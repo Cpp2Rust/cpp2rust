@@ -243,6 +243,11 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
     return false;
   }
 
+  if (IsVaListType(ctx_, clang::QualType(type, 0))) {
+    StrCat("VaList");
+    return false;
+  }
+
   StrCat(token::kStar);
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? keyword::kConst : keyword_mut_);
@@ -355,6 +360,16 @@ bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
 bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
   auto name = GetNamedDeclAsString(decl);
+
+  if (IsVaListType(ctx_, qual_type) && decl->isLocalVarDecl()) {
+    if (!clang::isa<clang::ParmVarDecl>(decl)) {
+      // va_list local variable: emit "let mut ap: VaList"
+      StrCat(keyword::kLet);
+    } // else va_list parameter (decayed to __va_list_tag *): emit "mut ap: VaList"
+    StrCat(keyword_mut_, name, token::kColon, "VaList");
+    return true;
+  }
+
   if (decl->isFileVarDecl()) {
     name = std::regex_replace(Mapper::ToString(decl), std::regex("::"), "_");
     if ((decl->isExternallyDeclarable() && !decl->hasInit()) ||
@@ -412,7 +427,9 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
     return;
   }
   auto qual_type = decl->getType();
-  if (decl->hasInit()) {
+  if (IsVaListType(ctx_, qual_type)) {
+    StrCat(token::kAssign, "VaList::empty()");
+  } else if (decl->hasInit()) {
     StrCat(token::kAssign);
     ConvertVarInit(qual_type, decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
@@ -1578,6 +1595,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         clang::isa<clang::PredefinedExpr>(sub_expr)) {
       return Convert(sub_expr);
     }
+    // __va_list_tag [1] decays to __va_list_tag *. Just pass through by value
+    if (IsVaListType(ctx_, sub_expr->getType())) {
+      Convert(sub_expr);
+      break;
+    }
     Convert(sub_expr);
     if (sub_expr->getType().isConstQualified()) {
       StrCat(keyword_ptr_decay_const_);
@@ -2223,6 +2245,18 @@ bool Converter::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
 bool Converter::VisitCXXNullPtrLiteralExpr(clang::CXXNullPtrLiteralExpr *expr) {
   StrCat(keyword_default_);
   computed_expr_type_ = ComputedExprType::FreshPointer;
+  return false;
+}
+
+bool Converter::VisitVAArgExpr(clang::VAArgExpr *expr) {
+  auto va_list_expr = expr->getSubExpr();
+  if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(va_list_expr)) {
+    va_list_expr = cast->getSubExpr();
+  }
+  Convert(va_list_expr);
+  StrCat(".arg::<");
+  Convert(expr->getType());
+  StrCat(">()");
   return false;
 }
 
