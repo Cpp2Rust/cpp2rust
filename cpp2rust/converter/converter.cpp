@@ -366,7 +366,8 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     if (!clang::isa<clang::ParmVarDecl>(decl)) {
       // va_list local variable: emit "let mut ap: VaList"
       StrCat(keyword::kLet);
-    } // else va_list parameter (decayed to __va_list_tag *): emit "mut ap: VaList"
+    } // else va_list parameter (decayed to __va_list_tag *): emit "mut ap:
+      // VaList"
     StrCat(keyword_mut_, name, token::kColon, "VaList");
     return true;
   }

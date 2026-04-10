@@ -572,7 +572,8 @@ bool IsVaListType(clang::ASTContext &ctx, clang::QualType type) {
 
   // Decayed match: __va_list_tag[1] decays to __va_list_tag *
   if (auto *arr = clang::dyn_cast<clang::ConstantArrayType>(va_list)) {
-    return canonical == ctx.getPointerType(arr->getElementType()).getCanonicalType();
+    return canonical ==
+           ctx.getPointerType(arr->getElementType()).getCanonicalType();
   }
 
   return false;
