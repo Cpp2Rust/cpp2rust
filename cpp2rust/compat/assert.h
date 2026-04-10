@@ -5,6 +5,6 @@
 
 #undef assert
 
-void __cpp2rust_assert_fail(bool condition) __attribute__((noreturn));
+void __cpp2rust_assert_fail(int condition) __attribute__((noreturn));
 
 #define assert(expr) __cpp2rust_assert_fail(expr)
