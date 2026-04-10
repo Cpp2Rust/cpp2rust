@@ -128,6 +128,7 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
 
 bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
+
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
       auto call_op = lambda->getLambdaCallOperator();
@@ -1276,7 +1277,28 @@ std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
   return std::nullopt;
 }
 
+void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
+  if (IsBuiltinVaStart(expr)) {
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "= VaList::new(args)");
+    return;
+  }
+  if (IsBuiltinVaEnd(expr)) {
+    // va_end is a no-op
+    return;
+  }
+  if (IsBuiltinVaCopy(expr)) {
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "=",
+           ToString(expr->getArg(1)->IgnoreImpCasts()), ".clone()");
+    return;
+  }
+}
+
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
+  if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
+    ConvertVAArgCall(expr);
+    return false;
+  }
+
   if (auto plugin_str = TryPluginConvert(expr)) {
     StrCat(*plugin_str);
     return false;
