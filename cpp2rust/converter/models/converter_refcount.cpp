@@ -1398,7 +1398,7 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   }
   StrCat(ConvertLValue(va_list_expr));
   StrCat(".arg::<");
-  Convert(expr->getType());
+  StrCat(GetUnsafeTypeAsString(expr->getType()));
   StrCat(">()");
   return false;
 }
