@@ -47,6 +47,8 @@ public:
 
   void ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 
+  void ConvertVaListVarDecl(clang::VarDecl *decl) override;
+
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
@@ -92,6 +94,8 @@ public:
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
   bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
+
+  bool VisitVAArgExpr(clang::VAArgExpr *expr) override;
 
   void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 

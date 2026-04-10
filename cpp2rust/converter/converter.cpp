@@ -358,17 +358,22 @@ bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
   return false;
 }
 
+void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
+  if (clang::isa<clang::ParmVarDecl>(decl)) {
+    // va_list parameter (decayed to __va_list_tag *): emit "mut ap: VaList"
+  } else {
+    // va_list local variable: emit "let mut ap: VaList"
+    StrCat(keyword::kLet);
+  }
+  StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");
+}
+
 bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
   auto name = GetNamedDeclAsString(decl);
 
   if (IsVaListType(ctx_, qual_type) && decl->isLocalVarDecl()) {
-    if (!clang::isa<clang::ParmVarDecl>(decl)) {
-      // va_list local variable: emit "let mut ap: VaList"
-      StrCat(keyword::kLet);
-    } // else va_list parameter (decayed to __va_list_tag *): emit "mut ap:
-      // VaList"
-    StrCat(keyword_mut_, name, token::kColon, "VaList");
+    ConvertVaListVarDecl(decl);
     return true;
   }
 
@@ -429,9 +434,7 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
     return;
   }
   auto qual_type = decl->getType();
-  if (IsVaListType(ctx_, qual_type)) {
-    StrCat(token::kAssign, "VaList::empty()");
-  } else if (decl->hasInit()) {
+  if (decl->hasInit()) {
     StrCat(token::kAssign);
     ConvertVarInit(qual_type, decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {

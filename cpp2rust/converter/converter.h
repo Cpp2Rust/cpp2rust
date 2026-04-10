@@ -85,7 +85,9 @@ public:
 
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);
 
-  bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
+  virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
+
+  virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
 
   virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
@@ -199,7 +201,7 @@ public:
 
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
-  virtual void ConvertVAArgCall(clang::CallExpr *expr);
+  void ConvertVAArgCall(clang::CallExpr *expr);
 
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
