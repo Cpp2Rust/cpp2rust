@@ -558,4 +558,45 @@ bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
   return parent && parent->getConstructor()->isConvertingConstructor(false);
 }
 
+// va_list is implemented as __va_list_tag[1] and decays to __va_list_tag *.
+// That's because va_list must have pointer semantics, but still be passed as
+// value by user code.
+bool IsVaListType(clang::ASTContext &ctx, clang::QualType type) {
+  auto canonical = type.getCanonicalType();
+  auto va_list = ctx.getBuiltinVaListType().getCanonicalType();
+
+  // Direct match: va_list itself
+  if (canonical == va_list) {
+    return true;
+  }
+
+  // Decayed match: __va_list_tag[1] decays to __va_list_tag *
+  if (auto *arr = clang::dyn_cast<clang::ConstantArrayType>(va_list)) {
+    return canonical == ctx.getPointerType(arr->getElementType()).getCanonicalType();
+  }
+
+  return false;
+}
+
+bool IsBuiltinVaStart(const clang::CallExpr *expr) {
+  if (auto *fn = expr->getDirectCallee()) {
+    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_start;
+  }
+  return false;
+}
+
+bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
+  if (auto *fn = expr->getDirectCallee()) {
+    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_end;
+  }
+  return false;
+}
+
+bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
+  if (auto *fn = expr->getDirectCallee()) {
+    return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_copy;
+  }
+  return false;
+}
+
 } // namespace cpp2rust

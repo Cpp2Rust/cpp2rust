@@ -142,4 +142,12 @@ std::string GetClassName(clang::QualType type);
 bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
                                  const clang::CXXConstructExpr *expr);
 
+bool IsVaListType(clang::ASTContext &ctx, clang::QualType type);
+
+bool IsBuiltinVaStart(const clang::CallExpr *expr);
+
+bool IsBuiltinVaEnd(const clang::CallExpr *expr);
+
+bool IsBuiltinVaCopy(const clang::CallExpr *expr);
+
 } // namespace cpp2rust
