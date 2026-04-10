@@ -1356,11 +1356,16 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
          "Either function decl or function prototype should be known");
 
   auto num_args = expr->getNumArgs() - arg_begin;
+  bool is_variadic =
+      function ? function->isVariadic() : (proto && proto->isVariadic());
+  unsigned num_named_params = function
+                                  ? function->getNumParams()
+                                  : (proto ? proto->getNumParams() : num_args);
 
   // Track which args are materialized temps bound to reference params
   std::vector<std::string> temp_refs(num_args);
 
-  for (unsigned i = 0; i < num_args; ++i) {
+  for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
     std::string param_name = function
                                  ? function->getParamDecl(i)->getNameAsString()
@@ -1387,7 +1392,7 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
 
   Convert(callee);
   StrCat(token::kOpenParen);
-  for (unsigned i = 0; i < num_args; ++i) {
+  for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
     std::string param_name = function
                                  ? function->getParamDecl(i)->getNameAsString()
@@ -1412,6 +1417,18 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
     }
     StrCat(token::kComma);
   }
+
+  // Variadic args: wrap in &[arg.into(), ...]
+  if (is_variadic) {
+    StrCat("& [");
+    for (unsigned i = num_named_params; i < num_args; ++i) {
+      auto *arg = expr->getArg(i + arg_begin);
+      Convert(arg);
+      StrCat(".into()", token::kComma);
+    }
+    StrCat("]");
+  }
+
   StrCat(token::kCloseParen);
   StrCat(token::kCloseCurlyBracket);
   StrCat(token::kCloseParen);
@@ -2806,6 +2823,9 @@ void Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   for (auto *parameter : definition->parameters()) {
     ConvertVarDeclSkipInit(parameter);
     StrCat(token::kComma);
+  }
+  if (decl->isVariadic()) {
+    StrCat("args: &[VaArg]", token::kComma);
   }
   in_function_formals_ = false;
 }
