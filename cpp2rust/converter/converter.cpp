@@ -247,7 +247,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? keyword::kConst : keyword_mut_);
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsCXXRecordDecl()))) {
+      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
     StrCat(keyword::kDyn);
   }
   return Convert(pointee_type);

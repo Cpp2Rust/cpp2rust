@@ -253,6 +253,7 @@ unsigned GetArraySize(clang::QualType array_type) {
 }
 
 std::string GetID(const clang::Decl *decl) {
+  assert(decl);
   const auto file_name = GetFileName(decl);
   const auto line_num = GetLineNumber(decl);
   const auto column_num = GetColumnNumber(decl);
