@@ -35,13 +35,31 @@ impl_from!(u32, UInt);
 impl_from!(i64, Long);
 impl_from!(u64, ULong);
 impl_from!(f64, Double);
-impl_from!(*mut c_void, RawPtr);
-impl_from!(*const c_void => RawPtr as *mut c_void);
-impl_from!(*mut i8 => RawPtr as *mut c_void);
-impl_from!(*const i8 => RawPtr as *mut c_void);
-impl_from!(*mut u8 => RawPtr as *mut c_void);
-impl_from!(*const u8 => RawPtr as *mut c_void);
+
+// C promotion: char/short -> int, float -> double
+impl_from!(i8 => Int as i32);
+impl_from!(i16 => Int as i32);
+impl_from!(u8 => UInt as u32);
+impl_from!(u16 => UInt as u32);
+impl_from!(f32 => Double as f64);
 impl_from!(AnyPtr, Ptr);
+
+impl<T: Clone + crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaArg {
+    fn from(v: crate::rc::Ptr<T>) -> Self {
+        VaArg::Ptr(v.to_any())
+    }
+}
+
+macro_rules! impl_from_ptr {
+    ($($ty:ty),*) => {
+        $(
+            impl_from!(*mut $ty => RawPtr as *mut c_void);
+            impl_from!(*const $ty => RawPtr as *mut c_void);
+        )*
+    };
+}
+
+impl_from_ptr!(c_void, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, usize, isize);
 
 pub struct VaList<'a> {
     args: &'a [VaArg],
@@ -154,11 +172,26 @@ impl VaArgGet for f64 {
     }
 }
 
-impl_get_ptr!(
-    *mut c_void,
-    *const c_void,
-    *mut i8,
-    *const i8,
-    *mut u8,
-    *const u8
-);
+macro_rules! impl_get_ptr {
+    ($($ty:ty),*) => {
+        $(
+            impl VaArgGet for *mut $ty {
+                fn get(v: &VaArg) -> Self { get_ptr(v) as *mut $ty }
+            }
+            impl VaArgGet for *const $ty {
+                fn get(v: &VaArg) -> Self { get_ptr(v) as *const $ty }
+            }
+        )*
+    };
+}
+
+impl_get_ptr!(c_void, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, usize, isize);
+
+impl<T: 'static> VaArgGet for crate::rc::Ptr<T> {
+    fn get(v: &VaArg) -> Self {
+        match v {
+            VaArg::Ptr(any) => any.cast::<T>().expect("VaList::arg: Ptr type mismatch"),
+            _ => panic!("VaList::arg: expected Ptr, got different variant"),
+        }
+    }
+}
