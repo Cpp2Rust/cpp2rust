@@ -58,6 +58,8 @@ pub mod math_tgt_unsafe;
 pub mod pair_tgt_refcount;
 #[path = r#"../pair/tgt_unsafe.rs"#]
 pub mod pair_tgt_unsafe;
+#[path = r#"../stdarg/tgt_unsafe.rs"#]
+pub mod stdarg_tgt_unsafe;
 #[path = r#"../stdio/tgt_refcount.rs"#]
 pub mod stdio_tgt_refcount;
 #[path = r#"../stdio/tgt_unsafe.rs"#]
