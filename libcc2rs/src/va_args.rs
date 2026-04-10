@@ -49,10 +49,6 @@ pub struct VaList<'a> {
 }
 
 impl<'a> VaList<'a> {
-    pub fn empty() -> Self {
-        VaList { args: &[], pos: 0 }
-    }
-
     pub fn new(args: &'a [VaArg]) -> Self {
         VaList { args, pos: 0 }
     }
@@ -61,6 +57,12 @@ impl<'a> VaList<'a> {
         let val = &self.args[self.pos];
         self.pos += 1;
         T::get(val)
+    }
+}
+
+impl Default for VaList<'_> {
+    fn default() -> Self {
+        VaList { args: &[], pos: 0 }
     }
 }
 
