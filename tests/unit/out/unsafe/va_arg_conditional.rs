@@ -1,0 +1,40 @@
+extern crate libc;
+use libc::*;
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::collections::BTreeMap;
+use std::io::Seek;
+use std::io::{Read, Write};
+use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::rc::Rc;
+pub unsafe fn conditional_log_0(mut verbose: i32, mut fmt: *const u8, args: &[VaArg]) -> i32 {
+    if (verbose != 0) {
+        let mut ap: VaList = <VaList>::default();
+        ap = VaList::new(args);
+        let mut result: i32 = ap.arg::<i32>();
+        return result;
+    }
+    return -1_i32;
+}
+pub fn main() {
+    unsafe {
+        std::process::exit(main_0() as i32);
+    }
+}
+unsafe fn main_0() -> i32 {
+    assert!(
+        ((unsafe {
+            let _verbose: i32 = 1;
+            let _fmt: *const u8 = b"%d\0".as_ptr();
+            conditional_log_0(_verbose, _fmt, &[42.into()])
+        }) == (42))
+    );
+    assert!(
+        ((unsafe {
+            let _verbose: i32 = 0;
+            let _fmt: *const u8 = b"%d\0".as_ptr();
+            conditional_log_0(_verbose, _fmt, &[99.into()])
+        }) == (-1_i32))
+    );
+    return 0;
+}

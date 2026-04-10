@@ -7,10 +7,11 @@ use std::io::Seek;
 use std::io::{Read, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_ints_0(first: i32, args: &[VaArg]) -> i32 {
+pub fn sum_then_product_0(first: i32, args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
-    let total: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
+    let sum: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
+    let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*ap.borrow_mut()) = VaList::new(args);
     let val: Value<i32> = <Value<i32>>::default();
     'loop_: while ((({
@@ -19,9 +20,18 @@ pub fn sum_ints_0(first: i32, args: &[VaArg]) -> i32 {
     }) as i32)
         != 0)
     {
-        (*total.borrow_mut()) += (*val.borrow());
+        (*sum.borrow_mut()) += (*val.borrow());
     }
-    return (*total.borrow());
+    (*ap.borrow_mut()) = VaList::new(args);
+    'loop_: while ((({
+        (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*val.borrow())
+    }) as i32)
+        != 0)
+    {
+        (*product.borrow_mut()) *= (*val.borrow());
+    }
+    return ((*sum.borrow()) + (*product.borrow()));
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -29,21 +39,9 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         (({
-            let _first: i32 = 1;
-            sum_ints_0(_first, &[2.into(), 3.into(), 4.into(), 0.into()])
-        }) == 10)
-    );
-    assert!(
-        (({
-            let _first: i32 = 100;
-            sum_ints_0(_first, &[0.into()])
-        }) == 100)
-    );
-    assert!(
-        (({
-            let _first: i32 = 5;
-            sum_ints_0(_first, &[5.into(), 5.into(), 5.into(), 5.into(), 0.into()])
-        }) == 25)
+            let _first: i32 = 2;
+            sum_then_product_0(_first, &[3.into(), 4.into(), 0.into()])
+        }) == 33)
     );
     return 0;
 }

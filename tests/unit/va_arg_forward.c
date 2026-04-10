@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdarg.h>
 
 int inner(int count, va_list ap) {
@@ -17,5 +18,8 @@ int outer(int count, ...) {
 }
 
 int main() {
-  return outer(3, 10, 20, 30) - 60;
+  assert(outer(3, 10, 20, 30) == 60);
+  assert(outer(1, 42) == 42);
+  assert(outer(0) == 0);
+  return 0;
 }

@@ -7,9 +7,10 @@ use std::io::Seek;
 use std::io::{Read, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_ints_0(mut first: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn sum_then_product_0(mut first: i32, args: &[VaArg]) -> i32 {
     let mut ap: VaList = <VaList>::default();
-    let mut total: i32 = first;
+    let mut sum: i32 = first;
+    let mut product: i32 = first;
     ap = VaList::new(args);
     let mut val: i32 = <i32>::default();
     'loop_: while ((({
@@ -18,9 +19,18 @@ pub unsafe fn sum_ints_0(mut first: i32, args: &[VaArg]) -> i32 {
     }) as i32)
         != (0))
     {
-        total += val;
+        sum += val;
     }
-    return total;
+    ap = VaList::new(args);
+    'loop_: while ((({
+        val = ap.arg::<i32>();
+        val
+    }) as i32)
+        != (0))
+    {
+        product *= val;
+    }
+    return ((sum) + (product));
 }
 pub fn main() {
     unsafe {
@@ -30,21 +40,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
-            let _first: i32 = 1;
-            sum_ints_0(_first, &[2.into(), 3.into(), 4.into(), 0.into()])
-        }) == (10))
-    );
-    assert!(
-        ((unsafe {
-            let _first: i32 = 100;
-            sum_ints_0(_first, &[0.into()])
-        }) == (100))
-    );
-    assert!(
-        ((unsafe {
-            let _first: i32 = 5;
-            sum_ints_0(_first, &[5.into(), 5.into(), 5.into(), 5.into(), 0.into()])
-        }) == (25))
+            let _first: i32 = 2;
+            sum_then_product_0(_first, &[3.into(), 4.into(), 0.into()])
+        }) == (33))
     );
     return 0;
 }
