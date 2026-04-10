@@ -1495,6 +1495,18 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   in_function_formals_ = false;
 }
 
+static bool ContainsVAArgExpr(const clang::Stmt *stmt) {
+  if (clang::isa<clang::VAArgExpr>(stmt)) {
+    return true;
+  }
+  for (auto *child : stmt->children()) {
+    if (ContainsVAArgExpr(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static std::unordered_set<const clang::ValueDecl *>
 GetAllVars(const clang::Stmt *stmt) {
   std::unordered_set<const clang::ValueDecl *> vars;
@@ -1606,9 +1618,14 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
   auto sides_contain_ptr_or_deref = std::ranges::any_of(rhs_vars, predicate) ||
                                     std::ranges::any_of(lhs_vars, predicate);
 
-  auto may_cause_borrow_mut_err = !sides_contains_literal &&
-                                  !same_var_on_both_sides &&
-                                  sides_contain_ptr_or_deref;
+  auto both_sides_have_va_arg = same_var_on_both_sides &&
+                                ContainsVAArgExpr(lhs) &&
+                                ContainsVAArgExpr(rhs);
+
+  auto may_cause_borrow_mut_err =
+      both_sides_have_va_arg ||
+      (!sides_contains_literal && !same_var_on_both_sides &&
+       sides_contain_ptr_or_deref);
 
   if (may_cause_borrow_mut_err) {
     StrCat(std::format("{{ let _lhs = {}; _lhs {} {} }}",
