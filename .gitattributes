@@ -1,0 +1,2 @@
+tests/lit/* linguist-vendored
+tests/lit/lit/formats/Cpp2RustTest.py linguist-vendored=false
