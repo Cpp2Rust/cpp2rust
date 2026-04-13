@@ -6,9 +6,7 @@ int inc(int x) { return x + 1; }
 int dec(int x) { return x - 1; }
 int identity(int x) { return x; }
 
-op_t pick(int mode) {
-  return mode > 0 ? inc : mode < 0 ? dec : identity;
-}
+op_t pick(int mode) { return mode > 0 ? inc : mode < 0 ? dec : identity; }
 
 int apply(op_t fn, int x) {
   op_t actual = fn ? fn : identity;

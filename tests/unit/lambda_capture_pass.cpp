@@ -1,7 +1,6 @@
 #include <assert.h>
 
-template <typename F>
-int apply(F fn, int x) { return fn(x); }
+template <typename F> int apply(F fn, int x) { return fn(x); }
 
 int main() {
   int base = 10;

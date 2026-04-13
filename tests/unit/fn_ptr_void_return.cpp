@@ -5,9 +5,7 @@ typedef void (*action_t)(int *);
 void negate(int *x) { *x = -*x; }
 void zero_out(int *x) { *x = 0; }
 
-void run(action_t fn, int *x) {
-  fn(x);
-}
+void run(action_t fn, int *x) { fn(x); }
 
 int main() {
   int a = 42;
