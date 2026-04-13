@@ -2023,7 +2023,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (clang::isa<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      StrCat(std::format("Some({})", str));
+      StrCat(std::format("Some({} as _)", str));
       return false;
     }
   }
