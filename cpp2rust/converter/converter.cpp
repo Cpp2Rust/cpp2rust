@@ -417,6 +417,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 }
 
 bool Converter::ConvertLambdaVarDecl(clang::VarDecl *decl) {
+  if (decl->getType()->isFunctionPointerType()) {
+    return false;
+  }
   if (decl->hasInit()) {
     if (clang::isa<clang::LambdaExpr>(
             decl->getInit()->IgnoreUnlessSpelledInSource())) {
@@ -1432,7 +1435,14 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
     }
   }
 
-  Convert(callee);
+  if (proto && !function) {
+    StrCat(token::kOpenParen);
+    Convert(callee);
+    StrCat(").unwrap()");
+  } else {
+    PushExprKind push(*this, ExprKind::RValue);
+    Convert(StripFunctionPointerDecay(callee));
+  }
   StrCat(token::kOpenParen);
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -1648,7 +1658,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   }
   case clang::CastKind::CK_FunctionToPointerDecay:
-  case clang::CastKind::CK_BuiltinFnToFnPtr:
+  case clang::CastKind::CK_BuiltinFnToFnPtr: {
+    PushExprKind push(*this, ExprKind::AddrOf);
+    Convert(sub_expr);
+    break;
+  }
   case clang::CastKind::CK_ConstructorConversion:
   case clang::CastKind::CK_DerivedToBase:
     Convert(sub_expr);
@@ -2001,13 +2015,15 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
-    if (auto init = var_decl->getInit()) {
-      if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-              init->IgnoreUnlessSpelledInSource())) {
-        StrCat(token::kOpenParen);
-        VisitLambdaExpr(lambda);
-        StrCat(token::kCloseParen);
-        return false;
+    if (!var_decl->getType()->isFunctionPointerType()) {
+      if (auto init = var_decl->getInit()) {
+        if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
+                init->IgnoreUnlessSpelledInSource())) {
+          StrCat(token::kOpenParen);
+          VisitLambdaExpr(lambda);
+          StrCat(token::kCloseParen);
+          return false;
+        }
       }
     }
   }
@@ -2466,6 +2482,9 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 }
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
+  if (isAddrOf() && expr->capture_size() == 0) {
+    StrCat("Some");
+  }
   StrCat(token::kOpenParen);
   StrCat("|");
   for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
@@ -2747,6 +2766,16 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     StrCat(token::kRef);
     if (IsMut(qual_type)) {
       StrCat(keyword_mut_);
+    }
+  }
+  if (qual_type->isFunctionPointerType()) {
+    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
+            expr->IgnoreUnlessSpelledInSource())) {
+      PushExprKind push(*this, ExprKind::AddrOf);
+      curr_init_type_.push(qual_type);
+      VisitLambdaExpr(lambda);
+      curr_init_type_.pop();
+      return;
     }
   }
   auto *ignore_casts = expr->IgnoreCasts();
@@ -3180,6 +3209,8 @@ void Converter::PlaceholderCtx::dump() const {
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
+  arg = StripFunctionPointerDecay(arg);
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),

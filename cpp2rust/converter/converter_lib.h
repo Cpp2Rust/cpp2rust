@@ -91,6 +91,8 @@ template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
 
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
+clang::Expr *StripFunctionPointerDecay(clang::Expr *expr);
+
 std::string GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);

@@ -338,6 +338,17 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
   return {};
 }
 
+clang::Expr *StripFunctionPointerDecay(clang::Expr *expr) {
+  if (auto *ice = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+    auto ck = ice->getCastKind();
+    if (ck == clang::CK_FunctionToPointerDecay ||
+        ck == clang::CK_BuiltinFnToFnPtr) {
+      return ice->getSubExpr();
+    }
+  }
+  return expr;
+}
+
 std::string GetOverloadedOperator(const clang::FunctionDecl *decl) {
   switch (decl->getOverloadedOperator()) {
   case clang::OO_Less:

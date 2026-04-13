@@ -1477,9 +1477,14 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
     {
       Buffer buf(*this);
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat("Rc::new(");
-      VisitLambdaExpr(lambda);
-      StrCat(")");
+      if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
+        PushExprKind addr_of(*this, ExprKind::AddrOf);
+        VisitLambdaExpr(lambda);
+      } else {
+        StrCat("Rc::new(");
+        VisitLambdaExpr(lambda);
+        StrCat(")");
+      }
       str = std::move(buf).str();
     }
     StrCat(BoxValue(std::move(str)));
