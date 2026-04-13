@@ -383,9 +383,15 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
       return false;
     }
     StrCat(AccessSpecifierAsString(decl->getAccess()), keyword::kStatic);
+    if (!qual_type.isConstQualified()) {
+      StrCat(keyword_mut_);
+    }
     ENSURE(decl_ids_.insert(GetID(decl)).second);
   } else if (decl->isStaticLocal()) {
     StrCat(keyword::kStatic);
+    if (!qual_type.isConstQualified()) {
+      StrCat(keyword_mut_);
+    }
   } else if (decl->isLocalVarDecl()) {
     StrCat(keyword::kLet);
   }
