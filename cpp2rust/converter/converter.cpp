@@ -1397,7 +1397,8 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   StrCat(token::kOpenParen);
   StrCat(keyword_unsafe_);
   StrCat(token::kOpenCurlyBracket);
-  const auto *function = expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
+  const auto *function =
+      expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
 
   if (!function) {
