@@ -1481,9 +1481,7 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
         PushExprKind addr_of(*this, ExprKind::AddrOf);
         VisitLambdaExpr(lambda);
       } else {
-        StrCat("Rc::new(");
         VisitLambdaExpr(lambda);
-        StrCat(")");
       }
       str = std::move(buf).str();
     }

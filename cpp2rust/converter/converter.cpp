@@ -130,17 +130,21 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
-      auto call_op = lambda->getLambdaCallOperator();
-      StrCat("Rc<dyn Fn(");
-      for (auto p : call_op->parameters()) {
-        StrCat(std::format("{},", ToStringBase(p->getType())));
+      if (in_function_formals_) {
+        // Function parameters can't use `_`. Emit `impl Fn(args) -> ret`.
+        auto call_op = lambda->getLambdaCallOperator();
+        StrCat("impl Fn(");
+        for (auto p : call_op->parameters()) {
+          StrCat(std::format("{},", ToStringBase(p->getType())));
+        }
+        StrCat(")");
+        if (!call_op->getReturnType()->isVoidType()) {
+          StrCat("->");
+          StrCat(ToStringBase(call_op->getReturnType()));
+        }
+      } else {
+        StrCat("_");
       }
-      StrCat(")");
-      if (!call_op->getReturnType()->isVoidType()) {
-        StrCat("->");
-        StrCat(ToStringBase(call_op->getReturnType()));
-      }
-      StrCat(">");
       return false;
     }
   }
