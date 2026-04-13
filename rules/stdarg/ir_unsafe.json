@@ -1,6 +1,6 @@
 {
   "t1": {
-    "init": "VaList::empty()",
+    "init": "VaList::default()",
     "type": "VaList"
   }
 }
