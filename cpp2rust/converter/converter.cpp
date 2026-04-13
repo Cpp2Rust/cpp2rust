@@ -1687,7 +1687,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     ConvertEqualsNullPtr(sub_expr);
     break;
   case clang::CastKind::CK_NullToPointer:
-    StrCat(keyword_default_);
+    if (type->isFunctionPointerType()) {
+      StrCat("None");
+    } else {
+      StrCat(keyword_default_);
+    }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
   default:
@@ -2686,18 +2690,18 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
-  static llvm::DenseMap<unsigned, std::string> default_for_type = {
-      {clang::BuiltinType::Char_U, "0_u8"},
-      {clang::BuiltinType::SChar, "0_i8"},
-      {clang::BuiltinType::UChar, "0_u8"},
-  };
-
   qual_type = qual_type.getUnqualifiedType().getCanonicalType();
-  if (auto builtin = qual_type->getAs<clang::BuiltinType>()) {
-    auto it = default_for_type.find(builtin->getKind());
-    if (it != default_for_type.end()) {
-      return it->second;
-    }
+
+  if (qual_type->isBooleanType()) {
+    return "false";
+  }
+
+  if (qual_type->isIntegerType()) {
+    return std::format("0 as {}", ToString(qual_type));
+  }
+
+  if (qual_type->isFloatingType()) {
+    return std::format("0.0 as {}", ToString(qual_type));
   }
 
   return std::format("<{}>::default()", ToString(qual_type));
