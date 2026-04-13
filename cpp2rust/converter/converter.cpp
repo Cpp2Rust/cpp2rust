@@ -1962,12 +1962,12 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
   Convert(expr->getCond());
   StrCat(token::kOpenCurlyBracket);
-  if (expr->isLValue() && !isRValue()) {
+  if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
     StrCat(token::kRef, keyword_mut_);
   }
   Convert(expr->getTrueExpr());
   StrCat(token::kCloseCurlyBracket, keyword::kElse, token::kOpenCurlyBracket);
-  if (expr->isLValue() && !isRValue()) {
+  if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
     StrCat(token::kRef, keyword_mut_);
   }
   Convert(expr->getFalseExpr());
