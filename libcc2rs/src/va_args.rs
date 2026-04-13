@@ -51,10 +51,6 @@ pub struct VaList<'a> {
 }
 
 impl<'a> VaList<'a> {
-    pub fn empty() -> Self {
-        VaList { args: &[], pos: 0 }
-    }
-
     pub fn new(args: &'a [VaArg]) -> Self {
         VaList { args, pos: 0 }
     }
