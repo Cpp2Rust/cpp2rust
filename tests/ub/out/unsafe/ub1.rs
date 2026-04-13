@@ -18,6 +18,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let x: *mut i32 = (unsafe { Rc::new(|| unsafe { dangling_0() })() });
+    let x: *mut i32 = (unsafe { dangling_0() });
     return (*x);
 }

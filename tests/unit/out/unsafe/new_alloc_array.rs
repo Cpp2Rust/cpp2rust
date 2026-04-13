@@ -13,12 +13,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut array: *mut i32 = Box::leak(
-        (0..100_u64)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
-    )
-    .as_mut_ptr();
+    let mut array: *mut i32 =
+        Box::leak((0..100_u64).map(|_| 0 as i32).collect::<Box<[i32]>>()).as_mut_ptr();
     {
         let byte_0 = (array as *mut i32 as *mut ::libc::c_void) as *mut u8;
         for offset in 0..(::std::mem::size_of::<i32>() as u64 as u64).wrapping_mul(100_u64) {

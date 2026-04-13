@@ -8,7 +8,7 @@ use std::io::{Read, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn foo_0() -> i32 {
-    static kX1: i32 = 1;;
+    static mut kX1: i32 = 1;;
     static kX2: i32 = 2;;
     kX1 += 1;
     return ((kX1) + (kX2));

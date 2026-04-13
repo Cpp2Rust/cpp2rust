@@ -94,7 +94,7 @@ unsafe fn main_0() -> i32 {
         (*h),
     );
     ::std::mem::drop(Box::from_raw(h));
-    let mut i: *mut i32 = Box::leak(Box::new([7, 8, <i32>::default()])).as_mut_ptr();
+    let mut i: *mut i32 = Box::leak(Box::new([7, 8, 0 as i32])).as_mut_ptr();
     write!(
         std::fs::File::from_raw_fd(
             std::io::stdout()

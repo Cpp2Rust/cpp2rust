@@ -22,10 +22,10 @@ pub struct Foo {
 impl Default for Foo {
     fn default() -> Self {
         Foo {
-            x: <i32>::default(),
+            x: 0 as i32,
             y: <*mut i32>::default(),
             z: Default::default(),
-            a: [<i32>::default(); 3],
+            a: [0 as i32; 3],
             bar: <Bar>::default(),
         }
     }

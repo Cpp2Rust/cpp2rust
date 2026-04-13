@@ -13,12 +13,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut arr: *mut i32 = Box::leak(
-        (0..10_u64)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
-    )
-    .as_mut_ptr();
+    let mut arr: *mut i32 =
+        Box::leak((0..10_u64).map(|_| 0 as i32).collect::<Box<[i32]>>()).as_mut_ptr();
     let mut out: i32 = (*arr.offset((10) as isize));
 
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(

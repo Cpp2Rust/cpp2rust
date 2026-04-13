@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
     let mut pa: *mut i32 = (&mut a as *mut i32);
     let b: *const i32 = (unsafe {
         let _a: *const i32 = &(*pa) as *const i32;
-        Rc::new(|a0| unsafe { foo_0(a0) })(_a)
+        foo_0(_a)
     });
     return (*b);
 }

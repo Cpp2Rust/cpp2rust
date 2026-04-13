@@ -14,12 +14,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut N: i32 = 5;
-    let mut A: *mut i32 = Box::leak(
-        (0..(N as u64))
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
-    )
-    .as_mut_ptr();
+    let mut A: *mut i32 =
+        Box::leak((0..(N as u64)).map(|_| 0 as i32).collect::<Box<[i32]>>()).as_mut_ptr();
 
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         A,
@@ -28,7 +24,7 @@ unsafe fn main_0() -> i32 {
     let N2: *mut i32 = &mut N as *mut i32;
     let mut A2: *mut i32 = Box::leak(
         (0..((*N2) as u64))
-            .map(|_| <i32>::default())
+            .map(|_| 0 as i32)
             .collect::<Box<[i32]>>(),
     )
     .as_mut_ptr();
