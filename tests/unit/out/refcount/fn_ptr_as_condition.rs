@@ -1,0 +1,59 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::Seek;
+use std::io::{Read, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+pub fn double_it_0(x: Ptr<i32>) {
+    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
+    {
+        let __ptr = (*x.borrow()).clone();
+        let __tmp = __ptr.read() * 2;
+        __ptr.write(__tmp)
+    };
+}
+pub fn maybe_call_1(cb: Option<fn(Ptr<i32>)>, x: Ptr<i32>) {
+    let cb: Value<Option<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));
+    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
+    if !(*cb.borrow()).is_none() {
+        ({
+            let _arg0: Ptr<i32> = (*x.borrow()).clone();
+            (*cb.borrow()).unwrap()(_arg0)
+        });
+    }
+}
+pub fn main() {
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let a: Value<i32> = Rc::new(RefCell::new(5));
+    ({
+        let _cb: Option<fn(Ptr<i32>)> = Some(double_it_0 as _);
+        let _x: Ptr<i32> = (a.as_pointer());
+        maybe_call_1(_cb, _x)
+    });
+    assert!(((*a.borrow()) == 10));
+    let b: Value<i32> = Rc::new(RefCell::new(5));
+    ({
+        let _cb: Option<fn(Ptr<i32>)> = None;
+        let _x: Ptr<i32> = (b.as_pointer());
+        maybe_call_1(_cb, _x)
+    });
+    assert!(((*b.borrow()) == 5));
+    let fn_: Value<Option<fn(Ptr<i32>)>> = Rc::new(RefCell::new(None));
+    if !!(*fn_.borrow()).is_none() {
+        (*fn_.borrow_mut()) = (Some(double_it_0 as _)).clone();
+    }
+    let c: Value<i32> = Rc::new(RefCell::new(3));
+    if !(*fn_.borrow()).is_none() {
+        ({
+            let _arg0: Ptr<i32> = (c.as_pointer());
+            (*fn_.borrow()).unwrap()(_arg0)
+        });
+    }
+    assert!(((*c.borrow()) == 6));
+    return 0;
+}
