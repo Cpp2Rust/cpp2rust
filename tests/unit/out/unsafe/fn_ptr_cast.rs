@@ -18,9 +18,11 @@ pub unsafe fn test_roundtrip_1() {
             (fn_).unwrap()(_arg0)
         }) == (10))
     );
-    let mut gfn: Option<unsafe fn()> = (fn_ as Option<unsafe fn()>);
+    let mut gfn: Option<unsafe fn()> =
+        std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_);
     assert!(!((gfn).is_none()));
-    let mut fn2: Option<unsafe fn(i32) -> i32> = (gfn as Option<unsafe fn(i32) -> i32>);
+    let mut fn2: Option<unsafe fn(i32) -> i32> =
+        std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(gfn);
     assert!(
         ((unsafe {
             let _arg0: i32 = 5;
@@ -32,7 +34,9 @@ pub unsafe fn test_roundtrip_1() {
 pub unsafe fn test_double_cast_2() {
     let mut fn_: Option<unsafe fn(i32) -> i32> = Some(double_it_0 as _);
     let mut fn2: Option<unsafe fn(i32) -> i32> =
-        ((fn_ as Option<unsafe fn()>) as Option<unsafe fn(i32) -> i32>);
+        std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(
+            std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_),
+        );
     assert!(
         ((unsafe {
             let _arg0: i32 = 5;
@@ -47,8 +51,11 @@ pub struct Command {
 }
 pub unsafe fn test_void_ptr_to_fn_3() {
     let mut cmd: Command = <Command>::default();
-    cmd.data = (Some(double_it_0 as _) as *mut ::libc::c_void);
-    let mut fn_: Option<unsafe fn(i32) -> i32> = (cmd.data as Option<unsafe fn(i32) -> i32>);
+    cmd.data = std::mem::transmute::<Option<unsafe fn(i32) -> i32>, *mut ::libc::c_void>(Some(
+        double_it_0 as _,
+    ));
+    let mut fn_: Option<unsafe fn(i32) -> i32> =
+        std::mem::transmute::<*mut ::libc::c_void, Option<unsafe fn(i32) -> i32>>(cmd.data);
     assert!(
         ((unsafe {
             let _arg0: i32 = 5;

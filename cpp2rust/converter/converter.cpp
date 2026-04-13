@@ -1737,6 +1737,17 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     if (expr->getType() == sub_expr->getType()) {
       return Convert(sub_expr);
     }
+    if (type->isFunctionPointerType() ||
+        sub_expr->getType()->isFunctionPointerType()) {
+      StrCat("std::mem::transmute::<");
+      Convert(sub_expr->getType());
+      StrCat(",");
+      Convert(type);
+      StrCat(">(");
+      Convert(sub_expr);
+      StrCat(")");
+      return false;
+    }
     StrCat(token::kOpenParen);
     Convert(sub_expr);
     if (auto *unary_oper = clang::dyn_cast<clang::UnaryOperator>(sub_expr);
