@@ -570,7 +570,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (clang::isa<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      StrCat(std::format("Rc::new({})", str));
+      StrCat(std::format("Some({})", str));
     } else {
       StrCat(str);
     }

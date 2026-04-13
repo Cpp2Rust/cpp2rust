@@ -226,7 +226,7 @@ void Converter::ConvertFunctionPointerType(clang::PointerType *type) {
   auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>();
   assert(proto && "Type should be a function prototype");
 
-  StrCat("Rc<dyn Fn(");
+  StrCat("Option<", keyword_unsafe_, " fn(");
   for (auto p_ty : proto->param_types()) {
     StrCat(std::format("{},", ToString(p_ty)));
   }
@@ -1993,23 +1993,9 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  if (auto function = clang::dyn_cast<clang::FunctionDecl>(decl)) {
+  if (clang::isa<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      // Wrap unsafe function in safe closure because the Fn trait only accepts
-      // safe functions
-      std::string arguments;
-      for (unsigned i = 0; i < function->getNumParams(); i++) {
-        arguments += (i ? ", a" : "a") + std::to_string(i);
-      }
-      StrCat("Rc::new", token::kOpenParen);
-      StrCat(std::format("|{}|", arguments));
-      StrCat(keyword_unsafe_, token::kOpenCurlyBracket);
-      StrCat(str);
-      StrCat(token::kOpenParen);
-      StrCat(arguments);
-      StrCat(token::kCloseParen);
-      StrCat(token::kCloseCurlyBracket);
-      StrCat(token::kCloseParen);
+      StrCat(std::format("Some({})", str));
       return false;
     }
   }
@@ -2609,15 +2595,7 @@ bool Converter::VisitCXXStdInitializerListExpr(
 
 std::string
 Converter::GetFunctionPointerDefaultAsString(clang::QualType qual_type) {
-  std::string ret;
-  auto proto = qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  assert(proto);
-  ret = "Rc::new(|";
-  for (unsigned i = 0; i < proto->getNumParams(); i++) {
-    ret += "_,";
-  }
-  ret += R"(| { panic!("ub: uninit function pointer") }))";
-  return ret;
+  return "None";
 }
 
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
@@ -2816,7 +2794,8 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat("(");
   Convert(expr);
-  if (IsUniquePtr(expr->getType())) {
+  if (IsUniquePtr(expr->getType()) ||
+      expr->getType()->isFunctionPointerType()) {
     StrCat(").is_none()");
   } else {
     StrCat(").is_null()");
