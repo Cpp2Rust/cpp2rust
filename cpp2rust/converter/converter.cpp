@@ -128,7 +128,6 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
 
 bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
-
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
       auto call_op = lambda->getLambdaCallOperator();
@@ -360,9 +359,9 @@ bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
 
 void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
   if (clang::isa<clang::ParmVarDecl>(decl)) {
-    // va_list parameter (decayed to __va_list_tag *): emit "mut ap: VaList"
+    // va_list parameter (decayed to __va_list_tag *)
   } else {
-    // va_list local variable: emit "let mut ap: VaList"
+    // va_list local variable
     StrCat(keyword::kLet);
   }
   StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");

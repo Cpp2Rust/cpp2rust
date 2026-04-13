@@ -150,4 +150,6 @@ bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
+bool ContainsVAArgExpr(const clang::Stmt *stmt);
+
 } // namespace cpp2rust

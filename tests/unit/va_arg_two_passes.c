@@ -1,4 +1,3 @@
-// Pattern from wget's concat_strings: va_start twice to iterate args in two passes
 #include <assert.h>
 #include <stdarg.h>
 

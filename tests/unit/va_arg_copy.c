@@ -1,4 +1,3 @@
-// va_copy: save position, consume from copy, original still usable
 #include <assert.h>
 #include <stdarg.h>
 
@@ -28,7 +27,6 @@ int sum_with_copy(int count, ...) {
 }
 
 int main() {
-  // sum1 = 10+20+30 = 60, sum2 = 10+20+30 = 60, total = 120
   assert(sum_with_copy(3, 10, 20, 30) == 120);
   return 0;
 }

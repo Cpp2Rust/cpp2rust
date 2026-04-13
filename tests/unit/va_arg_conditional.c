@@ -1,4 +1,3 @@
-// Pattern from Curl_failf: va_start only under a condition
 #include <assert.h>
 #include <stdarg.h>
 

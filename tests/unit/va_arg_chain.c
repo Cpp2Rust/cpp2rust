@@ -1,4 +1,3 @@
-// Pattern from curl's trc_write chain: variadic -> va_list -> va_list forwarding
 #include <assert.h>
 #include <stdarg.h>
 
@@ -22,7 +21,6 @@ int top_level(int n, ...) {
 }
 
 int main() {
-  // Extract the 3rd arg (0-indexed): 100, 200, 300, 400 -> 300
   assert(top_level(2, 100, 200, 300, 400) == 300);
   assert(top_level(0, 42, 99) == 42);
   assert(top_level(3, 1, 2, 3, 4) == 4);

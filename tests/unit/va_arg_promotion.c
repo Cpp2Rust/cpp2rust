@@ -1,4 +1,3 @@
-// C promotion rules: char/short promote to int, float promotes to double
 #include <assert.h>
 #include <stdarg.h>
 
@@ -23,7 +22,7 @@ int test_promotions(int count, ...) {
 }
 
 int main() {
-  char x = 'A';     // 65
+  char x = 'A';
   short y = 10;
   float z = 3.0f;
   // 65 + 10 + 3 = 78

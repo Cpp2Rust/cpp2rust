@@ -1,4 +1,3 @@
-// Pattern from Curl_failf: variadic function receives a struct pointer as first arg
 #include <assert.h>
 #include <stdarg.h>
 

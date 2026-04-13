@@ -600,4 +600,16 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
   return false;
 }
 
+bool ContainsVAArgExpr(const clang::Stmt *stmt) {
+  if (clang::isa<clang::VAArgExpr>(stmt)) {
+    return true;
+  }
+  for (auto *child : stmt->children()) {
+    if (ContainsVAArgExpr(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 } // namespace cpp2rust

@@ -479,9 +479,9 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
 
 void ConverterRefCount::ConvertVaListVarDecl(clang::VarDecl *decl) {
   if (clang::isa<clang::ParmVarDecl>(decl)) {
-    // va_list parameter (decayed to __va_list_tag *): emit "mut ap: VaList"
+    // va_list parameter (decayed to __va_list_tag *)
   } else {
-    // va_list local variable: emit "let mut ap: VaList"
+    // va_list local variable
     StrCat(keyword::kLet);
   }
 
@@ -1493,18 +1493,6 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
                       ? ConvertFreshPointer(expr)
                       : ConvertFreshRValue(expr)));
   in_function_formals_ = false;
-}
-
-static bool ContainsVAArgExpr(const clang::Stmt *stmt) {
-  if (clang::isa<clang::VAArgExpr>(stmt)) {
-    return true;
-  }
-  for (auto *child : stmt->children()) {
-    if (ContainsVAArgExpr(child)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 static std::unordered_set<const clang::ValueDecl *>

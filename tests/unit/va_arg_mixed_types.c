@@ -21,7 +21,6 @@ int sum_mixed(int count, ...) {
 }
 
 int main() {
-  // tag=0 int=10, tag=1 double=20.5, tag=2 long=30
   assert(sum_mixed(3, 0, 10, 1, 20.5, 2, 30L) == 60);
   assert(sum_mixed(1, 0, 42) == 42);
   assert(sum_mixed(2, 1, 3.7, 2, 100L) == 103);
