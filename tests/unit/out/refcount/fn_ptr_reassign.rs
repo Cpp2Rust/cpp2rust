@@ -26,39 +26,40 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fn_: Value<Option<fn(i32, i32) -> i32>> = Rc::new(RefCell::new(Some(add_0 as _)));
+    let fn_: Value<Ptr<fn(i32, i32) -> i32>> =
+        Rc::new(RefCell::new(fn_ptr!(add_0, fn(i32, i32) -> i32)));
     assert!(
         (({
             let _arg0: i32 = 3;
             let _arg1: i32 = 4;
-            (*fn_.borrow()).unwrap()(_arg0, _arg1)
+            (*fn_.borrow()).call_fn()(_arg0, _arg1)
         }) == 7)
     );
-    (*fn_.borrow_mut()) = Some(sub_1 as _);
+    (*fn_.borrow_mut()) = fn_ptr!(sub_1, fn(i32, i32) -> i32);
     assert!(
         (({
             let _arg0: i32 = 10;
             let _arg1: i32 = 3;
-            (*fn_.borrow()).unwrap()(_arg0, _arg1)
+            (*fn_.borrow()).call_fn()(_arg0, _arg1)
         }) == 7)
     );
-    (*fn_.borrow_mut()) = Some(mul_2 as _);
+    (*fn_.borrow_mut()) = fn_ptr!(mul_2, fn(i32, i32) -> i32);
     assert!(
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 7;
-            (*fn_.borrow()).unwrap()(_arg0, _arg1)
+            (*fn_.borrow()).call_fn()(_arg0, _arg1)
         }) == 42)
     );
-    (*fn_.borrow_mut()) = None;
-    assert!((*fn_.borrow()).is_none());
-    (*fn_.borrow_mut()) = Some(add_0 as _);
-    assert!(!((*fn_.borrow()).is_none()));
+    (*fn_.borrow_mut()) = Ptr::null();
+    assert!((*fn_.borrow()).is_null());
+    (*fn_.borrow_mut()) = fn_ptr!(add_0, fn(i32, i32) -> i32);
+    assert!(!((*fn_.borrow()).is_null()));
     assert!(
         (({
             let _arg0: i32 = 1;
             let _arg1: i32 = 1;
-            (*fn_.borrow()).unwrap()(_arg0, _arg1)
+            (*fn_.borrow()).call_fn()(_arg0, _arg1)
         }) == 2)
     );
     return 0;

@@ -26,34 +26,34 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let ops: Value<Box<[Option<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([
-        Some(add_0 as _),
-        Some(sub_1 as _),
-        Some(mul_2 as _),
+    let ops: Value<Box<[Ptr<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([
+        fn_ptr!(add_0, fn(i32, i32) -> i32),
+        fn_ptr!(sub_1, fn(i32, i32) -> i32),
+        fn_ptr!(mul_2, fn(i32, i32) -> i32),
     ])));
     assert!(
         (({
             let _arg0: i32 = 2;
             let _arg1: i32 = 3;
-            ((*ops.borrow())[(0) as usize]).unwrap()(_arg0, _arg1)
+            (*ops.borrow())[(0) as usize].call_fn()(_arg0, _arg1)
         }) == 5)
     );
     assert!(
         (({
             let _arg0: i32 = 7;
             let _arg1: i32 = 4;
-            ((*ops.borrow())[(1) as usize]).unwrap()(_arg0, _arg1)
+            (*ops.borrow())[(1) as usize].call_fn()(_arg0, _arg1)
         }) == 3)
     );
     assert!(
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 5;
-            ((*ops.borrow())[(2) as usize]).unwrap()(_arg0, _arg1)
+            (*ops.borrow())[(2) as usize].call_fn()(_arg0, _arg1)
         }) == 30)
     );
-    assert!(!(((*ops.borrow())[(0) as usize]).is_none()));
-    assert!(((*ops.borrow())[(0) as usize] == Some(add_0 as _)));
-    assert!(((*ops.borrow())[(0) as usize] != Some(sub_1 as _)));
+    assert!(!(((*ops.borrow())[(0) as usize]).is_null()));
+    assert!(((*ops.borrow())[(0) as usize] == fn_ptr!(add_0, fn(i32, i32) -> i32)));
+    assert!(((*ops.borrow())[(0) as usize] != fn_ptr!(sub_1, fn(i32, i32) -> i32)));
     return 0;
 }

@@ -1375,6 +1375,12 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   return false;
 }
 
+void Converter::EmitFnPtrCall(clang::Expr *callee) {
+  StrCat(token::kOpenParen);
+  Convert(callee);
+  StrCat(").unwrap()");
+}
+
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   clang::Expr *callee = expr->getCallee();
   auto convert_param_ty = [&](clang::QualType param_type, clang::Expr *expr) {
@@ -1447,9 +1453,7 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   }
 
   if (proto && !function) {
-    StrCat(token::kOpenParen);
-    Convert(callee);
-    StrCat(").unwrap()");
+    EmitFnPtrCall(callee);
   } else {
     PushExprKind push(*this, ExprKind::RValue);
     Convert(StripFunctionPointerDecay(callee));

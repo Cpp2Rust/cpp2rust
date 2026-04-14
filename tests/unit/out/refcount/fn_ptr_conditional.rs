@@ -19,30 +19,29 @@ pub fn identity_2(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return (*x.borrow());
 }
-pub fn pick_3(mode: i32) -> Option<fn(i32) -> i32> {
+pub fn pick_3(mode: i32) -> Ptr<fn(i32) -> i32> {
     let mode: Value<i32> = Rc::new(RefCell::new(mode));
     return if ((*mode.borrow()) > 0) {
-        Some(inc_0 as _)
+        fn_ptr!(inc_0, fn(i32) -> i32)
     } else {
         if ((*mode.borrow()) < 0) {
-            Some(dec_1 as _)
+            fn_ptr!(dec_1, fn(i32) -> i32)
         } else {
-            Some(identity_2 as _)
+            fn_ptr!(identity_2, fn(i32) -> i32)
         }
     };
 }
-pub fn apply_4(fn_: Option<fn(i32) -> i32>, x: i32) -> i32 {
-    let fn_: Value<Option<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
+pub fn apply_4(fn_: Ptr<fn(i32) -> i32>, x: i32) -> i32 {
+    let fn_: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    let actual: Value<Option<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(if !(*fn_.borrow()).is_none() {
-            (*fn_.borrow()).clone()
-        } else {
-            Some(identity_2 as _)
-        }));
+    let actual: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(if !(*fn_.borrow()).is_null() {
+        (*fn_.borrow()).clone()
+    } else {
+        fn_ptr!(identity_2, fn(i32) -> i32)
+    }));
     return ({
         let _arg0: i32 = (*x.borrow());
-        (*actual.borrow()).unwrap()(_arg0)
+        (*actual.borrow()).call_fn()(_arg0)
     });
 }
 pub fn main() {
@@ -56,7 +55,7 @@ fn main_0() -> i32 {
                 let _mode: i32 = 1;
                 pick_3(_mode)
             })
-            .unwrap()(_arg0)
+            .call_fn()(_arg0)
         }) == 11)
     );
     assert!(
@@ -66,7 +65,7 @@ fn main_0() -> i32 {
                 let _mode: i32 = -1_i32;
                 pick_3(_mode)
             })
-            .unwrap()(_arg0)
+            .call_fn()(_arg0)
         }) == 9)
     );
     assert!(
@@ -76,19 +75,19 @@ fn main_0() -> i32 {
                 let _mode: i32 = 0;
                 pick_3(_mode)
             })
-            .unwrap()(_arg0)
+            .call_fn()(_arg0)
         }) == 10)
     );
     assert!(
         (({
-            let _fn: Option<fn(i32) -> i32> = Some(inc_0 as _);
+            let _fn: Ptr<fn(i32) -> i32> = fn_ptr!(inc_0, fn(i32) -> i32);
             let _x: i32 = 5;
             apply_4(_fn, _x)
         }) == 6)
     );
     assert!(
         (({
-            let _fn: Option<fn(i32) -> i32> = None;
+            let _fn: Ptr<fn(i32) -> i32> = Ptr::null();
             let _x: i32 = 5;
             apply_4(_fn, _x)
         }) == 5)

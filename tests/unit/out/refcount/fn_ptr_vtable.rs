@@ -9,9 +9,9 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive()]
 pub struct Vtable {
-    pub create: Value<Option<fn(i32) -> AnyPtr>>,
-    pub get: Value<Option<fn(AnyPtr) -> i32>>,
-    pub destroy: Value<Option<fn(AnyPtr)>>,
+    pub create: Value<Ptr<fn(i32) -> AnyPtr>>,
+    pub get: Value<Ptr<fn(AnyPtr) -> i32>>,
+    pub destroy: Value<Ptr<fn(AnyPtr)>>,
 }
 impl Clone for Vtable {
     fn clone(&self) -> Self {
@@ -26,9 +26,9 @@ impl Clone for Vtable {
 impl Default for Vtable {
     fn default() -> Self {
         Vtable {
-            create: Rc::new(RefCell::new(None)),
-            get: Rc::new(RefCell::new(None)),
-            destroy: Rc::new(RefCell::new(None)),
+            create: Rc::new(RefCell::new(Ptr::null())),
+            get: Rc::new(RefCell::new(Ptr::null())),
+            destroy: Rc::new(RefCell::new(Ptr::null())),
         }
     }
 }
@@ -54,31 +54,33 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let vt: Value<Vtable> = Rc::new(RefCell::new(Vtable {
-        create: Rc::new(RefCell::new((Some(int_create_0 as _)).clone())),
-        get: Rc::new(RefCell::new(Some(int_get_1 as _))),
-        destroy: Rc::new(RefCell::new(Some(int_destroy_2 as _))),
+        create: Rc::new(RefCell::new(
+            (fn_ptr!(int_create_0, fn(i32) -> AnyPtr)).clone(),
+        )),
+        get: Rc::new(RefCell::new(fn_ptr!(int_get_1, fn(AnyPtr) -> i32))),
+        destroy: Rc::new(RefCell::new(fn_ptr!(int_destroy_2, fn(AnyPtr)))),
     }));
-    assert!(!((*(*vt.borrow()).create.borrow()).is_none()));
-    assert!(!((*(*vt.borrow()).get.borrow()).is_none()));
-    assert!(!((*(*vt.borrow()).destroy.borrow()).is_none()));
+    assert!(!((*(*vt.borrow()).create.borrow()).is_null()));
+    assert!(!((*(*vt.borrow()).get.borrow()).is_null()));
+    assert!(!((*(*vt.borrow()).destroy.borrow()).is_null()));
     let obj: Value<AnyPtr> = Rc::new(RefCell::new(
         ({
             let _arg0: i32 = 42;
-            (*(*vt.borrow()).create.borrow()).unwrap()(_arg0)
+            (*(*vt.borrow()).create.borrow()).call_fn()(_arg0)
         }),
     ));
     assert!(
         (({
             let _arg0: AnyPtr = (*obj.borrow()).clone();
-            (*(*vt.borrow()).get.borrow()).unwrap()(_arg0)
+            (*(*vt.borrow()).get.borrow()).call_fn()(_arg0)
         }) == 42)
     );
     ({
         let _arg0: AnyPtr = (*obj.borrow()).clone();
-        (*(*vt.borrow()).destroy.borrow()).unwrap()(_arg0)
+        (*(*vt.borrow()).destroy.borrow()).call_fn()(_arg0)
     });
     assert!(((*storage.with(Value::clone).borrow()) == 0));
-    (*(*vt.borrow()).get.borrow_mut()) = None;
-    assert!((*(*vt.borrow()).get.borrow()).is_none());
+    (*(*vt.borrow()).get.borrow_mut()) = Ptr::null();
+    assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;
 }

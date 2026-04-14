@@ -16,18 +16,18 @@ pub fn triple_it_1(x: i32) -> i32 {
     return ((*x.borrow()) * 3);
 }
 thread_local!(
-    pub static g_op: Value<Option<fn(i32) -> i32>> = Rc::new(RefCell::new(None));
+    pub static g_op: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(Ptr::null()));
 );
-pub fn set_op_2(fn_: Option<fn(i32) -> i32>) {
-    let fn_: Value<Option<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
+pub fn set_op_2(fn_: Ptr<fn(i32) -> i32>) {
+    let fn_: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
     (*g_op.with(Value::clone).borrow_mut()) = (*fn_.borrow()).clone();
 }
 pub fn call_op_3(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    if !(*g_op.with(Value::clone).borrow()).is_none() {
+    if !(*g_op.with(Value::clone).borrow()).is_null() {
         return ({
             let _arg0: i32 = (*x.borrow());
-            (*g_op.with(Value::clone).borrow()).unwrap()(_arg0)
+            (*g_op.with(Value::clone).borrow()).call_fn()(_arg0)
         });
     }
     return (*x.borrow());
@@ -43,13 +43,13 @@ fn main_0() -> i32 {
         }) == 5)
     );
     ({
-        let _fn: Option<fn(i32) -> i32> = Some(double_it_0 as _);
+        let _fn: Ptr<fn(i32) -> i32> = fn_ptr!(double_it_0, fn(i32) -> i32);
         set_op_2(_fn)
     });
-    assert!(!((*g_op.with(Value::clone).borrow()).is_none()));
+    assert!(!((*g_op.with(Value::clone).borrow()).is_null()));
     assert!({
         let _lhs = (*g_op.with(Value::clone).borrow()).clone();
-        _lhs == Some(double_it_0 as _)
+        _lhs == fn_ptr!(double_it_0, fn(i32) -> i32)
     });
     assert!(
         (({
@@ -58,12 +58,12 @@ fn main_0() -> i32 {
         }) == 10)
     );
     ({
-        let _fn: Option<fn(i32) -> i32> = Some(triple_it_1 as _);
+        let _fn: Ptr<fn(i32) -> i32> = fn_ptr!(triple_it_1, fn(i32) -> i32);
         set_op_2(_fn)
     });
     assert!({
         let _lhs = (*g_op.with(Value::clone).borrow()).clone();
-        _lhs == Some(triple_it_1 as _)
+        _lhs == fn_ptr!(triple_it_1, fn(i32) -> i32)
     });
     assert!(
         (({
@@ -72,10 +72,10 @@ fn main_0() -> i32 {
         }) == 15)
     );
     ({
-        let _fn: Option<fn(i32) -> i32> = None;
+        let _fn: Ptr<fn(i32) -> i32> = Ptr::null();
         set_op_2(_fn)
     });
-    assert!((*g_op.with(Value::clone).borrow()).is_none());
+    assert!((*g_op.with(Value::clone).borrow()).is_null());
     assert!(
         (({
             let _x: i32 = 5;

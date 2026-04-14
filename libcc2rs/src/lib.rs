@@ -4,6 +4,13 @@
 mod reinterpret;
 pub use reinterpret::ByteRepr;
 
+#[macro_export]
+macro_rules! fn_ptr {
+    ($f:expr, $ty:ty) => {
+        $crate::Ptr::from_fn($f as $ty, $f as *const () as usize)
+    };
+}
+
 mod rc;
 pub use rc::*;
 

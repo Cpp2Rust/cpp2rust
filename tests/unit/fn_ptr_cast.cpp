@@ -36,9 +36,21 @@ void test_void_ptr_to_fn() {
   assert(fn(5) == 10);
 }
 
+typedef int (*generic_int_fn)(void *, int);
+
+int add_offset(int *base, int offset) { return *base + offset; }
+
+void test_call_through_cast() {
+  generic_int_fn gfn = (generic_int_fn)add_offset;
+  int val = 100;
+  int result = gfn(&val, 42);
+  assert(result == 142);
+}
+
 int main() {
   test_roundtrip();
   test_double_cast();
   test_void_ptr_to_fn();
+  test_call_through_cast();
   return 0;
 }

@@ -64,6 +64,24 @@ impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {}
 impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {}
 impl<T: ByteRepr> ByteRepr for Box<[T]> {}
 impl<T: ByteRepr> ByteRepr for Box<T> {}
+
+macro_rules! impl_byterepr_fn {
+    ($($name:ident),*) => {
+        impl<R: 'static, $($name: 'static),*> ByteRepr for fn($($name),*) -> R {}
+    };
+}
+
+impl_byterepr_fn!();
+impl_byterepr_fn!(A);
+impl_byterepr_fn!(A, B);
+impl_byterepr_fn!(A, B, C);
+impl_byterepr_fn!(A, B, C, D);
+impl_byterepr_fn!(A, B, C, D, E);
+impl_byterepr_fn!(A, B, C, D, E, F);
+impl_byterepr_fn!(A, B, C, D, E, F, G);
+impl_byterepr_fn!(A, B, C, D, E, F, G, H);
+impl_byterepr_fn!(A, B, C, D, E, F, G, H, I);
+impl_byterepr_fn!(A, B, C, D, E, F, G, H, I, J);
 impl<T: 'static> ByteRepr for *const T {}
 impl<T: 'static> ByteRepr for *mut T {}
 impl<A: ByteRepr, B: ByteRepr> ByteRepr for (A, B) {}

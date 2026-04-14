@@ -15,13 +15,13 @@ pub fn double_it_0(x: Ptr<i32>) {
         __ptr.write(__tmp)
     };
 }
-pub fn maybe_call_1(cb: Option<fn(Ptr<i32>)>, x: Ptr<i32>) {
-    let cb: Value<Option<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));
+pub fn maybe_call_1(cb: Ptr<fn(Ptr<i32>)>, x: Ptr<i32>) {
+    let cb: Value<Ptr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
-    if !(*cb.borrow()).is_none() {
+    if !(*cb.borrow()).is_null() {
         ({
             let _arg0: Ptr<i32> = (*x.borrow()).clone();
-            (*cb.borrow()).unwrap()(_arg0)
+            (*cb.borrow()).call_fn()(_arg0)
         });
     }
 }
@@ -31,27 +31,27 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(5));
     ({
-        let _cb: Option<fn(Ptr<i32>)> = Some(double_it_0 as _);
+        let _cb: Ptr<fn(Ptr<i32>)> = fn_ptr!(double_it_0, fn(Ptr::<i32>));
         let _x: Ptr<i32> = (a.as_pointer());
         maybe_call_1(_cb, _x)
     });
     assert!(((*a.borrow()) == 10));
     let b: Value<i32> = Rc::new(RefCell::new(5));
     ({
-        let _cb: Option<fn(Ptr<i32>)> = None;
+        let _cb: Ptr<fn(Ptr<i32>)> = Ptr::null();
         let _x: Ptr<i32> = (b.as_pointer());
         maybe_call_1(_cb, _x)
     });
     assert!(((*b.borrow()) == 5));
-    let fn_: Value<Option<fn(Ptr<i32>)>> = Rc::new(RefCell::new(None));
-    if !!(*fn_.borrow()).is_none() {
-        (*fn_.borrow_mut()) = (Some(double_it_0 as _)).clone();
+    let fn_: Value<Ptr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(Ptr::null()));
+    if !!(*fn_.borrow()).is_null() {
+        (*fn_.borrow_mut()) = (fn_ptr!(double_it_0, fn(Ptr::<i32>))).clone();
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));
-    if !(*fn_.borrow()).is_none() {
+    if !(*fn_.borrow()).is_null() {
         ({
             let _arg0: Ptr<i32> = (c.as_pointer());
-            (*fn_.borrow()).unwrap()(_arg0)
+            (*fn_.borrow()).call_fn()(_arg0)
         });
     }
     assert!(((*c.borrow()) == 6));
