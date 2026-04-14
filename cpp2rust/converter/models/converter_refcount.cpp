@@ -230,7 +230,7 @@ ConverterRefCount::GetFnTypeString(const clang::FunctionProtoType *proto) {
 
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    StrCat(std::format("Ptr<{}>", GetFnTypeString(proto)));
+    StrCat(std::format("FnPtr<{}>", GetFnTypeString(proto)));
     return false;
   }
 
@@ -1017,7 +1017,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
   if (expr->getCastKind() == clang::CastKind::CK_NullToPointer &&
       expr->getType()->isFunctionPointerType()) {
-    StrCat("Ptr::null()");
+    StrCat("FnPtr::null()");
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -1027,12 +1027,12 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
 void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   Convert(callee);
-  StrCat(".call_fn()");
+  StrCat(".call()");
 }
 
 std::string ConverterRefCount::GetFunctionPointerDefaultAsString(
     clang::QualType qual_type) {
-  return "Ptr::null()";
+  return "FnPtr::null()";
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
@@ -1066,7 +1066,7 @@ bool ConverterRefCount::VisitFunctionPointerCast(
         }
       }
 
-      StrCat(std::format("{}.cast_fn::<{}>({})", ToString(expr->getSubExpr()),
+      StrCat(std::format("{}.cast::<{}>({})", ToString(expr->getSubExpr()),
                          fn_type, adapter));
     } else if (expr->getSubExpr()->getType()->isFunctionPointerType() ||
                expr->getType()->isVoidPointerType()) {
@@ -1077,7 +1077,7 @@ bool ConverterRefCount::VisitFunctionPointerCast(
       auto target_proto =
           expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
       auto fn_type = GetFnTypeString(target_proto);
-      StrCat(std::format("{}.cast::<{}>().expect(\"ub:wrong fn type\")",
+      StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
                          ToString(expr->getSubExpr()), fn_type));
     } else {
       assert(0 && "Unhandled function pointer cast");
@@ -1614,10 +1614,10 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
       Buffer buf(*this);
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-        StrCat(std::format("Ptr::from_fn(("));
+        StrCat("fn_ptr_anon!((");
         VisitLambdaExpr(lambda);
         StrCat(std::format(
-            ") as {}, 0)",
+            "), {})",
             GetFnTypeString(qual_type->getPointeeType()
                                 ->getAs<clang::FunctionProtoType>())));
       } else {

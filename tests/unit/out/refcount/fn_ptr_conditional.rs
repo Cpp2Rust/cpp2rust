@@ -19,7 +19,7 @@ pub fn identity_2(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return (*x.borrow());
 }
-pub fn pick_3(mode: i32) -> Ptr<fn(i32) -> i32> {
+pub fn pick_3(mode: i32) -> FnPtr<fn(i32) -> i32> {
     let mode: Value<i32> = Rc::new(RefCell::new(mode));
     return if ((*mode.borrow()) > 0) {
         fn_ptr!(inc_0, fn(i32) -> i32)
@@ -31,17 +31,18 @@ pub fn pick_3(mode: i32) -> Ptr<fn(i32) -> i32> {
         }
     };
 }
-pub fn apply_4(fn_: Ptr<fn(i32) -> i32>, x: i32) -> i32 {
-    let fn_: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
+pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
+    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    let actual: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(if !(*fn_.borrow()).is_null() {
-        (*fn_.borrow()).clone()
-    } else {
-        fn_ptr!(identity_2, fn(i32) -> i32)
-    }));
+    let actual: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(if !(*fn_.borrow()).is_null() {
+            (*fn_.borrow()).clone()
+        } else {
+            fn_ptr!(identity_2, fn(i32) -> i32)
+        }));
     return ({
         let _arg0: i32 = (*x.borrow());
-        (*actual.borrow()).call_fn()(_arg0)
+        (*actual.borrow()).call()(_arg0)
     });
 }
 pub fn main() {
@@ -55,7 +56,7 @@ fn main_0() -> i32 {
                 let _mode: i32 = 1;
                 pick_3(_mode)
             })
-            .call_fn()(_arg0)
+            .call()(_arg0)
         }) == 11)
     );
     assert!(
@@ -65,7 +66,7 @@ fn main_0() -> i32 {
                 let _mode: i32 = -1_i32;
                 pick_3(_mode)
             })
-            .call_fn()(_arg0)
+            .call()(_arg0)
         }) == 9)
     );
     assert!(
@@ -75,19 +76,19 @@ fn main_0() -> i32 {
                 let _mode: i32 = 0;
                 pick_3(_mode)
             })
-            .call_fn()(_arg0)
+            .call()(_arg0)
         }) == 10)
     );
     assert!(
         (({
-            let _fn: Ptr<fn(i32) -> i32> = fn_ptr!(inc_0, fn(i32) -> i32);
+            let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(inc_0, fn(i32) -> i32);
             let _x: i32 = 5;
             apply_4(_fn, _x)
         }) == 6)
     );
     assert!(
         (({
-            let _fn: Ptr<fn(i32) -> i32> = Ptr::null();
+            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
             let _x: i32 = 5;
             apply_4(_fn, _x)
         }) == 5)

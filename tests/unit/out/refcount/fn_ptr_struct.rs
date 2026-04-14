@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 #[derive()]
 pub struct Handler {
     pub tag: Value<i32>,
-    pub cb: Value<Ptr<fn(i32) -> i32>>,
+    pub cb: Value<FnPtr<fn(i32) -> i32>>,
 }
 impl Clone for Handler {
     fn clone(&self) -> Self {
@@ -25,7 +25,7 @@ impl Default for Handler {
     fn default() -> Self {
         Handler {
             tag: <Value<i32>>::default(),
-            cb: Rc::new(RefCell::new(Ptr::null())),
+            cb: Rc::new(RefCell::new(FnPtr::null())),
         }
     }
 }
@@ -54,20 +54,20 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: i32 = 5;
-            (*(*h1.borrow()).cb.borrow()).call_fn()(_arg0)
+            (*(*h1.borrow()).cb.borrow()).call()(_arg0)
         }) == 10)
     );
     assert!(
         (({
             let _arg0: i32 = 7;
-            (*(*h2.borrow()).cb.borrow()).call_fn()(_arg0)
+            (*(*h2.borrow()).cb.borrow()).call()(_arg0)
         }) == -7_i32)
     );
     (*(*h1.borrow()).cb.borrow_mut()) = fn_ptr!(negate_1, fn(i32) -> i32);
     assert!(
         (({
             let _arg0: i32 = 3;
-            (*(*h1.borrow()).cb.borrow()).call_fn()(_arg0)
+            (*(*h1.borrow()).cb.borrow()).call()(_arg0)
         }) == -3_i32)
     );
     assert!({

@@ -26,32 +26,6 @@ enum PtrKind<T> {
     HeapArray(Weak<RefCell<Box<[T]>>>),
     Vec(Weak<RefCell<Vec<T>>>),
     Reinterpreted(Rc<dyn OriginalAlloc>),
-    Fn(Rc<FnState>),
-}
-
-struct FnPtrAlloc {
-    addr: usize,
-}
-
-impl OriginalAlloc for FnPtrAlloc {
-    fn address(&self) -> usize {
-        self.addr
-    }
-    fn read_bytes(&self, _: usize, _: &mut [u8]) {
-        panic!("fn pointer");
-    }
-    fn write_bytes(&self, _: usize, _: &[u8]) {
-        panic!("fn pointer");
-    }
-    fn total_byte_len(&self) -> usize {
-        panic!("fn pointer");
-    }
-}
-
-#[derive(Clone)]
-pub struct FnState {
-    alloc: Rc<dyn OriginalAlloc>,
-    stack: Vec<Option<Rc<dyn Any>>>,
 }
 
 pub enum StrongPtr<T> {
@@ -106,7 +80,6 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::Reinterpreted(ref data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.address())
             }
-            PtrKind::Fn(ref state) => write!(f, "Fn(0x{:x})", state.alloc.address()),
         }
     }
 }
@@ -121,7 +94,6 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::StackArray(ref weak) => PtrKind::StackArray(weak.clone()),
             PtrKind::HeapArray(ref weak) => PtrKind::HeapArray(weak.clone()),
             PtrKind::Reinterpreted(ref data) => PtrKind::Reinterpreted(Rc::clone(data)),
-            PtrKind::Fn(ref state) => PtrKind::Fn(Rc::clone(state)),
         }
     }
 }
@@ -134,7 +106,6 @@ impl<T> PtrKind<T> {
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
             PtrKind::Reinterpreted(ref data) => data.address(),
-            PtrKind::Fn(ref state) => state.alloc.address(),
         }
     }
 }
@@ -298,7 +269,6 @@ impl<T> Ptr<T> {
                 let step = std::mem::size_of::<T>();
                 (data.total_byte_len() - self.offset % step) / step
             }
-            PtrKind::Fn(_) => 1,
         }
     }
 
@@ -362,7 +332,6 @@ impl<T> Ptr<T> {
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 
@@ -389,7 +358,6 @@ impl<T> Ptr<T> {
                 value.to_bytes(&mut buf);
                 data.write_bytes(self.offset, &buf);
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 
@@ -430,7 +398,6 @@ impl<T> Ptr<T> {
                 self.byte_offset(),
             ),
             PtrKind::Reinterpreted(ref data) => (Rc::clone(data), self.offset),
-            PtrKind::Fn(_) => panic!("fn pointer: use cast_fn instead"),
         };
 
         Ptr {
@@ -471,7 +438,6 @@ impl<T> Ptr<T> {
                 data.write_bytes(self.offset, &buf);
                 ret
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 
@@ -505,7 +471,6 @@ impl<T> Ptr<T> {
                 data.write_bytes(self.offset, &buf);
                 ret
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -532,7 +497,6 @@ impl<T: Clone + ByteRepr> Ptr<T> {
                 data.read_bytes(self.offset, &mut buf);
                 T::from_bytes(&buf)
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -565,7 +529,6 @@ impl<T: std::cmp::Ord> Ptr<T> {
             PtrKind::Reinterpreted(..) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -619,7 +582,6 @@ impl<T: Clone> Ptr<T> {
             PtrKind::Reinterpreted(..) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -868,7 +830,6 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(..) => panic!("Can't own a reinterpreted pointer"),
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -895,7 +856,6 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(..) => panic!("Can't own a reinterpreted pointer"),
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 }
@@ -911,7 +871,6 @@ impl<T> fmt::Debug for Ptr<T> {
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize)
                 .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
             PtrKind::Reinterpreted(ref data) => data.address().wrapping_add(self.offset),
-            PtrKind::Fn(ref state) => state.alloc.address(),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -1008,7 +967,6 @@ impl Ptr<u8> {
                 data.read_bytes(start, &mut buf);
                 buf
             }
-            PtrKind::Fn(_) => panic!("fn pointer"),
         }
     }
 
@@ -1046,71 +1004,7 @@ impl Ptr<u8> {
     }
 }
 
-impl<T: 'static> Ptr<T> {
-    pub fn from_fn(f: T, addr: usize) -> Self {
-        Ptr {
-            offset: 0,
-            kind: PtrKind::Fn(Rc::new(FnState {
-                alloc: Rc::new(FnPtrAlloc { addr }),
-                stack: vec![Some(Rc::new(f))],
-            })),
-        }
-    }
-
-    pub fn cast_fn<U: 'static>(&self, adapter: Option<U>) -> Ptr<U> {
-        let state = match &self.kind {
-            PtrKind::Fn(ref state) => state,
-            _ => panic!("not a fn pointer"),
-        };
-
-        let target_id = TypeId::of::<U>();
-
-        for (i, entry) in state.stack.iter().enumerate() {
-            if let Some(ref rc) = entry {
-                if (*rc).as_ref().type_id() == target_id {
-                    return Ptr {
-                        offset: 0,
-                        kind: PtrKind::Fn(Rc::new(FnState {
-                            alloc: Rc::clone(&state.alloc),
-                            stack: state.stack[..=i].to_vec(),
-                        })),
-                    };
-                }
-            }
-        }
-
-        let mut new_stack = state.stack.clone();
-        new_stack.push(adapter.map(|a| Rc::new(a) as Rc<dyn Any>));
-
-        Ptr {
-            offset: 0,
-            kind: PtrKind::Fn(Rc::new(FnState {
-                alloc: Rc::clone(&state.alloc),
-                stack: new_stack,
-            })),
-        }
-    }
-
-    pub fn call_fn(&self) -> T
-    where
-        T: Copy + 'static,
-    {
-        let state = match &self.kind {
-            PtrKind::Fn(ref state) => state,
-            _ => panic!("not a fn pointer"),
-        };
-
-        let entry = state.stack.last().expect("empty fn pointer stack");
-        match entry {
-            Some(ref rc) => *rc
-                .downcast_ref::<T>()
-                .expect("ub: fn pointer type mismatch"),
-            None => panic!("ub: calling through incompatible fn pointer type"),
-        }
-    }
-}
-
-trait ErasedPtr: std::any::Any {
+pub(crate) trait ErasedPtr: std::any::Any {
     fn pointee_type_id(&self) -> std::any::TypeId;
     fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
     fn as_any(&self) -> &dyn std::any::Any;
@@ -1180,7 +1074,7 @@ where
 
 #[derive(Clone)]
 pub struct AnyPtr {
-    ptr: Rc<dyn ErasedPtr>,
+    pub(crate) ptr: Rc<dyn ErasedPtr>,
 }
 
 impl<T: Clone + ByteRepr + 'static> Ptr<T> {

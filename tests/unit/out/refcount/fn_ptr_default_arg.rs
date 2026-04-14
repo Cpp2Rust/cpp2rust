@@ -11,13 +11,13 @@ pub fn identity_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return (*x.borrow());
 }
-pub fn apply_1(x: i32, fn_: Option<Ptr<fn(i32) -> i32>>) -> i32 {
+pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    let fn_: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_.unwrap_or(Ptr::null())));
+    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_.unwrap_or(FnPtr::null())));
     if !(*fn_.borrow()).is_null() {
         return ({
             let _arg0: i32 = (*x.borrow());
-            (*fn_.borrow()).call_fn()(_arg0)
+            (*fn_.borrow()).call()(_arg0)
         });
     }
     return (*x.borrow());
@@ -29,35 +29,35 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _x: i32 = 5;
-            let _fn: Ptr<fn(i32) -> i32> = Default::default();
+            let _fn: FnPtr<fn(i32) -> i32> = Default::default();
             apply_1(_x, Some(_fn))
         }) == 5)
     );
     assert!(
         (({
             let _x: i32 = 5;
-            let _fn: Ptr<fn(i32) -> i32> = Ptr::null();
+            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
             apply_1(_x, Some(_fn))
         }) == 5)
     );
     assert!(
         (({
             let _x: i32 = 5;
-            let _fn: Ptr<fn(i32) -> i32> = fn_ptr!(identity_0, fn(i32) -> i32);
+            let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(identity_0, fn(i32) -> i32);
             apply_1(_x, Some(_fn))
         }) == 5)
     );
-    let negate: Value<Ptr<fn(i32) -> i32>> = Rc::new(RefCell::new(Ptr::from_fn(
+    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_ptr_anon!(
         (|x: i32| {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             return -(*x.borrow());
-        }) as fn(i32) -> i32,
-        0,
+        }),
+        fn(i32) -> i32
     )));
     assert!(
         (({
             let _x: i32 = 5;
-            let _fn: Ptr<fn(i32) -> i32> = (*negate.borrow()).clone();
+            let _fn: FnPtr<fn(i32) -> i32> = (*negate.borrow()).clone();
             apply_1(_x, Some(_fn))
         }) == -5_i32)
     );

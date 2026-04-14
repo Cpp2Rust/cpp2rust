@@ -26,7 +26,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let ops: Value<Box<[Ptr<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([
+    let ops: Value<Box<[FnPtr<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([
         fn_ptr!(add_0, fn(i32, i32) -> i32),
         fn_ptr!(sub_1, fn(i32, i32) -> i32),
         fn_ptr!(mul_2, fn(i32, i32) -> i32),
@@ -35,21 +35,21 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 2;
             let _arg1: i32 = 3;
-            (*ops.borrow())[(0) as usize].call_fn()(_arg0, _arg1)
+            (*ops.borrow())[(0) as usize].call()(_arg0, _arg1)
         }) == 5)
     );
     assert!(
         (({
             let _arg0: i32 = 7;
             let _arg1: i32 = 4;
-            (*ops.borrow())[(1) as usize].call_fn()(_arg0, _arg1)
+            (*ops.borrow())[(1) as usize].call()(_arg0, _arg1)
         }) == 3)
     );
     assert!(
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 5;
-            (*ops.borrow())[(2) as usize].call_fn()(_arg0, _arg1)
+            (*ops.borrow())[(2) as usize].call()(_arg0, _arg1)
         }) == 30)
     );
     assert!(!(((*ops.borrow())[(0) as usize]).is_null()));

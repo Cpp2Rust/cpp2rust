@@ -9,9 +9,9 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive()]
 pub struct Vtable {
-    pub create: Value<Ptr<fn(i32) -> AnyPtr>>,
-    pub get: Value<Ptr<fn(AnyPtr) -> i32>>,
-    pub destroy: Value<Ptr<fn(AnyPtr)>>,
+    pub create: Value<FnPtr<fn(i32) -> AnyPtr>>,
+    pub get: Value<FnPtr<fn(AnyPtr) -> i32>>,
+    pub destroy: Value<FnPtr<fn(AnyPtr)>>,
 }
 impl Clone for Vtable {
     fn clone(&self) -> Self {
@@ -26,9 +26,9 @@ impl Clone for Vtable {
 impl Default for Vtable {
     fn default() -> Self {
         Vtable {
-            create: Rc::new(RefCell::new(Ptr::null())),
-            get: Rc::new(RefCell::new(Ptr::null())),
-            destroy: Rc::new(RefCell::new(Ptr::null())),
+            create: Rc::new(RefCell::new(FnPtr::null())),
+            get: Rc::new(RefCell::new(FnPtr::null())),
+            destroy: Rc::new(RefCell::new(FnPtr::null())),
         }
     }
 }
@@ -66,21 +66,21 @@ fn main_0() -> i32 {
     let obj: Value<AnyPtr> = Rc::new(RefCell::new(
         ({
             let _arg0: i32 = 42;
-            (*(*vt.borrow()).create.borrow()).call_fn()(_arg0)
+            (*(*vt.borrow()).create.borrow()).call()(_arg0)
         }),
     ));
     assert!(
         (({
             let _arg0: AnyPtr = (*obj.borrow()).clone();
-            (*(*vt.borrow()).get.borrow()).call_fn()(_arg0)
+            (*(*vt.borrow()).get.borrow()).call()(_arg0)
         }) == 42)
     );
     ({
         let _arg0: AnyPtr = (*obj.borrow()).clone();
-        (*(*vt.borrow()).destroy.borrow()).call_fn()(_arg0)
+        (*(*vt.borrow()).destroy.borrow()).call()(_arg0)
     });
     assert!(((*storage.with(Value::clone).borrow()) == 0));
-    (*(*vt.borrow()).get.borrow_mut()) = Ptr::null();
+    (*(*vt.borrow()).get.borrow_mut()) = FnPtr::null();
     assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;
 }

@@ -26,13 +26,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fn_: Value<Ptr<fn(i32, i32) -> i32>> =
+    let fn_: Value<FnPtr<fn(i32, i32) -> i32>> =
         Rc::new(RefCell::new(fn_ptr!(add_0, fn(i32, i32) -> i32)));
     assert!(
         (({
             let _arg0: i32 = 3;
             let _arg1: i32 = 4;
-            (*fn_.borrow()).call_fn()(_arg0, _arg1)
+            (*fn_.borrow()).call()(_arg0, _arg1)
         }) == 7)
     );
     (*fn_.borrow_mut()) = fn_ptr!(sub_1, fn(i32, i32) -> i32);
@@ -40,7 +40,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 10;
             let _arg1: i32 = 3;
-            (*fn_.borrow()).call_fn()(_arg0, _arg1)
+            (*fn_.borrow()).call()(_arg0, _arg1)
         }) == 7)
     );
     (*fn_.borrow_mut()) = fn_ptr!(mul_2, fn(i32, i32) -> i32);
@@ -48,10 +48,10 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 7;
-            (*fn_.borrow()).call_fn()(_arg0, _arg1)
+            (*fn_.borrow()).call()(_arg0, _arg1)
         }) == 42)
     );
-    (*fn_.borrow_mut()) = Ptr::null();
+    (*fn_.borrow_mut()) = FnPtr::null();
     assert!((*fn_.borrow()).is_null());
     (*fn_.borrow_mut()) = fn_ptr!(add_0, fn(i32, i32) -> i32);
     assert!(!((*fn_.borrow()).is_null()));
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 1;
             let _arg1: i32 = 1;
-            (*fn_.borrow()).call_fn()(_arg0, _arg1)
+            (*fn_.borrow()).call()(_arg0, _arg1)
         }) == 2)
     );
     return 0;
