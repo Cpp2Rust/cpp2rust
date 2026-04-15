@@ -1055,7 +1055,7 @@ pub struct AnyPtr {
     pub(crate) ptr: Rc<dyn ErasedPtr>,
 }
 
-impl<T: Clone + ByteRepr + 'static> Ptr<T> {
+impl<T: ByteRepr + 'static> Ptr<T> {
     pub fn to_any(&self) -> AnyPtr {
         AnyPtr {
             ptr: Rc::new(self.clone()),
@@ -1071,6 +1071,11 @@ impl Default for AnyPtr {
 
 impl AnyPtr {
     pub fn cast<T: 'static>(&self) -> Option<Ptr<T>> {
+        if let Some(p) = self.ptr.as_any().downcast_ref::<Ptr<()>>() {
+            if p.is_null() {
+                return Some(Ptr::<T>::null());
+            }
+        }
         self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
     }
 
