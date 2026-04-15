@@ -201,6 +201,10 @@ public:
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
 
+  virtual void EmitFnAsValue(const clang::FunctionDecl *fn_decl);
+
+  std::string GetPointeeRustType(clang::QualType ptr_type);
+
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
   void ConvertVAArgCall(clang::CallExpr *expr);

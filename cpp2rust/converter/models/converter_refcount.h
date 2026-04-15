@@ -61,6 +61,8 @@ public:
 
   void EmitFnPtrCall(clang::Expr *callee) override;
 
+  void EmitFnAsValue(const clang::FunctionDecl *fn_decl) override;
+
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;

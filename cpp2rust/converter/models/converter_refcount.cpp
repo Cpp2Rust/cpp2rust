@@ -192,7 +192,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += GetNamedDeclAsString(src_fn->getCanonicalDecl()) + "(";
+  closure += Mapper::GetFnRefName(src_fn) + "(";
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
@@ -200,7 +200,7 @@ std::string ConverterRefCount::BuildFnAdapter(
       closure += std::format("a{}", i);
     } else if (src_pty->isPointerType() && tgt_pty->isVoidPointerType()) {
       closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                             ToString(src_pty->getPointeeType()));
+                             GetPointeeRustType(src_pty));
     } else if (src_pty->isVoidPointerType() && tgt_pty->isPointerType()) {
       closure += std::format("a{}.to_any()", i);
     } else {
@@ -622,19 +622,18 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     }
   }
 
-  if (Mapper::Contains(expr)) {
+  auto str = ConvertDeclRefExpr(expr);
+  auto decl = expr->getDecl();
+
+  if (!(clang::isa<clang::FunctionDecl>(decl) && isAddrOf()) &&
+      Mapper::Contains(expr)) {
     StrCat(GetMappedAsString(expr));
     return false;
   }
 
-  auto str = ConvertDeclRefExpr(expr);
-  auto decl = expr->getDecl();
-
-  if (clang::isa<clang::FunctionDecl>(decl)) {
+  if (auto *fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      auto proto = decl->getType()->getAs<clang::FunctionProtoType>();
-      auto fn_type = GetFnTypeString(proto);
-      StrCat(std::format("fn_ptr!({}, {})", str, fn_type));
+      EmitFnAsValue(fn_decl);
     } else {
       StrCat(str);
     }
@@ -1028,6 +1027,12 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   Convert(callee);
   StrCat(".call()");
+}
+
+void ConverterRefCount::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
+  StrCat(std::format(
+      "fn_ptr!({}, {})", Mapper::GetFnRefName(fn_decl),
+      GetFnTypeString(fn_decl->getType()->getAs<clang::FunctionProtoType>())));
 }
 
 std::string ConverterRefCount::GetFunctionPointerDefaultAsString(

@@ -1381,6 +1381,25 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(").unwrap()");
 }
 
+void Converter::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
+  StrCat(std::format("Some({} as _)", Mapper::GetFnRefName(fn_decl)));
+}
+
+std::string Converter::GetPointeeRustType(clang::QualType ptr_type) {
+  auto pointee = ptr_type->getPointeeType();
+  if (pointee->isIntegerType()) {
+    return ToString(pointee);
+  }
+  auto str = ToString(ptr_type);
+  while (!str.empty() && std::isspace(str.back())) {
+    str.pop_back();
+  }
+  if (str.starts_with("Ptr<") && str.ends_with(">")) {
+    return str.substr(4, str.size() - 5);
+  }
+  return ToString(pointee);
+}
+
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   clang::Expr *callee = expr->getCallee();
   auto convert_param_ty = [&](clang::QualType param_type, clang::Expr *expr) {
@@ -2000,7 +2019,8 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   auto *decl = expr->getDecl();
-  if (Mapper::Contains(expr)) {
+  if (!(clang::isa<clang::FunctionDecl>(decl) && isAddrOf()) &&
+      Mapper::Contains(expr)) {
     return GetMappedAsString(expr);
   } else if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
@@ -2037,9 +2057,9 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  if (clang::isa<clang::FunctionDecl>(decl)) {
+  if (auto *fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      StrCat(std::format("Some({} as _)", str));
+      EmitFnAsValue(fn_decl);
       return false;
     }
   }
