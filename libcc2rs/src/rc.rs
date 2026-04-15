@@ -1013,7 +1013,7 @@ trait ErasedPtr: std::any::Any {
 
 impl<T> ErasedPtr for Ptr<T>
 where
-    T: Clone + ByteRepr + 'static,
+    T: ByteRepr + 'static,
     Ptr<T>: PartialEq,
 {
     fn pointee_type_id(&self) -> std::any::TypeId {
@@ -1024,35 +1024,13 @@ where
         if self.pointee_type_id() != src.pointee_type_id() {
             panic!("memcpy: type mismatch");
         }
-
         let src_ptr = src
             .as_any()
             .downcast_ref::<Ptr<T>>()
             .expect("memcpy: downcast to Ptr<T> failed");
-
-        let elem = std::mem::size_of::<T>();
-
-        if len == elem {
-            self.write(src_ptr.read());
-            return;
-        }
-
-        if elem != 0 && len.is_multiple_of(elem) {
-            let mut dst = self.clone();
-            let mut src_it = src_ptr.clone();
-            for _ in 0..(len / elem) {
-                dst.write(src_it.read());
-                dst += 1;
-                src_it += 1;
-            }
-
-            return;
-        }
-
-        panic!(
-            "memcpy: len {} not compatible with element size {}",
-            len, elem
-        );
+        let dst_bytes: Ptr<u8> = self.reinterpret_cast();
+        let src_bytes: Ptr<u8> = src_ptr.reinterpret_cast();
+        dst_bytes.memcpy(&src_bytes, len);
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
