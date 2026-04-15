@@ -618,7 +618,7 @@
     "multi_statement": true,
     "params": {
       "a0": {
-        "type": "*mut u8",
+        "type": "*mut ::libc::c_void",
         "is_unsafe_pointer": true
       },
       "a1": {
@@ -797,7 +797,7 @@
     "multi_statement": true,
     "params": {
       "a0": {
-        "type": "*mut u8",
+        "type": "*const ::libc::c_void",
         "is_unsafe_pointer": true
       },
       "a1": {

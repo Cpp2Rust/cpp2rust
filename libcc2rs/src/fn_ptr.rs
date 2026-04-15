@@ -75,7 +75,6 @@ impl<T: 'static> FnPtr<T> {
             _marker: PhantomData,
         }
     }
-
 }
 
 impl<T: 'static> Deref for FnPtr<T> {
