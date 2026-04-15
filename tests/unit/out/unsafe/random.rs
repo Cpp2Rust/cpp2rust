@@ -40,9 +40,9 @@ impl Pair {
 impl Default for Pair {
     fn default() -> Self {
         Pair {
-            x: 0 as i32,
-            y: 0 as i32,
-            a: [0 as i32; 5],
+            x: 0_i32,
+            y: 0_i32,
+            a: [0_i32; 5],
             r: <*mut i32>::default(),
             p: Default::default(),
             pair: Default::default(),

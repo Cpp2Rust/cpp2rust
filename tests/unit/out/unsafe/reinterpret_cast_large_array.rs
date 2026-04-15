@@ -15,7 +15,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let N: i32 = 10000;
     let mut arr: *mut u32 =
-        Box::leak((0..(N as u64)).map(|_| 0 as u32).collect::<Box<[u32]>>()).as_mut_ptr();
+        Box::leak((0..(N as u64)).map(|_| 0_u32).collect::<Box<[u32]>>()).as_mut_ptr();
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         (*arr.offset((i) as isize)) = 0_u32;

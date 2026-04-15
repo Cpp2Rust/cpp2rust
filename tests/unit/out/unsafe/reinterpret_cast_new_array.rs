@@ -14,7 +14,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: *mut u32 =
-        Box::leak((0..2_u64).map(|_| 0 as u32).collect::<Box<[u32]>>()).as_mut_ptr();
+        Box::leak((0..2_u64).map(|_| 0_u32).collect::<Box<[u32]>>()).as_mut_ptr();
     (*arr.offset((0) as isize)) = 67305985_u32;
     (*arr.offset((1) as isize)) = 134678021_u32;
     let mut bytes: *mut u8 = (arr as *mut u8);

@@ -2733,11 +2733,11 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   }
 
   if (qual_type->isIntegerType()) {
-    return std::format("0 as {}", ToString(qual_type));
+    return std::format("0_{}", ToString(qual_type));
   }
 
   if (qual_type->isFloatingType()) {
-    return std::format("0.0 as {}", ToString(qual_type));
+    return std::format("0.0_{}", ToString(qual_type));
   }
 
   return std::format("<{}>::default()", ToString(qual_type));

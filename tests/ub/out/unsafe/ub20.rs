@@ -17,7 +17,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: *mut i32 =
-        Box::leak((0..10_u64).map(|_| 0 as i32).collect::<Box<[i32]>>()).as_mut_ptr();
+        Box::leak((0..10_u64).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     (unsafe {
         let _single: *mut i32 = x;
         foo_0(_single)

@@ -15,7 +15,7 @@ pub struct Handler {
 impl Default for Handler {
     fn default() -> Self {
         Handler {
-            tag: 0 as i32,
+            tag: 0_i32,
             cb: None,
         }
     }

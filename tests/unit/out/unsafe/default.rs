@@ -22,7 +22,7 @@ impl Default for Pointers {
             x2: Default::default(),
             x3: [Default::default(); 5],
             x4: [Default::default(); 10],
-            x5: 0 as i32,
+            x5: 0_i32,
         }
     }
 }

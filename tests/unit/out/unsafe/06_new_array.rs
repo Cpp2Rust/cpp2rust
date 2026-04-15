@@ -13,8 +13,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut e: *mut i32 =
-        Box::leak((0..2_u64).map(|_| 0 as i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    let mut e: *mut i32 = Box::leak((0..2_u64).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     (*e.offset((0) as isize)) = 6;
     (*e.offset((1) as isize)) = 7;
 
