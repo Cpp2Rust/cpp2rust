@@ -17,7 +17,7 @@ pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     if !(*fn_.borrow()).is_null() {
         return ({
             let _arg0: i32 = (*x.borrow());
-            (*fn_.borrow()).call()(_arg0)
+            (*(*fn_.borrow()))(_arg0)
         });
     }
     return (*x.borrow());

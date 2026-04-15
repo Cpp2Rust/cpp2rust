@@ -32,7 +32,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 3;
             let _arg1: i32 = 4;
-            (*fn_.borrow()).call()(_arg0, _arg1)
+            (*(*fn_.borrow()))(_arg0, _arg1)
         }) == 7)
     );
     (*fn_.borrow_mut()) = fn_ptr!(sub_1, fn(i32, i32) -> i32);
@@ -40,7 +40,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 10;
             let _arg1: i32 = 3;
-            (*fn_.borrow()).call()(_arg0, _arg1)
+            (*(*fn_.borrow()))(_arg0, _arg1)
         }) == 7)
     );
     (*fn_.borrow_mut()) = fn_ptr!(mul_2, fn(i32, i32) -> i32);
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 7;
-            (*fn_.borrow()).call()(_arg0, _arg1)
+            (*(*fn_.borrow()))(_arg0, _arg1)
         }) == 42)
     );
     (*fn_.borrow_mut()) = FnPtr::null();
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 1;
             let _arg1: i32 = 1;
-            (*fn_.borrow()).call()(_arg0, _arg1)
+            (*(*fn_.borrow()))(_arg0, _arg1)
         }) == 2)
     );
     return 0;

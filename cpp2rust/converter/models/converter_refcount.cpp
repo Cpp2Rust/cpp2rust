@@ -180,10 +180,8 @@ std::string ConverterRefCount::BuildFnAdapter(
   // Build adapter signature: |a0: T0, a1: T1, ...| -> Tr
   std::string closure = "(|";
   for (unsigned i = 0; i < target_proto->getNumParams(); ++i) {
-    if (i > 0)
-      closure += ", ";
     closure +=
-        std::format("a{}: {}", i, ToString(target_proto->getParamType(i)));
+        std::format("a{}: {},", i, ToString(target_proto->getParamType(i)));
   }
   closure += "|";
   if (!target_proto->getReturnType()->isVoidType()) {
@@ -1025,8 +1023,9 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 }
 
 void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
+  StrCat("(*");
   Convert(callee);
-  StrCat(".call()");
+  StrCat(")");
 }
 
 void ConverterRefCount::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {

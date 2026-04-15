@@ -42,7 +42,7 @@ pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
         }));
     return ({
         let _arg0: i32 = (*x.borrow());
-        (*actual.borrow()).call()(_arg0)
+        (*(*actual.borrow()))(_arg0)
     });
 }
 pub fn main() {
@@ -52,31 +52,28 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: i32 = 10;
-            ({
+            (*({
                 let _mode: i32 = 1;
                 pick_3(_mode)
-            })
-            .call()(_arg0)
+            }))(_arg0)
         }) == 11)
     );
     assert!(
         (({
             let _arg0: i32 = 10;
-            ({
+            (*({
                 let _mode: i32 = -1_i32;
                 pick_3(_mode)
-            })
-            .call()(_arg0)
+            }))(_arg0)
         }) == 9)
     );
     assert!(
         (({
             let _arg0: i32 = 10;
-            ({
+            (*({
                 let _mode: i32 = 0;
                 pick_3(_mode)
-            })
-            .call()(_arg0)
+            }))(_arg0)
         }) == 10)
     );
     assert!(

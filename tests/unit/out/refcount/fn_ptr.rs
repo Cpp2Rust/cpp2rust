@@ -16,7 +16,7 @@ pub fn foo_1(fn_: FnPtr<fn(AnyPtr) -> i32>, pi: Ptr<i32>) -> i32 {
     let pi: Value<Ptr<i32>> = Rc::new(RefCell::new(pi));
     return ({
         let _arg0: AnyPtr = ((*pi.borrow()).clone() as Ptr<i32>).to_any();
-        (*fn_.borrow()).call()(_arg0)
+        (*(*fn_.borrow()))(_arg0)
     });
 }
 pub fn main() {

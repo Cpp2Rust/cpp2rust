@@ -21,7 +21,7 @@ pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     if !(*cb.borrow()).is_null() {
         ({
             let _arg0: Ptr<i32> = (*x.borrow()).clone();
-            (*cb.borrow()).call()(_arg0)
+            (*(*cb.borrow()))(_arg0)
         });
     }
 }
@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     if !(*fn_.borrow()).is_null() {
         ({
             let _arg0: Ptr<i32> = (c.as_pointer());
-            (*fn_.borrow()).call()(_arg0)
+            (*(*fn_.borrow()))(_arg0)
         });
     }
     assert!(((*c.borrow()) == 6));

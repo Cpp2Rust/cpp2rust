@@ -35,21 +35,21 @@ fn main_0() -> i32 {
         (({
             let _arg0: i32 = 2;
             let _arg1: i32 = 3;
-            (*ops.borrow())[(0) as usize].call()(_arg0, _arg1)
+            (*(*ops.borrow())[(0) as usize])(_arg0, _arg1)
         }) == 5)
     );
     assert!(
         (({
             let _arg0: i32 = 7;
             let _arg1: i32 = 4;
-            (*ops.borrow())[(1) as usize].call()(_arg0, _arg1)
+            (*(*ops.borrow())[(1) as usize])(_arg0, _arg1)
         }) == 3)
     );
     assert!(
         (({
             let _arg0: i32 = 6;
             let _arg1: i32 = 5;
-            (*ops.borrow())[(2) as usize].call()(_arg0, _arg1)
+            (*(*ops.borrow())[(2) as usize])(_arg0, _arg1)
         }) == 30)
     );
     assert!(!(((*ops.borrow())[(0) as usize]).is_null()));

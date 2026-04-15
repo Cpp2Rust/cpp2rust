@@ -66,18 +66,18 @@ fn main_0() -> i32 {
     let obj: Value<AnyPtr> = Rc::new(RefCell::new(
         ({
             let _arg0: i32 = 42;
-            (*(*vt.borrow()).create.borrow()).call()(_arg0)
+            (*(*(*vt.borrow()).create.borrow()))(_arg0)
         }),
     ));
     assert!(
         (({
             let _arg0: AnyPtr = (*obj.borrow()).clone();
-            (*(*vt.borrow()).get.borrow()).call()(_arg0)
+            (*(*(*vt.borrow()).get.borrow()))(_arg0)
         }) == 42)
     );
     ({
         let _arg0: AnyPtr = (*obj.borrow()).clone();
-        (*(*vt.borrow()).destroy.borrow()).call()(_arg0)
+        (*(*(*vt.borrow()).destroy.borrow()))(_arg0)
     });
     assert!(((*storage.with(Value::clone).borrow()) == 0));
     (*(*vt.borrow()).get.borrow_mut()) = FnPtr::null();

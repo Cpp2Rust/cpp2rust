@@ -17,7 +17,7 @@ pub fn test_roundtrip_1() {
     assert!(
         (({
             let _arg0: i32 = 5;
-            (*fn_.borrow()).call()(_arg0)
+            (*(*fn_.borrow()))(_arg0)
         }) == 10)
     );
     let gfn: Value<FnPtr<fn()>> =
@@ -29,7 +29,7 @@ pub fn test_roundtrip_1() {
     assert!(
         (({
             let _arg0: i32 = 5;
-            (*fn2.borrow()).call()(_arg0)
+            (*(*fn2.borrow()))(_arg0)
         }) == 10)
     );
     assert!({
@@ -49,7 +49,7 @@ pub fn test_double_cast_2() {
     assert!(
         (({
             let _arg0: i32 = 5;
-            (*fn2.borrow()).call()(_arg0)
+            (*(*fn2.borrow()))(_arg0)
         }) == 10)
     );
     assert!({
@@ -82,7 +82,7 @@ pub fn test_void_ptr_to_fn_3() {
     assert!(
         (({
             let _arg0: i32 = 5;
-            (*fn_.borrow()).call()(_arg0)
+            (*(*fn_.borrow()))(_arg0)
         }) == 10)
     );
 }
@@ -106,7 +106,7 @@ pub fn test_call_through_cast_5() {
         ({
             let _arg0: AnyPtr = ((val.as_pointer()) as Ptr<i32>).to_any();
             let _arg1: i32 = 42;
-            (*gfn.borrow()).call()(_arg0, _arg1)
+            (*(*gfn.borrow()))(_arg0, _arg1)
         }),
     ));
     assert!(((*result.borrow()) == 142));

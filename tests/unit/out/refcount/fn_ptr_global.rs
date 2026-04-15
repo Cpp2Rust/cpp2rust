@@ -27,7 +27,7 @@ pub fn call_op_3(x: i32) -> i32 {
     if !(*g_op.with(Value::clone).borrow()).is_null() {
         return ({
             let _arg0: i32 = (*x.borrow());
-            (*g_op.with(Value::clone).borrow()).call()(_arg0)
+            (*(*g_op.with(Value::clone).borrow()))(_arg0)
         });
     }
     return (*x.borrow());

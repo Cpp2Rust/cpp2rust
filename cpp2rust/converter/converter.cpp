@@ -131,7 +131,6 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
       if (in_function_formals_) {
-        // Function parameters can't use `_`. Emit `impl Fn(args) -> ret`.
         auto call_op = lambda->getLambdaCallOperator();
         StrCat("impl Fn(");
         for (auto p : call_op->parameters()) {

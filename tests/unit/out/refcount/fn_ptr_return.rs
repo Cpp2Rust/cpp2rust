@@ -40,7 +40,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: i32 = 10;
-            (*f.borrow()).call()(_arg0)
+            (*(*f.borrow()))(_arg0)
         }) == 11)
     );
     let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: i32 = 10;
-            (*g.borrow()).call()(_arg0)
+            (*(*g.borrow()))(_arg0)
         }) == 9)
     );
     assert!({

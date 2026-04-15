@@ -3,6 +3,7 @@
 
 use std::any::{Any, TypeId};
 use std::marker::PhantomData;
+use std::ops::Deref;
 use std::rc::Rc;
 
 use crate::rc::{AnyPtr, ErasedPtr};
@@ -75,17 +76,18 @@ impl<T: 'static> FnPtr<T> {
         }
     }
 
-    pub fn call(&self) -> T
-    where
-        T: Copy,
-    {
+}
+
+impl<T: 'static> Deref for FnPtr<T> {
+    type Target = T;
+    fn deref(&self) -> &T {
         let state = self.state.as_ref().expect("ub: null fn pointer call");
         let entry = state
             .cast_history
             .last()
             .expect("empty fn pointer cast_history");
         match entry {
-            Some(rc) => *rc
+            Some(rc) => rc
                 .downcast_ref::<T>()
                 .expect("ub: fn pointer type mismatch"),
             None => panic!("ub: calling through incompatible fn pointer type"),

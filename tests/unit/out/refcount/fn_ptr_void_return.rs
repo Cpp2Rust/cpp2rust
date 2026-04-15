@@ -21,7 +21,7 @@ pub fn run_2(fn_: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     ({
         let _arg0: Ptr<i32> = (*x.borrow()).clone();
-        (*fn_.borrow()).call()(_arg0)
+        (*(*fn_.borrow()))(_arg0)
     });
 }
 pub fn main() {
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(10));
     ({
         let _arg0: Ptr<i32> = (b.as_pointer());
-        (*fn_.borrow()).call()(_arg0)
+        (*(*fn_.borrow()))(_arg0)
     });
     assert!(((*b.borrow()) == -10_i32));
     return 0;
