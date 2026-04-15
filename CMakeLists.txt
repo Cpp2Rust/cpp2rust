@@ -90,7 +90,8 @@ add_subdirectory(cpp2rust)
 add_subdirectory(libcc2rs)
 add_subdirectory(tests)
 
-find_program(CLANG_FORMAT clang-format-22 clang-format)
+find_program(CLANG_FORMAT NAMES clang-format-22 clang-format)
+
 file(GLOB_RECURSE ALL_CXX_SOURCES
      cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp)
 
