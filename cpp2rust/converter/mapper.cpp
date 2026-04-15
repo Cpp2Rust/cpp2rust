@@ -8,6 +8,7 @@
 #include <llvm/Support/ThreadPool.h>
 
 #include <atomic>
+#include <format>
 #include <mutex>
 #include <regex>
 #include <utility>
@@ -560,6 +561,17 @@ std::string normalizeTranslationRule(std::string rule) {
   return rule;
 }
 
+std::string GetRulePathForFunction(const clang::FunctionDecl *decl,
+                                   const std::string &model_suffix) {
+  assert(decl);
+  auto it = exprs_.find(ToString(decl));
+  if (it == exprs_.end()) {
+    return "";
+  }
+  auto &tgt = it->second;
+  return std::format("rules::{}_{}::{}", tgt.module, model_suffix, tgt.name);
+}
+
 } // namespace
 
 bool Contains(clang::QualType qual_type) {
@@ -573,6 +585,21 @@ const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr) {
     return &it->second;
   }
   return nullptr;
+}
+
+std::string GetFnRefName(const clang::FunctionDecl *decl) {
+  assert(decl);
+  if (model_ == Model::kRefCount) {
+    auto refcount_path = GetRulePathForFunction(decl, "tgt_refcount");
+    if (!refcount_path.empty()) {
+      return refcount_path;
+    }
+  }
+  auto unsafe_path = GetRulePathForFunction(decl, "tgt_unsafe");
+  if (!unsafe_path.empty()) {
+    return unsafe_path;
+  }
+  return GetNamedDeclAsString(decl->getCanonicalDecl());
 }
 
 std::string InstantiateTemplate(const clang::Expr *expr,
