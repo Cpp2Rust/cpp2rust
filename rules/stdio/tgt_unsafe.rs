@@ -65,12 +65,7 @@ unsafe fn f4(a0: *mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
     }
 }
 
-pub unsafe fn f5(
-    a0: *mut ::libc::c_void,
-    a1: u64,
-    a2: u64,
-    a3: *mut ::std::fs::File,
-) -> u64 {
+pub unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
     let total = a1.saturating_mul(a2) as usize;
     let mut dst = a0 as *mut u8;
 
@@ -102,12 +97,7 @@ pub unsafe fn f5(
     (read_bytes / a1 as usize) as u64
 }
 
-pub unsafe fn f6(
-    a0: *const ::libc::c_void,
-    a1: u64,
-    a2: u64,
-    a3: *mut ::std::fs::File,
-) -> u64 {
+pub unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
     let total = a1.saturating_mul(a2) as usize;
     let mut src = a0 as *mut u8;
 
