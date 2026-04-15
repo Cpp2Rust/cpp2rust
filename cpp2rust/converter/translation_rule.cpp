@@ -321,7 +321,6 @@ RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
     if (name[0] == 'f') {
       rule.tgt = ParseExprTgtJSON(*obj);
       std::get<ExprTgt>(rule.tgt).name = name;
-      std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ":" + name);
     } else if (name[0] == 't') {
       rule.tgt = ParseTypeTgtJSON(*obj);
     } else {
@@ -463,6 +462,8 @@ void ExprTgt::validate(const std::string &context) const {
   ValidateConsecutiveKeys(params, 'a', 0, context + " params");
   ValidateConsecutiveKeys(generics, 'T', 1, context + " generics");
   assert(!body.empty() && "ExprTgt body must not be empty");
+  assert(!name.empty() && "ExprTgt name must not be empty");
+  assert(!module.empty() && "ExprTgt module must not be empty");
 }
 
 std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
@@ -493,6 +494,9 @@ std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
   std::vector<Rule> result;
   for (auto &[name, rule] : rules) {
     assert(!rule.src.empty() && "Rule loaded from IR but has no src");
+    if (auto *expr_tgt = std::get_if<ExprTgt>(&rule.tgt)) {
+      expr_tgt->validate(path.string() + ":" + name);
+    }
     result.push_back(std::move(rule));
   }
   return result;
