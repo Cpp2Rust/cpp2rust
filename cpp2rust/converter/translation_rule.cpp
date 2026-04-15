@@ -320,6 +320,7 @@ RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
     Rule rule;
     if (name[0] == 'f') {
       rule.tgt = ParseExprTgtJSON(*obj);
+      std::get<ExprTgt>(rule.tgt).name = name;
       std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ":" + name);
     } else if (name[0] == 't') {
       rule.tgt = ParseTypeTgtJSON(*obj);
@@ -484,6 +485,9 @@ std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
   }
   for (auto &[name, src_rule] : src_rules) {
     rules.at(name).src = std::move(src_rule.src);
+    if (auto *expr_tgt = std::get_if<ExprTgt>(&rules.at(name).tgt)) {
+      expr_tgt->module = dir.filename().string();
+    }
   }
 
   std::vector<Rule> result;

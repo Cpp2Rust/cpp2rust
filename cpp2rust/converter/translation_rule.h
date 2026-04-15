@@ -61,6 +61,8 @@ struct TypeInfo {
 };
 
 struct ExprTgt {
+  std::string name;
+  std::string module;
   std::unordered_map<std::string, TypeInfo> params; // "a0" -> TypeInfo
   TypeInfo return_type;
   std::unordered_map<std::string, std::vector<std::string>>
