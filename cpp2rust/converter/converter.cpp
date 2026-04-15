@@ -2689,7 +2689,7 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     return "false";
   }
 
-  if (qual_type->isIntegerType()) {
+  if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
     return std::format("0_{}", ToString(qual_type));
   }
 
