@@ -1618,12 +1618,9 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
       Buffer buf(*this);
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-        StrCat("fn_ptr_anon!((");
+        StrCat("FnPtr::new((");
         VisitLambdaExpr(lambda);
-        StrCat(std::format(
-            "), {})",
-            GetFnTypeString(qual_type->getPointeeType()
-                                ->getAs<clang::FunctionProtoType>())));
+        StrCat("), 0)");
       } else {
         VisitLambdaExpr(lambda);
       }

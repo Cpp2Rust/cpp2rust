@@ -22,7 +22,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut fn_: Option<unsafe fn(i32, i32) -> i32> = Some(add_0 as _);
+    let mut fn_: Option<unsafe fn(i32, i32) -> i32> = Some(add_0);
     assert!(
         ((unsafe {
             let _arg0: i32 = 3;
@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
             (fn_).unwrap()(_arg0, _arg1)
         }) == (7))
     );
-    fn_ = Some(sub_1 as _);
+    fn_ = Some(sub_1);
     assert!(
         ((unsafe {
             let _arg0: i32 = 10;
@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
             (fn_).unwrap()(_arg0, _arg1)
         }) == (7))
     );
-    fn_ = Some(mul_2 as _);
+    fn_ = Some(mul_2);
     assert!(
         ((unsafe {
             let _arg0: i32 = 6;
@@ -48,7 +48,7 @@ unsafe fn main_0() -> i32 {
     );
     fn_ = None;
     assert!((fn_).is_none());
-    fn_ = Some(add_0 as _);
+    fn_ = Some(add_0);
     assert!(!((fn_).is_none()));
     assert!(
         ((unsafe {

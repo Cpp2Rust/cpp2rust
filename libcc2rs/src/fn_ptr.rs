@@ -1,6 +1,13 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#[macro_export]
+macro_rules! fn_ptr {
+    ($f:expr, $ty:ty) => {
+        $crate::FnPtr::new($f as $ty, $f as *const () as usize)
+    };
+}
+
 use std::any::{Any, TypeId};
 use std::marker::PhantomData;
 use std::ops::Deref;

@@ -27,18 +27,18 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 42;
     (unsafe {
-        let _fn: Option<unsafe fn(*mut i32)> = Some(negate_0 as _);
+        let _fn: Option<unsafe fn(*mut i32)> = Some(negate_0);
         let _x: *mut i32 = (&mut a as *mut i32);
         run_2(_fn, _x)
     });
     assert!(((a) == (-42_i32)));
     (unsafe {
-        let _fn: Option<unsafe fn(*mut i32)> = Some(zero_out_1 as _);
+        let _fn: Option<unsafe fn(*mut i32)> = Some(zero_out_1);
         let _x: *mut i32 = (&mut a as *mut i32);
         run_2(_fn, _x)
     });
     assert!(((a) == (0)));
-    let mut fn_: Option<unsafe fn(*mut i32)> = Some(negate_0 as _);
+    let mut fn_: Option<unsafe fn(*mut i32)> = Some(negate_0);
     assert!(!((fn_).is_none()));
     let mut b: i32 = 10;
     (unsafe {

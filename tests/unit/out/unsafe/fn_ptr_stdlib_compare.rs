@@ -14,14 +14,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut rfn: Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::std::fs::File) -> u64> =
-        Some(rules::stdio_tgt_unsafe::f5 as _);
-    assert!(((rfn) == (Some(rules::stdio_tgt_unsafe::f5 as _))));
+        Some(rules::stdio_tgt_unsafe::f5);
+    assert!(((rfn) == (Some(rules::stdio_tgt_unsafe::f5))));
     assert!(!((rfn).is_none()));
     let mut rfn2: Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64> =
         std::mem::transmute::<
             Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::std::fs::File) -> u64>,
             Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64>,
-        >(Some(rules::stdio_tgt_unsafe::f5 as _));
+        >(Some(rules::stdio_tgt_unsafe::f5));
     assert!(
         ((rfn)
             == (std::mem::transmute::<

@@ -40,9 +40,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut vt: Vtable = Vtable {
-        create: Some(int_create_0 as _),
-        get: Some(int_get_1 as _),
-        destroy: Some(int_destroy_2 as _),
+        create: Some(int_create_0),
+        get: Some(int_get_1),
+        destroy: Some(int_destroy_2),
     };
     assert!(!((vt.create).is_none()));
     assert!(!((vt.get).is_none()));

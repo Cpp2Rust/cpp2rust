@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _x: i32 = 5;
-            let _fn: Option<unsafe fn(i32) -> i32> = Some(identity_0 as _);
+            let _fn: Option<unsafe fn(i32) -> i32> = Some(identity_0);
             apply_1(_x, Some(_fn))
         }) == (5))
     );

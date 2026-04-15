@@ -23,7 +23,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     return (unsafe {
-        let _fn: Option<unsafe fn() -> bool> = Some(test1_0 as _);
+        let _fn: Option<unsafe fn() -> bool> = Some(test1_0);
         test_1(_fn)
     });
 }

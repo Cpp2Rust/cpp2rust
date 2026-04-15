@@ -1381,7 +1381,7 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
 }
 
 void Converter::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({} as _)", Mapper::GetFnRefName(fn_decl)));
+  StrCat(std::format("Some({})", Mapper::GetFnRefName(fn_decl)));
 }
 
 std::string Converter::GetPointeeRustType(clang::QualType ptr_type) {

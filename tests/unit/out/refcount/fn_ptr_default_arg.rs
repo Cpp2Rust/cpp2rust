@@ -47,12 +47,12 @@ fn main_0() -> i32 {
             apply_1(_x, Some(_fn))
         }) == 5)
     );
-    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_ptr_anon!(
+    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::new(
         (|x: i32| {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             return -(*x.borrow());
         }),
-        fn(i32) -> i32
+        0,
     )));
     assert!(
         (({

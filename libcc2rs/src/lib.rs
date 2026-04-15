@@ -4,22 +4,6 @@
 mod reinterpret;
 pub use reinterpret::ByteRepr;
 
-#[macro_export]
-macro_rules! fn_ptr {
-    ($f:expr, $ty:ty) => {
-        $crate::FnPtr::new($f as $ty, $f as *const () as usize)
-    };
-}
-
-// Lambda: no stable address, use 0. TODO: assign unique addr per lambda site so distinct
-// lambdas don't compare equal.
-#[macro_export]
-macro_rules! fn_ptr_anon {
-    ($f:expr, $ty:ty) => {
-        $crate::FnPtr::new($f as $ty, 0)
-    };
-}
-
 mod rc;
 pub use rc::*;
 

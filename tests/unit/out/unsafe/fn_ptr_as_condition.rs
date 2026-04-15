@@ -26,7 +26,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 5;
     (unsafe {
-        let _cb: Option<unsafe fn(*mut i32)> = Some(double_it_0 as _);
+        let _cb: Option<unsafe fn(*mut i32)> = Some(double_it_0);
         let _x: *mut i32 = (&mut a as *mut i32);
         maybe_call_1(_cb, _x)
     });
@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
     assert!(((b) == (5)));
     let mut fn_: Option<unsafe fn(*mut i32)> = None;
     if !!(fn_).is_none() {
-        fn_ = Some(double_it_0 as _);
+        fn_ = Some(double_it_0);
     }
     let mut c: i32 = 3;
     if !(fn_).is_none() {

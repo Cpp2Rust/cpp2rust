@@ -15,9 +15,9 @@ pub unsafe fn dec_1(mut x: i32) -> i32 {
 }
 pub unsafe fn pick_2(mut choose_inc: i32) -> Option<unsafe fn(i32) -> i32> {
     if (choose_inc != 0) {
-        return Some(inc_0 as _);
+        return Some(inc_0);
     }
-    return Some(dec_1 as _);
+    return Some(dec_1);
 }
 pub fn main() {
     unsafe {
@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
         pick_2(_choose_inc)
     });
     assert!(!((f).is_none()));
-    assert!(((f) == (Some(inc_0 as _))));
+    assert!(((f) == (Some(inc_0))));
     assert!(
         ((unsafe {
             let _arg0: i32 = 10;
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
         let _choose_inc: i32 = 0;
         pick_2(_choose_inc)
     });
-    assert!(((g) == (Some(dec_1 as _))));
+    assert!(((g) == (Some(dec_1))));
     assert!(
         ((unsafe {
             let _arg0: i32 = 10;

@@ -39,11 +39,11 @@ unsafe fn main_0() -> i32 {
         }) == (5))
     );
     (unsafe {
-        let _fn: Option<unsafe fn(i32) -> i32> = Some(double_it_0 as _);
+        let _fn: Option<unsafe fn(i32) -> i32> = Some(double_it_0);
         set_op_2(_fn)
     });
     assert!(!((g_op).is_none()));
-    assert!(((g_op) == (Some(double_it_0 as _))));
+    assert!(((g_op) == (Some(double_it_0))));
     assert!(
         ((unsafe {
             let _x: i32 = 5;
@@ -51,10 +51,10 @@ unsafe fn main_0() -> i32 {
         }) == (10))
     );
     (unsafe {
-        let _fn: Option<unsafe fn(i32) -> i32> = Some(triple_it_1 as _);
+        let _fn: Option<unsafe fn(i32) -> i32> = Some(triple_it_1);
         set_op_2(_fn)
     });
-    assert!(((g_op) == (Some(triple_it_1 as _))));
+    assert!(((g_op) == (Some(triple_it_1))));
     assert!(
         ((unsafe {
             let _x: i32 = 5;
