@@ -62,7 +62,7 @@ pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
     let mut Q: Queue = Queue {
         elems: Box::leak(
             (0..((*graph).V as u64))
-                .map(|_| 0 as u32)
+                .map(|_| 0_u32)
                 .collect::<Box<[u32]>>(),
         )
         .as_mut_ptr(),
@@ -78,7 +78,7 @@ pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
     .as_mut_ptr();
     let mut pred: *mut u32 = Box::leak(
         (0..((*graph).V as u64))
-            .map(|_| 0 as u32)
+            .map(|_| 0_u32)
             .collect::<Box<[u32]>>(),
     )
     .as_mut_ptr();
