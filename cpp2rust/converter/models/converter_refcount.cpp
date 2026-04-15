@@ -196,11 +196,18 @@ std::string ConverterRefCount::BuildFnAdapter(
     auto tgt_pty = target_proto->getParamType(i);
     if (ToString(src_pty) == ToString(tgt_pty)) {
       closure += std::format("a{}", i);
-    } else if (src_pty->isPointerType() && tgt_pty->isVoidPointerType()) {
-      closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                             GetPointeeRustType(src_pty));
-    } else if (src_pty->isVoidPointerType() && tgt_pty->isPointerType()) {
-      closure += std::format("a{}.to_any()", i);
+    } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
+      if (tgt_pty->isVoidPointerType()) {
+        closure += std::format("a{}.cast::<{}>().unwrap()", i,
+                               GetPointeeRustType(src_pty));
+      } else if (src_pty->isVoidPointerType()) {
+        closure += std::format("a{}.to_any()", i);
+      } else if (tgt_pty->getPointeeType()->isCharType()) {
+        closure += std::format("a{}.reinterpret_cast::<{}>()", i,
+                               GetPointeeRustType(src_pty));
+      } else if (src_pty->getPointeeType()->isCharType()) {
+        closure += std::format("a{}.reinterpret_cast::<u8>()", i);
+      }
     } else {
       // UB: Incompatible types
       return "None";
