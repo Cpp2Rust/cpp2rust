@@ -1269,4 +1269,25 @@ mod tests {
 
         p.delete();
     }
+
+    #[test]
+    fn anyptr_null_cast() {
+        let any = Ptr::<()>::null().to_any();
+        let p: Option<Ptr<u32>> = any.cast::<u32>();
+        assert!(p.is_some());
+        assert!(p.unwrap().is_null());
+
+        let p2: Option<Ptr<u8>> = any.cast::<u8>();
+        assert!(p2.is_some());
+        assert!(p2.unwrap().is_null());
+    }
+
+    #[test]
+    fn to_any_without_clone() {
+        let p: Ptr<std::fs::File> = Ptr::null(); // std::fs::File is not Clone
+        let any = p.to_any();
+        let recovered = any.cast::<std::fs::File>();
+        assert!(recovered.is_some());
+        assert!(recovered.unwrap().is_null());
+    }
 }
