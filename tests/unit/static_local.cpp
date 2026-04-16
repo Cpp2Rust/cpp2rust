@@ -1,7 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-// no-compile: unsafe
 int foo() {
   static int kX1 = 1;
   static const int kX2 = 2;
