@@ -1009,6 +1009,7 @@ trait ErasedPtr: std::any::Any {
     fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> Option<bool>;
+    fn is_null(&self) -> bool;
 }
 
 impl<T> ErasedPtr for Ptr<T>
@@ -1048,6 +1049,10 @@ where
 
         None
     }
+
+    fn is_null(&self) -> bool {
+        Ptr::is_null(self)
+    }
 }
 
 #[derive(Clone)]
@@ -1071,10 +1076,8 @@ impl Default for AnyPtr {
 
 impl AnyPtr {
     pub fn cast<T: 'static>(&self) -> Option<Ptr<T>> {
-        if let Some(p) = self.ptr.as_any().downcast_ref::<Ptr<()>>() {
-            if p.is_null() {
-                return Some(Ptr::<T>::null());
-            }
+        if self.ptr.is_null() {
+            return Some(Ptr::<T>::null());
         }
         self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
     }
@@ -1272,6 +1275,7 @@ mod tests {
 
     #[test]
     fn anyptr_null_cast() {
+        // void* nullptr
         let any = Ptr::<()>::null().to_any();
         let p: Option<Ptr<u32>> = any.cast::<u32>();
         assert!(p.is_some());
@@ -1280,6 +1284,12 @@ mod tests {
         let p2: Option<Ptr<u8>> = any.cast::<u8>();
         assert!(p2.is_some());
         assert!(p2.unwrap().is_null());
+
+        // int* nullptr
+        let any2 = Ptr::<i32>::null().to_any();
+        let p3: Option<Ptr<f32>> = any2.cast::<f32>();
+        assert!(p3.is_some());
+        assert!(p3.unwrap().is_null());
     }
 
     #[test]
