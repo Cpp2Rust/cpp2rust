@@ -14,7 +14,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut input: [i32; 3] = [1, 2, 3];
-    let mut output: [i32; 3] = [<i32>::default(); 3];
+    let mut output: [i32; 3] = [0_i32; 3];
     {
         let mut outptr = output.as_mut_ptr().clone();
         let mut curr = input.as_mut_ptr().clone();

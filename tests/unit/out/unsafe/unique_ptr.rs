@@ -72,9 +72,7 @@ pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
 pub unsafe fn RndStuff_2() {
     let mut x1: Option<Box<[i32]>> = None;
     let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(Box::leak(
-        (0..100_u64)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
+        (0..100_u64).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
@@ -82,9 +80,7 @@ pub unsafe fn RndStuff_2() {
         i.prefix_inc();
     }
     x2 = Some(Box::from_raw(Box::leak(
-        (0..200_u64)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
+        (0..200_u64).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (200)) {

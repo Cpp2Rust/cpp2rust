@@ -15,9 +15,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut i1: i32 = 3;
-    let mut i2: i32 = <i32>::default();
+    let mut i2: i32 = 0_i32;
     let mut carr1: [i32; 2] = [1, 2];
-    let mut carr2: [i32; 3] = [1, <i32>::default(), <i32>::default()];
+    let mut carr2: [i32; 3] = [1, 0_i32, 0_i32];
     let mut arr: Vec<i32> = vec![1, 2, 3];
     let mut vec_: Vec<i32> = vec![1, 2, 3];
     (unsafe {
