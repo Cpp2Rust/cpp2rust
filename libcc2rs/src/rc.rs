@@ -1009,11 +1009,12 @@ trait ErasedPtr: std::any::Any {
     fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> Option<bool>;
+    fn is_null(&self) -> bool;
 }
 
 impl<T> ErasedPtr for Ptr<T>
 where
-    T: Clone + ByteRepr + 'static,
+    T: ByteRepr + 'static,
     Ptr<T>: PartialEq,
 {
     fn pointee_type_id(&self) -> std::any::TypeId {
@@ -1024,35 +1025,13 @@ where
         if self.pointee_type_id() != src.pointee_type_id() {
             panic!("memcpy: type mismatch");
         }
-
         let src_ptr = src
             .as_any()
             .downcast_ref::<Ptr<T>>()
             .expect("memcpy: downcast to Ptr<T> failed");
-
-        let elem = std::mem::size_of::<T>();
-
-        if len == elem {
-            self.write(src_ptr.read());
-            return;
-        }
-
-        if elem != 0 && len.is_multiple_of(elem) {
-            let mut dst = self.clone();
-            let mut src_it = src_ptr.clone();
-            for _ in 0..(len / elem) {
-                dst.write(src_it.read());
-                dst += 1;
-                src_it += 1;
-            }
-
-            return;
-        }
-
-        panic!(
-            "memcpy: len {} not compatible with element size {}",
-            len, elem
-        );
+        let dst_bytes: Ptr<u8> = self.reinterpret_cast();
+        let src_bytes: Ptr<u8> = src_ptr.reinterpret_cast();
+        dst_bytes.memcpy(&src_bytes, len);
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
@@ -1070,6 +1049,10 @@ where
 
         None
     }
+
+    fn is_null(&self) -> bool {
+        Ptr::is_null(self)
+    }
 }
 
 #[derive(Clone)]
@@ -1077,7 +1060,7 @@ pub struct AnyPtr {
     ptr: Rc<dyn ErasedPtr>,
 }
 
-impl<T: Clone + ByteRepr + 'static> Ptr<T> {
+impl<T: ByteRepr + 'static> Ptr<T> {
     pub fn to_any(&self) -> AnyPtr {
         AnyPtr {
             ptr: Rc::new(self.clone()),
@@ -1093,6 +1076,9 @@ impl Default for AnyPtr {
 
 impl AnyPtr {
     pub fn cast<T: 'static>(&self) -> Option<Ptr<T>> {
+        if self.ptr.is_null() {
+            return Some(Ptr::<T>::null());
+        }
         self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
     }
 
@@ -1285,5 +1271,33 @@ mod tests {
         assert_eq!(p.read(), 0x00000000DEADFACE);
 
         p.delete();
+    }
+
+    #[test]
+    fn anyptr_null_cast() {
+        // void* nullptr
+        let any = Ptr::<()>::null().to_any();
+        let p: Option<Ptr<u32>> = any.cast::<u32>();
+        assert!(p.is_some());
+        assert!(p.unwrap().is_null());
+
+        let p2: Option<Ptr<u8>> = any.cast::<u8>();
+        assert!(p2.is_some());
+        assert!(p2.unwrap().is_null());
+
+        // int* nullptr
+        let any2 = Ptr::<i32>::null().to_any();
+        let p3: Option<Ptr<f32>> = any2.cast::<f32>();
+        assert!(p3.is_some());
+        assert!(p3.unwrap().is_null());
+    }
+
+    #[test]
+    fn to_any_without_clone() {
+        let p: Ptr<std::fs::File> = Ptr::null(); // std::fs::File is not Clone
+        let any = p.to_any();
+        let recovered = any.cast::<std::fs::File>();
+        assert!(recovered.is_some());
+        assert!(recovered.unwrap().is_null());
     }
 }
