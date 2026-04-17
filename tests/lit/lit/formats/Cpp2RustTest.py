@@ -7,28 +7,28 @@ from .base import TestFormat
 import difflib, os, re, shutil, random
 import tomli
 
+def read_rust_version():
+  toolchain_path = os.path.join(os.path.dirname(__file__),
+                                '../../../../libcc2rs/rust-toolchain.toml')
+  with open(toolchain_path, 'rb') as f:
+    return tomli.load(f)['toolchain']['channel']
+
+def shared_target_dir():
+  return os.path.abspath(os.path.join(
+      os.path.dirname(__file__),
+      '../../../../build/tmp/cargo-target'))
+
+def cargo_env():
+  return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
+
 class Cpp2RustTest(TestFormat):
   def __init__(self):
     self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
     self.regex_panic = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nocompile = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nondet_result = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
-    self.rust_version = self.readRustVersion()
+    self.rust_version = read_rust_version()
     os.environ['RUSTFLAGS'] = '-Awarnings -A dangerous-implicit-autorefs'
-
-  def readRustVersion(self):
-    toolchain_path = os.path.join(os.path.dirname(__file__),
-                                  '../../../../libcc2rs/rust-toolchain.toml')
-    with open(toolchain_path, 'rb') as f:
-      return tomli.load(f)['toolchain']['channel']
-
-  def sharedTargetDir(self):
-    return os.path.abspath(os.path.join(
-        os.path.dirname(__file__),
-        '../../../../build/tmp/cargo-target'))
-
-  def cargoEnv(self):
-    return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(self.sharedTargetDir()))
 
   def updateExpected(self, generated, expected_path):
     os.makedirs(os.path.dirname(expected_path), exist_ok=True)
@@ -152,7 +152,7 @@ rules = {{ path = "../../../rules" }}
 """)
 
     cmd = ['cargo', 'build', '--release', '--quiet']
-    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=self.cargoEnv())
+    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=cargo_env())
     if should_not_compile:
       if returncode != 0:
         shutil.rmtree(tmp_dir, True)
@@ -161,7 +161,7 @@ rules = {{ path = "../../../rules" }}
     if returncode != 0:
       return fail('cargo failed\n' + err)
 
-    rust_bin = os.path.join(self.sharedTargetDir(), "release", pkg_name)
+    rust_bin = os.path.join(shared_target_dir(), "release", pkg_name)
 
     if not skip_run:
       if should_panic:
