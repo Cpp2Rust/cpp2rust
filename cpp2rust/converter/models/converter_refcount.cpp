@@ -165,10 +165,77 @@ bool ConverterRefCount::VisitLValueReferenceType(
   return false;
 }
 
+std::string ConverterRefCount::BuildFnAdapter(
+    const clang::FunctionDecl *src_fn,
+    const clang::FunctionProtoType *src_proto,
+    const clang::FunctionProtoType *target_proto) {
+
+  // UB: Incompatible arity
+  if (src_proto->getNumParams() != target_proto->getNumParams()) {
+    return "None";
+  }
+
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+
+  // Build adapter signature: |a0: T0, a1: T1, ...| -> Tr
+  std::string closure = "(|";
+  for (unsigned i = 0; i < target_proto->getNumParams(); ++i) {
+    closure +=
+        std::format("a{}: {},", i, ToString(target_proto->getParamType(i)));
+  }
+  closure += "|";
+  if (!target_proto->getReturnType()->isVoidType()) {
+    closure += std::format(" -> {} ", ToString(target_proto->getReturnType()));
+  }
+  closure += "{ ";
+
+  // Build adapter body: src_fn(convert(a0), convert(a1), ...)
+  closure += Mapper::GetFnRefName(src_fn) + "(";
+  for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
+    auto src_pty = src_proto->getParamType(i);
+    auto tgt_pty = target_proto->getParamType(i);
+    if (ToString(src_pty) == ToString(tgt_pty)) {
+      closure += std::format("a{}", i);
+    } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
+      if (tgt_pty->isVoidPointerType()) {
+        closure += std::format("a{}.cast::<{}>().unwrap()", i,
+                               GetPointeeRustType(src_pty));
+      } else if (src_pty->isVoidPointerType()) {
+        closure += std::format("a{}.to_any()", i);
+      } else if (tgt_pty->getPointeeType()->isCharType()) {
+        closure += std::format("a{}.reinterpret_cast::<{}>()", i,
+                               GetPointeeRustType(src_pty));
+      } else if (src_pty->getPointeeType()->isCharType()) {
+        closure += std::format("a{}.reinterpret_cast::<u8>()", i);
+      }
+    } else {
+      // UB: Incompatible types
+      return "None";
+    }
+    closure += ", ";
+  }
+  closure += ") })";
+
+  return std::format("Some({} as {})", closure, GetFnTypeString(target_proto));
+}
+
+std::string
+ConverterRefCount::GetFnTypeString(const clang::FunctionProtoType *proto) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  std::string result = "fn(";
+  for (auto p_ty : proto->param_types()) {
+    result += ToString(p_ty) + ",";
+  }
+  result += ")";
+  if (!proto->getReturnType()->isVoidType()) {
+    result += std::format(" -> {}", ToString(proto->getReturnType()));
+  }
+  return result;
+}
+
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
-  if (type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    ConvertFunctionPointerType(type);
+  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+    StrCat(std::format("FnPtr<{}>", GetFnTypeString(proto)));
     return false;
   }
 
@@ -570,7 +637,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (clang::isa<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      StrCat(std::format("Rc::new({})", str));
+      EmitFnAsValue(fn_decl);
     } else {
       StrCat(str);
     }
@@ -951,7 +1018,84 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
   }
 
+  if (expr->getCastKind() == clang::CastKind::CK_NullToPointer &&
+      expr->getType()->isFunctionPointerType()) {
+    StrCat("FnPtr::null()");
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  }
+
   return Converter::VisitImplicitCastExpr(expr);
+}
+
+void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
+  StrCat("(*");
+  Convert(callee);
+  StrCat(")");
+}
+
+void ConverterRefCount::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
+  StrCat(std::format(
+      "fn_ptr!({}, {})", Mapper::GetFnRefName(fn_decl),
+      GetFnTypeString(fn_decl->getType()->getAs<clang::FunctionProtoType>())));
+}
+
+std::string ConverterRefCount::GetFunctionPointerDefaultAsString(
+    clang::QualType qual_type) {
+  return "FnPtr::null()";
+}
+
+void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
+  StrCat("(");
+  Convert(expr);
+  StrCat(").is_null()");
+}
+
+bool ConverterRefCount::VisitFunctionPointerCast(
+    clang::ExplicitCastExpr *expr) {
+  if (expr->getType()->isFunctionPointerType() ||
+      expr->getSubExpr()->getType()->isFunctionPointerType()) {
+    if (expr->getSubExpr()->getType()->isFunctionPointerType() &&
+        expr->getType()->isFunctionPointerType()) {
+      auto target_proto =
+          expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+      auto src_proto = expr->getSubExpr()
+                           ->getType()
+                           ->getPointeeType()
+                           ->getAs<clang::FunctionProtoType>();
+      auto fn_type = GetFnTypeString(target_proto);
+
+      std::string adapter = "None";
+      // Only accept direct references to the casted function. Otherwise the
+      // closure would be capturing and would not coerce into a fn pointer.
+      if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(
+              expr->getSubExpr()->IgnoreImplicit())) {
+        if (auto *fn_decl =
+                clang::dyn_cast<clang::FunctionDecl>(decl_ref->getDecl())) {
+          adapter = BuildFnAdapter(fn_decl, src_proto, target_proto);
+        }
+      }
+
+      StrCat(std::format("{}.cast::<{}>({})", ToString(expr->getSubExpr()),
+                         fn_type, adapter));
+    } else if (expr->getSubExpr()->getType()->isFunctionPointerType() ||
+               expr->getType()->isVoidPointerType()) {
+      Convert(expr->getSubExpr());
+      StrCat(".to_any()");
+    } else if (expr->getSubExpr()->getType()->isVoidPointerType() ||
+               expr->getType()->isFunctionPointerType()) {
+      auto target_proto =
+          expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+      auto fn_type = GetFnTypeString(target_proto);
+      StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
+                         ToString(expr->getSubExpr()), fn_type));
+    } else {
+      assert(0 && "Unhandled function pointer cast");
+    }
+    return false;
+  }
+
+  return true;
 }
 
 bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
@@ -968,7 +1112,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
-    if (expr->getSubExpr()->getType()->isVoidPointerType()) {
+    if (!VisitFunctionPointerCast(expr)) {
+      return false;
+    } else if (expr->getSubExpr()->getType()->isVoidPointerType()) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
@@ -1477,9 +1623,13 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
     {
       Buffer buf(*this);
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat("Rc::new(");
-      VisitLambdaExpr(lambda);
-      StrCat(")");
+      if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
+        StrCat("FnPtr::new((");
+        VisitLambdaExpr(lambda);
+        StrCat("), 0)");
+      } else {
+        VisitLambdaExpr(lambda);
+      }
       str = std::move(buf).str();
     }
     StrCat(BoxValue(std::move(str)));

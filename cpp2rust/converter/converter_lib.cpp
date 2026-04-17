@@ -320,22 +320,33 @@ const char *AccessSpecifierAsString(clang::AccessSpecifier spec) {
 }
 
 clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
-  auto decl = expr->getCalleeDecl();
-  if (decl->getAsFunction()) {
-    return decl->getAsFunction()->getReturnType().getCanonicalType();
+  if (auto *decl = expr->getCalleeDecl()) {
+    if (auto *fn = decl->getAsFunction()) {
+      return fn->getReturnType().getCanonicalType();
+    }
   }
 
-  auto callee_ty =
-      expr->getCallee()->getType().getDesugaredType(decl->getASTContext());
-  if (auto ptr_ty = callee_ty->getAs<clang::PointerType>()) {
-    return ptr_ty->getPointeeType()
-        ->getAs<clang::FunctionProtoType>()
-        ->getReturnType()
-        .getCanonicalType();
+  auto callee_ty = expr->getCallee()->getType();
+  if (auto *ptr_ty = callee_ty->getAs<clang::PointerType>()) {
+    if (auto *fn_ty =
+            ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+      return fn_ty->getReturnType().getCanonicalType();
+    }
   }
 
   assert(0 && "Unhandled function prototype");
   return {};
+}
+
+clang::Expr *StripFunctionPointerDecay(clang::Expr *expr) {
+  if (auto *ice = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+    auto ck = ice->getCastKind();
+    if (ck == clang::CK_FunctionToPointerDecay ||
+        ck == clang::CK_BuiltinFnToFnPtr) {
+      return ice->getSubExpr();
+    }
+  }
+  return expr;
 }
 
 std::string GetOverloadedOperator(const clang::FunctionDecl *decl) {
