@@ -1029,10 +1029,10 @@ void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
 
 void ConverterRefCount::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
-  StrCat(
-      std::format("fn_ptr!({}, {})", GetNamedDeclAsString(fn_decl),
-                  ConvertFunctionPointerType(
-                      fn_decl->getType()->getAs<clang::FunctionProtoType>())));
+  StrCat(std::format("FnPtr::<{}>::new({})",
+                     ConvertFunctionPointerType(
+                         fn_decl->getType()->getAs<clang::FunctionProtoType>()),
+                     GetNamedDeclAsString(fn_decl)));
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
@@ -1614,9 +1614,9 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
       Buffer buf(*this);
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-        StrCat("FnPtr::new((");
+        StrCat("FnPtr::new(");
         VisitLambdaExpr(lambda);
-        StrCat("), 0)");
+        StrCat(")");
       } else {
         VisitLambdaExpr(lambda);
       }

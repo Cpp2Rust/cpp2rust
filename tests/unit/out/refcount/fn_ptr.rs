@@ -27,13 +27,13 @@ fn main_0() -> i32 {
     assert!((*fn_.borrow()).is_null());
     assert!({
         let _lhs = (*fn_.borrow()).clone();
-        _lhs != fn_ptr!(my_foo_0, fn(AnyPtr) -> i32)
+        _lhs != FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0)
     });
-    (*fn_.borrow_mut()) = fn_ptr!(my_foo_0, fn(AnyPtr) -> i32);
+    (*fn_.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0);
     assert!(!((*fn_.borrow()).is_null()));
     assert!({
         let _lhs = (*fn_.borrow()).clone();
-        _lhs == fn_ptr!(my_foo_0, fn(AnyPtr) -> i32)
+        _lhs == FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0)
     });
     let a: Value<i32> = Rc::new(RefCell::new(10));
     assert!({

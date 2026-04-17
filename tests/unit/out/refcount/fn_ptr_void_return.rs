@@ -30,18 +30,19 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(42));
     ({
-        let _fn: FnPtr<fn(Ptr<i32>)> = fn_ptr!(negate_0, fn(Ptr::<i32>));
+        let _fn: FnPtr<fn(Ptr<i32>)> = FnPtr::<fn(Ptr<i32>)>::new(negate_0);
         let _x: Ptr<i32> = (a.as_pointer());
         run_2(_fn, _x)
     });
     assert!(((*a.borrow()) == -42_i32));
     ({
-        let _fn: FnPtr<fn(Ptr<i32>)> = fn_ptr!(zero_out_1, fn(Ptr::<i32>));
+        let _fn: FnPtr<fn(Ptr<i32>)> = FnPtr::<fn(Ptr<i32>)>::new(zero_out_1);
         let _x: Ptr<i32> = (a.as_pointer());
         run_2(_fn, _x)
     });
     assert!(((*a.borrow()) == 0));
-    let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(fn_ptr!(negate_0, fn(Ptr::<i32>))));
+    let fn_: Value<FnPtr<fn(Ptr<i32>)>> =
+        Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::new(negate_0)));
     assert!(!((*fn_.borrow()).is_null()));
     let b: Value<i32> = Rc::new(RefCell::new(10));
     ({

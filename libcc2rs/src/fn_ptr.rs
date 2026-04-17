@@ -1,13 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#[macro_export]
-macro_rules! fn_ptr {
-    ($f:expr, $ty:ty) => {
-        $crate::FnPtr::new($f as $ty, $f as *const () as usize)
-    };
-}
-
 use std::any::{Any, TypeId};
 use std::marker::PhantomData;
 use std::ops::Deref;
@@ -15,6 +8,28 @@ use std::rc::Rc;
 
 use crate::rc::{AnyPtr, ErasedPtr};
 use crate::reinterpret::ByteRepr;
+
+pub trait FnAddr {
+    fn fn_addr(&self) -> usize;
+}
+
+macro_rules! impl_fn_addr {
+    () => {
+        impl_fn_addr!(@gen A B C D E F G H I J);
+    };
+    (@gen $($a:ident)*) => {
+        impl<R $(, $a)*> FnAddr for fn($($a,)*) -> R {
+            #[inline]
+            fn fn_addr(&self) -> usize { *self as *const () as usize }
+        }
+        impl_fn_addr!(@peel $($a)*);
+    };
+    (@peel) => {};
+    (@peel $head:ident $($tail:ident)*) => {
+        impl_fn_addr!(@gen $($tail)*);
+    };
+}
+impl_fn_addr!();
 
 #[derive(Clone)]
 pub(crate) struct FnState {
@@ -43,17 +58,19 @@ impl<T> FnPtr<T> {
     }
 }
 
-impl<T: 'static> FnPtr<T> {
-    pub fn new(f: T, addr: usize) -> Self {
+impl<T: FnAddr + 'static> FnPtr<T> {
+    pub fn new(f: T) -> Self {
         FnPtr {
             state: Some(Rc::new(FnState {
-                addr,
+                addr: f.fn_addr(),
                 cast_history: vec![Some(Rc::new(f))],
             })),
             _marker: PhantomData,
         }
     }
+}
 
+impl<T: 'static> FnPtr<T> {
     pub fn cast<U: 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
         let state = self.state.as_ref().expect("ub: null fn pointer cast");
 

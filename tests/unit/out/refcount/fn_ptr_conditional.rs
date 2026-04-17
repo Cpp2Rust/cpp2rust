@@ -22,12 +22,12 @@ pub fn identity_2(x: i32) -> i32 {
 pub fn pick_3(mode: i32) -> FnPtr<fn(i32) -> i32> {
     let mode: Value<i32> = Rc::new(RefCell::new(mode));
     return if ((*mode.borrow()) > 0) {
-        fn_ptr!(inc_0, fn(i32) -> i32)
+        FnPtr::<fn(i32) -> i32>::new(inc_0)
     } else {
         if ((*mode.borrow()) < 0) {
-            fn_ptr!(dec_1, fn(i32) -> i32)
+            FnPtr::<fn(i32) -> i32>::new(dec_1)
         } else {
-            fn_ptr!(identity_2, fn(i32) -> i32)
+            FnPtr::<fn(i32) -> i32>::new(identity_2)
         }
     };
 }
@@ -38,7 +38,7 @@ pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
         Rc::new(RefCell::new(if !(*fn_.borrow()).is_null() {
             (*fn_.borrow()).clone()
         } else {
-            fn_ptr!(identity_2, fn(i32) -> i32)
+            FnPtr::<fn(i32) -> i32>::new(identity_2)
         }));
     return ({
         let _arg0: i32 = (*x.borrow());
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(inc_0, fn(i32) -> i32);
+            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(inc_0);
             let _x: i32 = 5;
             apply_4(_fn, _x)
         }) == 6)

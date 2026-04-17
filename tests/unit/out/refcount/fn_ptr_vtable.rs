@@ -55,10 +55,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let vt: Value<Vtable> = Rc::new(RefCell::new(Vtable {
         create: Rc::new(RefCell::new(
-            (fn_ptr!(int_create_0, fn(i32) -> AnyPtr)).clone(),
+            (FnPtr::<fn(i32) -> AnyPtr>::new(int_create_0)).clone(),
         )),
-        get: Rc::new(RefCell::new(fn_ptr!(int_get_1, fn(AnyPtr) -> i32))),
-        destroy: Rc::new(RefCell::new(fn_ptr!(int_destroy_2, fn(AnyPtr)))),
+        get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_1))),
+        destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::new(int_destroy_2))),
     }));
     assert!(!((*(*vt.borrow()).create.borrow()).is_null()));
     assert!(!((*(*vt.borrow()).get.borrow()).is_null()));

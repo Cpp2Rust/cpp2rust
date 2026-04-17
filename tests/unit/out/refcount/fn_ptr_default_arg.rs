@@ -43,7 +43,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _x: i32 = 5;
-            let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(identity_0, fn(i32) -> i32);
+            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(identity_0);
             apply_1(_x, Some(_fn))
         }) == 5)
     );
@@ -52,7 +52,6 @@ fn main_0() -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             return -(*x.borrow());
         }),
-        0,
     )));
     assert!(
         (({

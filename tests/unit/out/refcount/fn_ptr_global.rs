@@ -43,13 +43,13 @@ fn main_0() -> i32 {
         }) == 5)
     );
     ({
-        let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(double_it_0, fn(i32) -> i32);
+        let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(double_it_0);
         set_op_2(_fn)
     });
     assert!(!((*g_op.with(Value::clone).borrow()).is_null()));
     assert!({
         let _lhs = (*g_op.with(Value::clone).borrow()).clone();
-        _lhs == fn_ptr!(double_it_0, fn(i32) -> i32)
+        _lhs == FnPtr::<fn(i32) -> i32>::new(double_it_0)
     });
     assert!(
         (({
@@ -58,12 +58,12 @@ fn main_0() -> i32 {
         }) == 10)
     );
     ({
-        let _fn: FnPtr<fn(i32) -> i32> = fn_ptr!(triple_it_1, fn(i32) -> i32);
+        let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(triple_it_1);
         set_op_2(_fn)
     });
     assert!({
         let _lhs = (*g_op.with(Value::clone).borrow()).clone();
-        _lhs == fn_ptr!(triple_it_1, fn(i32) -> i32)
+        _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
     assert!(
         (({
