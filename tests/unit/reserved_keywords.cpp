@@ -32,7 +32,8 @@
   X(box)                                                                       \
   X(final)                                                                     \
   X(gen)                                                                       \
-  X(macro) X(override) X(priv) X(unsized) X(yield) X(macro_rules) X(raw) X(safe)
+  X(macro)                                                                     \
+  X(override) X(priv) X(unsized) X(yield) X(macro_rules) X(raw) X(safe) X(vec)
 
 // Field declaration
 #define F(n) int n;

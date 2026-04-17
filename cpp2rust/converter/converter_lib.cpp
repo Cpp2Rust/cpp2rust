@@ -57,6 +57,8 @@ static const char *rust_keywords[] = {
     "macro_rules",
     "raw",
     "safe",
+    // Standard library keywords
+    "vec",
 };
 
 namespace cpp2rust {

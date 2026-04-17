@@ -46,6 +46,7 @@ pub struct S {
     pub macro_rules_: i32,
     pub raw_: i32,
     pub safe_: i32,
+    pub vec_: i32,
 }
 pub unsafe fn foo_0(
     mut as_: i32,
@@ -85,6 +86,7 @@ pub unsafe fn foo_0(
     mut macro_rules_: i32,
     mut raw_: i32,
     mut safe_: i32,
+    mut vec_: i32,
     mut dummy: i32,
 ) -> i32 {
     return 0;
@@ -133,6 +135,7 @@ unsafe fn main_0() -> i32 {
         macro_rules_: 0,
         raw_: 0,
         safe_: 0,
+        vec_: 0,
     };
     let mut as_: i32 = 0;
     let mut async_: i32 = 0;
@@ -171,6 +174,7 @@ unsafe fn main_0() -> i32 {
     let mut macro_rules_: i32 = 0;
     let mut raw_: i32 = 0;
     let mut safe_: i32 = 0;
+    let mut vec_: i32 = 0;
     return (unsafe {
         let _as: i32 = 0;
         let _async: i32 = 0;
@@ -209,6 +213,7 @@ unsafe fn main_0() -> i32 {
         let _macro_rules: i32 = 0;
         let _raw: i32 = 0;
         let _safe: i32 = 0;
+        let _vec: i32 = 0;
         let _dummy: i32 = 0;
         foo_0(
             _as,
@@ -248,6 +253,7 @@ unsafe fn main_0() -> i32 {
             _macro_rules,
             _raw,
             _safe,
+            _vec,
             _dummy,
         )
     });

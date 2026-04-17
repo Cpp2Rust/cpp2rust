@@ -46,6 +46,7 @@ pub struct S {
     pub macro_rules_: Value<i32>,
     pub raw_: Value<i32>,
     pub safe_: Value<i32>,
+    pub vec_: Value<i32>,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
@@ -87,6 +88,7 @@ impl Clone for S {
             macro_rules_: Rc::new(RefCell::new((*self.macro_rules_.borrow()))),
             raw_: Rc::new(RefCell::new((*self.raw_.borrow()))),
             safe_: Rc::new(RefCell::new((*self.safe_.borrow()))),
+            vec_: Rc::new(RefCell::new((*self.vec_.borrow()))),
         };
         this
     }
@@ -130,6 +132,7 @@ pub fn foo_0(
     macro_rules_: i32,
     raw_: i32,
     safe_: i32,
+    vec_: i32,
     dummy: i32,
 ) -> i32 {
     let as_: Value<i32> = Rc::new(RefCell::new(as_));
@@ -169,6 +172,7 @@ pub fn foo_0(
     let macro_rules_: Value<i32> = Rc::new(RefCell::new(macro_rules_));
     let raw_: Value<i32> = Rc::new(RefCell::new(raw_));
     let safe_: Value<i32> = Rc::new(RefCell::new(safe_));
+    let vec_: Value<i32> = Rc::new(RefCell::new(vec_));
     let dummy: Value<i32> = Rc::new(RefCell::new(dummy));
     return 0;
 }
@@ -214,6 +218,7 @@ fn main_0() -> i32 {
         macro_rules_: Rc::new(RefCell::new(0)),
         raw_: Rc::new(RefCell::new(0)),
         safe_: Rc::new(RefCell::new(0)),
+        vec_: Rc::new(RefCell::new(0)),
     }));
     let as_: Value<i32> = Rc::new(RefCell::new(0));
     let async_: Value<i32> = Rc::new(RefCell::new(0));
@@ -252,6 +257,7 @@ fn main_0() -> i32 {
     let macro_rules_: Value<i32> = Rc::new(RefCell::new(0));
     let raw_: Value<i32> = Rc::new(RefCell::new(0));
     let safe_: Value<i32> = Rc::new(RefCell::new(0));
+    let vec_: Value<i32> = Rc::new(RefCell::new(0));
     return ({
         let _as: i32 = 0;
         let _async: i32 = 0;
@@ -290,6 +296,7 @@ fn main_0() -> i32 {
         let _macro_rules: i32 = 0;
         let _raw: i32 = 0;
         let _safe: i32 = 0;
+        let _vec: i32 = 0;
         let _dummy: i32 = 0;
         foo_0(
             _as,
@@ -329,6 +336,7 @@ fn main_0() -> i32 {
             _macro_rules,
             _raw,
             _safe,
+            _vec,
             _dummy,
         )
     });
