@@ -1558,6 +1558,12 @@ std::string Converter::GetEscapedCharLiteral(char character) const {
   case '"':
     esc = "\\\"";
     break;
+  case '\'':
+    esc = "\\'";
+    break;
+  case '\\':
+    esc = "\\\\";
+    break;
   case '\n':
     esc = "\\n";
     break;
@@ -1593,7 +1599,8 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
   std::string string = str_expr->getString().str();
   // escape quotes
   size_t pos = 0;
-  while ((pos = string.find_first_of("\"\n\r\t\0", pos)) != std::string::npos) {
+  while ((pos = string.find_first_of("\"\'\\\n\r\t\0", pos)) !=
+         std::string::npos) {
     string.replace(pos, 1, GetEscapedCharLiteral(string[pos]));
     pos += 2;
   }
