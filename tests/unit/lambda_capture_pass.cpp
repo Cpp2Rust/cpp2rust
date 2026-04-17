@@ -1,3 +1,6 @@
+// Copyright (c) 2022-present INESC-ID.
+// Distributed under the MIT license that can be found in the LICENSE file.
+
 #include <assert.h>
 
 template <typename F> int apply(F fn, int x) { return fn(x); }
