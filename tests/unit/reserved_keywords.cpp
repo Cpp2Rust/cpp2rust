@@ -5,11 +5,34 @@
 #define KW(X)                                                                  \
   X(as)                                                                        \
   X(async)                                                                     \
-  X(await) X(crate) X(dyn) X(fn) X(impl) X(in) X(let) X(loop) X(match) X(mod)  \
-      X(move) X(mut) X(pub) X(ref) X(self) X(Self) X(super) X(trait) X(type)   \
-          X(unsafe) X(use) X(where) X(abstract) X(become) X(box) X(final)      \
-              X(gen) X(macro) X(override) X(priv) X(unsized) X(yield)          \
-                  X(macro_rules) X(raw) X(safe)
+  X(await)                                                                     \
+  X(crate)                                                                     \
+  X(dyn)                                                                       \
+  X(fn)                                                                        \
+  X(impl)                                                                      \
+  X(in)                                                                        \
+  X(let)                                                                       \
+  X(loop)                                                                      \
+  X(match)                                                                     \
+  X(mod)                                                                       \
+  X(move)                                                                      \
+  X(mut)                                                                       \
+  X(pub)                                                                       \
+  X(ref)                                                                       \
+  X(self)                                                                      \
+  X(Self)                                                                      \
+  X(super)                                                                     \
+  X(trait)                                                                     \
+  X(type)                                                                      \
+  X(unsafe)                                                                    \
+  X(use)                                                                       \
+  X(where)                                                                     \
+  X(abstract)                                                                  \
+  X(become)                                                                    \
+  X(box)                                                                       \
+  X(final)                                                                     \
+  X(gen)                                                                       \
+  X(macro) X(override) X(priv) X(unsized) X(yield) X(macro_rules) X(raw) X(safe)
 
 // Field declaration
 #define F(n) int n;
