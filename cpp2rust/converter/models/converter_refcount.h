@@ -22,6 +22,9 @@ public:
 
   bool VisitPointerType(clang::PointerType *type) override;
 
+  std::string
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
+
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
@@ -61,7 +64,8 @@ public:
 
   void EmitFnPtrCall(clang::Expr *callee) override;
 
-  void EmitFnAsValue(const clang::FunctionDecl *fn_decl) override;
+  void
+  ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
 
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
@@ -182,7 +186,6 @@ private:
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
-  std::string GetFnTypeString(const clang::FunctionProtoType *proto);
   std::string BuildFnAdapter(const clang::FunctionDecl *src_fn,
                              const clang::FunctionProtoType *src_proto,
                              const clang::FunctionProtoType *target_proto);
