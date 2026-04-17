@@ -34,7 +34,8 @@ impl_fn_addr!();
 #[derive(Clone)]
 pub(crate) struct FnState {
     addr: usize,
-    cast_history: Vec<Option<Rc<dyn Any>>>,
+    original: Rc<dyn Any>,
+    current_cast: Option<Rc<dyn Any>>,
 }
 
 pub struct FnPtr<T> {
@@ -60,10 +61,13 @@ impl<T> FnPtr<T> {
 
 impl<T: FnAddr + 'static> FnPtr<T> {
     pub fn new(f: T) -> Self {
+        let addr = f.fn_addr();
+        let rc: Rc<dyn Any> = Rc::new(f);
         FnPtr {
             state: Some(Rc::new(FnState {
-                addr: f.fn_addr(),
-                cast_history: vec![Some(Rc::new(f))],
+                addr,
+                original: rc.clone(),
+                current_cast: Some(rc),
             })),
             _marker: PhantomData,
         }
@@ -74,27 +78,23 @@ impl<T: 'static> FnPtr<T> {
     pub fn cast<U: 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
         let state = self.state.as_ref().expect("ub: null fn pointer cast");
 
-        for (i, entry) in state.cast_history.iter().enumerate() {
-            if let Some(ref rc) = entry {
-                if (*rc).as_ref().type_id() == TypeId::of::<U>() {
-                    return FnPtr {
-                        state: Some(Rc::new(FnState {
-                            addr: state.addr,
-                            cast_history: state.cast_history[..=i].to_vec(),
-                        })),
-                        _marker: PhantomData,
-                    };
-                }
-            }
-        }
-
-        let mut new_stack = state.cast_history.clone();
-        new_stack.push(adapter.map(|a| Rc::new(a) as Rc<dyn Any>));
+        let current_cast = if state
+            .current_cast
+            .as_ref()
+            .is_some_and(|rc| (**rc).type_id() == TypeId::of::<U>())
+        {
+            state.current_cast.clone()
+        } else if (*state.original).type_id() == TypeId::of::<U>() {
+            Some(state.original.clone())
+        } else {
+            adapter.map(|a| Rc::new(a) as Rc<dyn Any>)
+        };
 
         FnPtr {
             state: Some(Rc::new(FnState {
                 addr: state.addr,
-                cast_history: new_stack,
+                original: state.original.clone(),
+                current_cast,
             })),
             _marker: PhantomData,
         }
@@ -105,11 +105,7 @@ impl<T: 'static> Deref for FnPtr<T> {
     type Target = T;
     fn deref(&self) -> &T {
         let state = self.state.as_ref().expect("ub: null fn pointer call");
-        let entry = state
-            .cast_history
-            .last()
-            .expect("empty fn pointer cast_history");
-        match entry {
+        match &state.current_cast {
             Some(rc) => rc
                 .downcast_ref::<T>()
                 .expect("ub: fn pointer type mismatch"),
