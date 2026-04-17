@@ -7,6 +7,9 @@ pub use reinterpret::ByteRepr;
 mod rc;
 pub use rc::*;
 
+mod fn_ptr;
+pub use fn_ptr::FnPtr;
+
 mod inc;
 pub use inc::*;
 
