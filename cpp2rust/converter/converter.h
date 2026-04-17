@@ -479,6 +479,7 @@ protected:
   static std::unordered_set<std::string> abstract_structs_;
 
   enum class ExprKind : uint8_t {
+    Callee,
     LValue,
     RValue,
     XValue,
@@ -489,6 +490,8 @@ protected:
 
   static const char *expr_kind_to_string(ExprKind kind) {
     switch (kind) {
+    case ExprKind::Callee:
+      return "Callee";
     case ExprKind::LValue:
       return "LValue";
     case ExprKind::RValue:
@@ -512,6 +515,7 @@ protected:
   bool isAddrOf() const;
   bool isObject() const;
   bool isVoid() const;
+  bool isCallee() const;
 
   void dump_expr_kinds();
 

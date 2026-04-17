@@ -1464,8 +1464,8 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   if (proto && !function) {
     EmitFnPtrCall(callee);
   } else {
-    PushExprKind push(*this, ExprKind::RValue);
-    Convert(StripFunctionPointerDecay(callee));
+    PushExprKind push(*this, ExprKind::Callee);
+    Convert(callee);
   }
   StrCat(token::kOpenParen);
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
@@ -1688,8 +1688,12 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_FunctionToPointerDecay:
   case clang::CastKind::CK_BuiltinFnToFnPtr: {
-    PushExprKind push(*this, ExprKind::AddrOf);
-    Convert(sub_expr);
+    if (isCallee()) {
+      Convert(sub_expr);
+    } else {
+      PushExprKind push(*this, ExprKind::AddrOf);
+      Convert(sub_expr);
+    }
     break;
   }
   case clang::CastKind::CK_ConstructorConversion:
@@ -3256,7 +3260,12 @@ void Converter::PlaceholderCtx::dump() const {
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
-  arg = StripFunctionPointerDecay(arg);
+  if (arg->getType()->isFunctionPointerType()) {
+    PushExprKind push(*this, ExprKind::Callee);
+    Buffer buf(*this);
+    Convert(arg);
+    return std::move(buf).str();
+  }
 
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
@@ -3403,6 +3412,10 @@ bool Converter::isObject() const {
 
 bool Converter::isVoid() const {
   return curr_expr_kind_.empty() || curr_expr_kind_.back() == ExprKind::Void;
+}
+
+bool Converter::isCallee() const {
+  return !curr_expr_kind_.empty() && curr_expr_kind_.back() == ExprKind::Callee;
 }
 
 void Converter::SetFresh() {

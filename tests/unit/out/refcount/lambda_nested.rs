@@ -23,7 +23,7 @@ fn main_0() -> i32 {
             ));
             return ({
                 let _z: i32 = 1;
-                (*inner.borrow())(_z)
+                (*inner.borrow_mut())(_z)
             })
             .clone();
         }),
@@ -31,14 +31,14 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _y: i32 = 20;
-            (*outer.borrow())(_y)
+            (*outer.borrow_mut())(_y)
         }) == 31)
     );
     (*x.borrow_mut()) = 100;
     assert!(
         (({
             let _y: i32 = 20;
-            (*outer.borrow())(_y)
+            (*outer.borrow_mut())(_y)
         }) == 121)
     );
     return 0;
