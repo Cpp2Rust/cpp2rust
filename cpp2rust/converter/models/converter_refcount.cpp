@@ -1093,7 +1093,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     int i = 0;
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     for (const auto *field : record->fields()) {
-      StrCat(field->getName(), token::kColon);
+      StrCat(GetNamedDeclAsString(field), token::kColon);
       ConvertVarInit(field->getType(), expr->getInit(i++));
       StrCat(token::kComma);
     }

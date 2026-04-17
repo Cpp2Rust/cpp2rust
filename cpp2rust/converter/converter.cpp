@@ -2234,7 +2234,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     StrCat(GetUnsafeTypeAsString(qual_type), token::kOpenCurlyBracket);
     int i = 0;
     for (const auto *field : record->fields()) {
-      StrCat(field->getName(), token::kColon);
+      StrCat(GetNamedDeclAsString(field), token::kColon);
       ConvertVarInit(field->getType(), expr->getInit(i++));
       StrCat(token::kComma);
     }
