@@ -128,15 +128,6 @@ impl<T> PartialEq for FnPtr<T> {
 
 impl<T> Eq for FnPtr<T> {}
 
-impl<T> std::fmt::Debug for FnPtr<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self.state {
-            None => write!(f, "FnPtr(null)"),
-            Some(s) => write!(f, "FnPtr(0x{:x})", s.addr),
-        }
-    }
-}
-
 impl<T: 'static> ByteRepr for FnPtr<T> {}
 
 impl<T: 'static> ErasedPtr for FnPtr<T> {
