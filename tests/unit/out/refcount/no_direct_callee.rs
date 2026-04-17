@@ -22,7 +22,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     return ({
-        let _fn: FnPtr<fn() -> bool> = fn_ptr!(test1_0, fn() -> bool);
+        let _fn: FnPtr<fn() -> bool> = FnPtr::<fn() -> bool>::new(test1_0);
         test_1(_fn)
     });
 }
