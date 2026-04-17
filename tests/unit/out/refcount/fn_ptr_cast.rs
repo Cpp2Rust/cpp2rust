@@ -13,7 +13,7 @@ pub fn double_it_0(x: i32) -> i32 {
 }
 pub fn test_roundtrip_1() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(fn_ptr!(double_it_0, fn(i32) -> i32)));
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0)));
     assert!(
         (({
             let _arg0: i32 = 5;
@@ -39,7 +39,7 @@ pub fn test_roundtrip_1() {
 }
 pub fn test_double_cast_2() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(fn_ptr!(double_it_0, fn(i32) -> i32)));
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0)));
     let fn2: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*fn_.borrow())
             .cast::<fn()>(None)
@@ -72,7 +72,7 @@ impl Clone for Command {
 impl ByteRepr for Command {}
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
-    (*(*cmd.borrow()).data.borrow_mut()) = fn_ptr!(double_it_0, fn(i32) -> i32).to_any();
+    (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*(*cmd.borrow()).data.borrow())
             .cast_fn::<fn(i32) -> i32>()
@@ -96,7 +96,7 @@ pub fn add_offset_4(base: Ptr<i32>, offset: i32) -> i32 {
 }
 pub fn test_call_through_cast_5() {
     let gfn: Value<FnPtr<fn(AnyPtr, i32) -> i32>> = Rc::new(RefCell::new(
-        fn_ptr!(add_offset_4, fn(Ptr::<i32>, i32) -> i32).cast::<fn(AnyPtr, i32) -> i32>(Some(
+        FnPtr::<fn(Ptr<i32>, i32) -> i32>::new(add_offset_4).cast::<fn(AnyPtr, i32) -> i32>(Some(
             (|a0: AnyPtr, a1: i32| -> i32 { add_offset_4(a0.cast::<i32>().unwrap(), a1) })
                 as fn(AnyPtr, i32) -> i32,
         )),

@@ -31,7 +31,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(5));
     ({
-        let _cb: FnPtr<fn(Ptr<i32>)> = fn_ptr!(double_it_0, fn(Ptr::<i32>));
+        let _cb: FnPtr<fn(Ptr<i32>)> = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
         let _x: Ptr<i32> = (a.as_pointer());
         maybe_call_1(_cb, _x)
     });
@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     assert!(((*b.borrow()) == 5));
     let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::null()));
     if !!(*fn_.borrow()).is_null() {
-        (*fn_.borrow_mut()) = (fn_ptr!(double_it_0, fn(Ptr::<i32>))).clone();
+        (*fn_.borrow_mut()) = (FnPtr::<fn(Ptr<i32>)>::new(double_it_0)).clone();
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));
     if !(*fn_.borrow()).is_null() {
