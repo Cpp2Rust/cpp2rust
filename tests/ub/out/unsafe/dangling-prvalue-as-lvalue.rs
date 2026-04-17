@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = vec![1, 2];
     let b: *const i32 = (unsafe {
         let _a: *const i32 = &(*v.as_mut_ptr()) as *const i32;
-        Rc::new(|a0| unsafe { foo_0(a0) })(_a)
+        foo_0(_a)
     });
     v.clear();
     return (*b);

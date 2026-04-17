@@ -90,11 +90,11 @@ unsafe fn main_0() -> i32 {
     let r1: *mut i32 = &mut x1 as *mut i32;
     let r2: *mut i32 = (unsafe {
         let _x: *mut i32 = &mut x1 as *mut i32;
-        Rc::new(|a0| unsafe { bar_2(a0) })(_x)
+        bar_2(_x)
     });
     let r3: *mut i32 = (unsafe {
         let _x: *mut i32 = r1;
-        Rc::new(|a0| unsafe { bar_2(a0) })(_x)
+        bar_2(_x)
     });
     (*r2) += x1;
     (*r3) += (*r1);
@@ -230,12 +230,12 @@ unsafe fn main_0() -> i32 {
     let mut pref: *mut i32 = (unsafe {
         let _x: *mut i32 =
             &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        Rc::new(|a0| unsafe { bar_2(a0) })(_x)
+        bar_2(_x)
     });
     (*(unsafe {
         let _x: *mut i32 =
             &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        Rc::new(|a0| unsafe { bar_2(a0) })(_x)
+        bar_2(_x)
     }))
     .postfix_inc();
     return (((*(unsafe {

@@ -133,11 +133,11 @@ fn main_0() -> i32 {
     let r1: Ptr<i32> = x1.as_pointer();
     let r2: Ptr<i32> = ({
         let _x: Ptr<i32> = x1.as_pointer();
-        Rc::new(bar_2)(_x)
+        bar_2(_x)
     });
     let r3: Ptr<i32> = ({
         let _x: Ptr<i32> = (r1).clone();
-        Rc::new(bar_2)(_x)
+        bar_2(_x)
     });
     let __rhs = (*x1.borrow());
     {
@@ -403,7 +403,7 @@ fn main_0() -> i32 {
             .deref())
             .v
             .as_pointer());
-            Rc::new(ptr_1)(_x)
+            ptr_1(_x)
         })
         .clone();
         let __tmp = __ptr.read() + 1;
@@ -436,7 +436,7 @@ fn main_0() -> i32 {
         .deref())
         .v
         .as_pointer());
-        Rc::new(ptr_1)(_x)
+        ptr_1(_x)
     });
     let ptr3: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
@@ -450,7 +450,7 @@ fn main_0() -> i32 {
             .deref())
             .v
             .as_pointer());
-            Rc::new(ptr_1)(_x)
+            ptr_1(_x)
         }),
     ));
     let vptr: Value<i32> = Rc::new(RefCell::new(
@@ -481,7 +481,7 @@ fn main_0() -> i32 {
             .deref())
             .v
             .as_pointer();
-            Rc::new(bar_2)(_x)
+            bar_2(_x)
         }),
     ));
     ({
@@ -495,7 +495,7 @@ fn main_0() -> i32 {
         .deref())
         .v
         .as_pointer();
-        Rc::new(bar_2)(_x)
+        bar_2(_x)
     })
     .with_mut(|__v| __v.postfix_inc());
     return (((({
