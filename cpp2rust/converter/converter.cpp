@@ -1552,32 +1552,27 @@ bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
 }
 
 std::string Converter::GetEscapedCharLiteral(char character) const {
-  std::string esc;
-  esc = character;
   switch (character) {
   case '"':
-    esc = "\\\"";
-    break;
+    return "\\\"";
   case '\'':
-    esc = "\\'";
-    break;
+    return "\\'";
   case '\\':
-    esc = "\\\\";
-    break;
+    return "\\\\";
   case '\n':
-    esc = "\\n";
-    break;
+    return "\\n";
   case '\r':
-    esc = "\\r";
-    break;
+    return "\\r";
   case '\t':
-    esc = "\\t";
-    break;
+    return "\\t";
   case '\0':
-    esc = "\\0";
-    break;
+    return "\\0";
   }
-  return esc;
+  auto uc = static_cast<unsigned char>(character);
+  if (uc < 0x20 || uc == 0x7F) {
+    return std::format("\\x{:02x}", uc);
+  }
+  return std::string(1, character);
 }
 
 std::string Converter::GetEscapedUTF8CharLiteral(clang::Expr *expr) const {
@@ -1596,15 +1591,17 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
                                                bool add_null_char) const {
   auto str_expr = clang::dyn_cast<clang::StringLiteral>(expr->IgnoreCasts());
   assert(str_expr);
-  std::string string = str_expr->getString().str();
-  // escape quotes
-  size_t pos = 0;
-  while ((pos = string.find_first_of("\"\'\\\n\r\t\0", pos)) !=
-         std::string::npos) {
-    string.replace(pos, 1, GetEscapedCharLiteral(string[pos]));
-    pos += 2;
+  auto raw = str_expr->getString();
+  std::string out;
+  out.push_back('"');
+  for (unsigned char c : raw) {
+    out += GetEscapedCharLiteral(static_cast<char>(c));
   }
-  return '"' + std::move(string) + (add_null_char ? "\\0\"" : "\"");
+  if (add_null_char) {
+    out += "\\0";
+  }
+  out.push_back('"');
+  return out;
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
