@@ -1004,7 +1004,7 @@ impl Ptr<u8> {
     }
 }
 
-trait ErasedPtr: std::any::Any {
+pub(crate) trait ErasedPtr: std::any::Any {
     fn pointee_type_id(&self) -> std::any::TypeId;
     fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
     fn as_any(&self) -> &dyn std::any::Any;
@@ -1057,7 +1057,7 @@ where
 
 #[derive(Clone)]
 pub struct AnyPtr {
-    ptr: Rc<dyn ErasedPtr>,
+    pub(crate) ptr: Rc<dyn ErasedPtr>,
 }
 
 impl<T: ByteRepr + 'static> Ptr<T> {

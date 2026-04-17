@@ -201,6 +201,10 @@ public:
 
   void ConvertGenericCallExpr(clang::CallExpr *expr);
 
+  virtual void EmitFnPtrCall(clang::Expr *callee);
+
+  virtual void EmitFnAsValue(const clang::FunctionDecl *fn_decl);
+
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
   void ConvertVAArgCall(clang::CallExpr *expr);
@@ -334,7 +338,8 @@ protected:
   virtual bool Convert(clang::Stmt *stmt);
   virtual bool Convert(clang::Expr *expr);
 
-  std::string GetFunctionPointerDefaultAsString(clang::QualType qual_type);
+  virtual std::string
+  GetFunctionPointerDefaultAsString(clang::QualType qual_type);
 
   virtual std::string GetDefaultAsString(clang::QualType qual_type);
 
