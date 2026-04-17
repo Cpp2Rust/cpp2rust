@@ -190,7 +190,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += Mapper::GetFnRefName(src_fn) + "(";
+  closure += GetNamedDeclAsString(src_fn) + "(";
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
@@ -199,12 +199,12 @@ std::string ConverterRefCount::BuildFnAdapter(
     } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
       if (tgt_pty->isVoidPointerType()) {
         closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                               GetPointeeRustType(src_pty));
+                               ToString(src_pty->getPointeeType()));
       } else if (src_pty->isVoidPointerType()) {
         closure += std::format("a{}.to_any()", i);
       } else if (tgt_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
-                               GetPointeeRustType(src_pty));
+                               ToString(src_pty->getPointeeType()));
       } else if (src_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<u8>()", i);
       }
@@ -216,26 +216,19 @@ std::string ConverterRefCount::BuildFnAdapter(
   }
   closure += ") })";
 
-  return std::format("Some({} as {})", closure, GetFnTypeString(target_proto));
+  return std::format("Some({} as {})", closure,
+                     ConvertFunctionPointerType(target_proto));
 }
 
-std::string
-ConverterRefCount::GetFnTypeString(const clang::FunctionProtoType *proto) {
+std::string ConverterRefCount::ConvertFunctionPointerType(
+    const clang::FunctionProtoType *proto) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  std::string result = "fn(";
-  for (auto p_ty : proto->param_types()) {
-    result += ToString(p_ty) + ",";
-  }
-  result += ")";
-  if (!proto->getReturnType()->isVoidType()) {
-    result += std::format(" -> {}", ToString(proto->getReturnType()));
-  }
-  return result;
+  return Converter::ConvertFunctionPointerType(proto);
 }
 
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    StrCat(std::format("FnPtr<{}>", GetFnTypeString(proto)));
+    StrCat(std::format("FnPtr<{}>", ConvertFunctionPointerType(proto)));
     return false;
   }
 
@@ -635,9 +628,9 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   auto str = ConvertDeclRefExpr(expr);
   auto decl = expr->getDecl();
 
-  if (clang::isa<clang::FunctionDecl>(decl)) {
+  if (auto fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      EmitFnAsValue(fn_decl);
+      ConvertFunctionToFunctionPointer(fn_decl);
     } else {
       StrCat(str);
     }
@@ -1034,10 +1027,12 @@ void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(")");
 }
 
-void ConverterRefCount::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format(
-      "fn_ptr!({}, {})", Mapper::GetFnRefName(fn_decl),
-      GetFnTypeString(fn_decl->getType()->getAs<clang::FunctionProtoType>())));
+void ConverterRefCount::ConvertFunctionToFunctionPointer(
+    const clang::FunctionDecl *fn_decl) {
+  StrCat(
+      std::format("fn_ptr!({}, {})", GetNamedDeclAsString(fn_decl),
+                  ConvertFunctionPointerType(
+                      fn_decl->getType()->getAs<clang::FunctionProtoType>())));
 }
 
 std::string ConverterRefCount::GetFunctionPointerDefaultAsString(
@@ -1063,7 +1058,7 @@ bool ConverterRefCount::VisitFunctionPointerCast(
                            ->getType()
                            ->getPointeeType()
                            ->getAs<clang::FunctionProtoType>();
-      auto fn_type = GetFnTypeString(target_proto);
+      auto fn_type = ConvertFunctionPointerType(target_proto);
 
       std::string adapter = "None";
       // Only accept direct references to the casted function. Otherwise the
@@ -1086,7 +1081,7 @@ bool ConverterRefCount::VisitFunctionPointerCast(
                expr->getType()->isFunctionPointerType()) {
       auto target_proto =
           expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-      auto fn_type = GetFnTypeString(target_proto);
+      auto fn_type = ConvertFunctionPointerType(target_proto);
       StrCat(std::format("{}.cast_fn::<{}>().expect(\"ub:wrong fn type\")",
                          ToString(expr->getSubExpr()), fn_type));
     } else {

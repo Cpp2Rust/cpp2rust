@@ -225,24 +225,23 @@ bool Converter::VisitLValueReferenceType(clang::LValueReferenceType *type) {
   return Convert(pointee_type);
 }
 
-void Converter::ConvertFunctionPointerType(clang::PointerType *type) {
-  auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  assert(proto && "Type should be a function prototype");
-
-  StrCat("Option<", keyword_unsafe_, " fn(");
+std::string
+Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
+  std::string result = "fn(";
   for (auto p_ty : proto->param_types()) {
-    StrCat(std::format("{},", ToString(p_ty)));
+    result += ToString(p_ty) + ",";
   }
-  StrCat(")");
+  result += ")";
   if (!proto->getReturnType()->isVoidType()) {
-    StrCat(std::format("-> {}", ToString(proto->getReturnType())));
+    result += std::format(" -> {}", ToString(proto->getReturnType()));
   }
-  StrCat(">");
+  return result;
 }
 
 bool Converter::VisitPointerType(clang::PointerType *type) {
-  if (type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    ConvertFunctionPointerType(type);
+  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+    StrCat(std::format("Option<{} {}>", keyword_unsafe_,
+                       ConvertFunctionPointerType(proto)));
     return false;
   }
 
@@ -1389,8 +1388,9 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(").unwrap()");
 }
 
-void Converter::EmitFnAsValue(const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({})", Mapper::GetFnRefName(fn_decl)));
+void Converter::ConvertFunctionToFunctionPointer(
+    const clang::FunctionDecl *fn_decl) {
+  StrCat(std::format("Some({})", GetNamedDeclAsString(fn_decl)));
 }
 
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
@@ -2065,7 +2065,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (auto *fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      EmitFnAsValue(fn_decl);
+      ConvertFunctionToFunctionPointer(fn_decl);
       return false;
     }
   }

@@ -61,7 +61,8 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
-  void ConvertFunctionPointerType(clang::PointerType *type);
+  virtual std::string
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 
@@ -203,7 +204,8 @@ public:
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
 
-  virtual void EmitFnAsValue(const clang::FunctionDecl *fn_decl);
+  virtual void
+  ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
