@@ -131,16 +131,11 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
       if (in_function_formals_) {
-        auto call_op = lambda->getLambdaCallOperator();
-        StrCat("impl Fn(");
-        for (auto p : call_op->parameters()) {
-          StrCat(std::format("{},", ToStringBase(p->getType())));
-        }
-        StrCat(")");
-        if (!call_op->getReturnType()->isVoidType()) {
-          StrCat("->");
-          StrCat(ToStringBase(call_op->getReturnType()));
-        }
+        StrCat(
+            ConvertFunctionPointerType(lambda->getLambdaCallOperator()
+                                           ->getType()
+                                           ->getAs<clang::FunctionProtoType>(),
+                                       FnProtoType::LambdaCallOperator));
       } else {
         StrCat("_");
       }
@@ -226,8 +221,10 @@ bool Converter::VisitLValueReferenceType(clang::LValueReferenceType *type) {
 }
 
 std::string
-Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
-  std::string result = "fn(";
+Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                                      FnProtoType kind) {
+  std::string result =
+      (kind == FnProtoType::LambdaCallOperator ? "impl Fn(" : "fn(");
   for (auto p_ty : proto->param_types()) {
     result += ToString(p_ty) + ",";
   }

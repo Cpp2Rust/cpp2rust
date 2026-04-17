@@ -61,8 +61,11 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
+  enum class FnProtoType { LambdaCallOperator, FnPtr };
+
   virtual std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                             FnProtoType kind = FnProtoType::FnPtr);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 

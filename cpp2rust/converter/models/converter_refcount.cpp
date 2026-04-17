@@ -221,9 +221,9 @@ std::string ConverterRefCount::BuildFnAdapter(
 }
 
 std::string ConverterRefCount::ConvertFunctionPointerType(
-    const clang::FunctionProtoType *proto) {
+    const clang::FunctionProtoType *proto, FnProtoType kind) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  return Converter::ConvertFunctionPointerType(proto);
+  return Converter::ConvertFunctionPointerType(proto, kind);
 }
 
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {

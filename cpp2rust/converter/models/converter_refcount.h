@@ -23,7 +23,8 @@ public:
   bool VisitPointerType(clang::PointerType *type) override;
 
   std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                             FnProtoType kind = FnProtoType::FnPtr) override;
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
