@@ -1035,11 +1035,6 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
                       fn_decl->getType()->getAs<clang::FunctionProtoType>())));
 }
 
-std::string ConverterRefCount::GetFunctionPointerDefaultAsString(
-    clang::QualType qual_type) {
-  return "FnPtr::null()";
-}
-
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat("(");
   Convert(expr);
@@ -1553,7 +1548,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   if (qual_type->isPointerType()) {
     auto pointee_type = qual_type->getPointeeType();
     if (pointee_type->isFunctionType()) {
-      ret = GetFunctionPointerDefaultAsString(qual_type);
+      ret = "FnPtr::null()";
     } else {
       if (pointee_type->isVoidType()) {
         ret = "AnyPtr::default()";

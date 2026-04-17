@@ -113,9 +113,6 @@ public:
 
   std::string GetDefaultAsString(clang::QualType qual_type) override;
 
-  std::string
-  GetFunctionPointerDefaultAsString(clang::QualType qual_type) override;
-
   void ConvertEqualsNullPtr(clang::Expr *expr) override;
 
   std::string GetDefaultAsStringFallback(clang::QualType qual_type) override;
