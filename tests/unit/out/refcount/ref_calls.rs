@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     ));
     let z: Ptr<i32> = ({
         let _x: Ptr<i32> = x.as_pointer();
-        Rc::new(foo_1)(_x)
+        foo_1(_x)
     });
     return {
         let _lhs = {

@@ -44,7 +44,7 @@ fn main_0() -> i32 {
                     .to_c_string_iterator()
                     .chain(std::iter::once(0))
                     .collect::<Vec<u8>>();
-                Rc::new(fn_0)(_v)
+                fn_0(_v)
             })
         ))
         .as_pointer() as Ptr<u8>)
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
         "{}",
         (({
             let _v: Ptr<Vec<u8>> = s.as_pointer();
-            Rc::new(fn2_1)(_v)
+            fn2_1(_v)
         })
         .to_strong()
         .as_pointer() as Ptr<u8>)
