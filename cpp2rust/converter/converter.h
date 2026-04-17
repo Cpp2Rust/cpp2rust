@@ -340,9 +340,6 @@ protected:
   virtual bool Convert(clang::Stmt *stmt);
   virtual bool Convert(clang::Expr *expr);
 
-  virtual std::string
-  GetFunctionPointerDefaultAsString(clang::QualType qual_type);
-
   virtual std::string GetDefaultAsString(clang::QualType qual_type);
 
   virtual std::string GetDefaultAsStringFallback(clang::QualType qual_type);

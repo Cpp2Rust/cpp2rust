@@ -2668,15 +2668,10 @@ bool Converter::VisitCXXStdInitializerListExpr(
   return false;
 }
 
-std::string
-Converter::GetFunctionPointerDefaultAsString(clang::QualType qual_type) {
-  return "None";
-}
-
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (qual_type->isPointerType()) {
     if (qual_type->getPointeeType()->isFunctionType()) {
-      return GetFunctionPointerDefaultAsString(qual_type);
+      return "None";
     } else {
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return keyword_default_;
