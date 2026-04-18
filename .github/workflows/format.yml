@@ -20,7 +20,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Check C++ formatting
-        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
+        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
 
       - name: Check Rust formatting
         run: |
