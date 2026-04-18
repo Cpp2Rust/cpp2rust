@@ -93,7 +93,7 @@ add_subdirectory(tests)
 find_program(CLANG_FORMAT NAMES clang-format-22 clang-format)
 
 file(GLOB_RECURSE ALL_CXX_SOURCES
-     cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp)
+     cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp tests/*.c)
 
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
