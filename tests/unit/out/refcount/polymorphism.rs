@@ -12,6 +12,11 @@ pub trait Animal {
 }
 #[derive(Default)]
 pub struct Dog {}
+impl Animal for Dog {
+    fn bark(&self) -> bool {
+        return true;
+    }
+}
 impl Clone for Dog {
     fn clone(&self) -> Self {
         let mut this = Self {};
@@ -19,16 +24,16 @@ impl Clone for Dog {
     }
 }
 impl ByteRepr for Dog {}
-impl Animal for Dog {
-    fn bark(&self) -> bool {
-        return true;
-    }
-}
 #[derive(Default)]
 pub struct Cat {}
 impl Cat {
     fn meow(&self) -> bool {
         return true;
+    }
+}
+impl Animal for Cat {
+    fn bark(&self) -> bool {
+        return false;
     }
 }
 impl Clone for Cat {
@@ -38,11 +43,6 @@ impl Clone for Cat {
     }
 }
 impl ByteRepr for Cat {}
-impl Animal for Cat {
-    fn bark(&self) -> bool {
-        return false;
-    }
-}
 pub fn main() {
     std::process::exit(main_0());
 }
