@@ -31,7 +31,7 @@ public:
 
   void AddDropTrait(const clang::CXXRecordDecl *decl) override;
 
-  void AddByteReprTrait(const clang::CXXRecordDecl *decl) override;
+  void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   void AddDefaultTrait(const clang::CXXRecordDecl *decl) override;
 
@@ -108,8 +108,7 @@ public:
   std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
 
   std::vector<const char *>
-  GetStructAttributes(const clang::CXXRecordDecl *decl,
-                      bool &out_impl_default) override;
+  GetStructAttributes(const clang::CXXRecordDecl *decl) override;
 
   bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 

@@ -91,7 +91,11 @@ public:
 
   virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
+  bool VisitRecordDecl(clang::RecordDecl *decl);
+
   virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
+
+  void EmitRustStruct(clang::RecordDecl *decl);
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
@@ -346,7 +350,7 @@ protected:
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 
   virtual std::vector<const char *>
-  GetStructAttributes(const clang::CXXRecordDecl *decl, bool &out_impl_default);
+  GetStructAttributes(const clang::CXXRecordDecl *decl);
 
   virtual std::string GetUnsafeTypeAsString(clang::QualType qual_type) const;
 
@@ -401,7 +405,7 @@ protected:
 
   virtual void AddDefaultTrait(const clang::CXXRecordDecl *decl);
 
-  virtual void AddByteReprTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
