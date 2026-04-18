@@ -48,7 +48,7 @@ class Cpp2RustTest(TestFormat):
                           litConfig, localConfig):
     source_path = testSuite.getSourcePath(path_in_suite)
     for filename in os.listdir(source_path):
-      if filename.endswith('.cpp'):
+      if filename.endswith('.cpp') or filename.endswith('.c'):
         for t in self.getTestsForPath(testSuite, path_in_suite + (filename,), litConfig, localConfig):
           yield t
 
@@ -172,10 +172,11 @@ rules = {{ path = "../../../rules" }}
       elif is_nondet_result:
         lit.util.executeCommand(rust_bin)
       else:
-        cmd = ['clang++', '-O3', '-o', tmp_dir + '/cpp', cc_input]
+        cc = 'clang' if cc_input.endswith('.c') else 'clang++'
+        cmd = [cc, '-O3', '-o', tmp_dir + '/cpp', cc_input]
         _, _, code = lit.util.executeCommand(cmd)
         if code != 0:
-          return fail('clang++ failed')
+          return fail(cc + ' failed')
 
         out_cpp, err_cpp, code_cpp = lit.util.executeCommand(tmp_dir + '/cpp')
         out_rs, err_rs, code_rs = lit.util.executeCommand(rust_bin)
