@@ -11,7 +11,7 @@ pub unsafe fn sum_ints_0(mut first: i32, args: &[VaArg]) -> i32 {
     let mut ap: VaList = <VaList>::default();
     let mut total: i32 = first;
     ap = VaList::new(args);
-    let mut val: i32 = <i32>::default();
+    let mut val: i32 = 0_i32;
     'loop_: while ((({
         val = ap.arg::<i32>();
         val

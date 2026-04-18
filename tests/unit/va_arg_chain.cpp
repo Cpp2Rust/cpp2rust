@@ -8,9 +8,7 @@ int extract_nth(int n, va_list ap) {
   return va_arg(ap, int);
 }
 
-int middle_layer(int n, va_list ap) {
-  return extract_nth(n, ap);
-}
+int middle_layer(int n, va_list ap) { return extract_nth(n, ap); }
 
 int top_level(int n, ...) {
   va_list ap;
