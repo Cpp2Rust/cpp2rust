@@ -130,17 +130,15 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
   if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     if (lambda->isLambda()) {
-      auto call_op = lambda->getLambdaCallOperator();
-      StrCat("Rc<dyn Fn(");
-      for (auto p : call_op->parameters()) {
-        StrCat(std::format("{},", ToStringBase(p->getType())));
+      if (in_function_formals_) {
+        StrCat(
+            ConvertFunctionPointerType(lambda->getLambdaCallOperator()
+                                           ->getType()
+                                           ->getAs<clang::FunctionProtoType>(),
+                                       FnProtoType::LambdaCallOperator));
+      } else {
+        StrCat("_");
       }
-      StrCat(")");
-      if (!call_op->getReturnType()->isVoidType()) {
-        StrCat("->");
-        StrCat(ToStringBase(call_op->getReturnType()));
-      }
-      StrCat(">");
       return false;
     }
   }
@@ -222,24 +220,25 @@ bool Converter::VisitLValueReferenceType(clang::LValueReferenceType *type) {
   return Convert(pointee_type);
 }
 
-void Converter::ConvertFunctionPointerType(clang::PointerType *type) {
-  auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  assert(proto && "Type should be a function prototype");
-
-  StrCat("Rc<dyn Fn(");
+std::string
+Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                                      FnProtoType kind) {
+  std::string result =
+      (kind == FnProtoType::LambdaCallOperator ? "impl Fn(" : "fn(");
   for (auto p_ty : proto->param_types()) {
-    StrCat(std::format("{},", ToString(p_ty)));
+    result += ToString(p_ty) + ",";
   }
-  StrCat(")");
+  result += ")";
   if (!proto->getReturnType()->isVoidType()) {
-    StrCat(std::format("-> {}", ToString(proto->getReturnType())));
+    result += std::format(" -> {}", ToString(proto->getReturnType()));
   }
-  StrCat(">");
+  return result;
 }
 
 bool Converter::VisitPointerType(clang::PointerType *type) {
-  if (type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    ConvertFunctionPointerType(type);
+  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+    StrCat(std::format("Option<{} {}>", keyword_unsafe_,
+                       ConvertFunctionPointerType(proto)));
     return false;
   }
 
@@ -423,6 +422,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 }
 
 bool Converter::ConvertLambdaVarDecl(clang::VarDecl *decl) {
+  if (decl->getType()->isFunctionPointerType()) {
+    return false;
+  }
   if (decl->hasInit()) {
     if (clang::isa<clang::LambdaExpr>(
             decl->getInit()->IgnoreUnlessSpelledInSource())) {
@@ -1368,6 +1370,17 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   return false;
 }
 
+void Converter::EmitFnPtrCall(clang::Expr *callee) {
+  StrCat(token::kOpenParen);
+  Convert(callee);
+  StrCat(").unwrap()");
+}
+
+void Converter::ConvertFunctionToFunctionPointer(
+    const clang::FunctionDecl *fn_decl) {
+  StrCat(std::format("Some({})", GetNamedDeclAsString(fn_decl)));
+}
+
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   clang::Expr *callee = expr->getCallee();
   auto convert_param_ty = [&](clang::QualType param_type, clang::Expr *expr) {
@@ -1390,7 +1403,8 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   StrCat(token::kOpenParen);
   StrCat(keyword_unsafe_);
   StrCat(token::kOpenCurlyBracket);
-  const auto *function = expr->getCalleeDecl()->getAsFunction();
+  const auto *function =
+      expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
 
   if (!function) {
@@ -1438,7 +1452,12 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
     }
   }
 
-  Convert(callee);
+  if (proto && !function) {
+    EmitFnPtrCall(callee);
+  } else {
+    PushExprKind push(*this, ExprKind::Callee);
+    Convert(callee);
+  }
   StrCat(token::kOpenParen);
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -1658,7 +1677,15 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   }
   case clang::CastKind::CK_FunctionToPointerDecay:
-  case clang::CastKind::CK_BuiltinFnToFnPtr:
+  case clang::CastKind::CK_BuiltinFnToFnPtr: {
+    if (isCallee()) {
+      Convert(sub_expr);
+    } else {
+      PushExprKind push(*this, ExprKind::AddrOf);
+      Convert(sub_expr);
+    }
+    break;
+  }
   case clang::CastKind::CK_ConstructorConversion:
   case clang::CastKind::CK_DerivedToBase:
     Convert(sub_expr);
@@ -1673,7 +1700,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     ConvertEqualsNullPtr(sub_expr);
     break;
   case clang::CastKind::CK_NullToPointer:
-    StrCat(keyword_default_);
+    if (type->isFunctionPointerType()) {
+      StrCat("None");
+    } else {
+      StrCat(keyword_default_);
+    }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
   default:
@@ -1717,6 +1748,17 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   case clang::Stmt::CStyleCastExprClass:
     if (expr->getType() == sub_expr->getType()) {
       return Convert(sub_expr);
+    }
+    if (type->isFunctionPointerType() ||
+        sub_expr->getType()->isFunctionPointerType()) {
+      StrCat("std::mem::transmute::<");
+      Convert(sub_expr->getType());
+      StrCat(",");
+      Convert(type);
+      StrCat(">(");
+      Convert(sub_expr);
+      StrCat(")");
+      return false;
     }
     StrCat(token::kOpenParen);
     Convert(sub_expr);
@@ -1944,12 +1986,12 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
   Convert(expr->getCond());
   StrCat(token::kOpenCurlyBracket);
-  if (expr->isLValue() && !isRValue()) {
+  if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
     StrCat(token::kRef, keyword_mut_);
   }
   Convert(expr->getTrueExpr());
   StrCat(token::kCloseCurlyBracket, keyword::kElse, token::kOpenCurlyBracket);
-  if (expr->isLValue() && !isRValue()) {
+  if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
     StrCat(token::kRef, keyword_mut_);
   }
   Convert(expr->getFalseExpr());
@@ -2003,35 +2045,23 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  if (auto function = clang::dyn_cast<clang::FunctionDecl>(decl)) {
+  if (auto *fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
-      // Wrap unsafe function in safe closure because the Fn trait only accepts
-      // safe functions
-      std::string arguments;
-      for (unsigned i = 0; i < function->getNumParams(); i++) {
-        arguments += (i ? ", a" : "a") + std::to_string(i);
-      }
-      StrCat("Rc::new", token::kOpenParen);
-      StrCat(std::format("|{}|", arguments));
-      StrCat(keyword_unsafe_, token::kOpenCurlyBracket);
-      StrCat(str);
-      StrCat(token::kOpenParen);
-      StrCat(arguments);
-      StrCat(token::kCloseParen);
-      StrCat(token::kCloseCurlyBracket);
-      StrCat(token::kCloseParen);
+      ConvertFunctionToFunctionPointer(fn_decl);
       return false;
     }
   }
 
   if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
-    if (auto init = var_decl->getInit()) {
-      if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-              init->IgnoreUnlessSpelledInSource())) {
-        StrCat(token::kOpenParen);
-        VisitLambdaExpr(lambda);
-        StrCat(token::kCloseParen);
-        return false;
+    if (!var_decl->getType()->isFunctionPointerType()) {
+      if (auto init = var_decl->getInit()) {
+        if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
+                init->IgnoreUnlessSpelledInSource())) {
+          StrCat(token::kOpenParen);
+          VisitLambdaExpr(lambda);
+          StrCat(token::kCloseParen);
+          return false;
+        }
       }
     }
   }
@@ -2490,6 +2520,9 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 }
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
+  if (isAddrOf() && expr->capture_size() == 0) {
+    StrCat("Some");
+  }
   StrCat(token::kOpenParen);
   StrCat("|");
   for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
@@ -2617,23 +2650,10 @@ bool Converter::VisitCXXStdInitializerListExpr(
   return false;
 }
 
-std::string
-Converter::GetFunctionPointerDefaultAsString(clang::QualType qual_type) {
-  std::string ret;
-  auto proto = qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  assert(proto);
-  ret = "Rc::new(|";
-  for (unsigned i = 0; i < proto->getNumParams(); i++) {
-    ret += "_,";
-  }
-  ret += R"(| { panic!("ub: uninit function pointer") }))";
-  return ret;
-}
-
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (qual_type->isPointerType()) {
     if (qual_type->getPointeeType()->isFunctionType()) {
-      return GetFunctionPointerDefaultAsString(qual_type);
+      return "None";
     } else {
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return keyword_default_;
@@ -2781,6 +2801,16 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(keyword_mut_);
     }
   }
+  if (qual_type->isFunctionPointerType()) {
+    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
+            expr->IgnoreUnlessSpelledInSource())) {
+      PushExprKind push(*this, ExprKind::AddrOf);
+      curr_init_type_.push(qual_type);
+      VisitLambdaExpr(lambda);
+      curr_init_type_.pop();
+      return;
+    }
+  }
   auto *ignore_casts = expr->IgnoreCasts();
   // FIXME: this looks very complicated
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructExpr>(ignore_casts);
@@ -2826,7 +2856,8 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat("(");
   Convert(expr);
-  if (IsUniquePtr(expr->getType())) {
+  if (IsUniquePtr(expr->getType()) ||
+      expr->getType()->isFunctionPointerType()) {
     StrCat(").is_none()");
   } else {
     StrCat(").is_null()");
@@ -3211,6 +3242,13 @@ void Converter::PlaceholderCtx::dump() const {
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
+  if (arg->getType()->isFunctionPointerType()) {
+    PushExprKind push(*this, ExprKind::Callee);
+    Buffer buf(*this);
+    Convert(arg);
+    return std::move(buf).str();
+  }
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
@@ -3356,6 +3394,10 @@ bool Converter::isObject() const {
 
 bool Converter::isVoid() const {
   return curr_expr_kind_.empty() || curr_expr_kind_.back() == ExprKind::Void;
+}
+
+bool Converter::isCallee() const {
+  return !curr_expr_kind_.empty() && curr_expr_kind_.back() == ExprKind::Callee;
 }
 
 void Converter::SetFresh() {

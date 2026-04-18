@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     }));
     let z: *mut i32 = (unsafe {
         let _x: *mut i32 = &mut x as *mut i32;
-        Rc::new(|a0| unsafe { foo_1(a0) })(_x)
+        foo_1(_x)
     });
     return ((((*(unsafe {
         let _x: *mut i32 = &mut x as *mut i32;
