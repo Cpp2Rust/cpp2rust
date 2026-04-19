@@ -44,7 +44,7 @@ jobs:
       if: matrix.language == 'cpp'
       run: |
         mkdir build && cd build
-        cmake -DLIT_FLAGS="-v" -GNinja ..
+        cmake -GNinja ..
         ninja
 
     - name: Build Rust code
