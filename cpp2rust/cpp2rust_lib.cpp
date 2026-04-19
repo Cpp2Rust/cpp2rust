@@ -11,8 +11,8 @@
 #include "frontend_action.h"
 
 namespace cpp2rust {
-std::string TranspileSrc(const std::string &cc_code, Model model,
-                         const std::vector<std::string> &cxx_flags,
+std::string TranspileSrc(std::string_view cc_code, Model model,
+                         const std::vector<std::string_view> &cxx_flags,
                          const std::string &rules_dir) {
   auto tool_args = getPlatformClangFlags();
   tool_args.push_back("-fparse-all-comments");
@@ -25,7 +25,7 @@ std::string TranspileSrc(const std::string &cc_code, Model model,
   return rs_code;
 }
 
-std::string TranspileDir(const std::string &build_dir, Model model,
+std::string TranspileDir(std::string_view build_dir, Model model,
                          const std::string &rules_dir) {
   std::string error_message;
   auto compile_dbase = clang::tooling::CompilationDatabase::loadFromDirectory(

@@ -20,6 +20,17 @@
 
 #include "cpp2rust_lib.h"
 
+// LLVM's BumpPtrAllocator intentionally poisons freed slab memory via
+// __asan_poison_memory_region.  When ASan is enabled this can produce
+// use-after-poison false positives inside clang/LLVM itself (e.g. during
+// IdentifierTable initialisation).  Opting out of user-poisoning suppresses
+// those LLVM-internal false positives without affecting real UAF detection.
+#if defined(__has_feature) && __has_feature(address_sanitizer)
+extern "C" const char *__asan_default_options() {
+  return "allow_user_poisoning=0";
+}
+#endif
+
 namespace fs = std::filesystem;
 
 namespace {
@@ -140,7 +151,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  std::vector<std::string> cxx_flags(CXXFlags.begin(), CXXFlags.end());
+  std::vector<std::string_view> cxx_flags(CXXFlags.begin(), CXXFlags.end());
 
   if (RulesDir.empty() && !ResolveRulesDir()) {
     llvm::errs() << "ERROR: rules directory not found. "
