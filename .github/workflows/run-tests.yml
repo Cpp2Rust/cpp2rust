@@ -11,7 +11,7 @@ jobs:
         build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.test.name }} (${{ matrix.os }}, ${{ matrix.build_type }})
+    name: Run Tests (${{ matrix.os }}, ${{ matrix.build_type }})
 
     steps:
       - name: Checkout code
