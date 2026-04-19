@@ -188,7 +188,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
   PushConversionKind push2(*this, ConversionKind::FullRefCount,
                            pointee_type->isArrayType());
   if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsCXXRecordDecl()))) {
+      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
     StrCat("PtrDyn<dyn");
   } else {
     StrCat("Ptr<");
