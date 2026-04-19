@@ -852,6 +852,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   addRulesFromDirectory(rules_dir, model);
   addBuiltinTypes(model);
 
+#if 0
   for (auto &[src, expr] : exprs_) {
     llvm::errs() << "Expr: " << src << '\n';
     expr.dump();
@@ -860,6 +861,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
     llvm::errs() << "Type: " << src << '\n';
     type_tgt.dump();
   }
+#endif
 }
 
 } // namespace cpp2rust::Mapper
