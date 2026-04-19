@@ -1265,7 +1265,7 @@ void Converter::ConvertPrintf(clang::CallExpr *expr) {
       Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
 
   StrCat("printf(");
-  for (auto i = is_fprintf ? 1 : 0; i < expr->getNumArgs(); i++) {
+  for (unsigned i = is_fprintf; i < expr->getNumArgs(); ++i) {
     if (i == is_fprintf ? 1 : 0) {
       Convert(expr->getArg(i));
       StrCat("as *const i8");
@@ -2008,7 +2008,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       // Wrap unsafe function in safe closure because the Fn trait only accepts
       // safe functions
       std::string arguments;
-      for (unsigned i = 0; i < function->getNumParams(); i++) {
+      for (unsigned i = 0; i < function->getNumParams(); ++i) {
         arguments += (i ? ", a" : "a") + std::to_string(i);
       }
       StrCat("Rc::new", token::kOpenParen);
@@ -2255,7 +2255,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
             (arr_ty->getSize().getZExtValue() - expr->getNumInits()) &&
             "Number of initializers should be less that total size of array");
         for (unsigned i = 0;
-             i < arr_ty->getSize().getZExtValue() - expr->getNumInits(); i++) {
+             i < arr_ty->getSize().getZExtValue() - expr->getNumInits(); ++i) {
           ConvertVarInit(expr->getArrayFiller()->getType(),
                          expr->getArrayFiller());
           StrCat(token::kComma);
@@ -2623,7 +2623,7 @@ Converter::GetFunctionPointerDefaultAsString(clang::QualType qual_type) {
   auto proto = qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
   assert(proto);
   ret = "Rc::new(|";
-  for (unsigned i = 0; i < proto->getNumParams(); i++) {
+  for (unsigned i = 0; i < proto->getNumParams(); ++i) {
     ret += "_,";
   }
   ret += R"(| { panic!("ub: uninit function pointer") }))";
