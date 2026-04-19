@@ -11,7 +11,7 @@ pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, args: &[VaArg]) ->
     let buf: Value<Ptr<u8>> = Rc::new(RefCell::new(buf));
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = <Value<VaList>>::default();
     (*ap.borrow_mut()) = VaList::new(args);
     let n: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
     let __rhs = ((*n.borrow()) as u8);
@@ -42,6 +42,6 @@ fn main_0() -> i32 {
             extract_first_0(_buf, _size, _fmt, &[65.into()])
         }) == 65)
     );
-    assert!((((*buf.borrow())[(0) as usize] as i32) == (('A' as u8) as i32)));
+    assert!((((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)));
     return 0;
 }

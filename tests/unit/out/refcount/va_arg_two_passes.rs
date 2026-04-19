@@ -9,7 +9,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_then_product_0(first: i32, args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = <Value<VaList>>::default();
     let sum: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*ap.borrow_mut()) = VaList::new(args);

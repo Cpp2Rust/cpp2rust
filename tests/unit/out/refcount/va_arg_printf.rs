@@ -17,7 +17,7 @@ pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
 }
 pub fn logf_1(fmt: Ptr<u8>, args: &[VaArg]) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = <Value<VaList>>::default();
     (*ap.borrow_mut()) = VaList::new(args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({
