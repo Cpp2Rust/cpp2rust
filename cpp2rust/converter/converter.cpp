@@ -1554,7 +1554,8 @@ bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
 bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   std::string ch = GetEscapedCharLiteral(expr->getValue());
   ch = "'" + std::move(ch) + "'";
-  StrCat(token::kOpenParen, ch, keyword::kAs, "u8", token::kCloseParen);
+  StrCat(token::kOpenParen, ch, keyword::kAs, ToStringBase(expr->getType()),
+         token::kCloseParen);
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
