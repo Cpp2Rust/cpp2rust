@@ -40,11 +40,14 @@ jobs:
           paths-ignore:
             - 'tests/**'
 
-    - name: Autobuild
-      if: matrix.language != 'rust'
-      uses: github/codeql-action/autobuild@v4
+    - name: Build C++ code
+      if: matrix.language == 'cpp'
+      run: |
+        mkdir build && cd build
+        cmake -DLIT_FLAGS="-v" -GNinja ..
+        ninja
 
-    - name: Build Rust project
+    - name: Build Rust code
       if: matrix.language == 'rust'
       run: cargo build --verbose
       working-directory: libcc2rs
