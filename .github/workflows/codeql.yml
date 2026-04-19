@@ -34,7 +34,19 @@ jobs:
             - 'tests/**'
 
     - name: Autobuild
+      if: matrix.language != 'rust'
       uses: github/codeql-action/autobuild@v4
+
+    - name: Set up Rust
+      if: matrix.language == 'rust'
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: 1.94.0
+
+    - name: Build Rust project
+      if: matrix.language == 'rust'
+      run: cargo build --verbose
+      working-directory: libcc2rs
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
