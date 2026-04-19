@@ -112,6 +112,8 @@ public:
 
   virtual bool VisitReturnStmt(clang::ReturnStmt *stmt);
 
+  void ConvertCondition(clang::Expr *cond);
+
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
   virtual bool VisitWhileStmt(clang::WhileStmt *stmt);

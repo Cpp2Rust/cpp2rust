@@ -654,4 +654,10 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
   return false;
 }
 
+clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+  return clang::ImplicitCastExpr::Create(
+      ctx, ctx.BoolTy, clang::CK_IntegralToBoolean, expr,
+      /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
+}
+
 } // namespace cpp2rust

@@ -916,9 +916,17 @@ bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
   return false;
 }
 
+void Converter::ConvertCondition(clang::Expr *cond) {
+  if (!cond->getType()->isBooleanType()) {
+    StrCat(ConvertRValue(CreateConversionToBool(cond, ctx_)));
+    return;
+  }
+  Convert(cond);
+}
+
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
   StrCat(keyword::kIf);
-  Convert(stmt->getCond());
+  ConvertCondition(stmt->getCond());
   StrCat(token::kOpenCurlyBracket);
   Convert(stmt->getThen());
   StrCat(token::kCloseCurlyBracket);
@@ -938,7 +946,7 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
-  Convert(stmt->getCond());
+  ConvertCondition(stmt->getCond());
   StrCat(token::kOpenCurlyBracket);
   curr_for_inc_.emplace(nullptr);
   Convert(stmt->getBody());
@@ -954,7 +962,7 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
   Convert(stmt->getBody());
   curr_for_inc_.pop();
   StrCat(keyword::kIf, token::kNot, token::kOpenParen);
-  Convert(stmt->getCond());
+  ConvertCondition(stmt->getCond());
   StrCat(token::kCloseParen, token::kOpenCurlyBracket, keyword::kBreak,
          token::kSemiColon, token::kCloseCurlyBracket,
          token::kCloseCurlyBracket);
@@ -968,7 +976,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   if (stmt->getCond() == nullptr) {
     StrCat("true");
   } else {
-    Convert(stmt->getCond());
+    ConvertCondition(stmt->getCond());
   }
   StrCat(token::kOpenCurlyBracket);
   curr_for_inc_.emplace(stmt->getInc());
@@ -1664,6 +1672,15 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     Convert(sub_expr);
     break;
   case clang::CastKind::CK_IntegralToBoolean:
+    if (auto binop = clang::dyn_cast<clang::BinaryOperator>(
+            sub_expr->IgnoreParenImpCasts())) {
+      // This already produces bool, no need for != 0
+      if (binop->isComparisonOp()) {
+        Convert(sub_expr);
+        break;
+      }
+    }
+
     StrCat(token::kOpenParen);
     Convert(sub_expr);
     StrCat(token::kDiff, token::kZero, token::kCloseParen);
@@ -1831,13 +1848,13 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
 void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   StrCat(token::kOpenParen);
   StrCat(token::kOpenParen);
-  Convert(expr->getLHS());
+  StrCat(ConvertRValue(expr->getLHS()));
   StrCat(token::kCloseParen);
 
   StrCat(expr->getOpcodeStr());
 
   StrCat(token::kOpenParen);
-  Convert(expr->getRHS());
+  StrCat(ConvertRValue(expr->getRHS()));
   StrCat(token::kCloseParen);
   StrCat(token::kCloseParen);
 }
