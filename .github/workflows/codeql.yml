@@ -36,6 +36,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
+        trap-caching: false
         config: |
           paths-ignore:
             - 'tests/**'
