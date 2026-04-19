@@ -1622,8 +1622,11 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
     return;
   }
 
-  StrCat(token::kOpenParen, ConvertRValue(lhs), opcode, ConvertRValue(rhs),
-         token::kCloseParen);
+  StrCat(token::kOpenParen);
+  Convert(lhs);
+  StrCat(opcode);
+  Convert(rhs);
+  StrCat(token::kCloseParen);
 }
 
 void ConverterRefCount::ConvertUniquePtrDeref(

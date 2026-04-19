@@ -918,7 +918,8 @@ bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
 
 void Converter::ConvertCondition(clang::Expr *cond) {
   if (!cond->getType()->isBooleanType()) {
-    StrCat(ConvertRValue(CreateConversionToBool(cond, ctx_)));
+    PushExprKind push(*this, ExprKind::RValue);
+    Convert(CreateConversionToBool(cond, ctx_));
     return;
   }
   Convert(cond);
@@ -1849,13 +1850,13 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
 void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   StrCat(token::kOpenParen);
   StrCat(token::kOpenParen);
-  StrCat(ConvertRValue(expr->getLHS()));
+  Convert(expr->getLHS());
   StrCat(token::kCloseParen);
 
   StrCat(expr->getOpcodeStr());
 
   StrCat(token::kOpenParen);
-  StrCat(ConvertRValue(expr->getRHS()));
+  Convert(expr->getRHS());
   StrCat(token::kCloseParen);
   StrCat(token::kCloseParen);
 }
@@ -2893,12 +2894,12 @@ void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   curr_init_type_.pop();
   auto rhs_as_string = ConvertFreshRValue(rhs);
 
-  if (isRValue()) {
+  if (!isVoid()) {
     StrCat(token::kOpenCurlyBracket);
   }
 
   StrCat(lhs_as_string, assign_operator, rhs_as_string);
-  if (isRValue()) {
+  if (!isVoid()) {
     StrCat(token::kSemiColon, ConvertRValue(lhs), token::kCloseCurlyBracket);
   }
 }
