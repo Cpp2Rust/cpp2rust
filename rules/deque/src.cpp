@@ -4,35 +4,21 @@
 #include <deque>
 #include <vector>
 
-struct T1 {};
+template <typename T1> void t1(std::deque<T1>);
 
-std::deque<T1> t1;
+template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
 
-template <typename T> T &f1(std::deque<T> &o) { return o.back(); }
+template <typename T1> T1 &f2(std::deque<T1> &o) { return o.front(); }
 
-template T1 &f1<T1>(std::deque<T1> &);
+template <typename T1> bool f3(const std::deque<T1> &o) { return o.empty(); }
 
-template <typename T> T &f2(std::deque<T> &o) { return o.front(); }
-
-template T1 &f2<T1>(std::deque<T1> &);
-
-template <typename T> bool f3(const std::deque<T> &o) { return o.empty(); }
-
-template bool f3<T1>(const std::deque<T1> &);
-
-template <typename T> void f4(std::deque<T> &o, T &&value) {
+template <typename T1> void f4(std::deque<T1> &o, T1 &&value) {
   return o.push_back(std::move(value));
 }
 
-template void f4<T1>(std::deque<T1> &, T1 &&);
+template <typename T1> void f5(std::deque<T1> &o) { return o.pop_front(); }
 
-template <typename T> void f5(std::deque<T> &o) { return o.pop_front(); }
-
-template void f5<T1>(std::deque<T1> &);
-
-template <typename T>
-void f7(std::deque<std::vector<T>> &o, const std::vector<T> &value) {
+template <typename T1>
+void f7(std::deque<std::vector<T1>> &o, const std::vector<T1> &value) {
   return o.push_back(value);
 }
-
-template void f7(std::deque<std::vector<T1>> &, const std::vector<T1> &);

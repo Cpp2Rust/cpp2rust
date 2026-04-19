@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-std::ostream t1(std::cout.rdbuf());
-std::ostream &t2 = t1;
-std::ostream *t3 = &t1;
+void t1(std::ostream);
+void t2(std::ostream &);
+void t3(std::ostream *);
 
 std::ostream &f1() { return std::cout; }
 

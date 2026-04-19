@@ -3,9 +3,5 @@
 
 #include <cstdlib>
 
-struct T1 {};
-
-constexpr size_t DUMMY_SIZE = 1;
-
-T1 t1[DUMMY_SIZE][DUMMY_SIZE];
-T1 t2[DUMMY_SIZE][DUMMY_SIZE][DUMMY_SIZE];
+template <typename T1, std::size_t T2> void t1(T1[T2][T2]);
+template <typename T1, std::size_t T2> void t2(T1[T2][T2][T2]);

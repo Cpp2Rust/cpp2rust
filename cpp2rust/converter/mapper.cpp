@@ -391,7 +391,6 @@ decltype(types_)::const_iterator search(clang::QualType qual_type) {
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
-  std::vector<std::filesystem::path> paths;
   for (const auto &entry : std::filesystem::recursive_directory_iterator(dir)) {
     auto &path = entry.path();
     if (entry.is_regular_file() && path.extension() == ".cpp") {
@@ -670,7 +669,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
           break;
         case Model::kRefCount:
           types_[cpp_name + " *"] = TranslationRule::TypeTgt::RefcountPtr(
-              "PtrDyn<dyn " + rs_name + ">");
+              "PtrDyn<dyn " + rs_name + '>');
           break;
         }
       } else {
@@ -681,7 +680,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
           break;
         case Model::kRefCount:
           types_[cpp_name + " *"] =
-              TranslationRule::TypeTgt::RefcountPtr("Ptr<" + rs_name + ">");
+              TranslationRule::TypeTgt::RefcountPtr("Ptr<" + rs_name + '>');
           break;
         }
       }

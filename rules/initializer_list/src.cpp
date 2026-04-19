@@ -3,14 +3,9 @@
 
 #include <initializer_list>
 
-struct T1 {};
+template <typename T1> void t1(std::initializer_list<T1>);
 
-std::initializer_list<T1> t1;
-
-template <typename T>
-typename std::initializer_list<T>::size_type f1(std::initializer_list<T> &o) {
+template <typename T1>
+typename std::initializer_list<T1>::size_type f1(std::initializer_list<T1> &o) {
   return o.size();
 }
-
-template std::initializer_list<T1>::size_type
-f1<T1>(std::initializer_list<T1> &);

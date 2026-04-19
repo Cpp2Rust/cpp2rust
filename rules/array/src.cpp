@@ -3,23 +3,18 @@
 
 #include <array>
 
-struct T1 {};
-constexpr std::size_t DUMMY_SIZE = 0x0b57ac1e;
+template <typename T1, std::size_t T2> void t1(std::array<T1, T2>);
 
-std::array<T1, DUMMY_SIZE> t1;
-
-template <typename T> const T *f1(const std::array<T, DUMMY_SIZE> &o) {
+template <typename T1, std::size_t T2>
+const T1 *f1(const std::array<T1, T2> &o) {
   return o.data();
 }
 
-template const T1 *f1<T1>(const std::array<T1, DUMMY_SIZE> &);
-
-template <typename T> std::size_t f2(const std::array<T, DUMMY_SIZE> &o) {
+template <typename T1, std::size_t T2>
+std::size_t f2(const std::array<T1, T2> &o) {
   return o.size();
 }
 
-template std::size_t f2<T1>(const std::array<T1, DUMMY_SIZE> &);
-
-template <typename T> T *f3(std::array<T, DUMMY_SIZE> &o) { return o.data(); }
-
-template T1 *f3<T1>(std::array<T1, DUMMY_SIZE> &);
+template <typename T1, std::size_t T2> T1 *f3(std::array<T1, T2> &o) {
+  return o.data();
+}

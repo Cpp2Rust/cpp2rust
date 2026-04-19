@@ -17,9 +17,6 @@ unsafe fn f1<T1, T2>(a0: (T1, T2)) -> T2 {
 unsafe fn f2<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
     a0.clone()
 }
-unsafe fn f3<T1: Clone, T2: Clone>(a0: (T1, T2)) -> (T1, T2) {
-    a0.clone()
-}
 unsafe fn f4<T1, T2>(a0: T1, a1: T2) -> (T1, T2) {
     (a0.into(), a1.into())
 }
