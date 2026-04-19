@@ -295,7 +295,7 @@ protected:
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
 
   template <typename... Ts>
-  inline void _StrCat(const char *func, int line, Ts... vals) {
+  inline void _StrCat(const char *func, int line, const Ts &...vals) {
     llvm::errs() << '[' << func << ':' << line << "] ";
     ((llvm::errs() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
   }
@@ -389,11 +389,11 @@ protected:
   virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                              const clang::FunctionDecl *op);
 
-  void ConvertOrdAndPartialOrdTraitsBase(std::string first_branch,
-                                         std::string second_branch,
-                                         std::string first_return,
-                                         std::string second_return,
-                                         std::string record_name);
+  void ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
+                                         std::string_view second_branch,
+                                         std::string_view first_return,
+                                         std::string_view second_return,
+                                         std::string_view record_name);
 
   virtual void AddCloneTrait(const clang::CXXRecordDecl *decl);
 

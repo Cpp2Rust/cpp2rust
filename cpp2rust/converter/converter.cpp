@@ -1153,8 +1153,8 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("Setw")) {
     fmt_width = ToString(arg);
     // Delete leading and trailing whitespaces
-    fmt_width.erase(0, fmt_width.find_first_not_of(" "));
-    fmt_width.erase(fmt_width.find_last_not_of(" ") + 1);
+    fmt_width.erase(0, fmt_width.find_first_not_of(' '));
+    fmt_width.erase(fmt_width.find_last_not_of(' ') + 1);
   } else if (!arg->getType()->isCharType() &&
              Mapper::Map(arg->getType()) != "Vec<u8>") {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
@@ -2962,11 +2962,10 @@ void Converter::ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
   StrCat(token::kCloseCurlyBracket);
 }
 
-void Converter::ConvertOrdAndPartialOrdTraitsBase(std::string first_branch,
-                                                  std::string second_branch,
-                                                  std::string first_return,
-                                                  std::string second_return,
-                                                  std::string record_name) {
+void Converter::ConvertOrdAndPartialOrdTraitsBase(
+    std::string_view first_branch, std::string_view second_branch,
+    std::string_view first_return, std::string_view second_return,
+    std::string_view record_name) {
   StrCat(keyword::kImpl, "Ord for ", record_name, "{");
   StrCat("fn cmp(&self, other: &Self) -> std::cmp::Ordering {");
   StrCat(std::format("{} {{", keyword_unsafe_));
