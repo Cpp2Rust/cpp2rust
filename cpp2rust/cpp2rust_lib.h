@@ -12,7 +12,8 @@ namespace cpp2rust {
 
 std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::vector<std::string_view> &cxx_flags,
-                         const std::string &rules_dir);
+                         const std::string &rules_dir,
+                         std::string_view filename);
 std::string TranspileDir(std::string_view build_dir, Model model,
                          const std::string &rules_dir);
 

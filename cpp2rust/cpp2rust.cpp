@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 
   auto rs_code =
       BuildDir.empty()
-          ? cpp2rust::TranspileSrc(cc_code, model, cxx_flags, RulesDir)
+          ? cpp2rust::TranspileSrc(cc_code, model, cxx_flags, RulesDir, CcFile)
           : cpp2rust::TranspileDir(BuildDir, model, RulesDir);
 
   if (rs_code.empty()) {
