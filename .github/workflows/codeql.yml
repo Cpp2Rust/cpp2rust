@@ -20,6 +20,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
+    - name: Setup LLVM 22
+      uses: ZhongRuoyu/setup-llvm@v0
+      with:
+        llvm-version: 22
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
