@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  std::vector<std::string_view> cxx_flags(CXXFlags.begin(), CXXFlags.end());
+  std::vector<std::string> cxx_flags(CXXFlags.begin(), CXXFlags.end());
 
   if (RulesDir.empty() && !ResolveRulesDir()) {
     llvm::errs() << "ERROR: rules directory not found. "
