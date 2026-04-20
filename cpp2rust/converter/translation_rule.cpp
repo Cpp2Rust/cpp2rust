@@ -654,6 +654,7 @@ private:
     }
 
     assert(0 && "Rule resolution failed");
+    return nullptr;
   }
 
   clang::NamedDecl *lookupMemberAccess(clang::FunctionTemplateDecl *decl,
@@ -707,6 +708,7 @@ private:
       }
     }
     assert(0 && "Rule resolution failed");
+    return nullptr;
   }
 
   clang::QualType lookupType(clang::FunctionTemplateDecl *decl) {
