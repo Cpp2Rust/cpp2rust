@@ -27,7 +27,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
-          components: clippy, rustc-dev
+          components: rustfmt, clippy, rustc-dev
 
       - name: Apply C++ formatting fixes
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
