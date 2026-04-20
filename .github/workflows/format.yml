@@ -48,7 +48,7 @@ jobs:
       - name: Commit auto-fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "style: apply automatic formatting and lint fixes"
+          commit_message: "Automatically apply formatting and lint fixes"
 
       - name: Check C++ formatting
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
