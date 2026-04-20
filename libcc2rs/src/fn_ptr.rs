@@ -31,15 +31,19 @@ macro_rules! impl_fn_addr {
 }
 impl_fn_addr!();
 
-#[derive(Clone)]
-pub(crate) struct FnState {
-    addr: usize,
-    original: Rc<dyn Any>,
-    current_cast: Option<Rc<dyn Any>>,
+trait ErasedFn: Any {
+    fn addr(&self) -> usize;
+}
+
+impl<T: FnAddr + Any> ErasedFn for T {
+    fn addr(&self) -> usize {
+        self.fn_addr()
+    }
 }
 
 pub struct FnPtr<T> {
-    state: Option<Rc<FnState>>,
+    original: Option<Rc<dyn ErasedFn>>,
+    current_cast: Option<Rc<dyn ErasedFn>>,
     // FnPtr does not use T, hence wrap in PhantomData
     _marker: PhantomData<T>,
 }
@@ -48,54 +52,48 @@ impl<T> FnPtr<T> {
     #[inline]
     pub fn null() -> Self {
         FnPtr {
-            state: None,
+            original: None,
+            current_cast: None,
             _marker: PhantomData,
         }
     }
 
     #[inline]
     pub fn is_null(&self) -> bool {
-        self.state.is_none()
+        self.original.is_none()
     }
 }
 
 impl<T: FnAddr + 'static> FnPtr<T> {
     pub fn new(f: T) -> Self {
-        let addr = f.fn_addr();
-        let rc: Rc<dyn Any> = Rc::new(f);
+        let rc: Rc<dyn ErasedFn> = Rc::new(f);
         FnPtr {
-            state: Some(Rc::new(FnState {
-                addr,
-                original: rc.clone(),
-                current_cast: Some(rc),
-            })),
+            original: Some(rc.clone()),
+            current_cast: Some(rc),
             _marker: PhantomData,
         }
     }
 }
 
 impl<T: 'static> FnPtr<T> {
-    pub fn cast<U: 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
-        let state = self.state.as_ref().expect("ub: null fn pointer cast");
+    pub fn cast<U: FnAddr + 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
+        let original = self.original.as_ref().expect("ub: null fn pointer cast");
 
-        let current_cast = if state
+        let current_cast = if self
             .current_cast
             .as_ref()
-            .is_some_and(|rc| (**rc).type_id() == TypeId::of::<U>())
+            .is_some_and(|rc| Any::type_id(&**rc) == TypeId::of::<U>())
         {
-            state.current_cast.clone()
-        } else if (*state.original).type_id() == TypeId::of::<U>() {
-            Some(state.original.clone())
+            self.current_cast.clone()
+        } else if Any::type_id(&**original) == TypeId::of::<U>() {
+            Some(original.clone())
         } else {
-            adapter.map(|a| Rc::new(a) as Rc<dyn Any>)
+            adapter.map(|a| Rc::new(a) as Rc<dyn ErasedFn>)
         };
 
         FnPtr {
-            state: Some(Rc::new(FnState {
-                addr: state.addr,
-                original: state.original.clone(),
-                current_cast,
-            })),
+            original: Some(original.clone()),
+            current_cast,
             _marker: PhantomData,
         }
     }
@@ -104,20 +102,24 @@ impl<T: 'static> FnPtr<T> {
 impl<T: 'static> Deref for FnPtr<T> {
     type Target = T;
     fn deref(&self) -> &T {
-        let state = self.state.as_ref().expect("ub: null fn pointer call");
-        match &state.current_cast {
-            Some(rc) => rc
-                .downcast_ref::<T>()
-                .expect("ub: fn pointer type mismatch"),
-            None => panic!("ub: calling through incompatible fn pointer type"),
+        if self.original.is_none() {
+            panic!("ub: null fn pointer call");
         }
+        let rc = self
+            .current_cast
+            .as_ref()
+            .expect("ub: calling through incompatible fn pointer type");
+        let any: &dyn Any = &**rc;
+        any.downcast_ref::<T>()
+            .expect("ub: fn pointer type mismatch")
     }
 }
 
 impl<T> Clone for FnPtr<T> {
     fn clone(&self) -> Self {
         FnPtr {
-            state: self.state.clone(),
+            original: self.original.clone(),
+            current_cast: self.current_cast.clone(),
             _marker: PhantomData,
         }
     }
@@ -131,9 +133,9 @@ impl<T> Default for FnPtr<T> {
 
 impl<T> PartialEq for FnPtr<T> {
     fn eq(&self, other: &Self) -> bool {
-        match (&self.state, &other.state) {
+        match (&self.original, &other.original) {
             (None, None) => true,
-            (Some(a), Some(b)) => a.addr == b.addr,
+            (Some(a), Some(b)) => a.addr() == b.addr(),
             _ => false,
         }
     }
