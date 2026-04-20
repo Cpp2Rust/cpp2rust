@@ -495,7 +495,7 @@ std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
   for (auto &[name, rule] : rules) {
     assert(!rule.src.empty() && "Rule loaded from IR but has no src");
     if (auto *expr_tgt = std::get_if<ExprTgt>(&rule.tgt)) {
-      expr_tgt->validate(path.string() + ":" + name);
+      expr_tgt->validate(path.string() + ':' + name);
     }
     result.push_back(std::move(rule));
   }

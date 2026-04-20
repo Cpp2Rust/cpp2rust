@@ -196,7 +196,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += Mapper::MapFunctionName(src_fn) + "(";
+  closure += Mapper::MapFunctionName(src_fn) + '(';
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
