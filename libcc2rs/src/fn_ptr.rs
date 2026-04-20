@@ -159,6 +159,9 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
         }
         other.as_any().downcast_ref::<FnPtr<T>>().map(|o| self == o)
     }
+    fn is_null(&self) -> bool {
+        FnPtr::is_null(self)
+    }
 }
 
 impl<T: 'static> FnPtr<T> {
