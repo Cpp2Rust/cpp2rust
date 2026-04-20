@@ -478,7 +478,7 @@ protected:
     Void,
   };
 
-  inline std::string expr_kind_to_string(ExprKind kind) {
+  static const char *expr_kind_to_string(ExprKind kind) {
     switch (kind) {
     case ExprKind::LValue:
       return "LValue";
@@ -512,9 +512,9 @@ protected:
                  int line = __builtin_LINE())
         : c(c) {
       c.curr_expr_kind_.push_back(k);
-      llvm::errs() << "PushExprKind " << file << ":" << line << " ";
+      llvm::errs() << "PushExprKind " << file << ':' << line << ' ';
       c.dump_expr_kinds();
-      llvm::errs() << "[";
+      llvm::errs() << '[';
       for (const auto k : c.curr_expr_kind_) {
         llvm::errs() << c.expr_kind_to_string(k) << ", ";
       }
