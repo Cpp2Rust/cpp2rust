@@ -102,6 +102,9 @@ fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u
     let mut elem_buf = vec![0u8; elem_size];
     let first_elem = byte_offset / elem_size;
     let num_elem = data.len().div_ceil(elem_size);
+    if first_elem >= slice.len() {
+        panic!("ub: OOB write");
+    }
     for (elem_idx, elem) in slice.iter_mut().enumerate().skip(first_elem).take(num_elem) {
         let elem_byte_start = elem_idx * elem_size;
         elem.to_bytes(&mut elem_buf);
