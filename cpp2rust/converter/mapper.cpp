@@ -531,8 +531,9 @@ clang::QualType normalizeQualType(clang::QualType qual_type) {
 }
 
 std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto rule = parallel_search(
-      types_, [&](const std::string &tpl) { return matchTemplate(tpl, cpp_type); });
+  auto rule = parallel_search(types_, [&](const std::string &tpl) {
+    return matchTemplate(tpl, cpp_type);
+  });
   if (rule == types_.end()) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in types_");
