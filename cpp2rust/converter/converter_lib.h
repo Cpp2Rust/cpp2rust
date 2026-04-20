@@ -142,7 +142,7 @@ std::string GetClassName(clang::QualType type);
 bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
                                  const clang::CXXConstructExpr *expr);
 
-bool IsVaListType(clang::ASTContext &ctx, clang::QualType type);
+bool IsVaListType(clang::QualType type);
 
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 

@@ -133,6 +133,12 @@ std::string ConverterRefCount::BoxValue(std::string &&str) const {
 }
 
 bool ConverterRefCount::Convert(clang::QualType qual_type) {
+  // Detect va_list before desugaring strips the typedef.
+  if (IsVaListType(qual_type)) {
+    StrCat(BoxType("VaList"));
+    return false;
+  }
+
   if (!Mapper::Contains(qual_type))
     qual_type = qual_type.getUnqualifiedType().getDesugaredType(ctx_);
 
@@ -172,7 +178,7 @@ bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
     return false;
   }
 
-  if (IsVaListType(ctx_, clang::QualType(type, 0))) {
+  if (IsVaListType(clang::QualType(type, 0))) {
     StrCat("VaList");
     return false;
   }
@@ -933,7 +939,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
 
   if (expr->getCastKind() == clang::CastKind::CK_ArrayToPointerDecay) {
-    if (IsVaListType(ctx_, sub_expr->getType())) {
+    if (IsVaListType(sub_expr->getType())) {
       Convert(sub_expr);
       return false;
     }
@@ -1408,6 +1414,10 @@ bool ConverterRefCount::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
 }
 
 std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
+  if (IsVaListType(qual_type)) {
+    return BoxValue("VaList::default()");
+  }
+
   std::string ret;
   if (qual_type->isPointerType()) {
     auto pointee_type = qual_type->getPointeeType();

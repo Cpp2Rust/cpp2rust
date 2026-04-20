@@ -69,6 +69,12 @@ bool Converter::Convert(clang::QualType qual_type) {
     return false;
   }
 
+  // Catch va_list before desugaring
+  if (IsVaListType(qual_type)) {
+    StrCat("VaList");
+    return false;
+  }
+
   qual_type = qual_type.getUnqualifiedType().getDesugaredType(ctx_);
   return TraverseType(qual_type);
 }
@@ -243,7 +249,7 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
     return false;
   }
 
-  if (IsVaListType(ctx_, clang::QualType(type, 0))) {
+  if (IsVaListType(clang::QualType(type, 0))) {
     StrCat("VaList");
     return false;
   }
@@ -371,7 +377,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
   auto name = GetNamedDeclAsString(decl);
 
-  if (IsVaListType(ctx_, qual_type) && decl->isLocalVarDecl()) {
+  if (IsVaListType(qual_type) && decl->isLocalVarDecl()) {
     ConvertVaListVarDecl(decl);
     return true;
   }
@@ -1641,7 +1647,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       return Convert(sub_expr);
     }
     // __va_list_tag [1] decays to __va_list_tag *. Just pass through by value
-    if (IsVaListType(ctx_, sub_expr->getType())) {
+    if (IsVaListType(sub_expr->getType())) {
       Convert(sub_expr);
       break;
     }
@@ -2650,6 +2656,11 @@ Converter::GetFunctionPointerDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
+  if (IsVaListType(qual_type)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return "VaList::default()";
+  }
+
   if (qual_type->isPointerType()) {
     if (qual_type->getPointeeType()->isFunctionType()) {
       return GetFunctionPointerDefaultAsString(qual_type);

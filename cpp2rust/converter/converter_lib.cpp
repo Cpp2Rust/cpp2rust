@@ -600,24 +600,24 @@ bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
   return parent && parent->getConstructor()->isConvertingConstructor(false);
 }
 
-// va_list is implemented as __va_list_tag[1] and decays to __va_list_tag *.
-// That's because va_list must have pointer semantics, but still be passed as
-// value by user code.
-bool IsVaListType(clang::ASTContext &ctx, clang::QualType type) {
-  auto canonical = type.getCanonicalType();
-  auto va_list = ctx.getBuiltinVaListType().getCanonicalType();
-
-  // Direct match: va_list itself
-  if (canonical == va_list) {
-    return true;
+bool IsVaListType(clang::QualType type) {
+  for (auto t = type; !t.isNull();) {
+    if (auto *adjusted = t->getAs<clang::AdjustedType>()) {
+      // Possibly decayed va_list
+      t = adjusted->getOriginalType();
+      continue;
+    } else if (auto *typedef_type = t->getAs<clang::TypedefType>()) {
+      // Typedef'ed va_list
+      if (auto decl = typedef_type->getDecl()) {
+        if (decl->getName().contains("va_list")) {
+          return true;
+        }
+        t = decl->getUnderlyingType();
+        continue;
+      }
+    }
+    break;
   }
-
-  // Decayed match: __va_list_tag[1] decays to __va_list_tag *
-  if (auto *arr = clang::dyn_cast<clang::ConstantArrayType>(va_list)) {
-    return canonical ==
-           ctx.getPointerType(arr->getElementType()).getCanonicalType();
-  }
-
   return false;
 }
 
