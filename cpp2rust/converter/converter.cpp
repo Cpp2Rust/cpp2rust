@@ -1391,21 +1391,6 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(").unwrap()");
 }
 
-std::string Converter::GetPointeeRustType(clang::QualType ptr_type) {
-  auto pointee = ptr_type->getPointeeType();
-  if (pointee->isIntegerType()) {
-    return ToString(pointee);
-  }
-  auto str = ToString(ptr_type);
-  while (!str.empty() && std::isspace(str.back())) {
-    str.pop_back();
-  }
-  if (str.starts_with("Ptr<") && str.ends_with(">")) {
-    return str.substr(4, str.size() - 5);
-  }
-  return ToString(pointee);
-}
-
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
   StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));

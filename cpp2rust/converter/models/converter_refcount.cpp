@@ -205,12 +205,12 @@ std::string ConverterRefCount::BuildFnAdapter(
     } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
       if (tgt_pty->isVoidPointerType()) {
         closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                               GetPointeeRustType(src_pty));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->isVoidPointerType()) {
         closure += std::format("a{}.to_any()", i);
       } else if (tgt_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
-                               GetPointeeRustType(src_pty));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<u8>()", i);
       }
@@ -2156,6 +2156,16 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   }
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);
+}
+
+std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
+  // Pointee of a pointer to incomplete type is an incomplete type that does
+  // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
+  // not enough
+  assert(ptr_type->isPointerType());
+  auto str = ToString(ptr_type);
+  Unwrap(str, "Ptr<", ">");
+  return str;
 }
 
 } // namespace cpp2rust

@@ -205,6 +205,7 @@ private:
   std::string ConvertFreshPointer(clang::Expr *expr) override;
 
   std::string ConvertPtrType(clang::QualType type);
+  std::string ConvertPointeeType(clang::QualType ptr_type);
 
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {

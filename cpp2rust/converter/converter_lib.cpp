@@ -8,7 +8,9 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
 
+#include <algorithm>
 #include <array>
+#include <cctype>
 #include <filesystem>
 #include <unordered_set>
 
@@ -658,6 +660,20 @@ clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
   return clang::ImplicitCastExpr::Create(
       ctx, ctx.BoolTy, clang::CK_IntegralToBoolean, expr,
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
+}
+
+static void Trim(std::string &s) {
+  auto is_space = [](unsigned char c) { return std::isspace(c); };
+  s.erase(s.begin(), std::find_if_not(s.begin(), s.end(), is_space));
+  s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(), s.end());
+}
+
+void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
+  Trim(s);
+  if (s.size() >= prefix.size() + suffix.size() && s.starts_with(prefix) &&
+      s.ends_with(suffix)) {
+    s = s.substr(prefix.size(), s.size() - prefix.size() - suffix.size());
+  }
 }
 
 } // namespace cpp2rust

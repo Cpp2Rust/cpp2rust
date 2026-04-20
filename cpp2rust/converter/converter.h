@@ -207,8 +207,6 @@ public:
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
 
-  std::string GetPointeeRustType(clang::QualType ptr_type);
-
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 

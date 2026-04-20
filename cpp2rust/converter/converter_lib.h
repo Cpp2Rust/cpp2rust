@@ -12,6 +12,7 @@
 #include <optional>
 #include <regex>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cpp2rust {
@@ -153,5 +154,7 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx);
+
+void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 } // namespace cpp2rust
