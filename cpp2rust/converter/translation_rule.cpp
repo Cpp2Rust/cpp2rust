@@ -163,6 +163,13 @@ public:
           type = var->getType();
         }
 
+        if (const auto *decayed = type->getAs<clang::DecayedType>()) {
+          clang::QualType original = decayed->getOriginalType();
+          if (original->isArrayType()) {
+            type = original;
+          }
+        }
+
         add(Mapper::ToString(type));
         return;
       }
@@ -716,15 +723,7 @@ private:
     clang::Sema::ContextRAII savedContext(*sema_, ns);
     clang::FunctionDecl *rule = instantiateRuleDecl(decl);
     assert(rule && "Rule resolution failed");
-
-    clang::QualType type = rule->getParamDecl(0)->getType();
-    if (const auto *decayed = type->getAs<clang::DecayedType>()) {
-      clang::QualType original = decayed->getOriginalType();
-      if (original->isArrayType()) {
-        return original;
-      }
-    }
-    return type;
+    return rule->getParamDecl(0)->getType();
   }
 };
 
