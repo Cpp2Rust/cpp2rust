@@ -19,22 +19,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let fn1: Value<FnPtr<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>> =
-        Rc::new(RefCell::new(fn_ptr!(
-            rules::stdio_tgt_refcount::f5,
-            fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64
-        )));
+        Rc::new(RefCell::new(FnPtr::<
+            fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64,
+        >::new(rules::stdio_tgt_refcount::f5)));
     assert!({
         let _lhs = (*fn1.borrow()).clone();
-        _lhs == fn_ptr!(
+        _lhs == FnPtr::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>::new(
             rules::stdio_tgt_refcount::f5,
-            fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64
         )
     });
     assert!(!((*fn1.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(Ptr<u8>, u64, u64, AnyPtr) -> u64>> = Rc::new(RefCell::new(
-        fn_ptr!(
+        FnPtr::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>::new(
             rules::stdio_tgt_refcount::f5,
-            fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64
         )
         .cast::<fn(Ptr<u8>, u64, u64, AnyPtr) -> u64>(Some(
             (|a0: Ptr<u8>, a1: u64, a2: u64, a3: AnyPtr| -> u64 {
@@ -54,15 +51,19 @@ fn main_0() -> i32 {
     });
     let f3: Value<FnPtr<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>> =
         Rc::new(RefCell::new(
-            fn_ptr!(
-                my_alternative_fread_0,
-                fn(Ptr::<u8>, u64, u64, AnyPtr) -> u64
+            FnPtr::<fn(Ptr<u8>, u64, u64, AnyPtr) -> u64>::new(my_alternative_fread_0).cast::<fn(
+                AnyPtr,
+                u64,
+                u64,
+                Ptr<::std::fs::File>,
             )
-            .cast::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>(Some(
-                (|a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>| -> u64 {
-                    my_alternative_fread_0(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
-                }) as fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64,
-            )),
+                -> u64>(
+                Some(
+                    (|a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>| -> u64 {
+                        my_alternative_fread_0(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
+                    }) as fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64,
+                ),
+            ),
         ));
     assert!(
         (({

@@ -12,7 +12,7 @@ pub fn apply_0(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return ({
         let _x: i32 = (*x.borrow());
-        (*fn_.borrow())(_x)
+        (*fn_.borrow_mut())(_x)
     })
     .clone();
 }
@@ -21,7 +21,7 @@ pub fn apply_1(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return ({
         let _x: i32 = (*x.borrow());
-        (*fn_.borrow())(_x)
+        (*fn_.borrow_mut())(_x)
     })
     .clone();
 }

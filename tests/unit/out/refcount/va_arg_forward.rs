@@ -20,7 +20,7 @@ pub fn inner_0(count: i32, ap: VaList) -> i32 {
 }
 pub fn outer_1(count: i32, args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({

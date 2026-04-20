@@ -13,7 +13,7 @@ pub unsafe fn extract_first_0(
     mut fmt: *const u8,
     args: &[VaArg],
 ) -> i32 {
-    let mut ap: VaList = <VaList>::default();
+    let mut ap: VaList = VaList::default();
     ap = VaList::new(args);
     let mut n: i32 = ap.arg::<i32>();
     (*buf.offset((0) as isize)) = (n as u8);
@@ -25,7 +25,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut buf: [u8; 64] = [<u8>::default(); 64];
+    let mut buf: [u8; 64] = [0_u8; 64];
     assert!(
         ((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();
@@ -43,6 +43,6 @@ unsafe fn main_0() -> i32 {
             extract_first_0(_buf, _size, _fmt, &[65.into()])
         }) == (65))
     );
-    assert!(((buf[(0) as usize] as i32) == (('A' as u8) as i32)));
+    assert!(((buf[(0) as usize] as i32) == ('A' as i32)));
     return 0;
 }

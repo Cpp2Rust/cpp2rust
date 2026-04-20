@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
   format:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -14,13 +17,14 @@ jobs:
         with:
           llvm-version: 22
 
-      - name: Install Rust toolchain
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.94.0
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt
 
       - name: Check C++ formatting
-        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' | xargs clang-format --dry-run --Werror
+        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
 
       - name: Check Rust formatting
         run: |

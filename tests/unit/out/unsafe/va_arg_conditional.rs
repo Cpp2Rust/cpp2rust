@@ -9,7 +9,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn conditional_log_0(mut verbose: i32, mut fmt: *const u8, args: &[VaArg]) -> i32 {
     if (verbose != 0) {
-        let mut ap: VaList = <VaList>::default();
+        let mut ap: VaList = VaList::default();
         ap = VaList::new(args);
         let mut result: i32 = ap.arg::<i32>();
         return result;

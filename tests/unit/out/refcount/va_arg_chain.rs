@@ -28,7 +28,7 @@ pub fn middle_layer_1(n: i32, ap: VaList) -> i32 {
 }
 pub fn top_level_2(n: i32, args: &[VaArg]) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({

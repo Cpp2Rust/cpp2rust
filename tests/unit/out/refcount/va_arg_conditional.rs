@@ -11,7 +11,7 @@ pub fn conditional_log_0(verbose: i32, fmt: Ptr<u8>, args: &[VaArg]) -> i32 {
     let verbose: Value<i32> = Rc::new(RefCell::new(verbose));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     if ((*verbose.borrow()) != 0) {
-        let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+        let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(args);
         let result: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
         return (*result.borrow());

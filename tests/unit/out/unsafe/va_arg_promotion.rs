@@ -8,7 +8,7 @@ use std::io::{Read, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_promotions_0(mut count: i32, args: &[VaArg]) -> i32 {
-    let mut ap: VaList = <VaList>::default();
+    let mut ap: VaList = VaList::default();
     ap = VaList::new(args);
     let mut a: i32 = ap.arg::<i32>();
     let mut b: i32 = ap.arg::<i32>();
@@ -24,7 +24,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut x: u8 = ('A' as u8);
+    let mut x: u8 = (('A' as i32) as u8);
     let mut y: i16 = 10_i16;
     let mut z: f32 = 3.0E+0;
     assert!(

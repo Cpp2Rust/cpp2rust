@@ -9,8 +9,8 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_with_copy_0(count: i32, args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
-    let aq: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
+    let aq: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(args);
     (*aq.borrow_mut()) = (*ap.borrow_mut()).clone();
     let sum1: Value<i32> = Rc::new(RefCell::new(0));

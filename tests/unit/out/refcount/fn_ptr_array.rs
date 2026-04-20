@@ -27,9 +27,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let ops: Value<Box<[FnPtr<fn(i32, i32) -> i32>]>> = Rc::new(RefCell::new(Box::new([
-        fn_ptr!(add_0, fn(i32, i32) -> i32),
-        fn_ptr!(sub_1, fn(i32, i32) -> i32),
-        fn_ptr!(mul_2, fn(i32, i32) -> i32),
+        FnPtr::<fn(i32, i32) -> i32>::new(add_0),
+        FnPtr::<fn(i32, i32) -> i32>::new(sub_1),
+        FnPtr::<fn(i32, i32) -> i32>::new(mul_2),
     ])));
     assert!(
         (({
@@ -53,7 +53,7 @@ fn main_0() -> i32 {
         }) == 30)
     );
     assert!(!(((*ops.borrow())[(0) as usize]).is_null()));
-    assert!(((*ops.borrow())[(0) as usize] == fn_ptr!(add_0, fn(i32, i32) -> i32)));
-    assert!(((*ops.borrow())[(0) as usize] != fn_ptr!(sub_1, fn(i32, i32) -> i32)));
+    assert!(((*ops.borrow())[(0) as usize] == FnPtr::<fn(i32, i32) -> i32>::new(add_0)));
+    assert!(((*ops.borrow())[(0) as usize] != FnPtr::<fn(i32, i32) -> i32>::new(sub_1)));
     return 0;
 }

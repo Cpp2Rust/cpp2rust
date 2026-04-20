@@ -8,7 +8,7 @@ use std::io::{Read, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn mixed_args_0(mut count: i32, args: &[VaArg]) -> i32 {
-    let mut ap: VaList = <VaList>::default();
+    let mut ap: VaList = VaList::default();
     ap = VaList::new(args);
     let mut total: i32 = 0;
     let mut i: i32 = 0;

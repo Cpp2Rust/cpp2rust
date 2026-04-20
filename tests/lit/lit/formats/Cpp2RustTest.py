@@ -7,28 +7,28 @@ from .base import TestFormat
 import difflib, os, re, shutil, random
 import tomli
 
+def read_rust_version():
+  toolchain_path = os.path.join(os.path.dirname(__file__),
+                                '../../../../libcc2rs/rust-toolchain.toml')
+  with open(toolchain_path, 'rb') as f:
+    return tomli.load(f)['toolchain']['channel']
+
+def shared_target_dir():
+  return os.path.abspath(os.path.join(
+      os.path.dirname(__file__),
+      '../../../../build/tmp/cargo-target'))
+
+def cargo_env():
+  return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
+
 class Cpp2RustTest(TestFormat):
   def __init__(self):
     self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
     self.regex_panic = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nocompile = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nondet_result = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
-    self.rust_version = self.readRustVersion()
+    self.rust_version = read_rust_version()
     os.environ['RUSTFLAGS'] = '-Awarnings -A dangerous-implicit-autorefs'
-
-  def readRustVersion(self):
-    toolchain_path = os.path.join(os.path.dirname(__file__),
-                                  '../../../../libcc2rs/rust-toolchain.toml')
-    with open(toolchain_path, 'rb') as f:
-      return tomli.load(f)['toolchain']['channel']
-
-  def cargoEnv(self):
-    return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(self.sharedTargetDir()))
-
-  def sharedTargetDir(self):
-    return os.path.abspath(os.path.join(
-        os.path.dirname(__file__),
-        '../../../../build/tmp/cargo-target'))
 
   def updateExpected(self, generated, expected_path):
     os.makedirs(os.path.dirname(expected_path), exist_ok=True)
@@ -48,7 +48,7 @@ class Cpp2RustTest(TestFormat):
                           litConfig, localConfig):
     source_path = testSuite.getSourcePath(path_in_suite)
     for filename in os.listdir(source_path):
-      if filename.endswith('.cpp'):
+      if filename.endswith('.cpp') or filename.endswith('.c'):
         for t in self.getTestsForPath(testSuite, path_in_suite + (filename,), litConfig, localConfig):
           yield t
 
@@ -128,8 +128,7 @@ class Cpp2RustTest(TestFormat):
         fromfile='expected', tofile='generated'))
       return fail('different output\n' + diff)
 
-    pkg_name = "test_" + re.sub(r'[^a-zA-Z0-9_]', '_',
-                                os.path.basename(tmp_dir))
+    pkg_name = "test_" + re.sub(r'[^a-zA-Z0-9_]', '_', os.path.basename(tmp_dir))
 
     # Check if we can compile the rust file
     with open(tmp_dir + "/rust-toolchain.toml", 'w') as f:
@@ -153,7 +152,7 @@ rules = {{ path = "../../../rules" }}
 """)
 
     cmd = ['cargo', 'build', '--release', '--quiet']
-    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=self.cargoEnv())
+    _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=cargo_env())
     if should_not_compile:
       if returncode != 0:
         shutil.rmtree(tmp_dir, True)
@@ -162,7 +161,7 @@ rules = {{ path = "../../../rules" }}
     if returncode != 0:
       return fail('cargo failed\n' + err)
 
-    rust_bin = os.path.join(self.sharedTargetDir(), "release", pkg_name)
+    rust_bin = os.path.join(shared_target_dir(), "release", pkg_name)
 
     if not skip_run:
       if should_panic:
@@ -173,10 +172,11 @@ rules = {{ path = "../../../rules" }}
       elif is_nondet_result:
         lit.util.executeCommand(rust_bin)
       else:
-        cmd = ['clang++', '-O3', '-o', tmp_dir + '/cpp', cc_input]
+        cc = 'clang' if cc_input.endswith('.c') else 'clang++'
+        cmd = [cc, '-O3', '-o', tmp_dir + '/cpp', cc_input]
         _, _, code = lit.util.executeCommand(cmd)
         if code != 0:
-          return fail('clang++ failed')
+          return fail(cc + ' failed')
 
         out_cpp, err_cpp, code_cpp = lit.util.executeCommand(tmp_dir + '/cpp')
         out_rs, err_rs, code_rs = lit.util.executeCommand(rust_bin)

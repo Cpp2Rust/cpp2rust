@@ -15,8 +15,50 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 
-static std::array<const char *, 5> rust_keywords = {
-    "fn", "in", "mut", "vec", "ref",
+// https://doc.rust-lang.org/reference/keywords.html
+static const char *rust_keywords[] = {
+    // Strict keywords
+    "as",
+    "async",
+    "await",
+    "crate",
+    "dyn",
+    "fn",
+    "impl",
+    "in",
+    "let",
+    "loop",
+    "match",
+    "mod",
+    "move",
+    "mut",
+    "pub",
+    "ref",
+    "self",
+    "Self",
+    "super",
+    "trait",
+    "type",
+    "unsafe",
+    "use",
+    "where",
+    // Reserved keywords
+    "abstract",
+    "become",
+    "box",
+    "final",
+    "gen",
+    "macro",
+    "override",
+    "priv",
+    "unsized",
+    "yield",
+    // Weak keywords
+    "macro_rules",
+    "raw",
+    "safe",
+    // Standard library keywords
+    "vec",
 };
 
 namespace cpp2rust {
@@ -338,18 +380,7 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
   return {};
 }
 
-clang::Expr *StripFunctionPointerDecay(clang::Expr *expr) {
-  if (auto *ice = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
-    auto ck = ice->getCastKind();
-    if (ck == clang::CK_FunctionToPointerDecay ||
-        ck == clang::CK_BuiltinFnToFnPtr) {
-      return ice->getSubExpr();
-    }
-  }
-  return expr;
-}
-
-std::string GetOverloadedOperator(const clang::FunctionDecl *decl) {
+const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
   switch (decl->getOverloadedOperator()) {
   case clang::OO_Less:
     return "lt";
@@ -569,24 +600,24 @@ bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
   return parent && parent->getConstructor()->isConvertingConstructor(false);
 }
 
-// va_list is implemented as __va_list_tag[1] and decays to __va_list_tag *.
-// That's because va_list must have pointer semantics, but still be passed as
-// value by user code.
-bool IsVaListType(clang::ASTContext &ctx, clang::QualType type) {
-  auto canonical = type.getCanonicalType();
-  auto va_list = ctx.getBuiltinVaListType().getCanonicalType();
-
-  // Direct match: va_list itself
-  if (canonical == va_list) {
-    return true;
+bool IsVaListType(clang::QualType type) {
+  for (auto t = type; !t.isNull();) {
+    if (auto *adjusted = t->getAs<clang::AdjustedType>()) {
+      // Possibly decayed va_list
+      t = adjusted->getOriginalType();
+      continue;
+    } else if (auto *typedef_type = t->getAs<clang::TypedefType>()) {
+      // Typedef'ed va_list
+      if (auto decl = typedef_type->getDecl()) {
+        if (decl->getName().contains("va_list")) {
+          return true;
+        }
+        t = decl->getUnderlyingType();
+        continue;
+      }
+    }
+    break;
   }
-
-  // Decayed match: __va_list_tag[1] decays to __va_list_tag *
-  if (auto *arr = clang::dyn_cast<clang::ConstantArrayType>(va_list)) {
-    return canonical ==
-           ctx.getPointerType(arr->getElementType()).getCanonicalType();
-  }
-
   return false;
 }
 
@@ -621,6 +652,12 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
     }
   }
   return false;
+}
+
+clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+  return clang::ImplicitCastExpr::Create(
+      ctx, ctx.BoolTy, clang::CK_IntegralToBoolean, expr,
+      /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 
 } // namespace cpp2rust

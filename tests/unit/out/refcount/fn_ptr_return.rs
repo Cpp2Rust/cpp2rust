@@ -18,9 +18,9 @@ pub fn dec_1(x: i32) -> i32 {
 pub fn pick_2(choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
     let choose_inc: Value<i32> = Rc::new(RefCell::new(choose_inc));
     if ((*choose_inc.borrow()) != 0) {
-        return fn_ptr!(inc_0, fn(i32) -> i32);
+        return FnPtr::<fn(i32) -> i32>::new(inc_0);
     }
-    return fn_ptr!(dec_1, fn(i32) -> i32);
+    return FnPtr::<fn(i32) -> i32>::new(dec_1);
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -35,7 +35,7 @@ fn main_0() -> i32 {
     assert!(!((*f.borrow()).is_null()));
     assert!({
         let _lhs = (*f.borrow()).clone();
-        _lhs == fn_ptr!(inc_0, fn(i32) -> i32)
+        _lhs == FnPtr::<fn(i32) -> i32>::new(inc_0)
     });
     assert!(
         (({
@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     ));
     assert!({
         let _lhs = (*g.borrow()).clone();
-        _lhs == fn_ptr!(dec_1, fn(i32) -> i32)
+        _lhs == FnPtr::<fn(i32) -> i32>::new(dec_1)
     });
     assert!(
         (({

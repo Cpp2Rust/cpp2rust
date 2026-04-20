@@ -26,7 +26,7 @@ pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     if ((*(*(*ctx.borrow()).upgrade().deref()).verbose.borrow()) != 0) {
-        let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+        let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(args);
         (*(*(*ctx.borrow()).upgrade().deref()).last_error.borrow_mut()) =
             ((*ap.borrow_mut()).arg::<i32>()).clone();

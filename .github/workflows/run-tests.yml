@@ -1,4 +1,4 @@
-name: Run tests
+name: "Run tests"
 
 on: [push, pull_request]
 
@@ -11,30 +11,33 @@ jobs:
         build_type: [Debug, Release]
 
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.test.name }} (${{ matrix.os }}, ${{ matrix.build_type }})
+    name: Run Tests (${{ matrix.os }}, ${{ matrix.build_type }})
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup LLVM 22
+      - name: Setup LLVM
         uses: ZhongRuoyu/setup-llvm@v0
         with:
           llvm-version: 22
 
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get install -y python3-tomli
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.94.0
+          components: rustfmt
 
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          pip3 install tomli --break-system-packages
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
 
-      - name: Install Rust toolchain
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.94.0
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Install Python dependencies
+        run: pip install tomli
 
       - name: Configure
         run: |

@@ -34,7 +34,7 @@ list(APPEND CMAKE_MODULE_PATH "${CLANG_CMAKE_DIR}")
 include(AddLLVM)
 include(AddClang)
 
-if (NOT CMAKE_CXX_COMPILER MATCHES "clang")
+if (NOT CMAKE_CXX_COMPILER MATCHES "clang" AND NOT DEFINED ENV{CODEQL_EXTRACTOR_CPP_ROOT})
   set(CMAKE_CXX_COMPILER "${CLANG_CMAKE_DIR}/../../../bin/clang++")
 endif()
 
@@ -93,7 +93,7 @@ add_subdirectory(tests)
 find_program(CLANG_FORMAT NAMES clang-format-22 clang-format)
 
 file(GLOB_RECURSE ALL_CXX_SOURCES
-     cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp)
+     cpp2rust/*.cpp cpp2rust/*.h tests/*.cpp tests/*.c)
 
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}

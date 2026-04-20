@@ -44,11 +44,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let h1: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(1)),
-        cb: Rc::new(RefCell::new(fn_ptr!(double_it_0, fn(i32) -> i32))),
+        cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0))),
     }));
     let h2: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(2)),
-        cb: Rc::new(RefCell::new(fn_ptr!(negate_1, fn(i32) -> i32))),
+        cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(negate_1))),
     }));
     assert!(!((*(*h1.borrow()).cb.borrow()).is_null()));
     assert!(
@@ -63,7 +63,7 @@ fn main_0() -> i32 {
             (*(*(*h2.borrow()).cb.borrow()))(_arg0)
         }) == -7_i32)
     );
-    (*(*h1.borrow()).cb.borrow_mut()) = fn_ptr!(negate_1, fn(i32) -> i32);
+    (*(*h1.borrow()).cb.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(negate_1);
     assert!(
         (({
             let _arg0: i32 = 3;

@@ -368,7 +368,7 @@ Map::const_iterator parallel_search(const Map &container,
 
 decltype(exprs_)::const_iterator search(const clang::Expr *expr) {
   auto qualified_name = ToString(expr);
-  auto result = parallel_search(exprs_, [&](std::string tpl) {
+  auto result = parallel_search(exprs_, [&](const std::string &tpl) {
     return matchTemplate(tpl, qualified_name);
   });
   llvm::errs() << "search expr " << qualified_name << ", result:\n";
@@ -383,7 +383,7 @@ decltype(exprs_)::const_iterator search(const clang::Expr *expr) {
 decltype(types_)::const_iterator search(clang::QualType qual_type) {
   auto type = ToString(qual_type);
   auto result = parallel_search(
-      types_, [&](std::string tpl) { return matchTemplate(tpl, type); });
+      types_, [&](const std::string &tpl) { return matchTemplate(tpl, type); });
   llvm::errs() << "search type " << type << ", result: "
                << ((result == types_.end()) ? "None"
                                             : result->second.type_info.type)
@@ -532,8 +532,9 @@ clang::QualType normalizeQualType(clang::QualType qual_type) {
 }
 
 std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto rule = parallel_search(
-      types_, [&](std::string tpl) { return matchTemplate(tpl, cpp_type); });
+  auto rule = parallel_search(types_, [&](const std::string &tpl) {
+    return matchTemplate(tpl, cpp_type);
+  });
   if (rule == types_.end()) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in types_");
@@ -879,6 +880,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   addRulesFromDirectory(rules_dir, model);
   addBuiltinTypes(model);
 
+#if 0
   for (auto &[src, expr] : exprs_) {
     llvm::errs() << "Expr: " << src << '\n';
     expr.dump();
@@ -887,6 +889,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
     llvm::errs() << "Type: " << src << '\n';
     type_tgt.dump();
   }
+#endif
 }
 
 } // namespace cpp2rust::Mapper

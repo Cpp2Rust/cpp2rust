@@ -9,7 +9,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_promotions_0(count: i32, args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(args);
     let a: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
     let b: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
@@ -23,7 +23,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<u8> = Rc::new(RefCell::new(('A' as u8)));
+    let x: Value<u8> = Rc::new(RefCell::new((('A' as i32) as u8)));
     let y: Value<i16> = Rc::new(RefCell::new(10_i16));
     let z: Value<f32> = Rc::new(RefCell::new(3.0E+0));
     assert!(

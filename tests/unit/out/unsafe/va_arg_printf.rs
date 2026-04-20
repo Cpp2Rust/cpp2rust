@@ -11,7 +11,7 @@ pub unsafe fn logf_impl_0(mut fmt: *const u8, mut ap: VaList) -> i32 {
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));
 }
 pub unsafe fn logf_1(mut fmt: *const u8, args: &[VaArg]) -> i32 {
-    let mut ap: VaList = <VaList>::default();
+    let mut ap: VaList = VaList::default();
     ap = VaList::new(args);
     let mut result: i32 = (unsafe {
         let _fmt: *const u8 = fmt;

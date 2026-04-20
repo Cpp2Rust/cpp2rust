@@ -61,7 +61,11 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
-  void ConvertFunctionPointerType(clang::PointerType *type);
+  enum class FnProtoType { LambdaCallOperator, FnPtr };
+
+  virtual std::string
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                             FnProtoType kind = FnProtoType::FnPtr);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 
@@ -111,6 +115,8 @@ public:
   virtual bool VisitDeclStmt(clang::DeclStmt *stmt);
 
   virtual bool VisitReturnStmt(clang::ReturnStmt *stmt);
+
+  void ConvertCondition(clang::Expr *cond);
 
   virtual bool VisitIfStmt(clang::IfStmt *stmt);
 
@@ -201,9 +207,10 @@ public:
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
 
-  virtual void EmitFnAsValue(const clang::FunctionDecl *fn_decl);
-
   std::string GetPointeeRustType(clang::QualType ptr_type);
+
+  virtual void
+  ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
@@ -301,7 +308,7 @@ protected:
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
 
   template <typename... Ts>
-  inline void _StrCat(const char *func, int line, Ts... vals) {
+  inline void _StrCat(const char *func, int line, const Ts &...vals) {
     llvm::errs() << '[' << func << ':' << line << "] ";
     ((llvm::errs() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
   }
@@ -337,9 +344,6 @@ protected:
   virtual bool Convert(clang::Decl *decl);
   virtual bool Convert(clang::Stmt *stmt);
   virtual bool Convert(clang::Expr *expr);
-
-  virtual std::string
-  GetFunctionPointerDefaultAsString(clang::QualType qual_type);
 
   virtual std::string GetDefaultAsString(clang::QualType qual_type);
 
@@ -396,11 +400,11 @@ protected:
   virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                              const clang::FunctionDecl *op);
 
-  void ConvertOrdAndPartialOrdTraitsBase(std::string first_branch,
-                                         std::string second_branch,
-                                         std::string first_return,
-                                         std::string second_return,
-                                         std::string record_name);
+  void ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
+                                         std::string_view second_branch,
+                                         std::string_view first_return,
+                                         std::string_view second_return,
+                                         std::string_view record_name);
 
   virtual void AddCloneTrait(const clang::CXXRecordDecl *decl);
 
@@ -477,6 +481,7 @@ protected:
   static std::unordered_set<std::string> abstract_structs_;
 
   enum class ExprKind : uint8_t {
+    Callee,
     LValue,
     RValue,
     XValue,
@@ -485,8 +490,10 @@ protected:
     Void,
   };
 
-  inline std::string expr_kind_to_string(ExprKind kind) {
+  static const char *expr_kind_to_string(ExprKind kind) {
     switch (kind) {
+    case ExprKind::Callee:
+      return "Callee";
     case ExprKind::LValue:
       return "LValue";
     case ExprKind::RValue:
@@ -510,6 +517,7 @@ protected:
   bool isAddrOf() const;
   bool isObject() const;
   bool isVoid() const;
+  bool isCallee() const;
 
   void dump_expr_kinds();
 
@@ -519,9 +527,9 @@ protected:
                  int line = __builtin_LINE())
         : c(c) {
       c.curr_expr_kind_.push_back(k);
-      llvm::errs() << "PushExprKind " << file << ":" << line << " ";
+      llvm::errs() << "PushExprKind " << file << ':' << line << ' ';
       c.dump_expr_kinds();
-      llvm::errs() << "[";
+      llvm::errs() << '[';
       for (const auto k : c.curr_expr_kind_) {
         llvm::errs() << c.expr_kind_to_string(k) << ", ";
       }

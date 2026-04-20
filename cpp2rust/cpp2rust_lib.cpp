@@ -13,7 +13,8 @@
 namespace cpp2rust {
 std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::vector<std::string_view> &cxx_flags,
-                         const std::string &rules_dir) {
+                         const std::string &rules_dir,
+                         std::string_view filename) {
   auto tool_args = getPlatformClangFlags();
   tool_args.push_back("-fparse-all-comments");
   tool_args.insert(tool_args.end(), cxx_flags.begin(), cxx_flags.end());
@@ -21,7 +22,8 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
       std::make_unique<FrontendAction>(rs_code, model, true, rules_dir),
-      cc_code, tool_args, "input.cpp", CLANG_EXECUTABLE);
+      cc_code, tool_args, filename.ends_with(".c") ? "input.c" : "input.cpp",
+      filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
   return rs_code;
 }
 

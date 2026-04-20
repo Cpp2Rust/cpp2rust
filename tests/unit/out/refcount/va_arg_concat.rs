@@ -9,7 +9,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sum_ints_0(first: i32, args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
-    let ap: Value<VaList> = Rc::new(RefCell::new(<VaList>::default()));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     let total: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*ap.borrow_mut()) = VaList::new(args);
     let val: Value<i32> = <Value<i32>>::default();
