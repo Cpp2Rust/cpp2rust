@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void t1(FILE *);
+using t1 = FILE *;
 
 FILE *f1(const char *pathname, const char *mode) {
   return fopen(pathname, mode);

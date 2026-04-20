@@ -5,9 +5,9 @@
 #include <iostream>
 #include <iterator>
 
-void t1(std::ifstream);
-void t2(std::ofstream);
-void t3(std::ostream_iterator<char>);
+using t1 = std::ifstream;
+using t2 = std::ofstream;
+using t3 = std::ostream_iterator<char>;
 
 std::ofstream f1(const char *filename, std::ios_base::openmode mode) {
   return std::ofstream(filename, mode);

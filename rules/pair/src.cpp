@@ -3,7 +3,7 @@
 
 #include <utility>
 
-template <typename T1, typename T2> void t1(std::pair<T1, T2>);
+template <typename T1, typename T2> using t1 = std::pair<T1, T2>;
 
 template <typename T1, typename T2> T2 &f1(std::pair<T1, T2> &o) {
   return o.second;

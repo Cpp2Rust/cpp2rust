@@ -4,7 +4,7 @@
 #include <deque>
 #include <vector>
 
-template <typename T1> void t1(std::deque<T1>);
+template <typename T1> using t1 = std::deque<T1>;
 
 template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
 

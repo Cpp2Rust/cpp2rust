@@ -1,3 +1,3 @@
 #include <stdarg.h>
 
-void t1(va_list);
+using t1 = va_list;

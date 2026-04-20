@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-void t1(std::ostream);
-void t2(std::ostream &);
-void t3(std::ostream *);
+using t1 = std::ostream;
+using t2 = std::ostream &;
+using t3 = std::ostream *;
 
 std::ostream &f1() { return std::cout; }
 

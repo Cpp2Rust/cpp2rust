@@ -76,67 +76,6 @@ struct LookupInfo {
   }
 };
 
-template <typename Vec>
-concept TemplateArgVec = requires(Vec vec, std::size_t n) {
-  requires std::same_as<typename Vec::value_type, clang::TemplateArgument>;
-
-  { vec.resize(n) };
-  { vec.size() } -> std::convertible_to<std::size_t>;
-  { vec.operator[](n) } -> std::same_as<clang::TemplateArgument &>;
-};
-
-template <TemplateArgVec Container>
-class ArgListBuilder
-    : public clang::RecursiveASTVisitor<ArgListBuilder<Container>> {
-
-public:
-  ArgListBuilder(
-      llvm::SmallVectorImpl<Container> &out,
-      llvm::SmallDenseMap<clang::DeclarationName, clang::TemplateArgument> &map)
-      : out_(&out), map_(&map) {}
-
-  bool VisitTemplateTypeParmType(clang::TemplateTypeParmType *type) {
-    const auto *decl = type->getDecl();
-    unsigned depth = decl->getDepth();
-    unsigned idx = decl->getIndex();
-
-    if (depth >= out_->size()) {
-      out_->resize(depth + 1);
-    }
-    auto &level = (*out_)[depth];
-    if (idx >= level.size()) {
-      level.resize(idx + 1);
-    }
-
-    level[idx] = map_->at(decl->getDeclName());
-    return true;
-  }
-
-  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) {
-    const auto *decl =
-        llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(expr->getDecl());
-    assert(decl && "Unexpected decl in type");
-
-    unsigned depth = decl->getDepth();
-    unsigned idx = decl->getIndex();
-
-    if (depth >= out_->size()) {
-      out_->resize(depth + 1);
-    }
-    auto &level = (*out_)[depth];
-    if (idx >= level.size()) {
-      level.resize(idx + 1);
-    }
-
-    level[idx] = map_->at(decl->getDeclName());
-    return true;
-  }
-
-private:
-  llvm::SmallVectorImpl<Container> *out_;
-  llvm::SmallDenseMap<clang::DeclarationName, clang::TemplateArgument> *map_;
-};
-
 using RuleMap = std::unordered_map<std::string, Rule>;
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
@@ -147,6 +86,20 @@ public:
 
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
+    if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
+      clang::QualType type;
+      if (auto *tdecl = var->getDescribedAliasTemplate()) {
+        type = lookupType(tdecl);
+      } else {
+        type = var->getUnderlyingType();
+      }
+
+      Rule rule;
+      rule.src = Mapper::ToString(type);
+      out_[var->getQualifiedNameAsString()] = std::move(rule);
+      return;
+    }
+
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
       auto sym = func->getQualifiedNameAsString();
       auto add = [&](std::string src) {
@@ -155,24 +108,6 @@ public:
         out_[sym] = std::move(rule);
       };
 
-      if (auto var = R.Nodes.getNodeAs<clang::ParmVarDecl>("tvar")) {
-        clang::QualType type;
-        if (auto *tdecl = func->getDescribedFunctionTemplate()) {
-          type = lookupType(tdecl);
-        } else {
-          type = var->getType();
-        }
-
-        if (const auto *decayed = type->getAs<clang::DecayedType>()) {
-          clang::QualType original = decayed->getOriginalType();
-          if (original->isArrayType()) {
-            type = original;
-          }
-        }
-
-        add(Mapper::ToString(type));
-        return;
-      }
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
         if (fcall->getDirectCallee()) {
           add(Mapper::ToString(fcall));
@@ -281,15 +216,9 @@ private:
   }
 
   clang::FunctionDecl *deduceTemplateArguments(
-      clang::FunctionTemplateDecl *decl,
-      llvm::ArrayRef<clang::QualType> instantiatedParms, clang::QualType obj_t,
-      clang::Expr::Classification exprClass,
+      clang::FunctionTemplateDecl *decl, llvm::ArrayRef<clang::Expr *> callArgs,
+      clang::QualType obj_t, clang::Expr::Classification exprClass,
       clang::TemplateArgumentListInfo *explicitArgs = nullptr) {
-    llvm::SmallVector<clang::Expr *, 8> args;
-    for (const auto &parm_t : instantiatedParms) {
-      args.emplace_back(createOpaqueValueExpr(parm_t));
-    }
-
     clang::FunctionDecl *spec = nullptr;
     clang::sema::TemplateDeductionInfo info((clang::SourceLocation()));
     auto check = [](llvm::ArrayRef<clang::QualType>, bool) -> bool {
@@ -297,7 +226,7 @@ private:
     };
 
     auto result = sema_->DeduceTemplateArguments(
-        decl, explicitArgs, args, spec, info, false, false, false, obj_t,
+        decl, explicitArgs, callArgs, spec, info, false, false, false, obj_t,
         exprClass, false, check);
 
     if (result == clang::TemplateDeductionResult::Success) {
@@ -399,48 +328,42 @@ private:
         type->isRValueReferenceType() ? clang::VK_XValue : clang::VK_LValue);
   }
 
-  clang::FunctionDecl *instantiateRuleDecl(
-      clang::FunctionTemplateDecl *decl,
-      llvm::SmallDenseMap<clang::DeclarationName, clang::TemplateArgument>
-          *argMap = nullptr) {
-    clang::ASTContext &ctx = sema_->Context;
-    llvm::SmallVector<clang::TemplateArgument, 8> args;
-
+  void
+  createTemplateArguments(clang::TemplateDecl *decl,
+                          llvm::SmallVectorImpl<clang::TemplateArgument> &out) {
     for (clang::NamedDecl *param : *decl->getTemplateParameters()) {
       if (llvm::isa<clang::TemplateTypeParmDecl>(param)) {
         clang::RecordDecl *rdecl = createRecordDecl(param->getName());
-        clang::QualType type = ctx.getTagType(
+        clang::QualType type = sema_->Context.getTagType(
             clang::ElaboratedTypeKeyword::None, {}, rdecl, false);
-        args.emplace_back(type);
-        if (argMap) {
-          argMap->try_emplace(param->getDeclName(), type);
-        }
+        out.emplace_back(type);
       } else if (const auto *nttp =
                      llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param)) {
         clang::QualType type = nttp->getType();
         clang::DeclRefExpr *var =
             createConstexprDeclRefExpr(type, param->getName());
-        args.emplace_back(var, true);
-        if (argMap) {
-          argMap->try_emplace(param->getDeclName(), var, true);
-        }
+        out.emplace_back(var, true);
       } else {
         assert(0 && "Unsupported template param kind");
       }
     }
+  }
 
+  clang::FunctionDecl *instantiateRuleDecl(clang::FunctionTemplateDecl *decl) {
+    llvm::SmallVector<clang::TemplateArgument, 8> args;
+    createTemplateArguments(decl, args);
     return sema_->InstantiateFunctionDeclaration(
-        decl, clang::TemplateArgumentList::CreateCopy(ctx, args),
+        decl, clang::TemplateArgumentList::CreateCopy(sema_->Context, args),
         clang::SourceLocation());
   }
 
   clang::FunctionDecl *createCandidate(
-      clang::NamedDecl *decl, llvm::ArrayRef<clang::QualType> parms_t,
+      clang::NamedDecl *decl, llvm::ArrayRef<clang::Expr *> callArgs,
       clang::TemplateArgumentListInfo *explicitArgs = nullptr,
       clang::QualType obj_t = clang::QualType(),
       clang::Expr::Classification eclass = clang::Expr::Classification()) {
     if (auto *tdecl = llvm::dyn_cast<clang::FunctionTemplateDecl>(decl)) {
-      if (auto *fdecl = deduceTemplateArguments(tdecl, parms_t, obj_t, eclass,
+      if (auto *fdecl = deduceTemplateArguments(tdecl, callArgs, obj_t, eclass,
                                                 explicitArgs)) {
         return fdecl;
       }
@@ -462,24 +385,23 @@ private:
     return nullptr;
   }
 
-  void regularNameLookup(llvm::ArrayRef<clang::Expr *> args,
-                         llvm::ArrayRef<clang::QualType> parms,
-                         clang::TemplateArgumentListInfo *explicitArgs,
+  void regularNameLookup(llvm::ArrayRef<clang::Expr *> callArgs,
+                         clang::TemplateArgumentListInfo *explicitTArgs,
                          clang::DeclarationName &name,
                          clang::OverloadCandidateSet &candidates) {
     clang::LookupResult decls(*sema_, name, clang::SourceLocation(),
                               clang::Sema::LookupOrdinaryName);
     sema_->LookupQualifiedName(decls, sema_->getStdNamespace());
     for (auto *ndecl : decls) {
-      if (auto *candidate = createCandidate(ndecl, parms, explicitArgs)) {
+      if (auto *candidate = createCandidate(ndecl, callArgs, explicitTArgs)) {
         sema_->AddOverloadCandidate(
             candidate, clang::DeclAccessPair::make(candidate, clang::AS_public),
-            args, candidates, false);
+            callArgs, candidates, false);
       }
     }
 
-    for (const auto &parm_t : parms) {
-      if (auto *rdecl = resolveCXXRecordDecl(parm_t)) {
+    for (const auto *arg : callArgs) {
+      if (auto *rdecl = resolveCXXRecordDecl(arg->getType())) {
         for (auto *frdecl : rdecl->friends()) {
           auto *fd = frdecl->getFriendDecl();
           if (!fd) {
@@ -488,11 +410,12 @@ private:
 
           if (auto *ndecl = llvm::dyn_cast<clang::NamedDecl>(fd);
               ndecl && ndecl->getDeclName() == name) {
-            if (auto *candidate = createCandidate(ndecl, parms, explicitArgs)) {
+            if (auto *candidate =
+                    createCandidate(ndecl, callArgs, explicitTArgs)) {
               sema_->AddOverloadCandidate(
                   candidate,
                   clang::DeclAccessPair::make(candidate, clang::AS_public),
-                  args, candidates, false);
+                  callArgs, candidates, false);
             }
           }
         }
@@ -501,9 +424,8 @@ private:
   }
 
   void cxxMethodNameLookup(clang::QualType obj_t,
-                           llvm::ArrayRef<clang::Expr *> args,
-                           llvm::ArrayRef<clang::QualType> parms,
-                           clang::TemplateArgumentListInfo *explicitArgs,
+                           llvm::ArrayRef<clang::Expr *> callArgs,
+                           clang::TemplateArgumentListInfo *explicitTArgs,
                            clang::DeclarationName &name,
                            clang::OverloadCandidateSet &candidates) {
     clang::CXXRecordDecl *rdecl = resolveCXXRecordDecl(obj_t);
@@ -515,43 +437,41 @@ private:
     auto eclass = clang::Expr::Classification::makeSimpleLValue();
     for (auto *ndecl : members) {
       if (auto *candidate =
-              createCandidate(ndecl, parms, explicitArgs, obj_t, eclass)) {
+              createCandidate(ndecl, callArgs, explicitTArgs, obj_t, eclass)) {
         sema_->AddMethodCandidate(
             clang::DeclAccessPair::make(candidate, clang::AS_public), obj_t,
-            eclass, args, candidates);
+            eclass, callArgs, candidates);
       }
     }
   }
 
   void cxxConstructorNameLookup(clang::QualType obj_t,
-                                llvm::ArrayRef<clang::Expr *> args,
-                                llvm::ArrayRef<clang::QualType> parms,
+                                llvm::ArrayRef<clang::Expr *> callArgs,
                                 clang::OverloadCandidateSet &candidates) {
     clang::CXXRecordDecl *rdecl = resolveCXXRecordDecl(obj_t);
     assert(rdecl && "Failed fetching record decl");
     clang::DeclContextLookupResult ctors = sema_->LookupConstructors(rdecl);
 
     for (auto *ndecl : ctors) {
-      if (auto *candidate = createCandidate(ndecl, parms)) {
+      if (auto *candidate = createCandidate(ndecl, callArgs)) {
         sema_->AddOverloadCandidate(
             candidate, clang::DeclAccessPair::make(candidate, clang::AS_public),
-            args, candidates, false);
+            callArgs, candidates, false);
       }
     }
   }
 
-  void adlLookup(llvm::ArrayRef<clang::Expr *> args,
-                 llvm::ArrayRef<clang::QualType> parms,
+  void adlLookup(llvm::ArrayRef<clang::Expr *> callArgs,
                  clang::DeclarationName &name,
                  clang::OverloadCandidateSet &candidates) {
     clang::ADLResult adl;
-    sema_->ArgumentDependentLookup(name, {}, args, adl);
+    sema_->ArgumentDependentLookup(name, {}, callArgs, adl);
 
     for (auto *ndecl : adl) {
-      if (auto *candidate = createCandidate(ndecl, parms)) {
+      if (auto *candidate = createCandidate(ndecl, callArgs)) {
         sema_->AddOverloadCandidate(
             candidate, clang::DeclAccessPair::make(candidate, clang::AS_public),
-            args, candidates, false);
+            callArgs, candidates, false);
       }
     }
   }
@@ -560,52 +480,46 @@ private:
                                         LookupInfo &lookup) {
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
-    llvm::SmallDenseMap<clang::DeclarationName, clang::TemplateArgument> targs;
-    clang::FunctionDecl *rule = instantiateRuleDecl(decl, &targs);
+    clang::FunctionDecl *rule = instantiateRuleDecl(decl);
     llvm::ArrayRef<clang::ParmVarDecl *> parms = rule->parameters();
     auto csk = lookup.name.getNameKind() ==
                        clang::DeclarationName::NameKind::CXXOperatorName
                    ? clang::OverloadCandidateSet::CSK_Operator
                    : clang::OverloadCandidateSet::CSK_Normal;
 
-    llvm::SmallVector<clang::Expr *, 8> args;
-    llvm::SmallVector<clang::QualType, 8> parms_t;
+    llvm::SmallVector<clang::Expr *, 8> callArgs;
     for (const auto *parm : parms) {
       clang::QualType parm_t = parm->getType();
       forceCompleteDefinition(parm_t);
-      args.emplace_back(createOpaqueValueExpr(parm_t));
-      parms_t.emplace_back(parm_t);
+      callArgs.emplace_back(createOpaqueValueExpr(parm_t));
     }
 
-    clang::TemplateArgumentListInfo explicitArgs;
+    llvm::ArrayRef<clang::TemplateArgument> ruleTArgs =
+        rule->getTemplateSpecializationArgs()->asArray();
+    clang::TemplateArgumentListInfo explicitTArgs;
     for (const auto &argloc : lookup.explicitArgs) {
       const auto &arg = argloc.getArgument();
       if (!arg.isDependent()) {
-        explicitArgs.addArgument(argloc);
+        explicitTArgs.addArgument(argloc);
         continue;
       }
 
       clang::TemplateArgument inst;
       if (arg.getKind() == clang::TemplateArgument::Type) {
         clang::QualType type = arg.getAsType();
-        llvm::SmallVector<llvm::SmallVector<clang::TemplateArgument, 8>, 4>
-            replacements;
-        ArgListBuilder builder(replacements, targs);
-        builder.TraverseType(type);
-
-        clang::MultiLevelTemplateArgumentList mtal;
+        clang::MultiLevelTemplateArgumentList mtal(nullptr, ruleTArgs, false);
         mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
-        for (auto &level : replacements) {
-          mtal.addOuterTemplateArguments(level);
-        }
-
         clang::TypeSourceInfo *tsi =
             sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type),
                              mtal, {}, clang::DeclarationName());
+        assert(tsi && "Template argument type instantiation failed");
         inst = clang::TemplateArgument(tsi->getType());
       } else if (arg.getKind() == clang::TemplateArgument::Expression) {
-        if (auto *decl = llvm::dyn_cast<clang::DeclRefExpr>(arg.getAsExpr())) {
-          inst = targs.at(decl->getDecl()->getDeclName());
+        if (auto *expr = llvm::dyn_cast<clang::DeclRefExpr>(arg.getAsExpr())) {
+          const auto *nttp =
+              llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(expr->getDecl());
+          assert(nttp && "Unexpected decl in expr");
+          inst = ruleTArgs[nttp->getIndex()];
         } else {
           assert(0 && "Unsupported explicit template argument expression");
         }
@@ -613,7 +527,7 @@ private:
         assert(0 && "Unsupported explicit template argument kind");
       }
 
-      explicitArgs.addArgument(
+      explicitTArgs.addArgument(
           sema_->getTrivialTemplateArgumentLoc(inst, {}, {}, nullptr));
     }
 
@@ -621,22 +535,19 @@ private:
     clang::OverloadCandidateSet candidates(clang::SourceLocation(), csk);
     switch (lookup.kind) {
     case LookupKind::RegularName:
-      regularNameLookup(args, parms_t, &explicitArgs, name, candidates);
+      regularNameLookup(callArgs, &explicitTArgs, name, candidates);
       break;
     case LookupKind::CXXMethodName: {
-      llvm::ArrayRef<clang::Expr *> margs = args;
-      llvm::ArrayRef<clang::QualType> mparms = parms_t;
-      cxxMethodNameLookup(parms_t.front().getNonReferenceType(),
-                          margs.drop_front(), mparms.drop_front(),
-                          &explicitArgs, name, candidates);
+      llvm::ArrayRef<clang::Expr *> margs = callArgs;
+      cxxMethodNameLookup(margs.front()->getType().getNonReferenceType(),
+                          margs.drop_front(), &explicitTArgs, name, candidates);
       break;
     }
     case LookupKind::CXXConstructorName:
-      cxxConstructorNameLookup(rule->getReturnType(), args, parms_t,
-                               candidates);
+      cxxConstructorNameLookup(rule->getReturnType(), callArgs, candidates);
       break;
     case LookupKind::ADL:
-      adlLookup(args, parms_t, name, candidates);
+      adlLookup(callArgs, name, candidates);
       break;
     }
 
@@ -718,12 +629,18 @@ private:
     return nullptr;
   }
 
-  clang::QualType lookupType(clang::FunctionTemplateDecl *decl) {
+  clang::QualType lookupType(clang::TypeAliasTemplateDecl *decl) {
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
-    clang::FunctionDecl *rule = instantiateRuleDecl(decl);
-    assert(rule && "Rule resolution failed");
-    return rule->getParamDecl(0)->getType();
+    llvm::SmallVector<clang::TemplateArgument, 4> args;
+    createTemplateArguments(decl, args);
+
+    clang::MultiLevelTemplateArgumentList mtal(nullptr, args, false);
+    clang::TypeSourceInfo *tsi =
+        sema_->SubstType(decl->getTemplatedDecl()->getTypeSourceInfo(), mtal,
+                         {}, clang::DeclarationName());
+    assert(tsi && "Rule resolution failed");
+    return tsi->getType();
   }
 };
 
@@ -755,10 +672,7 @@ public:
         &cb_);
 
     finder_.addMatcher(
-        parmVarDecl(hasAncestor(functionDecl(matchesName("(^|::)t[0-9]+$"),
-                                             isExpansionInMainFile())
-                                    .bind("func")),
-                    isExpansionInMainFile())
+        typeAliasDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
         &cb_);
   }

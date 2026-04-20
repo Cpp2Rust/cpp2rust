@@ -5,10 +5,10 @@
 #include <initializer_list>
 #include <vector>
 
-template <typename T1> void t1(std::vector<T1>);
-template <typename T1> void t2(typename std::vector<T1>::iterator);
-template <typename T1> void t3(std::vector<std::vector<T1>>);
-template <typename T1> void t4(typename std::vector<T1>::const_iterator);
+template <typename T1> using t1 = std::vector<T1>;
+template <typename T1> using t2 = typename std::vector<T1>::iterator;
+template <typename T1> using t3 = std::vector<std::vector<T1>>;
+template <typename T1> using t4 = typename std::vector<T1>::const_iterator;
 
 template <typename T1>
 typename std::vector<T1>::iterator

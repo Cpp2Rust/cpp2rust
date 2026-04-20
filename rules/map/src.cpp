@@ -4,11 +4,13 @@
 #include <map>
 #include <utility>
 
-template <typename T1, typename T2> void t1(std::map<T1, T2>);
+template <typename T1, typename T2> using t1 = std::map<T1, T2>;
+
 template <typename T1, typename T2>
-void t2(typename std::map<T1, T2>::const_iterator);
+using t2 = typename std::map<T1, T2>::const_iterator;
+
 template <typename T1, typename T2>
-void t3(typename std::map<T1, T2>::iterator);
+using t3 = typename std::map<T1, T2>::iterator;
 
 template <typename T1, typename T2> T2 &f1(std::map<T1, T2> &o, const T1 &key) {
   return o.operator[](key);

@@ -3,5 +3,5 @@
 
 #include <cstdlib>
 
-template <typename T1, std::size_t T2> void t1(T1[T2][T2]);
-template <typename T1, std::size_t T2> void t2(T1[T2][T2][T2]);
+template <typename T1, std::size_t T2> using t1 = T1[T2][T2];
+template <typename T1, std::size_t T2> using t2 = T1[T2][T2][T2];
