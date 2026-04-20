@@ -3,8 +3,7 @@ use libc::*;
 extern crate libcc2rs;
 use libcc2rs::*;
 use std::collections::BTreeMap;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn for_test_0(n: i32) -> i32 {

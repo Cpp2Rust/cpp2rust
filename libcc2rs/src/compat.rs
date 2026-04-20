@@ -13,6 +13,11 @@ extern "C" {
     fn platform_malloc_size(ptr: *const c_void) -> usize;
 }
 
+/// # Safety
+///
+/// The pointer `ptr` must be a pointer to a block of memory allocated by
+/// the appropriate allocator (e.g., `malloc`).
+// The memory must not have been deallocated.
 pub unsafe fn malloc_usable_size(ptr: *mut c_void) -> usize {
     #[cfg(target_os = "linux")]
     {

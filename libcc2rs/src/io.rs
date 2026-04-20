@@ -43,10 +43,18 @@ pub fn cerr() -> Ptr<std::fs::File> {
     SAFE_STDERR.with(AsPointer::as_pointer)
 }
 
+/// # Safety
+///
+/// The caller must ensure that the returned pointer is not used after the
+//  thread finishes.
 pub unsafe fn cout_unsafe() -> *mut std::fs::File {
     UNSAFE_STDOUT.with(UnsafeCell::get)
 }
 
+/// # Safety
+///
+/// The caller must ensure that the returned pointer is not used after the
+//  thread finishes.
 pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
     UNSAFE_STDERR.with(UnsafeCell::get)
 }

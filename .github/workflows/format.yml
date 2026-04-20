@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup LLVM 22
         uses: ZhongRuoyu/setup-llvm@v0
@@ -64,6 +62,6 @@ jobs:
 
       - name: Check Rust lints
         run: |
-          cargo clippy --manifest-path rules/Cargo.toml --all-targets -- -D clippy::correctness
-          cargo +nightly clippy --manifest-path rule-preprocessor/Cargo.toml --all-targets -- -D clippy::correctness
-          cargo clippy --manifest-path libcc2rs/Cargo.toml --all-targets -- -D clippy::correctness
+          cargo clippy --manifest-path rules/Cargo.toml --all-targets --all-features -- -Dwarnings
+          cargo +nightly clippy --manifest-path rule-preprocessor/Cargo.toml --all-targets --all-features -- -Dwarnings
+          cargo clippy --manifest-path libcc2rs/Cargo.toml --all-targets --all-features -- -Dwarnings
