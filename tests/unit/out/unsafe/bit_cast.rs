@@ -2,7 +2,7 @@
 extern crate libc;
 use libc::*;
 extern crate libcc2rs;
-use libcc2rs::{prepostfix::*};
+use libcc2rs::prepostfix::*;
 pub unsafe fn decay_cast(mut a1: *mut u32) {}
 pub unsafe fn bit_cast(mut p: *const ::libc::c_void) {}
 pub fn main() {

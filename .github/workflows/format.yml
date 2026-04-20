@@ -6,11 +6,13 @@ jobs:
   format:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Setup LLVM 22
         uses: ZhongRuoyu/setup-llvm@v0
@@ -29,6 +31,27 @@ jobs:
           toolchain: nightly
           components: clippy, rustc-dev
 
+      - name: Apply C++ formatting fixes
+        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
+
+      - name: Apply Rust lint fixes
+        run: |
+          cargo clippy --fix --allow-dirty --manifest-path rules/Cargo.toml --all-targets
+          cargo +nightly clippy --fix --allow-dirty --manifest-path rule-preprocessor/Cargo.toml --all-targets
+          cargo clippy --fix --allow-dirty --manifest-path libcc2rs/Cargo.toml --all-targets
+
+      - name: Apply Rust formatting fixes
+        run: |
+          cargo fmt --manifest-path rules/Cargo.toml
+          cargo fmt --manifest-path rule-preprocessor/Cargo.toml
+          cargo fmt --manifest-path libcc2rs/Cargo.toml
+          find tests -name '*.rs' -print0 | xargs -0 rustfmt
+
+      - name: Commit auto-fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: apply automatic formatting and lint fixes"
+
       - name: Check C++ formatting
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
 
@@ -37,6 +60,7 @@ jobs:
           cargo fmt --manifest-path rules/Cargo.toml -- --check
           cargo fmt --manifest-path rule-preprocessor/Cargo.toml -- --check
           cargo fmt --manifest-path libcc2rs/Cargo.toml -- --check
+          find tests -name '*.rs' -print0 | xargs -0 rustfmt --check
 
       - name: Check Rust lints
         run: |

@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn foo(array: Value<Pointer<i32>>) {
     (*array.borrow()).delete_array();
 }

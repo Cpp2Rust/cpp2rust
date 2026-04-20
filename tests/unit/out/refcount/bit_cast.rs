@@ -3,8 +3,8 @@ extern crate libc;
 use libc::*;
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn decay_cast(a1: Value<Pointer<u32>>) {}
 pub fn bit_cast(p: Value<Pointer<dyn std::any::Any>>) {}
 pub fn main() {
