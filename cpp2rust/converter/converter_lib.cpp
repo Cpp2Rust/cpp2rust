@@ -380,7 +380,7 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
   return {};
 }
 
-std::string GetOverloadedOperator(const clang::FunctionDecl *decl) {
+const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
   switch (decl->getOverloadedOperator()) {
   case clang::OO_Less:
     return "lt";

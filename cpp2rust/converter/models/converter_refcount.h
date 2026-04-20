@@ -196,7 +196,7 @@ private:
     FullRefCount,
   };
 
-  std::string ConversionKindToString(ConversionKind k) {
+  const char *ConversionKindToString(ConversionKind k) {
     switch (k) {
     case ConversionKind::Unboxed:
       return "Unboxed";
