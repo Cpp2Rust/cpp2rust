@@ -2158,6 +2158,10 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
 }
 
 std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
+  if (ptr_type->getPointeeType()->isIntegerType()) {
+    return ToString(ptr_type->getPointeeType());
+  }
+
   // Pointee of a pointer to incomplete type is an incomplete type that does
   // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
   // not enough
