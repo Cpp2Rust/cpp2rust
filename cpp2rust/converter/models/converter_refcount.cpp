@@ -626,14 +626,13 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     }
   }
 
-  auto str = ConvertDeclRefExpr(expr);
-  auto decl = expr->getDecl();
-
-  if (!(clang::isa<clang::FunctionDecl>(decl) && isAddrOf()) &&
-      Mapper::Contains(expr)) {
+  if (ShouldReplaceWithMappedBody(expr)) {
     StrCat(GetMappedAsString(expr));
     return false;
   }
+
+  auto str = ConvertDeclRefExpr(expr);
+  auto decl = expr->getDecl();
 
   if (auto fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
