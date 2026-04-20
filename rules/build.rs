@@ -14,11 +14,10 @@ fn main() {
     // Collect all tgt_*.rs files
     let mut files = Vec::new();
     visit(&crate_root, &mut |p| {
-        if let Some(name) = p.file_name().and_then(|s| s.to_str())
-            && name.starts_with("tgt_")
-            && name.ends_with(".rs")
-        {
-            files.push(p.to_path_buf());
+        if let Some(name) = p.file_name().and_then(|s| s.to_str()) {
+            if name.starts_with("tgt_") && name.ends_with(".rs") {
+                files.push(p.to_path_buf());
+            }
         }
     });
     files.sort();
@@ -42,7 +41,9 @@ fn main() {
             .to_string_lossy()
             .replace('\\', "/")
             .trim_start_matches("./")
-            .replace(['/', '.', '-'], "_");
+            .replace('/', "_")
+            .replace('.', "_")
+            .replace('-', "_");
 
         if let Some(stripped) = module_name.strip_suffix("_rs") {
             module_name = stripped.to_string();
