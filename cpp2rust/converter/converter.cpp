@@ -1408,7 +1408,7 @@ std::string Converter::GetPointeeRustType(clang::QualType ptr_type) {
 
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({})", Mapper::GetFnRefName(fn_decl)));
+  StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {

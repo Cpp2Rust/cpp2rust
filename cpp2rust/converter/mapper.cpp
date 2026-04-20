@@ -588,7 +588,7 @@ const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr) {
   return nullptr;
 }
 
-std::string GetFnRefName(const clang::FunctionDecl *decl) {
+std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (model_ == Model::kRefCount) {
     auto refcount_path = GetRulePathForFunction(decl, "tgt_refcount");

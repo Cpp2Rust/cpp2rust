@@ -196,7 +196,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += Mapper::GetFnRefName(src_fn) + "(";
+  closure += Mapper::MapFunctionName(src_fn) + "(";
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
@@ -1039,7 +1039,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
   StrCat(std::format("FnPtr::<{}>::new({})",
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),
-                     Mapper::GetFnRefName(fn_decl)));
+                     Mapper::MapFunctionName(fn_decl)));
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
