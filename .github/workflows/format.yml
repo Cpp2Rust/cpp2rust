@@ -21,7 +21,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.95.0
-          components: rustfmt
+          components: rustfmt, clippy
 
       - name: Check C++ formatting
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
@@ -31,3 +31,10 @@ jobs:
           cargo fmt --manifest-path rules/Cargo.toml -- --check
           cargo fmt --manifest-path rule-preprocessor/Cargo.toml -- --check
           cargo fmt --manifest-path libcc2rs/Cargo.toml -- --check
+          find tests -name '*.rs' -print0 | xargs -0 -r rustfmt --check
+
+      - name: Check Rust lints
+        run: |
+          cargo clippy --manifest-path rules/Cargo.toml --all-targets -- -D warnings
+          cargo clippy --manifest-path rule-preprocessor/Cargo.toml --all-targets -- -D warnings
+          cargo clippy --manifest-path libcc2rs/Cargo.toml --all-targets -- -D warnings
