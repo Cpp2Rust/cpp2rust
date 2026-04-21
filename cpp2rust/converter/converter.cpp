@@ -1137,7 +1137,7 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
   StrCat(keyword::kBreak);
-  if (break_with_explicit_label_) {
+  if (switch_depth_ > 0) {
     StrCat("'switch");
   }
   return false;
@@ -2703,7 +2703,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   StrCat("match __match_cond");
   StrCat("{");
 
-  break_with_explicit_label_ = true;
+  ++switch_depth_;
 
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
@@ -2729,7 +2729,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
     StrCat(R"( _ => {})");
   }
 
-  break_with_explicit_label_ = false;
+  --switch_depth_;
 
   StrCat("}");
   StrCat("}");

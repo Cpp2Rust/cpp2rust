@@ -463,7 +463,7 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
-  bool break_with_explicit_label_ = false;
+  int switch_depth_ = 0;
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
 
