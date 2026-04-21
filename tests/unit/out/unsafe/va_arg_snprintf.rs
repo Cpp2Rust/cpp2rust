@@ -24,7 +24,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut buf: [u8; 64] = [0_u8; 64];
+    let mut buf: [u8; 64] = [<u8>::default(); 64];
     assert!(
         ((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();

@@ -6,11 +6,11 @@ int test_promotions(int count, ...) {
   va_start(ap, count);
 
   // char and short are promoted to int by the caller
-  int a = va_arg(ap, int); // was passed as char 'A' (65)
-  int b = va_arg(ap, int); // was passed as short 10
+  int a = va_arg(ap, int);   // was passed as char 'A' (65)
+  int b = va_arg(ap, int);   // was passed as short 10
 
   // float is promoted to double by the caller
-  double c = va_arg(ap, double); // was passed as float 3.0
+  double c = va_arg(ap, double);  // was passed as float 3.0
 
   va_end(ap);
 
