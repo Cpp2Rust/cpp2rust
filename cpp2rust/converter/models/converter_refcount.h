@@ -121,7 +121,7 @@ public:
   std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
 
   std::vector<const char *>
-  GetStructAttributes(const clang::CXXRecordDecl *decl) override;
+  GetStructAttributes(const clang::RecordDecl *decl) override;
 
   bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 

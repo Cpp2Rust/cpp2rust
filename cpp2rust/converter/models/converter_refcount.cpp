@@ -1604,7 +1604,7 @@ ConverterRefCount::ConvertVarDefaultInit(clang::QualType qual_type) {
 }
 
 std::vector<const char *>
-ConverterRefCount::GetStructAttributes(const clang::CXXRecordDecl *decl) {
+ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs = {};
 
   if (RecordDerivesDefault(decl)) {

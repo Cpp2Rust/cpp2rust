@@ -519,9 +519,11 @@ bool IsPointerType(clang::QualType qual_type) {
                             ->getCanonicalTypeInternal()));
 }
 
-bool Converter::RecordDerivesDefault(const clang::CXXRecordDecl *decl) {
-  if (GetUserDefinedDefaultConstructor(decl)) {
-    return false;
+bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
+  if (auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    if (GetUserDefinedDefaultConstructor(cxx_decl)) {
+      return false;
+    }
   }
 
   for (auto f : decl->fields()) {
@@ -546,7 +548,7 @@ bool Converter::RecordDerivesDefault(const clang::CXXRecordDecl *decl) {
   return true;
 }
 
-static bool recordDerivesCopy(const clang::CXXRecordDecl *decl) {
+static bool recordDerivesCopy(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -569,8 +571,8 @@ static bool recordDerivesCopy(const clang::CXXRecordDecl *decl) {
       }
     }
 
-    // Look recursively into fields that are CXXRecordDecl
-    if (auto field_record = f->getType()->getAsCXXRecordDecl()) {
+    // Look recursively into fields that are RecordDecl
+    if (auto field_record = f->getType()->getAsRecordDecl()) {
       if (!recordDerivesCopy(field_record)) {
         return false;
       }
@@ -629,12 +631,8 @@ void Converter::EmitRustStruct(clang::RecordDecl *decl) {
 
   // Derived traits
   StrCat("#[derive(");
-  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    for (auto *attr : GetStructAttributes(cxx)) {
-      StrCat(attr, ",");
-    }
-  } else {
-    StrCat("Clone, Default");
+  for (auto *attr : GetStructAttributes(decl)) {
+    StrCat(attr, ",");
   }
   StrCat(")]");
 
@@ -2837,14 +2835,18 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
 }
 
 std::vector<const char *>
-Converter::GetStructAttributes(const clang::CXXRecordDecl *decl) {
+Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> struct_attrs = {};
 
   if (recordDerivesCopy(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 
-  if (!decl->defaultedCopyConstructorIsDeleted()) {
+  if (auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    if (!cxx_decl->defaultedCopyConstructorIsDeleted()) {
+      struct_attrs.emplace_back("Clone");
+    }
+  } else /* RecordDecl */ {
     struct_attrs.emplace_back("Clone");
   }
 

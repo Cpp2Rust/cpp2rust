@@ -359,7 +359,7 @@ protected:
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 
   virtual std::vector<const char *>
-  GetStructAttributes(const clang::CXXRecordDecl *decl);
+  GetStructAttributes(const clang::RecordDecl *decl);
 
   virtual std::string GetUnsafeTypeAsString(clang::QualType qual_type) const;
 
@@ -457,7 +457,7 @@ protected:
 
   virtual bool IsReferenceType(const clang::Expr *expr) const;
 
-  virtual bool RecordDerivesDefault(const clang::CXXRecordDecl *decl);
+  virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
   std::string *rs_code_;
   clang::ASTContext &ctx_;
