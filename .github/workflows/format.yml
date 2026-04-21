@@ -1,6 +1,11 @@
 name: Format Check
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [ "**" ]
 
 jobs:
   format:
@@ -46,6 +51,7 @@ jobs:
           find tests -name '*.rs' -print0 | xargs -0 rustfmt
 
       - name: Commit auto-fixes
+        if: github.ref != 'refs/heads/master'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Automatically apply formatting and lint fixes"
