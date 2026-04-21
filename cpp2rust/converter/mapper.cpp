@@ -32,6 +32,7 @@ std::unordered_map<std::string, TranslationRule::TypeTgt>
 clang::PrintingPolicy getPrintPolicy() {
   assert(ctx_);
   clang::PrintingPolicy policy(ctx_->getLangOpts());
+  policy.Bool = true;
   policy.SuppressTagKeyword = true;
   policy.SuppressScope = false;
   policy.FullyQualifiedName = true;
@@ -561,6 +562,11 @@ std::string normalizeTranslationRule(std::string rule) {
 }
 
 } // namespace
+
+PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
+  ctx_ = &ctx;
+}
+PushASTContext::~PushASTContext() { ctx_ = prev_; }
 
 bool Contains(clang::QualType qual_type) {
   return search(qual_type) != types_.end();

@@ -86,6 +86,7 @@ public:
 
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
+    Mapper::PushASTContext scoped(*R.Context);
     if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
       clang::QualType type;
       if (auto *tdecl = var->getDescribedAliasTemplate()) {
