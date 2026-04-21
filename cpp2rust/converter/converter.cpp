@@ -2617,65 +2617,118 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
-bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
-  if (visited_switch_cases_.contains(stmt)) {
-    return false;
-  }
-  visited_switch_cases_.insert(stmt);
-
-  if (auto case_stmt = clang::dyn_cast<clang::CaseStmt>(stmt)) {
-    Convert(case_stmt->getLHS());
-  }
-
-  if (clang::isa<clang::CaseStmt>(stmt->getSubStmt())) {
-    StrCat("|| v == ");
-  } else {
-    if (clang::isa<clang::CaseStmt>(stmt)) {
-      StrCat(" => {");
-    } else {
-      StrCat("_ => {");
+static std::vector<clang::SwitchCase *>
+GetTopLevelSwitchCases(clang::SwitchStmt *stmt) {
+  std::vector<clang::SwitchCase *> cases;
+  if (auto *body = llvm::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
+    for (auto *s : body->body()) {
+      if (auto *sc = clang::dyn_cast<clang::SwitchCase>(s)) {
+        cases.push_back(sc);
+      }
     }
   }
+  return cases;
+}
 
-  Convert(stmt->getSubStmt());
+static bool ChainContainsDefault(clang::SwitchCase *c) {
+  for (clang::Stmt *cur = c;;) {
+    if (clang::isa<clang::DefaultStmt>(cur)) {
+      return true;
+    }
+    auto *sc = clang::dyn_cast<clang::SwitchCase>(cur);
+    if (!sc) {
+      return false;
+    }
+    cur = sc->getSubStmt();
+  }
+  return false;
+}
+
+static clang::Stmt *ChainLeafBody(clang::SwitchCase *c) {
+  clang::Stmt *cur = c->getSubStmt();
+  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
+    cur = sc->getSubStmt();
+  }
+  return cur;
+}
+
+static std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
+                                                   clang::SwitchCase *head) {
+  std::vector<clang::Stmt *> out;
+  out.push_back(ChainLeafBody(head));
+  auto it = body->body_begin(), end = body->body_end();
+  while (it != end && *it != head) {
+    ++it;
+  }
+  assert(it != end);
+  ++it;
+  while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
+    out.push_back(*it);
+    ++it;
+  }
+  return out;
+}
+
+bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
+  clang::Stmt *cur = stmt;
+  clang::SwitchCase *last = nullptr;
+  bool first = true;
+
+  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
+    if (auto *case_stmt = clang::dyn_cast<clang::CaseStmt>(sc)) {
+      if (!first) {
+        StrCat("|| v == ");
+      }
+      Convert(case_stmt->getLHS());
+    }
+    last = sc;
+    first = false;
+    cur = sc->getSubStmt();
+  }
+
+  if (clang::isa<clang::CaseStmt>(last)) {
+    StrCat(" => {");
+  } else /* DefaultStmt */ {
+    StrCat("_ => {");
+  }
   return false;
 }
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
+  auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
+  assert(body);
+
   StrCat("'switch: {");
   StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
   StrCat("match __match_cond");
   StrCat("{");
 
-  bool has_default_case = false;
-  auto body = llvm::cast<clang::CompoundStmt>(stmt->getBody());
-  assert(body);
-
-  visited_switch_cases_ = {};
-
   break_with_explicit_label_ = true;
-  for (auto it = body->body_begin(), end = body->body_end(); it != end;) {
-    if (auto switch_case = clang::dyn_cast<clang::SwitchCase>(*it)) {
-      if (clang::isa<clang::CaseStmt>(switch_case)) {
-        StrCat("v if v == ");
-      } else {
-        has_default_case = true;
-      }
-      VisitSwitchCase(switch_case);
-      ++it;
-    }
 
-    while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
-      Convert(*it);
-      ++it;
+  clang::SwitchCase *default_case = nullptr;
+  for (auto *sc : GetTopLevelSwitchCases(stmt)) {
+    if (ChainContainsDefault(sc)) {
+      default_case = sc;
+      continue;
     }
-
+    StrCat("v if v == ");
+    VisitSwitchCase(sc);
+    for (auto *t : GetSwitchArmBody(body, sc)) {
+      Convert(t);
+    }
     StrCat("},");
   }
 
-  if (!has_default_case) {
+  if (default_case) {
+    StrCat("_ => {");
+    for (auto *t : GetSwitchArmBody(body, default_case)) {
+      Convert(t);
+    }
+    StrCat("},");
+  } else {
     StrCat(R"( _ => {})");
   }
+
   break_with_explicit_label_ = false;
 
   StrCat("}");

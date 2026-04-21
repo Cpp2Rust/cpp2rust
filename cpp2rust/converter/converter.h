@@ -466,7 +466,6 @@ protected:
   bool break_with_explicit_label_ = false;
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
-  std::unordered_set<clang::SwitchCase *> visited_switch_cases_;
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
 
