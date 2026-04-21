@@ -3,23 +3,22 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::prelude::*;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {}
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
 }
 impl ByteRepr for Line {}
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Node {
     pub value: Value<i32>,
     pub next: Value<Ptr<Node>>,
@@ -32,13 +31,13 @@ enum Color {
     GREEN = 1,
     BLUE = 2,
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
 impl ByteRepr for Inner {}
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Container {
     pub inner: Value<Inner>,
     pub color: Value<Color>,

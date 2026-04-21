@@ -3,21 +3,20 @@ use libc::*;
 extern crate libcc2rs;
 use libcc2rs::*;
 use std::collections::BTreeMap;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Line {
     pub start: Point,
     pub end: Point,
 }
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Node {
     pub value: i32,
     pub next: *mut Node,
@@ -29,12 +28,12 @@ enum Color {
     GREEN = 1,
     BLUE = 2,
 }
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Inner {
     pub a: i32,
     pub b: i32,
 }
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
 pub struct Container {
     pub inner: Inner,
     pub color: Color,
