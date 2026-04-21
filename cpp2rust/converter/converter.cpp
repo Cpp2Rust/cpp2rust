@@ -2617,13 +2617,11 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
-static std::unordered_set<clang::SwitchCase *> visited_cases;
-
 bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
-  if (visited_cases.contains(stmt)) {
+  if (visited_switch_cases_.contains(stmt)) {
     return false;
   }
-  visited_cases.insert(stmt);
+  visited_switch_cases_.insert(stmt);
 
   if (auto case_stmt = clang::dyn_cast<clang::CaseStmt>(stmt)) {
     Convert(case_stmt->getLHS());
@@ -2652,6 +2650,8 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   bool has_default_case = false;
   auto body = llvm::cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
+
+  visited_switch_cases_ = {};
 
   break_with_explicit_label_ = true;
   for (auto it = body->body_begin(), end = body->body_end(); it != end;) {
