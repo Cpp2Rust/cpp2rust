@@ -3,8 +3,7 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::prelude::*;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn my_alternative_fread_0(p: Ptr<u8>, n: u64, m: u64, f: AnyPtr) -> u64 {
