@@ -3,8 +3,7 @@ use libc::*;
 extern crate libcc2rs;
 use libcc2rs::*;
 use std::collections::BTreeMap;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn more_refs_0(mut x1: i32, mut x2: i32, r1: *mut i32, r2: *const i32) {

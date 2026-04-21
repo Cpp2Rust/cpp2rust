@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn smaller(x1: Reference<i32>, x2: Reference<i32>) -> Value<Pointer<i32>> {
     return Rc::new(RefCell::new(
         if ((*x1.upgrade().expect("ub: dangling reference").borrow())

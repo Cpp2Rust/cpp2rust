@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn null(p: Value<Pointer<Pointer<i32>>>) {
     (*(*p.borrow())
         .as_reference()

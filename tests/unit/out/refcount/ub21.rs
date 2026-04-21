@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn strlen(s: Value<Pointer<i8>>) -> Value<u64> {
     let count: Value<u64> = Rc::new(RefCell::new((0_i32 as u64)));
     while ((*(*s.borrow_mut())

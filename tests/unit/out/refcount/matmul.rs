@@ -3,8 +3,7 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::prelude::*;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> {

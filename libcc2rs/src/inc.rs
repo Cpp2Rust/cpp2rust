@@ -77,6 +77,9 @@ postfix_wrap_inc_impl!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize);
 postfix_nowrap_inc_impl!(f32, f64);
 
 pub trait UnsafePostfixInc {
+    /// # Safety
+    /// This function increments a pointer and returns the old value.
+    /// The caller must ensure the pointer is valid and doesn't overflow.
     unsafe fn postfix_inc(&mut self) -> Self;
 }
 
@@ -99,6 +102,9 @@ impl<T> UnsafePostfixInc for *mut T {
 }
 
 pub trait UnsafePrefixInc {
+    /// # Safety
+    /// This function increments a pointer and returns the new value.
+    /// The caller must ensure the pointer is valid and doesn't overflow.
     unsafe fn prefix_inc(&mut self) -> Self;
 }
 

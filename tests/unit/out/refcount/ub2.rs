@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn null() -> Value<Pointer<i32>> {
     let p: Value<Pointer<i32>> = Rc::new(RefCell::new(Pointer::null()));
     return Rc::new(RefCell::new((*p.borrow()).clone()));

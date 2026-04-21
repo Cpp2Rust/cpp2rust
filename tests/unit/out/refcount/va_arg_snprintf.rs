@@ -3,8 +3,7 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::prelude::*;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, args: &[VaArg]) -> i32 {

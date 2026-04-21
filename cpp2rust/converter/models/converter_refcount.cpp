@@ -23,13 +23,12 @@ void ConverterRefCount::EmitFilePreamble() {
   StrCat(R"(
 extern crate libcc2rs;
 use libcc2rs::*;
-use std::collections::BTreeMap;
 use std::cell::RefCell;
-use std::io::{Read, Write};
-use std::rc::{Rc, Weak};
-use std::io::Seek;
-use std::os::fd::AsFd;
+use std::collections::BTreeMap;
+use std::io::{Read, Write, Seek};
 use std::io::prelude::*;
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
 )");
 }
 
