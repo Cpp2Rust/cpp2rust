@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn dangling() -> Reference<i32> {
     let x: Value<i32> = Rc::new(RefCell::new(1_i32));
     let p: Value<Pointer<i32>> = Rc::new(RefCell::new(x.as_pointer()));

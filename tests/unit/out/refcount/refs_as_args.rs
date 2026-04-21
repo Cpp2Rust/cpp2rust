@@ -3,8 +3,7 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::io::prelude::*;
-use std::io::Seek;
-use std::io::{Read, Write};
+use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {

@@ -99,19 +99,22 @@ fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]
 // Only deserializes/reserializes the overlapping elements.
 fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u8]) {
     let elem_size = std::mem::size_of::<S>();
+    let mut elem_buf = vec![0u8; elem_size];
     let first_elem = byte_offset / elem_size;
-    let last_elem = (byte_offset + data.len()).div_ceil(elem_size);
-    for elem_idx in first_elem..last_elem {
+    let num_elem = data.len().div_ceil(elem_size);
+    if first_elem >= slice.len() {
+        panic!("ub: OOB write");
+    }
+    for (elem_idx, elem) in slice.iter_mut().enumerate().skip(first_elem).take(num_elem) {
         let elem_byte_start = elem_idx * elem_size;
-        let mut elem_buf = vec![0u8; elem_size];
-        slice[elem_idx].to_bytes(&mut elem_buf);
+        elem.to_bytes(&mut elem_buf);
         let overlap_start = byte_offset.max(elem_byte_start) - elem_byte_start;
         let overlap_end =
             (byte_offset + data.len()).min(elem_byte_start + elem_size) - elem_byte_start;
         let data_start = byte_offset.max(elem_byte_start) - byte_offset;
         elem_buf[overlap_start..overlap_end]
             .copy_from_slice(&data[data_start..data_start + (overlap_end - overlap_start)]);
-        slice[elem_idx] = S::from_bytes(&elem_buf);
+        *elem = S::from_bytes(&elem_buf);
     }
 }
 

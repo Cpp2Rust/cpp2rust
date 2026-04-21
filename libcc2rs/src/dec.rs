@@ -66,6 +66,9 @@ prefix_wrap_dec_impl!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize);
 prefix_nowrap_dec_impl!(f32, f64);
 
 pub trait UnsafePostfixDec {
+    /// # Safety
+    /// This function decrements a pointer and returns the old value.
+    /// The caller must ensure the pointer is valid and doesn't underflow.
     unsafe fn postfix_dec(&mut self) -> Self;
 }
 
@@ -88,6 +91,9 @@ impl<T> UnsafePostfixDec for *mut T {
 }
 
 pub trait UnsafePrefixDec {
+    /// # Safety
+    /// This function decrements a pointer and returns the new value.
+    /// The caller must ensure the pointer is valid and doesn't underflow.
     unsafe fn prefix_dec(&mut self) -> Self;
 }
 

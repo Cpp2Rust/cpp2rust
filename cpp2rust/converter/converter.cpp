@@ -48,10 +48,9 @@ use libc::*;
 extern crate libcc2rs;
 use libcc2rs::*;
 use std::collections::BTreeMap;
-use std::rc::Rc;
-use std::io::{Read, Write};
-use std::io::Seek;
+use std::io::{Read, Write, Seek};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::rc::Rc;
 )");
 }
 

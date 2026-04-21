@@ -1,7 +1,7 @@
 extern crate libcc2rs;
 use libcc2rs::{prepostfix::*, rc::*};
-use std::rc::{Rc, Weak};
 use std::cell::RefCell;
+use std::rc::{Rc, Weak};
 pub fn strlen(s: Value<Pointer<i8>>) -> Value<u64> {
     let begin: Value<Pointer<i8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
     while ((*(*s.borrow())

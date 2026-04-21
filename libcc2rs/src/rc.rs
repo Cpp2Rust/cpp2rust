@@ -273,6 +273,25 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
+    pub fn is_empty(&self) -> bool {
+        match self.kind {
+            PtrKind::Null => true,
+            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => false,
+            PtrKind::Vec(ref weak) => weak
+                .upgrade()
+                .expect("ub: dangling pointer")
+                .borrow()
+                .is_empty(),
+            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => weak
+                .upgrade()
+                .expect("ub: dangling pointer")
+                .borrow()
+                .is_empty(),
+            PtrKind::Reinterpreted(ref data) => self.offset >= data.total_byte_len(),
+        }
+    }
+
+    #[inline]
     pub fn offset(&self, offset: isize) -> Self {
         let step = self.elem_step();
         Self {
@@ -660,7 +679,9 @@ impl<T> std::ops::AddAssign<u64> for Ptr<T> {
     #[inline]
     fn add_assign(&mut self, other: u64) {
         let step = self.elem_step();
-        self.offset = self.offset.wrapping_add((other as usize) * step);
+        self.offset = self
+            .offset
+            .wrapping_add((other as usize).wrapping_mul(step));
     }
 }
 
@@ -670,7 +691,7 @@ impl<T> std::ops::AddAssign<i32> for Ptr<T> {
         let step = self.elem_step();
         self.offset = self
             .offset
-            .wrapping_add(((other as isize) * step as isize) as usize);
+            .wrapping_add(((other as isize).wrapping_mul(step as isize)) as usize);
     }
 }
 
@@ -678,7 +699,9 @@ impl<T> std::ops::AddAssign<u32> for Ptr<T> {
     #[inline]
     fn add_assign(&mut self, other: u32) {
         let step = self.elem_step();
-        self.offset = self.offset.wrapping_add((other as usize) * step);
+        self.offset = self
+            .offset
+            .wrapping_add((other as usize).wrapping_mul(step));
     }
 }
 
@@ -686,7 +709,9 @@ impl<T> std::ops::AddAssign<isize> for Ptr<T> {
     #[inline]
     fn add_assign(&mut self, other: isize) {
         let step = self.elem_step();
-        self.offset = self.offset.wrapping_add((other * step as isize) as usize);
+        self.offset = self
+            .offset
+            .wrapping_add((other.wrapping_mul(step as isize)) as usize);
     }
 }
 
@@ -900,6 +925,7 @@ thread_local! {
 }
 
 impl Ptr<u8> {
+    #[allow(clippy::explicit_counter_loop)]
     pub fn memcpy(&self, src: &Self, len: usize) {
         let mut dst = self.clone();
         let mut i: usize = 0;
@@ -914,6 +940,7 @@ impl Ptr<u8> {
         assert_eq!(i, len, "ub: memcpy");
     }
 
+    #[allow(clippy::explicit_counter_loop)]
     pub fn memset(&self, value: u8, num: usize) {
         let mut dst = self.clone();
         for _ in 0..num {
@@ -922,6 +949,7 @@ impl Ptr<u8> {
         }
     }
 
+    #[allow(clippy::explicit_counter_loop)]
     pub fn memcmp(&self, other: &Self, len: usize) -> i32 {
         let mut a = self.clone();
         let mut b = other.clone();

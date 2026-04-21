@@ -435,12 +435,11 @@ impl<'a> FnIrBuilder<'a> {
 
         let mut ctx = FragmentCtx::new(self, params, generic_names);
         for child in stmt_list.syntax().children_with_tokens() {
-            if let ra_ap_syntax::NodeOrToken::Token(ref t) = child {
-                if (t.kind() == SyntaxKind::L_CURLY || t.kind() == SyntaxKind::R_CURLY)
-                    && t.parent().as_ref() == Some(stmt_list.syntax())
-                {
-                    continue;
-                }
+            if let ra_ap_syntax::NodeOrToken::Token(ref t) = child
+                && (t.kind() == SyntaxKind::L_CURLY || t.kind() == SyntaxKind::R_CURLY)
+                && t.parent().as_ref() == Some(stmt_list.syntax())
+            {
+                continue;
             }
             ctx.visit(child);
         }
