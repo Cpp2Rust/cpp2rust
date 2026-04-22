@@ -19,12 +19,13 @@ jobs:
           name: format-diff
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/format-diff
 
       - name: Read PR head
         id: head
         run: |
-          echo "repo=$(cat head-repo.txt)" >> "$GITHUB_OUTPUT"
-          echo "branch=$(cat head-branch.txt)" >> "$GITHUB_OUTPUT"
+          echo "repo=$(cat ${{ runner.temp }}/format-diff/head-repo.txt)" >> "$GITHUB_OUTPUT"
+          echo "branch=$(cat ${{ runner.temp }}/format-diff/head-branch.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Checkout PR head
         uses: actions/checkout@v6
@@ -34,7 +35,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Apply diff
-        run: git apply $GITHUB_WORKSPACE/../format.diff
+        run: git apply ${{ runner.temp }}/format-diff/format.diff
 
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
