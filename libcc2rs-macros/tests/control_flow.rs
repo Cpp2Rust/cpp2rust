@@ -3,8 +3,6 @@
 
 use libcc2rs_macros::{goto_block, switch};
 
-// ---- switch! -----------------------------------------------------------
-
 #[test]
 fn switch_dispatch_each_case() {
     for (input, expected) in [(0, "zero"), (1, "one"), (2, "two"), (9, "default")] {
@@ -129,8 +127,6 @@ fn switch_or_pattern() {
 
 #[test]
 fn switch_guard_stacked_cases() {
-    // Matches how cpp2rust's codegen emits stacked C `case` labels:
-    // `v if v == c1 || v == c2 || ...`.
     for (x, expected) in [(1, 100), (2, 100), (3, 100), (4, 200), (5, 200), (9, 300)] {
         let mut r = 0;
         switch!(match x {
@@ -269,8 +265,6 @@ fn switch_in_loop() {
     }
     assert_eq!(count, 3);
 }
-
-// ---- goto_block! -------------------------------------------------------
 
 #[test]
 fn goto_block_linear_fallthrough() {

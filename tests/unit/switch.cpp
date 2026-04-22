@@ -97,8 +97,7 @@ int default_first(int x) {
 }
 
 int empty_switch(int x) {
-  switch (x) {
-  }
+  switch (x) {}
   return x;
 }
 
