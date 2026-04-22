@@ -11,15 +11,6 @@ pub struct context {
     pub verbose: Value<i32>,
     pub last_error: Value<i32>,
 }
-impl Clone for context {
-    fn clone(&self) -> Self {
-        let mut this = Self {
-            verbose: Rc::new(RefCell::new((*self.verbose.borrow()))),
-            last_error: Rc::new(RefCell::new((*self.last_error.borrow()))),
-        };
-        this
-    }
-}
 impl ByteRepr for context {}
 pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
@@ -35,7 +26,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let ctx: Value<context> = Rc::new(RefCell::new(<context>::default()));
+    let ctx: Value<context> = <Value<context>>::default();
     (*(*ctx.borrow()).verbose.borrow_mut()) = 1;
     (*(*ctx.borrow()).last_error.borrow_mut()) = 0;
     ({
