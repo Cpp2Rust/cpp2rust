@@ -82,7 +82,11 @@ class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
   explicit Callback(RuleMap &out) : out_(out) {}
 
-  void setSema(clang::Sema &sema) { sema_ = &sema; }
+  void init(clang::Sema &sema) {
+    sema_ = &sema;
+    clang::SourceManager &sm = sema.Context.getSourceManager();
+    loc_ = sm.getLocForStartOfFile(sm.getMainFileID());
+  }
 
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
@@ -182,6 +186,7 @@ public:
 private:
   RuleMap &out_;
   clang::Sema *sema_ = nullptr;
+  clang::SourceLocation loc_;
 
   void forceCompleteDefinition(clang::QualType type) {
     type = type.getCanonicalType();
@@ -193,7 +198,7 @@ private:
       return;
     }
 
-    sema_->RequireCompleteType(clang::SourceLocation(), type,
+    sema_->RequireCompleteType(loc_, type,
                                clang::Sema::CompleteTypeKind::Normal,
                                clang::diag::err_incomplete_type);
 
@@ -220,7 +225,7 @@ private:
       clang::QualType obj_t, clang::Expr::Classification exprClass,
       clang::TemplateArgumentListInfo *explicitArgs = nullptr) {
     clang::FunctionDecl *spec = nullptr;
-    clang::sema::TemplateDeductionInfo info((clang::SourceLocation()));
+    clang::sema::TemplateDeductionInfo info((loc_));
     auto check = [](llvm::ArrayRef<clang::QualType>, bool) -> bool {
       return false;
     };
@@ -238,18 +243,17 @@ private:
         clang::TemplateArgumentListInfo targsInfo;
         for (const auto &arg : deduced->asArray()) {
           targsInfo.addArgument(
-              sema_->getTrivialTemplateArgumentLoc(arg, {}, {}, nullptr));
+              sema_->getTrivialTemplateArgumentLoc(arg, {}, loc_));
         }
 
         clang::DefaultArguments defaultArgs;
         clang::Sema::CheckTemplateArgumentInfo ctai;
         auto invalid = sema_->CheckTemplateArgumentList(
-            decl, decl->getTemplateParameters(), clang::SourceLocation(),
-            targsInfo, defaultArgs, true, ctai);
+            decl, decl->getTemplateParameters(), loc_, targsInfo, defaultArgs,
+            true, ctai);
 
         if (!invalid) {
-          return sema_->InstantiateFunctionDeclaration(decl, deduced,
-                                                       clang::SourceLocation());
+          return sema_->InstantiateFunctionDeclaration(decl, deduced, loc_);
         }
       }
     }
@@ -260,9 +264,8 @@ private:
   clang::NamespaceDecl *createNamespaceDecl() {
     auto &ctx = sema_->getASTContext();
     auto *tu = ctx.getTranslationUnitDecl();
-    auto *ns = clang::NamespaceDecl::Create(
-        ctx, tu, false, clang::SourceLocation(), clang::SourceLocation(),
-        nullptr, nullptr, false);
+    auto *ns = clang::NamespaceDecl::Create(ctx, tu, false, loc_, loc_, nullptr,
+                                            nullptr, false);
     tu->addDecl(ns);
     return ns;
   }
@@ -274,12 +277,10 @@ private:
     clang::MultiTemplateParamsArg args;
     auto decl = sema_->ActOnTag(
         sema_->getCurScope(), clang::DeclSpec::TST_struct,
-        clang::TagUseKind::Definition, clang::SourceLocation(), scope,
-        &sema_->Context.Idents.get(name), clang::SourceLocation(),
-        clang::ParsedAttributesView(), clang::AS_none, clang::SourceLocation(),
-        args, owned, dependent, clang::SourceLocation(), false,
-        clang::TypeResult(), false, false, clang::OffsetOfKind::Outside,
-        nullptr);
+        clang::TagUseKind::Definition, loc_, scope,
+        &sema_->Context.Idents.get(name), loc_, clang::ParsedAttributesView(),
+        clang::AS_none, loc_, args, owned, dependent, loc_, false,
+        clang::TypeResult(), false, false, clang::OffsetOfKind::Outside);
     assert(decl.isUsable() && "Record decl creation failed");
     auto *rdecl = decl.getAs<clang::RecordDecl>();
     rdecl->startDefinition();
@@ -290,20 +291,18 @@ private:
   clang::VarDecl *createVarDecl(clang::QualType type, llvm::StringRef name,
                                 clang::StorageClass sclass = clang::SC_None) {
     clang::ASTContext &ctx = sema_->Context;
-    clang::VarDecl *decl =
-        clang::VarDecl::Create(ctx, sema_->CurContext, clang::SourceLocation(),
-                               clang::SourceLocation(), &ctx.Idents.get(name),
-                               type.getNonReferenceType(), nullptr, sclass);
+    clang::VarDecl *decl = clang::VarDecl::Create(
+        ctx, sema_->CurContext, loc_, loc_, &ctx.Idents.get(name),
+        type.getNonReferenceType(), nullptr, sclass);
     sema_->CurContext->addDecl(decl);
     decl->markUsed(ctx);
     return decl;
   }
 
   clang::DeclRefExpr *createDeclRefExpr(clang::VarDecl *decl) {
-    return clang::DeclRefExpr::Create(
-        sema_->Context, clang::NestedNameSpecifierLoc(),
-        clang::SourceLocation(), decl, false, clang::SourceLocation(),
-        decl->getType().getCanonicalType(), clang::VK_LValue);
+    const clang::DeclarationNameInfo nameInfo(decl->getDeclName(), loc_);
+    return sema_->BuildDeclRefExpr(decl, decl->getType(), clang::VK_LValue,
+                                   nameInfo, decl->getQualifierLoc());
   }
 
   clang::DeclRefExpr *createConstexprDeclRefExpr(clang::QualType type,
@@ -314,7 +313,8 @@ private:
     clang::Expr *init;
     clang::ASTContext &ctx = sema_->Context;
     if (type->isIntegerType()) {
-      init = clang::IntegerLiteral::Create(ctx, llvm::APInt(1, 1), type, {});
+      init = clang::IntegerLiteral::Create(
+          ctx, llvm::APInt(ctx.getIntWidth(type), 1), type, loc_);
     } else {
       init = new (ctx) clang::ImplicitValueInitExpr(type);
     }
@@ -324,7 +324,7 @@ private:
 
   clang::OpaqueValueExpr *createOpaqueValueExpr(clang::QualType type) {
     return new (sema_->Context) clang::OpaqueValueExpr(
-        {}, type.getNonReferenceType(),
+        loc_, type.getNonReferenceType(),
         type->isRValueReferenceType() ? clang::VK_XValue : clang::VK_LValue);
   }
 
@@ -334,8 +334,9 @@ private:
     for (clang::NamedDecl *param : *decl->getTemplateParameters()) {
       if (llvm::isa<clang::TemplateTypeParmDecl>(param)) {
         clang::RecordDecl *rdecl = createRecordDecl(param->getName());
-        clang::QualType type = sema_->Context.getTagType(
-            clang::ElaboratedTypeKeyword::None, {}, rdecl, false);
+        clang::QualType type =
+            sema_->Context.getTagType(clang::ElaboratedTypeKeyword::None,
+                                      rdecl->getQualifier(), rdecl, false);
         out.emplace_back(type);
       } else if (const auto *nttp =
                      llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param)) {
@@ -354,7 +355,7 @@ private:
     createTemplateArguments(decl, args);
     return sema_->InstantiateFunctionDeclaration(
         decl, clang::TemplateArgumentList::CreateCopy(sema_->Context, args),
-        clang::SourceLocation());
+        loc_);
   }
 
   clang::FunctionDecl *createCandidate(
@@ -374,8 +375,8 @@ private:
 
   clang::CXXRecordDecl *resolveCXXRecordDecl(clang::QualType obj_t) {
     obj_t = obj_t.getCanonicalType();
-    if (obj_t->isReferenceType()) {
-      obj_t = obj_t.getNonReferenceType();
+    while (obj_t->isPointerOrReferenceType()) {
+      obj_t = obj_t->getPointeeType();
     }
 
     forceCompleteDefinition(obj_t);
@@ -389,7 +390,7 @@ private:
                          clang::TemplateArgumentListInfo *explicitTArgs,
                          clang::DeclarationName &name,
                          clang::OverloadCandidateSet &candidates) {
-    clang::LookupResult decls(*sema_, name, clang::SourceLocation(),
+    clang::LookupResult decls(*sema_, name, loc_,
                               clang::Sema::LookupOrdinaryName);
     sema_->LookupQualifiedName(decls, sema_->getStdNamespace());
     for (auto *ndecl : decls) {
@@ -430,7 +431,7 @@ private:
                            clang::OverloadCandidateSet &candidates) {
     clang::CXXRecordDecl *rdecl = resolveCXXRecordDecl(obj_t);
     assert(rdecl && "Failed fetching record decl");
-    clang::LookupResult members(*sema_, name, clang::SourceLocation(),
+    clang::LookupResult members(*sema_, name, loc_,
                                 clang::Sema::LookupMemberName);
     sema_->LookupQualifiedName(members, rdecl);
 
@@ -465,7 +466,7 @@ private:
                  clang::DeclarationName &name,
                  clang::OverloadCandidateSet &candidates) {
     clang::ADLResult adl;
-    sema_->ArgumentDependentLookup(name, {}, callArgs, adl);
+    sema_->ArgumentDependentLookup(name, loc_, callArgs, adl);
 
     for (auto *ndecl : adl) {
       if (auto *candidate = createCandidate(ndecl, callArgs)) {
@@ -497,42 +498,50 @@ private:
     llvm::ArrayRef<clang::TemplateArgument> ruleTArgs =
         rule->getTemplateSpecializationArgs()->asArray();
     clang::TemplateArgumentListInfo explicitTArgs;
-    for (const auto &argloc : lookup.explicitArgs) {
-      const auto &arg = argloc.getArgument();
-      if (!arg.isDependent()) {
-        explicitTArgs.addArgument(argloc);
-        continue;
-      }
 
-      clang::TemplateArgument inst;
-      if (arg.getKind() == clang::TemplateArgument::Type) {
-        clang::QualType type = arg.getAsType();
-        clang::MultiLevelTemplateArgumentList mtal(nullptr, ruleTArgs, false);
-        mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
-        clang::TypeSourceInfo *tsi =
-            sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type),
-                             mtal, {}, clang::DeclarationName());
-        assert(tsi && "Template argument type instantiation failed");
-        inst = clang::TemplateArgument(tsi->getType());
-      } else if (arg.getKind() == clang::TemplateArgument::Expression) {
-        if (auto *expr = llvm::dyn_cast<clang::DeclRefExpr>(arg.getAsExpr())) {
-          const auto *nttp =
-              llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(expr->getDecl());
-          assert(nttp && "Unexpected decl in expr");
-          inst = ruleTArgs[nttp->getIndex()];
-        } else {
-          assert(0 && "Unsupported explicit template argument expression");
+    {
+      clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+      assert(!Inst.isInvalid() && "Invalid instantiation context");
+      for (const auto &argloc : lookup.explicitArgs) {
+        const auto &arg = argloc.getArgument();
+        if (!arg.isDependent()) {
+          explicitTArgs.addArgument(argloc);
+          continue;
         }
-      } else {
-        assert(0 && "Unsupported explicit template argument kind");
-      }
 
-      explicitTArgs.addArgument(
-          sema_->getTrivialTemplateArgumentLoc(inst, {}, {}, nullptr));
+        clang::TemplateArgument inst;
+        if (arg.getKind() == clang::TemplateArgument::Type) {
+          clang::QualType type = arg.getAsType();
+          clang::MultiLevelTemplateArgumentList mtal;
+          mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
+          mtal.addOuterTemplateArguments(ruleTArgs);
+
+          clang::TypeSourceInfo *tsi =
+              sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type),
+                               mtal, loc_, clang::DeclarationName());
+          assert(tsi && "Template argument type instantiation failed");
+          inst = clang::TemplateArgument(tsi->getType());
+        } else if (arg.getKind() == clang::TemplateArgument::Expression) {
+          if (auto *expr =
+                  llvm::dyn_cast<clang::DeclRefExpr>(arg.getAsExpr())) {
+            const auto *nttp =
+                llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(expr->getDecl());
+            assert(nttp && "Unexpected decl in expr");
+            inst = ruleTArgs[nttp->getIndex()];
+          } else {
+            assert(0 && "Unsupported explicit template argument expression");
+          }
+        } else {
+          assert(0 && "Unsupported explicit template argument kind");
+        }
+
+        explicitTArgs.addArgument(
+            sema_->getTrivialTemplateArgumentLoc(inst, {}, loc_));
+      }
     }
 
     clang::DeclarationName &name = lookup.name;
-    clang::OverloadCandidateSet candidates(clang::SourceLocation(), csk);
+    clang::OverloadCandidateSet candidates(loc_, csk);
     switch (lookup.kind) {
     case LookupKind::RegularName:
       regularNameLookup(callArgs, &explicitTArgs, name, candidates);
@@ -552,8 +561,7 @@ private:
     }
 
     clang::OverloadCandidateSet::iterator best;
-    switch (
-        candidates.BestViableFunction(*sema_, clang::SourceLocation(), best)) {
+    switch (candidates.BestViableFunction(*sema_, loc_, best)) {
     case clang::OverloadingResult::OR_Success:
       return best->Function;
     case clang::OverloadingResult::OR_Ambiguous:
@@ -583,7 +591,7 @@ private:
     clang::CXXRecordDecl *rdecl =
         resolveCXXRecordDecl(rule->getParamDecl(0)->getType());
     assert(rdecl && "Failed fetching record decl");
-    clang::LookupResult members(*sema_, name, clang::SourceLocation(),
+    clang::LookupResult members(*sema_, name, loc_,
                                 clang::Sema::LookupMemberName);
     sema_->LookupQualifiedName(members, rdecl);
     assert(!members.empty() && "Rule resolution failed");
@@ -600,8 +608,8 @@ private:
 
     clang::Expr *obj = createOpaqueValueExpr(
         rule->getParamDecl(0)->getType().getNonReferenceType());
-    auto arrow = sema_->BuildOverloadedArrowExpr(sema_->getCurScope(), obj,
-                                                 clang::SourceLocation());
+    auto arrow =
+        sema_->BuildOverloadedArrowExpr(sema_->getCurScope(), obj, loc_);
     assert(arrow.isUsable() && "Overloaded arrow operator not found");
 
     auto *base = arrow.getAs<clang::CXXOperatorCallExpr>();
@@ -611,15 +619,14 @@ private:
         resolveCXXRecordDecl(base->getType()->getPointeeType());
     assert(rdecl && "Failed fetching record decl");
 
-    clang::LookupResult members(*sema_, nameInfo.getName(),
-                                clang::SourceLocation(),
+    clang::LookupResult members(*sema_, nameInfo.getName(), loc_,
                                 clang::Sema::LookupMemberName);
     sema_->LookupQualifiedName(members, rdecl);
     for (auto *ndecl : members) {
       if (auto *vdecl = llvm::dyn_cast<clang::ValueDecl>(ndecl)) {
         clang::MemberExpr *access = sema_->BuildMemberExpr(
-            base, true, clang::SourceLocation(), nns, clang::SourceLocation(),
-            vdecl, clang::DeclAccessPair::make(vdecl, clang::AS_public), false,
+            base, true, loc_, nns, loc_, vdecl,
+            clang::DeclAccessPair::make(vdecl, clang::AS_public), false,
             nameInfo, vdecl->getType(), clang::VK_LValue, clang::OK_Ordinary);
         assert(access && "Rule resolution failed");
         return access;
@@ -632,13 +639,20 @@ private:
   clang::QualType lookupType(clang::TypeAliasTemplateDecl *decl) {
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
+
     llvm::SmallVector<clang::TemplateArgument, 4> args;
     createTemplateArguments(decl, args);
 
-    clang::MultiLevelTemplateArgumentList mtal(nullptr, args, false);
+    clang::MultiLevelTemplateArgumentList mtal;
+    mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
+    mtal.addOuterTemplateArguments(args);
+
+    clang::Sema::InstantiatingTemplate TypeInst(*sema_, loc_, decl, args);
+    assert(!TypeInst.isInvalid() && "Invalid instantiation context");
+
     clang::TypeSourceInfo *tsi =
         sema_->SubstType(decl->getTemplatedDecl()->getTypeSourceInfo(), mtal,
-                         {}, clang::DeclarationName());
+                         loc_, clang::DeclarationName());
     assert(tsi && "Rule resolution failed");
     return tsi->getType();
   }
@@ -688,7 +702,7 @@ public:
         auto &DE = CI_->getDiagnostics();
         DE.setSuppressAllDiagnostics(true);
         DE.setClient(new clang::IgnoringDiagConsumer(), true);
-        CB_->setSema(CI_->getSema());
+        CB_->init(CI_->getSema());
         AC_->HandleTranslationUnit(ctx);
       }
 
