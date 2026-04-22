@@ -660,4 +660,78 @@ clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 
+std::vector<clang::SwitchCase *>
+GetTopLevelSwitchCases(clang::SwitchStmt *stmt) {
+  std::vector<clang::SwitchCase *> cases;
+  if (auto *body = llvm::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
+    for (auto *s : body->body()) {
+      if (auto *sc = clang::dyn_cast<clang::SwitchCase>(s)) {
+        cases.push_back(sc);
+      }
+    }
+  }
+  return cases;
+}
+
+bool ChainContainsDefault(clang::SwitchCase *c) {
+  for (clang::Stmt *cur = c;;) {
+    if (clang::isa<clang::DefaultStmt>(cur)) {
+      return true;
+    }
+    auto *sc = clang::dyn_cast<clang::SwitchCase>(cur);
+    if (!sc) {
+      return false;
+    }
+    cur = sc->getSubStmt();
+  }
+  return false;
+}
+
+clang::Stmt *ChainLeafBody(clang::SwitchCase *c) {
+  clang::Stmt *cur = c->getSubStmt();
+  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
+    cur = sc->getSubStmt();
+  }
+  return cur;
+}
+
+std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
+                                            clang::SwitchCase *head) {
+  std::vector<clang::Stmt *> out;
+  out.push_back(ChainLeafBody(head));
+  auto it = body->body_begin(), end = body->body_end();
+  while (it != end && *it != head) {
+    ++it;
+  }
+  assert(it != end);
+  ++it;
+  while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
+    out.push_back(*it);
+    ++it;
+  }
+  return out;
+}
+
+bool SwitchArmHasFallthrough(clang::Stmt *stmt) {
+  if (stmt) {
+    if (clang::isa<clang::BreakStmt>(stmt) ||
+        clang::isa<clang::ReturnStmt>(stmt)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
+  if (auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
+    for (auto top_level_case : GetTopLevelSwitchCases(stmt)) {
+      auto arm = GetSwitchArmBody(body, top_level_case);
+      if (arm.empty() || SwitchArmHasFallthrough(arm.back())) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 } // namespace cpp2rust

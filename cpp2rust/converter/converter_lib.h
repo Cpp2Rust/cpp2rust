@@ -154,4 +154,18 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
+std::vector<clang::SwitchCase *>
+GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
+
+bool ChainContainsDefault(clang::SwitchCase *c);
+
+clang::Stmt *ChainLeafBody(clang::SwitchCase *c);
+
+std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
+                                            clang::SwitchCase *head);
+
+bool SwitchArmHasFallthrough(clang::Stmt *stmt);
+
+bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+
 } // namespace cpp2rust

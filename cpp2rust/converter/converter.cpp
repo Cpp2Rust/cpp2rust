@@ -2617,58 +2617,6 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
-static std::vector<clang::SwitchCase *>
-GetTopLevelSwitchCases(clang::SwitchStmt *stmt) {
-  std::vector<clang::SwitchCase *> cases;
-  if (auto *body = llvm::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
-    for (auto *s : body->body()) {
-      if (auto *sc = clang::dyn_cast<clang::SwitchCase>(s)) {
-        cases.push_back(sc);
-      }
-    }
-  }
-  return cases;
-}
-
-static bool ChainContainsDefault(clang::SwitchCase *c) {
-  for (clang::Stmt *cur = c;;) {
-    if (clang::isa<clang::DefaultStmt>(cur)) {
-      return true;
-    }
-    auto *sc = clang::dyn_cast<clang::SwitchCase>(cur);
-    if (!sc) {
-      return false;
-    }
-    cur = sc->getSubStmt();
-  }
-  return false;
-}
-
-static clang::Stmt *ChainLeafBody(clang::SwitchCase *c) {
-  clang::Stmt *cur = c->getSubStmt();
-  while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
-    cur = sc->getSubStmt();
-  }
-  return cur;
-}
-
-static std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
-                                                   clang::SwitchCase *head) {
-  std::vector<clang::Stmt *> out;
-  out.push_back(ChainLeafBody(head));
-  auto it = body->body_begin(), end = body->body_end();
-  while (it != end && *it != head) {
-    ++it;
-  }
-  assert(it != end);
-  ++it;
-  while (it != end && !clang::isa<clang::SwitchCase>(*it)) {
-    out.push_back(*it);
-    ++it;
-  }
-  return out;
-}
-
 bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
   clang::Stmt *cur = stmt;
   clang::SwitchCase *last = nullptr;
