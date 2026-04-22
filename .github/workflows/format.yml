@@ -11,7 +11,8 @@ jobs:
   format:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -37,11 +38,23 @@ jobs:
       - name: Apply C++ formatting fixes
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
 
+      - name: Suggest C++ formatting fixes
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: clang-format
+
       - name: Apply Rust lint fixes
         run: |
           cargo clippy --fix --allow-dirty --manifest-path rules/Cargo.toml --all-targets
           cargo +nightly clippy --fix --allow-dirty --manifest-path rule-preprocessor/Cargo.toml --all-targets
           cargo clippy --fix --allow-dirty --manifest-path libcc2rs/Cargo.toml --all-targets
+
+      - name: Suggest Rust lint fixes
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: clippy
 
       - name: Apply Rust formatting fixes
         run: |
@@ -50,11 +63,11 @@ jobs:
           cargo fmt --manifest-path libcc2rs/Cargo.toml
           find tests -name '*.rs' -print0 | xargs -0 rustfmt
 
-      - name: Commit auto-fixes
-        if: github.ref != 'refs/heads/master'
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Suggest Rust formatting fixes
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-suggester@v1
         with:
-          commit_message: "Automatically apply formatting and lint fixes"
+          tool_name: rustfmt
 
       - name: Check C++ formatting
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
