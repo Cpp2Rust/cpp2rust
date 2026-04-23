@@ -488,6 +488,78 @@ int borrow_in_condition_and_in_body(int x) {
   }
 }
 
+int for_in_switch_break(int n) {
+  int r = 0;
+  switch (n) {
+  case 0:
+    for (int i = 0; i < 10; ++i) {
+      if (i == 3) break;
+      r += i;
+    }
+    r += 100;
+    break;
+  default:
+    r = -1;
+    break;
+  }
+  return r;
+}
+
+int for_in_switch_continue(int n) {
+  int r = 0;
+  switch (n) {
+  case 0:
+    for (int i = 0; i < 5; ++i) {
+      if (i % 2 == 0) continue;
+      r += i;
+    }
+    break;
+  default:
+    r = -1;
+    break;
+  }
+  return r;
+}
+
+int while_in_switch_break(int n) {
+  int r = 0;
+  switch (n) {
+  case 0: {
+    int i = 0;
+    while (i < 10) {
+      if (i == 4) break;
+      r += i;
+      ++i;
+    }
+    r += 1000;
+    break;
+  }
+  default:
+    r = -1;
+    break;
+  }
+  return r;
+}
+
+int for_switch_for_break(int n) {
+  int r = 0;
+  for (int i = 0; i < n; ++i) {
+    switch (i) {
+    case 1:
+      for (int j = 0; j < 10; ++j) {
+        if (j == 2) break;
+        r += 1;
+      }
+      r += 100;
+      break;
+    default:
+      r += 10;
+      break;
+    }
+  }
+  return r;
+}
+
 int main() {
   assert(basic(0) == 10);
   assert(basic(2) == 30);
@@ -609,5 +681,17 @@ int main() {
 
   assert(borrow_in_condition_and_in_body(0) == 1);
   assert(borrow_in_condition_and_in_body(1) == 2);
+
+  assert(for_in_switch_break(0) == 103);
+  assert(for_in_switch_break(99) == -1);
+
+  assert(for_in_switch_continue(0) == 4);
+  assert(for_in_switch_continue(99) == -1);
+
+  assert(while_in_switch_break(0) == 1006);
+  assert(while_in_switch_break(99) == -1);
+
+  assert(for_switch_for_break(3) == 122);
+
   return 0;
 }

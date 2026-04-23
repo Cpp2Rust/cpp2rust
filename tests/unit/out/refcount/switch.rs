@@ -658,6 +658,111 @@ pub fn borrow_in_condition_and_in_body_30(x: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
+pub fn for_in_switch_break_31(n: i32) -> i32 {
+    let n: Value<i32> = Rc::new(RefCell::new(n));
+    let r: Value<i32> = Rc::new(RefCell::new(0));
+    'switch: {
+        let __match_cond = (*n.borrow());
+        match __match_cond {
+            v if v == 0 => {
+                let i: Value<i32> = Rc::new(RefCell::new(0));
+                'loop_: while ((*i.borrow()) < 10) {
+                    if ((*i.borrow()) == 3) {
+                        break;
+                    }
+                    (*r.borrow_mut()) += (*i.borrow());
+                    (*i.borrow_mut()).prefix_inc();
+                }
+                (*r.borrow_mut()) += 100;
+                break 'switch;
+            }
+            _ => {
+                (*r.borrow_mut()) = -1_i32;
+                break 'switch;
+            }
+        }
+    };
+    return (*r.borrow());
+}
+pub fn for_in_switch_continue_32(n: i32) -> i32 {
+    let n: Value<i32> = Rc::new(RefCell::new(n));
+    let r: Value<i32> = Rc::new(RefCell::new(0));
+    'switch: {
+        let __match_cond = (*n.borrow());
+        match __match_cond {
+            v if v == 0 => {
+                let i: Value<i32> = Rc::new(RefCell::new(0));
+                'loop_: while ((*i.borrow()) < 5) {
+                    if (((*i.borrow()) % 2) == 0) {
+                        (*i.borrow_mut()).prefix_inc();
+                        continue 'loop_;
+                    }
+                    (*r.borrow_mut()) += (*i.borrow());
+                    (*i.borrow_mut()).prefix_inc();
+                }
+                break 'switch;
+            }
+            _ => {
+                (*r.borrow_mut()) = -1_i32;
+                break 'switch;
+            }
+        }
+    };
+    return (*r.borrow());
+}
+pub fn while_in_switch_break_33(n: i32) -> i32 {
+    let n: Value<i32> = Rc::new(RefCell::new(n));
+    let r: Value<i32> = Rc::new(RefCell::new(0));
+    switch!(match (*n.borrow()) {
+        v if v == 0 => {
+            let i: Value<i32> = Rc::new(RefCell::new(0));
+            'loop_: while ((*i.borrow()) < 10) {
+                if ((*i.borrow()) == 4) {
+                    break;
+                }
+                (*r.borrow_mut()) += (*i.borrow());
+                (*i.borrow_mut()).prefix_inc();
+            }
+            (*r.borrow_mut()) += 1000;
+            break;
+        }
+        _ => {
+            (*r.borrow_mut()) = -1_i32;
+            break;
+        }
+    });
+    return (*r.borrow());
+}
+pub fn for_switch_for_break_34(n: i32) -> i32 {
+    let n: Value<i32> = Rc::new(RefCell::new(n));
+    let r: Value<i32> = Rc::new(RefCell::new(0));
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+        'switch: {
+            let __match_cond = (*i.borrow());
+            match __match_cond {
+                v if v == 1 => {
+                    let j: Value<i32> = Rc::new(RefCell::new(0));
+                    'loop_: while ((*j.borrow()) < 10) {
+                        if ((*j.borrow()) == 2) {
+                            break;
+                        }
+                        (*r.borrow_mut()) += 1;
+                        (*j.borrow_mut()).prefix_inc();
+                    }
+                    (*r.borrow_mut()) += 100;
+                    break 'switch;
+                }
+                _ => {
+                    (*r.borrow_mut()) += 10;
+                    break 'switch;
+                }
+            }
+        };
+        (*i.borrow_mut()).prefix_inc();
+    }
+    return (*r.borrow());
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -1216,6 +1321,48 @@ fn main_0() -> i32 {
             let _x: i32 = 1;
             borrow_in_condition_and_in_body_30(_x)
         }) == 2)
+    );
+    assert!(
+        (({
+            let _n: i32 = 0;
+            for_in_switch_break_31(_n)
+        }) == 103)
+    );
+    assert!(
+        (({
+            let _n: i32 = 99;
+            for_in_switch_break_31(_n)
+        }) == -1_i32)
+    );
+    assert!(
+        (({
+            let _n: i32 = 0;
+            for_in_switch_continue_32(_n)
+        }) == 4)
+    );
+    assert!(
+        (({
+            let _n: i32 = 99;
+            for_in_switch_continue_32(_n)
+        }) == -1_i32)
+    );
+    assert!(
+        (({
+            let _n: i32 = 0;
+            while_in_switch_break_33(_n)
+        }) == 1006)
+    );
+    assert!(
+        (({
+            let _n: i32 = 99;
+            while_in_switch_break_33(_n)
+        }) == -1_i32)
+    );
+    assert!(
+        (({
+            let _n: i32 = 3;
+            for_switch_for_break_34(_n)
+        }) == 122)
     );
     return 0;
 }

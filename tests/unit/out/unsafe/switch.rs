@@ -620,6 +620,107 @@ pub unsafe fn borrow_in_condition_and_in_body_30(mut x: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
+pub unsafe fn for_in_switch_break_31(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    'switch: {
+        let __match_cond = n;
+        match __match_cond {
+            v if v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (10)) {
+                    if ((i) == (3)) {
+                        break;
+                    }
+                    r += i;
+                    i.prefix_inc();
+                }
+                r += 100;
+                break 'switch;
+            }
+            _ => {
+                r = -1_i32;
+                break 'switch;
+            }
+        }
+    };
+    return r;
+}
+pub unsafe fn for_in_switch_continue_32(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    'switch: {
+        let __match_cond = n;
+        match __match_cond {
+            v if v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (5)) {
+                    if (((i) % (2)) == (0)) {
+                        i.prefix_inc();
+                        continue 'loop_;
+                    }
+                    r += i;
+                    i.prefix_inc();
+                }
+                break 'switch;
+            }
+            _ => {
+                r = -1_i32;
+                break 'switch;
+            }
+        }
+    };
+    return r;
+}
+pub unsafe fn while_in_switch_break_33(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    switch!(match n {
+        v if v == 0 => {
+            let mut i: i32 = 0;
+            'loop_: while ((i) < (10)) {
+                if ((i) == (4)) {
+                    break;
+                }
+                r += i;
+                i.prefix_inc();
+            }
+            r += 1000;
+            break;
+        }
+        _ => {
+            r = -1_i32;
+            break;
+        }
+    });
+    return r;
+}
+pub unsafe fn for_switch_for_break_34(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while ((i) < (n)) {
+        'switch: {
+            let __match_cond = i;
+            match __match_cond {
+                v if v == 1 => {
+                    let mut j: i32 = 0;
+                    'loop_: while ((j) < (10)) {
+                        if ((j) == (2)) {
+                            break;
+                        }
+                        r += 1;
+                        j.prefix_inc();
+                    }
+                    r += 100;
+                    break 'switch;
+                }
+                _ => {
+                    r += 10;
+                    break 'switch;
+                }
+            }
+        };
+        i.prefix_inc();
+    }
+    return r;
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -1180,6 +1281,48 @@ unsafe fn main_0() -> i32 {
             let _x: i32 = 1;
             borrow_in_condition_and_in_body_30(_x)
         }) == (2))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 0;
+            for_in_switch_break_31(_n)
+        }) == (103))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 99;
+            for_in_switch_break_31(_n)
+        }) == (-1_i32))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 0;
+            for_in_switch_continue_32(_n)
+        }) == (4))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 99;
+            for_in_switch_continue_32(_n)
+        }) == (-1_i32))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 0;
+            while_in_switch_break_33(_n)
+        }) == (1006))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 99;
+            while_in_switch_break_33(_n)
+        }) == (-1_i32))
+    );
+    assert!(
+        ((unsafe {
+            let _n: i32 = 3;
+            for_switch_for_break_34(_n)
+        }) == (122))
     );
     return 0;
 }
