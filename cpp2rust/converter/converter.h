@@ -290,6 +290,9 @@ public:
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
+  void EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
+                     bool is_default);
+
   bool ConvertSwitchCaseCondition(clang::SwitchCase *stmt);
 
   virtual bool VisitVAArgExpr(clang::VAArgExpr *expr);

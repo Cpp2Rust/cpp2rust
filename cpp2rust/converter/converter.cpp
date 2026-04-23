@@ -2647,7 +2647,22 @@ bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
   return false;
 }
 
+void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
+                              bool is_default) {
+  if (is_default) {
+    StrCat("_ => {");
+  } else {
+    StrCat("v if v == ");
+    ConvertSwitchCaseCondition(sc);
+  }
+  for (auto *t : GetSwitchCaseBody(body, sc)) {
+    Convert(t);
+  }
+  StrCat("},");
+}
+
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
+  PushBreakTarget push(break_target_, BreakTarget::Switch);
   auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
 
@@ -2656,28 +2671,17 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   StrCat("match __match_cond");
   StrCat("{");
 
-  PushBreakTarget push(break_target_, BreakTarget::Switch);
-
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
     if (SwitchCaseContainsDefault(sc)) {
       default_case = sc;
       continue;
     }
-    StrCat("v if v == ");
-    ConvertSwitchCaseCondition(sc);
-    for (auto *t : GetSwitchCaseBody(body, sc)) {
-      Convert(t);
-    }
-    StrCat("},");
+    EmitSwitchArm(body, sc, /*is_default=*/false);
   }
 
   if (default_case) {
-    StrCat("_ => {");
-    for (auto *t : GetSwitchCaseBody(body, default_case)) {
-      Convert(t);
-    }
-    StrCat("},");
+    EmitSwitchArm(body, default_case, /*is_default=*/true);
   } else {
     StrCat(R"( _ => {})");
   }
