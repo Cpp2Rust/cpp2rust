@@ -468,22 +468,15 @@ protected:
   bool in_function_formals_ = false;
 
   enum class BreakTarget { Loop, Switch };
-  class BreakTargetStack {
-  public:
-    void push(BreakTarget t) { stack_.push(t); }
-    void pop() { stack_.pop(); }
-    bool isSwitch() const {
-      return !stack_.empty() && stack_.top() == BreakTarget::Switch;
-    }
+  std::stack<BreakTarget> break_target_;
 
-  private:
-    std::stack<BreakTarget> stack_;
-  };
-  BreakTargetStack break_target_;
+  bool isSwitchBreak() const {
+    return !break_target_.empty() && break_target_.top() == BreakTarget::Switch;
+  }
 
   class PushBreakTarget {
   public:
-    PushBreakTarget(BreakTargetStack &stack, BreakTarget target)
+    PushBreakTarget(std::stack<BreakTarget> &stack, BreakTarget target)
         : stack_(stack) {
       stack_.push(target);
     }
@@ -492,7 +485,7 @@ protected:
     PushBreakTarget &operator=(const PushBreakTarget &) = delete;
 
   private:
-    BreakTargetStack &stack_;
+    std::stack<BreakTarget> &stack_;
   };
 
   std::stack<clang::Expr *> curr_for_inc_;

@@ -1140,7 +1140,7 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
 }
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
-  if (break_target_.isSwitch()) {
+  if (isSwitchBreak()) {
     StrCat(keyword::kBreak, "'switch");
     return false;
   }
