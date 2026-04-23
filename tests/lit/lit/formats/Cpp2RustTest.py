@@ -96,10 +96,6 @@ class Cpp2RustTest(TestFormat):
       shutil.rmtree(tmp_dir, True)
       return code, str
 
-    expected_file = self.getExpectedFile(filepath, model, fname)
-    if not os.path.exists(expected_file) and not replace_expected:
-      return fail('no expected file')
-
     cmd = ['./cpp2rust/cpp2rust', '-file', cc_input, '-model', model,
            '-o', rs_file]
 
@@ -118,6 +114,10 @@ class Cpp2RustTest(TestFormat):
       if should_not_translate:
         return lit.Test.PASS, ''
       return fail('cpp2rust failed\n' + err)
+
+    expected_file = self.getExpectedFile(filepath, model, fname)
+    if not os.path.exists(expected_file) and not replace_expected:
+      return fail('no expected file')
 
     if replace_expected:
       self.updateExpected(generated, expected_file)
