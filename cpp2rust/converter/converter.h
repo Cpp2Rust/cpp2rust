@@ -476,7 +476,7 @@ protected:
   private:
     std::stack<BreakTarget> stack_;
   };
-  BreakTargetStack break_target_stack_;
+  BreakTargetStack break_target_;
 
   class PushBreakTarget {
   public:

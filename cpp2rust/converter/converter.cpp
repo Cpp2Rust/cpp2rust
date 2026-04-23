@@ -990,7 +990,7 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 }
 
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
-  PushBreakTarget push(break_target_stack_, BreakTarget::Loop);
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
@@ -1003,7 +1003,7 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
-  PushBreakTarget push(break_target_stack_, BreakTarget::Loop);
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
   StrCat(keyword::kLoop, token::kOpenCurlyBracket);
   curr_for_inc_.emplace(nullptr);
@@ -1018,7 +1018,7 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
 }
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
-  PushBreakTarget push(break_target_stack_, BreakTarget::Loop);
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   Convert(stmt->getInit());
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
@@ -1058,7 +1058,7 @@ void Converter::ConvertLoopVariable(clang::VarDecl *decl,
 
 void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
                                     const clang::VarDecl *map_iter_decl) {
-  PushBreakTarget push(break_target_stack_, BreakTarget::Loop);
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   std::optional<ScopedMapIterDecl> skip;
   if (map_iter_decl)
     skip.emplace(*this, map_iter_decl);
@@ -1140,7 +1140,7 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
 }
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
-  if (break_target_stack_.isSwitch()) {
+  if (break_target_.isSwitch()) {
     StrCat(keyword::kBreak, "'switch");
     return false;
   }
@@ -2656,7 +2656,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   StrCat("match __match_cond");
   StrCat("{");
 
-  PushBreakTarget push(break_target_stack_, BreakTarget::Switch);
+  PushBreakTarget push(break_target_, BreakTarget::Switch);
 
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
