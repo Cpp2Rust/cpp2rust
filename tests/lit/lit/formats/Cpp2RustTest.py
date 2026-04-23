@@ -26,6 +26,7 @@ class Cpp2RustTest(TestFormat):
     self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
     self.regex_panic = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nocompile = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
+    self.regex_translation_fail = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nondet_result = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
     self.rust_version = read_rust_version()
     os.environ['RUSTFLAGS'] = '-Awarnings -A dangerous-implicit-autorefs'
@@ -83,6 +84,7 @@ class Cpp2RustTest(TestFormat):
 
     should_panic = matches_model(self.regex_panic.search(text), model)
     should_not_compile = matches_model(self.regex_nocompile.search(text), model)
+    should_not_translate = matches_model(self.regex_translation_fail.search(text), model)
     is_nondet_result = matches_model(self.regex_nondet_result.search(text), model)
 
     tmp_dir = "tmp/" + fname + "-" + model + "_" + format(random.getrandbits(64), "x")
@@ -113,6 +115,8 @@ class Cpp2RustTest(TestFormat):
       generated = f.read()
 
     if returncode != 0:
+      if should_not_translate:
+        return lit.Test.PASS, ''
       return fail('cpp2rust failed\n' + err)
 
     if replace_expected:
