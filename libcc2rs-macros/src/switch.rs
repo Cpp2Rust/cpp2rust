@@ -1,15 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-// switch!(match <condition> {
-//     <pat> [if <guard>] => <body>,
-//     <pat> [if <guard>] => <body>,
-//     ...
-//     _ => <body>,
-// });
-//
-// The input is a real `match` expression so rustfmt formats it normally.
-
 use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::{parse_macro_input, Expr, Pat};
