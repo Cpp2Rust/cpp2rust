@@ -2622,7 +2622,7 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
-bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
+bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
   clang::Stmt *cur = stmt;
   clang::SwitchCase *last = nullptr;
   bool first = true;
@@ -2665,7 +2665,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
       continue;
     }
     StrCat("v if v == ");
-    VisitSwitchCase(sc);
+    ConvertSwitchCaseCondition(sc);
     for (auto *t : GetSwitchCaseBody(body, sc)) {
       Convert(t);
     }

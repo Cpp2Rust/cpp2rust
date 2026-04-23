@@ -290,7 +290,7 @@ public:
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
-  virtual bool VisitSwitchCase(clang::SwitchCase *stmt);
+  bool ConvertSwitchCaseCondition(clang::SwitchCase *stmt);
 
   virtual bool VisitVAArgExpr(clang::VAArgExpr *expr);
 
