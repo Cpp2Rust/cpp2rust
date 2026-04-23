@@ -298,7 +298,6 @@ int fallthrough_one(int x) {
   switch (x) {
   case 1:
     r += 10;
-    [[fallthrough]];
   case 2:
     r += 20;
     break;
