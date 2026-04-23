@@ -673,7 +673,7 @@ GetTopLevelSwitchCases(clang::SwitchStmt *stmt) {
   return cases;
 }
 
-bool ChainContainsDefault(clang::SwitchCase *c) {
+bool SwitchCaseContainsDefault(clang::SwitchCase *c) {
   for (clang::Stmt *cur = c;;) {
     if (clang::isa<clang::DefaultStmt>(cur)) {
       return true;
@@ -687,7 +687,7 @@ bool ChainContainsDefault(clang::SwitchCase *c) {
   return false;
 }
 
-clang::Stmt *ChainLeafBody(clang::SwitchCase *c) {
+static clang::Stmt *GetLastStmtOfSwitchCase(clang::SwitchCase *c) {
   clang::Stmt *cur = c->getSubStmt();
   while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
     cur = sc->getSubStmt();
@@ -695,10 +695,10 @@ clang::Stmt *ChainLeafBody(clang::SwitchCase *c) {
   return cur;
 }
 
-std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
-                                            clang::SwitchCase *head) {
+std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
+                                             clang::SwitchCase *head) {
   std::vector<clang::Stmt *> out;
-  out.push_back(ChainLeafBody(head));
+  out.push_back(GetLastStmtOfSwitchCase(head));
   auto it = body->body_begin(), end = body->body_end();
   while (it != end && *it != head) {
     ++it;
@@ -712,7 +712,7 @@ std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
   return out;
 }
 
-bool SwitchArmHasFallthrough(clang::Stmt *stmt) {
+static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
   if (stmt) {
     if (clang::isa<clang::BreakStmt>(stmt) ||
         clang::isa<clang::ReturnStmt>(stmt)) {
@@ -725,8 +725,8 @@ bool SwitchArmHasFallthrough(clang::Stmt *stmt) {
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
   if (auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody())) {
     for (auto top_level_case : GetTopLevelSwitchCases(stmt)) {
-      auto arm = GetSwitchArmBody(body, top_level_case);
-      if (arm.empty() || SwitchArmHasFallthrough(arm.back())) {
+      auto arm = GetSwitchCaseBody(body, top_level_case);
+      if (arm.empty() || SwitchCaseHasFallthrough(arm.back())) {
         return true;
       }
     }

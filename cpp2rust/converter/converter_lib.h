@@ -157,14 +157,10 @@ clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx);
 std::vector<clang::SwitchCase *>
 GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
 
-bool ChainContainsDefault(clang::SwitchCase *c);
+bool SwitchCaseContainsDefault(clang::SwitchCase *c);
 
-clang::Stmt *ChainLeafBody(clang::SwitchCase *c);
-
-std::vector<clang::Stmt *> GetSwitchArmBody(clang::CompoundStmt *body,
-                                            clang::SwitchCase *head);
-
-bool SwitchArmHasFallthrough(clang::Stmt *stmt);
+std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
+                                             clang::SwitchCase *head);
 
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
 

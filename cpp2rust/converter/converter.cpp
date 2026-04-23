@@ -2669,13 +2669,13 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
-    if (ChainContainsDefault(sc)) {
+    if (SwitchCaseContainsDefault(sc)) {
       default_case = sc;
       continue;
     }
     StrCat("v if v == ");
     VisitSwitchCase(sc);
-    for (auto *t : GetSwitchArmBody(body, sc)) {
+    for (auto *t : GetSwitchCaseBody(body, sc)) {
       Convert(t);
     }
     StrCat("},");
@@ -2683,7 +2683,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   if (default_case) {
     StrCat("_ => {");
-    for (auto *t : GetSwitchArmBody(body, default_case)) {
+    for (auto *t : GetSwitchCaseBody(body, default_case)) {
       Convert(t);
     }
     StrCat("},");
