@@ -67,8 +67,8 @@ impl GotoStateMachine {
         }
     }
 
-    fn bailout(any: bool, flag: &Ident, stmt: TokenStream2) -> (TokenStream2, TokenStream2) {
-        if !any {
+    fn bailout(should_emit: bool, flag: &Ident, stmt: TokenStream2) -> (TokenStream2, TokenStream2) {
+        if !should_emit {
             return (TokenStream2::new(), TokenStream2::new());
         }
         (
