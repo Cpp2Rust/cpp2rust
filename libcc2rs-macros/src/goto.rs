@@ -5,20 +5,20 @@ use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::{parse_macro_input, Expr, Lifetime, Token};
 
-use crate::state_machine::{emit_state_machine, Arm, ArmEntry};
+use crate::state_machine::{Arm, GotoStateMachine, StateMachine};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let GotoBlockInput { arms } = parse_macro_input!(input as GotoBlockInput);
-    emit_state_machine(
-        None,
-        arms.into_iter()
+    GotoStateMachine {
+        arms: arms
+            .into_iter()
             .map(|a| Arm {
                 label: a.label.ident.to_string(),
-                entry: ArmEntry::LabelOnly,
                 body: a.body,
             })
             .collect(),
-    )
+    }
+    .emit()
     .into()
 }
 

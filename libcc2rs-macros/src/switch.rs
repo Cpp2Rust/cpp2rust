@@ -5,24 +5,30 @@ use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::{parse_macro_input, Expr, Pat};
 
-use crate::state_machine::{emit_state_machine, Arm, ArmEntry};
+use crate::state_machine::{Arm, DispatchCase, GotoStateMachine, StateMachine, SwitchStateMachine};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let SwitchInput { condition, arms } = parse_macro_input!(input as SwitchInput);
-    emit_state_machine(
-        Some(condition),
-        arms.into_iter()
-            .enumerate()
-            .map(|(i, a)| Arm {
-                label: format!("__c{}", i),
-                entry: ArmEntry::Dispatch {
-                    pat: a.pat,
-                    guard: a.guard,
-                },
-                body: a.body,
-            })
-            .collect(),
-    )
+    let mut cases = Vec::with_capacity(arms.len());
+    let mut cfg_arms = Vec::with_capacity(arms.len());
+    for (i, a) in arms.into_iter().enumerate() {
+        let label = format!("__c{}", i);
+        cases.push(DispatchCase {
+            pat: a.pat,
+            guard: a.guard,
+            target: label.clone(),
+        });
+        cfg_arms.push(Arm {
+            label,
+            body: a.body,
+        });
+    }
+    SwitchStateMachine {
+        goto: GotoStateMachine { arms: cfg_arms },
+        condition: condition,
+        cases,
+    }
+    .emit()
     .into()
 }
 
