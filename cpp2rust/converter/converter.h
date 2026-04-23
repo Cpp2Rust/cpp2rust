@@ -463,7 +463,35 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
-  int switch_depth_ = 0;
+
+  enum class BreakTarget { Loop, RegularSwitch, FallthroughSwitch };
+  class BreakTargetStack {
+  public:
+    void push(BreakTarget t) { stack_.push(t); }
+    void pop() { stack_.pop(); }
+    bool isRegularSwitch() const {
+      return !stack_.empty() && stack_.top() == BreakTarget::RegularSwitch;
+    }
+
+  private:
+    std::stack<BreakTarget> stack_;
+  };
+  BreakTargetStack break_target_stack_;
+
+  class PushBreakTarget {
+  public:
+    PushBreakTarget(BreakTargetStack &stack, BreakTarget target)
+        : stack_(stack) {
+      stack_.push(target);
+    }
+    ~PushBreakTarget() { stack_.pop(); }
+    PushBreakTarget(const PushBreakTarget &) = delete;
+    PushBreakTarget &operator=(const PushBreakTarget &) = delete;
+
+  private:
+    BreakTargetStack &stack_;
+  };
+
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
 
