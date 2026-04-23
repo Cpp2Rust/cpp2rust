@@ -19,14 +19,6 @@ pub fn switch(input: TokenStream) -> TokenStream {
     switch::expand(input)
 }
 
-#[proc_macro]
-pub fn switch_break(_input: TokenStream) -> TokenStream {
-    quote::quote! {
-        compile_error!("switch_break!() can only be used inside switch!")
-    }
-    .into()
-}
-
 // goto_block! {
 //     '<label> => <body>,
 //     '<label> => <body>,
