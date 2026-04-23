@@ -1,107 +1,18 @@
-error: break is not allowed at the top level of a switch!/goto_block! arm. Inside a switch! use switch_break!()
-  --> tests/ui/forbidden.rs:10:5
-   |
-10 | /     switch!(match 0 {
-11 | |         0 => { v = 1; break; }
-12 | |         _ => { v = 2; }
-13 | |     });
-   | |______^
-   |
-   = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: continue is not allowed at the top level of a switch!/goto_block! arm
-  --> tests/ui/forbidden.rs:19:5
-   |
-19 | /     switch!(match 0 {
-20 | |         0 => { v = 1; continue; }
-21 | |         _ => { v = 2; }
-22 | |     });
-   | |______^
-   |
-   = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: break is not allowed at the top level of a switch!/goto_block! arm. Inside a switch! use switch_break!()
-  --> tests/ui/forbidden.rs:29:9
-   |
-29 | /         switch!(match 0 {
-30 | |             0 => { v = 1; break 'outer; }
-31 | |             _ => { v = 2; }
-32 | |         });
-   | |__________^
-   |
-   = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: switch_break!() can only be used inside switch!
-  --> tests/ui/forbidden.rs:42:17
-   |
-42 |                 switch_break!(); // C: break in a nested loop can't target the switch
-   |                 ^^^^^^^^^^^^^^^
-   |
-   = note: this error originates in the macro `switch_break` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: break is not allowed at the top level of a switch!/goto_block! arm. Inside a switch! use switch_break!()
-  --> tests/ui/forbidden.rs:53:5
-   |
-53 | /     goto_block! {
-54 | |         'a => { v = 1; break; },
-55 | |         'b => { v = 2; },
-56 | |     };
-   | |_____^
-   |
-   = note: this error originates in the macro `goto_block` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: continue is not allowed at the top level of a switch!/goto_block! arm
-  --> tests/ui/forbidden.rs:63:9
-   |
-63 | /         goto_block! {
-64 | |             'a => { v = 1; continue 'outer; },
-65 | |             'b => { v = 2; },
-66 | |         };
-   | |_________^
-   |
-   = note: this error originates in the macro `goto_block` (in Nightly builds, run with -Z macro-backtrace for more info)
-
-error: switch_break!() can only be used inside switch!
-  --> tests/ui/forbidden.rs:75:5
-   |
-75 |     switch_break!();
-   |     ^^^^^^^^^^^^^^^
-   |
-   = note: this error originates in the macro `switch_break` (in Nightly builds, run with -Z macro-backtrace for more info)
-
 error: goto!() can only be used inside goto_block!
-  --> tests/ui/forbidden.rs:81:5
+  --> tests/ui/forbidden.rs:22:5
    |
-81 |     goto!('nowhere);
+22 |     goto!('nowhere);
    |     ^^^^^^^^^^^^^^^
    |
    = note: this error originates in the macro `goto` (in Nightly builds, run with -Z macro-backtrace for more info)
 
-warning: unused label
-  --> tests/ui/forbidden.rs:28:5
+error[E0268]: `continue` outside of a loop
+  --> tests/ui/forbidden.rs:13:5
    |
-28 |     'outer: loop {
-   |     ^^^^^^
+13 | /     switch!(match 0 {
+14 | |         0 => { v = 1; continue; }
+15 | |         _ => { v = 2; }
+16 | |     });
+   | |______^ cannot `continue` outside of a loop
    |
-   = note: `#[warn(unused_labels)]` (part of `#[warn(unused)]`) on by default
-
-warning: unused label
-  --> tests/ui/forbidden.rs:62:5
-   |
-62 |     'outer: loop {
-   |     ^^^^^^
-
-warning: unreachable statement
-  --> tests/ui/forbidden.rs:34:5
-   |
-28 | /     'outer: loop {
-29 | |         switch!(match 0 {
-30 | |             0 => { v = 1; break 'outer; }
-31 | |             _ => { v = 2; }
-32 | |         });
-33 | |     }
-   | |_____- any code following this expression is unreachable
-34 |       let _ = v;
-   |       ^^^^^^^^^^ unreachable statement
-   |
-   = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
+   = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)

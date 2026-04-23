@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use libcc2rs_macros::{goto_block, switch, switch_break};
+use libcc2rs_macros::{goto_block, switch};
 
 #[test]
 fn switch_dispatch_each_case() {
@@ -10,19 +10,19 @@ fn switch_dispatch_each_case() {
         switch!(match input {
             0 => {
                 out = "zero";
-                switch_break!();
+                break;
             }
             1 => {
                 out = "one";
-                switch_break!();
+                break;
             }
             2 => {
                 out = "two";
-                switch_break!();
+                break;
             }
             _ => {
                 out = "default";
-                switch_break!();
+                break;
             }
         });
         assert_eq!(out, expected, "input = {}", input);
@@ -38,11 +38,11 @@ fn switch_fallthrough() {
         } // fall-through
         1 => {
             v += 10;
-            switch_break!();
+            break;
         }
         _ => {
             v = -1;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 11);
@@ -60,11 +60,11 @@ fn switch_fallthrough_chain() {
         }
         2 => {
             v += 100;
-            switch_break!();
+            break;
         }
         _ => {
             v = -1;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 111);
@@ -76,15 +76,15 @@ fn switch_break_exits() {
     switch!(match 1 {
         0 => {
             v = 999;
-            switch_break!();
+            break;
         }
         1 => {
             v = 1;
-            switch_break!();
+            break;
         }
         _ => {
             v = 2;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 1);
@@ -96,11 +96,11 @@ fn switch_default_case() {
     switch!(match 42 {
         0 => {
             v = 1;
-            switch_break!();
+            break;
         }
         _ => {
             v = 2;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 2);
@@ -113,11 +113,11 @@ fn switch_or_pattern() {
         switch!(match x {
             1 | 2 | 3 => {
                 v = "low";
-                switch_break!();
+                break;
             }
             _ => {
                 v = "other";
-                switch_break!();
+                break;
             }
         });
         let expected = if x <= 3 { "low" } else { "other" };
@@ -132,15 +132,15 @@ fn switch_guard_stacked_cases() {
         switch!(match x {
             v if v == 1 || v == 2 || v == 3 => {
                 r = 100;
-                switch_break!();
+                break;
             }
             v if v == 4 || v == 5 => {
                 r = 200;
-                switch_break!();
+                break;
             }
             _ => {
                 r = 300;
-                switch_break!();
+                break;
             }
         });
         assert_eq!(r, expected, "x = {}", x);
@@ -156,11 +156,11 @@ fn switch_guard_fallthrough() {
         }
         w if w == 2 => {
             v += 10;
-            switch_break!();
+            break;
         }
         _ => {
             v = -1;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 11);
@@ -172,15 +172,15 @@ fn switch_guard_no_match_hits_default() {
     switch!(match 42 {
         v if v == 1 => {
             r = 1;
-            switch_break!();
+            break;
         }
         v if v == 2 || v == 3 => {
             r = 2;
-            switch_break!();
+            break;
         }
         _ => {
             r = 99;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(r, 99);
@@ -192,15 +192,15 @@ fn switch_range_pattern() {
     switch!(match 50i32 {
         0..=9 => {
             v = 1;
-            switch_break!();
+            break;
         }
         10..=99 => {
             v = 2;
-            switch_break!();
+            break;
         }
         _ => {
             v = 3;
-            switch_break!();
+            break;
         }
     });
     assert_eq!(v, 2);
@@ -218,10 +218,10 @@ fn switch_nested_loop_break_targets_inner() {
                 sum += i;
             }
             sum += 100;
-            switch_break!();
+            break;
         }
         _ => {
-            switch_break!();
+            break;
         }
     });
     assert_eq!(sum, 103);
@@ -256,10 +256,10 @@ fn switch_in_loop() {
         switch!(match x {
             0 | 2 | 4 => {
                 count += 1;
-                switch_break!();
+                break;
             }
             _ => {
-                switch_break!();
+                break;
             }
         });
     }
