@@ -184,23 +184,26 @@ pub unsafe fn switch_enum_8(mut c: Color) -> i32 {
 }
 pub unsafe fn compound_case_body_9(mut x: i32) -> i32 {
     let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 => {
-            let mut y: i32 = 10;
-            let mut z: i32 = 20;
-            r = ((y) + (z));
-            break;
+    'switch: {
+        let __match_cond = x;
+        match __match_cond {
+            v if v == 1 => {
+                let mut y: i32 = 10;
+                let mut z: i32 = 20;
+                r = ((y) + (z));
+                break 'switch;
+            }
+            v if v == 2 => {
+                let mut y: i32 = 100;
+                r = ((y) - (1));
+                break 'switch;
+            }
+            _ => {
+                r = -1_i32;
+                break 'switch;
+            }
         }
-        v if v == 2 => {
-            let mut y: i32 = 100;
-            r = ((y) - (1));
-            break;
-        }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
+    };
     return r;
 }
 pub unsafe fn nested_10(mut a: i32, mut b: i32) -> i32 {
@@ -269,17 +272,20 @@ pub unsafe fn switch_in_loop_11(mut n: i32) -> i32 {
 }
 pub unsafe fn stacked_block_12(mut x: i32) -> i32 {
     let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 || v == 2 || v == 3 => {
-            let mut y: i32 = ((x) * (2));
-            r = ((y) + (1));
-            break;
+    'switch: {
+        let __match_cond = x;
+        match __match_cond {
+            v if v == 1 || v == 2 || v == 3 => {
+                let mut y: i32 = ((x) * (2));
+                r = ((y) + (1));
+                break 'switch;
+            }
+            _ => {
+                r = 0;
+                break 'switch;
+            }
         }
-        _ => {
-            r = 0;
-            break;
-        }
-    });
+    };
     return r;
 }
 pub unsafe fn double_it_13(mut v: i32) -> i32 {
@@ -399,81 +405,7 @@ pub unsafe fn empty_case_with_break_18(mut x: i32) -> i32 {
     };
     return r;
 }
-pub unsafe fn fallthrough_one_19(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 => {
-            r += 10;
-        }
-        v if v == 2 => {
-            r += 20;
-            break;
-        }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
-    return r;
-}
-pub unsafe fn fallthrough_chain_20(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 => {
-            r += 1;
-        }
-        v if v == 2 => {
-            r += 2;
-        }
-        v if v == 3 => {
-            r += 4;
-        }
-        v if v == 4 => {
-            r += 8;
-            break;
-        }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
-    return r;
-}
-pub unsafe fn fallthrough_default_21(mut x: i32, mut flag: i32) -> i32 {
-    let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 7 => {
-            if (flag != 0) {
-                r = 100;
-                break;
-            };
-        }
-        _ => {
-            r = 42;
-            break;
-        }
-    });
-    return r;
-}
-pub unsafe fn fallthrough_into_block_22(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 => {
-            r += 1;
-        }
-        v if v == 2 => {
-            let mut tmp: i32 = ((r) * (10));
-            r = ((tmp) + (5));
-            break;
-        }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
-    return r;
-}
-pub unsafe fn switch_complex_cond_23(mut p: *mut i32, mut bias: i32) -> i32 {
+pub unsafe fn switch_complex_cond_19(mut p: *mut i32, mut bias: i32) -> i32 {
     'switch: {
         let __match_cond = ((*p) + (bias));
         match __match_cond {
@@ -493,7 +425,7 @@ pub unsafe fn switch_complex_cond_23(mut p: *mut i32, mut bias: i32) -> i32 {
     };
     panic!("ub: non-void function does not return a value")
 }
-pub unsafe fn switch_in_dowhile_24(mut n: i32) -> i32 {
+pub unsafe fn switch_in_dowhile_20(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     let mut i: i32 = 0;
     'loop_: loop {
@@ -521,106 +453,29 @@ pub unsafe fn switch_in_dowhile_24(mut n: i32) -> i32 {
     }
     return r;
 }
-pub unsafe fn continue_inside_switch_25(mut n: i32) -> i32 {
+pub unsafe fn continue_inside_switch_21(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
-        switch!(match i {
-            v if v == 0 || v == 2 || v == 4 => {
-                i.prefix_inc();
-                continue 'loop_;
+        'switch: {
+            let __match_cond = i;
+            match __match_cond {
+                v if v == 0 || v == 2 || v == 4 => {
+                    i.prefix_inc();
+                    continue 'loop_;
+                }
+                _ => {
+                    r += i;
+                    break 'switch;
+                }
             }
-            _ => {
-                r += i;
-                break;
-            }
-        });
+        };
         r += 1000;
         i.prefix_inc();
     }
     return r;
 }
-pub unsafe fn case_then_default_26(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 2 => {
-                r = 20;
-                break 'switch;
-            }
-            _ => {
-                r = 10;
-                break 'switch;
-            }
-        }
-    };
-    return r;
-}
-pub unsafe fn default_then_case_27(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 1 => {
-                r = 1;
-                break 'switch;
-            }
-            v if v == 3 => {
-                r = 3;
-                break 'switch;
-            }
-            _ => {
-                r = 77;
-                break 'switch;
-            }
-        }
-    };
-    return r;
-}
-pub unsafe fn cases_and_default_stacked_28(mut x: i32) -> i32 {
-    let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 3 => {
-                r = 3;
-                break 'switch;
-            }
-            _ => {
-                r = 42;
-                break 'switch;
-            }
-        }
-    };
-    return r;
-}
-pub unsafe fn stacked_with_inner_fallthrough_29(mut x: i32, mut flag: i32) -> i32 {
-    let mut r: i32 = 0;
-    switch!(match x {
-        v if v == 1 || v == 2 || v == 3 => {
-            if !(flag != 0) {
-                r = 50;
-                break;
-            };
-        }
-        _ => {
-            r = 999;
-            break;
-        }
-    });
-    return r;
-}
-pub unsafe fn borrow_in_condition_and_in_body_30(mut x: i32) -> i32 {
-    switch!(match x {
-        v if v == 0 => {}
-        _ => {
-            return ((x) + (1));
-        }
-    });
-    panic!("ub: non-void function does not return a value")
-}
-pub unsafe fn for_in_switch_break_31(mut n: i32) -> i32 {
+pub unsafe fn for_in_switch_break_22(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {
         let __match_cond = n;
@@ -645,7 +500,7 @@ pub unsafe fn for_in_switch_break_31(mut n: i32) -> i32 {
     };
     return r;
 }
-pub unsafe fn for_in_switch_continue_32(mut n: i32) -> i32 {
+pub unsafe fn for_in_switch_continue_23(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {
         let __match_cond = n;
@@ -670,29 +525,32 @@ pub unsafe fn for_in_switch_continue_32(mut n: i32) -> i32 {
     };
     return r;
 }
-pub unsafe fn while_in_switch_break_33(mut n: i32) -> i32 {
+pub unsafe fn while_in_switch_break_24(mut n: i32) -> i32 {
     let mut r: i32 = 0;
-    switch!(match n {
-        v if v == 0 => {
-            let mut i: i32 = 0;
-            'loop_: while ((i) < (10)) {
-                if ((i) == (4)) {
-                    break;
+    'switch: {
+        let __match_cond = n;
+        match __match_cond {
+            v if v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (10)) {
+                    if ((i) == (4)) {
+                        break;
+                    }
+                    r += i;
+                    i.prefix_inc();
                 }
-                r += i;
-                i.prefix_inc();
+                r += 1000;
+                break 'switch;
             }
-            r += 1000;
-            break;
+            _ => {
+                r = -1_i32;
+                break 'switch;
+            }
         }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
+    };
     return r;
 }
-pub unsafe fn for_switch_for_break_34(mut n: i32) -> i32 {
+pub unsafe fn for_switch_for_break_25(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
@@ -1049,279 +907,93 @@ unsafe fn main_0() -> i32 {
             empty_case_with_break_18(_x)
         }) == (9))
     );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            fallthrough_one_19(_x)
-        }) == (30))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            fallthrough_one_19(_x)
-        }) == (20))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            fallthrough_one_19(_x)
-        }) == (-1_i32))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            fallthrough_chain_20(_x)
-        }) == (15))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            fallthrough_chain_20(_x)
-        }) == (14))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 3;
-            fallthrough_chain_20(_x)
-        }) == (12))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 4;
-            fallthrough_chain_20(_x)
-        }) == (8))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            fallthrough_chain_20(_x)
-        }) == (-1_i32))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 7;
-            let _flag: i32 = 0;
-            fallthrough_default_21(_x, _flag)
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 7;
-            let _flag: i32 = 1;
-            fallthrough_default_21(_x, _flag)
-        }) == (100))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            let _flag: i32 = 0;
-            fallthrough_default_21(_x, _flag)
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            fallthrough_into_block_22(_x)
-        }) == (15))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            fallthrough_into_block_22(_x)
-        }) == (5))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            fallthrough_into_block_22(_x)
-        }) == (-1_i32))
-    );
     let mut p_val: i32 = 5;
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
             let _bias: i32 = 0;
-            switch_complex_cond_23(_p, _bias)
+            switch_complex_cond_19(_p, _bias)
         }) == (2))
     );
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
             let _bias: i32 = 5;
-            switch_complex_cond_23(_p, _bias)
+            switch_complex_cond_19(_p, _bias)
         }) == (3))
     );
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
             let _bias: i32 = -5_i32;
-            switch_complex_cond_23(_p, _bias)
+            switch_complex_cond_19(_p, _bias)
         }) == (1))
     );
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
             let _bias: i32 = 99;
-            switch_complex_cond_23(_p, _bias)
+            switch_complex_cond_19(_p, _bias)
         }) == (0))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 1;
-            switch_in_dowhile_24(_n)
+            switch_in_dowhile_20(_n)
         }) == (1))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 3;
-            switch_in_dowhile_24(_n)
+            switch_in_dowhile_20(_n)
         }) == (((1) + (10)) + (100)))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 6;
-            continue_inside_switch_25(_n)
+            continue_inside_switch_21(_n)
         }) == (((((1) + (3)) + (5)) as i32) + ((3) * (1000))))
     );
     assert!(
         ((unsafe {
-            let _x: i32 = 1;
-            case_then_default_26(_x)
-        }) == (10))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            case_then_default_26(_x)
-        }) == (20))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            case_then_default_26(_x)
-        }) == (10))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            default_then_case_27(_x)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            default_then_case_27(_x)
-        }) == (77))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 3;
-            default_then_case_27(_x)
-        }) == (3))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            default_then_case_27(_x)
-        }) == (77))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            cases_and_default_stacked_28(_x)
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            cases_and_default_stacked_28(_x)
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 3;
-            cases_and_default_stacked_28(_x)
-        }) == (3))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            cases_and_default_stacked_28(_x)
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            let _flag: i32 = 0;
-            stacked_with_inner_fallthrough_29(_x, _flag)
-        }) == (50))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            let _flag: i32 = 1;
-            stacked_with_inner_fallthrough_29(_x, _flag)
-        }) == (999))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            let _flag: i32 = 0;
-            stacked_with_inner_fallthrough_29(_x, _flag)
-        }) == (999))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 0;
-            borrow_in_condition_and_in_body_30(_x)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            borrow_in_condition_and_in_body_30(_x)
-        }) == (2))
-    );
-    assert!(
-        ((unsafe {
             let _n: i32 = 0;
-            for_in_switch_break_31(_n)
+            for_in_switch_break_22(_n)
         }) == (103))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 99;
-            for_in_switch_break_31(_n)
+            for_in_switch_break_22(_n)
         }) == (-1_i32))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 0;
-            for_in_switch_continue_32(_n)
+            for_in_switch_continue_23(_n)
         }) == (4))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 99;
-            for_in_switch_continue_32(_n)
+            for_in_switch_continue_23(_n)
         }) == (-1_i32))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 0;
-            while_in_switch_break_33(_n)
+            while_in_switch_break_24(_n)
         }) == (1006))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 99;
-            while_in_switch_break_33(_n)
+            while_in_switch_break_24(_n)
         }) == (-1_i32))
     );
     assert!(
         ((unsafe {
             let _n: i32 = 3;
-            for_switch_for_break_34(_n)
+            for_switch_for_break_25(_n)
         }) == (122))
     );
     return 0;

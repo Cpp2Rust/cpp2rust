@@ -464,13 +464,13 @@ protected:
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
 
-  enum class BreakTarget { Loop, RegularSwitch, FallthroughSwitch };
+  enum class BreakTarget { Loop, Switch };
   class BreakTargetStack {
   public:
     void push(BreakTarget t) { stack_.push(t); }
     void pop() { stack_.pop(); }
-    bool isRegularSwitch() const {
-      return !stack_.empty() && stack_.top() == BreakTarget::RegularSwitch;
+    bool isSwitch() const {
+      return !stack_.empty() && stack_.top() == BreakTarget::Switch;
     }
 
   private:

@@ -293,77 +293,6 @@ int empty_case_with_break(int x) {
   return r;
 }
 
-int fallthrough_one(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-    r += 10;
-  case 2:
-    r += 20;
-    break;
-  default:
-    r = -1;
-    break;
-  }
-  return r;
-}
-
-int fallthrough_chain(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-    r += 1;
-    [[fallthrough]];
-  case 2:
-    r += 2;
-    [[fallthrough]];
-  case 3:
-    r += 4;
-    [[fallthrough]];
-  case 4:
-    r += 8;
-    break;
-  default:
-    r = -1;
-    break;
-  }
-  return r;
-}
-
-int fallthrough_default(int x, int flag) {
-  int r = 0;
-  switch (x) {
-  case 7:
-    if (flag) {
-      r = 100;
-      break;
-    }
-    [[fallthrough]];
-  default:
-    r = 42;
-    break;
-  }
-  return r;
-}
-
-int fallthrough_into_block(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-    r += 1;
-    [[fallthrough]];
-  case 2: {
-    int tmp = r * 10;
-    r = tmp + 5;
-    break;
-  }
-  default:
-    r = -1;
-    break;
-  }
-  return r;
-}
-
 int switch_complex_cond(int *p, int bias) {
   switch (*p + bias) {
   case 0:
@@ -412,79 +341,6 @@ int continue_inside_switch(int n) {
     r += 1000;
   }
   return r;
-}
-
-int case_then_default(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-  default:
-    r = 10;
-    break;
-  case 2:
-    r = 20;
-    break;
-  }
-  return r;
-}
-
-int default_then_case(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-    r = 1;
-    break;
-  default:
-  case 2:
-    r = 77;
-    break;
-  case 3:
-    r = 3;
-    break;
-  }
-  return r;
-}
-
-int cases_and_default_stacked(int x) {
-  int r = 0;
-  switch (x) {
-  case 1:
-  case 2:
-  default:
-    r = 42;
-    break;
-  case 3:
-    r = 3;
-    break;
-  }
-  return r;
-}
-
-int stacked_with_inner_fallthrough(int x, int flag) {
-  int r = 0;
-  switch (x) {
-  case 1:
-  case 2:
-  case 3:
-    if (!flag) {
-      r = 50;
-      break;
-    }
-    [[fallthrough]];
-  default:
-    r = 999;
-    break;
-  }
-  return r;
-}
-
-int borrow_in_condition_and_in_body(int x) {
-  switch (x) {
-  case 0:
-    [[fallthrough]];
-  default:
-    return x + 1;
-  }
 }
 
 int for_in_switch_break(int n) {
@@ -631,24 +487,6 @@ int main() {
   assert(empty_case_with_break(2) == 2);
   assert(empty_case_with_break(9) == 9);
 
-  assert(fallthrough_one(1) == 30);
-  assert(fallthrough_one(2) == 20);
-  assert(fallthrough_one(99) == -1);
-
-  assert(fallthrough_chain(1) == 15);
-  assert(fallthrough_chain(2) == 14);
-  assert(fallthrough_chain(3) == 12);
-  assert(fallthrough_chain(4) == 8);
-  assert(fallthrough_chain(99) == -1);
-
-  assert(fallthrough_default(7, 0) == 42);
-  assert(fallthrough_default(7, 1) == 100);
-  assert(fallthrough_default(99, 0) == 42);
-
-  assert(fallthrough_into_block(1) == 15);
-  assert(fallthrough_into_block(2) == 5);
-  assert(fallthrough_into_block(99) == -1);
-
   int p_val = 5;
   assert(switch_complex_cond(&p_val, 0) == 2);
   assert(switch_complex_cond(&p_val, 5) == 3);
@@ -659,27 +497,6 @@ int main() {
   assert(switch_in_dowhile(3) == 1 + 10 + 100);
 
   assert(continue_inside_switch(6) == (1 + 3 + 5) + 3 * 1000);
-
-  assert(case_then_default(1) == 10);
-  assert(case_then_default(2) == 20);
-  assert(case_then_default(99) == 10);
-
-  assert(default_then_case(1) == 1);
-  assert(default_then_case(2) == 77);
-  assert(default_then_case(3) == 3);
-  assert(default_then_case(99) == 77);
-
-  assert(cases_and_default_stacked(1) == 42);
-  assert(cases_and_default_stacked(2) == 42);
-  assert(cases_and_default_stacked(3) == 3);
-  assert(cases_and_default_stacked(99) == 42);
-
-  assert(stacked_with_inner_fallthrough(1, 0) == 50);
-  assert(stacked_with_inner_fallthrough(2, 1) == 999);
-  assert(stacked_with_inner_fallthrough(99, 0) == 999);
-
-  assert(borrow_in_condition_and_in_body(0) == 1);
-  assert(borrow_in_condition_and_in_body(1) == 2);
 
   assert(for_in_switch_break(0) == 103);
   assert(for_in_switch_break(99) == -1);

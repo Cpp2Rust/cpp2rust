@@ -1140,9 +1140,8 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
 }
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
-  if (break_target_stack_.isRegularSwitch()) {
-    StrCat(keyword::kBreak);
-    StrCat("'switch");
+  if (break_target_stack_.isSwitch()) {
+    StrCat(keyword::kBreak, "'switch");
     return false;
   }
   StrCat(keyword::kBreak);
@@ -2652,20 +2651,12 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
 
-  bool has_fallthrough = SwitchHasFallthrough(stmt);
+  StrCat("'switch: {");
+  StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
+  StrCat("match __match_cond");
+  StrCat("{");
 
-  if (has_fallthrough) {
-    StrCat("switch!(match ", ToString(stmt->getCond()), " {");
-  } else {
-    StrCat("'switch: {");
-    StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
-    StrCat("match __match_cond");
-    StrCat("{");
-  }
-
-  PushBreakTarget push(break_target_stack_, has_fallthrough
-                                                ? BreakTarget::FallthroughSwitch
-                                                : BreakTarget::RegularSwitch);
+  PushBreakTarget push(break_target_stack_, BreakTarget::Switch);
 
   clang::SwitchCase *default_case = nullptr;
   for (auto *sc : GetTopLevelSwitchCases(stmt)) {
@@ -2691,12 +2682,8 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
     StrCat(R"( _ => {})");
   }
 
-  if (has_fallthrough) {
-    StrCat("})");
-  } else {
-    StrCat("}");
-    StrCat("}");
-  }
+  StrCat("}");
+  StrCat("}");
   return false;
 }
 
