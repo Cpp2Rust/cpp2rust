@@ -8,7 +8,6 @@ int empty_switch(int x) {
   return x;
 }
 
-
 int main() {
   assert(empty_switch(5) == 5);
   return 0;

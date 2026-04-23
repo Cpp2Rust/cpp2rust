@@ -22,7 +22,6 @@ int switch_in_loop(int n) {
   return r;
 }
 
-
 int main() {
   assert(switch_in_loop(6) == 72);
   return 0;

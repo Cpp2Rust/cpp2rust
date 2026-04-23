@@ -18,7 +18,6 @@ int switch_on_call(int x) {
   }
 }
 
-
 int main() {
   assert(switch_on_call(0) == 100);
   assert(switch_on_call(1) == 200);

@@ -19,7 +19,6 @@ int fallthrough_one(int x) {
   return r;
 }
 
-
 int main() {
   assert(fallthrough_one(1) == 30);
   assert(fallthrough_one(2) == 20);

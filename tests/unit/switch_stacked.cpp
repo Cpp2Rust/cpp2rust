@@ -22,7 +22,6 @@ int stacked(int x) {
   return r;
 }
 
-
 int main() {
   assert(stacked(1) == 100);
   assert(stacked(3) == 100);

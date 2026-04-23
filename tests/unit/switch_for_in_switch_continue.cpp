@@ -8,7 +8,8 @@ int for_in_switch_continue(int n) {
   switch (n) {
   case 0:
     for (int i = 0; i < 5; ++i) {
-      if (i % 2 == 0) continue;
+      if (i % 2 == 0)
+        continue;
       r += i;
     }
     break;
@@ -18,7 +19,6 @@ int for_in_switch_continue(int n) {
   }
   return r;
 }
-
 
 int main() {
   assert(for_in_switch_continue(0) == 4);

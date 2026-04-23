@@ -18,7 +18,6 @@ int mixed_literal_cases(int x) {
   }
 }
 
-
 int main() {
   assert(mixed_literal_cases(-1) == 1);
   assert(mixed_literal_cases(0x10) == 2);

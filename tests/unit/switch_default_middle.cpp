@@ -20,7 +20,6 @@ int default_middle(int x) {
   return r;
 }
 
-
 int main() {
   assert(default_middle(1) == 1);
   assert(default_middle(2) == 2);

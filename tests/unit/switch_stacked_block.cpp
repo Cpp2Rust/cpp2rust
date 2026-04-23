@@ -20,7 +20,6 @@ int stacked_block(int x) {
   return r;
 }
 
-
 int main() {
   assert(stacked_block(2) == 5);
   assert(stacked_block(9) == 0);

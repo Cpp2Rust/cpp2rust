@@ -26,7 +26,6 @@ int fallthrough_chain(int x) {
   return r;
 }
 
-
 int main() {
   assert(fallthrough_chain(1) == 15);
   assert(fallthrough_chain(2) == 14);

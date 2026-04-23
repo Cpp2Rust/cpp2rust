@@ -22,7 +22,6 @@ int basic(int x) {
   return r;
 }
 
-
 int main() {
   assert(basic(0) == 10);
   assert(basic(2) == 30);

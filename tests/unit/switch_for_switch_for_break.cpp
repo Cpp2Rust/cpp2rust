@@ -10,7 +10,8 @@ int for_switch_for_break(int n) {
     switch (i) {
     case 1:
       for (int j = 0; j < 10; ++j) {
-        if (j == 2) break;
+        if (j == 2)
+          break;
         r += 1;
       }
       r += 100;
@@ -22,7 +23,6 @@ int for_switch_for_break(int n) {
   }
   return r;
 }
-
 
 int main() {
   assert(for_switch_for_break(3) == 122);

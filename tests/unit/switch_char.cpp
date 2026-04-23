@@ -20,7 +20,6 @@ int switch_char(char c) {
 
 enum Color { kRed, kGreen, kBlue };
 
-
 int main() {
   assert(switch_char('a') == 1);
   assert(switch_char('b') == 2);

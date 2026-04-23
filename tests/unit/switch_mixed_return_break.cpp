@@ -20,7 +20,6 @@ int mixed_return_break(int x) {
   return r;
 }
 
-
 int main() {
   assert(mixed_return_break(0) == 100);
   assert(mixed_return_break(1) == 10);

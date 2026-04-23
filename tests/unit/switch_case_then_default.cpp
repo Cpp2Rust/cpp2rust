@@ -18,7 +18,6 @@ int case_then_default(int x) {
   return r;
 }
 
-
 int main() {
   assert(case_then_default(1) == 10);
   assert(case_then_default(2) == 20);

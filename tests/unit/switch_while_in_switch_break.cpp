@@ -1,7 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-// panic
 #include <cassert>
 
 int while_in_switch_break(int n) {
@@ -10,7 +9,8 @@ int while_in_switch_break(int n) {
   case 0: {
     int i = 0;
     while (i < 10) {
-      if (i == 4) break;
+      if (i == 4)
+        break;
       r += i;
       ++i;
     }
@@ -23,7 +23,6 @@ int while_in_switch_break(int n) {
   }
   return r;
 }
-
 
 int main() {
   assert(while_in_switch_break(0) == 1006);

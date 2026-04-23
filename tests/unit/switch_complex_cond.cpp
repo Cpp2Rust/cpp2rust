@@ -16,7 +16,6 @@ int switch_complex_cond(int *p, int bias) {
   }
 }
 
-
 int main() {
   int p_val = 5;
   assert(switch_complex_cond(&p_val, 0) == 2);

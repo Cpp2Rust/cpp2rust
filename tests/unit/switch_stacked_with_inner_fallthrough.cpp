@@ -22,7 +22,6 @@ int stacked_with_inner_fallthrough(int x, int flag) {
   return r;
 }
 
-
 int main() {
   assert(stacked_with_inner_fallthrough(1, 0) == 50);
   assert(stacked_with_inner_fallthrough(2, 1) == 999);

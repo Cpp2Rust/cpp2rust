@@ -31,7 +31,6 @@ int nested(int a, int b) {
   return r;
 }
 
-
 int main() {
   assert(nested(1, 10) == 12);
   assert(nested(1, 99) == 14);

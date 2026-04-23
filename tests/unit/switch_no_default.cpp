@@ -16,7 +16,6 @@ int no_default(int x) {
   return r;
 }
 
-
 int main() {
   assert(no_default(7) == 1);
   assert(no_default(42) == -1);

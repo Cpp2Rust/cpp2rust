@@ -13,7 +13,6 @@ int only_default(int x) {
   return r;
 }
 
-
 int main() {
   assert(only_default(1) == 42);
   return 0;

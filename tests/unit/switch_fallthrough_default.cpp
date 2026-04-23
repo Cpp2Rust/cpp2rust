@@ -20,7 +20,6 @@ int fallthrough_default(int x, int flag) {
   return r;
 }
 
-
 int main() {
   assert(fallthrough_default(7, 0) == 42);
   assert(fallthrough_default(7, 1) == 100);

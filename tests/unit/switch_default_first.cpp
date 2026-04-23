@@ -20,7 +20,6 @@ int default_first(int x) {
   return r;
 }
 
-
 int main() {
   assert(default_first(1) == 1);
   assert(default_first(99) == 7);

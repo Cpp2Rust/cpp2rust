@@ -20,7 +20,6 @@ int switch_on_assignment(int x) {
   return r;
 }
 
-
 int main() {
   assert(switch_on_assignment(0) == 10);
   assert(switch_on_assignment(1) == 20);

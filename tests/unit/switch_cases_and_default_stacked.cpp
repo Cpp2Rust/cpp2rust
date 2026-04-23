@@ -19,7 +19,6 @@ int cases_and_default_stacked(int x) {
   return r;
 }
 
-
 int main() {
   assert(cases_and_default_stacked(1) == 42);
   assert(cases_and_default_stacked(2) == 42);

@@ -24,7 +24,6 @@ int compound_case_body(int x) {
   return r;
 }
 
-
 int main() {
   assert(compound_case_body(1) == 30);
   assert(compound_case_body(2) == 99);

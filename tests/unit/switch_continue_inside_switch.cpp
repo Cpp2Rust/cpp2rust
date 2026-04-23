@@ -20,7 +20,6 @@ int continue_inside_switch(int n) {
   return r;
 }
 
-
 int main() {
   assert(continue_inside_switch(6) == (1 + 3 + 5) + 3 * 1000);
   return 0;

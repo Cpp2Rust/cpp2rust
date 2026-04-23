@@ -17,7 +17,6 @@ int switch_enum(Color c) {
   return -1;
 }
 
-
 int main() {
   assert(switch_enum(kRed) == 10);
   assert(switch_enum(kGreen) == 20);

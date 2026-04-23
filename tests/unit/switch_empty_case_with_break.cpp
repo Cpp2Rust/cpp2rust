@@ -18,7 +18,6 @@ int empty_case_with_break(int x) {
   return r;
 }
 
-
 int main() {
   assert(empty_case_with_break(1) == 5);
   assert(empty_case_with_break(2) == 2);

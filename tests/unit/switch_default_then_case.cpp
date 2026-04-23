@@ -21,7 +21,6 @@ int default_then_case(int x) {
   return r;
 }
 
-
 int main() {
   assert(default_then_case(1) == 1);
   assert(default_then_case(2) == 77);

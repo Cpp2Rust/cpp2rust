@@ -22,7 +22,6 @@ int fallthrough_into_block(int x) {
   return r;
 }
 
-
 int main() {
   assert(fallthrough_into_block(1) == 15);
   assert(fallthrough_into_block(2) == 5);

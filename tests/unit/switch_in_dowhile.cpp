@@ -23,7 +23,6 @@ int switch_in_dowhile(int n) {
   return r;
 }
 
-
 int main() {
   assert(switch_in_dowhile(1) == 1);
   assert(switch_in_dowhile(3) == 1 + 10 + 100);
