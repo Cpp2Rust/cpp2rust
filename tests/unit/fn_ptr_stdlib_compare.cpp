@@ -9,6 +9,23 @@ typedef size_t (*fread_alternative_t)(char *, size_t, size_t, void *);
 
 size_t my_alternative_fread(char *p, size_t n, size_t m, void *f) { return 22; }
 
+#define CHECK_FREAD(call)                                                      \
+  do {                                                                         \
+    FILE *stream = fopen("/dev/zero", "rb");                                   \
+    assert(stream != nullptr);                                                 \
+    char buf[16];                                                              \
+    memset(buf, 'X', sizeof(buf));                                             \
+    size_t n = (call)(buf, 1, 10, stream);                                     \
+    assert(n == 10);                                                           \
+    for (int i = 0; i < 10; ++i) {                                             \
+      assert(buf[i] == 0);                                                     \
+    }                                                                          \
+    for (int i = 10; i < 16; ++i) {                                            \
+      assert(buf[i] == 'X');                                                   \
+    }                                                                          \
+    fclose(stream);                                                            \
+  } while (0)
+
 int main() {
   fread_t fn1 = fread;
   assert(fn1 == fread);
@@ -20,19 +37,8 @@ int main() {
   fread_t f3 = (fread_t)my_alternative_fread;
   assert((*f3)(nullptr, 0, 0, nullptr) == 22);
 
-  FILE *stream = fopen("/dev/zero", "rb");
-  assert(stream != nullptr);
-  char buf[16];
-  memset(buf, 'X', sizeof(buf));
-  size_t n = (*fn1)(buf, 1, 10, stream);
-  assert(n == 10);
-  for (int i = 0; i < 10; ++i) {
-    assert(buf[i] == 0);
-  }
-  for (int i = 10; i < 16; ++i) {
-    assert(buf[i] == 'X');
-  }
-  fclose(stream);
+  CHECK_FREAD(fread);
+  CHECK_FREAD((*fn1));
 
   return 0;
 }

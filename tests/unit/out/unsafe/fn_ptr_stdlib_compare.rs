@@ -50,63 +50,132 @@ unsafe fn main_0() -> i32 {
             (f3).unwrap()(_arg0, _arg1, _arg2, _arg3)
         }) == (22_u64))
     );
-    let mut stream: *mut ::std::fs::File =
-        match std::ffi::CStr::from_ptr(b"rb\0".as_ptr() as *const i8)
-            .to_str()
-            .expect("invalid c-string")
+    'loop_: loop {
+        let mut stream: *mut ::std::fs::File =
+            match std::ffi::CStr::from_ptr(b"rb\0".as_ptr() as *const i8)
+                .to_str()
+                .expect("invalid c-string")
+            {
+                v if v == "rb" => std::fs::OpenOptions::new()
+                    .read(true)
+                    .open(
+                        std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
+                            .to_str()
+                            .expect("invalid c-string"),
+                    )
+                    .ok()
+                    .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
+                v if v == "wb" => std::fs::OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .truncate(true)
+                    .open(
+                        std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
+                            .to_str()
+                            .expect("invalid c-string"),
+                    )
+                    .ok()
+                    .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
+                _ => panic!("unsupported mode"),
+            };
+        assert!(!((stream).is_null()));
+        let mut buf: [u8; 16] = [0_u8; 16];
         {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(
-                    std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(
-                    std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            _ => panic!("unsupported mode"),
+            let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
+            for offset in 0..::std::mem::size_of::<[u8; 16]>() as u64 {
+                *byte_0.offset(offset as isize) = (('X' as u8) as i32) as u8;
+            }
+            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-    assert!(!((stream).is_null()));
-    let mut buf: [u8; 16] = [0_u8; 16];
-    {
-        let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<[u8; 16]>() as u64 {
-            *byte_0.offset(offset as isize) = (('X' as u8) as i32) as u8;
+        let mut n: u64 = unsafe {
+            libcc2rs::fread_unsafe(
+                (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut ::std::ffi::c_void,
+                1_u64,
+                10_u64,
+                stream,
+            )
+        };
+        assert!(((n) == (10_u64)));
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (10)) {
+            assert!(((buf[(i) as usize] as i32) == (0)));
+            i.prefix_inc();
         }
-        (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
-    };
-    let mut n: u64 = (unsafe {
-        let _arg0: *mut ::libc::c_void = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void);
-        let _arg1: u64 = 1_u64;
-        let _arg2: u64 = 10_u64;
-        let _arg3: *mut ::std::fs::File = stream;
-        (fn1).unwrap()(_arg0, _arg1, _arg2, _arg3)
-    });
-    assert!(((n) == (10_u64)));
-    let mut i: i32 = 0;
-    'loop_: while ((i) < (10)) {
-        assert!(((buf[(i) as usize] as i32) == (0)));
-        i.prefix_inc();
+        let mut i: i32 = 10;
+        'loop_: while ((i) < (16)) {
+            assert!(((buf[(i) as usize] as i32) == (('X' as u8) as i32)));
+            i.prefix_inc();
+        }
+        {
+            Box::from_raw(stream);
+            0
+        };
+        if !(0 != 0) {
+            break;
+        }
     }
-    let mut i: i32 = 10;
-    'loop_: while ((i) < (16)) {
-        assert!(((buf[(i) as usize] as i32) == (('X' as u8) as i32)));
-        i.prefix_inc();
+    'loop_: loop {
+        let mut stream: *mut ::std::fs::File =
+            match std::ffi::CStr::from_ptr(b"rb\0".as_ptr() as *const i8)
+                .to_str()
+                .expect("invalid c-string")
+            {
+                v if v == "rb" => std::fs::OpenOptions::new()
+                    .read(true)
+                    .open(
+                        std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
+                            .to_str()
+                            .expect("invalid c-string"),
+                    )
+                    .ok()
+                    .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
+                v if v == "wb" => std::fs::OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .truncate(true)
+                    .open(
+                        std::ffi::CStr::from_ptr(b"/dev/zero\0".as_ptr() as *const i8)
+                            .to_str()
+                            .expect("invalid c-string"),
+                    )
+                    .ok()
+                    .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
+                _ => panic!("unsupported mode"),
+            };
+        assert!(!((stream).is_null()));
+        let mut buf: [u8; 16] = [0_u8; 16];
+        {
+            let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
+            for offset in 0..::std::mem::size_of::<[u8; 16]>() as u64 {
+                *byte_0.offset(offset as isize) = (('X' as u8) as i32) as u8;
+            }
+            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
+        };
+        let mut n: u64 = (unsafe {
+            let _arg0: *mut ::libc::c_void = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void);
+            let _arg1: u64 = 1_u64;
+            let _arg2: u64 = 10_u64;
+            let _arg3: *mut ::std::fs::File = stream;
+            (fn1).unwrap()(_arg0, _arg1, _arg2, _arg3)
+        });
+        assert!(((n) == (10_u64)));
+        let mut i: i32 = 0;
+        'loop_: while ((i) < (10)) {
+            assert!(((buf[(i) as usize] as i32) == (0)));
+            i.prefix_inc();
+        }
+        let mut i: i32 = 10;
+        'loop_: while ((i) < (16)) {
+            assert!(((buf[(i) as usize] as i32) == (('X' as u8) as i32)));
+            i.prefix_inc();
+        }
+        {
+            Box::from_raw(stream);
+            0
+        };
+        if !(0 != 0) {
+            break;
+        }
     }
-    {
-        Box::from_raw(stream);
-        0
-    };
     return 0;
 }

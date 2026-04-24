@@ -66,57 +66,116 @@ fn main_0() -> i32 {
             (*(*f3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 22_u64)
     );
-    let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-        match Ptr::from_string_literal("rb").to_rust_string() {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            _ => panic!("unsupported mode"),
-        },
-    ));
-    assert!(!((*stream.borrow()).is_null()));
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
-    {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
-            (('X' as u8) as i32) as u8,
-            ::std::mem::size_of::<[u8; 16]>() as u64 as usize,
-        );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
-    };
-    let n: Value<u64> = Rc::new(RefCell::new(
-        ({
-            let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
-            let _arg1: u64 = 1_u64;
-            let _arg2: u64 = 10_u64;
-            let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
-            (*(*fn1.borrow()))(_arg0, _arg1, _arg2, _arg3)
-        }),
-    ));
-    assert!(((*n.borrow()) == 10_u64));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
-        assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == 0));
-        (*i.borrow_mut()).prefix_inc();
+    'loop_: loop {
+        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
+            match Ptr::from_string_literal("rb").to_rust_string() {
+                v if v == "rb" => std::fs::OpenOptions::new()
+                    .read(true)
+                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .ok()
+                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
+                v if v == "wb" => std::fs::OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .truncate(true)
+                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .ok()
+                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
+                _ => panic!("unsupported mode"),
+            },
+        ));
+        assert!(!((*stream.borrow()).is_null()));
+        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+            (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+        ));
+        {
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+                (('X' as u8) as i32) as u8,
+                ::std::mem::size_of::<[u8; 16]>() as u64 as usize,
+            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        };
+        let n: Value<u64> = Rc::new(RefCell::new(libcc2rs::fread_refcount(
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+            1_u64,
+            10_u64,
+            (*stream.borrow()).clone(),
+        )));
+        assert!(((*n.borrow()) == 10_u64));
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < 10) {
+            assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == 0));
+            (*i.borrow_mut()).prefix_inc();
+        }
+        let i: Value<i32> = Rc::new(RefCell::new(10));
+        'loop_: while ((*i.borrow()) < 16) {
+            assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
+            (*i.borrow_mut()).prefix_inc();
+        }
+        {
+            (*stream.borrow()).delete();
+            0
+        };
+        if !(0 != 0) {
+            break;
+        }
     }
-    let i: Value<i32> = Rc::new(RefCell::new(10));
-    'loop_: while ((*i.borrow()) < 16) {
-        assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
-        (*i.borrow_mut()).prefix_inc();
+    'loop_: loop {
+        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
+            match Ptr::from_string_literal("rb").to_rust_string() {
+                v if v == "rb" => std::fs::OpenOptions::new()
+                    .read(true)
+                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .ok()
+                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
+                v if v == "wb" => std::fs::OpenOptions::new()
+                    .write(true)
+                    .create(true)
+                    .truncate(true)
+                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .ok()
+                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
+                _ => panic!("unsupported mode"),
+            },
+        ));
+        assert!(!((*stream.borrow()).is_null()));
+        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+            (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+        ));
+        {
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+                (('X' as u8) as i32) as u8,
+                ::std::mem::size_of::<[u8; 16]>() as u64 as usize,
+            );
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        };
+        let n: Value<u64> = Rc::new(RefCell::new(
+            ({
+                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+                let _arg1: u64 = 1_u64;
+                let _arg2: u64 = 10_u64;
+                let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
+                (*(*fn1.borrow()))(_arg0, _arg1, _arg2, _arg3)
+            }),
+        ));
+        assert!(((*n.borrow()) == 10_u64));
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < 10) {
+            assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == 0));
+            (*i.borrow_mut()).prefix_inc();
+        }
+        let i: Value<i32> = Rc::new(RefCell::new(10));
+        'loop_: while ((*i.borrow()) < 16) {
+            assert!((((*buf.borrow())[(*i.borrow()) as usize] as i32) == (('X' as u8) as i32)));
+            (*i.borrow_mut()).prefix_inc();
+        }
+        {
+            (*stream.borrow()).delete();
+            0
+        };
+        if !(0 != 0) {
+            break;
+        }
     }
-    {
-        (*stream.borrow()).delete();
-        0
-    };
     return 0;
 }
