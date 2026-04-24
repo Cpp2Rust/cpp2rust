@@ -195,7 +195,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += GetNamedDeclAsString(src_fn) + "(";
+  closure += Mapper::MapFunctionName(src_fn) + '(';
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
@@ -204,12 +204,12 @@ std::string ConverterRefCount::BuildFnAdapter(
     } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
       if (tgt_pty->isVoidPointerType()) {
         closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                               ToString(src_pty->getPointeeType()));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->isVoidPointerType()) {
         closure += std::format("a{}.to_any()", i);
       } else if (tgt_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
-                               ToString(src_pty->getPointeeType()));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<u8>()", i);
       }
@@ -625,7 +625,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     }
   }
 
-  if (Mapper::Contains(expr)) {
+  if (ShouldReplaceWithMappedBody(expr)) {
     StrCat(GetMappedAsString(expr));
     return false;
   }
@@ -1037,7 +1037,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
   StrCat(std::format("FnPtr::<{}>::new({})",
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),
-                     GetNamedDeclAsString(fn_decl)));
+                     Mapper::MapFunctionName(fn_decl)));
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
@@ -2153,6 +2153,20 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   }
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);
+}
+
+std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
+  if (ptr_type->getPointeeType()->isIntegerType()) {
+    return ToString(ptr_type->getPointeeType());
+  }
+
+  // Pointee of a pointer to incomplete type is an incomplete type that does
+  // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
+  // not enough
+  assert(ptr_type->isPointerType());
+  auto str = ToString(ptr_type);
+  Unwrap(str, "Ptr<", ">");
+  return str;
 }
 
 } // namespace cpp2rust

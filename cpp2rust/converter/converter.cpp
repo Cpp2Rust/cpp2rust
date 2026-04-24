@@ -1430,7 +1430,7 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
 
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({})", GetNamedDeclAsString(fn_decl)));
+  StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
 void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
@@ -2070,7 +2070,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   auto *decl = expr->getDecl();
-  if (Mapper::Contains(expr)) {
+  if (ShouldReplaceWithMappedBody(expr)) {
     return GetMappedAsString(expr);
   } else if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
@@ -3470,6 +3470,13 @@ bool Converter::isVoid() const {
 
 bool Converter::isCallee() const {
   return !curr_expr_kind_.empty() && curr_expr_kind_.back() == ExprKind::Callee;
+}
+
+bool Converter::ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const {
+  if (clang::isa<clang::FunctionDecl>(expr->getDecl()) && isAddrOf()) {
+    return false;
+  }
+  return Mapper::Contains(expr);
 }
 
 void Converter::SetFresh() {

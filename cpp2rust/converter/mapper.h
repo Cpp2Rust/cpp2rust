@@ -31,6 +31,7 @@ bool Contains(const clang::Expr *expr);
 
 std::string Map(clang::QualType qual_type);
 const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr);
+std::string MapFunctionName(const clang::FunctionDecl *decl);
 std::string InstantiateTemplate(const clang::Expr *expr,
                                 const std::string &text);
 bool ReturnsPointer(const clang::Expr *expr);

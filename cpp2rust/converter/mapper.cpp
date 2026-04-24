@@ -8,6 +8,7 @@
 #include <llvm/Support/ThreadPool.h>
 
 #include <atomic>
+#include <format>
 #include <mutex>
 #include <regex>
 #include <utility>
@@ -579,6 +580,15 @@ const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr) {
     return &it->second;
   }
   return nullptr;
+}
+
+std::string MapFunctionName(const clang::FunctionDecl *decl) {
+  assert(decl);
+  if (exprs_.contains(ToString(decl))) {
+    return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
+                       model_ == Model::kRefCount ? "refcount" : "unsafe");
+  }
+  return GetNamedDeclAsString(decl->getCanonicalDecl());
 }
 
 std::string InstantiateTemplate(const clang::Expr *expr,
