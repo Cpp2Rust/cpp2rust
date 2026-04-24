@@ -8,24 +8,27 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn while_in_switch_break_0(mut n: i32) -> i32 {
     let mut r: i32 = 0;
-    switch!(match n {
-        v if v == 0 => {
-            let mut i: i32 = 0;
-            'loop_: while ((i) < (10)) {
-                if ((i) == (4)) {
-                    break;
+    'switch: {
+        let __match_cond = n;
+        match __match_cond {
+            v if v == 0 => {
+                let mut i: i32 = 0;
+                'loop_: while ((i) < (10)) {
+                    if ((i) == (4)) {
+                        break;
+                    }
+                    r += i;
+                    i.prefix_inc();
                 }
-                r += i;
-                i.prefix_inc();
+                r += 1000;
+                break 'switch;
             }
-            r += 1000;
-            break;
+            _ => {
+                r = -1_i32;
+                break 'switch;
+            }
         }
-        _ => {
-            r = -1_i32;
-            break;
-        }
-    });
+    };
     return r;
 }
 pub fn main() {

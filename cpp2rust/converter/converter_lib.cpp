@@ -713,14 +713,20 @@ std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
 }
 
 static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
-  if (stmt) {
-    if (clang::isa<clang::BreakStmt>(stmt) ||
-        clang::isa<clang::ReturnStmt>(stmt)) {
-      return false;
-    }
-    return true;
+  if (!stmt) {
+    return false;
   }
-  return false;
+  if (auto *compound = clang::dyn_cast<clang::CompoundStmt>(stmt)) {
+    if (compound->body_empty()) {
+      return true;
+    }
+    return SwitchCaseHasFallthrough(compound->body_back());
+  }
+  if (clang::isa<clang::BreakStmt>(stmt) ||
+      clang::isa<clang::ReturnStmt>(stmt)) {
+    return false;
+  }
+  return true;
 }
 
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
