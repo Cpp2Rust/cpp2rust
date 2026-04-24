@@ -1,0 +1,18 @@
+error: goto!() can only be used inside goto_block!
+  --> tests/ui/forbidden.rs:22:5
+   |
+22 |     goto!('nowhere);
+   |     ^^^^^^^^^^^^^^^
+   |
+   = note: this error originates in the macro `goto` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0268]: `continue` outside of a loop
+  --> tests/ui/forbidden.rs:13:5
+   |
+13 | /     switch!(match 0 {
+14 | |         0 => { v = 1; continue; }
+15 | |         _ => { v = 2; }
+16 | |     });
+   | |______^ cannot `continue` outside of a loop
+   |
+   = note: this error originates in the macro `switch` (in Nightly builds, run with -Z macro-backtrace for more info)
