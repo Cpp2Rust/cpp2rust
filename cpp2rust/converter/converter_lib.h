@@ -162,4 +162,6 @@ bool SwitchCaseContainsDefault(clang::SwitchCase *c);
 std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
                                              clang::SwitchCase *head);
 
+bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+
 } // namespace cpp2rust

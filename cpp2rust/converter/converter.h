@@ -469,7 +469,7 @@ protected:
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
 
-  enum class BreakTarget { Loop, Switch };
+  enum class BreakTarget { Loop, FallthroughSwitch, Switch };
   std::stack<BreakTarget> break_target_;
 
   bool isSwitchBreak() const {
