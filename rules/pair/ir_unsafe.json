@@ -148,43 +148,6 @@
       "type": "(T1, T2)"
     }
   },
-  "f3": {
-    "body": [
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": "a0",
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      }
-    ],
-    "generics": {
-      "T1": [
-        "Clone"
-      ],
-      "T2": [
-        "Clone"
-      ]
-    },
-    "params": {
-      "a0": {
-        "type": "(T1, T2)"
-      }
-    },
-    "return_type": {
-      "type": "(T1, T2)"
-    }
-  },
   "f4": {
     "body": [
       {

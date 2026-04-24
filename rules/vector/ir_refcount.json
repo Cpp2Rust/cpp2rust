@@ -1045,39 +1045,16 @@
         }
       },
       {
-        "text": ";\n    let __len =\n        ("
+        "text": ";\n    let mut __out = Vec::with_capacity("
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "("
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "placeholder": {
-                      "arg": "a1",
-                      "access": "read"
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".clone()"
-                  }
-                ]
+              "placeholder": {
+                "arg": "a1",
+                "access": "read"
               }
-            },
-            {
-              "text": " as Ptr<"
-            },
-            {
-              "generic": "T1"
-            },
-            {
-              "text": ">)"
             }
           ],
           "body": [
@@ -1088,7 +1065,7 @@
         }
       },
       {
-        "text": " as isize - "
+        "text": " - "
       },
       {
         "method_call": {
@@ -1105,7 +1082,7 @@
         }
       },
       {
-        "text": " as isize) as usize;\n    let mut __out = Vec::with_capacity(__len);\n    while __a0 != "
+        "text": ");\n    while __a0 != "
       },
       {
         "placeholder": {
@@ -1131,23 +1108,12 @@
               "method_call": {
                 "receiver": [
                   {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "text": "__a0"
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".read()"
-                        }
-                      ]
-                    }
+                    "text": "__a0"
                   }
                 ],
                 "body": [
                   {
-                    "text": ".clone()"
+                    "text": ".read()"
                   }
                 ]
               }
@@ -1159,24 +1125,7 @@
         }
       },
       {
-        "text": ";\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    }\n    __out"
+        "text": ";\n        __a0 += 1;\n    }\n    __out"
       }
     ],
     "generics": {
@@ -1223,39 +1172,16 @@
         }
       },
       {
-        "text": ";\n    let __len =\n        ("
+        "text": ";\n    let mut __out = Vec::with_capacity("
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "("
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "placeholder": {
-                      "arg": "a1",
-                      "access": "read"
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".clone()"
-                  }
-                ]
+              "placeholder": {
+                "arg": "a1",
+                "access": "read"
               }
-            },
-            {
-              "text": " as Ptr<"
-            },
-            {
-              "generic": "T1"
-            },
-            {
-              "text": ">)"
             }
           ],
           "body": [
@@ -1266,7 +1192,7 @@
         }
       },
       {
-        "text": " as isize - "
+        "text": " - "
       },
       {
         "method_call": {
@@ -1283,7 +1209,7 @@
         }
       },
       {
-        "text": " as isize) as usize;\n    let mut __out = Vec::with_capacity(__len);\n    while __a0 != "
+        "text": ");\n    while __a0 != "
       },
       {
         "placeholder": {
@@ -1309,23 +1235,12 @@
               "method_call": {
                 "receiver": [
                   {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "text": "__a0"
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".read()"
-                        }
-                      ]
-                    }
+                    "text": "__a0"
                   }
                 ],
                 "body": [
                   {
-                    "text": ".clone()"
+                    "text": ".read()"
                   }
                 ]
               }
@@ -1337,24 +1252,7 @@
         }
       },
       {
-        "text": ";\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    }\n    __out"
+        "text": ";\n        __a0 += 1;\n    }\n    __out"
       }
     ],
     "generics": {
@@ -1401,33 +1299,16 @@
         }
       },
       {
-        "text": ";\n    let __len =\n        ("
+        "text": ";\n    let mut __out = Vec::with_capacity("
       },
       {
         "method_call": {
           "receiver": [
             {
-              "text": "("
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "placeholder": {
-                      "arg": "a1",
-                      "access": "read"
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".clone()"
-                  }
-                ]
+              "placeholder": {
+                "arg": "a1",
+                "access": "read"
               }
-            },
-            {
-              "text": " as Ptr<u32>)"
             }
           ],
           "body": [
@@ -1438,7 +1319,7 @@
         }
       },
       {
-        "text": " as isize - "
+        "text": " - "
       },
       {
         "method_call": {
@@ -1455,7 +1336,7 @@
         }
       },
       {
-        "text": " as isize) as usize;\n    let mut __out = Vec::with_capacity(__len);\n    while __a0 != "
+        "text": ");\n    while __a0 != "
       },
       {
         "placeholder": {
@@ -1498,24 +1379,7 @@
         }
       },
       {
-        "text": ";\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    }\n    __out"
+        "text": ";\n        __a0 += 1;\n    }\n    __out"
       }
     ],
     "multi_statement": true,
@@ -1671,24 +1535,7 @@
         }
       },
       {
-        "text": ";\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n\n        while __a0 != "
+        "text": ";\n        __a0 += 1;\n\n        while __a0 != "
       },
       {
         "placeholder": {
@@ -1748,24 +1595,7 @@
         }
       },
       {
-        "text": ";\n            }\n            "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        }\n        max_it\n    }"
+        "text": ";\n            }\n            __a0 += 1;\n        }\n        max_it\n    }"
       }
     ],
     "params": {
@@ -2107,26 +1937,6 @@
         }
       },
       {
-        "text": ";\n    let mut __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": "a0",
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
         "text": ";\n    while __a2 != "
       },
       {
@@ -2173,23 +1983,12 @@
                     "method_call": {
                       "receiver": [
                         {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "text": "__a2"
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".read()"
-                              }
-                            ]
-                          }
+                          "text": "__a2"
                         }
                       ],
                       "body": [
                         {
-                          "text": ".clone()"
+                          "text": ".read()"
                         }
                       ]
                     }
@@ -2207,24 +2006,13 @@
         }
       },
       {
-        "text": ";\n        __idx += 1;\n        "
+        "text": ";\n        __idx += 1;\n        __a2 += 1;\n    }\n    "
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a2"
-            }
-          ],
-          "body": [
-            {
-              "text": ".prefix_inc()"
-            }
-          ]
+        "placeholder": {
+          "arg": "a0",
+          "access": "read"
         }
-      },
-      {
-        "text": ";\n    }\n    __a0"
       }
     ],
     "generics": {
@@ -2308,38 +2096,33 @@
         "method_call": {
           "receiver": [
             {
+              "placeholder": {
+                "arg": "a0",
+                "access": "read"
+              }
+            },
+            {
+              "text": "["
+            },
+            {
               "method_call": {
                 "receiver": [
                   {
-                    "text": "("
-                  },
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "placeholder": {
-                            "arg": "a0",
-                            "access": "read"
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".to_last()"
-                        }
-                      ]
+                    "placeholder": {
+                      "arg": "a0",
+                      "access": "read"
                     }
-                  },
-                  {
-                    "text": ")"
                   }
                 ],
                 "body": [
                   {
-                    "text": ".read()"
+                    "text": ".len()"
                   }
                 ]
               }
+            },
+            {
+              "text": " - 1]"
             }
           ],
           "body": [
@@ -2357,8 +2140,7 @@
     },
     "params": {
       "a0": {
-        "type": "Ptr<Value<Vec<T1>>>",
-        "is_refcount_pointer": true
+        "type": "&Vec<Value<Vec<T1>>>"
       }
     },
     "return_type": {

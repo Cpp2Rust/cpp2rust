@@ -11,13 +11,13 @@ jobs:
   format:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Setup LLVM 22
+      - name: Setup LLVM
         uses: ZhongRuoyu/setup-llvm@v0
         with:
           llvm-version: 22
@@ -33,28 +33,6 @@ jobs:
         with:
           toolchain: nightly
           components: rustfmt, clippy, rustc-dev
-
-      - name: Apply C++ formatting fixes
-        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format -i
-
-      - name: Apply Rust lint fixes
-        run: |
-          cargo clippy --fix --allow-dirty --manifest-path rules/Cargo.toml --all-targets
-          cargo +nightly clippy --fix --allow-dirty --manifest-path rule-preprocessor/Cargo.toml --all-targets
-          cargo clippy --fix --allow-dirty --manifest-path libcc2rs/Cargo.toml --all-targets
-
-      - name: Apply Rust formatting fixes
-        run: |
-          cargo fmt --manifest-path rules/Cargo.toml
-          cargo fmt --manifest-path rule-preprocessor/Cargo.toml
-          cargo fmt --manifest-path libcc2rs/Cargo.toml
-          find tests -name '*.rs' -print0 | xargs -0 rustfmt
-
-      - name: Commit auto-fixes
-        if: github.ref != 'refs/heads/master'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Automatically apply formatting and lint fixes"
 
       - name: Check C++ formatting
         run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror

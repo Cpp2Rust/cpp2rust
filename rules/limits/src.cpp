@@ -3,12 +3,6 @@
 
 #include <limits>
 
-struct T1 {};
+template <typename T1> T1 f1(std::numeric_limits<T1> &a0) { return a0.max(); }
 
-template <typename T> T f1() { return std::numeric_limits<T>::max(); }
-
-template T1 f1<T1>();
-
-template <typename T> T f2() { return std::numeric_limits<T>::min(); }
-
-template T1 f2<T1>();
+template <typename T1> T1 f2(std::numeric_limits<T1> &a0) { return a0.min(); }

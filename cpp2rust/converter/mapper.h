@@ -3,6 +3,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <clang/AST/ASTContext.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 
@@ -14,6 +15,17 @@
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::Mapper {
+class PushASTContext {
+public:
+  explicit PushASTContext(clang::ASTContext &ctx);
+  ~PushASTContext();
+  PushASTContext(const PushASTContext &) = delete;
+  PushASTContext &operator=(const PushASTContext &) = delete;
+
+private:
+  clang::ASTContext *prev_;
+};
+
 bool Contains(clang::QualType qual_type);
 bool Contains(const clang::Expr *expr);
 

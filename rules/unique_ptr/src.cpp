@@ -4,54 +4,32 @@
 #include <cstddef>
 #include <memory>
 
-struct T1 {};
+template <typename T1> using t1 = std::unique_ptr<T1>;
+template <typename T1> using t2 = std::unique_ptr<T1[]>;
 
-std::unique_ptr<T1> t1;
-std::unique_ptr<T1[]> t2;
-
-template <typename T> std::unique_ptr<T[]> f1(std::size_t n) {
-  return std::make_unique<T[]>(n);
+template <typename T2, typename T1> std::unique_ptr<T1[]> f1(std::size_t n) {
+  return std::make_unique<T1[]>(n);
 }
 
-template std::unique_ptr<T1[]> f1<T1>(std::size_t);
-#include <memory>
+template <typename T1> T1 *f2(std::unique_ptr<T1> &o) { return o.get(); }
 
-template <typename T> T *f2(std::unique_ptr<T> &o) { return o.get(); }
-
-template T1 *f2<T1>(std::unique_ptr<T1> &);
-#include <memory>
-
-template <typename T> std::unique_ptr<T> f3(T *p) {
-  return std::unique_ptr<T>(p);
+template <typename T1> std::unique_ptr<T1> f3(T1 *p) {
+  return std::unique_ptr<T1>(p);
 }
 
-template std::unique_ptr<T1> f3<T1>(T1 *);
-#include <memory>
-
-template <typename T> std::unique_ptr<T[]> f4(T *p) {
-  return std::unique_ptr<T[]>(p);
+template <typename T1> std::unique_ptr<T1[]> f4(T1 *p) {
+  return std::unique_ptr<T1[]>(p);
 }
 
-template std::unique_ptr<T1[]> f4<T1>(T1 *);
-#include <memory>
-
-template <typename T> void f5(std::unique_ptr<T> &o, T *p) {
+template <typename T1> void f5(std::unique_ptr<T1> &o, T1 *p) {
   return o.reset(p);
 }
 
-template void f5<T1>(std::unique_ptr<T1> &, T1 *);
-#include <memory>
-
-template <typename T> void f6(std::unique_ptr<T[]> &o, T *p) {
+template <typename T1> void f6(std::unique_ptr<T1[]> &o, T1 *p) {
   return o.reset(p);
 }
 
-template void f6<T1>(std::unique_ptr<T1[]> &, T1 *);
-#include <memory>
-
-template <typename T> T *f7(std::unique_ptr<T[]> &o) { return o.get(); }
-
-template T1 *f7<T1>(std::unique_ptr<T1[]> &);
+template <typename T1> T1 *f7(std::unique_ptr<T1[]> &o) { return o.get(); }
 
 // template <typename T, typename... Args>
 // std::unique_ptr<T> f8(Args&&... args) {
@@ -62,24 +40,18 @@ template T1 *f7<T1>(std::unique_ptr<T1[]> &);
 // versions for make_unique with 1, 2, 3, etc arguments and translate the
 // specialized versions.
 
-template <typename T, typename Arg> std::unique_ptr<T> f8(Arg &&arg) {
-  return std::make_unique<T>(std::forward<Arg>(arg));
+template <typename T1, typename T2> std::unique_ptr<T1> f8(T2 &&a0) {
+  return std::make_unique<T1>(std::move(a0));
 }
 
-template std::unique_ptr<T1> f8<T1>(T1 &&);
-
-template <typename T> void f9(std::unique_ptr<T[]> &o) {
+template <typename T1> void f9(std::unique_ptr<T1[]> &o) {
   return o.reset(nullptr);
 }
 
-template void f9<T1>(std::unique_ptr<T1[]> &);
-
-template <typename T> std::unique_ptr<T> f10() { return std::unique_ptr<T>(); }
-
-template std::unique_ptr<T1> f10<T1>();
-
-template <typename T> std::unique_ptr<T[]> f11() {
-  return std::unique_ptr<T[]>();
+template <typename T1> std::unique_ptr<T1> f10() {
+  return std::unique_ptr<T1>();
 }
 
-template std::unique_ptr<T1[]> f11<T1>();
+template <typename T1> std::unique_ptr<T1[]> f11() {
+  return std::unique_ptr<T1[]>();
+}

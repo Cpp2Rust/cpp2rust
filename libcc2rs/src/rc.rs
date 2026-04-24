@@ -671,7 +671,7 @@ impl<T> Sub for Ptr<T> {
     type Output = usize;
     fn sub(self, other: Self) -> Self::Output {
         assert!(self.kind == other.kind, "ub: invalid subtraction");
-        (self.offset - other.offset) / self.elem_step()
+        (self.offset / self.elem_step()).wrapping_sub(other.offset / other.elem_step())
     }
 }
 

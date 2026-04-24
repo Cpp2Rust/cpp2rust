@@ -33,6 +33,7 @@ std::unordered_map<std::string, TranslationRule::TypeTgt>
 clang::PrintingPolicy getPrintPolicy() {
   assert(ctx_);
   clang::PrintingPolicy policy(ctx_->getLangOpts());
+  policy.Bool = true;
   policy.SuppressTagKeyword = true;
   policy.SuppressScope = false;
   policy.FullyQualifiedName = true;
@@ -392,7 +393,6 @@ decltype(types_)::const_iterator search(clang::QualType qual_type) {
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
-  std::vector<std::filesystem::path> paths;
   for (const auto &entry : std::filesystem::recursive_directory_iterator(dir)) {
     auto &path = entry.path();
     if (entry.is_regular_file() && path.extension() == ".cpp") {
@@ -564,6 +564,11 @@ std::string normalizeTranslationRule(std::string rule) {
 
 } // namespace
 
+PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
+  ctx_ = &ctx;
+}
+PushASTContext::~PushASTContext() { ctx_ = prev_; }
+
 bool Contains(clang::QualType qual_type) {
   return search(qual_type) != types_.end();
 }
@@ -680,7 +685,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
           break;
         case Model::kRefCount:
           types_[cpp_name + " *"] = TranslationRule::TypeTgt::RefcountPtr(
-              "PtrDyn<dyn " + rs_name + ">");
+              "PtrDyn<dyn " + rs_name + '>');
           break;
         }
       } else {
@@ -691,7 +696,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
           break;
         case Model::kRefCount:
           types_[cpp_name + " *"] =
-              TranslationRule::TypeTgt::RefcountPtr("Ptr<" + rs_name + ">");
+              TranslationRule::TypeTgt::RefcountPtr("Ptr<" + rs_name + '>');
           break;
         }
       }

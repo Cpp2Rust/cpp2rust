@@ -114,36 +114,30 @@ fn f34<T1>(a0: &mut Ptr<T1>) -> Ptr<T1> {
 
 fn f35<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
     let mut __a0 = a0.clone();
-    let __len =
-        ((a1.clone() as Ptr<T1>).get_offset() as isize - __a0.get_offset() as isize) as usize;
-    let mut __out = Vec::with_capacity(__len);
+    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
     while __a0 != a1 {
-        __out.push(__a0.read().clone());
-        __a0.prefix_inc();
+        __out.push(__a0.read());
+        __a0 += 1;
     }
     __out
 }
 
 fn f37<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
     let mut __a0 = a0.clone();
-    let __len =
-        ((a1.clone() as Ptr<T1>).get_offset() as isize - __a0.get_offset() as isize) as usize;
-    let mut __out = Vec::with_capacity(__len);
+    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
     while __a0 != a1 {
-        __out.push(__a0.read().clone());
-        __a0.prefix_inc();
+        __out.push(__a0.read());
+        __a0 += 1;
     }
     __out
 }
 
 fn f39(a0: Ptr<u32>, a1: Ptr<u32>) -> Vec<i32> {
     let mut __a0 = a0.clone();
-    let __len =
-        ((a1.clone() as Ptr<u32>).get_offset() as isize - __a0.get_offset() as isize) as usize;
-    let mut __out = Vec::with_capacity(__len);
+    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
     while __a0 != a1 {
         __out.push(__a0.read() as i32);
-        __a0.prefix_inc();
+        __a0 += 1;
     }
     __out
 }
@@ -162,13 +156,13 @@ fn f42(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
     } else {
         let mut __a0 = a0.clone();
         let mut max_it = a0.clone();
-        __a0.prefix_inc();
+        __a0 += 1;
 
         while __a0 != a1 {
             if max_it.read() < __a0.read() {
                 max_it = __a0.clone();
             }
-            __a0.prefix_inc();
+            __a0 += 1;
         }
         max_it
     }
@@ -206,17 +200,16 @@ fn f53<T1: Clone + ByteRepr>(
 ) -> Ptr<Vec<T1>> {
     let mut __idx = a1.get_offset() as usize;
     let mut __a2 = a2.clone();
-    let mut __a0 = a0.clone();
     while __a2 != a3 {
-        a0.with_mut(|__v: &mut Vec<T1>| __v.insert(__idx, __a2.read().clone()));
+        a0.with_mut(|__v: &mut Vec<T1>| __v.insert(__idx, __a2.read()));
         __idx += 1;
-        __a2.prefix_inc();
+        __a2 += 1;
     }
-    __a0
+    a0
 }
 
-fn f56<T1: ByteRepr>(a0: Ptr<Value<Vec<T1>>>) -> Ptr<Vec<T1>> {
-    (a0.to_last()).read().as_pointer()
+fn f56<T1: ByteRepr>(a0: &Vec<Value<Vec<T1>>>) -> Ptr<Vec<T1>> {
+    a0[a0.len() - 1].as_pointer()
 }
 
 fn f55<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {

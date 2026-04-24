@@ -4,10 +4,10 @@
 #include "brotli/decode.h"
 #include "brotli/encode.h"
 
-BrotliDecoderResult t1;
-BrotliEncoderMode t2;
-BrotliDecoderStateStruct *t3;
-const BrotliDecoderStateStruct *t4;
+using t1 = BrotliDecoderResult;
+using t2 = BrotliEncoderMode;
+using t3 = BrotliDecoderStateStruct *;
+using t4 = const BrotliDecoderStateStruct *;
 
 BrotliEncoderMode f1() { return BROTLI_MODE_FONT; }
 

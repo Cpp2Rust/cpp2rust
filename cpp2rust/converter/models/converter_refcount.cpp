@@ -494,7 +494,7 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat("}");
 }
 
-void ConverterRefCount::AddByteReprTrait(const clang::CXXRecordDecl *decl) {
+void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
   StrCat(std::format("impl ByteRepr for {}", struct_name),
          token::kOpenCurlyBracket, token::kCloseCurlyBracket);
@@ -1604,11 +1604,10 @@ ConverterRefCount::ConvertVarDefaultInit(clang::QualType qual_type) {
 }
 
 std::vector<const char *>
-ConverterRefCount::GetStructAttributes(const clang::CXXRecordDecl *decl,
-                                       bool &out_impl_default) {
+ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs = {};
 
-  if (out_impl_default) {
+  if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
   }
   return attrs;

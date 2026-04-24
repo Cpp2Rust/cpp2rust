@@ -117,7 +117,10 @@ add_custom_target("check-libcc2rs"
                  )
 
 add_custom_target("check-unit"
-                  COMMAND "python3"
+                  COMMAND ${CMAKE_COMMAND} -E env
+                          "CC=${CMAKE_C_COMPILER}"
+                          "CXX=${CMAKE_CXX_COMPILER}"
+                          "python3"
                           "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
                           ${LIT_FLAGS}
                           "${PROJECT_SOURCE_DIR}/tests/unit"
@@ -127,7 +130,10 @@ add_custom_target("check-unit"
                  )
 
 add_custom_target("check-benchmarks"
-                  COMMAND "python3"
+                  COMMAND ${CMAKE_COMMAND} -E env
+                          "CC=${CMAKE_C_COMPILER}"
+                          "CXX=${CMAKE_CXX_COMPILER}"
+                          "python3"
                           "${PROJECT_SOURCE_DIR}/tests/lit/lit.py"
                           ${LIT_FLAGS}
                           "${PROJECT_SOURCE_DIR}/tests/benchmarks"
@@ -151,4 +157,8 @@ add_custom_target("check-rules"
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
                   DEPENDS install-rust-toolchain
                   USES_TERMINAL
+                 )
+
+add_custom_target("check-all"
+                  DEPENDS check-libcc2rs check-rules check-unit check-benchmarks
                  )

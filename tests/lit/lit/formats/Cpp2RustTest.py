@@ -26,6 +26,7 @@ class Cpp2RustTest(TestFormat):
     self.regex_xfail = re.compile(r"//\s*XFAIL:\s*(.*)")
     self.regex_panic = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nocompile = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
+    self.regex_translation_fail = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nondet_result = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
     self.rust_version = read_rust_version()
     os.environ['RUSTFLAGS'] = '-Awarnings -A dangerous-implicit-autorefs'
@@ -83,6 +84,7 @@ class Cpp2RustTest(TestFormat):
 
     should_panic = matches_model(self.regex_panic.search(text), model)
     should_not_compile = matches_model(self.regex_nocompile.search(text), model)
+    should_not_translate = matches_model(self.regex_translation_fail.search(text), model)
     is_nondet_result = matches_model(self.regex_nondet_result.search(text), model)
 
     tmp_dir = "tmp/" + fname + "-" + model + "_" + format(random.getrandbits(64), "x")
@@ -93,10 +95,6 @@ class Cpp2RustTest(TestFormat):
     def fail(str, code = fail_code):
       shutil.rmtree(tmp_dir, True)
       return code, str
-
-    expected_file = self.getExpectedFile(filepath, model, fname)
-    if not os.path.exists(expected_file) and not replace_expected:
-      return fail('no expected file')
 
     cmd = ['./cpp2rust/cpp2rust', '-file', cc_input, '-model', model,
            '-o', rs_file]
@@ -113,7 +111,13 @@ class Cpp2RustTest(TestFormat):
       generated = f.read()
 
     if returncode != 0:
+      if should_not_translate:
+        return lit.Test.XFAIL, ''
       return fail('cpp2rust failed\n' + err)
+
+    expected_file = self.getExpectedFile(filepath, model, fname)
+    if not os.path.exists(expected_file) and not replace_expected:
+      return fail('no expected file')
 
     if replace_expected:
       self.updateExpected(generated, expected_file)
@@ -172,7 +176,10 @@ rules = {{ path = "../../../rules" }}
       elif is_nondet_result:
         lit.util.executeCommand(rust_bin)
       else:
-        cc = 'clang' if cc_input.endswith('.c') else 'clang++'
+        if cc_input.endswith('.c'):
+          cc = os.environ.get('CC', 'clang')
+        else:
+          cc = os.environ.get('CXX', 'clang++')
         cmd = [cc, '-O3', '-o', tmp_dir + '/cpp', cc_input]
         _, _, code = lit.util.executeCommand(cmd)
         if code != 0:
