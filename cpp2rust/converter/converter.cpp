@@ -990,6 +990,7 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
 }
 
 bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
@@ -1002,6 +1003,7 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
 }
 
 bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
   StrCat(keyword::kLoop, token::kOpenCurlyBracket);
   curr_for_inc_.emplace(nullptr);
@@ -1016,6 +1018,7 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
 }
 
 bool Converter::VisitForStmt(clang::ForStmt *stmt) {
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   Convert(stmt->getInit());
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
@@ -1055,6 +1058,7 @@ void Converter::ConvertLoopVariable(clang::VarDecl *decl,
 
 void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
                                     const clang::VarDecl *map_iter_decl) {
+  PushBreakTarget push(break_target_, BreakTarget::Loop);
   std::optional<ScopedMapIterDecl> skip;
   if (map_iter_decl)
     skip.emplace(*this, map_iter_decl);
@@ -1137,7 +1141,7 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
 
 bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
   StrCat(keyword::kBreak);
-  if (break_with_explicit_label_) {
+  if (isSwitchBreak()) {
     StrCat("'switch");
   }
   return false;
@@ -2644,6 +2648,7 @@ bool Converter::VisitSwitchCase(clang::SwitchCase *stmt) {
 }
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
+  PushBreakTarget push(break_target_, BreakTarget::Switch);
   StrCat("'switch: {");
   StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
   StrCat("match __match_cond");
@@ -2653,7 +2658,6 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   auto body = llvm::cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
 
-  break_with_explicit_label_ = true;
   for (auto it = body->body_begin(), end = body->body_end(); it != end;) {
     if (auto switch_case = clang::dyn_cast<clang::SwitchCase>(*it)) {
       if (clang::isa<clang::CaseStmt>(switch_case)) {
@@ -2676,7 +2680,6 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   if (!has_default_case) {
     StrCat(R"( _ => {})");
   }
-  break_with_explicit_label_ = false;
 
   StrCat("}");
   StrCat("}");
