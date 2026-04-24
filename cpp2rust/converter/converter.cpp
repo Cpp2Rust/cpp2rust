@@ -2662,6 +2662,9 @@ void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   PushBreakTarget push(break_target_, BreakTarget::Switch);
+  auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
+  assert(body);
+
   StrCat("'switch: {");
   StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
   StrCat("match __match_cond");
