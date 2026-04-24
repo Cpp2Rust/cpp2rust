@@ -85,8 +85,8 @@ pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) ->
             Err(e) => panic!("Unhandled error in fread: {e}"),
         };
 
-        for i in 0..n {
-            dst.write(buffer[i]);
+        for &byte in &buffer[..n] {
+            dst.write(byte);
             dst = dst.offset(1);
         }
 
@@ -96,6 +96,10 @@ pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) ->
     (read_bytes / a1 as usize) as u64
 }
 
+/// # Safety
+///
+/// `a0` must point to a writable buffer of at least `a1 * a2` bytes, and `a3`
+/// must point to a valid, open `std::fs::File`.
 pub unsafe fn fread_unsafe(
     a0: *mut ::std::ffi::c_void,
     a1: u64,
@@ -122,9 +126,9 @@ pub unsafe fn fread_unsafe(
             Err(e) => panic!("Unhandled error in fread: {e}"),
         };
 
-        for i in 0..n {
+        for &byte in &buffer[..n] {
             unsafe {
-                *dst = buffer[i];
+                *dst = byte;
                 dst = dst.offset(1);
             }
         }
