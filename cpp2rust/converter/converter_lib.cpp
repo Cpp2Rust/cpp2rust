@@ -670,10 +670,13 @@ static std::string_view Trim(std::string_view s) {
 }
 
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
-  Trim(s);
-  if (s.size() >= prefix.size() + suffix.size() && s.starts_with(prefix) &&
-      s.ends_with(suffix)) {
-    s = s.substr(prefix.size(), s.size() - prefix.size() - suffix.size());
+  auto trimmed = Trim(s);
+  if (trimmed.starts_with(prefix) && trimmed.ends_with(suffix)) {
+    assert(trimmed.size() >= prefix.size() + suffix.size() &&
+           "prefix and suffix overlap in s");
+    trimmed.remove_prefix(prefix.size());
+    trimmed.remove_suffix(suffix.size());
+    s = std::string(trimmed);
   }
 }
 
