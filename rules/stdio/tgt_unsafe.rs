@@ -65,7 +65,12 @@ unsafe fn f4(a0: *mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
     }
 }
 
-pub(crate) unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
+pub(crate) unsafe fn f5(
+    a0: *mut ::libc::c_void,
+    a1: u64,
+    a2: u64,
+    a3: *mut ::std::fs::File,
+) -> u64 {
     let total = a1.saturating_mul(a2) as usize;
     let mut dst = a0 as *mut u8;
 
