@@ -1,4 +1,3 @@
-// translation-fail
 #include <cassert>
 
 int cases_and_default_stacked(int x) {

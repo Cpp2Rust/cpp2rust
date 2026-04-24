@@ -1,4 +1,3 @@
-// translation-fail
 #include <cassert>
 
 int case_then_default(int x) {
