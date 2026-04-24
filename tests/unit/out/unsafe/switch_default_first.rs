@@ -11,16 +11,16 @@ pub unsafe fn default_first_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            _ => {
-                r = 7;
-                break 'switch;
-            }
             v if v == 1 => {
                 r = 1;
                 break 'switch;
             }
             v if v == 2 => {
                 r = 2;
+                break 'switch;
+            }
+            _ => {
+                r = 7;
                 break 'switch;
             }
         }

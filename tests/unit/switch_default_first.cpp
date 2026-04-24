@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int default_first(int x) {

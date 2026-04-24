@@ -16,12 +16,12 @@ pub fn default_middle_0(x: i32) -> i32 {
                 (*r.borrow_mut()) = 1;
                 break 'switch;
             }
-            _ => {
-                (*r.borrow_mut()) = 99;
-                break 'switch;
-            }
             v if v == 2 => {
                 (*r.borrow_mut()) = 2;
+                break 'switch;
+            }
+            _ => {
+                (*r.borrow_mut()) = 99;
                 break 'switch;
             }
         }

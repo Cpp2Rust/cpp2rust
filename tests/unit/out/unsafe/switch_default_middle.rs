@@ -15,12 +15,12 @@ pub unsafe fn default_middle_0(mut x: i32) -> i32 {
                 r = 1;
                 break 'switch;
             }
-            _ => {
-                r = 99;
-                break 'switch;
-            }
             v if v == 2 => {
                 r = 2;
+                break 'switch;
+            }
+            _ => {
+                r = 99;
                 break 'switch;
             }
         }

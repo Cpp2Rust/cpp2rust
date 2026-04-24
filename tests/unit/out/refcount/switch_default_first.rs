@@ -12,16 +12,16 @@ pub fn default_first_0(x: i32) -> i32 {
     'switch: {
         let __match_cond = (*x.borrow());
         match __match_cond {
-            _ => {
-                (*r.borrow_mut()) = 7;
-                break 'switch;
-            }
             v if v == 1 => {
                 (*r.borrow_mut()) = 1;
                 break 'switch;
             }
             v if v == 2 => {
                 (*r.borrow_mut()) = 2;
+                break 'switch;
+            }
+            _ => {
+                (*r.borrow_mut()) = 7;
                 break 'switch;
             }
         }

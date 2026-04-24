@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int default_middle(int x) {
