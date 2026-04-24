@@ -115,6 +115,9 @@ class Cpp2RustTest(TestFormat):
         return lit.Test.XFAIL, ''
       return fail('cpp2rust failed\n' + err)
 
+    if should_not_translate:
+      return fail('expected translation-fail but cpp2rust succeeded')
+
     expected_file = self.getExpectedFile(filepath, model, fname)
     if not os.path.exists(expected_file) and not replace_expected:
       return fail('no expected file')
