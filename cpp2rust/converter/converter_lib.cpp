@@ -723,6 +723,7 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
     return SwitchCaseHasFallthrough(compound->body_back());
   }
   if (clang::isa<clang::BreakStmt>(stmt) ||
+      clang::isa<clang::ContinueStmt>(stmt) ||
       clang::isa<clang::ReturnStmt>(stmt)) {
     return false;
   }
