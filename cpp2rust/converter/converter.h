@@ -463,9 +463,29 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
-  bool break_with_explicit_label_ = false;
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
+
+  enum class BreakTarget { Loop, Switch };
+  std::stack<BreakTarget> break_target_;
+
+  bool isSwitchBreak() const {
+    return !break_target_.empty() && break_target_.top() == BreakTarget::Switch;
+  }
+
+  class PushBreakTarget {
+  public:
+    PushBreakTarget(std::stack<BreakTarget> &stack, BreakTarget target)
+        : stack_(stack) {
+      stack_.push(target);
+    }
+    ~PushBreakTarget() { stack_.pop(); }
+    PushBreakTarget(const PushBreakTarget &) = delete;
+    PushBreakTarget &operator=(const PushBreakTarget &) = delete;
+
+  private:
+    std::stack<BreakTarget> &stack_;
+  };
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
 
