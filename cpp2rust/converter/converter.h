@@ -466,6 +466,8 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  std::stack<clang::Expr *> curr_for_inc_;
+  std::stack<clang::QualType> curr_init_type_;
 
   enum class BreakTarget { Loop, Switch };
   std::stack<BreakTarget> break_target_;
@@ -487,9 +489,6 @@ protected:
   private:
     std::stack<BreakTarget> &stack_;
   };
-
-  std::stack<clang::Expr *> curr_for_inc_;
-  std::stack<clang::QualType> curr_init_type_;
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
 
