@@ -21,14 +21,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fn1: Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::std::fs::File) -> u64> =
-        Some(rules::fread_unsafe);
-    assert!(((fn1) == (Some(rules::fread_unsafe))));
+        Some(libcc2rs::fread_unsafe);
+    assert!(((fn1) == (Some(libcc2rs::fread_unsafe))));
     assert!(!((fn1).is_none()));
     let mut fn2: Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64> =
         std::mem::transmute::<
             Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::std::fs::File) -> u64>,
             Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64>,
-        >(Some(rules::fread_unsafe));
+        >(Some(libcc2rs::fread_unsafe));
     assert!(
         ((fn1)
             == (std::mem::transmute::<

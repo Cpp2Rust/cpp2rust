@@ -55,41 +55,8 @@ fn f4(a0: &mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
     }
 }
 
-pub(crate) fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
-    let total = a1.saturating_mul(a2) as usize;
-    let mut dst = a0
-        .cast::<u8>()
-        .expect("fread: only supporting u8 pointers")
-        .clone();
-
-    let mut f = (*a3.upgrade().deref())
-        .try_clone()
-        .expect("try_clone failed");
-    let mut reader = std::io::BufReader::with_capacity(64 * 1024, f);
-
-    let mut read_bytes: usize = 0;
-    let mut buffer: [u8; 8192] = [0; 8192];
-
-    while read_bytes < total {
-        let remaining = total - read_bytes;
-        let to_read = std::cmp::min(buffer.len(), remaining);
-
-        let n = match std::io::Read::read(&mut reader, &mut buffer[..to_read]) {
-            Ok(0) => break,
-            Ok(n) => n,
-            Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-            Err(e) => panic!("Unhandled error in fread: {e}"),
-        };
-
-        for i in 0..n {
-            dst.write(buffer[i]);
-            dst = dst.offset(1);
-        }
-
-        read_bytes += n;
-    }
-
-    (read_bytes / a1 as usize) as u64
+fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
+    libcc2rs::fread_refcount(a0, a1, a2, a3)
 }
 
 fn f6(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {

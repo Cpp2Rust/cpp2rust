@@ -20,19 +20,19 @@ fn main_0() -> i32 {
     let fn1: Value<FnPtr<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>> =
         Rc::new(RefCell::new(FnPtr::<
             fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64,
-        >::new(rules::fread_refcount)));
+        >::new(libcc2rs::fread_refcount)));
     assert!({
         let _lhs = (*fn1.borrow()).clone();
         _lhs == FnPtr::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>::new(
-            rules::fread_refcount,
+            libcc2rs::fread_refcount,
         )
     });
     assert!(!((*fn1.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(Ptr<u8>, u64, u64, AnyPtr) -> u64>> = Rc::new(RefCell::new(
-        FnPtr::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>::new(rules::fread_refcount)
+        FnPtr::<fn(AnyPtr, u64, u64, Ptr<::std::fs::File>) -> u64>::new(libcc2rs::fread_refcount)
             .cast::<fn(Ptr<u8>, u64, u64, AnyPtr) -> u64>(Some(
             (|a0: Ptr<u8>, a1: u64, a2: u64, a3: AnyPtr| -> u64 {
-                rules::fread_refcount(a0.to_any(), a1, a2, a3.cast::<::std::fs::File>().unwrap())
+                libcc2rs::fread_refcount(a0.to_any(), a1, a2, a3.cast::<::std::fs::File>().unwrap())
             }) as fn(Ptr<u8>, u64, u64, AnyPtr) -> u64,
         )),
     ));

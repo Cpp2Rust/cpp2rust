@@ -585,7 +585,7 @@ const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr) {
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
   if (exprs_.contains(ToString(decl))) {
-    return std::format("rules::{}_{}", decl->getNameAsString(),
+    return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }
   return GetNamedDeclAsString(decl->getCanonicalDecl());
