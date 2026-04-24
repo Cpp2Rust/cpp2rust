@@ -16,7 +16,7 @@ pub fn while_in_switch_break_0(n: i32) -> i32 {
                 let i: Value<i32> = Rc::new(RefCell::new(0));
                 'loop_: while ((*i.borrow()) < 10) {
                     if ((*i.borrow()) == 4) {
-                        break 'switch;
+                        break;
                     }
                     (*r.borrow_mut()) += (*i.borrow());
                     (*i.borrow_mut()).prefix_inc();

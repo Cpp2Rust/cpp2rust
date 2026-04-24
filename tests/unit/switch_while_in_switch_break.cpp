@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int while_in_switch_break(int n) {

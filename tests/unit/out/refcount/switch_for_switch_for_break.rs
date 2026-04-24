@@ -18,7 +18,7 @@ pub fn for_switch_for_break_0(n: i32) -> i32 {
                     let j: Value<i32> = Rc::new(RefCell::new(0));
                     'loop_: while ((*j.borrow()) < 10) {
                         if ((*j.borrow()) == 2) {
-                            break 'switch;
+                            break;
                         }
                         (*r.borrow_mut()) += 1;
                         (*j.borrow_mut()).prefix_inc();

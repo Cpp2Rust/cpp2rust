@@ -30,15 +30,15 @@ pub unsafe fn nested_0(mut a: i32, mut b: i32) -> i32 {
                     }
                 };
                 r += 1;
-                break;
+                break 'switch;
             }
             v if v == 2 => {
                 r = 2;
-                break;
+                break 'switch;
             }
             _ => {
                 r = -1_i32;
-                break;
+                break 'switch;
             }
         }
     };

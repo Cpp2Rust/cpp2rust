@@ -1,4 +1,3 @@
-// no-compile
 #include <cassert>
 
 int nested(int a, int b) {

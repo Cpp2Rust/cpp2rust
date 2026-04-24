@@ -32,15 +32,15 @@ pub fn nested_0(a: i32, b: i32) -> i32 {
                     }
                 };
                 (*r.borrow_mut()) += 1;
-                break;
+                break 'switch;
             }
             v if v == 2 => {
                 (*r.borrow_mut()) = 2;
-                break;
+                break 'switch;
             }
             _ => {
                 (*r.borrow_mut()) = -1_i32;
-                break;
+                break 'switch;
             }
         }
     };

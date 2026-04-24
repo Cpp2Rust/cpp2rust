@@ -15,7 +15,7 @@ pub unsafe fn while_in_switch_break_0(mut n: i32) -> i32 {
                 let mut i: i32 = 0;
                 'loop_: while ((i) < (10)) {
                     if ((i) == (4)) {
-                        break 'switch;
+                        break;
                     }
                     r += i;
                     i.prefix_inc();
