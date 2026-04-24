@@ -55,7 +55,7 @@ fn f4(a0: &mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
     }
 }
 
-pub fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
+pub(crate) fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
     let total = a1.saturating_mul(a2) as usize;
     let mut dst = a0
         .cast::<u8>()
@@ -92,7 +92,7 @@ pub fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
     (read_bytes / a1 as usize) as u64
 }
 
-pub fn f6(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
+fn f6(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
     let total = a1.saturating_mul(a2) as usize;
     let mut src = a0
         .cast::<u8>()
