@@ -112,7 +112,7 @@ class Cpp2RustTest(TestFormat):
 
     if returncode != 0:
       if should_not_translate:
-        return lit.Test.PASS, ''
+        return lit.Test.XFAIL, ''
       return fail('cpp2rust failed\n' + err)
 
     expected_file = self.getExpectedFile(filepath, model, fname)
