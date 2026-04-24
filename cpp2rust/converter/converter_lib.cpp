@@ -662,10 +662,11 @@ clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 
-static void Trim(std::string &s) {
+static std::string_view Trim(std::string_view s) {
   auto is_space = [](unsigned char c) { return std::isspace(c); };
-  s.erase(s.begin(), std::find_if_not(s.begin(), s.end(), is_space));
-  s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(), s.end());
+  auto b = std::find_if_not(s.begin(), s.end(), is_space);
+  auto e = std::find_if_not(s.rbegin(), s.rend(), is_space).base();
+  return {b, e};
 }
 
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
