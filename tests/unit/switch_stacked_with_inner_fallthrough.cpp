@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int stacked_with_inner_fallthrough(int x, int flag) {

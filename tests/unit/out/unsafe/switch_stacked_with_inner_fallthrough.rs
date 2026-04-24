@@ -8,21 +8,18 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn stacked_with_inner_fallthrough_0(mut x: i32, mut flag: i32) -> i32 {
     let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 1 || v == 2 || v == 3 => {
-                if !(flag != 0) {
-                    r = 50;
-                    break 'switch;
-                };
-            }
-            _ => {
-                r = 999;
-                break 'switch;
-            }
+    switch!(match x {
+        v if v == 1 || v == 2 || v == 3 => {
+            if !(flag != 0) {
+                r = 50;
+                break;
+            };
         }
-    };
+        _ => {
+            r = 999;
+            break;
+        }
+    });
     return r;
 }
 pub fn main() {

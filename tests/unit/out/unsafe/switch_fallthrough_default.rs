@@ -8,21 +8,18 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn fallthrough_default_0(mut x: i32, mut flag: i32) -> i32 {
     let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 7 => {
-                if (flag != 0) {
-                    r = 100;
-                    break 'switch;
-                };
-            }
-            _ => {
-                r = 42;
-                break 'switch;
-            }
+    switch!(match x {
+        v if v == 7 => {
+            if (flag != 0) {
+                r = 100;
+                break;
+            };
         }
-    };
+        _ => {
+            r = 42;
+            break;
+        }
+    });
     return r;
 }
 pub fn main() {

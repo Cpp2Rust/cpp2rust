@@ -8,20 +8,17 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn stacked_block_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
-    'switch: {
-        let __match_cond = x;
-        match __match_cond {
-            v if v == 1 || v == 2 || v == 3 => {
-                let mut y: i32 = ((x) * (2));
-                r = ((y) + (1));
-                break 'switch;
-            }
-            _ => {
-                r = 0;
-                break 'switch;
-            }
+    switch!(match x {
+        v if v == 1 || v == 2 || v == 3 => {
+            let mut y: i32 = ((x) * (2));
+            r = ((y) + (1));
+            break;
         }
-    };
+        _ => {
+            r = 0;
+            break;
+        }
+    });
     return r;
 }
 pub fn main() {

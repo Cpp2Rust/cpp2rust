@@ -9,20 +9,17 @@ use std::rc::{Rc, Weak};
 pub fn stacked_block_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
-    'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
-            v if v == 1 || v == 2 || v == 3 => {
-                let y: Value<i32> = Rc::new(RefCell::new(((*x.borrow()) * 2)));
-                (*r.borrow_mut()) = ((*y.borrow()) + 1);
-                break 'switch;
-            }
-            _ => {
-                (*r.borrow_mut()) = 0;
-                break 'switch;
-            }
+    switch!(match (*x.borrow()) {
+        v if v == 1 || v == 2 || v == 3 => {
+            let y: Value<i32> = Rc::new(RefCell::new(((*x.borrow()) * 2)));
+            (*r.borrow_mut()) = ((*y.borrow()) + 1);
+            break;
         }
-    };
+        _ => {
+            (*r.borrow_mut()) = 0;
+            break;
+        }
+    });
     return (*r.borrow());
 }
 pub fn main() {

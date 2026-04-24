@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int fallthrough_into_block(int x) {

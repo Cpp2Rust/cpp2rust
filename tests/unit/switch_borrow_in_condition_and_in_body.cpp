@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int borrow_in_condition_and_in_body(int x) {

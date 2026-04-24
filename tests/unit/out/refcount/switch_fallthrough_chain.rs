@@ -9,28 +9,25 @@ use std::rc::{Rc, Weak};
 pub fn fallthrough_chain_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
-    'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
-            v if v == 1 => {
-                (*r.borrow_mut()) += 1;
-            }
-            v if v == 2 => {
-                (*r.borrow_mut()) += 2;
-            }
-            v if v == 3 => {
-                (*r.borrow_mut()) += 4;
-            }
-            v if v == 4 => {
-                (*r.borrow_mut()) += 8;
-                break 'switch;
-            }
-            _ => {
-                (*r.borrow_mut()) = -1_i32;
-                break 'switch;
-            }
+    switch!(match (*x.borrow()) {
+        v if v == 1 => {
+            (*r.borrow_mut()) += 1;
         }
-    };
+        v if v == 2 => {
+            (*r.borrow_mut()) += 2;
+        }
+        v if v == 3 => {
+            (*r.borrow_mut()) += 4;
+        }
+        v if v == 4 => {
+            (*r.borrow_mut()) += 8;
+            break;
+        }
+        _ => {
+            (*r.borrow_mut()) = -1_i32;
+            break;
+        }
+    });
     return (*r.borrow());
 }
 pub fn main() {

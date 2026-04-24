@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int fallthrough_chain(int x) {

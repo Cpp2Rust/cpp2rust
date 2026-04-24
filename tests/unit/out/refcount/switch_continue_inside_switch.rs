@@ -11,19 +11,16 @@ pub fn continue_inside_switch_0(n: i32) -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        'switch: {
-            let __match_cond = (*i.borrow());
-            match __match_cond {
-                v if v == 0 || v == 2 || v == 4 => {
-                    (*i.borrow_mut()).prefix_inc();
-                    continue 'loop_;
-                }
-                _ => {
-                    (*r.borrow_mut()) += (*i.borrow());
-                    break 'switch;
-                }
+        switch!(match (*i.borrow()) {
+            v if v == 0 || v == 2 || v == 4 => {
+                (*i.borrow_mut()).prefix_inc();
+                continue 'loop_;
             }
-        };
+            _ => {
+                (*r.borrow_mut()) += (*i.borrow());
+                break;
+            }
+        });
         (*r.borrow_mut()) += 1000;
         (*i.borrow_mut()).prefix_inc();
     }

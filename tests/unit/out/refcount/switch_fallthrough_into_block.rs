@@ -9,23 +9,20 @@ use std::rc::{Rc, Weak};
 pub fn fallthrough_into_block_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
-    'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
-            v if v == 1 => {
-                (*r.borrow_mut()) += 1;
-            }
-            v if v == 2 => {
-                let tmp: Value<i32> = Rc::new(RefCell::new(((*r.borrow()) * 10)));
-                (*r.borrow_mut()) = ((*tmp.borrow()) + 5);
-                break 'switch;
-            }
-            _ => {
-                (*r.borrow_mut()) = -1_i32;
-                break 'switch;
-            }
+    switch!(match (*x.borrow()) {
+        v if v == 1 => {
+            (*r.borrow_mut()) += 1;
         }
-    };
+        v if v == 2 => {
+            let tmp: Value<i32> = Rc::new(RefCell::new(((*r.borrow()) * 10)));
+            (*r.borrow_mut()) = ((*tmp.borrow()) + 5);
+            break;
+        }
+        _ => {
+            (*r.borrow_mut()) = -1_i32;
+            break;
+        }
+    });
     return (*r.borrow());
 }
 pub fn main() {

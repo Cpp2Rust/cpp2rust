@@ -1,4 +1,3 @@
-// panic
 #include <cassert>
 
 int fallthrough_default(int x, int flag) {
