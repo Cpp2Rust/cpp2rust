@@ -56,7 +56,7 @@ fn f4(a0: &mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
 }
 
 fn f5(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
-    libcc2rs::fread_refcount(a0, a1, a2, a3)
+    libcc2rs::fread_refcount(a0, a1, a2, a3.clone())
 }
 
 fn f6(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {

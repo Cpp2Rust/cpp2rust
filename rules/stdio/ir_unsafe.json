@@ -477,36 +477,7 @@
   "f5": {
     "body": [
       {
-        "text": "let total = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": "a1",
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".saturating_mul("
-            },
-            {
-              "placeholder": {
-                "arg": "a2",
-                "access": "read"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ]
-        }
-      },
-      {
-        "text": " as usize;\n    let mut dst = "
+        "text": "unsafe { libcc2rs::fread_unsafe("
       },
       {
         "placeholder": {
@@ -515,95 +486,7 @@
         }
       },
       {
-        "text": " as *mut u8;\n\n    let mut f = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(*"
-                  },
-                  {
-                    "placeholder": {
-                      "arg": "a3",
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".try_clone()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".expect(\"try_clone failed\")"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let mut reader = std::io::BufReader::with_capacity(64 * 1024, f);\n\n    let mut read_bytes: usize = 0;\n    let mut buffer: [u8; 8192] = [0; 8192];\n\n    while read_bytes < total {\n        let remaining = total - read_bytes;\n        let to_read = std::cmp::min("
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "buffer"
-            }
-          ],
-          "body": [
-            {
-              "text": ".len()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ", remaining);\n\n        let n = match std::io::Read::read(&mut reader, &mut buffer[..to_read]) {\n            Ok(0) => break,\n            Ok(n) => n,\n            Err(ref e) if "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "e"
-            }
-          ],
-          "body": [
-            {
-              "text": ".kind()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " == std::io::ErrorKind::Interrupted => continue,\n            Err(e) => panic!(\"Unhandled error in fread: {e}\"),\n        };\n\n        for i in 0..n {\n            *dst = buffer[i];\n            dst = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "dst"
-            }
-          ],
-          "body": [
-            {
-              "text": ".offset(1)"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        }\n\n        read_bytes += n;\n    }\n\n    (read_bytes / "
+        "text": " as *mut ::std::ffi::c_void, "
       },
       {
         "placeholder": {
@@ -612,10 +495,27 @@
         }
       },
       {
-        "text": " as usize) as u64"
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": "a2",
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": "a3",
+          "access": "read"
+        }
+      },
+      {
+        "text": ") }"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*mut ::libc::c_void",
