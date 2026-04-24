@@ -3,7 +3,6 @@
 
 use crate::{AnyPtr, AsPointer, Ptr, Value};
 use std::cell::{RefCell, UnsafeCell};
-use std::ops::Deref;
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 
