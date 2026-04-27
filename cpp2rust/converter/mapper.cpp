@@ -739,8 +739,8 @@ static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
   std::string parent_name;
   if (auto *parent =
           clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
-    parent_name =
-        parent->getIdentifier() ? parent->getIdentifier()->getName().str();
+    parent_name = parent->getIdentifier()
+                      ? parent->getIdentifier()->getName().str()
                       : synthesizeAnonRecordName(parent);
   }
   return std::format("{}_anon_{}", parent_name, GetAnonIndex(record));
