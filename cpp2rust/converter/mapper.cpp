@@ -723,7 +723,23 @@ std::string ToString(clang::QualType qual_type) {
   return normalizeTranslationRule(type);
 }
 
+static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
+  std::string parent_name;
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
+    parent_name =
+        parent->getIdentifier() ? parent->getIdentifier()->getName().str();
+                      : synthesizeAnonRecordName(parent);
+  }
+  return std::format("{}_anon_{}", parent_name, GetAnonIndex(record));
+}
+
 std::string ToString(const clang::NamedDecl *decl) {
+  if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
+      record && !record->getIdentifier()) {
+    return synthesizeAnonRecordName(record);
+  }
+
   std::string out;
   llvm::raw_string_ostream os(out);
 

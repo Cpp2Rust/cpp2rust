@@ -12,6 +12,7 @@
 #include <array>
 #include <cctype>
 #include <filesystem>
+#include <format>
 #include <unordered_set>
 
 #include "converter/lex.h"
@@ -296,6 +297,25 @@ unsigned GetArraySize(clang::QualType array_type) {
   return constant_array_ty->getSize().getZExtValue();
 }
 
+unsigned GetAnonIndex(const clang::NamedDecl *decl) {
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
+    unsigned counter = 0;
+    for (auto *d : parent->decls()) {
+      if (d == decl) {
+        return counter;
+      }
+      auto *named = clang::dyn_cast<clang::NamedDecl>(d);
+      if (named && named->getKind() == decl->getKind() &&
+          named->getName().empty()) {
+        counter++;
+      }
+    }
+    return counter;
+  }
+  return 0;
+}
+
 std::string GetID(const clang::Decl *decl) {
   assert(decl);
   const auto file_name = GetFileName(decl);
@@ -316,6 +336,11 @@ static std::unordered_map<std::string, size_t> type_mapping;
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
+
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl);
+      field && name.empty()) {
+    return std::format("anon_{}", GetAnonIndex(field));
+  }
 
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (!clang::isa<clang::CXXMethodDecl>(fn)) {

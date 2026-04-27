@@ -82,6 +82,8 @@ std::string GetID(const clang::Decl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
+unsigned GetAnonIndex(const clang::NamedDecl *decl);
+
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);
 
 template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {
