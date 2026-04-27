@@ -3,25 +3,25 @@
 #include <stdint.h>
 #include <string.h>
 
-struct header {
-  uint16_t tag;
-  char data[14];
+struct record {
+  uint16_t code;
+  char pad[14];
 };
 
 struct inner {
   union {
-    struct header h;
+    struct record h;
     char raw[128];
-  } buffer;
+  } view;
 };
 
 struct Outer {
   int kind;
-  int subtype;
-  int proto;
+  int level;
+  int variant;
   unsigned int len;
   union {
-    struct header h;
+    struct record h;
     struct inner nested;
   } body;
 };
@@ -31,15 +31,15 @@ int main(void) {
   memset(&ex, 0, sizeof(ex));
 
   ex.kind = 2;
-  ex.subtype = 1;
-  ex.proto = 6;
-  ex.len = sizeof(struct header);
-  ex.body.h.tag = 2;
-  ex.body.h.data[0] = 'X';
+  ex.level = 1;
+  ex.variant = 6;
+  ex.len = sizeof(struct record);
+  ex.body.h.code = 2;
+  ex.body.h.pad[0] = 'X';
 
-  assert(ex.body.h.tag == 2);
-  assert(ex.body.h.data[0] == 'X');
+  assert(ex.body.h.code == 2);
+  assert(ex.body.h.pad[0] == 'X');
 
-  assert(ex.body.nested.buffer.h.tag == 2);
+  assert(ex.body.nested.view.h.code == 2);
   return 0;
 }

@@ -5,12 +5,12 @@ int main(void) {
   long x = -1;
 
   union {
-    unsigned long *to_ulong;
-    long *to_long;
-  } lptr;
+    unsigned long *as_unsigned;
+    long *as_signed;
+  } pp;
 
-  lptr.to_long = &x;
-  *lptr.to_ulong = 42UL;
+  pp.as_signed = &x;
+  *pp.as_unsigned = 42UL;
 
   assert(x == 42);
   return 0;

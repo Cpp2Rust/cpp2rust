@@ -4,52 +4,52 @@
 #include <stdint.h>
 #include <string.h>
 
-struct header_a {
-  uint16_t tag;
-  char data[14];
+struct shape_a {
+  uint16_t code;
+  char pad[14];
 };
 
-struct header_b {
-  uint16_t tag;
-  uint16_t port;
-  uint32_t addr;
-  char zero[8];
+struct shape_b {
+  uint16_t code;
+  uint16_t lo;
+  uint32_t hi;
+  char fill[8];
 };
 
-struct Storage {
+struct Container {
   union {
-    struct header_a a;
-    struct header_b b;
+    struct shape_a a;
+    struct shape_b b;
     char raw[256];
-  } buffer;
+  } view;
 };
 
 int main(void) {
-  struct Storage s;
+  struct Container c;
 
-  memset(&s, 0, sizeof(s));
-  assert(s.buffer.a.tag == 0);
-  assert(s.buffer.b.port == 0);
-  assert(s.buffer.raw[0] == 0);
-  assert(s.buffer.raw[255] == 0);
+  memset(&c, 0, sizeof(c));
+  assert(c.view.a.code == 0);
+  assert(c.view.b.lo == 0);
+  assert(c.view.raw[0] == 0);
+  assert(c.view.raw[255] == 0);
 
-  unsigned char wire[16] = {0};
-  wire[0] = 2;
-  wire[2] = 0x50;
-  wire[3] = 0x00;
-  wire[4] = 0x7F;
-  wire[5] = 0x00;
-  wire[6] = 0x00;
-  wire[7] = 0x01;
+  unsigned char src[16] = {0};
+  src[0] = 2;
+  src[2] = 0x50;
+  src[3] = 0x00;
+  src[4] = 0x7F;
+  src[5] = 0x00;
+  src[6] = 0x00;
+  src[7] = 0x01;
   size_t len = 16;
-  assert(len <= sizeof(s.buffer.raw));
-  memcpy(&s.buffer.raw, wire, len);
+  assert(len <= sizeof(c.view.raw));
+  memcpy(&c.view.raw, src, len);
 
-  assert(s.buffer.b.tag == 2);
-  assert(((unsigned char *)&s.buffer.b.port)[0] == 0x50);
+  assert(c.view.b.code == 2);
+  assert(((unsigned char *)&c.view.b.lo)[0] == 0x50);
 
-  memset(&s, 0, sizeof(s));
-  assert(s.buffer.b.tag == 0);
+  memset(&c, 0, sizeof(c));
+  assert(c.view.b.code == 0);
 
   return 0;
 }

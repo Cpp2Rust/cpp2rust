@@ -4,43 +4,43 @@
 #include <stdint.h>
 #include <string.h>
 
-struct header_a {
-  uint16_t tag;
-  char data[14];
+struct shape_a {
+  uint16_t code;
+  char pad[14];
 };
 
-struct header_b {
-  uint16_t tag;
-  uint16_t port;
-  uint32_t flags;
-  uint8_t body[16];
-  uint32_t extra;
+struct shape_b {
+  uint16_t code;
+  uint16_t lo;
+  uint32_t mid;
+  uint8_t fill[16];
+  uint32_t tail;
 };
 
-struct Storage {
+struct Container {
   unsigned int len;
   union {
-    struct header_a a;
-    struct header_b b;
+    struct shape_a a;
+    struct shape_b b;
     char raw[64];
   } u;
 };
 
 int main(void) {
-  struct Storage s;
-  memset(&s, 0, sizeof(s));
+  struct Container c;
+  memset(&c, 0, sizeof(c));
 
-  s.u.a.tag = 10;
-  s.len = sizeof(struct header_b);
+  c.u.a.code = 10;
+  c.len = sizeof(struct shape_b);
 
-  ((struct header_b *)(void *)&s.u.a)->extra = 0xDEADBEEF;
+  ((struct shape_b *)(void *)&c.u.a)->tail = 0xDEADBEEF;
 
-  assert(s.u.b.extra == 0xDEADBEEF);
-  assert(s.u.b.tag == 10);
+  assert(c.u.b.tail == 0xDEADBEEF);
+  assert(c.u.b.code == 10);
 
-  s.u.b.port = 0x1F90;
-  assert(((unsigned char *)&s.u.raw)[2] == 0x90);
-  assert(((unsigned char *)&s.u.raw)[3] == 0x1F);
+  c.u.b.lo = 0x1F90;
+  assert(((unsigned char *)&c.u.raw)[2] == 0x90);
+  assert(((unsigned char *)&c.u.raw)[3] == 0x1F);
 
   return 0;
 }

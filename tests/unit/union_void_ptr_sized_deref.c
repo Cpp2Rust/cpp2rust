@@ -4,31 +4,31 @@
 #include <stdint.h>
 
 typedef enum {
-  W_INT64,
-  W_INT32,
-  W_INT16,
-} IntWidth;
+  W_64,
+  W_32,
+  W_16,
+} Width;
 
-struct Arg {
-  IntWidth width;
+struct Sink {
+  Width width;
   union {
-    const char *str;
-    void *ptr;
-    int64_t nums;
-    double dnum;
-  } val;
+    const char *text;
+    void *handle;
+    int64_t signed_n;
+    double f;
+  } out;
 };
 
-static void store_count(struct Arg *in, int64_t count) {
-  switch (in->width) {
-  case W_INT64:
-    *(int64_t *)in->val.ptr = count;
+static void write_count(struct Sink *s, int64_t count) {
+  switch (s->width) {
+  case W_64:
+    *(int64_t *)s->out.handle = count;
     break;
-  case W_INT32:
-    *(int32_t *)in->val.ptr = (int32_t)count;
+  case W_32:
+    *(int32_t *)s->out.handle = (int32_t)count;
     break;
-  case W_INT16:
-    *(int16_t *)in->val.ptr = (int16_t)count;
+  case W_16:
+    *(int16_t *)s->out.handle = (int16_t)count;
     break;
   }
 }
@@ -38,21 +38,21 @@ int main(void) {
   int32_t buf32 = 0;
   int16_t buf16 = 0;
 
-  struct Arg in;
+  struct Sink s;
 
-  in.width = W_INT64;
-  in.val.ptr = &buf64;
-  store_count(&in, 0x1122334455667788LL);
+  s.width = W_64;
+  s.out.handle = &buf64;
+  write_count(&s, 0x1122334455667788LL);
   assert(buf64 == 0x1122334455667788LL);
 
-  in.width = W_INT32;
-  in.val.ptr = &buf32;
-  store_count(&in, 0x12345678);
+  s.width = W_32;
+  s.out.handle = &buf32;
+  write_count(&s, 0x12345678);
   assert(buf32 == 0x12345678);
 
-  in.width = W_INT16;
-  in.val.ptr = &buf16;
-  store_count(&in, 0x1234);
+  s.width = W_16;
+  s.out.handle = &buf16;
+  write_count(&s, 0x1234);
   assert(buf16 == 0x1234);
 
   return 0;

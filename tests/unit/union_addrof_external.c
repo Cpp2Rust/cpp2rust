@@ -4,21 +4,21 @@
 #include <stdint.h>
 #include <string.h>
 
-struct header {
-  uint16_t tag;
-  uint16_t port;
-  uint32_t addr;
+struct record {
+  uint16_t code;
+  uint16_t lo;
+  uint32_t hi;
   char pad[8];
 };
 
-struct Storage {
+struct Container {
   union {
-    struct header h;
+    struct record h;
     char raw[128];
-  } buffer;
+  } view;
 };
 
-static void external_writer(void *out, size_t cap) {
+static void fill(void *out, size_t cap) {
   unsigned char src[16] = {0};
   src[0] = 2;
   src[1] = 0;
@@ -33,17 +33,17 @@ static void external_writer(void *out, size_t cap) {
 }
 
 int main(void) {
-  struct Storage s;
-  memset(&s, 0, sizeof(s));
+  struct Container c;
+  memset(&c, 0, sizeof(c));
 
-  external_writer((void *)&s.buffer, sizeof(s.buffer));
+  fill((void *)&c.view, sizeof(c.view));
 
-  assert(s.buffer.h.tag == 2);
-  assert(((unsigned char *)&s.buffer.h.port)[0] == 0x00);
-  assert(((unsigned char *)&s.buffer.h.port)[1] == 0x50);
+  assert(c.view.h.code == 2);
+  assert(((unsigned char *)&c.view.h.lo)[0] == 0x00);
+  assert(((unsigned char *)&c.view.h.lo)[1] == 0x50);
 
-  assert(s.buffer.raw[0] == 2);
-  assert((unsigned char)s.buffer.raw[3] == 0x50);
+  assert(c.view.raw[0] == 2);
+  assert((unsigned char)c.view.raw[3] == 0x50);
 
   return 0;
 }

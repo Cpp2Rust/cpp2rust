@@ -3,67 +3,67 @@
 #include <stdint.h>
 
 typedef enum {
-  T_SET = 1,
-  T_RANGE_ASCII,
-  T_RANGE_NUM,
-} VariantKind;
+  C_LIST = 1,
+  C_LETTERS,
+  C_INTEGERS,
+} Choice;
 
-struct Pattern {
-  VariantKind kind;
+struct Branch {
+  Choice choice;
   int index;
   union {
     struct {
-      char **elem;
-      int64_t size;
-      int64_t idx;
-    } set;
+      char **items;
+      int64_t count;
+      int64_t cursor;
+    } list;
     struct {
-      int min;
-      int max;
-      int letter;
+      int lo;
+      int hi;
+      int curr;
       unsigned char step;
-    } ascii;
+    } letters;
     struct {
-      int64_t min;
-      int64_t max;
-      int64_t idx;
+      int64_t lo;
+      int64_t hi;
+      int64_t curr;
       int64_t step;
-      int npad;
-    } num;
+      int width;
+    } integers;
   } v;
 };
 
 int main(void) {
   static char *items[] = {"a", "b", "c"};
 
-  struct Pattern p_set;
-  p_set.kind = T_SET;
-  p_set.index = 0;
-  p_set.v.set.elem = items;
-  p_set.v.set.size = 3;
-  p_set.v.set.idx = 1;
-  assert(p_set.v.set.size == 3);
-  assert(p_set.v.set.elem[1][0] == 'b');
+  struct Branch p_list;
+  p_list.choice = C_LIST;
+  p_list.index = 0;
+  p_list.v.list.items = items;
+  p_list.v.list.count = 3;
+  p_list.v.list.cursor = 1;
+  assert(p_list.v.list.count == 3);
+  assert(p_list.v.list.items[1][0] == 'b');
 
-  struct Pattern p_ascii;
-  p_ascii.kind = T_RANGE_ASCII;
-  p_ascii.index = 1;
-  p_ascii.v.ascii.min = 'a';
-  p_ascii.v.ascii.max = 'z';
-  p_ascii.v.ascii.letter = 'm';
-  p_ascii.v.ascii.step = 1;
-  assert(p_ascii.v.ascii.max - p_ascii.v.ascii.min == 25);
+  struct Branch p_letters;
+  p_letters.choice = C_LETTERS;
+  p_letters.index = 1;
+  p_letters.v.letters.lo = 'a';
+  p_letters.v.letters.hi = 'z';
+  p_letters.v.letters.curr = 'm';
+  p_letters.v.letters.step = 1;
+  assert(p_letters.v.letters.hi - p_letters.v.letters.lo == 25);
 
-  struct Pattern p_num;
-  p_num.kind = T_RANGE_NUM;
-  p_num.index = 2;
-  p_num.v.num.min = 1;
-  p_num.v.num.max = 100;
-  p_num.v.num.idx = 1;
-  p_num.v.num.step = 1;
-  p_num.v.num.npad = 3;
-  assert(p_num.v.num.max == 100);
-  assert(p_num.v.num.npad == 3);
+  struct Branch p_integers;
+  p_integers.choice = C_INTEGERS;
+  p_integers.index = 2;
+  p_integers.v.integers.lo = 1;
+  p_integers.v.integers.hi = 100;
+  p_integers.v.integers.curr = 1;
+  p_integers.v.integers.step = 1;
+  p_integers.v.integers.width = 3;
+  assert(p_integers.v.integers.hi == 100);
+  assert(p_integers.v.integers.width == 3);
 
   return 0;
 }

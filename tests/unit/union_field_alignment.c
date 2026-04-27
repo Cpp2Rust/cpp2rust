@@ -3,21 +3,21 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct chunk {
-  struct chunk *next;
+struct node {
+  struct node *next;
   union {
-    uint8_t data[1];
-    void *dummy;
+    uint8_t bytes[1];
+    void *aligner;
   } x;
 };
 
 int main(void) {
-  struct chunk c;
-  c.next = 0;
-  c.x.data[0] = 0xAB;
+  struct node n;
+  n.next = 0;
+  n.x.bytes[0] = 0xAB;
 
-  assert(c.x.data[0] == 0xAB);
-  assert(sizeof(c.x) >= sizeof(void *));
-  assert(((uintptr_t)&c.x % _Alignof(void *)) == 0);
+  assert(n.x.bytes[0] == 0xAB);
+  assert(sizeof(n.x) >= sizeof(void *));
+  assert(((uintptr_t)&n.x % _Alignof(void *)) == 0);
   return 0;
 }
