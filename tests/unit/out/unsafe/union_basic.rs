@@ -6,14 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub union basic {
+#[derive(Copy, Clone, Default)]
+pub struct basic {
     pub i: i32,
     pub f: f32,
-}
-impl Default for basic {
-    fn default() -> Self {
-        unsafe { ::std::mem::MaybeUninit::zeroed().assume_init() }
-    }
 }
 pub fn main() {
     unsafe {
