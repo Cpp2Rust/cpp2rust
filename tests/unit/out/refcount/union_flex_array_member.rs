@@ -7,15 +7,20 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive()]
-pub struct node_anon_0 {
+pub union node_anon_10_3 {
     pub bytes: Value<Box<[u8]>>,
     pub aligner: Value<AnyPtr>,
 }
-impl ByteRepr for node_anon_0 {}
+impl Default for node_anon_10_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl ByteRepr for node_anon_10_3 {}
 #[derive(Default)]
 pub struct node {
     pub len: Value<u64>,
-    pub x: Value<node_anon_0>,
+    pub x: Value<node_anon_10_3>,
 }
 impl ByteRepr for node {}
 pub fn main() {

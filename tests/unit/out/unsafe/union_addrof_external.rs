@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct record {
     pub code: u16,
@@ -13,14 +14,31 @@ pub struct record {
     pub hi: u32,
     pub pad: [u8; 8],
 }
+impl Default for record {
+    fn default() -> Self {
+        record {
+            code: 0_u16,
+            lo: 0_u16,
+            hi: 0_u32,
+            pad: [0_u8; 8],
+        }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct Container_anon_0 {
+pub union Container_anon_15_3 {
     pub h: record,
     pub raw_: [u8; 128],
 }
+impl Default for Container_anon_15_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Container {
-    pub view: Container_anon_0,
+    pub view: Container_anon_15_3,
 }
 pub unsafe fn fill_0(mut out: *mut ::libc::c_void, mut cap: u64) {
     let mut src: [u8; 16] = [
@@ -68,8 +86,8 @@ unsafe fn main_0() -> i32 {
     };
     (unsafe {
         let _out: *mut ::libc::c_void =
-            ((&mut c.view as *mut Container_anon_0) as *mut ::libc::c_void);
-        let _cap: u64 = ::std::mem::size_of::<Container_anon_0>() as u64;
+            ((&mut c.view as *mut Container_anon_15_3) as *mut ::libc::c_void);
+        let _cap: u64 = ::std::mem::size_of::<Container_anon_15_3>() as u64;
         fill_0(_out, _cap)
     });
     assert!(((c.view.h.code as i32) == (2)));

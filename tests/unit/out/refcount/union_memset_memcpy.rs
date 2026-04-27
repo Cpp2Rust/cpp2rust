@@ -11,6 +11,16 @@ pub struct shape_a {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
 }
+impl Default for shape_a {
+    fn default() -> Self {
+        shape_a {
+            code: <Value<u16>>::default(),
+            pad: Rc::new(RefCell::new(
+                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
+        }
+    }
+}
 impl ByteRepr for shape_a {}
 #[derive()]
 pub struct shape_b {
@@ -19,17 +29,34 @@ pub struct shape_b {
     pub hi: Value<u32>,
     pub fill: Value<Box<[u8]>>,
 }
+impl Default for shape_b {
+    fn default() -> Self {
+        shape_b {
+            code: <Value<u16>>::default(),
+            lo: <Value<u16>>::default(),
+            hi: <Value<u32>>::default(),
+            fill: Rc::new(RefCell::new(
+                (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
+        }
+    }
+}
 impl ByteRepr for shape_b {}
 #[derive()]
-pub struct Container_anon_0 {
+pub union Container_anon_20_3 {
     pub a: Value<shape_a>,
     pub b: Value<shape_b>,
     pub raw_: Value<Box<[u8]>>,
 }
-impl ByteRepr for Container_anon_0 {}
+impl Default for Container_anon_20_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl ByteRepr for Container_anon_20_3 {}
 #[derive(Default)]
 pub struct Container {
-    pub view: Value<Container_anon_0>,
+    pub view: Value<Container_anon_20_3>,
 }
 impl ByteRepr for Container {}
 pub fn main() {

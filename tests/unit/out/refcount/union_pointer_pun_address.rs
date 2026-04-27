@@ -25,12 +25,17 @@ fn main_0() -> i32 {
         n: Rc::new(RefCell::new(123)),
     }));
     #[derive(Default)]
-    pub struct anon_0 {
+    pub union anon_16_3 {
         pub to_a: Value<Ptr<node_a>>,
         pub to_b: Value<Ptr<node_b>>,
     }
-    impl ByteRepr for anon_0 {};
-    let ptr: Value<anon_0> = <Value<anon_0>>::default();
+    impl Default for anon_16_3 {
+        fn default() -> Self {
+            unsafe { std::mem::zeroed() }
+        }
+    }
+    impl ByteRepr for anon_16_3 {};
+    let ptr: Value<anon_16_3> = <Value<anon_16_3>>::default();
     (*(*ptr.borrow()).to_a.borrow_mut()) = (a.as_pointer());
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new((*(*ptr.borrow()).to_b.borrow()).clone()));
     assert!({

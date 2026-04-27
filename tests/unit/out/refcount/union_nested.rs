@@ -11,31 +11,51 @@ pub struct record {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
 }
+impl Default for record {
+    fn default() -> Self {
+        record {
+            code: <Value<u16>>::default(),
+            pad: Rc::new(RefCell::new(
+                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
+        }
+    }
+}
 impl ByteRepr for record {}
 #[derive()]
-pub struct inner_anon_0 {
+pub union inner_anon_12_3 {
     pub h: Value<record>,
     pub raw_: Value<Box<[u8]>>,
 }
-impl ByteRepr for inner_anon_0 {}
+impl Default for inner_anon_12_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl ByteRepr for inner_anon_12_3 {}
 #[derive(Default)]
 pub struct inner {
-    pub view: Value<inner_anon_0>,
+    pub view: Value<inner_anon_12_3>,
 }
 impl ByteRepr for inner {}
 #[derive(Default)]
-pub struct Outer_anon_0 {
+pub union Outer_anon_23_3 {
     pub h: Value<record>,
     pub nested: Value<inner>,
 }
-impl ByteRepr for Outer_anon_0 {}
+impl Default for Outer_anon_23_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl ByteRepr for Outer_anon_23_3 {}
 #[derive(Default)]
 pub struct Outer {
     pub kind: Value<i32>,
     pub level: Value<i32>,
     pub variant: Value<i32>,
     pub len: Value<u32>,
-    pub body: Value<Outer_anon_0>,
+    pub body: Value<Outer_anon_23_3>,
 }
 impl ByteRepr for Outer {}
 pub fn main() {

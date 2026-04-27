@@ -20,14 +20,19 @@ pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     };
 }
 #[derive()]
-pub struct Outer_anon_0 {
+pub union Outer_anon_13_3 {
     pub inner: Value<Inner>,
     pub raw_: Value<Box<[u8]>>,
 }
-impl ByteRepr for Outer_anon_0 {}
+impl Default for Outer_anon_13_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+impl ByteRepr for Outer_anon_13_3 {}
 #[derive(Default)]
 pub struct Outer {
-    pub u: Value<Outer_anon_0>,
+    pub u: Value<Outer_anon_13_3>,
 }
 impl ByteRepr for Outer {}
 pub fn main() {

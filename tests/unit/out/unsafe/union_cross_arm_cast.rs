@@ -6,11 +6,21 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct shape_a {
     pub code: u16,
     pub pad: [u8; 14],
 }
+impl Default for shape_a {
+    fn default() -> Self {
+        shape_a {
+            code: 0_u16,
+            pad: [0_u8; 14],
+        }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct shape_b {
     pub code: u16,
@@ -19,16 +29,34 @@ pub struct shape_b {
     pub fill: [u8; 16],
     pub tail: u32,
 }
+impl Default for shape_b {
+    fn default() -> Self {
+        shape_b {
+            code: 0_u16,
+            lo: 0_u16,
+            mid: 0_u32,
+            fill: [0_u8; 16],
+            tail: 0_u32,
+        }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct Container_anon_0 {
+pub union Container_anon_22_3 {
     pub a: shape_a,
     pub b: shape_b,
     pub raw_: [u8; 64],
 }
+impl Default for Container_anon_22_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Container {
     pub len: u32,
-    pub u: Container_anon_0,
+    pub u: Container_anon_22_3,
 }
 pub fn main() {
     unsafe {

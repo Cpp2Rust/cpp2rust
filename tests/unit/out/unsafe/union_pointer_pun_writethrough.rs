@@ -13,12 +13,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i64 = (-1_i32 as i64);
-    #[derive(Copy, Clone, Default)]
-    pub struct anon_0 {
+    #[repr(C)]
+    #[derive(Copy, Clone)]
+    pub union anon_7_3 {
         pub as_unsigned: *mut u64,
         pub as_signed: *mut i64,
+    }
+    impl Default for anon_7_3 {
+        fn default() -> Self {
+            unsafe { std::mem::zeroed() }
+        }
     };
-    let mut pp: anon_0 = <anon_0>::default();
+    let mut pp: anon_7_3 = <anon_7_3>::default();
     pp.as_signed = (&mut x as *mut i64);
     (*pp.as_unsigned) = 42_u64;
     assert!(((x) == (42_i64)));

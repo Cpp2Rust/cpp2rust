@@ -15,18 +15,25 @@ enum Tag {
     T_FLOAT = 3,
     T_REF = 4,
 }
-#[derive(Copy, Clone, Default)]
-pub struct Slot_anon_0 {
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union Slot_anon_15_3 {
     pub text: *const u8,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub unsigned_n: u64,
     pub f: f64,
 }
+impl Default for Slot_anon_15_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Slot {
     pub tag: Tag,
-    pub payload: Slot_anon_0,
+    pub payload: Slot_anon_15_3,
 }
 pub fn main() {
     unsafe {

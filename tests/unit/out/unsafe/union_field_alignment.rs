@@ -6,15 +6,22 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct node_anon_0 {
+pub union node_anon_10_3 {
     pub bytes: [u8; 1],
     pub aligner: *mut ::libc::c_void,
 }
+impl Default for node_anon_10_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct node {
     pub next: *mut node,
-    pub x: node_anon_0,
+    pub x: node_anon_10_3,
 }
 pub fn main() {
     unsafe {

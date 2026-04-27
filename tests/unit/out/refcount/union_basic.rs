@@ -7,9 +7,14 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
-pub struct basic {
+pub union basic {
     pub i: Value<i32>,
     pub f: Value<f32>,
+}
+impl Default for basic {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
 }
 impl ByteRepr for basic {}
 pub fn main() {

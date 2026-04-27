@@ -6,32 +6,55 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct record {
     pub code: u16,
     pub pad: [u8; 14],
 }
+impl Default for record {
+    fn default() -> Self {
+        record {
+            code: 0_u16,
+            pad: [0_u8; 14],
+        }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone)]
-pub struct inner_anon_0 {
+pub union inner_anon_12_3 {
     pub h: record,
     pub raw_: [u8; 128],
 }
+impl Default for inner_anon_12_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct inner {
-    pub view: inner_anon_0,
+    pub view: inner_anon_12_3,
 }
-#[derive(Copy, Clone, Default)]
-pub struct Outer_anon_0 {
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union Outer_anon_23_3 {
     pub h: record,
     pub nested: inner,
 }
+impl Default for Outer_anon_23_3 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Outer {
     pub kind: i32,
     pub level: i32,
     pub variant: i32,
     pub len: u32,
-    pub body: Outer_anon_0,
+    pub body: Outer_anon_23_3,
 }
 pub fn main() {
     unsafe {

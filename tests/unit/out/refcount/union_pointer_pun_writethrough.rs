@@ -12,12 +12,17 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i64> = Rc::new(RefCell::new((-1_i32 as i64)));
     #[derive(Default)]
-    pub struct anon_0 {
+    pub union anon_7_3 {
         pub as_unsigned: Value<Ptr<u64>>,
         pub as_signed: Value<Ptr<i64>>,
     }
-    impl ByteRepr for anon_0 {};
-    let pp: Value<anon_0> = <Value<anon_0>>::default();
+    impl Default for anon_7_3 {
+        fn default() -> Self {
+            unsafe { std::mem::zeroed() }
+        }
+    }
+    impl ByteRepr for anon_7_3 {};
+    let pp: Value<anon_7_3> = <Value<anon_7_3>>::default();
     (*(*pp.borrow()).as_signed.borrow_mut()) = (x.as_pointer());
     (*(*pp.borrow()).as_unsigned.borrow()).write(42_u64);
     assert!(((*x.borrow()) == 42_i64));
