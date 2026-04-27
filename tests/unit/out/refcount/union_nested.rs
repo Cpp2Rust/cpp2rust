@@ -23,39 +23,39 @@ impl Default for record {
 }
 impl ByteRepr for record {}
 #[derive()]
-pub union inner_anon_12_3 {
+pub union inner_anon_0 {
     pub h: Value<record>,
     pub raw_: Value<Box<[u8]>>,
 }
-impl Default for inner_anon_12_3 {
+impl Default for inner_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for inner_anon_12_3 {}
+impl ByteRepr for inner_anon_0 {}
 #[derive(Default)]
 pub struct inner {
-    pub view: Value<inner_anon_12_3>,
+    pub view: Value<inner_anon_0>,
 }
 impl ByteRepr for inner {}
 #[derive(Default)]
-pub union Outer_anon_23_3 {
+pub union Outer_anon_0 {
     pub h: Value<record>,
     pub nested: Value<inner>,
 }
-impl Default for Outer_anon_23_3 {
+impl Default for Outer_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Outer_anon_23_3 {}
+impl ByteRepr for Outer_anon_0 {}
 #[derive(Default)]
 pub struct Outer {
     pub kind: Value<i32>,
     pub level: Value<i32>,
     pub variant: Value<i32>,
     pub len: Value<u32>,
-    pub body: Value<Outer_anon_23_3>,
+    pub body: Value<Outer_anon_0>,
 }
 impl ByteRepr for Outer {}
 pub fn main() {

@@ -15,13 +15,13 @@ enum Width {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Sink_anon_14_3 {
+pub union Sink_anon_0 {
     pub text: *const u8,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub f: f64,
 }
-impl Default for Sink_anon_14_3 {
+impl Default for Sink_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -30,7 +30,7 @@ impl Default for Sink_anon_14_3 {
 #[derive(Copy, Clone, Default)]
 pub struct Sink {
     pub width: Width,
-    pub out: Sink_anon_14_3,
+    pub out: Sink_anon_0,
 }
 pub unsafe fn write_count_0(mut s: *mut Sink, mut count: i64) {
     'switch: {

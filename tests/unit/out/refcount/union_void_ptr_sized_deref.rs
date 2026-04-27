@@ -14,22 +14,22 @@ enum Width {
     W_16 = 2,
 }
 #[derive(Default)]
-pub union Sink_anon_14_3 {
+pub union Sink_anon_0 {
     pub text: Value<Ptr<u8>>,
     pub handle: Value<AnyPtr>,
     pub signed_n: Value<i64>,
     pub f: Value<f64>,
 }
-impl Default for Sink_anon_14_3 {
+impl Default for Sink_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Sink_anon_14_3 {}
+impl ByteRepr for Sink_anon_0 {}
 #[derive(Default)]
 pub struct Sink {
     pub width: Value<Width>,
-    pub out: Value<Sink_anon_14_3>,
+    pub out: Value<Sink_anon_0>,
 }
 impl ByteRepr for Sink {}
 pub fn write_count_0(s: Ptr<Sink>, count: i64) {

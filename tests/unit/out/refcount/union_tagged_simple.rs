@@ -13,21 +13,21 @@ enum Kind {
     KIND_DONE = 1,
 }
 #[derive(Default)]
-pub union Event_anon_12_3 {
+pub union Event_anon_0 {
     pub obj: Value<AnyPtr>,
     pub code: Value<i32>,
 }
-impl Default for Event_anon_12_3 {
+impl Default for Event_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Event_anon_12_3 {}
+impl ByteRepr for Event_anon_0 {}
 #[derive(Default)]
 pub struct Event {
     pub kind: Value<Kind>,
     pub handle: Value<AnyPtr>,
-    pub payload: Value<Event_anon_12_3>,
+    pub payload: Value<Event_anon_0>,
 }
 impl ByteRepr for Event {}
 pub fn main() {

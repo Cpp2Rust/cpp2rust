@@ -26,16 +26,16 @@ unsafe fn main_0() -> i32 {
     let mut a: node_a = node_a { n: 123 };
     #[repr(C)]
     #[derive(Copy, Clone)]
-    pub union anon_16_3 {
+    pub union anon_0 {
         pub to_a: *mut node_a,
         pub to_b: *mut node_b,
     }
-    impl Default for anon_16_3 {
+    impl Default for anon_0 {
         fn default() -> Self {
             unsafe { std::mem::zeroed() }
         }
     };
-    let mut ptr: anon_16_3 = <anon_16_3>::default();
+    let mut ptr: anon_0 = <anon_0>::default();
     ptr.to_a = (&mut a as *mut node_a);
     let mut out: *mut node_b = ptr.to_b;
     assert!(((out as *mut ::libc::c_void) == ((&mut a as *mut node_a) as *mut ::libc::c_void)));

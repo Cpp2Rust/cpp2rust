@@ -16,23 +16,23 @@ enum Tag {
     T_REF = 4,
 }
 #[derive(Default)]
-pub union Slot_anon_15_3 {
+pub union Slot_anon_0 {
     pub text: Value<Ptr<u8>>,
     pub handle: Value<AnyPtr>,
     pub signed_n: Value<i64>,
     pub unsigned_n: Value<u64>,
     pub f: Value<f64>,
 }
-impl Default for Slot_anon_15_3 {
+impl Default for Slot_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Slot_anon_15_3 {}
+impl ByteRepr for Slot_anon_0 {}
 #[derive(Default)]
 pub struct Slot {
     pub tag: Value<Tag>,
-    pub payload: Value<Slot_anon_15_3>,
+    pub payload: Value<Slot_anon_0>,
 }
 impl ByteRepr for Slot {}
 pub fn main() {

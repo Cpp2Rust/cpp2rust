@@ -14,46 +14,46 @@ enum Choice {
     C_INTEGERS = 3,
 }
 #[derive(Default)]
-pub struct Branch_anon_14_3_anon_15_5 {
+pub struct Branch_anon_0_anon_0 {
     pub items: Value<Ptr<Ptr<u8>>>,
     pub count: Value<i64>,
     pub cursor: Value<i64>,
 }
-impl ByteRepr for Branch_anon_14_3_anon_15_5 {}
+impl ByteRepr for Branch_anon_0_anon_0 {}
 #[derive(Default)]
-pub struct Branch_anon_14_3_anon_20_5 {
+pub struct Branch_anon_0_anon_1 {
     pub lo: Value<i32>,
     pub hi: Value<i32>,
     pub curr: Value<i32>,
     pub step: Value<u8>,
 }
-impl ByteRepr for Branch_anon_14_3_anon_20_5 {}
+impl ByteRepr for Branch_anon_0_anon_1 {}
 #[derive(Default)]
-pub struct Branch_anon_14_3_anon_26_5 {
+pub struct Branch_anon_0_anon_2 {
     pub lo: Value<i64>,
     pub hi: Value<i64>,
     pub curr: Value<i64>,
     pub step: Value<i64>,
     pub width: Value<i32>,
 }
-impl ByteRepr for Branch_anon_14_3_anon_26_5 {}
+impl ByteRepr for Branch_anon_0_anon_2 {}
 #[derive(Default)]
-pub union Branch_anon_14_3 {
-    pub list: Value<Branch_anon_14_3_anon_15_5>,
-    pub letters: Value<Branch_anon_14_3_anon_20_5>,
-    pub integers: Value<Branch_anon_14_3_anon_26_5>,
+pub union Branch_anon_0 {
+    pub list: Value<Branch_anon_0_anon_0>,
+    pub letters: Value<Branch_anon_0_anon_1>,
+    pub integers: Value<Branch_anon_0_anon_2>,
 }
-impl Default for Branch_anon_14_3 {
+impl Default for Branch_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Branch_anon_14_3 {}
+impl ByteRepr for Branch_anon_0 {}
 #[derive(Default)]
 pub struct Branch {
     pub choice: Value<Choice>,
     pub index: Value<i32>,
-    pub v: Value<Branch_anon_14_3>,
+    pub v: Value<Branch_anon_0>,
 }
 impl ByteRepr for Branch {}
 pub fn main() {

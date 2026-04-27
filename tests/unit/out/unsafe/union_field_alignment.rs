@@ -8,11 +8,11 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union node_anon_10_3 {
+pub union node_anon_0 {
     pub bytes: [u8; 1],
     pub aligner: *mut ::libc::c_void,
 }
-impl Default for node_anon_10_3 {
+impl Default for node_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -21,7 +21,7 @@ impl Default for node_anon_10_3 {
 #[derive(Copy, Clone, Default)]
 pub struct node {
     pub next: *mut node,
-    pub x: node_anon_10_3,
+    pub x: node_anon_0,
 }
 pub fn main() {
     unsafe {

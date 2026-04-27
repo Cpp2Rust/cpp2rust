@@ -26,11 +26,11 @@ impl Default for record {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Container_anon_15_3 {
+pub union Container_anon_0 {
     pub h: record,
     pub raw_: [u8; 128],
 }
-impl Default for Container_anon_15_3 {
+impl Default for Container_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -38,7 +38,7 @@ impl Default for Container_anon_15_3 {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Container {
-    pub view: Container_anon_15_3,
+    pub view: Container_anon_0,
 }
 pub unsafe fn fill_0(mut out: *mut ::libc::c_void, mut cap: u64) {
     let mut src: [u8; 16] = [
@@ -86,8 +86,8 @@ unsafe fn main_0() -> i32 {
     };
     (unsafe {
         let _out: *mut ::libc::c_void =
-            ((&mut c.view as *mut Container_anon_15_3) as *mut ::libc::c_void);
-        let _cap: u64 = ::std::mem::size_of::<Container_anon_15_3>() as u64;
+            ((&mut c.view as *mut Container_anon_0) as *mut ::libc::c_void);
+        let _cap: u64 = ::std::mem::size_of::<Container_anon_0>() as u64;
         fill_0(_out, _cap)
     });
     assert!(((c.view.h.code as i32) == (2)));

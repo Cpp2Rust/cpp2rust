@@ -43,20 +43,20 @@ impl Default for shape_b {
 }
 impl ByteRepr for shape_b {}
 #[derive()]
-pub union Container_anon_20_3 {
+pub union Container_anon_0 {
     pub a: Value<shape_a>,
     pub b: Value<shape_b>,
     pub raw_: Value<Box<[u8]>>,
 }
-impl Default for Container_anon_20_3 {
+impl Default for Container_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
 }
-impl ByteRepr for Container_anon_20_3 {}
+impl ByteRepr for Container_anon_0 {}
 #[derive(Default)]
 pub struct Container {
-    pub view: Value<Container_anon_20_3>,
+    pub view: Value<Container_anon_0>,
 }
 impl ByteRepr for Container {}
 pub fn main() {

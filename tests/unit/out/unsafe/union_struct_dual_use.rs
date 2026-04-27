@@ -17,11 +17,11 @@ pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Outer_anon_13_3 {
+pub union Outer_anon_0 {
     pub inner: Inner,
     pub raw_: [u8; 16],
 }
-impl Default for Outer_anon_13_3 {
+impl Default for Outer_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -29,7 +29,7 @@ impl Default for Outer_anon_13_3 {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Outer {
-    pub u: Outer_anon_13_3,
+    pub u: Outer_anon_0,
 }
 pub fn main() {
     unsafe {

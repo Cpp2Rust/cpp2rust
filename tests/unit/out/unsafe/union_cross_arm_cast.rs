@@ -42,12 +42,12 @@ impl Default for shape_b {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union Container_anon_22_3 {
+pub union Container_anon_0 {
     pub a: shape_a,
     pub b: shape_b,
     pub raw_: [u8; 64],
 }
-impl Default for Container_anon_22_3 {
+impl Default for Container_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -56,7 +56,7 @@ impl Default for Container_anon_22_3 {
 #[derive(Copy, Clone, Default)]
 pub struct Container {
     pub len: u32,
-    pub u: Container_anon_22_3,
+    pub u: Container_anon_0,
 }
 pub fn main() {
     unsafe {
