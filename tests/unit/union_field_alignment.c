@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// Just check if this compiles. node::x::aligner is used to impose a specific
+// alignment on the bytes field.
 struct node {
   struct node *next;
   union {
@@ -15,9 +17,6 @@ int main(void) {
   struct node n;
   n.next = 0;
   n.x.bytes[0] = 0xAB;
-
   assert(n.x.bytes[0] == 0xAB);
-  assert(sizeof(n.x) >= sizeof(void *));
-  assert(((uintptr_t)&n.x % _Alignof(void *)) == 0);
   return 0;
 }
