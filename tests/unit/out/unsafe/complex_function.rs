@@ -15,10 +15,12 @@ pub unsafe fn ptr_1(mut x: *mut i32) -> *mut i32 {
 pub unsafe fn bar_2(x: *mut i32) -> *mut i32 {
     return x;
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct X1 {
     pub v: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct X2 {
     pub v: *mut X1,
@@ -28,6 +30,7 @@ impl X2 {
         return self.v;
     }
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct X3 {
     pub v: *mut X2,
@@ -37,6 +40,7 @@ impl X3 {
         return self.v;
     }
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct X4 {
     pub v: X3,

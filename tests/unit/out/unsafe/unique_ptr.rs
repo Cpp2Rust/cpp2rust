@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Default)]
 pub struct SafePointer {
     pub ptr: Option<Box<i32>>,
@@ -15,6 +16,7 @@ impl SafePointer {
         (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
     }
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Pair {
     pub x: i32,

@@ -21,6 +21,7 @@ pub unsafe fn foo_3(mut x: *mut i32, mut y: *mut i32, z: *mut i32) -> i32 {
 pub unsafe fn bar_4(x: *mut i32) -> i32 {
     return (*x);
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Foo {}
 impl Foo {

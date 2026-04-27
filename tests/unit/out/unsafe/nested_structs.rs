@@ -6,28 +6,34 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x1: i32,
     pub x2: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_1_Level2_1 {
     pub x1: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_1 {
     pub x1: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_2 {
     pub x1: i32,
     pub x2: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0 {}
 pub fn main() {

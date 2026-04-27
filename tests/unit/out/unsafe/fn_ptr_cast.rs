@@ -44,6 +44,7 @@ pub unsafe fn test_double_cast_2() {
     );
     assert!(((fn2) == (fn_)));
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Command {
     pub data: *mut ::libc::c_void,

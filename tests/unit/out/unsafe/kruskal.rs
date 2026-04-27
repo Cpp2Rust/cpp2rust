@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Edge {
     pub u: i32,
@@ -93,6 +94,7 @@ pub unsafe fn quicksort_1(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         quicksort_1(_arr, _start, _end)
     });
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct DisjointSet {
     pub rank: Option<Box<[i32]>>,
@@ -144,6 +146,7 @@ impl DisjointSet {
         }
     }
 }
+#[repr(C)]
 #[derive(Default)]
 pub struct Graph {
     pub edges: Option<Box<[Edge]>>,

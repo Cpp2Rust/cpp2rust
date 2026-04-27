@@ -6,15 +6,18 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Chunk {
     pub data: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Writer {
     pub output: *mut Vec<Chunk>,
     pub chunk: Chunk,
 }
+#[repr(C)]
 #[derive(Clone, Default)]
 pub struct JPEGData {
     pub com_data: Vec<Vec<u8>>,
