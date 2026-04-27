@@ -2881,10 +2881,6 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
   if (auto it = inner_structs_.find(ID); it != inner_structs_.end()) {
     return it->second;
   }
-  if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
-      record && !record->getIdentifier()) {
-    return ID;
-  }
   return std::regex_replace(Mapper::ToString(decl), std::regex("::"), "_");
 }
 
