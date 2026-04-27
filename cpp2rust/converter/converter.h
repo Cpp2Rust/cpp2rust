@@ -462,6 +462,8 @@ protected:
 
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
+  bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;
+
   std::string *rs_code_;
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;

@@ -12,6 +12,7 @@
 #include <optional>
 #include <regex>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cpp2rust {
@@ -161,5 +162,7 @@ bool SwitchCaseContainsDefault(clang::SwitchCase *c);
 
 std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
                                              clang::SwitchCase *head);
+
+void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 } // namespace cpp2rust
