@@ -1,3 +1,4 @@
+// no-compile: refcount
 #include <assert.h>
 
 union basic {
