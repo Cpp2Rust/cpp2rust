@@ -51,6 +51,7 @@ inline constexpr const char *kReturn = "return";
 inline constexpr const char *kSelfValue = "self";
 inline constexpr const char *kStatic = "static";
 inline constexpr const char *kStruct = "struct";
+inline constexpr const char *kUnion = "union";
 inline constexpr const char *kTrue = "true";
 inline constexpr const char *kWhile = "while";
 inline constexpr const char *kFor = "for";

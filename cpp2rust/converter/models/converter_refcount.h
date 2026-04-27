@@ -28,6 +28,8 @@ public:
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
+  bool EmitsReprCForRecords() const override { return false; }
+
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                      const clang::FunctionDecl *op) override;
 
@@ -37,7 +39,7 @@ public:
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
-  void AddDefaultTrait(const clang::CXXRecordDecl *decl) override;
+  void AddDefaultTrait(const clang::RecordDecl *decl) override;
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 

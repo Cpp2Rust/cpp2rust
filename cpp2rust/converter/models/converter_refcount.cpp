@@ -460,7 +460,7 @@ void ConverterRefCount::AddCloneTrait(const clang::CXXRecordDecl *decl) {
   StrCat("}");
 }
 
-void ConverterRefCount::AddDefaultTrait(const clang::CXXRecordDecl *decl) {
+void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
   Converter::AddDefaultTrait(decl);
 }

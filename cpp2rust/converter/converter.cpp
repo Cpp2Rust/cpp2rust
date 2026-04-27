@@ -599,12 +599,12 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
   }
 
   Mapper::AddRuleForUserDefinedType(decl);
-  EmitRustStruct(decl);
+  EmitRustStructOrUnion(decl);
 
   return false;
 }
 
-void Converter::EmitRustStruct(clang::RecordDecl *decl) {
+void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Enums and static variables. In rust they live outside the record
   for (auto *d : decl->decls()) {
     if (auto *enum_decl = llvm::dyn_cast<clang::EnumDecl>(d)) {
@@ -630,6 +630,9 @@ void Converter::EmitRustStruct(clang::RecordDecl *decl) {
   }
 
   // Derived traits
+  if (EmitsReprCForRecords()) {
+    StrCat("#[repr(C)]");
+  }
   StrCat("#[derive(");
   for (auto *attr : GetStructAttributes(decl)) {
     StrCat(attr, ",");
@@ -640,7 +643,7 @@ void Converter::EmitRustStruct(clang::RecordDecl *decl) {
   auto access = clang::dyn_cast<clang::CXXRecordDecl>(decl)
                     ? AccessSpecifierAsString(decl->getAccess())
                     : keyword::kPub;
-  StrCat(access, keyword::kStruct, GetRecordName(decl));
+  StrCat(access, decl->isUnion() ? keyword::kUnion : keyword::kStruct, GetRecordName(decl));
   {
     PushBrace brace(*this);
     for (auto *field : decl->fields()) {
@@ -681,8 +684,8 @@ void Converter::EmitRustStruct(clang::RecordDecl *decl) {
     AddOrdTrait(cxx);
     AddCloneTrait(cxx);
     AddDropTrait(cxx);
-    AddDefaultTrait(cxx);
   }
+  AddDefaultTrait(decl);
   AddByteReprTrait(decl);
 }
 
@@ -728,10 +731,10 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       }
     }
 
-    EmitRustStruct(decl);
+    EmitRustStructOrUnion(decl);
   } else {
     // FIXME: improve error handling
-    assert(0 && "unsupported union");
+    assert(0 && "unsupported record kind");
   }
 
   return false;
@@ -2878,11 +2881,19 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
   if (auto it = inner_structs_.find(ID); it != inner_structs_.end()) {
     return it->second;
   }
+  if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
+      record && !record->getIdentifier()) {
+    return ID;
+  }
   return std::regex_replace(Mapper::ToString(decl), std::regex("::"), "_");
 }
 
 std::vector<const char *>
 Converter::GetStructAttributes(const clang::RecordDecl *decl) {
+  if (decl->isUnion()) {
+    return {"Copy", "Clone"};
+  }
+
   std::vector<const char *> struct_attrs = {};
 
   if (recordDerivesCopy(decl)) {
@@ -3202,7 +3213,14 @@ void Converter::AddCloneTrait(const clang::CXXRecordDecl *decl) {}
 
 void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {}
 
-void Converter::AddDefaultTrait(const clang::CXXRecordDecl *decl) {
+void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
+  if (decl->isUnion()) {
+    StrCat(
+        std::format("impl Default for {} {{ fn default() -> Self {{ unsafe {{ "
+                    "std::mem::zeroed() }} }} }}",
+                    GetRecordName(decl)));
+    return;
+  }
   if (RecordDerivesDefault(decl)) {
     return;
   }
@@ -3211,20 +3229,26 @@ void Converter::AddDefaultTrait(const clang::CXXRecordDecl *decl) {
   PushBrace impl_brace(*this);
   StrCat("fn default() -> Self");
   PushBrace fn_brace(*this);
-  if (auto *default_ctor = GetUserDefinedDefaultConstructor(decl)) {
-    StrCat(keyword_unsafe_);
-    PushBrace unsafe_brace(*this);
-    Convert(clang::CXXConstructExpr::Create(
-        ctx_, ctx_.getCanonicalTagType(decl), clang::SourceLocation(),
-        default_ctor,
-        /*Elidable=*/false, llvm::ArrayRef<clang::Expr *>(),
-        /*HadMultipleCandidates=*/false,
-        /*ListInitialization=*/false,
-        /*StdInitListInitialization=*/false,
-        /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
-        clang::SourceRange()));
-  } else {
-    StrCat(struct_name);
+
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    if (auto *default_ctor = GetUserDefinedDefaultConstructor(decl)) {
+      StrCat(keyword_unsafe_);
+      PushBrace unsafe_brace(*this);
+      Convert(clang::CXXConstructExpr::Create(
+          ctx_, ctx_.getCanonicalTagType(decl), clang::SourceLocation(),
+          default_ctor,
+          /*Elidable=*/false, llvm::ArrayRef<clang::Expr *>(),
+          /*HadMultipleCandidates=*/false,
+          /*ListInitialization=*/false,
+          /*StdInitListInitialization=*/false,
+          /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
+          clang::SourceRange()));
+      return;
+    }
+  }
+
+  StrCat(struct_name);
+  {
     PushBrace struct_brace(*this);
     for (auto *field : decl->fields()) {
       StrCat(GetNamedDeclAsString(field), token::kColon,

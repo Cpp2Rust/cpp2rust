@@ -99,7 +99,9 @@ public:
 
   virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
 
-  void EmitRustStruct(clang::RecordDecl *decl);
+  virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
+
+  virtual bool EmitsReprCForRecords() const { return true; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
@@ -441,7 +443,7 @@ protected:
 
   virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
 
-  virtual void AddDefaultTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
