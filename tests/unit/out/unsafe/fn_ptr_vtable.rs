@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Clone)]
 pub struct Vtable {
     pub create: Option<unsafe fn(i32) -> *mut ::libc::c_void>,

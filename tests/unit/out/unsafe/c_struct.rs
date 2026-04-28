@@ -6,16 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Line {
     pub start: Point,
     pub end: Point,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Node {
     pub value: i32,
@@ -28,11 +31,13 @@ enum Color {
     GREEN = 1,
     BLUE = 2,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
     pub a: i32,
     pub b: i32,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Container {
     pub inner: Inner,

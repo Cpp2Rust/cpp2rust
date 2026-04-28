@@ -1,5 +1,4 @@
 // no-compile: refcount
-// panic: unsafe
 #include <assert.h>
 
 struct node_a {

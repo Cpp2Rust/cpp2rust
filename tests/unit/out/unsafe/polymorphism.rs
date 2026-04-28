@@ -9,6 +9,7 @@ use std::rc::Rc;
 pub unsafe trait Animal {
     unsafe fn bark(&self) -> bool;
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Dog {}
 unsafe impl Animal for Dog {
@@ -16,6 +17,7 @@ unsafe impl Animal for Dog {
         return true;
     }
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Cat {}
 impl Cat {

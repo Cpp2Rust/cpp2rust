@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Queue {
     pub elems: *mut u32,
@@ -35,11 +36,13 @@ impl Queue {
         return ((self.back) == (0_u64));
     }
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct GraphNode {
     pub vertex: u32,
     pub next: *mut GraphNode,
 }
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Graph {
     pub V: u32,

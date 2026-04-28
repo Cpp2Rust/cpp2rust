@@ -1,5 +1,4 @@
-// panic: refcount
-// XFAIL: unsafe
+// no-compile: refcount
 #include <assert.h>
 
 int main(void) {

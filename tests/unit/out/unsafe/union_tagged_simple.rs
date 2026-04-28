@@ -12,11 +12,18 @@ enum Kind {
     KIND_NONE = 0,
     KIND_DONE = 1,
 }
-#[derive(Copy, Clone, Default)]
-pub struct Event_anon_0 {
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union Event_anon_0 {
     pub obj: *mut ::libc::c_void,
     pub code: i32,
 }
+impl Default for Event_anon_0 {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Event {
     pub kind: Kind,

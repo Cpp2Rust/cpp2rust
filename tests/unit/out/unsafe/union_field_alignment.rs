@@ -8,14 +8,20 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union basic {
-    pub i: i32,
-    pub f: f32,
+pub union node_anon_0 {
+    pub bytes: [u8; 1],
+    pub aligner: *mut ::libc::c_void,
 }
-impl Default for basic {
+impl Default for node_anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct node {
+    pub next: *mut node,
+    pub x: node_anon_0,
 }
 pub fn main() {
     unsafe {
@@ -23,10 +29,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut u: basic = <basic>::default();
-    u.i = 42;
-    assert!(((u.i) == (42)));
-    u.f = 3.140000105E+0;
-    assert!(((u.f) == (3.140000105E+0)));
+    let mut n: node = <node>::default();
+    n.next = Default::default();
+    n.x.bytes[(0) as usize] = 171_u8;
+    assert!(((n.x.bytes[(0) as usize] as i32) == (171)));
     return 0;
 }
