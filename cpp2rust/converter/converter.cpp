@@ -1876,7 +1876,7 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
   auto *rhs = expr->getRHS();
   auto lhs_type = lhs->getType();
   auto rhs_type = rhs->getType();
-  std::string opcode_as_string = expr->getOpcodeStr().str();
+  std::string_view opcode_as_string = expr->getOpcodeStr();
 
   if (auto *cmpd_assign_op =
           llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
@@ -1902,7 +1902,9 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
         Convert(lhs);
         ConvertCast(computation_result_type);
       }
-      StrCat(std::regex_replace(opcode_as_string, std::regex("="), ""));
+      std::string op(opcode_as_string);
+      op.erase(std::remove(op.begin(), op.end(), '='), op.end());
+      StrCat(op);
       Convert(rhs);
     }
     if (lhs_type->isBooleanType()) {
@@ -2207,7 +2209,7 @@ bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
 bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   switch (expr->getOperator()) {
   case clang::OverloadedOperatorKind::OO_Equal:
-    ConvertAssignment(expr->getArg(0), expr->getArg(1), token::kAssign);
+    ConvertAssignment(expr->getArg(0), expr->getArg(1), "=");
     break;
   case clang::OverloadedOperatorKind::OO_Star:
   case clang::OverloadedOperatorKind::OO_Arrow:

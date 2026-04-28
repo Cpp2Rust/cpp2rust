@@ -22,7 +22,7 @@ inline constexpr const char *kDiff = "!=";
 inline constexpr char kZero = '0';
 inline constexpr char kOne = '1';
 inline constexpr char kRef = '&';
-inline constexpr char kStar = '*';
+inline constexpr const char *kStar = "*";
 inline constexpr const char *kArrow = "->";
 inline constexpr char kHash = '#';
 inline constexpr char kMinus = '-';
