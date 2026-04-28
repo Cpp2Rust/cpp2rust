@@ -337,9 +337,15 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
 
+  // Anonymous record field
   if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl);
       field && name.empty()) {
-    return std::format("anon_{}", GetAnonIndex(field));
+    const clang::NamedDecl *target = field;
+    if (auto *record = field->getType()->getAsRecordDecl();
+        record && !record->getIdentifier()) {
+      target = record;
+    }
+    return std::format("anon_{}", GetAnonIndex(target));
   }
 
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
