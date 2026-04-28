@@ -3,8 +3,6 @@
 
 #include <clang/Sema/Initialization.h>
 
-#include <regex>
-
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
 #include "converter/models/converter_refcount.h"
@@ -139,8 +137,7 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   {
     PushExprKind push(*this, ExprKind::LValue);
-    StrCat(std::regex_replace(ToString(call->getCallee()),
-                              std::regex("emplace_back"), "push"));
+    StrCat(ReplaceAll(ToString(call->getCallee()), "emplace_back", "push"));
   }
   StrCat("(");
 }

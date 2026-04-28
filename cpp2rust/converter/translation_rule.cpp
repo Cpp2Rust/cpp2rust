@@ -24,7 +24,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
-#include <regex>
 #include <string>
 #include <vector>
 
