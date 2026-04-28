@@ -12,6 +12,7 @@
 #include <optional>
 #include <regex>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace cpp2rust {
@@ -80,6 +81,8 @@ unsigned GetArraySize(clang::QualType array_type);
 std::string GetID(const clang::Decl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
+
+unsigned GetAnonIndex(const clang::NamedDecl *decl);
 
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);
 
@@ -163,5 +166,7 @@ std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
                                              clang::SwitchCase *head);
 
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+
+void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 } // namespace cpp2rust

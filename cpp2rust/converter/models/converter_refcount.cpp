@@ -6,7 +6,6 @@
 #include <clang/Basic/OperatorKinds.h>
 
 #include <format>
-#include <regex>
 
 #include "compiler.h"
 #include "converter/converter_lib.h"
@@ -195,7 +194,7 @@ std::string ConverterRefCount::BuildFnAdapter(
   closure += "{ ";
 
   // Build adapter body: src_fn(convert(a0), convert(a1), ...)
-  closure += GetNamedDeclAsString(src_fn) + "(";
+  closure += Mapper::MapFunctionName(src_fn) + '(';
   for (unsigned i = 0; i < src_proto->getNumParams(); ++i) {
     auto src_pty = src_proto->getParamType(i);
     auto tgt_pty = target_proto->getParamType(i);
@@ -204,12 +203,12 @@ std::string ConverterRefCount::BuildFnAdapter(
     } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
       if (tgt_pty->isVoidPointerType()) {
         closure += std::format("a{}.cast::<{}>().unwrap()", i,
-                               ToString(src_pty->getPointeeType()));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->isVoidPointerType()) {
         closure += std::format("a{}.to_any()", i);
       } else if (tgt_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
-                               ToString(src_pty->getPointeeType()));
+                               ConvertPointeeType(src_pty));
       } else if (src_pty->getPointeeType()->isCharType()) {
         closure += std::format("a{}.reinterpret_cast::<u8>()", i);
       }
@@ -385,9 +384,10 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
         pending_deref_.set_unchecked(std::move(buf).str(), expr);
         return false;
       }
-      StrCat(token::kOpenParen, GetPointerDerefPrefix(expr->getType()));
+      PushParen paren(*this);
+      StrCat(GetPointerDerefPrefix(expr->getType()));
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-      StrCat(GetPointerDerefSuffix(expr->getType()), token::kCloseParen);
+      StrCat(GetPointerDerefSuffix(expr->getType()));
     } else {
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
     }
@@ -496,8 +496,8 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
 
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
-  StrCat(std::format("impl ByteRepr for {}", struct_name),
-         token::kOpenCurlyBracket, token::kCloseCurlyBracket);
+  StrCat(std::format("impl ByteRepr for {}", struct_name));
+  PushBrace brace(*this);
 }
 
 std::string
@@ -558,9 +558,12 @@ bool ConverterRefCount::ConvertLambdaVarDecl(clang::VarDecl *decl) {
 }
 
 void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
-  StrCat("thread_local!", token::kOpenParen);
-  ConvertVarDecl(decl);
-  StrCat(token::kCloseParen, token::kSemiColon);
+  StrCat("thread_local!");
+  {
+    PushParen paren(*this);
+    ConvertVarDecl(decl);
+  }
+  StrCat(token::kSemiColon);
 }
 
 bool ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
@@ -609,10 +612,16 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
-  StrCat(keyword::kIf, ConvertRValue(expr->getCond()), token::kOpenCurlyBracket,
-         ConvertFresh(expr->getTrueExpr()), token::kCloseCurlyBracket,
-         keyword::kElse, token::kOpenCurlyBracket,
-         ConvertFresh(expr->getFalseExpr()), token::kCloseCurlyBracket);
+  StrCat(keyword::kIf, ConvertRValue(expr->getCond()));
+  {
+    PushBrace then_brace(*this);
+    StrCat(ConvertFresh(expr->getTrueExpr()));
+  }
+  StrCat(keyword::kElse);
+  {
+    PushBrace else_brace(*this);
+    StrCat(ConvertFresh(expr->getFalseExpr()));
+  }
   return false;
 }
 
@@ -625,7 +634,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     }
   }
 
-  if (Mapper::Contains(expr)) {
+  if (ShouldReplaceWithMappedBody(expr)) {
     StrCat(GetMappedAsString(expr));
     return false;
   }
@@ -1010,8 +1019,8 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
       // smart enough to pick the right specialization
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat(token::kOpenParen, ConvertPointer(sub_expr), keyword::kAs,
-             ToString(expr->getType()), token::kCloseParen);
+      PushParen paren(*this);
+      StrCat(ConvertPointer(sub_expr), keyword::kAs, ToString(expr->getType()));
       return false;
     }
   }
@@ -1037,7 +1046,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
   StrCat(std::format("FnPtr::<{}>::new({})",
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),
-                     GetNamedDeclAsString(fn_decl)));
+                     Mapper::MapFunctionName(fn_decl)));
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
@@ -1134,28 +1143,31 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
   auto *rhs = expr->getRHS();
   auto lhs_type = lhs->getType();
   auto rhs_type = rhs->getType();
-  std::string opcode_as_string = expr->getOpcodeStr().str();
+  std::string_view opcode_as_string = expr->getOpcodeStr();
 
   if (auto *assign = llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
       assign && lhs_type != assign->getComputationResultType()) {
     auto computation_result_type = assign->getComputationResultType();
     StrCat(keyword::kLet, "rhs_0", token::kAssign);
     if (IsUnsignedArithOp(assign)) {
-      StrCat(token::kOpenParen, token::kOpenParen);
-      StrCat(ConvertRValue(lhs));
-      ConvertCast(computation_result_type);
-      StrCat(token::kCloseParen);
+      PushParen outer(*this);
+      {
+        PushParen inner(*this);
+        StrCat(ConvertRValue(lhs));
+        ConvertCast(computation_result_type);
+      }
       ConvertUnsignedArithBinaryOperator(expr, rhs);
-      StrCat(token::kCloseParen);
     } else {
-      StrCat(token::kOpenParen);
-      StrCat(token::kOpenParen);
-      StrCat(ConvertRValue(lhs));
-      ConvertCast(computation_result_type);
-      StrCat(token::kCloseParen);
-      StrCat(std::regex_replace(opcode_as_string, std::regex("="), ""));
+      PushParen outer(*this);
+      {
+        PushParen inner(*this);
+        StrCat(ConvertRValue(lhs));
+        ConvertCast(computation_result_type);
+      }
+      std::string op(opcode_as_string);
+      op.erase(std::remove(op.begin(), op.end(), '='), op.end());
+      StrCat(op);
       Convert(rhs);
-      StrCat(token::kCloseParen);
     }
     if (lhs_type->isBooleanType()) {
       StrCat(token::kDiff, token::kZero);
@@ -1171,13 +1183,14 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp()) {
       StrCat(keyword::kLet, "rhs_0", token::kAssign);
     }
-    StrCat(token::kOpenParen);
-    if (expr->isCompoundAssignmentOp() && lhs->isLValue()) {
-      StrCat(ConvertRValue(lhs));
-    } else {
-      ConvertUnsignedArithOperand(lhs, expr->getType());
+    {
+      PushParen paren(*this);
+      if (expr->isCompoundAssignmentOp() && lhs->isLValue()) {
+        StrCat(ConvertRValue(lhs));
+      } else {
+        ConvertUnsignedArithOperand(lhs, expr->getType());
+      }
     }
-    StrCat(token::kCloseParen);
     ConvertUnsignedArithBinaryOperator(expr, rhs);
     if (expr->isCompoundAssignmentOp()) {
       StrCat(token::kSemiColon);
@@ -1230,15 +1243,17 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       return false;
     }
 
-    StrCat(GetUnsafeTypeAsString(qual_type), token::kOpenCurlyBracket);
-    int i = 0;
-    PushConversionKind push(*this, ConversionKind::FullRefCount);
-    for (const auto *field : record->fields()) {
-      StrCat(GetNamedDeclAsString(field), token::kColon);
-      ConvertVarInit(field->getType(), expr->getInit(i++));
-      StrCat(token::kComma);
+    StrCat(GetUnsafeTypeAsString(qual_type));
+    {
+      PushBrace brace(*this);
+      int i = 0;
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      for (const auto *field : record->fields()) {
+        StrCat(GetNamedDeclAsString(field), token::kColon);
+        ConvertVarInit(field->getType(), expr->getInit(i++));
+        StrCat(token::kComma);
+      }
     }
-    StrCat(token::kCloseCurlyBracket);
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
@@ -1381,14 +1396,13 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   StrCat("'loop_:");
   StrCat(keyword::kFor, loop_var_name, keyword::kIn, "RefcountMapIter::begin(",
          ConvertObject(stmt->getRangeInit()), ")");
-  StrCat(token::kOpenCurlyBracket);
+  PushBrace brace(*this);
 
   EmitByValueShadow(
       loop_var_name, loop_var->getType(), std::string(loop_var_name),
       "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + ">");
 
   ConvertForRangeBody(stmt, loop_var);
-  StrCat(token::kCloseCurlyBracket);
 
   return false;
 }
@@ -1404,7 +1418,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
          loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
   StrCat(keyword::kAs, ConvertPtrType(stmt->getRangeInit()->getType()));
 
-  StrCat(token::kOpenCurlyBracket);
+  PushBrace brace(*this);
 
   // handle multi-level types such as Vec<Value<Vec<T>>>
   if (IsBoxedType(stmt->getRangeInit()->getType()) &&
@@ -1430,7 +1444,6 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
   }
 
   ConvertForRangeBody(stmt);
-  StrCat(token::kCloseCurlyBracket);
 
   return false;
 }
@@ -1447,23 +1460,25 @@ bool ConverterRefCount::VisitCXXForRangeStmtString(
   StrCat(".to_string_iterator() as StringIterator<",
          ToString(loop_var->getType().getNonReferenceType()), ">");
 
-  StrCat(token::kOpenCurlyBracket);
+  PushBrace brace(*this);
 
   EmitByValueShadow(loop_var_name, loop_var->getType(),
                     loop_var_name + GetPointerDerefSuffix(loop_var->getType()) +
                         ".clone()");
   ConvertForRangeBody(stmt);
-  StrCat(token::kCloseCurlyBracket);
 
   return false;
 }
 
 void ConverterRefCount::ConvertArrayCXXConstructExpr(
     clang::CXXConstructExpr *expr) {
-  StrCat(std::format("Box::new(std::array::from_fn::<_, {}, _>(|_|",
+  StrCat("Box::new");
+  PushParen outer(*this);
+  StrCat(std::format("std::array::from_fn::<_, {}, _>",
                      GetArraySize(expr->getType())));
+  PushParen inner(*this);
+  StrCat("|_|");
   ConvertCXXConstructExprArgs(expr);
-  StrCat(token::kCloseParen, token::kCloseParen);
 }
 
 std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
@@ -1519,6 +1534,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
 bool ConverterRefCount::VisitImplicitValueInitExpr(
     clang::ImplicitValueInitExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
   if (auto arr_ty = clang::dyn_cast<clang::ArrayType>(
           expr->getType()->getCanonicalTypeInternal().getTypePtr())) {
     if (clang::isa<clang::ConstantArrayType>(arr_ty)) {
@@ -1703,9 +1719,7 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                           std::string_view assign_operator) {
   auto rhs_as_string = ConvertFreshRValue(rhs);
 
-  if (isRValue()) {
-    StrCat(token::kOpenCurlyBracket);
-  }
+  PushBrace brace(*this, isRValue());
 
   if (MayCauseBorrowMutError(lhs, rhs)) {
     StrCat(keyword::kLet, "__rhs", token::kAssign, rhs_as_string,
@@ -1732,7 +1746,7 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   }
 
   if (isRValue()) {
-    StrCat(token::kSemiColon, ConvertRValue(lhs), token::kCloseCurlyBracket);
+    StrCat(token::kSemiColon, ConvertRValue(lhs));
   }
 }
 
@@ -1770,11 +1784,10 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
     return;
   }
 
-  StrCat(token::kOpenParen);
+  PushParen paren(*this);
   Convert(lhs);
   StrCat(opcode);
   Convert(rhs);
-  StrCat(token::kCloseParen);
 }
 
 void ConverterRefCount::ConvertUniquePtrDeref(
@@ -1793,7 +1806,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     clang::CXXOperatorCallExpr *expr) {
   switch (expr->getOperator()) {
   case clang::OverloadedOperatorKind::OO_Equal:
-    ConvertAssignment(expr->getArg(0), expr->getArg(1), token::kAssign);
+    ConvertAssignment(expr->getArg(0), expr->getArg(1), "=");
     break;
 
   case clang::OverloadedOperatorKind::OO_Arrow:
@@ -1814,13 +1827,17 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       break;
     }
 
-    if (!isAddrOf()) {
-      StrCat(token::kOpenParen, GetPointerDerefPrefix(expr->getType()));
-    }
-    Convert(expr->getArg(0));
-    if (!isAddrOf()) {
-      StrCat(GetPointerDerefSuffix(expr->getType()), token::kCloseParen);
-      SetValueFreshness(expr->getType());
+    {
+      bool deref = !isAddrOf();
+      PushParen paren(*this, deref);
+      if (deref) {
+        StrCat(GetPointerDerefPrefix(expr->getType()));
+      }
+      Convert(expr->getArg(0));
+      if (deref) {
+        StrCat(GetPointerDerefSuffix(expr->getType()));
+        SetValueFreshness(expr->getType());
+      }
     }
     break;
 
@@ -1857,32 +1874,36 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       break;
     }
 
-    if (!isAddrOf()) {
-      StrCat(token::kOpenParen, GetPointerDerefPrefix(expr->getType()));
-    }
-
-    if (is_inner_boxed && !isObject()) {
-      StrCat("(");
-    }
-
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    StrCat(std::format("({} as {}).offset({} as isize)",
-                       ConvertObject(expr->getArg(0)),
-                       ConvertPtrType(expr->getArg(0)->getType()),
-                       ConvertRValue(expr->getArg(1))));
-
-    if (is_inner_boxed) {
-      StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
-      if (!isObject()) {
-        StrCat(std::format("as Ptr<{}>)", ToString(expr->getType())));
+    {
+      bool deref = !isAddrOf();
+      PushParen paren(*this, deref);
+      if (deref) {
+        StrCat(GetPointerDerefPrefix(expr->getType()));
       }
-    }
 
-    if (isAddrOf()) {
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-    } else {
-      StrCat(GetPointerDerefSuffix(expr->getType()), token::kCloseParen);
-      SetValueFreshness(expr->getType());
+      if (is_inner_boxed && !isObject()) {
+        StrCat("(");
+      }
+
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      StrCat(std::format("({} as {}).offset({} as isize)",
+                         ConvertObject(expr->getArg(0)),
+                         ConvertPtrType(expr->getArg(0)->getType()),
+                         ConvertRValue(expr->getArg(1))));
+
+      if (is_inner_boxed) {
+        StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
+        if (!isObject()) {
+          StrCat(std::format("as Ptr<{}>)", ToString(expr->getType())));
+        }
+      }
+
+      if (isAddrOf()) {
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+      } else {
+        StrCat(GetPointerDerefSuffix(expr->getType()));
+        SetValueFreshness(expr->getType());
+      }
     }
     break;
   }
@@ -1914,16 +1935,16 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
           base_arr_ty->getElementType().getTypePtr());
     }
 
-    if (is_inner_boxed) {
-      StrCat("(");
-    }
+    {
+      PushParen paren(*this, is_inner_boxed);
+      StrCat(std::format("({} as {}).offset({} as isize)",
+                         ToString(base->IgnoreImplicit()),
+                         ConvertPtrType(base->IgnoreImplicit()->getType()),
+                         ConvertRValue(idx)));
 
-    StrCat(std::format(
-        "({} as {}).offset({} as isize)", ToString(base->IgnoreImplicit()),
-        ConvertPtrType(base->IgnoreImplicit()->getType()), ConvertRValue(idx)));
-
-    if (is_inner_boxed) {
-      StrCat(GetPointerDerefSuffix(type), ".as_pointer()", token::kCloseParen);
+      if (is_inner_boxed) {
+        StrCat(GetPointerDerefSuffix(type), ".as_pointer()");
+      }
     }
 
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -1960,11 +1981,14 @@ void ConverterRefCount::ConvertPointerSubscript(
     return;
   }
 
-  if (!isAddrOf())
-    StrCat(token::kOpenParen, GetPointerDerefPrefix(expr->getType()));
+  bool deref = !isAddrOf();
+  PushParen paren(*this, deref);
+  if (deref) {
+    StrCat(GetPointerDerefPrefix(expr->getType()));
+  }
   ConvertPointerOffset(base, idx);
-  if (!isAddrOf()) {
-    StrCat(GetPointerDerefSuffix(expr->getType()), token::kCloseParen);
+  if (deref) {
+    StrCat(GetPointerDerefSuffix(expr->getType()));
     SetValueFreshness(expr->getType());
   }
 }
@@ -2005,13 +2029,17 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
     return;
   }
 
-  if (!isAddrOf()) {
-    StrCat(token::kOpenParen, GetPointerDerefPrefix(pointee_type));
-  }
-  Convert(expr);
-  if (!isAddrOf()) {
-    StrCat(GetPointerDerefSuffix(pointee_type), token::kCloseParen);
-    SetValueFreshness(expr->getType());
+  {
+    bool deref = !isAddrOf();
+    PushParen paren(*this, deref);
+    if (deref) {
+      StrCat(GetPointerDerefPrefix(pointee_type));
+    }
+    Convert(expr);
+    if (deref) {
+      StrCat(GetPointerDerefSuffix(pointee_type));
+      SetValueFreshness(expr->getType());
+    }
   }
 
   if (isObject()) {
@@ -2153,6 +2181,20 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   }
 
   return std::format("{}.with_mut(|__v: {}| __v{})", ptr, param_type, body);
+}
+
+std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
+  if (ptr_type->getPointeeType()->isIntegerType()) {
+    return ToString(ptr_type->getPointeeType());
+  }
+
+  // Pointee of a pointer to incomplete type is an incomplete type that does
+  // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
+  // not enough
+  assert(ptr_type->isPointerType());
+  auto str = ToString(ptr_type);
+  Unwrap(str, "Ptr<", ">");
+  return str;
 }
 
 } // namespace cpp2rust

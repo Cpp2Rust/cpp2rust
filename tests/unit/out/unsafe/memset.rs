@@ -28,7 +28,6 @@ unsafe fn main_0() -> i32 {
         sum += (*arr.offset((i) as isize));
         i.prefix_inc();
     }
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         arr,
         libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),

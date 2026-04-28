@@ -8,8 +8,11 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
 
+#include <algorithm>
 #include <array>
+#include <cctype>
 #include <filesystem>
+#include <format>
 #include <unordered_set>
 
 #include "converter/lex.h"
@@ -265,11 +268,10 @@ std::string GetFileName(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto full_location = ctx.getFullLoc(decl->getBeginLoc());
   const auto file_name = ctx.getSourceManager().getFilename(full_location);
-  const auto file_name_as_string = file_name.str();
-  const std::filesystem::path file_path(file_name_as_string);
+  const std::filesystem::path file_path(file_name.begin(), file_name.end());
   return std::filesystem::exists(file_path)
              ? std::filesystem::canonical(file_path).string()
-             : file_name_as_string;
+             : file_path.string();
 }
 
 unsigned GetLineNumber(const clang::Decl *decl) {
@@ -294,6 +296,25 @@ unsigned GetArraySize(clang::QualType array_type) {
   return constant_array_ty->getSize().getZExtValue();
 }
 
+unsigned GetAnonIndex(const clang::NamedDecl *decl) {
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
+    unsigned counter = 0;
+    for (auto *d : parent->decls()) {
+      if (d == decl) {
+        return counter;
+      }
+      auto *named = clang::dyn_cast<clang::NamedDecl>(d);
+      if (named && named->getKind() == decl->getKind() &&
+          named->getName().empty()) {
+        counter++;
+      }
+    }
+    return counter;
+  }
+  return 0;
+}
+
 std::string GetID(const clang::Decl *decl) {
   assert(decl);
   const auto file_name = GetFileName(decl);
@@ -314,6 +335,17 @@ static std::unordered_map<std::string, size_t> type_mapping;
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
+
+  // Anonymous record field
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl);
+      field && name.empty()) {
+    const clang::NamedDecl *target = field;
+    if (auto *record = field->getType()->getAsRecordDecl();
+        record && !record->getIdentifier()) {
+      target = record;
+    }
+    return std::format("anon_{}", GetAnonIndex(target));
+  }
 
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (!clang::isa<clang::CXXMethodDecl>(fn)) {
@@ -740,6 +772,24 @@ bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
     }
   }
   return false;
+}
+
+static std::string_view Trim(std::string_view s) {
+  auto is_space = [](unsigned char c) { return std::isspace(c); };
+  auto b = std::find_if_not(s.begin(), s.end(), is_space);
+  auto e = std::find_if_not(s.rbegin(), s.rend(), is_space).base();
+  return {b, e};
+}
+
+void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
+  auto trimmed = Trim(s);
+  if (trimmed.starts_with(prefix) && trimmed.ends_with(suffix)) {
+    assert(trimmed.size() >= prefix.size() + suffix.size() &&
+           "prefix and suffix overlap in s");
+    trimmed.remove_prefix(prefix.size());
+    trimmed.remove_suffix(suffix.size());
+    s = std::string(trimmed);
+  }
 }
 
 } // namespace cpp2rust

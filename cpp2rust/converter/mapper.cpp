@@ -8,6 +8,7 @@
 #include <llvm/Support/ThreadPool.h>
 
 #include <atomic>
+#include <format>
 #include <mutex>
 #include <regex>
 #include <utility>
@@ -561,6 +562,18 @@ std::string normalizeTranslationRule(std::string rule) {
   return rule;
 }
 
+static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
+  std::string parent_name;
+  if (auto *parent =
+          clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
+    parent_name = parent->getIdentifier()
+                      ? parent->getIdentifier()->getName().str()
+                      : synthesizeAnonRecordName(parent);
+    parent_name += '_';
+  }
+  return std::format("{}anon_{}", parent_name, GetAnonIndex(record));
+}
+
 } // namespace
 
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
@@ -579,6 +592,15 @@ const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr) {
     return &it->second;
   }
   return nullptr;
+}
+
+std::string MapFunctionName(const clang::FunctionDecl *decl) {
+  assert(decl);
+  if (exprs_.contains(ToString(decl))) {
+    return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
+                       model_ == Model::kRefCount ? "refcount" : "unsafe");
+  }
+  return GetNamedDeclAsString(decl->getCanonicalDecl());
 }
 
 std::string InstantiateTemplate(const clang::Expr *expr,
@@ -710,10 +732,15 @@ std::string ToString(clang::QualType qual_type) {
   std::string type;
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
-  return normalizeTranslationRule(type);
+  return normalizeTranslationRule(std::move(type));
 }
 
 std::string ToString(const clang::NamedDecl *decl) {
+  if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
+      record && !record->getIdentifier()) {
+    return synthesizeAnonRecordName(record);
+  }
+
   std::string out;
   llvm::raw_string_ostream os(out);
 
@@ -726,7 +753,7 @@ std::string ToString(const clang::NamedDecl *decl) {
 
   if (!func_decl) {
     decl->printQualifiedName(os, getPrintPolicy());
-    return normalizeTranslationRule(out);
+    return normalizeTranslationRule(std::move(out));
   }
 
   os << ToString(func_decl->getReturnType()) << " ";
@@ -771,7 +798,7 @@ std::string ToString(const clang::NamedDecl *decl) {
     }
   }
 
-  return normalizeTranslationRule(os.str());
+  return normalizeTranslationRule(std::move(out));
 }
 
 std::string ToString(const clang::Expr *expr) {

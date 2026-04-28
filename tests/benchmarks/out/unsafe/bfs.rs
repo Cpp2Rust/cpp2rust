@@ -108,7 +108,6 @@ pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
             head = (*head).next;
         }
     }
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         visited,
         libcc2rs::malloc_usable_size(visited as *mut ::libc::c_void)
@@ -170,7 +169,6 @@ unsafe fn main_0() -> i32 {
         }
         i.prefix_inc();
     }
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         graph.adj,
         libcc2rs::malloc_usable_size(graph.adj as *mut ::libc::c_void)
