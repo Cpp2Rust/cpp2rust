@@ -5,8 +5,8 @@
 
 namespace cpp2rust {
 namespace token {
-inline constexpr const char *kOpenCurlyBracket = "{\n";
-inline constexpr const char *kCloseCurlyBracket = "\n}\n";
+inline constexpr char kOpenCurlyBracket = '{';
+inline constexpr char kCloseCurlyBracket = '}';
 inline constexpr char kOpenBracket = '[';
 inline constexpr char kCloseBracket = ']';
 inline constexpr const char *kSemiColon = ";\n";
