@@ -163,7 +163,7 @@ rules = {{ path = "../../../rules" }}
     if should_not_compile:
       if returncode != 0:
         shutil.rmtree(tmp_dir, True)
-        return lit.Test.PASS, ''
+        return lit.Test.XFAIL, ''
       return fail('expected no-compile but compiled successfully')
     if returncode != 0:
       return fail('cargo failed\n' + err)
