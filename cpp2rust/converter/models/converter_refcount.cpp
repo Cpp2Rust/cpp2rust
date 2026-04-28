@@ -1035,6 +1035,11 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     return false;
   }
 
+  if (expr->getCastKind() == clang::CastKind::CK_NoOp) {
+    Convert(sub_expr);
+    return false;
+  }
+
   return Converter::VisitImplicitCastExpr(expr);
 }
 

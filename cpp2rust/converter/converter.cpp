@@ -1756,6 +1756,9 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_NoOp: {
     Convert(sub_expr);
+    if (IsConversionFromStringLiteralToCharPtr(expr)) {
+      StrCat(".cast_mut()");
+    }
     break;
   }
   case clang::CastKind::CK_FunctionToPointerDecay:

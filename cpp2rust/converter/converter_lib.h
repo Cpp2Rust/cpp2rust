@@ -170,5 +170,4 @@ void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
 std::string ReplaceAll(std::string str, std::string_view from,
                        std::string_view to);
-
 } // namespace cpp2rust
