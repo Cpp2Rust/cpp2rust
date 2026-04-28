@@ -3227,7 +3227,7 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
   PushBrace fn_brace(*this);
 
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    if (auto *default_ctor = GetUserDefinedDefaultConstructor(decl)) {
+    if (auto *default_ctor = GetUserDefinedDefaultConstructor(cxx)) {
       StrCat(keyword_unsafe_);
       PushBrace unsafe_brace(*this);
       Convert(clang::CXXConstructExpr::Create(
