@@ -549,7 +549,7 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 std::string normalizeTranslationRule(std::string rule) {
   static const std::array<std::pair<std::regex, std::string>, 2>
       normalization_rules{{
-          // Dettach pointer from double reference. Useful for matching
+          // Detach pointer from double reference. Useful for matching
           // translation rules.
           {std::regex(R"(\*\&\&)"), "* &&"},
           // Ignore constant template parameters, i.e. replace them with _.
@@ -568,7 +568,7 @@ static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
   if (auto *parent =
           clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
     parent_name = parent->getIdentifier()
-                      ? std::string(parent->getIdentifier()->getName())
+                      ? parent->getIdentifier()->getName().str()
                       : synthesizeAnonRecordName(parent);
     parent_name += '_';
   }
