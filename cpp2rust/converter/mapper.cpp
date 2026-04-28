@@ -798,7 +798,7 @@ std::string ToString(const clang::NamedDecl *decl) {
     }
   }
 
-  return normalizeTranslationRule(os.str());
+  return normalizeTranslationRule(std::move(out));
 }
 
 std::string ToString(const clang::Expr *expr) {
