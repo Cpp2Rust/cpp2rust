@@ -1,4 +1,5 @@
-// translation-fail
+// translation-fail: refcount
+// no-compile: unsafe
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>

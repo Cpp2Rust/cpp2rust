@@ -1,4 +1,3 @@
-// translation-fail
 #include <assert.h>
 
 typedef enum {

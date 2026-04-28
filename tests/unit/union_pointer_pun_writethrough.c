@@ -1,4 +1,5 @@
-// translation-fail
+// panic: refcount
+// XFAIL: unsafe
 #include <assert.h>
 
 int main(void) {

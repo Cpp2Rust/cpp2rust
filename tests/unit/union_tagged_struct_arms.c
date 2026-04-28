@@ -1,4 +1,4 @@
-// translation-fail
+// no-compile: unsafe
 #include <assert.h>
 #include <stdint.h>
 
