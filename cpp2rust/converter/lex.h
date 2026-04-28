@@ -13,7 +13,7 @@ inline constexpr const char *kSemiColon = ";\n";
 inline constexpr char kComma = ',';
 inline constexpr char kColon = ':';
 inline constexpr const char *kDoubleColon = "::";
-inline constexpr const char *kAssign = "=";
+inline constexpr char kAssign = '=';
 inline constexpr char kOpenParen = '(';
 inline constexpr char kCloseParen = ')';
 inline constexpr char kDot = '.';
