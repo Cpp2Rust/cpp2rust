@@ -1,4 +1,4 @@
-// no-compile
+// no-compile: refcount
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
