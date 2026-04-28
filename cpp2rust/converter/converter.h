@@ -328,7 +328,7 @@ protected:
     std::string str() && { return std::move(partial_code); }
   };
 
-  template <const char *kOpen, const char *kClose> class PushDelim {
+  template <char kOpen, char kClose> class PushDelim {
     Converter &c;
     bool enabled;
 

@@ -5,32 +5,32 @@
 
 namespace cpp2rust {
 namespace token {
-inline constexpr char kOpenCurlyBracket[] = "{\n";
-inline constexpr char kCloseCurlyBracket[] = "\n}\n";
-inline constexpr char kOpenBracket[] = "[";
-inline constexpr char kCloseBracket[] = "]";
-inline constexpr char kSemiColon[] = ";\n";
-inline constexpr char kComma[] = ",";
-inline constexpr char kColon[] = ":";
-inline constexpr char kDoubleColon[] = "::";
-inline constexpr char kAssign[] = "=";
-inline constexpr char kOpenParen[] = "(";
-inline constexpr char kCloseParen[] = ")";
-inline constexpr char kDot[] = ".";
-inline constexpr char kNot[] = "!";
-inline constexpr char kDiff[] = "!=";
-inline constexpr char kZero[] = "0";
-inline constexpr char kOne[] = "1";
-inline constexpr char kRef[] = "&";
-inline constexpr char kStar[] = "*";
-inline constexpr char kArrow[] = "->";
-inline constexpr char kHash[] = "#";
-inline constexpr char kMinus[] = "-";
-inline constexpr char kDiv[] = "/";
-inline constexpr char kLt[] = "<";
-inline constexpr char kGt[] = ">";
-inline constexpr char kEmpty[] = "";
-inline constexpr char kNewLine[] = "\n";
+inline constexpr const char *kOpenCurlyBracket = "{\n";
+inline constexpr const char *kCloseCurlyBracket = "\n}\n";
+inline constexpr char kOpenBracket = '[';
+inline constexpr char kCloseBracket = ']';
+inline constexpr const char *kSemiColon = ";\n";
+inline constexpr char kComma = ',';
+inline constexpr char kColon = ':';
+inline constexpr const char *kDoubleColon = "::";
+inline constexpr const char *kAssign = "=";
+inline constexpr char kOpenParen = '(';
+inline constexpr char kCloseParen = ')';
+inline constexpr char kDot = '.';
+inline constexpr char kNot = '!';
+inline constexpr const char *kDiff = "!=";
+inline constexpr char kZero = '0';
+inline constexpr char kOne = '1';
+inline constexpr char kRef = '&';
+inline constexpr const char *kStar = "*";
+inline constexpr const char *kArrow = "->";
+inline constexpr char kHash = '#';
+inline constexpr char kMinus = '-';
+inline constexpr char kDiv = '/';
+inline constexpr char kLt = '<';
+inline constexpr char kGt = '>';
+inline constexpr const char *kEmpty = "";
+inline constexpr char kNewLine = '\n';
 } // namespace token
 
 namespace keyword {
