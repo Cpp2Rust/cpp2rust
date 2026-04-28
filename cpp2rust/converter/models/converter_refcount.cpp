@@ -1519,6 +1519,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
 bool ConverterRefCount::VisitImplicitValueInitExpr(
     clang::ImplicitValueInitExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
   if (auto arr_ty = clang::dyn_cast<clang::ArrayType>(
           expr->getType()->getCanonicalTypeInternal().getTypePtr())) {
     if (clang::isa<clang::ConstantArrayType>(arr_ty)) {
