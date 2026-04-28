@@ -87,5 +87,25 @@ unsafe fn main_0() -> i32 {
     assert!(((o.anon_3.i) == (9)));
     assert!(((o.anon_3.inner_named.j) == (10)));
     assert!(((o.anon_3.anon_1.k) == (11)));
+    #[derive(Copy, Clone, Default)]
+    pub struct anon_0 {
+        pub x: i32,
+        pub z: i32,
+    };
+    let mut s: anon_0 = <anon_0>::default();
+    s.x = 1;
+    s.z = 2;
+    assert!(
+        ({
+            s.x = 1;
+            s.x
+        } != 0)
+    );
+    assert!(
+        ({
+            s.z = 2;
+            s.z
+        } != 0)
+    );
     return 0;
 }
