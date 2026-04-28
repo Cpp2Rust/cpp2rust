@@ -59,5 +59,16 @@ int main(void) {
   assert(o.inner_named.j == 10);
   assert(o.k == 11);
 
+  struct {
+    int x;
+    int z;
+  } s;
+
+  s.x = 1;
+  s.z = 2;
+
+  assert(s.x = 1);
+  assert(s.z = 2);
+
   return 0;
 }
