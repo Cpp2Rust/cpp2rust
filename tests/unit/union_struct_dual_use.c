@@ -1,4 +1,4 @@
-// translation-fail
+// no-compile
 #include <assert.h>
 #include <string.h>
 
