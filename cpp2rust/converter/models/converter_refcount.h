@@ -41,6 +41,8 @@ public:
 
   void AddDefaultTrait(const clang::RecordDecl *decl) override;
 
+  void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
+
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;

@@ -3210,12 +3210,19 @@ void Converter::AddCloneTrait(const clang::CXXRecordDecl *decl) {}
 
 void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {}
 
+void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
+  StrCat(std::format("impl Default for {}", GetRecordName(decl)));
+  PushBrace impl_brace(*this);
+  StrCat("fn default() -> Self");
+  PushBrace fn_brace(*this);
+  StrCat("unsafe");
+  PushBrace unsafe_brace(*this);
+  StrCat("std::mem::zeroed()");
+}
+
 void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
-    StrCat(
-        std::format("impl Default for {} {{ fn default() -> Self {{ unsafe {{ "
-                    "std::mem::zeroed() }} }} }}",
-                    GetRecordName(decl)));
+    AddDefaultTraitForUnion(decl);
     return;
   }
   if (RecordDerivesDefault(decl)) {

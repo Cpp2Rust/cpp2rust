@@ -465,6 +465,9 @@ void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
   Converter::AddDefaultTrait(decl);
 }
 
+void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
+}
+
 void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   if (!decl->hasUserDeclaredDestructor()) {
     return;

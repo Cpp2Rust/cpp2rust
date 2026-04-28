@@ -445,6 +445,8 @@ protected:
 
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
+  virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
+
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
   virtual void
