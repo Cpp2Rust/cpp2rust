@@ -643,7 +643,8 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   auto access = clang::dyn_cast<clang::CXXRecordDecl>(decl)
                     ? AccessSpecifierAsString(decl->getAccess())
                     : keyword::kPub;
-  StrCat(access, decl->isUnion() ? keyword::kUnion : keyword::kStruct, GetRecordName(decl));
+  StrCat(access, decl->isUnion() ? keyword::kUnion : keyword::kStruct,
+         GetRecordName(decl));
   {
     PushBrace brace(*this);
     for (auto *field : decl->fields()) {
