@@ -8,9 +8,9 @@
 #include <llvm/Support/ThreadPool.h>
 
 #include <atomic>
-#include <cctype>
 #include <format>
 #include <mutex>
+#include <regex>
 #include <utility>
 #include <vector>
 
@@ -546,41 +546,19 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
   return instantiateTgt(subs, rule->second.type_info.type);
 }
 
-// Replace digit sequences that are not adjacent to other word characters with
-// '_'. Equivalent to the regex \b\d+\b.
-static std::string replaceWordBoundaryDigits(std::string_view str) {
-  std::string result;
-  result.reserve(str.size());
-  auto is_word_char = [](char c) {
-    return std::isalnum((unsigned char)c) || c == '_';
-  };
-  size_t i = 0;
-  while (i < str.size()) {
-    if (std::isdigit((unsigned char)str[i])) {
-      bool start_ok = (i == 0 || !is_word_char(str[i - 1]));
-      size_t start = i;
-      while (i < str.size() && std::isdigit((unsigned char)str[i])) {
-        ++i;
-      }
-      bool end_ok = (i == str.size() || !is_word_char(str[i]));
-      if (start_ok && end_ok) {
-        result += '_';
-      } else {
-        result.append(str.data() + start, i - start);
-      }
-    } else {
-      result += str[i++];
-    }
-  }
-  return result;
-}
-
 std::string normalizeTranslationRule(std::string rule) {
-  // Detach pointer from double reference. Useful for matching translation
-  // rules.
-  rule = ReplaceAll(std::move(rule), "*&&", "* &&");
-  // Ignore constant template parameters, i.e. replace them with _.
-  rule = replaceWordBoundaryDigits(rule);
+  const std::array<std::pair<std::regex, std::string>, 2> normalization_rules{{
+      // Detach pointer from double reference. Useful for matching translation
+      // rules.
+      {std::regex(R"(\*\&\&)"), "* &&"},
+      // Ignore constant template parameters, i.e. replace them with _.
+      {std::regex(R"(\b\d+\b)"), "_"},
+  }};
+
+  for (const auto &r : normalization_rules) {
+    rule = std::regex_replace(rule, r.first, r.second);
+  }
+
   return rule;
 }
 
