@@ -569,8 +569,9 @@ static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
     parent_name = parent->getIdentifier()
                       ? parent->getIdentifier()->getName().str()
                       : synthesizeAnonRecordName(parent);
+    parent_name += '_';
   }
-  return std::format("{}_anon_{}", parent_name, GetAnonIndex(record));
+  return std::format("{}anon_{}", parent_name, GetAnonIndex(record));
 }
 
 } // namespace
