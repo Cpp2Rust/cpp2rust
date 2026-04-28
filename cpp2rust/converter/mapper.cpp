@@ -576,7 +576,7 @@ static std::string replaceWordBoundaryDigits(std::string_view str) {
 }
 
 std::string normalizeTranslationRule(std::string rule) {
-  // Dettach pointer from double reference. Useful for matching translation
+  // Detach pointer from double reference. Useful for matching translation
   // rules.
   rule = ReplaceAll(std::move(rule), "*&&", "* &&");
   // Ignore constant template parameters, i.e. replace them with _.
