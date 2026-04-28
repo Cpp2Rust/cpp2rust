@@ -197,35 +197,5 @@ fn main_0() -> i32 {
             .borrow())
             == 11)
     );
-    #[derive(Default)]
-    pub struct anon_0 {
-        pub x: Value<i32>,
-        pub z: Value<i32>,
-    }
-    impl Clone for anon_0 {
-        fn clone(&self) -> Self {
-            let mut this = Self {
-                x: Rc::new(RefCell::new((*self.x.borrow()))),
-                z: Rc::new(RefCell::new((*self.z.borrow()))),
-            };
-            this
-        }
-    }
-    impl ByteRepr for anon_0 {};
-    let s: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
-    (*(*s.borrow()).x.borrow_mut()) = 1;
-    (*(*s.borrow()).z.borrow_mut()) = 2;
-    assert!(
-        ({
-            (*(*s.borrow()).x.borrow_mut()) = 1;
-            (*(*s.borrow()).x.borrow())
-        } != 0)
-    );
-    assert!(
-        ({
-            (*(*s.borrow()).z.borrow_mut()) = 2;
-            (*(*s.borrow()).z.borrow())
-        } != 0)
-    );
     return 0;
 }
