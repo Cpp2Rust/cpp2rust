@@ -118,22 +118,23 @@ class Cpp2RustTest(TestFormat):
     if should_not_translate:
       return fail('expected translation-fail but cpp2rust succeeded')
 
-    expected_file = self.getExpectedFile(filepath, model, fname)
-    if not os.path.exists(expected_file) and not replace_expected:
-      return fail('no expected file')
+    if not should_not_compile:
+      expected_file = self.getExpectedFile(filepath, model, fname)
+      if not os.path.exists(expected_file) and not replace_expected:
+        return fail('no expected file')
 
-    if replace_expected:
-      self.updateExpected(generated, expected_file)
+      if replace_expected:
+        self.updateExpected(generated, expected_file)
 
-    with open(expected_file, 'r') as f:
-      expected = f.read()
+      with open(expected_file, 'r') as f:
+        expected = f.read()
 
-    if generated != expected:
-      diff = ''.join(difflib.unified_diff(
-        expected.splitlines(keepends=True),
-        generated.splitlines(keepends=True),
-        fromfile='expected', tofile='generated'))
-      return fail('different output\n' + diff)
+      if generated != expected:
+        diff = ''.join(difflib.unified_diff(
+          expected.splitlines(keepends=True),
+          generated.splitlines(keepends=True),
+          fromfile='expected', tofile='generated'))
+        return fail('different output\n' + diff)
 
     pkg_name = "test_" + re.sub(r'[^a-zA-Z0-9_]', '_', os.path.basename(tmp_dir))
 
