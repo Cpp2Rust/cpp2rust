@@ -732,7 +732,7 @@ std::string ToString(clang::QualType qual_type) {
   std::string type;
   llvm::raw_string_ostream os(type);
   normalizeQualType(qual_type).print(os, getPrintPolicy());
-  return normalizeTranslationRule(type);
+  return normalizeTranslationRule(std::move(type));
 }
 
 std::string ToString(const clang::NamedDecl *decl) {
@@ -753,7 +753,7 @@ std::string ToString(const clang::NamedDecl *decl) {
 
   if (!func_decl) {
     decl->printQualifiedName(os, getPrintPolicy());
-    return normalizeTranslationRule(out);
+    return normalizeTranslationRule(std::move(out));
   }
 
   os << ToString(func_decl->getReturnType()) << " ";

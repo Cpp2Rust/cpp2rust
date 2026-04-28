@@ -268,11 +268,10 @@ std::string GetFileName(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto full_location = ctx.getFullLoc(decl->getBeginLoc());
   const auto file_name = ctx.getSourceManager().getFilename(full_location);
-  const auto file_name_as_string = file_name.str();
-  const std::filesystem::path file_path(file_name_as_string);
+  const std::filesystem::path file_path(file_name.begin(), file_name.end());
   return std::filesystem::exists(file_path)
              ? std::filesystem::canonical(file_path).string()
-             : file_name_as_string;
+             : file_path.string();
 }
 
 unsigned GetLineNumber(const clang::Decl *decl) {

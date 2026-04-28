@@ -552,7 +552,8 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
-    if (Mapper::Map(f->getType()).starts_with("Vec<")) {
+    auto mapped = Mapper::Map(f->getType());
+    if (mapped.starts_with("Vec<")) {
       return false;
     }
 
@@ -560,7 +561,7 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
       return false;
     }
 
-    if (Mapper::Map(f->getType()).starts_with("BTreeMap<")) {
+    if (mapped.starts_with("BTreeMap<")) {
       return false;
     }
 
@@ -653,7 +654,7 @@ void Converter::EmitRustStruct(clang::RecordDecl *decl) {
     auto struct_name = GetRecordName(cxx);
 
     ConvertCXXMethodDecls(
-        cxx, std::string(keyword::kImpl) + ' ' + struct_name,
+        cxx, std::format("{} {}", keyword::kImpl, struct_name),
         [](const auto *method) {
           return !method->isImplicit() &&
                  !(method->getDefinition() &&
@@ -701,7 +702,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (decl->isStruct() || decl->isClass()) {
     for (auto c : GetTemplateInstantiatedCtors(decl)) {
       if (!decl_ids_.contains(GetID(c))) {
-        StrCat(std::string(keyword::kImpl) + ' ' + GetRecordName(decl));
+        StrCat(keyword::kImpl, GetRecordName(decl));
         PushBrace brace(*this);
         VisitCXXMethodDecl(c);
       }
@@ -2785,40 +2786,43 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   } else if (auto *array_type =
                  clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
     return GetDefaultAsString(array_type->getElementType());
-  } else if (Mapper::ToString(qual_type) == "struct std::pair") {
-    auto template_args = *GetTemplateArgs(qual_type);
-    auto first_type = template_args[0].getAsType();
-    auto second_type = template_args[1].getAsType();
-    return std::format("({}, {})", GetDefaultAsString(first_type),
-                       GetDefaultAsString(second_type));
-  } else if (Mapper::ToString(qual_type).contains("std::array")) {
-    assert(GetTemplateArgs(qual_type).has_value());
-    auto template_args = *GetTemplateArgs(qual_type);
-    assert(template_args.size() == 2);
-    auto array_size = template_args[1];
-    unsigned size = 0;
-    switch (array_size.getKind()) {
-    case clang::TemplateArgument::Expression: {
-      auto array_size_expr = array_size.getAsExpr();
-      assert(array_size_expr && !array_size_expr->isValueDependent());
-      clang::Expr::EvalResult result;
-      ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
-      size = result.Val.getInt().getZExtValue();
-      break;
-    }
-    case clang::TemplateArgument::Integral: {
-      size = array_size.getAsIntegral().getZExtValue();
-      break;
-    }
-    default:
-      assert(0 && "Unsupported array size kind");
-      break;
-    }
-    return std::format(
-        "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
-        size);
   } else {
-    return GetDefaultAsStringFallback(qual_type);
+    auto qual_type_str = Mapper::ToString(qual_type);
+    if (qual_type_str == "struct std::pair") {
+      auto template_args = *GetTemplateArgs(qual_type);
+      auto first_type = template_args[0].getAsType();
+      auto second_type = template_args[1].getAsType();
+      return std::format("({}, {})", GetDefaultAsString(first_type),
+                         GetDefaultAsString(second_type));
+    } else if (qual_type_str.contains("std::array")) {
+      assert(GetTemplateArgs(qual_type).has_value());
+      auto template_args = *GetTemplateArgs(qual_type);
+      assert(template_args.size() == 2);
+      auto array_size = template_args[1];
+      unsigned size = 0;
+      switch (array_size.getKind()) {
+      case clang::TemplateArgument::Expression: {
+        auto array_size_expr = array_size.getAsExpr();
+        assert(array_size_expr && !array_size_expr->isValueDependent());
+        clang::Expr::EvalResult result;
+        ENSURE(array_size_expr->EvaluateAsInt(result, ctx_));
+        size = result.Val.getInt().getZExtValue();
+        break;
+      }
+      case clang::TemplateArgument::Integral: {
+        size = array_size.getAsIntegral().getZExtValue();
+        break;
+      }
+      default:
+        assert(0 && "Unsupported array size kind");
+        break;
+      }
+      return std::format(
+          "std::array::from_fn::<_, {}, _>(|_| Default::default()).to_vec()",
+          size);
+    } else {
+      return GetDefaultAsStringFallback(qual_type);
+    }
   }
 }
 
