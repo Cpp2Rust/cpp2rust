@@ -447,7 +447,7 @@ void addBuiltinTypes(Model model) {
   auto build_rust_type = [&](clang::QualType qt) {
     unsigned bits = ctx_->getTypeSize(qt);
     char sign = qt->isSignedIntegerType() ? 'i' : 'u';
-    return std::string(1, sign) + std::to_string(bits);
+    return std::format("{}{}", sign, bits);
   };
 
   // Misc
@@ -547,13 +547,14 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 }
 
 std::string normalizeTranslationRule(std::string rule) {
-  const std::array<std::pair<std::regex, std::string>, 2> normalization_rules{{
-      // Dettach pointer from double reference. Useful for matching translation
-      // rules.
-      {std::regex(R"(\*\&\&)"), "* &&"},
-      // Ignore constant template parameters, i.e. replace them with _.
-      {std::regex(R"(\b\d+\b)"), "_"},
-  }};
+  static const std::array<std::pair<std::regex, std::string>, 2>
+      normalization_rules{{
+          // Dettach pointer from double reference. Useful for matching
+          // translation rules.
+          {std::regex(R"(\*\&\&)"), "* &&"},
+          // Ignore constant template parameters, i.e. replace them with _.
+          {std::regex(R"(\b\d+\b)"), "_"},
+      }};
 
   for (const auto &r : normalization_rules) {
     rule = std::regex_replace(rule, r.first, r.second);
@@ -567,7 +568,7 @@ static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
   if (auto *parent =
           clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
     parent_name = parent->getIdentifier()
-                      ? parent->getIdentifier()->getName().str()
+                      ? std::string(parent->getIdentifier()->getName())
                       : synthesizeAnonRecordName(parent);
     parent_name += '_';
   }
@@ -674,7 +675,7 @@ bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
 
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto cpp_name = ToString(decl);
-  auto rs_name = std::regex_replace(cpp_name, std::regex("::"), "_");
+  auto rs_name = ReplaceAll(cpp_name, "::", "_");
 
   if (types_.contains(cpp_name)) {
     return;
@@ -863,10 +864,11 @@ std::string ToString(const clang::Expr *expr) {
   }
 
   if (const auto *uop = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
-    std::string opcode =
-        clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str();
-    return uop->isPostfix() ? ToString(uop->getSubExpr()) + std::move(opcode)
-                            : std::move(opcode) + ToString(uop->getSubExpr());
+    auto sub = ToString(uop->getSubExpr());
+    std::string_view opcode =
+        clang::UnaryOperator::getOpcodeStr(uop->getOpcode());
+    return uop->isPostfix() ? std::format("{}{}", sub, opcode)
+                            : std::format("{}{}", opcode, sub);
   }
 
   return "Unhandled case in ToString";

@@ -1754,7 +1754,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
     clang::BinaryOperator *expr) {
   auto lhs = expr->getLHS();
   auto rhs = expr->getRHS();
-  auto opcode = expr->getOpcodeStr().str();
+  std::string_view opcode = expr->getOpcodeStr();
 
   auto lhs_vars = GetAllVars(lhs);
   auto rhs_vars = GetAllVars(rhs);

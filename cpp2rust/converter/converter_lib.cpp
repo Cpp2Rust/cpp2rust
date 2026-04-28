@@ -762,4 +762,13 @@ void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
   }
 }
 
+std::string ReplaceAll(std::string str, std::string_view from,
+                       std::string_view to) {
+  for (size_t pos = 0; (pos = str.find(from, pos)) != std::string::npos;
+       pos += to.size()) {
+    str.replace(pos, from.size(), to);
+  }
+  return str;
+}
+
 } // namespace cpp2rust
