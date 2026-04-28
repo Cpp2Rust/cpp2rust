@@ -200,11 +200,10 @@ impl<'a> FragmentCtx<'a> {
                 });
                 return;
             }
-            if self.generic_names.contains(&token.text().to_string()) {
+            let text = token.text().to_string();
+            if self.generic_names.contains(&text) {
                 self.flush_text();
-                self.fragments.push(BodyFragment::Generic {
-                    generic: token.text().to_string(),
-                });
+                self.fragments.push(BodyFragment::Generic { generic: text });
                 return;
             }
         }

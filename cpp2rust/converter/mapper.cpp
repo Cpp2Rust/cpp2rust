@@ -206,16 +206,14 @@ matchTemplate(const std::string &template_str,
       }
       nextLit = template_str.substr(ti, scan - ti);
 
-      auto it = captured.find(name);
-      if (it != captured.end()) {
+      auto [it, inserted] = captured.try_emplace(std::move(name));
+      if (!inserted) {
         size_t end_pos = 0;
         if (!matchLiteralAt(instantiated, si, it->second, end_pos)) {
           return std::nullopt;
         }
         si = end_pos;
       } else {
-        std::string value;
-
         if (!nextLit.empty()) {
           size_t k = findNextLiteralSameDepth(instantiated, si, nextLit);
           if (k == std::string::npos) {
@@ -232,7 +230,7 @@ matchTemplate(const std::string &template_str,
             b--;
           }
 
-          value = instantiated.substr(a, b - a);
+          it->second = instantiated.substr(a, b - a);
           si = k;
         } else {
           size_t a = si;
@@ -245,11 +243,9 @@ matchTemplate(const std::string &template_str,
             b--;
           }
 
-          value = instantiated.substr(a, b - a);
+          it->second = instantiated.substr(a, b - a);
           si = instantiated.size();
         }
-
-        captured[name] = value;
       }
 
       if (!nextLit.empty()) {
@@ -676,11 +672,10 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto cpp_name = ToString(decl);
   auto rs_name = std::regex_replace(cpp_name, std::regex("::"), "_");
 
-  if (types_.contains(cpp_name)) {
+  if (!types_.try_emplace(cpp_name, TranslationRule::TypeTgt::Plain(rs_name))
+           .second) {
     return;
   }
-
-  types_[cpp_name] = TranslationRule::TypeTgt::Plain(rs_name);
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
