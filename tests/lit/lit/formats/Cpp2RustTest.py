@@ -4,8 +4,11 @@
 import lit.Test
 import lit.util
 from .base import TestFormat
-import difflib, os, re, shutil, random
+import difflib, os, re, shutil, random, sys
 import tomli
+
+CURRENT_OS = 'macos' if sys.platform == 'darwin' else 'linux'
+ENTRY_RE = re.compile(r'(\w+)(?:\s*\(([^)]*)\))?')
 
 def read_rust_version():
   toolchain_path = os.path.join(os.path.dirname(__file__),
@@ -69,17 +72,24 @@ class Cpp2RustTest(TestFormat):
     def matches_model(match, model):
       if match is None:
         return False
-      models = match.group(1)
-      if models is None or models.strip() == '':
+      spec = match.group(1)
+      if spec is None or spec.strip() == '':
         return True
-      return model in re.split(r'\s*,\s*', models.strip())
+      for entry in ENTRY_RE.finditer(spec):
+        if entry.group(1) != model:
+          continue
+        os_list = entry.group(2)
+        if os_list is None:
+          return True
+        if CURRENT_OS in [o.strip() for o in os_list.split(',')]:
+          return True
+      return False
 
     should_fail = False
     fail_code = lit.Test.FAIL
     xfail = self.regex_xfail.search(text)
     if xfail:
-      xfail = re.split(r'\s*,\s*', xfail.group(1))
-      should_fail = model in xfail
+      should_fail = matches_model(xfail, model)
       fail_code = lit.Test.XFAIL
 
     should_panic = matches_model(self.regex_panic.search(text), model)
