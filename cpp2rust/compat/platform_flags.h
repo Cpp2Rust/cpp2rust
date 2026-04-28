@@ -10,6 +10,7 @@ static inline std::vector<std::string> getPlatformClangFlags() {
   std::vector<std::string> flags = {
       "-resource-dir=" CLANG_RESOURCE_DIR,
       "-I" COMPAT_INCLUDE_DIR,
+      "-D_FORTIFY_SOURCE=0",
   };
 #ifdef MACOS_SDK_PATH
   flags.push_back("-isysroot" MACOS_SDK_PATH);
