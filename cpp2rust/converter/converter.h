@@ -331,6 +331,32 @@ protected:
     std::string str() && { return std::move(partial_code); }
   };
 
+  template <char kOpen, char kClose> class PushDelim {
+    Converter &c;
+    bool enabled;
+
+  public:
+    PushDelim(Converter &c, bool enabled = true) : c(c), enabled(enabled) {
+      if (enabled) {
+        c.StrCat(kOpen);
+      }
+    }
+    ~PushDelim() {
+      if (enabled) {
+        c.StrCat(kClose);
+      }
+    }
+    PushDelim(const PushDelim &) = delete;
+    PushDelim(PushDelim &&) = delete;
+    PushDelim &operator=(const PushDelim &) = delete;
+    PushDelim &operator=(PushDelim &&) = delete;
+  };
+
+  using PushBrace =
+      PushDelim<token::kOpenCurlyBracket, token::kCloseCurlyBracket>;
+  using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
+  using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
+
   template <typename T> inline std::string ToString(T node) {
     Buffer buf(*this);
     Convert(node);

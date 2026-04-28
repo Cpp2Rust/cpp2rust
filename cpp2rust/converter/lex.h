@@ -5,32 +5,32 @@
 
 namespace cpp2rust {
 namespace token {
-inline constexpr const char *kOpenCurlyBracket = "{\n";
-inline constexpr const char *kCloseCurlyBracket = "\n}\n";
-inline constexpr const char *kOpenBracket = "[";
-inline constexpr const char *kCloseBracket = "]";
+inline constexpr char kOpenCurlyBracket = '{';
+inline constexpr char kCloseCurlyBracket = '}';
+inline constexpr char kOpenBracket = '[';
+inline constexpr char kCloseBracket = ']';
 inline constexpr const char *kSemiColon = ";\n";
-inline constexpr const char *kComma = ",";
-inline constexpr const char *kColon = ":";
+inline constexpr char kComma = ',';
+inline constexpr char kColon = ':';
 inline constexpr const char *kDoubleColon = "::";
 inline constexpr const char *kAssign = "=";
-inline constexpr const char *kOpenParen = "(";
-inline constexpr const char *kCloseParen = ")";
-inline constexpr const char *kDot = ".";
-inline constexpr const char *kNot = "!";
+inline constexpr char kOpenParen = '(';
+inline constexpr char kCloseParen = ')';
+inline constexpr char kDot = '.';
+inline constexpr char kNot = '!';
 inline constexpr const char *kDiff = "!=";
-inline constexpr const char *kZero = "0";
-inline constexpr const char *kOne = "1";
-inline constexpr const char *kRef = "&";
+inline constexpr char kZero = '0';
+inline constexpr char kOne = '1';
+inline constexpr char kRef = '&';
 inline constexpr const char *kStar = "*";
 inline constexpr const char *kArrow = "->";
-inline constexpr const char *kHash = "#";
-inline constexpr const char *kMinus = "-";
-inline constexpr const char *kDiv = "/";
-inline constexpr const char *kLt = "<";
-inline constexpr const char *kGt = ">";
+inline constexpr char kHash = '#';
+inline constexpr char kMinus = '-';
+inline constexpr char kDiv = '/';
+inline constexpr char kLt = '<';
+inline constexpr char kGt = '>';
 inline constexpr const char *kEmpty = "";
-inline constexpr const char *kNewLine = "\n";
+inline constexpr char kNewLine = '\n';
 } // namespace token
 
 namespace keyword {
