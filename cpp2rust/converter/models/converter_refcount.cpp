@@ -6,7 +6,6 @@
 #include <clang/Basic/OperatorKinds.h>
 
 #include <format>
-#include <regex>
 
 #include "compiler.h"
 #include "converter/converter_lib.h"
