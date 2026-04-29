@@ -2113,9 +2113,7 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   return false;
 }
 
-void Converter::EmitStmtExprTail(clang::Expr *tail) {
-  Convert(tail);
-}
+void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);

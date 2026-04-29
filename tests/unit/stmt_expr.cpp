@@ -26,11 +26,11 @@ int main() {
   assert(z == 10);
 
   assert(({
-      int inner = ({
-          int a = 100;
-          a;
-      });
-      inner;
-  }) == 100);
+           int inner = ({
+             int a = 100;
+             a;
+           });
+           inner;
+         }) == 100);
   return 0;
 }
