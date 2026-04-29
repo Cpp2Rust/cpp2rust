@@ -2058,6 +2058,9 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     return false;
   }
   switch (opcode) {
+  case clang::UO_Extension:
+    Convert(sub_expr);
+    break;
   case clang::UO_AddrOf: {
     PushParen paren(*this);
     ConvertAddrOf(sub_expr, expr->getType());
@@ -2089,6 +2092,29 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     Convert(sub_expr);
   }
   return false;
+}
+
+bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
+  auto *body = expr->getSubStmt();
+  PushBrace brace(*this);
+  auto stmts = body->body();
+  size_t n = static_cast<size_t>(stmts.end() - stmts.begin());
+  size_t i = 0;
+  for (auto *s : stmts) {
+    ++i;
+    if (i == n) {
+      if (auto *tail = clang::dyn_cast<clang::Expr>(s)) {
+        EmitStmtExprTail(tail);
+        continue;
+      }
+    }
+    Convert(s);
+  }
+  return false;
+}
+
+void Converter::EmitStmtExprTail(clang::Expr *tail) {
+  Convert(tail);
 }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {

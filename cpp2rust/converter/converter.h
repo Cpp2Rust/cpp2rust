@@ -248,6 +248,10 @@ public:
 
   virtual bool VisitUnaryOperator(clang::UnaryOperator *expr);
 
+  virtual bool VisitStmtExpr(clang::StmtExpr *expr);
+
+  virtual void EmitStmtExprTail(clang::Expr *tail);
+
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
   virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);

@@ -1141,6 +1141,18 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
 }
 
+bool ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  return Converter::VisitStmtExpr(expr);
+}
+
+void ConverterRefCount::EmitStmtExprTail(clang::Expr *tail) {
+  StrCat("let __result = ");
+  Convert(tail);
+  StrCat(token::kSemiColon);
+  StrCat("__result");
+}
+
 bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
   auto *lhs = expr->getLHS();
   auto *rhs = expr->getRHS();
@@ -1654,12 +1666,10 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   }
 
   bool is_ref = qual_type->isReferenceType();
-  in_function_formals_ = true;
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
   StrCat(BoxValue((is_ref || qual_type->isFunctionPointerType())
                       ? ConvertFreshPointer(expr)
                       : ConvertFreshRValue(expr)));
-  in_function_formals_ = false;
 }
 
 static std::unordered_set<const clang::ValueDecl *>

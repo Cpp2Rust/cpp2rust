@@ -84,6 +84,10 @@ public:
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) override;
 
+  bool VisitStmtExpr(clang::StmtExpr *expr) override;
+
+  void EmitStmtExprTail(clang::Expr *tail) override;
+
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
 
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
