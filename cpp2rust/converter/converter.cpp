@@ -2136,7 +2136,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
     return std::format("{}::{}",
                        GetRecordName(clang::dyn_cast<clang::EnumDecl>(
                            enum_constant->getDeclContext())),
-                       enum_constant->getName().str());
+                       std::string_view(enum_constant->getName()));
   } else if (IsGlobalVar(expr)) {
     return ReplaceAll(Mapper::ToString(expr->getDecl()), "::", "_");
   }
@@ -2612,12 +2612,12 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    std::string init_str(init.begin(), init.end());
     if (first_enumerator) {
       StrCat("#[default]");
       first_enumerator = false;
     }
-    StrCat(std::format("{} = {},", e->getNameAsString(), init_str));
+    StrCat(std::format("{} = {},", std::string_view(e->getName()),
+                       std::string_view(init.data(), init.size())));
   }
   StrCat("}");
   return false;
@@ -2854,7 +2854,7 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
-  std::string name(decl->getNameAsString());
+  auto name = decl->getNameAsString();
 
   if (decl->getNumParams() != 0U) {
     name += '_';

@@ -443,7 +443,7 @@ void addBuiltinTypes(Model model) {
   auto build_rust_type = [&](clang::QualType qt) {
     unsigned bits = ctx_->getTypeSize(qt);
     char sign = qt->isSignedIntegerType() ? 'i' : 'u';
-    return std::string(1, sign) + std::to_string(bits);
+    return std::format("{}{}", sign, bits);
   };
 
   // Misc
@@ -858,10 +858,11 @@ std::string ToString(const clang::Expr *expr) {
   }
 
   if (const auto *uop = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
-    std::string opcode =
-        clang::UnaryOperator::getOpcodeStr(uop->getOpcode()).str();
-    return uop->isPostfix() ? ToString(uop->getSubExpr()) + std::move(opcode)
-                            : std::move(opcode) + ToString(uop->getSubExpr());
+    auto sub = ToString(uop->getSubExpr());
+    std::string_view opcode =
+        clang::UnaryOperator::getOpcodeStr(uop->getOpcode());
+    return uop->isPostfix() ? std::format("{}{}", sub, opcode)
+                            : std::format("{}{}", opcode, sub);
   }
 
   return "Unhandled case in ToString";
