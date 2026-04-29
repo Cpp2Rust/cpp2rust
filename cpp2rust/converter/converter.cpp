@@ -1767,7 +1767,8 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_NoOp: {
     Convert(sub_expr);
     if (expr->getType()->isPointerType() &&
-        sub_expr->getType()->isPointerType()) {
+        sub_expr->getType()->isPointerType() &&
+        !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
       switch (GetConstCastType(expr->getType()->getPointeeType(),
                                sub_expr->getType()->getPointeeType())) {
       case ConstCastType::MutableToConst:
