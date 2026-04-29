@@ -61,7 +61,6 @@ impl GotoStateMachine {
         };
         quote! {
             #idx => {
-                #[allow(unreachable_code)]
                 { #body; #tail }
             }
         }
@@ -74,7 +73,6 @@ impl GotoStateMachine {
         (
             quote! { let mut #flag: bool = false; },
             quote! {
-                #[allow(unreachable_code)]
                 if #flag { #stmt }
             },
         )
@@ -112,7 +110,6 @@ impl StateMachine for GotoStateMachine {
             #brk_decl
             #cnt_decl
             let mut #s: u32 = 0;
-            #[allow(unreachable_code, unused_labels)]
             #lbl: loop {
                 match #s {
                     #(#body_arms)*
@@ -164,7 +161,6 @@ impl SwitchStateMachine {
         });
         let body: Expr = syn::parse_quote! {
             {
-                #[allow(unreachable_patterns)]
                 match #cond {
                     #(#case_arms,)*
                     _ => break #label,
