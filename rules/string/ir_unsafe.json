@@ -1548,13 +1548,13 @@
             {
               "placeholder": {
                 "arg": "a0",
-                "access": "read"
+                "access": "write"
               }
             }
           ],
           "body": [
             {
-              "text": ".as_ptr()"
+              "text": ".as_mut_ptr()"
             }
           ]
         }
@@ -1562,7 +1562,7 @@
     ],
     "params": {
       "a0": {
-        "type": "Vec<u8>"
+        "type": "&mut Vec<u8>"
       }
     },
     "return_type": {
