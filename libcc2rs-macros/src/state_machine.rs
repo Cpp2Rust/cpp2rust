@@ -66,7 +66,11 @@ impl GotoStateMachine {
         }
     }
 
-    fn bailout(should_emit: bool, flag: &Ident, stmt: TokenStream2) -> (TokenStream2, TokenStream2) {
+    fn bailout(
+        should_emit: bool,
+        flag: &Ident,
+        stmt: TokenStream2,
+    ) -> (TokenStream2, TokenStream2) {
         if !should_emit {
             return (TokenStream2::new(), TokenStream2::new());
         }
@@ -103,8 +107,10 @@ impl StateMachine for GotoStateMachine {
             })
             .collect();
 
-        let (brk_decl, brk_bailout) = Self::bailout(arms_have_break, &break_flag, quote! { break; });
-        let (cnt_decl, cnt_bailout) = Self::bailout(arms_have_continue, &cont_flag, quote! { continue; });
+        let (brk_decl, brk_bailout) =
+            Self::bailout(arms_have_break, &break_flag, quote! { break; });
+        let (cnt_decl, cnt_bailout) =
+            Self::bailout(arms_have_continue, &cont_flag, quote! { continue; });
 
         quote! {{
             #brk_decl
