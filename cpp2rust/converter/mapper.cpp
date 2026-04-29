@@ -736,6 +736,12 @@ std::string ToString(const clang::NamedDecl *decl) {
     return synthesizeAnonRecordName(record);
   }
 
+  if (auto *enum_decl = clang::dyn_cast<clang::EnumDecl>(decl);
+      enum_decl && !enum_decl->getIdentifier() &&
+      enum_decl->getTypedefNameForAnonDecl() == nullptr) {
+    return std::format("anon_enum_{}", GetLineNumber(enum_decl));
+  }
+
   std::string out;
   llvm::raw_string_ostream os(out);
 
