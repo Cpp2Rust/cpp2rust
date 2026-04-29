@@ -32,6 +32,12 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
     let immutable_string_arr: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
+    let mutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
+    let immutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
+    let mutable_empty_arr: Value<Box<[u8]>> =
+        Rc::new(RefCell::new(Box::<[u8]>::from(b"\0".as_slice())));
+    let immutable_empty_arr: Value<Box<[u8]>> =
+        Rc::new(RefCell::new(Box::<[u8]>::from(b"\0".as_slice())));
     ({
         let _str: Ptr<u8> = Ptr::from_string_literal("world");
         foo_mut_0(_str)
@@ -62,6 +68,26 @@ fn main_0() -> i32 {
     });
     ({
         let _str: Ptr<u8> = (immutable_string_arr.as_pointer() as Ptr<u8>);
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = Ptr::from_string_literal("");
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (*mutable_empty.borrow()).clone();
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (*immutable_empty.borrow()).clone();
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (mutable_empty_arr.as_pointer() as Ptr<u8>);
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (immutable_empty_arr.as_pointer() as Ptr<u8>);
         foo_const_1(_str)
     });
     return 0;
