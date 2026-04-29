@@ -87,8 +87,8 @@ impl StateMachine for GotoStateMachine {
         let cont_flag = format_ident!("__user_continue");
 
         let n = self.arms.len();
-        let mut any_break = false;
-        let mut any_continue = false;
+        let mut arms_have_break = false;
+        let mut arms_have_continue = false;
         let body_arms: Vec<_> = self
             .arms
             .iter()
@@ -97,14 +97,14 @@ impl StateMachine for GotoStateMachine {
                 let mut body = arm.body.clone();
                 let (had_br, had_cn) =
                     Self::propagate_rewrite(&mut body, &lbl, &break_flag, &cont_flag);
-                any_break |= had_br;
-                any_continue |= had_cn;
+                arms_have_break |= had_br;
+                arms_have_continue |= had_cn;
                 Self::emit_body_arm(i as u32, &body, i + 1 == n, &lbl, &s)
             })
             .collect();
 
-        let (brk_decl, brk_bailout) = Self::bailout(any_break, &break_flag, quote! { break; });
-        let (cnt_decl, cnt_bailout) = Self::bailout(any_continue, &cont_flag, quote! { continue; });
+        let (brk_decl, brk_bailout) = Self::bailout(arms_have_break, &break_flag, quote! { break; });
+        let (cnt_decl, cnt_bailout) = Self::bailout(arms_have_continue, &cont_flag, quote! { continue; });
 
         quote! {{
             #brk_decl
