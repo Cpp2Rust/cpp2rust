@@ -946,6 +946,13 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
+  if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
+    // b"" has type &static [u8; N]. For translating char str[] =
+    // "string_literal"; we need an initializer of type Box<[u8]>
+    StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
+                       GetEscapedStringLiteral(expr, true)));
+    return false;
+  }
   StrCat(GetEscapedStringLiteral(expr));
   return false;
 }

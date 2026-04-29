@@ -1706,11 +1706,13 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
-  StrCat(std::format("b{}.as_ptr()", GetEscapedStringLiteral(expr, true)));
-  // In C, string literals are char[], in C++ they are const char[]
-  if (!expr->getType().isConstQualified()) {
-    StrCat(".cast_mut()");
+  if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
+    // b"" has type &static [u8; N]. For translating char str[] =
+    // "string_literal"; we need an initializer of type [u8; N]. Dereferencing
+    // the &static [u8; N] achieves this.
+    StrCat(token::kStar);
   }
+  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, true)));
   return false;
 }
 
