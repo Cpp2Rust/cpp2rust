@@ -99,7 +99,7 @@ unsafe fn main_0() -> i32 {
         assert!((((v7[(i as u64) as usize].0).is_null()) && ((v7[(i as u64) as usize].1) == (0))));
         i.prefix_inc();
     }
-    let mut p1: *const f64 = v6.as_mut_ptr();
+    let mut p1: *const f64 = v6.as_mut_ptr().cast_const();
     assert!(((*p1) == (2.0E+0)));
     let mut p2: *mut i32 = v3.as_mut_ptr();
     assert!(((*p2) == (1)));

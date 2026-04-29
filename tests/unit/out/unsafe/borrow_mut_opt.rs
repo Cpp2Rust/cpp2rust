@@ -23,7 +23,7 @@ pub unsafe fn convert_without_rhs_0() {
     let mut w: i32 = ((arr[(y) as usize]) + (arr[(x) as usize]));
     w += (((z) + (y)) + (x));
     let mut arr2: [u8; 3] = [('a' as u8), ('b' as u8), ('c' as u8)];
-    let mut p1: *const i32 = (&mut x as *mut i32);
+    let mut p1: *const i32 = (&mut x as *mut i32).cast_const();
     let mut c: u8 = arr2[(*p1) as usize];
     c = arr2[(*p1) as usize];
     let mut p2: *mut i32 = (&mut x as *mut i32);

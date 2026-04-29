@@ -802,4 +802,16 @@ std::string ReplaceAll(std::string str, std::string_view from,
   return str;
 }
 
+ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {
+  if (to.isConstQualified() && from.isConstQualified()) {
+    return ConstCastType::ConstToConst;
+  } else if (!to.isConstQualified() && from.isConstQualified()) {
+    return ConstCastType::ConstToMutable;
+  } else if (to.isConstQualified() && !from.isConstQualified()) {
+    return ConstCastType::MutableToConst;
+  } else {
+    return ConstCastType::MutableToMutable;
+  }
+}
+
 } // namespace cpp2rust

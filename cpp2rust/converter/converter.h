@@ -233,7 +233,7 @@ public:
   std::string GetEscapedUTF8CharLiteral(clang::Expr *expr) const;
 
   std::string GetEscapedStringLiteral(clang::Expr *expr,
-                                      bool add_null_char = false) const;
+                                      uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
@@ -524,6 +524,19 @@ protected:
 
   private:
     std::stack<BreakTarget> &stack_;
+  };
+
+  class PushInitType {
+  public:
+    PushInitType(Converter &c, clang::QualType type) : c_(c) {
+      c_.curr_init_type_.push(type);
+    }
+    ~PushInitType() { c_.curr_init_type_.pop(); }
+    PushInitType(const PushInitType &) = delete;
+    PushInitType &operator=(const PushInitType &) = delete;
+
+  private:
+    Converter &c_;
   };
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;

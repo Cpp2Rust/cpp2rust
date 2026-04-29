@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut out: i32 = 0;
     let mut arr: [i32; 5] = [1, 2, 3, 4, 0];
-    let mut ptr: *const i32 = (&mut arr[(0) as usize] as *mut i32);
+    let mut ptr: *const i32 = (&mut arr[(0) as usize] as *mut i32).cast_const();
     'loop_: while ((*ptr) != (0)) {
         out += (*ptr);
         ptr.prefix_inc();
@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
         out += (*ptr);
         ptr.postfix_dec();
     }
-    let mut ptr: *const i32 = (&mut arr[(3) as usize] as *mut i32);
+    let mut ptr: *const i32 = (&mut arr[(3) as usize] as *mut i32).cast_const();
     'loop_: while ((*ptr) != (2)) {
         out += (*ptr);
         ptr.prefix_dec();

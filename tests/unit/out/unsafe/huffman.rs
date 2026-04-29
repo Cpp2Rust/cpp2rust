@@ -241,7 +241,7 @@ pub unsafe fn CollectCodes_4(
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
-    if (unsafe { (*root).IsLeaf() }) {
+    if (unsafe { (*root.cast_const()).IsLeaf() }) {
         (unsafe {
             let _arr: *mut Option<Box<[i32]>> = arr;
             let _top: i32 = top;

@@ -35,8 +35,8 @@ unsafe fn f4(a0: &mut Vec<u8>, a1: *mut u8, a2: usize) {
 unsafe fn f5(a0: Vec<u8>) -> *const u8 {
     a0.as_ptr()
 }
-unsafe fn f6(a0: Vec<u8>) -> *const u8 {
-    a0.as_ptr()
+unsafe fn f6(a0: &mut Vec<u8>) -> *const u8 {
+    a0.as_mut_ptr()
 }
 unsafe fn f7(a0: *const u8, a1: usize) -> Vec<u8> {
     std::slice::from_raw_parts(a0, a1 as usize)

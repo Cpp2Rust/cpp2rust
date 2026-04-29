@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn more_refs_0(mut x1: i32, mut x2: i32, r1: *mut i32, r2: *const i32) {
     let rx1: *const i32 = &x1 as *const i32;
     let rx2: *mut i32 = &mut x2 as *mut i32;
-    let mut pr1: *const i32 = (r1);
+    let mut pr1: *const i32 = (r1).cast_const();
     let mut pr2: *const i32 = (r2);
     let rpr1: *const i32 = &(*pr1) as *const i32;
     let rpr2: *const i32 = &(*pr2) as *const i32;

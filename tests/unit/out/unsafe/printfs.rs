@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
         let s = b"a string\0".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    printf(b"%s\n\0".as_ptr() as *const i8, s.as_ptr());
+    printf(b"%s\n\0".as_ptr() as *const i8, s.as_mut_ptr());
     printf(
         b"%s\n\0".as_ptr() as *const i8,
         (unsafe {

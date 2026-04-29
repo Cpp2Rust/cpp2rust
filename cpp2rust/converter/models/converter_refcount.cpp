@@ -946,6 +946,22 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
+  if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
+    uint64_t pad = 1;
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
+      uint64_t arr_size = arr_ty->getSize().getZExtValue();
+      if (expr->getString().empty()) {
+        StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
+        return false;
+      }
+      pad = arr_size > expr->getString().size()
+                ? arr_size - expr->getString().size()
+                : 0;
+    }
+    StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
+                       GetEscapedStringLiteral(expr, pad)));
+    return false;
+  }
   StrCat(GetEscapedStringLiteral(expr));
   return false;
 }
@@ -1032,6 +1048,11 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       expr->getType()->isFunctionPointerType()) {
     StrCat("FnPtr::null()");
     computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  }
+
+  if (expr->getCastKind() == clang::CastKind::CK_NoOp) {
+    Convert(sub_expr);
     return false;
   }
 
@@ -1667,6 +1688,7 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
 
   bool is_ref = qual_type->isReferenceType();
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
+  PushInitType init_type(*this, qual_type);
   StrCat(BoxValue((is_ref || qual_type->isFunctionPointerType())
                       ? ConvertFreshPointer(expr)
                       : ConvertFreshRValue(expr)));
