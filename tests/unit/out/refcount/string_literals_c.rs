@@ -35,9 +35,9 @@ fn main_0() -> i32 {
     let mutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
     let immutable_empty: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("")));
     let mutable_empty_arr: Value<Box<[u8]>> =
-        Rc::new(RefCell::new(Box::<[u8]>::from(b"\0".as_slice())));
+        Rc::new(RefCell::new(vec![0u8; 1].into_boxed_slice()));
     let immutable_empty_arr: Value<Box<[u8]>> =
-        Rc::new(RefCell::new(Box::<[u8]>::from(b"\0".as_slice())));
+        Rc::new(RefCell::new(vec![0u8; 1].into_boxed_slice()));
     ({
         let _str: Ptr<u8> = Ptr::from_string_literal("world");
         foo_mut_0(_str)

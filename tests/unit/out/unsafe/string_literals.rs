@@ -19,8 +19,8 @@ unsafe fn main_0() -> i32 {
     let mut mutable_string_arr: [u8; 9] = *b"papanasi\0";
     let immutable_string_arr: [u8; 9] = *b"papanasi\0";
     let mut immutable_empty: *const u8 = b"\0".as_ptr();
-    let mut mutable_empty_arr: [u8; 1] = *b"\0";
-    let immutable_empty_arr: [u8; 1] = *b"\0";
+    let mut mutable_empty_arr: [u8; 1] = [0u8; 1];
+    let immutable_empty_arr: [u8; 1] = [0u8; 1];
     (unsafe {
         let _str: *mut u8 = mutable_string_arr.as_mut_ptr();
         foo_mut_0(_str)
