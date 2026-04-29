@@ -25,7 +25,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
     }
     SwitchStateMachine {
         goto: GotoStateMachine { arms: cfg_arms },
-        condition: condition,
+        condition,
         cases,
     }
     .emit()

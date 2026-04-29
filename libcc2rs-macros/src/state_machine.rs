@@ -140,8 +140,8 @@ pub struct SwitchStateMachine {
 
 impl SwitchStateMachine {
     // Rewrite break into break '__sm
-    fn convert_break_to_switch_exit(arms: &Vec<Arm>, label: &Lifetime) -> Vec<Arm> {
-        arms.into_iter()
+    fn convert_break_to_switch_exit(arms: &[Arm], label: &Lifetime) -> Vec<Arm> {
+        arms.iter()
             .map(|a| {
                 let mut body = a.body.clone();
                 ExitSwitchRewriter {
