@@ -1739,17 +1739,16 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     Convert(sub_expr);
-    switch (GetConstCastType(
-        expr->getType()->getPointeeType(),
-        sub_expr->getType()->getAsArrayTypeUnsafe()->getElementType())) {
-    case ConstCastType::MutableToConst:
-      StrCat(".cast_const()");
-      break;
-    case ConstCastType::ConstToMutable:
-      StrCat(".cast_mut()");
-      break;
-    default:
-      break;
+    bool dest_pointee_const =
+        expr->getType()->getPointeeType().isConstQualified();
+    if (clang::isa<clang::StringLiteral>(sub_expr) ||
+        clang::isa<clang::PredefinedExpr>(sub_expr)) {
+      StrCat(".as_ptr()");
+      if (!dest_pointee_const) {
+        StrCat(".cast_mut()");
+      }
+    } else {
+      StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
     }
     break;
   }
