@@ -111,7 +111,7 @@ fn switch_or_pattern() {
     for x in [1, 2, 5] {
         let mut v = "other";
         switch!(match x {
-            1 | 2 | 3 => {
+            1..=3 => {
                 v = "low";
                 break;
             }
