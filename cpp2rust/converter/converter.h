@@ -522,6 +522,19 @@ protected:
     std::stack<BreakTarget> &stack_;
   };
 
+  class PushInitType {
+  public:
+    PushInitType(Converter &c, clang::QualType type) : c_(c) {
+      c_.curr_init_type_.push(type);
+    }
+    ~PushInitType() { c_.curr_init_type_.pop(); }
+    PushInitType(const PushInitType &) = delete;
+    PushInitType &operator=(const PushInitType &) = delete;
+
+  private:
+    Converter &c_;
+  };
+
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
 
   struct ScopedMapIterDecl {

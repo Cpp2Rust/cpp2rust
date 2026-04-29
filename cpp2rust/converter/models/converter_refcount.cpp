@@ -1668,6 +1668,7 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   bool is_ref = qual_type->isReferenceType();
   in_function_formals_ = true;
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
+  PushInitType init_type(*this, qual_type);
   StrCat(BoxValue((is_ref || qual_type->isFunctionPointerType())
                       ? ConvertFreshPointer(expr)
                       : ConvertFreshRValue(expr)));

@@ -2973,9 +2973,8 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
             expr->IgnoreUnlessSpelledInSource())) {
       PushExprKind push(*this, ExprKind::AddrOf);
-      curr_init_type_.push(qual_type);
+      PushInitType init_type(*this, qual_type);
       VisitLambdaExpr(lambda);
-      curr_init_type_.pop();
       return;
     }
   }
@@ -2992,21 +2991,18 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     {
       PushParen paren(*this);
       StrCat(token::kStar);
-      curr_init_type_.push(qual_type);
+      PushInitType init_type(*this, qual_type);
       Convert(expr);
-      curr_init_type_.pop();
     }
     StrCat(".clone()");
   } else if (IsReferenceType(expr) || qual_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
-    curr_init_type_.push(qual_type);
+    PushInitType init_type(*this, qual_type);
     Convert(expr);
-    curr_init_type_.pop();
   } else {
     PushExprKind push(*this, ExprKind::RValue);
-    curr_init_type_.push(qual_type);
+    PushInitType init_type(*this, qual_type);
     Convert(expr);
-    curr_init_type_.pop();
   }
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
     StrCat(keyword::kAs);
@@ -3080,9 +3076,11 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
 
 void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                   std::string_view assign_operator) {
-  curr_init_type_.push(lhs->getType());
-  auto lhs_as_string = ConvertLValue(lhs);
-  curr_init_type_.pop();
+  std::string lhs_as_string;
+  {
+    PushInitType init_type(*this, lhs->getType());
+    lhs_as_string = ConvertLValue(lhs);
+  }
   auto rhs_as_string = ConvertFreshRValue(rhs);
 
   PushBrace brace(*this, !isVoid());
