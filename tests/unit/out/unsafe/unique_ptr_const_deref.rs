@@ -6,7 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[repr(C)]
 #[derive(Default)]
 pub struct Holder {
     pub val: Option<Box<i32>>,
@@ -30,12 +29,12 @@ unsafe fn main_0() -> i32 {
     let mut h: Holder = <Holder>::default();
     h.val = Some(Box::new(10));
     (unsafe {
-        let _h: *const Holder = (&mut h as *mut Holder);
+        let _h: *const Holder = (&mut h as *mut Holder).cast_const();
         let _v: i32 = 42;
         write_val_1(_h, _v)
     });
     return (unsafe {
-        let _h: *const Holder = (&mut h as *mut Holder);
+        let _h: *const Holder = (&mut h as *mut Holder).cast_const();
         read_val_0(_h)
     });
 }

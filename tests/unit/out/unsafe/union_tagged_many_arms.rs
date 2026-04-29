@@ -15,21 +15,14 @@ enum Tag {
     T_FLOAT = 3,
     T_REF = 4,
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union Slot_anon_0 {
+#[derive(Copy, Clone, Default)]
+pub struct Slot_anon_0 {
     pub text: *const u8,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub unsigned_n: u64,
     pub f: f64,
 }
-impl Default for Slot_anon_0 {
-    fn default() -> Self {
-        unsafe { std::mem::zeroed() }
-    }
-}
-#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Slot {
     pub tag: Tag,
@@ -51,7 +44,7 @@ unsafe fn main_0() -> i32 {
     assert!(((b.payload.unsigned_n) == (3735928559_u64)));
     let mut c: Slot = <Slot>::default();
     c.tag = (Tag::T_TEXT as Tag);
-    c.payload.text = b"hello\0".as_ptr();
+    c.payload.text = b"hello\0".as_ptr().cast_mut().cast_const();
     assert!((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)));
     let mut d: Slot = <Slot>::default();
     d.tag = (Tag::T_FLOAT as Tag);

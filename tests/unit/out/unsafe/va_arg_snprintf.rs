@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
         ((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();
             let _size: i32 = 1;
-            let _fmt: *const u8 = b"%d\0".as_ptr();
+            let _fmt: *const u8 = b"%d\0".as_ptr().cast_mut().cast_const();
             extract_first_0(_buf, _size, _fmt, &[42.into()])
         }) == (42))
     );
@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
         ((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();
             let _size: i32 = 1;
-            let _fmt: *const u8 = b"%d\0".as_ptr();
+            let _fmt: *const u8 = b"%d\0".as_ptr().cast_mut().cast_const();
             extract_first_0(_buf, _size, _fmt, &[65.into()])
         }) == (65))
     );

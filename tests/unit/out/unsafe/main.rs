@@ -18,7 +18,7 @@ pub fn main() {
 }
 unsafe fn main_0(mut argc: i32, mut argv: *mut *mut u8) -> i32 {
     let mut s: Vec<u8> = {
-        let s = (*argv.offset((0) as isize));
+        let s = (*argv.offset((0) as isize)).cast_const();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
     assert!(((argc) == (1)));

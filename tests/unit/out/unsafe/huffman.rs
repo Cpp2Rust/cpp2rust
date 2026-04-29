@@ -6,7 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct MinHeapNode {
     pub data: u8,
@@ -41,7 +40,6 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
     })
     .clone();
 }
-#[repr(C)]
 #[derive(Default)]
 pub struct MinHeap {
     pub size: i32,
@@ -241,7 +239,7 @@ pub unsafe fn CollectCodes_4(
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
-    if (unsafe { (*root).IsLeaf() }) {
+    if (unsafe { (*root.cast_const()).IsLeaf() }) {
         (unsafe {
             let _arr: *mut Option<Box<[i32]>> = arr;
             let _top: i32 = top;

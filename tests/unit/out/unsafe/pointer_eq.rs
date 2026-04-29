@@ -13,11 +13,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 5;
-    let mut p1: *const i32 = (&mut x as *mut i32);
-    let mut p2: *const i32 = (&mut x as *mut i32);
+    let mut p1: *const i32 = (&mut x as *mut i32).cast_const();
+    let mut p2: *const i32 = (&mut x as *mut i32).cast_const();
     assert!(((p1) == (p2)));
     let mut y: i32 = 5;
-    let mut p3: *const i32 = (&mut y as *mut i32);
+    let mut p3: *const i32 = (&mut y as *mut i32).cast_const();
     assert!(((p1) != (p3)));
     let mut arr: [i32; 3] = [1, 2, 3];
     let mut p: *mut i32 = arr.as_mut_ptr();

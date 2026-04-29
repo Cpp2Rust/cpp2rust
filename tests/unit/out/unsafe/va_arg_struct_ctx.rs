@@ -6,7 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct context {
     pub verbose: i32,
@@ -30,14 +29,14 @@ unsafe fn main_0() -> i32 {
     ctx.last_error = 0;
     (unsafe {
         let _ctx: *mut context = (&mut ctx as *mut context);
-        let _fmt: *const u8 = b"error %d\0".as_ptr();
+        let _fmt: *const u8 = b"error %d\0".as_ptr().cast_mut().cast_const();
         set_error_0(_ctx, _fmt, &[42.into()])
     });
     assert!(((ctx.last_error) == (42)));
     ctx.verbose = 0;
     (unsafe {
         let _ctx: *mut context = (&mut ctx as *mut context);
-        let _fmt: *const u8 = b"error %d\0".as_ptr();
+        let _fmt: *const u8 = b"error %d\0".as_ptr().cast_mut().cast_const();
         set_error_0(_ctx, _fmt, &[99.into()])
     });
     assert!(((ctx.last_error) == (42)));

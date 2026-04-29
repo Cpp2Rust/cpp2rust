@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
                 .to_vec()
         }
     );
-    let mut p1: *const u8 = s1.as_ptr();
+    let mut p1: *const u8 = s1.as_mut_ptr().cast_const();
     assert!((((*p1.offset((0) as isize)) as i32) == (('h' as u8) as i32)));
     assert!((((*p1.offset((1) as isize)) as i32) == (('e' as u8) as i32)));
     assert!((((*p1.offset((2) as isize)) as i32) == (('l' as u8) as i32)));
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
         .cloned()
         .chain(std::iter::once(0))
         .collect();
-    let mut p2: *const u8 = s2.as_ptr();
+    let mut p2: *const u8 = s2.as_mut_ptr().cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < ((s2.len() - 1) as u64)) {
         assert!(
@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((((s3.len() - 1) as u64) == (5_u64)));
     assert!((((s3.len() - 1) as u64) == ((s3.len() - 1) as u64)));
-    let mut p3: *const u8 = s3.as_ptr();
+    let mut p3: *const u8 = s3.as_mut_ptr().cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < ((s3.len() - 1) as u64)) {
         assert!((((*p3.offset((i) as isize)) as i32) == (s3[(i as u64) as usize] as i32)));
@@ -99,7 +99,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((((s4.len() - 1) as u64) == (3_u64)));
     assert!((((s4.len() - 1) as u64) == ((s4.len() - 1) as u64)));
-    let mut p4: *const u8 = s4.as_ptr();
+    let mut p4: *const u8 = s4.as_mut_ptr().cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < ((s4.len() - 1) as u64)) {
         assert!((((*p4.offset((i) as isize)) as i32) == (s4[(i as u64) as usize] as i32)));
@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
     };
     assert!((((s5.len() - 1) as u64) == (12_u64)));
     assert!((((s5.len() - 1) as u64) == ((s5.len() - 1) as u64)));
-    let mut p5: *const u8 = s5.as_ptr();
+    let mut p5: *const u8 = s5.as_mut_ptr().cast_const();
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < ((s5.len() - 1) as u64)) {
         assert!((((*p5.offset((i) as isize)) as i32) == (s5[(i as u64) as usize] as i32)));
@@ -133,12 +133,13 @@ unsafe fn main_0() -> i32 {
         ('o' as u8),
         ('o' as u8),
     ];
-    let mut string: Vec<u8> = std::slice::from_raw_parts(arr.as_mut_ptr(), 3_u64 as usize)
-        .to_vec()
-        .iter()
-        .copied()
-        .chain(std::iter::once(0))
-        .collect();
+    let mut string: Vec<u8> =
+        std::slice::from_raw_parts(arr.as_mut_ptr().cast_const(), 3_u64 as usize)
+            .to_vec()
+            .iter()
+            .copied()
+            .chain(std::iter::once(0))
+            .collect();
     assert!((((string.len() - 1) as u64) == (3_u64)));
     assert!(((string[(0_u64) as usize] as i32) == (('b' as u8) as i32)));
     assert!(((string[(1_u64) as usize] as i32) == (('a' as u8) as i32)));

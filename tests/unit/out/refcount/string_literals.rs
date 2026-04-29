@@ -6,7 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(str: Ptr<u8>) {
+pub fn foo_mut_0(str: Ptr<u8>) {
+    let str: Value<Ptr<u8>> = Rc::new(RefCell::new(str));
+}
+pub fn foo_const_1(str: Ptr<u8>) {
     let str: Value<Ptr<u8>> = Rc::new(RefCell::new(str));
 }
 pub fn main() {
@@ -25,13 +28,41 @@ fn main_0() -> i32 {
     ])));
     let mutable_string: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hello")));
     let immutable_string: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hello")));
+    let mutable_string_arr: Value<Box<[u8]>> =
+        Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
+    let immutable_string_arr: Value<Box<[u8]>> =
+        Rc::new(RefCell::new(Box::<[u8]>::from(b"papanasi\0".as_slice())));
     ({
         let _str: Ptr<u8> = Ptr::from_string_literal("world");
-        foo_0(_str)
+        foo_mut_0(_str)
     });
     ({
         let _str: Ptr<u8> = (*mutable_string.borrow()).clone();
-        foo_0(_str)
+        foo_mut_0(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (mutable_string_arr.as_pointer() as Ptr<u8>);
+        foo_mut_0(_str)
+    });
+    ({
+        let _str: Ptr<u8> = Ptr::from_string_literal("world");
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (*mutable_string.borrow()).clone();
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (*immutable_string.borrow()).clone();
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (mutable_string_arr.as_pointer() as Ptr<u8>);
+        foo_const_1(_str)
+    });
+    ({
+        let _str: Ptr<u8> = (immutable_string_arr.as_pointer() as Ptr<u8>);
+        foo_const_1(_str)
     });
     return 0;
 }
