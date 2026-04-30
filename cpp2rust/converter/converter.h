@@ -240,8 +240,6 @@ public:
 
   virtual bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr);
 
-  void ConvertVoidCastExpr(clang::ExplicitCastExpr *expr);
-
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
 
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);

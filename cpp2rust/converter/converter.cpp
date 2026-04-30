@@ -1865,21 +1865,12 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   return false;
 }
 
-void Converter::ConvertVoidCastExpr(clang::ExplicitCastExpr *expr) {
-  PushExprKind push(*this, ExprKind::Void);
-  StrCat("let _ = ");
-  Convert(expr->getSubExpr());
-  if (expr->getSubExpr()->isLValue()) {
-    StrCat(".clone()");
-  }
-  StrCat(token::kSemiColon);
-}
-
 bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto type = expr->getTypeAsWritten();
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
-    ConvertVoidCastExpr(expr);
+    PushExprKind push(*this, ExprKind::Void);
+    Convert(expr->getSubExpr());
     return false;
   }
   switch (expr->getStmtClass()) {
@@ -2263,14 +2254,12 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
 bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
   // Comma operator becomes (A, B, C) -> { A; B; C }
-  auto *bin = clang::dyn_cast<clang::BinaryOperator>(expr->getSubExpr());
-  // Void cast becomes ((void) A) -> { let _ = A; }
-  auto *cast = clang::dyn_cast<clang::ExplicitCastExpr>(expr->getSubExpr());
-  if ((bin && bin->isCommaOp()) ||
-      (cast && cast->getTypeAsWritten()->isVoidType())) {
-    PushBrace push(*this);
-    Convert(expr->getSubExpr());
-    return false;
+  if (auto *bin = clang::dyn_cast<clang::BinaryOperator>(expr->getSubExpr())) {
+    if (bin->isCommaOp()) {
+      PushBrace push(*this);
+      Convert(expr->getSubExpr());
+      return false;
+    }
   }
 
   // Add cast to avoid ambigous integers. Don't add cast if sub expression is a
