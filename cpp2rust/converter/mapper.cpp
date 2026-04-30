@@ -738,6 +738,9 @@ std::string ToString(clang::QualType qual_type) {
 std::string ToString(const clang::NamedDecl *decl) {
   if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
       record && !record->getIdentifier()) {
+    if (auto *typedef_decl = record->getTypedefNameForAnonDecl()) {
+      return ToString(clang::cast<clang::NamedDecl>(typedef_decl));
+    }
     return synthesizeAnonRecordName(record);
   }
 
