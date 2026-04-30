@@ -187,7 +187,7 @@ std::string ConverterRefCount::BuildFnAdapter(
     closure +=
         std::format("a{}: {},", i, ToString(target_proto->getParamType(i)));
   }
-  closure += "|";
+  closure += '|';
   if (!target_proto->getReturnType()->isVoidType()) {
     closure += std::format(" -> {} ", ToString(target_proto->getReturnType()));
   }
@@ -1436,7 +1436,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   EmitByValueShadow(
       loop_var_name, loop_var->getType(), std::string(loop_var_name),
-      "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + ">");
+      "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 

@@ -65,9 +65,9 @@ bool Converter::Convert(clang::QualType qual_type) {
     return false;
   }
 
-  if (Mapper::Contains(qual_type) &&
-      Mapper::Map(qual_type) != ignore_rule_type_) {
-    StrCat(Mapper::Map(qual_type));
+  auto mapped = Mapper::Map(qual_type);
+  if (!mapped.empty() && mapped != ignore_rule_type_) {
+    StrCat(mapped);
     return false;
   }
 
