@@ -612,7 +612,7 @@ std::string InstantiateTemplate(const clang::Expr *expr,
   return instantiateTgt(types_map, text);
 }
 
-std::string Map(clang::QualType qual_type) {
+std::optional<std::string> Map(clang::QualType qual_type) {
   if (auto it = search(qual_type); it != types_.end()) {
     auto types_map = matchTemplate(it->first, ToString(qual_type)).value();
     for (auto &kv : types_map) {
@@ -620,7 +620,7 @@ std::string Map(clang::QualType qual_type) {
     }
     return instantiateTgt(types_map, it->second.type_info.type);
   }
-  return {};
+  return std::nullopt;
 }
 
 bool MapsToPointer(clang::QualType qual_type) {
