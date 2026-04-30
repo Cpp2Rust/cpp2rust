@@ -3055,11 +3055,9 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
 void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
                                             clang::QualType type) {
   Convert(expr);
-  auto expr_mapped = Mapper::Map(expr->getType()).value_or(std::string{});
-  auto type_mapped = Mapper::Map(type).value_or(std::string{});
   if ((expr->isIntegerConstantExpr(ctx_) &&
        !clang::isa<clang::ImplicitCastExpr>(expr)) ||
-      expr_mapped != type_mapped) {
+      Mapper::Map(expr->getType()) != Mapper::Map(type)) {
     ConvertCast(type);
   }
 }
