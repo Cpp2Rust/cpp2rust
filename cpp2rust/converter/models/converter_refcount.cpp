@@ -1128,6 +1128,7 @@ bool ConverterRefCount::VisitFunctionPointerCast(
 
 bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
+    ConvertVoidCastExpr(expr);
     return false;
   }
   switch (expr->getStmtClass()) {
