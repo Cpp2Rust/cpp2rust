@@ -65,9 +65,9 @@ bool Converter::Convert(clang::QualType qual_type) {
     return false;
   }
 
-  if (auto mapped = Mapper::Map(qual_type);
-      mapped && *mapped != ignore_rule_type_) {
-    StrCat(*mapped);
+  if (Mapper::Contains(qual_type) &&
+      Mapper::Map(qual_type) != ignore_rule_type_) {
+    StrCat(Mapper::Map(qual_type));
     return false;
   }
 
@@ -76,7 +76,7 @@ bool Converter::Convert(clang::QualType qual_type) {
 }
 
 bool Converter::ConvertMappedType(clang::QualType qual_type) {
-  std::string type_as_string = Mapper::Map(qual_type).value_or(std::string{});
+  std::string type_as_string = Mapper::Map(qual_type);
   if (type_as_string == ignore_rule_type_) {
     return false;
   }
@@ -551,7 +551,7 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
-    auto mapped = Mapper::Map(f->getType()).value_or(std::string{});
+    auto mapped = Mapper::Map(f->getType());
     if (mapped.starts_with("Vec<")) {
       return false;
     }
@@ -1105,7 +1105,7 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto loop_var_name = GetNamedDeclAsString(loop_var);
 
   StrCat("'loop_:");
-  auto map_type = Mapper::Map(stmt->getRangeInit()->getType()).value_or(std::string{});
+  auto map_type = Mapper::Map(stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, loop_var_name, keyword::kIn,
          "UnsafeMapIterator::begin(&");
   Convert(stmt->getRangeInit());
@@ -1234,7 +1234,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
     fmt_width.erase(0, fmt_width.find_first_not_of(' '));
     fmt_width.erase(fmt_width.find_last_not_of(' ') + 1);
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(arg->getType()).value_or(std::string{}) != "Vec<u8>") {
+             Mapper::Map(arg->getType()) != "Vec<u8>") {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
     arg_str = ToString(arg);
@@ -1251,7 +1251,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
     raw_args += "(&[" + ToString(arg) + "]";
-  } else if (Mapper::Map(arg->getType()).value_or(std::string{}) == "Vec<u8>") {
+  } else if (Mapper::Map(arg->getType()) == "Vec<u8>") {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
     raw_args += "(&(" + str + ")[..(" + str + ").len() - 1]";
@@ -1630,7 +1630,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
 }
 
 bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
-  StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()).value_or(std::string{}) != "i32"));
+  StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
@@ -2672,7 +2672,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   }
   Mapper::AddRuleForUserDefinedType(decl);
   StrCat("#[derive(Clone, Copy, PartialEq, Debug, Default)]");
-  StrCat(std::format("enum {}", Mapper::Map(ctx_.getCanonicalTagType(decl)).value_or(std::string{})));
+  StrCat(std::format("enum {}", Mapper::Map(ctx_.getCanonicalTagType(decl))));
   StrCat("{");
   bool first_enumerator = true;
   for (auto e : decl->enumerators()) {

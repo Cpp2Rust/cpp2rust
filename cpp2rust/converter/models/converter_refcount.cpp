@@ -36,7 +36,7 @@ static bool IsBoxedType(std::string_view type) {
 }
 
 static bool IsBoxedType(clang::QualType type) {
-  return IsBoxedType(Mapper::Map(type.getUnqualifiedType()).value_or(std::string{}));
+  return IsBoxedType(Mapper::Map(type.getUnqualifiedType()));
 }
 
 static bool NeedsMutAccess(const clang::CXXMethodDecl *method,

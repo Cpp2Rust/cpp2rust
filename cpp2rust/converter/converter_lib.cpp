@@ -567,15 +567,18 @@ bool HasReceiver(clang::Expr *expr) {
 std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
-  auto mapped = Mapper::Map(type);
-  if (!mapped) {
+  if (!Mapper::Contains(type)) {
     return std::nullopt;
   }
   if (Mapper::MapsToRefcountPointer(type)) {
     return IteratorCategory::Contiguous;
   }
-  if (mapped->starts_with("RefcountMapIter<") ||
-      mapped->starts_with("UnsafeMapIterator<")) {
+  auto mapped = Mapper::Map(type);
+  if (mapped.empty()) {
+    return std::nullopt;
+  }
+  if (mapped.starts_with("RefcountMapIter<") ||
+      mapped.starts_with("UnsafeMapIterator<")) {
     return IteratorCategory::Bidirectional;
   }
   return std::nullopt;
