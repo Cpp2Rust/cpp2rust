@@ -84,6 +84,7 @@ fn main_0() -> i32 {
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     ((*p.borrow()).read());
+    (*p.borrow_mut()).clone();
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     ((*arr.borrow_mut())[(1) as usize]);
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {

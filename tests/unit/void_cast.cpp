@@ -61,6 +61,7 @@ int main() {
   int storage = 11;
   int *p = &storage;
   (void)(*p);
+  (void)(p);
 
   int arr[] = {1, 2, 3};
   (void)(arr[1]);

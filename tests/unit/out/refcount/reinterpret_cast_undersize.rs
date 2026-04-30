@@ -13,6 +13,6 @@ fn main_0() -> i32 {
     let b: Value<u8> = Rc::new(RefCell::new(66_u8));
     let p: Value<Ptr<u32>> = Rc::new(RefCell::new((b.as_pointer()).reinterpret_cast::<u32>()));
     let val: Value<u32> = Rc::new(RefCell::new(((*p.borrow()).read())));
-    let _ = (*val.borrow_mut()).clone();
+    (*val.borrow_mut());
     return 0;
 }

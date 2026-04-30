@@ -77,6 +77,7 @@ unsafe fn main_0() -> i32 {
     let mut storage: i32 = 11;
     let mut p: *mut i32 = (&mut storage as *mut i32);
     (*p);
+    (p);
     let mut arr: [i32; 3] = [1, 2, 3];
     (arr[(1) as usize]);
     let mut h: Holder = Holder { field: 17 };

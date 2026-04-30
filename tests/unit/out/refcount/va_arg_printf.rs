@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
-    let _ = (*fmt.borrow());
+    (*fmt.borrow()).clone();
     return {
         let _lhs = ((*ap.borrow_mut()).arg::<i32>()).clone();
         _lhs + ((*ap.borrow_mut()).arg::<i32>()).clone()
