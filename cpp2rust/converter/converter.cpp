@@ -2672,7 +2672,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   }
   Mapper::AddRuleForUserDefinedType(decl);
   StrCat("#[derive(Clone, Copy, PartialEq, Debug, Default)]");
-  StrCat(std::format("enum {}", Mapper::Map(ctx_.getCanonicalTagType(decl))));
+  StrCat(std::format("enum {}", GetRecordName(decl)));
   StrCat("{");
   bool first_enumerator = true;
   for (auto e : decl->enumerators()) {
