@@ -4,5 +4,5 @@
 #include <assert.h>
 
 void f1(bool condition) {
-  return __cpp2rust_assert_fail(condition);
+  return cpp2rust_assert_fail(condition);
 }

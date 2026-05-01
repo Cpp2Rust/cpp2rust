@@ -11,6 +11,7 @@ static inline std::vector<std::string> getPlatformClangFlags() {
       "-resource-dir=" CLANG_RESOURCE_DIR,
       "-I" COMPAT_INCLUDE_DIR,
       "-D_FORTIFY_SOURCE=0",
+      "-Wno-gnu-include-next",
   };
 #ifdef MACOS_SDK_PATH
   flags.push_back("-isysroot" MACOS_SDK_PATH);

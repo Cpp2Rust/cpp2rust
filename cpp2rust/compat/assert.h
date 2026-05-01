@@ -9,6 +9,6 @@
 #include <stdbool.h>
 #endif
 
-void __cpp2rust_assert_fail(bool condition) __attribute__((noreturn));
+void cpp2rust_assert_fail(bool condition) __attribute__((noreturn));
 
-#define assert(expr) __cpp2rust_assert_fail(expr)
+#define assert(expr) cpp2rust_assert_fail(expr)
