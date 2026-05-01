@@ -730,14 +730,6 @@ private:
   Callback cb_;
 };
 
-TextFragment ParseTextFragmentJSON(const llvm::json::Object &obj) {
-  return {obj.getString("text")->str()};
-}
-
-GenericFragment ParseGenericFragmentJSON(const llvm::json::Object &obj) {
-  return {(unsigned)*obj.getInteger("generic")};
-}
-
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
   if (auto ty = obj.getString("type"))
@@ -789,10 +781,10 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     auto *frag_obj = frag.getAsObject();
     if (!frag_obj)
       continue;
-    if (frag_obj->getString("text")) {
-      result.push_back(ParseTextFragmentJSON(*frag_obj));
-    } else if (frag_obj->getString("generic")) {
-      result.push_back(ParseGenericFragmentJSON(*frag_obj));
+    if (auto str = frag_obj->getString("text")) {
+      result.push_back(TextFragment{str->str()});
+    } else if (auto n = frag_obj->getInteger("generic")) {
+      result.push_back(GenericFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
