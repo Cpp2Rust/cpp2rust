@@ -949,6 +949,7 @@ void MethodCallFragment::dump() const {
 }
 
 void ExprRule::dump() const {
+  llvm::errs() << "Matching: " << src << '\n';
   unsigned i = 0;
   for (auto &info : params) {
     llvm::errs() << "  param a" << i++ << ": ";
@@ -962,7 +963,7 @@ void ExprRule::dump() const {
   }
   i = 0;
   for (auto &bounds : generics) {
-    llvm::errs() << "  generic " << ++i << ':';
+    llvm::errs() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
       llvm::errs() << ' ' << b;
     }

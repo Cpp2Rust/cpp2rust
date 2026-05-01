@@ -40,7 +40,35 @@ clang::PrintingPolicy getPrintPolicy() {
   return policy;
 }
 
-std::string GetMapKey(const std::string &str) {
+std::string GetExprMapKey(const std::string &str) {
+  // Extract the function name from something like
+  // const T1 & std::foo<T1, T2>::fn_name(args)
+  auto n = str.find_first_of('(');
+  if (n == std::string::npos) { // e.g. std::cerr
+    return str;
+  }
+
+  // Walk backwards from '(' tracking <> depth:
+  // - skip characters inside template arguments (depth > 0)
+  // - stop at the first space outside all angle brackets
+  std::string result;
+  int depth = 0;
+  for (int i = (int)n - 1; i >= 0; --i) {
+    char c = str[i];
+    if (c == '>')
+      ++depth;
+    else if (c == '<')
+      --depth;
+    else if (c == ' ' && depth == 0)
+      break;
+    else if (depth == 0)
+      result += c;
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+std::string GetTypeMapKey(const std::string &str) {
   auto n = str.find_first_of("<[");
   if (n == std::string::npos || str[n] == '<') {
     return str.substr(0, n);
@@ -50,7 +78,7 @@ std::string GetMapKey(const std::string &str) {
 }
 
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
-  auto key = GetMapKey(src);
+  auto key = GetTypeMapKey(src);
   rule.src = std::move(src);
   types_.emplace(std::move(key), std::move(rule));
 }
@@ -68,8 +96,7 @@ std::optional<std::vector<std::string>>
 matchTemplate(const std::string &template_str,
               const std::string &instantiated) {
   auto matchLiteralAt = [&](const std::string &input_str, size_t pos,
-                            const std::string &literal,
-                            size_t &end_pos) -> bool {
+                            std::string_view literal, size_t &end_pos) -> bool {
     size_t i = pos;
     size_t j = 0;
 
@@ -101,7 +128,7 @@ matchTemplate(const std::string &template_str,
   };
 
   auto findNextLiteralSameDepth = [&](const std::string &s, size_t start,
-                                      const std::string &lit) -> size_t {
+                                      std::string_view lit) -> size_t {
     int ang = 0;
     int par = 0;
     int sq = 0;
@@ -209,7 +236,7 @@ matchTemplate(const std::string &template_str,
       size_t type_idx = std::stoi(&template_str[ti + 1]) - 1;
       ti = tj;
 
-      std::string nextLit;
+      std::string_view nextLit;
       size_t scan = ti;
       while (scan < template_str.size()) {
         if (template_str[scan] == 'T' && scan + 1 < template_str.size() &&
@@ -218,7 +245,7 @@ matchTemplate(const std::string &template_str,
         }
         scan++;
       }
-      nextLit = template_str.substr(ti, scan - ti);
+      nextLit = std::string_view(template_str).substr(ti, scan - ti);
 
       captured.resize(std::max(captured.size(), type_idx + 1));
       auto &repl = captured[type_idx];
@@ -281,7 +308,7 @@ matchTemplate(const std::string &template_str,
         ++tj;
       }
 
-      std::string lit = template_str.substr(ti, tj - ti);
+      auto lit = std::string_view(template_str).substr(ti, tj - ti);
       size_t end_pos = 0;
       if (!matchLiteralAt(instantiated, si, lit, end_pos)) {
         return std::nullopt;
@@ -332,15 +359,15 @@ std::string instantiateTgt(const std::vector<std::string> &types,
 
 template <typename T>
 std::pair<T *, std::vector<std::string>>
-search(std::unordered_multimap<std::string, T> &map,
-       const std::string &cpp_type) {
-  auto [it, end] = map.equal_range(GetMapKey(cpp_type));
+search(std::unordered_multimap<std::string, T> &map, const std::string &txt,
+       const std::string &key) {
+  auto [it, end] = map.equal_range(key);
   T *rule = nullptr;
   std::vector<std::string> subs;
 
   for (; it != end; ++it) {
     auto &this_rule = it->second;
-    auto this_subs = matchTemplate(this_rule.src, cpp_type);
+    auto this_subs = matchTemplate(this_rule.src, txt);
     if (!this_subs) {
       continue;
     }
@@ -355,7 +382,8 @@ search(std::unordered_multimap<std::string, T> &map,
 
 TranslationRule::ExprRule *search(const clang::Expr *expr) {
   auto qualified_name = ToString(expr);
-  auto [rule, subs] = search(exprs_, qualified_name);
+  auto [rule, subs] =
+      search(exprs_, qualified_name, GetExprMapKey(qualified_name));
   llvm::errs() << "search expr " << qualified_name << ", result:\n";
   if (rule) {
     rule->dump();
@@ -367,7 +395,7 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
 
 TranslationRule::TypeRule *search(clang::QualType qual_type) {
   auto type = ToString(qual_type);
-  auto [rule, subs] = search(types_, type);
+  auto [rule, subs] = search(types_, type, GetTypeMapKey(type));
   llvm::errs() << "search type " << type
                << ", result: " << (rule ? rule->type_info.type : "None")
                << '\n';
@@ -384,10 +412,10 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
         continue;
       }
       for (auto &[_, rule] : expr_rules) {
-        exprs_.emplace(GetMapKey(rule.src), std::move(rule));
+        exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
       }
       for (auto &[_, rule] : type_rules) {
-        types_.emplace(GetMapKey(rule.src), std::move(rule));
+        types_.emplace(GetTypeMapKey(rule.src), std::move(rule));
       }
     }
   }
@@ -505,7 +533,7 @@ clang::QualType normalizeQualType(clang::QualType qual_type) {
 }
 
 std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto [rule, subs] = search(types_, cpp_type);
+  auto [rule, subs] = search(types_, cpp_type, GetTypeMapKey(cpp_type));
   if (!rule) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in types_");
@@ -572,8 +600,9 @@ std::string MapFunctionName(const clang::FunctionDecl *decl) {
 }
 
 std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
-  auto text = 'T' + std::to_string(n);
-  auto [rule, subs] = search(exprs_, ToString(expr));
+  auto expr_str = ToString(expr);
+  auto [rule, subs] = search(exprs_, expr_str, GetExprMapKey(expr_str));
+  auto text = std::format("T{}", n);
   if (!rule) {
     return text;
   }
@@ -584,7 +613,8 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
 }
 
 std::string Map(clang::QualType qual_type) {
-  auto [rule, subs] = search(types_, ToString(qual_type));
+  auto type_str = ToString(qual_type);
+  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
   if (rule) {
     for (auto &ty : subs) {
       ty = mapTypeStringRecursive(ty);
@@ -617,12 +647,12 @@ const TranslationRule::TypeInfo &GetParamInfo(const clang::Expr *expr,
 }
 
 std::string GetParamType(const clang::Expr *expr, unsigned index) {
-  auto &info = GetParamInfo(expr, index);
-  auto [rule, subs] = search(exprs_, ToString(expr));
+  auto expr_str = ToString(expr);
+  auto [rule, subs] = search(exprs_, expr_str, GetExprMapKey(expr_str));
   for (auto &ty : subs) {
     ty = mapTypeStringRecursive(ty);
   }
-  return instantiateTgt(subs, info.type);
+  return instantiateTgt(subs, rule->params.at(index).type);
 }
 
 bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
@@ -853,14 +883,14 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   addRulesFromDirectory(rules_dir, model);
   addBuiltinTypes(model);
 
-#if 0
-  for (auto &[src, expr] : exprs_) {
-    llvm::errs() << "Expr: " << src << '\n';
-    expr.dump();
+#if 1
+  for (auto &[src, rule] : exprs_) {
+    llvm::errs() << "Expr key: " << src << '\n';
+    rule.dump();
   }
-  for (auto &[src, type_tgt] : types_) {
+  for (auto &[src, rule] : types_) {
     llvm::errs() << "Type key: " << src << '\n';
-    type_tgt.dump();
+    rule.dump();
   }
 #endif
 }
