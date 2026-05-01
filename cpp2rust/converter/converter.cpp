@@ -1731,6 +1731,16 @@ bool Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
   return false;
 }
 
+void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
+                                             clang::Expr *from) {
+  StrCat(GetUnsafeTypeAsString(to->getType()), "::from");
+  PushParen paren(*this);
+  Convert(from);
+  if (!from->getType()->isSpecificBuiltinType(clang::BuiltinType::Int)) {
+    StrCat(keyword::kAs, "i32");
+  }
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1847,10 +1857,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
-      StrCat(std::format("{}::from", GetUnsafeTypeAsString(type)));
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(keyword::kAs, "i32");
+      ConvertIntegerToEnumeralCast(expr, sub_expr);
       break;
     }
     {
@@ -1898,10 +1905,7 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       return false;
     }
     if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
-      StrCat(std::format("{}::from", GetUnsafeTypeAsString(type)));
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(keyword::kAs, "i32");
+      ConvertIntegerToEnumeralCast(expr, sub_expr);
       return false;
     }
     {
