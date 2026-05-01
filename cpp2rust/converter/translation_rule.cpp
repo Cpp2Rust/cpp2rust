@@ -97,13 +97,15 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      out_.at(var->getQualifiedNameAsString()).src = Mapper::ToString(type);
+      auto &rule = out_.at(var->getQualifiedNameAsString());
+      rule.src = Mapper::ToString(type);
+      get<TypeRule>(rule.tgt).src = rule.src;
       return;
     }
 
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
       auto sym = func->getQualifiedNameAsString();
-      auto add = [&](std::string src) { out_.at(sym).src = std::move(src); };
+      auto add = [&](std::string &&src) { out_.at(sym).src = std::move(src); };
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
         if (fcall->getDirectCallee()) {
@@ -837,10 +839,8 @@ ExprTgt ParseExprTgtJSON(const llvm::json::Object &obj) {
   return ir;
 }
 
-TypeRule ParseTypeRuleJSON(const std::string &src,
-                           const llvm::json::Object &obj) {
+TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   TypeRule rule;
-  rule.src = src;
   if (auto init = obj.getString("init"))
     rule.initializer = init->str();
   rule.type_info = ParseTypeInfoJSON(obj);
@@ -883,7 +883,7 @@ void LoadTgtFromIR(RuleMap &rules, const std::filesystem::path &json_path) {
       rule.tgt = ParseExprTgtJSON(*obj);
       std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ':' + name);
     } else if (name[0] == 't') {
-      rule.tgt = ParseTypeRuleJSON(name, *obj);
+      rule.tgt = ParseTypeRuleJSON(*obj);
     } else {
       continue;
     }
@@ -1024,15 +1024,15 @@ void ExprTgt::validate(const std::string &context) const {
 }
 
 RuleMap Load(const std::filesystem::path &path, Model model) {
-  auto dir = path.parent_path();
-  auto unsafe_ir_path = dir / "ir_unsafe.json";
-  auto refcount_ir_path = dir / "ir_refcount.json";
-
   RuleMap rules;
-  LoadTgtFromIR(rules, unsafe_ir_path);
+  auto dir = path.parent_path();
+  LoadTgtFromIR(rules, dir / "ir_unsafe.json");
 
-  if (model == Model::kRefCount && std::filesystem::exists(refcount_ir_path)) {
-    LoadTgtFromIR(rules, refcount_ir_path);
+  if (model == Model::kRefCount) {
+    auto refcount_ir_path = dir / "ir_refcount.json";
+    if (std::filesystem::exists(refcount_ir_path)) {
+      LoadTgtFromIR(rules, refcount_ir_path);
+    }
   }
 
   LoadSrc(rules, path);

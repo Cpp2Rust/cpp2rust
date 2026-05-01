@@ -436,7 +436,7 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
           }
         } else if (auto *type =
                        std::get_if<TranslationRule::TypeRule>(&rule.tgt)) {
-          types_.emplace(GetMapKey(type->src), std::move(*type));
+          types_.emplace(GetMapKey(rule.src), std::move(*type));
         }
       }
     }
@@ -648,17 +648,13 @@ std::string Map(clang::QualType qual_type) {
 }
 
 bool MapsToPointer(clang::QualType qual_type) {
-  if (auto rule = search(qual_type)) {
-    return rule->type_info.is_pointer();
-  }
-  return false;
+  auto rule = search(qual_type);
+  return rule && rule->type_info.is_pointer();
 }
 
 bool MapsToRefcountPointer(clang::QualType qual_type) {
-  if (auto rule = search(qual_type)) {
-    return rule->type_info.is_refcount_pointer;
-  }
-  return false;
+  auto rule = search(qual_type);
+  return rule && rule->type_info.is_refcount_pointer;
 }
 
 bool ReturnsPointer(const clang::Expr *expr) {
