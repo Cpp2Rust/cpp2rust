@@ -28,6 +28,7 @@
 
 #include "compat/platform_flags.h"
 #include "converter/mapper.h"
+#include "logging.h"
 
 namespace cpp2rust::TranslationRule {
 
@@ -862,7 +863,7 @@ void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
   auto parsed = llvm::json::parse((*buf)->getBuffer());
   if (!parsed) {
     verrs() << "Failed to parse IR JSON: " << json_path << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
+            << llvm::toString(parsed.takeError()) << '\n';
     assert(0);
     return;
   }
@@ -900,9 +901,7 @@ void BodyFragmentDump(const BodyFragment &frag) {
 
 } // namespace
 
-void TextFragment::dump() const {
-  verrs() << "  text: \"" << text << "\"\n";
-}
+void TextFragment::dump() const { verrs() << "  text: \"" << text << "\"\n"; }
 
 void PlaceholderFragment::dump() const {
   verrs() << "  placeholder: " << n;
@@ -930,7 +929,7 @@ const PlaceholderFragment *MethodCallFragment::getReceiverPlaceholder() const {
 
 void MethodCallFragment::dump() const {
   verrs() << "  method_call:\n"
-                  "    receiver:\n";
+             "    receiver:\n";
   for (const auto &frag : receiver) {
     BodyFragmentDump(frag);
   }
@@ -966,9 +965,7 @@ void ExprRule::dump() const {
   }
 }
 
-void GenericFragment::dump() const {
-  verrs() << "  generic: " << n << '\n';
-}
+void GenericFragment::dump() const { verrs() << "  generic: " << n << '\n'; }
 
 void TypeInfo::dump() const {
   verrs() << type;

@@ -824,7 +824,7 @@ static std::vector<const char *> printf2fmt(std::string &format) {
         }
       }
     }
-    cpp2rust::verrs() << "Unknown printf format: " << format << "\n";
+    verrs() << "Unknown printf format: " << format << "\n";
     assert(0);
   }
   return types;
@@ -838,9 +838,9 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
           expr->getArg(is_fprintf)->IgnoreImplicit())) {
     format = GetEscapedStringLiteral(str);
   } else {
-    cpp2rust::verrs() << "Uknown fprintf format: ";
-    expr->getArg(1)->dump(cpp2rust::verrs(), ctx_);
-    cpp2rust::verrs() << "\n";
+    verrs() << "Uknown fprintf format: ";
+    expr->getArg(1)->dump(verrs(), ctx_);
+    verrs() << "\n";
     exit(1);
   }
   bool ends_newline = format.ends_with("\\n\"");
@@ -851,7 +851,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   } else if (fd == "stderr" || fd == "__stderrp") {
     StrCat(ends_newline ? "eprintln!(" : "eprint!(");
   } else {
-    cpp2rust::verrs() << "Uknown fprintf fd: " << fd << "\n";
+    verrs() << "Uknown fprintf fd: " << fd << "\n";
     exit(1);
   }
   if (ends_newline) {

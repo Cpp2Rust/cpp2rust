@@ -397,8 +397,7 @@ TranslationRule::TypeRule *search(clang::QualType qual_type) {
   auto type = ToString(qual_type);
   auto [rule, subs] = search(types_, type, GetTypeMapKey(type));
   verrs() << "search type " << type
-               << ", result: " << (rule ? rule->type_info.type : "None")
-               << '\n';
+          << ", result: " << (rule ? rule->type_info.type : "None") << '\n';
   return rule;
 }
 
