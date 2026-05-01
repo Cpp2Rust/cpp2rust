@@ -1149,7 +1149,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   case clang::Stmt::CXXStaticCastExprClass:
     if (!VisitFunctionPointerCast(expr)) {
       return false;
-    } else if (expr->getSubExpr()->getType()->isVoidPointerType()) {
+    } else if (expr->getSubExpr()->getType()->isVoidPointerType() &&
+               expr->getType()->isPointerType()) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
