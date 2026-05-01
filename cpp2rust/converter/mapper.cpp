@@ -547,7 +547,7 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 std::string normalizeTranslationRule(std::string rule) {
   // Detach pointer from double reference. Useful for matching translation
   // rules.
-  rule = ReplaceAll(rule, "(*&&)", "* &&");
+  rule = ReplaceAll(rule, "*&&", "* &&");
 
   const std::array<std::pair<std::regex, std::string>, 1> normalization_rules{{
       // Ignore constant template parameters, i.e. replace them with _.
