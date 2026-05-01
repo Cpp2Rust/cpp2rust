@@ -42,7 +42,12 @@ clang::PrintingPolicy getPrintPolicy() {
 }
 
 std::string GetMapKey(const std::string &str) {
-  return str.substr(0, str.find_first_of("<["));
+  auto n = str.find_first_of("<[");
+  if (n == std::string::npos || str[n] == '<') {
+    return str.substr(0, n);
+  }
+  // something like int[][] or T1[] -> []
+  return str.substr(n+1);
 }
 
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
