@@ -2184,8 +2184,12 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 
   auto *decl = expr->getDecl();
   if (ShouldReplaceWithMappedBody(expr)) {
-    return GetMappedAsString(expr);
-  } else if (auto *function = decl->getAsFunction()) {
+    if (auto str = GetMappedAsString(expr); !str.empty()) {
+      return str;
+    }
+  }
+
+  if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
       if (method->isStatic()) {
         return std::format("{}::{}", GetRecordName(method->getParent()),
@@ -2193,13 +2197,16 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
       }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());
-  } else if (auto enum_constant =
-                 clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
+  }
+
+  if (auto enum_constant = clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
     return std::format("{}::{}",
                        GetRecordName(clang::dyn_cast<clang::EnumDecl>(
                            enum_constant->getDeclContext())),
                        std::string_view(enum_constant->getName()));
-  } else if (IsGlobalVar(expr)) {
+  }
+
+  if (IsGlobalVar(expr)) {
     return ReplaceAll(Mapper::ToString(expr->getDecl()), "::", "_");
   }
 
@@ -3657,7 +3664,7 @@ bool Converter::ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const {
   if (clang::isa<clang::FunctionDecl>(expr->getDecl()) && isAddrOf()) {
     return false;
   }
-  return Mapper::Contains(expr);
+  return true;
 }
 
 void Converter::SetFresh() {

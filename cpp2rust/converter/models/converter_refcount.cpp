@@ -631,15 +631,17 @@ bool ConverterRefCount::VisitConditionalOperator(
 bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
-    if (Mapper::Contains(addrof_op)) {
-      StrCat(GetMappedAsString(addrof_op));
+    if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
+      StrCat(str);
       return false;
     }
   }
 
   if (ShouldReplaceWithMappedBody(expr)) {
-    StrCat(GetMappedAsString(expr));
-    return false;
+    if (auto str = GetMappedAsString(expr); !str.empty()) {
+      StrCat(str);
+      return false;
+    }
   }
 
   auto str = ConvertDeclRefExpr(expr);
@@ -723,7 +725,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 static std::vector<const char *> printf2fmt(std::string &format) {
   std::vector<const char *> types;
   size_t pos = 0;
-  while ((pos = format.find("%", pos)) != std::string::npos) {
+  while ((pos = format.find('%', pos)) != std::string::npos) {
     if (pos + 1 >= format.size())
       break;
 
@@ -1529,8 +1531,8 @@ std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
 bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
 
-  if (Mapper::Contains(expr)) {
-    auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
+  if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
+      !str.empty()) {
     if (isAddrOf()) {
       StrCat(std::format("Rc::new(RefCell::new({})).as_pointer()",
                          std::move(str)));
