@@ -75,7 +75,7 @@ struct LookupInfo {
   }
 };
 
-using RuleMap = std::unordered_map<std::string, Rule>;
+using RuleMap = cpp2rust::TranslationRule::RuleMap;
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
@@ -97,20 +97,13 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-
-      Rule rule;
-      rule.src = Mapper::ToString(type);
-      out_[var->getQualifiedNameAsString()] = std::move(rule);
+      out_.at(var->getQualifiedNameAsString()).src = Mapper::ToString(type);
       return;
     }
 
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
       auto sym = func->getQualifiedNameAsString();
-      auto add = [&](std::string src) {
-        Rule rule;
-        rule.src = std::move(src);
-        out_[sym] = std::move(rule);
-      };
+      auto add = [&](std::string src) { out_.at(sym).src = std::move(src); };
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
         if (fcall->getDirectCallee()) {
@@ -844,48 +837,40 @@ ExprTgt ParseExprTgtJSON(const llvm::json::Object &obj) {
   return ir;
 }
 
-TypeTgt ParseTypeTgtJSON(const llvm::json::Object &obj) {
-  TypeTgt tgt;
+TypeRule ParseTypeRuleJSON(const std::string &src,
+                           const llvm::json::Object &obj) {
+  TypeRule rule;
+  rule.src = src;
   if (auto init = obj.getString("init"))
-    tgt.initializer = init->str();
-  tgt.type_info = ParseTypeInfoJSON(obj);
-  return tgt;
+    rule.initializer = init->str();
+  rule.type_info = ParseTypeInfoJSON(obj);
+  return rule;
 }
 
-RuleMap LoadSrc(const std::filesystem::path &src_path) {
+void LoadSrc(RuleMap &rules, const std::filesystem::path &src_path) {
   clang::tooling::FixedCompilationDatabase compilations(
       ".", getPlatformClangFlags());
-  RuleMap out;
-  ActionFactory factory(out);
+  ActionFactory factory(rules);
   clang::tooling::ClangTool tool(compilations, {src_path.string()});
   tool.run(&factory);
-
-  if (out.empty()) {
-    llvm::errs() << "Warning: no symbols found in return statements for file: "
-                 << src_path << '\n';
-    return out;
-  }
-  return out;
 }
 
-RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
-  RuleMap out;
-
+void LoadTgtFromIR(RuleMap &rules, const std::filesystem::path &json_path) {
   auto buf = llvm::MemoryBuffer::getFile(json_path.string());
   if (!buf)
-    return out;
+    return;
 
   auto parsed = llvm::json::parse((*buf)->getBuffer());
   if (!parsed) {
     llvm::errs() << "Failed to parse IR JSON: " << json_path << ": "
                  << llvm::toString(parsed.takeError()) << '\n';
     assert(0);
-    return out;
+    return;
   }
 
   auto *root = parsed->getAsObject();
   if (!root)
-    return out;
+    return;
 
   for (auto &[entry_name, entry_val] : *root) {
     auto *obj = entry_val.getAsObject();
@@ -896,16 +881,14 @@ RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
     Rule rule;
     if (name[0] == 'f') {
       rule.tgt = ParseExprTgtJSON(*obj);
-      std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ":" + name);
+      std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ':' + name);
     } else if (name[0] == 't') {
-      rule.tgt = ParseTypeTgtJSON(*obj);
+      rule.tgt = ParseTypeRuleJSON(name, *obj);
     } else {
       continue;
     }
-    out[name] = std::move(rule);
+    rules[std::move(name)] = std::move(rule);
   }
-
-  return out;
 }
 
 template <typename Map>
@@ -1025,8 +1008,8 @@ void TypeInfo::dump() const {
     llvm::errs() << " [unsafe_ptr]";
 }
 
-void TypeTgt::dump() const {
-  llvm::errs() << "  type: ";
+void TypeRule::dump() const {
+  llvm::errs() << "name: " << src << "\n  Rust type: ";
   type_info.dump();
   llvm::errs() << '\n';
   if (!initializer.empty()) {
@@ -1040,43 +1023,33 @@ void ExprTgt::validate(const std::string &context) const {
   assert(!body.empty() && "ExprTgt body must not be empty");
 }
 
-std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
+RuleMap Load(const std::filesystem::path &path, Model model) {
   auto dir = path.parent_path();
   auto unsafe_ir_path = dir / "ir_unsafe.json";
   auto refcount_ir_path = dir / "ir_refcount.json";
 
-  auto rules = LoadTgtFromIR(unsafe_ir_path);
+  RuleMap rules;
+  LoadTgtFromIR(rules, unsafe_ir_path);
 
   if (model == Model::kRefCount && std::filesystem::exists(refcount_ir_path)) {
-    auto refcount = LoadTgtFromIR(refcount_ir_path);
-    for (auto &[name, rule] : refcount) {
-      rules[name] = std::move(rule);
-    }
+    LoadTgtFromIR(rules, refcount_ir_path);
   }
 
-  auto src_rules = LoadSrc(path);
-  if (src_rules.empty()) {
-    return {};
-  }
-  for (auto &[name, src_rule] : src_rules) {
-    rules.at(name).src = std::move(src_rule.src);
-  }
+  LoadSrc(rules, path);
 
-  std::vector<Rule> result;
   for (auto &[name, rule] : rules) {
     if (rule.src.empty()) {
       llvm::errs() << name << '\n';
-      if (const auto *tgt = std::get_if<TypeTgt>(&rule.tgt)) {
+      if (const auto *tgt = std::get_if<TypeRule>(&rule.tgt)) {
         tgt->dump();
       }
       if (const auto *tgt = std::get_if<ExprTgt>(&rule.tgt)) {
         tgt->dump();
       }
+      assert(0 && "Rule loaded from IR but has no src");
     }
-    assert(!rule.src.empty() && "Rule loaded from IR but has no src");
-    result.push_back(std::move(rule));
   }
-  return result;
+  return rules;
 }
 
 } // namespace cpp2rust::TranslationRule

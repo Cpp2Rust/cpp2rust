@@ -72,27 +72,29 @@ struct ExprTgt {
   void validate(const std::string &context) const;
 };
 
-struct TypeTgt {
+struct TypeRule {
+  std::string src;
   std::string initializer; // Rust initializer expression
   TypeInfo type_info;
 
   void dump() const;
 
-  static TypeTgt Plain(std::string type) {
-    return {{}, {std::move(type), false, false}};
+  static TypeRule Plain(std::string type) {
+    return {{}, {}, {std::move(type), false, false}};
   }
-  static TypeTgt RefcountPtr(std::string type) {
-    return {{}, {std::move(type), true, false}};
+  static TypeRule RefcountPtr(std::string type) {
+    return {{}, {}, {std::move(type), true, false}};
   }
-  static TypeTgt UnsafePtr(std::string type) {
-    return {{}, {std::move(type), false, true}};
+  static TypeRule UnsafePtr(std::string type) {
+    return {{}, {}, {std::move(type), false, true}};
   }
 };
 
 struct Rule {
   std::string src;
-  std::variant<ExprTgt, TypeTgt> tgt;
+  std::variant<ExprTgt, TypeRule> tgt;
 };
 
-std::vector<Rule> Load(const std::filesystem::path &path, Model model);
+using RuleMap = std::unordered_map<std::string, Rule>;
+RuleMap Load(const std::filesystem::path &path, Model model);
 } // namespace cpp2rust::TranslationRule

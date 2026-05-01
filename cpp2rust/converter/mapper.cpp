@@ -27,8 +27,8 @@ bool translation_rules_loaded_ = false;
 
 std::unordered_map<std::string, TranslationRule::ExprTgt>
     exprs_; // src -> ExprTgt
-std::unordered_map<std::string, TranslationRule::TypeTgt>
-    types_; // src -> TypeTgt
+std::unordered_multimap<std::string, TranslationRule::TypeRule>
+    types_; // src -> TypeRule
 
 clang::PrintingPolicy getPrintPolicy() {
   assert(ctx_);
@@ -39,6 +39,16 @@ clang::PrintingPolicy getPrintPolicy() {
   policy.FullyQualifiedName = true;
   policy.SuppressUnwrittenScope = true;
   return policy;
+}
+
+std::string GetMapKey(const std::string &str) {
+  return str.substr(0, str.find_first_of("<["));
+}
+
+void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
+  auto key = GetMapKey(src);
+  rule.src = std::move(src);
+  types_.emplace(std::move(key), std::move(rule));
 }
 
 // Attempts to unify an instantiated C++ type or function signature with a
@@ -309,6 +319,28 @@ instantiateTgt(const std::unordered_map<std::string, std::string> &types,
   return instantiated_template;
 }
 
+std::pair<TranslationRule::TypeRule *,
+          std::unordered_map<std::string, std::string>>
+search_type(const std::string &cpp_type) {
+  auto [it, end] = types_.equal_range(GetMapKey(cpp_type));
+  TranslationRule::TypeRule *rule = nullptr;
+  std::unordered_map<std::string, std::string> subs;
+
+  for (; it != end; ++it) {
+    auto &this_rule = it->second;
+    auto this_subs = matchTemplate(this_rule.src, cpp_type);
+    if (!this_subs) {
+      continue;
+    }
+    // tie breaker: prefer more specific rules (usually the longer ones)
+    if (!rule || this_rule.src.size() > rule->src.size()) {
+      rule = &this_rule;
+      subs = *std::move(this_subs);
+    }
+  }
+  return {rule, std::move(subs)};
+}
+
 template <class Map, class MatchPred>
 Map::const_iterator parallel_search(const Map &container,
                                     MatchPred &&match_func) {
@@ -377,15 +409,13 @@ decltype(exprs_)::const_iterator search(const clang::Expr *expr) {
   return result;
 }
 
-decltype(types_)::const_iterator search(clang::QualType qual_type) {
+TranslationRule::TypeRule *search(clang::QualType qual_type) {
   auto type = ToString(qual_type);
-  auto result = parallel_search(
-      types_, [&](const std::string &tpl) { return matchTemplate(tpl, type); });
-  llvm::errs() << "search type " << type << ", result: "
-               << ((result == types_.end()) ? "None"
-                                            : result->second.type_info.type)
+  auto [rule, subs] = search_type(type);
+  llvm::errs() << "search type " << type
+               << ", result: " << (rule ? rule->type_info.type : "None")
                << '\n';
-  return result;
+  return rule;
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
@@ -397,7 +427,7 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
         llvm::errs() << "No rules found in " << path << '\n';
         continue;
       }
-      for (auto &rule : rules) {
+      for (auto &[_, rule] : rules) {
         if (auto *expr = std::get_if<TranslationRule::ExprTgt>(&rule.tgt)) {
           if (!exprs_.try_emplace(std::move(rule.src), std::move(*expr))
                    .second) {
@@ -405,12 +435,8 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
             assert(0);
           }
         } else if (auto *type =
-                       std::get_if<TranslationRule::TypeTgt>(&rule.tgt)) {
-          if (!types_.try_emplace(std::move(rule.src), std::move(*type))
-                   .second) {
-            llvm::errs() << "Key: " << rule.src << " already exists in types\n";
-            assert(0);
-          }
+                       std::get_if<TranslationRule::TypeRule>(&rule.tgt)) {
+          types_.emplace(GetMapKey(type->src), std::move(*type));
         }
       }
     }
@@ -422,20 +448,21 @@ void addBuiltinTypes(Model model) {
 
   auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
     auto cxx = ToString(qt);
-    types_[cxx] = TranslationRule::TypeTgt::Plain(rust);
-    types_["const " + cxx] = TranslationRule::TypeTgt::Plain(rust);
+    AddTypeRule(cxx, TranslationRule::TypeRule::Plain(rust));
+    AddTypeRule("const " + cxx, TranslationRule::TypeRule::Plain(rust));
 
     switch (model) {
     case Model::kUnsafe:
-      types_[cxx + " *"] = TranslationRule::TypeTgt::UnsafePtr("*mut " + rust);
-      types_["const " + cxx + " *"] =
-          TranslationRule::TypeTgt::UnsafePtr("*const " + rust);
+      AddTypeRule(cxx + " *",
+                  TranslationRule::TypeRule::UnsafePtr("*mut " + rust));
+      AddTypeRule("const " + cxx + " *",
+                  TranslationRule::TypeRule::UnsafePtr("*const " + rust));
       break;
     case Model::kRefCount:
-      types_[cxx + " *"] =
-          TranslationRule::TypeTgt::RefcountPtr("Ptr::<" + rust + ">");
-      types_["const " + cxx + " *"] =
-          TranslationRule::TypeTgt::RefcountPtr("Ptr::<" + rust + ">");
+      AddTypeRule(cxx + " *", TranslationRule::TypeRule::RefcountPtr(
+                                  "Ptr::<" + rust + ">"));
+      AddTypeRule("const " + cxx + " *", TranslationRule::TypeRule::RefcountPtr(
+                                             "Ptr::<" + rust + ">"));
       break;
     }
   };
@@ -453,16 +480,16 @@ void addBuiltinTypes(Model model) {
 
   switch (model) {
   case Model::kUnsafe:
-    types_[ToString(ctx_->VoidTy) + " *"] =
-        TranslationRule::TypeTgt::UnsafePtr("*mut ::libc::c_void");
-    types_["const " + ToString(ctx_->VoidTy) + " *"] =
-        TranslationRule::TypeTgt::UnsafePtr("*const ::libc::c_void");
+    AddTypeRule(ToString(ctx_->VoidTy) + " *",
+                TranslationRule::TypeRule::UnsafePtr("*mut ::libc::c_void"));
+    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
+                TranslationRule::TypeRule::UnsafePtr("*const ::libc::c_void"));
     break;
   case Model::kRefCount:
-    types_[ToString(ctx_->VoidTy) + " *"] =
-        TranslationRule::TypeTgt::RefcountPtr("AnyPtr");
-    types_["const " + ToString(ctx_->VoidTy) + " *"] =
-        TranslationRule::TypeTgt::RefcountPtr("AnyPtr");
+    AddTypeRule(ToString(ctx_->VoidTy) + " *",
+                TranslationRule::TypeRule::RefcountPtr("AnyPtr"));
+    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
+                TranslationRule::TypeRule::RefcountPtr("AnyPtr"));
     break;
   }
 
@@ -528,18 +555,15 @@ clang::QualType normalizeQualType(clang::QualType qual_type) {
 }
 
 std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto rule = parallel_search(types_, [&](const std::string &tpl) {
-    return matchTemplate(tpl, cpp_type);
-  });
-  if (rule == types_.end()) {
+  auto [rule, subs] = search_type(cpp_type);
+  if (!rule) {
     llvm::errs() << "cpp_type: " << cpp_type << '\n';
     assert(0 && "Type is not present in types_");
   }
-  auto subs = matchTemplate(rule->first, cpp_type).value();
   for (auto &kv : subs) {
     kv.second = mapTypeStringRecursive(kv.second);
   }
-  return instantiateTgt(subs, rule->second.type_info.type);
+  return instantiateTgt(subs, rule->type_info.type);
 }
 
 std::string normalizeTranslationRule(std::string rule) {
@@ -578,7 +602,7 @@ PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
 PushASTContext::~PushASTContext() { ctx_ = prev_; }
 
 bool Contains(clang::QualType qual_type) {
-  return search(qual_type) != types_.end();
+  return search(qual_type) != nullptr;
 }
 
 bool Contains(const clang::Expr *expr) { return search(expr) != exprs_.end(); }
@@ -613,26 +637,26 @@ std::string InstantiateTemplate(const clang::Expr *expr,
 }
 
 std::string Map(clang::QualType qual_type) {
-  if (auto it = search(qual_type); it != types_.end()) {
-    auto types_map = matchTemplate(it->first, ToString(qual_type)).value();
-    for (auto &kv : types_map) {
+  auto [rule, subs] = search_type(ToString(qual_type));
+  if (rule) {
+    for (auto &kv : subs) {
       kv.second = mapTypeStringRecursive(kv.second);
     }
-    return instantiateTgt(types_map, it->second.type_info.type);
+    return instantiateTgt(subs, rule->type_info.type);
   }
   return {};
 }
 
 bool MapsToPointer(clang::QualType qual_type) {
-  if (auto it = search(qual_type); it != types_.end()) {
-    return it->second.type_info.is_pointer();
+  if (auto rule = search(qual_type)) {
+    return rule->type_info.is_pointer();
   }
   return false;
 }
 
 bool MapsToRefcountPointer(clang::QualType qual_type) {
-  if (auto it = search(qual_type); it != types_.end()) {
-    return it->second.type_info.is_refcount_pointer;
+  if (auto rule = search(qual_type)) {
+    return rule->type_info.is_refcount_pointer;
   }
   return false;
 }
@@ -672,10 +696,7 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   auto cpp_name = ToString(decl);
   auto rs_name = ReplaceAll(cpp_name, "::", "_");
 
-  if (!types_.try_emplace(cpp_name, TranslationRule::TypeTgt::Plain(rs_name))
-           .second) {
-    return;
-  }
+  AddTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
 
   if (auto record_decl = llvm::dyn_cast<clang::RecordDecl>(decl)) {
     // Forward declaration
@@ -687,23 +708,22 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       if (cxx_decl->isAbstract()) {
         switch (model_) {
         case Model::kUnsafe:
-          types_[cpp_name + " *"] =
-              TranslationRule::TypeTgt::UnsafePtr("*mut dyn " + rs_name);
+          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::UnsafePtr(
+                                           "*mut dyn " + rs_name));
           break;
         case Model::kRefCount:
-          types_[cpp_name + " *"] = TranslationRule::TypeTgt::RefcountPtr(
-              "PtrDyn<dyn " + rs_name + '>');
+          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
+                                           "PtrDyn<dyn " + rs_name + '>'));
           break;
         }
       } else {
         switch (model_) {
         case Model::kUnsafe:
-          types_[cpp_name + " *"] =
-              TranslationRule::TypeTgt::UnsafePtr("*mut " + rs_name);
+          AddTypeRule(cpp_name + " *",
+                      TranslationRule::TypeRule::UnsafePtr("*mut " + rs_name));
           break;
         case Model::kRefCount:
-          types_[cpp_name + " *"] =
-              TranslationRule::TypeTgt::RefcountPtr("Ptr<" + rs_name + '>');
+          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr("Ptr<" + rs_name + '>'));
           break;
         }
       }
@@ -765,7 +785,7 @@ std::string ToString(const clang::NamedDecl *decl) {
     return normalizeTranslationRule(std::move(out));
   }
 
-  os << ToString(func_decl->getReturnType()) << " ";
+  os << ToString(func_decl->getReturnType()) << ' ';
   if (const auto *method_decl =
           llvm::dyn_cast<clang::CXXMethodDecl>(func_decl)) {
     if (method_decl->getParent()->isLambda() &&
@@ -901,7 +921,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
     expr.dump();
   }
   for (auto &[src, type_tgt] : types_) {
-    llvm::errs() << "Type: " << src << '\n';
+    llvm::errs() << "Type key: " << src << '\n';
     type_tgt.dump();
   }
 #endif
