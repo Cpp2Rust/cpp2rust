@@ -1890,6 +1890,13 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       StrCat(')');
       return false;
     }
+    if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
+      StrCat(std::format("{}::from", GetUnsafeTypeAsString(type)));
+      PushParen paren(*this);
+      Convert(sub_expr);
+      StrCat(keyword::kAs, "i32");
+      return false;
+    }
     {
       PushParen paren(*this);
       Convert(sub_expr);
@@ -2704,7 +2711,27 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
                        std::string_view(init.data(), init.size())));
   }
   StrCat("}");
+
+  AddFromImpl(decl);
   return false;
+}
+
+void Converter::AddFromImpl(clang::EnumDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat(std::format("impl From<i32> for {}", name));
+  PushBrace impl(*this);
+  StrCat(std::format("fn from(n: i32) -> {}", name));
+  PushBrace fn(*this);
+  StrCat("match n");
+  PushBrace match(*this);
+  for (auto e : decl->enumerators()) {
+    llvm::SmallVector<char, 32> init;
+    e->getInitVal().toString(init, 10);
+    StrCat(std::format("{} => {}::{},",
+                       std::string_view(init.data(), init.size()), name,
+                       std::string_view(e->getName())));
+  }
+  StrCat(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name));
 }
 
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {

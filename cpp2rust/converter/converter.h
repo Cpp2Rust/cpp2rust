@@ -293,6 +293,8 @@ public:
 
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
+  virtual void AddFromImpl(clang::EnumDecl *decl);
+
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
