@@ -159,17 +159,20 @@ public:
   virtual std::string ConvertStream(clang::Expr *expr);
 
   struct TempMaterializationCtx {
-    std::unordered_map<unsigned, clang::QualType> materialized_args;
+    std::vector<std::optional<clang::QualType>> materialized_args;
     std::string temporary_bindings;
 
-    std::string GetOrMaterialize(
+    TempMaterializationCtx(size_t num_args)
+        : materialized_args(num_args), materialized_refs_(num_args) {}
+
+    const std::string &GetOrMaterialize(
         unsigned argument_num,
         std::function<std::pair<std::string, std::string>(const std::string &,
                                                           clang::QualType)>
             materialize_fn);
 
   private:
-    std::unordered_map<unsigned, std::string> materialized_refs_;
+    std::vector<std::string> materialized_refs_;
   };
 
   struct PlaceholderCtx {
@@ -429,10 +432,9 @@ protected:
 
   virtual void ConvertAbstractClass(clang::CXXRecordDecl *decl);
 
-  template <typename Predicate>
   void ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
                              const std::string_view signature,
-                             Predicate predicate);
+                             bool (*predicate)(clang::CXXMethodDecl *));
 
   virtual void AddOrdTrait(const clang::CXXRecordDecl *decl);
 

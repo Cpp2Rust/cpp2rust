@@ -450,16 +450,13 @@ clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr) {
 
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::Decl *> nested_decls;
-  auto predicate = [](auto *decl) {
-    return clang::isa<clang::CXXRecordDecl>(decl) && !decl->isImplicit();
-  };
-  std::copy_if(decl->decls_begin(), decl->decls_end(),
-               std::back_inserter(nested_decls), predicate);
   std::vector<clang::CXXRecordDecl *> nested_record_decls;
-  auto op = [](auto *decl) { return clang::cast<clang::CXXRecordDecl>(decl); };
-  std::transform(nested_decls.cbegin(), nested_decls.cend(),
-                 std::back_inserter(nested_record_decls), op);
+  for (auto *d : decl->decls()) {
+    if (auto *rec = clang::dyn_cast<clang::CXXRecordDecl>(d);
+        rec && !rec->isImplicit()) {
+      nested_record_decls.push_back(rec);
+    }
+  }
   return nested_record_decls;
 }
 
