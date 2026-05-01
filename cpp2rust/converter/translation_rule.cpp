@@ -23,7 +23,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <iterator>
 #include <string>
 #include <vector>
 
@@ -75,11 +74,13 @@ struct LookupInfo {
   }
 };
 
-using RuleMap = std::unordered_map<std::string, Rule>;
+using ExprRules = cpp2rust::TranslationRule::ExprRules;
+using TypeRules = cpp2rust::TranslationRule::TypeRules;
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  explicit Callback(RuleMap &out) : out_(out) {}
+  explicit Callback(ExprRules &exprs, TypeRules &types)
+      : exprs_(exprs), types_(types) {}
 
   void init(clang::Sema &sema) {
     sema_ = &sema;
@@ -97,19 +98,13 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-
-      Rule rule;
-      rule.src = Mapper::ToString(type);
-      out_[var->getQualifiedNameAsString()] = std::move(rule);
+      types_.at(var->getQualifiedNameAsString()).src = Mapper::ToString(type);
       return;
     }
 
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
-      auto sym = func->getQualifiedNameAsString();
-      auto add = [&](std::string src) {
-        Rule rule;
-        rule.src = std::move(src);
-        out_[sym] = std::move(rule);
+      auto add = [&](std::string &&src) {
+        exprs_.at(func->getQualifiedNameAsString()).src = std::move(src);
       };
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
@@ -184,7 +179,8 @@ public:
   }
 
 private:
-  RuleMap &out_;
+  ExprRules &exprs_;
+  TypeRules &types_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
 
@@ -660,7 +656,8 @@ private:
 
 class ActionFactory : public clang::tooling::FrontendActionFactory {
 public:
-  explicit ActionFactory(RuleMap &out) : cb_(out) {
+  explicit ActionFactory(ExprRules &exprs, TypeRules &types)
+      : cb_(exprs, types) {
     using namespace clang::ast_matchers;
     finder_.addMatcher(
         returnStmt(
@@ -733,14 +730,6 @@ private:
   Callback cb_;
 };
 
-TextFragment ParseTextFragmentJSON(const llvm::json::Object &obj) {
-  return {obj.getString("text")->str()};
-}
-
-GenericFragment ParseGenericFragmentJSON(const llvm::json::Object &obj) {
-  return {obj.getString("generic")->str()};
-}
-
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
   if (auto ty = obj.getString("type"))
@@ -769,10 +758,8 @@ Access ParseAccessJSON(llvm::StringRef value) {
 
 PlaceholderFragment
 ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
-  auto arg = obj.getString("arg");
   auto access = obj.getString("access");
-  assert(arg && access);
-  return {arg->str(), ParseAccessJSON(*access)};
+  return {(unsigned)*obj.getInteger("arg"), ParseAccessJSON(*access)};
 }
 
 std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr);
@@ -794,10 +781,10 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
     auto *frag_obj = frag.getAsObject();
     if (!frag_obj)
       continue;
-    if (frag_obj->getString("text")) {
-      result.push_back(ParseTextFragmentJSON(*frag_obj));
-    } else if (frag_obj->getString("generic")) {
-      result.push_back(ParseGenericFragmentJSON(*frag_obj));
+    if (auto str = frag_obj->getString("text")) {
+      result.push_back(TextFragment{str->str()});
+    } else if (auto n = frag_obj->getInteger("generic")) {
+      result.push_back(GenericFragment{(unsigned)*n});
     } else if (auto *ph = frag_obj->getObject("placeholder")) {
       result.push_back(ParsePlaceholderFragmentJSON(*ph));
     } else if (auto *mc = frag_obj->getObject("method_call")) {
@@ -808,13 +795,16 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
   return result;
 }
 
-ExprTgt ParseExprTgtJSON(const llvm::json::Object &obj) {
-  ExprTgt ir;
+ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
+  ExprRule ir;
 
   if (auto *params = obj.getObject("params")) {
     for (auto &[key, val] : *params) {
-      if (auto *param_obj = val.getAsObject())
-        ir.params[key.str()] = ParseTypeInfoJSON(*param_obj);
+      if (auto *param_obj = val.getAsObject()) {
+        size_t id = atoi(llvm::StringRef(key).data() + 1);
+        ir.params.resize(std::max(ir.params.size(), id + 1));
+        ir.params[id] = ParseTypeInfoJSON(*param_obj);
+      }
     }
   }
 
@@ -832,7 +822,9 @@ ExprTgt ParseExprTgtJSON(const llvm::json::Object &obj) {
           if (auto s = b.getAsString())
             bounds.push_back(s->str());
         }
-        ir.generics[key.str()] = std::move(bounds);
+        size_t id = atoi(llvm::StringRef(key).data() + 1) - 1; // starts in T1
+        ir.generics.resize(std::max(ir.generics.size(), id + 1));
+        ir.generics[id] = std::move(bounds);
       }
     }
   }
@@ -844,48 +836,40 @@ ExprTgt ParseExprTgtJSON(const llvm::json::Object &obj) {
   return ir;
 }
 
-TypeTgt ParseTypeTgtJSON(const llvm::json::Object &obj) {
-  TypeTgt tgt;
+TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
+  TypeRule rule;
   if (auto init = obj.getString("init"))
-    tgt.initializer = init->str();
-  tgt.type_info = ParseTypeInfoJSON(obj);
-  return tgt;
+    rule.initializer = init->str();
+  rule.type_info = ParseTypeInfoJSON(obj);
+  return rule;
 }
 
-RuleMap LoadSrc(const std::filesystem::path &src_path) {
+void LoadSrc(ExprRules &exprs, TypeRules &types,
+             const std::filesystem::path &src_path) {
   clang::tooling::FixedCompilationDatabase compilations(
       ".", getPlatformClangFlags());
-  RuleMap out;
-  ActionFactory factory(out);
+  ActionFactory factory(exprs, types);
   clang::tooling::ClangTool tool(compilations, {src_path.string()});
   tool.run(&factory);
-
-  if (out.empty()) {
-    llvm::errs() << "Warning: no symbols found in return statements for file: "
-                 << src_path << '\n';
-    return out;
-  }
-  return out;
 }
 
-RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
-  RuleMap out;
-
+void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
+                   const std::filesystem::path &json_path) {
   auto buf = llvm::MemoryBuffer::getFile(json_path.string());
   if (!buf)
-    return out;
+    return;
 
   auto parsed = llvm::json::parse((*buf)->getBuffer());
   if (!parsed) {
     llvm::errs() << "Failed to parse IR JSON: " << json_path << ": "
                  << llvm::toString(parsed.takeError()) << '\n';
     assert(0);
-    return out;
+    return;
   }
 
   auto *root = parsed->getAsObject();
   if (!root)
-    return out;
+    return;
 
   for (auto &[entry_name, entry_val] : *root) {
     auto *obj = entry_val.getAsObject();
@@ -893,44 +877,10 @@ RuleMap LoadTgtFromIR(const std::filesystem::path &json_path) {
       continue;
 
     auto name = entry_name.str();
-    Rule rule;
     if (name[0] == 'f') {
-      rule.tgt = ParseExprTgtJSON(*obj);
-      std::get<ExprTgt>(rule.tgt).validate(json_path.string() + ":" + name);
+      exprs[std::move(name)] = ParseExprRuleJSON(*obj);
     } else if (name[0] == 't') {
-      rule.tgt = ParseTypeTgtJSON(*obj);
-    } else {
-      continue;
-    }
-    out[name] = std::move(rule);
-  }
-
-  return out;
-}
-
-template <typename Map>
-void ValidateConsecutiveKeys(const Map &map, char prefix, int start,
-                             const std::string &label) {
-  std::vector<int> indices;
-  for (auto &[key, _] : map) {
-    if (key.size() < 2 || key[0] != prefix ||
-        !std::all_of(key.begin() + 1, key.end(), ::isdigit)) {
-      llvm::errs() << label << ": invalid name '" << key << "', expected "
-                   << prefix << start << ", " << prefix << (start + 1) << ", "
-                   << prefix << (start + 2) << ", ...\n";
-      assert(0 && "names must follow expected pattern");
-    }
-    indices.push_back(std::stoi(key.substr(1)));
-  }
-  std::sort(indices.begin(), indices.end());
-  for (size_t i = 0; i < indices.size(); ++i) {
-    if (indices[i] != static_cast<int>(i) + start) {
-      llvm::errs() << label << ": not consecutive. Got:";
-      for (auto idx : indices) {
-        llvm::errs() << " " << prefix << idx;
-      }
-      llvm::errs() << '\n';
-      assert(0 && "indices must be consecutive");
+      types[std::move(name)] = ParseTypeRuleJSON(*obj);
     }
   }
 }
@@ -955,16 +905,16 @@ void TextFragment::dump() const {
 }
 
 void PlaceholderFragment::dump() const {
-  llvm::errs() << "  placeholder: " << arg << " (";
+  llvm::errs() << "  placeholder: " << n;
   switch (access) {
   case Access::kRead:
-    llvm::errs() << "read\n";
+    llvm::errs() << " (read)\n";
     break;
   case Access::kWrite:
-    llvm::errs() << "write\n";
+    llvm::errs() << " (write)\n";
     break;
   case Access::kMove:
-    llvm::errs() << "move\n";
+    llvm::errs() << " (move)\n";
     break;
   }
 }
@@ -990,9 +940,11 @@ void MethodCallFragment::dump() const {
   }
 }
 
-void ExprTgt::dump() const {
-  for (auto &[name, info] : params) {
-    llvm::errs() << "  param " << name << ": ";
+void ExprRule::dump() const {
+  llvm::errs() << "Matching: " << src << '\n';
+  unsigned i = 0;
+  for (auto &info : params) {
+    llvm::errs() << "  param a" << i++ << ": ";
     info.dump();
     llvm::errs() << '\n';
   }
@@ -1001,10 +953,11 @@ void ExprTgt::dump() const {
     return_type.dump();
     llvm::errs() << '\n';
   }
-  for (auto &[name, bounds] : generics) {
-    llvm::errs() << "  generic " << name << ":";
+  i = 0;
+  for (auto &bounds : generics) {
+    llvm::errs() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
-      llvm::errs() << " " << b;
+      llvm::errs() << ' ' << b;
     }
     llvm::errs() << '\n';
   }
@@ -1014,7 +967,7 @@ void ExprTgt::dump() const {
 }
 
 void GenericFragment::dump() const {
-  llvm::errs() << "  generic: " << name << '\n';
+  llvm::errs() << "  generic: " << n << '\n';
 }
 
 void TypeInfo::dump() const {
@@ -1025,8 +978,8 @@ void TypeInfo::dump() const {
     llvm::errs() << " [unsafe_ptr]";
 }
 
-void TypeTgt::dump() const {
-  llvm::errs() << "  type: ";
+void TypeRule::dump() const {
+  llvm::errs() << "name: " << src << "\n  Rust type: ";
   type_info.dump();
   llvm::errs() << '\n';
   if (!initializer.empty()) {
@@ -1034,49 +987,37 @@ void TypeTgt::dump() const {
   }
 }
 
-void ExprTgt::validate(const std::string &context) const {
-  ValidateConsecutiveKeys(params, 'a', 0, context + " params");
-  ValidateConsecutiveKeys(generics, 'T', 1, context + " generics");
-  assert(!body.empty() && "ExprTgt body must not be empty");
-}
-
-std::vector<Rule> Load(const std::filesystem::path &path, Model model) {
+std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
+                                     Model model) {
+  ExprRules exprs;
+  TypeRules types;
   auto dir = path.parent_path();
-  auto unsafe_ir_path = dir / "ir_unsafe.json";
-  auto refcount_ir_path = dir / "ir_refcount.json";
+  LoadTgtFromIR(exprs, types, dir / "ir_unsafe.json");
 
-  auto rules = LoadTgtFromIR(unsafe_ir_path);
-
-  if (model == Model::kRefCount && std::filesystem::exists(refcount_ir_path)) {
-    auto refcount = LoadTgtFromIR(refcount_ir_path);
-    for (auto &[name, rule] : refcount) {
-      rules[name] = std::move(rule);
+  if (model == Model::kRefCount) {
+    auto refcount_ir_path = dir / "ir_refcount.json";
+    if (std::filesystem::exists(refcount_ir_path)) {
+      LoadTgtFromIR(exprs, types, refcount_ir_path);
     }
   }
 
-  auto src_rules = LoadSrc(path);
-  if (src_rules.empty()) {
-    return {};
-  }
-  for (auto &[name, src_rule] : src_rules) {
-    rules.at(name).src = std::move(src_rule.src);
-  }
+  LoadSrc(exprs, types, path);
 
-  std::vector<Rule> result;
-  for (auto &[name, rule] : rules) {
+  for (auto &[name, rule] : exprs) {
     if (rule.src.empty()) {
       llvm::errs() << name << '\n';
-      if (const auto *tgt = std::get_if<TypeTgt>(&rule.tgt)) {
-        tgt->dump();
-      }
-      if (const auto *tgt = std::get_if<ExprTgt>(&rule.tgt)) {
-        tgt->dump();
-      }
+      rule.dump();
+      assert(0 && "Expr rule loaded from IR but has no src");
     }
-    assert(!rule.src.empty() && "Rule loaded from IR but has no src");
-    result.push_back(std::move(rule));
   }
-  return result;
+  for (auto &[name, rule] : types) {
+    if (rule.src.empty()) {
+      llvm::errs() << name << '\n';
+      rule.dump();
+      assert(0 && "Type rule loaded from IR but has no src");
+    }
+  }
+  return {std::move(exprs), std::move(types)};
 }
 
 } // namespace cpp2rust::TranslationRule

@@ -24,14 +24,14 @@ struct TextFragment {
 enum class Access { kRead, kWrite, kMove };
 
 struct PlaceholderFragment {
-  std::string arg; // "a0", "a1", ...
+  unsigned n; // "a0", "a1", ...
   Access access;
 
   void dump() const;
 };
 
 struct GenericFragment {
-  std::string name; // "T1", "T2", ...
+  unsigned n; // "T1", "T2", ...
 
   void dump() const;
 };
@@ -60,39 +60,38 @@ struct TypeInfo {
   void dump() const;
 };
 
-struct ExprTgt {
-  std::unordered_map<std::string, TypeInfo> params; // "a0" -> TypeInfo
+struct ExprRule {
+  std::string src;
+  std::vector<TypeInfo> params;
   TypeInfo return_type;
-  std::unordered_map<std::string, std::vector<std::string>>
-      generics; // "T1" -> ["Ord", "Clone"]
+  std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
   std::vector<BodyFragment> body;
   bool multi_statement = false;
 
   void dump() const;
-  void validate(const std::string &context) const;
 };
 
-struct TypeTgt {
+struct TypeRule {
+  std::string src;
   std::string initializer; // Rust initializer expression
   TypeInfo type_info;
 
   void dump() const;
 
-  static TypeTgt Plain(std::string type) {
-    return {{}, {std::move(type), false, false}};
+  static TypeRule Plain(std::string type) {
+    return {{}, {}, {std::move(type), false, false}};
   }
-  static TypeTgt RefcountPtr(std::string type) {
-    return {{}, {std::move(type), true, false}};
+  static TypeRule RefcountPtr(std::string type) {
+    return {{}, {}, {std::move(type), true, false}};
   }
-  static TypeTgt UnsafePtr(std::string type) {
-    return {{}, {std::move(type), false, true}};
+  static TypeRule UnsafePtr(std::string type) {
+    return {{}, {}, {std::move(type), false, true}};
   }
 };
 
-struct Rule {
-  std::string src;
-  std::variant<ExprTgt, TypeTgt> tgt;
-};
+using ExprRules = std::unordered_map<std::string, ExprRule>;
+using TypeRules = std::unordered_map<std::string, TypeRule>;
 
-std::vector<Rule> Load(const std::filesystem::path &path, Model model);
+std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
+                                     Model model);
 } // namespace cpp2rust::TranslationRule

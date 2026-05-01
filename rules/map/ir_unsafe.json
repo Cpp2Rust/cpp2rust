@@ -12,7 +12,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "write"
                           }
                         }
@@ -23,7 +23,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         },
@@ -78,7 +78,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -86,20 +86,20 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>, &"
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -130,7 +130,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -139,7 +139,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -171,7 +171,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -179,13 +179,13 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>)"
@@ -211,7 +211,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -220,7 +220,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -252,7 +252,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -260,13 +260,13 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>)"
@@ -304,7 +304,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         }
@@ -315,7 +315,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         },
@@ -345,7 +345,7 @@
         "text": " as *const "
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ")"
@@ -374,7 +374,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -383,7 +383,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -415,7 +415,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -423,20 +423,20 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>, &"
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -467,7 +467,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -492,7 +492,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -528,7 +528,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -565,7 +565,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -602,7 +602,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -639,7 +639,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -676,7 +676,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -684,20 +684,20 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>, &"
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -745,7 +745,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -791,7 +791,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         }
@@ -802,7 +802,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         },
@@ -832,7 +832,7 @@
         "text": " as *const "
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ")"
@@ -870,7 +870,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "write"
                           }
                         }
@@ -881,7 +881,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         },
@@ -936,7 +936,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -944,13 +944,13 @@
         "text": " as *const BTreeMap<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ", Box<"
       },
       {
-        "generic": "T2"
+        "generic": 2
       },
       {
         "text": ">>)"

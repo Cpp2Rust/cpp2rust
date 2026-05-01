@@ -7,9 +7,7 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 
-#include <filesystem>
 #include <string>
-#include <unordered_map>
 
 #include "converter/factory.h"
 #include "converter/translation_rule.h"
@@ -30,10 +28,9 @@ bool Contains(clang::QualType qual_type);
 bool Contains(const clang::Expr *expr);
 
 std::string Map(clang::QualType qual_type);
-const TranslationRule::ExprTgt *GetExprTgt(const clang::Expr *expr);
+const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr);
 std::string MapFunctionName(const clang::FunctionDecl *decl);
-std::string InstantiateTemplate(const clang::Expr *expr,
-                                const std::string &text);
+std::string InstantiateTemplate(const clang::Expr *expr, unsigned n);
 bool ReturnsPointer(const clang::Expr *expr);
 std::string GetParamType(const clang::Expr *expr, unsigned index);
 bool ParamIsPointer(const clang::Expr *expr, unsigned index);

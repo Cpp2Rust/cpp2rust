@@ -194,7 +194,7 @@ impl<'a> FragmentCtx<'a> {
                 self.flush_text();
                 self.fragments.push(BodyFragment::Placeholder {
                     placeholder: PlaceholderInner {
-                        arg: token.text().to_string(),
+                        arg: token.text()[1..].parse().unwrap_or(0),
                         access,
                     },
                 });
@@ -203,7 +203,9 @@ impl<'a> FragmentCtx<'a> {
             let text = token.text().to_string();
             if self.generic_names.contains(&text) {
                 self.flush_text();
-                self.fragments.push(BodyFragment::Generic { generic: text });
+                self.fragments.push(BodyFragment::Generic {
+                    generic: text[1..].parse().unwrap_or(0),
+                });
                 return;
             }
         }

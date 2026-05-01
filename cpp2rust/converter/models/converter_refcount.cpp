@@ -2195,7 +2195,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 
-  auto arg_idx = std::stoi(receiver_ph->arg.substr(1));
+  auto arg_idx = receiver_ph->n;
   auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
 
   if (!arg->getType()->isPointerType() && !IsReferenceType(arg)) {

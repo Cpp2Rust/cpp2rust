@@ -6,7 +6,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }

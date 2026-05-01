@@ -9,7 +9,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -23,7 +23,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -49,7 +49,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -66,7 +66,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -105,7 +105,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   },
@@ -152,7 +152,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -187,7 +187,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -199,7 +199,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -219,7 +219,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -239,7 +239,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -250,7 +250,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -283,7 +283,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -316,7 +316,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -327,7 +327,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "move"
               }
             },
@@ -359,7 +359,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -371,7 +371,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -381,7 +381,7 @@
               "text": ".resize_with(__a0, || <"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">::default())"
@@ -412,7 +412,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -444,7 +444,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   }
@@ -466,7 +466,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -508,7 +508,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -522,7 +522,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -548,7 +548,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -559,7 +559,7 @@
             },
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             },
@@ -597,7 +597,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -606,7 +606,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -639,7 +639,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -677,7 +677,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -691,7 +691,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -717,7 +717,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -728,7 +728,7 @@
             },
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             },
@@ -769,7 +769,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -789,7 +789,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -821,7 +821,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -844,7 +844,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -867,7 +867,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -893,7 +893,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -904,7 +904,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -936,7 +936,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -945,7 +945,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -971,7 +971,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -980,7 +980,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -1009,7 +1009,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -1043,7 +1043,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1077,7 +1077,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1115,7 +1115,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -1128,7 +1128,7 @@
                     "text": ".map(|_| <Vec<"
                   },
                   {
-                    "generic": "T1"
+                    "generic": 1
                   },
                   {
                     "text": ">>::default())"
@@ -1167,7 +1167,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -1178,7 +1178,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -1208,7 +1208,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -1219,7 +1219,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -1227,7 +1227,7 @@
               "text": " as usize, || <Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">>::default())"
@@ -1257,7 +1257,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1268,7 +1268,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -1303,7 +1303,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -1340,7 +1340,7 @@
             },
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             },
@@ -1355,7 +1355,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "read"
                     }
                   },
@@ -1369,7 +1369,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -1414,7 +1414,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -1441,7 +1441,7 @@
             },
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             },
@@ -1456,7 +1456,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "write"
                     }
                   },
@@ -1470,7 +1470,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -1524,7 +1524,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -1538,7 +1538,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "read"
                     }
                   },
@@ -1585,7 +1585,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         },
@@ -1600,7 +1600,7 @@
                               },
                               {
                                 "placeholder": {
-                                  "arg": "a1",
+                                  "arg": 1,
                                   "access": "write"
                                 }
                               },
@@ -1614,7 +1614,7 @@
                               },
                               {
                                 "placeholder": {
-                                  "arg": "a0",
+                                  "arg": 0,
                                   "access": "read"
                                 }
                               },
@@ -1689,7 +1689,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -1711,7 +1711,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -1750,7 +1750,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1792,7 +1792,7 @@
                         },
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         },
@@ -1807,7 +1807,7 @@
                               },
                               {
                                 "placeholder": {
-                                  "arg": "a1",
+                                  "arg": 1,
                                   "access": "read"
                                 }
                               },
@@ -1821,7 +1821,7 @@
                               },
                               {
                                 "placeholder": {
-                                  "arg": "a0",
+                                  "arg": 0,
                                   "access": "read"
                                 }
                               },
@@ -1886,7 +1886,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1922,7 +1922,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -1944,7 +1944,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -1980,7 +1980,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -2001,7 +2001,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -2010,7 +2010,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "write"
         }
       },
@@ -2034,7 +2034,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2066,7 +2066,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -2078,7 +2078,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -2104,7 +2104,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   },
@@ -2126,7 +2126,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -2174,7 +2174,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -2220,7 +2220,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2234,7 +2234,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "read"
                     }
                   }
@@ -2277,7 +2277,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -2291,7 +2291,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -2314,7 +2314,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -2323,7 +2323,7 @@
       },
       {
         "placeholder": {
-          "arg": "a2",
+          "arg": 2,
           "access": "read"
         }
       },
@@ -2332,7 +2332,7 @@
       },
       {
         "placeholder": {
-          "arg": "a3",
+          "arg": 3,
           "access": "read"
         }
       },
@@ -2344,7 +2344,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2401,7 +2401,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   }
@@ -2457,7 +2457,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -2469,7 +2469,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2480,7 +2480,7 @@
             },
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             },
@@ -2514,7 +2514,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -2523,7 +2523,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "move"
         }
       }
@@ -2558,7 +2558,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   },
@@ -2608,7 +2608,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -2630,7 +2630,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -2666,7 +2666,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -2678,7 +2678,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -2712,7 +2712,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2741,7 +2741,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -2774,7 +2774,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -2783,7 +2783,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "write"
         }
       },
@@ -2820,7 +2820,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -2833,7 +2833,7 @@
                     "text": ".map(|_| <"
                   },
                   {
-                    "generic": "T1"
+                    "generic": 1
                   },
                   {
                     "text": ">::default())"
@@ -2880,7 +2880,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   },

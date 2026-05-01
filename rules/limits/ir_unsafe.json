@@ -5,7 +5,7 @@
         "text": "<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ">::MAX"
@@ -26,7 +26,7 @@
         "text": "<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ">::MIN"

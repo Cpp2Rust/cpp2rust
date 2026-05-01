@@ -6,7 +6,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -37,7 +37,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -63,7 +63,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -73,7 +73,7 @@
               "text": ".with_mut(|__v: &mut Vec<Value<Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">>>| "
@@ -91,7 +91,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "read"
                     }
                   },

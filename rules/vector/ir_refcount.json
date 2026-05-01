@@ -9,7 +9,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -29,7 +29,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -39,7 +39,7 @@
               "text": ".with_mut(|__v: &mut Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">| "
@@ -75,7 +75,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -99,7 +99,7 @@
         "text": " as Ptr<"
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": ">"
@@ -133,7 +133,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -164,7 +164,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -190,7 +190,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -227,7 +227,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -247,7 +247,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -258,7 +258,7 @@
             },
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             },
@@ -273,7 +273,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -311,7 +311,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -331,7 +331,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -342,7 +342,7 @@
             },
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             },
@@ -357,7 +357,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -389,7 +389,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -415,7 +415,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -449,7 +449,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -483,7 +483,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -494,7 +494,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -526,7 +526,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -535,7 +535,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -561,7 +561,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -570,7 +570,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       }
@@ -599,7 +599,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -639,7 +639,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         }
@@ -723,7 +723,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -736,7 +736,7 @@
                     "text": ".map(|_| <Value<Vec<"
                   },
                   {
-                    "generic": "T1"
+                    "generic": 1
                   },
                   {
                     "text": ">>>::default())"
@@ -775,7 +775,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -785,7 +785,7 @@
               "text": ".with_mut(|__v: &mut Vec<Value<Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">>>| "
@@ -806,7 +806,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         }
@@ -854,7 +854,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -866,7 +866,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -876,7 +876,7 @@
               "text": ".with_mut(|__v: &mut Vec<Value<Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">>>| "
@@ -893,7 +893,7 @@
                     "text": ".resize_with(_a0, <Value<Vec<"
                   },
                   {
-                    "generic": "T1"
+                    "generic": 1
                   },
                   {
                     "text": ">>>::default)"
@@ -935,7 +935,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -955,7 +955,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -995,7 +995,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -1032,7 +1032,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1052,7 +1052,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -1086,7 +1086,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1159,7 +1159,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1179,7 +1179,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -1213,7 +1213,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1286,7 +1286,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1306,7 +1306,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -1340,7 +1340,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1404,7 +1404,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1435,7 +1435,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -1461,7 +1461,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -1470,7 +1470,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1482,7 +1482,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1502,7 +1502,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1522,7 +1522,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1539,7 +1539,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1617,7 +1617,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -1643,7 +1643,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1677,7 +1677,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -1698,7 +1698,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a0",
+                            "arg": 0,
                             "access": "read"
                           }
                         }
@@ -1737,7 +1737,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1748,7 +1748,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -1788,7 +1788,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1822,7 +1822,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1832,7 +1832,7 @@
               "text": ".with_mut(|__v: &mut Vec<Value<Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">>>| "
@@ -1853,7 +1853,7 @@
                       "receiver": [
                         {
                           "placeholder": {
-                            "arg": "a1",
+                            "arg": 1,
                             "access": "read"
                           }
                         }
@@ -1904,7 +1904,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             }
@@ -1924,7 +1924,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a2",
+                "arg": 2,
                 "access": "read"
               }
             }
@@ -1941,7 +1941,7 @@
       },
       {
         "placeholder": {
-          "arg": "a3",
+          "arg": 3,
           "access": "read"
         }
       },
@@ -1953,7 +1953,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -1963,7 +1963,7 @@
               "text": ".with_mut(|__v: &mut Vec<"
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ">| "
@@ -2010,7 +2010,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -2052,7 +2052,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -2063,7 +2063,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "move"
               }
             },
@@ -2097,7 +2097,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             },
@@ -2109,7 +2109,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   }
@@ -2155,7 +2155,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -2189,7 +2189,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -2203,7 +2203,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a1",
+                      "arg": 1,
                       "access": "read"
                     }
                   }
@@ -2242,7 +2242,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }
@@ -2268,7 +2268,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -2279,7 +2279,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
@@ -2311,7 +2311,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       }

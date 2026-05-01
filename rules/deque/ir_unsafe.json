@@ -12,7 +12,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   }
@@ -65,7 +65,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   },
@@ -112,7 +112,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "read"
               }
             }
@@ -144,7 +144,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -155,7 +155,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "move"
               }
             },
@@ -187,7 +187,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -219,7 +219,7 @@
           "receiver": [
             {
               "placeholder": {
-                "arg": "a0",
+                "arg": 0,
                 "access": "write"
               }
             }
@@ -230,7 +230,7 @@
             },
             {
               "placeholder": {
-                "arg": "a1",
+                "arg": 1,
                 "access": "read"
               }
             },
