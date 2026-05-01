@@ -24,14 +24,14 @@ struct TextFragment {
 enum class Access { kRead, kWrite, kMove };
 
 struct PlaceholderFragment {
-  std::string arg; // "a0", "a1", ...
+  unsigned n; // "a0", "a1", ...
   Access access;
 
   void dump() const;
 };
 
 struct GenericFragment {
-  std::string name; // "T1", "T2", ...
+  unsigned n; // "T1", "T2", ...
 
   void dump() const;
 };

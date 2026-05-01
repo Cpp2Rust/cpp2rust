@@ -47,7 +47,7 @@ std::string GetMapKey(const std::string &str) {
     return str.substr(0, n);
   }
   // something like int[][] or T1[] -> []
-  return str.substr(n+1);
+  return str.substr(n + 1);
 }
 
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
@@ -628,8 +628,8 @@ std::string MapFunctionName(const clang::FunctionDecl *decl) {
   return GetNamedDeclAsString(decl->getCanonicalDecl());
 }
 
-std::string InstantiateTemplate(const clang::Expr *expr,
-                                const std::string &text) {
+std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
+  auto text = 'T' + std::to_string(n);
   auto it = search(expr);
   if (it == exprs_.end()) {
     return text;

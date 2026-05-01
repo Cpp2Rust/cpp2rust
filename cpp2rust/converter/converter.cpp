@@ -3582,9 +3582,9 @@ std::string Converter::ConvertIRFragment(
     if (auto *t = std::get_if<TextFragment>(&frag)) {
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-      result += Mapper::InstantiateTemplate(GetCalleeOrExpr(expr), g->name);
+      result += Mapper::InstantiateTemplate(GetCalleeOrExpr(expr), g->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
-      auto arg_idx = std::stoi(ph->arg.substr(1)); // "a0" -> 0
+      auto arg_idx = ph->n;
       assert(arg_idx < static_cast<int>(all_args.size()));
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
@@ -3593,7 +3593,7 @@ std::string Converter::ConvertIRFragment(
           .param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx),
           .materialize_ctx = ctx,
           .materialize_idx =
-              is_receiver ? -1 : (arg_idx - (HasReceiver(expr) ? 1 : 0)),
+              is_receiver ? -1 : ((int)arg_idx - HasReceiver(expr)),
           .access = ph->access,
           .is_receiver = is_receiver,
           .is_cpp_ptr = arg->getType()->isPointerType(),

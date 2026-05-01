@@ -733,7 +733,12 @@ TextFragment ParseTextFragmentJSON(const llvm::json::Object &obj) {
 }
 
 GenericFragment ParseGenericFragmentJSON(const llvm::json::Object &obj) {
-  return {obj.getString("generic")->str()};
+  auto s = obj.getString("generic");
+  if (s->size() < 2 || s->front() != 'T') {
+    llvm::errs() << "Invalid generic fragment: " << s << '\n';
+    assert(0);
+  }
+  return {(unsigned)std::atoi(s->data() + 1)};
 }
 
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
@@ -767,7 +772,11 @@ ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
   auto arg = obj.getString("arg");
   auto access = obj.getString("access");
   assert(arg && access);
-  return {arg->str(), ParseAccessJSON(*access)};
+  if (arg->size() < 2 || arg->front() != 'a') {
+    llvm::errs() << "Invalid arg fragment: " << arg << '\n';
+    assert(0);
+  }
+  return {(unsigned)atoi(arg->data() + 1), ParseAccessJSON(*access)};
 }
 
 std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr);
@@ -938,7 +947,7 @@ void TextFragment::dump() const {
 }
 
 void PlaceholderFragment::dump() const {
-  llvm::errs() << "  placeholder: " << arg << " (";
+  llvm::errs() << "  placeholder: " << n << " (";
   switch (access) {
   case Access::kRead:
     llvm::errs() << "read\n";
@@ -997,7 +1006,7 @@ void ExprTgt::dump() const {
 }
 
 void GenericFragment::dump() const {
-  llvm::errs() << "  generic: " << name << '\n';
+  llvm::errs() << "  generic: " << n << '\n';
 }
 
 void TypeInfo::dump() const {
