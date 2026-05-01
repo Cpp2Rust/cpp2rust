@@ -723,7 +723,8 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
                       TranslationRule::TypeRule::UnsafePtr("*mut " + rs_name));
           break;
         case Model::kRefCount:
-          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr("Ptr<" + rs_name + '>'));
+          AddTypeRule(cpp_name + " *", TranslationRule::TypeRule::RefcountPtr(
+                                           "Ptr<" + rs_name + '>'));
           break;
         }
       }
