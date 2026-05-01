@@ -60,16 +60,15 @@ struct TypeInfo {
   void dump() const;
 };
 
-struct ExprTgt {
-  std::unordered_map<std::string, TypeInfo> params; // "a0" -> TypeInfo
+struct ExprRule {
+  std::string src;
+  std::vector<TypeInfo> params;
   TypeInfo return_type;
-  std::unordered_map<std::string, std::vector<std::string>>
-      generics; // "T1" -> ["Ord", "Clone"]
+  std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
   std::vector<BodyFragment> body;
   bool multi_statement = false;
 
   void dump() const;
-  void validate(const std::string &context) const;
 };
 
 struct TypeRule {
@@ -90,11 +89,9 @@ struct TypeRule {
   }
 };
 
-struct Rule {
-  std::string src;
-  std::variant<ExprTgt, TypeRule> tgt;
-};
+using ExprRules = std::unordered_map<std::string, ExprRule>;
+using TypeRules = std::unordered_map<std::string, TypeRule>;
 
-using RuleMap = std::unordered_map<std::string, Rule>;
-RuleMap Load(const std::filesystem::path &path, Model model);
+std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
+                                     Model model);
 } // namespace cpp2rust::TranslationRule

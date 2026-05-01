@@ -121,7 +121,7 @@ pub struct TypeIr {
 pub enum BodyFragment {
     Text { text: String },
     Placeholder { placeholder: PlaceholderInner },
-    Generic { generic: String },
+    Generic { generic: i32 },
     MethodCall { method_call: MethodCallInner },
 }
 
@@ -136,7 +136,7 @@ pub enum Access {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlaceholderInner {
-    pub arg: String,
+    pub arg: i32,
     pub access: Access,
 }
 
@@ -168,7 +168,9 @@ fn resolve_nth_unknown(body: &mut [BodyFragment], param: &str, access: Access, n
     ) -> bool {
         for frag in body {
             match frag {
-                BodyFragment::Placeholder { placeholder } if placeholder.arg == param => {
+                BodyFragment::Placeholder { placeholder }
+                    if placeholder.arg == param[1..].parse().unwrap_or(0) =>
+                {
                     if *count == nth {
                         if placeholder.access == Access::Unknown {
                             placeholder.access = access;

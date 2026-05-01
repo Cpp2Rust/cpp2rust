@@ -3558,7 +3558,7 @@ std::string Converter::ConvertMappedMethodCall(
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                          unsigned num_args,
                                          TempMaterializationCtx *ctx) {
-  auto *tgt_ir = Mapper::GetExprTgt(GetCalleeOrExpr(expr));
+  auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
   if (!tgt_ir)
     return {};
 
@@ -3585,7 +3585,7 @@ std::string Converter::ConvertIRFragment(
       result += Mapper::InstantiateTemplate(GetCalleeOrExpr(expr), g->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
-      assert(arg_idx < static_cast<int>(all_args.size()));
+      assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
 

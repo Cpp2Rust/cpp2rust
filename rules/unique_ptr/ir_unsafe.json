@@ -15,7 +15,7 @@
                   },
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "read"
                     }
                   },
@@ -28,7 +28,7 @@
                     "text": ".map(|_| <"
                   },
                   {
-                    "generic": "T1"
+                    "generic": 1
                   },
                   {
                     "text": ">::default())"
@@ -100,7 +100,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   }
@@ -118,7 +118,7 @@
               "text": ".map_or(::std::ptr::null_mut(), |v| v as *mut "
             },
             {
-              "generic": "T1"
+              "generic": 1
             },
             {
               "text": ")"
@@ -147,7 +147,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -175,7 +175,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -202,14 +202,14 @@
         "text": "let _a0: *mut "
       },
       {
-        "generic": "T1"
+        "generic": 1
       },
       {
         "text": " = "
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -218,7 +218,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -263,7 +263,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
@@ -272,7 +272,7 @@
       },
       {
         "placeholder": {
-          "arg": "a1",
+          "arg": 1,
           "access": "read"
         }
       },
@@ -303,7 +303,7 @@
                 "receiver": [
                   {
                     "placeholder": {
-                      "arg": "a0",
+                      "arg": 0,
                       "access": "write"
                     }
                   }
@@ -361,7 +361,7 @@
       },
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "read"
         }
       },
@@ -385,7 +385,7 @@
     "body": [
       {
         "placeholder": {
-          "arg": "a0",
+          "arg": 0,
           "access": "write"
         }
       },
