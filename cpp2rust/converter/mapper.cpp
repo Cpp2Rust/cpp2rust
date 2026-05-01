@@ -592,7 +592,7 @@ const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr) {
 
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
-  if (exprs_.contains(ToString(decl))) {
+  if (exprs_.contains(GetExprMapKey(ToString(decl)))) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }
@@ -883,7 +883,7 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   addRulesFromDirectory(rules_dir, model);
   addBuiltinTypes(model);
 
-#if 1
+#if 0
   for (auto &[src, rule] : exprs_) {
     llvm::errs() << "Expr key: " << src << '\n';
     rule.dump();
