@@ -14,6 +14,8 @@
 #include <string_view>
 #include <vector>
 
+#include "logging.h"
+
 namespace cpp2rust {
 
 // Order matters: each category is a superset of the previous one.
@@ -116,7 +118,7 @@ void ForEachTemplateArgument(
       break;
     default:
       // FIXME: improve logging
-      llvm::errs() << "unsupported template argument kind\n";
+      verrs() << "unsupported template argument kind\n";
     }
   }
 }

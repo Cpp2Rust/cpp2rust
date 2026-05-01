@@ -6,6 +6,7 @@
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
 #include "converter/models/converter_refcount.h"
+#include "logging.h"
 
 namespace cpp2rust {
 
@@ -182,7 +183,7 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
       StrCat(GetUnsafeTypeAsString(elem_ty));
     }
   } else {
-    call->dumpColor();
+    call->dump(cpp2rust::verrs(), ctx_);
     assert(0 && "no ctor and no pod type");
     return false;
   }

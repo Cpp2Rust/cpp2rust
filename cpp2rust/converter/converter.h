@@ -17,6 +17,7 @@
 
 #include "converter/lex.h"
 #include "converter/translation_rule.h"
+#include "logging.h"
 
 namespace cpp2rust {
 class Converter : public clang::RecursiveASTVisitor<Converter> {
@@ -329,8 +330,8 @@ protected:
 
   template <typename... Ts>
   inline void _StrCat(const char *func, int line, const Ts &...vals) {
-    llvm::errs() << '[' << func << ':' << line << "] ";
-    ((llvm::errs() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
+    verrs() << '[' << func << ':' << line << "] ";
+    ((verrs() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
   }
 
   class Buffer {
@@ -609,13 +610,13 @@ protected:
                  int line = __builtin_LINE())
         : c(c) {
       c.curr_expr_kind_.push_back(k);
-      llvm::errs() << "PushExprKind " << file << ':' << line << ' ';
+      verrs() << "PushExprKind " << file << ':' << line << ' ';
       c.dump_expr_kinds();
-      llvm::errs() << '[';
+      verrs() << '[';
       for (const auto k : c.curr_expr_kind_) {
-        llvm::errs() << c.expr_kind_to_string(k) << ", ";
+        verrs() << c.expr_kind_to_string(k) << ", ";
       }
-      llvm::errs() << "]\n";
+      verrs() << "]\n";
     }
     ~PushExprKind() { c.curr_expr_kind_.pop_back(); }
   };

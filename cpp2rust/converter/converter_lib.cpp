@@ -418,7 +418,7 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
     return "lt";
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported overloaded operator\n";
+    verrs() << "unsupported overloaded operator\n";
     return "";
   }
 }

@@ -19,11 +19,16 @@
 #include <llvm/Support/CommandLine.h>
 
 #include "cpp2rust_lib.h"
+#include "logging.h"
 
 namespace fs = std::filesystem;
 
 namespace {
 llvm::cl::OptionCategory cpp2rust_cmdargs("Cpp2Rust options");
+
+llvm::cl::opt<bool> Verbose("verbose", llvm::cl::desc("Enable verbose logging"),
+                            llvm::cl::init(false),
+                            llvm::cl::cat(cpp2rust_cmdargs));
 
 llvm::cl::opt<std::string> CcFile("file",
                                   llvm::cl::desc("Path to the C++ file"),
@@ -89,7 +94,7 @@ static bool ResolveRulesDir() {
   for (const auto &dir : candidates) {
     if (fs::exists(dir) && fs::is_directory(dir)) {
       RulesDir = fs::canonical(dir).string();
-      llvm::outs() << "Using rules directory: " << RulesDir << '\n';
+      llvm::errs() << "Using rules directory: " << RulesDir << '\n';
       return true;
     }
   }
@@ -99,6 +104,8 @@ static bool ResolveRulesDir() {
 int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cpp2rust_cmdargs);
   llvm::cl::ParseCommandLineOptions(argc, argv);
+
+  cpp2rust::SetVerbose(Verbose);
 
   if (CcFile.empty() && BuildDir.empty()) {
     llvm::errs() << "ERROR: please provide either --file or --dir\n";

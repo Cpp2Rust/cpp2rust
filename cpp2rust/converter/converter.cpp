@@ -14,6 +14,7 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "logging.h"
 
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
@@ -52,8 +53,8 @@ use std::rc::Rc;
 }
 
 bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
-  llvm::errs() << "RecoveryExpr: ";
-  expr->dump();
+  verrs() << "RecoveryExpr: ";
+  expr->dump(verrs(), ctx_);
   exit(1);
   return false;
 }
@@ -122,7 +123,7 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported builtin type\n";
+    verrs() << "unsupported builtin type\n";
     break;
   }
   return false;
@@ -151,7 +152,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
 }
 
 std::string Converter::ConvertPointer(clang::Expr *expr, int line) {
-  llvm::errs() << "ConvertPointer called from line " << line << "\n";
+  verrs() << "ConvertPointer called from line " << line << "\n";
   PushExprKind push(*this, ExprKind::AddrOf);
   return ToString(expr);
 }
@@ -175,7 +176,7 @@ std::string Converter::ConvertLValue(clang::Expr *expr) {
 }
 
 std::string Converter::ConvertRValue(clang::Expr *expr, int line) {
-  llvm::errs() << "ConvertRValue called from line " << line << "\n";
+  verrs() << "ConvertRValue called from line " << line << "\n";
   PushExprKind push(*this, ExprKind::RValue);
   return ToString(expr);
 }
@@ -295,7 +296,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
     return false;
   }
-  decl->dump();
+  decl->dump(verrs());
   curr_function_ = decl;
   std::string function_name;
   if (decl->isMain()) {
@@ -582,7 +583,7 @@ static bool recordDerivesCopy(const clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
-  decl->dumpColor();
+  decl->dump(verrs());
 
   // VisitCXXRecordDecl already visited the record
   if (clang::isa<clang::CXXRecordDecl>(decl)) {
@@ -694,7 +695,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     materializeTemplateSpecialization(decl);
   }
 
-  decl->dump();
+  decl->dump(verrs());
 
   Mapper::AddRuleForUserDefinedType(decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
@@ -741,7 +742,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
-  decl->dump();
+  decl->dump(verrs());
   if (!IsConvertibleCXXMethodDecl(decl)) {
     return false;
   }
@@ -1085,10 +1086,10 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
 
   if (!Mapper::Contains(range_init_type.getUnqualifiedType())) {
     // FIXME: improve error handling
-    llvm::errs() << "for range stmts only for types in std namespace\n";
+    verrs() << "for range stmts only for types in std namespace\n";
   }
 
-  llvm::errs() << "GetClassName: " << GetClassName(range_init_type) << "\n";
+  verrs() << "GetClassName: " << GetClassName(range_init_type) << "\n";
 
   if (GetClassName(range_init_type) == "std::map") {
     return VisitCXXForRangeStmtMap(stmt);
@@ -2363,8 +2364,8 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported CXXOperatorCallExpr: "
-                 << clang::getOperatorSpelling(expr->getOperator()) << '\n';
+    verrs() << "unsupported CXXOperatorCallExpr: "
+            << clang::getOperatorSpelling(expr->getOperator()) << '\n';
     assert(0);
   }
   return false;
@@ -2692,7 +2693,7 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported unary expr or type trait expr\n";
+    verrs() << "unsupported unary expr or type trait expr\n";
   }
   return false;
 }
@@ -3344,8 +3345,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   }
 
   if (methods.size() > 1) {
-    llvm::errs()
-        << "Currently supporting only one overloaded comparison operator\n";
+    verrs() << "Currently supporting only one overloaded comparison operator\n";
     abort();
   }
 
@@ -3436,8 +3436,8 @@ void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
     break;
   default:
     // FIXME: improve error handling
-    llvm::errs() << "unsupported unsigned binary operator: " << opcode << '\n';
-    op->dumpColor();
+    verrs() << "unsupported unsigned binary operator: " << opcode << '\n';
+    op->dump(verrs(), ctx_);
     assert(0);
   }
   PushParen paren(*this);
@@ -3747,9 +3747,9 @@ void Converter::SetFreshType(clang::QualType type) {
 }
 
 void Converter::dump_expr_kinds() {
-  llvm::errs() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
-               << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
-               << ", isVoid: " << isVoid() << "\n";
+  verrs() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
+          << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
+          << ", isVoid: " << isVoid() << "\n";
 }
 
 void Converter::emplace_back_plugin_construct_arg(

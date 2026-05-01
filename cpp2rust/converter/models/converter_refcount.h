@@ -245,21 +245,21 @@ private:
       if (pushed) {
         c.conversion_kind_.push_back(k);
       }
-      llvm::errs() << "[PushConversionKind:" << line << "] ";
+      verrs() << "[PushConversionKind:" << line << "] ";
       for (auto ck : c.conversion_kind_) {
-        llvm::errs() << c.ConversionKindToString(ck) << ", ";
+        verrs() << c.ConversionKindToString(ck) << ", ";
       }
-      llvm::errs() << "\n";
+      verrs() << "\n";
     }
     ~PushConversionKind() {
       if (pushed) {
         c.conversion_kind_.pop_back();
       }
-      llvm::errs() << "[PopConversionKind] ";
+      verrs() << "[PopConversionKind] ";
       for (auto ck : c.conversion_kind_) {
-        llvm::errs() << c.ConversionKindToString(ck) << ", ";
+        verrs() << c.ConversionKindToString(ck) << ", ";
       }
-      llvm::errs() << "\n";
+      verrs() << "\n";
     }
   };
 
