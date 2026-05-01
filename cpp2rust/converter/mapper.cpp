@@ -44,8 +44,8 @@ std::string GetExprMapKey(const std::string &str) {
   // Extract the function name from something like
   // const T1 & std::foo<T1, T2>::fn_name(args)
   auto n = str.find_first_of('(');
-  if (n == std::string::npos) { // e.g. std::cerr
-    return str;
+  if (n == std::string::npos) {
+    n = str.size();
   }
 
   // Walk backwards from '(' tracking <> depth:
