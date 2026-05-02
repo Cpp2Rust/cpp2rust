@@ -2130,6 +2130,20 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     Convert(sub_expr);
     computed_expr_type_ = ComputedExprType::FreshValue;
     break;
+  case clang::UO_LNot: {
+    bool needs_int_cast = expr->getType()->isIntegerType();
+    PushParen paren_cast(*this, needs_int_cast);
+    StrCat(token::kNot);
+    {
+      PushParen paren(*this);
+      ConvertCondition(sub_expr);
+    }
+    if (needs_int_cast) {
+      ConvertCast(expr->getType());
+    }
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    break;
+  }
   case clang::UO_Minus:
     if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
       if (sub_expr->getType()->isUnsignedIntegerType()) {
