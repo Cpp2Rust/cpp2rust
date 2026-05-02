@@ -35,14 +35,14 @@ fn main_0() -> i32 {
         'loop_: while ((*k2.borrow()) < 5) {
             let k3: Value<i32> = Rc::new(RefCell::new(0));
             'loop_: while ((*k3.borrow()) < 5) {
-                if (((((*k1.borrow()) + (*k2.borrow())) + (*k3.borrow())) % 2) == 0) {
+                if ((((((*k1.borrow()) + (*k2.borrow())) + (*k3.borrow())) as i32) % 2) == 0) {
                     (*k3.borrow_mut()).postfix_inc();
                     continue 'loop_;
                 }
                 (*out.borrow_mut()).prefix_inc();
                 (*k3.borrow_mut()).postfix_inc();
             }
-            if ((((*k1.borrow()) + (*k2.borrow())) % 2) == 0) {
+            if (((((*k1.borrow()) + (*k2.borrow())) as i32) % 2) == 0) {
                 (*k2.borrow_mut()).postfix_inc();
                 continue 'loop_;
             }

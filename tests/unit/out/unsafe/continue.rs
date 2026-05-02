@@ -37,14 +37,14 @@ unsafe fn main_0() -> i32 {
         'loop_: while ((k2) < (5)) {
             let mut k3: i32 = 0;
             'loop_: while ((k3) < (5)) {
-                if (((((k1) + (k2)) + (k3)) % (2)) == (0)) {
+                if ((((((k1) + (k2)) + (k3)) as i32) % (2)) == (0)) {
                     k3.postfix_inc();
                     continue 'loop_;
                 }
                 out.prefix_inc();
                 k3.postfix_inc();
             }
-            if ((((k1) + (k2)) % (2)) == (0)) {
+            if (((((k1) + (k2)) as i32) % (2)) == (0)) {
                 k2.postfix_inc();
                 continue 'loop_;
             }
