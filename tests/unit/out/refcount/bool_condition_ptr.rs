@@ -16,13 +16,13 @@ fn main_0() -> i32 {
     if !(*p.borrow()).is_null() {
         assert!(true);
     }
-    if !(!(*p.borrow()).is_null()) {
+    if !!(*p.borrow()).is_null() {
         assert!(false);
     }
     if !(*np.borrow()).is_null() {
         assert!(false);
     }
-    if !(!(*np.borrow()).is_null()) {
+    if !!(*np.borrow()).is_null() {
         assert!(true);
     }
     let iter: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
@@ -36,9 +36,9 @@ fn main_0() -> i32 {
     assert!(((*t3.borrow()) == 1));
     let t4: Value<i32> = Rc::new(RefCell::new(if !(*np.borrow()).is_null() { 1 } else { 0 }));
     assert!(((*t4.borrow()) == 0));
-    let t5: Value<i32> = Rc::new(RefCell::new((!(!(*p.borrow()).is_null()) as i32)));
+    let t5: Value<i32> = Rc::new(RefCell::new((!!(*p.borrow()).is_null() as i32)));
     assert!(((*t5.borrow()) == 0));
-    let t6: Value<i32> = Rc::new(RefCell::new((!(!(*np.borrow()).is_null()) as i32)));
+    let t6: Value<i32> = Rc::new(RefCell::new((!!(*np.borrow()).is_null() as i32)));
     assert!(((*t6.borrow()) == 1));
     let b2: Value<bool> = Rc::new(RefCell::new((!(*p.borrow()).is_null()).clone()));
     let b3: Value<bool> = Rc::new(RefCell::new((!(*np.borrow()).is_null()).clone()));

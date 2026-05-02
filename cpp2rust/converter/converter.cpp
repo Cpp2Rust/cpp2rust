@@ -2153,10 +2153,7 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
         expr->getType()->isIntegerType() && !expr->getType()->isBooleanType();
     PushParen paren_cast(*this, needs_int_cast);
     StrCat(token::kNot);
-    {
-      PushParen paren(*this);
-      ConvertCondition(sub_expr);
-    }
+    ConvertCondition(sub_expr);
     if (needs_int_cast) {
       ConvertCast(expr->getType());
     }

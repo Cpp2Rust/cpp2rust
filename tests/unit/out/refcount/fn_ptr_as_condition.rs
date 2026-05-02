@@ -43,7 +43,7 @@ fn main_0() -> i32 {
     });
     assert!(((*b.borrow()) == 5));
     let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::null()));
-    if !(!(*fn_.borrow()).is_null()) {
+    if !!(*fn_.borrow()).is_null() {
         (*fn_.borrow_mut()) = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));
