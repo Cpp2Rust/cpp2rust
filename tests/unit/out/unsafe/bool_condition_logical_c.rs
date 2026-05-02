@@ -41,38 +41,38 @@ unsafe fn main_0() -> i32 {
     let mut np: *mut i32 = Default::default();
     let mut u: u32 = 4_u32;
     let mut code: Code = Code::from((Code::CODE_OK as i32));
-    if ((n != 0) && (!(p).is_null())) {
+    if (n != 0) && (!(p).is_null()) {
         assert!((1 != 0));
     }
-    if ((n != 0) && (!(np).is_null())) {
+    if (n != 0) && (!(np).is_null()) {
         assert!((0 != 0));
     }
-    if ((zero != 0) || (!(p).is_null())) {
+    if (zero != 0) || (!(p).is_null()) {
         assert!((1 != 0));
     }
-    if ((zero != 0) || (!(np).is_null())) {
+    if (zero != 0) || (!(np).is_null()) {
         assert!((0 != 0));
     }
-    if ((((n != 0) && (u != 0)) && (!(p).is_null()))
-        && ((code as u32) == ((Code::CODE_OK as i32) as u32)))
+    if (((n != 0) && (u != 0)) && (!(p).is_null()))
+        && ((code as u32) == ((Code::CODE_OK as i32) as u32))
     {
         assert!((1 != 0));
     }
     side_effect = 0;
-    if ((zero != 0)
+    if (zero != 0)
         && ((unsafe {
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0))
+        }) != 0)
     {
         assert!((0 != 0));
     }
     assert!(((side_effect) == (0)));
-    if ((n != 0)
+    if (n != 0)
         || ((unsafe {
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0))
+        }) != 0)
     {
         assert!((1 != 0));
     }

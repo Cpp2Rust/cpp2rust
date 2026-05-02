@@ -42,38 +42,38 @@ fn main_0() -> i32 {
     let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let code: Value<Code> = Rc::new(RefCell::new(Code::from((Code::CODE_OK as i32))));
-    if (((*n.borrow()) != 0) && (!(*p.borrow()).is_null())) {
+    if ((*n.borrow()) != 0) && (!(*p.borrow()).is_null()) {
         assert!((1 != 0));
     }
-    if (((*n.borrow()) != 0) && (!(*np.borrow()).is_null())) {
+    if ((*n.borrow()) != 0) && (!(*np.borrow()).is_null()) {
         assert!((0 != 0));
     }
-    if (((*zero.borrow()) != 0) || (!(*p.borrow()).is_null())) {
+    if ((*zero.borrow()) != 0) || (!(*p.borrow()).is_null()) {
         assert!((1 != 0));
     }
-    if (((*zero.borrow()) != 0) || (!(*np.borrow()).is_null())) {
+    if ((*zero.borrow()) != 0) || (!(*np.borrow()).is_null()) {
         assert!((0 != 0));
     }
-    if (((((*n.borrow()) != 0) && ((*u.borrow()) != 0)) && (!(*p.borrow()).is_null()))
-        && (((*code.borrow()) as u32) == ((Code::CODE_OK as i32) as u32)))
+    if ((((*n.borrow()) != 0) && ((*u.borrow()) != 0)) && (!(*p.borrow()).is_null()))
+        && (((*code.borrow()) as u32) == ((Code::CODE_OK as i32) as u32))
     {
         assert!((1 != 0));
     }
     (*side_effect.with(Value::clone).borrow_mut()) = 0;
-    if (((*zero.borrow()) != 0)
+    if ((*zero.borrow()) != 0)
         && (({
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0))
+        }) != 0)
     {
         assert!((0 != 0));
     }
     assert!(((*side_effect.with(Value::clone).borrow()) == 0));
-    if (((*n.borrow()) != 0)
+    if ((*n.borrow()) != 0)
         || (({
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0))
+        }) != 0)
     {
         assert!((1 != 0));
     }
