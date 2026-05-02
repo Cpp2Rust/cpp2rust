@@ -684,8 +684,15 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
 }
 
 clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+  clang::CastKind cast_kind;
+  if (expr->getType()->isPointerType()) {
+    cast_kind = clang::CK_PointerToBoolean;
+  } else /* expr->getType()->isIntegerType() */ {
+    cast_kind = clang::CK_IntegralToBoolean;
+  }
+
   return clang::ImplicitCastExpr::Create(
-      ctx, ctx.BoolTy, clang::CK_IntegralToBoolean, expr,
+      ctx, ctx.BoolTy, cast_kind, expr,
       /*BasePath=*/nullptr, clang::VK_PRValue, clang::FPOptionsOverride());
 }
 
