@@ -2173,7 +2173,7 @@ void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
-  Convert(expr->getCond());
+  ConvertCondition(expr->getCond());
   {
     PushBrace then_brace(*this);
     if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {

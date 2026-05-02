@@ -615,7 +615,8 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
-  StrCat(keyword::kIf, ConvertRValue(expr->getCond()));
+  StrCat(keyword::kIf);
+  ConvertCondition(expr->getCond());
   {
     PushBrace then_brace(*this);
     StrCat(ConvertFresh(expr->getTrueExpr()));
