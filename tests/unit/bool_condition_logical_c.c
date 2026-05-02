@@ -46,5 +46,37 @@ int main() {
   }
   assert(side_effect == 0);
 
+  int chunk_count = 5;
+  int max_chunks = 3;
+  unsigned opts = 0x2u;
+  if ((chunk_count > max_chunks) || (opts & 0x1u)) {
+    assert(true);
+  }
+  if ((chunk_count < max_chunks) || (opts & 0x1u)) {
+    assert(false);
+  }
+
+  unsigned a_id = 1u;
+  unsigned b_id = 2u;
+  unsigned other_id = 3u;
+  if (((a_id != other_id)) && ((b_id != other_id))) {
+    assert(true);
+  }
+
+  int reply_ms = -1;
+  if ((p != NULL) && (reply_ms < 0)) {
+    assert(true);
+  }
+
+  unsigned baller_count = 2u;
+  bool ballers_complete = false;
+  if ((baller_count > 1u) || !ballers_complete) {
+    assert(true);
+  }
+
+  if (((chunk_count > max_chunks)) || ((opts & 0x4u))) {
+    assert(true);
+  }
+
   return 0;
 }
