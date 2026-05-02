@@ -1741,6 +1741,42 @@ void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
   }
 }
 
+void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
+  auto sub_expr = expr->getSubExpr();
+  auto *stripped = sub_expr->IgnoreParenImpCasts();
+
+  if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
+    // Comparison already produces bool, no wrap needed.
+    if (binop->isComparisonOp()) {
+      Convert(sub_expr);
+      return;
+    }
+    // Distribute bool conversion to each argument of the logical op.
+    if (binop->isLogicalOp()) {
+      PushParen outer(*this);
+      {
+        PushParen lp(*this);
+        Convert(CreateConversionToBool(binop->getLHS(), ctx_));
+      }
+      StrCat(binop->getOpcodeStr());
+      {
+        PushParen rp(*this);
+        Convert(CreateConversionToBool(binop->getRHS(), ctx_));
+      }
+      return;
+    }
+  }
+
+  PushParen paren(*this);
+  Convert(sub_expr);
+  StrCat(token::kDiff);
+  if (sub_expr->getType()->isEnumeralType()) {
+    StrCat(GetUnsafeTypeAsString(sub_expr->getType()), "::from(0)");
+  } else /* sub_expr->getType()->isIntegerType() */ {
+    StrCat(token::kZero);
+  }
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1816,20 +1852,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     Convert(sub_expr);
     break;
   case clang::CastKind::CK_IntegralToBoolean:
-    if (auto binop = clang::dyn_cast<clang::BinaryOperator>(
-            sub_expr->IgnoreParenImpCasts())) {
-      // This already produces bool, no need for != 0
-      if (binop->isComparisonOp()) {
-        Convert(sub_expr);
-        break;
-      }
-    }
-
-    {
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(token::kDiff, token::kZero);
-    }
+    ConvertIntegralToBooleanCast(expr);
     break;
   case clang::CastKind::CK_PointerToBoolean:
     StrCat(token::kNot);

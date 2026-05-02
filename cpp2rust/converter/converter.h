@@ -243,6 +243,8 @@ public:
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
 
+  void ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr);
+
   virtual bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr);
 
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
