@@ -18,13 +18,13 @@ unsafe fn main_0() -> i32 {
     if !(p).is_null() {
         assert!((1 != 0));
     }
-    if (!(!(p).is_null()) as bool) {
+    if !(!(p).is_null()) {
         assert!((0 != 0));
     }
     if !(np).is_null() {
         assert!((0 != 0));
     }
-    if (!(!(np).is_null()) as bool) {
+    if !(!(np).is_null()) {
         assert!((1 != 0));
     }
     let mut iter: *mut i32 = p;

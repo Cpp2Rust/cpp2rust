@@ -95,12 +95,12 @@ pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
         let _elem: i32 = (start_vertex as i32);
         Q.enqueue(_elem)
     });
-    'loop_: while (!(unsafe { Q.empty() }) as bool) {
+    'loop_: while !(unsafe { Q.empty() }) {
         let mut current_vertex: i32 = ((unsafe { Q.dequeue() }) as i32);
         let mut head: *mut GraphNode = (*(*graph).adj.offset((current_vertex) as isize));
         'loop_: while !((head).is_null()) {
             let mut adj_vertex: i32 = ((*head).vertex as i32);
-            if (!(*visited.offset((adj_vertex) as isize)) as bool) {
+            if !(*visited.offset((adj_vertex) as isize)) {
                 (*visited.offset((adj_vertex) as isize)) = true;
                 (unsafe {
                     let _elem: i32 = adj_vertex;

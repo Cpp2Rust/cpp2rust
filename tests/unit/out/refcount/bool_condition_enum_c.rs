@@ -32,13 +32,13 @@ fn main_0() -> i32 {
     if ((*code.borrow()) != Code::from(0)) {
         assert!((0 != 0));
     }
-    if (!((*code.borrow()) != Code::from(0)) as bool) {
+    if !((*code.borrow()) != Code::from(0)) {
         assert!((1 != 0));
     }
     if ((*err.borrow()) != Code::from(0)) {
         assert!((1 != 0));
     }
-    if (!((*err.borrow()) != Code::from(0)) as bool) {
+    if !((*err.borrow()) != Code::from(0)) {
         assert!((0 != 0));
     }
     let t9: Value<i32> = Rc::new(RefCell::new((!((*code.borrow()) != Code::from(0)) as i32)));

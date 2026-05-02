@@ -10,7 +10,7 @@ pub unsafe fn stacked_with_inner_fallthrough_0(mut x: i32, mut flag: i32) -> i32
     let mut r: i32 = 0;
     switch!(match x {
         v if v == 1 || v == 2 || v == 3 => {
-            if (!(flag != 0) as bool) {
+            if !(flag != 0) {
                 r = 50;
                 break;
             };

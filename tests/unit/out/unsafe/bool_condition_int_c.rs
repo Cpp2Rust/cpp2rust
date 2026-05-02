@@ -21,13 +21,13 @@ unsafe fn main_0() -> i32 {
     if (n != 0) {
         assert!((1 != 0));
     }
-    if (!(n != 0) as bool) {
+    if !(n != 0) {
         assert!((0 != 0));
     }
     if (zero != 0) {
         assert!((0 != 0));
     }
-    if (!(zero != 0) as bool) {
+    if !(zero != 0) {
         assert!((1 != 0));
     }
     if (u != 0) {

@@ -19,13 +19,13 @@ fn main_0() -> i32 {
     if ((*n.borrow()) != 0) {
         assert!(true);
     }
-    if (!((*n.borrow()) != 0) as bool) {
+    if !((*n.borrow()) != 0) {
         assert!(false);
     }
     if ((*zero.borrow()) != 0) {
         assert!(false);
     }
-    if (!((*zero.borrow()) != 0) as bool) {
+    if !((*zero.borrow()) != 0) {
         assert!(true);
     }
     if ((*u.borrow()) != 0) {
@@ -61,9 +61,9 @@ fn main_0() -> i32 {
         200
     }));
     assert!(((*t2.borrow()) == 200));
-    let t7: Value<i32> = Rc::new(RefCell::new(((!((*n.borrow()) != 0) as bool) as i32)));
+    let t7: Value<i32> = Rc::new(RefCell::new((!((*n.borrow()) != 0) as i32)));
     assert!(((*t7.borrow()) == 0));
-    let t8: Value<i32> = Rc::new(RefCell::new(((!((*zero.borrow()) != 0) as bool) as i32)));
+    let t8: Value<i32> = Rc::new(RefCell::new((!((*zero.borrow()) != 0) as i32)));
     assert!(((*t8.borrow()) == 1));
     let b1: Value<bool> = Rc::new(RefCell::new(((*n.borrow()) != 0)));
     assert!((*b1.borrow()));

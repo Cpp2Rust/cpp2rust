@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((b) == (5)));
     let mut fn_: Option<unsafe fn(*mut i32)> = None;
-    if (!(!(fn_).is_none()) as bool) {
+    if !(!(fn_).is_none()) {
         fn_ = Some(double_it_0);
     }
     let mut c: i32 = 3;

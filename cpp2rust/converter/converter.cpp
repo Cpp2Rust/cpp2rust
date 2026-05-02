@@ -2149,7 +2149,8 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     break;
   case clang::UO_LNot: {
-    bool needs_int_cast = expr->getType()->isIntegerType();
+    bool needs_int_cast =
+        expr->getType()->isIntegerType() && !expr->getType()->isBooleanType();
     PushParen paren_cast(*this, needs_int_cast);
     StrCat(token::kNot);
     {

@@ -21,13 +21,13 @@ unsafe fn main_0() -> i32 {
     if (n != 0) {
         assert!(true);
     }
-    if (!(n != 0) as bool) {
+    if !(n != 0) {
         assert!(false);
     }
     if (zero != 0) {
         assert!(false);
     }
-    if (!(zero != 0) as bool) {
+    if !(zero != 0) {
         assert!(true);
     }
     if (u != 0) {
@@ -59,9 +59,9 @@ unsafe fn main_0() -> i32 {
     assert!(((t) == (100)));
     let mut t2: i32 = if (zero != 0) { 100 } else { 200 };
     assert!(((t2) == (200)));
-    let mut t7: i32 = ((!(n != 0) as bool) as i32);
+    let mut t7: i32 = (!(n != 0) as i32);
     assert!(((t7) == (0)));
-    let mut t8: i32 = ((!(zero != 0) as bool) as i32);
+    let mut t8: i32 = (!(zero != 0) as i32);
     assert!(((t8) == (1)));
     let mut b1: bool = (n != 0);
     assert!(b1);

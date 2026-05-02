@@ -10,6 +10,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((!(0 != 0) as bool));
+    assert!(!(0 != 0));
     return 1;
 }

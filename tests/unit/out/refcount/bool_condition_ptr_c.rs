@@ -16,13 +16,13 @@ fn main_0() -> i32 {
     if !(*p.borrow()).is_null() {
         assert!((1 != 0));
     }
-    if (!(!(*p.borrow()).is_null()) as bool) {
+    if !(!(*p.borrow()).is_null()) {
         assert!((0 != 0));
     }
     if !(*np.borrow()).is_null() {
         assert!((0 != 0));
     }
-    if (!(!(*np.borrow()).is_null()) as bool) {
+    if !(!(*np.borrow()).is_null()) {
         assert!((1 != 0));
     }
     let iter: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));

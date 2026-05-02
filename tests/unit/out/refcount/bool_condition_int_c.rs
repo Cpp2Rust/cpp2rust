@@ -19,13 +19,13 @@ fn main_0() -> i32 {
     if ((*n.borrow()) != 0) {
         assert!((1 != 0));
     }
-    if (!((*n.borrow()) != 0) as bool) {
+    if !((*n.borrow()) != 0) {
         assert!((0 != 0));
     }
     if ((*zero.borrow()) != 0) {
         assert!((0 != 0));
     }
-    if (!((*zero.borrow()) != 0) as bool) {
+    if !((*zero.borrow()) != 0) {
         assert!((1 != 0));
     }
     if ((*u.borrow()) != 0) {

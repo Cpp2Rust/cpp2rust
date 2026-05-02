@@ -34,13 +34,13 @@ unsafe fn main_0() -> i32 {
     if (code != Code::from(0)) {
         assert!((0 != 0));
     }
-    if (!(code != Code::from(0)) as bool) {
+    if !(code != Code::from(0)) {
         assert!((1 != 0));
     }
     if (err != Code::from(0)) {
         assert!((1 != 0));
     }
-    if (!(err != Code::from(0)) as bool) {
+    if !(err != Code::from(0)) {
         assert!((0 != 0));
     }
     let mut t9: i32 = (!(code != Code::from(0)) as i32);

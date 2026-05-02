@@ -152,7 +152,7 @@ pub fn BFS_0(graph: Ptr<Graph>, start_vertex: u32) -> Ptr<u32> {
         let _elem: i32 = ((*start_vertex.borrow()) as i32);
         (*Q.borrow()).enqueue(_elem)
     });
-    'loop_: while (!({ (*Q.borrow()).empty() }) as bool) {
+    'loop_: while !({ (*Q.borrow()).empty() }) {
         let current_vertex: Value<i32> =
             Rc::new(RefCell::new((({ (*Q.borrow()).dequeue() }) as i32)));
         let head: Value<Ptr<GraphNode>> = Rc::new(RefCell::new(
@@ -165,9 +165,9 @@ pub fn BFS_0(graph: Ptr<Graph>, start_vertex: u32) -> Ptr<u32> {
             let adj_vertex: Value<i32> = Rc::new(RefCell::new(
                 ((*(*(*head.borrow()).upgrade().deref()).vertex.borrow()) as i32),
             ));
-            if (!((*visited.borrow())
+            if !((*visited.borrow())
                 .offset((*adj_vertex.borrow()) as isize)
-                .read()) as bool)
+                .read())
             {
                 (*visited.borrow())
                     .offset((*adj_vertex.borrow()) as isize)
