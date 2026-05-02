@@ -684,6 +684,15 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
 }
 
 clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+  if (auto bin = clang::dyn_cast<clang::UnaryOperator>(expr)) {
+    if (bin->getOpcode() == clang::UO_LNot) {
+      return clang::UnaryOperator::Create(
+          ctx, bin->getSubExpr(), clang::UO_LNot, ctx.BoolTy, clang::VK_PRValue,
+          clang::OK_Ordinary, clang::SourceLocation(), false,
+          clang::FPOptionsOverride());
+    }
+  }
+
   clang::CastKind cast_kind;
   if (expr->getType()->isPointerType()) {
     cast_kind = clang::CK_PointerToBoolean;
