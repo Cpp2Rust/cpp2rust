@@ -2320,21 +2320,11 @@ bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
     }
   }
 
-  // Add cast to avoid ambigous integers. Don't add cast if sub expression is a
-  // pointer dereference because we might want to mutate the dereferenced value.
-  bool should_add_integral_cast =
-      expr->getType()->isIntegralOrEnumerationType() && !isAddrOf() &&
-      !isVoid() && !clang::isa<clang::UnaryOperator>(expr->getSubExpr());
-  PushParen outer(*this, should_add_integral_cast);
-
   {
     PushParen inner(*this);
     Convert(expr->getSubExpr());
   }
 
-  if (should_add_integral_cast) {
-    ConvertCast(expr->getType());
-  }
   return false;
 }
 
