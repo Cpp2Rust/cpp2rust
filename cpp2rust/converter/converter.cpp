@@ -1749,7 +1749,6 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
     }
     // Distribute bool conversion to each argument of the logical op.
     if (binop->isLogicalOp()) {
-      PushParen outer(*this);
       {
         PushParen paren(*this);
         ConvertCondition(binop->getLHS());
