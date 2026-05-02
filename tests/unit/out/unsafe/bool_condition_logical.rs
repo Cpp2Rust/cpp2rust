@@ -75,5 +75,32 @@ unsafe fn main_0() -> i32 {
         assert!(true);
     }
     assert!(((side_effect) == (0)));
+    let mut chunk_count: i32 = 5;
+    let mut max_chunks: i32 = 3;
+    let mut opts: u32 = 2_u32;
+    if (((chunk_count) > (max_chunks)) || (((opts) & (1_u32)) != 0)) {
+        assert!(true);
+    }
+    if (((chunk_count) < (max_chunks)) || (((opts) & (1_u32)) != 0)) {
+        assert!(false);
+    }
+    let mut a_id: u32 = 1_u32;
+    let mut b_id: u32 = 2_u32;
+    let mut other_id: u32 = 3_u32;
+    if (((a_id) != (other_id)) && ((b_id) != (other_id))) {
+        assert!(true);
+    }
+    let mut reply_ms: i32 = -1_i32;
+    if ((!((p).is_null())) && ((reply_ms) < (0))) {
+        assert!(true);
+    }
+    let mut baller_count: u32 = 2_u32;
+    let mut ballers_complete: bool = false;
+    if (((baller_count) > (1_u32)) || (!ballers_complete)) {
+        assert!(true);
+    }
+    if (((chunk_count) > (max_chunks)) || (((opts) & (4_u32)) != 0)) {
+        assert!(true);
+    }
     return 0;
 }
