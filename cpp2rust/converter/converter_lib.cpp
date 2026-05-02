@@ -688,6 +688,8 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
     return expr;
   }
 
+  // If logical not returns integer, then craft a new logical not that returns
+  // bool.
   if (auto bin = clang::dyn_cast<clang::UnaryOperator>(expr)) {
     if (bin->getOpcode() == clang::UO_LNot) {
       return clang::UnaryOperator::Create(
@@ -697,6 +699,7 @@ clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
     }
   }
 
+  // Either to pointer -> bool, or int -> bool.
   clang::CastKind cast_kind;
   if (expr->getType()->isPointerType()) {
     cast_kind = clang::CK_PointerToBoolean;
