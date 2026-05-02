@@ -683,7 +683,7 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt) {
   return false;
 }
 
-clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx) {
+clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx) {
   if (expr->getType()->isBooleanType()) {
     return expr;
   }

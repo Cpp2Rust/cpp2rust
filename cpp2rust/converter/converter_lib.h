@@ -154,7 +154,7 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
-clang::Expr *CreateConversionToBool(clang::Expr *expr, clang::ASTContext &ctx);
+clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
 std::vector<clang::SwitchCase *>
 GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
