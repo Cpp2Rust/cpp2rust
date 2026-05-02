@@ -43,6 +43,6 @@ fn main_0() -> i32 {
     let b2: Value<bool> = Rc::new(RefCell::new((!(*p.borrow()).is_null()).clone()));
     let b3: Value<bool> = Rc::new(RefCell::new((!(*np.borrow()).is_null()).clone()));
     assert!((*b2.borrow()));
-    assert!(!(*b3.borrow()));
+    assert!(((!(*b3.borrow()) as i32) != 0));
     return 0;
 }

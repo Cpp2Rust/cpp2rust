@@ -1,6 +1,6 @@
 #include <assert.h>
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 enum Code { CODE_OK = 0, CODE_ERR = 1, CODE_FATAL = 2 };
 

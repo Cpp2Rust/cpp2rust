@@ -30,10 +30,11 @@ unsafe fn main_0() -> i32 {
     if ((a) < (b)) {}
     assert!(((a) == (b)));
     assert!(
-        !((({
+        ((!((({
             a = b;
             a
         }) as i32)
+            != 0) as i32)
             != 0)
     );
     let mut c: bool = false;
