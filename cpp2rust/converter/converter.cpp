@@ -1012,7 +1012,10 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
     Convert(stmt->getBody());
     curr_for_inc_.pop();
     StrCat(keyword::kIf, token::kNot);
-    ConvertCondition(stmt->getCond());
+    {
+      PushParen paren(*this);
+      ConvertCondition(stmt->getCond());
+    }
     {
       PushBrace if_brace(*this);
       StrCat(keyword::kBreak, token::kSemiColon);
@@ -1748,13 +1751,13 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
     if (binop->isLogicalOp()) {
       PushParen outer(*this);
       {
-      PushParen paren(*this);
-      ConvertCondition(binop->getLHS());
+        PushParen paren(*this);
+        ConvertCondition(binop->getLHS());
       }
       StrCat(binop->getOpcodeStr());
       {
-      PushParen paren(*this);
-      ConvertCondition(binop->getRHS());
+        PushParen paren(*this);
+        ConvertCondition(binop->getRHS());
       }
       return;
     }
@@ -2150,10 +2153,10 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     bool needs_int_cast = expr->getType()->isIntegerType();
     PushParen paren_cast(*this, needs_int_cast);
     StrCat(token::kNot);
-      {
+    {
       PushParen paren(*this);
-    ConvertCondition(sub_expr);
-      }
+      ConvertCondition(sub_expr);
+    }
     if (needs_int_cast) {
       ConvertCast(expr->getType());
     }
