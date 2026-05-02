@@ -17,7 +17,7 @@ fn main_0() -> i32 {
     assert!(((*v1.borrow()).len() as u64 == 0_u64));
     assert!((*v1.borrow()).is_empty());
     (*v1.borrow_mut()).push(1);
-    assert!(!(*v1.borrow()).is_empty());
+    assert!((!((*v1.borrow()).is_empty()) as bool));
     (*v1.borrow_mut()).pop();
     assert!((*v1.borrow()).is_empty());
     let s1: Value<u64> = Rc::new(RefCell::new((*v1.borrow()).len() as u64));

@@ -30,7 +30,7 @@ unsafe fn main_0() -> i32 {
     if ((a) < (b)) {}
     assert!(((a) == (b)));
     assert!(
-        (!(({
+        !((({
             a = b;
             a
         }) as i32)

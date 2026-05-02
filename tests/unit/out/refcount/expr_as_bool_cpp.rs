@@ -28,11 +28,11 @@ fn main_0() -> i32 {
     if ((*a.borrow()) < (*b.borrow())) {}
     assert!(((*a.borrow()) == (*b.borrow())));
     assert!(
-        !((({
+        (!((({
             (*a.borrow_mut()) = (*b.borrow());
             (*a.borrow())
         }) as i32)
-            != 0)
+            != 0) as bool)
     );
     let c: Value<bool> = <Value<bool>>::default();
     (*c.borrow_mut()) = ({

@@ -11,7 +11,7 @@ pub fn test1_0() -> bool {
 }
 pub fn test_1(fn_: FnPtr<fn() -> bool>) -> i32 {
     let fn_: Value<FnPtr<fn() -> bool>> = Rc::new(RefCell::new(fn_));
-    if !({ (*(*fn_.borrow()))() }) {
+    if (!({ (*(*fn_.borrow()))() }) as bool) {
         return 1;
     }
     return 0;
