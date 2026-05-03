@@ -77,14 +77,18 @@ unsafe fn main_0() -> i32 {
     c.len = (::std::mem::size_of::<shape_b>() as u64 as u32);
     (*(((&mut c.u.a as *mut shape_a) as *mut ::libc::c_void) as *mut shape_b)).tail =
         3735928559_u32;
-    assert!(((c.u.b.tail) == (3735928559_u32)));
-    assert!(((c.u.b.code as i32) == (10)));
+    assert!(((((c.u.b.tail) == (3735928559_u32)) as i32) != 0));
+    assert!(((((c.u.b.code as i32) == (10)) as i32) != 0));
     c.u.b.lo = 8080_u16;
     assert!(
-        (((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((2) as isize)) as i32) == (144))
+        (((((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((2) as isize)) as i32) == (144))
+            as i32)
+            != 0)
     );
     assert!(
-        (((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((3) as isize)) as i32) == (31))
+        (((((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((3) as isize)) as i32) == (31))
+            as i32)
+            != 0)
     );
     return 0;
 }

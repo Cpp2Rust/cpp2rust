@@ -76,8 +76,8 @@ unsafe fn main_0() -> i32 {
     ex.len = (::std::mem::size_of::<record>() as u64 as u32);
     ex.body.h.code = 2_u16;
     ex.body.h.pad[(0) as usize] = (('X' as i32) as u8);
-    assert!(((ex.body.h.code as i32) == (2)));
-    assert!(((ex.body.h.pad[(0) as usize] as i32) == ('X' as i32)));
-    assert!(((ex.body.nested.view.h.code as i32) == (2)));
+    assert!(((((ex.body.h.code as i32) == (2)) as i32) != 0));
+    assert!(((((ex.body.h.pad[(0) as usize] as i32) == ('X' as i32)) as i32) != 0));
+    assert!(((((ex.body.nested.view.h.code as i32) == (2)) as i32) != 0));
     return 0;
 }

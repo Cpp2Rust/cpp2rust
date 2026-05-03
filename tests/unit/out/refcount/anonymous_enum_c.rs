@@ -96,17 +96,25 @@ fn main_0() -> i32 {
             }
         }
     };
-    assert!(((anon_enum_3::FIRST_A as i32) != (anon_enum_3::FIRST_B as i32)));
-    assert!(((anon_enum_11::SECOND_A as i32) != (anon_enum_11::SECOND_B as i32)));
-    assert!(((anon_enum_31::THIRD_A as i32) != (anon_enum_31::THIRD_B as i32)));
+    assert!(((((anon_enum_3::FIRST_A as i32) != (anon_enum_3::FIRST_B as i32)) as i32) != 0));
+    assert!(((((anon_enum_11::SECOND_A as i32) != (anon_enum_11::SECOND_B as i32)) as i32) != 0));
+    assert!(((((anon_enum_31::THIRD_A as i32) != (anon_enum_31::THIRD_B as i32)) as i32) != 0));
     let td: Value<TdEnum> = Rc::new(RefCell::new(TdEnum::from((TdEnum::TD_A as i32))));
-    assert!((((*td.borrow()) as u32) == ((TdEnum::TD_A as i32) as u32)));
+    assert!((((((*td.borrow()) as u32) == ((TdEnum::TD_A as i32) as u32)) as i32) != 0));
     (*td.borrow_mut()) = TdEnum::from((TdEnum::TD_B as i32));
-    assert!((((*td.borrow()) as u32) == ((TdEnum::TD_B as i32) as u32)));
+    assert!((((((*td.borrow()) as u32) == ((TdEnum::TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
     (*(*w.borrow()).field.borrow_mut()) = anon_enum_24::from((anon_enum_24::FIELD_A as i32));
-    assert!((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_A as i32) as u32)));
+    assert!(
+        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_A as i32) as u32))
+            as i32)
+            != 0)
+    );
     (*(*w.borrow()).field.borrow_mut()) = anon_enum_24::from((anon_enum_24::FIELD_B as i32));
-    assert!((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_B as i32) as u32)));
+    assert!(
+        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_B as i32) as u32))
+            as i32)
+            != 0)
+    );
     return 0;
 }

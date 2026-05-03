@@ -33,15 +33,15 @@ unsafe fn main_0() -> i32 {
         iters.prefix_inc();
         iter = Default::default();
     }
-    assert!(((iters) == (1)));
+    assert!(((((iters) == (1)) as i32) != 0));
     let mut t3: i32 = if !(p).is_null() { 1 } else { 0 };
-    assert!(((t3) == (1)));
+    assert!(((((t3) == (1)) as i32) != 0));
     let mut t4: i32 = if !(np).is_null() { 1 } else { 0 };
-    assert!(((t4) == (0)));
+    assert!(((((t4) == (0)) as i32) != 0));
     let mut t5: i32 = (!!(p).is_null() as i32);
-    assert!(((t5) == (0)));
+    assert!(((((t5) == (0)) as i32) != 0));
     let mut t6: i32 = (!!(np).is_null() as i32);
-    assert!(((t6) == (1)));
+    assert!(((((t6) == (1)) as i32) != 0));
     let mut b2: bool = !(p).is_null();
     let mut b3: bool = !(np).is_null();
     assert!(b2);

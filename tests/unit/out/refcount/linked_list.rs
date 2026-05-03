@@ -204,22 +204,20 @@ fn main_0() -> i32 {
         .val
         .borrow())
             == 1))
-        && ({
-            let _lhs = ((*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                let _idx: i32 = 4;
-                Find_0(_head, _idx)
-            })
-            .upgrade()
-            .deref())
-            .val
-            .borrow())
-                == -1_i32);
-            _lhs && (({
+        && (((*(*({
+            let _head: Ptr<Node> = (*head.borrow()).clone();
+            let _idx: i32 = 4;
+            Find_0(_head, _idx)
+        })
+        .upgrade()
+        .deref())
+        .val
+        .borrow())
+            == -1_i32)
+            && (({
                 let _head: Ptr<Node> = (*head.borrow()).clone();
                 let _idx: i32 = 5;
                 Find_0(_head, _idx)
             })
-            .is_null())
-        })) as i32);
+            .is_null()))) as i32);
 }

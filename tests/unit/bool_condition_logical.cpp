@@ -9,6 +9,9 @@ int observe(int v) {
   return v;
 }
 
+int returns_one() { return 1; }
+int returns_zero() { return 0; }
+
 int main() {
   int n = 3;
   int zero = 0;
@@ -74,6 +77,51 @@ int main() {
   }
 
   if (((x > y)) || ((flags & 0x4u))) {
+    assert(true);
+  }
+
+  unsigned long long ull = 7ull;
+  if ((p != nullptr) && ull) {
+    assert(true);
+  }
+  if ((x > y) && ull) {
+    assert(true);
+  }
+
+  long long mask = (1ll << 4) | (1ll << 5);
+  long long bits = 1ll << 4;
+  if ((n != 0) && (bits & mask)) {
+    assert(true);
+  }
+  if ((n != 0) || (bits & 0x100ll)) {
+    assert(true);
+  }
+
+  const char *cp = "hi";
+  const char *cnp = nullptr;
+  if ((x > y) && cp) {
+    assert(true);
+  }
+  if ((x < y) || cnp) {
+    assert(false);
+  }
+  if ((x > y) && (n && cp)) {
+    assert(true);
+  }
+
+  if ((x > y) && returns_one()) {
+    assert(true);
+  }
+  if ((x > y) && !returns_zero()) {
+    assert(true);
+  }
+  if ((x < y) || returns_one()) {
+    assert(true);
+  }
+  if ((x < y) || !returns_one()) {
+    assert(false);
+  }
+  if ((p != nullptr) && returns_one() && (n != 0)) {
     assert(true);
   }
 

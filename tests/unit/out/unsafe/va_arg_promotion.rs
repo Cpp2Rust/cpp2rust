@@ -12,9 +12,9 @@ pub unsafe fn test_promotions_0(mut count: i32, args: &[VaArg]) -> i32 {
     let mut a: i32 = ap.arg::<i32>();
     let mut b: i32 = ap.arg::<i32>();
     let mut c: f64 = ap.arg::<f64>();
-    assert!(((a) == (65)));
-    assert!(((b) == (10)));
-    assert!(((c) == (3.0E+0)));
+    assert!(((((a) == (65)) as i32) != 0));
+    assert!(((((b) == (10)) as i32) != 0));
+    assert!(((((c) == (3.0E+0)) as i32) != 0));
     return (((a) + (b)) + (c as i32));
 }
 pub fn main() {
@@ -27,13 +27,14 @@ unsafe fn main_0() -> i32 {
     let mut y: i16 = 10_i16;
     let mut z: f32 = 3.0E+0;
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 3;
             test_promotions_0(
                 _count,
                 &[(x as i32).into(), (y as i32).into(), (z as f64).into()],
             )
-        }) == (78))
+        }) == (78)) as i32)
+            != 0)
     );
     return 0;
 }

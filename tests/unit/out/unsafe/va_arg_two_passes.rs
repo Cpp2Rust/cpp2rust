@@ -12,18 +12,20 @@ pub unsafe fn sum_then_product_0(mut first: i32, args: &[VaArg]) -> i32 {
     let mut product: i32 = first;
     ap = VaList::new(args);
     let mut val: i32 = 0_i32;
-    'loop_: while (({
+    'loop_: while (((({
         val = ap.arg::<i32>();
         val
-    }) != (0))
+    }) != (0)) as i32)
+        != 0)
     {
         sum += val;
     }
     ap = VaList::new(args);
-    'loop_: while (({
+    'loop_: while (((({
         val = ap.arg::<i32>();
         val
-    }) != (0))
+    }) != (0)) as i32)
+        != 0)
     {
         product *= val;
     }
@@ -36,10 +38,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _first: i32 = 2;
             sum_then_product_0(_first, &[3.into(), 4.into(), 0.into()])
-        }) == (33))
+        }) == (33)) as i32)
+            != 0)
     );
     return 0;
 }

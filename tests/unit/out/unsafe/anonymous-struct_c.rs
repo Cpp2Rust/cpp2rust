@@ -80,17 +80,17 @@ unsafe fn main_0() -> i32 {
     o.anon_3.i = 9;
     o.anon_3.inner_named.j = 10;
     o.anon_3.anon_1.k = 11;
-    assert!(((o.named.a) == (1)));
-    assert!(((o.named.b) == (2)));
-    assert!(((o.anon0.c) == (3)));
-    assert!(((o.anon0.d) == (4)));
-    assert!(((o.anon1.g) == (5)));
-    assert!(((o.anon1.h) == (6)));
-    assert!(((o.anon_2.e) == (7)));
-    assert!(((o.anon_2.f) == (8)));
-    assert!(((o.anon_3.i) == (9)));
-    assert!(((o.anon_3.inner_named.j) == (10)));
-    assert!(((o.anon_3.anon_1.k) == (11)));
+    assert!(((((o.named.a) == (1)) as i32) != 0));
+    assert!(((((o.named.b) == (2)) as i32) != 0));
+    assert!(((((o.anon0.c) == (3)) as i32) != 0));
+    assert!(((((o.anon0.d) == (4)) as i32) != 0));
+    assert!(((((o.anon1.g) == (5)) as i32) != 0));
+    assert!(((((o.anon1.h) == (6)) as i32) != 0));
+    assert!(((((o.anon_2.e) == (7)) as i32) != 0));
+    assert!(((((o.anon_2.f) == (8)) as i32) != 0));
+    assert!(((((o.anon_3.i) == (9)) as i32) != 0));
+    assert!(((((o.anon_3.inner_named.j) == (10)) as i32) != 0));
+    assert!(((((o.anon_3.anon_1.k) == (11)) as i32) != 0));
     #[repr(C)]
     #[derive(Copy, Clone, Default)]
     pub struct anon_0 {

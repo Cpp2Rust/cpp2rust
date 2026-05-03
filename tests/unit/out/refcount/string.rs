@@ -59,14 +59,14 @@ fn main_0() -> i32 {
     let p2: Value<Ptr<u8>> = Rc::new(RefCell::new((s2.as_pointer() as Ptr<u8>)));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as u64) < ((*s2.borrow()).len() - 1) as u64) {
-        assert!({
-            let _lhs = ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
-                == (('a' as u8) as i32));
-            _lhs && ((((s2.as_pointer() as Ptr<u8>)
-                .offset(((*i.borrow()) as u64) as isize)
-                .read()) as i32)
+        assert!(
+            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
                 == (('a' as u8) as i32))
-        });
+                && ((((s2.as_pointer() as Ptr<u8>)
+                    .offset(((*i.borrow()) as u64) as isize)
+                    .read()) as i32)
+                    == (('a' as u8) as i32))
+        );
         (*i.borrow_mut()).prefix_inc();
     }
     assert!((((*s2.borrow()).len() - 1) as u64 == 10_u64));
@@ -87,14 +87,14 @@ fn main_0() -> i32 {
     );
     let i: Value<u32> = Rc::new(RefCell::new(2_u32));
     'loop_: while (((*i.borrow()) as u64) < ((*s2.borrow()).len() - 1) as u64) {
-        assert!({
-            let _lhs = ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
-                == (('a' as u8) as i32));
-            _lhs && ((((s2.as_pointer() as Ptr<u8>)
-                .offset(((*i.borrow()) as u64) as isize)
-                .read()) as i32)
+        assert!(
+            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
                 == (('a' as u8) as i32))
-        });
+                && ((((s2.as_pointer() as Ptr<u8>)
+                    .offset(((*i.borrow()) as u64) as isize)
+                    .read()) as i32)
+                    == (('a' as u8) as i32))
+        );
         (*i.borrow_mut()).prefix_inc();
     }
     let s3: Value<Vec<u8>> = Rc::new(RefCell::new({

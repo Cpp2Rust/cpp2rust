@@ -58,5 +58,5 @@ fn main_0() -> i32 {
     let eat2: Value<bool> = Rc::new(RefCell::new(
         ({ (*(*animal.borrow()).upgrade().deref()).bark() }),
     ));
-    return (((*eat1.borrow()) && !(*eat2.borrow())) as i32);
+    return (((*eat1.borrow()) && (!(*eat2.borrow()))) as i32);
 }

@@ -46,25 +46,25 @@ fn main_0() -> i32 {
         (*counter.borrow_mut()).prefix_dec();
         (*loop_count.borrow_mut()).prefix_inc();
     }
-    assert!(((*loop_count.borrow()) == 3));
+    assert!(((((*loop_count.borrow()) == 3) as i32) != 0));
     let i: Value<i32> = Rc::new(RefCell::new(5));
     'loop_: while ((*i.borrow()) != 0) {
         (*loop_count.borrow_mut()).prefix_inc();
         (*i.borrow_mut()).prefix_dec();
     }
-    assert!(((*loop_count.borrow()) == 8));
+    assert!(((((*loop_count.borrow()) == 8) as i32) != 0));
     let t: Value<i32> = Rc::new(RefCell::new(if ((*n.borrow()) != 0) { 100 } else { 200 }));
-    assert!(((*t.borrow()) == 100));
+    assert!(((((*t.borrow()) == 100) as i32) != 0));
     let t2: Value<i32> = Rc::new(RefCell::new(if ((*zero.borrow()) != 0) {
         100
     } else {
         200
     }));
-    assert!(((*t2.borrow()) == 200));
+    assert!(((((*t2.borrow()) == 200) as i32) != 0));
     let t7: Value<i32> = Rc::new(RefCell::new((!((*n.borrow()) != 0) as i32)));
-    assert!(((*t7.borrow()) == 0));
+    assert!(((((*t7.borrow()) == 0) as i32) != 0));
     let t8: Value<i32> = Rc::new(RefCell::new((!((*zero.borrow()) != 0) as i32)));
-    assert!(((*t8.borrow()) == 1));
+    assert!(((((*t8.borrow()) == 1) as i32) != 0));
     let b1: Value<bool> = Rc::new(RefCell::new(((*n.borrow()) != 0)));
     assert!((*b1.borrow()));
     return 0;

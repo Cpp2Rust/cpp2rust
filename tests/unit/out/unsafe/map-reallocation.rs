@@ -20,12 +20,12 @@ unsafe fn main_0() -> i32 {
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<i32>>, &sentinel);
     let mut p: *mut i32 = (&mut *it.second() as *mut i32);
     assert!(
-        (((*it.second()) == (sentinel))
-            && (!(b"iterator does not have correct value before insert\0".as_ptr()).is_null()))
+        ((*it.second()) == (sentinel))
+            && (!(b"iterator does not have correct value before insert\0".as_ptr()).is_null())
     );
     assert!(
-        (((*p) == (sentinel))
-            && (!(b"pointer does not have correct value before insert\0".as_ptr()).is_null()))
+        ((*p) == (sentinel))
+            && (!(b"pointer does not have correct value before insert\0".as_ptr()).is_null())
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (sentinel)) {
@@ -38,17 +38,17 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!(
-        (((*it.second()) != (0))
+        ((*it.second()) != (0))
             && (!(b"in refcount, iterator points to index 0 instead of sentinel\0".as_ptr())
-                .is_null()))
+                .is_null())
     );
     assert!(
-        (((*it.second()) == (sentinel))
-            && (!(b"iterator does not have correct value after insert\0".as_ptr()).is_null()))
+        ((*it.second()) == (sentinel))
+            && (!(b"iterator does not have correct value after insert\0".as_ptr()).is_null())
     );
     assert!(
-        (((*p) == (sentinel))
-            && (!(b"pointer does not have correct value after insert\0".as_ptr()).is_null()))
+        ((*p) == (sentinel))
+            && (!(b"pointer does not have correct value after insert\0".as_ptr()).is_null())
     );
     *it.second() = 57005;
     assert!(((*m.entry(sentinel).or_default().as_mut()) == (57005)));

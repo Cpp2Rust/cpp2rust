@@ -79,7 +79,7 @@ unsafe fn main_0() -> i32 {
         let _count: i64 = 1234605616436508552_i64;
         write_count_0(_s, _count)
     });
-    assert!(((buf64) == (1234605616436508552_i64)));
+    assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width::from((Width::W_32 as i32));
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
     (unsafe {
@@ -87,7 +87,7 @@ unsafe fn main_0() -> i32 {
         let _count: i64 = 305419896_i64;
         write_count_0(_s, _count)
     });
-    assert!(((buf32) == (305419896)));
+    assert!(((((buf32) == (305419896)) as i32) != 0));
     s.width = Width::from((Width::W_16 as i32));
     s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
     (unsafe {
@@ -95,6 +95,6 @@ unsafe fn main_0() -> i32 {
         let _count: i64 = 4660_i64;
         write_count_0(_s, _count)
     });
-    assert!(((buf16 as i32) == (4660)));
+    assert!(((((buf16 as i32) == (4660)) as i32) != 0));
     return 0;
 }

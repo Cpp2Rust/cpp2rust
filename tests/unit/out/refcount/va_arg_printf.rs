@@ -33,16 +33,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _fmt: Ptr<u8> = Ptr::from_string_literal("hello %d %d");
             logf_1(_fmt, &[10.into(), 32.into()])
-        }) == 42)
+        }) == 42) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _fmt: Ptr<u8> = Ptr::from_string_literal("x %d %d");
             logf_1(_fmt, &[1.into(), 2.into()])
-        }) == 3)
+        }) == 3) as i32)
+            != 0)
     );
     return 0;
 }

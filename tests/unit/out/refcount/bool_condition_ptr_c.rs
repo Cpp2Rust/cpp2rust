@@ -31,15 +31,15 @@ fn main_0() -> i32 {
         (*iters.borrow_mut()).prefix_inc();
         (*iter.borrow_mut()) = Default::default();
     }
-    assert!(((*iters.borrow()) == 1));
+    assert!(((((*iters.borrow()) == 1) as i32) != 0));
     let t3: Value<i32> = Rc::new(RefCell::new(if !(*p.borrow()).is_null() { 1 } else { 0 }));
-    assert!(((*t3.borrow()) == 1));
+    assert!(((((*t3.borrow()) == 1) as i32) != 0));
     let t4: Value<i32> = Rc::new(RefCell::new(if !(*np.borrow()).is_null() { 1 } else { 0 }));
-    assert!(((*t4.borrow()) == 0));
+    assert!(((((*t4.borrow()) == 0) as i32) != 0));
     let t5: Value<i32> = Rc::new(RefCell::new((!!(*p.borrow()).is_null() as i32)));
-    assert!(((*t5.borrow()) == 0));
+    assert!(((((*t5.borrow()) == 0) as i32) != 0));
     let t6: Value<i32> = Rc::new(RefCell::new((!!(*np.borrow()).is_null() as i32)));
-    assert!(((*t6.borrow()) == 1));
+    assert!(((((*t6.borrow()) == 1) as i32) != 0));
     let b2: Value<bool> = Rc::new(RefCell::new((!(*p.borrow()).is_null()).clone()));
     let b3: Value<bool> = Rc::new(RefCell::new((!(*np.borrow()).is_null()).clone()));
     assert!((*b2.borrow()));

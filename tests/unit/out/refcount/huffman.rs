@@ -15,10 +15,7 @@ pub struct MinHeapNode {
 }
 impl MinHeapNode {
     pub fn IsLeaf(&self) -> bool {
-        return {
-            let _lhs = ((*self.left.borrow()).is_null()).clone();
-            _lhs && ((*self.right.borrow()).is_null()).clone()
-        };
+        return (((*self.left.borrow()).is_null()) && ((*self.right.borrow()).is_null())).clone();
     }
 }
 impl Clone for MinHeapNode {
@@ -94,7 +91,7 @@ impl MinHeap {
         let smallest: Value<i32> = Rc::new(RefCell::new((*idx.borrow())));
         let left: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 1)));
         let right: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 2)));
-        if (((*left.borrow()) < (*self.size.borrow()))
+        if ((*left.borrow()) < (*self.size.borrow()))
             && ((*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
                 [((*left.borrow()) as u64) as usize]
                 .upgrade()
@@ -106,11 +103,11 @@ impl MinHeap {
                     .upgrade()
                     .deref())
                 .freq
-                .borrow())))
+                .borrow()))
         {
             (*smallest.borrow_mut()) = (*left.borrow());
         }
-        if (((*right.borrow()) < (*self.size.borrow()))
+        if ((*right.borrow()) < (*self.size.borrow()))
             && ((*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
                 [((*right.borrow()) as u64) as usize]
                 .upgrade()
@@ -122,7 +119,7 @@ impl MinHeap {
                     .upgrade()
                     .deref())
                 .freq
-                .borrow())))
+                .borrow()))
         {
             (*smallest.borrow_mut()) = (*right.borrow());
         }
@@ -161,9 +158,8 @@ impl MinHeap {
         let node: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(node));
         (*self.size.borrow_mut()).prefix_inc();
         let i: Value<i32> = Rc::new(RefCell::new(((*self.size.borrow()) - 1)));
-        'loop_: while {
-            let _lhs = ((*i.borrow()) != 0);
-            _lhs && {
+        'loop_: while ((*i.borrow()) != 0)
+            && ({
                 let _lhs = (*(*(*node.borrow()).upgrade().deref()).freq.borrow());
                 _lhs < (*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
                     [((((*i.borrow()) - 1) / 2) as u64) as usize]
@@ -171,8 +167,8 @@ impl MinHeap {
                     .deref())
                 .freq
                 .borrow())
-            }
-        } {
+            })
+        {
             let __rhs = ((*self.arr.borrow()).as_ref().unwrap().borrow()
                 [((((*i.borrow()) - 1) / 2) as u64) as usize])
                 .clone();

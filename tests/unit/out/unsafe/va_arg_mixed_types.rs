@@ -11,11 +11,11 @@ pub unsafe fn sum_mixed_0(mut count: i32, args: &[VaArg]) -> i32 {
     ap = VaList::new(args);
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
+    'loop_: while ((((i) < (count)) as i32) != 0) {
         let mut tag: i32 = ap.arg::<i32>();
-        if ((tag) == (0)) {
+        if ((((tag) == (0)) as i32) != 0) {
             total += ap.arg::<i32>();
-        } else if ((tag) == (1)) {
+        } else if ((((tag) == (1)) as i32) != 0) {
             total += (ap.arg::<f64>() as i32);
         } else {
             let mut val: i64 = ap.arg::<i64>();
@@ -32,7 +32,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 3;
             sum_mixed_0(
                 _count,
@@ -45,19 +45,22 @@ unsafe fn main_0() -> i32 {
                     30_i64.into(),
                 ],
             )
-        }) == (60))
+        }) == (60)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 1;
             sum_mixed_0(_count, &[0.into(), 42.into()])
-        }) == (42))
+        }) == (42)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 2;
             sum_mixed_0(_count, &[1.into(), 3.7E+0.into(), 2.into(), 100_i64.into()])
-        }) == (103))
+        }) == (103)) as i32)
+            != 0)
     );
     return 0;
 }

@@ -25,8 +25,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut u: basic = <basic>::default();
     u.i = 42;
-    assert!(((u.i) == (42)));
+    assert!(((((u.i) == (42)) as i32) != 0));
     u.f = 3.140000105E+0;
-    assert!(((u.f) == (3.140000105E+0)));
+    assert!(((((u.f) == (3.140000105E+0)) as i32) != 0));
     return 0;
 }

@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while (((*x.borrow_mut()).postfix_inc() < 100) && ((*x.borrow()) != 50)) {
+    'loop_: while ((*x.borrow_mut()).postfix_inc() < 100) && ((*x.borrow()) != 50) {
         (*x.borrow_mut()).prefix_inc();
     }
     return (*x.borrow());

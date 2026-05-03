@@ -50,12 +50,16 @@ unsafe fn main_0() -> i32 {
     m1.kind = Kind::from((Kind::KIND_DONE as i32));
     m1.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m1.payload.code = 42;
-    assert!(((m1.kind as u32) == ((Kind::KIND_DONE as i32) as u32)));
-    assert!(((m1.payload.code) == (42)));
+    assert!(((((m1.kind as u32) == ((Kind::KIND_DONE as i32) as u32)) as i32) != 0));
+    assert!(((((m1.payload.code) == (42)) as i32) != 0));
     let mut m2: Event = <Event>::default();
     m2.kind = Kind::from((Kind::KIND_NONE as i32));
     m2.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m2.payload.obj = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
-    assert!(((m2.payload.obj) == ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void)));
+    assert!(
+        ((((m2.payload.obj) == ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void))
+            as i32)
+            != 0)
+    );
     return 0;
 }

@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
         assert!((0 != 0));
     }
     let mut t9: i32 = (!(code != Code::from(0)) as i32);
-    assert!(((t9) == (1)));
+    assert!(((((t9) == (1)) as i32) != 0));
     let mut b4: bool = (code != Code::from(0));
     assert!(((!b4 as i32) != 0));
     return 0;

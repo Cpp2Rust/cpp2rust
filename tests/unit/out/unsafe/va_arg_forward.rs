@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn inner_0(mut count: i32, mut ap: VaList) -> i32 {
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
+    'loop_: while ((((i) < (count)) as i32) != 0) {
         total += ap.arg::<i32>();
         i.postfix_inc();
     }
@@ -32,22 +32,25 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 3;
             outer_1(_count, &[10.into(), 20.into(), 30.into()])
-        }) == (60))
+        }) == (60)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 1;
             outer_1(_count, &[42.into()])
-        }) == (42))
+        }) == (42)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 0;
             outer_1(_count, &[])
-        }) == (0))
+        }) == (0)) as i32)
+            != 0)
     );
     return 0;
 }

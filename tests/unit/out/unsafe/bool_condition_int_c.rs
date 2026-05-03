@@ -48,21 +48,21 @@ unsafe fn main_0() -> i32 {
         counter.prefix_dec();
         loop_count.prefix_inc();
     }
-    assert!(((loop_count) == (3)));
+    assert!(((((loop_count) == (3)) as i32) != 0));
     let mut i: i32 = 5;
     'loop_: while (i != 0) {
         loop_count.prefix_inc();
         i.prefix_dec();
     }
-    assert!(((loop_count) == (8)));
+    assert!(((((loop_count) == (8)) as i32) != 0));
     let mut t: i32 = if (n != 0) { 100 } else { 200 };
-    assert!(((t) == (100)));
+    assert!(((((t) == (100)) as i32) != 0));
     let mut t2: i32 = if (zero != 0) { 100 } else { 200 };
-    assert!(((t2) == (200)));
+    assert!(((((t2) == (200)) as i32) != 0));
     let mut t7: i32 = (!(n != 0) as i32);
-    assert!(((t7) == (0)));
+    assert!(((((t7) == (0)) as i32) != 0));
     let mut t8: i32 = (!(zero != 0) as i32);
-    assert!(((t8) == (1)));
+    assert!(((((t8) == (1)) as i32) != 0));
     let mut b1: bool = (n != 0);
     assert!(b1);
     return 0;

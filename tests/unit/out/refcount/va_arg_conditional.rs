@@ -22,18 +22,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _verbose: i32 = 1;
             let _fmt: Ptr<u8> = Ptr::from_string_literal("%d");
             conditional_log_0(_verbose, _fmt, &[42.into()])
-        }) == 42)
+        }) == 42) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _verbose: i32 = 0;
             let _fmt: Ptr<u8> = Ptr::from_string_literal("%d");
             conditional_log_0(_verbose, _fmt, &[99.into()])
-        }) == -1_i32)
+        }) == -1_i32) as i32)
+            != 0)
     );
     return 0;
 }

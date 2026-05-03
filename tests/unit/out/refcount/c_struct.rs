@@ -62,8 +62,8 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(10)),
         y: Rc::new(RefCell::new(20)),
     }));
-    assert!(((*(*p.borrow()).x.borrow()) == 10));
-    assert!(((*(*p.borrow()).y.borrow()) == 20));
+    assert!(((((*(*p.borrow()).x.borrow()) == 10) as i32) != 0));
+    assert!(((((*(*p.borrow()).y.borrow()) == 20) as i32) != 0));
     let l: Value<Line> = Rc::new(RefCell::new(Line {
         start: Rc::new(RefCell::new(Point {
             x: Rc::new(RefCell::new(1)),
@@ -74,8 +74,8 @@ fn main_0() -> i32 {
             y: Rc::new(RefCell::new(4)),
         })),
     }));
-    assert!(((*(*(*l.borrow()).start.borrow()).x.borrow()) == 1));
-    assert!(((*(*(*l.borrow()).end.borrow()).y.borrow()) == 4));
+    assert!(((((*(*(*l.borrow()).start.borrow()).x.borrow()) == 1) as i32) != 0));
+    assert!(((((*(*(*l.borrow()).end.borrow()).y.borrow()) == 4) as i32) != 0));
     let a: Value<Node> = Rc::new(RefCell::new(Node {
         value: Rc::new(RefCell::new(1)),
         next: Rc::new(RefCell::new(Default::default())),
@@ -85,10 +85,11 @@ fn main_0() -> i32 {
         next: Rc::new(RefCell::new((a.as_pointer()))),
     }));
     assert!(
-        ((*(*(*(*b.borrow()).next.borrow()).upgrade().deref())
+        ((((*(*(*(*b.borrow()).next.borrow()).upgrade().deref())
             .value
             .borrow())
-            == 1)
+            == 1) as i32)
+            != 0)
     );
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: Rc::new(RefCell::new(Inner {
@@ -98,12 +99,15 @@ fn main_0() -> i32 {
         color: Rc::new(RefCell::new(Color::from((Color::GREEN as i32)))),
         count: Rc::new(RefCell::new(42)),
     }));
-    assert!(((*(*(*c.borrow()).inner.borrow()).a.borrow()) == 5));
-    assert!(((*(*(*c.borrow()).inner.borrow()).b.borrow()) == 6));
-    assert!((((*(*c.borrow()).color.borrow()) as u32) == ((Color::GREEN as i32) as u32)));
-    assert!(((*(*c.borrow()).count.borrow()) == 42));
+    assert!(((((*(*(*c.borrow()).inner.borrow()).a.borrow()) == 5) as i32) != 0));
+    assert!(((((*(*(*c.borrow()).inner.borrow()).b.borrow()) == 6) as i32) != 0));
+    assert!(
+        (((((*(*c.borrow()).color.borrow()) as u32) == ((Color::GREEN as i32) as u32)) as i32)
+            != 0)
+    );
+    assert!(((((*(*c.borrow()).count.borrow()) == 42) as i32) != 0));
     let c2: Value<Container> = <Value<Container>>::default();
     (*(*c2.borrow()).color.borrow_mut()) = Color::from((Color::BLUE as i32));
-    assert!((((*(*c2.borrow()).color.borrow()) as u32) == 2_u32));
+    assert!((((((*(*c2.borrow()).color.borrow()) as u32) == 2_u32) as i32) != 0));
     return 0;
 }

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn fib_0(n: u64) -> u64 {
     let n: Value<u64> = Rc::new(RefCell::new(n));
-    return if (((*n.borrow()) == 0_u64) || ((*n.borrow()) == 1_u64)) {
+    return if ((*n.borrow()) == 0_u64) || ((*n.borrow()) == 1_u64) {
         (*n.borrow())
     } else {
         ({

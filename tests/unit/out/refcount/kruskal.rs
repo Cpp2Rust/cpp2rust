@@ -97,7 +97,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
         };
     let i: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
     let j: Value<i32> = Rc::new(RefCell::new((*end.borrow())));
-    'loop_: while (((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow()))) {
+    'loop_: while ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
         'loop_: while {
             let _lhs = (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
                 [((*i.borrow()) as u64) as usize]
@@ -116,7 +116,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
         } {
             (*j.borrow_mut()).prefix_dec();
         }
-        if (((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow()))) {
+        if ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
             (*tmp.borrow_mut()) = Edge {
                 u: Rc::new(RefCell::new(
                     (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()

@@ -16,7 +16,7 @@ pub struct MinHeapNode {
 }
 impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
-        return (((self.left).is_null()) && ((self.right).is_null()));
+        return ((self.left).is_null()) && ((self.right).is_null());
     }
 }
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
@@ -65,15 +65,15 @@ impl MinHeap {
         let mut smallest: i32 = idx;
         let mut left: i32 = (((2) * (idx)) + (1));
         let mut right: i32 = (((2) * (idx)) + (2));
-        if (((left) < (self.size))
+        if ((left) < (self.size))
             && (((*self.arr.as_mut().unwrap()[(left as u64) as usize]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as u64) as usize]).freq)))
+                < ((*self.arr.as_mut().unwrap()[(smallest as u64) as usize]).freq))
         {
             smallest = left;
         }
-        if (((right) < (self.size))
+        if ((right) < (self.size))
             && (((*self.arr.as_mut().unwrap()[(right as u64) as usize]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as u64) as usize]).freq)))
+                < ((*self.arr.as_mut().unwrap()[(smallest as u64) as usize]).freq))
         {
             smallest = right;
         }
@@ -106,9 +106,9 @@ impl MinHeap {
     pub unsafe fn Insert(&mut self, mut node: *mut MinHeapNode) {
         self.size.prefix_inc();
         let mut i: i32 = ((self.size) - (1));
-        'loop_: while (((i) != (0))
+        'loop_: while ((i) != (0))
             && (((*node).freq)
-                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as u64) as usize]).freq)))
+                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as u64) as usize]).freq))
         {
             self.arr.as_mut().unwrap()[(i as u64) as usize] =
                 self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as u64) as usize];

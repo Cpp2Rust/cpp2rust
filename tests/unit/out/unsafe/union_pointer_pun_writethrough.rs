@@ -27,6 +27,6 @@ unsafe fn main_0() -> i32 {
     let mut pp: anon_0 = <anon_0>::default();
     pp.as_signed = (&mut x as *mut i64);
     (*pp.as_unsigned) = 42_u64;
-    assert!(((x) == (42_i64)));
+    assert!(((((x) == (42_i64)) as i32) != 0));
     return 0;
 }

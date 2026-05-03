@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn fib_0(mut n: *mut u64) {
-    if (((*n) == (0_u64)) || ((*n) == (1_u64))) {
+    if ((*n) == (0_u64)) || ((*n) == (1_u64)) {
         return;
     }
     let mut n_1: u64 = (*n).wrapping_sub(1_u64);

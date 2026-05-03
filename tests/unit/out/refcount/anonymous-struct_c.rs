@@ -85,26 +85,28 @@ fn main_0() -> i32 {
     (*(*(*(*o.borrow()).anon_3.borrow()).anon_1.borrow())
         .k
         .borrow_mut()) = 11;
-    assert!(((*(*(*o.borrow()).named.borrow()).a.borrow()) == 1));
-    assert!(((*(*(*o.borrow()).named.borrow()).b.borrow()) == 2));
-    assert!(((*(*(*o.borrow()).anon0.borrow()).c.borrow()) == 3));
-    assert!(((*(*(*o.borrow()).anon0.borrow()).d.borrow()) == 4));
-    assert!(((*(*(*o.borrow()).anon1.borrow()).g.borrow()) == 5));
-    assert!(((*(*(*o.borrow()).anon1.borrow()).h.borrow()) == 6));
-    assert!(((*(*(*o.borrow()).anon_2.borrow()).e.borrow()) == 7));
-    assert!(((*(*(*o.borrow()).anon_2.borrow()).f.borrow()) == 8));
-    assert!(((*(*(*o.borrow()).anon_3.borrow()).i.borrow()) == 9));
+    assert!(((((*(*(*o.borrow()).named.borrow()).a.borrow()) == 1) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).named.borrow()).b.borrow()) == 2) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon0.borrow()).c.borrow()) == 3) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon0.borrow()).d.borrow()) == 4) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon1.borrow()).g.borrow()) == 5) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon1.borrow()).h.borrow()) == 6) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon_2.borrow()).e.borrow()) == 7) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon_2.borrow()).f.borrow()) == 8) as i32) != 0));
+    assert!(((((*(*(*o.borrow()).anon_3.borrow()).i.borrow()) == 9) as i32) != 0));
     assert!(
-        ((*(*(*(*o.borrow()).anon_3.borrow()).inner_named.borrow())
+        ((((*(*(*(*o.borrow()).anon_3.borrow()).inner_named.borrow())
             .j
             .borrow())
-            == 10)
+            == 10) as i32)
+            != 0)
     );
     assert!(
-        ((*(*(*(*o.borrow()).anon_3.borrow()).anon_1.borrow())
+        ((((*(*(*(*o.borrow()).anon_3.borrow()).anon_1.borrow())
             .k
             .borrow())
-            == 11)
+            == 11) as i32)
+            != 0)
     );
     #[derive(Default)]
     pub struct anon_0 {

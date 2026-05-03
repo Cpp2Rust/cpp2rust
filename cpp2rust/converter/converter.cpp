@@ -1742,22 +1742,10 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   auto *stripped = sub_expr->IgnoreParenImpCasts();
 
   if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
-    // Comparison already produces bool, no wrap needed.
-    if (binop->isComparisonOp()) {
+    // Comparisons and logical ops already produces bool, no wrap needed.
+    if ((binop->isComparisonOp() || binop->isLogicalOp()) &&
+        binop->getType()->isBooleanType()) {
       Convert(sub_expr);
-      return;
-    }
-    // Distribute bool conversion to each argument of the logical op.
-    if (binop->isLogicalOp()) {
-      {
-        PushParen paren(*this);
-        ConvertCondition(binop->getLHS());
-      }
-      StrCat(binop->getOpcodeStr());
-      {
-        PushParen paren(*this);
-        ConvertCondition(binop->getRHS());
-      }
       return;
     }
   }
@@ -1945,6 +1933,21 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
 }
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
+  bool needs_cast = (expr->isComparisonOp() || expr->isLogicalOp()) &&
+                    expr->getType()->isIntegerType() &&
+                    !expr->getType()->isBooleanType();
+  PushParen outer(*this, needs_cast);
+  {
+    PushParen inner(*this, needs_cast);
+    ConvertBinaryOperator(expr);
+  }
+  if (needs_cast) {
+    ConvertCast(expr->getType());
+  }
+  return false;
+}
+
+void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto type = expr->getType();
   auto *lhs = expr->getLHS();
   auto *rhs = expr->getRHS();
@@ -2048,10 +2051,19 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
     }
     ConvertCast(expr->getType());
     computed_expr_type_ = ComputedExprType::FreshValue;
+  } else if (expr->isLogicalOp()) {
+    {
+      PushParen paren(*this);
+      ConvertCondition(expr->getLHS());
+    }
+    StrCat(expr->getOpcodeStr());
+    {
+      PushParen paren(*this);
+      ConvertCondition(expr->getRHS());
+    }
   } else {
     ConvertGenericBinaryOperator(expr);
   }
-  return false;
 }
 
 void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
@@ -2063,8 +2075,10 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 
   StrCat(expr->getOpcodeStr());
 
-  PushParen rhs_paren(*this);
-  Convert(expr->getRHS());
+  {
+    PushParen rhs_paren(*this);
+    Convert(expr->getRHS());
+  }
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {

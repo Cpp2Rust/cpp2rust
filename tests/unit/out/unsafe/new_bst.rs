@@ -14,13 +14,13 @@ pub struct node_t {
     pub value: i32,
 }
 pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
-    if (((value) < ((*node).value)) && (!(((*node).left).is_null()))) {
+    if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe {
             let _node: *mut node_t = (*node).left;
             let _value: i32 = value;
             find_0(_node, _value)
         });
-    } else if (((value) > ((*node).value)) && (!(((*node).right).is_null()))) {
+    } else if ((value) > ((*node).value)) && (!(((*node).right).is_null())) {
         return (unsafe {
             let _node: *mut node_t = (*node).right;
             let _value: i32 = value;
@@ -100,7 +100,7 @@ unsafe fn main_0() -> i32 {
         let _value: i32 = 4;
         insert_1(_node, _value)
     });
-    let mut out: bool = ((((((((*(unsafe {
+    let mut out: bool = (((((((*(unsafe {
         let _node: *mut node_t = root;
         let _value: i32 = 0;
         find_0(_node, _value)
@@ -140,7 +140,7 @@ unsafe fn main_0() -> i32 {
             let _value: i32 = 5;
             find_0(_node, _value)
         })
-        .is_null()));
+        .is_null());
     (unsafe {
         let _node: *mut node_t = root;
         del_2(_node)

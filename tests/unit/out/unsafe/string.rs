@@ -45,8 +45,8 @@ unsafe fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < ((s2.len() - 1) as u64)) {
         assert!(
-            ((((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
-                && ((s2[(i as u64) as usize] as i32) == (('a' as u8) as i32)))
+            (((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
+                && ((s2[(i as u64) as usize] as i32) == (('a' as u8) as i32))
         );
         i.prefix_inc();
     }
@@ -59,8 +59,8 @@ unsafe fn main_0() -> i32 {
     let mut i: u32 = 2_u32;
     'loop_: while ((i as u64) < ((s2.len() - 1) as u64)) {
         assert!(
-            ((((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
-                && ((s2[(i as u64) as usize] as i32) == (('a' as u8) as i32)))
+            (((*p2.offset((i) as isize)) as i32) == (('a' as u8) as i32))
+                && ((s2[(i as u64) as usize] as i32) == (('a' as u8) as i32))
         );
         i.prefix_inc();
     }

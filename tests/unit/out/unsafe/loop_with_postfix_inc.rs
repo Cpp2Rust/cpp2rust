@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
-    'loop_: while (((x.postfix_inc()) < (100)) && ((x) != (50))) {
+    'loop_: while ((x.postfix_inc()) < (100)) && ((x) != (50)) {
         x.prefix_inc();
     }
     return x;

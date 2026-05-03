@@ -13,17 +13,17 @@ pub unsafe fn sum_with_copy_0(mut count: i32, args: &[VaArg]) -> i32 {
     aq = ap.clone();
     let mut sum1: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
+    'loop_: while ((((i) < (count)) as i32) != 0) {
         sum1 += ap.arg::<i32>();
         i.postfix_inc();
     }
     let mut sum2: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
+    'loop_: while ((((i) < (count)) as i32) != 0) {
         sum2 += aq.arg::<i32>();
         i.postfix_inc();
     }
-    assert!(((sum1) == (sum2)));
+    assert!(((((sum1) == (sum2)) as i32) != 0));
     return ((sum1) + (sum2));
 }
 pub fn main() {
@@ -33,10 +33,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 3;
             sum_with_copy_0(_count, &[10.into(), 20.into(), 30.into()])
-        }) == (120))
+        }) == (120)) as i32)
+            != 0)
     );
     return 0;
 }

@@ -13,22 +13,16 @@ pub struct Pair {
 }
 impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
-        return {
-            let _lhs = {
-                let _lhs = (*self.x.borrow());
-                _lhs < (*(*other.upgrade().deref()).x.borrow())
-            };
-            _lhs || ({
-                let _lhs = {
-                    let _lhs = (*self.x.borrow());
-                    _lhs == (*(*other.upgrade().deref()).x.borrow())
-                };
-                _lhs && {
-                    let _lhs = (*self.y.borrow());
-                    _lhs < (*(*other.upgrade().deref()).y.borrow())
-                }
-            })
-        };
+        return ({
+            let _lhs = (*self.x.borrow());
+            _lhs < (*(*other.upgrade().deref()).x.borrow())
+        }) || (({
+            let _lhs = (*self.x.borrow());
+            _lhs == (*(*other.upgrade().deref()).x.borrow())
+        }) && ({
+            let _lhs = (*self.y.borrow());
+            _lhs < (*(*other.upgrade().deref()).y.borrow())
+        }));
     }
 }
 impl Ord for Pair {

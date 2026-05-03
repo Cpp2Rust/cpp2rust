@@ -1191,7 +1191,7 @@ void ConverterRefCount::EmitStmtExprTail(clang::Expr *tail) {
   StrCat("__result");
 }
 
-bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
+void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   auto *lhs = expr->getLHS();
   auto *rhs = expr->getRHS();
   auto lhs_type = lhs->getType();
@@ -1229,7 +1229,7 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
     }
     StrCat(token::kSemiColon);
     EmitSetOrAssign(lhs, "rhs_0");
-    return false;
+    return;
   }
 
   if (IsUnsignedArithOp(expr)) {
@@ -1249,7 +1249,7 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
       StrCat(token::kSemiColon);
       EmitSetOrAssign(lhs, "rhs_0");
     }
-    return false;
+    return;
   }
 
   // pointer subtraction. The Sub trait gets elements by Value, so we need
@@ -1263,15 +1263,15 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
     }
     ConvertCast(expr->getType());
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return false;
+    return;
   }
 
   if (expr->isAssignmentOp()) {
     ConvertAssignment(lhs, rhs, opcode_as_string);
-    return false;
+    return;
   }
 
-  return Converter::VisitBinaryOperator(expr);
+  Converter::ConvertBinaryOperator(expr);
 }
 
 bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
@@ -1840,7 +1840,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
     return;
   }
 
-  PushParen paren(*this);
+  PushParen outer(*this);
   Convert(lhs);
   StrCat(opcode);
   Convert(rhs);

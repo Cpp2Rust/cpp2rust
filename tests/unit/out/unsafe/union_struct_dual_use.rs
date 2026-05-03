@@ -41,10 +41,11 @@ unsafe fn main_0() -> i32 {
     standalone.a = 3;
     standalone.b = 4;
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _i: *mut Inner = (&mut standalone as *mut Inner);
             sum_inner_0(_i)
-        }) == (7))
+        }) == (7)) as i32)
+            != 0)
     );
     let mut outer: Outer = <Outer>::default();
     {
@@ -57,12 +58,13 @@ unsafe fn main_0() -> i32 {
     outer.u.inner.a = 3;
     outer.u.inner.b = 4;
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _i: *mut Inner = (&mut outer.u.inner as *mut Inner);
             sum_inner_0(_i)
-        }) == (7))
+        }) == (7)) as i32)
+            != 0)
     );
-    assert!((((outer.u.raw_[(0) as usize] as u8) as i32) == (3)));
-    assert!((((outer.u.raw_[(4) as usize] as u8) as i32) == (4)));
+    assert!((((((outer.u.raw_[(0) as usize] as u8) as i32) == (3)) as i32) != 0));
+    assert!((((((outer.u.raw_[(4) as usize] as u8) as i32) == (4)) as i32) != 0));
     return 0;
 }

@@ -53,7 +53,7 @@ pub unsafe fn fill_0(mut out: *mut ::libc::c_void, mut cap: u64) {
     src[(5) as usize] = 0_u8;
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
-    let mut n: u64 = if ((::std::mem::size_of::<[u8; 16]>() as u64) < (cap)) {
+    let mut n: u64 = if ((((::std::mem::size_of::<[u8; 16]>() as u64) < (cap)) as i32) != 0) {
         ::std::mem::size_of::<[u8; 16]>() as u64
     } else {
         cap
@@ -90,10 +90,18 @@ unsafe fn main_0() -> i32 {
         let _cap: u64 = ::std::mem::size_of::<Container_anon_0>() as u64;
         fill_0(_out, _cap)
     });
-    assert!(((c.view.h.code as i32) == (2)));
-    assert!((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (0)));
-    assert!((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((1) as isize)) as i32) == (80)));
-    assert!(((c.view.raw_[(0) as usize] as i32) == (2)));
-    assert!((((c.view.raw_[(3) as usize] as u8) as i32) == (80)));
+    assert!(((((c.view.h.code as i32) == (2)) as i32) != 0));
+    assert!(
+        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (0))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((*((&mut c.view.h.lo as *mut u16) as *mut u8).offset((1) as isize)) as i32) == (80))
+            as i32)
+            != 0)
+    );
+    assert!(((((c.view.raw_[(0) as usize] as i32) == (2)) as i32) != 0));
+    assert!((((((c.view.raw_[(3) as usize] as u8) as i32) == (80)) as i32) != 0));
     return 0;
 }

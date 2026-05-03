@@ -48,13 +48,11 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
         let _lhs = (*i.borrow());
         _lhs < (n1.read())
     } {
-        let __rhs = {
-            let _lhs = (*out.borrow());
-            _lhs || (((*arr.upgrade().deref()).as_ref().unwrap().borrow()
+        let __rhs = (*out.borrow())
+            || (((*arr.upgrade().deref()).as_ref().unwrap().borrow()
                 [((*i.borrow()) as u64) as usize]
                 .read())
-                == 0)
-        };
+                == 0);
         (*out.borrow_mut()) = __rhs;
         (*i.borrow_mut()).prefix_inc();
     }

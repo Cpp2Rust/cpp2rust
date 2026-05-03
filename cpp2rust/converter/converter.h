@@ -252,6 +252,8 @@ public:
 
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
 
+  virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
+
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
   virtual bool VisitUnaryOperator(clang::UnaryOperator *expr);

@@ -70,10 +70,10 @@ unsafe fn main_0() -> i32 {
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
     };
-    assert!(((c.view.a.code as i32) == (0)));
-    assert!(((c.view.b.lo as i32) == (0)));
-    assert!(((c.view.raw_[(0) as usize] as i32) == (0)));
-    assert!(((c.view.raw_[(255) as usize] as i32) == (0)));
+    assert!(((((c.view.a.code as i32) == (0)) as i32) != 0));
+    assert!(((((c.view.b.lo as i32) == (0)) as i32) != 0));
+    assert!(((((c.view.raw_[(0) as usize] as i32) == (0)) as i32) != 0));
+    assert!(((((c.view.raw_[(255) as usize] as i32) == (0)) as i32) != 0));
     let mut src: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -86,7 +86,7 @@ unsafe fn main_0() -> i32 {
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
     let mut len: u64 = 16_u64;
-    assert!(((len) <= (::std::mem::size_of::<[u8; 256]>() as u64)));
+    assert!(((((len) <= (::std::mem::size_of::<[u8; 256]>() as u64)) as i32) != 0));
     {
         if len != 0 {
             ::std::ptr::copy_nonoverlapping(
@@ -97,8 +97,12 @@ unsafe fn main_0() -> i32 {
         }
         ((&mut c.view.raw_ as *mut [u8; 256]) as *mut [u8; 256] as *mut ::libc::c_void)
     };
-    assert!(((c.view.b.code as i32) == (2)));
-    assert!((((*((&mut c.view.b.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (80)));
+    assert!(((((c.view.b.code as i32) == (2)) as i32) != 0));
+    assert!(
+        (((((*((&mut c.view.b.lo as *mut u16) as *mut u8).offset((0) as isize)) as i32) == (80))
+            as i32)
+            != 0)
+    );
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
@@ -107,6 +111,6 @@ unsafe fn main_0() -> i32 {
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
     };
-    assert!(((c.view.b.code as i32) == (0)));
+    assert!(((((c.view.b.code as i32) == (0)) as i32) != 0));
     return 0;
 }

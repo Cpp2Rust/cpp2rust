@@ -95,10 +95,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: Color = Color::from((Color::RED as i32));
-    assert!(((c as u32) == ((Color::RED as i32) as u32)));
-    assert!(((c as u32) == (0_u32)));
-    assert!(((c as u32) != (1_u32)));
-    if ((c as u32) == ((Color::GREEN as i32) as u32)) {
+    assert!(((((c as u32) == ((Color::RED as i32) as u32)) as i32) != 0));
+    assert!(((((c as u32) == (0_u32)) as i32) != 0));
+    assert!(((((c as u32) != (1_u32)) as i32) != 0));
+    if ((((c as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0) {
         return 1;
     }
     'switch: {
@@ -119,48 +119,48 @@ unsafe fn main_0() -> i32 {
         }
     };
     let mut x: i32 = (c as i32);
-    assert!(((x) == (0)));
+    assert!(((((x) == (0)) as i32) != 0));
     let mut y: i32 = (((c as u32).wrapping_add(1_u32)) as i32);
-    assert!(((y) == (1)));
+    assert!(((((y) == (1)) as i32) != 0));
     c = Color::from(2);
-    assert!(((c as u32) == ((Color::BLUE as i32) as u32)));
-    assert!(((c as u32) == (2_u32)));
+    assert!(((((c as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
+    assert!(((((c as u32) == (2_u32)) as i32) != 0));
     c = (unsafe {
         let _n: i32 = 1;
         make_color_2(_n)
     });
-    assert!(((c as u32) == ((Color::GREEN as i32) as u32)));
+    assert!(((((c as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
     let mut cmp: Color = Color::from(((c as u32).wrapping_add(1_u32)) as i32);
-    assert!(((cmp as u32) == ((Color::BLUE as i32) as u32)));
+    assert!(((((cmp as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
     let mut o: Option = Option::from((Option::OPT_A as i32));
-    assert!(((o as u32) == ((Option::OPT_A as i32) as u32)));
-    assert!(((o as u32) == (10_u32)));
+    assert!(((((o as u32) == ((Option::OPT_A as i32) as u32)) as i32) != 0));
+    assert!(((((o as u32) == (10_u32)) as i32) != 0));
     let mut oi: i32 = (o as i32);
-    assert!(((oi) == (10)));
+    assert!(((((oi) == (10)) as i32) != 0));
     o = Option::from(20);
-    assert!(((o as u32) == ((Option::OPT_B as i32) as u32)));
+    assert!(((((o as u32) == ((Option::OPT_B as i32) as u32)) as i32) != 0));
     let mut rc: i32 = (unsafe {
         let _option: i32 = (o as i32);
         classify_option_1(_option)
     });
-    assert!(((rc) == (2)));
+    assert!(((((rc) == (2)) as i32) != 0));
     rc = (unsafe {
         let _option: i32 = 20;
         classify_option_1(_option)
     });
-    assert!(((rc) == (2)));
+    assert!(((((rc) == (2)) as i32) != 0));
     rc = (unsafe {
         let _option: i32 = (Option::OPT_C as i32);
         classify_option_1(_option)
     });
-    assert!(((rc) == (3)));
+    assert!(((((rc) == (3)) as i32) != 0));
     let mut t: Tag = Tag::from((Tag::TAG_ONE as i32));
-    assert!(((t as u32) == (1_u32)));
-    assert!(((t as u32) == ((Tag::TAG_ONE as i32) as u32)));
+    assert!(((((t as u32) == (1_u32)) as i32) != 0));
+    assert!(((((t as u32) == ((Tag::TAG_ONE as i32) as u32)) as i32) != 0));
     let mut ti: i32 = (t as i32);
-    assert!(((ti) == (1)));
+    assert!(((((ti) == (1)) as i32) != 0));
     t = Tag::from(2);
-    assert!(((t as u32) == ((Tag::TAG_TWO as i32) as u32)));
+    assert!(((((t as u32) == ((Tag::TAG_TWO as i32) as u32)) as i32) != 0));
     'switch: {
         let __match_cond = (t as u32);
         match __match_cond {
@@ -177,6 +177,6 @@ unsafe fn main_0() -> i32 {
         }
     };
     let mut extra: i32 = (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32));
-    assert!(((extra) == (((0) + (1)) + (2))));
+    assert!(((((extra) == (((0) + (1)) + (2))) as i32) != 0));
     return 0;
 }

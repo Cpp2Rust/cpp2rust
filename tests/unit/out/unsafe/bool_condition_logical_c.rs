@@ -28,6 +28,12 @@ pub unsafe fn observe_0(mut v: i32) -> i32 {
     side_effect.prefix_inc();
     return v;
 }
+pub unsafe fn returns_one_1() -> i32 {
+    return 1;
+}
+pub unsafe fn returns_zero_2() -> i32 {
+    return 0;
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -41,67 +47,123 @@ unsafe fn main_0() -> i32 {
     let mut np: *mut i32 = Default::default();
     let mut u: u32 = 4_u32;
     let mut code: Code = Code::from((Code::CODE_OK as i32));
-    if (n != 0) && (!(p).is_null()) {
+    if ((((n != 0) && (!(p).is_null())) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (n != 0) && (!(np).is_null()) {
+    if ((((n != 0) && (!(np).is_null())) as i32) != 0) {
         assert!((0 != 0));
     }
-    if (zero != 0) || (!(p).is_null()) {
+    if ((((zero != 0) || (!(p).is_null())) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (zero != 0) || (!(np).is_null()) {
+    if ((((zero != 0) || (!(np).is_null())) as i32) != 0) {
         assert!((0 != 0));
     }
-    if (((n != 0) && (u != 0)) && (!(p).is_null()))
-        && ((code as u32) == ((Code::CODE_OK as i32) as u32))
+    if ((((((((((n != 0) && (u != 0)) as i32) != 0) && (!(p).is_null())) as i32) != 0)
+        && ((((code as u32) == ((Code::CODE_OK as i32) as u32)) as i32) != 0)) as i32)
+        != 0)
     {
         assert!((1 != 0));
     }
     side_effect = 0;
-    if (zero != 0)
+    if ((((zero != 0)
         && ((unsafe {
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0)
+        }) != 0)) as i32)
+        != 0)
     {
         assert!((0 != 0));
     }
-    assert!(((side_effect) == (0)));
-    if (n != 0)
+    assert!(((((side_effect) == (0)) as i32) != 0));
+    if ((((n != 0)
         || ((unsafe {
             let _v: i32 = 1;
             observe_0(_v)
-        }) != 0)
+        }) != 0)) as i32)
+        != 0)
     {
         assert!((1 != 0));
     }
-    assert!(((side_effect) == (0)));
+    assert!(((((side_effect) == (0)) as i32) != 0));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;
-    if ((x) > (y)) || (((flags) & (1_u32)) != 0) {
+    if (((((((x) > (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if ((x) < (y)) || (((flags) & (1_u32)) != 0) {
+    if (((((((x) < (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
         assert!((0 != 0));
     }
     let mut a: u32 = 1_u32;
     let mut b: u32 = 2_u32;
     let mut c: u32 = 3_u32;
-    if ((a) != (c)) && ((b) != (c)) {
+    if (((((((a) != (c)) as i32) != 0) && ((((b) != (c)) as i32) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     let mut s: i32 = -1_i32;
-    if ((p) != ((0 as *mut ::libc::c_void) as *mut i32)) && ((s) < (0)) {
+    if (((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0)
+        && ((((s) < (0)) as i32) != 0)) as i32)
+        != 0)
+    {
         assert!((1 != 0));
     }
     let mut k: u32 = 2_u32;
     let mut done: bool = (0 != 0);
-    if ((k) > (1_u32)) || (!done) {
+    if (((((((k) > (1_u32)) as i32) != 0) || (!done)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if ((x) > (y)) || (((flags) & (4_u32)) != 0) {
+    if (((((((x) > (y)) as i32) != 0) || (((flags) & (4_u32)) != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    let mut ull: u64 = 7_u64;
+    if (((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0) && (ull != 0)) as i32)
+        != 0)
+    {
+        assert!((1 != 0));
+    }
+    if (((((((x) > (y)) as i32) != 0) && (ull != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    let mut mask: i64 = (((1_i64) << (4)) | ((1_i64) << (5)));
+    let mut bits: i64 = ((1_i64) << (4));
+    if (((((((n) != (0)) as i32) != 0) && (((bits) & (mask)) != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    if (((((((n) != (0)) as i32) != 0) || (((bits) & (256_i64)) != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    let mut cp: *const u8 = b"hi\0".as_ptr().cast_mut().cast_const();
+    let mut cnp: *const u8 = Default::default();
+    if (((((((x) > (y)) as i32) != 0) && (!(cp).is_null())) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    if (((((((x) < (y)) as i32) != 0) || (!(cnp).is_null())) as i32) != 0) {
+        assert!((0 != 0));
+    }
+    if (((((((x) > (y)) as i32) != 0) && ((((n != 0) && (!(cp).is_null())) as i32) != 0)) as i32)
+        != 0)
+    {
+        assert!((1 != 0));
+    }
+    if (((((((x) > (y)) as i32) != 0) && ((unsafe { returns_one_1() }) != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    if (((((((x) > (y)) as i32) != 0) && (!((unsafe { returns_zero_2() }) != 0))) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    if (((((((x) < (y)) as i32) != 0) || ((unsafe { returns_one_1() }) != 0)) as i32) != 0) {
+        assert!((1 != 0));
+    }
+    if (((((((x) < (y)) as i32) != 0) || (!((unsafe { returns_one_1() }) != 0))) as i32) != 0) {
+        assert!((0 != 0));
+    }
+    if ((((((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0)
+        && ((unsafe { returns_one_1() }) != 0)) as i32)
+        != 0)
+        && ((((n) != (0)) as i32) != 0)) as i32)
+        != 0)
+    {
         assert!((1 != 0));
     }
     return 0;

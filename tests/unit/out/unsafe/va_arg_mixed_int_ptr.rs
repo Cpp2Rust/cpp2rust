@@ -11,9 +11,9 @@ pub unsafe fn mixed_args_0(mut count: i32, args: &[VaArg]) -> i32 {
     ap = VaList::new(args);
     let mut total: i32 = 0;
     let mut i: i32 = 0;
-    'loop_: while ((i) < (count)) {
+    'loop_: while ((((i) < (count)) as i32) != 0) {
         let mut tag: i32 = ap.arg::<i32>();
-        if ((tag) == (0)) {
+        if ((((tag) == (0)) as i32) != 0) {
             total += ap.arg::<i32>();
         } else {
             let mut ptr: *mut i32 = ap.arg::<*mut i32>();
@@ -31,7 +31,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 100;
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 3;
             mixed_args_0(
                 _count,
@@ -44,20 +44,23 @@ unsafe fn main_0() -> i32 {
                     20.into(),
                 ],
             )
-        }) == (130))
+        }) == (130)) as i32)
+            != 0)
     );
     let mut y: i32 = 50;
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 1;
             mixed_args_0(_count, &[1.into(), (&mut y as *mut i32).into()])
-        }) == (50))
+        }) == (50)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _count: i32 = 2;
             mixed_args_0(_count, &[0.into(), 5.into(), 0.into(), 3.into()])
-        }) == (8))
+        }) == (8)) as i32)
+            != 0)
     );
     return 0;
 }

@@ -32,6 +32,6 @@ unsafe fn main_0() -> i32 {
     let mut n: node = <node>::default();
     n.next = Default::default();
     n.x.bytes[(0) as usize] = 171_u8;
-    assert!(((n.x.bytes[(0) as usize] as i32) == (171)));
+    assert!(((((n.x.bytes[(0) as usize] as i32) == (171)) as i32) != 0));
     return 0;
 }

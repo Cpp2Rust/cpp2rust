@@ -82,7 +82,7 @@ public:
 
   bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) override;
 
-  bool VisitBinaryOperator(clang::BinaryOperator *expr) override;
+  void ConvertBinaryOperator(clang::BinaryOperator *expr) override;
 
   bool VisitStmtExpr(clang::StmtExpr *expr) override;
 

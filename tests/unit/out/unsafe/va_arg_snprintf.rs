@@ -26,22 +26,24 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut buf: [u8; 64] = [0_u8; 64];
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();
             let _size: i32 = 1;
             let _fmt: *const u8 = b"%d\0".as_ptr().cast_mut().cast_const();
             extract_first_0(_buf, _size, _fmt, &[42.into()])
-        }) == (42))
+        }) == (42)) as i32)
+            != 0)
     );
-    assert!(((buf[(0) as usize] as i32) == (42)));
+    assert!(((((buf[(0) as usize] as i32) == (42)) as i32) != 0));
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _buf: *mut u8 = buf.as_mut_ptr();
             let _size: i32 = 1;
             let _fmt: *const u8 = b"%d\0".as_ptr().cast_mut().cast_const();
             extract_first_0(_buf, _size, _fmt, &[65.into()])
-        }) == (65))
+        }) == (65)) as i32)
+            != 0)
     );
-    assert!(((buf[(0) as usize] as i32) == ('A' as i32)));
+    assert!(((((buf[(0) as usize] as i32) == ('A' as i32)) as i32) != 0));
     return 0;
 }

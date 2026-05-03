@@ -25,14 +25,14 @@ fn main_0() -> i32 {
             let __tmp = __ptr.read() + 1;
             __ptr.write(__tmp)
         };
-        if (((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3)) {
+        if ((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3) {
             (*p.borrow_mut()).prefix_dec();
             {
                 let __ptr = (*p.borrow()).clone();
                 let __tmp = __ptr.read() + 1;
                 __ptr.write(__tmp)
             };
-            if (((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3)) {
+            if ((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3) {
                 (*p.borrow_mut()) = (x.as_pointer());
                 {
                     let __ptr = (*p.borrow()).clone();

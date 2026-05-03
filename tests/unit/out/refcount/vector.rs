@@ -123,23 +123,22 @@ fn main_0() -> i32 {
     assert!(((*v7.borrow()).len() as u64 == 200_u64));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < 200_u32) {
-        assert!({
-            let _lhs = ((*(*(v7.as_pointer() as Ptr<(Value<Ptr<i32>>, Value<i32>)>)
+        assert!(
+            ((*(*(v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
                 .offset(((*i.borrow()) as u64) as isize)
                 .upgrade()
                 .deref())
             .0
             .borrow())
             .is_null())
-            .clone();
-            _lhs && ((*(*(v7.as_pointer() as Ptr<(Value<Ptr<i32>>, Value<i32>)>)
-                .offset(((*i.borrow()) as u64) as isize)
-                .upgrade()
-                .deref())
-            .1
-            .borrow())
-                == 0)
-        });
+                && ((*(*(v7.as_pointer() as Ptr<(Value<Ptr::<i32>>, Value<i32>)>)
+                    .offset(((*i.borrow()) as u64) as isize)
+                    .upgrade()
+                    .deref())
+                .1
+                .borrow())
+                    == 0)
+        );
         (*i.borrow_mut()).prefix_inc();
     }
     let p1: Value<Ptr<f64>> = Rc::new(RefCell::new((v6.as_pointer() as Ptr<f64>)));

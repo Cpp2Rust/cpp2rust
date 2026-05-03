@@ -27,16 +27,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _fmt: *const u8 = b"hello %d %d\0".as_ptr().cast_mut().cast_const();
             logf_1(_fmt, &[10.into(), 32.into()])
-        }) == (42))
+        }) == (42)) as i32)
+            != 0)
     );
     assert!(
-        ((unsafe {
+        ((((unsafe {
             let _fmt: *const u8 = b"x %d %d\0".as_ptr().cast_mut().cast_const();
             logf_1(_fmt, &[1.into(), 2.into()])
-        }) == (3))
+        }) == (3)) as i32)
+            != 0)
     );
     return 0;
 }

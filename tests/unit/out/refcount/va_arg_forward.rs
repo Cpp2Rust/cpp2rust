@@ -11,7 +11,7 @@ pub fn inner_0(count: i32, ap: VaList) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*count.borrow())) {
+    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
         (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<i32>()).clone();
         (*i.borrow_mut()).postfix_inc();
     }
@@ -35,22 +35,25 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _count: i32 = 3;
             outer_1(_count, &[10.into(), 20.into(), 30.into()])
-        }) == 60)
+        }) == 60) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _count: i32 = 1;
             outer_1(_count, &[42.into()])
-        }) == 42)
+        }) == 42) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _count: i32 = 0;
             outer_1(_count, &[])
-        }) == 0)
+        }) == 0) as i32)
+            != 0)
     );
     return 0;
 }

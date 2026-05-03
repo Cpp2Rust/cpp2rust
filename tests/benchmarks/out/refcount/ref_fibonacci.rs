@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn fib_0(n: Ptr<u64>) {
-    if (((n.read()) == 0_u64) || ((n.read()) == 1_u64)) {
+    if ((n.read()) == 0_u64) || ((n.read()) == 1_u64) {
         return;
     }
     let n_1: Value<u64> = Rc::new(RefCell::new((n.read()).wrapping_sub(1_u64)));

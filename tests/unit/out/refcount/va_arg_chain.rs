@@ -10,7 +10,7 @@ pub fn extract_nth_0(n: i32, ap: VaList) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+    'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
         (*ap.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }
@@ -43,22 +43,25 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _n: i32 = 2;
             top_level_2(_n, &[100.into(), 200.into(), 300.into(), 400.into()])
-        }) == 300)
+        }) == 300) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _n: i32 = 0;
             top_level_2(_n, &[42.into(), 99.into()])
-        }) == 42)
+        }) == 42) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _n: i32 = 3;
             top_level_2(_n, &[1.into(), 2.into(), 3.into(), 4.into()])
-        }) == 4)
+        }) == 4) as i32)
+            != 0)
     );
     return 0;
 }

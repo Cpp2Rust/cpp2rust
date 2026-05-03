@@ -14,17 +14,17 @@ pub fn sum_with_copy_0(count: i32, args: &[VaArg]) -> i32 {
     (*aq.borrow_mut()) = (*ap.borrow_mut()).clone();
     let sum1: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*count.borrow())) {
+    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
         (*sum1.borrow_mut()) += ((*ap.borrow_mut()).arg::<i32>()).clone();
         (*i.borrow_mut()).postfix_inc();
     }
     let sum2: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*count.borrow())) {
+    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
         (*sum2.borrow_mut()) += ((*aq.borrow_mut()).arg::<i32>()).clone();
         (*i.borrow_mut()).postfix_inc();
     }
-    assert!(((*sum1.borrow()) == (*sum2.borrow())));
+    assert!(((((*sum1.borrow()) == (*sum2.borrow())) as i32) != 0));
     return ((*sum1.borrow()) + (*sum2.borrow()));
 }
 pub fn main() {
@@ -32,10 +32,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _count: i32 = 3;
             sum_with_copy_0(_count, &[10.into(), 20.into(), 30.into()])
-        }) == 120)
+        }) == 120) as i32)
+            != 0)
     );
     return 0;
 }

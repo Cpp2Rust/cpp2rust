@@ -12,11 +12,11 @@ pub fn sum_mixed_0(count: i32, args: &[VaArg]) -> i32 {
     (*ap.borrow_mut()) = VaList::new(args);
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*count.borrow())) {
+    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
         let tag: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
-        if ((*tag.borrow()) == 0) {
+        if ((((*tag.borrow()) == 0) as i32) != 0) {
             (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<i32>()).clone();
-        } else if ((*tag.borrow()) == 1) {
+        } else if ((((*tag.borrow()) == 1) as i32) != 0) {
             (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<f64>() as i32).clone();
         } else {
             let val: Value<i64> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i64>()).clone()));
@@ -31,7 +31,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (({
+        (((({
             let _count: i32 = 3;
             sum_mixed_0(
                 _count,
@@ -44,19 +44,22 @@ fn main_0() -> i32 {
                     30_i64.into(),
                 ],
             )
-        }) == 60)
+        }) == 60) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _count: i32 = 1;
             sum_mixed_0(_count, &[0.into(), 42.into()])
-        }) == 42)
+        }) == 42) as i32)
+            != 0)
     );
     assert!(
-        (({
+        (((({
             let _count: i32 = 2;
             sum_mixed_0(_count, &[1.into(), 3.7E+0.into(), 2.into(), 100_i64.into()])
-        }) == 103)
+        }) == 103) as i32)
+            != 0)
     );
     return 0;
 }

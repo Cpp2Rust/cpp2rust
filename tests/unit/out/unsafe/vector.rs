@@ -96,7 +96,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v7.len() as u64) == (200_u64)));
     let mut i: u32 = 0_u32;
     'loop_: while ((i) < (200_u32)) {
-        assert!((((v7[(i as u64) as usize].0).is_null()) && ((v7[(i as u64) as usize].1) == (0))));
+        assert!(((v7[(i as u64) as usize].0).is_null()) && ((v7[(i as u64) as usize].1) == (0)));
         i.prefix_inc();
     }
     let mut p1: *const f64 = v6.as_mut_ptr().cast_const();

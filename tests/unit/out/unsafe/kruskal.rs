@@ -41,7 +41,7 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     };
     let mut i: i32 = start;
     let mut j: i32 = end;
-    'loop_: while (((i) < (pidx)) && ((j) > (pidx))) {
+    'loop_: while ((i) < (pidx)) && ((j) > (pidx)) {
         'loop_: while (((*arr).as_mut().unwrap()[(i as u64) as usize].weight) <= ((*pivot).weight))
         {
             i.prefix_inc();
@@ -49,7 +49,7 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         'loop_: while (((*arr).as_mut().unwrap()[(j as u64) as usize].weight) > ((*pivot).weight)) {
             j.prefix_dec();
         }
-        if (((i) < (pidx)) && ((j) > (pidx))) {
+        if ((i) < (pidx)) && ((j) > (pidx)) {
             tmp = Edge {
                 u: (*arr).as_mut().unwrap()[(i as u64) as usize].u,
                 v: (*arr).as_mut().unwrap()[(i as u64) as usize].v,
