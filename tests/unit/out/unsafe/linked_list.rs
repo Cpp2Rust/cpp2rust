@@ -142,45 +142,45 @@ unsafe fn main_0() -> i32 {
         let _val: i32 = -2_i32;
         Delete_2(_head, _val)
     });
-    return (((((((((*(unsafe {
+    return ((((((((*(unsafe {
         let _head: *mut Node = head;
         let _idx: i32 = 0;
         Find_0(_head, _idx)
     }))
     .val)
-        == (4)) as bool)
-        && ((((*(unsafe {
+        == (4))
+        && (((*(unsafe {
             let _head: *mut Node = head;
             let _idx: i32 = 1;
             Find_0(_head, _idx)
         }))
         .val)
-            == (3)) as bool))
-        && ((((*(unsafe {
+            == (3)))
+        && (((*(unsafe {
             let _head: *mut Node = head;
             let _idx: i32 = 2;
             Find_0(_head, _idx)
         }))
         .val)
-            == (2)) as bool))
-        && ((((*(unsafe {
+            == (2)))
+        && (((*(unsafe {
             let _head: *mut Node = head;
             let _idx: i32 = 3;
             Find_0(_head, _idx)
         }))
         .val)
-            == (1)) as bool))
-        && (((((*(unsafe {
+            == (1)))
+        && ((((*(unsafe {
             let _head: *mut Node = head;
             let _idx: i32 = 4;
             Find_0(_head, _idx)
         }))
         .val)
             == (-1_i32))
-            && (((unsafe {
+            && ((unsafe {
                 let _head: *mut Node = head;
                 let _idx: i32 = 5;
                 Find_0(_head, _idx)
             })
-            .is_null()) as bool)) as bool)) as i32);
+            .is_null()))) as i32);
 }

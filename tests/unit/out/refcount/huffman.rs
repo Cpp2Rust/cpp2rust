@@ -166,7 +166,7 @@ impl MinHeap {
             _lhs && {
                 let _lhs = (*(*(*node.borrow()).upgrade().deref()).freq.borrow());
                 _lhs < (*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [(((((*i.borrow()) - 1) as i32) / 2) as u64) as usize]
+                    [((((*i.borrow()) - 1) / 2) as u64) as usize]
                     .upgrade()
                     .deref())
                 .freq
@@ -174,11 +174,11 @@ impl MinHeap {
             }
         } {
             let __rhs = ((*self.arr.borrow()).as_ref().unwrap().borrow()
-                [(((((*i.borrow()) - 1) as i32) / 2) as u64) as usize])
+                [((((*i.borrow()) - 1) / 2) as u64) as usize])
                 .clone();
             (*self.arr.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] =
                 __rhs;
-            let __rhs = ((((*i.borrow()) - 1) as i32) / 2);
+            let __rhs = (((*i.borrow()) - 1) / 2);
             (*i.borrow_mut()) = __rhs;
         }
         (*self.arr.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] =
@@ -203,7 +203,7 @@ impl MinHeap {
             });
             (*i.borrow_mut()).prefix_inc();
         }
-        let i: Value<i32> = Rc::new(RefCell::new(((((*self.size.borrow()) - 2) as i32) / 2)));
+        let i: Value<i32> = Rc::new(RefCell::new((((*self.size.borrow()) - 2) / 2)));
         'loop_: while ((*i.borrow()) >= 0) {
             ({
                 let _idx: i32 = (*i.borrow());

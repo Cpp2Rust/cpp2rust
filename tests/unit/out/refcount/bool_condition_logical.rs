@@ -94,34 +94,34 @@ fn main_0() -> i32 {
         assert!(true);
     }
     assert!(((*side_effect.with(Value::clone).borrow()) == 0));
-    let chunk_count: Value<i32> = Rc::new(RefCell::new(5));
-    let max_chunks: Value<i32> = Rc::new(RefCell::new(3));
-    let opts: Value<u32> = Rc::new(RefCell::new(2_u32));
-    if (((*chunk_count.borrow()) > (*max_chunks.borrow())) || (((*opts.borrow()) & 1_u32) != 0)) {
+    let x: Value<i32> = Rc::new(RefCell::new(5));
+    let y: Value<i32> = Rc::new(RefCell::new(3));
+    let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
+    if (((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0)) {
         assert!(true);
     }
-    if (((*chunk_count.borrow()) < (*max_chunks.borrow())) || (((*opts.borrow()) & 1_u32) != 0)) {
+    if (((*x.borrow()) < (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0)) {
         assert!(false);
     }
-    let a_id: Value<u32> = Rc::new(RefCell::new(1_u32));
-    let b_id: Value<u32> = Rc::new(RefCell::new(2_u32));
-    let other_id: Value<u32> = Rc::new(RefCell::new(3_u32));
-    if (((*a_id.borrow()) != (*other_id.borrow())) && ((*b_id.borrow()) != (*other_id.borrow()))) {
+    let a: Value<u32> = Rc::new(RefCell::new(1_u32));
+    let b: Value<u32> = Rc::new(RefCell::new(2_u32));
+    let c: Value<u32> = Rc::new(RefCell::new(3_u32));
+    if (((*a.borrow()) != (*c.borrow())) && ((*b.borrow()) != (*c.borrow()))) {
         assert!(true);
     }
-    let reply_ms: Value<i32> = Rc::new(RefCell::new(-1_i32));
+    let s: Value<i32> = Rc::new(RefCell::new(-1_i32));
     if {
         let _lhs = (!((*p.borrow()).is_null())).clone();
-        _lhs && ((*reply_ms.borrow()) < 0)
+        _lhs && ((*s.borrow()) < 0)
     } {
         assert!(true);
     }
-    let baller_count: Value<u32> = Rc::new(RefCell::new(2_u32));
-    let ballers_complete: Value<bool> = Rc::new(RefCell::new(false));
-    if (((*baller_count.borrow()) > 1_u32) || !(*ballers_complete.borrow())) {
+    let k: Value<u32> = Rc::new(RefCell::new(2_u32));
+    let done: Value<bool> = Rc::new(RefCell::new(false));
+    if (((*k.borrow()) > 1_u32) || !(*done.borrow())) {
         assert!(true);
     }
-    if (((*chunk_count.borrow()) > (*max_chunks.borrow())) || (((*opts.borrow()) & 4_u32) != 0)) {
+    if (((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 4_u32) != 0)) {
         assert!(true);
     }
     return 0;

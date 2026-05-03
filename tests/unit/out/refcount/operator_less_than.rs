@@ -18,7 +18,7 @@ impl Pair {
                 let _lhs = (*self.x.borrow());
                 _lhs < (*(*other.upgrade().deref()).x.borrow())
             };
-            _lhs || (({
+            _lhs || ({
                 let _lhs = {
                     let _lhs = (*self.x.borrow());
                     _lhs == (*(*other.upgrade().deref()).x.borrow())
@@ -27,7 +27,7 @@ impl Pair {
                     let _lhs = (*self.y.borrow());
                     _lhs < (*(*other.upgrade().deref()).y.borrow())
                 }
-            }) as bool)
+            })
         };
     }
 }

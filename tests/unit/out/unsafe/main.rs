@@ -23,5 +23,5 @@ unsafe fn main_0(mut argc: i32, mut argv: *mut *mut u8) -> i32 {
     };
     assert!(((argc) == (1)));
     assert!((((s.len() - 1) as u64) > (0_u64)));
-    return ((argc) + (((((s.len() - 1) as u64) > (0_u64)) as bool) as i32));
+    return ((argc) + ((((s.len() - 1) as u64) > (0_u64)) as i32));
 }

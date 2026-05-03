@@ -12,20 +12,18 @@ pub unsafe fn sum_then_product_0(mut first: i32, args: &[VaArg]) -> i32 {
     let mut product: i32 = first;
     ap = VaList::new(args);
     let mut val: i32 = 0_i32;
-    'loop_: while ((({
+    'loop_: while (({
         val = ap.arg::<i32>();
         val
-    }) as i32)
-        != (0))
+    }) != (0))
     {
         sum += val;
     }
     ap = VaList::new(args);
-    'loop_: while ((({
+    'loop_: while (({
         val = ap.arg::<i32>();
         val
-    }) as i32)
-        != (0))
+    }) != (0))
     {
         product *= val;
     }

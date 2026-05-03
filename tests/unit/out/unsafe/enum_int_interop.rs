@@ -130,7 +130,7 @@ unsafe fn main_0() -> i32 {
         make_color_2(_n)
     });
     assert!(((c as i32) == (Color::GREEN as i32)));
-    let mut cmp: Color = Color::from((((c as i32) + (1)) as i32));
+    let mut cmp: Color = Color::from(((c as i32) + (1)));
     assert!(((cmp as i32) == (Color::BLUE as i32)));
     let mut o: Option = Option::OPT_A;
     assert!(((o as i32) == (Option::OPT_A as i32)));

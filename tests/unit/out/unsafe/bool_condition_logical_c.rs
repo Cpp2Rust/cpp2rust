@@ -77,31 +77,31 @@ unsafe fn main_0() -> i32 {
         assert!((1 != 0));
     }
     assert!(((side_effect) == (0)));
-    let mut chunk_count: i32 = 5;
-    let mut max_chunks: i32 = 3;
-    let mut opts: u32 = 2_u32;
-    if ((chunk_count) > (max_chunks)) || (((opts) & (1_u32)) != 0) {
+    let mut x: i32 = 5;
+    let mut y: i32 = 3;
+    let mut flags: u32 = 2_u32;
+    if ((x) > (y)) || (((flags) & (1_u32)) != 0) {
         assert!((1 != 0));
     }
-    if ((chunk_count) < (max_chunks)) || (((opts) & (1_u32)) != 0) {
+    if ((x) < (y)) || (((flags) & (1_u32)) != 0) {
         assert!((0 != 0));
     }
-    let mut a_id: u32 = 1_u32;
-    let mut b_id: u32 = 2_u32;
-    let mut other_id: u32 = 3_u32;
-    if ((a_id) != (other_id)) && ((b_id) != (other_id)) {
+    let mut a: u32 = 1_u32;
+    let mut b: u32 = 2_u32;
+    let mut c: u32 = 3_u32;
+    if ((a) != (c)) && ((b) != (c)) {
         assert!((1 != 0));
     }
-    let mut reply_ms: i32 = -1_i32;
-    if ((p) != ((0 as *mut ::libc::c_void) as *mut i32)) && ((reply_ms) < (0)) {
+    let mut s: i32 = -1_i32;
+    if ((p) != ((0 as *mut ::libc::c_void) as *mut i32)) && ((s) < (0)) {
         assert!((1 != 0));
     }
-    let mut baller_count: u32 = 2_u32;
-    let mut ballers_complete: bool = (0 != 0);
-    if ((baller_count) > (1_u32)) || (!ballers_complete) {
+    let mut k: u32 = 2_u32;
+    let mut done: bool = (0 != 0);
+    if ((k) > (1_u32)) || (!done) {
         assert!((1 != 0));
     }
-    if ((chunk_count) > (max_chunks)) || (((opts) & (4_u32)) != 0) {
+    if ((x) > (y)) || (((flags) & (4_u32)) != 0) {
         assert!((1 != 0));
     }
     return 0;

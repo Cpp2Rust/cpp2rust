@@ -164,7 +164,7 @@ fn main_0() -> i32 {
         Delete_2(_head, _val)
     });
     (*head.borrow_mut()) = __rhs;
-    return ((((((((*(*({
+    return (((((((*(*({
         let _head: Ptr<Node> = (*head.borrow()).clone();
         let _idx: i32 = 0;
         Find_0(_head, _idx)
@@ -173,8 +173,8 @@ fn main_0() -> i32 {
     .deref())
     .val
     .borrow())
-        == 4) as bool)
-        && (((*(*({
+        == 4)
+        && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
             let _idx: i32 = 1;
             Find_0(_head, _idx)
@@ -183,8 +183,8 @@ fn main_0() -> i32 {
         .deref())
         .val
         .borrow())
-            == 3) as bool))
-        && (((*(*({
+            == 3))
+        && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
             let _idx: i32 = 2;
             Find_0(_head, _idx)
@@ -193,8 +193,8 @@ fn main_0() -> i32 {
         .deref())
         .val
         .borrow())
-            == 2) as bool))
-        && (((*(*({
+            == 2))
+        && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
             let _idx: i32 = 3;
             Find_0(_head, _idx)
@@ -203,8 +203,8 @@ fn main_0() -> i32 {
         .deref())
         .val
         .borrow())
-            == 1) as bool))
-        && (({
+            == 1))
+        && ({
             let _lhs = ((*(*({
                 let _head: Ptr<Node> = (*head.borrow()).clone();
                 let _idx: i32 = 4;
@@ -215,11 +215,11 @@ fn main_0() -> i32 {
             .val
             .borrow())
                 == -1_i32);
-            _lhs && ((({
+            _lhs && (({
                 let _head: Ptr<Node> = (*head.borrow()).clone();
                 let _idx: i32 = 5;
                 Find_0(_head, _idx)
             })
-            .is_null()) as bool)
-        }) as bool)) as i32);
+            .is_null())
+        })) as i32);
 }

@@ -17,22 +17,20 @@ fn main_0() -> i32 {
         (*b.borrow())
     } != 0)
     {}
-    'loop_: while ((({
+    'loop_: while (({
         (*b.borrow_mut()) = (*a.borrow());
         (*b.borrow())
-    }) as i32)
-        != 0)
+    }) != 0)
     {}
     if ((*a.borrow()) != 0) {}
     if ((*a.borrow()) == (*b.borrow())) {}
     if ((*a.borrow()) < (*b.borrow())) {}
     assert!(((*a.borrow()) == (*b.borrow())));
     assert!(
-        ((!((({
+        ((!(({
             (*a.borrow_mut()) = (*b.borrow());
             (*a.borrow())
-        }) as i32)
-            != 0) as i32)
+        }) != 0) as i32)
             != 0)
     );
     let c: Value<bool> = <Value<bool>>::default();
@@ -40,11 +38,10 @@ fn main_0() -> i32 {
         (*a.borrow_mut()) = (*b.borrow());
         (*a.borrow())
     } != 0);
-    (*c.borrow_mut()) = ((({
+    (*c.borrow_mut()) = (({
         (*b.borrow_mut()) = (*a.borrow());
         (*b.borrow())
-    }) as i32)
-        != 0);
+    }) != 0);
     (*c.borrow_mut()) = ((*a.borrow()) != 0);
     (*c.borrow_mut()) = ((*a.borrow()) == (*b.borrow()));
     (*c.borrow_mut()) = ((*a.borrow()) < (*b.borrow()));

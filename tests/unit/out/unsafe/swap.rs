@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
         identity_0(_x)
     });
     let mut p: *mut i32 = (&mut a as *mut i32);
-    p = (&mut ((b) as i32) as *mut i32);
+    p = (&mut (b) as *mut i32);
     p = (&mut a as *mut i32);
     (unsafe {
         let _a: *mut i32 = p;

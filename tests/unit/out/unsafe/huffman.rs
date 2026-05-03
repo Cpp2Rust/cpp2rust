@@ -108,12 +108,11 @@ impl MinHeap {
         let mut i: i32 = ((self.size) - (1));
         'loop_: while (((i) != (0))
             && (((*node).freq)
-                < ((*self.arr.as_mut().unwrap()[(((((i) - (1)) as i32) / (2)) as u64) as usize])
-                    .freq)))
+                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as u64) as usize]).freq)))
         {
             self.arr.as_mut().unwrap()[(i as u64) as usize] =
-                self.arr.as_mut().unwrap()[(((((i) - (1)) as i32) / (2)) as u64) as usize];
-            i = ((((i) - (1)) as i32) / (2));
+                self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as u64) as usize];
+            i = (((i) - (1)) / (2));
         }
         self.arr.as_mut().unwrap()[(i as u64) as usize] = node;
     }
@@ -132,7 +131,7 @@ impl MinHeap {
             });
             i.prefix_inc();
         }
-        let mut i: i32 = ((((self.size) - (2)) as i32) / (2));
+        let mut i: i32 = (((self.size) - (2)) / (2));
         'loop_: while ((i) >= (0)) {
             (unsafe {
                 let _idx: i32 = i;

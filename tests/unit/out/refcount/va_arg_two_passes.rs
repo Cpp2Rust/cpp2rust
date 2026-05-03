@@ -13,20 +13,18 @@ pub fn sum_then_product_0(first: i32, args: &[VaArg]) -> i32 {
     let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*ap.borrow_mut()) = VaList::new(args);
     let val: Value<i32> = <Value<i32>>::default();
-    'loop_: while ((({
+    'loop_: while (({
         (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
         (*val.borrow())
-    }) as i32)
-        != 0)
+    }) != 0)
     {
         (*sum.borrow_mut()) += (*val.borrow());
     }
     (*ap.borrow_mut()) = VaList::new(args);
-    'loop_: while ((({
+    'loop_: while (({
         (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
         (*val.borrow())
-    }) as i32)
-        != 0)
+    }) != 0)
     {
         (*product.borrow_mut()) *= (*val.borrow());
     }

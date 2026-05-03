@@ -7,11 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn smaller_0(x1: *mut i32, x2: *mut i32) -> *mut i32 {
-    return if (((*x1) < (*x2)) as bool) {
-        (x1)
-    } else {
-        (x2)
-    };
+    return if ((*x1) < (*x2)) { (x1) } else { (x2) };
 }
 pub fn main() {
     unsafe {

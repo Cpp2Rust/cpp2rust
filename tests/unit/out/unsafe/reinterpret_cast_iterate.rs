@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut words: *mut u16 = (arr.as_mut_ptr() as *mut u16);
     let mut i: i32 = 0;
     'loop_: while ((i) < (8)) {
-        assert!((((*words.offset((i) as isize)) as i32) == (((((i) + (1)) as i32) as u16) as i32)));
+        assert!((((*words.offset((i) as isize)) as i32) == ((((i) + (1)) as u16) as i32)));
         i.postfix_inc();
     }
     return 0;

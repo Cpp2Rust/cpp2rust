@@ -19,33 +19,30 @@ unsafe fn main_0() -> i32 {
         b
     } != 0)
     {}
-    'loop_: while ((({
+    'loop_: while (({
         b = a;
         b
-    }) as i32)
-        != (0))
+    }) != (0))
     {}
     if (a != 0) {}
     if ((a) == (b)) {}
     if ((a) < (b)) {}
     assert!(((a) == (b)));
     assert!(
-        !((({
+        !(({
             a = b;
             a
-        }) as i32)
-            != 0)
+        }) != 0)
     );
     let mut c: bool = false;
     c = ({
         a = b;
         a
     } != 0);
-    c = ((({
+    c = (({
         b = a;
         b
-    }) as i32)
-        != (0));
+    }) != (0));
     c = (a != 0);
     c = ((a) == (b));
     c = ((a) < (b));

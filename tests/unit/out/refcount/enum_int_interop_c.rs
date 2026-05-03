@@ -134,7 +134,7 @@ fn main_0() -> i32 {
     });
     assert!((((*c.borrow()) as u32) == ((Color::GREEN as i32) as u32)));
     let cmp: Value<Color> = Rc::new(RefCell::new(Color::from(
-        ((((*c.borrow()) as u32).wrapping_add(1_u32)) as u32) as i32,
+        (((*c.borrow()) as u32).wrapping_add(1_u32)) as i32,
     )));
     assert!((((*cmp.borrow()) as u32) == ((Color::BLUE as i32) as u32)));
     let o: Value<Option> = Rc::new(RefCell::new(Option::from((Option::OPT_A as i32))));

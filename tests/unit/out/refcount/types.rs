@@ -20,7 +20,7 @@ fn main_0() -> i32 {
     let xi2: Value<i16> = Rc::new(RefCell::new(16_i16));
     let xi3: Value<i32> = Rc::new(RefCell::new(32));
     let xi4: Value<i64> = Rc::new(RefCell::new(64_i64));
-    let b: Value<bool> = Rc::new(RefCell::new((((*xu64.borrow()) == 64_u64) as bool)));
+    let b: Value<bool> = Rc::new(RefCell::new(((*xu64.borrow()) == 64_u64)));
     return ((((((((((((((*xu8.borrow()) as i32) + ((*xu16.borrow()) as i32)) as u32)
         .wrapping_add((*xu32.borrow()))) as u64)
         .wrapping_add((*xu64.borrow())))

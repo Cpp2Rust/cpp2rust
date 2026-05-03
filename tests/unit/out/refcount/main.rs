@@ -33,5 +33,5 @@ fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     ));
     assert!(((*argc.borrow()) == 1));
     assert!((((*s.borrow()).len() - 1) as u64 > 0_u64));
-    return ((*argc.borrow()) + (((((*s.borrow()).len() - 1) as u64 > 0_u64) as bool) as i32));
+    return ((*argc.borrow()) + ((((*s.borrow()).len() - 1) as u64 > 0_u64) as i32));
 }

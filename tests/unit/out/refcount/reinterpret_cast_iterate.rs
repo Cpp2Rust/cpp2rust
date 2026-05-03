@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     'loop_: while ((*i.borrow()) < 8) {
         assert!({
             let _lhs = (((*words.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-            _lhs == (((((*i.borrow()) + 1) as i32) as u16) as i32)
+            _lhs == ((((*i.borrow()) + 1) as u16) as i32)
         });
         (*i.borrow_mut()).postfix_inc();
     }

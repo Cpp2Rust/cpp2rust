@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
     *it.second() = 57005;
     assert!(((*m.entry(sentinel).or_default().as_mut()) == (57005)));
     assert!(((*p) == (57005)));
-    assert!(((m.len() as u64) == (((((N) + (1)) as i32) as u32) as u64)));
+    assert!(((m.len() as u64) == ((((N) + (1)) as u32) as u64)));
     let mut prev: i32 = -1_i32;
     'loop_: for pair in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<i32>>) {
         assert!(((*pair.first()) > (prev)));

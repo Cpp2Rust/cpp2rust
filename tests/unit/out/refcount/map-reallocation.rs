@@ -93,7 +93,7 @@ fn main_0() -> i32 {
             == 57005)
     );
     assert!((((*p.borrow()).read()) == 57005));
-    assert!(((*m.borrow()).len() as u64 == (((((*N.borrow()) + 1) as i32) as u32) as u64)));
+    assert!(((*m.borrow()).len() as u64 == ((((*N.borrow()) + 1) as u32) as u64)));
     let prev: Value<i32> = Rc::new(RefCell::new(-1_i32));
     'loop_: for pair in RefcountMapIter::begin(m.as_pointer()) {
         assert!({

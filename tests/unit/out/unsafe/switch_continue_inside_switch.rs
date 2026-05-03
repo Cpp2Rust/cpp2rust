@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
         ((unsafe {
             let _n: i32 = 6;
             continue_inside_switch_0(_n)
-        }) == (((((1) + (3)) + (5)) as i32) + ((3) * (1000))))
+        }) == ((((1) + (3)) + (5)) + ((3) * (1000))))
     );
     return 0;
 }

@@ -269,16 +269,13 @@ fn main_0() -> i32 {
         (*imgs.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] = __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
-    return ((((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_u64) as usize] == 10)
+    return (((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_u64) as usize] == 10)
         && ((*imgs.borrow()).as_ref().unwrap().borrow()[(0_u64) as usize] == 0))
-        as bool)
-        && ((((*reals.borrow()).as_ref().unwrap().borrow()[(1_u64) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_u64) as usize] == 2))
-            as bool))
-        && ((((*reals.borrow()).as_ref().unwrap().borrow()[(2_u64) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_u64) as usize] == 0))
-            as bool))
-        && ((((*reals.borrow()).as_ref().unwrap().borrow()[(3_u64) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_u64) as usize] == -2_i32))
-            as bool)) as i32);
+        && (((*reals.borrow()).as_ref().unwrap().borrow()[(1_u64) as usize] == -2_i32)
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_u64) as usize] == 2)))
+        && (((*reals.borrow()).as_ref().unwrap().borrow()[(2_u64) as usize] == -2_i32)
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_u64) as usize] == 0)))
+        && (((*reals.borrow()).as_ref().unwrap().borrow()[(3_u64) as usize] == -2_i32)
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_u64) as usize] == -2_i32)))
+        as i32);
 }
