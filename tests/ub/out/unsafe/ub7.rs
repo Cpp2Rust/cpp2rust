@@ -11,7 +11,7 @@ pub unsafe fn strlen_0(mut s: *const u8) -> u64 {
     'loop_: while ((*s) != 0) {
         s.prefix_inc();
     }
-    return ((((s as usize - begin as usize) / ::std::mem::size_of::<u8>()) as u64) as u64);
+    return ((((s as usize - begin as usize) / ::std::mem::size_of::<u8>()) as i64) as u64);
 }
 pub fn main() {
     unsafe {

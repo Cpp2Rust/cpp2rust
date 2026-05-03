@@ -2028,7 +2028,7 @@ bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
           std::format("::std::mem::size_of::<{}>()", pointee_type_as_string);
       StrCat(size_of_as_string);
     }
-    StrCat(keyword::kAs, "u64");
+    ConvertCast(expr->getType());
     computed_expr_type_ = ComputedExprType::FreshValue;
   } else {
     ConvertGenericBinaryOperator(expr);

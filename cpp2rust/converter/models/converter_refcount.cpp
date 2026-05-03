@@ -1247,8 +1247,12 @@ bool ConverterRefCount::VisitBinaryOperator(clang::BinaryOperator *expr) {
   // fresh pointers
   if (expr->isAdditiveOp() && lhs_type->isPointerType() &&
       rhs_type->isPointerType()) {
-    StrCat(ConvertFreshPointer(lhs), expr->getOpcodeStr(),
-           ConvertFreshPointer(rhs));
+    {
+      PushParen paren(*this);
+      StrCat(ConvertFreshPointer(lhs), expr->getOpcodeStr(),
+             ConvertFreshPointer(rhs));
+    }
+    ConvertCast(expr->getType());
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }

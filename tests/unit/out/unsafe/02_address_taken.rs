@@ -19,6 +19,6 @@ unsafe fn main_0() -> i32 {
     (*(*b_ptr_ptr)) = 4;
     (*b_ptr) = (*(*b_ptr_ptr));
     let mut offset: u64 =
-        ((((b_ptr as usize - b_ptr as usize) / ::std::mem::size_of::<i32>()) as u64) as u64);
+        ((((b_ptr as usize - b_ptr as usize) / ::std::mem::size_of::<i32>()) as i64) as u64);
     return b;
 }

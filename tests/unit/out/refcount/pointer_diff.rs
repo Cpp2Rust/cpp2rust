@@ -17,5 +17,5 @@ fn main_0() -> i32 {
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ((a.as_pointer() as Ptr<i32>).offset(4 as isize)),
     ));
-    return (((*p1.borrow()).clone() - (*p0.borrow()).clone()) as i32);
+    return ((((*p1.borrow()).clone() - (*p0.borrow()).clone()) as i64) as i32);
 }

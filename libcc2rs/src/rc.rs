@@ -675,45 +675,29 @@ impl<T> Sub for Ptr<T> {
     }
 }
 
-impl<T> std::ops::AddAssign<u64> for Ptr<T> {
-    #[inline]
-    fn add_assign(&mut self, other: u64) {
-        let step = self.elem_step();
-        self.offset = self
-            .offset
-            .wrapping_add((other as usize).wrapping_mul(step));
-    }
+macro_rules! impl_ptr_add_sub_assign {
+    ($($rhs:ty),+) => { $(
+        impl<T> std::ops::AddAssign<$rhs> for Ptr<T> {
+            #[inline]
+            fn add_assign(&mut self, other: $rhs) {
+                let step = self.elem_step();
+                self.offset = self.offset.wrapping_add(
+                    ((other as isize).wrapping_mul(step as isize)) as usize,
+                );
+            }
+        }
+        impl<T> std::ops::SubAssign<$rhs> for Ptr<T> {
+            #[inline]
+            fn sub_assign(&mut self, other: $rhs) {
+                let step = self.elem_step();
+                self.offset = self.offset.wrapping_sub(
+                    ((other as isize).wrapping_mul(step as isize)) as usize,
+                );
+            }
+        }
+    )+ }
 }
-
-impl<T> std::ops::AddAssign<i32> for Ptr<T> {
-    #[inline]
-    fn add_assign(&mut self, other: i32) {
-        let step = self.elem_step();
-        self.offset = self
-            .offset
-            .wrapping_add(((other as isize).wrapping_mul(step as isize)) as usize);
-    }
-}
-
-impl<T> std::ops::AddAssign<u32> for Ptr<T> {
-    #[inline]
-    fn add_assign(&mut self, other: u32) {
-        let step = self.elem_step();
-        self.offset = self
-            .offset
-            .wrapping_add((other as usize).wrapping_mul(step));
-    }
-}
-
-impl<T> std::ops::AddAssign<isize> for Ptr<T> {
-    #[inline]
-    fn add_assign(&mut self, other: isize) {
-        let step = self.elem_step();
-        self.offset = self
-            .offset
-            .wrapping_add((other.wrapping_mul(step as isize)) as usize);
-    }
-}
+impl_ptr_add_sub_assign!(i32, u32, u64, isize);
 
 macro_rules! impl_ptr_add_sub {
     ($($rhs:ty),+) => { $(
