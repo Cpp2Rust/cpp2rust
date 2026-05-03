@@ -39,6 +39,76 @@
       "type": "::brotli_sys::BrotliEncoderMode"
     }
   },
+  "f13": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderResult"
+    }
+  },
+  "f14": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_NIBBLE"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f15": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_META_NIBBLE"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f16": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_ALPHABET"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f17": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_SAME"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f18": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_CL_SPACE"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f19": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_HUFFMAN_SPACE"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
   "f2": {
     "body": [
       {
@@ -138,6 +208,106 @@
       "type": "libc::c_int"
     }
   },
+  "f20": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_CONTEXT_MAP_REPEAT"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f21": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_1"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f22": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_BLOCK_LENGTH_2"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f23": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_TRANSFORM"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f24": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_DICTIONARY"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f25": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_WINDOW_BITS"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f26": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_PADDING_1"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f27": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_FORMAT_PADDING_2"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f28": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_INVALID_ARGUMENTS"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f29": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MODES"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
   "f3": {
     "body": [
       {
@@ -146,6 +316,101 @@
     ],
     "return_type": {
       "type": "::brotli_sys::BrotliEncoderMode"
+    }
+  },
+  "f30": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_TREE_GROUPS"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f31": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_CONTEXT_MAP"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f32": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_1"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f33": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_RING_BUFFER_2"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f34": {
+    "body": [
+      {
+        "text": "::brotli_sys::BROTLI_DECODER_ERROR_ALLOC_BLOCK_TYPE_TREES"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f35": {
+    "body": [
+      {
+        "text": "::brotli_sys::BrotliDecoderGetErrorCode("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const ::brotli_sys::BrotliDecoderState",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
+    }
+  },
+  "f36": {
+    "body": [
+      {
+        "text": "::brotli_sys::BrotliDecoderVersion()"
+      }
+    ],
+    "return_type": {
+      "type": "u32"
+    }
+  },
+  "f37": {
+    "body": [
+      {
+        "text": "-19_i32 as ::brotli_sys::BrotliDecoderErrorCode"
+      }
+    ],
+    "return_type": {
+      "type": "::brotli_sys::BrotliDecoderErrorCode"
     }
   },
   "f4": {
