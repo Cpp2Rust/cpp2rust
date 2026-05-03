@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     ));
     assert!(((*diff.borrow()) == 3_i64));
     let idx: Value<u64> = Rc::new(RefCell::new(
-        (((((*r.borrow()).clone() - (*p.borrow()).clone()) as i64) as i64) as u64),
+        ((((*r.borrow()).clone() - (*p.borrow()).clone()) as i64) as u64),
     ));
     assert!(((*idx.borrow()) == 3_u64));
     let q2: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));

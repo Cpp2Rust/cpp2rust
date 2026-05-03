@@ -22,8 +22,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*s) == (11)));
     let mut diff: i64 = ((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64;
     assert!(((diff) == (3_i64)));
-    let mut idx: u64 =
-        (((((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64) as i64) as u64);
+    let mut idx: u64 = ((((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64) as u64);
     assert!(((idx) == (3_u64)));
     let mut q2: *mut i32 = p;
     q2.prefix_inc();
