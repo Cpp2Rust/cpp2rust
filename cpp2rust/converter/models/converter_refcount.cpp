@@ -1840,6 +1840,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
     return;
   }
 
+  PushParen outer(*this);
   Convert(lhs);
   StrCat(opcode);
   Convert(rhs);

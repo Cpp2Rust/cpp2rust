@@ -2067,6 +2067,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
+  PushParen outer(*this);
   {
     PushParen lhs_paren(*this);
     Convert(expr->getLHS());
