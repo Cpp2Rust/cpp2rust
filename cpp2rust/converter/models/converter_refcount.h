@@ -245,21 +245,21 @@ private:
       if (pushed) {
         c.conversion_kind_.push_back(k);
       }
-      verrs() << "[PushConversionKind:" << line << "] ";
+      log() << "[PushConversionKind:" << line << "] ";
       for (auto ck : c.conversion_kind_) {
-        verrs() << c.ConversionKindToString(ck) << ", ";
+        log() << c.ConversionKindToString(ck) << ", ";
       }
-      verrs() << "\n";
+      log() << "\n";
     }
     ~PushConversionKind() {
       if (pushed) {
         c.conversion_kind_.pop_back();
       }
-      verrs() << "[PopConversionKind] ";
+      log() << "[PopConversionKind] ";
       for (auto ck : c.conversion_kind_) {
-        verrs() << c.ConversionKindToString(ck) << ", ";
+        log() << c.ConversionKindToString(ck) << ", ";
       }
-      verrs() << "\n";
+      log() << "\n";
     }
   };
 

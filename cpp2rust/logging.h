@@ -9,7 +9,6 @@ namespace cpp2rust {
 
 void SetVerbose(bool verbose);
 
-llvm::raw_ostream &verrs();
-llvm::raw_ostream &vouts();
+llvm::raw_ostream &log();
 
 } // namespace cpp2rust

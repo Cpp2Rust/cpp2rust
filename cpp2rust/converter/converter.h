@@ -330,8 +330,8 @@ protected:
 
   template <typename... Ts>
   inline void _StrCat(const char *func, int line, const Ts &...vals) {
-    verrs() << '[' << func << ':' << line << "] ";
-    ((verrs() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
+    log() << '[' << func << ':' << line << "] ";
+    ((log() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
   }
 
   class Buffer {
@@ -610,13 +610,13 @@ protected:
                  int line = __builtin_LINE())
         : c(c) {
       c.curr_expr_kind_.push_back(k);
-      verrs() << "PushExprKind " << file << ':' << line << ' ';
+      log() << "PushExprKind " << file << ':' << line << ' ';
       c.dump_expr_kinds();
-      verrs() << '[';
+      log() << '[';
       for (const auto k : c.curr_expr_kind_) {
-        verrs() << c.expr_kind_to_string(k) << ", ";
+        log() << c.expr_kind_to_string(k) << ", ";
       }
-      verrs() << "]\n";
+      log() << "]\n";
     }
     ~PushExprKind() { c.curr_expr_kind_.pop_back(); }
   };

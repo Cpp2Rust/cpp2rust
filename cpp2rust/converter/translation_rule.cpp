@@ -569,10 +569,10 @@ private:
       }
       break;
     case clang::OverloadingResult::OR_No_Viable_Function:
-      verrs() << "No viable function\n";
+      llvm::errs() << "No viable function\n";
       break;
     case clang::OverloadingResult::OR_Deleted:
-      verrs() << "Deleted function selected\n";
+      llvm::errs() << "Deleted function selected\n";
       break;
     }
 
@@ -751,7 +751,7 @@ Access ParseAccessJSON(llvm::StringRef value) {
   } else if (value == "move") {
     return Access::kMove;
   } else {
-    verrs() << "Invalid access value: " << value << '\n';
+    llvm::errs() << "Invalid access value: " << value << '\n';
     assert(0);
     return Access::kRead;
   }
@@ -862,8 +862,8 @@ void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
 
   auto parsed = llvm::json::parse((*buf)->getBuffer());
   if (!parsed) {
-    verrs() << "Failed to parse IR JSON: " << json_path << ": "
-            << llvm::toString(parsed.takeError()) << '\n';
+    llvm::errs() << "Failed to parse IR JSON: " << json_path << ": "
+                 << llvm::toString(parsed.takeError()) << '\n';
     assert(0);
     return;
   }
@@ -901,19 +901,19 @@ void BodyFragmentDump(const BodyFragment &frag) {
 
 } // namespace
 
-void TextFragment::dump() const { verrs() << "  text: \"" << text << "\"\n"; }
+void TextFragment::dump() const { log() << "  text: \"" << text << "\"\n"; }
 
 void PlaceholderFragment::dump() const {
-  verrs() << "  placeholder: " << n;
+  log() << "  placeholder: " << n;
   switch (access) {
   case Access::kRead:
-    verrs() << " (read)\n";
+    log() << " (read)\n";
     break;
   case Access::kWrite:
-    verrs() << " (write)\n";
+    log() << " (write)\n";
     break;
   case Access::kMove:
-    verrs() << " (move)\n";
+    log() << " (move)\n";
     break;
   }
 }
@@ -928,59 +928,59 @@ const PlaceholderFragment *MethodCallFragment::getReceiverPlaceholder() const {
 }
 
 void MethodCallFragment::dump() const {
-  verrs() << "  method_call:\n"
-             "    receiver:\n";
+  log() << "  method_call:\n"
+           "    receiver:\n";
   for (const auto &frag : receiver) {
     BodyFragmentDump(frag);
   }
-  verrs() << "    body:\n";
+  log() << "    body:\n";
   for (const auto &frag : body) {
     BodyFragmentDump(frag);
   }
 }
 
 void ExprRule::dump() const {
-  verrs() << "Matching: " << src << '\n';
+  log() << "Matching: " << src << '\n';
   unsigned i = 0;
   for (auto &info : params) {
-    verrs() << "  param a" << i++ << ": ";
+    log() << "  param a" << i++ << ": ";
     info.dump();
-    verrs() << '\n';
+    log() << '\n';
   }
   if (!return_type.type.empty()) {
-    verrs() << "  return: ";
+    log() << "  return: ";
     return_type.dump();
-    verrs() << '\n';
+    log() << '\n';
   }
   i = 0;
   for (auto &bounds : generics) {
-    verrs() << "  generic T" << ++i << ':';
+    log() << "  generic T" << ++i << ':';
     for (auto &b : bounds) {
-      verrs() << ' ' << b;
+      log() << ' ' << b;
     }
-    verrs() << '\n';
+    log() << '\n';
   }
   for (const auto &frag : body) {
     BodyFragmentDump(frag);
   }
 }
 
-void GenericFragment::dump() const { verrs() << "  generic: " << n << '\n'; }
+void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
 void TypeInfo::dump() const {
-  verrs() << type;
+  log() << type;
   if (is_refcount_pointer)
-    verrs() << " [rc_ptr]";
+    log() << " [rc_ptr]";
   if (is_unsafe_pointer)
-    verrs() << " [unsafe_ptr]";
+    log() << " [unsafe_ptr]";
 }
 
 void TypeRule::dump() const {
-  verrs() << "name: " << src << "\n  Rust type: ";
+  log() << "name: " << src << "\n  Rust type: ";
   type_info.dump();
-  verrs() << '\n';
+  log() << '\n';
   if (!initializer.empty()) {
-    verrs() << "  init: " << initializer << '\n';
+    log() << "  init: " << initializer << '\n';
   }
 }
 
@@ -1002,14 +1002,14 @@ std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
 
   for (auto &[name, rule] : exprs) {
     if (rule.src.empty()) {
-      verrs() << name << '\n';
+      llvm::errs() << name << '\n';
       rule.dump();
       assert(0 && "Expr rule loaded from IR but has no src");
     }
   }
   for (auto &[name, rule] : types) {
     if (rule.src.empty()) {
-      verrs() << name << '\n';
+      llvm::errs() << name << '\n';
       rule.dump();
       assert(0 && "Type rule loaded from IR but has no src");
     }

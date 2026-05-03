@@ -118,7 +118,7 @@ void ForEachTemplateArgument(
       break;
     default:
       // FIXME: improve logging
-      verrs() << "unsupported template argument kind\n";
+      log() << "unsupported template argument kind\n";
     }
   }
 }

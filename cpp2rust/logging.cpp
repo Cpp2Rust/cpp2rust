@@ -5,16 +5,13 @@
 
 namespace cpp2rust {
 namespace {
-llvm::raw_ostream *verrs_ = &llvm::nulls();
-llvm::raw_ostream *vouts_ = &llvm::nulls();
+llvm::raw_ostream *log_ = &llvm::nulls();
 } // namespace
 
 void SetVerbose(bool verbose) {
-  verrs_ = verbose ? &llvm::errs() : &llvm::nulls();
-  vouts_ = verbose ? &llvm::outs() : &llvm::nulls();
+  log_ = verbose ? &llvm::errs() : &llvm::nulls();
 }
 
-llvm::raw_ostream &verrs() { return *verrs_; }
-llvm::raw_ostream &vouts() { return *vouts_; }
+llvm::raw_ostream &log() { return *log_; }
 
 } // namespace cpp2rust
