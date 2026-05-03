@@ -1,0 +1,12 @@
+set(RUST_STABLE_VERSION "1.95.0")
+
+function(write_rust_toolchain DIR)
+  set(_content "[toolchain]\nchannel = \"${RUST_STABLE_VERSION}\"\n")
+  set(_file ${DIR}/rust-toolchain.toml)
+  if (EXISTS ${_file})
+    file(READ ${_file} _existing)
+  endif()
+  if (NOT "${_existing}" STREQUAL "${_content}")
+    file(WRITE ${_file} ${_content})
+  endif()
+endfunction()

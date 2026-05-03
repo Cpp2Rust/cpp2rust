@@ -63,18 +63,7 @@ if (NOT RUSTC_LLVM_VERSION STREQUAL LLVM_PACKAGE_VERSION)
   message(WARNING "The LLVM versions used by rustc and clang are different!")
 endif()
 
-set(RUST_STABLE_VERSION "1.95.0")
-
-function(write_rust_toolchain DIR)
-  set(_content "[toolchain]\nchannel = \"${RUST_STABLE_VERSION}\"\n")
-  set(_file ${DIR}/rust-toolchain.toml)
-  if (EXISTS ${_file})
-    file(READ ${_file} _existing)
-  endif()
-  if (NOT "${_existing}" STREQUAL "${_content}")
-    file(WRITE ${_file} ${_content})
-  endif()
-endfunction()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
 
 # rule-preprocessor uses nightly
 foreach(_dir libcc2rs rules)
