@@ -142,10 +142,12 @@ add_custom_target("check-rules"
                           ${CMAKE_COMMAND} -E env
                               CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
                               cargo run
+                  COMMAND $<TARGET_FILE:cpp-rule-preprocessor>
+                              --rules ${PROJECT_SOURCE_DIR}/rules
                   COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}
                           git diff --exit-code -- rules/
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
-                  DEPENDS install-rust-toolchain
+                  DEPENDS install-rust-toolchain cpp-rule-preprocessor
                   USES_TERMINAL
                  )
 
