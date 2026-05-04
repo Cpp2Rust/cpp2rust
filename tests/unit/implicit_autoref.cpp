@@ -1,36 +1,29 @@
 #include <cassert>
-
-struct Counter {
-  int value = 0;
-  void bump() { ++value; }
-  int get() const { return value; }
-};
+#include <vector>
 
 struct Holder {
-  Counter c;
-  Counter &ref;
-  Holder(Counter &c) : ref(c) {}
+  std::vector<int> v;
 };
 
-void via_ref(Counter &r) { r.bump(); }
-
 int main() {
-  Counter c;
-  Counter *p = &c;
-  (*p).bump();
-  p->bump();
+  std::vector<int> v;
+  v.push_back(10);
+  v.push_back(20);
 
-  Counter arr[2];
-  arr[0].bump();
-  arr[1].bump();
+  std::vector<int> *p = &v;
+  int a = (*p)[0];
+  (*p)[1] = 30;
 
-  Holder h(c);
-  h.c.bump();
-  h.ref.bump();
+  Holder h;
+  h.v.push_back(40);
+  h.v.push_back(50);
+  Holder *hp = &h;
+  int b = (*hp).v[0];
+  (*hp).v[1] = 60;
 
-  via_ref(c);
-
-  int sum = (*p).get() + h.c.get() + h.ref.get() + arr[0].get() + arr[1].get();
-  assert(sum == 11);
+  assert(a == 10);
+  assert((*p)[1] == 30);
+  assert(b == 40);
+  assert((*hp).v[1] == 60);
   return 0;
 }

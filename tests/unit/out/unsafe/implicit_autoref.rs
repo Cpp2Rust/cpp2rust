@@ -7,35 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
-pub struct Counter {
-    pub value: i32,
-}
-impl Counter {
-    pub unsafe fn bump(&mut self) {
-        self.value.prefix_inc();
-    }
-    pub unsafe fn get(&self) -> i32 {
-        return self.value;
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Clone, Default)]
 pub struct Holder {
-    pub c: Counter,
-    pub ref_: *mut Counter,
-}
-impl Holder {
-    pub unsafe fn Holder(c: *mut Counter) -> Self {
-        let mut this = Self {
-            c: <Counter>::default(),
-            ref_: c,
-        };
-        this
-    }
-}
-pub unsafe fn via_ref_0(r: *mut Counter) {
-    (unsafe { (*r).bump() });
+    pub v: Vec<i32>,
 }
 pub fn main() {
     unsafe {
@@ -43,24 +17,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: Counter = <Counter>::default();
-    let mut p: *mut Counter = (&mut c as *mut Counter);
-    (unsafe { (*p).bump() });
-    (unsafe { (*p).bump() });
-    let mut arr: [Counter; 2] = [<Counter>::default(); 2];
-    (unsafe { arr[(0) as usize].bump() });
-    (unsafe { arr[(1) as usize].bump() });
-    let mut h: Holder = Holder::Holder(&mut c as *mut Counter);
-    (unsafe { h.c.bump() });
-    (unsafe { (*h.ref_).bump() });
-    (unsafe {
-        let _r: *mut Counter = &mut c as *mut Counter;
-        via_ref_0(_r)
-    });
-    let mut sum: i32 = (((((unsafe { (*p).get() }) + (unsafe { h.c.get() }))
-        + (unsafe { (*h.ref_).get() }))
-        + (unsafe { arr[(0) as usize].get() }))
-        + (unsafe { arr[(1) as usize].get() }));
-    printf(b"%d\n\0".as_ptr() as *const i8, sum);
+    let mut v: Vec<i32> = Vec::new();
+    v.push(10);
+    v.push(20);
+    let mut p: *mut Vec<i32> = (&mut v as *mut Vec<i32>);
+    let mut a: i32 = (&mut (*p))[(0_u64) as usize];
+    (&mut (*p))[(1_u64) as usize] = 30;
+    let mut h: Holder = <Holder>::default();
+    h.v.push(40);
+    h.v.push(50);
+    let mut hp: *mut Holder = (&mut h as *mut Holder);
+    let mut b: i32 = (&mut (*hp)).v[(0_u64) as usize];
+    (&mut (*hp)).v[(1_u64) as usize] = 60;
+    assert!(((a) == (10)));
+    assert!((((&mut (*p))[(1_u64) as usize]) == (30)));
+    assert!(((b) == (40)));
+    assert!((((&mut (*hp)).v[(1_u64) as usize]) == (60)));
     return 0;
 }
