@@ -474,6 +474,8 @@ protected:
 
   virtual void ConvertDeref(clang::Expr *expr);
 
+  void EmitDeref(std::string inner, clang::QualType pointee_type);
+
   virtual void ConvertArrow(clang::Expr *expr);
 
   virtual void ConvertCast(clang::QualType qual_type);
@@ -515,6 +517,17 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  std::optional<bool> autoref_mut_;
+
+  struct PushExplicitAutoref {
+    Converter &c;
+    std::optional<bool> prev;
+    PushExplicitAutoref(Converter &c, std::optional<bool> v)
+        : c(c), prev(c.autoref_mut_) {
+      c.autoref_mut_ = v;
+    }
+    ~PushExplicitAutoref() { c.autoref_mut_ = prev; }
+  };
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
 
