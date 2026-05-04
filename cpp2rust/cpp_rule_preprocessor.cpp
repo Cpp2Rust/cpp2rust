@@ -12,7 +12,6 @@
 #include <string>
 
 #include "converter/rule_src_parser.h"
-#include "rules_dir.h"
 
 namespace fs = std::filesystem;
 
@@ -20,14 +19,18 @@ namespace {
 llvm::cl::OptionCategory cat("cpp-rule-preprocessor options");
 
 llvm::cl::opt<std::string>
-    RulesDir("rules",
-             llvm::cl::desc("Directory containing rule packages (each with a "
-                            "src.cpp); ir_src.json is written next to each. "
-                            "If omitted, auto-detected as in cpp2rust"),
-             llvm::cl::value_desc("dir"), llvm::cl::cat(cat));
+    SrcFile("file",
+            llvm::cl::desc("Path to a rule's src.cpp. ir_src.json is written "
+                           "next to it"),
+            llvm::cl::value_desc("src.cpp"), llvm::cl::Required,
+            llvm::cl::cat(cat));
 } // namespace
 
-static void process(const fs::path &src) {
+int main(int argc, char *argv[]) {
+  llvm::cl::HideUnrelatedOptions(cat);
+  llvm::cl::ParseCommandLineOptions(argc, argv);
+
+  fs::path src = SrcFile.getValue();
   llvm::errs() << "Preprocessing " << src.string() << '\n';
   auto strings = cpp2rust::RuleSrcParser::Extract(src);
 
@@ -53,24 +56,8 @@ static void process(const fs::path &src) {
   if (ec) {
     llvm::errs() << "ERROR: failed to open " << out_path.string() << ": "
                  << ec.message() << '\n';
-    std::exit(EXIT_FAILURE);
-  }
-  out << llvm::formatv("{0:2}", llvm::json::Value(std::move(root))) << '\n';
-}
-
-int main(int argc, char *argv[]) {
-  llvm::cl::HideUnrelatedOptions(cat);
-  llvm::cl::ParseCommandLineOptions(argc, argv);
-
-  if (RulesDir.empty() && !cpp2rust::ResolveRulesDir(RulesDir)) {
     return EXIT_FAILURE;
   }
-
-  for (const auto &entry :
-       fs::recursive_directory_iterator(RulesDir.getValue())) {
-    if (entry.is_regular_file() && entry.path().filename() == "src.cpp") {
-      process(entry.path());
-    }
-  }
+  out << llvm::formatv("{0:2}", llvm::json::Value(std::move(root))) << '\n';
   return EXIT_SUCCESS;
 }
