@@ -8,7 +8,6 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <map>
 #include <string>
 
 #include "converter/rule_src_parser.h"
@@ -32,23 +31,8 @@ int main(int argc, char *argv[]) {
 
   fs::path src = SrcFile.getValue();
   llvm::errs() << "Preprocessing " << src.string() << '\n';
-  auto strings = cpp2rust::RuleSrcParser::Extract(src);
-
-  // Sort by name for deterministic output.
-  std::map<std::string, std::string> sorted;
-  for (auto &[k, v] : strings.functions) {
-    sorted.emplace(k, v);
-  }
-  for (auto &[k, v] : strings.types) {
-    sorted.emplace(k, v);
-  }
-
   llvm::json::Object root;
-  for (auto &[k, v] : sorted) {
-    llvm::json::Object entry;
-    entry["to_string"] = v;
-    root.try_emplace(k, std::move(entry));
-  }
+  cpp2rust::RuleSrcParser::Extract(src, root);
 
   auto out_path = src.parent_path() / "ir_src.json";
   std::error_code ec;

@@ -69,7 +69,7 @@ struct LookupInfo {
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  explicit Callback(SrcStrings &strings) : strings_(strings) {}
+  explicit Callback(llvm::json::Object &out) : out_(out) {}
 
   void init(clang::Sema &sema) {
     sema_ = &sema;
@@ -87,13 +87,15 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      strings_.types[var->getQualifiedNameAsString()] = Mapper::ToString(type);
+      out_[var->getQualifiedNameAsString()] =
+          llvm::json::Object{{"to_string", Mapper::ToString(type)}};
       return;
     }
 
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
       auto add = [&](std::string &&src) {
-        strings_.functions[func->getQualifiedNameAsString()] = std::move(src);
+        out_[func->getQualifiedNameAsString()] =
+            llvm::json::Object{{"to_string", std::move(src)}};
       };
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
@@ -168,7 +170,7 @@ public:
   }
 
 private:
-  SrcStrings &strings_;
+  llvm::json::Object &out_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
 
@@ -644,7 +646,7 @@ private:
 
 class ActionFactory : public clang::tooling::FrontendActionFactory {
 public:
-  explicit ActionFactory(SrcStrings &strings) : cb_(strings) {
+  explicit ActionFactory(llvm::json::Object &out) : cb_(out) {
     using namespace clang::ast_matchers;
     finder_.addMatcher(
         returnStmt(
@@ -719,16 +721,14 @@ private:
 
 } // namespace
 
-SrcStrings Extract(const std::filesystem::path &src_path) {
-  SrcStrings strings;
+void Extract(const std::filesystem::path &src_path, llvm::json::Object &out) {
   auto flags = getPlatformClangBeginFlags();
   auto end_flags = getPlatformClangEndFlags();
   flags.insert(flags.end(), end_flags.begin(), end_flags.end());
   clang::tooling::FixedCompilationDatabase compilations(".", flags);
-  ActionFactory factory(strings);
+  ActionFactory factory(out);
   clang::tooling::ClangTool tool(compilations, {src_path.string()});
   tool.run(&factory);
-  return strings;
 }
 
 } // namespace cpp2rust::RuleSrcParser

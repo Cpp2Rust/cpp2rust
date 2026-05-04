@@ -1,19 +1,16 @@
-#pragma once
-
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#pragma once
+
+#include <llvm/Support/JSON.h>
+
 #include <filesystem>
-#include <string>
-#include <unordered_map>
 
 namespace cpp2rust::RuleSrcParser {
 
-struct SrcStrings {
-  std::unordered_map<std::string, std::string> functions; // f<n> -> ToString
-  std::unordered_map<std::string, std::string> types;     // t<n> -> ToString
-};
-
-SrcStrings Extract(const std::filesystem::path &src_path);
+// Visit every f<n> / t<n> declaration in `src_path`:
+// f<n> / t<n>: { "to_string": <Mapper::ToString> }
+void Extract(const std::filesystem::path &src_path, llvm::json::Object &out);
 
 } // namespace cpp2rust::RuleSrcParser
