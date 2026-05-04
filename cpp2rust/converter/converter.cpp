@@ -2466,17 +2466,13 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
-  PushExplicitAutoref autoref(*this, method && !method->isStatic() &&
-                                             isCallee() && !base_is_this
-                                         ? std::optional{!method->isConst()}
-                                         : autoref_mut_);
   if (expr->isArrow() && !base_is_this) {
     ConvertArrow(base);
   } else {
     Convert(base);
   }
 
+  auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
   if (method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
     StrCat(GetOverloadedFunctionName(method));
