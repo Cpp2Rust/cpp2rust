@@ -3,14 +3,14 @@
 
 #include "rules_dir.h"
 
+#include <llvm/Support/raw_ostream.h>
+
 #include <algorithm>
 #include <array>
 #include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
-
-#include <llvm/Support/raw_ostream.h>
 
 #if defined(_WIN32)
 #include <windows.h>
