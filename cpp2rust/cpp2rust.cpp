@@ -1,15 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include <llvm/Support/CommandLine.h>
-
 #include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <vector>
-
 #if defined(_WIN32)
 #include <windows.h>
 #elif defined(__linux__)
@@ -18,6 +15,8 @@
 #elif defined(__APPLE__)
 #include <mach-o/dyld.h>
 #endif
+
+#include <llvm/Support/CommandLine.h>
 
 #include "cpp2rust_lib.h"
 #include "logging.h"
@@ -66,6 +65,7 @@ llvm::cl::list<std::string> CXXFlags("cxxflags",
 
 } // namespace
 
+// Get the directory of the running executable
 static fs::path GetExecutableDir() {
 #if defined(_WIN32)
   char path[MAX_PATH];
@@ -78,7 +78,7 @@ static fs::path GetExecutableDir() {
       .parent_path();
 #elif defined(__APPLE__)
   uint32_t size = 0;
-  _NSGetExecutablePath(nullptr, &size);
+  _NSGetExecutablePath(nullptr, &size); // get path length
   std::vector<char> buffer(size);
   _NSGetExecutablePath(buffer.data(), &size);
   return fs::path(buffer.data()).parent_path();
