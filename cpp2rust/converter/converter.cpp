@@ -1626,6 +1626,11 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
 }
 
 bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
+  if (auto str = GetMappedAsString(expr); !str.empty()) {
+    StrCat(str);
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;

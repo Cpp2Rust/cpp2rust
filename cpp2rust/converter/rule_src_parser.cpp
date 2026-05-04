@@ -188,6 +188,13 @@ public:
         add(Mapper::ToString(decl));
         return;
       }
+      if (const auto *lit = R.Nodes.getNodeAs<clang::Expr>("lit")) {
+        auto src = Mapper::ToString(lit);
+        if (!src.empty()) {
+          add(std::move(src));
+        }
+        return;
+      }
     }
   }
 
@@ -689,7 +696,8 @@ public:
                                   declRefExpr(to(decl(unless(parmVarDecl()))))))
                     .bind("udeclref"),
                 cxxDependentScopeMemberExpr().bind("dsme"),
-                cxxUnresolvedConstructExpr().bind("uctor"))))),
+                cxxUnresolvedConstructExpr().bind("uctor"),
+                integerLiteral().bind("lit"))))),
             hasAncestor(functionDecl(isDefinition(),
                                      matchesName("(^|::)f[0-9]+$"),
                                      isExpansionInMainFile())
@@ -701,7 +709,6 @@ public:
             .bind("tvar"),
         &cb_);
 
-    // Collect every f<n> for the post-run diff against bound bodies.
     finder_.addMatcher(functionDecl(isDefinition(),
                                     matchesName("(^|::)f[0-9]+$"),
                                     isExpansionInMainFile())
@@ -767,10 +774,7 @@ bool Extract(const std::filesystem::path &src_path, llvm::json::Object &out) {
     if (out.find(name) == out.end()) {
       llvm::errs() << src_path.string() << ": " << name
                    << ": matcher did not bind to the function body.\n"
-                   << "  body: " << body_src << '\n'
-                   << "  Likely cause: return expression shape not handled by "
-                      "rule_src_parser.cpp's ActionFactory matcher (e.g. a "
-                      "literal from a macro expansion).\n";
+                   << "  body: " << body_src << '\n';
       ok = false;
     }
   }
