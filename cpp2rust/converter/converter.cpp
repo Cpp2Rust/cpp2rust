@@ -2472,8 +2472,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     Convert(base);
   }
 
-  auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
-  if (method && IsOverloadedMethod(method)) {
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
+      method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
     StrCat(GetOverloadedFunctionName(method));
   } else {
