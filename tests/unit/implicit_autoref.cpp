@@ -1,4 +1,4 @@
-#include <cstdio>
+#include <cassert>
 
 struct Counter {
   int value = 0;
@@ -31,6 +31,6 @@ int main() {
   via_ref(c);
 
   int sum = (*p).get() + h.c.get() + h.ref.get() + arr[0].get() + arr[1].get();
-  printf("%d\n", sum);
+  assert(sum == 11);
   return 0;
 }
