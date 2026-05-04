@@ -156,6 +156,15 @@ bool IsMut(clang::QualType qual_type) {
            qual_type->getPointeeType().isConstQualified());
 }
 
+bool IsMutatingCall(const clang::CallExpr *expr) {
+  if (auto *callee = expr->getDirectCallee()) {
+    if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
+      return !method->isConst();
+    }
+  }
+  return true;
+}
+
 bool IsOverloadedFunction(const clang::FunctionDecl *decl) {
   const auto *ctx = decl->getDeclContext();
   const auto decl_name = decl->getDeclName();

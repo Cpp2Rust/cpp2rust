@@ -2225,21 +2225,21 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   bool branch_is_addr =
       expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
   {
-    PushBrace brace(*this);
+    PushBrace then_brace(*this);
     if (branch_is_addr) {
       StrCat(token::kRef, keyword_mut_);
     }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::optional<bool>{}
+    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
     Convert(expr->getTrueExpr());
   }
   StrCat(keyword::kElse);
   {
-    PushBrace brace(*this);
+    PushBrace else_brace(*this);
     if (branch_is_addr) {
       StrCat(token::kRef, keyword_mut_);
     }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::optional<bool>{}
+    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
     Convert(expr->getFalseExpr());
   }
@@ -2369,13 +2369,7 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     }
     break;
   case clang::OverloadedOperatorKind::OO_Subscript: {
-    bool is_mut = true;
-    if (auto *callee = expr->getDirectCallee()) {
-      if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
-        is_mut = !method->isConst();
-      }
-    }
-    PushExplicitAutoref autoref(*this, is_mut);
+    PushExplicitAutoref autoref(*this, IsMutatingCall(expr));
     ConvertArraySubscript(expr->getArg(0), expr->getArg(1), expr->getType());
     break;
   }
