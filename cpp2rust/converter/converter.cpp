@@ -1059,7 +1059,10 @@ void Converter::ConvertLoopVariable(clang::VarDecl *decl,
       StrCat(std::format(".as_mut_ptr().add({})", loop_var_name));
     }
   } else {
-    Convert(range_init);
+    {
+      PushAutorefReceiver autoref(*this, /*is_mut=*/false);
+      Convert(range_init);
+    }
     StrCat(std::format("[{}]", loop_var_name));
     StrCat(".clone()");
   }
@@ -2218,18 +2221,22 @@ void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
+  bool branch_is_addr =
+      expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
   {
     PushBrace then_brace(*this);
-    if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
+    if (branch_is_addr) {
       StrCat(token::kRef, keyword_mut_);
+      autoref_receiver_ = false;
     }
     Convert(expr->getTrueExpr());
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    if (expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType()) {
+    if (branch_is_addr) {
       StrCat(token::kRef, keyword_mut_);
+      autoref_receiver_ = false;
     }
     Convert(expr->getFalseExpr());
   }
@@ -2285,11 +2292,8 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
-    {
-      PushParen paren(*this);
-      StrCat(GetPointerDerefPrefix(decl->getType().getNonReferenceType()),
-             std::move(str));
-    }
+    EmitMaybeWrappedDeref(std::move(str),
+                          decl->getType().getNonReferenceType());
     SetValueFreshness(expr->getType());
     return false;
   }
@@ -2362,9 +2366,17 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
       Convert(expr->getArg(0));
     }
     break;
-  case clang::OverloadedOperatorKind::OO_Subscript:
+  case clang::OverloadedOperatorKind::OO_Subscript: {
+    bool is_mut = true;
+    if (auto *callee = expr->getDirectCallee()) {
+      if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
+        is_mut = !method->isConst();
+      }
+    }
+    PushAutorefReceiver autoref(*this, is_mut);
     ConvertArraySubscript(expr->getArg(0), expr->getArg(1), expr->getType());
     break;
+  }
   case clang::OverloadedOperatorKind::OO_LessLess:
     if (IsCallToOstream(expr)) {
       ConvertCallToOstream(expr);
@@ -2430,8 +2442,8 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   }
 
   if (!isAddrOf() && member->getType()->isReferenceType()) {
-    PushParen paren(*this);
-    StrCat(GetPointerDerefPrefix(member->getType().getNonReferenceType()), str);
+    EmitMaybeWrappedDeref(std::move(str),
+                          member->getType().getNonReferenceType());
     return false;
   }
 
@@ -2459,6 +2471,11 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+  std::optional<PushAutorefReceiver> autoref;
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
+      method && !method->isStatic() && isCallee() && !base_is_this) {
+    autoref.emplace(*this, !method->isConst());
+  }
   if (expr->isArrow() && !base_is_this) {
     ConvertArrow(base);
   } else {
@@ -3200,10 +3217,15 @@ void Converter::ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
 
 void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                                       clang::QualType type) {
+  bool is_unique_ptr = IsUniquePtr(base->getType());
+  if (is_unique_ptr) {
+    autoref_receiver_ = false;
+  }
   Convert(base->IgnoreImplicit());
-  if (IsUniquePtr(base->getType())) {
+  if (is_unique_ptr) {
     StrCat(".as_mut().unwrap()");
   }
+  autoref_receiver_ = false;
   PushBracket bracket(*this);
   {
     PushParen paren(*this);
@@ -3509,11 +3531,26 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   }
 }
 
+void Converter::EmitMaybeWrappedDeref(std::string inner,
+                                      clang::QualType pointee_type) {
+  bool wrap = autoref_receiver_;
+  bool wrap_mut = autoref_receiver_mut_;
+  autoref_receiver_ = false;
+  if (wrap) {
+    StrCat("(", wrap_mut ? "&mut " : "&");
+  }
+  {
+    PushParen paren(*this);
+    StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
+  }
+  if (wrap) {
+    StrCat(")");
+  }
+}
+
 void Converter::ConvertDeref(clang::Expr *expr) {
   if (!isAddrOf()) {
-    PushParen paren(*this);
-    StrCat(GetPointerDerefPrefix(expr->getType()->getPointeeType()),
-           ToString(expr));
+    EmitMaybeWrappedDeref(ToString(expr), expr->getType()->getPointeeType());
   } else {
     Convert(expr);
   }
