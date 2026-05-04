@@ -474,7 +474,7 @@ protected:
 
   virtual void ConvertDeref(clang::Expr *expr);
 
-  void EmitMaybeWrappedDeref(std::string inner, clang::QualType pointee_type);
+  void EmitDeref(std::string inner, clang::QualType pointee_type);
 
   virtual void ConvertArrow(clang::Expr *expr);
 
@@ -517,23 +517,16 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
-  bool autoref_receiver_ = false;
-  bool autoref_receiver_mut_ = false;
+  std::optional<bool> autoref_mut_;
 
-  struct PushAutorefReceiver {
+  struct PushExplicitAutoref {
     Converter &c;
-    bool prev_active;
-    bool prev_mut;
-    PushAutorefReceiver(Converter &c, bool is_mut)
-        : c(c), prev_active(c.autoref_receiver_),
-          prev_mut(c.autoref_receiver_mut_) {
-      c.autoref_receiver_ = true;
-      c.autoref_receiver_mut_ = is_mut;
+    std::optional<bool> prev;
+    PushExplicitAutoref(Converter &c, std::optional<bool> v)
+        : c(c), prev(c.autoref_mut_) {
+      c.autoref_mut_ = v;
     }
-    ~PushAutorefReceiver() {
-      c.autoref_receiver_ = prev_active;
-      c.autoref_receiver_mut_ = prev_mut;
-    }
+    ~PushExplicitAutoref() { c.autoref_mut_ = prev; }
   };
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;

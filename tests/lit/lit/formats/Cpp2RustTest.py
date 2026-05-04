@@ -29,7 +29,7 @@ class Cpp2RustTest(TestFormat):
     self.regex_translation_fail = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
     self.regex_nondet_result = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
     self.rust_version = read_rust_version()
-    os.environ['RUSTFLAGS'] = '-Awarnings -A dangerous-implicit-autorefs'
+    os.environ['RUSTFLAGS'] = '-Awarnings'
 
   def updateExpected(self, generated, expected_path):
     os.makedirs(os.path.dirname(expected_path), exist_ok=True)
