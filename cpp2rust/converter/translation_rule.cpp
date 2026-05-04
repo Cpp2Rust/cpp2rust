@@ -166,10 +166,7 @@ void LoadIrSrc(ExprRules &exprs, TypeRules &types,
                const std::filesystem::path &json_path) {
   auto buf = llvm::MemoryBuffer::getFile(json_path.string());
   if (!buf) {
-    llvm::errs() << "Missing " << json_path
-                 << " (run cpp-rule-preprocessor; it is invoked at build "
-                    "time via the cmake check-rules / preprocess-cpp-rules "
-                    "targets)\n";
+    llvm::errs() << "Missing " << json_path << ", run cpp-rule-preprocessor\n";
     assert(0);
     return;
   }
@@ -183,19 +180,23 @@ void LoadIrSrc(ExprRules &exprs, TypeRules &types,
   }
 
   auto *root = parsed->getAsObject();
-  if (!root)
+  if (!root) {
     return;
+  }
 
   for (auto &[entry_name, entry_val] : *root) {
     auto *obj = entry_val.getAsObject();
-    if (!obj)
+    if (!obj) {
       continue;
+    }
     auto str = obj->getString("to_string");
-    if (!str)
+    if (!str) {
       continue;
+    }
     auto name = entry_name.str();
-    if (name.empty())
+    if (name.empty()) {
       continue;
+    }
     if (name[0] == 'f') {
       auto it = exprs.find(name);
       if (it != exprs.end()) {
