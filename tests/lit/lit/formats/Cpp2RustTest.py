@@ -156,7 +156,6 @@ path = "src/main.rs"
 [dependencies]
 libc = "0.2.169"
 libcc2rs = {{ path = "../../../libcc2rs" }}
-rules = {{ path = "../../../rules" }}
 """)
 
     cmd = ['cargo', 'build', '--release', '--quiet']
