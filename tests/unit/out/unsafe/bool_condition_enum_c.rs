@@ -29,8 +29,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut code: Code = Code::from((Code::CODE_OK as i32));
-    let mut err: Code = Code::from((Code::CODE_ERR as i32));
+    let mut code: Code = Code::CODE_OK;
+    let mut err: Code = Code::CODE_ERR;
     if (code != Code::from(0)) {
         assert!((0 != 0));
     }

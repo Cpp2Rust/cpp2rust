@@ -96,7 +96,7 @@ fn main_0() -> i32 {
             a: Rc::new(RefCell::new(5)),
             b: Rc::new(RefCell::new(6)),
         })),
-        color: Rc::new(RefCell::new(Color::from((Color::GREEN as i32)))),
+        color: Rc::new(RefCell::new(Color::GREEN)),
         count: Rc::new(RefCell::new(42)),
     }));
     assert!(((((*(*(*c.borrow()).inner.borrow()).a.borrow()) == 5) as i32) != 0));
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
     );
     assert!(((((*(*c.borrow()).count.borrow()) == 42) as i32) != 0));
     let c2: Value<Container> = <Value<Container>>::default();
-    (*(*c2.borrow()).color.borrow_mut()) = Color::from((Color::BLUE as i32));
+    (*(*c2.borrow()).color.borrow_mut()) = Color::BLUE;
     assert!((((((*(*c2.borrow()).color.borrow()) as u32) == 2_u32) as i32) != 0));
     return 0;
 }

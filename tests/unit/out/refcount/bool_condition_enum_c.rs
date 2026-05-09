@@ -27,8 +27,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let code: Value<Code> = Rc::new(RefCell::new(Code::from((Code::CODE_OK as i32))));
-    let err: Value<Code> = Rc::new(RefCell::new(Code::from((Code::CODE_ERR as i32))));
+    let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
+    let err: Value<Code> = Rc::new(RefCell::new(Code::CODE_ERR));
     if ((*code.borrow()) != Code::from(0)) {
         assert!((0 != 0));
     }
