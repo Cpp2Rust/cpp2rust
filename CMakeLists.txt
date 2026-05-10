@@ -152,8 +152,6 @@ endforeach()
 add_custom_target("preprocess-cpp-rules" DEPENDS ${cpp_rules_ir_outputs})
 
 add_custom_target("preprocess-rust-rules"
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_refcount.json" -delete
                   COMMAND cargo build
                   COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
                           ${CMAKE_COMMAND} -E env
@@ -165,9 +163,11 @@ add_custom_target("preprocess-rust-rules"
                  )
 
 add_custom_target("check-rules"
+                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
+                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_refcount.json" -delete
+                  DEPENDS preprocess-cpp-rules preprocess-rust-rules
                   COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}
                           git diff --exit-code -- rules/
-                  DEPENDS preprocess-cpp-rules preprocess-rust-rules
                  )
 
 add_custom_target("check-all"
