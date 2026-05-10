@@ -93,15 +93,13 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      out_[var->getQualifiedNameAsString()] =
-          llvm::json::Object{{"to_string", Mapper::ToString(type)}};
+      out_.try_emplace(var->getQualifiedNameAsString(), Mapper::ToString(type));
       return;
     }
 
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("func")) {
       auto add = [&](std::string &&src) {
-        out_[func->getQualifiedNameAsString()] =
-            llvm::json::Object{{"to_string", std::move(src)}};
+        out_.try_emplace(func->getQualifiedNameAsString(), std::move(src));
       };
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {

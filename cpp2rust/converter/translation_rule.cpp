@@ -185,27 +185,17 @@ void LoadIrSrc(ExprRules &exprs, TypeRules &types,
   }
 
   for (auto &[entry_name, entry_val] : *root) {
-    auto *obj = entry_val.getAsObject();
-    if (!obj) {
-      continue;
-    }
-    auto str = obj->getString("to_string");
-    if (!str) {
-      continue;
-    }
     auto name = entry_name.str();
-    if (name.empty()) {
-      continue;
-    }
+    auto val = entry_val.getAsString();
     if (name[0] == 'f') {
       auto it = exprs.find(name);
       if (it != exprs.end()) {
-        it->second.src = str->str();
+        it->second.src = val->str();
       }
     } else if (name[0] == 't') {
       auto it = types.find(name);
       if (it != types.end()) {
-        it->second.src = str->str();
+        it->second.src = val->str();
       }
     }
   }
