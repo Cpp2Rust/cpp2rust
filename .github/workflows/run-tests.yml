@@ -58,12 +58,12 @@ jobs:
         run: ninja
         working-directory: build
 
-      - name: Run unit tests
-        run: ninja check
-        working-directory: build
-
       - name: Check rules
         run: ninja check-rules
+        working-directory: build
+
+      - name: Run unit tests
+        run: ninja check
         working-directory: build
 
       - name: Check benchmarks (don't run)

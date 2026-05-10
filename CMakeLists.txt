@@ -135,18 +135,57 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-unit
                  )
 
+file(GLOB rule_src_files ${PROJECT_SOURCE_DIR}/rules/*/src.cpp)
+set(cpp_rules_ir_outputs)
+set(rust_rules_ir_outputs)
+set(rust_rules_inputs)
+foreach(_src IN LISTS rule_src_files)
+  get_filename_component(_rule_dir ${_src} DIRECTORY)
+  set(_out ${_rule_dir}/ir_src.json)
+  add_custom_command(
+    OUTPUT ${_out}
+    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --file ${_src}
+    DEPENDS ${_src} cpp-rule-preprocessor
+    VERBATIM
+  )
+  list(APPEND cpp_rules_ir_outputs ${_out})
+  if(EXISTS ${_rule_dir}/tgt_unsafe.rs)
+    list(APPEND rust_rules_ir_outputs ${_rule_dir}/ir_unsafe.json)
+    list(APPEND rust_rules_inputs ${_rule_dir}/tgt_unsafe.rs)
+  endif()
+  if(EXISTS ${_rule_dir}/tgt_refcount.rs)
+    list(APPEND rust_rules_ir_outputs ${_rule_dir}/ir_refcount.json)
+    list(APPEND rust_rules_inputs ${_rule_dir}/tgt_refcount.rs)
+  endif()
+endforeach()
+
+add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
+
+file(GLOB_RECURSE rule_preprocessor_sources
+     ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
+
+add_custom_command(
+  OUTPUT ${rust_rules_ir_outputs}
+  COMMAND cargo build
+  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
+          ${CMAKE_COMMAND} -E env
+              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
+              cargo run
+  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
+  DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources}
+  VERBATIM
+)
+
+add_custom_target("preprocess-rust-rules" ALL
+                  DEPENDS ${rust_rules_ir_outputs} install-rust-toolchain)
+
 add_custom_target("check-rules"
-                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir*.json" -delete
-                  COMMAND cargo build
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
-                          ${CMAKE_COMMAND} -E env
-                              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
-                              cargo run
+                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
+                  COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_refcount.json" -delete
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
                   COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}
                           git diff --exit-code -- rules/
-                  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
-                  DEPENDS install-rust-toolchain
-                  USES_TERMINAL
                  )
 
 add_custom_target("check-all"
