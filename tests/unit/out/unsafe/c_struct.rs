@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*b.next).value) == (1)) as i32) != 0));
     let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
-        color: Color::from((Color::GREEN as i32)),
+        color: Color::GREEN,
         count: 42,
     };
     assert!(((((c.inner.a) == (5)) as i32) != 0));
@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((c.color as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
     assert!(((((c.count) == (42)) as i32) != 0));
     let mut c2: Container = <Container>::default();
-    c2.color = Color::from((Color::BLUE as i32));
+    c2.color = Color::BLUE;
     assert!(((((c2.color as u32) == (2_u32)) as i32) != 0));
     return 0;
 }

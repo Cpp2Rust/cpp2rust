@@ -74,7 +74,7 @@ unsafe fn main_0() -> i32 {
     let mut buf32: i32 = 0;
     let mut buf16: i16 = 0_i16;
     let mut s: Sink = <Sink>::default();
-    s.width = Width::from((Width::W_64 as i32));
+    s.width = Width::W_64;
     s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
         write_count_0(_s, _count)
     });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
-    s.width = Width::from((Width::W_32 as i32));
+    s.width = Width::W_32;
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
@@ -90,7 +90,7 @@ unsafe fn main_0() -> i32 {
         write_count_0(_s, _count)
     });
     assert!(((((buf32) == (305419896)) as i32) != 0));
-    s.width = Width::from((Width::W_16 as i32));
+    s.width = Width::W_16;
     s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);

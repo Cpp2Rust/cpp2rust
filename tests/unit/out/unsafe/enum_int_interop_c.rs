@@ -66,6 +66,8 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Entry {}
 pub static mut global_color: Color = Color::GREEN;
 pub static mut global_opt: Option = Option::OPT_B;
 pub static mut global_tag: Tag = Tag::TAG_TWO;
