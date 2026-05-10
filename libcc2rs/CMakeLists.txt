@@ -17,5 +17,5 @@ add_custom_command(
 )
 
 add_custom_target(libcc2rs ALL
-    DEPENDS ${RUST_BUILD_DIR}/release/liblibcc2rs.rlib install-rust-toolchain
+    DEPENDS ${RUST_BUILD_DIR}/release/liblibcc2rs.rlib "${RUST_STAMP_FILE}"
 )

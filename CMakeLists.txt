@@ -70,10 +70,16 @@ foreach(_dir libcc2rs rules)
   write_rust_toolchain(${CMAKE_SOURCE_DIR}/${_dir})
 endforeach()
 
-add_custom_target("install-rust-toolchain"
-                  COMMAND rustup toolchain install ${RUST_STABLE_VERSION}
-                  USES_TERMINAL
-                 )
+set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
+
+add_custom_command(
+    OUTPUT "${RUST_STAMP_FILE}"
+    COMMAND rustup toolchain install ${RUST_STABLE_VERSION}
+    COMMAND ${CMAKE_COMMAND} -E touch "${RUST_STAMP_FILE}"
+    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake"
+    USES_TERMINAL
+    VERBATIM
+)
 
 add_subdirectory(cpp2rust)
 add_subdirectory(libcc2rs)
@@ -90,7 +96,7 @@ add_custom_target("format"
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  DEPENDS "install-rust-toolchain"
+                  DEPENDS "${RUST_STAMP_FILE}"
                   COMMENT "Running clang-format and cargo fmt on all source files"
                   VERBATIM
                   )
@@ -102,7 +108,7 @@ endif()
 add_custom_target("check-libcc2rs"
                   COMMAND cargo test
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs"
-                  DEPENDS install-rust-toolchain
+                  DEPENDS "${RUST_STAMP_FILE}"
                   USES_TERMINAL
                  )
 
@@ -172,12 +178,12 @@ add_custom_command(
               CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
               cargo run
   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
-  DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources}
+  DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
   VERBATIM
 )
 
 add_custom_target("preprocess-rust-rules" ALL
-                  DEPENDS ${rust_rules_ir_outputs} install-rust-toolchain)
+                  DEPENDS ${rust_rules_ir_outputs})
 
 add_custom_target("check-rules"
                   COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
