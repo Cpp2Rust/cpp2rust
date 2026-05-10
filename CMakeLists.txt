@@ -182,7 +182,8 @@ add_custom_target("preprocess-rust-rules" ALL
 add_custom_target("check-rules"
                   COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_unsafe.json" -delete
                   COMMAND find ${PROJECT_SOURCE_DIR}/rules -name "ir_refcount.json" -delete
-                  DEPENDS preprocess-cpp-rules preprocess-rust-rules
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
+                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
                   COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}
                           git diff --exit-code -- rules/
                  )
