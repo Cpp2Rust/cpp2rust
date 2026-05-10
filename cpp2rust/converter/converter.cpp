@@ -445,6 +445,8 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
     return;
   }
   auto qual_type = decl->getType();
+  PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
+                                              decl->isStaticLocal());
   if (decl->hasInit()) {
     StrCat(token::kAssign);
     ConvertVarInit(qual_type, decl->getInit());
@@ -3043,6 +3045,18 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     return std::format("0.0_{}", ToString(qual_type));
   }
 
+  if (auto record = qual_type->getAsRecordDecl();
+      record && in_const_initializer_) {
+    if (auto cxx = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
+      ENSURE(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
+             "Default initializing globals using default constructor is not "
+             "supported");
+    }
+    Buffer buf(*this);
+    EmitDefaultStructLiteral(record);
+    return std::move(buf).str();
+  }
+
   return std::format("<{}>::default()", ToString(qual_type));
 }
 
@@ -3458,13 +3472,15 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
     }
   }
 
-  StrCat(struct_name);
-  {
-    PushBrace struct_brace(*this);
-    for (auto *field : decl->fields()) {
-      StrCat(GetNamedDeclAsString(field), token::kColon,
-             GetDefaultAsString(field->getType()), token::kComma);
-    }
+  EmitDefaultStructLiteral(decl);
+}
+
+void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
+  StrCat(GetRecordName(decl));
+  PushBrace brace(*this);
+  for (auto *field : decl->fields()) {
+    StrCat(GetNamedDeclAsString(field), token::kColon,
+           GetDefaultAsString(field->getType()), token::kComma);
   }
 }
 
