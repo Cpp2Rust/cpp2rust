@@ -38,7 +38,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut g: Graph = Graph {
         V: 5_u32,
-        adj: Default::default(),
+        adj: std::ptr::null_mut(),
     };
     return 0;
 }

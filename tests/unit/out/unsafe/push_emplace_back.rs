@@ -28,7 +28,7 @@ pub unsafe fn push_param_0(mut dest: *mut Vec<Vec<u8>>) {
 }
 pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
-    let mut dest: *mut Vec<Vec<u8>> = Default::default();
+    let mut dest: *mut Vec<Vec<u8>> = std::ptr::null_mut();
     if cond {
         dest = (&mut (*jpg).com_data as *mut Vec<Vec<u8>>);
     } else {
@@ -50,7 +50,7 @@ pub unsafe fn nested_push_move_3(mut bw: *mut Writer) {
 }
 pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
-    let mut dest: *mut Vec<Vec<u8>> = Default::default();
+    let mut dest: *mut Vec<Vec<u8>> = std::ptr::null_mut();
     if cond {
         dest = (&mut (*jpg).com_data as *mut Vec<Vec<u8>>);
     } else {

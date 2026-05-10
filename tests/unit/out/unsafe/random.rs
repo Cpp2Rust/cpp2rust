@@ -23,9 +23,9 @@ impl Pair {
         self.y.prefix_inc();
         self.a[(4) as usize] = 1;
         (*self.r) = 1;
-        self.p = Default::default();
-        self.pair = Default::default();
-        self.ap[(0) as usize] = Default::default();
+        self.p = std::ptr::null_mut();
+        self.pair = std::ptr::null_mut();
+        self.ap[(0) as usize] = std::ptr::null_mut();
     }
     pub unsafe fn as_val(&mut self) -> i32 {
         return self.x;
@@ -44,9 +44,9 @@ impl Default for Pair {
             y: 0_i32,
             a: [0_i32; 5],
             r: <*mut i32>::default(),
-            p: Default::default(),
-            pair: Default::default(),
-            ap: [Default::default(); 2],
+            p: std::ptr::null_mut(),
+            pair: std::ptr::null_mut(),
+            ap: [std::ptr::null_mut(); 2],
         }
     }
 }
@@ -81,9 +81,9 @@ unsafe fn main_0() -> i32 {
         y: 2,
         a: [1, 2, 3, 4, 5],
         r: &mut x1 as *mut i32,
-        p: Default::default(),
-        pair: Default::default(),
-        ap: [Default::default(), Default::default()],
+        p: std::ptr::null_mut(),
+        pair: std::ptr::null_mut(),
+        ap: [std::ptr::null_mut(), std::ptr::null_mut()],
     };
     let mut y4: Pair = Pair {
         x: y1.x,
@@ -136,7 +136,7 @@ unsafe fn main_0() -> i32 {
     };
     let ry3: *mut Pair = &mut (*py1) as *mut Pair;
     let mut py3: *mut Pair = py1;
-    py3 = Default::default();
+    py3 = std::ptr::null_mut();
     let mut ptr2pair: *mut Pair = py3;
     (unsafe {
         let _x1: i32 = x1;
@@ -197,9 +197,9 @@ unsafe fn main_0() -> i32 {
         y: 2,
         a: [1, 2, 3, 4, 5],
         r: &mut j as *mut i32,
-        p: Default::default(),
-        pair: Default::default(),
-        ap: [Default::default(), Default::default()],
+        p: std::ptr::null_mut(),
+        pair: std::ptr::null_mut(),
+        ap: [std::ptr::null_mut(), std::ptr::null_mut()],
     };
     y1.x = new_y.x;
     let mut i: u32 = 1_u32;

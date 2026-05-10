@@ -1862,7 +1862,9 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     if (type->isFunctionPointerType()) {
       StrCat("None");
     } else {
-      StrCat(keyword_default_);
+      StrCat(type->getPointeeType().isConstQualified()
+                 ? "std::ptr::null()"
+                 : "std::ptr::null_mut()");
     }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
@@ -2966,12 +2968,13 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   }
 
   if (qual_type->isPointerType()) {
-    if (qual_type->getPointeeType()->isFunctionType()) {
+    auto pointee = qual_type->getPointeeType();
+    if (pointee->isFunctionType()) {
       return "None";
-    } else {
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-      return keyword_default_;
     }
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return pointee.isConstQualified() ? "std::ptr::null()"
+                                      : "std::ptr::null_mut()";
   }
 
   computed_expr_type_ = ComputedExprType::FreshValue;

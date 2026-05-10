@@ -43,10 +43,10 @@ unsafe fn main_0() -> i32 {
         >(Some(my_alternative_fread_0));
     assert!(
         ((unsafe {
-            let _arg0: *mut ::libc::c_void = Default::default();
+            let _arg0: *mut ::libc::c_void = std::ptr::null_mut();
             let _arg1: u64 = 0_u64;
             let _arg2: u64 = 0_u64;
-            let _arg3: *mut ::std::fs::File = Default::default();
+            let _arg3: *mut ::std::fs::File = std::ptr::null_mut();
             (f3).unwrap()(_arg0, _arg1, _arg2, _arg3)
         }) == (22_u64))
     );

@@ -38,7 +38,7 @@ pub unsafe fn Append_1(head: *mut Node, new_node: *mut Node) {
 }
 pub unsafe fn Delete_2(mut head: *mut Node, mut val: i32) -> *mut Node {
     let mut curr: *mut Node = head;
-    let mut prev: *mut Node = Default::default();
+    let mut prev: *mut Node = std::ptr::null_mut();
     'loop_: while !((curr).is_null()) {
         if (((*curr).val) == (val)) {
             if !((prev).is_null()) {
@@ -61,36 +61,36 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut n0: Node = Node {
         val: 5,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut head: *mut Node = (&mut n0 as *mut Node);
     let mut n1: Node = Node {
         val: 4,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n2: Node = Node {
         val: 3,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n3: Node = Node {
         val: 2,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n4: Node = Node {
         val: 1,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n5: Node = Node {
         val: 0,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n6: Node = Node {
         val: -1_i32,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut n7: Node = Node {
         val: -2_i32,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     (unsafe {
         let _head: *mut Node = &mut (*head) as *mut Node;

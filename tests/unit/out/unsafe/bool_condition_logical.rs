@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
     let mut zero: i32 = 0;
     let mut storage: i32 = 7;
     let mut p: *mut i32 = (&mut storage as *mut i32);
-    let mut np: *mut i32 = Default::default();
+    let mut np: *mut i32 = std::ptr::null_mut();
     let mut u: u32 = 4_u32;
     let mut code: Code = Code::CODE_OK;
     if (n != 0) && (!(p).is_null()) {
@@ -124,7 +124,7 @@ unsafe fn main_0() -> i32 {
         assert!(true);
     }
     let mut cp: *const u8 = b"hi\0".as_ptr();
-    let mut cnp: *const u8 = Default::default();
+    let mut cnp: *const u8 = std::ptr::null();
     if ((x) > (y)) && (!(cp).is_null()) {
         assert!(true);
     }

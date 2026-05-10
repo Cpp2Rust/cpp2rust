@@ -14,7 +14,7 @@ pub struct StackArray {
 impl Default for StackArray {
     fn default() -> Self {
         StackArray {
-            arr: [Default::default(); 3],
+            arr: [std::ptr::null_mut(); 3],
         }
     }
 }

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn null_0() -> *mut i32 {
-    let mut p: *mut i32 = Default::default();
+    let mut p: *mut i32 = std::ptr::null_mut();
     return p;
 }
 pub fn main() {

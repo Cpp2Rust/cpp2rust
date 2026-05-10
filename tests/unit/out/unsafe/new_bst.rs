@@ -29,13 +29,13 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     } else if ((value) == ((*node).value)) {
         return node;
     }
-    return Default::default();
+    return std::ptr::null_mut();
 }
 pub unsafe fn insert_1(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if (node).is_null() {
         return (Box::leak(Box::new(node_t {
-            left: Default::default(),
-            right: Default::default(),
+            left: std::ptr::null_mut(),
+            right: std::ptr::null_mut(),
             value: value,
         })) as *mut node_t);
     }
@@ -76,8 +76,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut root: *mut node_t = (Box::leak(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 0,
     })) as *mut node_t);
     root = (unsafe {

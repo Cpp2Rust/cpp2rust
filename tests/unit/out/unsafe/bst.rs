@@ -29,7 +29,7 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     } else if ((value) == ((*node).value)) {
         return node;
     }
-    return Default::default();
+    return std::ptr::null_mut();
 }
 pub unsafe fn insert_1(mut node: *mut node_t, mut new_node: *mut node_t) -> *mut node_t {
     if (node).is_null() {
@@ -57,28 +57,28 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut tree: Option<Box<node_t>> = Some(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 0,
     }));
     let mut n1: Option<Box<node_t>> = Some(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 1,
     }));
     let mut n2: Option<Box<node_t>> = Some(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 2,
     }));
     let mut n3: Option<Box<node_t>> = Some(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 3,
     }));
     let mut n4: Option<Box<node_t>> = Some(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 4,
     }));
     let mut ptr1: *mut node_t = (&mut (*tree.as_deref_mut().unwrap()) as *mut node_t);

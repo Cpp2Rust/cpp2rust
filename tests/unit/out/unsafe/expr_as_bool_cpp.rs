@@ -64,7 +64,7 @@ unsafe fn main_0() -> i32 {
     assert!(((lt) == (0)));
     assert!(((neq) == (0)));
     let mut p1: *const u8 = b"hi\0".as_ptr();
-    let mut p2: *const u8 = Default::default();
+    let mut p2: *const u8 = std::ptr::null();
     let mut either: i32 = (((!(p1).is_null()) || (!(p2).is_null())) as i32);
     let mut both: i32 = (((!(p1).is_null()) && (!(p2).is_null())) as i32);
     assert!(((either) == (1)));
@@ -90,22 +90,22 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _p: *const u8 = Default::default();
-            let _q: *const u8 = Default::default();
+            let _p: *const u8 = std::ptr::null();
+            let _q: *const u8 = std::ptr::null();
             cmp_or_ptr_1(_p, _q)
         }) == (0))
     );
     assert!(
         ((unsafe {
-            let _s1: *const u8 = Default::default();
-            let _s2: *const u8 = Default::default();
+            let _s1: *const u8 = std::ptr::null();
+            let _s2: *const u8 = std::ptr::null();
             both_null_2(_s1, _s2)
         }) == (1))
     );
     assert!(
         ((unsafe {
             let _s1: *const u8 = p1;
-            let _s2: *const u8 = Default::default();
+            let _s2: *const u8 = std::ptr::null();
             both_null_2(_s1, _s2)
         }) == (0))
     );

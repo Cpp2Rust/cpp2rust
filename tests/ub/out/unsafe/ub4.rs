@@ -15,7 +15,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut out: *mut i32 = Default::default();
+    let mut out: *mut i32 = std::ptr::null_mut();
     let mut x1: i32 = 1;
     if (x1 != 0) {
         let mut x2: i32 = -1_i32;

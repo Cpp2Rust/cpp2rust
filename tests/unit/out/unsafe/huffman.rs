@@ -55,8 +55,8 @@ impl MinHeap {
         self.alloc.as_mut().unwrap()[(self.next as u64) as usize] = MinHeapNode {
             data: data,
             freq: freq,
-            left: Default::default(),
-            right: Default::default(),
+            left: std::ptr::null_mut(),
+            right: std::ptr::null_mut(),
         };
         return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as u64) as usize]
             as *mut MinHeapNode);

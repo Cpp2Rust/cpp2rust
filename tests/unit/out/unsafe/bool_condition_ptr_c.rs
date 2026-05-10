@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut storage: i32 = 7;
     let mut p: *mut i32 = (&mut storage as *mut i32);
-    let mut np: *mut i32 = Default::default();
+    let mut np: *mut i32 = std::ptr::null_mut();
     if !(p).is_null() {
         assert!((1 != 0));
     }
@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     let mut iters: i32 = 0;
     'loop_: while !(iter).is_null() {
         iters.prefix_inc();
-        iter = Default::default();
+        iter = std::ptr::null_mut();
     }
     assert!(((((iters) == (1)) as i32) != 0));
     let mut t3: i32 = if !(p).is_null() { 1 } else { 0 };

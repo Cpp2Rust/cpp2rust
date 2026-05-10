@@ -13,10 +13,10 @@ pub unsafe fn foo_1(mut x: f64) -> f64 {
     return x;
 }
 pub unsafe fn bar_2(mut p: *mut i32, mut flag: bool) -> *mut i32 {
-    return if flag { p } else { Default::default() };
+    return if flag { p } else { std::ptr::null_mut() };
 }
 pub unsafe fn bar_3(mut p: *mut f64, mut flag: bool) -> *mut f64 {
-    return if flag { p } else { Default::default() };
+    return if flag { p } else { std::ptr::null_mut() };
 }
 pub unsafe fn func_4(mut x1: i32, mut x2: i32, mut x3: i32) -> i32 {
     return (((x1) + (x2)) + (x3));

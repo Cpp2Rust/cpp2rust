@@ -71,7 +71,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((l.end.y) == (4)) as i32) != 0));
     let mut a: Node = Node {
         value: 1,
-        next: Default::default(),
+        next: std::ptr::null_mut(),
     };
     let mut b: Node = Node {
         value: 2,

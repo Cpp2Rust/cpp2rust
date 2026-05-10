@@ -29,7 +29,7 @@ pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     } else if ((value) == ((*node).value)) {
         return node;
     }
-    return Default::default();
+    return std::ptr::null_mut();
 }
 pub unsafe fn insert_1(mut node: *mut node_t, mut new_node: *mut node_t) -> *mut node_t {
     if (node).is_null() {
@@ -58,8 +58,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let N: i32 = 25000;
     let mut tree: *mut node_t = (Box::leak(Box::new(node_t {
-        left: Default::default(),
-        right: Default::default(),
+        left: std::ptr::null_mut(),
+        right: std::ptr::null_mut(),
         value: 0,
     })) as *mut node_t);
     let mut i: i32 = 0;
@@ -67,8 +67,8 @@ unsafe fn main_0() -> i32 {
         (unsafe {
             let _node: *mut node_t = tree;
             let _new_node: *mut node_t = (Box::leak(Box::new(node_t {
-                left: Default::default(),
-                right: Default::default(),
+                left: std::ptr::null_mut(),
+                right: std::ptr::null_mut(),
                 value: i,
             })) as *mut node_t);
             insert_1(_node, _new_node)

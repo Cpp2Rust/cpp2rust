@@ -134,14 +134,14 @@ unsafe fn main_0() -> i32 {
         V: (V as u32),
         adj: Box::leak(
             (0..V)
-                .map(|_| Default::default())
+                .map(|_| std::ptr::null_mut())
                 .collect::<Box<[*mut GraphNode]>>(),
         )
         .as_mut_ptr(),
     };
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < (V)) {
-        (*graph.adj.offset((i) as isize)) = Default::default();
+        (*graph.adj.offset((i) as isize)) = std::ptr::null_mut();
         i.prefix_inc();
     }
     let mut i: u32 = 0_u32;

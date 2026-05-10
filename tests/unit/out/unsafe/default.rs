@@ -18,10 +18,10 @@ pub struct Pointers {
 impl Default for Pointers {
     fn default() -> Self {
         Pointers {
-            x1: Default::default(),
-            x2: Default::default(),
-            x3: [Default::default(); 5],
-            x4: [Default::default(); 10],
+            x1: std::ptr::null_mut(),
+            x2: std::ptr::null(),
+            x3: [std::ptr::null_mut(); 5],
+            x4: [std::ptr::null(); 10],
             x5: 0_i32,
         }
     }

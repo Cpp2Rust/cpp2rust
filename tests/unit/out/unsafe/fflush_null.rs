@@ -12,7 +12,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut file_ptr: *mut ::std::fs::File = Default::default();
+    let mut file_ptr: *mut ::std::fs::File = std::ptr::null_mut();
     return if !(file_ptr).is_null() {
         match (*file_ptr).sync_all() {
             Ok(_) => 0,

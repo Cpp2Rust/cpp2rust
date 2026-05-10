@@ -54,7 +54,7 @@ unsafe fn main_0() -> i32 {
         let _t: *mut Test = (&mut t1 as *mut Test);
         Update_0(_t)
     });
-    let mut t3: *mut Test = Default::default();
+    let mut t3: *mut Test = std::ptr::null_mut();
     t3 = t2;
     (*t3).x = 15;
     (*(unsafe { (*t3).as_ptr() })) += 10;
