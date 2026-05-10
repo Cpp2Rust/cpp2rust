@@ -3048,7 +3048,7 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   if (auto record = qual_type->getAsRecordDecl();
       record && in_const_initializer_) {
     if (auto cxx = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
-      assert(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
+      ENSURE(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
              "Default initializing globals using default constructor is not "
              "supported");
     }
