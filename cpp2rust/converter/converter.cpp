@@ -3485,8 +3485,8 @@ void Converter::AddSyncTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  StrCat("\n// SAFETY: preserves unsafe C semantics; thread-safety is the "
-         "programmer's responsibility\n");
+  StrCat("\n// SAFETY: preserves unsafe C semantics; thread-safety is not "
+         "enforced\n");
   StrCat("unsafe impl Sync for", GetRecordName(decl));
   PushBrace brace(*this);
 }
