@@ -59,6 +59,33 @@ impl From<i32> for Tag {
         }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Entry {
+    pub name: *const u8,
+    pub color: Color,
+    pub opt: Option,
+}
+pub static mut global_color: Color = Color::GREEN;
+pub static mut global_opt: Option = Option::OPT_B;
+pub static mut global_tag: Tag = Tag::TAG_TWO;
+pub static mut entries: [Entry; 3] = [
+    Entry {
+        name: b"first\0".as_ptr(),
+        color: Color::RED,
+        opt: Option::OPT_NONE,
+    },
+    Entry {
+        name: b"second\0".as_ptr(),
+        color: Color::GREEN,
+        opt: Option::OPT_A,
+    },
+    Entry {
+        name: b"third\0".as_ptr(),
+        color: Color::BLUE,
+        opt: Option::OPT_C,
+    },
+];
 pub unsafe fn as_int_0(mut c: Color) -> i32 {
     return (c as i32);
 }
@@ -178,5 +205,14 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
+    assert!(((global_color as i32) == (Color::GREEN as i32)));
+    assert!(((global_opt as i32) == (Option::OPT_B as i32)));
+    assert!(((global_tag as i32) == (Tag::TAG_TWO as i32)));
+    assert!(((entries[(0) as usize].color as i32) == (Color::RED as i32)));
+    assert!(((entries[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
+    assert!(((entries[(1) as usize].color as i32) == (Color::GREEN as i32)));
+    assert!(((entries[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
+    assert!(((entries[(2) as usize].color as i32) == (Color::BLUE as i32)));
+    assert!(((entries[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
     return 0;
 }

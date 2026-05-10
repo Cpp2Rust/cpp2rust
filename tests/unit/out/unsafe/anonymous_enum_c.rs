@@ -101,14 +101,14 @@ unsafe fn main_0() -> i32 {
     assert!(((((anon_enum_3::FIRST_A as i32) != (anon_enum_3::FIRST_B as i32)) as i32) != 0));
     assert!(((((anon_enum_11::SECOND_A as i32) != (anon_enum_11::SECOND_B as i32)) as i32) != 0));
     assert!(((((anon_enum_31::THIRD_A as i32) != (anon_enum_31::THIRD_B as i32)) as i32) != 0));
-    let mut td: TdEnum = TdEnum::from((TdEnum::TD_A as i32));
+    let mut td: TdEnum = TdEnum::TD_A;
     assert!(((((td as u32) == ((TdEnum::TD_A as i32) as u32)) as i32) != 0));
-    td = (TdEnum::from((TdEnum::TD_B as i32))).clone();
+    td = (TdEnum::TD_B).clone();
     assert!(((((td as u32) == ((TdEnum::TD_B as i32) as u32)) as i32) != 0));
     let mut w: WithAnonField = <WithAnonField>::default();
-    w.field = anon_enum_24::from((anon_enum_24::FIELD_A as i32));
+    w.field = anon_enum_24::FIELD_A;
     assert!(((((w.field as u32) == ((anon_enum_24::FIELD_A as i32) as u32)) as i32) != 0));
-    w.field = (anon_enum_24::from((anon_enum_24::FIELD_B as i32))).clone();
+    w.field = (anon_enum_24::FIELD_B).clone();
     assert!(((((w.field as u32) == ((anon_enum_24::FIELD_B as i32) as u32)) as i32) != 0));
     return 0;
 }

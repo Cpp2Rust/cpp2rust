@@ -15,6 +15,22 @@ typedef enum {
   TAG_TWO = 2,
 } Tag;
 
+struct Entry {
+  const char *name;
+  Color color;
+  Option opt;
+};
+
+static Color global_color = GREEN;
+static Option global_opt = OPT_B;
+static Tag global_tag = TAG_TWO;
+
+static Entry entries[3] = {
+    {"first", RED, OPT_NONE},
+    {"second", GREEN, OPT_A},
+    {"third", BLUE, OPT_C},
+};
+
 int as_int(Color c) { return c; }
 
 int classify_option(int option) {
@@ -112,6 +128,17 @@ int main() {
 
   int extra = (int)RED + (int)GREEN + (int)BLUE;
   assert(extra == 0 + 1 + 2);
+
+  assert(global_color == GREEN);
+  assert(global_opt == OPT_B);
+  assert(global_tag == TAG_TWO);
+
+  assert(entries[0].color == RED);
+  assert(entries[0].opt == OPT_NONE);
+  assert(entries[1].color == GREEN);
+  assert(entries[1].opt == OPT_A);
+  assert(entries[2].color == BLUE);
+  assert(entries[2].opt == OPT_C);
 
   return 0;
 }

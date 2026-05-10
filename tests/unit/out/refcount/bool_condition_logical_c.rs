@@ -47,7 +47,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
-    let code: Value<Code> = Rc::new(RefCell::new(Code::from((Code::CODE_OK as i32))));
+    let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
     if (((((*n.borrow()) != 0) && (!(*p.borrow()).is_null())) as i32) != 0) {
         assert!((1 != 0));
     }

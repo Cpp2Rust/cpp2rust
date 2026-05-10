@@ -46,7 +46,7 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut i32 = (&mut storage as *mut i32);
     let mut np: *mut i32 = Default::default();
     let mut u: u32 = 4_u32;
-    let mut code: Code = Code::from((Code::CODE_OK as i32));
+    let mut code: Code = Code::CODE_OK;
     if ((((n != 0) && (!(p).is_null())) as i32) != 0) {
         assert!((1 != 0));
     }

@@ -1733,6 +1733,19 @@ bool Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
 
 void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
                                              clang::Expr *from) {
+  // Short circuit `Enum::from(X as i32)` to `X`
+  if (auto ref =
+          clang::dyn_cast<clang::DeclRefExpr>(from->IgnoreParenImpCasts())) {
+    if (auto ec = clang::dyn_cast<clang::EnumConstantDecl>(ref->getDecl())) {
+      auto src_enum = clang::dyn_cast<clang::EnumDecl>(ec->getDeclContext());
+      auto dst_enum = to->getType()->getAs<clang::EnumType>();
+      if (src_enum && dst_enum && dst_enum->getDecl() == src_enum) {
+        StrCat(std::format("{}::{}", GetRecordName(src_enum),
+                           std::string_view(ec->getName())));
+        return;
+      }
+    }
+  }
   StrCat(GetUnsafeTypeAsString(to->getType()), "::from");
   PushParen paren(*this);
   Convert(from);
