@@ -464,6 +464,8 @@ protected:
 
   virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
 
+  void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
+
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
   virtual void
@@ -517,6 +519,7 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
 
   struct PushExplicitAutoref {
@@ -527,6 +530,23 @@ protected:
       c.autoref_mut_ = v;
     }
     ~PushExplicitAutoref() { c.autoref_mut_ = prev; }
+  };
+
+  struct PushConstInitializer {
+    Converter &c;
+    bool prev;
+    bool enabled;
+    PushConstInitializer(Converter &c, bool enabled)
+        : c(c), prev(c.in_const_initializer_), enabled(enabled) {
+      if (enabled) {
+        c.in_const_initializer_ = true;
+      }
+    }
+    ~PushConstInitializer() {
+      if (enabled) {
+        c.in_const_initializer_ = prev;
+      }
+    }
   };
   std::stack<clang::Expr *> curr_for_inc_;
   std::stack<clang::QualType> curr_init_type_;
