@@ -32,6 +32,8 @@ impl Default for Event_anon_0 {
         unsafe { std::mem::zeroed() }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Event_anon_0 {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Event {
@@ -39,6 +41,8 @@ pub struct Event {
     pub handle: *mut ::libc::c_void,
     pub payload: Event_anon_0,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Event {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -47,13 +51,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut dummy: i32 = 0;
     let mut m1: Event = <Event>::default();
-    m1.kind = Kind::KIND_DONE;
+    m1.kind = Kind::from((Kind::KIND_DONE as i32));
     m1.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m1.payload.code = 42;
     assert!(((((m1.kind as u32) == ((Kind::KIND_DONE as i32) as u32)) as i32) != 0));
     assert!(((((m1.payload.code) == (42)) as i32) != 0));
     let mut m2: Event = <Event>::default();
-    m2.kind = Kind::KIND_NONE;
+    m2.kind = Kind::from((Kind::KIND_NONE as i32));
     m2.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m2.payload.obj = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     assert!(

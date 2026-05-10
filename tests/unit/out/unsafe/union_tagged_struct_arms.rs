@@ -30,6 +30,8 @@ pub struct Branch_anon_0_anon_0 {
     pub count: i64,
     pub cursor: i64,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Branch_anon_0_anon_0 {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch_anon_0_anon_1 {
@@ -78,7 +80,7 @@ unsafe fn main_0() -> i32 {
         b"c\0".as_ptr().cast_mut(),
     ];;
     let mut p_list: Branch = <Branch>::default();
-    p_list.choice = Choice::C_LIST;
+    p_list.choice = Choice::from((Choice::C_LIST as i32));
     p_list.index = 0;
     p_list.v.list.items = items.as_mut_ptr();
     p_list.v.list.count = 3_i64;
@@ -90,7 +92,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut p_letters: Branch = <Branch>::default();
-    p_letters.choice = Choice::C_LETTERS;
+    p_letters.choice = Choice::from((Choice::C_LETTERS as i32));
     p_letters.index = 1;
     p_letters.v.letters.lo = ('a' as i32);
     p_letters.v.letters.hi = ('z' as i32);
@@ -98,7 +100,7 @@ unsafe fn main_0() -> i32 {
     p_letters.v.letters.step = 1_u8;
     assert!((((((p_letters.v.letters.hi) - (p_letters.v.letters.lo)) == (25)) as i32) != 0));
     let mut p_integers: Branch = <Branch>::default();
-    p_integers.choice = Choice::C_INTEGERS;
+    p_integers.choice = Choice::from((Choice::C_INTEGERS as i32));
     p_integers.index = 2;
     p_integers.v.integers.lo = 1_i64;
     p_integers.v.integers.hi = 100_i64;

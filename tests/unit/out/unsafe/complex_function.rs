@@ -40,6 +40,8 @@ impl X3 {
         return self.v;
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for X3 {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct X4 {

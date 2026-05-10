@@ -24,6 +24,8 @@ pub struct Node {
     pub value: i32,
     pub next: *mut Node,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Node {}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Color {
     #[default]

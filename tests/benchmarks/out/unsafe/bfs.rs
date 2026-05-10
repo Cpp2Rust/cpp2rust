@@ -36,12 +36,16 @@ impl Queue {
         return ((self.back) == (0_u64));
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Queue {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct GraphNode {
     pub vertex: u32,
     pub next: *mut GraphNode,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for GraphNode {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Graph {
@@ -60,6 +64,8 @@ impl Graph {
         })) as *mut GraphNode);
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Graph {}
 pub unsafe fn BFS_0(graph: *const Graph, mut start_vertex: u32) -> *mut u32 {
     let mut Q: Queue = Queue {
         elems: Box::leak(

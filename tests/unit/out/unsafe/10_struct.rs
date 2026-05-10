@@ -12,6 +12,8 @@ pub struct GraphNode {
     pub dst: u32,
     pub next: *mut GraphNode,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for GraphNode {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Graph {
@@ -30,6 +32,8 @@ impl Graph {
         })) as *mut GraphNode);
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Graph {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

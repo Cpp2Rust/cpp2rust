@@ -26,6 +26,8 @@ impl Default for Pointers {
         }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Pointers {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

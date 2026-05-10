@@ -20,6 +20,8 @@ impl Default for Handler {
         }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Handler {}
 pub unsafe fn double_it_0(mut x: i32) -> i32 {
     return ((x) * (2));
 }

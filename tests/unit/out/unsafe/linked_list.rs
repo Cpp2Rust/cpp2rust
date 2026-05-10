@@ -17,6 +17,8 @@ impl Node {
         self.next = next;
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Node {}
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {
     let mut curr: *mut Node = head;
     let mut i: i32 = 0;

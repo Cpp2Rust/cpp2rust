@@ -50,6 +50,8 @@ impl Default for Pair {
         }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Pair {}
 pub unsafe fn zero_0() -> i32 {
     return 0;
 }

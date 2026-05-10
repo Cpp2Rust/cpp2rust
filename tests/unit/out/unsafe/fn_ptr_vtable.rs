@@ -22,6 +22,8 @@ impl Default for Vtable {
         }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Vtable {}
 pub static mut storage: i32 = 0_i32;
 pub unsafe fn int_create_0(mut val: i32) -> *mut ::libc::c_void {
     storage = val;

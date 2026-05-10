@@ -17,6 +17,8 @@ pub struct node_b {
     pub data: *mut ::libc::c_void,
     pub next: *mut node_b,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for node_b {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -34,7 +36,9 @@ unsafe fn main_0() -> i32 {
         fn default() -> Self {
             unsafe { std::mem::zeroed() }
         }
-    };
+    }
+    // SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+    unsafe impl Sync for anon_0 {};
     let mut ptr: anon_0 = <anon_0>::default();
     ptr.to_a = (&mut a as *mut node_a);
     let mut out: *mut node_b = ptr.to_b;

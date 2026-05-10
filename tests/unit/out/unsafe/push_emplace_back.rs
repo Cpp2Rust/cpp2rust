@@ -17,6 +17,8 @@ pub struct Writer {
     pub output: *mut Vec<Chunk>,
     pub chunk: Chunk,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Writer {}
 #[repr(C)]
 #[derive(Clone, Default)]
 pub struct JPEGData {

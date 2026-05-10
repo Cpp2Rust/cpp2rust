@@ -49,6 +49,8 @@ pub unsafe fn test_double_cast_2() {
 pub struct Command {
     pub data: *mut ::libc::c_void,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Command {}
 pub unsafe fn test_void_ptr_to_fn_3() {
     let mut cmd: Command = <Command>::default();
     cmd.data = std::mem::transmute::<Option<unsafe fn(i32) -> i32>, *mut ::libc::c_void>(Some(

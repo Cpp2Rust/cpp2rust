@@ -17,12 +17,16 @@ impl Default for node_anon_0 {
         unsafe { std::mem::zeroed() }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for node_anon_0 {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct node {
     pub next: *mut node,
     pub x: node_anon_0,
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for node {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

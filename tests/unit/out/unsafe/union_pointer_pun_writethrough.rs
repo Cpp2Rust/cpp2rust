@@ -23,7 +23,9 @@ unsafe fn main_0() -> i32 {
         fn default() -> Self {
             unsafe { std::mem::zeroed() }
         }
-    };
+    }
+    // SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+    unsafe impl Sync for anon_0 {};
     let mut pp: anon_0 = <anon_0>::default();
     pp.as_signed = (&mut x as *mut i64);
     (*pp.as_unsigned) = 42_u64;

@@ -19,6 +19,8 @@ impl MinHeapNode {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for MinHeapNode {}
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
     let mut t: MinHeapNode = MinHeapNode {
         data: (*a).data,

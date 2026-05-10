@@ -31,6 +31,8 @@ impl Default for Foo {
         }
     }
 }
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
+unsafe impl Sync for Foo {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

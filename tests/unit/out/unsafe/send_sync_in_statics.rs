@@ -12,7 +12,7 @@ pub struct Entry {
     pub name: *const u8,
     pub p: *mut i32,
 }
-// SAFETY: preserves unsafe C semantics; thread-safety is the programmer's responsibility
+// SAFETY: preserves unsafe C semantics; thread-safety is not enforced
 unsafe impl Sync for Entry {}
 pub static single_entry: Entry = Entry {
     name: b"alone\0".as_ptr(),
