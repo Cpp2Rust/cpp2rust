@@ -170,6 +170,13 @@ public:
         add(Mapper::ToString(decl));
         return;
       }
+      if (const auto *lit =
+              R.Nodes.getNodeAs<clang::IntegerLiteral>("macro_int")) {
+        if (lit->getBeginLoc().isMacroID()) {
+          add(Mapper::ToString(lit));
+        }
+        return;
+      }
     }
   }
 
@@ -668,7 +675,8 @@ public:
                                   declRefExpr(to(decl(unless(parmVarDecl()))))))
                     .bind("udeclref"),
                 cxxDependentScopeMemberExpr().bind("dsme"),
-                cxxUnresolvedConstructExpr().bind("uctor"))))),
+                cxxUnresolvedConstructExpr().bind("uctor"),
+                integerLiteral().bind("macro_int"))))),
             hasAncestor(functionDecl(isDefinition(),
                                      matchesName("(^|::)f[0-9]+$"),
                                      isExpansionInMainFile())
