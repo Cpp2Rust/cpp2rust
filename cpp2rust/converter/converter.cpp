@@ -1944,6 +1944,13 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       ConvertIntegerToEnumeralCast(expr, sub_expr);
       return false;
     }
+    if (type->isBooleanType() && sub_expr->getType()->isIntegerType() &&
+        !sub_expr->getType()->isBooleanType()) {
+      PushParen paren(*this);
+      Convert(sub_expr);
+      StrCat(token::kDiff, token::kZero);
+      return false;
+    }
     {
       PushParen paren(*this);
       Convert(sub_expr);
