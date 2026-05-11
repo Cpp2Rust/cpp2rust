@@ -381,7 +381,8 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 
   if (decl->isFileVarDecl()) {
     name = ReplaceAll(Mapper::ToString(decl), "::", "_");
-    if ((decl->isExternallyDeclarable() && !decl->hasInit()) ||
+    if (decl->isThisDeclarationADefinition() ==
+            clang::VarDecl::DeclarationOnly ||
         !globals_.insert(name).second) {
       return false;
     }
