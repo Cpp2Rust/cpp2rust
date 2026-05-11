@@ -54,3 +54,12 @@ jobs:
           cargo +nightly clippy --manifest-path rule-preprocessor/Cargo.toml --all-targets --all-features -- -Dwarnings
           cargo clippy --manifest-path libcc2rs/Cargo.toml --all-targets --all-features -- -Dwarnings
           cargo clippy --manifest-path libcc2rs-macros/Cargo.toml --all-targets --all-features -- -Dwarnings
+
+      - name: Check Python (ruff)
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: 'check tests/lit/lit/formats/Cpp2RustTest.py'
+      - name: Check Python formatting (ruff)
+        uses: astral-sh/ruff-action@v3
+        with:
+          args: 'format --check tests/lit/lit/formats/Cpp2RustTest.py'
