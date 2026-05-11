@@ -1635,8 +1635,8 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
       if (pointee_type->isVoidType()) {
         ret = "AnyPtr::default()";
       } else {
-        ret = std::format("Ptr::<{}>::null()",
-                          GetUnsafeTypeAsString(pointee_type));
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        ret = std::format("Ptr::<{}>::null()", ConvertPointeeType(qual_type));
       }
     }
   } else if (auto *array_type =
@@ -2240,6 +2240,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
 }
 
 std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
+  assert(!ptr_type.isNull() && ptr_type->isPointerType());
   if (ptr_type->getPointeeType()->isIntegerType()) {
     return ToString(ptr_type->getPointeeType());
   }
@@ -2247,7 +2248,6 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   // Pointee of a pointer to incomplete type is an incomplete type that does
   // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
   // not enough
-  assert(ptr_type->isPointerType());
   auto str = ToString(ptr_type);
   Unwrap(str, "Ptr<", ">");
   return str;
