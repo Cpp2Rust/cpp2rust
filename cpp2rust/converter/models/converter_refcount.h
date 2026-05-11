@@ -249,7 +249,7 @@ private:
       for (auto ck : c.conversion_kind_) {
         log() << c.ConversionKindToString(ck) << ", ";
       }
-      log() << "\n";
+      log() << '\n';
     }
     ~PushConversionKind() {
       if (pushed) {
@@ -259,7 +259,7 @@ private:
       for (auto ck : c.conversion_kind_) {
         log() << c.ConversionKindToString(ck) << ", ";
       }
-      log() << "\n";
+      log() << '\n';
     }
   };
 

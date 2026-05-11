@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
   } else if (Model == "unsafe") {
     model = cpp2rust::Model::kUnsafe;
   } else {
-    llvm::errs() << "ERROR: unknown model: " << Model << "\n";
+    llvm::errs() << "ERROR: unknown model: " << Model << '\n';
     return EXIT_FAILURE;
   }
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
   if (!CcFile.empty()) {
     std::ifstream file(CcFile);
     if (!file) {
-      llvm::errs() << "ERROR: failed to open " << CcFile << "\n";
+      llvm::errs() << "ERROR: failed to open " << CcFile << '\n';
       return EXIT_FAILURE;
     }
     cc_code = {std::istreambuf_iterator<char>(file),
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]) {
 
   std::ofstream file(RsFile);
   if (!file) {
-    llvm::errs() << "ERROR: failed to open " << RsFile << "\n";
+    llvm::errs() << "ERROR: failed to open " << RsFile << '\n';
     return EXIT_FAILURE;
   }
 
