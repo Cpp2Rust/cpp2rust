@@ -838,7 +838,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
           expr->getArg(is_fprintf)->IgnoreImplicit())) {
     format = GetEscapedStringLiteral(str);
   } else {
-    llvm::errs() << "Uknown fprintf format: ";
+    llvm::errs() << "Unknown fprintf format: ";
     expr->getArg(1)->dump();
     llvm::errs() << '\n';
     exit(1);
@@ -851,7 +851,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   } else if (fd == "stderr" || fd == "__stderrp") {
     StrCat(ends_newline ? "eprintln!(" : "eprint!(");
   } else {
-    llvm::errs() << "Uknown fprintf fd: " << fd << '\n';
+    llvm::errs() << "Unknown fprintf fd: " << fd << '\n';
     exit(1);
   }
   if (ends_newline) {
