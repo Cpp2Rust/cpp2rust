@@ -1,0 +1,32 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::IPPROTO_TCP"
+      }
+    ],
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f2": {
+    "body": [
+      {
+        "text": "libc::IPPROTO_UDP"
+      }
+    ],
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f3": {
+    "body": [
+      {
+        "text": "libc::IPPROTO_IP"
+      }
+    ],
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}

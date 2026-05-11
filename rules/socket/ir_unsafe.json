@@ -1,0 +1,12 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::MSG_NOSIGNAL"
+      }
+    ],
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}

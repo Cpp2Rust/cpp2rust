@@ -5,6 +5,7 @@
 
 #include <clang/AST/ExprCXX.h>
 #include <clang/Basic/SourceManager.h>
+#include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
 #include <format>
@@ -803,6 +804,16 @@ std::string ToString(const clang::Expr *expr) {
   }
 
   expr = expr->IgnoreParenImpCasts();
+
+  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+      expr->getBeginLoc().isMacroID()) {
+    auto &sm = ctx_->getSourceManager();
+    auto name = clang::Lexer::getImmediateMacroName(expr->getBeginLoc(), sm,
+                                                    ctx_->getLangOpts());
+    if (!name.empty()) {
+      return name.str();
+    }
+  }
 
   if (const auto *CE = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (const auto *decl = CE->getDirectCallee()) {

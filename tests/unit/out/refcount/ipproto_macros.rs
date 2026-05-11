@@ -10,9 +10,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v: Value<Vec<bool>> = Rc::new(RefCell::new(vec![true]));
-    return (((*(v.as_pointer() as Ptr<bool>)
-        .offset(0_u64 as isize)
-        .upgrade()
-        .deref()) as bool) as i32);
+    let tcp: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_TCP));
+    let udp: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_UDP));
+    let ip: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_IP));
+    return (((*tcp.borrow()) + (*udp.borrow())) + (*ip.borrow()));
 }

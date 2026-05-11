@@ -12,6 +12,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<bool> = vec![true];
-    return ((v[(0_u64) as usize] as bool) as i32);
+    let mut tcp: i32 = libc::IPPROTO_TCP;
+    let mut udp: i32 = libc::IPPROTO_UDP;
+    let mut ip: i32 = libc::IPPROTO_IP;
+    return (((tcp) + (udp)) + (ip));
 }

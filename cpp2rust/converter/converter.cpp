@@ -1626,6 +1626,11 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
 }
 
 bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
+  if (auto str = GetMappedAsString(expr); !str.empty()) {
+    StrCat(str);
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
@@ -1774,6 +1779,15 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   }
 }
 
+bool Converter::IsCastRedundantInRust(clang::Expr *expr,
+                                      clang::QualType target_type) {
+  auto target = GetUnsafeTypeAsString(target_type);
+  if (const auto *rule = Mapper::GetExprRule(expr)) {
+    return rule->return_type.type == target;
+  }
+  return GetUnsafeTypeAsString(expr->getType()) == target;
+}
+
 bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
   auto type = expr->getType();
@@ -1873,8 +1887,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     // Skip cast if source and target map to the same Rust type.
-    if (GetUnsafeTypeAsString(sub_expr->getType()) ==
-        GetUnsafeTypeAsString(type)) {
+    if (IsCastRedundantInRust(sub_expr, type)) {
       Convert(sub_expr);
       break;
     }
@@ -3129,7 +3142,7 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
   std::string type_as_string;
   Converter converter(type_as_string, ctx_);
   converter.Convert(qual_type);
-  return type_as_string;
+  return std::string(Trim(type_as_string));
 }
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
@@ -3567,7 +3580,8 @@ void Converter::ConvertDeref(clang::Expr *expr) {
 
 void Converter::ConvertArrow(clang::Expr *expr) { ConvertDeref(expr); }
 
-void Converter::ConvertCast(clang::QualType qual_type) {
+void Converter::ConvertCast(clang::QualType qual_type, int line) {
+  log() << "[ConvertCast] Called from line " << line << "\n";
   StrCat(keyword::kAs, GetUnsafeTypeAsString(qual_type));
 }
 

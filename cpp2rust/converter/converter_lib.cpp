@@ -803,7 +803,7 @@ bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
   return false;
 }
 
-static std::string_view Trim(std::string_view s) {
+std::string_view Trim(std::string_view s) {
   auto is_space = [](unsigned char c) { return std::isspace(c); };
   auto b = std::find_if_not(s.begin(), s.end(), is_space);
   auto e = std::find_if_not(s.rbegin(), s.rend(), is_space).base();

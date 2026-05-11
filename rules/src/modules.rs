@@ -46,6 +46,8 @@ pub mod iomanip_tgt_unsafe;
 pub mod iostream_tgt_refcount;
 #[path = r#"../iostream/tgt_unsafe.rs"#]
 pub mod iostream_tgt_unsafe;
+#[path = r#"../ip/tgt_unsafe.rs"#]
+pub mod ip_tgt_unsafe;
 #[path = r#"../limits/tgt_unsafe.rs"#]
 pub mod limits_tgt_unsafe;
 #[path = r#"../map/tgt_refcount.rs"#]
@@ -58,6 +60,8 @@ pub mod math_tgt_unsafe;
 pub mod pair_tgt_refcount;
 #[path = r#"../pair/tgt_unsafe.rs"#]
 pub mod pair_tgt_unsafe;
+#[path = r#"../socket/tgt_unsafe.rs"#]
+pub mod socket_tgt_unsafe;
 #[path = r#"../stdio/tgt_refcount.rs"#]
 pub mod stdio_tgt_refcount;
 #[path = r#"../stdio/tgt_unsafe.rs"#]

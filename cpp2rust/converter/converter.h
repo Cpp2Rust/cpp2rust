@@ -480,7 +480,8 @@ protected:
 
   virtual void ConvertArrow(clang::Expr *expr);
 
-  virtual void ConvertCast(clang::QualType qual_type);
+  virtual void ConvertCast(clang::QualType qual_type,
+                           int line = __builtin_LINE());
 
   virtual void ConvertLoopVariable(clang::VarDecl *decl,
                                    clang::Expr *range_init);
@@ -704,6 +705,8 @@ protected:
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 
   TempMaterializationCtx CollectPrvalueToLRefArgs(clang::CallExpr *expr);
+
+  bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 
 private:
   void materializeTemplateSpecialization(clang::CXXRecordDecl *decl);
