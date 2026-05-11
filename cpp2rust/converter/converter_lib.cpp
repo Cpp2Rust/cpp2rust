@@ -324,19 +324,24 @@ unsigned GetAnonIndex(const clang::NamedDecl *decl) {
   return 0;
 }
 
-std::string GetID(const clang::Decl *decl) {
-  assert(decl);
-  const auto file_name = GetFileName(decl);
-  const auto line_num = GetLineNumber(decl);
-  const auto column_num = GetColumnNumber(decl);
+static std::string GetLocationID(const clang::Decl *decl) {
+  return GetFileName(decl) + std::to_string(GetLineNumber(decl)) +
+         std::to_string(GetColumnNumber(decl));
+}
+
+static std::string GetParamSignature(const clang::Decl *decl) {
   std::string args;
   if (auto fdecl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     for (unsigned i = 0; i < fdecl->getNumParams(); ++i) {
       args += fdecl->getParamDecl(i)->getType().getAsString();
     }
   }
-  return file_name + std::to_string(line_num) + std::to_string(column_num) +
-         args;
+  return args;
+}
+
+std::string GetID(const clang::Decl *decl) {
+  assert(decl);
+  return GetLocationID(decl) + GetParamSignature(decl);
 }
 
 static std::unordered_map<std::string, size_t> type_mapping;
@@ -360,7 +365,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     if (!clang::isa<clang::CXXMethodDecl>(fn)) {
       auto mangled =
           clang::ASTNameGenerator(decl->getASTContext()).getName(decl) +
-          GetID(decl);
+          GetParamSignature(decl);
+      if (fn->getFormalLinkage() == clang::Linkage::Internal) {
+        mangled += GetLocationID(decl);
+      }
       auto id =
           type_mapping.try_emplace(mangled, type_mapping.size()).first->second;
       name += '_';
