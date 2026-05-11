@@ -35,6 +35,7 @@ jobs:
         llvm-version: 22
 
     - name: Setup Rust
+      if: matrix.language != 'actions'
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: 1.95.0
