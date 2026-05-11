@@ -168,9 +168,8 @@ public:
 
     const std::string &GetOrMaterialize(
         unsigned argument_num,
-        std::function<std::pair<std::string, std::string>(const std::string &,
-                                                          clang::QualType)>
-            materialize_fn);
+        const std::function<std::pair<std::string, std::string>(
+            const std::string &, clang::QualType)> &materialize_fn);
 
   private:
     std::vector<std::string> materialized_refs_;
@@ -476,7 +475,7 @@ protected:
 
   virtual void ConvertDeref(clang::Expr *expr);
 
-  void EmitDeref(std::string inner, clang::QualType pointee_type);
+  void EmitDeref(std::string_view inner, clang::QualType pointee_type);
 
   virtual void ConvertArrow(clang::Expr *expr);
 

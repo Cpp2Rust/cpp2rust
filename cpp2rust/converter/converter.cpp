@@ -2321,7 +2321,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
-    EmitDeref(std::move(str), decl->getType().getNonReferenceType());
+    EmitDeref(str, decl->getType().getNonReferenceType());
     SetValueFreshness(expr->getType());
     return false;
   }
@@ -2464,7 +2464,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   }
 
   if (!isAddrOf() && member->getType()->isReferenceType()) {
-    EmitDeref(std::move(str), member->getType().getNonReferenceType());
+    EmitDeref(str, member->getType().getNonReferenceType());
     return false;
   }
 
@@ -3561,14 +3561,14 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
   }
 }
 
-void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
+void Converter::EmitDeref(std::string_view inner, clang::QualType pointee_type) {
   auto wrap = std::exchange(autoref_mut_, std::nullopt);
   PushParen outer(*this, wrap.has_value());
   if (wrap) {
     StrCat(*wrap ? "&mut" : "&");
   }
   PushParen paren(*this);
-  StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
+  StrCat(GetPointerDerefPrefix(pointee_type), inner);
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
@@ -3605,9 +3605,9 @@ Converter::CollectPrvalueToLRefArgs(clang::CallExpr *expr) {
 
 const std::string &Converter::TempMaterializationCtx::GetOrMaterialize(
     unsigned argument_num,
-    std::function<std::pair<std::string, std::string>(const std::string &,
-                                                      clang::QualType)>
-        materialize_fn) {
+    const std::function<std::pair<std::string, std::string>(const std::string &,
+                                                            clang::QualType)>
+        &materialize_fn) {
   auto &str = materialized_refs_.at(argument_num);
   if (!str.empty()) {
     return str;
