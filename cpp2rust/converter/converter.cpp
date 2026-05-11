@@ -152,7 +152,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
 }
 
 std::string Converter::ConvertPointer(clang::Expr *expr, int line) {
-  log() << "ConvertPointer called from line " << line << "\n";
+  log() << "ConvertPointer called from line " << line << '\n';
   PushExprKind push(*this, ExprKind::AddrOf);
   return ToString(expr);
 }
@@ -176,7 +176,7 @@ std::string Converter::ConvertLValue(clang::Expr *expr) {
 }
 
 std::string Converter::ConvertRValue(clang::Expr *expr, int line) {
-  log() << "ConvertRValue called from line " << line << "\n";
+  log() << "ConvertRValue called from line " << line << '\n';
   PushExprKind push(*this, ExprKind::RValue);
   return ToString(expr);
 }
@@ -1086,7 +1086,7 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
     log() << "for range stmts only for types in std namespace\n";
   }
 
-  log() << "GetClassName: " << GetClassName(range_init_type) << "\n";
+  log() << "GetClassName: " << GetClassName(range_init_type) << '\n';
 
   if (GetClassName(range_init_type) == "std::map") {
     return VisitCXXForRangeStmtMap(stmt);
@@ -3582,7 +3582,7 @@ void Converter::ConvertDeref(clang::Expr *expr) {
 void Converter::ConvertArrow(clang::Expr *expr) { ConvertDeref(expr); }
 
 void Converter::ConvertCast(clang::QualType qual_type, int line) {
-  log() << "[ConvertCast] Called from line " << line << "\n";
+  log() << "[ConvertCast] Called from line " << line << '\n';
   StrCat(keyword::kAs, GetUnsafeTypeAsString(qual_type));
 }
 
@@ -3633,7 +3633,7 @@ void Converter::PlaceholderCtx::dump() const {
                << declared_in_rule_as_rust_ptr << ", access: "
                << (access == TranslationRule::Access::kRead ? "read" : "write")
                << ", param_type: " << param_type
-               << ", materialize_idx: " << materialize_idx << "\n";
+               << ", materialize_idx: " << materialize_idx << '\n';
 }
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
@@ -3844,7 +3844,7 @@ void Converter::SetFreshType(clang::QualType type) {
 void Converter::dump_expr_kinds() {
   log() << "isRValue: " << isRValue() << ", isXValue: " << isXValue()
         << ", isAddrOf: " << isAddrOf() << ", isObject: " << isObject()
-        << ", isVoid: " << isVoid() << "\n";
+        << ", isVoid: " << isVoid() << '\n';
 }
 
 void Converter::emplace_back_plugin_construct_arg(
