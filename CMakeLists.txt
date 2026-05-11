@@ -151,7 +151,7 @@ foreach(_src IN LISTS rule_src_files)
   add_custom_command(
     OUTPUT ${_out}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --file ${_src}
-    DEPENDS ${_src} cpp-rule-preprocessor
+    DEPENDS ${_src} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
