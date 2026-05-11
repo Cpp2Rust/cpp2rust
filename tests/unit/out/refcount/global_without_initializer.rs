@@ -23,7 +23,8 @@ thread_local!(
     pub static s: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );
 thread_local!(
-    pub static file: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::<_IO_FILE>::null()));
+    pub static file: Value<Ptr<::std::fs::File>> =
+        Rc::new(RefCell::new(Ptr::<::std::fs::File>::null()));
 );
 thread_local!(
     pub static size: Value<u64> = <Value<u64>>::default();
