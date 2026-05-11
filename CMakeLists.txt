@@ -121,6 +121,7 @@ add_custom_target("check-unit"
                           ${LIT_FLAGS}
                           "${PROJECT_SOURCE_DIR}/tests/unit"
                           "${PROJECT_SOURCE_DIR}/tests/ub"
+                          "${PROJECT_SOURCE_DIR}/tests/multi-file"
                   DEPENDS cpp2rust libcc2rs
                   USES_TERMINAL
                  )
