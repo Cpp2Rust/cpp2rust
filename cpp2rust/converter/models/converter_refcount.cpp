@@ -1602,6 +1602,8 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
   return Converter::VisitImplicitValueInitExpr(expr);
 }
 
+void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) { Convert(arg); }
+
 bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   auto va_list_expr = expr->getSubExpr();
   if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(va_list_expr)) {

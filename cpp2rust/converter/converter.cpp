@@ -1361,6 +1361,16 @@ std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
   return std::nullopt;
 }
 
+void Converter::ConvertVariadicArg(clang::Expr *arg) {
+  if (arg->getType()->isFunctionPointerType()) {
+    PushParen p(*this);
+    Convert(arg);
+    StrCat(".map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void)");
+    return;
+  }
+  Convert(arg);
+}
+
 void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
     StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
@@ -1571,7 +1581,7 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
       StrCat("& [");
       for (unsigned i = num_named_params; i < num_args; ++i) {
         auto *arg = expr->getArg(i + arg_begin);
-        Convert(arg);
+        ConvertVariadicArg(arg);
         StrCat(".into()", token::kComma);
       }
       StrCat(']');
@@ -2597,6 +2607,18 @@ bool Converter::VisitVAArgExpr(clang::VAArgExpr *expr) {
   auto va_list_expr = expr->getSubExpr();
   if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(va_list_expr)) {
     va_list_expr = cast->getSubExpr();
+  }
+  if (expr->getType()->isFunctionPointerType()) {
+    StrCat("std::mem::transmute::<*mut ::libc::c_void", token::kComma);
+    Convert(expr->getType());
+    StrCat(">");
+    PushParen paren(*this);
+    {
+      PushExprKind push(*this, ExprKind::RValue);
+      Convert(va_list_expr);
+    }
+    StrCat(".arg::<*mut ::libc::c_void>()");
+    return false;
   }
   Convert(va_list_expr);
   StrCat(".arg::<");

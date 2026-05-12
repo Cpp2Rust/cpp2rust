@@ -116,6 +116,8 @@ public:
 
   bool VisitVAArgExpr(clang::VAArgExpr *expr) override;
 
+  void ConvertVariadicArg(clang::Expr *arg) override;
+
   void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
   bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) override;

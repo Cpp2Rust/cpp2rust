@@ -224,6 +224,8 @@ public:
 
   void ConvertVAArgCall(clang::CallExpr *expr);
 
+  virtual void ConvertVariadicArg(clang::Expr *arg);
+
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
