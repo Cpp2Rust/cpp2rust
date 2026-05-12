@@ -27,21 +27,23 @@ macro_rules! impl_va_arg_from {
             fn from(v: $ty) -> Self { VaArg::$variant(v as $cast) }
         }
     )*};
-    (ptr: $($ty:ty),*) => {$(
-        impl From<*mut $ty> for VaArg {
-            fn from(v: *mut $ty) -> Self { VaArg::RawPtr(v as *mut c_void) }
-        }
-        impl From<*const $ty> for VaArg {
-            fn from(v: *const $ty) -> Self { VaArg::RawPtr(v as *mut c_void) }
-        }
-    )*};
 }
 
 impl_va_arg_from!(direct: i32 => Int, u32 => UInt, i64 => Long, u64 => ULong, f64 => Double, AnyPtr => Ptr);
 impl_va_arg_from!(promote: i8 => Int as i32, i16 => Int as i32, u8 => UInt as u32, u16 => UInt as u32, f32 => Double as f64);
-impl_va_arg_from!(ptr: c_void, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, usize, isize);
 
-impl<T: Clone + crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaArg {
+impl<T> From<*mut T> for VaArg {
+    fn from(v: *mut T) -> Self {
+        VaArg::RawPtr(v as *mut c_void)
+    }
+}
+impl<T> From<*const T> for VaArg {
+    fn from(v: *const T) -> Self {
+        VaArg::RawPtr(v as *mut c_void)
+    }
+}
+
+impl<T: crate::reinterpret::ByteRepr + 'static> From<crate::rc::Ptr<T>> for VaArg {
     fn from(v: crate::rc::Ptr<T>) -> Self {
         VaArg::Ptr(v.to_any())
     }
@@ -95,23 +97,27 @@ macro_rules! impl_va_arg_get {
             }
         }
     )*};
-    (ptr: $($ty:ty),*) => {$(
-        impl VaArgGet for *mut $ty {
-            fn get(v: &VaArg) -> Self {
-                match v { VaArg::RawPtr(p) => *p as Self, _ => panic!("VaArgGet: expected pointer") }
-            }
-        }
-        impl VaArgGet for *const $ty {
-            fn get(v: &VaArg) -> Self {
-                match v { VaArg::RawPtr(p) => *p as Self, _ => panic!("VaArgGet: expected pointer") }
-            }
-        }
-    )*};
 }
 
 impl_va_arg_get!(int: i8, i16, i32, i64, u8, u16, u32, u64);
 impl_va_arg_get!(float: f32, f64);
-impl_va_arg_get!(ptr: c_void, i8, u8, i16, u16, i32, u32, i64, u64, f32, f64, usize, isize);
+
+impl<T> VaArgGet for *mut T {
+    fn get(v: &VaArg) -> Self {
+        match v {
+            VaArg::RawPtr(p) => *p as Self,
+            _ => panic!("VaArgGet: expected pointer"),
+        }
+    }
+}
+impl<T> VaArgGet for *const T {
+    fn get(v: &VaArg) -> Self {
+        match v {
+            VaArg::RawPtr(p) => *p as Self,
+            _ => panic!("VaArgGet: expected pointer"),
+        }
+    }
+}
 
 impl<T: 'static> VaArgGet for crate::rc::Ptr<T> {
     fn get(v: &VaArg) -> Self {
