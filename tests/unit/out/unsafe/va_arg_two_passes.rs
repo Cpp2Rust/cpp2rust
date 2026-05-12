@@ -6,11 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_then_product_0(mut first: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn sum_then_product_0(mut first: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     let mut sum: i32 = first;
     let mut product: i32 = first;
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut val: i32 = 0_i32;
     'loop_: while (((({
         val = ap.arg::<i32>();
@@ -20,7 +20,7 @@ pub unsafe fn sum_then_product_0(mut first: i32, args: &[VaArg]) -> i32 {
     {
         sum += val;
     }
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     'loop_: while (((({
         val = ap.arg::<i32>();
         val

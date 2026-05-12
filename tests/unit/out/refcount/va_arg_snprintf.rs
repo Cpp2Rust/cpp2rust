@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, args: &[VaArg]) -> i32 {
+pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let buf: Value<Ptr<u8>> = Rc::new(RefCell::new(buf));
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let n: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
     let __rhs = ((*n.borrow()) as u8);
     (*buf.borrow()).offset((0) as isize).write(__rhs);

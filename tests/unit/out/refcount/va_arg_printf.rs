@@ -15,10 +15,10 @@ pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
         _lhs + ((*ap.borrow_mut()).arg::<i32>()).clone()
     };
 }
-pub fn logf_1(fmt: Ptr<u8>, args: &[VaArg]) -> i32 {
+pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({
             let _fmt: Ptr<u8> = (*fmt.borrow()).clone();

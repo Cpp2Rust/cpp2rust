@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn test_promotions_0(mut count: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn test_promotions_0(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut a: i32 = ap.arg::<i32>();
     let mut b: i32 = ap.arg::<i32>();
     let mut c: f64 = ap.arg::<f64>();

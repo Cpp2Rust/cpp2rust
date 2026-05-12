@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_then_product_0(first: i32, args: &[VaArg]) -> i32 {
+pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     let sum: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let val: Value<i32> = <Value<i32>>::default();
     'loop_: while (((({
         (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
@@ -21,7 +21,7 @@ pub fn sum_then_product_0(first: i32, args: &[VaArg]) -> i32 {
     {
         (*sum.borrow_mut()) += (*val.borrow());
     }
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     'loop_: while (((({
         (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
         (*val.borrow())

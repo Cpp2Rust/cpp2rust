@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn conditional_log_0(verbose: i32, fmt: Ptr<u8>, args: &[VaArg]) -> i32 {
+pub fn conditional_log_0(verbose: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let verbose: Value<i32> = Rc::new(RefCell::new(verbose));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     if ((*verbose.borrow()) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-        (*ap.borrow_mut()) = VaList::new(args);
+        (*ap.borrow_mut()) = VaList::new(__args);
         let result: Value<i32> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<i32>()).clone()));
         return (*result.borrow());
     }

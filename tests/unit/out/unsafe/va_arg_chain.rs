@@ -21,9 +21,9 @@ pub unsafe fn middle_layer_1(mut n: i32, mut ap: VaList) -> i32 {
         extract_nth_0(_n, _ap)
     });
 }
-pub unsafe fn top_level_2(mut n: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn top_level_2(mut n: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut result: i32 = (unsafe {
         let _n: i32 = n;
         let _ap: VaList = ap;

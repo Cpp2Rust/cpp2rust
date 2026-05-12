@@ -6,14 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_ints_0(first: i32, args: &[VaArg]) -> i32 {
+pub fn sum_ints_0(first: i32, __args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
-    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
+    let args: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     let total: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*args.borrow_mut()) = VaList::new(__args);
     let val: Value<i32> = <Value<i32>>::default();
     'loop_: while (((({
-        (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*val.borrow_mut()) = ((*args.borrow_mut()).arg::<i32>()).clone();
         (*val.borrow())
     }) != 0) as i32)
         != 0)

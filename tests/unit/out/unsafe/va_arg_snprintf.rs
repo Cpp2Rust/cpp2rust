@@ -10,10 +10,10 @@ pub unsafe fn extract_first_0(
     mut buf: *mut u8,
     mut size: i32,
     mut fmt: *const u8,
-    args: &[VaArg],
+    __args: &[VaArg],
 ) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut n: i32 = ap.arg::<i32>();
     (*buf.offset((0) as isize)) = (n as u8);
     return n;

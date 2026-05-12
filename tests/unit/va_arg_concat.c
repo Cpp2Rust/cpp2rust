@@ -2,15 +2,15 @@
 #include <stdarg.h>
 
 int sum_ints(int first, ...) {
-  va_list ap;
+  va_list args;
   int total = first;
 
-  va_start(ap, first);
+  va_start(args, first);
   int val;
-  while ((val = va_arg(ap, int)) != 0) {
+  while ((val = va_arg(args, int)) != 0) {
     total += val;
   }
-  va_end(ap);
+  va_end(args);
 
   return total;
 }

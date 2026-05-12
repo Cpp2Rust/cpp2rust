@@ -12,10 +12,10 @@ pub struct context {
     pub verbose: i32,
     pub last_error: i32,
 }
-pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const u8, args: &[VaArg]) {
+pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const u8, __args: &[VaArg]) {
     if ((*ctx).verbose != 0) {
         let mut ap: VaList = VaList::default();
-        ap = VaList::new(args);
+        ap = VaList::new(__args);
         (*ctx).last_error = (ap.arg::<i32>()).clone();
     }
 }

@@ -1363,7 +1363,8 @@ std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
 
 void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr)) {
-    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()), "= VaList::new(args)");
+    StrCat(ToString(expr->getArg(0)->IgnoreImpCasts()),
+           "= VaList::new(__args)");
     return;
   }
   if (IsBuiltinVaEnd(expr)) {
@@ -3289,7 +3290,7 @@ void Converter::ConvertFunctionParameters(clang::FunctionDecl *decl) {
     StrCat(token::kComma);
   }
   if (decl->isVariadic()) {
-    StrCat("args: &[VaArg]", token::kComma);
+    StrCat("__args: &[VaArg]", token::kComma);
   }
   in_function_formals_ = false;
 }

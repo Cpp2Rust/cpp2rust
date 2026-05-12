@@ -17,10 +17,10 @@ pub fn inner_0(count: i32, ap: VaList) -> i32 {
     }
     return (*total.borrow());
 }
-pub fn outer_1(count: i32, args: &[VaArg]) -> i32 {
+pub fn outer_1(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({
             let _count: i32 = (*count.borrow());

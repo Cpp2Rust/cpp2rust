@@ -6,10 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn sum_with_copy_0(mut count: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn sum_with_copy_0(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     let mut aq: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     aq = ap.clone();
     let mut sum1: i32 = 0;
     let mut i: i32 = 0;

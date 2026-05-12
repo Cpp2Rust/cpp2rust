@@ -25,10 +25,10 @@ pub fn middle_layer_1(n: i32, ap: VaList) -> i32 {
         extract_nth_0(_n, _ap)
     });
 }
-pub fn top_level_2(n: i32, args: &[VaArg]) -> i32 {
+pub fn top_level_2(n: i32, __args: &[VaArg]) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
         ({
             let _n: i32 = (*n.borrow());
