@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn first_nonnull_0(mut count: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn first_nonnull_0(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut result: i32 = -1_i32;
     let mut i: i32 = 0;
     'loop_: while ((((i) < (count)) as i32) != 0) {
