@@ -5,6 +5,7 @@
 
 #include <clang/AST/APValue.h>
 #include <clang/AST/ParentMapContext.h>
+#include <clang/Basic/SourceManager.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
 
@@ -3065,6 +3066,12 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     Buffer buf(*this);
     EmitDefaultStructLiteral(record);
     return std::move(buf).str();
+  }
+
+  if (auto record = qual_type->getAsRecordDecl()) {
+    if (ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+      return std::format("std::mem::zeroed::<{}>()", ToString(qual_type));
+    }
   }
 
   return std::format("<{}>::default()", ToString(qual_type));
