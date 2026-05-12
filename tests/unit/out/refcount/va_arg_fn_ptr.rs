@@ -19,10 +19,10 @@ pub fn add_2(a: i32, b: i32) -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     return ((*a.borrow()) + (*b.borrow()));
 }
-pub fn apply_unary_3(x: i32, args: &[VaArg]) -> i32 {
+pub fn apply_unary_3(x: i32, __args: &[VaArg]) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>()).clone(),
     ));
@@ -34,11 +34,11 @@ pub fn apply_unary_3(x: i32, args: &[VaArg]) -> i32 {
     ));
     return (*result.borrow());
 }
-pub fn apply_binary_4(a: i32, b: i32, args: &[VaArg]) -> i32 {
+pub fn apply_binary_4(a: i32, b: i32, __args: &[VaArg]) -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     let b: Value<i32> = Rc::new(RefCell::new(b));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    (*ap.borrow_mut()) = VaList::new(args);
+    (*ap.borrow_mut()) = VaList::new(__args);
     let fn_: Value<FnPtr<fn(i32, i32) -> i32>> = Rc::new(RefCell::new(
         ((*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>()).clone(),
     ));

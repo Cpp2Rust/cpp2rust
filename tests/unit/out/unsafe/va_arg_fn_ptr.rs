@@ -15,9 +15,9 @@ pub unsafe fn negate_1(mut x: i32) -> i32 {
 pub unsafe fn add_2(mut a: i32, mut b: i32) -> i32 {
     return ((a) + (b));
 }
-pub unsafe fn apply_unary_3(mut x: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn apply_unary_3(mut x: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut fn_: Option<unsafe fn(i32) -> i32> = std::mem::transmute::<
         *mut ::libc::c_void,
         Option<unsafe fn(i32) -> i32>,
@@ -28,9 +28,9 @@ pub unsafe fn apply_unary_3(mut x: i32, args: &[VaArg]) -> i32 {
     });
     return result;
 }
-pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, args: &[VaArg]) -> i32 {
+pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
-    ap = VaList::new(args);
+    ap = VaList::new(__args);
     let mut fn_: Option<unsafe fn(i32, i32) -> i32> = std::mem::transmute::<
         *mut ::libc::c_void,
         Option<unsafe fn(i32, i32) -> i32>,
