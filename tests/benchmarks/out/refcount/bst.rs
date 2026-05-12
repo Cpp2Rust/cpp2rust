@@ -53,7 +53,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     } {
         return (*node.borrow()).clone();
     }
-    return Default::default();
+    return Ptr::<node_t>::null();
 }
 pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
@@ -91,8 +91,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(25000));
     let tree: Value<Ptr<node_t>> = Rc::new(RefCell::new(Ptr::alloc(node_t {
-        left: Rc::new(RefCell::new(Default::default())),
-        right: Rc::new(RefCell::new(Default::default())),
+        left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
+        right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
         value: Rc::new(RefCell::new(0)),
     })));
     let i: Value<i32> = Rc::new(RefCell::new(0));
@@ -100,8 +100,8 @@ fn main_0() -> i32 {
         ({
             let _node: Ptr<node_t> = (*tree.borrow()).clone();
             let _new_node: Ptr<node_t> = Ptr::alloc(node_t {
-                left: Rc::new(RefCell::new(Default::default())),
-                right: Rc::new(RefCell::new(Default::default())),
+                left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
+                right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
                 value: Rc::new(RefCell::new((*i.borrow()))),
             });
             insert_1(_node, _new_node)

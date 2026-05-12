@@ -33,10 +33,10 @@ thread_local!(
     ));
 );
 thread_local!(
-    pub static cp_explicit_null: Value<Ptr<u8>> = Rc::new(RefCell::new(Default::default()));
+    pub static cp_explicit_null: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
 );
 thread_local!(
-    pub static p_zero: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
+    pub static p_zero: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 pub fn main() {
     std::process::exit(main_0());

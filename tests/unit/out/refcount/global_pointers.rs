@@ -24,18 +24,18 @@ impl ByteRepr for Entry {}
 thread_local!(
     pub static single_entry: Value<Entry> = Rc::new(RefCell::new(Entry {
         name: Rc::new(RefCell::new(Ptr::from_string_literal("alone"))),
-        p: Rc::new(RefCell::new(Default::default())),
+        p: Rc::new(RefCell::new(Ptr::<i32>::null())),
     }));
 );
 thread_local!(
     pub static entries: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
-            p: Rc::new(RefCell::new(Default::default())),
+            p: Rc::new(RefCell::new(Ptr::<i32>::null())),
         },
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal("second"))),
-            p: Rc::new(RefCell::new(Default::default())),
+            p: Rc::new(RefCell::new(Ptr::<i32>::null())),
         },
     ])));
 );

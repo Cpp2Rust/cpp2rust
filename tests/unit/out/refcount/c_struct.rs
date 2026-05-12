@@ -78,7 +78,7 @@ fn main_0() -> i32 {
     assert!(((((*(*(*l.borrow()).end.borrow()).y.borrow()) == 4) as i32) != 0));
     let a: Value<Node> = Rc::new(RefCell::new(Node {
         value: Rc::new(RefCell::new(1)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let b: Value<Node> = Rc::new(RefCell::new(Node {
         value: Rc::new(RefCell::new(2)),

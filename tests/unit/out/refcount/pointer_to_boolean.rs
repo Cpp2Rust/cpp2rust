@@ -10,7 +10,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
+    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     if !(*x.borrow()).is_null() {
         return 1;
     }

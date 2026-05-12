@@ -105,13 +105,21 @@ bool IsBuiltinConstantP(const clang::Expr *expr) {
 }
 
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr) {
-  const auto *rhs = expr->getRHS()->IgnoreCasts();
-  switch (rhs->getStmtClass()) {
-  case clang::Stmt::CXXNullPtrLiteralExprClass:
-    return expr->isComparisonOp();
-  default:
+  if (!expr->isComparisonOp()) {
     return false;
   }
+  auto rhs = expr->getRHS()->IgnoreParenCasts();
+  // C++ nullptr/NULL
+  if (clang::isa<clang::CXXNullPtrLiteralExpr>(rhs) ||
+      clang::isa<clang::GNUNullExpr>(rhs)) {
+    return true;
+  }
+  // C NULL
+  if (auto lit = clang::dyn_cast<clang::IntegerLiteral>(rhs)) {
+    return lit->getValue() == 0 &&
+           expr->getLHS()->IgnoreParenImpCasts()->getType()->isPointerType();
+  }
+  return false;
 }
 
 bool IsInMainFile(const clang::Decl *decl) {

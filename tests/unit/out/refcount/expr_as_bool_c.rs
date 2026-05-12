@@ -18,8 +18,9 @@ pub fn cmp_or_ptr_1(p: Ptr<u8>, q: Ptr<u8>) -> i32 {
 pub fn both_null_2(s1: Ptr<u8>, s2: Ptr<u8>) -> i32 {
     let s1: Value<Ptr<u8>> = Rc::new(RefCell::new(s1));
     let s2: Value<Ptr<u8>> = Rc::new(RefCell::new(s2));
-    return ((((((*s1.borrow()) == (Default::default())) as i32) != 0)
-        && ((((*s2.borrow()) == (Default::default())) as i32) != 0)) as i32);
+    return ((((((*s1.borrow()).is_null()) as i32) != 0)
+        && ((((*s2.borrow()).is_null()) as i32) != 0)) as i32)
+        .clone();
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -71,7 +72,7 @@ fn main_0() -> i32 {
     assert!(((((*lt.borrow()) == 0) as i32) != 0));
     assert!(((((*neq.borrow()) == 0) as i32) != 0));
     let p1: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hi")));
-    let p2: Value<Ptr<u8>> = Rc::new(RefCell::new(Default::default()));
+    let p2: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     let either: Value<i32> = Rc::new(RefCell::new(
         (((!(*p1.borrow()).is_null()) || (!(*p2.borrow()).is_null())) as i32).clone(),
     ));
@@ -104,16 +105,16 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            let _p: Ptr<u8> = Default::default();
-            let _q: Ptr<u8> = Default::default();
+            let _p: Ptr<u8> = Ptr::<u8>::null();
+            let _q: Ptr<u8> = Ptr::<u8>::null();
             cmp_or_ptr_1(_p, _q)
         }) == 0) as i32)
             != 0)
     );
     assert!(
         (((({
-            let _s1: Ptr<u8> = Default::default();
-            let _s2: Ptr<u8> = Default::default();
+            let _s1: Ptr<u8> = Ptr::<u8>::null();
+            let _s2: Ptr<u8> = Ptr::<u8>::null();
             both_null_2(_s1, _s2)
         }) == 1) as i32)
             != 0)
@@ -121,7 +122,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let _s1: Ptr<u8> = (*p1.borrow()).clone();
-            let _s2: Ptr<u8> = Default::default();
+            let _s2: Ptr<u8> = Ptr::<u8>::null();
             both_null_2(_s1, _s2)
         }) == 0) as i32)
             != 0)

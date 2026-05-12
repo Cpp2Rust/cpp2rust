@@ -22,9 +22,9 @@ impl Pair {
         (*self.y.borrow_mut()).prefix_inc();
         (*self.a.borrow_mut())[(4) as usize] = 1;
         self.r.write(1);
-        (*self.p.borrow_mut()) = Default::default();
-        (*self.pair.borrow_mut()) = Default::default();
-        (*self.ap.borrow_mut())[(0) as usize] = Default::default();
+        (*self.p.borrow_mut()) = Ptr::<i32>::null();
+        (*self.pair.borrow_mut()) = Ptr::<Pair>::null();
+        (*self.ap.borrow_mut())[(0) as usize] = Ptr::<i32>::null();
     }
     pub fn as_val(&self) -> i32 {
         return (*self.x.borrow());
@@ -108,11 +108,11 @@ fn main_0() -> i32 {
         y: Rc::new(RefCell::new(2)),
         a: Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 5]))),
         r: x1.as_pointer(),
-        p: Rc::new(RefCell::new(Default::default())),
-        pair: Rc::new(RefCell::new(Default::default())),
+        p: Rc::new(RefCell::new(Ptr::<i32>::null())),
+        pair: Rc::new(RefCell::new(Ptr::<Pair>::null())),
         ap: Rc::new(RefCell::new(Box::new([
-            Default::default(),
-            Default::default(),
+            Ptr::<i32>::null(),
+            Ptr::<i32>::null(),
         ]))),
     }));
     let y4: Value<Pair> = Rc::new(RefCell::new(Pair {
@@ -185,7 +185,7 @@ fn main_0() -> i32 {
     }));
     let ry3: Ptr<Pair> = (*py1.borrow()).clone();
     let py3: Value<Ptr<Pair>> = Rc::new(RefCell::new((*py1.borrow()).clone()));
-    (*py3.borrow_mut()) = Default::default();
+    (*py3.borrow_mut()) = Ptr::<Pair>::null();
     let ptr2pair: Value<Ptr<Pair>> = Rc::new(RefCell::new((*py3.borrow()).clone()));
     ({
         let _x1: i32 = (*x1.borrow());
@@ -264,11 +264,11 @@ fn main_0() -> i32 {
         y: Rc::new(RefCell::new(2)),
         a: Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 5]))),
         r: j.as_pointer(),
-        p: Rc::new(RefCell::new(Default::default())),
-        pair: Rc::new(RefCell::new(Default::default())),
+        p: Rc::new(RefCell::new(Ptr::<i32>::null())),
+        pair: Rc::new(RefCell::new(Ptr::<Pair>::null())),
         ap: Rc::new(RefCell::new(Box::new([
-            Default::default(),
-            Default::default(),
+            Ptr::<i32>::null(),
+            Ptr::<i32>::null(),
         ]))),
     }));
     let __rhs = (*(*new_y.borrow()).x.borrow());

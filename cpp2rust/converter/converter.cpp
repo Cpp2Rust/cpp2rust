@@ -1871,13 +1871,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     ConvertEqualsNullPtr(sub_expr);
     break;
   case clang::CastKind::CK_NullToPointer:
-    if (type->isFunctionPointerType()) {
-      StrCat("None");
-    } else {
-      StrCat(type->getPointeeType().isConstQualified()
-                 ? "std::ptr::null()"
-                 : "std::ptr::null_mut()");
-    }
+    StrCat(GetDefaultAsString(type));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
   default:

@@ -1048,11 +1048,8 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
 
   if (expr->getCastKind() == clang::CastKind::CK_NullToPointer) {
-    if (expr->getType()->isFunctionPointerType()) {
-      StrCat("FnPtr::null()");
-    } else {
-      StrCat("Default::default()");
-    }
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    StrCat(GetDefaultAsString(expr->getType()));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -1142,7 +1139,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   }
   if (expr->getCastKind() == clang::CK_NullToPointer) {
-    StrCat("Default::default()");
+    StrCat(GetDefaultAsString(expr->getType()));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -1163,7 +1160,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
-                         ToString(expr->getType()->getPointeeType())));
+                         ConvertPointeeType(expr->getType())));
       return false;
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
@@ -1612,7 +1609,10 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   }
   StrCat(ConvertLValue(va_list_expr));
   StrCat(".arg::<");
-  StrCat(GetUnsafeTypeAsString(expr->getType()));
+  {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    StrCat(ToString(expr->getType()));
+  }
   StrCat(">()");
   return false;
 }
@@ -2241,8 +2241,9 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
 
 std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   assert(!ptr_type.isNull() && ptr_type->isPointerType());
-  if (ptr_type->getPointeeType()->isIntegerType()) {
-    return ToString(ptr_type->getPointeeType());
+  auto pointee = ptr_type->getPointeeType();
+  if (!pointee->isRecordType()) {
+    return ToString(pointee);
   }
 
   // Pointee of a pointer to incomplete type is an incomplete type that does
