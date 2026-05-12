@@ -66,7 +66,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let g: Value<Graph> = Rc::new(RefCell::new(Graph {
         V: Rc::new(RefCell::new(5_u32)),
-        adj: Rc::new(RefCell::new(Default::default())),
+        adj: Rc::new(RefCell::new(Ptr::<Ptr<GraphNode>>::null())),
     }));
     return 0;
 }

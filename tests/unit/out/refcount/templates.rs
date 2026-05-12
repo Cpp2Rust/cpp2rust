@@ -20,7 +20,7 @@ pub fn bar_2(p: Ptr<i32>, flag: bool) -> Ptr<i32> {
     return if (*flag.borrow()) {
         (*p.borrow()).clone()
     } else {
-        Default::default()
+        Ptr::<i32>::null()
     };
 }
 pub fn bar_3(p: Ptr<f64>, flag: bool) -> Ptr<f64> {
@@ -29,7 +29,7 @@ pub fn bar_3(p: Ptr<f64>, flag: bool) -> Ptr<f64> {
     return if (*flag.borrow()) {
         (*p.borrow()).clone()
     } else {
-        Default::default()
+        Ptr::<f64>::null()
     };
 }
 pub fn func_4(x1: i32, x2: i32, x3: i32) -> i32 {

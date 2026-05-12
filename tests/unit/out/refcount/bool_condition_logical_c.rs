@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     let zero: Value<i32> = Rc::new(RefCell::new(0));
     let storage: Value<i32> = Rc::new(RefCell::new(7));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
+    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
     if (((((*n.borrow()) != 0) && (!(*p.borrow()).is_null())) as i32) != 0) {
@@ -115,8 +115,8 @@ fn main_0() -> i32 {
         assert!((1 != 0));
     }
     let s: Value<i32> = Rc::new(RefCell::new(-1_i32));
-    if (((((((*p.borrow()) != (Default::default())) as i32) != 0)
-        && ((((*s.borrow()) < 0) as i32) != 0)) as i32)
+    if ((((((!((*p.borrow()).is_null())) as i32) != 0) && ((((*s.borrow()) < 0) as i32) != 0))
+        as i32)
         != 0)
     {
         assert!((1 != 0));
@@ -133,10 +133,7 @@ fn main_0() -> i32 {
         assert!((1 != 0));
     }
     let ull: Value<u64> = Rc::new(RefCell::new(7_u64));
-    if (((((((*p.borrow()) != (Default::default())) as i32) != 0) && ((*ull.borrow()) != 0))
-        as i32)
-        != 0)
-    {
+    if ((((((!((*p.borrow()).is_null())) as i32) != 0) && ((*ull.borrow()) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     if (((((((*x.borrow()) > (*y.borrow())) as i32) != 0) && ((*ull.borrow()) != 0)) as i32) != 0) {
@@ -155,7 +152,7 @@ fn main_0() -> i32 {
         assert!((1 != 0));
     }
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hi")));
-    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Default::default()));
+    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     if (((((((*x.borrow()) > (*y.borrow())) as i32) != 0) && (!(*cp.borrow()).is_null())) as i32)
         != 0)
     {
@@ -194,8 +191,7 @@ fn main_0() -> i32 {
     {
         assert!((0 != 0));
     }
-    if ((((((((((*p.borrow()) != (Default::default())) as i32) != 0)
-        && (({ returns_one_1() }) != 0)) as i32)
+    if (((((((((!((*p.borrow()).is_null())) as i32) != 0) && (({ returns_one_1() }) != 0)) as i32)
         != 0)
         && ((((*n.borrow()) != 0) as i32) != 0)) as i32)
         != 0)

@@ -76,8 +76,8 @@ impl MinHeap {
             [((*self.next.borrow()) as u64) as usize] = MinHeapNode {
             data: Rc::new(RefCell::new((*data.borrow()))),
             freq: Rc::new(RefCell::new((*freq.borrow()))),
-            left: Rc::new(RefCell::new(Default::default())),
-            right: Rc::new(RefCell::new(Default::default())),
+            left: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
+            right: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
         };
         return ((*self.alloc.borrow())
             .as_ref()

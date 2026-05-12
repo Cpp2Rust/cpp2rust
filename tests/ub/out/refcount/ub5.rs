@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn null_0(p: Ptr<Ptr<i32>>) {
     let p: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new(p));
-    (*p.borrow()).write(Default::default());
+    (*p.borrow()).write(Ptr::<i32>::null());
 }
 pub fn main() {
     std::process::exit(main_0());

@@ -54,7 +54,7 @@ pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let val: Value<i32> = Rc::new(RefCell::new(val));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
-    let prev: Value<Ptr<Node>> = Rc::new(RefCell::new(Default::default()));
+    let prev: Value<Ptr<Node>> = Rc::new(RefCell::new(Ptr::<Node>::null()));
     'loop_: while !((*curr.borrow()).is_null()) {
         if {
             let _lhs = (*(*(*curr.borrow()).upgrade().deref()).val.borrow());
@@ -80,36 +80,36 @@ pub fn main() {
 fn main_0() -> i32 {
     let n0: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(5)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new((n0.as_pointer())));
     let n1: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(4)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n2: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(3)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n3: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(2)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n4: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(1)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n5: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(0)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n6: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(-1_i32)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     let n7: Value<Node> = Rc::new(RefCell::new(Node {
         val: Rc::new(RefCell::new(-2_i32)),
-        next: Rc::new(RefCell::new(Default::default())),
+        next: Rc::new(RefCell::new(Ptr::<Node>::null())),
     }));
     ({
         let _head: Ptr<Node> = (*head.borrow()).clone();

@@ -12,7 +12,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let storage: Value<i32> = Rc::new(RefCell::new(7));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
+    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     if !(*p.borrow()).is_null() {
         assert!(true);
     }
@@ -29,7 +29,7 @@ fn main_0() -> i32 {
     let iters: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while !(*iter.borrow()).is_null() {
         (*iters.borrow_mut()).prefix_inc();
-        (*iter.borrow_mut()) = Default::default();
+        (*iter.borrow_mut()) = Ptr::<i32>::null();
     }
     assert!(((*iters.borrow()) == 1));
     let t3: Value<i32> = Rc::new(RefCell::new(if !(*p.borrow()).is_null() { 1 } else { 0 }));

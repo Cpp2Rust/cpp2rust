@@ -13,9 +13,7 @@ pub unsafe fn cmp_or_ptr_1(mut p: *const u8, mut q: *const u8) -> i32 {
     return (((!(p).is_null()) || (!(q).is_null())) as i32);
 }
 pub unsafe fn both_null_2(mut s1: *const u8, mut s2: *const u8) -> i32 {
-    return ((((((s1) == ((0 as *mut ::libc::c_void) as *const u8)) as i32) != 0)
-        && ((((s2) == ((0 as *mut ::libc::c_void) as *const u8)) as i32) != 0))
-        as i32);
+    return ((((((s1).is_null()) as i32) != 0) && ((((s2).is_null()) as i32) != 0)) as i32);
 }
 pub fn main() {
     unsafe {

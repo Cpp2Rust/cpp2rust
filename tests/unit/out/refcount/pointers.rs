@@ -67,7 +67,7 @@ fn main_0() -> i32 {
             Update_0(_t)
         }),
     ));
-    let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Default::default()));
+    let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
     {

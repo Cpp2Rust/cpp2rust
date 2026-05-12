@@ -59,10 +59,10 @@ fn main_0() -> i32 {
         ));
     assert!(
         (({
-            let _arg0: AnyPtr = Default::default();
+            let _arg0: AnyPtr = AnyPtr::default();
             let _arg1: u64 = 0_u64;
             let _arg2: u64 = 0_u64;
-            let _arg3: Ptr<::std::fs::File> = Default::default();
+            let _arg3: Ptr<::std::fs::File> = Ptr::<::std::fs::File>::null();
             (*(*f3.borrow()))(_arg0, _arg1, _arg2, _arg3)
         }) == 22_u64)
     );

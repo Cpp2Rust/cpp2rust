@@ -102,10 +102,7 @@ unsafe fn main_0() -> i32 {
         assert!((1 != 0));
     }
     let mut s: i32 = -1_i32;
-    if (((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0)
-        && ((((s) < (0)) as i32) != 0)) as i32)
-        != 0)
-    {
+    if ((((((!((p).is_null())) as i32) != 0) && ((((s) < (0)) as i32) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     let mut k: u32 = 2_u32;
@@ -117,9 +114,7 @@ unsafe fn main_0() -> i32 {
         assert!((1 != 0));
     }
     let mut ull: u64 = 7_u64;
-    if (((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0) && (ull != 0)) as i32)
-        != 0)
-    {
+    if ((((((!((p).is_null())) as i32) != 0) && (ull != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     if (((((((x) > (y)) as i32) != 0) && (ull != 0)) as i32) != 0) {
@@ -158,8 +153,7 @@ unsafe fn main_0() -> i32 {
     if (((((((x) < (y)) as i32) != 0) || (!((unsafe { returns_one_1() }) != 0))) as i32) != 0) {
         assert!((0 != 0));
     }
-    if ((((((((((p) != ((0 as *mut ::libc::c_void) as *mut i32)) as i32) != 0)
-        && ((unsafe { returns_one_1() }) != 0)) as i32)
+    if (((((((((!((p).is_null())) as i32) != 0) && ((unsafe { returns_one_1() }) != 0)) as i32)
         != 0)
         && ((((n) != (0)) as i32) != 0)) as i32)
         != 0)

@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     let zero: Value<i32> = Rc::new(RefCell::new(0));
     let storage: Value<i32> = Rc::new(RefCell::new(7));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
-    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Default::default()));
+    let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
     if ((*n.borrow()) != 0) && (!(*p.borrow()).is_null()) {
@@ -127,7 +127,7 @@ fn main_0() -> i32 {
         assert!(true);
     }
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal("hi")));
-    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Default::default()));
+    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     if ((*x.borrow()) > (*y.borrow())) && (!(*cp.borrow()).is_null()) {
         assert!(true);
     }

@@ -206,7 +206,7 @@ fn main_0() -> i32 {
     'loop_: while (((*i.borrow()) as u64) < (*V.borrow())) {
         (*(*graph.borrow()).adj.borrow())
             .offset((*i.borrow()) as isize)
-            .write(Default::default());
+            .write(Ptr::<GraphNode>::null());
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
