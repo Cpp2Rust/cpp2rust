@@ -698,6 +698,9 @@ public:
 
       void HandleTranslationUnit(clang::ASTContext &ctx) override {
         auto &DE = CI_->getDiagnostics();
+        if (DE.hasErrorOccurred()) {
+          std::exit(EXIT_FAILURE);
+        }
         DE.setSuppressAllDiagnostics(true);
         DE.setClient(new clang::IgnoringDiagConsumer(), true);
         CB_->init(CI_->getSema());
