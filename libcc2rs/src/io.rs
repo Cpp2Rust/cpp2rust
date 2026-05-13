@@ -154,7 +154,7 @@ pub unsafe fn fread_unsafe(
         for &byte in &buffer[..n] {
             unsafe {
                 *dst = byte;
-                dst += 1;
+                dst = dst.offset(1);
             }
         }
 

@@ -13,8 +13,8 @@ unsafe fn f2<T1: Clone, T2: From<T1>>(a0: *const T1, a1: *const T1, a2: *mut T2)
     let mut curr = a0.clone();
     while curr < a1 {
         *outptr = (*curr).clone().into();
-        curr += 1;
-        outptr += 1;
+        curr = curr.offset(1);
+        outptr = outptr.offset(1);
     }
     outptr
 }

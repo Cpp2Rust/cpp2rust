@@ -87,7 +87,7 @@ impl<T> UnsafePostfixInc for *const T {
     #[inline]
     unsafe fn postfix_inc(&mut self) -> Self {
         let copy = *self;
-        *self += 1;
+        *self = self.offset(1);
         copy
     }
 }
@@ -96,7 +96,7 @@ impl<T> UnsafePostfixInc for *mut T {
     #[inline]
     unsafe fn postfix_inc(&mut self) -> Self {
         let copy = *self;
-        *self += 1;
+        *self = self.offset(1);
         copy
     }
 }
@@ -111,7 +111,7 @@ pub trait UnsafePrefixInc {
 impl<T> UnsafePrefixInc for *const T {
     #[inline]
     unsafe fn prefix_inc(&mut self) -> Self {
-        *self += 1;
+        *self = self.offset(1);
         *self
     }
 }
@@ -119,7 +119,7 @@ impl<T> UnsafePrefixInc for *const T {
 impl<T> UnsafePrefixInc for *mut T {
     #[inline]
     unsafe fn prefix_inc(&mut self) -> Self {
-        *self += 1;
+        *self = self.offset(1);
         *self
     }
 }
