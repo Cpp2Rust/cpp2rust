@@ -36,8 +36,7 @@ while satisfying Rust's borrow checker through checked run-time operations.
 On Ubuntu, install the required dependencies with:
 
 ```bash
-sudo apt install libclang-22-dev clang++-22 ninja-build cmake python3-tomli
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.95.0
+sudo apt install libclang-22-dev clang++-22 ninja-build cmake
 curl -LsSf https://astral.sh/ruff/install.sh | sh
 ```
 
