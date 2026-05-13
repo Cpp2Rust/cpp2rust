@@ -774,13 +774,12 @@ int main(int argc, char *argv[]) {
     llvm::json::Object file_root;
     cpp2rust::Extract(path, file_root);
     for (auto &[k, v] : file_root) {
-      if (root.find(k) != root.end()) {
+      if (!root.try_emplace(k, std::move(v)).second) {
         llvm::errs() << "ERROR: rule name " << k.str()
                      << " defined in multiple files in " << dir.string()
                      << '\n';
         return EXIT_FAILURE;
       }
-      root[k] = std::move(v);
     }
   }
 
