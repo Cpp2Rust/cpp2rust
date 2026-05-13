@@ -16,6 +16,6 @@ fn main_0() -> i32 {
     (*bytes.borrow()).offset((1) as isize).write(190_u8);
     (*bytes.borrow()).offset((2) as isize).write(173_u8);
     (*bytes.borrow()).offset((3) as isize).write(222_u8);
-    assert!(((*val.borrow()) == 3735928559));
+    assert!(((*val.borrow()) == 3735928559_u32));
     return 0;
 }

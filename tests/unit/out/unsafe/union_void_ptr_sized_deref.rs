@@ -79,7 +79,7 @@ unsafe fn main_0() -> i32 {
         let _count: i64 = 1234605616436508552_i64;
         write_count_0(_s, _count)
     });
-    assert!(((((buf64) == (1234605616436508552)) as i32) != 0));
+    assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width::W_32;
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
     (unsafe {

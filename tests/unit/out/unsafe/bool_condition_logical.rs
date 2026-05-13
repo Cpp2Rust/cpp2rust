@@ -83,16 +83,16 @@ unsafe fn main_0() -> i32 {
     assert!(((side_effect) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
-    let mut flags: u32 = 2;
-    if ((x) > (y)) || (((flags) & (1)) != 0) {
+    let mut flags: u32 = 2_u32;
+    if ((x) > (y)) || (((flags) & (1_u32)) != 0) {
         assert!(true);
     }
-    if ((x) < (y)) || (((flags) & (1)) != 0) {
+    if ((x) < (y)) || (((flags) & (1_u32)) != 0) {
         assert!(false);
     }
-    let mut a: u32 = 1;
-    let mut b: u32 = 2;
-    let mut c: u32 = 3;
+    let mut a: u32 = 1_u32;
+    let mut b: u32 = 2_u32;
+    let mut c: u32 = 3_u32;
     if ((a) != (c)) && ((b) != (c)) {
         assert!(true);
     }
@@ -100,27 +100,27 @@ unsafe fn main_0() -> i32 {
     if (!((p).is_null())) && ((s) < (0)) {
         assert!(true);
     }
-    let mut k: u32 = 2;
+    let mut k: u32 = 2_u32;
     let mut done: bool = false;
-    if ((k) > (1)) || (!done) {
+    if ((k) > (1_u32)) || (!done) {
         assert!(true);
     }
-    if ((x) > (y)) || (((flags) & (4)) != 0) {
+    if ((x) > (y)) || (((flags) & (4_u32)) != 0) {
         assert!(true);
     }
-    let mut ull: u64 = 7;
+    let mut ull: u64 = 7_u64;
     if (!((p).is_null())) && (ull != 0) {
         assert!(true);
     }
     if ((x) > (y)) && (ull != 0) {
         assert!(true);
     }
-    let mut mask: i64 = (((1) << (4)) | ((1) << (5)));
-    let mut bits: i64 = ((1) << (4));
+    let mut mask: i64 = (((1_i64) << (4)) | ((1_i64) << (5)));
+    let mut bits: i64 = ((1_i64) << (4));
     if ((n) != (0)) && (((bits) & (mask)) != 0) {
         assert!(true);
     }
-    if ((n) != (0)) || (((bits) & (256)) != 0) {
+    if ((n) != (0)) || (((bits) & (256_i64)) != 0) {
         assert!(true);
     }
     let mut cp: *const u8 = b"hi\0".as_ptr();

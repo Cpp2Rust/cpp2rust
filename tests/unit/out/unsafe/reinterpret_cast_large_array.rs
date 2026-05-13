@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
         (*arr.offset((i) as isize)) = 0_u32;
         i.postfix_inc();
     }
-    (*arr.offset(((N) - (1)) as isize)) = 3148519816;
+    (*arr.offset(((N) - (1)) as isize)) = 3148519816_u32;
     let mut words: *mut u16 = (arr as *mut u16);
     assert!((((*words.offset((((N) * (2)) - (1)) as isize)) as i32) == (48042)));
     assert!((((*words.offset((((N) * (2)) - (2)) as isize)) as i32) == (39304)));

@@ -23,10 +23,12 @@ fn main_0() -> i32 {
     assert!(((((*words.borrow()).offset((2) as isize).read()) as i32) == 1541));
     assert!(((((*words.borrow()).offset((3) as isize).read()) as i32) == 2055));
     (*words.borrow()).offset((1) as isize).write(48042_u16);
-    assert!((((*dwords.borrow()).offset((0) as isize).read()) == 3148481025));
-    assert!(((*val.borrow()) == 578437698833482241));
-    (*dwords.borrow()).offset((1) as isize).write(4293844428);
-    assert!(((*val.borrow()) == 18441921395520307713));
+    assert!((((*dwords.borrow()).offset((0) as isize).read()) == 3148481025_u32));
+    assert!(((*val.borrow()) == 578437698833482241_u64));
+    (*dwords.borrow())
+        .offset((1) as isize)
+        .write(4293844428_u32);
+    assert!(((*val.borrow()) == 18441921395520307713_u64));
     assert!(((((*words.borrow()).offset((2) as isize).read()) as i32) == 56780));
     assert!(((((*words.borrow()).offset((3) as isize).read()) as i32) == 65518));
     return 0;

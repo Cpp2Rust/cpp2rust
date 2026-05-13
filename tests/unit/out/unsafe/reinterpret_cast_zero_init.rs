@@ -18,6 +18,6 @@ unsafe fn main_0() -> i32 {
     (*bytes.offset((1) as isize)) = 190_u8;
     (*bytes.offset((2) as isize)) = 173_u8;
     (*bytes.offset((3) as isize)) = 222_u8;
-    assert!(((val) == (3735928559)));
+    assert!(((val) == (3735928559_u32)));
     return 0;
 }

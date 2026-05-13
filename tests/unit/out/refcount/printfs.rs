@@ -24,7 +24,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     println!("{}", Ptr::from_string_literal("fprintf stdout"));
-    println!("{} {} {}", 1, 2, 3);
+    println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
     println!("{}", Ptr::from_string_literal("printf"));
     print!("hello world");

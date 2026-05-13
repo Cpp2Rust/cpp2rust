@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     }
     (*arr.borrow())
         .offset(((*N.borrow()) - 1) as isize)
-        .write(3148519816);
+        .write(3148519816_u32);
     let words: Value<Ptr<u16>> = Rc::new(RefCell::new(
         ((*arr.borrow()).reinterpret_cast::<u16>()).clone(),
     ));

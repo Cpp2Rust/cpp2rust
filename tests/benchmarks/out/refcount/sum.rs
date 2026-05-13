@@ -10,7 +10,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let N: Value<i64> = Rc::new(RefCell::new(25000000000));
+    let N: Value<i64> = Rc::new(RefCell::new(25000000000_i64));
     let sum: Value<i64> = Rc::new(RefCell::new(0_i64));
     let i: Value<i64> = Rc::new(RefCell::new(0_i64));
     let j: Value<i64> = Rc::new(RefCell::new((*N.borrow())));

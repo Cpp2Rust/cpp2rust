@@ -88,16 +88,16 @@ unsafe fn main_0() -> i32 {
     assert!(((((side_effect) == (0)) as i32) != 0));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
-    let mut flags: u32 = 2;
-    if (((((((x) > (y)) as i32) != 0) || (((flags) & (1)) != 0)) as i32) != 0) {
+    let mut flags: u32 = 2_u32;
+    if (((((((x) > (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((x) < (y)) as i32) != 0) || (((flags) & (1)) != 0)) as i32) != 0) {
+    if (((((((x) < (y)) as i32) != 0) || (((flags) & (1_u32)) != 0)) as i32) != 0) {
         assert!((0 != 0));
     }
-    let mut a: u32 = 1;
-    let mut b: u32 = 2;
-    let mut c: u32 = 3;
+    let mut a: u32 = 1_u32;
+    let mut b: u32 = 2_u32;
+    let mut c: u32 = 3_u32;
     if (((((((a) != (c)) as i32) != 0) && ((((b) != (c)) as i32) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
@@ -105,27 +105,27 @@ unsafe fn main_0() -> i32 {
     if ((((((!((p).is_null())) as i32) != 0) && ((((s) < (0)) as i32) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    let mut k: u32 = 2;
+    let mut k: u32 = 2_u32;
     let mut done: bool = (0 != 0);
-    if (((((((k) > (1)) as i32) != 0) || (!done)) as i32) != 0) {
+    if (((((((k) > (1_u32)) as i32) != 0) || (!done)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((x) > (y)) as i32) != 0) || (((flags) & (4)) != 0)) as i32) != 0) {
+    if (((((((x) > (y)) as i32) != 0) || (((flags) & (4_u32)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    let mut ull: u64 = 7;
+    let mut ull: u64 = 7_u64;
     if ((((((!((p).is_null())) as i32) != 0) && (ull != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     if (((((((x) > (y)) as i32) != 0) && (ull != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    let mut mask: i64 = (((1) << (4)) | ((1) << (5)));
-    let mut bits: i64 = ((1) << (4));
+    let mut mask: i64 = (((1_i64) << (4)) | ((1_i64) << (5)));
+    let mut bits: i64 = ((1_i64) << (4));
     if (((((((n) != (0)) as i32) != 0) && (((bits) & (mask)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    if (((((((n) != (0)) as i32) != 0) || (((bits) & (256)) != 0)) as i32) != 0) {
+    if (((((((n) != (0)) as i32) != 0) || (((bits) & (256_i64)) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     let mut cp: *const u8 = b"hi\0".as_ptr().cast_mut().cast_const();
