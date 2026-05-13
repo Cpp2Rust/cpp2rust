@@ -32,7 +32,7 @@ unsafe fn main_0() -> i32 {
         b"%s\n\0".as_ptr() as *const i8,
         b"fprintf stdout\0".as_ptr(),
     );
-    printf(b"%d %u %ld\n\0".as_ptr() as *const i8, 1, 2_u32, 3_i64);
+    printf(b"%d %u %ld\n\0".as_ptr() as *const i8, 1, 2, 3);
     printf(b"hello world\0".as_ptr() as *const i8);
     printf(b"%s\n\0".as_ptr() as *const i8, b"printf\0".as_ptr());
     printf(b"hello world\0".as_ptr() as *const i8);

@@ -22,10 +22,10 @@ unsafe fn main_0() -> i32 {
     assert!((((*words.offset((2) as isize)) as i32) == (1541)));
     assert!((((*words.offset((3) as isize)) as i32) == (2055)));
     (*words.offset((1) as isize)) = 48042_u16;
-    assert!(((*dwords.offset((0) as isize)) == (3148481025_u32)));
-    assert!(((val) == (578437698833482241_u64)));
-    (*dwords.offset((1) as isize)) = 4293844428_u32;
-    assert!(((val) == (18441921395520307713_u64)));
+    assert!(((*dwords.offset((0) as isize)) == (3148481025)));
+    assert!(((val) == (578437698833482241)));
+    (*dwords.offset((1) as isize)) = 4293844428;
+    assert!(((val) == (18441921395520307713)));
     assert!((((*words.offset((2) as isize)) as i32) == (56780)));
     assert!((((*words.offset((3) as isize)) as i32) == (65518)));
     return 0;

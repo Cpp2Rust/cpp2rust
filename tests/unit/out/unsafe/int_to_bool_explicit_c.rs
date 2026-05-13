@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut flag: u32 = 7_u32;
     let mut b1: bool = (flag != 0);
-    let mut b2: bool = (0_u32 != 0);
+    let mut b2: bool = (0 != 0);
     assert!(b1);
     assert!(((!b2 as i32) != 0));
     return 0;

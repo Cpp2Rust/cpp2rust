@@ -15,11 +15,11 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u32>()));
     let view2: Value<Ptr<u32>> =
         Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u32>()));
-    (*view1.borrow()).offset((0) as isize).write(3721182122_u32);
-    assert!((((*view2.borrow()).offset((0) as isize).read()) == 3721182122_u32));
-    assert!(((*val.borrow()) == 578437699406183338_u64));
-    (*view2.borrow()).offset((1) as isize).write(4293844428_u32);
-    assert!((((*view1.borrow()).offset((1) as isize).read()) == 4293844428_u32));
-    assert!(((*val.borrow()) == 18441921396093008810_u64));
+    (*view1.borrow()).offset((0) as isize).write(3721182122);
+    assert!((((*view2.borrow()).offset((0) as isize).read()) == 3721182122));
+    assert!(((*val.borrow()) == 578437699406183338));
+    (*view2.borrow()).offset((1) as isize).write(4293844428);
+    assert!((((*view1.borrow()).offset((1) as isize).read()) == 4293844428));
+    assert!(((*val.borrow()) == 18441921396093008810));
     return 0;
 }

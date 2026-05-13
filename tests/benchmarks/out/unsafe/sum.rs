@@ -12,7 +12,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut N: i64 = 25000000000_i64;
+    let mut N: i64 = 25000000000;
     let mut sum: i64 = 0_i64;
     let mut i: i64 = 0_i64;
     let mut j: i64 = N;
