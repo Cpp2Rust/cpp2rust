@@ -64,12 +64,6 @@ if (NOT RUSTC_LLVM_VERSION STREQUAL LLVM_PACKAGE_VERSION)
 endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
-
-# rule-preprocessor uses nightly
-foreach(_dir libcc2rs rules)
-  write_rust_toolchain(${CMAKE_SOURCE_DIR}/${_dir})
-endforeach()
-
 set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 
 add_custom_command(
@@ -95,18 +89,18 @@ set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
-                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
-                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
-                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
-                  COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rules
-                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
-                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/libcc2rs
-                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
-                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/libcc2rs-macros
-                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
+                  COMMAND cargo +${RUST_STABLE_VERSION}  --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
+                  COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
+                  COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                                --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                                --manifest-path chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                                --manifest-path $${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                                --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
                   DEPENDS "${RUST_STAMP_FILE}"
@@ -119,7 +113,7 @@ if (NOT LIT_FLAGS)
 endif()
 
 add_custom_target("check-libcc2rs"
-                  COMMAND cargo test
+                  COMMAND cargo +${RUST_STABLE_VERSION} test
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs"
                   DEPENDS "${RUST_STAMP_FILE}"
                   USES_TERMINAL
@@ -188,12 +182,10 @@ file(GLOB_RECURSE rule_preprocessor_sources
 
 add_custom_command(
   OUTPUT ${rust_rules_ir_outputs}
-  COMMAND cargo build
-  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
-          ${CMAKE_COMMAND} -E env
-              CARGO_TARGET_DIR=${PROJECT_SOURCE_DIR}/rule-preprocessor/target
-              cargo run
-  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/rules"
+  COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
+  COMMAND ${CMAKE_COMMAND} -E env
+          CARGO_TARGET_DIR="${CMAKE_CURRENT_BINARY_DIR}/target_preprocessor"
+          cargo +nightly-2026-05-13 run --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
   VERBATIM
 )
