@@ -69,7 +69,7 @@ set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 add_custom_command(
     OUTPUT "${RUST_STAMP_FILE}"
     COMMAND rustup toolchain install ${RUST_STABLE_VERSION}
-    COMMAND rustup toolchain install nightly-2026-05-13 --component rustc-dev
+    COMMAND rustup toolchain install nightly-2026-05-13 --component rustc-dev --component llvm-tools
     COMMAND ${CMAKE_COMMAND} -E touch "${RUST_STAMP_FILE}"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake"
     USES_TERMINAL
