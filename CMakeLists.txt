@@ -65,7 +65,6 @@ endif()
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
 set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
-set(RUST_NIGHTLY_VERSION nightly-2026-05-13)
 
 add_custom_command(
     OUTPUT "${RUST_STAMP_FILE}"
