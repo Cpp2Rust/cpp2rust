@@ -86,6 +86,26 @@ public:
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
     Mapper::PushASTContext scoped(*R.Context);
+    if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("validate_func")) {
+      const char *err = nullptr;
+      if (auto body =
+              clang::dyn_cast_or_null<clang::CompoundStmt>(func->getBody())) {
+        if (body->size() != 1) {
+          err = "body must contain exactly one statement (a return)";
+        } else if (!clang::isa<clang::ReturnStmt>(*body->body_begin())) {
+          err = "body must be a return statement";
+        }
+      } else {
+        err = "body cannot be empty";
+      }
+
+      if (err) {
+        llvm::errs() << "ERROR: " << func->getQualifiedNameAsString() << ": "
+                     << err << '\n';
+        std::exit(EXIT_FAILURE);
+      }
+      return;
+    }
     if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
       clang::QualType type;
       if (auto *tdecl = var->getDescribedAliasTemplate()) {
@@ -687,6 +707,12 @@ public:
         typeAliasDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
         &cb_);
+
+    finder_.addMatcher(functionDecl(isDefinition(),
+                                    matchesName("(^|::)f[0-9]+$"),
+                                    isExpansionInMainFile())
+                           .bind("validate_func"),
+                       &cb_);
   }
 
   std::unique_ptr<clang::FrontendAction> create() override {
