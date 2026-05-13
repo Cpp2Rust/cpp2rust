@@ -130,3 +130,7 @@ unsafe fn f8() -> *mut ::std::fs::File {
 unsafe fn f9() -> *mut ::std::fs::File {
     libcc2rs::cerr_unsafe()
 }
+
+unsafe fn f10() -> *mut ::std::fs::File {
+    libcc2rs::cin_unsafe()
+}

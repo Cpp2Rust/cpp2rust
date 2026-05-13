@@ -202,6 +202,17 @@
       "is_refcount_pointer": true
     }
   },
+  "f10": {
+    "body": [
+      {
+        "text": "libcc2rs::cin()"
+      }
+    ],
+    "return_type": {
+      "type": "Ptr<::std::fs::File>",
+      "is_refcount_pointer": true
+    }
+  },
   "f2": {
     "body": [
       {

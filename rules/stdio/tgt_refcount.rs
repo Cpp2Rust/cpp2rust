@@ -125,3 +125,7 @@ fn f8() -> Ptr<::std::fs::File> {
 fn f9() -> Ptr<::std::fs::File> {
     libcc2rs::cerr()
 }
+
+fn f10() -> Ptr<::std::fs::File> {
+    libcc2rs::cin()
+}
