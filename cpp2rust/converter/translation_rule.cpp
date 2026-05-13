@@ -130,6 +130,16 @@ TypeRule ParseTypeRuleJSON(const llvm::json::Object &obj) {
   return rule;
 }
 
+bool CfgMatchesHost(llvm::StringRef cfg) {
+#if defined(__linux__)
+  return cfg == "linux";
+#elif defined(__APPLE__)
+  return cfg == "macos";
+#else
+  return false;
+#endif
+}
+
 void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
                    const std::filesystem::path &json_path) {
   auto buf = llvm::MemoryBuffer::getFile(json_path.string());
@@ -152,6 +162,10 @@ void LoadTgtFromIR(ExprRules &exprs, TypeRules &types,
     auto *obj = entry_val.getAsObject();
     if (!obj)
       continue;
+
+    if (auto cfg = obj->getString("cfg"); cfg && !CfgMatchesHost(*cfg)) {
+      continue;
+    }
 
     auto name = entry_name.str();
     if (name[0] == 'f') {

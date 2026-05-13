@@ -258,6 +258,31 @@ impl<'a> FnIrBuilder<'a> {
         Self { fn_item }
     }
 
+    fn cfg_target_os(&self) -> Option<String> {
+        use ast::HasAttrs;
+        for attr in self.fn_item.attrs() {
+            let meta_text = attr.meta()?.syntax().text().to_string();
+            let syn::Meta::List(list) = syn::parse_str(&meta_text).ok()? else {
+                continue;
+            };
+            if !list.path.is_ident("cfg") {
+                continue;
+            }
+            let mut found = None;
+            let _ = list.parse_nested_meta(|nested| {
+                if nested.path.is_ident("target_os") {
+                    let lit: syn::LitStr = nested.value()?.parse()?;
+                    found = Some(lit.value());
+                }
+                Ok(())
+            });
+            if found.is_some() {
+                return found;
+            }
+        }
+        None
+    }
+
     fn params(&self) -> Vec<ParamInfo> {
         let mut params = Vec::new();
         let Some(param_list) = self.fn_item.param_list() else {
@@ -499,6 +524,7 @@ impl<'a> FnIrBuilder<'a> {
             },
             multi_statement,
             body,
+            cfg: self.cfg_target_os(),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir

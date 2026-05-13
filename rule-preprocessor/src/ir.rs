@@ -48,8 +48,9 @@ pub struct TypeInfo {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FnIr {
-    // Fields ordered alphabetically to match the old serde_json::Map output
     pub body: Vec<BodyFragment>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cfg: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub generics: Option<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]

@@ -9,3 +9,4 @@ rules = { path = "../rules" }
 ra_ap_syntax = "0.0.266"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+syn = "2"

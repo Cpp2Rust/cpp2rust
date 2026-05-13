@@ -13,6 +13,7 @@ int f3() {
   return SOCK_DGRAM;
 }
 
+#ifdef __linux__
 int f4() {
   return SOCK_CLOEXEC;
 }
@@ -20,3 +21,4 @@ int f4() {
 int f5() {
   return SOCK_NONBLOCK;
 }
+#endif
