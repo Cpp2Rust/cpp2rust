@@ -1633,7 +1633,7 @@ bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
-  StrCat(getIntegerLiteral(expr, false));
+  StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
