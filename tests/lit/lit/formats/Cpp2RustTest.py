@@ -9,15 +9,18 @@ import os
 import re
 import shutil
 import random
-import tomli
 
 
 def read_rust_version():
     toolchain_path = os.path.join(
-        os.path.dirname(__file__), "../../../../libcc2rs/rust-toolchain.toml"
+        os.path.dirname(__file__), "../../../../cmake/rust-toolchain.cmake"
     )
-    with open(toolchain_path, "rb") as f:
-        return tomli.load(f)["toolchain"]["channel"]
+    with open(toolchain_path, "r") as f:
+        for line in f:
+            m = re.match(r'set\s*\(\s*RUST_VERSION\s+"([^"]+)', line)
+            if m:
+                return m.group(1)
+    raise Exception("could not find rust version in " + toolchain_path)
 
 
 def shared_target_dir():
@@ -170,15 +173,12 @@ class Cpp2RustTest(TestFormat):
         pkg_name = "test_" + re.sub(r"[^a-zA-Z0-9_]", "_", os.path.basename(tmp_dir))
 
         # Check if we can compile the rust file
-        with open(tmp_dir + "/rust-toolchain.toml", "w") as f:
-            f.write(f'[toolchain]\nchannel = "{self.rust_version}"\n')
         with open(tmp_dir + "/Cargo.toml", "w") as f:
             f.write(f"""
 [package]
 name = "{pkg_name}"
 version = "0.1.0"
 edition = "2021"
-rust-version = "{self.rust_version}"
 
 [[bin]]
 name = "{pkg_name}"
@@ -189,7 +189,7 @@ libc = "0.2.169"
 libcc2rs = {{ path = "../../../libcc2rs" }}
 """)
 
-        cmd = ["cargo", "build", "--release", "--quiet"]
+        cmd = ["cargo", "+" + self.rust_version, "build", "--release", "--quiet"]
         _, err, returncode = lit.util.executeCommand(cmd, tmp_dir, env=cargo_env())
         if should_not_compile:
             if returncode != 0:
