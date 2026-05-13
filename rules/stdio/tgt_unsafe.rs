@@ -85,7 +85,7 @@ unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::Fi
 
         for i in 0..to_fill {
             buffer[i] = *src;
-            src = src.offset(1);
+            src += 1;
         }
 
         let mut off = 0;

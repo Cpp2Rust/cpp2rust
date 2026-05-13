@@ -80,7 +80,7 @@ fn f6(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
 
         for i in 0..to_fill {
             buffer[i] = src.read();
-            src = src.offset(1);
+            src += 1;
         }
 
         let mut off = 0;

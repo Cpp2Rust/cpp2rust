@@ -641,7 +641,7 @@ impl<T> Iterator for StringIterator<T> {
         // skip the null terminator
         if self.ptr.get_offset() + 1 < self.ptr.len() {
             let value = self.ptr.clone();
-            self.ptr = self.ptr.offset(1);
+            self.ptr += 1;
             Some(value)
         } else {
             None
