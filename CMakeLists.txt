@@ -185,7 +185,8 @@ add_custom_command(
   COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E env
           CARGO_TARGET_DIR="${CMAKE_CURRENT_BINARY_DIR}/target_preprocessor"
-          cargo +nightly-2026-05-13 run --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+          cargo +nightly-2026-05-13 run --component rustc-dev
+          --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
   VERBATIM
 )
