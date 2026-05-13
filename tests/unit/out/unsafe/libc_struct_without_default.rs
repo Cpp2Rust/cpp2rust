@@ -15,10 +15,13 @@ unsafe fn main_0() -> i32 {
     let mut p: pollfd = std::mem::zeroed::<pollfd>();
     p.fd = -1_i32;
     p.events = 0_i16;
-    p.revents = 0_i16;
+    p.revents = 2_i16;
+    assert!(((((p.fd) == (-1_i32)) as i32) != 0));
+    assert!(((((p.events as i32) == (0)) as i32) != 0));
+    assert!(((((p.revents as i32) == (2)) as i32) != 0));
     let mut ia: in_addr = std::mem::zeroed::<in_addr>();
-    ia.s_addr = 0_u32;
-    assert!(((((ia.s_addr) == (0_u32)) as i32) != 0));
+    ia.s_addr = 1_u32;
+    assert!(((((ia.s_addr) == (1_u32)) as i32) != 0));
     let mut t: tm = std::mem::zeroed::<tm>();
     t.tm_year = 124;
     t.tm_mon = 5;
