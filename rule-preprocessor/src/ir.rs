@@ -50,8 +50,6 @@ pub struct TypeInfo {
 pub struct FnIr {
     pub body: Vec<BodyFragment>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub target_os: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub generics: Option<BTreeMap<String, Vec<String>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub multi_statement: Option<bool>,
@@ -59,6 +57,8 @@ pub struct FnIr {
     pub params: Option<BTreeMap<String, TypeInfo>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_type: Option<TypeInfo>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target_os: Option<String>,
 }
 
 impl FnIr {
