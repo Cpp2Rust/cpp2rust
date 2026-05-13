@@ -99,10 +99,18 @@ add_custom_target("format"
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND rustup run ${RUST_STABLE_VERSION} cargo fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rules
+                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor
+                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/libcc2rs
+                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
+                  COMMAND ${CMAKE_COMMAND} -E chdir ${PROJECT_SOURCE_DIR}/libcc2rs-macros
+                    cargo clippy --fix --allow-dirty --allow-staged --all-targets --all-features -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
                   DEPENDS "${RUST_STAMP_FILE}"
-                  COMMENT "Running clang-format, cargo fmt, and ruff on all source files"
+                  COMMENT "Running clang-format, cargo fmt, cargo clippy, and ruff on all source files"
                   VERBATIM
                   )
 
