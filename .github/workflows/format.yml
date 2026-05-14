@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup LLVM
         uses: ZhongRuoyu/setup-llvm@v0
