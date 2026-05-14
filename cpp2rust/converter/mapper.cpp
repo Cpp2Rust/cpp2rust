@@ -564,8 +564,7 @@ std::string normalizeTranslationRule(std::string rule) {
 
 static std::string synthesizeAnonRecordName(const clang::RecordDecl *record) {
   std::string parent_name;
-  if (auto *parent =
-          clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
+  if (auto *parent = clang::dyn_cast<clang::RecordDecl>(record->getDeclContext())) {
     parent_name = parent->getIdentifier()
                       ? parent->getIdentifier()->getName().str()
                       : synthesizeAnonRecordName(parent);

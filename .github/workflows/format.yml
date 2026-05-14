@@ -25,43 +25,15 @@ jobs:
         with:
           llvm-version: 22
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.95.0
-          components: rustfmt, clippy
+      - name: Setup Python
+        run: pip install ruff
 
-      - name: Setup nightly Rust for rule-preprocessor clippy
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
-          components: rustfmt, clippy, rustc-dev
+      - name: Configure
+        run: cmake -GNinja -B build -S .
 
-      - name: Check C++ formatting
-        run: find cpp2rust tests -name '*.cpp' -o -name '*.h' -o -name '*.c' | xargs clang-format --dry-run --Werror
+      - name: Format files
+        run: ninja format
+        working-directory: build
 
-      - name: Check Rust formatting
-        run: |
-          cargo fmt --manifest-path rules/Cargo.toml -- --check
-          cargo fmt --manifest-path rule-preprocessor/Cargo.toml -- --check
-          cargo fmt --manifest-path libcc2rs/Cargo.toml -- --check
-          cargo fmt --manifest-path libcc2rs-macros/Cargo.toml -- --check
-          find tests -name '*.rs' -print0 | xargs -0 rustfmt --check
-
-      - name: Check Rust lints
-        run: |
-          cargo clippy --manifest-path rules/Cargo.toml --all-targets --all-features -- -Dwarnings
-          cargo +nightly clippy --manifest-path rule-preprocessor/Cargo.toml --all-targets --all-features -- -Dwarnings
-          cargo clippy --manifest-path libcc2rs/Cargo.toml --all-targets --all-features -- -Dwarnings
-          cargo clippy --manifest-path libcc2rs-macros/Cargo.toml --all-targets --all-features -- -Dwarnings
-
-      - name: Check Python (ruff)
-        uses: astral-sh/ruff-action@v3
-        with:
-          args: 'check'
-          src: tests/lit/lit/formats/Cpp2RustTest.py
-      - name: Check Python formatting (ruff)
-        uses: astral-sh/ruff-action@v3
-        with:
-          args: 'format --check'
-          src: tests/lit/lit/formats/Cpp2RustTest.py
+      - name: Check format
+        run: git diff --exit-code
