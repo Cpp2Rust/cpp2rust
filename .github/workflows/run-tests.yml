@@ -44,9 +44,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Python dependencies
-        run: pip install tomli
-
       - name: Configure
         run: |
           mkdir build && cd build
