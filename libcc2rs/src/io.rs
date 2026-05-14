@@ -162,8 +162,6 @@ pub fn fwrite_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -
         written_bytes += off;
     }
 
-    std::io::Write::flush(&mut writer).expect("flush failed");
-
     (written_bytes / a1 as usize) as u64
 }
 
@@ -213,8 +211,6 @@ pub unsafe fn fwrite_unsafe(
 
         written_bytes += off;
     }
-
-    std::io::Write::flush(&mut writer).expect("flush failed");
 
     (written_bytes / a1 as usize) as u64
 }
