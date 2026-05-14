@@ -17,7 +17,7 @@ def read_rust_version():
     )
     with open(toolchain_path, "r") as f:
         for line in f:
-            m = re.match(r'set\s*\(\s*RUST_VERSION\s+"([^"]+)', line)
+            m = re.match(r'set\(RUST_STABLE_VERSION\s+"([^"]+)', line)
             if m:
                 return m.group(1)
     raise Exception("could not find rust version in " + toolchain_path)
