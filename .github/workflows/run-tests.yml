@@ -33,17 +33,6 @@ jobs:
         with:
           llvm-version: 22
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.95.0
-          components: rustfmt
-
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.x'
-
       - name: Configure
         run: |
           mkdir build && cd build
