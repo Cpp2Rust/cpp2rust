@@ -503,66 +503,42 @@
   "f6": {
     "body": [
       {
-        "text": "let total = "
+        "text": "libcc2rs::fwrite_refcount("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 1,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".saturating_mul("
-            },
-            {
-              "placeholder": {
-                "arg": 2,
-                "access": "read"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": " as usize;\n    let mut src = "
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
       },
       {
         "method_call": {
           "receiver": [
             {
-              "method_call": {
-                "receiver": [
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "placeholder": {
-                            "arg": 0,
-                            "access": "read"
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".cast::<u8>()"
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".expect(\"fwrite: only supporting u8 pointers\")"
-                  }
-                ]
+              "placeholder": {
+                "arg": 3,
+                "access": "read"
               }
             }
           ],
@@ -574,163 +550,9 @@
         }
       },
       {
-        "text": ";\n\n    let mut f = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(*"
-                  },
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "placeholder": {
-                                  "arg": 3,
-                                  "access": "read"
-                                }
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".upgrade()"
-                              }
-                            ]
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".deref()"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".try_clone()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".expect(\"try_clone failed\")"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let mut writer = std::io::BufWriter::with_capacity(64 * 1024, f);\n\n    let mut written_bytes: usize = 0;\n    let mut buffer: [u8; 8192] = [0; 8192];\n\n    while written_bytes < total {\n        let remaining = total - written_bytes;\n        let to_fill = std::cmp::min("
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "buffer"
-            }
-          ],
-          "body": [
-            {
-              "text": ".len()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ", remaining);\n\n        for i in 0..to_fill {\n            buffer[i] = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "src"
-            }
-          ],
-          "body": [
-            {
-              "text": ".read()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n            src = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "src"
-            }
-          ],
-          "body": [
-            {
-              "text": ".offset(1)"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        }\n\n        let mut off = 0;\n        while off < to_fill {\n            match std::io::Write::write(&mut writer, &buffer[off..to_fill]) {\n                Ok(0) => break,\n                Ok(n) => off += n,\n                Err(ref e) if "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "e"
-            }
-          ],
-          "body": [
-            {
-              "text": ".kind()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " == std::io::ErrorKind::Interrupted => continue,\n                Err(e) => panic!(\"Unhandled error in fwrite: {e}\"),\n            }\n        }\n\n        if off == 0 {\n            break;\n        }\n\n        written_bytes += off;\n    }\n\n    "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "std::io::Write::flush(&mut writer)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".expect(\"flush failed\")"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n\n    (written_bytes / "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " as usize) as u64"
+        "text": ")"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "AnyPtr"
