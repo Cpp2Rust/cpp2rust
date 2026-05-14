@@ -94,13 +94,13 @@ add_custom_target("format"
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path chdir ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path $${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
