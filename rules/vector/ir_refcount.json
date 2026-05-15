@@ -1235,12 +1235,43 @@
               "method_call": {
                 "receiver": [
                   {
-                    "text": "__a0"
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "generic": 1
+                        },
+                        {
+                          "text": "::try_from("
+                        },
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "text": "__a0"
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".read()"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "text": ")"
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".ok()"
+                        }
+                      ]
+                    }
                   }
                 ],
                 "body": [
                   {
-                    "text": ".read()"
+                    "text": ".unwrap()"
                   }
                 ]
               }
@@ -1257,6 +1288,9 @@
     ],
     "generics": {
       "T1": [
+        "TryFrom<T2>"
+      ],
+      "T2": [
         "Clone",
         "ByteRepr"
       ]
@@ -1264,137 +1298,16 @@
     "multi_statement": true,
     "params": {
       "a0": {
-        "type": "Ptr<T1>",
+        "type": "Ptr<T2>",
         "is_refcount_pointer": true
       },
       "a1": {
-        "type": "Ptr<T1>",
+        "type": "Ptr<T2>",
         "is_refcount_pointer": true
       }
     },
     "return_type": {
       "type": "Vec<T1>"
-    }
-  },
-  "f39": {
-    "body": [
-      {
-        "text": "let mut __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let mut __out = Vec::with_capacity("
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 1,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".get_offset()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " - "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__a0"
-            }
-          ],
-          "body": [
-            {
-              "text": ".get_offset()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ");\n    while __a0 != "
-      },
-      {
-        "placeholder": {
-          "arg": 1,
-          "access": "read"
-        }
-      },
-      {
-        "text": " {\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "__out"
-            }
-          ],
-          "body": [
-            {
-              "text": ".push("
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "__a0"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".read()"
-                  }
-                ]
-              }
-            },
-            {
-              "text": " as i32)"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        __a0 += 1;\n    }\n    __out"
-      }
-    ],
-    "multi_statement": true,
-    "params": {
-      "a0": {
-        "type": "Ptr<u32>",
-        "is_refcount_pointer": true
-      },
-      "a1": {
-        "type": "Ptr<u32>",
-        "is_refcount_pointer": true
-      }
-    },
-    "return_type": {
-      "type": "Vec<i32>"
     }
   },
   "f40": {

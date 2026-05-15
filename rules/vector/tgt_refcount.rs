@@ -122,21 +122,11 @@ fn f35<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
     __out
 }
 
-fn f37<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
+fn f37<T1: TryFrom<T2>, T2: Clone + ByteRepr>(a0: Ptr<T2>, a1: Ptr<T2>) -> Vec<T1> {
     let mut __a0 = a0.clone();
     let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
     while __a0 != a1 {
-        __out.push(__a0.read());
-        __a0 += 1;
-    }
-    __out
-}
-
-fn f39(a0: Ptr<u32>, a1: Ptr<u32>) -> Vec<i32> {
-    let mut __a0 = a0.clone();
-    let mut __out = Vec::with_capacity(a1.get_offset() - __a0.get_offset());
-    while __a0 != a1 {
-        __out.push(__a0.read() as i32);
+        __out.push(T1::try_from(__a0.read()).ok().unwrap());
         __a0 += 1;
     }
     __out
