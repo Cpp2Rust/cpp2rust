@@ -3092,7 +3092,8 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   }
 
   if (auto record = qual_type->getAsRecordDecl()) {
-    if (ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+    if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
+        qual_type.isPODType(ctx_)) {
       return std::format("std::mem::zeroed::<{}>()", ToString(qual_type));
     }
   }

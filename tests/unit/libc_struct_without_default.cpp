@@ -1,9 +1,16 @@
 // no-compile: refcount
+#include <array>
 #include <assert.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <vector>
+
+struct UserDefined {
+  std::array<int, 1> a;
+  std::vector<int> v;
+};
 
 int main() {
   struct pollfd p;
@@ -29,5 +36,9 @@ int main() {
   struct stat st;
   st.st_size = 1024;
   assert(st.st_size == 1024);
+
+  UserDefined ud;
+  assert(ud.a[0] == 0);
+  assert(ud.v.size() == 0);
   return 0;
 }
