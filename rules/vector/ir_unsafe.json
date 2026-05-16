@@ -2775,7 +2775,8 @@
       {
         "placeholder": {
           "arg": 0,
-          "access": "write"
+          "access": "write",
+          "needs_autoref": true
         }
       },
       {

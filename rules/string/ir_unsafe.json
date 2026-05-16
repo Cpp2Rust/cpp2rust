@@ -10,7 +10,8 @@
             {
               "placeholder": {
                 "arg": 0,
-                "access": "read"
+                "access": "read",
+                "needs_autoref": true
               }
             },
             {
@@ -1194,7 +1195,8 @@
       {
         "placeholder": {
           "arg": 0,
-          "access": "write"
+          "access": "write",
+          "needs_autoref": true
         }
       },
       {
