@@ -63,17 +63,17 @@ pub struct FnIr {
 
 impl FnIr {
     /// Find the next unvisited placeholder for `param`, mark it visited,
-    /// and if it was "unknown", patch it with the given access.
-    /// Searches inside MethodCall bodies recursively.
+    /// and apply `patch` to it. Searches inside MethodCall bodies
+    /// recursively.
     pub fn resolve_next_param(
         &mut self,
         param: &str,
-        access: Access,
         visited: &mut HashMap<String, usize>,
+        patch: impl Fn(&mut PlaceholderInner),
     ) {
         let n = visited.entry(param.to_string()).or_insert(0);
         let nth = std::mem::replace(n, *n + 1);
-        resolve_nth_unknown(&mut self.body, param, access, nth);
+        resolve_nth_unknown(&mut self.body, param, nth, patch);
     }
 
     pub fn has_unknowns(&self) -> bool {
@@ -139,6 +139,8 @@ pub enum Access {
 pub struct PlaceholderInner {
     pub arg: i32,
     pub access: Access,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub needs_autoref: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -157,15 +159,21 @@ impl BodyFragment {
     }
 }
 
-/// Resolve the nth Unknown placeholder for `param` in a body fragment list.
-fn resolve_nth_unknown(body: &mut [BodyFragment], param: &str, access: Access, nth: usize) {
+/// Find the nth occurrence of `param` in a body fragment list and apply
+/// `patch` to it.
+fn resolve_nth_unknown(
+    body: &mut [BodyFragment],
+    param: &str,
+    nth: usize,
+    patch: impl Fn(&mut PlaceholderInner),
+) {
     let mut count = 0;
     fn resolve(
         body: &mut [BodyFragment],
         param: &str,
-        access: Access,
         nth: usize,
         count: &mut usize,
+        patch: &impl Fn(&mut PlaceholderInner),
     ) -> bool {
         for frag in body {
             match frag {
@@ -173,18 +181,16 @@ fn resolve_nth_unknown(body: &mut [BodyFragment], param: &str, access: Access, n
                     if placeholder.arg == param[1..].parse().unwrap_or(0) =>
                 {
                     if *count == nth {
-                        if placeholder.access == Access::Unknown {
-                            placeholder.access = access;
-                        }
+                        patch(placeholder);
                         return true;
                     }
                     *count += 1;
                 }
                 BodyFragment::MethodCall { method_call } => {
-                    if resolve(&mut method_call.receiver, param, access, nth, count) {
+                    if resolve(&mut method_call.receiver, param, nth, count, patch) {
                         return true;
                     }
-                    if resolve(&mut method_call.body, param, access, nth, count) {
+                    if resolve(&mut method_call.body, param, nth, count, patch) {
                         return true;
                     }
                 }
@@ -193,7 +199,7 @@ fn resolve_nth_unknown(body: &mut [BodyFragment], param: &str, access: Access, n
         }
         false
     }
-    resolve(body, param, access, nth, &mut count);
+    resolve(body, param, nth, &mut count, &patch);
 }
 
 // A rule file's IR: mix of function rules (f1, f2, ...) and type rules (t1, t2, ...)
@@ -211,7 +217,6 @@ pub type FileIr = BTreeMap<String, RuleIr>;
 /// All IR for all rule files.
 pub struct RulesIR {
     pub all_ir: HashMap<String, FileIr>,
-    pub has_unknowns: bool,
     pub crate_root: PathBuf,
 }
 
