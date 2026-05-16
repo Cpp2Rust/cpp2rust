@@ -88,6 +88,8 @@ public:
 
   void ConvertVarDecl(clang::VarDecl *decl);
 
+  void ConvertVarDeclInitializer(clang::VarDecl *decl);
+
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);
 
   virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
