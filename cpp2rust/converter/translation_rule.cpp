@@ -7,7 +7,6 @@
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <algorithm>
-#include <format>
 #include <string>
 #include <vector>
 
@@ -16,6 +15,21 @@
 namespace cpp2rust::TranslationRule {
 
 namespace {
+
+struct GenericPlaceholders {
+  char storage[kMaxGenerics][3]{};
+
+  constexpr GenericPlaceholders() {
+    for (unsigned i = 0; i < kMaxGenerics; ++i) {
+      storage[i][0] = 'T';
+      storage[i][1] = static_cast<char>('1' + i);
+      storage[i][2] = '\0';
+    }
+  }
+};
+static_assert(kMaxGenerics <= 9,
+              "GenericPlaceholders assumes single-digit names");
+constexpr GenericPlaceholders kGenericPlaceholders{};
 
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
@@ -307,9 +321,10 @@ void ExprRule::validate(const std::string &name) const {
     assert(0 && "Expr rule loaded from IR but has no src");
   }
 
-  // Check that both source and target use the same generics.
-  for (unsigned i = 0; i < generics.size(); ++i) {
-    auto placeholder = std::format("T{}", i + 1);
+  assert(generics.size() <= kMaxGenerics &&
+         "rule declares more generics than kMaxGenerics");
+  for (unsigned i = 0, e = generics.size(); i < e; ++i) {
+    const char *placeholder = kGenericPlaceholders.storage[i];
     if (src.find(placeholder) == std::string::npos) {
       llvm::errs() << name << '\n';
       dump();

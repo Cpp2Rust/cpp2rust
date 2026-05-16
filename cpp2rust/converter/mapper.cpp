@@ -226,7 +226,6 @@ matchTemplate(const std::string &template_str,
   size_t si = 0;
 
   while (ti < template_str.size()) {
-    // Match T{N}. TODO: currently only T0..9 are supported
     if (template_str[ti] == 'T' && ti + 1 < template_str.size() &&
         std::isdigit(template_str[ti + 1])) {
       size_t tj = ti + 2;
@@ -235,6 +234,8 @@ matchTemplate(const std::string &template_str,
       }
 
       size_t type_idx = std::stoi(&template_str[ti + 1]) - 1;
+      assert(type_idx < TranslationRule::kMaxGenerics &&
+             "template placeholder exceeds kMaxGenerics");
       ti = tj;
 
       std::string_view nextLit;

@@ -15,6 +15,8 @@
 
 namespace cpp2rust::TranslationRule {
 
+inline constexpr unsigned kMaxGenerics = 9;
+
 struct TextFragment {
   std::string text;
 
