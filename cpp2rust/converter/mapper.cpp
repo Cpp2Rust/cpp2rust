@@ -342,7 +342,8 @@ matchTemplate(const std::string &template_str,
 //   result       = "Vec<i32>"
 std::string instantiateTgt(const std::vector<std::optional<std::string>> &types,
                            const std::string &tgt_template) {
-  assert(types.size() <= 9);
+  assert(types.size() <= TranslationRule::kMaxGenerics &&
+         "template placeholder exceeds kMaxGenerics");
   std::string instantiated_template = tgt_template;
   std::string::size_type pos = 0;
   while ((pos = instantiated_template.find('T', pos)) != std::string::npos) {
