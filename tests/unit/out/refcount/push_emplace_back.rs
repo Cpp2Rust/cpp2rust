@@ -88,7 +88,7 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
                             - __a0.get_offset(),
                     );
                     while __a0 != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
-                        __out.push(__a0.read());
+                        __out.push(u8::try_from(__a0.read()).ok().unwrap());
                         __a0 += 1;
                     }
                     __out
@@ -134,7 +134,7 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
                         - __a0.get_offset(),
                 );
                 while __a0 != (head.as_pointer() as Ptr<u8>).offset((3) as isize) {
-                    __out.push(__a0.read());
+                    __out.push(u8::try_from(__a0.read()).ok().unwrap());
                     __a0 += 1;
                 }
                 __out

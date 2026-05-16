@@ -1437,144 +1437,6 @@
         "method_call": {
           "receiver": [
             {
-              "text": "core::slice::from_raw_parts("
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            },
-            {
-              "text": ", "
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "write"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".offset_from("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 0,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ]
-              }
-            },
-            {
-              "text": " as usize)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".to_vec()"
-            }
-          ]
-        }
-      }
-    ],
-    "generics": {
-      "T1": [
-        "Clone"
-      ]
-    },
-    "params": {
-      "a0": {
-        "type": "*mut T1",
-        "is_unsafe_pointer": true
-      },
-      "a1": {
-        "type": "*mut T1",
-        "is_unsafe_pointer": true
-      }
-    },
-    "return_type": {
-      "type": "Vec<T1>"
-    }
-  },
-  "f38": {
-    "body": [
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(0..("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 0,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": ") as usize)"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".map(|_| "
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".collect::<Vec<bool>>()"
-            }
-          ]
-        }
-      }
-    ],
-    "params": {
-      "a0": {
-        "type": "usize"
-      },
-      "a1": {
-        "type": "bool"
-      }
-    },
-    "return_type": {
-      "type": "Vec<bool>"
-    }
-  },
-  "f39": {
-    "body": [
-      {
-        "method_call": {
-          "receiver": [
-            {
               "method_call": {
                 "receiver": [
                   {
@@ -1638,7 +1500,55 @@
                 ],
                 "body": [
                   {
-                    "text": ".map(|&x| x as i32)"
+                    "text": ".map(|x| "
+                  },
+                  {
+                    "method_call": {
+                      "receiver": [
+                        {
+                          "method_call": {
+                            "receiver": [
+                              {
+                                "generic": 1
+                              },
+                              {
+                                "text": "::try_from("
+                              },
+                              {
+                                "method_call": {
+                                  "receiver": [
+                                    {
+                                      "text": "x"
+                                    }
+                                  ],
+                                  "body": [
+                                    {
+                                      "text": ".clone()"
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "text": ")"
+                              }
+                            ],
+                            "body": [
+                              {
+                                "text": ".ok()"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "body": [
+                        {
+                          "text": ".unwrap()"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "text": ")"
                   }
                 ]
               }
@@ -1652,18 +1562,84 @@
         }
       }
     ],
+    "generics": {
+      "T1": [
+        "TryFrom<T2>"
+      ],
+      "T2": [
+        "Clone"
+      ]
+    },
     "params": {
       "a0": {
-        "type": "*mut u32",
+        "type": "*mut T2",
         "is_unsafe_pointer": true
       },
       "a1": {
-        "type": "*mut u32",
+        "type": "*mut T2",
         "is_unsafe_pointer": true
       }
     },
     "return_type": {
-      "type": "Vec<i32>"
+      "type": "Vec<T1>"
+    }
+  },
+  "f38": {
+    "body": [
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "method_call": {
+                "receiver": [
+                  {
+                    "text": "(0..("
+                  },
+                  {
+                    "placeholder": {
+                      "arg": 0,
+                      "access": "read"
+                    }
+                  },
+                  {
+                    "text": ") as usize)"
+                  }
+                ],
+                "body": [
+                  {
+                    "text": ".map(|_| "
+                  },
+                  {
+                    "placeholder": {
+                      "arg": 1,
+                      "access": "read"
+                    }
+                  },
+                  {
+                    "text": ")"
+                  }
+                ]
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".collect::<Vec<bool>>()"
+            }
+          ]
+        }
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "usize"
+      },
+      "a1": {
+        "type": "bool"
+      }
+    },
+    "return_type": {
+      "type": "Vec<bool>"
     }
   },
   "f4": {

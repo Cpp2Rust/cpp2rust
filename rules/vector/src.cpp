@@ -171,16 +171,13 @@ std::vector<T1> f36(const std::initializer_list<T1> &a0) {
   return std::vector<T1>(a0);
 }
 
-template <typename T1> std::vector<T1> f37(T1 *first, T1 *last) {
+template <typename T1, typename T2>
+std::vector<T1> f37(T2 *first, T2 *last) {
   return std::vector<T1>(first, last);
 }
 
 std::vector<bool> f38(std::size_t n, const bool &value) {
   return std::vector<bool>(n, value);
-}
-
-std::vector<int> f39(unsigned int *first, unsigned int *last) {
-  return std::vector<int>(first, last);
 }
 
 template <class T1, std::size_t T2> const T1 *f40(T1 const (&a0)[T2]) {

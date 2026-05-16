@@ -39,7 +39,9 @@ pub unsafe fn push_local_from_field_1(mut jpg: *mut JPEGData, mut cond: bool) {
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
-        .to_vec(),
+        .iter()
+        .map(|x| u8::try_from(x.clone()).ok().unwrap())
+        .collect(),
     );
 }
 pub unsafe fn shrink_through_ptr_2(mut comps: *mut Vec<Chunk>) {
@@ -61,7 +63,9 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
-        .to_vec(),
+        .iter()
+        .map(|x| u8::try_from(x.clone()).ok().unwrap())
+        .collect(),
     );
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {

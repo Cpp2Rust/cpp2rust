@@ -142,19 +142,15 @@ unsafe fn f36<T1>(a0: Vec<T1>) -> Vec<T1> {
     a0
 }
 
-unsafe fn f37<T1: Clone>(a0: *mut T1, a1: *mut T1) -> Vec<T1> {
-    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize).to_vec()
+unsafe fn f37<T1: TryFrom<T2>, T2: Clone>(a0: *mut T2, a1: *mut T2) -> Vec<T1> {
+    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
+        .iter()
+        .map(|x| T1::try_from(x.clone()).ok().unwrap())
+        .collect()
 }
 
 unsafe fn f38(a0: usize, a1: bool) -> Vec<bool> {
     (0..(a0) as usize).map(|_| a1).collect::<Vec<bool>>()
-}
-
-unsafe fn f39(a0: *mut u32, a1: *mut u32) -> Vec<i32> {
-    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
-        .iter()
-        .map(|&x| x as i32)
-        .collect()
 }
 
 unsafe fn f40<T1>(a0: Vec<T1>) -> *const T1 {
