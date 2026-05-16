@@ -436,25 +436,40 @@ bool Converter::ConvertLambdaVarDecl(clang::VarDecl *decl) {
   return false;
 }
 
+void ConvertVarDeclInitializer(clang::VarDecl *decl) {
+  if (decl->hasInit()) {
+    ConvertVarInit(decl->getType(), decl->getInit());
+  } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
+    StrCat(ConvertVarDefaultInit(decl->getType()));
+  }
+}
+
 void Converter::ConvertVarDecl(clang::VarDecl *decl) {
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
   }
-  auto qual_type = decl->getType();
   PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
                                               decl->isStaticLocal());
-  if (decl->hasInit()) {
-    StrCat(token::kAssign);
-    ConvertVarInit(qual_type, decl->getInit());
-  } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
-    StrCat(token::kAssign, ConvertVarDefaultInit(qual_type));
-  }
+  StrCat(token::kAssign);
+  ConvertVarDeclInitializer(decl);
   StrCat(token::kSemiColon);
 }
 
 void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
-  ConvertVarDecl(decl);
+  if (!ConvertVarDeclSkipInit(decl)) {
+    // Skip global variables declared extern
+    return;
+  }
+  PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
+                                              decl->isStaticLocal());
+  StrCat(token::kAssign);
+  StrCat(keyword_unsafe_);
+  {
+    PushBrace push(*this);
+    ConvertVarDeclInitializer(decl);
+  }
+  StrCat(token::kSemiColon);
 }
 
 bool Converter::VisitVarDecl(clang::VarDecl *decl) {
