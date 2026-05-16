@@ -10,10 +10,30 @@ pub fn unused_param_0(x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     (*x.borrow_mut());
 }
+#[derive(Default)]
+pub struct NonTrivial {
+    pub data: Value<Vec<i32>>,
+}
+impl Clone for NonTrivial {
+    fn clone(&self) -> Self {
+        let mut this = Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+        };
+        this
+    }
+}
+impl ByteRepr for NonTrivial {}
+pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
+    (*x.upgrade().deref()).clone();
+}
+pub fn unused_ptr_param_2(p: Ptr<NonTrivial>) {
+    let p: Value<Ptr<NonTrivial>> = Rc::new(RefCell::new(p));
+    (*(*p.borrow()).upgrade().deref()).clone();
+}
 thread_local!(
     pub static side_effect_counter: Value<i32> = Rc::new(RefCell::new(0));
 );
-pub fn bump_and_return_1() -> i32 {
+pub fn bump_and_return_3() -> i32 {
     (*side_effect_counter.with(Value::clone).borrow_mut()).prefix_inc();
     return (*side_effect_counter.with(Value::clone).borrow());
 }
@@ -53,10 +73,10 @@ fn main_0() -> i32 {
     }));
     assert!(((*w.borrow()) == 3));
     assert!(((*counter.borrow()) == 3));
-    ({ bump_and_return_1() });
+    ({ bump_and_return_3() });
     assert!(((*side_effect_counter.with(Value::clone).borrow()) == 1));
     let v: Value<i32> = Rc::new(RefCell::new({
-        ({ bump_and_return_1() });
+        ({ bump_and_return_3() });
         99
     }));
     assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
@@ -75,11 +95,11 @@ fn main_0() -> i32 {
     }));
     assert!(((*err.borrow()) == 7));
     assert!(((*chosen.borrow()) == 123));
-    bump_and_return_1;
+    bump_and_return_3;
     assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
-    (FnPtr::<fn() -> i32>::new(bump_and_return_1));
+    (FnPtr::<fn() -> i32>::new(bump_and_return_3));
     assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
-    ((FnPtr::<fn() -> i32>::new(bump_and_return_1)).cast::<fn() -> i32>(None));
+    ((FnPtr::<fn() -> i32>::new(bump_and_return_3)).cast::<fn() -> i32>(None));
     assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
@@ -93,5 +113,14 @@ fn main_0() -> i32 {
     (*(*h.borrow()).field.borrow_mut());
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     (*(*(*hp.borrow()).upgrade().deref()).field.borrow_mut());
+    let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
+    ({
+        let _x: Ptr<NonTrivial> = nt.as_pointer();
+        unused_ref_param_1(_x)
+    });
+    ({
+        let _p: Ptr<NonTrivial> = (nt.as_pointer());
+        unused_ptr_param_2(_p)
+    });
     return 0;
 }
