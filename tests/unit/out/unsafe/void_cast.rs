@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub unsafe fn unused_param_0(mut x: i32) {
     x;
 }
-pub static mut side_effect_counter: i32 = 0;
+pub static mut side_effect_counter: i32 = unsafe { 0 };
 pub unsafe fn bump_and_return_1() -> i32 {
     side_effect_counter.prefix_inc();
     return side_effect_counter;

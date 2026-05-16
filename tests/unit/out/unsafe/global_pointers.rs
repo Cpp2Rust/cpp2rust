@@ -12,25 +12,31 @@ pub struct Entry {
     pub name: *const u8,
     pub p: *mut i32,
 }
-pub static mut single_entry: Entry = Entry {
-    name: b"alone\0".as_ptr(),
-    p: std::ptr::null_mut(),
+pub static mut single_entry: Entry = unsafe {
+    Entry {
+        name: b"alone\0".as_ptr(),
+        p: std::ptr::null_mut(),
+    }
 };
-pub static mut entries: [Entry; 2] = [
-    Entry {
-        name: b"first\0".as_ptr(),
-        p: std::ptr::null_mut(),
-    },
-    Entry {
-        name: b"second\0".as_ptr(),
-        p: std::ptr::null_mut(),
-    },
-];
-pub static mut arr_of_pointers: [*mut u8; 3] = [
-    std::ptr::null_mut(),
-    std::ptr::null_mut(),
-    std::ptr::null_mut(),
-];
+pub static mut entries: [Entry; 2] = unsafe {
+    [
+        Entry {
+            name: b"first\0".as_ptr(),
+            p: std::ptr::null_mut(),
+        },
+        Entry {
+            name: b"second\0".as_ptr(),
+            p: std::ptr::null_mut(),
+        },
+    ]
+};
+pub static mut arr_of_pointers: [*mut u8; 3] = unsafe {
+    [
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+    ]
+};
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

@@ -58,49 +58,9 @@ impl Default for Foo {
         }
     }
 }
-pub static mut static_fn: Option<unsafe fn(i32) -> i32> = None;
-pub static mut static_outer: Outer = Outer {
-    p1: std::ptr::null_mut(),
-    p2: std::ptr::null(),
-    arr: [std::ptr::null_mut(); 3],
-    cp: std::ptr::null(),
-    pp: std::ptr::null_mut(),
-    inner: Inner {
-        v: 0_i32,
-        name: std::ptr::null(),
-    },
-    x: 0_i32,
-    fn_: None,
-};
-pub static mut static_inner_array: [Inner; 2] = [Inner {
-    v: 0_i32,
-    name: std::ptr::null(),
-}; 2];
-pub static mut static_foo: Foo = Foo {
-    s1: b"hello\0".as_ptr(),
-    s2: std::ptr::null(),
-    fn1: None,
-    fn2: None,
-    n: 42,
-};
-pub static mut static_foo_array: [Foo; 2] = [
-    Foo {
-        s1: b"first\0".as_ptr(),
-        s2: std::ptr::null(),
-        fn1: None,
-        fn2: None,
-        n: 1,
-    },
-    Foo {
-        s1: b"second\0".as_ptr(),
-        s2: std::ptr::null(),
-        fn1: None,
-        fn2: None,
-        n: 2,
-    },
-];
-pub unsafe fn check_local_static_0() {
-    static mut local_outer: Outer = Outer {
+pub static mut static_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };
+pub static mut static_outer: Outer = unsafe {
+    Outer {
         p1: std::ptr::null_mut(),
         p2: std::ptr::null(),
         arr: [std::ptr::null_mut(); 3],
@@ -112,9 +72,59 @@ pub unsafe fn check_local_static_0() {
         },
         x: 0_i32,
         fn_: None,
+    }
+};
+pub static mut static_inner_array: [Inner; 2] = unsafe {
+    [Inner {
+        v: 0_i32,
+        name: std::ptr::null(),
+    }; 2]
+};
+pub static mut static_foo: Foo = unsafe {
+    Foo {
+        s1: b"hello\0".as_ptr(),
+        s2: std::ptr::null(),
+        fn1: None,
+        fn2: None,
+        n: 42,
+    }
+};
+pub static mut static_foo_array: [Foo; 2] = unsafe {
+    [
+        Foo {
+            s1: b"first\0".as_ptr(),
+            s2: std::ptr::null(),
+            fn1: None,
+            fn2: None,
+            n: 1,
+        },
+        Foo {
+            s1: b"second\0".as_ptr(),
+            s2: std::ptr::null(),
+            fn1: None,
+            fn2: None,
+            n: 2,
+        },
+    ]
+};
+pub unsafe fn check_local_static_0() {
+    static mut local_outer: Outer = unsafe {
+        Outer {
+            p1: std::ptr::null_mut(),
+            p2: std::ptr::null(),
+            arr: [std::ptr::null_mut(); 3],
+            cp: std::ptr::null(),
+            pp: std::ptr::null_mut(),
+            inner: Inner {
+                v: 0_i32,
+                name: std::ptr::null(),
+            },
+            x: 0_i32,
+            fn_: None,
+        }
     };;
-    static mut local_fn: Option<unsafe fn(i32) -> i32> = None;;
-    static mut local_p: *mut i32 = std::ptr::null_mut();;
+    static mut local_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };;
+    static mut local_p: *mut i32 = unsafe { std::ptr::null_mut() };;
     assert!((local_outer.p1).is_null());
     assert!((local_outer.fn_).is_none());
     assert!((local_fn).is_none());

@@ -72,11 +72,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items: [*mut u8; 3] = [
-        b"a\0".as_ptr().cast_mut(),
-        b"b\0".as_ptr().cast_mut(),
-        b"c\0".as_ptr().cast_mut(),
-    ];;
+    static mut items: [*mut u8; 3] = unsafe {
+        [
+            b"a\0".as_ptr().cast_mut(),
+            b"b\0".as_ptr().cast_mut(),
+            b"c\0".as_ptr().cast_mut(),
+        ]
+    };;
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice::C_LIST;
     p_list.index = 0;

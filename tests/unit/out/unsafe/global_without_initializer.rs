@@ -11,9 +11,9 @@ use std::rc::Rc;
 pub struct S {
     pub a: i32,
 }
-pub static mut s: *mut S = std::ptr::null_mut();
-pub static mut file: *mut ::std::fs::File = std::ptr::null_mut();
-pub static mut size: u64 = 0_u64;
+pub static mut s: *mut S = unsafe { std::ptr::null_mut() };
+pub static mut file: *mut ::std::fs::File = unsafe { std::ptr::null_mut() };
+pub static mut size: u64 = unsafe { 0_u64 };
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

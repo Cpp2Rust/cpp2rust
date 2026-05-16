@@ -23,7 +23,7 @@ impl From<i32> for Code {
         }
     }
 }
-pub static mut side_effect: i32 = 0;
+pub static mut side_effect: i32 = unsafe { 0 };
 pub unsafe fn observe_0(mut v: i32) -> i32 {
     side_effect.prefix_inc();
     return v;

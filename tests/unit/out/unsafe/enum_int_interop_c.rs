@@ -66,26 +66,28 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color: Color = Color::GREEN;
-pub static mut global_opt: Option = Option::OPT_B;
-pub static mut global_tag: Tag = Tag::TAG_TWO;
-pub static mut entries: [Entry; 3] = [
-    Entry {
-        name: b"first\0".as_ptr().cast_mut().cast_const(),
-        color: Color::RED,
-        opt: Option::OPT_NONE,
-    },
-    Entry {
-        name: b"second\0".as_ptr().cast_mut().cast_const(),
-        color: Color::GREEN,
-        opt: Option::OPT_A,
-    },
-    Entry {
-        name: b"third\0".as_ptr().cast_mut().cast_const(),
-        color: Color::BLUE,
-        opt: Option::OPT_C,
-    },
-];
+pub static mut global_color: Color = unsafe { Color::GREEN };
+pub static mut global_opt: Option = unsafe { Option::OPT_B };
+pub static mut global_tag: Tag = unsafe { Tag::TAG_TWO };
+pub static mut entries: [Entry; 3] = unsafe {
+    [
+        Entry {
+            name: b"first\0".as_ptr().cast_mut().cast_const(),
+            color: Color::RED,
+            opt: Option::OPT_NONE,
+        },
+        Entry {
+            name: b"second\0".as_ptr().cast_mut().cast_const(),
+            color: Color::GREEN,
+            opt: Option::OPT_A,
+        },
+        Entry {
+            name: b"third\0".as_ptr().cast_mut().cast_const(),
+            color: Color::BLUE,
+            opt: Option::OPT_C,
+        },
+    ]
+};
 pub unsafe fn as_int_0(mut c: Color) -> i32 {
     return (c as i32);
 }

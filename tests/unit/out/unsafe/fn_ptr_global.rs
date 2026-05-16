@@ -12,7 +12,7 @@ pub unsafe fn double_it_0(mut x: i32) -> i32 {
 pub unsafe fn triple_it_1(mut x: i32) -> i32 {
     return ((x) * (3));
 }
-pub static mut g_op: Option<unsafe fn(i32) -> i32> = None;
+pub static mut g_op: Option<unsafe fn(i32) -> i32> = unsafe { None };
 pub unsafe fn set_op_2(mut fn_: Option<unsafe fn(i32) -> i32>) {
     g_op = fn_;
 }
