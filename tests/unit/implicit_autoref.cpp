@@ -5,6 +5,8 @@ struct Holder {
   std::vector<int> v;
 };
 
+static void write_through(int *p) { *p = 42; }
+
 int main() {
   std::vector<int> v;
   v.push_back(10);
@@ -25,5 +27,8 @@ int main() {
   assert((*p)[1] == 30);
   assert(b == 40);
   assert((*hp).v[1] == 60);
+
+  write_through(&p->at(0));
+  assert((*p)[0] == 42);
   return 0;
 }

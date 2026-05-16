@@ -19,6 +19,10 @@ impl Clone for Holder {
     }
 }
 impl ByteRepr for Holder {}
+pub fn write_through_0(p: Ptr<i32>) {
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
+    (*p.borrow()).write(42);
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -60,6 +64,17 @@ fn main_0() -> i32 {
             .offset(1_u64 as isize)
             .read())
             == 60)
+    );
+    ({
+        let _p: Ptr<i32> =
+            (((*p.borrow()).to_strong().as_pointer() as Ptr<i32>).offset(0_u64 as isize));
+        write_through_0(_p)
+    });
+    assert!(
+        (((((*p.borrow()).to_strong().as_pointer()) as Ptr<i32>)
+            .offset(0_u64 as isize)
+            .read())
+            == 42)
     );
     return 0;
 }

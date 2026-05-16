@@ -11,6 +11,9 @@ use std::rc::Rc;
 pub struct Holder {
     pub v: Vec<i32>,
 }
+pub unsafe fn write_through_0(mut p: *mut i32) {
+    (*p) = 42;
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -33,5 +36,10 @@ unsafe fn main_0() -> i32 {
     assert!((((&mut (*p))[(1_u64) as usize]) == (30)));
     assert!(((b) == (40)));
     assert!((((&mut (*hp)).v[(1_u64) as usize]) == (60)));
+    (unsafe {
+        let _p: *mut i32 = (&mut (&mut (*p))[0_u64 as usize]);
+        write_through_0(_p)
+    });
+    assert!((((&mut (*p))[(0_u64) as usize]) == (42)));
     return 0;
 }
