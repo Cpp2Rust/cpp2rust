@@ -15,6 +15,8 @@
 
 namespace cpp2rust::TranslationRule {
 
+inline constexpr unsigned kMaxGenerics = 9;
+
 struct TextFragment {
   std::string text;
 
@@ -69,6 +71,7 @@ struct ExprRule {
   bool multi_statement = false;
 
   void dump() const;
+  void validate(const std::string &name) const;
 };
 
 struct TypeRule {

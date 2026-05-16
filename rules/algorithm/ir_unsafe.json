@@ -419,9 +419,6 @@
         }
       }
     ],
-    "generics": {
-      "T1": []
-    },
     "multi_statement": true,
     "params": {
       "a0": {

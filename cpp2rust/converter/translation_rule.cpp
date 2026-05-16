@@ -16,6 +16,21 @@ namespace cpp2rust::TranslationRule {
 
 namespace {
 
+struct GenericPlaceholders {
+  char storage[kMaxGenerics][3]{};
+
+  constexpr GenericPlaceholders() {
+    for (unsigned i = 0; i < kMaxGenerics; ++i) {
+      storage[i][0] = 'T';
+      storage[i][1] = static_cast<char>('1' + i);
+      storage[i][2] = '\0';
+    }
+  }
+};
+static_assert(kMaxGenerics <= 9,
+              "GenericPlaceholders assumes single-digit names");
+constexpr GenericPlaceholders kGenericPlaceholders{};
+
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
   if (auto ty = obj.getString("type"))
@@ -299,6 +314,27 @@ void ExprRule::dump() const {
   }
 }
 
+void ExprRule::validate(const std::string &name) const {
+  if (src.empty()) {
+    llvm::errs() << name << '\n';
+    dump();
+    assert(0 && "Expr rule loaded from IR but has no src");
+  }
+
+  assert(generics.size() <= kMaxGenerics &&
+         "rule declares more generics than kMaxGenerics");
+  for (unsigned i = 0, e = generics.size(); i < e; ++i) {
+    const char *placeholder = kGenericPlaceholders.storage[i];
+    if (src.find(placeholder) == std::string::npos) {
+      llvm::errs() << name << '\n';
+      dump();
+      llvm::errs() << "generic " << placeholder
+                   << " declared but missing from src: " << src << '\n';
+      assert(0 && "Expr rule declares a generic absent from its src");
+    }
+  }
+}
+
 void GenericFragment::dump() const { log() << "  generic: " << n << '\n'; }
 
 void TypeInfo::dump() const {
@@ -335,11 +371,7 @@ std::pair<ExprRules, TypeRules> Load(const std::filesystem::path &path,
   LoadIrSrc(exprs, types, dir / "ir_src.json");
 
   for (auto &[name, rule] : exprs) {
-    if (rule.src.empty()) {
-      llvm::errs() << name << '\n';
-      rule.dump();
-      assert(0 && "Expr rule loaded from IR but has no src");
-    }
+    rule.validate(name);
   }
   for (auto &[name, rule] : types) {
     if (rule.src.empty()) {

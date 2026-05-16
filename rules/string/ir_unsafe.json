@@ -1210,19 +1210,16 @@
         "text": " as usize]\n    }"
       }
     ],
-    "generics": {
-      "T1": []
-    },
     "params": {
       "a0": {
-        "type": "&mut Vec<T1>"
+        "type": "&mut Vec<u8>"
       },
       "a1": {
         "type": "usize"
       }
     },
     "return_type": {
-      "type": "*mut T1",
+      "type": "*mut u8",
       "is_unsafe_pointer": true
     }
   },

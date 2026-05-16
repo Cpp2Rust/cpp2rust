@@ -146,7 +146,7 @@ unsafe fn f25(a0: &mut Vec<u8>) {
     a0.shrink_to_fit()
 }
 
-unsafe fn f26<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
+unsafe fn f26(a0: &mut Vec<u8>, a1: usize) -> *mut u8 {
     if a1 as usize >= a0.len() - 1 {
         panic!("out of bounds access")
     } else {
