@@ -45,7 +45,11 @@ Access ParseAccessJSON(llvm::StringRef value) {
 PlaceholderFragment
 ParsePlaceholderFragmentJSON(const llvm::json::Object &obj) {
   auto access = obj.getString("access");
-  return {(unsigned)*obj.getInteger("arg"), ParseAccessJSON(*access)};
+  return {
+      (unsigned)*obj.getInteger("arg"),
+      ParseAccessJSON(*access),
+      obj.getBoolean("is_index_base").value_or(false),
+  };
 }
 
 std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr);

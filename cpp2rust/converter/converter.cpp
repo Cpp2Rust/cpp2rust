@@ -3700,6 +3700,11 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.needs_object_receiver()) {
     Buffer buf(*this);
+    PushExplicitAutoref autoref(
+        *this,
+        ph_ctx.is_index_base
+            ? std::optional(ph_ctx.access == TranslationRule::Access::kWrite)
+            : std::nullopt);
     ConvertDeref(arg);
     return std::move(buf).str();
   }
@@ -3774,6 +3779,7 @@ std::string Converter::ConvertIRFragment(
           .maps_to_rust_ptr = Mapper::MapsToPointer(arg->getType()),
           .declared_in_rule_as_rust_ptr =
               Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
+          .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
     } else if (auto *mc =

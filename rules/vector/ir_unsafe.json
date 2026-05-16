@@ -2775,7 +2775,8 @@
       {
         "placeholder": {
           "arg": 0,
-          "access": "write"
+          "access": "write",
+          "is_index_base": true
         }
       },
       {

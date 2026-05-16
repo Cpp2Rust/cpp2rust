@@ -26,6 +26,7 @@ enum class Access { kRead, kWrite, kMove };
 struct PlaceholderFragment {
   unsigned n; // "a0", "a1", ...
   Access access;
+  bool is_index_base = false;
 
   void dump() const;
 };

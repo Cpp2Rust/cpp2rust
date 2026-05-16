@@ -10,10 +10,6 @@ pub struct SemanticAnalysis;
 
 impl SemanticAnalysis {
     pub fn run(ir: RulesIR) -> RulesIR {
-        if !ir.has_unknowns {
-            return ir;
-        }
-
         let args = build_rustc_args(&ir.crate_root);
         let mut resolver = MethodResolver { ir };
 
@@ -131,7 +127,6 @@ impl MethodResolver {
     fn resolve_fn_decl<'tcx>(&mut self, tcx: rustc_middle::ty::TyCtxt<'tcx>, f: &FnDecl<'tcx>) {
         if let Some(file_ir) = self.ir.all_ir.get_mut(&f.source_file)
             && let Some(RuleIr::Fn(fn_ir)) = file_ir.get_mut(&f.name)
-            && fn_ir.has_unknowns()
         {
             f.resolve_unknowns(tcx, fn_ir);
         }
@@ -218,11 +213,29 @@ struct AstVisitor<'a, 'tcx> {
 }
 
 impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
+    fn visit_expr_as_index_base(&mut self, expr: &'tcx rustc_hir::Expr<'tcx>, context: Access) {
+        if let Some(param) = self.expr_as_decl_ref(expr) {
+            self.fn_ir
+                .resolve_next_param(&param, &mut self.visited, |p| {
+                    if p.access == Access::Unknown {
+                        p.access = context;
+                    }
+                    p.is_index_base = true;
+                });
+            return;
+        }
+        self.visit_expr(expr, context);
+    }
+
     fn visit_expr(&mut self, expr: &'tcx rustc_hir::Expr<'tcx>, context: Access) {
         // Reached an argument used inside the rule body
         if let Some(param) = self.expr_as_decl_ref(expr) {
             self.fn_ir
-                .resolve_next_param(&param, context, &mut self.visited);
+                .resolve_next_param(&param, &mut self.visited, |p| {
+                    if p.access == Access::Unknown {
+                        p.access = context;
+                    }
+                });
             return;
         }
 
@@ -311,7 +324,11 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             | rustc_hir::ExprKind::Repeat(e, _) => {
                 self.visit_expr(e, context);
             }
-            rustc_hir::ExprKind::Index(a, b, _) | rustc_hir::ExprKind::Binary(_, a, b) => {
+            rustc_hir::ExprKind::Index(base, idx, _) => {
+                self.visit_expr_as_index_base(base, context);
+                self.visit_expr(idx, context);
+            }
+            rustc_hir::ExprKind::Binary(_, a, b) => {
                 self.visit_expr(a, context);
                 self.visit_expr(b, context);
             }

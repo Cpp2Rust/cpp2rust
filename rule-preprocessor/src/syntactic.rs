@@ -44,7 +44,6 @@ impl SyntacticAnalysis {
     pub fn run(crate_root: &Path) -> RulesIR {
         let rule_files = Self::collect_rule_files(crate_root);
         let mut all_ir = HashMap::new();
-        let mut has_unknowns = false;
 
         for rule_file in &rule_files {
             let source = std::fs::read_to_string(rule_file).unwrap();
@@ -56,10 +55,6 @@ impl SyntacticAnalysis {
                 rule_file.display()
             );
 
-            has_unknowns |= file_ir.values().any(|r| match r {
-                RuleIr::Fn(f) => f.has_unknowns(),
-                RuleIr::Type(_) => false,
-            });
             let canonical = rule_file
                 .canonicalize()
                 .unwrap_or_else(|_| rule_file.clone())
@@ -70,7 +65,6 @@ impl SyntacticAnalysis {
 
         RulesIR {
             all_ir,
-            has_unknowns,
             crate_root: crate_root.to_path_buf(),
         }
     }
@@ -196,6 +190,7 @@ impl<'a> FragmentCtx<'a> {
                     placeholder: PlaceholderInner {
                         arg: token.text()[1..].parse().unwrap_or(0),
                         access,
+                        is_index_base: false,
                     },
                 });
                 return;

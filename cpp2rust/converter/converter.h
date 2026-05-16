@@ -185,6 +185,7 @@ public:
     bool is_cpp_ptr;
     bool maps_to_rust_ptr;
     bool declared_in_rule_as_rust_ptr;
+    bool is_index_base;
 
     bool needs_materialization() const {
       return materialize_ctx && materialize_idx >= 0 &&

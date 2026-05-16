@@ -10,7 +10,8 @@
             {
               "placeholder": {
                 "arg": 0,
-                "access": "read"
+                "access": "read",
+                "is_index_base": true
               }
             },
             {
