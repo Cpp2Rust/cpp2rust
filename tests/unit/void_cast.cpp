@@ -1,6 +1,15 @@
 #include <cassert>
+#include <vector>
 
 void unused_param(int x) { (void)x; }
+
+struct NonTrivial {
+  std::vector<int> data;
+};
+
+void unused_ref_param(const NonTrivial &x) { (void)x; }
+
+void unused_ptr_param(const NonTrivial *p) { (void)(*p); }
 
 int side_effect_counter = 0;
 int bump_and_return() {
@@ -70,6 +79,10 @@ int main() {
   (void)(h.field);
   Holder *hp = &h;
   (void)(hp->field);
+
+  NonTrivial nt;
+  unused_ref_param(nt);
+  unused_ptr_param(&nt);
 
   return 0;
 }

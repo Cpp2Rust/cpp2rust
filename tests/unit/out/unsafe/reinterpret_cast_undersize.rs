@@ -15,6 +15,6 @@ unsafe fn main_0() -> i32 {
     let mut b: u8 = 66_u8;
     let mut p: *mut u32 = ((&mut b as *mut u8) as *mut u32);
     let mut val: u32 = (*p);
-    val;
+    &(val);
     return 0;
 }
