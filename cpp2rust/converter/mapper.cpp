@@ -9,6 +9,7 @@
 #include <llvm/Support/ThreadPool.h>
 
 #include <format>
+#include <optional>
 #include <regex>
 #include <unordered_map>
 #include <utility>
@@ -93,7 +94,7 @@ void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
 //   template_str   = "std::vector<T1>::vector()"
 //   instantiated   = "std::vector<int>::vector()"
 //   result         = { "int" }
-std::optional<std::vector<std::string>>
+std::optional<std::vector<std::optional<std::string>>>
 matchTemplate(const std::string &template_str,
               const std::string &instantiated) {
   auto matchLiteralAt = [&](const std::string &input_str, size_t pos,
@@ -220,7 +221,7 @@ matchTemplate(const std::string &template_str,
     return std::string::npos;
   };
 
-  std::vector<std::string> captured;
+  std::vector<std::optional<std::string>> captured;
 
   size_t ti = 0;
   size_t si = 0;
@@ -250,9 +251,9 @@ matchTemplate(const std::string &template_str,
 
       captured.resize(std::max(captured.size(), type_idx + 1));
       auto &repl = captured[type_idx];
-      if (!repl.empty()) {
+      if (repl.has_value()) {
         size_t end_pos = 0;
-        if (!matchLiteralAt(instantiated, si, repl, end_pos)) {
+        if (!matchLiteralAt(instantiated, si, *repl, end_pos)) {
           return std::nullopt;
         }
         si = end_pos;
@@ -338,7 +339,7 @@ matchTemplate(const std::string &template_str,
 //   types        = { {"i32"} }
 //   tgt_template = "Vec<T1>"
 //   result       = "Vec<i32>"
-std::string instantiateTgt(const std::vector<std::string> &types,
+std::string instantiateTgt(const std::vector<std::optional<std::string>> &types,
                            const std::string &tgt_template) {
   assert(types.size() <= 9);
   std::string instantiated_template = tgt_template;
@@ -351,7 +352,7 @@ std::string instantiateTgt(const std::vector<std::string> &types,
       ++pos;
       continue;
     }
-    auto &repl = types.at(instantiated_template[pos + 1] - '1');
+    const auto &repl = types.at(instantiated_template[pos + 1] - '1').value();
     instantiated_template.replace(pos, 2, repl);
     pos += repl.length();
   }
@@ -359,12 +360,12 @@ std::string instantiateTgt(const std::vector<std::string> &types,
 }
 
 template <typename T>
-std::pair<T *, std::vector<std::string>>
+std::pair<T *, std::vector<std::optional<std::string>>>
 search(std::unordered_multimap<std::string, T> &map, const std::string &txt,
        const std::string &key) {
   auto [it, end] = map.equal_range(key);
   T *rule = nullptr;
-  std::vector<std::string> subs;
+  std::vector<std::optional<std::string>> subs;
 
   for (; it != end; ++it) {
     auto &this_rule = it->second;
@@ -540,7 +541,9 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
     assert(0 && "Type is not present in types_");
   }
   for (auto &ty : subs) {
-    ty = mapTypeStringRecursive(ty);
+    if (ty) {
+      ty = mapTypeStringRecursive(*ty);
+    }
   }
   return instantiateTgt(subs, rule->type_info.type);
 }
@@ -608,7 +611,9 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
     return text;
   }
   for (auto &ty : subs) {
-    ty = mapTypeStringRecursive(ty);
+    if (ty) {
+      ty = mapTypeStringRecursive(*ty);
+    }
   }
   return instantiateTgt(subs, text);
 }
@@ -618,7 +623,9 @@ std::string Map(clang::QualType qual_type) {
   auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
   if (rule) {
     for (auto &ty : subs) {
-      ty = mapTypeStringRecursive(ty);
+      if (ty) {
+        ty = mapTypeStringRecursive(*ty);
+      }
     }
     return instantiateTgt(subs, rule->type_info.type);
   }
@@ -651,7 +658,9 @@ std::string GetParamType(const clang::Expr *expr, unsigned index) {
   auto expr_str = ToString(expr);
   auto [rule, subs] = search(exprs_, expr_str, GetExprMapKey(expr_str));
   for (auto &ty : subs) {
-    ty = mapTypeStringRecursive(ty);
+    if (ty) {
+      ty = mapTypeStringRecursive(*ty);
+    }
   }
   return instantiateTgt(subs, rule->params.at(index).type);
 }
