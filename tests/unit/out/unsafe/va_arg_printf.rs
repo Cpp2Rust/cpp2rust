@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn logf_impl_0(mut fmt: *const u8, mut ap: VaList) -> i32 {
-    fmt;
+    &(fmt);
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));
 }
 pub unsafe fn logf_1(mut fmt: *const u8, __args: &[VaArg]) -> i32 {
