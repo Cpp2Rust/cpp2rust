@@ -11,7 +11,6 @@ import difflib
 import os
 import re
 import shutil
-import tomli
 
 
 MODELS = ("refcount", "unsafe")
@@ -42,12 +41,6 @@ class TestExpectations:
             if models is None or models.strip() == "":
                 return True
             return model in re.split(r"\s*,\s*", models.strip())
-        os.path.join(os.path.dirname(__file__), "../../../../build/tmp/cargo-target")
-    )
-
-
-def cargo_env():
-    return dict(os.environ, CARGO_TARGET_DIR=os.path.abspath(shared_target_dir()))
 
         xfail_m = RE_XFAIL.search(text)
         xfail = xfail_m is not None and model in re.split(r"\s*,\s*", xfail_m.group(1))
@@ -199,18 +192,13 @@ class TestContext:
 
     def build_rust(self):
         exp = self.expectations
-        rust_version = read_rust_version()
         self.pkg_name = "test_" + re.sub(r"[^a-zA-Z0-9_]", "_", self.tmp_dir.name)
 
-        (self.tmp_dir / "rust-toolchain.toml").write_text(
-            f'[toolchain]\nchannel = "{rust_version}"\n'
-        )
         (self.tmp_dir / "Cargo.toml").write_text(f"""
 [package]
 name = "{self.pkg_name}"
 version = "0.1.0"
 edition = "2021"
-rust-version = "{rust_version}"
 
 [[bin]]
 name = "{self.pkg_name}"
@@ -221,7 +209,7 @@ libc = "0.2.169"
 libcc2rs = {{ path = "../../../libcc2rs" }}
 """)
 
-        cmd = ["cargo", "build", "--release", "--quiet"]
+        cmd = ["cargo", "+" + read_rust_version(), "build", "--release", "--quiet"]
         _, err, returncode = lit.util.executeCommand(
             cmd, str(self.tmp_dir), env=cargo_env()
         )
@@ -332,8 +320,15 @@ class Cpp2RustTest(TestFormat):
 
 
 def read_rust_version():
-    toolchain_path = Path(__file__).parent / "../../../../libcc2rs/rust-toolchain.toml"
-    return tomli.loads(toolchain_path.read_text())["toolchain"]["channel"]
+    toolchain_path = os.path.join(
+        os.path.dirname(__file__), "../../../../cmake/rust-toolchain.cmake"
+    )
+    with open(toolchain_path, "r") as f:
+        for line in f:
+            m = re.match(r'set\(RUST_STABLE_VERSION\s+"([^"]+)', line)
+            if m:
+                return m.group(1)
+    raise Exception("could not find rust version in " + toolchain_path)
 
 
 def shared_target_dir():
