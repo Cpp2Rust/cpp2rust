@@ -74,7 +74,6 @@ class TestContext:
     skip_run: bool = False
     build_dir: Optional[Path] = None
     generated: Optional[str] = None
-    pkg_name: Optional[str] = None
     cpp_bin: Optional[Path] = None
     rust_bin: Optional[Path] = None
     cpp_result: Optional[RunResult] = None
@@ -86,10 +85,10 @@ class TestContext:
         is_multi = is_multi_file_test(cc_input)
         model = test.getSourcePath().split("/")[-1]
         fname = cc_input.name if is_multi else cc_input.stem
-        tmp_dir = Path("tmp") / f"{fname}-{model}"
+        tmp_dir = get_temp_dir() / f"{fname}-{model}"
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
-        (tmp_dir / "src").mkdir(parents=True)
+        tmp_dir.mkdir(parents=True)
 
         return cls(
             cc_input=cc_input,
@@ -98,7 +97,7 @@ class TestContext:
             filepath=cc_input if is_multi else cc_input.parent,
             model=model,
             tmp_dir=tmp_dir,
-            rs_file=tmp_dir / "src" / "main.rs",
+            rs_file=tmp_dir / "main.rs",
             expectations=TestExpectations.parse(load_source_text(cc_input), model),
             replace_expected=bool(os.environ.get("REPLACE_EXPECTED", False)),
             skip_run=bool(os.environ.get("SKIP_RUN", False)),
@@ -178,6 +177,7 @@ class TestContext:
             self.cpp_bin = self.build_dir / "app"
             return None
 
+        ## FIXME: these must use the detected/chosen compiler in cmake
         cc = (
             os.environ.get("CC", "clang")
             if self.cc_input.suffix == ".c"
@@ -192,27 +192,23 @@ class TestContext:
 
     def build_rust(self):
         exp = self.expectations
-        self.pkg_name = "test_" + re.sub(r"[^a-zA-Z0-9_]", "_", self.tmp_dir.name)
 
-        (self.tmp_dir / "Cargo.toml").write_text(f"""
-[package]
-name = "{self.pkg_name}"
-version = "0.1.0"
-edition = "2021"
-
-[[bin]]
-name = "{self.pkg_name}"
-path = "src/main.rs"
-
-[dependencies]
-libc = "0.2.169"
-libcc2rs = {{ path = "../../../libcc2rs" }}
-""")
-
-        cmd = ["cargo", "+" + read_rust_version(), "build", "--release", "--quiet"]
-        _, err, returncode = lit.util.executeCommand(
-            cmd, str(self.tmp_dir), env=cargo_env()
-        )
+        parent = Path(__file__).resolve().parent.parent.parent.parent.parent
+        cc2rs_dir = parent / "libcc2rs" / "target" / "release"
+        libc_dir = parent / "libc-dep" / "target" / "release"
+        cmd = [
+        "rustc",
+        "+" + read_rust_version(),
+        "main.rs",
+        "-C", "opt-level=3", # Equivalent to --release
+        "-C", "strip=symbols",
+        "--out-dir", str(self.tmp_dir),
+        "-L", f"dependency={cc2rs_dir / 'deps'}",
+        "--extern", f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
+        ]
+        if self.model == "unsafe":
+            cmd += ["--extern", f"libc={libc_dir / 'liblibc_dep.rlib'}"]
+        _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
             if returncode != 0:
                 return (lit.Test.XFAIL, "")
@@ -220,7 +216,7 @@ libcc2rs = {{ path = "../../../libcc2rs" }}
         if returncode != 0:
             return (exp.fail_code, "cargo failed\n" + err)
 
-        self.rust_bin = shared_target_dir() / "release" / self.pkg_name
+        self.rust_bin = self.tmp_dir / "main"
         return None
 
     def run_cpp(self):
@@ -331,12 +327,11 @@ def read_rust_version():
     raise Exception("could not find rust version in " + toolchain_path)
 
 
-def shared_target_dir():
-    return (Path(__file__).parent / "../../../../build/tmp/cargo-target").resolve()
-
-
-def cargo_env():
-    return dict(os.environ, CARGO_TARGET_DIR=str(shared_target_dir()))
+def get_temp_dir():
+    shm = Path("/dev/shm")
+    if shm.exists() and os.access(shm, os.W_OK):
+        return shm / "cpp2rust-tests"
+    return Path("/tmp/cpp2rust-tests")
 
 
 def is_multi_file_test(p):
