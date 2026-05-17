@@ -77,6 +77,7 @@ add_custom_command(
 )
 
 add_subdirectory(cpp2rust)
+add_subdirectory(libc-dep)
 add_subdirectory(libcc2rs)
 add_subdirectory(tests)
 
