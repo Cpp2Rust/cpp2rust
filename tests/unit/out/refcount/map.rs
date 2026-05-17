@@ -274,7 +274,7 @@ fn main_0() -> i32 {
     );
     RefcountMapIter::erase(
         ((r).clone() as Ptr<BTreeMap<i16, Value<u32>>>),
-        &(*it4.borrow()),
+        &(*it4.borrow()).clone(),
     );
     assert!(((*r.upgrade().deref()).len() as u64 == 3_u64));
     assert!(
