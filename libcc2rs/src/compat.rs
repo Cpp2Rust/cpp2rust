@@ -3,7 +3,7 @@
 
 use std::ffi::c_void;
 
-extern "C" {
+unsafe extern "C" {
     #[cfg(target_os = "linux")]
     #[link_name = "malloc_usable_size"]
     fn platform_malloc_size(ptr: *mut c_void) -> usize;
@@ -21,10 +21,10 @@ extern "C" {
 pub unsafe fn malloc_usable_size(ptr: *mut c_void) -> usize {
     #[cfg(target_os = "linux")]
     {
-        platform_malloc_size(ptr)
+        unsafe { platform_malloc_size(ptr) }
     }
     #[cfg(target_os = "macos")]
     {
-        platform_malloc_size(ptr as *const c_void)
+        unsafe { platform_malloc_size(ptr as *const c_void) }
     }
 }

@@ -77,7 +77,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::HeapSingle(w) => write!(f, "HeapSingle({:?})", w.as_ptr()),
             PtrKind::StackArray(w) => write!(f, "StackArray({:?})", w.as_ptr()),
             PtrKind::HeapArray(w) => write!(f, "HeapArray({:?})", w.as_ptr()),
-            PtrKind::Reinterpreted(ref data) => {
+            PtrKind::Reinterpreted(data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.address())
             }
         }
@@ -88,12 +88,12 @@ impl<T> Clone for PtrKind<T> {
     fn clone(&self) -> Self {
         match self {
             PtrKind::Null => PtrKind::Null,
-            PtrKind::Vec(ref weak) => PtrKind::Vec(weak.clone()),
-            PtrKind::StackSingle(ref weak) => PtrKind::StackSingle(weak.clone()),
-            PtrKind::HeapSingle(ref weak) => PtrKind::HeapSingle(weak.clone()),
-            PtrKind::StackArray(ref weak) => PtrKind::StackArray(weak.clone()),
-            PtrKind::HeapArray(ref weak) => PtrKind::HeapArray(weak.clone()),
-            PtrKind::Reinterpreted(ref data) => PtrKind::Reinterpreted(Rc::clone(data)),
+            PtrKind::Vec(weak) => PtrKind::Vec(weak.clone()),
+            PtrKind::StackSingle(weak) => PtrKind::StackSingle(weak.clone()),
+            PtrKind::HeapSingle(weak) => PtrKind::HeapSingle(weak.clone()),
+            PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
+            PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
+            PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
         }
     }
 }
@@ -105,7 +105,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
-            PtrKind::Reinterpreted(ref data) => data.address(),
+            PtrKind::Reinterpreted(data) => data.address(),
         }
     }
 }
@@ -346,7 +346,7 @@ impl<T> Ptr<T> {
                 rc: weak.upgrade().expect("ub: dangling pointer"),
                 offset: self.offset,
             },
-            PtrKind::Reinterpreted(ref data) => StrongPtr::Reinterpreted {
+            PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
                 alloc: Rc::clone(data),
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
@@ -416,7 +416,7 @@ impl<T> Ptr<T> {
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
                 self.byte_offset(),
             ),
-            PtrKind::Reinterpreted(ref data) => (Rc::clone(data), self.offset),
+            PtrKind::Reinterpreted(data) => (Rc::clone(data), self.offset),
         };
 
         Ptr {
@@ -879,7 +879,7 @@ impl<T> fmt::Debug for Ptr<T> {
                 .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize)
                 .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
-            PtrKind::Reinterpreted(ref data) => data.address().wrapping_add(self.offset),
+            PtrKind::Reinterpreted(data) => data.address().wrapping_add(self.offset),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -1191,7 +1191,7 @@ impl<T: ?Sized> PtrDyn<T> {
     pub fn upgrade(&self) -> StrongPtrDyn<T> {
         match &self.kind {
             PtrKindDyn::Null => panic!("ub: dereference of null pointer"),
-            PtrKindDyn::StackSingle(ref weak) => {
+            PtrKindDyn::StackSingle(weak) => {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
                 StrongPtrDyn {
                     rc: weak.upgrade().expect("ub: dangling pointer"),

@@ -3,7 +3,7 @@
 
 use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
-use syn::{parse_macro_input, Expr, Lifetime, Token};
+use syn::{Expr, Lifetime, Token, parse_macro_input};
 
 use crate::state_machine::{Arm, GotoStateMachine, StateMachine};
 

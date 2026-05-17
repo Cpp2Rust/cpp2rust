@@ -221,7 +221,7 @@ class TestContext:
             "--extern",
             f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
             "--extern",
-            f"libc={libc_rlib}"
+            f"libc={libc_rlib}",
         ]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
@@ -248,10 +248,9 @@ class TestContext:
 
         if exp.should_panic:
             err = str(self.rust_result.stderr)
-            if (
-                not re.search(r"thread 'main' \(\d+\) panicked at", err)
-                or self.rust_result.returncode not in [-6, 101]
-            ):
+            if not re.search(
+                r"thread 'main' \(\d+\) panicked at", err
+            ) or self.rust_result.returncode not in [-6, 101]:
                 return (exp.fail_code, "expected panic\n" + err)
             return self.success_result()
 
