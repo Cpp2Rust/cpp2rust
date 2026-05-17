@@ -1,5 +1,5 @@
 set(LIBC_DEP_DIR ${CMAKE_SOURCE_DIR}/libc-dep)
-set(LIBC_DEP_OUTPUT ${LIBCC2RC_LIB_DIR}/target/release/libc_dep.rlib)
+set(LIBC_DEP_OUTPUT ${LIBC_DEP_DIR}/target/release/libc_dep.rlib)
 
 add_custom_command(
     OUTPUT ${LIBC_DEP_OUTPUT}
