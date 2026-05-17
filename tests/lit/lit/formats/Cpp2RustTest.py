@@ -229,7 +229,7 @@ class TestContext:
                 return (lit.Test.XFAIL, "")
             return (exp.fail_code, "expected no-compile but compiled successfully")
         if returncode != 0:
-            return (exp.fail_code, "cargo failed\n" + err)
+            return (exp.fail_code, "rustc failed\n" + err)
 
         self.rust_bin = self.tmp_dir / "main"
         return None
