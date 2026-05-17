@@ -195,7 +195,13 @@ class TestContext:
 
         parent = Path(__file__).resolve().parent.parent.parent.parent.parent
         cc2rs_dir = parent / "libcc2rs" / "target" / "release"
-        libc_dir = parent / "libc-dep" / "target" / "release"
+        # pick the most recently compiled libc
+        libc_rlib = max(
+            (parent / "libc-dep" / "target" / "release" / "deps").glob(
+                "liblibc-*.rlib"
+            ),
+            key=lambda p: p.stat().st_mtime,
+        )
         cmd = [
             "rustc",
             "+" + read_rust_version(),
@@ -216,7 +222,7 @@ class TestContext:
             f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
         ]
         if self.model == "unsafe":
-            cmd += ["--extern", f"libc={libc_dir / 'liblibc_dep.rlib'}"]
+            cmd += ["--extern", f"libc={libc_rlib}"]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
             if returncode != 0:
