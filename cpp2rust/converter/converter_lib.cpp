@@ -539,7 +539,7 @@ GetTemplateArgs(clang::QualType qual_type, clang::Expr *expr) {
   if (auto pt = qual_type->getPointeeType(); !pt.isNull())
     qual_type = pt;
 
-  return GetTemplateArgs(qual_type, nullptr);
+  return GetTemplateArgs(qual_type);
 }
 
 clang::Expr *GetCallObject(clang::CallExpr *expr) {
