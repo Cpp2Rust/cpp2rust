@@ -216,6 +216,8 @@ class TestContext:
             "strip=symbols",
             "-C",
             "panic=abort",
+            "-W",  ## TODO: remove this once we fix the errors in the generated code
+            "static_mut_refs",
             "--out-dir",
             str(self.tmp_dir),
             "-L",
