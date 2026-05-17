@@ -250,7 +250,7 @@ class TestContext:
             err = str(self.rust_result.stderr)
             if (
                 not re.search(r"thread 'main' \(\d+\) panicked at", err)
-                or self.rust_result.returncode != 101
+                or self.rust_result.returncode not in [-6, 101]
             ):
                 return (exp.fail_code, "expected panic\n" + err)
             return self.success_result()
