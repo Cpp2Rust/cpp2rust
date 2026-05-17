@@ -220,9 +220,9 @@ class TestContext:
             f"dependency={cc2rs_dir / 'deps'}",
             "--extern",
             f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
+            "--extern",
+            f"libc={libc_rlib}"
         ]
-        if self.model == "unsafe":
-            cmd += ["--extern", f"libc={libc_rlib}"]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
             if returncode != 0:
