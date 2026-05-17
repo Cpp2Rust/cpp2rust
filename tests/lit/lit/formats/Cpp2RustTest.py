@@ -205,6 +205,8 @@ class TestContext:
         cmd = [
             "rustc",
             "+" + read_rust_version(),
+            "--edition",
+            "2024",
             "main.rs",
             "-A",
             "warnings",
