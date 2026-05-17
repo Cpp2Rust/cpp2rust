@@ -16,21 +16,6 @@ namespace cpp2rust::TranslationRule {
 
 namespace {
 
-struct GenericPlaceholders {
-  char storage[kMaxGenerics][3]{};
-
-  constexpr GenericPlaceholders() {
-    for (unsigned i = 0; i < kMaxGenerics; ++i) {
-      storage[i][0] = 'T';
-      storage[i][1] = static_cast<char>('1' + i);
-      storage[i][2] = '\0';
-    }
-  }
-};
-static_assert(kMaxGenerics <= 9,
-              "GenericPlaceholders assumes single-digit names");
-constexpr GenericPlaceholders kGenericPlaceholders{};
-
 TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   TypeInfo info;
   if (auto ty = obj.getString("type"))
@@ -318,6 +303,9 @@ void ExprRule::dump() const {
   }
 }
 
+std::array<const char *, kMaxGenerics> kGenericPlaceholders = {
+    "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"};
+
 void ExprRule::validate(const std::string &name) const {
   if (src.empty()) {
     llvm::errs() << name << '\n';
@@ -325,10 +313,8 @@ void ExprRule::validate(const std::string &name) const {
     assert(0 && "Expr rule loaded from IR but has no src");
   }
 
-  assert(generics.size() <= kMaxGenerics &&
-         "rule declares more generics than kMaxGenerics");
   for (unsigned i = 0, e = generics.size(); i < e; ++i) {
-    const char *placeholder = kGenericPlaceholders.storage[i];
+    const char *placeholder = kGenericPlaceholders[i];
     if (src.find(placeholder) == std::string::npos) {
       llvm::errs() << name << '\n';
       dump();
