@@ -21,5 +21,10 @@ int main() {
   assert(v3.size() == 3);
   assert(v3[0] == 1 && v3[1] == 2 && v3[2] == 3);
 
+  const uint32_t src1[3] = {1, 2, 3};
+  auto v4 = std::vector<uint32_t>(src1, std::end(src1));
+  assert(v4.size() == 3);
+  assert(v4[0] == 1 && v4[1] == 2 && v4[2] == 3);
+
   return 0;
 }

@@ -71,5 +71,23 @@ fn main_0() -> i32 {
             && (((v3.as_pointer() as Ptr<i32>).offset(1_u64 as isize).read()) == 2))
             && (((v3.as_pointer() as Ptr<i32>).offset(2_u64 as isize).read()) == 3)
     );
+    let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
+    let v4: Value<Vec<u32>> = Rc::new(RefCell::new({
+        let mut __a0 = (src1.as_pointer() as Ptr<u32>).clone();
+        let mut __out = Vec::with_capacity(
+            (src1.as_pointer() as Ptr<u32>).to_end().get_offset() - __a0.get_offset(),
+        );
+        while __a0 != (src1.as_pointer() as Ptr<u32>).to_end() {
+            __out.push(__a0.read());
+            __a0 += 1;
+        }
+        __out
+    }));
+    assert!(((*v4.borrow()).len() as u64 == 3_u64));
+    assert!(
+        ((((v4.as_pointer() as Ptr<u32>).offset(0_u64 as isize).read()) == 1_u32)
+            && (((v4.as_pointer() as Ptr<u32>).offset(1_u64 as isize).read()) == 2_u32))
+            && (((v4.as_pointer() as Ptr<u32>).offset(2_u64 as isize).read()) == 3_u32)
+    );
     return 0;
 }

@@ -49,5 +49,16 @@ unsafe fn main_0() -> i32 {
         (((v3[(0_u64) as usize]) == (1)) && ((v3[(1_u64) as usize]) == (2)))
             && ((v3[(2_u64) as usize]) == (3))
     );
+    let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
+    let mut v4: Vec<u32> = core::slice::from_raw_parts(
+        src1.as_ptr(),
+        (src1.as_ptr().add(src1.len())).offset_from(src1.as_ptr()) as usize,
+    )
+    .to_vec();
+    assert!(((v4.len() as u64) == (3_u64)));
+    assert!(
+        (((v4[(0_u64) as usize]) == (1_u32)) && ((v4[(1_u64) as usize]) == (2_u32)))
+            && ((v4[(2_u64) as usize]) == (3_u32))
+    );
     return 0;
 }

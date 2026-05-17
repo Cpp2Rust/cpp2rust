@@ -3686,6 +3686,11 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return std::move(buf).str();
   }
 
+  if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
+    return std::format("({} as {})", ConvertFreshPointer(arg),
+                       ph_ctx.param_type);
+  }
+
   if (ph_ctx.needs_materialization()) {
     auto materialized = ph_ctx.materialize_ctx->GetOrMaterialize(
         static_cast<unsigned>(ph_ctx.materialize_idx),
