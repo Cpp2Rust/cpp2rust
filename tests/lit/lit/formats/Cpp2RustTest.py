@@ -197,14 +197,23 @@ class TestContext:
         cc2rs_dir = parent / "libcc2rs" / "target" / "release"
         libc_dir = parent / "libc-dep" / "target" / "release"
         cmd = [
-        "rustc",
-        "+" + read_rust_version(),
-        "main.rs",
-        "-C", "opt-level=3", # Equivalent to --release
-        "-C", "strip=symbols",
-        "--out-dir", str(self.tmp_dir),
-        "-L", f"dependency={cc2rs_dir / 'deps'}",
-        "--extern", f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
+            "rustc",
+            "+" + read_rust_version(),
+            "main.rs",
+            "-A",
+            "warnings",
+            "-C",
+            "opt-level=3",  # Equivalent to --release
+            "-C",
+            "strip=symbols",
+            "-C",
+            "panic=abort",
+            "--out-dir",
+            str(self.tmp_dir),
+            "-L",
+            f"dependency={cc2rs_dir / 'deps'}",
+            "--extern",
+            f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
         ]
         if self.model == "unsafe":
             cmd += ["--extern", f"libc={libc_dir / 'liblibc_dep.rlib'}"]
