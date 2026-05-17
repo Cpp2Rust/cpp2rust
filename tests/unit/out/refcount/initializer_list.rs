@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn f_0(bytes: Vec<i32>) -> u64 {
     let bytes: Value<Vec<i32>> = Rc::new(RefCell::new(bytes));
-    let buf: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(Ptr::alloc((*bytes.borrow()))));
+    let buf: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(Ptr::alloc((*bytes.borrow()).clone())));
     let n: Value<u64> = Rc::new(RefCell::new((*bytes.borrow()).len() as u64));
     (*buf.borrow()).delete();
     return (*n.borrow());
