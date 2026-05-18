@@ -184,7 +184,15 @@ class TestContext:
             else os.environ.get("CXX", "clang++")
         )
         self.cpp_bin = self.tmp_dir / "cpp"
-        cmd = [cc, "-O3", "-o", str(self.cpp_bin), str(self.cc_input)]
+        cmd = [
+            cc,
+            "-O3",
+            "-o",
+            str(self.cpp_bin),
+            str(self.cc_input),
+            "-Wno-builtin-macro-redefined",
+            '-D__FILE__="' + os.path.basename(self.cc_input) + '"',
+        ]
         _, _, rc = lit.util.executeCommand(cmd)
         if rc != 0:
             return (exp.fail_code, cc + " failed")
