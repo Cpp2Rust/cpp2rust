@@ -13,6 +13,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "converter/lex.h"
@@ -547,8 +548,9 @@ protected:
     PushSuppressIteratorClone(Converter &c, clang::CXXConstructExpr *expr)
         : c(c), prev(c.suppress_iterator_clone_) {
       auto *ctor = expr->getConstructor();
-      if (ctor->isConvertingConstructor(/*AllowExplicit=*/false) &&
-          ctor->getNumParams() == 1 && IsIteratorType(expr->getType())) {
+      if (!ctor->isCopyOrMoveConstructor() &&
+          ctor->isConvertingConstructor(/*AllowExplicit=*/false) &&
+          ctor->getNumParams() == 1) {
         c.suppress_iterator_clone_ = true;
       }
     }
@@ -557,24 +559,8 @@ protected:
     PushSuppressIteratorClone &
     operator=(const PushSuppressIteratorClone &) = delete;
 
-    static bool take(Converter &c, clang::CXXConstructExpr *inner) {
-      bool suppress =
-          c.suppress_iterator_clone_ && IsIteratorType(inner->getType());
-      c.suppress_iterator_clone_ = false;
-      return suppress;
-    }
-
-  private:
-    static bool IsIteratorType(clang::QualType qt) {
-      if (auto *record = qt->getAsCXXRecordDecl()) {
-        for (auto *d : record->decls()) {
-          if (auto *tnd = llvm::dyn_cast<clang::TypedefNameDecl>(d)) {
-            if (tnd->getName() == "iterator_category")
-              return true;
-          }
-        }
-      }
-      return false;
+    static bool take(Converter &c) {
+      return std::exchange(c.suppress_iterator_clone_, false);
     }
   };
 
