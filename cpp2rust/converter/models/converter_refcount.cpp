@@ -14,8 +14,8 @@
 
 namespace cpp2rust {
 ConverterRefCount::ConverterRefCount(std::string &rs_code,
-                                     clang::ASTContext &ctx, bool single_file)
-    : Converter(rs_code, ctx, single_file, "", "", ".as_pointer()", ""),
+                                     clang::ASTContext &ctx)
+    : Converter(rs_code, ctx, "", "", ".as_pointer()", ""),
       conversion_kind_({ConversionKind::Unboxed}) {}
 
 void ConverterRefCount::EmitFilePreamble() {

@@ -18,6 +18,5 @@ class Converter;
 
 std::unique_ptr<Converter> CreateConverter(std::string &rs_code,
                                            clang::ASTContext &ctx, Model model,
-                                           bool single_file,
                                            const std::string &rules_dir);
 } // namespace cpp2rust

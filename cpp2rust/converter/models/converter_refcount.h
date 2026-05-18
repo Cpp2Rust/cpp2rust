@@ -8,8 +8,7 @@
 namespace cpp2rust {
 class ConverterRefCount final : public Converter {
 public:
-  ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx,
-                    bool single_file = false);
+  ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx);
 
   void EmitFilePreamble() override;
 
