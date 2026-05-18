@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// min_max_ptr2ptr.rs
 pub fn main() {
     std::process::exit(main_0());
 }

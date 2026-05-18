@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// polymorphism.rs
 pub unsafe trait Animal {
     unsafe fn bark(&self) -> bool;
 }

@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// references2.rs
 pub unsafe fn change_0(p: *mut Option<Box<i32>>) {
     let mut q: Option<Box<i32>> = Some(Box::new(7));
     (*p) = q;

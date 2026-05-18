@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// iterator_freshness.rs
 pub fn foo_0(a0: Ptr<i32>) {
     let a0: Value<Ptr<i32>> = Rc::new(RefCell::new(a0));
 }

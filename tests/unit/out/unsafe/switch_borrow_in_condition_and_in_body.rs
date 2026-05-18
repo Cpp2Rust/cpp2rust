@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_borrow_in_condition_and_in_body.rs
 pub unsafe fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
     switch!(match x {
         v if v == 0 => {}

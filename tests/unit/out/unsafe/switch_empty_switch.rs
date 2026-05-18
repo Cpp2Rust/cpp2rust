@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_empty_switch.rs
 pub unsafe fn empty_switch_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;

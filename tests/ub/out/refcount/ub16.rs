@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ub16.rs
 pub fn foo_0(a: Ptr<i32>) -> Ptr<i32> {
     let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
     return ((*a.borrow()).offset((5) as isize));

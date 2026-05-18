@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// nested_structs.rs
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: Value<i32>,

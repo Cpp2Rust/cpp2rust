@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// void_return.rs
 pub fn f1_0(first: Ptr<i32>, last: Ptr<i32>) {
     let first: Value<Ptr<i32>> = Rc::new(RefCell::new(first));
     let last: Value<Ptr<i32>> = Rc::new(RefCell::new(last));

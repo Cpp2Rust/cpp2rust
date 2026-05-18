@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// va_arg_mixed_types.rs
 pub unsafe fn sum_mixed_0(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);

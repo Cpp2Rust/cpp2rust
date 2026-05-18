@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// struct_default_ctor.rs
 #[repr(C)]
 #[derive(Clone)]
 pub struct WOFF2Params {

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// fn_ptr_global.rs
 pub fn double_it_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return ((*x.borrow()) * 2);

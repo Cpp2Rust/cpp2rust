@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ref_array_sum.rs
 pub fn initialize_0(array: Ptr<Option<Value<Box<[i32]>>>>, N: i32) {
     let N: Value<i32> = Rc::new(RefCell::new(N));
     let i: Value<i32> = Rc::new(RefCell::new(0));

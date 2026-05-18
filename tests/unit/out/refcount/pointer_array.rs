@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// pointer_array.rs
 #[derive()]
 pub struct StackArray {
     pub arr: Value<Box<[Ptr<i32>]>>,

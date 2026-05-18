@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// 07_unique.rs
 pub unsafe fn fn_0(mut u: Option<Box<i32>>) -> Option<Box<i32>> {
     (*u.as_deref_mut().unwrap()) = 10;
     return u;

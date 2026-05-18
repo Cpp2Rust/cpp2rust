@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// va_arg_printf.rs
 pub unsafe fn logf_impl_0(mut fmt: *const u8, mut ap: VaList) -> i32 {
     &(fmt);
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));

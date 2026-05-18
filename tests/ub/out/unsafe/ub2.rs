@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// ub2.rs
 pub unsafe fn null_0() -> *mut i32 {
     let mut p: *mut i32 = std::ptr::null_mut();
     return p;

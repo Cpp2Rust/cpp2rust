@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// fn_ptr.rs
 pub fn my_foo_0(p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
     return ((*p.borrow()).cast::<i32>().expect("ub:wrong type").read());

@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// printfs.rs
 pub unsafe fn fn_0(mut v: Vec<u8>) -> Vec<u8> {
     return {
         let mut __tmp2 = v.clone();

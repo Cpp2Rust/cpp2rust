@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// fn_ptr_array.rs
 pub unsafe fn add_0(mut a: i32, mut b: i32) -> i32 {
     return ((a) + (b));
 }

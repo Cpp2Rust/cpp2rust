@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// switch_borrow_in_condition_and_in_body.rs
 pub fn borrow_in_condition_and_in_body_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     switch!(match (*x.borrow()) {

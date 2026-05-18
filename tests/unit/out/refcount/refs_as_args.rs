@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// refs_as_args.rs
 pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let x1: Value<i32> = Rc::new(RefCell::new(x1));
     let x2: Value<i32> = Rc::new(RefCell::new(x2));

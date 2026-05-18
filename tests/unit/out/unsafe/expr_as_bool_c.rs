@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// expr_as_bool_c.rs
 pub unsafe fn cmp_eq_0(mut rc: i32) -> i32 {
     return (((rc) == (-1_i32)) as i32);
 }

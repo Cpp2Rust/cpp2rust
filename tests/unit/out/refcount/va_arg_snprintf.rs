@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_snprintf.rs
 pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let buf: Value<Ptr<u8>> = Rc::new(RefCell::new(buf));
     let size: Value<i32> = Rc::new(RefCell::new(size));

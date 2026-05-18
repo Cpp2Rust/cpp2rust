@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// pointer_array.rs
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct StackArray {

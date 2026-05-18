@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// static_local.rs
 pub fn foo_0() -> i32 {
     thread_local!(
         static static_i: Value<i32> = <Value<i32>>::default();

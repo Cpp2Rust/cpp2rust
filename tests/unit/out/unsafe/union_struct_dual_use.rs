@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// union_struct_dual_use.rs
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {

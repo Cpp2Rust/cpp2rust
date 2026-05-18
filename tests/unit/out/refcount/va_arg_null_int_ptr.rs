@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_null_int_ptr.rs
 pub fn first_nonnull_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));

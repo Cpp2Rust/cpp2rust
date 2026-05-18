@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_printf.rs
 pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));

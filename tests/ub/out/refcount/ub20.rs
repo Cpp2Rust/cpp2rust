@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ub20.rs
 pub fn foo_0(single: Ptr<i32>) {
     let single: Value<Ptr<i32>> = Rc::new(RefCell::new(single));
     (*single.borrow()).delete();

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// printfs.rs
 pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
     let v: Value<Vec<u8>> = Rc::new(RefCell::new(v));
     return {

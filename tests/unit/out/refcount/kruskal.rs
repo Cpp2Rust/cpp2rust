@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// kruskal.rs
 #[derive(Default)]
 pub struct Edge {
     pub u: Value<i32>,

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// switch_empty_case_with_break.rs
 pub fn empty_case_with_break_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(5));

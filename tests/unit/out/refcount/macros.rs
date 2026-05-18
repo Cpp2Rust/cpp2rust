@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// macros.rs
 pub fn log_0(file: Ptr<u8>, line: i32, func: Ptr<u8>) {
     let file: Value<Ptr<u8>> = Rc::new(RefCell::new(file));
     let line: Value<i32> = Rc::new(RefCell::new(line));

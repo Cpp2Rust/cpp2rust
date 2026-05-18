@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// null_in_statics.rs
 thread_local!(
     pub static p_mut: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );

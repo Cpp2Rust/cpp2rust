@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// unique_ptr_const_deref.rs
 #[derive(Default)]
 pub struct Holder {
     pub val: Value<Option<Value<i32>>>,

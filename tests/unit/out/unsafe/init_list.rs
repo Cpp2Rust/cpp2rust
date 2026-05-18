@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// init_list.rs
 pub unsafe fn f_0(mut list: Vec<i32>) {}
 pub fn main() {
     unsafe {

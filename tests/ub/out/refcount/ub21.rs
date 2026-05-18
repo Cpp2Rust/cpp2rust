@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ub21.rs
 pub fn strlen_0(s: Ptr<u8>) -> u64 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let count: Value<u64> = Rc::new(RefCell::new(0_u64));

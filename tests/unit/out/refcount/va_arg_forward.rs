@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_forward.rs
 pub fn inner_0(count: i32, ap: VaList) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));

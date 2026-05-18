@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// fn_ptr_stdlib_compare.rs
 pub fn my_alternative_fread_0(p: Ptr<u8>, n: u64, m: u64, f: AnyPtr) -> u64 {
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(p));
     let n: Value<u64> = Rc::new(RefCell::new(n));

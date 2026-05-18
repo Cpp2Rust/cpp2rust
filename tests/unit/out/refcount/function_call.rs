@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// function_call.rs
 pub fn function_0(y: i32, z: i32) -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(y));
     let z: Value<i32> = Rc::new(RefCell::new(z));

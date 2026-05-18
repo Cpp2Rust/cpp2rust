@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_on_call.rs
 pub unsafe fn double_it_0(mut v: i32) -> i32 {
     return ((v) * (2));
 }

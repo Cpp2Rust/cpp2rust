@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// break.rs
 pub unsafe fn for_test_0(n: i32) -> i32 {
     let mut x: i32 = 0;
     let mut i: i32 = 0;

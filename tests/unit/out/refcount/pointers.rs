@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// pointers.rs
 #[derive(Default)]
 pub struct Test {
     pub x: Value<i32>,

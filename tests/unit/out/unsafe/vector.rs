@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// vector.rs
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}
 pub fn main() {
     unsafe {

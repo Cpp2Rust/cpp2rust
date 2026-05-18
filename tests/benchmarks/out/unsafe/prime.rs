@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// prime.rs
 pub unsafe fn is_prime_0(mut x: i32) -> bool {
     let mut i: i32 = 2;
     'loop_: while ((i) < (x)) {

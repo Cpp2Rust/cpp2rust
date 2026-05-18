@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// strlen_rec.rs
 pub fn strlen_0(s: Ptr<u8>, n: i32) -> i32 {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let n: Value<i32> = Rc::new(RefCell::new(n));

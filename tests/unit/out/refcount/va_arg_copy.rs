@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_copy.rs
 pub fn sum_with_copy_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));

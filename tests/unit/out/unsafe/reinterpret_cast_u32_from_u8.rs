@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// reinterpret_cast_u32_from_u8.rs
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// vector2.rs
 pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     (*v).push(20);
     let mut x: i32 = 0_i32;

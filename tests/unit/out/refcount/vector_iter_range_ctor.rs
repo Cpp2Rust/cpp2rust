@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// vector_iter_range_ctor.rs
 pub fn main() {
     std::process::exit(main_0());
 }

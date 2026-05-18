@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// ub5.rs
 pub unsafe fn null_0(mut p: *mut *mut i32) {
     (*p) = std::ptr::null_mut();
 }

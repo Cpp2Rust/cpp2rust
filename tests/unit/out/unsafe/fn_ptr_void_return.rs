@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// fn_ptr_void_return.rs
 pub unsafe fn negate_0(mut x: *mut i32) {
     (*x) = -(*x);
 }

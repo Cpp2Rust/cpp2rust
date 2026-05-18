@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// ub4.rs
 pub unsafe fn smaller_0(x1: *mut i32, x2: *mut i32) -> *mut i32 {
     return if ((*x1) < (*x2)) { (x1) } else { (x2) };
 }

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// switch_for_switch_for_break.rs
 pub fn for_switch_for_break_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let r: Value<i32> = Rc::new(RefCell::new(0));

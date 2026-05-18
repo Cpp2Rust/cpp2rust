@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// addr_of_global.rs
 #[derive(Default)]
 pub struct Inner {
     pub value: Value<i32>,

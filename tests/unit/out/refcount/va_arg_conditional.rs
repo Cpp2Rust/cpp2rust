@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_conditional.rs
 pub fn conditional_log_0(verbose: i32, fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let verbose: Value<i32> = Rc::new(RefCell::new(verbose));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// anonymous_enum_c.rs
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_enum_3 {
     #[default]

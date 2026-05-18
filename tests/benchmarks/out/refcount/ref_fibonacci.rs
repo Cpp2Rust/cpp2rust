@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ref_fibonacci.rs
 pub fn fib_0(n: Ptr<u64>) {
     if ((n.read()) == 0_u64) || ((n.read()) == 1_u64) {
         return;

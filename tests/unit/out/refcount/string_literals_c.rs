@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// string_literals_c.rs
 pub fn foo_mut_0(str: Ptr<u8>) {
     let str: Value<Ptr<u8>> = Rc::new(RefCell::new(str));
 }

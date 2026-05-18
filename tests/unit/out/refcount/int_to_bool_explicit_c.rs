@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// int_to_bool_explicit_c.rs
 pub fn main() {
     std::process::exit(main_0());
 }

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// borrow_mut_opt.rs
 pub fn convert_without_rhs_0() {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let y: Value<i32> = Rc::new(RefCell::new(1));

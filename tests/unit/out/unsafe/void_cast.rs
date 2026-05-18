@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// void_cast.rs
 pub unsafe fn unused_param_0(mut x: i32) {
     &(x);
 }

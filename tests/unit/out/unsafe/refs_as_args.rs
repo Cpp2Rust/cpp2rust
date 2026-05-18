@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// refs_as_args.rs
 pub unsafe fn more_refs_0(mut x1: i32, mut x2: i32, r1: *mut i32, r2: *const i32) {
     let rx1: *const i32 = &x1 as *const i32;
     let rx2: *mut i32 = &mut x2 as *mut i32;

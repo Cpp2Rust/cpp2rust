@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_compound_case_body.rs
 pub unsafe fn compound_case_body_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {

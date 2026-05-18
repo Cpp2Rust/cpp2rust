@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// ub12.rs
 pub unsafe fn escape_0(mut ptr: *mut i32) {
     ::std::mem::drop(Box::from_raw(ptr));
 }

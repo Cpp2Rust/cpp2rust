@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// map.rs
 pub unsafe fn foo_0(mut x: u32) {
     x = (x).wrapping_add(1_u32);
 }

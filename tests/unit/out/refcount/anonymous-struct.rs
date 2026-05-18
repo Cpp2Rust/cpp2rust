@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// anonymous-struct.rs
 #[derive(Default)]
 pub struct Outer_Named {
     pub a: Value<i32>,

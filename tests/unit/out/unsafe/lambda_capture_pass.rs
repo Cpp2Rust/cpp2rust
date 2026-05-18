@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// lambda_capture_pass.rs
 pub unsafe fn apply_0(mut fn_: impl Fn(i32) -> i32, mut x: i32) -> i32 {
     return (unsafe {
         let _x: i32 = x;

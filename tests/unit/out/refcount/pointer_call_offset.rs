@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// pointer_call_offset.rs
 pub fn foo_0(p: Ptr<i32>) -> Ptr<i32> {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
     return ((*p.borrow()).offset((5) as isize));

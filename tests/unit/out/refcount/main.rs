@@ -7,8 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 
-// main.rs
-
 pub fn main() {
     let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
         .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))

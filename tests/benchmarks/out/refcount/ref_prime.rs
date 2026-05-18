@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ref_prime.rs
 pub fn is_prime_0(x: Ptr<i32>) -> bool {
     let i: Value<i32> = Rc::new(RefCell::new(2));
     'loop_: while {

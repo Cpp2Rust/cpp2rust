@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_char.rs
 pub unsafe fn switch_char_0(mut c: u8) -> i32 {
     'switch: {
         let __match_cond = (c as i32);

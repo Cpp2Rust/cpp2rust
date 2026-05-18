@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// implicit_autoref.rs
 #[repr(C)]
 #[derive(Clone, Default)]
 pub struct Holder {

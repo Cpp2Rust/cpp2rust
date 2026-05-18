@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// reserved_keywords.rs
 #[derive(Default)]
 pub struct S {
     pub as_: Value<i32>,

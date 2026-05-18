@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_default_then_case.rs
 pub unsafe fn default_then_case_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {

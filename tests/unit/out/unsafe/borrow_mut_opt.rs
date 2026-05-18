@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// borrow_mut_opt.rs
 pub unsafe fn convert_without_rhs_0() {
     let mut x: i32 = 0;
     let mut y: i32 = 1;

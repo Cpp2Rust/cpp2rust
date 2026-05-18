@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// switch_complex_cond.rs
 pub fn switch_complex_cond_0(p: Ptr<i32>, bias: i32) -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
     let bias: Value<i32> = Rc::new(RefCell::new(bias));

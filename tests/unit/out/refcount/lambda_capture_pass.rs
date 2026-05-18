@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// lambda_capture_pass.rs
 pub fn apply_0(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
     let fn_: Value<_> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));

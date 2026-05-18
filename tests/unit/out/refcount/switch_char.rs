@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// switch_char.rs
 pub fn switch_char_0(c: u8) -> i32 {
     let c: Value<u8> = Rc::new(RefCell::new(c));
     'switch: {

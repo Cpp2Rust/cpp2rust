@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// static_var_in_class.rs
 thread_local!(
     static C_inner_const: Value<i32> = Rc::new(RefCell::new(1));
 );

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// bool_condition_ptr_c.rs
 pub fn main() {
     std::process::exit(main_0());
 }

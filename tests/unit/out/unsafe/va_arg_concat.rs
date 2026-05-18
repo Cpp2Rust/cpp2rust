@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// va_arg_concat.rs
 pub unsafe fn sum_ints_0(mut first: i32, __args: &[VaArg]) -> i32 {
     let mut args: VaList = VaList::default();
     let mut total: i32 = first;

@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// va_arg_non_primitive_ptrs.rs
 #[derive(Default)]
 pub struct node {
     pub data: Value<i32>,

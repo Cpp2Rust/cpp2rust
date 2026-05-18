@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// switch_complex_cond.rs
 pub unsafe fn switch_complex_cond_0(mut p: *mut i32, mut bias: i32) -> i32 {
     'switch: {
         let __match_cond = ((*p) + (bias));

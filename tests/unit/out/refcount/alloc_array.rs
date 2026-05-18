@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// alloc_array.rs
 pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, N: i32, element: i32) {
     let N: Value<i32> = Rc::new(RefCell::new(N));
     let element: Value<i32> = Rc::new(RefCell::new(element));

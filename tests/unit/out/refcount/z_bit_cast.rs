@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// z_bit_cast.rs
 pub fn decay_cast_0(a1: Ptr<u32>) {
     let a1: Value<Ptr<u32>> = Rc::new(RefCell::new(a1));
 }

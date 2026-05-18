@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// pointer_call_offset.rs
 pub unsafe fn foo_0(mut p: *mut i32) -> *mut i32 {
     return (&mut (*p.offset((5) as isize)) as *mut i32);
 }

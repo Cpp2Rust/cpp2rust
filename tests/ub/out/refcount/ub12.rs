@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// ub12.rs
 pub fn escape_0(ptr: Ptr<i32>) {
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(ptr));
     (*ptr.borrow()).delete();

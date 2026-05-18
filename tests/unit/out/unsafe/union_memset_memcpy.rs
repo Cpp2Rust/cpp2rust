@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// union_memset_memcpy.rs
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct shape_a {
