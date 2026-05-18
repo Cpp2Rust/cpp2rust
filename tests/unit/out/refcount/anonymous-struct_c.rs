@@ -11,35 +11,97 @@ pub struct Named {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
-impl ByteRepr for Named {}
+impl ByteRepr for Named {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_0 {
     pub c: Value<i32>,
     pub d: Value<i32>,
 }
-impl ByteRepr for Outer_anon_0 {}
+impl ByteRepr for Outer_anon_0 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.c.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.d.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            c: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            d: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_1 {
     pub g: Value<i32>,
     pub h: Value<i32>,
 }
-impl ByteRepr for Outer_anon_1 {}
+impl ByteRepr for Outer_anon_1 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.g.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.h.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            g: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            h: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_2 {
     pub e: Value<i32>,
     pub f: Value<i32>,
 }
-impl ByteRepr for Outer_anon_2 {}
+impl ByteRepr for Outer_anon_2 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.e.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.f.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            e: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            f: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_3_anon_0 {
     pub j: Value<i32>,
 }
-impl ByteRepr for Outer_anon_3_anon_0 {}
+impl ByteRepr for Outer_anon_3_anon_0 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.j.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            j: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_3_anon_1 {
     pub k: Value<i32>,
 }
-impl ByteRepr for Outer_anon_3_anon_1 {}
+impl ByteRepr for Outer_anon_3_anon_1 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.k.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            k: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer_anon_3 {
     pub i: Value<i32>,
@@ -113,7 +175,18 @@ fn main_0() -> i32 {
         pub x: Value<i32>,
         pub z: Value<i32>,
     }
-    impl ByteRepr for anon_0 {};
+    impl ByteRepr for anon_0 {
+        fn to_bytes(&self, buf: &mut [u8]) {
+            (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+            (*self.z.borrow()).to_bytes(&mut buf[4..8]);
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            Self {
+                x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+                z: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            }
+        }
+    };
     let s: Value<anon_0> = <Value<anon_0>>::default();
     (*(*s.borrow()).x.borrow_mut()) = 1;
     (*(*s.borrow()).z.borrow_mut()) = 2;

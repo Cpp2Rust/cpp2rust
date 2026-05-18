@@ -20,7 +20,18 @@ impl Clone for Point {
         this
     }
 }
-impl ByteRepr for Point {}
+impl ByteRepr for Point {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

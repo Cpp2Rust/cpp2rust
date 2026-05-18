@@ -20,7 +20,18 @@ impl Clone for Item {
         this
     }
 }
-impl ByteRepr for Item {}
+impl ByteRepr for Item {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.key.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.value.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            key: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return {
         let _lhs = (*(*a.upgrade().deref()).key.borrow());

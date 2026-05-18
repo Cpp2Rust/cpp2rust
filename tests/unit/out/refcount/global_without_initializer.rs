@@ -18,7 +18,16 @@ impl Clone for S {
         this
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 thread_local!(
     pub static s: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );

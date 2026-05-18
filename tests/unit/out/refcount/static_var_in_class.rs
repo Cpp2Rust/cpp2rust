@@ -22,7 +22,12 @@ impl Clone for C {
         this
     }
 }
-impl ByteRepr for C {}
+impl ByteRepr for C {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 thread_local!(
     pub static S_inner_const: Value<i32> = Rc::new(RefCell::new(2));
 );
@@ -34,7 +39,12 @@ impl Clone for S {
         this
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

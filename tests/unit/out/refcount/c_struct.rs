@@ -11,7 +11,18 @@ pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
-impl ByteRepr for Point {}
+impl ByteRepr for Point {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Line {
     pub start: Value<Point>,
@@ -46,7 +57,18 @@ pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
-impl ByteRepr for Inner {}
+impl ByteRepr for Inner {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Container {
     pub inner: Value<Inner>,

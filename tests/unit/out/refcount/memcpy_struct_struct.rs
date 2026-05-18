@@ -20,7 +20,18 @@ impl Clone for Entry {
         this
     }
 }
-impl ByteRepr for Entry {}
+impl ByteRepr for Entry {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.bits.borrow()).to_bytes(&mut buf[0..1]);
+        (*self.value.borrow()).to_bytes(&mut buf[2..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            bits: Rc::new(RefCell::new(<u8>::from_bytes(&buf[0..1]))),
+            value: Rc::new(RefCell::new(<u16>::from_bytes(&buf[2..4]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

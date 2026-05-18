@@ -49,7 +49,16 @@ impl Clone for Holder {
         this
     }
 }
-impl ByteRepr for Holder {}
+impl ByteRepr for Holder {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            field: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

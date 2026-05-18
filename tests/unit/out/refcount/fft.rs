@@ -20,7 +20,18 @@ impl Clone for Complex {
         this
     }
 }
-impl ByteRepr for Complex {}
+impl ByteRepr for Complex {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.re.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.img.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            re: Rc::new(RefCell::new(<f64>::from_bytes(&buf[0..8]))),
+            img: Rc::new(RefCell::new(<f64>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn Product_0(z1: Complex, z2: Complex) -> Complex {
     let z1: Value<Complex> = Rc::new(RefCell::new(z1));
     let z2: Value<Complex> = Rc::new(RefCell::new(z2));

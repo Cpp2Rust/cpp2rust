@@ -18,7 +18,16 @@ impl Clone for Chunk {
         this
     }
 }
-impl ByteRepr for Chunk {}
+impl ByteRepr for Chunk {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Writer {
     pub output: Value<Ptr<Vec<Chunk>>>,

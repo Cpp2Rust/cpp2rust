@@ -20,7 +20,18 @@ impl Clone for Outer_RunInfo {
         this
     }
 }
-impl ByteRepr for Outer_RunInfo {}
+impl ByteRepr for Outer_RunInfo {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.block_idx.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.num_extra_zero_runs.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            block_idx: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            num_extra_zero_runs: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer {
     pub runs: Value<Vec<Outer_RunInfo>>,

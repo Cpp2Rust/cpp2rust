@@ -18,7 +18,16 @@ impl Clone for X {
         this
     }
 }
-impl ByteRepr for X {}
+impl ByteRepr for X {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Y {
     pub x: Value<X>,

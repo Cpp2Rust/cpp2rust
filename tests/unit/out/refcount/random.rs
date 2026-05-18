@@ -81,7 +81,12 @@ impl Clone for X1 {
         this
     }
 }
-impl ByteRepr for X1 {}
+impl ByteRepr for X1 {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) {
     let x1: Value<i32> = Rc::new(RefCell::new(x1));
     let x3: Value<Ptr<i32>> = Rc::new(RefCell::new(x3));

@@ -39,7 +39,18 @@ impl Clone for StructWithCtor {
         this
     }
 }
-impl ByteRepr for StructWithCtor {}
+impl ByteRepr for StructWithCtor {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1_.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.x2_.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x2_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }

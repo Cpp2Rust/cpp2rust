@@ -22,7 +22,12 @@ impl Clone for Dog {
         this
     }
 }
-impl ByteRepr for Dog {}
+impl ByteRepr for Dog {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 #[derive(Default)]
 pub struct Cat {}
 impl Cat {
@@ -41,7 +46,12 @@ impl Clone for Cat {
         this
     }
 }
-impl ByteRepr for Cat {}
+impl ByteRepr for Cat {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

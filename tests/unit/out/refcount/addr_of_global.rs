@@ -18,7 +18,16 @@ impl Clone for Inner {
         this
     }
 }
-impl ByteRepr for Inner {}
+impl ByteRepr for Inner {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer {
     pub p: Value<Ptr<Inner>>,

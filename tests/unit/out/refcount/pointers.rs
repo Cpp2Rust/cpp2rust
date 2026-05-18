@@ -34,7 +34,16 @@ impl Clone for Test {
         this
     }
 }
-impl ByteRepr for Test {}
+impl ByteRepr for Test {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let t: Value<Ptr<Test>> = Rc::new(RefCell::new(t));
     let x: Value<i32> = Rc::new(RefCell::new(1));

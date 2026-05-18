@@ -55,7 +55,18 @@ impl Clone for Pair {
         this
     }
 }
-impl ByteRepr for Pair {}
+impl ByteRepr for Pair {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.second.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            first: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            second: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Route {
     pub path: Value<Pair>,

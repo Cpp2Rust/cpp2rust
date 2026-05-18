@@ -18,7 +18,16 @@ impl Clone for Level0_Level1_1_Level2_1_Level3_1 {
         this
     }
 }
-impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {}
+impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x1: Value<i32>,
@@ -33,7 +42,18 @@ impl Clone for Level0_Level1_1_Level2_1_Level3_2 {
         this
     }
 }
-impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {}
+impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Level0_Level1_1_Level2_1 {
     pub x1: Value<i32>,
@@ -46,7 +66,16 @@ impl Clone for Level0_Level1_1_Level2_1 {
         this
     }
 }
-impl ByteRepr for Level0_Level1_1_Level2_1 {}
+impl ByteRepr for Level0_Level1_1_Level2_1 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Level0_Level1_1 {
     pub x1: Value<i32>,
@@ -59,7 +88,16 @@ impl Clone for Level0_Level1_1 {
         this
     }
 }
-impl ByteRepr for Level0_Level1_1 {}
+impl ByteRepr for Level0_Level1_1 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Level0_Level1_2 {
     pub x1: Value<i32>,
@@ -74,7 +112,18 @@ impl Clone for Level0_Level1_2 {
         this
     }
 }
-impl ByteRepr for Level0_Level1_2 {}
+impl ByteRepr for Level0_Level1_2 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Level0 {}
 impl Clone for Level0 {
@@ -83,7 +132,12 @@ impl Clone for Level0 {
         this
     }
 }
-impl ByteRepr for Level0 {}
+impl ByteRepr for Level0 {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

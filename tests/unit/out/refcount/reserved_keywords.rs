@@ -92,7 +92,90 @@ impl Clone for S {
         this
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.as_.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.async_.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.await_.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.crate_.borrow()).to_bytes(&mut buf[12..16]);
+        (*self.dyn_.borrow()).to_bytes(&mut buf[16..20]);
+        (*self.fn_.borrow()).to_bytes(&mut buf[20..24]);
+        (*self.impl_.borrow()).to_bytes(&mut buf[24..28]);
+        (*self.in_.borrow()).to_bytes(&mut buf[28..32]);
+        (*self.let_.borrow()).to_bytes(&mut buf[32..36]);
+        (*self.loop_.borrow()).to_bytes(&mut buf[36..40]);
+        (*self.match_.borrow()).to_bytes(&mut buf[40..44]);
+        (*self.mod_.borrow()).to_bytes(&mut buf[44..48]);
+        (*self.move_.borrow()).to_bytes(&mut buf[48..52]);
+        (*self.mut_.borrow()).to_bytes(&mut buf[52..56]);
+        (*self.pub_.borrow()).to_bytes(&mut buf[56..60]);
+        (*self.ref_.borrow()).to_bytes(&mut buf[60..64]);
+        (*self.self_.borrow()).to_bytes(&mut buf[64..68]);
+        (*self.Self_.borrow()).to_bytes(&mut buf[68..72]);
+        (*self.super_.borrow()).to_bytes(&mut buf[72..76]);
+        (*self.trait_.borrow()).to_bytes(&mut buf[76..80]);
+        (*self.type_.borrow()).to_bytes(&mut buf[80..84]);
+        (*self.unsafe_.borrow()).to_bytes(&mut buf[84..88]);
+        (*self.use_.borrow()).to_bytes(&mut buf[88..92]);
+        (*self.where_.borrow()).to_bytes(&mut buf[92..96]);
+        (*self.abstract_.borrow()).to_bytes(&mut buf[96..100]);
+        (*self.become_.borrow()).to_bytes(&mut buf[100..104]);
+        (*self.box_.borrow()).to_bytes(&mut buf[104..108]);
+        (*self.final_.borrow()).to_bytes(&mut buf[108..112]);
+        (*self.gen_.borrow()).to_bytes(&mut buf[112..116]);
+        (*self.macro_.borrow()).to_bytes(&mut buf[116..120]);
+        (*self.override_.borrow()).to_bytes(&mut buf[120..124]);
+        (*self.priv_.borrow()).to_bytes(&mut buf[124..128]);
+        (*self.unsized_.borrow()).to_bytes(&mut buf[128..132]);
+        (*self.yield_.borrow()).to_bytes(&mut buf[132..136]);
+        (*self.macro_rules_.borrow()).to_bytes(&mut buf[136..140]);
+        (*self.raw_.borrow()).to_bytes(&mut buf[140..144]);
+        (*self.safe_.borrow()).to_bytes(&mut buf[144..148]);
+        (*self.vec_.borrow()).to_bytes(&mut buf[148..152]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            as_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            async_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            await_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            crate_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
+            dyn_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
+            fn_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[20..24]))),
+            impl_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
+            in_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[28..32]))),
+            let_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[32..36]))),
+            loop_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[36..40]))),
+            match_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[40..44]))),
+            mod_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[44..48]))),
+            move_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[48..52]))),
+            mut_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[52..56]))),
+            pub_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[56..60]))),
+            ref_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[60..64]))),
+            self_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[64..68]))),
+            Self_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[68..72]))),
+            super_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[72..76]))),
+            trait_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[76..80]))),
+            type_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[80..84]))),
+            unsafe_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[84..88]))),
+            use_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[88..92]))),
+            where_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[92..96]))),
+            abstract_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[96..100]))),
+            become_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[100..104]))),
+            box_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[104..108]))),
+            final_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[108..112]))),
+            gen_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[112..116]))),
+            macro_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[116..120]))),
+            override_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[120..124]))),
+            priv_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[124..128]))),
+            unsized_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[128..132]))),
+            yield_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[132..136]))),
+            macro_rules_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[136..140]))),
+            raw_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[140..144]))),
+            safe_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[144..148]))),
+            vec_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[148..152]))),
+        }
+    }
+}
 pub fn foo_0(
     as_: i32,
     async_: i32,

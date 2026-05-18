@@ -22,7 +22,20 @@ impl Clone for Edge {
         this
     }
 }
-impl ByteRepr for Edge {}
+impl ByteRepr for Edge {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.u.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.v.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.weight.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            u: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            weight: Rc::new(RefCell::new(<f64>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -> i32 {
     let start: Value<i32> = Rc::new(RefCell::new(start));
     let end: Value<i32> = Rc::new(RefCell::new(end));

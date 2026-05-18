@@ -62,7 +62,12 @@ impl Clone for Foo {
         this
     }
 }
-impl ByteRepr for Foo {}
+impl ByteRepr for Foo {
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
 pub fn func_5(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return 1;

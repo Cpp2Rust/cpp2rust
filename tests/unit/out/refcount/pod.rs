@@ -22,7 +22,20 @@ impl Clone for POD {
         this
     }
 }
-impl ByteRepr for POD {}
+impl ByteRepr for POD {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.x3.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x3: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 pub fn PODIncrement_0(pod: Ptr<POD>) {
     (*(*pod.upgrade().deref()).x1.borrow_mut()) += 1;
     (*(*pod.upgrade().deref()).x2.borrow_mut()) += 2;

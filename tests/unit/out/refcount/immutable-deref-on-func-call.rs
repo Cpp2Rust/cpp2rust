@@ -24,7 +24,16 @@ impl Clone for Item {
         this
     }
 }
-impl ByteRepr for Item {}
+impl ByteRepr for Item {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

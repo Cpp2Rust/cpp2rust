@@ -11,7 +11,18 @@ pub struct context {
     pub verbose: Value<i32>,
     pub last_error: Value<i32>,
 }
-impl ByteRepr for context {}
+impl ByteRepr for context {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.verbose.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.last_error.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            verbose: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            last_error: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
