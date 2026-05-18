@@ -6,8 +6,6 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-
-// a.rs
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -23,7 +21,6 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
-// b.rs
 pub unsafe fn unrelated1_1() -> i32 {
     return 1;
 }

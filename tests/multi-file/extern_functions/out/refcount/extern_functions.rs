@@ -6,8 +6,6 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-
-// a.rs
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -21,7 +19,6 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-// b.rs
 pub fn unrelated1_1() -> i32 {
     return 1;
 }
