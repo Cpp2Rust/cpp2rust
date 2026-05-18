@@ -3,6 +3,7 @@
 
 #include "converter/models/converter_refcount.h"
 
+#include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
 
 #include <format>
@@ -497,10 +498,70 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat("}");
 }
 
+static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
+  if (decl->isUnion()) {
+    return false;
+  }
+
+  // ByteRepr is only supported for user-defined structs that contain ByteRepr
+  // fields.
+  for (auto *f : decl->fields()) {
+    auto qt = f->getType();
+    if (qt->isEnumeralType()) {
+      return false;
+    }
+    if (!qt->isIntegerType() && !qt->isFloatingType()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
+
+  if (!recordImplementsByteRepr(decl)) {
+    StrCat(std::format("impl ByteRepr for {}", struct_name));
+    PushBrace brace(*this);
+    return;
+  }
+
   StrCat(std::format("impl ByteRepr for {}", struct_name));
-  PushBrace brace(*this);
+  PushBrace impl_brace(*this);
+
+  const auto &layout = ctx_.getASTRecordLayout(decl);
+
+  StrCat("fn to_bytes(&self, buf: &mut [u8])");
+  {
+    PushBrace fn_brace(*this);
+    unsigned idx = 0;
+    for (auto *field : decl->fields()) {
+      auto byte_off = layout.getFieldOffset(idx) / 8;
+      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+      StrCat(std::format("(*self.{}.borrow()).to_bytes(&mut buf[{}..{}]);",
+                         GetNamedDeclAsString(field), byte_off,
+                         byte_off + byte_size));
+      ++idx;
+    }
+  }
+
+  StrCat("fn from_bytes(buf: &[u8]) -> Self");
+  {
+    PushBrace fn_brace(*this);
+    StrCat("Self");
+    PushBrace lit_brace(*this);
+    unsigned idx = 0;
+    for (auto *field : decl->fields()) {
+      auto byte_off = layout.getFieldOffset(idx) / 8;
+      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+      StrCat(std::format(
+          "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
+          GetNamedDeclAsString(field), Mapper::Map(field->getType()), byte_off,
+          byte_off + byte_size));
+      ++idx;
+    }
+  }
 }
 
 std::string
