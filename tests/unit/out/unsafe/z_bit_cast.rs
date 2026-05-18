@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// z_bit_cast.rs
 pub unsafe fn decay_cast_0(mut a1: *mut u32) {}
 pub unsafe fn bit_cast_1(mut p: *const ::libc::c_void) {}
 pub fn main() {

@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// ub3.rs
 pub unsafe fn dangling_0() -> *mut i32 {
     let mut x: i32 = 1;
     let mut p: *mut i32 = (&mut x as *mut i32);

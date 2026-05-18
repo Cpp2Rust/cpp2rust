@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// null_in_statics.rs
 pub static mut p_mut: *mut i32 = unsafe { std::ptr::null_mut() };
 pub static mut p_const: *const i32 = unsafe { std::ptr::null() };
 pub static mut cp: *const u8 = unsafe { std::ptr::null() };

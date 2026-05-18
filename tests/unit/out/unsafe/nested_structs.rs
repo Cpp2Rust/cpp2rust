@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// nested_structs.rs
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {

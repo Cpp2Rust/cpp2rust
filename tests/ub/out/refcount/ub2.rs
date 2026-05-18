@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// ub2.rs
 pub fn null_0() -> Ptr<i32> {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     return (*p.borrow()).clone();

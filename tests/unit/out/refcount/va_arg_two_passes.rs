@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// va_arg_two_passes.rs
 pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));

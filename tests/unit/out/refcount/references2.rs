@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// references2.rs
 pub fn change_0(p: Ptr<Option<Value<i32>>>) {
     let q: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(7)))));
     let __rhs = (*q.borrow_mut()).take();

@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// fn_ptr.rs
 pub unsafe fn my_foo_0(mut p: *mut ::libc::c_void) -> i32 {
     return (*(p as *mut i32));
 }

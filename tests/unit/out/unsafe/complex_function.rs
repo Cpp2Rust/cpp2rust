@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// complex_function.rs
 pub unsafe fn foo_0(mut x: i32) -> i32 {
     return x;
 }

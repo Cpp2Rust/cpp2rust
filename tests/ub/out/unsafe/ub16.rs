@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// ub16.rs
 pub unsafe fn foo_0(mut a: *mut i32) -> *mut i32 {
     return (&mut (*a.offset((5) as isize)) as *mut i32);
 }

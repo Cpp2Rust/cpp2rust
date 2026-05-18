@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// strlen_diff.rs
 pub unsafe fn strlen_0(mut s: *const u8) -> u64 {
     let mut begin: *const u8 = s;
     'loop_: while ((*s) != 0) {

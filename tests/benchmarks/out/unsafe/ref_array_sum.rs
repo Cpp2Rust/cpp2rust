@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// ref_array_sum.rs
 pub unsafe fn initialize_0(array: *mut Option<Box<[i32]>>, mut N: i32) {
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {

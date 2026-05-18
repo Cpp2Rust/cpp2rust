@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// va_arg_two_passes.rs
 pub unsafe fn sum_then_product_0(mut first: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     let mut sum: i32 = first;

@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// reinterpret_cast_same_type.rs
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

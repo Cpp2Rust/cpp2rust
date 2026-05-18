@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// map.rs
 pub fn foo_0(x: u32) {
     let x: Value<u32> = Rc::new(RefCell::new(x));
     let __rhs = (*x.borrow()).wrapping_add(1_u32);

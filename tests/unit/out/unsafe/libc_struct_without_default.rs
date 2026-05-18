@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// libc_struct_without_default.rs
 #[repr(C)]
 #[derive(Clone)]
 pub struct UserDefined {

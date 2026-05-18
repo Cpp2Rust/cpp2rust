@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// fatorial.rs
 pub unsafe fn fatorial_0(mut n: i32) -> i32 {
     if ((n) == (0)) {
         return 1;

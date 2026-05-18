@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// fn_ptr_as_condition.rs
 pub fn double_it_0(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     {

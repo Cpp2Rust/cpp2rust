@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// enum_out_of_range_cast.rs
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Color {
     #[default]

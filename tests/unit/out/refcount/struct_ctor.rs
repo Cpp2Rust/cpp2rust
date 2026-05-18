@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// struct_ctor.rs
 #[derive(Default)]
 pub struct StructWithCtor {
     x1_: Value<i32>,

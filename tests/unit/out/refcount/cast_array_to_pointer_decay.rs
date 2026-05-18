@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// cast_array_to_pointer_decay.rs
 pub fn deref_0(p: Ptr<i32>) -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
     return ((*p.borrow()).read());

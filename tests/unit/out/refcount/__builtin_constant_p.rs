@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// __builtin_constant_p.rs
 pub fn main() {
     std::process::exit(main_0());
 }

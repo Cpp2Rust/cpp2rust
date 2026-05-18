@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// ub19.rs
 pub unsafe fn foo_0(mut array: *mut i32) {
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         array,

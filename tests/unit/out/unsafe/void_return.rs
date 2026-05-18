@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// void_return.rs
 pub unsafe fn f1_0(mut first: *mut i32, mut last: *mut i32) {
     {
         let len = last.offset_from(first) as usize;

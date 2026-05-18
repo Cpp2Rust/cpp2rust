@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// global-initialization-using-global.rs
 pub static mut first: i32 = unsafe { 0_i32 };
 pub static mut second: i32 = unsafe { ((first) + (1)) };
 pub fn main() {

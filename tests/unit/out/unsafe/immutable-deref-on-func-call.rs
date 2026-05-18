@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// immutable-deref-on-func-call.rs
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Item {

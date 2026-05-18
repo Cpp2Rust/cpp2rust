@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// string_literals_return.rs
 pub unsafe fn get_greeting_0() -> *const u8 {
     return b"hello\0".as_ptr();
 }

@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// string_literals_return_c.rs
 pub fn get_greeting_0() -> Ptr<u8> {
     return Ptr::from_string_literal("hello");
 }

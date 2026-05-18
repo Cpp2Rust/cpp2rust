@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// reinterpret_cast_struct_to_struct.rs
 #[derive(Default)]
 pub struct Point {
     pub x: Value<u32>,

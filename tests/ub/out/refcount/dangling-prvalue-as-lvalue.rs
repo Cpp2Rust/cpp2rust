@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// dangling-prvalue-as-lvalue.rs
 pub fn foo_0(a: Ptr<i32>) -> Ptr<i32> {
     return (a).clone();
 }

@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// cast_array_to_pointer_decay.rs
 pub unsafe fn deref_0(mut p: *mut i32) -> i32 {
     return (*p);
 }

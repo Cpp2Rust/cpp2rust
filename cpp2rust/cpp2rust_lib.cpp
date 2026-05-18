@@ -7,6 +7,8 @@
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
 
+#include <filesystem>
+
 #include "compat/platform_flags.h"
 #include "frontend_action.h"
 
@@ -24,7 +26,7 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
       std::make_unique<FrontendAction>(rs_code, model, true, rules_dir),
-      cc_code, tool_args, filename.ends_with(".c") ? "input.c" : "input.cpp",
+      cc_code, tool_args, filename,
       filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
   return rs_code;
 }
@@ -49,6 +51,18 @@ std::string TranspileDir(std::string_view build_dir, Model model,
       clang::tooling::ArgumentInsertPosition::BEGIN));
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
       getPlatformClangEndFlags(), clang::tooling::ArgumentInsertPosition::END));
+  // Redefine __FILE__ to use just the basename, so the generated code
+  // doesn't contain system-specific absolute paths.
+  Tool.appendArgumentsAdjuster(
+      [](const clang::tooling::CommandLineArguments &args,
+         llvm::StringRef filename) {
+        auto result = args;
+        auto basename =
+            std::filesystem::path(filename.str()).filename().string();
+        result.push_back("-Wno-builtin-macro-redefined");
+        result.push_back("-D__FILE__=\"" + basename + "\"");
+        return result;
+      });
 
   std::string rs_code;
   FrontendActionFactory factory(rs_code, model, rules_dir);

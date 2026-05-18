@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// fn_ptr_struct.rs
 #[derive()]
 pub struct Handler {
     pub tag: Value<i32>,

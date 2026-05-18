@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// vector2.rs
 pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));

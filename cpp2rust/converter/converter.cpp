@@ -275,9 +275,7 @@ bool Converter::VisitUsingType(clang::UsingType *type) {
 bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
-  if (auto main_file_name = GetMainFileName(ctx_); main_file_name != "input") {
-    StrCat("\n//", main_file_name + ".rs\n");
-  }
+  StrCat("\n//", GetMainFileName(ctx_) + ".rs\n");
   for (auto *child : decl->decls()) {
     if (IsConvertibleDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
@@ -294,7 +292,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (!IsConvertibleFunctionDecl(decl)) {
     return false;
   }
-  if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
+  if (!decl_ids_.insert(GetID(decl)).second) {
     return false;
   }
   decl->dump(log());

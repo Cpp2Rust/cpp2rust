@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// anonymous_enum.rs
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_enum_3 {
     #[default]

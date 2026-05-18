@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// global-initialization-using-global.rs
 thread_local!(
     pub static first: Value<i32> = <Value<i32>>::default();
 );

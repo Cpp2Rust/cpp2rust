@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// global_without_initializer.rs
 #[derive(Default)]
 pub struct S {
     pub a: Value<i32>,

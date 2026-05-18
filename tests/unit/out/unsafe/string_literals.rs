@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// string_literals.rs
 pub unsafe fn foo_mut_0(mut str: *mut u8) {}
 pub unsafe fn foo_const_1(mut str: *const u8) {}
 pub fn main() {

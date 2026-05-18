@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// static_var_in_class.rs
 static mut C_inner_const: i32 = unsafe { 1 };
 #[repr(C)]
 #[derive(Copy, Clone, Default)]

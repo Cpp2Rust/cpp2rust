@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// static_local.rs
 pub unsafe fn foo_0() -> i32 {
     static mut static_i: i32 = unsafe { 0_i32 };;
     static mut static_f: f32 = unsafe { 0.0_f32 };;

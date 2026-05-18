@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// fn_ptr_vtable.rs
 #[repr(C)]
 #[derive(Clone)]
 pub struct Vtable {

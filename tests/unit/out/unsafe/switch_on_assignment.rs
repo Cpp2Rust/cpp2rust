@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// switch_on_assignment.rs
 pub unsafe fn switch_on_assignment_0(mut x: i32) -> i32 {
     let mut y: i32 = 0;
     let mut r: i32 = 0;

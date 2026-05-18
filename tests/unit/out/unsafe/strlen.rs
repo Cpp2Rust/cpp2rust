@@ -6,6 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+
+// strlen.rs
 pub unsafe fn strlen_0(mut ptr: *mut u8) -> u32 {
     let mut count: u32 = 0_u32;
     'loop_: while (((*ptr.postfix_inc()) as i32) != (('\0' as u8) as i32)) {

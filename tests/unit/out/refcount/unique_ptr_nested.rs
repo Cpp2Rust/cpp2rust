@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+
+// unique_ptr_nested.rs
 #[derive(Default)]
 pub struct Inner {
     pub x: Value<i32>,
