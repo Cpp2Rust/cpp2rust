@@ -294,7 +294,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (!IsConvertibleFunctionDecl(decl)) {
     return false;
   }
-  if (!decl_ids_.insert(GetID(decl)).second) {
+  if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
     return false;
   }
   decl->dump(log());
