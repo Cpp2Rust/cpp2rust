@@ -1541,6 +1541,7 @@ std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
 
 bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
+  PushSuppressIteratorClone push_suppress(*this, expr);
 
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
@@ -1564,7 +1565,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   if (ctor->isCopyConstructor()) {
-    StrCat(IsRedundantCopyInConversion(ctx_, expr)
+    StrCat(PushSuppressIteratorClone::take(*this, expr)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
     return false;

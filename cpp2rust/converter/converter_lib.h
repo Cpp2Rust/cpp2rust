@@ -145,9 +145,6 @@ GetForRangeIteratorType(const clang::CXXForRangeStmt *for_range);
 
 std::string GetClassName(clang::QualType type);
 
-bool IsRedundantCopyInConversion(clang::ASTContext &ctx,
-                                 const clang::CXXConstructExpr *expr);
-
 bool IsVaListType(clang::QualType type);
 
 bool IsBuiltinVaStart(const clang::CallExpr *expr);

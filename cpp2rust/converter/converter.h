@@ -529,6 +529,7 @@ protected:
   bool in_function_formals_ = false;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
+  bool suppress_iterator_clone_ = false;
 
   struct PushExplicitAutoref {
     Converter &c;
@@ -538,6 +539,43 @@ protected:
       c.autoref_mut_ = v;
     }
     ~PushExplicitAutoref() { c.autoref_mut_ = prev; }
+  };
+
+  struct PushSuppressIteratorClone {
+    Converter &c;
+    bool prev;
+    PushSuppressIteratorClone(Converter &c, clang::CXXConstructExpr *expr)
+        : c(c), prev(c.suppress_iterator_clone_) {
+      auto *ctor = expr->getConstructor();
+      if (ctor->isConvertingConstructor(/*AllowExplicit=*/false) &&
+          ctor->getNumParams() == 1 && IsIteratorType(expr->getType())) {
+        c.suppress_iterator_clone_ = true;
+      }
+    }
+    ~PushSuppressIteratorClone() { c.suppress_iterator_clone_ = prev; }
+    PushSuppressIteratorClone(const PushSuppressIteratorClone &) = delete;
+    PushSuppressIteratorClone &
+    operator=(const PushSuppressIteratorClone &) = delete;
+
+    static bool take(Converter &c, clang::CXXConstructExpr *inner) {
+      bool suppress =
+          c.suppress_iterator_clone_ && IsIteratorType(inner->getType());
+      c.suppress_iterator_clone_ = false;
+      return suppress;
+    }
+
+  private:
+    static bool IsIteratorType(clang::QualType qt) {
+      if (auto *record = qt->getAsCXXRecordDecl()) {
+        for (auto *d : record->decls()) {
+          if (auto *tnd = llvm::dyn_cast<clang::TypedefNameDecl>(d)) {
+            if (tnd->getName() == "iterator_category")
+              return true;
+          }
+        }
+      }
+      return false;
+    }
   };
 
   struct PushConstInitializer {
