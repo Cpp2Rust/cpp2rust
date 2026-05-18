@@ -275,7 +275,9 @@ bool Converter::VisitUsingType(clang::UsingType *type) {
 bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
-  StrCat("\n//", GetMainFileName(ctx_) + ".rs\n");
+  if (!single_file_) {
+    StrCat("\n//", GetMainFileName(ctx_) + ".rs\n");
+  }
   for (auto *child : decl->decls()) {
     if (IsConvertibleDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {

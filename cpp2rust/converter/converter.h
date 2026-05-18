@@ -24,12 +24,14 @@ class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
+                     bool single_file = false,
                      const char *keyword_unsafe = "unsafe",
                      const char *keyword_mut = "mut",
                      const char *keyword_ptr_decay = ".as_mut_ptr()",
                      const char *keyword_const_fn = keyword::kConst)
-      : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
-        keyword_mut_(keyword_mut), keyword_ptr_decay_(keyword_ptr_decay),
+      : rs_code_(&rs_code), ctx_(ctx), single_file_(single_file),
+        keyword_unsafe_(keyword_unsafe), keyword_mut_(keyword_mut),
+        keyword_ptr_decay_(keyword_ptr_decay),
         keyword_const_fn_(keyword_const_fn) {}
 
   virtual ~Converter() = default;
@@ -525,6 +527,7 @@ protected:
 
   std::string *rs_code_;
   clang::ASTContext &ctx_;
+  bool single_file_ = false;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
   bool in_const_initializer_ = false;

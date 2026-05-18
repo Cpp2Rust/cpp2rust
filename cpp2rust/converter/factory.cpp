@@ -10,13 +10,14 @@ namespace cpp2rust {
 
 std::unique_ptr<Converter> CreateConverter(std::string &rs_code,
                                            clang::ASTContext &ctx, Model model,
+                                           bool single_file,
                                            const std::string &rules_dir) {
   Mapper::LoadTranslationRules(model, ctx, rules_dir);
   switch (model) {
   case Model::kUnsafe:
-    return std::make_unique<Converter>(rs_code, ctx);
+    return std::make_unique<Converter>(rs_code, ctx, single_file);
   case Model::kRefCount:
-    return std::make_unique<ConverterRefCount>(rs_code, ctx);
+    return std::make_unique<ConverterRefCount>(rs_code, ctx, single_file);
   }
   std::unreachable();
 }

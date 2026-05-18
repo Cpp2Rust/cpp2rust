@@ -25,7 +25,8 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
 
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
-      std::make_unique<FrontendAction>(rs_code, model, true, rules_dir),
+      std::make_unique<FrontendAction>(rs_code, model, /*first=*/true,
+                                       /*single_file=*/true, rules_dir),
       cc_code, tool_args, std::filesystem::path(filename).filename().string(),
       filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
   return rs_code;
