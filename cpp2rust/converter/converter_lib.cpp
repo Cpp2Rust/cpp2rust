@@ -274,8 +274,8 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
 
 std::string GetMainFileName(const clang::ASTContext &ctx) {
   const auto &src_mgr = ctx.getSourceManager();
-  auto filed_id = src_mgr.getMainFileID();
-  auto file_entry = src_mgr.getFileEntryRefForID(filed_id);
+  auto file_id = src_mgr.getMainFileID();
+  auto file_entry = src_mgr.getFileEntryRefForID(file_id);
   auto file_path = file_entry->getName();
   auto file_name = llvm::sys::path::filename(file_path);
   return llvm::sys::path::stem(file_name).str();
@@ -399,7 +399,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     }
   }
 
-  if (name.size() == 0) {
+  if (name.empty()) {
     name = "self";
   }
 
