@@ -19,12 +19,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     printf(
         b"%s %d %s\n\0".as_ptr() as *const i8,
-        b"/app/cpp2rust/tests/unit/macros.cpp\0".as_ptr(),
+        b"macros.cpp\0".as_ptr(),
         8,
         b"main\0".as_ptr(),
     );
     (unsafe {
-        let _file: *const u8 = b"/app/cpp2rust/tests/unit/macros.cpp\0".as_ptr();
+        let _file: *const u8 = b"macros.cpp\0".as_ptr();
         let _line: i32 = 9;
         let _func: *const u8 = b"main\0".as_ptr();
         log_0(_file, _line, _func)
