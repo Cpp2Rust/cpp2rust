@@ -26,5 +26,12 @@ int main() {
   assert(v4.size() == 3);
   assert(v4[0] == 1 && v4[1] == 2 && v4[2] == 3);
 
+  uint8_t buf[5] = {10, 20, 30, 40, 50};
+  const uint8_t *start = buf;
+  size_t len = 5;
+  std::vector<uint8_t> v5(start, start + len);
+  assert(v5.size() == 5);
+  assert(v5[0] == 10 && v5[4] == 50);
+
   return 0;
 }

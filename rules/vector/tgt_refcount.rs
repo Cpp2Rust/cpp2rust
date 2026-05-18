@@ -114,12 +114,12 @@ fn f34<T1>(a0: &mut Ptr<T1>) -> Ptr<T1> {
 
 fn f35<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Vec<T1> {
     let __count = a1.get_offset() - a0.get_offset();
-    PtrValueIter::new(a0, __count).collect::<Vec<_>>()
+    PtrValueIter::new(&a0, __count).collect::<Vec<_>>()
 }
 
 fn f37<T1: TryFrom<T2>, T2: Clone + ByteRepr>(a0: Ptr<T2>, a1: Ptr<T2>) -> Vec<T1> {
     let __count = a1.get_offset() - a0.get_offset();
-    PtrValueIter::new(a0.clone(), __count)
+    PtrValueIter::new(&a0, __count)
         .map(|item| T1::try_from(item).ok().unwrap())
         .collect::<Vec<_>>()
 }
@@ -133,9 +133,8 @@ fn f41<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f42(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __a0 = a0.clone();
-    let __count = a1.get_offset() - __a0.get_offset();
-    let max_index = PtrValueIter::new(__a0, __count)
+    let __count = a1.get_offset() - a0.get_offset();
+    let max_index = PtrValueIter::new(&a0, __count)
         .enumerate()
         .max_by_key(|&(_, val)| val)
         .map(|(idx, _)| idx)
@@ -176,7 +175,7 @@ fn f53<T1: Clone + ByteRepr>(
 ) -> Ptr<Vec<T1>> {
     let start_idx = a1.get_offset();
     let count = a3.get_offset() - a2.get_offset();
-    let temp_vec: Vec<T1> = PtrValueIter::new(a2, count).collect();
+    let temp_vec: Vec<T1> = PtrValueIter::new(&a2, count).collect();
     a0.with_mut(|v: &mut Vec<T1>| {
         v.splice(start_idx..start_idx, temp_vec);
     });

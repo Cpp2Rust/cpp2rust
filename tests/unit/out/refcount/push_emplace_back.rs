@@ -84,7 +84,7 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
                         .offset((3) as isize)
                         .get_offset()
                         - (head.as_pointer() as Ptr<u8>).get_offset();
-                    PtrValueIter::new((head.as_pointer() as Ptr<u8>).clone(), __count)
+                    PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
                         .map(|item| u8::try_from(item).ok().unwrap())
                         .collect::<Vec<_>>()
                 }
@@ -125,7 +125,7 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
                     .offset((3) as isize)
                     .get_offset()
                     - (head.as_pointer() as Ptr<u8>).get_offset();
-                PtrValueIter::new((head.as_pointer() as Ptr<u8>).clone(), __count)
+                PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
                     .map(|item| u8::try_from(item).ok().unwrap())
                     .collect::<Vec<_>>()
             })))

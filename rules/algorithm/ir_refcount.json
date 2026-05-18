@@ -127,7 +127,7 @@
         }
       },
       {
-        "text": ";\n        let mut iter = PtrValueIter::new("
+        "text": ";\n        let mut iter = PtrValueIter::new(&"
       },
       {
         "placeholder": {
@@ -975,7 +975,7 @@
         }
       },
       {
-        "text": ";\n    for value in PtrValueIter::new("
+        "text": ";\n    for value in PtrValueIter::new(&"
       },
       {
         "placeholder": {
@@ -1430,23 +1430,12 @@
                           "method_call": {
                             "receiver": [
                               {
-                                "text": "PtrValueIter::new("
+                                "text": "PtrValueIter::new(&"
                               },
                               {
-                                "method_call": {
-                                  "receiver": [
-                                    {
-                                      "placeholder": {
-                                        "arg": 0,
-                                        "access": "read"
-                                      }
-                                    }
-                                  ],
-                                  "body": [
-                                    {
-                                      "text": ".clone()"
-                                    }
-                                  ]
+                                "placeholder": {
+                                  "arg": 0,
+                                  "access": "read"
                                 }
                               },
                               {

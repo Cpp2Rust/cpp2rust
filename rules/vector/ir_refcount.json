@@ -1071,7 +1071,7 @@
         "method_call": {
           "receiver": [
             {
-              "text": "PtrValueIter::new("
+              "text": "PtrValueIter::new(&"
             },
             {
               "placeholder": {
@@ -1164,23 +1164,12 @@
               "method_call": {
                 "receiver": [
                   {
-                    "text": "PtrValueIter::new("
+                    "text": "PtrValueIter::new(&"
                   },
                   {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "placeholder": {
-                            "arg": 0,
-                            "access": "read"
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".clone()"
-                        }
-                      ]
+                    "placeholder": {
+                      "arg": 0,
+                      "access": "read"
                     }
                   },
                   {
@@ -1318,27 +1307,7 @@
   "f42": {
     "body": [
       {
-        "text": "let __a0 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".clone()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let __count = "
+        "text": "let __count = "
       },
       {
         "method_call": {
@@ -1364,7 +1333,10 @@
         "method_call": {
           "receiver": [
             {
-              "text": "__a0"
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
             }
           ],
           "body": [
@@ -1390,7 +1362,16 @@
                           "method_call": {
                             "receiver": [
                               {
-                                "text": "PtrValueIter::new(__a0, __count)"
+                                "text": "PtrValueIter::new(&"
+                              },
+                              {
+                                "placeholder": {
+                                  "arg": 0,
+                                  "access": "read"
+                                }
+                              },
+                              {
+                                "text": ", __count)"
                               }
                             ],
                             "body": [
@@ -1809,7 +1790,7 @@
         "method_call": {
           "receiver": [
             {
-              "text": "PtrValueIter::new("
+              "text": "PtrValueIter::new(&"
             },
             {
               "placeholder": {

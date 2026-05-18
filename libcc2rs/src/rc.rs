@@ -639,8 +639,11 @@ pub struct PtrValueIter<T> {
 }
 
 impl<T> PtrValueIter<T> {
-    pub fn new(ptr: Ptr<T>, n: usize) -> Self {
-        Self { ptr, n }
+    pub fn new(ptr: &Ptr<T>, n: usize) -> Self {
+        Self {
+            ptr: ptr.clone(),
+            n,
+        }
     }
 }
 
