@@ -19,8 +19,8 @@ class FrontendAction : public clang::ASTFrontendAction {
 public:
   explicit FrontendAction(std::string &rs_code, Model model, bool first,
                           const std::string &rules_dir)
-      : rs_code_(rs_code), model_(model), first_(first),
-        rules_dir_(rules_dir) {}
+      : rs_code_(rs_code), model_(model), first_(first), rules_dir_(rules_dir) {
+  }
 
   std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &CI,

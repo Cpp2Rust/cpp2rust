@@ -17,8 +17,8 @@ public:
   explicit ASTConsumer(std::string &rs_code, Model model, bool first,
                        clang::CompilerInstance &CI,
                        const std::string &rules_dir)
-      : rs_code_(rs_code), model_(model), first_(first),
-        CI_(CI), rules_dir_(rules_dir) {}
+      : rs_code_(rs_code), model_(model), first_(first), CI_(CI),
+        rules_dir_(rules_dir) {}
 
   void HandleTranslationUnit(clang::ASTContext &ctx) override;
 

@@ -28,9 +28,8 @@ public:
                      const char *keyword_mut = "mut",
                      const char *keyword_ptr_decay = ".as_mut_ptr()",
                      const char *keyword_const_fn = keyword::kConst)
-      : rs_code_(&rs_code), ctx_(ctx),
-        keyword_unsafe_(keyword_unsafe), keyword_mut_(keyword_mut),
-        keyword_ptr_decay_(keyword_ptr_decay),
+      : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
+        keyword_mut_(keyword_mut), keyword_ptr_decay_(keyword_ptr_decay),
         keyword_const_fn_(keyword_const_fn) {}
 
   virtual ~Converter() = default;
