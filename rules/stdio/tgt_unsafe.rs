@@ -66,11 +66,19 @@ unsafe fn f4(a0: *mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
 }
 
 unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
-    libcc2rs::fread_unsafe(a0 as *mut ::std::ffi::c_void, a1, a2, a3)
+    let __a0 = a0 as *mut ::std::ffi::c_void;
+    let __a1 = a1;
+    let __a2 = a2;
+    let __a3 = a3;
+    libcc2rs::fread_unsafe(__a0, __a1, __a2, __a3)
 }
 
 unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
-    libcc2rs::fwrite_unsafe(a0 as *const ::std::ffi::c_void, a1, a2, a3)
+    let __a0 = a0 as *const ::std::ffi::c_void;
+    let __a1 = a1;
+    let __a2 = a2;
+    let __a3 = a3;
+    libcc2rs::fwrite_unsafe(__a0, __a1, __a2, __a3)
 }
 
 unsafe fn f7(a0: *mut ::std::fs::File) -> i32 {

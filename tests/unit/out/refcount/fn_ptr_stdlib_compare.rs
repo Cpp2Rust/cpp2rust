@@ -102,12 +102,13 @@ fn main_0() -> i32 {
             );
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
-        let n: Value<u64> = Rc::new(RefCell::new(libcc2rs::fread_refcount(
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            1_u64,
-            10_u64,
-            (*stream.borrow()).clone(),
-        )));
+        let n: Value<u64> = Rc::new(RefCell::new({
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a1 = 1_u64;
+            let __a2 = 10_u64;
+            let __a3 = (*stream.borrow()).clone();
+            libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
+        }));
         assert!(((*n.borrow()) == 10_u64));
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 10) {
@@ -267,12 +268,13 @@ fn main_0() -> i32 {
             );
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
-        let n: Value<u64> = Rc::new(RefCell::new(libcc2rs::fwrite_refcount(
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            1_u64,
-            10_u64,
-            (*stream.borrow()).clone(),
-        )));
+        let n: Value<u64> = Rc::new(RefCell::new({
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a1 = 1_u64;
+            let __a2 = 10_u64;
+            let __a3 = (*stream.borrow()).clone();
+            libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
+        }));
         assert!(((*n.borrow()) == 10_u64));
         {
             (*stream.borrow()).delete();

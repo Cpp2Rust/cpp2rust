@@ -488,7 +488,7 @@
   "f5": {
     "body": [
       {
-        "text": "libcc2rs::fread_unsafe("
+        "text": "let __a0 = "
       },
       {
         "placeholder": {
@@ -497,7 +497,7 @@
         }
       },
       {
-        "text": " as *mut ::std::ffi::c_void, "
+        "text": " as *mut ::std::ffi::c_void;\n    let __a1 = "
       },
       {
         "placeholder": {
@@ -506,7 +506,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a2 = "
       },
       {
         "placeholder": {
@@ -515,7 +515,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a3 = "
       },
       {
         "placeholder": {
@@ -524,9 +524,10 @@
         }
       },
       {
-        "text": ")"
+        "text": ";\n    libcc2rs::fread_unsafe(__a0, __a1, __a2, __a3)"
       }
     ],
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*mut ::libc::c_void",
@@ -550,7 +551,7 @@
   "f6": {
     "body": [
       {
-        "text": "libcc2rs::fwrite_unsafe("
+        "text": "let __a0 = "
       },
       {
         "placeholder": {
@@ -559,7 +560,7 @@
         }
       },
       {
-        "text": " as *const ::std::ffi::c_void, "
+        "text": " as *const ::std::ffi::c_void;\n    let __a1 = "
       },
       {
         "placeholder": {
@@ -568,7 +569,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a2 = "
       },
       {
         "placeholder": {
@@ -577,7 +578,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a3 = "
       },
       {
         "placeholder": {
@@ -586,9 +587,10 @@
         }
       },
       {
-        "text": ")"
+        "text": ";\n    libcc2rs::fwrite_unsafe(__a0, __a1, __a2, __a3)"
       }
     ],
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*const ::libc::c_void",

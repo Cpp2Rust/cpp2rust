@@ -95,12 +95,14 @@ unsafe fn main_0() -> i32 {
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = libcc2rs::fread_unsafe(
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut ::std::ffi::c_void,
-            1_u64,
-            10_u64,
-            stream,
-        );
+        let mut n: u64 = {
+            let __a0 =
+                (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut ::std::ffi::c_void;
+            let __a1 = 1_u64;
+            let __a2 = 10_u64;
+            let __a3 = stream;
+            libcc2rs::fread_unsafe(__a0, __a1, __a2, __a3)
+        };
         assert!(((n) == (10_u64)));
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
@@ -250,12 +252,14 @@ unsafe fn main_0() -> i32 {
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = libcc2rs::fwrite_unsafe(
-            (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const ::std::ffi::c_void,
-            1_u64,
-            10_u64,
-            stream,
-        );
+        let mut n: u64 = {
+            let __a0 = (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void)
+                as *const ::std::ffi::c_void;
+            let __a1 = 1_u64;
+            let __a2 = 10_u64;
+            let __a3 = stream;
+            libcc2rs::fwrite_unsafe(__a0, __a1, __a2, __a3)
+        };
         assert!(((n) == (10_u64)));
         {
             Box::from_raw(stream);

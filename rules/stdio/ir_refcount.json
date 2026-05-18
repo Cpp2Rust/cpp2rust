@@ -431,7 +431,7 @@
   "f5": {
     "body": [
       {
-        "text": "libcc2rs::fread_refcount("
+        "text": "let __a0 = "
       },
       {
         "placeholder": {
@@ -440,7 +440,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a1 = "
       },
       {
         "placeholder": {
@@ -449,7 +449,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a2 = "
       },
       {
         "placeholder": {
@@ -458,7 +458,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a3 = "
       },
       {
         "method_call": {
@@ -478,9 +478,10 @@
         }
       },
       {
-        "text": ")"
+        "text": ";\n    libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)"
       }
     ],
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "AnyPtr"
@@ -503,7 +504,7 @@
   "f6": {
     "body": [
       {
-        "text": "libcc2rs::fwrite_refcount("
+        "text": "let __a0 = "
       },
       {
         "placeholder": {
@@ -512,7 +513,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a1 = "
       },
       {
         "placeholder": {
@@ -521,7 +522,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a2 = "
       },
       {
         "placeholder": {
@@ -530,7 +531,7 @@
         }
       },
       {
-        "text": ", "
+        "text": ";\n    let __a3 = "
       },
       {
         "method_call": {
@@ -550,9 +551,10 @@
         }
       },
       {
-        "text": ")"
+        "text": ";\n    libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)"
       }
     ],
+    "multi_statement": true,
     "params": {
       "a0": {
         "type": "AnyPtr"
