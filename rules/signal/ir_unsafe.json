@@ -1,0 +1,52 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::sigaction("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*const ::libc::sigaction",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut ::libc::sigaction",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}
