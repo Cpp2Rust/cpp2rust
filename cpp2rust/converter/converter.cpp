@@ -276,7 +276,7 @@ bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
 
 bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
   for (auto *child : decl->decls()) {
-    if (IsConvertibleDecl(child) &&
+    if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
       Convert(child);
     }

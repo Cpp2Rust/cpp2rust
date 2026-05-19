@@ -385,6 +385,9 @@ search(std::unordered_multimap<std::string, T> &map, const std::string &txt,
 }
 
 TranslationRule::ExprRule *search(const clang::Expr *expr) {
+  if (RefersToUserDefinedDecl(expr)) {
+    return nullptr;
+  }
   auto qualified_name = ToString(expr);
   auto [rule, subs] =
       search(exprs_, qualified_name, GetExprMapKey(qualified_name));
@@ -598,7 +601,8 @@ const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr) {
 
 std::string MapFunctionName(const clang::FunctionDecl *decl) {
   assert(decl);
-  if (exprs_.contains(GetExprMapKey(ToString(decl)))) {
+  if (!IsUserDefinedDecl(decl) &&
+      exprs_.contains(GetExprMapKey(ToString(decl)))) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        model_ == Model::kRefCount ? "refcount" : "unsafe");
   }

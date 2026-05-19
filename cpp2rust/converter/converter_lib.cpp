@@ -129,13 +129,28 @@ bool IsInMainFile(const clang::Decl *decl) {
   return src_mgr.isInMainFile(src_mgr.getExpansionLoc(loc));
 }
 
-bool IsConvertibleDecl(const clang::Decl *decl) {
+bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
   const auto src_loc = decl->getLocation();
   return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
+}
+
+bool RefersToUserDefinedDecl(const clang::Expr *expr) {
+  expr = expr->IgnoreParenImpCasts();
+  const clang::Decl *decl = nullptr;
+  if (const auto *call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    decl = call->getDirectCallee();
+  } else if (const auto *ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
+    decl = ref->getDecl();
+  } else if (const auto *member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    decl = member->getMemberDecl();
+  } else if (const auto *ctor = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
+    decl = ctor->getConstructor();
+  }
+  return decl && IsUserDefinedDecl(decl);
 }
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr) {

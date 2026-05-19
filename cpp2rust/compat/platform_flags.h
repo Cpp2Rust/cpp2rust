@@ -9,7 +9,7 @@
 static inline std::vector<std::string> getPlatformClangBeginFlags() {
   std::vector<std::string> flags = {
       "-resource-dir=" CLANG_RESOURCE_DIR,
-      "-I" COMPAT_INCLUDE_DIR,
+      "-isystem" COMPAT_INCLUDE_DIR,
       "-D_FORTIFY_SOURCE=0",
   };
 #ifdef MACOS_SDK_PATH

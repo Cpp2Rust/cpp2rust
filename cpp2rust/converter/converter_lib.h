@@ -39,7 +39,9 @@ bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
 bool IsInMainFile(const clang::Decl *decl);
 
-bool IsConvertibleDecl(const clang::Decl *decl);
+bool IsUserDefinedDecl(const clang::Decl *decl);
+
+bool RefersToUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
