@@ -43,11 +43,18 @@ static void test_strchr() {
   assert(std::strchr(s, 'z') == nullptr);
 }
 
+static void test_strlen() {
+  assert(std::strlen("") == 0);
+  assert(std::strlen("hello") == 5);
+  assert(std::strlen("hello world") == 11);
+}
+
 int main() {
   test_memcpy();
   test_memset();
   test_memcmp();
   test_memmove();
   test_strchr();
+  test_strlen();
   return 0;
 }

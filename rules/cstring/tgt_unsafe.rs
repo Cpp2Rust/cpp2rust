@@ -43,3 +43,7 @@ unsafe fn f5(a0: *const u8, a1: i32) -> *mut u8 {
 unsafe fn f6(a0: *const u8, a1: i32) -> *const u8 {
     libc::strchr(a0 as *const i8, a1) as *const u8
 }
+
+unsafe fn f7(a0: *const u8) -> u64 {
+    libc::strlen(a0 as *const i8) as u64
+}
