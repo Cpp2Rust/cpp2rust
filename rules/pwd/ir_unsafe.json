@@ -1,0 +1,27 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::getpwuid("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "u32"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::passwd",
+      "is_unsafe_pointer": true
+    }
+  }
+}
