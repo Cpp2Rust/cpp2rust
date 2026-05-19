@@ -49,6 +49,31 @@ static void test_strlen(void) {
   assert(strlen("hello world") == 11);
 }
 
+static void test_strcmp(void) {
+  assert(strcmp("abc", "abc") == 0);
+  assert(strcmp("abc", "abd") < 0);
+  assert(strcmp("abd", "abc") > 0);
+  const char *p = "abc";
+  const char *q = "abd";
+  char buf[] = {'a', 'b', 'c', '\0'};
+  assert(strcmp(p, p) == 0);
+  assert(strcmp(p, q) < 0);
+  assert(strcmp(buf, p) == 0);
+}
+
+static void test_strncmp(void) {
+  assert(strncmp("abcdef", "abcxyz", 3) == 0);
+  assert(strncmp("abcdef", "abcxyz", 4) < 0);
+  assert(strncmp("abcxyz", "abcdef", 4) > 0);
+  const char *p = "abcdef";
+  const char *q = "abcxyz";
+  char buf[] = {'a', 'b', 'c', 'd', 'e', 'f', '\0'};
+  size_t n = 3;
+  assert(strncmp(p, q, n) == 0);
+  assert(strncmp(p, q, n + 1) < 0);
+  assert(strncmp(buf, p, 6) == 0);
+}
+
 int main(void) {
   test_memcpy();
   test_memset();
@@ -56,5 +81,7 @@ int main(void) {
   test_memmove();
   test_strchr();
   test_strlen();
+  test_strcmp();
+  test_strncmp();
   return 0;
 }

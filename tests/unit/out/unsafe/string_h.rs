@@ -192,6 +192,99 @@ pub unsafe fn test_strlen_5() {
             != 0)
     );
 }
+pub unsafe fn test_strcmp_6() {
+    assert!(
+        ((((libc::strcmp(
+            (b"abc\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abc\0".as_ptr().cast_mut()).cast_const() as *const i8
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (b"abc\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abd\0".as_ptr().cast_mut()).cast_const() as *const i8
+        )) < (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (b"abd\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abc\0".as_ptr().cast_mut()).cast_const() as *const i8
+        )) > (0)) as i32)
+            != 0)
+    );
+    let mut p: *const u8 = (b"abc\0".as_ptr().cast_mut()).cast_const();
+    let mut q: *const u8 = (b"abd\0".as_ptr().cast_mut()).cast_const();
+    let mut buf: [u8; 4] = [
+        (('a' as i32) as u8),
+        (('b' as i32) as u8),
+        (('c' as i32) as u8),
+        (('\0' as i32) as u8),
+    ];
+    assert!(((((libc::strcmp(p as *const i8, p as *const i8)) == (0)) as i32) != 0));
+    assert!(((((libc::strcmp(p as *const i8, q as *const i8)) < (0)) as i32) != 0));
+    assert!(
+        ((((libc::strcmp((buf.as_mut_ptr()).cast_const() as *const i8, p as *const i8)) == (0))
+            as i32)
+            != 0)
+    );
+}
+pub unsafe fn test_strncmp_7() {
+    assert!(
+        ((((libc::strncmp(
+            (b"abcdef\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abcxyz\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            3_u64 as usize
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strncmp(
+            (b"abcdef\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abcxyz\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            4_u64 as usize
+        )) < (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strncmp(
+            (b"abcxyz\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (b"abcdef\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            4_u64 as usize
+        )) > (0)) as i32)
+            != 0)
+    );
+    let mut p: *const u8 = (b"abcdef\0".as_ptr().cast_mut()).cast_const();
+    let mut q: *const u8 = (b"abcxyz\0".as_ptr().cast_mut()).cast_const();
+    let mut buf: [u8; 7] = [
+        (('a' as i32) as u8),
+        (('b' as i32) as u8),
+        (('c' as i32) as u8),
+        (('d' as i32) as u8),
+        (('e' as i32) as u8),
+        (('f' as i32) as u8),
+        (('\0' as i32) as u8),
+    ];
+    let mut n: u64 = 3_u64;
+    assert!(((((libc::strncmp(p as *const i8, q as *const i8, n as usize)) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::strncmp(
+            p as *const i8,
+            q as *const i8,
+            (n).wrapping_add(1_u64) as usize
+        )) < (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strncmp(
+            (buf.as_mut_ptr()).cast_const() as *const i8,
+            p as *const i8,
+            6_u64 as usize
+        )) == (0)) as i32)
+            != 0)
+    );
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -204,5 +297,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_memmove_3() });
     (unsafe { test_strchr_4() });
     (unsafe { test_strlen_5() });
+    (unsafe { test_strcmp_6() });
+    (unsafe { test_strncmp_7() });
     return 0;
 }

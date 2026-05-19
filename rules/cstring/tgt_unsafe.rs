@@ -47,3 +47,11 @@ unsafe fn f6(a0: *const u8, a1: i32) -> *const u8 {
 unsafe fn f7(a0: *const u8) -> u64 {
     libc::strlen(a0 as *const i8) as u64
 }
+
+unsafe fn f8(a0: *const u8, a1: *const u8) -> i32 {
+    libc::strcmp(a0 as *const i8, a1 as *const i8)
+}
+
+unsafe fn f9(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
+    libc::strncmp(a0 as *const i8, a1 as *const i8, a2 as usize)
+}

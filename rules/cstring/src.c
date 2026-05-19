@@ -14,3 +14,7 @@ void *f4(void *dst, const void *src, size_t n) { return memmove(dst, src, n); }
 char *f5(const char *a0, int a1) { return strchr(a0, a1); }
 
 size_t f7(const char *a0) { return strlen(a0); }
+
+int f8(const char *a0, const char *a1) { return strcmp(a0, a1); }
+
+int f9(const char *a0, const char *a1, size_t a2) { return strncmp(a0, a1, a2); }
