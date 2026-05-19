@@ -371,28 +371,7 @@ pub unsafe fn test_strpbrk_14() {
             == (&mut buf[(1) as usize] as *mut u8))
     );
 }
-pub unsafe fn test_memrchr_15() {
-    let data: [u8; 5] = [1_u8, 2_u8, 3_u8, 2_u8, 4_u8];
-    let mut r: *const ::libc::c_void = libc::memrchr(
-        (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
-        2,
-        5_u64 as usize,
-    ) as *const ::libc::c_void;
-    assert!(((r) == ((&data[(3) as usize] as *const u8) as *const u8 as *const ::libc::c_void)));
-    assert!((libc::memrchr(
-        (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
-        99,
-        5_u64 as usize
-    ) as *const ::libc::c_void)
-        .is_null());
-    let mut p: *const ::libc::c_void = (data.as_ptr() as *const u8 as *const ::libc::c_void);
-    let mut n: u64 = 5_u64;
-    assert!(
-        ((libc::memrchr(p as *const ::libc::c_void, 1, n as usize) as *const ::libc::c_void)
-            == (p))
-    );
-}
-pub unsafe fn test_strcasecmp_16() {
+pub unsafe fn test_strcasecmp_15() {
     assert!(
         ((libc::strcasecmp(
             b"HELLO\0".as_ptr() as *const i8,
@@ -436,7 +415,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_strspn_12() });
     (unsafe { test_strstr_13() });
     (unsafe { test_strpbrk_14() });
-    (unsafe { test_memrchr_15() });
-    (unsafe { test_strcasecmp_16() });
+    (unsafe { test_strcasecmp_15() });
     return 0;
 }

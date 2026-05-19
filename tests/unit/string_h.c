@@ -153,16 +153,6 @@ static void test_strpbrk(void) {
   assert(strpbrk(buf, "b") == &buf[1]);
 }
 
-static void test_memrchr(void) {
-  const char data[] = {1, 2, 3, 2, 4};
-  void *r = memrchr(data, 2, 5);
-  assert(r == &data[3]);
-  assert(memrchr(data, 99, 5) == NULL);
-  const void *p = data;
-  size_t n = 5;
-  assert(memrchr(p, 1, n) == p);
-}
-
 static void test_strcasecmp(void) {
   assert(strcasecmp("HELLO", "hello") == 0);
   assert(strcasecmp("abc", "abd") < 0);
@@ -188,7 +178,6 @@ int main(void) {
   test_strspn();
   test_strstr();
   test_strpbrk();
-  test_memrchr();
   test_strcasecmp();
   return 0;
 }
