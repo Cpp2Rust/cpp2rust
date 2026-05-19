@@ -105,3 +105,18 @@ unsafe fn f9() -> *mut ::std::fs::File {
 unsafe fn f10() -> *mut ::std::fs::File {
     libcc2rs::cin_unsafe()
 }
+
+unsafe fn f11(a0: i32, a1: *mut ::std::fs::File) -> i32 {
+    match (*a1).write_all(&[a0 as u8]) {
+        Ok(()) => a0 & 0xff,
+        Err(_) => -1,
+    }
+}
+
+unsafe fn f12(a0: *const u8, a1: *mut ::std::fs::File) -> i32 {
+    let bytes = std::ffi::CStr::from_ptr(a0 as *const i8).to_bytes();
+    match (*a1).write_all(bytes) {
+        Ok(()) => 0,
+        Err(_) => -1,
+    }
+}

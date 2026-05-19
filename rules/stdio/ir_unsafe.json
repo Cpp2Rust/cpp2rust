@@ -264,6 +264,142 @@
       "is_unsafe_pointer": true
     }
   },
+  "f11": {
+    "body": [
+      {
+        "text": "match "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "(*"
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "write"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ],
+          "body": [
+            {
+              "text": ".write_all(&["
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": " as u8])"
+            }
+          ]
+        }
+      },
+      {
+        "text": " {\n        Ok(()) => "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " & 0xff,\n        Err(_) => -1,\n    }"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::std::fs::File",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f12": {
+    "body": [
+      {
+        "text": "let bytes = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "std::ffi::CStr::from_ptr("
+            },
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            },
+            {
+              "text": " as *const i8)"
+            }
+          ],
+          "body": [
+            {
+              "text": ".to_bytes()"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    match "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "text": "(*"
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "write"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ],
+          "body": [
+            {
+              "text": ".write_all(bytes)"
+            }
+          ]
+        }
+      },
+      {
+        "text": " {\n        Ok(()) => 0,\n        Err(_) => -1,\n    }"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*mut ::std::fs::File",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
   "f2": {
     "body": [
       {
