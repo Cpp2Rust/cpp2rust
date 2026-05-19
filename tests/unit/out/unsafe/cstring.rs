@@ -151,6 +151,11 @@ pub unsafe fn test_strchr_4() {
     assert!((((*r) as i32) == (('w' as u8) as i32)));
     assert!((libc::strchr(s as *const i8, (('z' as u8) as i32)) as *const u8).is_null());
 }
+pub unsafe fn test_strlen_5() {
+    assert!(((libc::strlen(b"\0".as_ptr() as *const i8) as u64) == (0_u64)));
+    assert!(((libc::strlen(b"hello\0".as_ptr() as *const i8) as u64) == (5_u64)));
+    assert!(((libc::strlen(b"hello world\0".as_ptr() as *const i8) as u64) == (11_u64)));
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -162,5 +167,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_memcmp_2() });
     (unsafe { test_memmove_3() });
     (unsafe { test_strchr_4() });
+    (unsafe { test_strlen_5() });
     return 0;
 }

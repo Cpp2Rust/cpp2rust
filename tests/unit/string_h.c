@@ -43,11 +43,18 @@ static void test_strchr(void) {
   assert(strchr((char *)s, 'z') == NULL);
 }
 
+static void test_strlen(void) {
+  assert(strlen("") == 0);
+  assert(strlen("hello") == 5);
+  assert(strlen("hello world") == 11);
+}
+
 int main(void) {
   test_memcpy();
   test_memset();
   test_memcmp();
   test_memmove();
   test_strchr();
+  test_strlen();
   return 0;
 }
