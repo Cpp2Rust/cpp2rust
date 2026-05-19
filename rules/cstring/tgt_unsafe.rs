@@ -79,3 +79,51 @@ unsafe fn f14(a0: *mut u8, a1: i32) -> *mut u8 {
 unsafe fn f15(a0: *const u8) -> *mut u8 {
     libc::strdup(a0 as *const i8) as *mut u8
 }
+
+unsafe fn f16(a0: *const u8, a1: *const u8) -> u64 {
+    libc::strcspn(a0 as *const i8, a1 as *const i8) as u64
+}
+
+unsafe fn f17(a0: *const u8, a1: *const u8) -> u64 {
+    libc::strspn(a0 as *const i8, a1 as *const i8) as u64
+}
+
+unsafe fn f18(a0: *const u8, a1: *const u8) -> *mut u8 {
+    libc::strstr(a0 as *const i8, a1 as *const i8) as *mut u8
+}
+
+unsafe fn f19(a0: *const u8, a1: *const u8) -> *const u8 {
+    libc::strstr(a0 as *const i8, a1 as *const i8) as *const u8
+}
+
+unsafe fn f20(a0: *mut u8, a1: *const u8) -> *mut u8 {
+    libc::strstr(a0 as *const i8, a1 as *const i8) as *mut u8
+}
+
+unsafe fn f21(a0: *const u8, a1: *const u8) -> *mut u8 {
+    libc::strpbrk(a0 as *const i8, a1 as *const i8) as *mut u8
+}
+
+unsafe fn f22(a0: *const u8, a1: *const u8) -> *const u8 {
+    libc::strpbrk(a0 as *const i8, a1 as *const i8) as *const u8
+}
+
+unsafe fn f23(a0: *mut u8, a1: *const u8) -> *mut u8 {
+    libc::strpbrk(a0 as *const i8, a1 as *const i8) as *mut u8
+}
+
+unsafe fn f24(a0: *const u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+}
+
+unsafe fn f25(a0: *const u8, a1: i32, a2: usize) -> *const ::libc::c_void {
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize) as *const ::libc::c_void
+}
+
+unsafe fn f26(a0: *mut u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
+    libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+}
+
+unsafe fn f27(a0: *const u8, a1: *const u8) -> i32 {
+    libc::strcasecmp(a0 as *const i8, a1 as *const i8)
+}

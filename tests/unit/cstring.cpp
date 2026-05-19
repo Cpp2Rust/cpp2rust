@@ -1,7 +1,9 @@
 // no-compile: refcount
+#define _GNU_SOURCE
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <strings.h>
 
 static void test_memcpy() {
   const char src[] = "hello";
@@ -113,6 +115,63 @@ static void test_strdup() {
   std::free(d3);
 }
 
+static void test_strcspn() {
+  assert(std::strcspn("hello", "el") == 1);
+  assert(std::strcspn("abc", "xyz") == 3);
+  assert(std::strcspn("", "abc") == 0);
+  const char *s = "hello";
+  const char *rej = "el";
+  assert(std::strcspn(s, rej) == 1);
+}
+
+static void test_strspn() {
+  assert(std::strspn("hello", "hel") == 4);
+  assert(std::strspn("abc", "xyz") == 0);
+  assert(std::strspn("aaa", "a") == 3);
+  const char *s = "hello";
+  const char *acc = "hel";
+  assert(std::strspn(s, acc) == 4);
+}
+
+static void test_strstr() {
+  const char *h = "hello world";
+  const char *r = std::strstr(h, "world");
+  assert(r != nullptr);
+  assert(r == h + 6);
+  assert(std::strstr(h, "xyz") == nullptr);
+  char buf[] = {'h', 'e', 'l', 'l', 'o', '\0'};
+  assert(std::strstr(buf, "ll") == &buf[2]);
+}
+
+static void test_strpbrk() {
+  const char *s = "hello world";
+  const char *r = std::strpbrk(s, "wo");
+  assert(r != nullptr);
+  assert(r == s + 4);
+  assert(std::strpbrk(s, "xyz") == nullptr);
+  char buf[] = {'a', 'b', 'c', '\0'};
+  assert(std::strpbrk(buf, "b") == &buf[1]);
+}
+
+static void test_memrchr() {
+  const char data[] = {1, 2, 3, 2, 4};
+  const void *r = memrchr(data, 2, 5);
+  assert(r == &data[3]);
+  assert(memrchr(data, 99, 5) == nullptr);
+  const void *p = data;
+  std::size_t n = 5;
+  assert(memrchr(p, 1, n) == p);
+}
+
+static void test_strcasecmp() {
+  assert(strcasecmp("HELLO", "hello") == 0);
+  assert(strcasecmp("abc", "abd") < 0);
+  assert(strcasecmp("abd", "abc") > 0);
+  const char *p = "FOO";
+  const char *q = "foo";
+  assert(strcasecmp(p, q) == 0);
+}
+
 int main() {
   test_memcpy();
   test_memset();
@@ -125,5 +184,11 @@ int main() {
   test_memchr();
   test_strrchr();
   test_strdup();
+  test_strcspn();
+  test_strspn();
+  test_strstr();
+  test_strpbrk();
+  test_memrchr();
+  test_strcasecmp();
   return 0;
 }
