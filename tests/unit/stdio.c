@@ -29,10 +29,13 @@ static void test_fileno(void) {
   assert(fileno(stdin) == 0);
   assert(fileno(stdout) == 1);
   assert(fileno(stderr) == 2);
-  FILE *fp = fopen("/tmp/cpp2rust_fileno_test.tmp", "wb");
+  const char* file = "/tmp/cpp2rust_fileno_test.tmp";
+  FILE *fp = fopen(file, "wb");
   assert(fp != NULL);
   assert(fileno(fp) > 2);
   fclose(fp);
+  // TODO: uncomment when unlink is available 
+  // assert(unlink(file) == 0);
 }
 
 int main(void) {

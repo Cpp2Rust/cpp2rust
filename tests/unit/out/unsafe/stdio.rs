@@ -130,6 +130,7 @@ pub unsafe fn test_fileno_3() {
         }) == (2)) as i32)
             != 0)
     );
+    let mut file: *const u8 = (b"/tmp/cpp2rust_fileno_test.tmp\0".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::std::fs::File =
         match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
             .to_str()
@@ -138,12 +139,9 @@ pub unsafe fn test_fileno_3() {
             v if v == "rb" => std::fs::OpenOptions::new()
                 .read(true)
                 .open(
-                    std::ffi::CStr::from_ptr(
-                        (b"/tmp/cpp2rust_fileno_test.tmp\0".as_ptr().cast_mut()).cast_const()
-                            as *const i8,
-                    )
-                    .to_str()
-                    .expect("invalid c-string"),
+                    std::ffi::CStr::from_ptr(file as *const i8)
+                        .to_str()
+                        .expect("invalid c-string"),
                 )
                 .ok()
                 .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
@@ -152,12 +150,9 @@ pub unsafe fn test_fileno_3() {
                 .create(true)
                 .truncate(true)
                 .open(
-                    std::ffi::CStr::from_ptr(
-                        (b"/tmp/cpp2rust_fileno_test.tmp\0".as_ptr().cast_mut()).cast_const()
-                            as *const i8,
-                    )
-                    .to_str()
-                    .expect("invalid c-string"),
+                    std::ffi::CStr::from_ptr(file as *const i8)
+                        .to_str()
+                        .expect("invalid c-string"),
                 )
                 .ok()
                 .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
