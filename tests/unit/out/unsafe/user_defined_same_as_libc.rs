@@ -18,8 +18,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fp: *mut ::std::fs::File = (unsafe {
-        let _path: *const u8 = b"/etc/passwd\0".as_ptr().cast_mut().cast_const();
-        let _mode: *const u8 = b"r\0".as_ptr().cast_mut().cast_const();
+        let _path: *const u8 = (b"/etc/passwd\0".as_ptr().cast_mut()).cast_const();
+        let _mode: *const u8 = (b"r\0".as_ptr().cast_mut()).cast_const();
         fopen_0(_path, _mode)
     });
     assert!(((((fp).is_null()) as i32) != 0));
