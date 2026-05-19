@@ -87,13 +87,9 @@ static void test_ftruncate(void) {
   unlink(path);
 }
 
-static void test_isatty(void) {
-  printf("%d\n", isatty(0));
-}
+static void test_isatty(void) { printf("%d\n", isatty(0)); }
 
-static void test_geteuid(void) {
-  printf("%u\n", geteuid());
-}
+static void test_geteuid(void) { printf("%u\n", geteuid()); }
 
 static void test_gethostname(void) {
   char name[256];
