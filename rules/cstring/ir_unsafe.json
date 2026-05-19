@@ -66,6 +66,246 @@
       "is_unsafe_pointer": true
     }
   },
+  "f10": {
+    "body": [
+      {
+        "text": "libc::memchr("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const ::libc::c_void, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as usize)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "usize"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f11": {
+    "body": [
+      {
+        "text": "libc::strrchr("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as *mut u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f12": {
+    "body": [
+      {
+        "text": "libc::memchr("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const ::libc::c_void, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as usize) as *const ::libc::c_void"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "usize"
+      }
+    },
+    "return_type": {
+      "type": "*const ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f13": {
+    "body": [
+      {
+        "text": "libc::strrchr("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as *const u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "*const u8",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f14": {
+    "body": [
+      {
+        "text": "libc::strrchr("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as *mut u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f15": {
+    "body": [
+      {
+        "text": "libc::strdup("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8) as *mut u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
   "f2": {
     "body": [
       {

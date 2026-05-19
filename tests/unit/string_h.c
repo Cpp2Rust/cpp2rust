@@ -1,5 +1,6 @@
 // no-compile: refcount
 #include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
 static void test_memcpy(void) {
@@ -74,6 +75,44 @@ static void test_strncmp(void) {
   assert(strncmp(buf, p, 6) == 0);
 }
 
+static void test_memchr(void) {
+  const char data[] = {0x10, 0x20, 0x30, 0x40};
+  void *r = memchr(data, 0x30, 4);
+  assert(r == &data[2]);
+  assert(memchr(data, 0x99, 4) == NULL);
+  const void *p = data;
+  size_t n = 4;
+  assert(memchr(p, 0x10, n) == p);
+}
+
+static void test_strrchr(void) {
+  const char *s = "hello world";
+  char *r = strrchr((char *)s, 'l');
+  assert(r != NULL);
+  assert(*r == 'l');
+  assert(r == s + 9);
+  assert(strrchr((char *)s, 'z') == NULL);
+  char buf[] = {'a', 'b', 'a', '\0'};
+  assert(strrchr(buf, 'a') == &buf[2]);
+}
+
+static void test_strdup(void) {
+  char *d = strdup("hello");
+  assert(d != NULL);
+  assert(strcmp(d, "hello") == 0);
+  free(d);
+  const char *p = "world";
+  char buf[] = {'a', 'b', 'c', '\0'};
+  char *d2 = strdup(p);
+  assert(d2 != NULL);
+  assert(strcmp(d2, p) == 0);
+  free(d2);
+  char *d3 = strdup(buf);
+  assert(d3 != NULL);
+  assert(strcmp(d3, buf) == 0);
+  free(d3);
+}
+
 int main(void) {
   test_memcpy();
   test_memset();
@@ -83,5 +122,8 @@ int main(void) {
   test_strlen();
   test_strcmp();
   test_strncmp();
+  test_memchr();
+  test_strrchr();
+  test_strdup();
   return 0;
 }

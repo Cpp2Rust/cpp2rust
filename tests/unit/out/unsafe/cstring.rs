@@ -232,6 +232,66 @@ pub unsafe fn test_strncmp_7() {
         )) == (0))
     );
 }
+pub unsafe fn test_memchr_8() {
+    let data: [u8; 4] = [16_u8, 32_u8, 48_u8, 64_u8];
+    let mut r: *const ::libc::c_void = libc::memchr(
+        (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
+        48,
+        4_u64 as usize,
+    ) as *const ::libc::c_void;
+    assert!(((r) == ((&data[(2) as usize] as *const u8) as *const u8 as *const ::libc::c_void)));
+    assert!((libc::memchr(
+        (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
+        153,
+        4_u64 as usize
+    ) as *const ::libc::c_void)
+        .is_null());
+    let mut p: *const ::libc::c_void = (data.as_ptr() as *const u8 as *const ::libc::c_void);
+    let mut n: u64 = 4_u64;
+    assert!(
+        ((libc::memchr(p as *const ::libc::c_void, 16, n as usize) as *const ::libc::c_void)
+            == (p))
+    );
+}
+pub unsafe fn test_strrchr_9() {
+    let mut s: *const u8 = b"hello world\0".as_ptr();
+    let mut r: *const u8 = libc::strrchr(s as *const i8, (('l' as u8) as i32)) as *const u8;
+    assert!(!((r).is_null()));
+    assert!((((*r) as i32) == (('l' as u8) as i32)));
+    assert!(((r) == (s.offset((9) as isize))));
+    assert!((libc::strrchr(s as *const i8, (('z' as u8) as i32)) as *const u8).is_null());
+    let mut buf: [u8; 4] = [('a' as u8), ('b' as u8), ('a' as u8), ('\0' as u8)];
+    assert!(
+        ((libc::strrchr(buf.as_mut_ptr() as *const i8, (('a' as u8) as i32)) as *mut u8)
+            == (&mut buf[(2) as usize] as *mut u8))
+    );
+}
+pub unsafe fn test_strdup_10() {
+    let mut d: *mut u8 = libc::strdup(b"hello\0".as_ptr() as *const i8) as *mut u8;
+    assert!(!((d).is_null()));
+    assert!(
+        ((libc::strcmp(
+            (d).cast_const() as *const i8,
+            b"hello\0".as_ptr() as *const i8
+        )) == (0))
+    );
+    libc::free((d as *mut u8 as *mut ::libc::c_void));
+    let mut p: *const u8 = b"world\0".as_ptr();
+    let mut buf: [u8; 4] = [('a' as u8), ('b' as u8), ('c' as u8), ('\0' as u8)];
+    let mut d2: *mut u8 = libc::strdup(p as *const i8) as *mut u8;
+    assert!(!((d2).is_null()));
+    assert!(((libc::strcmp((d2).cast_const() as *const i8, p as *const i8)) == (0)));
+    libc::free((d2 as *mut u8 as *mut ::libc::c_void));
+    let mut d3: *mut u8 = libc::strdup((buf.as_mut_ptr()).cast_const() as *const i8) as *mut u8;
+    assert!(!((d3).is_null()));
+    assert!(
+        ((libc::strcmp(
+            (d3).cast_const() as *const i8,
+            (buf.as_mut_ptr()).cast_const() as *const i8
+        )) == (0))
+    );
+    libc::free((d3 as *mut u8 as *mut ::libc::c_void));
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -246,5 +306,8 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_strlen_5() });
     (unsafe { test_strcmp_6() });
     (unsafe { test_strncmp_7() });
+    (unsafe { test_memchr_8() });
+    (unsafe { test_strrchr_9() });
+    (unsafe { test_strdup_10() });
     return 0;
 }

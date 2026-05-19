@@ -1,5 +1,6 @@
 // no-compile: refcount
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 
 static void test_memcpy() {
@@ -74,6 +75,44 @@ static void test_strncmp() {
   assert(std::strncmp(buf, p, 6) == 0);
 }
 
+static void test_memchr() {
+  const char data[] = {0x10, 0x20, 0x30, 0x40};
+  const void *r = std::memchr(data, 0x30, 4);
+  assert(r == &data[2]);
+  assert(std::memchr(data, 0x99, 4) == nullptr);
+  const void *p = data;
+  std::size_t n = 4;
+  assert(std::memchr(p, 0x10, n) == p);
+}
+
+static void test_strrchr() {
+  const char *s = "hello world";
+  const char *r = std::strrchr(s, 'l');
+  assert(r != nullptr);
+  assert(*r == 'l');
+  assert(r == s + 9);
+  assert(std::strrchr(s, 'z') == nullptr);
+  char buf[] = {'a', 'b', 'a', '\0'};
+  assert(std::strrchr(buf, 'a') == &buf[2]);
+}
+
+static void test_strdup() {
+  char *d = strdup("hello");
+  assert(d != nullptr);
+  assert(std::strcmp(d, "hello") == 0);
+  std::free(d);
+  const char *p = "world";
+  char buf[] = {'a', 'b', 'c', '\0'};
+  char *d2 = strdup(p);
+  assert(d2 != nullptr);
+  assert(std::strcmp(d2, p) == 0);
+  std::free(d2);
+  char *d3 = strdup(buf);
+  assert(d3 != nullptr);
+  assert(std::strcmp(d3, buf) == 0);
+  std::free(d3);
+}
+
 int main() {
   test_memcpy();
   test_memset();
@@ -83,5 +122,8 @@ int main() {
   test_strlen();
   test_strcmp();
   test_strncmp();
+  test_memchr();
+  test_strrchr();
+  test_strdup();
   return 0;
 }

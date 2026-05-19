@@ -18,3 +18,9 @@ size_t f7(const char *a0) { return strlen(a0); }
 int f8(const char *a0, const char *a1) { return strcmp(a0, a1); }
 
 int f9(const char *a0, const char *a1, size_t a2) { return strncmp(a0, a1, a2); }
+
+void *f10(const void *a0, int a1, size_t a2) { return memchr(a0, a1, a2); }
+
+char *f11(const char *a0, int a1) { return strrchr(a0, a1); }
+
+char *f15(const char *a0) { return strdup(a0); }

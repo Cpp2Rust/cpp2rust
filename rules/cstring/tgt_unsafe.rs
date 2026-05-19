@@ -55,3 +55,27 @@ unsafe fn f8(a0: *const u8, a1: *const u8) -> i32 {
 unsafe fn f9(a0: *const u8, a1: *const u8, a2: usize) -> i32 {
     libc::strncmp(a0 as *const i8, a1 as *const i8, a2 as usize)
 }
+
+unsafe fn f10(a0: *const u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
+    libc::memchr(a0 as *const ::libc::c_void, a1, a2 as usize)
+}
+
+unsafe fn f11(a0: *const u8, a1: i32) -> *mut u8 {
+    libc::strrchr(a0 as *const i8, a1) as *mut u8
+}
+
+unsafe fn f12(a0: *const u8, a1: i32, a2: usize) -> *const ::libc::c_void {
+    libc::memchr(a0 as *const ::libc::c_void, a1, a2 as usize) as *const ::libc::c_void
+}
+
+unsafe fn f13(a0: *const u8, a1: i32) -> *const u8 {
+    libc::strrchr(a0 as *const i8, a1) as *const u8
+}
+
+unsafe fn f14(a0: *mut u8, a1: i32) -> *mut u8 {
+    libc::strrchr(a0 as *const i8, a1) as *mut u8
+}
+
+unsafe fn f15(a0: *const u8) -> *mut u8 {
+    libc::strdup(a0 as *const i8) as *mut u8
+}
