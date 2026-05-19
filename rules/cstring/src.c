@@ -35,6 +35,8 @@ char *f18(const char *a0, const char *a1) { return strstr(a0, a1); }
 
 char *f21(const char *a0, const char *a1) { return strpbrk(a0, a1); }
 
+#if defined(__linux__)
 void *f24(const void *a0, int a1, size_t a2) { return memrchr(a0, a1, a2); }
+#endif
 
 int f27(const char *a0, const char *a1) { return strcasecmp(a0, a1); }

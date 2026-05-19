@@ -112,14 +112,17 @@ unsafe fn f23(a0: *mut u8, a1: *const u8) -> *mut u8 {
     libc::strpbrk(a0 as *const i8, a1 as *const i8) as *mut u8
 }
 
+#[cfg(target_os = "linux")]
 unsafe fn f24(a0: *const u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
     libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
 }
 
+#[cfg(target_os = "linux")]
 unsafe fn f25(a0: *const u8, a1: i32, a2: usize) -> *const ::libc::c_void {
     libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize) as *const ::libc::c_void
 }
 
+#[cfg(target_os = "linux")]
 unsafe fn f26(a0: *mut u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
     libc::memrchr(a0 as *const ::libc::c_void, a1, a2 as usize)
 }

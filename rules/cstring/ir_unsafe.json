@@ -739,7 +739,8 @@
     "return_type": {
       "type": "*mut ::libc::c_void",
       "is_unsafe_pointer": true
-    }
+    },
+    "target_os": "linux"
   },
   "f25": {
     "body": [
@@ -789,7 +790,8 @@
     "return_type": {
       "type": "*const ::libc::c_void",
       "is_unsafe_pointer": true
-    }
+    },
+    "target_os": "linux"
   },
   "f26": {
     "body": [
@@ -839,7 +841,8 @@
     "return_type": {
       "type": "*mut ::libc::c_void",
       "is_unsafe_pointer": true
-    }
+    },
+    "target_os": "linux"
   },
   "f27": {
     "body": [
