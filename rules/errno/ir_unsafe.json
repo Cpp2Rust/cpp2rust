@@ -2,7 +2,7 @@
   "f1": {
     "body": [
       {
-        "text": "libc::__errno_location()"
+        "text": "libcc2rs::cpp2rust_errno()"
       }
     ],
     "return_type": {

@@ -2,5 +2,5 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 unsafe fn f1() -> *mut i32 {
-    libc::__errno_location()
+    libcc2rs::cpp2rust_errno()
 }

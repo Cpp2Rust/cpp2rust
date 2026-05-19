@@ -3,4 +3,4 @@
 
 #include <errno.h>
 
-int *f1(void) { return __errno_location(); }
+int *f1(void) { return cpp2rust_errno(); }
