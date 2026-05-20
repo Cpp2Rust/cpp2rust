@@ -131,12 +131,14 @@ pub unsafe fn test_fstat_1() {
 pub unsafe fn test_mkdir_2() {
     let mut path: *const u8 = (b"/tmp/cpp2rust_mkdir_test_dir\0".as_ptr().cast_mut()).cast_const();
     libc::rmdir(path as *const i8);
-    assert!(((((libc::mkdir(path as *const i8, 493_u32)) == (0)) as i32) != 0));
+    assert!(((((libc::mkdir(path as *const i8, 493_u32 as ::libc::mode_t)) == (0)) as i32) != 0));
     let mut st: stat = std::mem::zeroed::<stat>();
     assert!(((((libc::stat(path as *const i8, (&mut st as *mut stat))) == (0)) as i32) != 0));
     assert!((((((st.st_mode) & (61440_u32)) == ((16384) as u32)) as i32) != 0));
     (*libcc2rs::cpp2rust_errno()) = 0;
-    assert!(((((libc::mkdir(path as *const i8, 493_u32)) == (-1_i32)) as i32) != 0));
+    assert!(
+        ((((libc::mkdir(path as *const i8, 493_u32 as ::libc::mode_t)) == (-1_i32)) as i32) != 0)
+    );
     assert!(((((*libcc2rs::cpp2rust_errno()) == (17)) as i32) != 0));
     assert!(((((libc::rmdir(path as *const i8)) == (0)) as i32) != 0));
     (*libcc2rs::cpp2rust_errno()) = 0;

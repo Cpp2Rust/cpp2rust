@@ -9,6 +9,6 @@ unsafe fn f2(a0: i32, a1: *mut ::libc::stat) -> i32 {
     libc::fstat(a0, a1)
 }
 
-unsafe fn f3(a0: *const u8, a1: u32) -> i32 {
-    libc::mkdir(a0 as *const i8, a1)
+unsafe fn f3(a0: *const u8, a1: ::libc::mode_t) -> i32 {
+    libc::mkdir(a0 as *const i8, a1 as ::libc::mode_t)
 }
