@@ -62,6 +62,10 @@ pub mod math_tgt_unsafe;
 pub mod pair_tgt_refcount;
 #[path = r#"../pair/tgt_unsafe.rs"#]
 pub mod pair_tgt_unsafe;
+#[path = r#"../poll/tgt_unsafe.rs"#]
+pub mod poll_tgt_unsafe;
+#[path = r#"../select/tgt_unsafe.rs"#]
+pub mod select_tgt_unsafe;
 #[path = r#"../socket/tgt_unsafe.rs"#]
 pub mod socket_tgt_unsafe;
 #[path = r#"../stdio/tgt_refcount.rs"#]
