@@ -1,0 +1,30 @@
+// Copyright (c) 2022-present INESC-ID.
+// Distributed under the MIT license that can be found in the LICENSE file.
+
+unsafe fn f1(a0: *mut ::libc::time_t) -> ::libc::time_t {
+    libc::time(a0)
+}
+
+unsafe fn f2(a0: ::libc::clockid_t, a1: *mut ::libc::timespec) -> i32 {
+    libc::clock_gettime(a0, a1)
+}
+
+unsafe fn f3(a0: *mut ::libc::timeval, a1: *mut ::libc::timezone) -> i32 {
+    libc::gettimeofday(a0, a1 as *mut ::libc::timezone)
+}
+
+unsafe fn f4(a0: *const ::libc::time_t, a1: *mut ::libc::tm) -> *mut ::libc::tm {
+    libc::gmtime_r(a0, a1)
+}
+
+unsafe fn f5(a0: *const ::libc::time_t, a1: *mut ::libc::tm) -> *mut ::libc::tm {
+    libc::localtime_r(a0, a1)
+}
+
+unsafe fn f6(a0: *mut u8, a1: u64, a2: *const u8, a3: *const ::libc::tm) -> u64 {
+    libc::strftime(a0 as *mut i8, a1 as ::libc::size_t, a2 as *const i8, a3) as u64
+}
+
+unsafe fn f7(a0: *const u8, a1: *const ::libc::timeval) -> i32 {
+    libc::utimes(a0 as *const i8, a1)
+}

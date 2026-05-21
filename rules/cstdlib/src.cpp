@@ -18,3 +18,13 @@ char *f6(const char *name) { return getenv(name); }
 int f7(const char *name, const char *value, int overwrite) {
   return setenv(name, value, overwrite);
 }
+
+void *f8(const void *key, const void *base, size_t nmemb, size_t size,
+         int (*compar)(const void *, const void *)) {
+  return bsearch(key, base, nmemb, size, compar);
+}
+
+void f9(void *base, size_t nmemb, size_t size,
+        int (*compar)(const void *, const void *)) {
+  return qsort(base, nmemb, size, compar);
+}

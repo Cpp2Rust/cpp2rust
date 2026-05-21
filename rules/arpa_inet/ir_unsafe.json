@@ -46,5 +46,53 @@
     "return_type": {
       "type": "u16"
     }
+  },
+  "f3": {
+    "body": [
+      {
+        "text": "u16::to_be("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "u16"
+      }
+    },
+    "return_type": {
+      "type": "u16"
+    }
+  },
+  "f4": {
+    "body": [
+      {
+        "text": "u32::to_be("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "u32"
+      }
+    },
+    "return_type": {
+      "type": "u32"
+    }
   }
 }

@@ -43,3 +43,20 @@ unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: u64, a3: i32) -> i64 {
 unsafe fn f11(a0: i32, a1: i32, a2: i32, a3: *mut i32) -> i32 {
     libc::socketpair(a0, a1, a2, a3)
 }
+
+unsafe fn f12(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32) -> i32 {
+    libc::getsockname(a0, a1, a2)
+}
+
+unsafe fn f13(a0: i32, a1: *const ::libc::sockaddr, a2: u32) -> i32 {
+    libc::connect(a0, a1, a2)
+}
+
+unsafe fn f14(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32) -> i32 {
+    libc::getpeername(a0, a1, a2)
+}
+
+#[cfg(target_os = "linux")]
+unsafe fn f15(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32, a3: i32) -> i32 {
+    libc::accept4(a0, a1, a2, a3)
+}

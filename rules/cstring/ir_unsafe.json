@@ -882,6 +882,63 @@
       "type": "i32"
     }
   },
+  "f28": {
+    "body": [
+      {
+        "text": "libc::strerror_r("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *mut i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t);\n    "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut u8",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "u64"
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
   "f3": {
     "body": [
       {

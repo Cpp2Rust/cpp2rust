@@ -1,0 +1,281 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::time("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::time_t",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "::libc::time_t"
+    }
+  },
+  "f2": {
+    "body": [
+      {
+        "text": "libc::clock_gettime("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "::libc::clockid_t"
+      },
+      "a1": {
+        "type": "*mut ::libc::timespec",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f3": {
+    "body": [
+      {
+        "text": "libc::gettimeofday("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *mut ::libc::timezone)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::timeval",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*mut ::libc::timezone",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f4": {
+    "body": [
+      {
+        "text": "libc::gmtime_r("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const ::libc::time_t",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*mut ::libc::tm",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::tm",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f5": {
+    "body": [
+      {
+        "text": "libc::localtime_r("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const ::libc::time_t",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*mut ::libc::tm",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::tm",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f6": {
+    "body": [
+      {
+        "text": "libc::strftime("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *mut i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as u64"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "u64"
+      },
+      "a2": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a3": {
+        "type": "*const ::libc::tm",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "u64"
+    }
+  },
+  "f7": {
+    "body": [
+      {
+        "text": "libc::utimes("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*const ::libc::timeval",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}

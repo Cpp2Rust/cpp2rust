@@ -130,3 +130,8 @@ unsafe fn f26(a0: *mut u8, a1: i32, a2: usize) -> *mut ::libc::c_void {
 unsafe fn f27(a0: *const u8, a1: *const u8) -> i32 {
     libc::strcasecmp(a0 as *const i8, a1 as *const i8)
 }
+
+unsafe fn f28(a0: i32, a1: *mut u8, a2: u64) -> *mut u8 {
+    libc::strerror_r(a0, a1 as *mut i8, a2 as ::libc::size_t);
+    a1
+}

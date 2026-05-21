@@ -131,6 +131,218 @@
       "type": "i32"
     }
   },
+  "f12": {
+    "body": [
+      {
+        "text": "libc::getsockname("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::libc::sockaddr",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut u32",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f13": {
+    "body": [
+      {
+        "text": "libc::connect("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*const ::libc::sockaddr",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "u32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f14": {
+    "body": [
+      {
+        "text": "libc::getpeername("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::libc::sockaddr",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut u32",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f15": {
+    "body": [
+      {
+        "text": "libc::accept4("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::libc::sockaddr",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut u32",
+        "is_unsafe_pointer": true
+      },
+      "a3": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    },
+    "target_os": "linux"
+  },
   "f2": {
     "body": [
       {

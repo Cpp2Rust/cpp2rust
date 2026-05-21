@@ -203,5 +203,138 @@
     "return_type": {
       "type": "i32"
     }
+  },
+  "f8": {
+    "body": [
+      {
+        "text": "libc::bsearch(\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ",\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ",\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t,\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t,\n        Some(std::mem::transmute::<\n            *const (),\n            unsafe extern \"C\" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,\n        >("
+      },
+      {
+        "placeholder": {
+          "arg": 4,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const ())),\n    )"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*const ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "u64"
+      },
+      "a3": {
+        "type": "u64"
+      },
+      "a4": {
+        "type": "unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f9": {
+    "body": [
+      {
+        "text": "libc::qsort(\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ",\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t,\n        "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t,\n        Some(std::mem::transmute::<\n            *const (),\n            unsafe extern \"C\" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,\n        >("
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const ())),\n    )"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "u64"
+      },
+      "a2": {
+        "type": "u64"
+      },
+      "a3": {
+        "type": "unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32"
+      }
+    }
   }
 }

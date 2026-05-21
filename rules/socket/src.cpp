@@ -46,3 +46,21 @@ ssize_t f10(int sockfd, const void *buf, size_t len, int flags) {
 int f11(int domain, int type, int protocol, int sv[2]) {
   return socketpair(domain, type, protocol, sv);
 }
+
+int f12(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+  return getsockname(sockfd, addr, addrlen);
+}
+
+int f13(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+  return connect(sockfd, addr, addrlen);
+}
+
+int f14(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
+  return getpeername(sockfd, addr, addrlen);
+}
+
+#ifdef __linux__
+int f15(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags) {
+  return accept4(sockfd, addr, addrlen, flags);
+}
+#endif
