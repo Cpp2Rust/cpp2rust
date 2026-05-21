@@ -52,12 +52,16 @@ pub mod iostream_tgt_unsafe;
 pub mod ip_tgt_unsafe;
 #[path = r#"../limits/tgt_unsafe.rs"#]
 pub mod limits_tgt_unsafe;
+#[path = r#"../locale/tgt_unsafe.rs"#]
+pub mod locale_tgt_unsafe;
 #[path = r#"../map/tgt_refcount.rs"#]
 pub mod map_tgt_refcount;
 #[path = r#"../map/tgt_unsafe.rs"#]
 pub mod map_tgt_unsafe;
 #[path = r#"../math/tgt_unsafe.rs"#]
 pub mod math_tgt_unsafe;
+#[path = r#"../netdb/tgt_unsafe.rs"#]
+pub mod netdb_tgt_unsafe;
 #[path = r#"../pair/tgt_refcount.rs"#]
 pub mod pair_tgt_refcount;
 #[path = r#"../pair/tgt_unsafe.rs"#]
@@ -66,6 +70,10 @@ pub mod pair_tgt_unsafe;
 pub mod poll_tgt_unsafe;
 #[path = r#"../select/tgt_unsafe.rs"#]
 pub mod select_tgt_unsafe;
+#[path = r#"../pwd/tgt_unsafe.rs"#]
+pub mod pwd_tgt_unsafe;
+#[path = r#"../signal/tgt_unsafe.rs"#]
+pub mod signal_tgt_unsafe;
 #[path = r#"../socket/tgt_unsafe.rs"#]
 pub mod socket_tgt_unsafe;
 #[path = r#"../stat/tgt_unsafe.rs"#]
@@ -78,6 +86,8 @@ pub mod stdio_tgt_unsafe;
 pub mod string_tgt_refcount;
 #[path = r#"../string/tgt_unsafe.rs"#]
 pub mod string_tgt_unsafe;
+#[path = r#"../termios/tgt_unsafe.rs"#]
+pub mod termios_tgt_unsafe;
 #[path = r#"../unique_ptr/tgt_refcount.rs"#]
 pub mod unique_ptr_tgt_refcount;
 #[path = r#"../unique_ptr/tgt_unsafe.rs"#]
