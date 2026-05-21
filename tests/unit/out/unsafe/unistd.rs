@@ -24,87 +24,22 @@ pub unsafe fn test_close_0() {
 }
 pub unsafe fn test_lseek_1() {
     let mut path: *const u8 = (b"/tmp/cpp2rust_lseek_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::std::fs::File =
-        match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-            .to_str()
-            .expect("invalid c-string")
-        {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            _ => panic!("unsupported mode"),
-        };
-    assert!((((!((fp).is_null())) as i32) != 0));
-    {
-        let bytes = std::ffi::CStr::from_ptr(
-            (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8
-        )
-        .to_bytes();
-        match (*fp).write_all(bytes) {
-            Ok(()) => 0,
-            Err(_) => -1,
-        }
-    };
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
+    let mut fp: *mut ::libc::FILE = libc::fopen(
+        path as *const i8,
+        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
     );
-    fp = match std::ffi::CStr::from_ptr((b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-        .to_str()
-        .expect("invalid c-string")
-    {
-        v if v == "rb" => std::fs::OpenOptions::new()
-            .read(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        v if v == "wb" => std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        _ => panic!("unsupported mode"),
-    };
     assert!((((!((fp).is_null())) as i32) != 0));
-    let mut fd: i32 = if fp == libcc2rs::cin_unsafe() {
-        0
-    } else if fp == libcc2rs::cout_unsafe() {
-        1
-    } else if fp == libcc2rs::cerr_unsafe() {
-        2
-    } else {
-        ::std::os::fd::AsRawFd::as_raw_fd(&*fp)
-    };
+    libc::fputs(
+        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        fp,
+    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fp = libc::fopen(
+        path as *const i8,
+        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
+    );
+    assert!((((!((fp).is_null())) as i32) != 0));
+    let mut fd: i32 = libc::fileno(fp);
     assert!(((((libc::lseek(fd, 0_i64, 2)) == (11_i64)) as i32) != 0));
     assert!(((((libc::lseek(fd, 6_i64, 0)) == (6_i64)) as i32) != 0));
     let mut buf: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
@@ -138,98 +73,27 @@ pub unsafe fn test_lseek_1() {
         }) == (0)) as i32)
             != 0)
     );
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
 pub unsafe fn test_read_2() {
     let mut path: *const u8 = (b"/tmp/cpp2rust_read_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::std::fs::File =
-        match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-            .to_str()
-            .expect("invalid c-string")
-        {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            _ => panic!("unsupported mode"),
-        };
-    assert!((((!((fp).is_null())) as i32) != 0));
-    {
-        let bytes = std::ffi::CStr::from_ptr(
-            (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8
-        )
-        .to_bytes();
-        match (*fp).write_all(bytes) {
-            Ok(()) => 0,
-            Err(_) => -1,
-        }
-    };
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
+    let mut fp: *mut ::libc::FILE = libc::fopen(
+        path as *const i8,
+        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
     );
-    fp = match std::ffi::CStr::from_ptr((b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-        .to_str()
-        .expect("invalid c-string")
-    {
-        v if v == "rb" => std::fs::OpenOptions::new()
-            .read(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        v if v == "wb" => std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        _ => panic!("unsupported mode"),
-    };
     assert!((((!((fp).is_null())) as i32) != 0));
-    let mut fd: i32 = if fp == libcc2rs::cin_unsafe() {
-        0
-    } else if fp == libcc2rs::cout_unsafe() {
-        1
-    } else if fp == libcc2rs::cerr_unsafe() {
-        2
-    } else {
-        ::std::os::fd::AsRawFd::as_raw_fd(&*fp)
-    };
+    libc::fputs(
+        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        fp,
+    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fp = libc::fopen(
+        path as *const i8,
+        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
+    );
+    assert!((((!((fp).is_null())) as i32) != 0));
+    let mut fd: i32 = libc::fileno(fp);
     let mut buf: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -265,52 +129,17 @@ pub unsafe fn test_read_2() {
         }) == (0)) as i32)
             != 0)
     );
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
 pub unsafe fn test_unlink_3() {
     let mut path: *const u8 = (b"/tmp/cpp2rust_unlink_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::std::fs::File =
-        match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-            .to_str()
-            .expect("invalid c-string")
-        {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            _ => panic!("unsupported mode"),
-        };
-    assert!((((!((fp).is_null())) as i32) != 0));
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
+    let mut fp: *mut ::libc::FILE = libc::fopen(
+        path as *const i8,
+        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
     );
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path as *const i8)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path as *const i8)) == (-1_i32)) as i32) != 0));
 }
@@ -373,116 +202,27 @@ pub unsafe fn test_pipe_4() {
 pub unsafe fn test_ftruncate_5() {
     let mut path: *const u8 =
         (b"/tmp/cpp2rust_ftruncate_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::std::fs::File =
-        match std::ffi::CStr::from_ptr((b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-            .to_str()
-            .expect("invalid c-string")
-        {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open(
-                    std::ffi::CStr::from_ptr(path as *const i8)
-                        .to_str()
-                        .expect("invalid c-string"),
-                )
-                .ok()
-                .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-            _ => panic!("unsupported mode"),
-        };
+    let mut fp: *mut ::libc::FILE = libc::fopen(
+        path as *const i8,
+        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
+    );
     assert!((((!((fp).is_null())) as i32) != 0));
-    {
-        let bytes = std::ffi::CStr::from_ptr(
-            (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8
-        )
-        .to_bytes();
-        match (*fp).write_all(bytes) {
-            Ok(()) => 0,
-            Err(_) => -1,
-        }
-    };
-    if !(fp).is_null() {
-        match (*fp).sync_all() {
-            Ok(_) => 0,
-            Err(_) => -1,
-        }
-    } else {
-        ::std::io::stdout().flush().unwrap();
-        ::std::io::stderr().flush().unwrap();
-        0
-    };
-    let mut fd: i32 = if fp == libcc2rs::cin_unsafe() {
-        0
-    } else if fp == libcc2rs::cout_unsafe() {
-        1
-    } else if fp == libcc2rs::cerr_unsafe() {
-        2
-    } else {
-        ::std::os::fd::AsRawFd::as_raw_fd(&*fp)
-    };
+    libc::fputs(
+        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        fp,
+    );
+    libc::fflush(fp);
+    let mut fd: i32 = libc::fileno(fp);
     assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fp = libc::fopen(
+        path as *const i8,
+        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
     );
-    fp = match std::ffi::CStr::from_ptr((b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8)
-        .to_str()
-        .expect("invalid c-string")
-    {
-        v if v == "rb" => std::fs::OpenOptions::new()
-            .read(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        v if v == "wb" => std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(
-                std::ffi::CStr::from_ptr(path as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        _ => panic!("unsupported mode"),
-    };
     assert!((((!((fp).is_null())) as i32) != 0));
-    fd = (if fp == libcc2rs::cin_unsafe() {
-        0
-    } else if fp == libcc2rs::cout_unsafe() {
-        1
-    } else if fp == libcc2rs::cerr_unsafe() {
-        2
-    } else {
-        ::std::os::fd::AsRawFd::as_raw_fd(&*fp)
-    })
-    .clone();
+    fd = (libc::fileno(fp)).clone();
     assert!(((((libc::lseek(fd, 0_i64, 2)) == (5_i64)) as i32) != 0));
-    assert!(
-        (((({
-            Box::from_raw(fp);
-            0
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
 pub unsafe fn test_isatty_6() {

@@ -45,7 +45,7 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
                 break 'switch;
             }
             v if v == (opt::OPT_FILE as i32) => {
-                let mut f: *mut ::std::fs::File = ap.arg::<*mut ::std::fs::File>();
+                let mut f: *mut ::libc::FILE = ap.arg::<*mut ::libc::FILE>();
                 result = ((!((f).is_null())) as i32).clone();
                 break 'switch;
             }
@@ -83,7 +83,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[libcc2rs::cout_unsafe().into()])
+            dispatch_0(_option, &[libcc2rs::stdout_unsafe().into()])
         }) == (1)) as i32)
             != 0)
     );
@@ -92,7 +92,7 @@ unsafe fn main_0() -> i32 {
             let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
                 _option,
-                &[((0 as *mut ::libc::c_void) as *mut ::std::fs::File).into()],
+                &[((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()],
             )
         }) == (0)) as i32)
             != 0)

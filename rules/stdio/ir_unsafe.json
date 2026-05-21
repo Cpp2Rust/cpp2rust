@@ -2,307 +2,7 @@
   "f1": {
     "body": [
       {
-        "text": "match "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "std::ffi::CStr::from_ptr("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": " as *const i8)"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".to_str()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".expect(\"invalid c-string\")"
-            }
-          ]
-        }
-      },
-      {
-        "text": "\n    {\n        v if v == \"rb\" => "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "text": "std::fs::OpenOptions::new()"
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".read(true)"
-                              }
-                            ]
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".open(\n                "
-                        },
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "method_call": {
-                                  "receiver": [
-                                    {
-                                      "text": "std::ffi::CStr::from_ptr("
-                                    },
-                                    {
-                                      "placeholder": {
-                                        "arg": 0,
-                                        "access": "read"
-                                      }
-                                    },
-                                    {
-                                      "text": " as *const i8)"
-                                    }
-                                  ],
-                                  "body": [
-                                    {
-                                      "text": ".to_str()"
-                                    }
-                                  ]
-                                }
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".expect(\"invalid c-string\")"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "text": ",\n            )"
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".ok()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f)))"
-            }
-          ]
-        }
-      },
-      {
-        "text": ",\n        v if v == \"wb\" => "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "method_call": {
-                      "receiver": [
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "method_call": {
-                                  "receiver": [
-                                    {
-                                      "method_call": {
-                                        "receiver": [
-                                          {
-                                            "text": "std::fs::OpenOptions::new()"
-                                          }
-                                        ],
-                                        "body": [
-                                          {
-                                            "text": ".write(true)"
-                                          }
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  "body": [
-                                    {
-                                      "text": ".create(true)"
-                                    }
-                                  ]
-                                }
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".truncate(true)"
-                              }
-                            ]
-                          }
-                        }
-                      ],
-                      "body": [
-                        {
-                          "text": ".open(\n                "
-                        },
-                        {
-                          "method_call": {
-                            "receiver": [
-                              {
-                                "method_call": {
-                                  "receiver": [
-                                    {
-                                      "text": "std::ffi::CStr::from_ptr("
-                                    },
-                                    {
-                                      "placeholder": {
-                                        "arg": 0,
-                                        "access": "read"
-                                      }
-                                    },
-                                    {
-                                      "text": " as *const i8)"
-                                    }
-                                  ],
-                                  "body": [
-                                    {
-                                      "text": ".to_str()"
-                                    }
-                                  ]
-                                }
-                              }
-                            ],
-                            "body": [
-                              {
-                                "text": ".expect(\"invalid c-string\")"
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "text": ",\n            )"
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".ok()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f)))"
-            }
-          ]
-        }
-      },
-      {
-        "text": ",\n        _ => panic!(\"unsupported mode\"),\n    }"
-      }
-    ],
-    "params": {
-      "a0": {
-        "type": "*const i8",
-        "is_unsafe_pointer": true
-      },
-      "a1": {
-        "type": "*const i8",
-        "is_unsafe_pointer": true
-      }
-    },
-    "return_type": {
-      "type": "*mut ::std::fs::File",
-      "is_unsafe_pointer": true
-    }
-  },
-  "f10": {
-    "body": [
-      {
-        "text": "libcc2rs::cin_unsafe()"
-      }
-    ],
-    "return_type": {
-      "type": "*mut ::std::fs::File",
-      "is_unsafe_pointer": true
-    }
-  },
-  "f11": {
-    "body": [
-      {
-        "text": "match "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*"
-            },
-            {
-              "placeholder": {
-                "arg": 1,
-                "access": "write"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ],
-          "body": [
-            {
-              "text": ".write_all(&["
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            },
-            {
-              "text": " as u8])"
-            }
-          ]
-        }
-      },
-      {
-        "text": " {\n        Ok(()) => "
+        "text": "libc::fopen("
       },
       {
         "placeholder": {
@@ -311,7 +11,66 @@
         }
       },
       {
-        "text": " & 0xff,\n        Err(_) => -1,\n    }"
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::FILE",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f10": {
+    "body": [
+      {
+        "text": "libcc2rs::stdin_unsafe()"
+      }
+    ],
+    "return_type": {
+      "type": "*mut ::libc::FILE",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f11": {
+    "body": [
+      {
+        "text": "libc::fputc("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
       }
     ],
     "params": {
@@ -319,7 +78,7 @@
         "type": "i32"
       },
       "a1": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -330,69 +89,34 @@
   "f12": {
     "body": [
       {
-        "text": "let bytes = "
+        "text": "libc::fputs("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "std::ffi::CStr::from_ptr("
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            },
-            {
-              "text": " as *const i8)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".to_bytes()"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": ";\n    match "
+        "text": " as *const i8, "
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*"
-            },
-            {
-              "placeholder": {
-                "arg": 1,
-                "access": "write"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ],
-          "body": [
-            {
-              "text": ".write_all(bytes)"
-            }
-          ]
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
         }
       },
       {
-        "text": " {\n        Ok(()) => 0,\n        Err(_) => -1,\n    }"
+        "text": ")"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*const u8",
         "is_unsafe_pointer": true
       },
       "a1": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -403,104 +127,18 @@
   "f13": {
     "body": [
       {
-        "text": "let bytes = "
+        "text": "libc::puts("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "std::ffi::CStr::from_ptr("
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            },
-            {
-              "text": " as *const i8)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".to_bytes()"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": ";\n    let stdout = libcc2rs::cout_unsafe();\n    let r1 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*stdout)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".write_all(bytes)"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    let r2 = "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*stdout)"
-            }
-          ],
-          "body": [
-            {
-              "text": ".write_all(b\"\\n\")"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n    if "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "r1"
-            }
-          ],
-          "body": [
-            {
-              "text": ".is_ok()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " && "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "r2"
-            }
-          ],
-          "body": [
-            {
-              "text": ".is_ok()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " { 0 } else { -1 }"
+        "text": " as *const i8)"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*const u8",
@@ -514,7 +152,7 @@
   "f14": {
     "body": [
       {
-        "text": "if "
+        "text": "libc::fileno("
       },
       {
         "placeholder": {
@@ -523,40 +161,215 @@
         }
       },
       {
-        "text": " == libcc2rs::cin_unsafe() {\n        0\n    } else if "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": " == libcc2rs::cout_unsafe() {\n        1\n    } else if "
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": " == libcc2rs::cerr_unsafe() {\n        2\n    } else {\n        ::std::os::fd::AsRawFd::as_raw_fd(&*"
-      },
-      {
-        "placeholder": {
-          "arg": 0,
-          "access": "read"
-        }
-      },
-      {
-        "text": ")\n    }"
+        "text": ")"
       }
     ],
     "params": {
       "a0": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f15": {
+    "body": [
+      {
+        "text": "libc::ferror("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::FILE",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f16": {
+    "body": [
+      {
+        "text": "libc::feof("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::FILE",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f17": {
+    "body": [
+      {
+        "text": "libc::fgets("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *mut i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as *mut u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "*mut ::libc::FILE",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f18": {
+    "body": [
+      {
+        "text": "libc::freopen("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut ::libc::FILE",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::FILE",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f19": {
+    "body": [
+      {
+        "text": "libc::fseeko("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::off_t, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::FILE",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "i64"
+      },
+      "a2": {
+        "type": "i32"
       }
     },
     "return_type": {
@@ -566,7 +379,7 @@
   "f2": {
     "body": [
       {
-        "text": "Box::from_raw("
+        "text": "libc::fclose("
       },
       {
         "placeholder": {
@@ -575,13 +388,12 @@
         }
       },
       {
-        "text": ");\n    0"
+        "text": ")"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -589,41 +401,62 @@
       "type": "i32"
     }
   },
-  "f3": {
+  "f20": {
     "body": [
       {
-        "text": "match "
+        "text": "libc::fdopen("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*"
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "write"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ],
-          "body": [
-            {
-              "text": ".stream_position()"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": " {\n        Ok(pos) => pos as i64,\n        Err(_) => -1,\n    }"
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8)"
       }
     ],
     "params": {
       "a0": {
-        "type": "*mut ::std::fs::File",
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::FILE",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f3": {
+    "body": [
+      {
+        "text": "libc::ftell("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as i64"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -634,143 +467,39 @@
   "f4": {
     "body": [
       {
-        "text": "if "
+        "text": "libc::fseek("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(match "
-            },
-            {
-              "placeholder": {
-                "arg": 2,
-                "access": "read"
-              }
-            },
-            {
-              "text": " {\n        0 => "
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(*"
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 0,
-                      "access": "write"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".seek(std::io::SeekFrom::Start("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": " as u64))"
-                  }
-                ]
-              }
-            },
-            {
-              "text": ",\n        1 => "
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(*"
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 0,
-                      "access": "write"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".seek(std::io::SeekFrom::Current("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": "))"
-                  }
-                ]
-              }
-            },
-            {
-              "text": ",\n        2 => "
-            },
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "(*"
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 0,
-                      "access": "write"
-                    }
-                  },
-                  {
-                    "text": ")"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".seek(std::io::SeekFrom::End("
-                  },
-                  {
-                    "placeholder": {
-                      "arg": 1,
-                      "access": "read"
-                    }
-                  },
-                  {
-                    "text": "))"
-                  }
-                ]
-              }
-            },
-            {
-              "text": ",\n        _ => Err(std::io::Error::other(\"unsupported whence for fseek.\")),\n    })"
-            }
-          ],
-          "body": [
-            {
-              "text": ".is_ok()"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": "\n    {\n        0\n    } else {\n        -1\n    }"
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::c_long, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
       }
     ],
     "params": {
       "a0": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       },
       "a1": {
@@ -787,7 +516,7 @@
   "f5": {
     "body": [
       {
-        "text": "let __a0 = "
+        "text": "libcc2rs::fread_unsafe("
       },
       {
         "placeholder": {
@@ -796,7 +525,7 @@
         }
       },
       {
-        "text": " as *mut ::std::ffi::c_void;\n    let __a1 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -805,7 +534,7 @@
         }
       },
       {
-        "text": ";\n    let __a2 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -814,7 +543,7 @@
         }
       },
       {
-        "text": ";\n    let __a3 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -823,10 +552,9 @@
         }
       },
       {
-        "text": ";\n    libcc2rs::fread_unsafe(__a0, __a1, __a2, __a3)"
+        "text": ")"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*mut ::libc::c_void",
@@ -839,7 +567,7 @@
         "type": "u64"
       },
       "a3": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -850,7 +578,7 @@
   "f6": {
     "body": [
       {
-        "text": "let __a0 = "
+        "text": "libcc2rs::fwrite_unsafe("
       },
       {
         "placeholder": {
@@ -859,7 +587,7 @@
         }
       },
       {
-        "text": " as *const ::std::ffi::c_void;\n    let __a1 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -868,7 +596,7 @@
         }
       },
       {
-        "text": ";\n    let __a2 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -877,7 +605,7 @@
         }
       },
       {
-        "text": ";\n    let __a3 = "
+        "text": ", "
       },
       {
         "placeholder": {
@@ -886,10 +614,9 @@
         }
       },
       {
-        "text": ";\n    libcc2rs::fwrite_unsafe(__a0, __a1, __a2, __a3)"
+        "text": ")"
       }
     ],
-    "multi_statement": true,
     "params": {
       "a0": {
         "type": "*const ::libc::c_void",
@@ -902,7 +629,7 @@
         "type": "u64"
       },
       "a3": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -913,120 +640,21 @@
   "f7": {
     "body": [
       {
-        "text": "if !"
+        "text": "libc::fflush("
       },
       {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "("
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "write"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ],
-          "body": [
-            {
-              "text": ".is_null()"
-            }
-          ]
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
         }
       },
       {
-        "text": " {\n        match "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "text": "(*"
-            },
-            {
-              "placeholder": {
-                "arg": 0,
-                "access": "read"
-              }
-            },
-            {
-              "text": ")"
-            }
-          ],
-          "body": [
-            {
-              "text": ".sync_all()"
-            }
-          ]
-        }
-      },
-      {
-        "text": " {\n            Ok(_) => 0,\n            Err(_) => -1,\n        }\n    } else {\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "::std::io::stdout()"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".flush()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".unwrap()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        "
-      },
-      {
-        "method_call": {
-          "receiver": [
-            {
-              "method_call": {
-                "receiver": [
-                  {
-                    "text": "::std::io::stderr()"
-                  }
-                ],
-                "body": [
-                  {
-                    "text": ".flush()"
-                  }
-                ]
-              }
-            }
-          ],
-          "body": [
-            {
-              "text": ".unwrap()"
-            }
-          ]
-        }
-      },
-      {
-        "text": ";\n        0\n    }"
+        "text": ")"
       }
     ],
     "params": {
       "a0": {
-        "type": "*mut ::std::fs::File",
+        "type": "*mut ::libc::FILE",
         "is_unsafe_pointer": true
       }
     },
@@ -1037,28 +665,28 @@
   "f8": {
     "body": [
       {
-        "text": "libcc2rs::cout_unsafe()"
+        "text": "libcc2rs::stdout_unsafe()"
       }
     ],
     "return_type": {
-      "type": "*mut ::std::fs::File",
+      "type": "*mut ::libc::FILE",
       "is_unsafe_pointer": true
     }
   },
   "f9": {
     "body": [
       {
-        "text": "libcc2rs::cerr_unsafe()"
+        "text": "libcc2rs::stderr_unsafe()"
       }
     ],
     "return_type": {
-      "type": "*mut ::std::fs::File",
+      "type": "*mut ::libc::FILE",
       "is_unsafe_pointer": true
     }
   },
   "t1": {
     "init": "std::ptr::null_mut()",
-    "type": "*mut ::std::fs::File",
+    "type": "*mut ::libc::FILE",
     "is_unsafe_pointer": true
   }
 }

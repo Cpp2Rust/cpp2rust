@@ -165,95 +165,70 @@ pub fn fwrite_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -
     (written_bytes / a1 as usize) as u64
 }
 
-/// # Safety
-///
-/// `a0` must point to a readable buffer of at least `a1 * a2` bytes, and `a3`
-/// must point to a valid, open `std::fs::File`.
-pub unsafe fn fwrite_unsafe(
-    a0: *const ::std::ffi::c_void,
-    a1: u64,
-    a2: u64,
-    a3: *mut ::std::fs::File,
-) -> u64 {
-    let total = a1.saturating_mul(a2) as usize;
-    let mut src = a0 as *const u8;
+unsafe extern "C" {
+    #[cfg(target_os = "linux")]
+    #[link_name = "stdin"]
+    static mut LIBC_STDIN: *mut libc::FILE;
+    #[cfg(target_os = "linux")]
+    #[link_name = "stdout"]
+    static mut LIBC_STDOUT: *mut libc::FILE;
+    #[cfg(target_os = "linux")]
+    #[link_name = "stderr"]
+    static mut LIBC_STDERR: *mut libc::FILE;
 
-    let f = unsafe { (*a3).try_clone().expect("try_clone failed") };
-    let mut writer = std::io::BufWriter::with_capacity(64 * 1024, f);
-
-    let mut written_bytes: usize = 0;
-    let mut buffer: [u8; 8192] = [0; 8192];
-
-    while written_bytes < total {
-        let remaining = total - written_bytes;
-        let to_fill = std::cmp::min(buffer.len(), remaining);
-
-        for b in buffer.iter_mut().take(to_fill) {
-            unsafe {
-                *b = *src;
-                src = src.offset(1);
-            }
-        }
-
-        let mut off = 0;
-        while off < to_fill {
-            match std::io::Write::write(&mut writer, &buffer[off..to_fill]) {
-                Ok(0) => break,
-                Ok(n) => off += n,
-                Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-                Err(e) => panic!("Unhandled error in fwrite: {e}"),
-            }
-        }
-
-        if off == 0 {
-            break;
-        }
-
-        written_bytes += off;
-    }
-
-    (written_bytes / a1 as usize) as u64
+    #[cfg(target_os = "macos")]
+    #[link_name = "__stdinp"]
+    static mut LIBC_STDIN: *mut libc::FILE;
+    #[cfg(target_os = "macos")]
+    #[link_name = "__stdoutp"]
+    static mut LIBC_STDOUT: *mut libc::FILE;
+    #[cfg(target_os = "macos")]
+    #[link_name = "__stderrp"]
+    static mut LIBC_STDERR: *mut libc::FILE;
 }
 
 /// # Safety
 ///
-/// `a0` must point to a writable buffer of at least `a1 * a2` bytes, and `a3`
-/// must point to a valid, open `std::fs::File`.
+/// Returns the libc `stdin` handle. The pointer is valid for the process
+/// lifetime.
+pub unsafe fn stdin_unsafe() -> *mut libc::FILE {
+    unsafe { LIBC_STDIN }
+}
+
+/// # Safety
+///
+/// Returns the libc `stdout` handle.
+pub unsafe fn stdout_unsafe() -> *mut libc::FILE {
+    unsafe { LIBC_STDOUT }
+}
+
+/// # Safety
+///
+/// Returns the libc `stderr` handle.
+pub unsafe fn stderr_unsafe() -> *mut libc::FILE {
+    unsafe { LIBC_STDERR }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fwrite`.
+pub unsafe fn fwrite_unsafe(
+    a0: *const ::std::ffi::c_void,
+    a1: u64,
+    a2: u64,
+    a3: *mut libc::FILE,
+) -> u64 {
+    unsafe { libc::fwrite(a0, a1 as libc::size_t, a2 as libc::size_t, a3) as u64 }
+}
+
+/// # Safety
+///
+/// Same contract as C's `fread`.
 pub unsafe fn fread_unsafe(
     a0: *mut ::std::ffi::c_void,
     a1: u64,
     a2: u64,
-    a3: *mut ::std::fs::File,
+    a3: *mut libc::FILE,
 ) -> u64 {
-    let total = a1.saturating_mul(a2) as usize;
-    let mut dst = a0 as *mut u8;
-
-    let f = unsafe { (*a3).try_clone().expect("try_clone failed") };
-    let mut reader = std::io::BufReader::with_capacity(64 * 1024, f);
-
-    let mut read_bytes: usize = 0;
-    let mut buffer: [u8; 8192] = [0; 8192];
-
-    while read_bytes < total {
-        let remaining = total - read_bytes;
-        let to_read = std::cmp::min(buffer.len(), remaining);
-
-        let n = match std::io::Read::read(&mut reader, &mut buffer[..to_read]) {
-            Ok(0) => break,
-            Ok(n) => n,
-            Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-            Err(e) => panic!("Unhandled error in fread: {e}"),
-        };
-
-        for &byte in &buffer[..n] {
-            unsafe {
-                *dst = byte;
-                dst = dst.offset(1);
-            }
-        }
-
-        read_bytes += n;
-    }
-
-    (read_bytes / a1 as usize) as u64
+    unsafe { libc::fread(a0, a1 as libc::size_t, a2 as libc::size_t, a3) as u64 }
 }

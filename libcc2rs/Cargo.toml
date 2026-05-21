@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 libcc2rs-macros = { path = "../libcc2rs-macros", version = "0.1.0" }
+libc = "0.2"

@@ -12,7 +12,7 @@ pub struct S {
     pub a: i32,
 }
 pub static mut s: *mut S = unsafe { std::ptr::null_mut() };
-pub static mut file: *mut ::std::fs::File = unsafe { std::ptr::null_mut() };
+pub static mut file: *mut ::libc::FILE = unsafe { std::ptr::null_mut() };
 pub static mut size: u64 = unsafe { 0_u64 };
 pub fn main() {
     unsafe {

@@ -40,3 +40,19 @@ int f12(const char *s, FILE *stream) { return fputs(s, stream); }
 int f13(const char *s) { return puts(s); }
 
 int f14(FILE *stream) { return fileno(stream); }
+
+int f15(FILE *stream) { return ferror(stream); }
+
+int f16(FILE *stream) { return feof(stream); }
+
+char *f17(char *s, int n, FILE *stream) { return fgets(s, n, stream); }
+
+FILE *f18(const char *pathname, const char *mode, FILE *stream) {
+  return freopen(pathname, mode, stream);
+}
+
+int f19(FILE *stream, off_t offset, int whence) {
+  return fseeko(stream, offset, whence);
+}
+
+FILE *f20(int fd, const char *mode) { return fdopen(fd, mode); }

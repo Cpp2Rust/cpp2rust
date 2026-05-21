@@ -1,142 +1,87 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use libcc2rs::*;
-use std::io::prelude::*;
-
 fn types() -> Result<(), Box<dyn std::error::Error>> {
-    let t1: *mut ::std::fs::File = std::ptr::null_mut();
+    let t1: *mut ::libc::FILE = std::ptr::null_mut();
     Ok(())
 }
 
-unsafe fn f1(a0: *const i8, a1: *const i8) -> *mut ::std::fs::File {
-    match std::ffi::CStr::from_ptr(a1 as *const i8)
-        .to_str()
-        .expect("invalid c-string")
-    {
-        v if v == "rb" => std::fs::OpenOptions::new()
-            .read(true)
-            .open(
-                std::ffi::CStr::from_ptr(a0 as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        v if v == "wb" => std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .open(
-                std::ffi::CStr::from_ptr(a0 as *const i8)
-                    .to_str()
-                    .expect("invalid c-string"),
-            )
-            .ok()
-            .map_or(std::ptr::null_mut(), |f| Box::into_raw(Box::new(f))),
-        _ => panic!("unsupported mode"),
-    }
+unsafe fn f1(a0: *const u8, a1: *const u8) -> *mut ::libc::FILE {
+    libc::fopen(a0 as *const i8, a1 as *const i8)
 }
 
-unsafe fn f2(a0: *mut ::std::fs::File) -> i32 {
-    Box::from_raw(a0);
-    0
+unsafe fn f2(a0: *mut ::libc::FILE) -> i32 {
+    libc::fclose(a0)
 }
 
-unsafe fn f3(a0: *mut ::std::fs::File) -> i64 {
-    match (*a0).stream_position() {
-        Ok(pos) => pos as i64,
-        Err(_) => -1,
-    }
+unsafe fn f3(a0: *mut ::libc::FILE) -> i64 {
+    libc::ftell(a0) as i64
 }
 
-unsafe fn f4(a0: *mut ::std::fs::File, a1: i64, a2: i32) -> i32 {
-    if (match a2 {
-        0 => (*a0).seek(std::io::SeekFrom::Start(a1 as u64)),
-        1 => (*a0).seek(std::io::SeekFrom::Current(a1)),
-        2 => (*a0).seek(std::io::SeekFrom::End(a1)),
-        _ => Err(std::io::Error::other("unsupported whence for fseek.")),
-    })
-    .is_ok()
-    {
-        0
-    } else {
-        -1
-    }
+unsafe fn f4(a0: *mut ::libc::FILE, a1: i64, a2: i32) -> i32 {
+    libc::fseek(a0, a1 as ::libc::c_long, a2)
 }
 
-unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
-    let __a0 = a0 as *mut ::std::ffi::c_void;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __a3 = a3;
-    libcc2rs::fread_unsafe(__a0, __a1, __a2, __a3)
+unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::libc::FILE) -> u64 {
+    libcc2rs::fread_unsafe(a0, a1, a2, a3)
 }
 
-unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::std::fs::File) -> u64 {
-    let __a0 = a0 as *const ::std::ffi::c_void;
-    let __a1 = a1;
-    let __a2 = a2;
-    let __a3 = a3;
-    libcc2rs::fwrite_unsafe(__a0, __a1, __a2, __a3)
+unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::libc::FILE) -> u64 {
+    libcc2rs::fwrite_unsafe(a0, a1, a2, a3)
 }
 
-unsafe fn f7(a0: *mut ::std::fs::File) -> i32 {
-    if !(a0).is_null() {
-        match (*a0).sync_all() {
-            Ok(_) => 0,
-            Err(_) => -1,
-        }
-    } else {
-        ::std::io::stdout().flush().unwrap();
-        ::std::io::stderr().flush().unwrap();
-        0
-    }
+unsafe fn f7(a0: *mut ::libc::FILE) -> i32 {
+    libc::fflush(a0)
 }
 
-unsafe fn f8() -> *mut ::std::fs::File {
-    libcc2rs::cout_unsafe()
+unsafe fn f8() -> *mut ::libc::FILE {
+    libcc2rs::stdout_unsafe()
 }
 
-unsafe fn f9() -> *mut ::std::fs::File {
-    libcc2rs::cerr_unsafe()
+unsafe fn f9() -> *mut ::libc::FILE {
+    libcc2rs::stderr_unsafe()
 }
 
-unsafe fn f10() -> *mut ::std::fs::File {
-    libcc2rs::cin_unsafe()
+unsafe fn f10() -> *mut ::libc::FILE {
+    libcc2rs::stdin_unsafe()
 }
 
-unsafe fn f11(a0: i32, a1: *mut ::std::fs::File) -> i32 {
-    match (*a1).write_all(&[a0 as u8]) {
-        Ok(()) => a0 & 0xff,
-        Err(_) => -1,
-    }
+unsafe fn f11(a0: i32, a1: *mut ::libc::FILE) -> i32 {
+    libc::fputc(a0, a1)
 }
 
-unsafe fn f12(a0: *const u8, a1: *mut ::std::fs::File) -> i32 {
-    let bytes = std::ffi::CStr::from_ptr(a0 as *const i8).to_bytes();
-    match (*a1).write_all(bytes) {
-        Ok(()) => 0,
-        Err(_) => -1,
-    }
+unsafe fn f12(a0: *const u8, a1: *mut ::libc::FILE) -> i32 {
+    libc::fputs(a0 as *const i8, a1)
 }
 
 unsafe fn f13(a0: *const u8) -> i32 {
-    let bytes = std::ffi::CStr::from_ptr(a0 as *const i8).to_bytes();
-    let stdout = libcc2rs::cout_unsafe();
-    let r1 = (*stdout).write_all(bytes);
-    let r2 = (*stdout).write_all(b"\n");
-    if r1.is_ok() && r2.is_ok() { 0 } else { -1 }
+    libc::puts(a0 as *const i8)
 }
 
-unsafe fn f14(a0: *mut ::std::fs::File) -> i32 {
-    if a0 == libcc2rs::cin_unsafe() {
-        0
-    } else if a0 == libcc2rs::cout_unsafe() {
-        1
-    } else if a0 == libcc2rs::cerr_unsafe() {
-        2
-    } else {
-        ::std::os::fd::AsRawFd::as_raw_fd(&*a0)
-    }
+unsafe fn f14(a0: *mut ::libc::FILE) -> i32 {
+    libc::fileno(a0)
+}
+
+unsafe fn f15(a0: *mut ::libc::FILE) -> i32 {
+    libc::ferror(a0)
+}
+
+unsafe fn f16(a0: *mut ::libc::FILE) -> i32 {
+    libc::feof(a0)
+}
+
+unsafe fn f17(a0: *mut u8, a1: i32, a2: *mut ::libc::FILE) -> *mut u8 {
+    libc::fgets(a0 as *mut i8, a1, a2) as *mut u8
+}
+
+unsafe fn f18(a0: *const u8, a1: *const u8, a2: *mut ::libc::FILE) -> *mut ::libc::FILE {
+    libc::freopen(a0 as *const i8, a1 as *const i8, a2)
+}
+
+unsafe fn f19(a0: *mut ::libc::FILE, a1: i64, a2: i32) -> i32 {
+    libc::fseeko(a0, a1 as ::libc::off_t, a2)
+}
+
+unsafe fn f20(a0: i32, a1: *const u8) -> *mut ::libc::FILE {
+    libc::fdopen(a0, a1 as *const i8)
 }

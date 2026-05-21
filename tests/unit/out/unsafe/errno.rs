@@ -26,18 +26,7 @@ pub unsafe fn test_errno_preserved_across_strdup_1() {
 }
 pub unsafe fn test_errno_from_fseek_2() {
     (*libcc2rs::cpp2rust_errno()) = 0;
-    let mut r: i32 = if (match 0 {
-        0 => (*libcc2rs::cin_unsafe()).seek(std::io::SeekFrom::Start(0_i64 as u64)),
-        1 => (*libcc2rs::cin_unsafe()).seek(std::io::SeekFrom::Current(0_i64)),
-        2 => (*libcc2rs::cin_unsafe()).seek(std::io::SeekFrom::End(0_i64)),
-        _ => Err(std::io::Error::other("unsupported whence for fseek.")),
-    })
-    .is_ok()
-    {
-        0
-    } else {
-        -1
-    };
+    let mut r: i32 = libc::fseek(libcc2rs::stdin_unsafe(), 0_i64 as ::libc::c_long, 0);
     assert!(((((r) == (-1_i32)) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno()) == (29)) as i32) != 0));
     (*libcc2rs::cpp2rust_errno()) = 0;

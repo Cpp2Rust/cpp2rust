@@ -12,15 +12,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut file_ptr: *mut ::std::fs::File = std::ptr::null_mut();
-    return if !(file_ptr).is_null() {
-        match (*file_ptr).sync_all() {
-            Ok(_) => 0,
-            Err(_) => -1,
-        }
-    } else {
-        ::std::io::stdout().flush().unwrap();
-        ::std::io::stderr().flush().unwrap();
-        0
-    };
+    let mut file_ptr: *mut ::libc::FILE = std::ptr::null_mut();
+    return libc::fflush(file_ptr);
 }
