@@ -9,6 +9,128 @@
       "type": "i32"
     }
   },
+  "f10": {
+    "body": [
+      {
+        "text": "libc::send("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as usize, "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as i64"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*const ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "u64"
+      },
+      "a3": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i64"
+    }
+  },
+  "f11": {
+    "body": [
+      {
+        "text": "libc::socketpair("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "i32"
+      },
+      "a3": {
+        "type": "*mut i32",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
   "f2": {
     "body": [
       {
@@ -50,5 +172,261 @@
       "type": "i32"
     },
     "target_os": "linux"
+  },
+  "f6": {
+    "body": [
+      {
+        "text": "libc::socket("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f7": {
+    "body": [
+      {
+        "text": "libc::setsockopt("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 4,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "i32"
+      },
+      "a3": {
+        "type": "*const ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a4": {
+        "type": "u32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f8": {
+    "body": [
+      {
+        "text": "libc::getsockopt("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 4,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "i32"
+      },
+      "a2": {
+        "type": "i32"
+      },
+      "a3": {
+        "type": "*mut ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a4": {
+        "type": "*mut u32",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  },
+  "f9": {
+    "body": [
+      {
+        "text": "libc::recv("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as usize, "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ") as i64"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::libc::c_void",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "u64"
+      },
+      "a3": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i64"
+    }
   }
 }

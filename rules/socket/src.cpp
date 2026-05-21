@@ -22,3 +22,27 @@ int f5() {
   return SOCK_NONBLOCK;
 }
 #endif
+
+int f6(int domain, int type, int protocol) {
+  return socket(domain, type, protocol);
+}
+
+int f7(int sockfd, int level, int optname, const void *optval, socklen_t optlen) {
+  return setsockopt(sockfd, level, optname, optval, optlen);
+}
+
+int f8(int sockfd, int level, int optname, void *optval, socklen_t *optlen) {
+  return getsockopt(sockfd, level, optname, optval, optlen);
+}
+
+ssize_t f9(int sockfd, void *buf, size_t len, int flags) {
+  return recv(sockfd, buf, len, flags);
+}
+
+ssize_t f10(int sockfd, const void *buf, size_t len, int flags) {
+  return send(sockfd, buf, len, flags);
+}
+
+int f11(int domain, int type, int protocol, int sv[2]) {
+  return socketpair(domain, type, protocol, sv);
+}

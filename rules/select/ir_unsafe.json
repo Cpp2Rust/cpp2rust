@@ -1,0 +1,78 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::select("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 3,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 4,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "i32"
+      },
+      "a1": {
+        "type": "*mut ::libc::fd_set",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "*mut ::libc::fd_set",
+        "is_unsafe_pointer": true
+      },
+      "a3": {
+        "type": "*mut ::libc::fd_set",
+        "is_unsafe_pointer": true
+      },
+      "a4": {
+        "type": "*mut ::libc::timeval",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}

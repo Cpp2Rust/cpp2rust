@@ -1,0 +1,51 @@
+{
+  "f1": {
+    "body": [
+      {
+        "text": "libc::poll("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": ", "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::nfds_t, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*mut ::libc::pollfd",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "u64"
+      },
+      "a2": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
+  }
+}
