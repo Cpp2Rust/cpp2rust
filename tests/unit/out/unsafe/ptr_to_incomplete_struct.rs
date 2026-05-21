@@ -12,9 +12,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut fp: *mut ::std::fs::File = libcc2rs::cout_unsafe();
+    let mut fp: *mut ::libc::FILE = libcc2rs::stdout_unsafe();
     let mut p: *mut ::libc::c_void = (fp as *mut ::libc::c_void);
-    let mut fp2: *mut ::std::fs::File = (p as *mut ::std::fs::File);
+    let mut fp2: *mut ::libc::FILE = (p as *mut ::libc::FILE);
     assert!(((((fp) == (fp2)) as i32) != 0));
     return 0;
 }
