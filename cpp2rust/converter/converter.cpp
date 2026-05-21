@@ -86,6 +86,19 @@ bool Converter::ConvertMappedType(clang::QualType qual_type) {
   return true;
 }
 
+std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
+  assert(!ptr_type.isNull() && ptr_type->isPointerType());
+  auto pointee = ptr_type->getPointeeType();
+  if (!pointee->isRecordType()) {
+    return ToString(pointee);
+  }
+
+  auto str = ToString(ptr_type);
+  Unwrap(str, "*mut ", "");
+  Unwrap(str, "*const ", "");
+  return str;
+}
+
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
   switch (type->getKind()) {
   case clang::BuiltinType::Bool:
@@ -216,9 +229,8 @@ bool Converter::VisitIncompleteArrayType(clang::IncompleteArrayType *type) {
 }
 
 bool Converter::VisitLValueReferenceType(clang::LValueReferenceType *type) {
-  StrCat(token::kStar);
   auto pointee_type = type->getPointeeType();
-  StrCat(pointee_type.isConstQualified() ? keyword::kConst : keyword_mut_);
+  StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   return Convert(pointee_type);
 }
 
@@ -250,9 +262,8 @@ bool Converter::VisitPointerType(clang::PointerType *type) {
     return false;
   }
 
-  StrCat(token::kStar);
   auto pointee_type = type->getPointeeType();
-  StrCat(pointee_type.isConstQualified() ? keyword::kConst : keyword_mut_);
+  StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   if (pointee_type->isRecordType() &&
       abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
     StrCat(keyword::kDyn);
@@ -1850,7 +1861,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     if (type->isVoidPointerType()) {
       StrCat(keyword::kAs,
              type->getPointeeType().isConstQualified() ? "*const" : "*mut");
-      Convert(sub_expr->getType()->getPointeeType());
+      StrCat(ConvertPointeeType(sub_expr->getType()));
     }
     ConvertCast(type);
     break;
@@ -2109,7 +2120,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         StrCat(keyword::kAs, "usize");
       }
       StrCat(token::kDiv);
-      auto pointee_type_as_string = ToString(lhs_type->getPointeeType());
+      auto pointee_type_as_string = ConvertPointeeType(lhs_type);
       auto size_of_as_string =
           std::format("::std::mem::size_of::<{}>()", pointee_type_as_string);
       StrCat(size_of_as_string);

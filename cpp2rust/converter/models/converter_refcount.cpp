@@ -1080,9 +1080,9 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
       if (pointee_type && abstract_structs_.contains(GetID(pointee_type))) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
-        StrCat(std::format("({}.to_strong() as Value<dyn {}>).as_pointer_dyn()",
+        StrCat(std::format("({}.to_strong() as Value<{}>).as_pointer_dyn()",
                            ToString(sub_expr->IgnoreCasts()),
-                           ToString(expr->getType()->getPointeeType())));
+                           ConvertPointeeType(expr->getType())));
         computed_expr_type_ = ComputedExprType::FreshPointer;
         return false;
       }
@@ -1222,6 +1222,12 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
                          ConvertPointeeType(expr->getType())));
+      return false;
+    } else if (expr->getType()->isVoidPointerType() &&
+               expr->getSubExpr()->getType()->isPointerType()) {
+      StrCat(
+          std::format("{}.to_any()", ConvertFreshPointer(expr->getSubExpr())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
@@ -2321,6 +2327,7 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   // not have a translation rule. Hence ToString(ptr_type->getPointeeType()) is
   // not enough
   auto str = ToString(ptr_type);
+  Unwrap(str, "PtrDyn<", ">");
   Unwrap(str, "Ptr<", ">");
   return str;
 }
