@@ -90,5 +90,118 @@
       "type": "*mut ::libc::c_void",
       "is_unsafe_pointer": true
     }
+  },
+  "f5": {
+    "body": [
+      {
+        "text": "libc::calloc("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as ::libc::size_t)"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "u64"
+      },
+      "a1": {
+        "type": "u64"
+      }
+    },
+    "return_type": {
+      "type": "*mut ::libc::c_void",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f6": {
+    "body": [
+      {
+        "text": "libc::getenv("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8) as *mut u8"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "*mut u8",
+      "is_unsafe_pointer": true
+    }
+  },
+  "f7": {
+    "body": [
+      {
+        "text": "libc::setenv("
+      },
+      {
+        "placeholder": {
+          "arg": 0,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 1,
+          "access": "read"
+        }
+      },
+      {
+        "text": " as *const i8, "
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "read"
+        }
+      },
+      {
+        "text": ")"
+      }
+    ],
+    "params": {
+      "a0": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a1": {
+        "type": "*const u8",
+        "is_unsafe_pointer": true
+      },
+      "a2": {
+        "type": "i32"
+      }
+    },
+    "return_type": {
+      "type": "i32"
+    }
   }
 }

@@ -44,5 +44,15 @@ unsafe fn main_0() -> i32 {
     assert!(((((*grow.offset((2) as isize)) == (3)) as i32) != 0));
     assert!(((((*grow.offset((3) as isize)) == (4)) as i32) != 0));
     libc::free((grow as *mut i32 as *mut ::libc::c_void));
+    let mut zeros: *mut i32 = (libc::calloc(
+        4_u64 as ::libc::size_t,
+        ::std::mem::size_of::<i32>() as u64 as ::libc::size_t,
+    ) as *mut i32);
+    let mut i: i32 = 0;
+    'loop_: while ((((i) < (4)) as i32) != 0) {
+        assert!(((((*zeros.offset((i) as isize)) == (0)) as i32) != 0));
+        i.postfix_inc();
+    }
+    libc::free((zeros as *mut i32 as *mut ::libc::c_void));
     return 0;
 }

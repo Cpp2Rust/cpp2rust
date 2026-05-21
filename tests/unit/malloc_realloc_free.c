@@ -28,5 +28,11 @@ int main() {
   assert(grow[3] == 4);
   free(grow);
 
+  int *zeros = (int *)calloc(4, sizeof(int));
+  for (int i = 0; i < 4; i++) {
+    assert(zeros[i] == 0);
+  }
+  free(zeros);
+
   return 0;
 }
