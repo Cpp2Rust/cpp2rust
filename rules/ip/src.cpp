@@ -16,6 +16,8 @@ int f4() {
   return IPPROTO_IPV6;
 }
 
+#if defined(__linux__)
 int f5() {
   return IPPROTO_MPTCP;
 }
+#endif
