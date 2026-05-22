@@ -25,3 +25,17 @@ unsafe fn f7(a0: u64) -> i32 {
 unsafe fn f8(a0: u64) -> i32 {
     a0.count_ones() as i32
 }
+unsafe fn f9(a0: i64, a1: i64, a2: *mut i64) -> bool {
+    let (val, ovf) = a0.overflowing_mul(a1);
+    *a2 = val;
+    ovf
+}
+unsafe fn f10(a0: i64, a1: i64, a2: *mut i64) -> bool {
+    let (val, ovf) = a0.overflowing_mul(a1);
+    *a2 = val;
+    ovf
+}
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+unsafe fn f11() {
+    std::hint::spin_loop()
+}

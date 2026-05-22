@@ -1,0 +1,146 @@
+{
+  "f10": {
+    "body": [
+      {
+        "text": "let (val, ovf) = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".overflowing_mul("
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 2,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".write(val)"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    ovf"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "i64"
+      },
+      "a1": {
+        "type": "i64"
+      },
+      "a2": {
+        "type": "Ptr<i64>",
+        "is_refcount_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "bool"
+    }
+  },
+  "f9": {
+    "body": [
+      {
+        "text": "let (val, ovf) = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".overflowing_mul("
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 2,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".write(val)"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    ovf"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "i64"
+      },
+      "a1": {
+        "type": "i64"
+      },
+      "a2": {
+        "type": "Ptr<i64>",
+        "is_refcount_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "bool"
+    }
+  }
+}

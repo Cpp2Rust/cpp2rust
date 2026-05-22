@@ -20,6 +20,74 @@
       "type": "usize"
     }
   },
+  "f10": {
+    "body": [
+      {
+        "text": "let (val, ovf) = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".overflowing_mul("
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    *"
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "write"
+        }
+      },
+      {
+        "text": " = val;\n    ovf"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "i64"
+      },
+      "a1": {
+        "type": "i64"
+      },
+      "a2": {
+        "type": "*mut i64",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "bool"
+    }
+  },
+  "f11": {
+    "body": [
+      {
+        "text": "std::hint::spin_loop()"
+      }
+    ]
+  },
   "f2": {
     "body": [
       {
@@ -233,6 +301,67 @@
     },
     "return_type": {
       "type": "i32"
+    }
+  },
+  "f9": {
+    "body": [
+      {
+        "text": "let (val, ovf) = "
+      },
+      {
+        "method_call": {
+          "receiver": [
+            {
+              "placeholder": {
+                "arg": 0,
+                "access": "read"
+              }
+            }
+          ],
+          "body": [
+            {
+              "text": ".overflowing_mul("
+            },
+            {
+              "placeholder": {
+                "arg": 1,
+                "access": "read"
+              }
+            },
+            {
+              "text": ")"
+            }
+          ]
+        }
+      },
+      {
+        "text": ";\n    *"
+      },
+      {
+        "placeholder": {
+          "arg": 2,
+          "access": "write"
+        }
+      },
+      {
+        "text": " = val;\n    ovf"
+      }
+    ],
+    "multi_statement": true,
+    "params": {
+      "a0": {
+        "type": "i64"
+      },
+      "a1": {
+        "type": "i64"
+      },
+      "a2": {
+        "type": "*mut i64",
+        "is_unsafe_pointer": true
+      }
+    },
+    "return_type": {
+      "type": "bool"
     }
   }
 }

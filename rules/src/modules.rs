@@ -16,6 +16,8 @@ pub mod assert_tgt_unsafe;
 pub mod brotli_tgt_refcount;
 #[path = r#"../brotli/tgt_unsafe.rs"#]
 pub mod brotli_tgt_unsafe;
+#[path = r#"../builtin/tgt_refcount.rs"#]
+pub mod builtin_tgt_refcount;
 #[path = r#"../builtin/tgt_unsafe.rs"#]
 pub mod builtin_tgt_unsafe;
 #[path = r#"../carray/tgt_refcount.rs"#]
