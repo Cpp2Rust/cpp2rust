@@ -2621,6 +2621,18 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
   return false;
 }
 
+bool Converter::VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr) {
+  auto record = expr->getType()->getAsRecordDecl();
+  if (!record || !record->hasAttr<clang::TransparentUnionAttr>()) {
+    return true;
+  }
+  auto init = clang::cast<clang::InitListExpr>(expr->getInitializer());
+  assert(init->getNumInits() == 1);
+  PushExprKind push(*this, ExprKind::RValue);
+  Convert(init->getInit(0));
+  return false;
+}
+
 bool Converter::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
   if (base->IgnoreCasts()->getType()->isPointerType()) {

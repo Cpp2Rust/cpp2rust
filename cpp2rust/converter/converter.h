@@ -283,6 +283,8 @@ public:
 
   virtual bool VisitInitListExpr(clang::InitListExpr *expr);
 
+  virtual bool VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
+
   virtual bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr);
 
   virtual bool VisitCXXNullPtrLiteralExpr(clang::CXXNullPtrLiteralExpr *expr);
