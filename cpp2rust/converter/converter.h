@@ -398,6 +398,8 @@ protected:
   virtual bool Convert(clang::QualType qual_type);
   virtual bool ConvertMappedType(clang::QualType qual_type);
 
+  virtual std::string ConvertPointeeType(clang::QualType ptr_type);
+
   virtual bool Convert(clang::Decl *decl);
   virtual bool Convert(clang::Stmt *stmt);
   virtual bool Convert(clang::Expr *expr);
