@@ -151,6 +151,8 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-unit
                  )
 
+set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
+
 file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
@@ -160,20 +162,23 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   if(NOT _srcs)
     continue()
   endif()
-  set(_out ${_rule_dir}/ir_src.json)
+  get_filename_component(_rule_name ${_rule_dir} NAME)
+  set(_out_dir ${RULES_IR_DIR}/${_rule_name})
+  set(_out ${_out_dir}/ir_src.json)
   add_custom_command(
     OUTPUT ${_out}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
+    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out}
     DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
   if(EXISTS ${_rule_dir}/tgt_unsafe.rs)
-    list(APPEND rust_rules_ir_outputs ${_rule_dir}/ir_unsafe.json)
+    list(APPEND rust_rules_ir_outputs ${_out_dir}/ir_unsafe.json)
     list(APPEND rust_rules_inputs ${_rule_dir}/tgt_unsafe.rs)
   endif()
   if(EXISTS ${_rule_dir}/tgt_refcount.rs)
-    list(APPEND rust_rules_ir_outputs ${_rule_dir}/ir_refcount.json)
+    list(APPEND rust_rules_ir_outputs ${_out_dir}/ir_refcount.json)
     list(APPEND rust_rules_inputs ${_rule_dir}/tgt_refcount.rs)
   endif()
 endforeach()
@@ -189,6 +194,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E env
           CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
           cargo +${RUST_NIGHTLY_VERSION} run --release --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+          -- "${RULES_IR_DIR}"
   DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
   VERBATIM
 )
@@ -197,10 +203,9 @@ add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
 
 add_custom_target("check-rules"
-                  COMMAND find rules "\\(" -name ir_unsafe.json -o -name ir_refcount.json -o -name ir_src.json "\\)" -delete
+                  COMMAND ${CMAKE_COMMAND} -E rm -rf "${RULES_IR_DIR}"
                   COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
                   COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
-                  COMMAND git diff --exit-code -- rules/
                   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                  )
 
