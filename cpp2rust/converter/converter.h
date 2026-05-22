@@ -51,6 +51,10 @@ public:
 
   virtual void EmitFilePreamble();
 
+  // Returns Rust text emitting `pub struct N { _opaque: [u8; 0] }` for each
+  // record name referenced by some TU but never defined by any.
+  static std::string EmitOpaqueRecordMarkers();
+
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
@@ -646,6 +650,7 @@ protected:
   static std::unordered_set<std::string> decl_ids_;
   static std::unordered_set<std::string> record_decls_;
   static std::unordered_set<std::string> abstract_structs_;
+  static std::unordered_map<std::string, std::string> referenced_records_;
 
   enum class ExprKind : uint8_t {
     Callee,
