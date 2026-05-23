@@ -76,10 +76,6 @@ impl SyntacticAnalysis {
             let source = std::fs::read_to_string(rule_file).unwrap();
             let file_ir = Self::parse_rule_file(&source, rule_file);
 
-            if file_ir.is_empty() {
-                continue;
-            }
-
             let canonical = rule_file
                 .canonicalize()
                 .unwrap_or_else(|_| rule_file.clone())
