@@ -151,6 +151,10 @@ add_custom_target("check"
                   DEPENDS check-libcc2rs check-unit
                  )
 
+add_custom_target("check-all"
+                  DEPENDS check check-benchmarks
+                 )
+
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 
 file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
@@ -201,14 +205,3 @@ add_custom_command(
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
-
-add_custom_target("check-rules"
-                  COMMAND ${CMAKE_COMMAND} -E rm -rf "${RULES_IR_DIR}"
-                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-cpp-rules
-                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target preprocess-rust-rules
-                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                 )
-
-add_custom_target("check-all"
-                  DEPENDS check-libcc2rs check-rules check-unit check-benchmarks
-                 )
