@@ -1586,7 +1586,7 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   }
 }
 
-void Converter::EmitArgBindings(CallInfo &info) {
+void Converter::EmitHoistedArgs(CallInfo &info) {
   using Kind = CallArg::Kind;
   for (auto &ca : info.args) {
     switch (ca.kind) {
@@ -1648,7 +1648,7 @@ void Converter::EmitArgList(const CallInfo &info) {
 }
 
 void Converter::EmitCall(CallInfo info) {
-  EmitArgBindings(info);
+  EmitHoistedArgs(info);
 
   if (info.is_fn_ptr_call) {
     EmitFnPtrCall(info.callee);

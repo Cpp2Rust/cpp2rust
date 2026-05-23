@@ -246,7 +246,7 @@ public:
 
   void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
-  void EmitArgBindings(CallInfo &info);
+  void EmitHoistedArgs(CallInfo &info);
 
   void EmitArgList(const CallInfo &info);
 
