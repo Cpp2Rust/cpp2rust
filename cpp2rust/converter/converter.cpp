@@ -1517,123 +1517,154 @@ void Converter::ConvertFunctionToFunctionPointer(
   StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
-void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
-  clang::Expr *callee = expr->getCallee();
-  auto convert_param_ty = [&](clang::QualType param_type, clang::Expr *expr) {
-    if (param_type->isLValueReferenceType()) {
-      PushExprKind push(*this, ExprKind::AddrOf);
-      ConvertVarInit(param_type, expr);
-    } else {
-      ConvertVarInit(param_type, expr);
-    }
-  };
+Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
+  using Kind = CallArg::Kind;
 
-  unsigned arg_begin = 0; // skip count for operator()'s implicit object arg
+  CallInfo info{};
+  info.callee = expr->getCallee();
+  unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     if (op_call->getOperator() == clang::OO_Call) {
-      callee = op_call->getArg(0);
+      info.callee = op_call->getArg(0);
       arg_begin = 1;
     }
   }
 
-  PushParen outer(*this);
-  StrCat(keyword_unsafe_);
-  PushBrace unsafe_brace(*this);
   const auto *function =
       expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
-
   if (!function) {
-    auto callee_ty = callee->getType().getDesugaredType(ctx_);
+    auto callee_ty = info.callee->getType().getDesugaredType(ctx_);
     if (auto ptr_ty = callee_ty->getAs<clang::PointerType>()) {
       proto = ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>();
     }
   }
-
   assert((function || proto) &&
          "Either function decl or function prototype should be known");
 
-  auto num_args = expr->getNumArgs() - arg_begin;
-  bool is_variadic =
-      function ? function->isVariadic() : (proto && proto->isVariadic());
-  unsigned num_named_params = function
-                                  ? function->getNumParams()
-                                  : (proto ? proto->getNumParams() : num_args);
-
-  // Track which args are materialized temps bound to reference params
-  std::vector<std::string> temp_refs(num_args);
+  unsigned num_args = expr->getNumArgs() - arg_begin;
+  unsigned num_named_params =
+      function ? function->getNumParams() : proto->getNumParams();
+  info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
+  info.is_fn_ptr_call = !function;
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
-    std::string param_name = function
-                                 ? function->getParamDecl(i)->getNameAsString()
-                                 : ("arg" + std::to_string(i));
-    clang::QualType param_type = function ? function->getParamDecl(i)->getType()
-                                          : proto->getParamType(i);
+    CallArg ca{
+        .expr = arg,
+        .kind = Kind::Hoisted,
+        .param_name = function ? function->getParamDecl(i)->getNameAsString()
+                               : ("arg" + std::to_string(i)),
+        .param_type = function ? function->getParamDecl(i)->getType()
+                               : proto->getParamType(i),
+        .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
+    };
+    bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
+    if (is_materialize && ca.param_type->isLValueReferenceType()) {
+      ca.kind = Kind::Materialized;
+    } else if (is_materialize) {
+      ca.kind = Kind::Inline;
+    }
+    info.args.push_back(std::move(ca));
+  }
 
-    bool is_materialize_to_ref =
-        clang::isa<clang::MaterializeTemporaryExpr>(arg) &&
-        param_type->isLValueReferenceType();
-
-    if (is_materialize_to_ref) {
-      auto [binding, ref] =
-          MaterializeTemp(std::format("_{}", param_name), param_type, arg);
-      StrCat(binding);
-      temp_refs[i] = std::move(ref);
-    } else if (!clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
-      StrCat("let", std::format("_{}: {}", param_name, ToString(param_type)),
-             "=");
-      convert_param_ty(param_type, arg);
-      StrCat(";");
+  if (info.is_variadic) {
+    for (unsigned i = num_named_params; i < num_args; ++i) {
+      info.variadic_args.push_back(expr->getArg(i + arg_begin));
     }
   }
 
-  if (proto && !function) {
-    EmitFnPtrCall(callee);
+  return info;
+}
+
+void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
+  if (param_type->isLValueReferenceType()) {
+    PushExprKind push(*this, ExprKind::AddrOf);
+    ConvertVarInit(param_type, expr);
+  } else {
+    ConvertVarInit(param_type, expr);
+  }
+}
+
+void Converter::EmitArgBindings(CallInfo &info) {
+  using Kind = CallArg::Kind;
+  for (auto &ca : info.args) {
+    switch (ca.kind) {
+    case Kind::Hoisted:
+      StrCat("let",
+             std::format("_{}: {}", ca.param_name, ToString(ca.param_type)),
+             "=");
+      ConvertParamTy(ca.param_type, ca.expr);
+      StrCat(";");
+      break;
+    case Kind::Materialized: {
+      auto [binding, ref] = MaterializeTemp(std::format("_{}", ca.param_name),
+                                            ca.param_type, ca.expr);
+      StrCat(binding);
+      ca.ref_temp_name = std::move(ref);
+      break;
+    }
+    case Kind::Inline:
+      break;
+    }
+  }
+}
+
+void Converter::EmitArgList(const CallInfo &info) {
+  using Kind = CallArg::Kind;
+  PushParen call_args(*this);
+
+  for (const auto &ca : info.args) {
+    if (ca.has_default) {
+      StrCat("Some");
+    }
+
+    {
+      PushParen push(*this, ca.has_default);
+      switch (ca.kind) {
+      case Kind::Hoisted:
+        StrCat(std::format("_{}", ca.param_name));
+        break;
+      case Kind::Materialized:
+        StrCat(ca.ref_temp_name);
+        break;
+      case Kind::Inline:
+        ConvertParamTy(ca.param_type, ca.expr);
+        break;
+      }
+    }
+
+    StrCat(token::kComma);
+  }
+
+  if (info.is_variadic) {
+    StrCat(token::kRef);
+    PushBracket push(*this);
+    for (auto *arg : info.variadic_args) {
+      ConvertVariadicArg(arg);
+      StrCat(".into()", token::kComma);
+    }
+  }
+}
+
+void Converter::EmitCall(CallInfo info) {
+  EmitArgBindings(info);
+
+  if (info.is_fn_ptr_call) {
+    EmitFnPtrCall(info.callee);
   } else {
     PushExprKind push(*this, ExprKind::Callee);
-    Convert(callee);
+    Convert(info.callee);
   }
-  {
-    PushParen call_args(*this);
-    for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
-      auto *arg = expr->getArg(i + arg_begin);
-      std::string param_name =
-          function ? function->getParamDecl(i)->getNameAsString()
-                   : ("arg" + std::to_string(i));
-      clang::QualType param_type = function
-                                       ? function->getParamDecl(i)->getType()
-                                       : proto->getParamType(i);
-      bool is_parm_with_default_value =
-          function && function->getParamDecl(i)->hasDefaultArg();
 
-      if (is_parm_with_default_value) {
-        StrCat("Some(");
-      }
-      if (!temp_refs[i].empty()) {
-        StrCat(temp_refs[i]);
-      } else if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
-        convert_param_ty(param_type, arg);
-      } else {
-        StrCat(std::format("_{}", param_name));
-      }
-      if (is_parm_with_default_value) {
-        StrCat(')');
-      }
-      StrCat(token::kComma);
-    }
+  EmitArgList(info);
+}
 
-    // Variadic args: wrap in &[arg.into(), ...]
-    if (is_variadic) {
-      StrCat("& [");
-      for (unsigned i = num_named_params; i < num_args; ++i) {
-        auto *arg = expr->getArg(i + arg_begin);
-        ConvertVariadicArg(arg);
-        StrCat(".into()", token::kComma);
-      }
-      StrCat(']');
-    }
-  }
+void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
+  PushParen outer(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
+  EmitCall(CollectCallInfo(expr));
 }
 
 std::optional<Converter::TempMaterializationCtx>
