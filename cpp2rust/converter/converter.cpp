@@ -1520,7 +1520,7 @@ void Converter::ConvertFunctionToFunctionPointer(
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
-  CallInfo info{};
+  CallInfo info;
   info.callee = expr->getCallee();
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
