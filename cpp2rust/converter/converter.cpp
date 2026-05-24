@@ -1647,7 +1647,7 @@ void Converter::EmitArgList(const CallInfo &info) {
   }
 }
 
-void Converter::EmitCall(CallInfo info) {
+void Converter::EmitCall(CallInfo &&info) {
   EmitHoistedArgs(info);
 
   if (info.is_fn_ptr_call) {
