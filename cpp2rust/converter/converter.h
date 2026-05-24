@@ -255,7 +255,7 @@ public:
 
   void EmitArgList(const CallInfo &info);
 
-  void EmitCall(CallInfo info);
+  void EmitCall(CallInfo &&info);
 
   void ConvertGenericCallExpr(clang::CallExpr *expr);
 
