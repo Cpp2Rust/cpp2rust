@@ -1551,14 +1551,14 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
     CallArg ca{
-        .expr = arg,
-        .kind = Kind::Hoisted,
         .param_name = function
                           ? ("_" + function->getParamDecl(i)->getNameAsString())
                           : ("_arg" + std::to_string(i)),
         .param_type = function ? function->getParamDecl(i)->getType()
                                : proto->getParamType(i),
+        .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
+        .kind = Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {
