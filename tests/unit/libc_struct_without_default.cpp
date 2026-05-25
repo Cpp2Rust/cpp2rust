@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <netinet/in.h>
 #include <poll.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <vector>
@@ -10,6 +11,10 @@
 struct UserDefined {
   std::array<int, 1> a;
   std::vector<int> v;
+};
+
+struct FieldIsLibcType {
+  struct sockaddr addr;
 };
 
 int main() {
@@ -40,5 +45,8 @@ int main() {
   UserDefined ud;
   assert(ud.a[0] == 0);
   assert(ud.v.size() == 0);
+
+  FieldIsLibcType filt;
+  assert(filt.addr.sa_family == 0);
   return 0;
 }

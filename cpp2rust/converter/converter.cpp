@@ -579,6 +579,14 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
     if (f->getType()->isArrayType()) {
       return false;
     }
+
+    // Records that contain libc types do not derive Default
+    if (auto record = f->getType()->getAsRecordDecl()) {
+      if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
+          f->getType().isPODType(ctx_)) {
+        return false;
+      }
+    }
   }
 
   return true;
@@ -3162,7 +3170,8 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
         qual_type.isPODType(ctx_)) {
-      return std::format("std::mem::zeroed::<{}>()", ToString(qual_type));
+      return std::format("unsafe {{ std::mem::zeroed::<{}>() }}",
+                         ToString(qual_type));
     }
   }
 
