@@ -792,6 +792,12 @@ std::string ToString(const clang::NamedDecl *decl) {
     }
     os << ToString(func_decl->getParamDecl(i)->getType());
   }
+  if (func_decl->isVariadic()) {
+    if (func_decl->getNumParams()) {
+      os << ", ";
+    }
+    os << "...";
+  }
   os << ')';
 
   if (const auto *method_decl =
