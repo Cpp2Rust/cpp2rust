@@ -35,3 +35,7 @@ unsafe fn f10(a0: i64, a1: i64, a2: *mut i64) -> bool {
     *a2 = val;
     ovf
 }
+#[cfg(any(target_arch = "x86_64", target_arch = "x86"))]
+unsafe fn f11() {
+    std::hint::spin_loop();
+}

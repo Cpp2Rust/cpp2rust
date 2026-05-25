@@ -56,6 +56,11 @@ fn cfg_matches_host(fn_item: &ast::Fn) -> bool {
                 "macos" => cfg!(target_os = "macos"),
                 other => panic!("unsupported target_os in cfg: {other}"),
             },
+            Predicate::Target(TargetPredicate::Arch(arch)) => match arch.as_str() {
+                "x86_64" => cfg!(target_arch = "x86_64"),
+                "x86" => cfg!(target_arch = "x86"),
+                other => panic!("unsupported target_arch in cfg: {other}"),
+            },
             _ => panic!("unsupported cfg predicate in `{meta_text}`"),
         });
         if !matches {
