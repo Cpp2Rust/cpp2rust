@@ -23,6 +23,7 @@ impl From<i32> for Choice {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Choice);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Branch_anon_0_anon_0 {

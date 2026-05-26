@@ -23,6 +23,7 @@ impl From<i32> for Color {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Color);
 pub fn switch_enum_0(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
     'switch: {

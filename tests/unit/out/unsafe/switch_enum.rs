@@ -23,6 +23,7 @@ impl From<i32> for Color {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Color);
 pub unsafe fn switch_enum_0(mut c: Color) -> i32 {
     'switch: {
         let __match_cond = (c as i32);

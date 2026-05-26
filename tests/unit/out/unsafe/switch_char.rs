@@ -46,6 +46,7 @@ impl From<i32> for Color {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Color);
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

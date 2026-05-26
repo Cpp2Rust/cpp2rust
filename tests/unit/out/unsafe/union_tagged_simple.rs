@@ -21,6 +21,7 @@ impl From<i32> for Kind {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Kind);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Event_anon_0 {

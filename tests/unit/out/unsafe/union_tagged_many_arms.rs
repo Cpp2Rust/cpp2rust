@@ -27,6 +27,7 @@ impl From<i32> for Tag {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Tag);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Slot_anon_0 {

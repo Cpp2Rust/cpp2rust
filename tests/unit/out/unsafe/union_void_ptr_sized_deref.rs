@@ -23,6 +23,7 @@ impl From<i32> for Width {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Width);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union Sink_anon_0 {

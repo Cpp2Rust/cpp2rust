@@ -124,6 +124,38 @@ impl<T> UnsafePrefixInc for *mut T {
     }
 }
 
+#[macro_export]
+macro_rules! impl_enum_inc_dec {
+    ($t:ty) => {
+        impl PostfixInc for $t {
+            fn postfix_inc(&mut self) -> Self {
+                let copy = *self;
+                *self = <$t>::from(*self as i32 + 1);
+                copy
+            }
+        }
+        impl PrefixInc for $t {
+            fn prefix_inc(&mut self) -> Self {
+                *self = <$t>::from(*self as i32 + 1);
+                *self
+            }
+        }
+        impl PostfixDec for $t {
+            fn postfix_dec(&mut self) -> Self {
+                let copy = *self;
+                *self = <$t>::from(*self as i32 - 1);
+                copy
+            }
+        }
+        impl PrefixDec for $t {
+            fn prefix_dec(&mut self) -> Self {
+                *self = <$t>::from(*self as i32 - 1);
+                *self
+            }
+        }
+    };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
