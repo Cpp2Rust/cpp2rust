@@ -2892,6 +2892,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   StrCat("}");
 
   AddFromImpl(decl);
+  AddIncDecImpls(decl);
   return false;
 }
 
@@ -2911,6 +2912,10 @@ void Converter::AddFromImpl(clang::EnumDecl *decl) {
                        std::string_view(e->getName())));
   }
   StrCat(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name));
+}
+
+void Converter::AddIncDecImpls(clang::EnumDecl *decl) {
+  StrCat(std::format("libcc2rs::impl_enum_inc_dec!({});", GetRecordName(decl)));
 }
 
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {

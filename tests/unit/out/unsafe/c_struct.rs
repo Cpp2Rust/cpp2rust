@@ -41,6 +41,7 @@ impl From<i32> for Color {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Color);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {

@@ -31,6 +31,7 @@ impl From<i32> for opt {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(opt);
 pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));

@@ -21,6 +21,7 @@ impl From<i32> for anon_enum_3 {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(anon_enum_3);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_enum_11 {
     #[default]
@@ -36,6 +37,7 @@ impl From<i32> for anon_enum_11 {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(anon_enum_11);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct S {
@@ -56,6 +58,7 @@ impl From<i32> for TdEnum {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(TdEnum);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_enum_24 {
     #[default]
@@ -71,6 +74,7 @@ impl From<i32> for anon_enum_24 {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(anon_enum_24);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct WithAnonField {
@@ -97,7 +101,8 @@ unsafe fn main_0() -> i32 {
                 _ => panic!("invalid anon_enum_31 value: {}", n),
             }
         }
-    };
+    }
+    libcc2rs::impl_enum_inc_dec!(anon_enum_31);
     assert!(((anon_enum_3::FIRST_A as i32) != (anon_enum_3::FIRST_B as i32)));
     assert!(((anon_enum_11::SECOND_A as i32) != (anon_enum_11::SECOND_B as i32)));
     assert!(((anon_enum_31::THIRD_A as i32) != (anon_enum_31::THIRD_B as i32)));

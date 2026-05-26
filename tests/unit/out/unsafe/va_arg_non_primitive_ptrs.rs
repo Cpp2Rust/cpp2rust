@@ -31,6 +31,7 @@ impl From<i32> for opt {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(opt);
 pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);

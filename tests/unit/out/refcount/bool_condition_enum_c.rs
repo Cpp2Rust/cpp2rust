@@ -23,6 +23,7 @@ impl From<i32> for Code {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Code);
 pub fn main() {
     std::process::exit(main_0());
 }

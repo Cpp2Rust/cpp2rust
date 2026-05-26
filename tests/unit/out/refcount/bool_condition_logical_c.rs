@@ -23,6 +23,7 @@ impl From<i32> for Code {
         }
     }
 }
+libcc2rs::impl_enum_inc_dec!(Code);
 thread_local!(
     pub static side_effect: Value<i32> = Rc::new(RefCell::new(0));
 );
