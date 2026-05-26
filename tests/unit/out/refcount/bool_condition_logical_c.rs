@@ -25,11 +25,11 @@ impl From<i32> for Code {
 }
 libcc2rs::impl_enum_inc_dec!(Code);
 thread_local!(
-    pub static side_effect: Value<i32> = Rc::new(RefCell::new(0));
+    pub static s_side_effect: Value<i32> = Rc::new(RefCell::new(0));
 );
 pub fn observe_0(v: i32) -> i32 {
     let v: Value<i32> = Rc::new(RefCell::new(v));
-    (*side_effect.with(Value::clone).borrow_mut()).prefix_inc();
+    (*s_side_effect.with(Value::clone).borrow_mut()).prefix_inc();
     return (*v.borrow());
 }
 pub fn returns_one_1() -> i32 {
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    (*side_effect.with(Value::clone).borrow_mut()) = 0;
+    (*s_side_effect.with(Value::clone).borrow_mut()) = 0;
     if (((((*zero.borrow()) != 0)
         && (({
             let _v: i32 = 1;
@@ -80,7 +80,7 @@ fn main_0() -> i32 {
     {
         assert!((0 != 0));
     }
-    assert!(((((*side_effect.with(Value::clone).borrow()) == 0) as i32) != 0));
+    assert!(((((*s_side_effect.with(Value::clone).borrow()) == 0) as i32) != 0));
     if (((((*n.borrow()) != 0)
         || (({
             let _v: i32 = 1;
@@ -90,7 +90,7 @@ fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    assert!(((((*side_effect.with(Value::clone).borrow()) == 0) as i32) != 0));
+    assert!(((((*s_side_effect.with(Value::clone).borrow()) == 0) as i32) != 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
     let flags: Value<u32> = Rc::new(RefCell::new(2_u32));

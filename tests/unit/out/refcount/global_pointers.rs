@@ -22,13 +22,13 @@ impl Clone for Entry {
 }
 impl ByteRepr for Entry {}
 thread_local!(
-    pub static single_entry: Value<Entry> = Rc::new(RefCell::new(Entry {
+    pub static s_single_entry: Value<Entry> = Rc::new(RefCell::new(Entry {
         name: Rc::new(RefCell::new(Ptr::from_string_literal("alone"))),
         p: Rc::new(RefCell::new(Ptr::<i32>::null())),
     }));
 );
 thread_local!(
-    pub static entries: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
+    pub static s_entries: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
             p: Rc::new(RefCell::new(Ptr::<i32>::null())),
@@ -40,7 +40,7 @@ thread_local!(
     ])));
 );
 thread_local!(
-    pub static arr_of_pointers: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
+    pub static s_arr_of_pointers: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<u8>::null(),
         Ptr::<u8>::null(),
         Ptr::<u8>::null(),
@@ -50,16 +50,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*(*single_entry.with(Value::clone).borrow()).p.borrow()).is_null());
+    assert!((*(*s_single_entry.with(Value::clone).borrow()).p.borrow()).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*entries.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            (*(*s_entries.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .p
                 .borrow())
             .is_null()
         );
-        assert!(((*arr_of_pointers.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null());
+        assert!(
+            ((*s_arr_of_pointers.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null()
+        );
         (*i.borrow_mut()).prefix_inc();
     }
     return 0;

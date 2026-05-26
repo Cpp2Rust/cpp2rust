@@ -15,18 +15,18 @@ pub fn triple_it_1(x: i32) -> i32 {
     return ((*x.borrow()) * 3);
 }
 thread_local!(
-    pub static g_op: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    pub static s_g_op: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
 );
 pub fn set_op_2(fn_: FnPtr<fn(i32) -> i32>) {
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
-    (*g_op.with(Value::clone).borrow_mut()) = (*fn_.borrow()).clone();
+    (*s_g_op.with(Value::clone).borrow_mut()) = (*fn_.borrow()).clone();
 }
 pub fn call_op_3(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    if !(*g_op.with(Value::clone).borrow()).is_null() {
+    if !(*s_g_op.with(Value::clone).borrow()).is_null() {
         return ({
             let _arg0: i32 = (*x.borrow());
-            (*(*g_op.with(Value::clone).borrow()))(_arg0)
+            (*(*s_g_op.with(Value::clone).borrow()))(_arg0)
         });
     }
     return (*x.borrow());
@@ -45,9 +45,9 @@ fn main_0() -> i32 {
         let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(double_it_0);
         set_op_2(_fn)
     });
-    assert!(!((*g_op.with(Value::clone).borrow()).is_null()));
+    assert!(!((*s_g_op.with(Value::clone).borrow()).is_null()));
     assert!({
-        let _lhs = (*g_op.with(Value::clone).borrow()).clone();
+        let _lhs = (*s_g_op.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(double_it_0)
     });
     assert!(
@@ -61,7 +61,7 @@ fn main_0() -> i32 {
         set_op_2(_fn)
     });
     assert!({
-        let _lhs = (*g_op.with(Value::clone).borrow()).clone();
+        let _lhs = (*s_g_op.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
     assert!(
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
         let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
         set_op_2(_fn)
     });
-    assert!((*g_op.with(Value::clone).borrow()).is_null());
+    assert!((*s_g_op.with(Value::clone).borrow()).is_null());
     assert!(
         (({
             let _x: i32 = 5;

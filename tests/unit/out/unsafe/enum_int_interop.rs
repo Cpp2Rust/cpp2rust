@@ -69,10 +69,10 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color: Color = unsafe { Color::GREEN };
-pub static mut global_opt: Option = unsafe { Option::OPT_B };
-pub static mut global_tag: Tag = unsafe { Tag::TAG_TWO };
-pub static mut entries: [Entry; 3] = unsafe {
+pub static mut s_global_color: Color = unsafe { Color::GREEN };
+pub static mut s_global_opt: Option = unsafe { Option::OPT_B };
+pub static mut s_global_tag: Tag = unsafe { Tag::TAG_TWO };
+pub static mut s_entries: [Entry; 3] = unsafe {
     [
         Entry {
             name: b"first\0".as_ptr(),
@@ -210,14 +210,14 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
-    assert!(((global_color as i32) == (Color::GREEN as i32)));
-    assert!(((global_opt as i32) == (Option::OPT_B as i32)));
-    assert!(((global_tag as i32) == (Tag::TAG_TWO as i32)));
-    assert!(((entries[(0) as usize].color as i32) == (Color::RED as i32)));
-    assert!(((entries[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
-    assert!(((entries[(1) as usize].color as i32) == (Color::GREEN as i32)));
-    assert!(((entries[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
-    assert!(((entries[(2) as usize].color as i32) == (Color::BLUE as i32)));
-    assert!(((entries[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
+    assert!(((s_global_color as i32) == (Color::GREEN as i32)));
+    assert!(((s_global_opt as i32) == (Option::OPT_B as i32)));
+    assert!(((s_global_tag as i32) == (Tag::TAG_TWO as i32)));
+    assert!(((s_entries[(0) as usize].color as i32) == (Color::RED as i32)));
+    assert!(((s_entries[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
+    assert!(((s_entries[(1) as usize].color as i32) == (Color::GREEN as i32)));
+    assert!(((s_entries[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
+    assert!(((s_entries[(2) as usize].color as i32) == (Color::BLUE as i32)));
+    assert!(((s_entries[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
     return 0;
 }

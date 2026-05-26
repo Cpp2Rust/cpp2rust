@@ -20,10 +20,10 @@ pub unsafe fn unused_ref_param_1(x: *const NonTrivial) {
 pub unsafe fn unused_ptr_param_2(mut p: *const NonTrivial) {
     &(*p);
 }
-pub static mut side_effect_counter: i32 = unsafe { 0 };
+pub static mut s_side_effect_counter: i32 = unsafe { 0 };
 pub unsafe fn bump_and_return_3() -> i32 {
-    side_effect_counter.prefix_inc();
-    return side_effect_counter;
+    s_side_effect_counter.prefix_inc();
+    return s_side_effect_counter;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
@@ -56,12 +56,12 @@ unsafe fn main_0() -> i32 {
     assert!(((w) == (3)));
     assert!(((counter) == (3)));
     &(unsafe { bump_and_return_3() });
-    assert!(((side_effect_counter) == (1)));
+    assert!(((s_side_effect_counter) == (1)));
     let mut v: i32 = {
         &(unsafe { bump_and_return_3() });
         99
     };
-    assert!(((side_effect_counter) == (2)));
+    assert!(((s_side_effect_counter) == (2)));
     assert!(((v) == (99)));
     &(0);
     &(0);
@@ -78,13 +78,13 @@ unsafe fn main_0() -> i32 {
     assert!(((err) == (7)));
     assert!(((chosen) == (123)));
     &(bump_and_return_3);
-    assert!(((side_effect_counter) == (2)));
+    assert!(((s_side_effect_counter) == (2)));
     &(Some(bump_and_return_3));
-    assert!(((side_effect_counter) == (2)));
+    assert!(((s_side_effect_counter) == (2)));
     &(std::mem::transmute::<Option<unsafe fn() -> i32>, Option<unsafe fn() -> i32>>(
         (Some(bump_and_return_3)),
     ));
-    assert!(((side_effect_counter) == (2)));
+    assert!(((s_side_effect_counter) == (2)));
     let mut storage: i32 = 11;
     let mut p: *mut i32 = (&mut storage as *mut i32);
     &(*p);

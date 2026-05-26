@@ -22,10 +22,10 @@ impl Default for Vtable {
         }
     }
 }
-pub static mut storage: i32 = unsafe { 0_i32 };
+pub static mut s_storage: i32 = unsafe { 0_i32 };
 pub unsafe fn int_create_0(mut val: i32) -> *mut ::libc::c_void {
-    storage = val;
-    return ((&raw mut storage as *mut i32) as *mut i32 as *mut ::libc::c_void);
+    s_storage = val;
+    return ((&raw mut s_storage as *mut i32) as *mut i32 as *mut ::libc::c_void);
 }
 pub unsafe fn int_get_1(mut p: *mut ::libc::c_void) -> i32 {
     return (*(p as *mut i32));
@@ -61,7 +61,7 @@ unsafe fn main_0() -> i32 {
         let _arg0: *mut ::libc::c_void = obj;
         (vt.destroy).unwrap()(_arg0)
     });
-    assert!(((storage) == (0)));
+    assert!(((s_storage) == (0)));
     (vt.get) = None;
     assert!((vt.get).is_none());
     return 0;

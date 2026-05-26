@@ -58,8 +58,8 @@ impl Default for Foo {
         }
     }
 }
-pub static mut static_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };
-pub static mut static_outer: Outer = unsafe {
+pub static mut s_static_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };
+pub static mut s_static_outer: Outer = unsafe {
     Outer {
         p1: std::ptr::null_mut(),
         p2: std::ptr::null(),
@@ -74,13 +74,13 @@ pub static mut static_outer: Outer = unsafe {
         fn_: None,
     }
 };
-pub static mut static_inner_array: [Inner; 2] = unsafe {
+pub static mut s_static_inner_array: [Inner; 2] = unsafe {
     [Inner {
         v: 0_i32,
         name: std::ptr::null(),
     }; 2]
 };
-pub static mut static_foo: Foo = unsafe {
+pub static mut s_static_foo: Foo = unsafe {
     Foo {
         s1: b"hello\0".as_ptr(),
         s2: std::ptr::null(),
@@ -89,7 +89,7 @@ pub static mut static_foo: Foo = unsafe {
         n: 42,
     }
 };
-pub static mut static_foo_array: [Foo; 2] = unsafe {
+pub static mut s_static_foo_array: [Foo; 2] = unsafe {
     [
         Foo {
             s1: b"first\0".as_ptr(),
@@ -108,7 +108,7 @@ pub static mut static_foo_array: [Foo; 2] = unsafe {
     ]
 };
 pub unsafe fn check_local_static_0() {
-    static mut local_outer: Outer = unsafe {
+    static mut s_local_outer: Outer = unsafe {
         Outer {
             p1: std::ptr::null_mut(),
             p2: std::ptr::null(),
@@ -123,12 +123,12 @@ pub unsafe fn check_local_static_0() {
             fn_: None,
         }
     };;
-    static mut local_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };;
-    static mut local_p: *mut i32 = unsafe { std::ptr::null_mut() };;
-    assert!((local_outer.p1).is_null());
-    assert!((local_outer.fn_).is_none());
-    assert!((local_fn).is_none());
-    assert!((local_p).is_null());
+    static mut s_local_fn: Option<unsafe fn(i32) -> i32> = unsafe { None };;
+    static mut s_local_p: *mut i32 = unsafe { std::ptr::null_mut() };;
+    assert!((s_local_outer.p1).is_null());
+    assert!((s_local_outer.fn_).is_none());
+    assert!((s_local_fn).is_none());
+    assert!((s_local_p).is_null());
 }
 pub fn main() {
     unsafe {
@@ -136,32 +136,32 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((static_fn).is_none());
-    assert!((static_outer.p1).is_null());
-    assert!((static_outer.p2).is_null());
-    assert!((static_outer.cp).is_null());
-    assert!((static_outer.pp).is_null());
-    assert!((static_outer.fn_).is_none());
+    assert!((s_static_fn).is_none());
+    assert!((s_static_outer.p1).is_null());
+    assert!((s_static_outer.p2).is_null());
+    assert!((s_static_outer.cp).is_null());
+    assert!((s_static_outer.pp).is_null());
+    assert!((s_static_outer.fn_).is_none());
     let mut i: i32 = 0;
     'loop_: while ((i) < (3)) {
-        assert!((static_outer.arr[(i) as usize]).is_null());
+        assert!((s_static_outer.arr[(i) as usize]).is_null());
         i.prefix_inc();
     }
-    assert!((static_outer.inner.name).is_null());
+    assert!((s_static_outer.inner.name).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!((static_inner_array[(i) as usize].name).is_null());
+        assert!((s_static_inner_array[(i) as usize].name).is_null());
         i.prefix_inc();
     }
-    assert!((static_foo.s2).is_null());
-    assert!((static_foo.fn1).is_none());
-    assert!((static_foo.fn2).is_none());
-    assert!(((static_foo.n) == (42)));
+    assert!((s_static_foo.s2).is_null());
+    assert!((s_static_foo.fn1).is_none());
+    assert!((s_static_foo.fn2).is_none());
+    assert!(((s_static_foo.n) == (42)));
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!((static_foo_array[(i) as usize].s2).is_null());
-        assert!((static_foo_array[(i) as usize].fn1).is_none());
-        assert!((static_foo_array[(i) as usize].fn2).is_none());
+        assert!((s_static_foo_array[(i) as usize].s2).is_null());
+        assert!((s_static_foo_array[(i) as usize].fn1).is_none());
+        assert!((s_static_foo_array[(i) as usize].fn2).is_none());
         i.prefix_inc();
     }
     (unsafe { check_local_static_0() });

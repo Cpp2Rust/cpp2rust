@@ -31,11 +31,11 @@ pub fn unused_ptr_param_2(p: Ptr<NonTrivial>) {
     (*(*p.borrow()).upgrade().deref()).clone();
 }
 thread_local!(
-    pub static side_effect_counter: Value<i32> = Rc::new(RefCell::new(0));
+    pub static s_side_effect_counter: Value<i32> = Rc::new(RefCell::new(0));
 );
 pub fn bump_and_return_3() -> i32 {
-    (*side_effect_counter.with(Value::clone).borrow_mut()).prefix_inc();
-    return (*side_effect_counter.with(Value::clone).borrow());
+    (*s_side_effect_counter.with(Value::clone).borrow_mut()).prefix_inc();
+    return (*s_side_effect_counter.with(Value::clone).borrow());
 }
 #[derive(Default)]
 pub struct Holder {
@@ -83,12 +83,12 @@ fn main_0() -> i32 {
     assert!(((*w.borrow()) == 3));
     assert!(((*counter.borrow()) == 3));
     ({ bump_and_return_3() });
-    assert!(((*side_effect_counter.with(Value::clone).borrow()) == 1));
+    assert!(((*s_side_effect_counter.with(Value::clone).borrow()) == 1));
     let v: Value<i32> = Rc::new(RefCell::new({
         ({ bump_and_return_3() });
         99
     }));
-    assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
+    assert!(((*s_side_effect_counter.with(Value::clone).borrow()) == 2));
     assert!(((*v.borrow()) == 99));
     0;
     (0);
@@ -105,11 +105,11 @@ fn main_0() -> i32 {
     assert!(((*err.borrow()) == 7));
     assert!(((*chosen.borrow()) == 123));
     bump_and_return_3;
-    assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
+    assert!(((*s_side_effect_counter.with(Value::clone).borrow()) == 2));
     (FnPtr::<fn() -> i32>::new(bump_and_return_3));
-    assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
+    assert!(((*s_side_effect_counter.with(Value::clone).borrow()) == 2));
     ((FnPtr::<fn() -> i32>::new(bump_and_return_3)).cast::<fn() -> i32>(None));
-    assert!(((*side_effect_counter.with(Value::clone).borrow()) == 2));
+    assert!(((*s_side_effect_counter.with(Value::clone).borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     ((*p.borrow()).read());

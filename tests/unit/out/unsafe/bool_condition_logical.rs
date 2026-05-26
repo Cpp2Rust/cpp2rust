@@ -24,9 +24,9 @@ impl From<i32> for Code {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Code);
-pub static mut side_effect: i32 = unsafe { 0 };
+pub static mut s_side_effect: i32 = unsafe { 0 };
 pub unsafe fn observe_0(mut v: i32) -> i32 {
-    side_effect.prefix_inc();
+    s_side_effect.prefix_inc();
     return v;
 }
 pub unsafe fn returns_one_1() -> i32 {
@@ -63,7 +63,7 @@ unsafe fn main_0() -> i32 {
     if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code::CODE_OK as i32)) {
         assert!(true);
     }
-    side_effect = 0;
+    s_side_effect = 0;
     if (zero != 0)
         && ((unsafe {
             let _v: i32 = 1;
@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
     {
         assert!(false);
     }
-    assert!(((side_effect) == (0)));
+    assert!(((s_side_effect) == (0)));
     if (n != 0)
         || ((unsafe {
             let _v: i32 = 1;
@@ -81,7 +81,7 @@ unsafe fn main_0() -> i32 {
     {
         assert!(true);
     }
-    assert!(((side_effect) == (0)));
+    assert!(((s_side_effect) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;

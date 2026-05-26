@@ -33,12 +33,12 @@ impl Default for Vtable {
 }
 impl ByteRepr for Vtable {}
 thread_local!(
-    pub static storage: Value<i32> = <Value<i32>>::default();
+    pub static s_storage: Value<i32> = <Value<i32>>::default();
 );
 pub fn int_create_0(val: i32) -> AnyPtr {
     let val: Value<i32> = Rc::new(RefCell::new(val));
-    (*storage.with(Value::clone).borrow_mut()) = (*val.borrow());
-    return ((storage.with(Value::clone).as_pointer()) as Ptr<i32>).to_any();
+    (*s_storage.with(Value::clone).borrow_mut()) = (*val.borrow());
+    return ((s_storage.with(Value::clone).as_pointer()) as Ptr<i32>).to_any();
 }
 pub fn int_get_1(p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         let _arg0: AnyPtr = (*obj.borrow()).clone();
         (*(*(*vt.borrow()).destroy.borrow()))(_arg0)
     });
-    assert!(((*storage.with(Value::clone).borrow()) == 0));
+    assert!(((*s_storage.with(Value::clone).borrow()) == 0));
     (*(*vt.borrow()).get.borrow_mut()) = FnPtr::null();
     assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;

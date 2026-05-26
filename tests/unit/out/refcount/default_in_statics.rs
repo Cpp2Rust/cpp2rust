@@ -99,18 +99,18 @@ impl Default for Foo {
 }
 impl ByteRepr for Foo {}
 thread_local!(
-    pub static static_fn: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    pub static s_static_fn: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
 );
 thread_local!(
-    pub static static_outer: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    pub static s_static_outer: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
 );
 thread_local!(
-    pub static static_inner_array: Value<Box<[Inner]>> = Rc::new(RefCell::new(
+    pub static s_static_inner_array: Value<Box<[Inner]>> = Rc::new(RefCell::new(
         (0..2).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
     ));
 );
 thread_local!(
-    pub static static_foo: Value<Foo> = Rc::new(RefCell::new(Foo {
+    pub static s_static_foo: Value<Foo> = Rc::new(RefCell::new(Foo {
         s1: Rc::new(RefCell::new(Ptr::from_string_literal("hello"))),
         s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
         fn1: Rc::new(RefCell::new(FnPtr::null())),
@@ -119,7 +119,7 @@ thread_local!(
     }));
 );
 thread_local!(
-    pub static static_foo_array: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
+    pub static s_static_foo_array: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
@@ -138,38 +138,39 @@ thread_local!(
 );
 pub fn check_local_static_0() {
     thread_local!(
-        static local_outer: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+        static s_local_outer: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     );
     thread_local!(
-        static local_fn: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+        static s_local_fn: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
     );
     thread_local!(
-        static local_p: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+        static s_local_p: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     );
-    assert!((*(*local_outer.with(Value::clone).borrow()).p1.borrow()).is_null());
-    assert!((*(*local_outer.with(Value::clone).borrow()).fn_.borrow()).is_null());
-    assert!((*local_fn.with(Value::clone).borrow()).is_null());
-    assert!((*local_p.with(Value::clone).borrow()).is_null());
+    assert!((*(*s_local_outer.with(Value::clone).borrow()).p1.borrow()).is_null());
+    assert!((*(*s_local_outer.with(Value::clone).borrow()).fn_.borrow()).is_null());
+    assert!((*s_local_fn.with(Value::clone).borrow()).is_null());
+    assert!((*s_local_p.with(Value::clone).borrow()).is_null());
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*static_fn.with(Value::clone).borrow()).is_null());
-    assert!((*(*static_outer.with(Value::clone).borrow()).p1.borrow()).is_null());
-    assert!((*(*static_outer.with(Value::clone).borrow()).p2.borrow()).is_null());
-    assert!((*(*static_outer.with(Value::clone).borrow()).cp.borrow()).is_null());
-    assert!((*(*static_outer.with(Value::clone).borrow()).pp.borrow()).is_null());
-    assert!((*(*static_outer.with(Value::clone).borrow()).fn_.borrow()).is_null());
+    assert!((*s_static_fn.with(Value::clone).borrow()).is_null());
+    assert!((*(*s_static_outer.with(Value::clone).borrow()).p1.borrow()).is_null());
+    assert!((*(*s_static_outer.with(Value::clone).borrow()).p2.borrow()).is_null());
+    assert!((*(*s_static_outer.with(Value::clone).borrow()).cp.borrow()).is_null());
+    assert!((*(*s_static_outer.with(Value::clone).borrow()).pp.borrow()).is_null());
+    assert!((*(*s_static_outer.with(Value::clone).borrow()).fn_.borrow()).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
-        assert!(((*(*static_outer.with(Value::clone).borrow()).arr.borrow())
-            [(*i.borrow()) as usize])
-            .is_null());
+        assert!(
+            ((*(*s_static_outer.with(Value::clone).borrow()).arr.borrow())[(*i.borrow()) as usize])
+                .is_null()
+        );
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        (*(*(*static_outer.with(Value::clone).borrow()).inner.borrow())
+        (*(*(*s_static_outer.with(Value::clone).borrow()).inner.borrow())
             .name
             .borrow())
         .is_null()
@@ -177,33 +178,33 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*static_inner_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            (*(*s_static_inner_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .name
                 .borrow())
             .is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }
-    assert!((*(*static_foo.with(Value::clone).borrow()).s2.borrow()).is_null());
-    assert!((*(*static_foo.with(Value::clone).borrow()).fn1.borrow()).is_null());
-    assert!((*(*static_foo.with(Value::clone).borrow()).fn2.borrow()).is_null());
-    assert!(((*(*static_foo.with(Value::clone).borrow()).n.borrow()) == 42));
+    assert!((*(*s_static_foo.with(Value::clone).borrow()).s2.borrow()).is_null());
+    assert!((*(*s_static_foo.with(Value::clone).borrow()).fn1.borrow()).is_null());
+    assert!((*(*s_static_foo.with(Value::clone).borrow()).fn2.borrow()).is_null());
+    assert!(((*(*s_static_foo.with(Value::clone).borrow()).n.borrow()) == 42));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            (*(*s_static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .s2
                 .borrow())
             .is_null()
         );
         assert!(
-            (*(*static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            (*(*s_static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .fn1
                 .borrow())
             .is_null()
         );
         assert!(
-            (*(*static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            (*(*s_static_foo_array.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .fn2
                 .borrow())
             .is_null()
