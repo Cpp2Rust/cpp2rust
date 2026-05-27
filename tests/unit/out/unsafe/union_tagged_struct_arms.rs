@@ -73,7 +73,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: [*mut u8; 3] = unsafe {
+    static mut items: [*mut u8; 3] = unsafe {
         [
             b"a\0".as_ptr().cast_mut(),
             b"b\0".as_ptr().cast_mut(),
@@ -83,7 +83,7 @@ unsafe fn main_0() -> i32 {
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice::C_LIST;
     p_list.index = 0;
-    p_list.v.list.items = items_4.as_mut_ptr();
+    p_list.v.list.items = items.as_mut_ptr();
     p_list.v.list.count = 3_i64;
     p_list.v.list.cursor = 1_i64;
     assert!(((((p_list.v.list.count) == (3_i64)) as i32) != 0));
