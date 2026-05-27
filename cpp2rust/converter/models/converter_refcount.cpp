@@ -1010,9 +1010,9 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
-  if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
+  if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
     uint64_t pad = 1;
-    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
@@ -1281,8 +1281,8 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         StrCat(ConvertRValue(lhs));
         ConvertCast(computation_result_type);
       }
-      std::string op(opcode_as_string);
-      op.erase(std::remove(op.begin(), op.end(), '='), op.end());
+      auto op = opcode_as_string;
+      op.remove_suffix(1); // remove '=' from operator
       StrCat(op);
       Convert(rhs);
     }

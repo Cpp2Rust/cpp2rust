@@ -9,7 +9,6 @@
 
 #include <functional>
 #include <optional>
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -157,7 +156,7 @@ public:
   virtual bool VisitContinueStmt(clang::ContinueStmt *stmt);
 
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
-                 std::string &fmt_trait, std::string &fmt_width);
+                 const char *&fmt_trait, std::string &fmt_width);
 
   bool GetRawArg(clang::Expr *arg, std::string &raw_args);
 
@@ -606,36 +605,37 @@ protected:
       }
     }
   };
-  std::stack<clang::Expr *> curr_for_inc_;
-  std::stack<clang::QualType> curr_init_type_;
+  std::vector<clang::Expr *> curr_for_inc_;
+  std::vector<clang::QualType> curr_init_type_;
 
-  enum class BreakTarget { Loop, FallthroughSwitch, Switch };
-  std::stack<BreakTarget> break_target_;
+  enum class BreakTarget : int8_t { Loop, FallthroughSwitch, Switch };
+  std::vector<BreakTarget> break_target_;
 
   bool isSwitchBreak() const {
-    return !break_target_.empty() && break_target_.top() == BreakTarget::Switch;
+    return !break_target_.empty() &&
+           break_target_.back() == BreakTarget::Switch;
   }
 
   class PushBreakTarget {
   public:
-    PushBreakTarget(std::stack<BreakTarget> &stack, BreakTarget target)
+    PushBreakTarget(std::vector<BreakTarget> &stack, BreakTarget target)
         : stack_(stack) {
-      stack_.push(target);
+      stack_.push_back(target);
     }
-    ~PushBreakTarget() { stack_.pop(); }
+    ~PushBreakTarget() { stack_.pop_back(); }
     PushBreakTarget(const PushBreakTarget &) = delete;
     PushBreakTarget &operator=(const PushBreakTarget &) = delete;
 
   private:
-    std::stack<BreakTarget> &stack_;
+    std::vector<BreakTarget> &stack_;
   };
 
   class PushInitType {
   public:
     PushInitType(Converter &c, clang::QualType type) : c_(c) {
-      c_.curr_init_type_.push(type);
+      c_.curr_init_type_.emplace_back(type);
     }
-    ~PushInitType() { c_.curr_init_type_.pop(); }
+    ~PushInitType() { c_.curr_init_type_.pop_back(); }
     PushInitType(const PushInitType &) = delete;
     PushInitType &operator=(const PushInitType &) = delete;
 

@@ -1041,9 +1041,9 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   ConvertCondition(stmt->getCond());
   {
     PushBrace brace(*this);
-    curr_for_inc_.emplace(nullptr);
+    curr_for_inc_.emplace_back(nullptr);
     Convert(stmt->getBody());
-    curr_for_inc_.pop();
+    curr_for_inc_.pop_back();
   }
   return false;
 }
@@ -1054,9 +1054,9 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
   StrCat(keyword::kLoop);
   {
     PushBrace loop_brace(*this);
-    curr_for_inc_.emplace(nullptr);
+    curr_for_inc_.emplace_back(nullptr);
     Convert(stmt->getBody());
-    curr_for_inc_.pop();
+    curr_for_inc_.pop_back();
     StrCat(keyword::kIf, token::kNot);
     {
       PushParen paren(*this);
@@ -1082,9 +1082,9 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   }
   {
     PushBrace brace(*this);
-    curr_for_inc_.emplace(stmt->getInc());
+    curr_for_inc_.emplace_back(stmt->getInc());
     Convert(stmt->getBody());
-    curr_for_inc_.pop();
+    curr_for_inc_.pop_back();
     Convert(stmt->getInc());
     StrCat(token::kSemiColon);
   }
@@ -1120,9 +1120,9 @@ void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
   std::optional<ScopedMapIterDecl> skip;
   if (map_iter_decl)
     skip.emplace(*this, map_iter_decl);
-  curr_for_inc_.emplace(nullptr);
+  curr_for_inc_.emplace_back(nullptr);
   Convert(stmt->getBody());
-  curr_for_inc_.pop();
+  curr_for_inc_.pop_back();
 }
 
 bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
@@ -1213,7 +1213,7 @@ bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
 
 bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
   if (!curr_for_inc_.empty()) {
-    Convert(curr_for_inc_.top());
+    Convert(curr_for_inc_.back());
     StrCat(token::kSemiColon);
   }
   StrCat(keyword::kContinue);
@@ -1256,27 +1256,26 @@ bool Converter::IsSubExprOf(const clang::Expr *sub_expr,
 }
 
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
-                          std::string &fmt_args, std::string &fmt_trait,
+                          std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
   std::string arg_str = Mapper::ToString(arg);
   if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
     auto str = GetEscapedStringLiteral(arg);
+    std::string_view trim(str);
     // Delete " from string
-    str.erase(std::remove(str.begin(), str.end(), '"'), str.end());
-    fmt += std::move(str);
+    trim.remove_prefix(1);
+    trim.remove_suffix(1);
+    fmt += trim;
   } else if (auto ch = GetEscapedUTF8CharLiteral(arg); !ch.empty()) {
     fmt += std::move(ch);
   } else if (arg_str.contains("std::endl")) {
     fmt += "\\n";
   } else if (arg_str.contains("std::hex")) {
-    fmt_trait = 'x';
+    fmt_trait = "x";
   } else if (arg_str.contains("std::dec")) {
     fmt_trait = "";
   } else if (arg_str.contains("Setw")) {
-    fmt_width = ToString(arg);
-    // Delete leading and trailing whitespaces
-    fmt_width.erase(0, fmt_width.find_first_not_of(' '));
-    fmt_width.erase(fmt_width.find_last_not_of(' ') + 1);
+    fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
              Mapper::Map(arg->getType()) != "Vec<u8>") {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
@@ -1343,7 +1342,7 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
   }
 
   std::string fmt;
-  std::string fmt_trait;
+  const char *fmt_trait = "";
   std::string fmt_width;
   std::string fmt_args;
   std::string raw_args;
@@ -1379,7 +1378,7 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
     write_raw_args();
   }
 
-  assert(fmt_trait == "" && "Stream state was not restored after call");
+  assert(*fmt_trait == '\0' && "Stream state was not restored after call");
 }
 
 void Converter::ConvertPrintf(clang::CallExpr *expr) {
@@ -1766,8 +1765,8 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
-  if (!curr_init_type_.empty() && curr_init_type_.top()->isArrayType()) {
-    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.top())) {
+  if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format("[0u8; {}]", arr_size));
@@ -2077,8 +2076,8 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         Convert(lhs);
         ConvertCast(computation_result_type);
       }
-      std::string op(opcode_as_string);
-      op.erase(std::remove(op.begin(), op.end(), '='), op.end());
+      auto op = opcode_as_string;
+      op.remove_suffix(1); // remove '=' from operator
       StrCat(op);
       Convert(rhs);
     }
@@ -2778,7 +2777,7 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
                       alloc_type_as_string);
       StrCat(new_array_as_string);
     }
-    if (!curr_init_type_.empty() && curr_init_type_.top()->isPointerType()) {
+    if (!curr_init_type_.empty() && curr_init_type_.back()->isPointerType()) {
       StrCat(".as_mut_ptr()");
     }
   } else {

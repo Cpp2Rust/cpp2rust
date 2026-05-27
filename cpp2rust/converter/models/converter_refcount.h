@@ -228,7 +228,7 @@ private:
     FullRefCount,
   };
 
-  const char *ConversionKindToString(ConversionKind k) {
+  static const char *ConversionKindToString(ConversionKind k) {
     switch (k) {
     case ConversionKind::Unboxed:
       return "Unboxed";
@@ -254,7 +254,7 @@ private:
       }
       log() << "[PushConversionKind:" << line << "] ";
       for (auto ck : c.conversion_kind_) {
-        log() << c.ConversionKindToString(ck) << ", ";
+        log() << ConversionKindToString(ck) << ", ";
       }
       log() << '\n';
     }
@@ -264,7 +264,7 @@ private:
       }
       log() << "[PopConversionKind] ";
       for (auto ck : c.conversion_kind_) {
-        log() << c.ConversionKindToString(ck) << ", ";
+        log() << ConversionKindToString(ck) << ", ";
       }
       log() << '\n';
     }
