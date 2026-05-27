@@ -1447,6 +1447,13 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (Mapper::Contains(expr->getCallee())) {
+    if (auto tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr))) {
+      if (tgt_ir->body.empty() && tgt_ir->is_variadic) {
+        ConvertGenericCallExpr(expr);
+        return false;
+      }
+    }
+
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
     auto ctx = CollectPrvalueToLRefArgs(expr);

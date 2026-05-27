@@ -104,6 +104,9 @@ ExprRule ParseExprRuleJSON(const llvm::json::Object &obj) {
   if (auto ms = obj.getBoolean("multi_statement"))
     ir.multi_statement = *ms;
 
+  if (auto v = obj.getBoolean("is_variadic"))
+    ir.is_variadic = *v;
+
   if (auto *generics = obj.getObject("generics")) {
     for (auto &[key, val] : *generics) {
       if (auto *arr = val.getAsArray()) {

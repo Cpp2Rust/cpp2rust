@@ -70,6 +70,7 @@ struct ExprRule {
   std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
   std::vector<BodyFragment> body;
   bool multi_statement = false;
+  bool is_variadic = false;
 
   void dump() const;
   void validate(const std::string &name) const;
