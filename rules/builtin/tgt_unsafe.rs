@@ -39,3 +39,14 @@ unsafe fn f10(a0: i64, a1: i64, a2: *mut i64) -> bool {
 unsafe fn f11() {
     std::hint::spin_loop();
 }
+
+unsafe fn f12(a0: i64, a1: i64, a2: *mut i64) -> bool {
+    let (val, ovf) = a0.overflowing_mul(a1);
+    *a2 = val;
+    ovf
+}
+unsafe fn f13(a0: i64, a1: i64, a2: *mut i64) -> bool {
+    let (val, ovf) = a0.overflowing_mul(a1);
+    *a2 = val;
+    ovf
+}
