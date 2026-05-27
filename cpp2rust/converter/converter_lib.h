@@ -129,6 +129,8 @@ void ForEachTemplateArgument(
 
 clang::Expr *GetCallObject(clang::CallExpr *expr);
 
+clang::Expr *GetCallee(clang::CallExpr *expr);
+
 clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
 
 bool HasReceiver(clang::Expr *expr);

@@ -1528,20 +1528,20 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
   CallInfo info;
-  info.callee = expr->getCallee();
+  info.expr = expr;
+  auto callee = GetCallee(expr);
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     if (op_call->getOperator() == clang::OO_Call) {
-      info.callee = op_call->getArg(0);
       arg_begin = 1;
     }
   }
 
-  const auto *function =
-      expr->getCalleeDecl() ? expr->getCalleeDecl()->getAsFunction() : nullptr;
+  auto decl = expr->getCalleeDecl();
+  const auto *function = decl ? decl->getAsFunction() : nullptr;
   const clang::FunctionProtoType *proto = nullptr;
   if (!function) {
-    auto callee_ty = info.callee->getType().getDesugaredType(ctx_);
+    auto callee_ty = callee->getType().getDesugaredType(ctx_);
     if (auto ptr_ty = callee_ty->getAs<clang::PointerType>()) {
       proto = ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>();
     }
@@ -1658,10 +1658,14 @@ void Converter::EmitCall(CallInfo &&info) {
   EmitHoistedArgs(info);
 
   if (info.is_fn_ptr_call) {
-    EmitFnPtrCall(info.callee);
+    EmitFnPtrCall(GetCallee(info.expr));
+  } else if (info.is_libc_passthrough) {
+    auto *direct_callee = info.expr->getDirectCallee();
+    assert(direct_callee);
+    StrCat("libc::", direct_callee->getName());
   } else {
     PushExprKind push(*this, ExprKind::Callee);
-    Convert(info.callee);
+    Convert(GetCallee(info.expr));
   }
 
   EmitArgList(info);

@@ -588,6 +588,15 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
   return all_args;
 }
 
+clang::Expr *GetCallee(clang::CallExpr *expr) {
+  if (auto op_call = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
+    if (op_call->getOperator() == clang::OO_Call) {
+      return op_call->getArg(0);
+    }
+  }
+  return expr->getCallee();
+}
+
 clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {
   if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
     return call->getCallee();

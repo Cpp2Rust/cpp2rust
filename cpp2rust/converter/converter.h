@@ -237,9 +237,10 @@ public:
   struct CallInfo {
     std::vector<CallArg> args;
     std::vector<clang::Expr *> variadic_args;
-    clang::Expr *callee;
+    clang::CallExpr *expr;
     bool is_variadic;
     bool is_fn_ptr_call;
+    bool is_libc_passthrough;
   };
 
   CallInfo CollectCallInfo(clang::CallExpr *expr);
