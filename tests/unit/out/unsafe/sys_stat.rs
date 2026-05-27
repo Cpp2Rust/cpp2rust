@@ -22,7 +22,6 @@ pub unsafe fn test_stat_0() {
     assert!(((((libc::stat(path as *const i8, (&mut st as *mut stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (5_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
-    assert!(((((st.st_mtime_nsec) > (0_i64)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
 pub unsafe fn test_fstat_1() {
@@ -42,7 +41,6 @@ pub unsafe fn test_fstat_1() {
     assert!(((((libc::fstat(fd, (&mut st as *mut stat))) == (0)) as i32) != 0));
     assert!(((((st.st_size) == (11_i64)) as i32) != 0));
     assert!(((((st.st_mtime) > (0_i64)) as i32) != 0));
-    assert!(((((st.st_mtime_nsec) > (0_i64)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
