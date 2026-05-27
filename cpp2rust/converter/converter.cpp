@@ -2108,6 +2108,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
         expr->getRHS()->getType()->isIntegralOrEnumerationType()) {
+      PushBrace brace(*this, !isVoid());
       Convert(lhs);
       StrCat(token::kAssign);
       {
@@ -2115,6 +2116,9 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
         ConvertUnsignedArithOperand(lhs, type);
       }
       ConvertUnsignedArithBinaryOperator(expr, rhs);
+      if (!isVoid()) {
+        StrCat(token::kSemiColon, ConvertRValue(lhs));
+      }
     } else {
       ConvertAssignment(lhs, rhs, opcode_as_string);
     }
@@ -3030,7 +3034,8 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   if (has_fallthrough) {
     StrCat("match", ToString(stmt->getCond()));
   } else {
-    StrCat(std::format("let __match_cond = {};", ToString(stmt->getCond())));
+    StrCat(
+        std::format("let __match_cond = {};", ConvertRValue(stmt->getCond())));
     StrCat("match __match_cond");
   }
 

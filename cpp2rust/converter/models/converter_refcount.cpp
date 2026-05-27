@@ -1879,7 +1879,7 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   }
 
   if (isRValue()) {
-    StrCat(token::kSemiColon, ConvertRValue(lhs));
+    StrCat(token::kSemiColon, ConvertFreshRValue(lhs));
   }
 }
 
