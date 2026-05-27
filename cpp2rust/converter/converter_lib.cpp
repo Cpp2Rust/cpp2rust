@@ -129,6 +129,16 @@ bool IsInMainFile(const clang::Decl *decl) {
   return src_mgr.isInMainFile(src_mgr.getExpansionLoc(loc));
 }
 
+bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl) {
+  auto field = clang::dyn_cast<clang::FieldDecl>(decl);
+  if (!field || !field->getType()->isPointerType() ||
+      !field->getType()->getPointeeType()->isCharType()) {
+    return false;
+  }
+  return field->getASTContext().getSourceManager().isInSystemHeader(
+      field->getParent()->getLocation());
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
