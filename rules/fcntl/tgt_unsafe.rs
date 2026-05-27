@@ -3,5 +3,5 @@
 
 unsafe extern "C" {
     fn f1(a0: i32, a1: i32, ...) -> i32;
-    fn f2(a0: *const u8, a1: i32, ...) -> i32;
+    fn f2(a0: *const i8, a1: i32, ...) -> i32;
 }

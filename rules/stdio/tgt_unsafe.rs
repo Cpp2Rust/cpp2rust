@@ -87,5 +87,5 @@ unsafe fn f20(a0: i32, a1: *const u8) -> *mut ::libc::FILE {
 }
 
 unsafe extern "C" {
-    fn f21(a0: *mut u8, a1: u64, a2: *const u8, ...) -> i32;
+    fn f21(a0: *mut i8, a1: usize, a2: *const i8, ...) -> i32;
 }
