@@ -2,14 +2,16 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use proc_macro::TokenStream;
+use proc_macro2::Span;
 use syn::parse::{Parse, ParseStream};
-use syn::{Expr, Lifetime, Token, parse_macro_input};
+use syn::{Block, Expr, ExprBlock, Lifetime, Stmt, parse_macro_input};
 
-use crate::state_machine::{Arm, GotoStateMachine, StateMachine};
+use crate::state_machine::{Arm, GotoStateMachine, StateMachineNames, StateMachine};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let GotoBlockInput { arms } = parse_macro_input!(input as GotoBlockInput);
     GotoStateMachine {
+        names: StateMachineNames::fresh(),
         arms: arms
             .into_iter()
             .map(|a| Arm {

@@ -5,7 +5,9 @@ use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
 use syn::{Expr, Pat, parse_macro_input};
 
-use crate::state_machine::{Arm, DispatchCase, GotoStateMachine, StateMachine, SwitchStateMachine};
+use crate::state_machine::{
+    Arm, DispatchCase, GotoStateMachine, StateMachineNames, StateMachine, SwitchStateMachine,
+};
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let SwitchInput { condition, arms } = parse_macro_input!(input as SwitchInput);
@@ -24,7 +26,10 @@ pub fn expand(input: TokenStream) -> TokenStream {
         });
     }
     SwitchStateMachine {
-        goto: GotoStateMachine { arms: cfg_arms },
+        goto: GotoStateMachine {
+            names: StateMachineNames::fresh(),
+            arms: cfg_arms,
+        },
         condition,
         cases,
     }

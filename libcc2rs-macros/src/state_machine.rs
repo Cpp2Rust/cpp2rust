@@ -1,10 +1,13 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU64, Ordering};
+
 use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use quote::{format_ident, quote};
 use syn::visit_mut::{self, VisitMut};
-use syn::{Expr, ExprBreak, ExprContinue, Lifetime, Pat};
+use syn::{Expr, ExprBreak, ExprContinue, Lifetime, Pat, Stmt, parse_quote};
 
 pub struct Arm {
     pub label: String,
@@ -21,12 +24,29 @@ pub trait StateMachine {
     fn emit(self) -> TokenStream2;
 }
 
-fn sm_label() -> Lifetime {
-    Lifetime::new("'__sm", Span::call_site())
+pub(crate) struct StateMachineNames {
+    pub label: Lifetime,
+    pub state: Ident,
+    pub break_flag: Ident,
+    pub cont_flag: Ident,
+}
+
+impl StateMachineNames {
+    pub fn fresh() -> Self {
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
+        let id = COUNTER.fetch_add(1, Ordering::Relaxed);
+        Self {
+            label: Lifetime::new(&format!("'__sm{id}"), Span::call_site()),
+            state: format_ident!("__s{}", id),
+            break_flag: format_ident!("__user_break{}", id),
+            cont_flag: format_ident!("__user_continue{}", id),
+        }
+    }
 }
 
 // Collection of labeled arms that fall-through by default
 pub struct GotoStateMachine {
+    pub names: StateMachineNames,
     pub arms: Vec<Arm>,
 }
 
@@ -87,10 +107,7 @@ impl GotoStateMachine {
 
 impl StateMachine for GotoStateMachine {
     fn emit(self) -> TokenStream2 {
-        let lbl = sm_label();
-        let s = format_ident!("__s");
-        let break_flag = format_ident!("__user_break");
-        let cont_flag = format_ident!("__user_continue");
+        let StateMachineNames { label: lbl, state: s, break_flag, cont_flag } = self.names;
 
         let n = self.arms.len();
         let mut arms_have_break = false;
@@ -186,17 +203,16 @@ impl SwitchStateMachine {
 
 impl StateMachine for SwitchStateMachine {
     fn emit(self) -> TokenStream2 {
-        let lbl = sm_label();
-        let s = format_ident!("__s");
+        let names = StateMachineNames::fresh();
 
-        let user_arms = Self::convert_break_to_switch_exit(&self.goto.arms, &lbl);
-        let dispatch = self.build_dispatch_arm(&user_arms, &lbl, &s);
+        let user_arms = Self::convert_break_to_switch_exit(&self.goto.arms, &names.label);
+        let dispatch = self.build_dispatch_arm(&user_arms, &names.label, &names.state);
 
         let mut arms = Vec::new();
         arms.push(dispatch);
         arms.extend(user_arms);
 
-        GotoStateMachine { arms }.emit()
+        GotoStateMachine { names, arms }.emit()
     }
 }
 
