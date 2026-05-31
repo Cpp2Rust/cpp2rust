@@ -269,11 +269,17 @@ fn switch_in_loop() {
 #[test]
 fn goto_block_linear_fallthrough() {
     let mut v = 0;
-    goto_block! {
-        'a => { v += 1; },
-        'b => { v += 10; },
-        'c => { v += 100; },
-    };
+    goto_block!({
+        'a: {
+            v += 1;
+        }
+        'b: {
+            v += 10;
+        }
+        'c: {
+            v += 100;
+        }
+    });
     assert_eq!(v, 111);
 }
 
@@ -281,11 +287,21 @@ fn goto_block_linear_fallthrough() {
 fn goto_block_return_from_arm() {
     #[allow(unreachable_code)]
     fn run(start: u32) -> &'static str {
-        goto_block! {
-            'a => { if start == 0 { return "a"; } },
-            'b => { if start == 1 { return "b"; } },
-            'c => { return "c"; },
-        };
+        goto_block!({
+            'a: {
+                if start == 0 {
+                    return "a";
+                }
+            }
+            'b: {
+                if start == 1 {
+                    return "b";
+                }
+            }
+            'c: {
+                return "c";
+            }
+        });
         "fallthrough"
     }
     assert_eq!(run(0), "a");
@@ -294,16 +310,176 @@ fn goto_block_return_from_arm() {
 }
 
 #[test]
+fn goto_block_forward_goto_skips_block() {
+    fn skip(n: i32) -> i32 {
+        let mut x: i32 = 0;
+        goto_block!({
+            '__entry: {
+                x = 0;
+                if n > 0 {
+                    goto!('mid);
+                }
+                x += 10;
+            }
+            'mid: {
+                x += 1;
+            }
+        });
+        x
+    }
+    assert_eq!(skip(1), 1);
+    assert_eq!(skip(-1), 11);
+}
+
+#[test]
+fn goto_block_local_visible_across_label() {
+    fn early(n: i32) -> i32 {
+        let mut ret: i32 = 0;
+        goto_block!({
+            '__entry: {
+                if n < 0 {
+                    ret = -1;
+                    goto!('out);
+                }
+                ret = 100;
+            }
+            'out: {
+                return ret;
+            }
+        });
+        #[allow(unreachable_code)]
+        0
+    }
+    assert_eq!(early(-1), -1);
+    assert_eq!(early(5), 100);
+}
+
+#[test]
+fn goto_block_backward_goto_retry() {
+    fn f() -> i32 {
+        let mut sum: i32 = 0;
+        let mut i: i32 = 0;
+        goto_block!({
+            'again: {
+                let local: i32 = i;
+                sum += local;
+                i += 1;
+                if i < 4 {
+                    goto!('again);
+                }
+                return sum;
+            }
+        });
+        #[allow(unreachable_code)]
+        0
+    }
+    assert_eq!(f(), 6);
+}
+
+#[test]
+fn goto_block_multi_label_fallthrough() {
+    fn classify(n: i32) -> i32 {
+        let mut ret: i32 = 0;
+        goto_block!({
+            '__entry: {
+                if n < 0 {
+                    goto!('error);
+                }
+                if n == 0 {
+                    goto!('out);
+                }
+                ret = n;
+                goto!('out);
+            }
+            'error: {
+                ret = -1;
+            }
+            'out: {
+                return ret;
+            }
+        });
+        #[allow(unreachable_code)]
+        0
+    }
+    assert_eq!(classify(5), 5);
+    assert_eq!(classify(0), 0);
+    assert_eq!(classify(-2), -1);
+}
+
+#[test]
+fn goto_block_goto_out_of_switch() {
+    fn sm(n: i32) -> i32 {
+        let mut ret: i32 = 0;
+        goto_block!({
+            '__entry: {
+                switch!(match n {
+                    0 => {
+                        ret += 1;
+                    }
+                    1 => {
+                        ret += 10;
+                        goto!('out);
+                    }
+                    _ => {
+                        ret += 100;
+                        break;
+                    }
+                });
+                ret += 1000;
+            }
+            'out: {
+                return ret;
+            }
+        });
+        #[allow(unreachable_code)]
+        0
+    }
+    assert_eq!(sm(0), 11);
+    assert_eq!(sm(1), 10);
+    assert_eq!(sm(9), 1100);
+}
+
+#[test]
+fn goto_block_goto_out_of_nested_block() {
+    fn f(n: i32) -> i32 {
+        let mut ret: i32 = 0;
+        goto_block!({
+            '__entry: {
+                goto_block!({
+                    'inner: {
+                        ret = 1;
+                        if n > 0 {
+                            goto!('out);
+                        }
+                        ret = 2;
+                    }
+                });
+                ret += 10;
+            }
+            'out: {
+                return ret;
+            }
+        });
+        #[allow(unreachable_code)]
+        0
+    }
+    assert_eq!(f(1), 1);
+    assert_eq!(f(-1), 12);
+}
+
+#[test]
 fn goto_block_nested_loop_break_targets_inner() {
     let mut sum = 0;
-    goto_block! {
-        'entry => {
+    goto_block!({
+        'entry: {
             for i in 0..10 {
-                if i == 3 { break; } // targets the for loop
+                if i == 3 {
+                    break;
+                } // targets the for loop
                 sum += i;
             }
             sum += 100;
-        },
-    };
+        }
+    });
     assert_eq!(sum, 103);
 }

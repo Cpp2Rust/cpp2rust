@@ -36,10 +36,10 @@ pub fn switch(input: TokenStream) -> TokenStream {
     switch::expand(input)
 }
 
-//     goto_block! {
-//         '<label> => { /* body; may contain `break` or `continue` */ },
+//     goto_block!({
+//         '<label>: { /* body; may contain `break`, `continue`, or goto!('other) */ }
 //         ...
-//     };
+//     });
 //
 // Expands to
 //
