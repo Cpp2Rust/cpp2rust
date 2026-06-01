@@ -364,7 +364,59 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   return false;
 }
 
+void Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
+  for (auto *child : body->body()) {
+    if (auto *decl_stmt = clang::dyn_cast<clang::DeclStmt>(child)) {
+      for (auto *decl : decl_stmt->decls()) {
+        if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+            var && var->isLocalVarDecl() && !IsGlobalVar(var)) {
+          hoisted_decls_.insert(var);
+          if (ConvertVarDeclSkipInit(var)) {
+            StrCat(token::kAssign, ConvertVarDefaultInit(var->getType()),
+                   token::kSemiColon);
+          }
+        }
+      }
+    }
+  }
+}
+
+void Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
+  PushHoistedDecls push(hoisted_decls_);
+  EmitHoistedDecls(body);
+
+  StrCat("goto_block!");
+  {
+    PushParen paren(*this);
+    PushBrace outer(*this);
+    StrCat("'__entry: ");
+    std::optional<PushBrace> arm;
+    arm.emplace(*this);
+    for (auto *child : body->body()) {
+      if (auto *label = clang::dyn_cast<clang::LabelStmt>(child)) {
+        arm.reset();
+        StrCat(std::format("'{}: ", label->getDecl()->getName().str()));
+        arm.emplace(*this);
+        Convert(label->getSubStmt());
+      } else {
+        Convert(child);
+      }
+    }
+  }
+  StrCat(token::kSemiColon);
+}
+
 void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
+  if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
+    if (CompoundHasTopLevelLabel(compound)) {
+      ConvertGotoBlock(compound);
+      if (!decl->getReturnType()->isVoidType()) {
+        StrCat(R"(panic!("ub: non-void function does not return a value"))");
+      }
+      return;
+    }
+  }
+
   Convert(decl->getBody());
   if (!decl->getReturnType()->isVoidType()) {
     if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
@@ -422,9 +474,11 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto *method_or_null =
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
-  if (!qual_type.isConstQualified() && !qual_type->isReferenceType() &&
-      ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
-      !IsGlobalVar(decl)) {
+  if (hoisted_decls_.contains(decl) && !qual_type->isReferenceType()) {
+    StrCat("mut");
+  } else if (!qual_type.isConstQualified() && !qual_type->isReferenceType() &&
+             ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
+             !IsGlobalVar(decl)) {
     StrCat(keyword_mut_);
   }
 
@@ -468,6 +522,14 @@ void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
 }
 
 void Converter::ConvertVarDecl(clang::VarDecl *decl) {
+  if (hoisted_decls_.contains(decl)) {
+    if (decl->hasInit()) {
+      StrCat(GetNamedDeclAsString(decl), token::kAssign);
+      ConvertVarInit(decl->getType(), decl->getInit());
+      StrCat(token::kSemiColon);
+    }
+    return;
+  }
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
@@ -985,6 +1047,10 @@ bool Converter::Convert(clang::Stmt *stmt) {
 }
 
 bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
+  if (CompoundHasTopLevelLabel(stmt)) {
+    ConvertGotoBlock(stmt);
+    return false;
+  }
   for (auto *child : stmt->body()) {
     Convert(child);
   }
@@ -1008,6 +1074,11 @@ bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
     Convert(stmt->getRetValue());
     StrCat(token::kSemiColon, keyword::kReturn, token::kSemiColon);
   }
+  return false;
+}
+
+bool Converter::VisitGotoStmt(clang::GotoStmt *stmt) {
+  StrCat(std::format("goto!('{})", stmt->getLabel()->getName().str()));
   return false;
 }
 

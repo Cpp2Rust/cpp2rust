@@ -82,6 +82,10 @@ public:
 
   virtual void ConvertFunctionBody(clang::FunctionDecl *decl);
 
+  void ConvertGotoBlock(clang::CompoundStmt *body);
+
+  void EmitHoistedDecls(clang::CompoundStmt *body);
+
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
 
   virtual bool VisitVarDecl(clang::VarDecl *decl);
@@ -124,6 +128,8 @@ public:
   virtual bool VisitDeclStmt(clang::DeclStmt *stmt);
 
   virtual bool VisitReturnStmt(clang::ReturnStmt *stmt);
+
+  virtual bool VisitGotoStmt(clang::GotoStmt *stmt);
 
   void ConvertCondition(clang::Expr *cond);
 
@@ -645,6 +651,24 @@ protected:
   };
 
   std::unordered_set<const clang::VarDecl *> map_iter_decls_;
+
+  // Local variables hoisted outside a goto_block so that all labels can see and
+  // use the variables.
+  std::unordered_set<const clang::VarDecl *> hoisted_decls_;
+  class PushHoistedDecls {
+  public:
+    PushHoistedDecls(std::unordered_set<const clang::VarDecl *> &field)
+        : field_(field), saved_(std::move(field)) {
+      field_.clear();
+    }
+    ~PushHoistedDecls() { field_ = std::move(saved_); }
+    PushHoistedDecls(const PushHoistedDecls &) = delete;
+    PushHoistedDecls &operator=(const PushHoistedDecls &) = delete;
+
+  private:
+    std::unordered_set<const clang::VarDecl *> &field_;
+    std::unordered_set<const clang::VarDecl *> saved_;
+  };
 
   struct ScopedMapIterDecl {
     Converter &c;
