@@ -11,10 +11,10 @@ pub fn scan_0(n: i32) -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        let mut j: Value<i32> = <Value<i32>>::default();
+        let j: Value<i32> = <Value<i32>>::default();
         goto_block!({
             '__entry: {
-                j = Rc::new(RefCell::new(0));
+                *j.borrow_mut() = 0;
                 'loop_: while ((((*j.borrow()) < 10) as i32) != 0) {
                     if ((((*j.borrow()) == 5) as i32) != 0) {
                         goto!('next);

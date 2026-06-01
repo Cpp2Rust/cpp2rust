@@ -8,12 +8,12 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn retry_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut count: Value<i32> = <Value<i32>>::default();
-    let mut acc: Value<i32> = <Value<i32>>::default();
+    let count: Value<i32> = <Value<i32>>::default();
+    let acc: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
-            count = Rc::new(RefCell::new(0));
-            acc = Rc::new(RefCell::new(0));
+            *count.borrow_mut() = 0;
+            *acc.borrow_mut() = 0;
         }
         'again: {
             (*count.borrow_mut()) += 1;

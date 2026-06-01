@@ -59,6 +59,8 @@ public:
 
   bool ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
 
+  void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
+
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;

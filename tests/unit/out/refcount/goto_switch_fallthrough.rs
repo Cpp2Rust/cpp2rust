@@ -8,10 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn sm_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut ret: Value<i32> = <Value<i32>>::default();
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
-            ret = Rc::new(RefCell::new(0));
+            *ret.borrow_mut() = 0;
             switch!(match (*n.borrow()) {
                 v if v == 0 => {
                     (*ret.borrow_mut()) += 1;

@@ -628,6 +628,17 @@ bool ConverterRefCount::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   return Converter::ConvertVarDeclSkipInit(decl);
 }
 
+void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
+  if (!decl->hasInit()) {
+    return;
+  }
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  StrCat(token::kStar, GetNamedDeclAsString(decl), ".borrow_mut()",
+         token::kAssign);
+  Convert(decl->getInit());
+  StrCat(token::kSemiColon);
+}
+
 void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   StrCat("thread_local!");
   {

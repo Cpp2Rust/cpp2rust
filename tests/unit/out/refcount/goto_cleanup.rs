@@ -8,10 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn early_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut ret: Value<i32> = <Value<i32>>::default();
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
-            ret = Rc::new(RefCell::new(0));
+            *ret.borrow_mut() = 0;
             if ((((*n.borrow()) < 0) as i32) != 0) {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
@@ -26,10 +26,10 @@ pub fn early_0(n: i32) -> i32 {
 }
 pub fn from_loop_1(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut ret: Value<i32> = <Value<i32>>::default();
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
-            ret = Rc::new(RefCell::new(0));
+            *ret.borrow_mut() = 0;
             let i: Value<i32> = Rc::new(RefCell::new(0));
             'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
                 if ((((*i.borrow()) == 3) as i32) != 0) {
@@ -49,10 +49,10 @@ pub fn from_loop_1(n: i32) -> i32 {
 }
 pub fn from_switch_2(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let mut ret: Value<i32> = <Value<i32>>::default();
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
-            ret = Rc::new(RefCell::new(0));
+            *ret.borrow_mut() = 0;
             'switch: {
                 let __match_cond = (*n.borrow());
                 match __match_cond {

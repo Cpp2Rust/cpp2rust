@@ -92,6 +92,8 @@ public:
 
   void ConvertVarDecl(clang::VarDecl *decl);
 
+  virtual void EmitHoistedInArmAssignment(clang::VarDecl *decl);
+
   void ConvertVarDeclInitializer(clang::VarDecl *decl);
 
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);

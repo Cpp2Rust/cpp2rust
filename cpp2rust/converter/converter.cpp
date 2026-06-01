@@ -474,11 +474,9 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto *method_or_null =
       curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
                      : nullptr;
-  if (hoisted_decls_.contains(decl) && !qual_type->isReferenceType()) {
-    StrCat("mut");
-  } else if (!qual_type.isConstQualified() && !qual_type->isReferenceType() &&
-             ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
-             !IsGlobalVar(decl)) {
+  if (!qual_type.isConstQualified() && !qual_type->isReferenceType() &&
+      ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
+      !IsGlobalVar(decl)) {
     StrCat(keyword_mut_);
   }
 
@@ -521,13 +519,18 @@ void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
   }
 }
 
+void Converter::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
+  if (!decl->hasInit()) {
+    return;
+  }
+  StrCat(GetNamedDeclAsString(decl), token::kAssign);
+  ConvertVarInit(decl->getType(), decl->getInit());
+  StrCat(token::kSemiColon);
+}
+
 void Converter::ConvertVarDecl(clang::VarDecl *decl) {
   if (hoisted_decls_.contains(decl)) {
-    if (decl->hasInit()) {
-      StrCat(GetNamedDeclAsString(decl), token::kAssign);
-      ConvertVarInit(decl->getType(), decl->getInit());
-      StrCat(token::kSemiColon);
-    }
+    EmitHoistedInArmAssignment(decl);
     return;
   }
   if (!ConvertVarDeclSkipInit(decl)) {
