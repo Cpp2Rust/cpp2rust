@@ -1,11 +1,16 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn types() -> Result<(), Box<dyn std::error::Error>> {
-    let t1: ::std::fs::File = ::std::fs::File::open("")?;
-    let t2: ::std::fs::File = ::std::fs::File::open("")?;
-    let t3: ::std::fs::File = ::std::fs::File::open("")?;
-    Ok(())
+fn t1() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
+}
+
+fn t2() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
+}
+
+fn t3() -> ::std::fs::File {
+    ::std::fs::File::open("").unwrap()
 }
 
 unsafe fn f1(a0: *const u8) -> ::std::fs::File {

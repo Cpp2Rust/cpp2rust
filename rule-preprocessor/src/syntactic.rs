@@ -124,10 +124,11 @@ impl SyntacticAnalysis {
             let Some(name) = fn_item.name() else { continue };
             let fn_name = name.text().to_string();
 
-            if fn_name == "types" {
-                for (name, ir) in TypeIrBuilder::new(&fn_item).build() {
-                    file_ir.insert(name, RuleIr::Type(ir));
-                }
+            if fn_name.starts_with('t') {
+                file_ir.insert(
+                    fn_name.clone(),
+                    RuleIr::Type(TypeIrBuilder::new(&fn_item).build()),
+                );
             } else if fn_name.starts_with('f') {
                 if !cfg_matches_host(&fn_item) {
                     continue;
@@ -531,35 +532,30 @@ impl<'a> TypeIrBuilder<'a> {
         Self { fn_item }
     }
 
-    fn build(&self) -> Vec<(String, TypeIr)> {
-        let Some(body) = self.fn_item.body() else {
-            return Vec::new();
-        };
-        let mut results = Vec::new();
-        for stmt in body.syntax().descendants().filter_map(ast::LetStmt::cast) {
-            let Some(pat) = stmt.pat() else { continue };
-            let pat_text = pat.syntax().text().to_string();
-            if !pat_text.starts_with('t') {
-                continue;
-            }
-            let Some(ty) = stmt.ty() else { continue };
-            let Some(init) = stmt.initializer() else {
-                continue;
-            };
+    fn build(&self) -> TypeIr {
+        let ty = self
+            .fn_item
+            .ret_type()
+            .and_then(|rt| rt.ty())
+            .expect("type rule must declare a return type");
+        let (is_refcount_pointer, is_unsafe_pointer) = pointer_flags(&ty);
 
-            let (is_refcount_pointer, is_unsafe_pointer) = pointer_flags(&ty);
-            results.push((
-                pat_text,
-                TypeIr {
-                    init: init.syntax().text().to_string(),
-                    type_info: TypeInfo {
-                        ty: ty.syntax().text().to_string(),
-                        is_refcount_pointer,
-                        is_unsafe_pointer,
-                    },
-                },
-            ));
+        let body = self.fn_item.body().expect("type rule must have a body");
+        let init = body
+            .syntax()
+            .descendants()
+            .find_map(ast::ReturnExpr::cast)
+            .and_then(|ret| ret.expr())
+            .or_else(|| body.stmt_list().and_then(|sl| sl.tail_expr()))
+            .expect("type rule must yield an initializer");
+
+        TypeIr {
+            init: init.syntax().text().to_string(),
+            type_info: TypeInfo {
+                ty: ty.syntax().text().to_string(),
+                is_refcount_pointer,
+                is_unsafe_pointer,
+            },
         }
-        results
     }
 }

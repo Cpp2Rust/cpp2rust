@@ -4,14 +4,16 @@
 use libcc2rs::{MapIterator, UnsafeMapIterator};
 use std::collections::BTreeMap;
 
-#[derive(Clone, Eq, Ord, PartialEq, PartialOrd)]
-struct T1;
-struct T2;
+fn t1<T1, T2>() -> BTreeMap<T1, Box<T2>> {
+    BTreeMap::new()
+}
 
-fn types() {
-    let t1: BTreeMap<T1, Box<T2>> = BTreeMap::new();
-    let t2: UnsafeMapIterator<T1, T2> = UnsafeMapIterator::null();
-    let t3: UnsafeMapIterator<T1, T2> = UnsafeMapIterator::null();
+fn t2<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
+    UnsafeMapIterator::null()
+}
+
+fn t3<T1: Clone + Ord, T2>() -> UnsafeMapIterator<T1, T2> {
+    UnsafeMapIterator::null()
 }
 
 unsafe fn f1<T1: Ord + Clone, T2: Default>(a0: &mut BTreeMap<T1, Box<T2>>, a1: T1) -> &mut T2 {

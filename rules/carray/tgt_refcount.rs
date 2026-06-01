@@ -3,9 +3,10 @@
 
 use libcc2rs::*;
 
-struct T1;
+fn t1<T1>() -> Box<[Value<Box<[T1]>>]> {
+    Box::new([Default::default()])
+}
 
-fn types() {
-    let t1: Box<[Value<Box<[T1]>>]> = Box::new([Default::default()]);
-    let t2: Box<[Value<Box<[Value<Box<[T1]>>]>>]> = Box::new([Default::default()]);
+fn t2<T1>() -> Box<[Value<Box<[Value<Box<[T1]>>]>>]> {
+    Box::new([Default::default()])
 }

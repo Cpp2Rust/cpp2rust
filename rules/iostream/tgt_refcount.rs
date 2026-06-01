@@ -5,9 +5,12 @@ use libcc2rs::*;
 use std::os::fd::AsFd;
 
 // TODO: t2 and t3 should be translated to Ptr<dyn Traits>
-fn types() {
-    let t2: Ptr<std::fs::File> = Ptr::null();
-    let t3: Ptr<std::fs::File> = Ptr::null();
+fn t2() -> Ptr<std::fs::File> {
+    Ptr::null()
+}
+
+fn t3() -> Ptr<std::fs::File> {
+    Ptr::null()
 }
 
 fn f1() -> ::std::fs::File {

@@ -3,12 +3,10 @@
 
 use libcc2rs::*;
 
-struct T1;
-
-fn types() {
-    // TODO: it should be VecDeque, but we don't have the neccessary infrastructure in Ptr<> to
-    // make this work.
-    let t1: Vec<T1> = Default::default();
+// TODO: it should be VecDeque, but we don't have the neccessary infrastructure in Ptr<> to
+// make this work.
+fn t1<T1>() -> Vec<T1> {
+    Default::default()
 }
 
 unsafe fn f1<T1>(a0: &mut Vec<T1>) -> *const T1 {

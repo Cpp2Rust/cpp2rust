@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#[derive(Default)]
-struct T1;
+fn t1<T1>() -> Option<Box<T1>> {
+    None
+}
 
-fn types() {
-    let t1: Option<Box<T1>> = None;
-    let t2: Option<Box<[T1]>> = None;
+fn t2<T1>() -> Option<Box<[T1]>> {
+    None
 }
 
 unsafe fn f1<T1: Default>(a0: usize) -> Option<Box<[T1]>> {

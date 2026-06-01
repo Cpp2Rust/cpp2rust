@@ -5,12 +5,16 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-struct T1;
+fn t2<T1>() -> Ptr<T1> {
+    Ptr::null()
+}
 
-fn types() {
-    let t2: Ptr<T1> = Ptr::null();
-    let t3: Vec<Value<Vec<T1>>> = Vec::new();
-    let t4: Ptr<T1> = Ptr::null();
+fn t3<T1>() -> Vec<Value<Vec<T1>>> {
+    Vec::new()
+}
+
+fn t4<T1>() -> Ptr<T1> {
+    Ptr::null()
 }
 
 fn f1<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<T1>) -> Ptr<T1> {
