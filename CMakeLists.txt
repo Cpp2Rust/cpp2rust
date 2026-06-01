@@ -121,6 +121,13 @@ add_custom_target("check-libcc2rs"
                   USES_TERMINAL
                  )
 
+add_custom_target("check-libcc2rs-macros"
+                  COMMAND cargo +${RUST_STABLE_VERSION} test
+                  WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs-macros"
+                  DEPENDS "${RUST_STAMP_FILE}"
+                  USES_TERMINAL
+                 )
+
 add_custom_target("check-unit"
                   COMMAND ${CMAKE_COMMAND} -E env
                           "CC=${CMAKE_C_COMPILER}"
@@ -148,7 +155,7 @@ add_custom_target("check-benchmarks"
                  )
 
 add_custom_target("check"
-                  DEPENDS check-libcc2rs check-unit
+                  DEPENDS check-libcc2rs check-libcc2rs-macros check-unit
                  )
 
 add_custom_target("check-all"
