@@ -537,17 +537,22 @@ impl<'a> TypeIrBuilder<'a> {
             .fn_item
             .ret_type()
             .and_then(|rt| rt.ty())
-            .expect("type rule must declare a return type");
+            .expect("Type rules must declare a return type");
         let (is_refcount_pointer, is_unsafe_pointer) = pointer_flags(&ty);
 
-        let body = self.fn_item.body().expect("type rule must have a body");
-        let init = body
-            .syntax()
-            .descendants()
-            .find_map(ast::ReturnExpr::cast)
-            .and_then(|ret| ret.expr())
-            .or_else(|| body.stmt_list().and_then(|sl| sl.tail_expr()))
-            .expect("type rule must yield an initializer");
+        let stmts = self
+            .fn_item
+            .body()
+            .and_then(|bd| bd.stmt_list())
+            .expect("Types rule must have a body");
+        assert!(
+            stmts.statements().count() == 0,
+            "Type rules mustn't contain anything in the body besides the tail expression"
+        );
+
+        let init = stmts
+            .tail_expr()
+            .expect("Type rules must yield an initializer");
 
         TypeIr {
             init: init.syntax().text().to_string(),
