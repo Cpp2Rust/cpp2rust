@@ -4,3 +4,13 @@
 unsafe fn f1(a0: u32) -> *mut ::libc::passwd {
     libc::getpwuid(a0)
 }
+
+unsafe fn f2(
+    a0: u32,
+    a1: *mut ::libc::passwd,
+    a2: *mut u8,
+    a3: u64,
+    a4: *mut *mut ::libc::passwd,
+) -> i32 {
+    libc::getpwuid_r(a0, a1, a2 as *mut i8, a3 as usize, a4)
+}
