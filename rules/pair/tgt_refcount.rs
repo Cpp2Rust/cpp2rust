@@ -5,17 +5,11 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Default)]
-struct T1;
-
-#[derive(Default)]
-struct T2;
-
-fn types() {
-    let t1: (Value<T1>, Value<T2>) = (
+fn t1<T1: Default, T2: Default>() -> (Value<T1>, Value<T2>) {
+    (
         Rc::new(RefCell::new(T1::default())),
         Rc::new(RefCell::new(T2::default())),
-    );
+    )
 }
 
 fn f1<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T2> {

@@ -6,14 +6,16 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 
-#[derive(Clone, Eq, Ord, PartialEq, PartialOrd)]
-struct T1;
-struct T2;
+fn t1<T1, T2>() -> BTreeMap<T1, Value<T2>> {
+    BTreeMap::new()
+}
 
-fn types() {
-    let t1: BTreeMap<T1, Value<T2>> = BTreeMap::new();
-    let t2: RefcountMapIter<T1, T2> = RefcountMapIter::null();
-    let t3: RefcountMapIter<T1, T2> = RefcountMapIter::null();
+fn t2<T1: Clone + Ord + 'static, T2: 'static>() -> RefcountMapIter<T1, T2> {
+    RefcountMapIter::null()
+}
+
+fn t3<T1: Clone + Ord + 'static, T2: 'static>() -> RefcountMapIter<T1, T2> {
+    RefcountMapIter::null()
 }
 
 fn f1<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(

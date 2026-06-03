@@ -3,13 +3,20 @@
 
 use libcc2rs::*;
 
-struct T1;
+fn t1<T1>() -> Vec<T1> {
+    Default::default()
+}
 
-fn types() {
-    let t1: Vec<T1> = Default::default();
-    let t2: *mut T1 = Default::default();
-    let t3: Vec<Vec<T1>> = Vec::new();
-    let t4: *const T1 = Default::default();
+fn t2<T1>() -> *mut T1 {
+    Default::default()
+}
+
+fn t3<T1>() -> Vec<Vec<T1>> {
+    Vec::new()
+}
+
+fn t4<T1>() -> *const T1 {
+    Default::default()
 }
 
 unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {

@@ -4,11 +4,17 @@
 use libcc2rs::*;
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 
+fn t1() -> std::fs::File {
+    std::fs::File::open("").unwrap()
+}
+
 // TODO: t2 and t3 should be translated to *mut dyn Traits
-unsafe fn types() {
-    let t1: std::fs::File = std::fs::File::open("").unwrap();
-    let t2: *mut std::fs::File = libcc2rs::cout_unsafe();
-    let t3: *mut std::fs::File = libcc2rs::cout_unsafe();
+unsafe fn t2() -> *mut std::fs::File {
+    libcc2rs::cout_unsafe()
+}
+
+unsafe fn t3() -> *mut std::fs::File {
+    libcc2rs::cout_unsafe()
 }
 
 unsafe fn f1() -> ::std::fs::File {

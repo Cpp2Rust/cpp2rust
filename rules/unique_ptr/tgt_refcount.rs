@@ -5,11 +5,12 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-struct T1;
+fn t1<T1>() -> Option<Value<T1>> {
+    None
+}
 
-fn types() {
-    let t1: Option<Value<T1>> = None;
-    let t2: Option<Value<Box<[T1]>>> = None;
+fn t2<T1>() -> Option<Value<Box<[T1]>>> {
+    None
 }
 
 fn f1<T1: Default>(a0: usize) -> Option<Value<Box<[T1]>>> {
@@ -51,10 +52,10 @@ fn f9<T1>(a0: &mut Option<Value<Box<[T1]>>>) {
     *a0 = None
 }
 
-fn f10() -> Option<Value<T1>> {
+fn f10<T1>() -> Option<Value<T1>> {
     None
 }
 
-fn f11() -> Option<Value<Box<[T1]>>> {
+fn f11<T1>() -> Option<Value<Box<[T1]>>> {
     None
 }

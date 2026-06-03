@@ -1,9 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-fn types() {
-    let t1: Vec<u8> = Vec::new();
-    let t2: *mut u8 = ::std::ptr::null_mut();
+fn t1() -> Vec<u8> {
+    Vec::new()
+}
+
+fn t2() -> *mut u8 {
+    ::std::ptr::null_mut()
 }
 
 unsafe fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {

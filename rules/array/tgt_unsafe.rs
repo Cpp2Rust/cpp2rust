@@ -3,10 +3,8 @@
 
 use libcc2rs::*;
 
-struct T1;
-
-fn types() {
-    let t1: Vec<T1> = Default::default();
+fn t1<T1>() -> Vec<T1> {
+    Default::default()
 }
 
 unsafe fn f1<T1>(a0: Vec<T1>) -> *const T1 {

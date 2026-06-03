@@ -5,9 +5,8 @@ use libcc2rs::*;
 use std::io::prelude::*;
 use std::os::fd::AsFd;
 
-fn types() -> Result<(), Box<dyn std::error::Error>> {
-    let t1: Ptr<::std::fs::File> = Ptr::null();
-    Ok(())
+fn t1() -> Ptr<::std::fs::File> {
+    Ptr::null()
 }
 
 fn f1(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<::std::fs::File> {

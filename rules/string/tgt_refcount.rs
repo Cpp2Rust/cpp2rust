@@ -5,8 +5,8 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn types() {
-    let t2: Ptr<u8> = Ptr::null();
+fn t2() -> Ptr<u8> {
+    Ptr::null()
 }
 
 fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {
