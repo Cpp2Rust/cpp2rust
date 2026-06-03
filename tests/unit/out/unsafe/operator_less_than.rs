@@ -23,7 +23,7 @@ impl Ord for Pair {
         unsafe {
             if self.lt(other) {
                 std::cmp::Ordering::Less
-            } else if other.lt(other) {
+            } else if other.lt(self) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -38,7 +38,7 @@ impl PartialOrd for Pair {
 }
 impl PartialEq for Pair {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { !(self.lt(other)) && !(other.lt(other)) }
+        unsafe { !(self.lt(other)) && !(other.lt(self)) }
     }
 }
 impl Eq for Pair {}

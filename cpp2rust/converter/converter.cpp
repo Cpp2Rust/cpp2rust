@@ -3678,7 +3678,7 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
   case clang::OO_Less:
     if (clang::isa<clang::CXXMethodDecl>(op)) {
       first_branch = std::format("self.{}(other)", GetOverloadedOperator(op));
-      second_branch = std::format("other.{}(other)", GetOverloadedOperator(op));
+      second_branch = std::format("other.{}(self)", GetOverloadedOperator(op));
     } else {
       first_branch = std::format("{}(self, other)", GetOverloadedOperator(op));
       second_branch = std::format("{}(other, self)", GetOverloadedOperator(op));
