@@ -165,7 +165,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
                                            ->getAs<clang::FunctionProtoType>(),
                                        FnProtoType::LambdaCallOperator));
       } else {
-        StrCat("_");
+        StrCat('_');
       }
       return false;
     }
@@ -1660,9 +1660,9 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
       temp_refs[i] = std::move(ref);
     } else if (!clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       StrCat("let", std::format("_{}: {}", param_name, ToString(param_type)),
-             "=");
+             '=');
       convert_param_ty(param_type, arg);
-      StrCat(";");
+      StrCat(';');
     }
   }
 
@@ -3018,7 +3018,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   Mapper::AddRuleForUserDefinedType(decl);
   StrCat("#[derive(Clone, Copy, PartialEq, Debug, Default)]");
   StrCat(std::format("enum {}", GetRecordName(decl)));
-  StrCat("{");
+  StrCat('{');
   bool first_enumerator = true;
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
@@ -3030,7 +3030,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
     StrCat(std::format("{} = {},", std::string_view(e->getName()),
                        std::string_view(init.data(), init.size())));
   }
-  StrCat("}");
+  StrCat('}');
 
   AddFromImpl(decl);
   AddIncDecImpls(decl);
@@ -3071,7 +3071,7 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
     StrCat("Some");
   }
   PushParen paren(*this);
-  StrCat("|");
+  StrCat('|');
   for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
     StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
            token::kComma);
@@ -3083,7 +3083,7 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   curr_function_ = expr->getLambdaClass()->getLambdaCallOperator();
   ConvertFunctionBody(curr_function_);
   curr_function_ = old_function;
-  StrCat("}");
+  StrCat('}');
   return false;
 }
 
@@ -3659,21 +3659,21 @@ void Converter::ConvertOrdAndPartialOrdTraitsBase(
     std::string_view first_branch, std::string_view second_branch,
     std::string_view first_return, std::string_view second_return,
     std::string_view record_name) {
-  StrCat(keyword::kImpl, "Ord for ", record_name, "{");
+  StrCat(keyword::kImpl, "Ord for ", record_name, '{');
   StrCat("fn cmp(&self, other: &Self) -> std::cmp::Ordering {");
   StrCat(std::format("{} {{", keyword_unsafe_));
-  StrCat("if", first_branch, "{", first_return, "} else if", second_branch, "{",
+  StrCat("if", first_branch, '{', first_return, "} else if", second_branch, '{',
          second_return, "} else { std::cmp::Ordering::Equal }");
   StrCat("}}}");
 
-  StrCat(keyword::kImpl, "PartialOrd for", record_name, "{");
+  StrCat(keyword::kImpl, "PartialOrd for", record_name, '{');
   StrCat(R"(
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
       Some(self.cmp(other))
     }
   })");
 
-  StrCat(keyword::kImpl, "PartialEq for", record_name, "{");
+  StrCat(keyword::kImpl, "PartialEq for", record_name, '{');
   StrCat("fn eq(&self, other: &Self) -> bool {");
   StrCat(std::format("{} {{", keyword_unsafe_));
   StrCat("!(", first_branch, ") && !(", second_branch, ')');

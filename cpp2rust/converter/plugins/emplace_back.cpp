@@ -139,11 +139,11 @@ void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
     PushExprKind push(*this, ExprKind::LValue);
     StrCat(ReplaceAll(ToString(call->getCallee()), "emplace_back", "push"));
   }
-  StrCat("(");
+  StrCat('(');
 }
 
 void Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
-  StrCat(")");
+  StrCat(')');
 }
 
 bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
@@ -169,7 +169,7 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
     emplace_back_plugin_construct_arg(
         elem_ty, buildConstructExpr(member_call, GetSema()));
     if (is_argument_moved) {
-      StrCat(")");
+      StrCat(')');
     }
   } else if (elem_ty.isPODType(ctx_)) {
     if (call->getNumArgs() == 0) {

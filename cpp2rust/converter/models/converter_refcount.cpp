@@ -274,7 +274,7 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
 
   switch (conv) {
   case ConversionKind::Unboxed:
-    StrCat("[");
+    StrCat('[');
     Convert(type->getElementType());
     StrCat(std::format("; {}]", GetNumAsString(type->getSize()).c_str()));
     break;
@@ -445,7 +445,7 @@ void ConverterRefCount::AddCloneTrait(const clang::CXXRecordDecl *decl) {
 
   auto record_name = GetRecordName(decl);
 
-  StrCat(keyword::kImpl, "Clone for", record_name, "{");
+  StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
   for (auto ctor : decl->ctors()) {
@@ -456,8 +456,8 @@ void ConverterRefCount::AddCloneTrait(const clang::CXXRecordDecl *decl) {
     }
   }
 
-  StrCat("}");
-  StrCat("}");
+  StrCat('}');
+  StrCat('}');
 }
 
 void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
@@ -491,11 +491,11 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
 
   auto record_name = GetRecordName(decl);
 
-  StrCat(keyword::kImpl, "Drop for", record_name, "{");
+  StrCat(keyword::kImpl, "Drop for", record_name, '{');
   StrCat("fn drop(&mut self) {");
   Convert(body);
-  StrCat("}");
-  StrCat("}");
+  StrCat('}');
+  StrCat('}');
 }
 
 static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
@@ -687,7 +687,7 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   if (!pending_deref_.empty()) {
     StrCat(pending_deref_.take(), ".with_mut(|__v| __v.", method, "())");
   } else {
-    StrCat(str, ".", method, "()");
+    StrCat(str, '.', method, "()");
   }
   return true;
 }
@@ -946,7 +946,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
     if (types[j])
       StrCat(keyword::kAs, types[j++]);
   }
-  StrCat(")");
+  StrCat(')');
 }
 
 bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
@@ -1144,7 +1144,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   StrCat("(*");
   Convert(callee);
-  StrCat(")");
+  StrCat(')');
 }
 
 void ConverterRefCount::ConvertFunctionToFunctionPointer(
@@ -1156,7 +1156,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
-  StrCat("(");
+  StrCat('(');
   Convert(expr);
   StrCat(").is_null()");
 }
@@ -1485,7 +1485,7 @@ bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
             expr->getInitializer())) {
       StrCat("Ptr::alloc_array(");
       Convert(init);
-      StrCat(")");
+      StrCat(')');
     } else {
       auto array_size_as_string = ToString(*expr->getArraySize());
       auto alloc_type = expr->getAllocatedType();
@@ -1505,7 +1505,7 @@ bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
     } else {
       Convert(expr->getInitializer());
     }
-    StrCat(")");
+    StrCat(')');
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return false;
@@ -1540,7 +1540,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   StrCat("'loop_:");
   StrCat(keyword::kFor, loop_var_name, keyword::kIn, "RefcountMapIter::begin(",
-         ConvertObject(stmt->getRangeInit()), ")");
+         ConvertObject(stmt->getRangeInit()), ')');
   PushBrace brace(*this);
 
   EmitByValueShadow(
@@ -1603,7 +1603,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtString(
          stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
          loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
   StrCat(".to_string_iterator() as StringIterator<",
-         ToString(loop_var->getType().getNonReferenceType()), ">");
+         ToString(loop_var->getType().getNonReferenceType()), '>');
 
   PushBrace brace(*this);
 
@@ -1688,7 +1688,7 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
     if (clang::isa<clang::ConstantArrayType>(arr_ty)) {
       StrCat("Box::new(");
       Converter::VisitImplicitValueInitExpr(expr);
-      StrCat(")");
+      StrCat(')');
       return false;
     }
   }
@@ -1798,7 +1798,7 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
       if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
         StrCat("FnPtr::new(");
         VisitLambdaExpr(lambda);
-        StrCat(")");
+        StrCat(')');
       } else {
         VisitLambdaExpr(lambda);
       }
@@ -1866,7 +1866,7 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
   auto lhs_str = ConvertLValue(lhs);
   if (!pending_deref_.empty()) {
     auto ptr = pending_deref_.take();
-    StrCat(ptr, ".write(", rhs, ")");
+    StrCat(ptr, ".write(", rhs, ')');
   } else {
     StrCat(lhs_str, token::kAssign, rhs);
   }
@@ -2039,7 +2039,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       }
 
       if (is_inner_boxed && !isObject()) {
-        StrCat("(");
+        StrCat('(');
       }
 
       PushConversionKind push(*this, ConversionKind::Unboxed);
