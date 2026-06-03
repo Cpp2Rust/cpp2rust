@@ -11,7 +11,7 @@ impl<T> PostfixInc for Cursor<*mut T> {
     #[inline]
     fn postfix_inc(&mut self) -> Self {
         let clone = self.clone();
-        self.set_position(self.position() + 1);
+        self.set_position(self.position().wrapping_add(1));
         clone
     }
 }
@@ -130,26 +130,26 @@ macro_rules! impl_enum_inc_dec {
         impl PostfixInc for $t {
             fn postfix_inc(&mut self) -> Self {
                 let copy = *self;
-                *self = <$t>::from(*self as i32 + 1);
+                *self = <$t>::from((*self as i32).wrapping_add(1));
                 copy
             }
         }
         impl PrefixInc for $t {
             fn prefix_inc(&mut self) -> Self {
-                *self = <$t>::from(*self as i32 + 1);
+                *self = <$t>::from((*self as i32).wrapping_add(1));
                 *self
             }
         }
         impl PostfixDec for $t {
             fn postfix_dec(&mut self) -> Self {
                 let copy = *self;
-                *self = <$t>::from(*self as i32 - 1);
+                *self = <$t>::from((*self as i32).wrapping_sub(1));
                 copy
             }
         }
         impl PrefixDec for $t {
             fn prefix_dec(&mut self) -> Self {
-                *self = <$t>::from(*self as i32 - 1);
+                *self = <$t>::from((*self as i32).wrapping_sub(1));
                 *self
             }
         }

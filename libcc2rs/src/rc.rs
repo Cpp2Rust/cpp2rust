@@ -241,7 +241,7 @@ impl<T> Ptr<T> {
     fn byte_offset(&self) -> usize {
         match &self.kind {
             PtrKind::Reinterpreted(_) => self.offset,
-            _ => self.offset * std::mem::size_of::<T>(),
+            _ => self.offset.wrapping_mul(std::mem::size_of::<T>()),
         }
     }
 
@@ -265,10 +265,7 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
-            PtrKind::Reinterpreted(ref data) => {
-                let step = std::mem::size_of::<T>();
-                (data.total_byte_len() - self.offset % step) / step
-            }
+            PtrKind::Reinterpreted(ref data) => data.total_byte_len() / std::mem::size_of::<T>(),
         }
     }
 
@@ -298,7 +295,7 @@ impl<T> Ptr<T> {
             kind: self.kind.clone(),
             offset: self
                 .offset
-                .wrapping_add((offset.wrapping_mul(step as isize)) as usize),
+                .wrapping_add(offset.wrapping_mul(step as isize) as usize),
         }
     }
 
@@ -309,21 +306,17 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn to_last(&self) -> Self {
-        let step = self.elem_step();
-        let base = self.offset % step;
         Self {
             kind: self.kind.clone(),
-            offset: base + (self.len() - 1) * step,
+            offset: self.len().wrapping_sub(1).wrapping_mul(self.elem_step()),
         }
     }
 
     #[inline]
     pub fn to_end(&self) -> Self {
-        let step = self.elem_step();
-        let base = self.offset % step;
         Self {
             kind: self.kind.clone(),
-            offset: base + self.len() * step,
+            offset: self.len().wrapping_mul(self.elem_step()),
         }
     }
 
@@ -554,6 +547,24 @@ impl<T: Clone> Ptr<T> {
     where
         F: FnMut(Ptr<T>, Ptr<T>) -> bool,
     {
+        fn sort<T: Clone, F: FnMut(Ptr<T>, Ptr<T>) -> bool>(
+            slice: &mut [T],
+            offset: usize,
+            last: usize,
+            cmp: &mut F,
+        ) {
+            slice[offset..last].sort_by(|a, b| {
+                let val_a = Rc::new(RefCell::new(a.clone()));
+                let val_b = Rc::new(RefCell::new(b.clone()));
+                if cmp(val_a.as_pointer(), val_b.as_pointer()) {
+                    std::cmp::Ordering::Less
+                } else if cmp(val_b.as_pointer(), val_a.as_pointer()) {
+                    std::cmp::Ordering::Greater
+                } else {
+                    std::cmp::Ordering::Equal
+                }
+            });
+        }
         match self.kind {
             PtrKind::Null => panic!("ub: dereference of null pointer"),
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => {
@@ -561,39 +572,13 @@ impl<T: Clone> Ptr<T> {
             }
             PtrKind::Vec(ref weak) => {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
-                (*strong.borrow_mut())[self.get_offset()..last].sort_by(|a, b| {
-                    if cmp(
-                        Rc::new(RefCell::new(a.clone())).as_pointer(),
-                        Rc::new(RefCell::new(b.clone())).as_pointer(),
-                    ) {
-                        std::cmp::Ordering::Less
-                    } else if cmp(
-                        Rc::new(RefCell::new(b.clone())).as_pointer(),
-                        Rc::new(RefCell::new(a.clone())).as_pointer(),
-                    ) {
-                        std::cmp::Ordering::Greater
-                    } else {
-                        std::cmp::Ordering::Equal
-                    }
-                });
+                let mut borrow = strong.borrow_mut();
+                sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
             PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
-                (*strong.borrow_mut())[self.get_offset()..last].sort_by(|a, b| {
-                    if cmp(
-                        Rc::new(RefCell::new(a.clone())).as_pointer(),
-                        Rc::new(RefCell::new(b.clone())).as_pointer(),
-                    ) {
-                        std::cmp::Ordering::Less
-                    } else if cmp(
-                        Rc::new(RefCell::new(b.clone())).as_pointer(),
-                        Rc::new(RefCell::new(a.clone())).as_pointer(),
-                    ) {
-                        std::cmp::Ordering::Greater
-                    } else {
-                        std::cmp::Ordering::Equal
-                    }
-                });
+                let mut borrow = strong.borrow_mut();
+                sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
             PtrKind::Reinterpreted(..) => {
                 panic!("sorting not supported for reinterpreted pointers")
@@ -617,10 +602,9 @@ where
 impl<T> Iterator for Ptr<T> {
     type Item = Ptr<T>;
     fn next(&mut self) -> Option<Self::Item> {
-        let step = self.elem_step();
-        if self.offset / step < self.len() {
+        if self.get_offset() < self.len() {
             let value = self.clone();
-            self.offset += step;
+            self.offset += self.elem_step();
             Some(value)
         } else {
             None
@@ -672,8 +656,8 @@ pub struct StringIterator<T> {
 impl<T> Iterator for StringIterator<T> {
     type Item = Ptr<T>;
     fn next(&mut self) -> Option<Self::Item> {
-        // skip the null terminator
-        if self.ptr.get_offset() + 1 < self.ptr.len() {
+        // stop before the null terminator at the last position
+        if self.ptr.get_offset().wrapping_add(1) < self.ptr.len() {
             let value = self.ptr.clone();
             self.ptr += 1;
             Some(value)
@@ -702,10 +686,10 @@ impl Iterator for CStringIterator {
 }
 
 impl<T> Sub for Ptr<T> {
-    type Output = usize;
+    type Output = isize;
     fn sub(self, other: Self) -> Self::Output {
         assert!(self.kind == other.kind, "ub: invalid subtraction");
-        (self.offset / self.elem_step()).wrapping_sub(other.offset / other.elem_step())
+        (self.get_offset() as isize).wrapping_sub(other.get_offset() as isize)
     }
 }
 
@@ -907,13 +891,14 @@ impl<T> fmt::Debug for Ptr<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let addr = match &self.kind {
             PtrKind::Null => 0,
-            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => (Weak::as_ptr(w) as usize)
-                .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
-            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => (Weak::as_ptr(w) as usize)
-                .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
-            PtrKind::Vec(w) => (Weak::as_ptr(w) as usize)
-                .wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>())),
-            PtrKind::Reinterpreted(data) => data.address().wrapping_add(self.offset),
+            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => {
+                (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
+            }
+            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => {
+                (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
+            }
+            PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
+            PtrKind::Reinterpreted(data) => data.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -922,7 +907,7 @@ impl<T> fmt::Debug for Ptr<T> {
 impl fmt::Display for Ptr<u8> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.kind {
-            PtrKind::Null => write!(f, ""),
+            PtrKind::Null => write!(f, "NULL"),
             _ => {
                 for value in self {
                     let ch = value.read();
@@ -976,7 +961,7 @@ impl Ptr<u8> {
             let va = a.read();
             let vb = b.read();
             if va != vb {
-                return va as i32 - vb as i32;
+                return (va as i32).wrapping_sub(vb as i32);
             }
             a += 1;
             b += 1;
@@ -1010,7 +995,7 @@ impl Ptr<u8> {
                 raw[start..end].to_vec()
             }
             PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; end - start];
+                let mut buf = vec![0u8; end.wrapping_sub(start)];
                 data.read_bytes(start, &mut buf);
                 buf
             }
