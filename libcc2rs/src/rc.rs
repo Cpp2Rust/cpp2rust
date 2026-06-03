@@ -485,10 +485,7 @@ impl<T> Ptr<T> {
                 let mut buf = vec![0u8; std::mem::size_of::<T>()];
                 data.read_bytes(self.offset, &mut buf);
                 let val = T::from_bytes(&buf);
-                let ret = f(&val);
-                val.to_bytes(&mut buf);
-                data.write_bytes(self.offset, &buf);
-                ret
+                f(&val)
             }
         }
     }
