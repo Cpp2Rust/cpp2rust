@@ -4,3 +4,8 @@
 #include <pwd.h>
 
 struct passwd *f1(uid_t uid) { return getpwuid(uid); }
+
+int f2(uid_t uid, struct passwd *pwd, char *buf, size_t buflen,
+       struct passwd **result) {
+  return getpwuid_r(uid, pwd, buf, buflen, result);
+}

@@ -84,3 +84,11 @@ unsafe fn f19(a0: *mut ::libc::FILE, a1: i64, a2: i32) -> i32 {
 unsafe fn f20(a0: i32, a1: *const u8) -> *mut ::libc::FILE {
     libc::fdopen(a0, a1 as *const i8)
 }
+
+unsafe fn f22(a0: *const i8, a1: *const i8) -> i32 {
+    libc::rename(a0 as *const i8, a1 as *const i8)
+}
+
+unsafe fn f23(a0: *mut ::libc::FILE) -> i32 {
+    libc::fgetc(a0)
+}

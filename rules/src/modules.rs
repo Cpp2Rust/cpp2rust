@@ -36,12 +36,18 @@ pub mod cstring_tgt_unsafe;
 pub mod deque_tgt_refcount;
 #[path = r#"../deque/tgt_unsafe.rs"#]
 pub mod deque_tgt_unsafe;
+#[path = r#"../dirent/tgt_unsafe.rs"#]
+pub mod dirent_tgt_unsafe;
 #[path = r#"../errno/tgt_unsafe.rs"#]
 pub mod errno_tgt_unsafe;
+#[path = r#"../fnmatch/tgt_unsafe.rs"#]
+pub mod fnmatch_tgt_unsafe;
 #[path = r#"../fstream/tgt_refcount.rs"#]
 pub mod fstream_tgt_refcount;
 #[path = r#"../fstream/tgt_unsafe.rs"#]
 pub mod fstream_tgt_unsafe;
+#[path = r#"../ifaddrs/tgt_unsafe.rs"#]
+pub mod ifaddrs_tgt_unsafe;
 #[path = r#"../initializer_list/tgt_unsafe.rs"#]
 pub mod initializer_list_tgt_unsafe;
 #[path = r#"../iomanip/tgt_unsafe.rs"#]
@@ -62,6 +68,8 @@ pub mod map_tgt_refcount;
 pub mod map_tgt_unsafe;
 #[path = r#"../math/tgt_unsafe.rs"#]
 pub mod math_tgt_unsafe;
+#[path = r#"../net_if/tgt_unsafe.rs"#]
+pub mod net_if_tgt_unsafe;
 #[path = r#"../netdb/tgt_unsafe.rs"#]
 pub mod netdb_tgt_unsafe;
 #[path = r#"../pair/tgt_refcount.rs"#]

@@ -60,3 +60,33 @@ unsafe fn f14(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32) -> i32 {
 unsafe fn f15(a0: i32, a1: *mut ::libc::sockaddr, a2: *mut u32, a3: i32) -> i32 {
     libc::accept4(a0, a1, a2, a3)
 }
+
+unsafe fn f16(a0: i32, a1: *const ::libc::sockaddr, a2: u32) -> i32 {
+    libc::bind(a0, a1, a2)
+}
+
+unsafe fn f17(a0: i32, a1: i32) -> i32 {
+    libc::listen(a0, a1)
+}
+
+unsafe fn f18(
+    a0: i32,
+    a1: *mut ::libc::c_void,
+    a2: u64,
+    a3: i32,
+    a4: *mut ::libc::sockaddr,
+    a5: *mut u32,
+) -> i64 {
+    libc::recvfrom(a0, a1, a2 as usize, a3, a4, a5) as i64
+}
+
+unsafe fn f19(
+    a0: i32,
+    a1: *const ::libc::c_void,
+    a2: u64,
+    a3: i32,
+    a4: *const ::libc::sockaddr,
+    a5: u32,
+) -> i64 {
+    libc::sendto(a0, a1, a2 as usize, a3, a4, a5) as i64
+}
