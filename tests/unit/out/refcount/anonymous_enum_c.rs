@@ -7,37 +7,37 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_enum_3 {
+enum anon_0 {
     #[default]
     FIRST_A = 0,
     FIRST_B = 1,
 }
-impl From<i32> for anon_enum_3 {
-    fn from(n: i32) -> anon_enum_3 {
+impl From<i32> for anon_0 {
+    fn from(n: i32) -> anon_0 {
         match n {
-            0 => anon_enum_3::FIRST_A,
-            1 => anon_enum_3::FIRST_B,
-            _ => panic!("invalid anon_enum_3 value: {}", n),
+            0 => anon_0::FIRST_A,
+            1 => anon_0::FIRST_B,
+            _ => panic!("invalid anon_0 value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(anon_enum_3);
+libcc2rs::impl_enum_inc_dec!(anon_0);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_enum_11 {
+enum anon_1 {
     #[default]
     SECOND_A = 0,
     SECOND_B = 1,
 }
-impl From<i32> for anon_enum_11 {
-    fn from(n: i32) -> anon_enum_11 {
+impl From<i32> for anon_1 {
+    fn from(n: i32) -> anon_1 {
         match n {
-            0 => anon_enum_11::SECOND_A,
-            1 => anon_enum_11::SECOND_B,
-            _ => panic!("invalid anon_enum_11 value: {}", n),
+            0 => anon_1::SECOND_A,
+            1 => anon_1::SECOND_B,
+            _ => panic!("invalid anon_1 value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(anon_enum_11);
+libcc2rs::impl_enum_inc_dec!(anon_1);
 #[derive(Default)]
 pub struct S {
     pub a: Value<i32>,
@@ -69,25 +69,25 @@ impl From<i32> for TdEnum_enum {
 }
 libcc2rs::impl_enum_inc_dec!(TdEnum_enum);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_enum_24 {
+enum anon_2 {
     #[default]
     FIELD_A = 0,
     FIELD_B = 1,
 }
-impl From<i32> for anon_enum_24 {
-    fn from(n: i32) -> anon_enum_24 {
+impl From<i32> for anon_2 {
+    fn from(n: i32) -> anon_2 {
         match n {
-            0 => anon_enum_24::FIELD_A,
-            1 => anon_enum_24::FIELD_B,
-            _ => panic!("invalid anon_enum_24 value: {}", n),
+            0 => anon_2::FIELD_A,
+            1 => anon_2::FIELD_B,
+            _ => panic!("invalid anon_2 value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(anon_enum_24);
+libcc2rs::impl_enum_inc_dec!(anon_2);
 #[derive(Default)]
 pub struct WithAnonField {
     pub a: Value<i32>,
-    pub field: Value<anon_enum_24>,
+    pub field: Value<anon_2>,
 }
 impl ByteRepr for WithAnonField {}
 pub fn main() {
@@ -95,39 +95,37 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     #[derive(Clone, Copy, PartialEq, Debug, Default)]
-    enum anon_enum_31 {
+    enum anon_3 {
         #[default]
         THIRD_A = 0,
         THIRD_B = 1,
     }
-    impl From<i32> for anon_enum_31 {
-        fn from(n: i32) -> anon_enum_31 {
+    impl From<i32> for anon_3 {
+        fn from(n: i32) -> anon_3 {
             match n {
-                0 => anon_enum_31::THIRD_A,
-                1 => anon_enum_31::THIRD_B,
-                _ => panic!("invalid anon_enum_31 value: {}", n),
+                0 => anon_3::THIRD_A,
+                1 => anon_3::THIRD_B,
+                _ => panic!("invalid anon_3 value: {}", n),
             }
         }
     }
-    libcc2rs::impl_enum_inc_dec!(anon_enum_31);
-    assert!(((((anon_enum_3::FIRST_A as i32) != (anon_enum_3::FIRST_B as i32)) as i32) != 0));
-    assert!(((((anon_enum_11::SECOND_A as i32) != (anon_enum_11::SECOND_B as i32)) as i32) != 0));
-    assert!(((((anon_enum_31::THIRD_A as i32) != (anon_enum_31::THIRD_B as i32)) as i32) != 0));
+    libcc2rs::impl_enum_inc_dec!(anon_3);
+    assert!(((((anon_0::FIRST_A as i32) != (anon_0::FIRST_B as i32)) as i32) != 0));
+    assert!(((((anon_1::SECOND_A as i32) != (anon_1::SECOND_B as i32)) as i32) != 0));
+    assert!(((((anon_3::THIRD_A as i32) != (anon_3::THIRD_B as i32)) as i32) != 0));
     let td: Value<TdEnum_enum> = Rc::new(RefCell::new(TdEnum_enum::TD_A));
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum::TD_A as i32) as u32)) as i32) != 0));
     (*td.borrow_mut()) = TdEnum_enum::TD_B;
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum::TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
-    (*(*w.borrow()).field.borrow_mut()) = anon_enum_24::FIELD_A;
+    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_A;
     assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_A as i32) as u32))
-            as i32)
+        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2::FIELD_A as i32) as u32)) as i32)
             != 0)
     );
-    (*(*w.borrow()).field.borrow_mut()) = anon_enum_24::FIELD_B;
+    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_B;
     assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_enum_24::FIELD_B as i32) as u32))
-            as i32)
+        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2::FIELD_B as i32) as u32)) as i32)
             != 0)
     );
     return 0;

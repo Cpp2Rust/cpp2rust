@@ -765,7 +765,7 @@ std::string ToString(const clang::NamedDecl *decl) {
     }
     if (!enum_decl->getIdentifier() &&
         !enum_decl->getTypedefNameForAnonDecl()) {
-      return std::format("anon_enum_{}", GetLineNumber(enum_decl));
+      return GetNamedDeclAsString(enum_decl);
     }
   }
 

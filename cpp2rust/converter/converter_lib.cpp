@@ -416,9 +416,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
 
-  // Anonymous record
+  // Anonymous record or enum
   if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
-                       clang::isa<clang::FieldDecl>(decl))) {
+                       clang::isa<clang::FieldDecl>(decl) ||
+                       clang::isa<clang::EnumDecl>(decl))) {
     const clang::NamedDecl *target = decl;
     if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
       if (auto *record = field->getType()->getAsRecordDecl();
