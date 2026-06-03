@@ -29,7 +29,7 @@ fn main_0() -> i32 {
             let _buf: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
             let _size: i32 = 1;
             let _fmt: Ptr<u8> = Ptr::from_string_literal(b"%d");
-            extract_first_0(_buf, _size, _fmt, &[(42).into()])
+            extract_first_0(_buf, _size, _fmt, &[42.into()])
         }) == 42) as i32)
             != 0)
     );
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
             let _buf: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
             let _size: i32 = 1;
             let _fmt: Ptr<u8> = Ptr::from_string_literal(b"%d");
-            extract_first_0(_buf, _size, _fmt, &[(65).into()])
+            extract_first_0(_buf, _size, _fmt, &[65.into()])
         }) == 65) as i32)
             != 0)
     );

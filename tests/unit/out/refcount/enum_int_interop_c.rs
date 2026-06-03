@@ -81,17 +81,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
             color: Rc::new(RefCell::new(Color::RED)),
             opt: Rc::new(RefCell::new(Option::OPT_NONE)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("second"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
             color: Rc::new(RefCell::new(Color::GREEN)),
             opt: Rc::new(RefCell::new(Option::OPT_A)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal("third"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
             color: Rc::new(RefCell::new(Color::BLUE)),
             opt: Rc::new(RefCell::new(Option::OPT_C)),
         },

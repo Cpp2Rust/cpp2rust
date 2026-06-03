@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     assert!((*arr.borrow())
         .iter()
         .copied()
-        .take((*arr.borrow()).len().saturating_sub(1))
+        .take((*arr.borrow()).len() - 1)
         .eq(Ptr::from_string_literal(b"fbo").to_c_string_iterator()));
     return 0;
 }

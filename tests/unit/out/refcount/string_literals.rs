@@ -60,12 +60,5 @@ fn main_0() -> i32 {
         let _str: Ptr<u8> = (immutable_empty_arr.as_pointer() as Ptr<u8>);
         foo_const_1(_str)
     });
-    let inited_through_init_list: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::<[u8]>::from(
-        b"papanasi cu smantana\0".as_slice(),
-    )));
-    ({
-        let _str: Ptr<u8> = (inited_through_init_list.as_pointer() as Ptr<u8>);
-        foo_const_1(_str)
-    });
     return 0;
 }

@@ -40,7 +40,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     'switch: {
         let __match_cond = (*option.borrow());
         match __match_cond {
-            __v if __v == (opt::OPT_STRING_OUT as i32) => {
+            v if v == (opt::OPT_STRING_OUT as i32) => {
                 let out: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
                     ((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()).clone(),
                 ));
@@ -48,21 +48,21 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
                 (*result.borrow_mut()) = 1;
                 break 'switch;
             }
-            __v if __v == (opt::OPT_FILE as i32) => {
+            v if v == (opt::OPT_FILE as i32) => {
                 let f: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
                     ((*ap.borrow_mut()).arg::<Ptr<::std::fs::File>>()).clone(),
                 ));
                 (*result.borrow_mut()) = ((!((*f.borrow()).is_null())) as i32).clone();
                 break 'switch;
             }
-            __v if __v == (opt::OPT_NODE as i32) => {
+            v if v == (opt::OPT_NODE as i32) => {
                 let n: Value<Ptr<node>> = Rc::new(RefCell::new(
                     ((*ap.borrow_mut()).arg::<Ptr<node>>()).clone(),
                 ));
                 (*result.borrow_mut()) = (*(*(*n.borrow()).upgrade().deref()).data.borrow());
                 break 'switch;
             }
-            __v if __v == (opt::OPT_NODE_OUT as i32) => {
+            v if v == (opt::OPT_NODE_OUT as i32) => {
                 let out: Value<Ptr<Ptr<node>>> = Rc::new(RefCell::new(
                     ((*ap.borrow_mut()).arg::<Ptr<Ptr<node>>>()).clone(),
                 ));
@@ -91,7 +91,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[(libcc2rs::cout()).into()])
+            dispatch_0(_option, &[libcc2rs::cout().into()])
         }) == 1) as i32)
             != 0)
     );
@@ -100,10 +100,10 @@ fn main_0() -> i32 {
             let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
                 _option,
-                &[((AnyPtr::default())
+                &[(AnyPtr::default())
                     .cast::<::std::fs::File>()
-                    .expect("ub:wrong type"))
-                .into()],
+                    .expect("ub:wrong type")
+                    .into()],
             )
         }) == 0) as i32)
             != 0)
