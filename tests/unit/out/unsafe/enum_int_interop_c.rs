@@ -98,16 +98,16 @@ pub unsafe fn classify_option_5(mut option: i32) -> i32 {
     'switch: {
         let __match_cond = option;
         match __match_cond {
-            __v if __v == (Option::OPT_NONE as i32) => {
+            v if v == (Option::OPT_NONE as i32) => {
                 return -1_i32;
             }
-            __v if __v == (Option::OPT_A as i32) => {
+            v if v == (Option::OPT_A as i32) => {
                 return 1;
             }
-            __v if __v == (Option::OPT_B as i32) => {
+            v if v == (Option::OPT_B as i32) => {
                 return 2;
             }
-            __v if __v == (Option::OPT_C as i32) => {
+            v if v == (Option::OPT_C as i32) => {
                 return 3;
             }
             _ => {
@@ -136,13 +136,13 @@ unsafe fn main_0() -> i32 {
     'switch: {
         let __match_cond = (c as u32);
         match __match_cond {
-            __v if __v == (0 as u32) => {
+            v if v == (0 as u32) => {
                 break 'switch;
             }
-            __v if __v == (1 as u32) => {
+            v if v == (1 as u32) => {
                 return 1;
             }
-            __v if __v == (2 as u32) => {
+            v if v == (2 as u32) => {
                 return 2;
             }
             _ => {
@@ -196,13 +196,13 @@ unsafe fn main_0() -> i32 {
     'switch: {
         let __match_cond = (t as u32);
         match __match_cond {
-            __v if __v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
+            v if v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
                 return 90;
             }
-            __v if __v == (1 as u32) => {
+            v if v == (1 as u32) => {
                 return 91;
             }
-            __v if __v == (2 as u32) => {
+            v if v == (2 as u32) => {
                 break 'switch;
             }
             _ => {}

@@ -81,17 +81,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal("first"))),
             color: Rc::new(RefCell::new(Color::RED)),
             opt: Rc::new(RefCell::new(Option::OPT_NONE)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal("second"))),
             color: Rc::new(RefCell::new(Color::GREEN)),
             opt: Rc::new(RefCell::new(Option::OPT_A)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
+            name: Rc::new(RefCell::new(Ptr::from_string_literal("third"))),
             color: Rc::new(RefCell::new(Color::BLUE)),
             opt: Rc::new(RefCell::new(Option::OPT_C)),
         },
@@ -106,16 +106,16 @@ pub fn classify_option_5(option: i32) -> i32 {
     'switch: {
         let __match_cond = (*option.borrow());
         match __match_cond {
-            __v if __v == (Option::OPT_NONE as i32) => {
+            v if v == (Option::OPT_NONE as i32) => {
                 return -1_i32;
             }
-            __v if __v == (Option::OPT_A as i32) => {
+            v if v == (Option::OPT_A as i32) => {
                 return 1;
             }
-            __v if __v == (Option::OPT_B as i32) => {
+            v if v == (Option::OPT_B as i32) => {
                 return 2;
             }
-            __v if __v == (Option::OPT_C as i32) => {
+            v if v == (Option::OPT_C as i32) => {
                 return 3;
             }
             _ => {
@@ -143,13 +143,13 @@ fn main_0() -> i32 {
     'switch: {
         let __match_cond = ((*c.borrow()) as u32);
         match __match_cond {
-            __v if __v == (0 as u32) => {
+            v if v == (0 as u32) => {
                 break 'switch;
             }
-            __v if __v == (1 as u32) => {
+            v if v == (1 as u32) => {
                 return 1;
             }
-            __v if __v == (2 as u32) => {
+            v if v == (2 as u32) => {
                 return 2;
             }
             _ => {
@@ -209,13 +209,13 @@ fn main_0() -> i32 {
     'switch: {
         let __match_cond = ((*t.borrow()) as u32);
         match __match_cond {
-            __v if __v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
+            v if v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
                 return 90;
             }
-            __v if __v == (1 as u32) => {
+            v if v == (1 as u32) => {
                 return 91;
             }
-            __v if __v == (2 as u32) => {
+            v if v == (2 as u32) => {
                 break 'switch;
             }
             _ => {}
