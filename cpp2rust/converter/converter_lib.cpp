@@ -380,7 +380,7 @@ std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
           tag->getLocation())) {
     return "";
   }
-  return typedef_decl->getName().str() + "_" + tag->getKindName().str();
+  return typedef_decl->getName().str() + '_' + tag->getKindName().str();
 }
 
 static std::unordered_map<std::string, size_t> type_mapping;
