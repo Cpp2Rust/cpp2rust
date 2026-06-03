@@ -91,7 +91,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[libcc2rs::cout().into()])
+            dispatch_0(_option, &[(libcc2rs::cout()).into()])
         }) == 1) as i32)
             != 0)
     );
@@ -100,10 +100,10 @@ fn main_0() -> i32 {
             let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
                 _option,
-                &[(AnyPtr::default())
+                &[((AnyPtr::default())
                     .cast::<::std::fs::File>()
-                    .expect("ub:wrong type")
-                    .into()],
+                    .expect("ub:wrong type"))
+                .into()],
             )
         }) == 0) as i32)
             != 0)

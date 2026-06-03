@@ -25,7 +25,7 @@ fn main_0() -> i32 {
         (((({
             let _verbose: i32 = 1;
             let _fmt: Ptr<u8> = Ptr::from_string_literal(b"%d");
-            conditional_log_0(_verbose, _fmt, &[42.into()])
+            conditional_log_0(_verbose, _fmt, &[(42).into()])
         }) == 42) as i32)
             != 0)
     );
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
         (((({
             let _verbose: i32 = 0;
             let _fmt: Ptr<u8> = Ptr::from_string_literal(b"%d");
-            conditional_log_0(_verbose, _fmt, &[99.into()])
+            conditional_log_0(_verbose, _fmt, &[(99).into()])
         }) == -1_i32) as i32)
             != 0)
     );

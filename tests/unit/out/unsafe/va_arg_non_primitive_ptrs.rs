@@ -84,7 +84,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             let _option: i32 = (opt::OPT_FILE as i32);
-            dispatch_0(_option, &[libcc2rs::stdout_unsafe().into()])
+            dispatch_0(_option, &[(libcc2rs::stdout_unsafe()).into()])
         }) == (1)) as i32)
             != 0)
     );
