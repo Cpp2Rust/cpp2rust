@@ -169,6 +169,8 @@ std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
 
 bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
 
+bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound);
+
 std::string_view Trim(std::string_view s);
 
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);

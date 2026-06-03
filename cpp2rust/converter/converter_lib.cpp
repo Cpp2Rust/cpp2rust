@@ -811,7 +811,8 @@ static bool SwitchCaseHasFallthrough(clang::Stmt *stmt) {
   }
   if (clang::isa<clang::BreakStmt>(stmt) ||
       clang::isa<clang::ContinueStmt>(stmt) ||
-      clang::isa<clang::ReturnStmt>(stmt)) {
+      clang::isa<clang::ReturnStmt>(stmt) ||
+      clang::isa<clang::GotoStmt>(stmt)) {
     return false;
   }
   return true;
@@ -824,6 +825,15 @@ bool SwitchHasFallthrough(clang::SwitchStmt *stmt) {
       if (arm.empty() || SwitchCaseHasFallthrough(arm.back())) {
         return true;
       }
+    }
+  }
+  return false;
+}
+
+bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound) {
+  for (const auto *child : compound->body()) {
+    if (clang::isa<clang::LabelStmt>(child)) {
+      return true;
     }
   }
   return false;
