@@ -53,21 +53,21 @@ impl ByteRepr for S {
     }
 }
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum TdEnum {
+enum TdEnum_enum {
     #[default]
     TD_A = 0,
     TD_B = 1,
 }
-impl From<i32> for TdEnum {
-    fn from(n: i32) -> TdEnum {
+impl From<i32> for TdEnum_enum {
+    fn from(n: i32) -> TdEnum_enum {
         match n {
-            0 => TdEnum::TD_A,
-            1 => TdEnum::TD_B,
-            _ => panic!("invalid TdEnum value: {}", n),
+            0 => TdEnum_enum::TD_A,
+            1 => TdEnum_enum::TD_B,
+            _ => panic!("invalid TdEnum_enum value: {}", n),
         }
     }
 }
-libcc2rs::impl_enum_inc_dec!(TdEnum);
+libcc2rs::impl_enum_inc_dec!(TdEnum_enum);
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum anon_2 {
     #[default]
@@ -113,10 +113,10 @@ fn main_0() -> i32 {
     assert!(((((anon_0::FIRST_A as i32) != (anon_0::FIRST_B as i32)) as i32) != 0));
     assert!(((((anon_1::SECOND_A as i32) != (anon_1::SECOND_B as i32)) as i32) != 0));
     assert!(((((anon_3::THIRD_A as i32) != (anon_3::THIRD_B as i32)) as i32) != 0));
-    let td: Value<TdEnum> = Rc::new(RefCell::new(TdEnum::TD_A));
-    assert!((((((*td.borrow()) as u32) == ((TdEnum::TD_A as i32) as u32)) as i32) != 0));
-    (*td.borrow_mut()) = TdEnum::TD_B;
-    assert!((((((*td.borrow()) as u32) == ((TdEnum::TD_B as i32) as u32)) as i32) != 0));
+    let td: Value<TdEnum_enum> = Rc::new(RefCell::new(TdEnum_enum::TD_A));
+    assert!((((((*td.borrow()) as u32) == ((TdEnum_enum::TD_A as i32) as u32)) as i32) != 0));
+    (*td.borrow_mut()) = TdEnum_enum::TD_B;
+    assert!((((((*td.borrow()) as u32) == ((TdEnum_enum::TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
     (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_A;
     assert!(
