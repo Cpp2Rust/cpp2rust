@@ -56,7 +56,7 @@ pub fn from_switch_2(n: i32) -> i32 {
             'switch: {
                 let __match_cond = (*n.borrow());
                 match __match_cond {
-                    v if v == 1 => {
+                    __v if __v == 1 => {
                         (*ret.borrow_mut()) = 10;
                         goto!('out);
                     }

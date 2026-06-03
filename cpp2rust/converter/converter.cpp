@@ -3109,7 +3109,7 @@ bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
   while (auto *sc = clang::dyn_cast<clang::SwitchCase>(cur)) {
     if (auto *case_stmt = clang::dyn_cast<clang::CaseStmt>(sc)) {
       if (!first) {
-        StrCat("|| v == ");
+        StrCat("|| __v == ");
       }
       Convert(case_stmt->getLHS());
     }
@@ -3131,7 +3131,7 @@ void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
   if (is_default) {
     StrCat("_ => {");
   } else {
-    StrCat("v if v == ");
+    StrCat("__v if __v == ");
     ConvertSwitchCaseCondition(sc);
   }
   for (auto *t : GetSwitchCaseBody(body, sc)) {

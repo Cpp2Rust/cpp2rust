@@ -10,10 +10,10 @@ pub fn fallthrough_one_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match (*x.borrow()) {
-        v if v == 1 => {
+        __v if __v == 1 => {
             (*r.borrow_mut()) += 10;
         }
-        v if v == 2 => {
+        __v if __v == 2 => {
             (*r.borrow_mut()) += 20;
             break;
         }

@@ -28,13 +28,13 @@ pub unsafe fn switch_enum_0(mut c: Color) -> i32 {
     'switch: {
         let __match_cond = (c as i32);
         match __match_cond {
-            v if v == (Color::kRed as i32) => {
+            __v if __v == (Color::kRed as i32) => {
                 return 10;
             }
-            v if v == (Color::kGreen as i32) => {
+            __v if __v == (Color::kGreen as i32) => {
                 return 20;
             }
-            v if v == (Color::kBlue as i32) => {
+            __v if __v == (Color::kBlue as i32) => {
                 return 30;
             }
             _ => {}

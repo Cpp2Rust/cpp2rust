@@ -39,23 +39,23 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     'switch: {
         let __match_cond = option;
         match __match_cond {
-            v if v == (opt::OPT_STRING_OUT as i32) => {
+            __v if __v == (opt::OPT_STRING_OUT as i32) => {
                 let mut out: *mut *const u8 = ap.arg::<*mut *const u8>();
                 (*out) = (b"hello\0".as_ptr().cast_mut()).cast_const();
                 result = 1;
                 break 'switch;
             }
-            v if v == (opt::OPT_FILE as i32) => {
+            __v if __v == (opt::OPT_FILE as i32) => {
                 let mut f: *mut ::libc::FILE = ap.arg::<*mut ::libc::FILE>();
                 result = ((!((f).is_null())) as i32).clone();
                 break 'switch;
             }
-            v if v == (opt::OPT_NODE as i32) => {
+            __v if __v == (opt::OPT_NODE as i32) => {
                 let mut n: *mut node = ap.arg::<*mut node>();
                 result = (*n).data;
                 break 'switch;
             }
-            v if v == (opt::OPT_NODE_OUT as i32) => {
+            __v if __v == (opt::OPT_NODE_OUT as i32) => {
                 let mut out: *mut *mut node = ap.arg::<*mut *mut node>();
                 (*out) = std::ptr::null_mut();
                 result = 2;

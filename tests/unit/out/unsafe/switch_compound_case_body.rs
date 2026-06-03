@@ -11,13 +11,13 @@ pub unsafe fn compound_case_body_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 1 => {
+            __v if __v == 1 => {
                 let mut y: i32 = 10;
                 let mut z: i32 = 20;
                 r = ((y) + (z));
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 let mut y: i32 = 100;
                 r = ((y) - (1));
                 break 'switch;

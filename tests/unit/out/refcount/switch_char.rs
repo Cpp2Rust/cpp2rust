@@ -11,16 +11,16 @@ pub fn switch_char_0(c: u8) -> i32 {
     'switch: {
         let __match_cond = ((*c.borrow()) as i32);
         match __match_cond {
-            v if v == (('a' as u8) as i32) => {
+            __v if __v == (('a' as u8) as i32) => {
                 return 1;
             }
-            v if v == (('b' as u8) as i32) => {
+            __v if __v == (('b' as u8) as i32) => {
                 return 2;
             }
-            v if v == (('\n' as u8) as i32) => {
+            __v if __v == (('\n' as u8) as i32) => {
                 return 3;
             }
-            v if v == (('\0' as u8) as i32) => {
+            __v if __v == (('\0' as u8) as i32) => {
                 return 4;
             }
             _ => {

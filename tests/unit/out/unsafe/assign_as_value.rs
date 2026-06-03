@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
             out
         }) as i32);
         match __match_cond {
-            v if v == ('x' as i32) => {
+            __v if __v == ('x' as i32) => {
                 assert!((1 != 0));
                 break 'switch;
             }

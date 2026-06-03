@@ -11,7 +11,7 @@ pub fn stacked_with_inner_fallthrough_0(x: i32, flag: i32) -> i32 {
     let flag: Value<i32> = Rc::new(RefCell::new(flag));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     switch!(match (*x.borrow()) {
-        v if v == 1 || v == 2 || v == 3 => {
+        __v if __v == 1 || __v == 2 || __v == 3 => {
             if !((*flag.borrow()) != 0) {
                 (*r.borrow_mut()) = 50;
                 break;

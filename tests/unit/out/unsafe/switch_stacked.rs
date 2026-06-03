@@ -11,11 +11,11 @@ pub unsafe fn stacked_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 1 || v == 2 || v == 3 => {
+            __v if __v == 1 || __v == 2 || __v == 3 => {
                 r = 100;
                 break 'switch;
             }
-            v if v == 4 || v == 5 => {
+            __v if __v == 4 || __v == 5 => {
                 r = 200;
                 break 'switch;
             }

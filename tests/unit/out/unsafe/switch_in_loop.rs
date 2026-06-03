@@ -13,11 +13,11 @@ pub unsafe fn switch_in_loop_0(mut n: i32) -> i32 {
         'switch: {
             let __match_cond = ((i) % (3));
             match __match_cond {
-                v if v == 0 => {
+                __v if __v == 0 => {
                     r += 1;
                     break 'switch;
                 }
-                v if v == 1 => {
+                __v if __v == 1 => {
                     r += 2;
                     break 'switch;
                 }

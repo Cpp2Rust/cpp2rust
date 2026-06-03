@@ -15,11 +15,11 @@ pub unsafe fn switch_on_assignment_0(mut x: i32) -> i32 {
             y
         };
         match __match_cond {
-            v if v == 1 => {
+            __v if __v == 1 => {
                 r = 10;
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 r = 20;
                 break 'switch;
             }

@@ -2,6 +2,7 @@
 
 int basic(int x) {
   int r = 0;
+  int v = 0; // this should not clash with the match_cond translated variable
   switch (x) {
   case 0:
     r = 10;

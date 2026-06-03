@@ -16,11 +16,11 @@ pub fn switch_on_assignment_0(x: i32) -> i32 {
             (*y.borrow())
         };
         match __match_cond {
-            v if v == 1 => {
+            __v if __v == 1 => {
                 (*r.borrow_mut()) = 10;
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 (*r.borrow_mut()) = 20;
                 break 'switch;
             }

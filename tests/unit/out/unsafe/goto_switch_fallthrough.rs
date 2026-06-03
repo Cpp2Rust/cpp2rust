@@ -12,10 +12,10 @@ pub unsafe fn sm_0(mut n: i32) -> i32 {
         '__entry: {
             ret = 0;
             switch!(match n {
-                v if v == 0 => {
+                __v if __v == 0 => {
                     ret += 1;
                 }
-                v if v == 1 => {
+                __v if __v == 1 => {
                     ret += 10;
                     goto!('out);
                 }

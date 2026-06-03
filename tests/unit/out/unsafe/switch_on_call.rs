@@ -16,13 +16,13 @@ pub unsafe fn switch_on_call_1(mut x: i32) -> i32 {
             double_it_0(_v)
         });
         match __match_cond {
-            v if v == 0 => {
+            __v if __v == 0 => {
                 return 100;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 return 200;
             }
-            v if v == 4 => {
+            __v if __v == 4 => {
                 return 400;
             }
             _ => {

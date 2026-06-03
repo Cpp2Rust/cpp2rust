@@ -47,15 +47,15 @@ pub unsafe fn write_count_1(mut s: *mut Sink, mut count: i64) {
     'switch: {
         let __match_cond = ((*s).width as u32);
         match __match_cond {
-            v if v == ((Width_enum::W_64 as i32) as u32) => {
+            __v if __v == ((Width_enum::W_64 as i32) as u32) => {
                 (*((*s).out.handle as *mut i64)) = count;
                 break 'switch;
             }
-            v if v == ((Width_enum::W_32 as i32) as u32) => {
+            __v if __v == ((Width_enum::W_32 as i32) as u32) => {
                 (*((*s).out.handle as *mut i32)) = (count as i32);
                 break 'switch;
             }
-            v if v == ((Width_enum::W_16 as i32) as u32) => {
+            __v if __v == ((Width_enum::W_16 as i32) as u32) => {
                 (*((*s).out.handle as *mut i16)) = (count as i16);
                 break 'switch;
             }

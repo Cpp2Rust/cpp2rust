@@ -12,11 +12,11 @@ pub fn no_default_0(x: i32) -> i32 {
     'switch: {
         let __match_cond = (*x.borrow());
         match __match_cond {
-            v if v == 7 => {
+            __v if __v == 7 => {
                 (*r.borrow_mut()) = 1;
                 break 'switch;
             }
-            v if v == 8 => {
+            __v if __v == 8 => {
                 (*r.borrow_mut()) = 2;
                 break 'switch;
             }

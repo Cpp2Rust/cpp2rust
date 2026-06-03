@@ -9,16 +9,16 @@ use std::rc::Rc;
 pub unsafe fn fallthrough_chain_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     switch!(match x {
-        v if v == 1 => {
+        __v if __v == 1 => {
             r += 1;
         }
-        v if v == 2 => {
+        __v if __v == 2 => {
             r += 2;
         }
-        v if v == 3 => {
+        __v if __v == 3 => {
             r += 4;
         }
-        v if v == 4 => {
+        __v if __v == 4 => {
             r += 8;
             break;
         }

@@ -11,14 +11,14 @@ pub unsafe fn mixed_return_break_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 0 => {
+            __v if __v == 0 => {
                 return 100;
             }
-            v if v == 1 => {
+            __v if __v == 1 => {
                 r = 10;
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 return 200;
             }
             _ => {

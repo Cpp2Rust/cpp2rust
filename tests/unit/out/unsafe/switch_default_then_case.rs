@@ -11,11 +11,11 @@ pub unsafe fn default_then_case_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 1 => {
+            __v if __v == 1 => {
                 r = 1;
                 break 'switch;
             }
-            v if v == 3 => {
+            __v if __v == 3 => {
                 r = 3;
                 break 'switch;
             }

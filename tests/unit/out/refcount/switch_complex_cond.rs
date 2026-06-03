@@ -15,13 +15,13 @@ pub fn switch_complex_cond_0(p: Ptr<i32>, bias: i32) -> i32 {
             _lhs + (*bias.borrow())
         };
         match __match_cond {
-            v if v == 0 => {
+            __v if __v == 0 => {
                 return 1;
             }
-            v if v == 5 => {
+            __v if __v == 5 => {
                 return 2;
             }
-            v if v == 10 => {
+            __v if __v == 10 => {
                 return 3;
             }
             _ => {

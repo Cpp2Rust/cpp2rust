@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn borrow_in_condition_and_in_body_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     switch!(match (*x.borrow()) {
-        v if v == 0 => {}
+        __v if __v == 0 => {}
         _ => {
             return ((*x.borrow()) + 1);
         }

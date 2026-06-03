@@ -11,15 +11,15 @@ pub unsafe fn nested_0(mut a: i32, mut b: i32) -> i32 {
     'switch: {
         let __match_cond = a;
         match __match_cond {
-            v if v == 1 => {
+            __v if __v == 1 => {
                 'switch: {
                     let __match_cond = b;
                     match __match_cond {
-                        v if v == 10 => {
+                        __v if __v == 10 => {
                             r = 11;
                             break 'switch;
                         }
-                        v if v == 20 => {
+                        __v if __v == 20 => {
                             r = 12;
                             break 'switch;
                         }
@@ -32,7 +32,7 @@ pub unsafe fn nested_0(mut a: i32, mut b: i32) -> i32 {
                 r += 1;
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 r = 2;
                 break 'switch;
             }

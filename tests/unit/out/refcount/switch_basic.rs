@@ -9,18 +9,19 @@ use std::rc::{Rc, Weak};
 pub fn basic_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
+    let v: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
         let __match_cond = (*x.borrow());
         match __match_cond {
-            v if v == 0 => {
+            __v if __v == 0 => {
                 (*r.borrow_mut()) = 10;
                 break 'switch;
             }
-            v if v == 1 => {
+            __v if __v == 1 => {
                 (*r.borrow_mut()) = 20;
                 break 'switch;
             }
-            v if v == 2 => {
+            __v if __v == 2 => {
                 (*r.borrow_mut()) = 30;
                 break 'switch;
             }

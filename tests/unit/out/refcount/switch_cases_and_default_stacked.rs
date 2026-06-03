@@ -12,7 +12,7 @@ pub fn cases_and_default_stacked_0(x: i32) -> i32 {
     'switch: {
         let __match_cond = (*x.borrow());
         match __match_cond {
-            v if v == 3 => {
+            __v if __v == 3 => {
                 (*r.borrow_mut()) = 3;
                 break 'switch;
             }

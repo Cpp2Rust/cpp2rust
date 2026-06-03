@@ -14,7 +14,7 @@ pub fn for_switch_for_break_0(n: i32) -> i32 {
         'switch: {
             let __match_cond = (*i.borrow());
             match __match_cond {
-                v if v == 1 => {
+                __v if __v == 1 => {
                     let j: Value<i32> = Rc::new(RefCell::new(0));
                     'loop_: while ((*j.borrow()) < 10) {
                         if ((*j.borrow()) == 2) {

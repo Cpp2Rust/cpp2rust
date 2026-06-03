@@ -9,10 +9,10 @@ use std::rc::Rc;
 pub unsafe fn fallthrough_into_block_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     switch!(match x {
-        v if v == 1 => {
+        __v if __v == 1 => {
             r += 1;
         }
-        v if v == 2 => {
+        __v if __v == 2 => {
             let mut tmp: i32 = ((r) * (10));
             r = ((tmp) + (5));
             break;

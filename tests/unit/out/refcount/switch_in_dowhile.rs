@@ -16,11 +16,11 @@ pub fn switch_in_dowhile_0(n: i32) -> i32 {
         'switch: {
             let __match_cond = (*i.borrow());
             match __match_cond {
-                v if v == 0 => {
+                __v if __v == 0 => {
                     (*r.borrow_mut()) += 1;
                     break 'switch;
                 }
-                v if v == 1 => {
+                __v if __v == 1 => {
                     (*r.borrow_mut()) += 10;
                     break 'switch;
                 }

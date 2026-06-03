@@ -10,16 +10,16 @@ pub unsafe fn mixed_literal_cases_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == -1_i32 => {
+            __v if __v == -1_i32 => {
                 return 1;
             }
-            v if v == 16 => {
+            __v if __v == 16 => {
                 return 2;
             }
-            v if v == 65152 => {
+            __v if __v == 65152 => {
                 return 3;
             }
-            v if v == -255_i32 => {
+            __v if __v == -255_i32 => {
                 return 4;
             }
             _ => {

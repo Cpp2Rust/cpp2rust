@@ -11,7 +11,7 @@ pub unsafe fn stacked_block_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 1 || v == 2 || v == 3 => {
+            __v if __v == 1 || __v == 2 || __v == 3 => {
                 let mut y: i32 = ((x) * (2));
                 r = ((y) + (1));
                 break 'switch;

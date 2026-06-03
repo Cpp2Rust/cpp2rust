@@ -11,7 +11,7 @@ pub unsafe fn case_then_default_0(mut x: i32) -> i32 {
     'switch: {
         let __match_cond = x;
         match __match_cond {
-            v if v == 2 => {
+            __v if __v == 2 => {
                 r = 20;
                 break 'switch;
             }

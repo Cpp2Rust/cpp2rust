@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
     switch!(match x {
-        v if v == 0 => {}
+        __v if __v == 0 => {}
         _ => {
             return ((x) + (1));
         }
