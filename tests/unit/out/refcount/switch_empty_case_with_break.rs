@@ -31,23 +31,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 1;
-            empty_case_with_break_0(_x)
-        }) == 5)
-    );
-    assert!(
-        (({
-            let _x: i32 = 2;
-            empty_case_with_break_0(_x)
-        }) == 2)
-    );
-    assert!(
-        (({
-            let _x: i32 = 9;
-            empty_case_with_break_0(_x)
-        }) == 9)
-    );
+    assert!((({ empty_case_with_break_0(1,) }) == 5));
+    assert!((({ empty_case_with_break_0(2,) }) == 2));
+    assert!((({ empty_case_with_break_0(9,) }) == 9));
     return 0;
 }

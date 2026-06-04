@@ -19,9 +19,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         ({
-            let _path: Ptr<u8> = Ptr::from_string_literal(b"/tmp/irrelevant-file");
-            let _mode: Ptr<u8> = Ptr::from_string_literal(b"r");
-            fopen_0(_path, _mode)
+            fopen_0(
+                Ptr::from_string_literal(b"/tmp/irrelevant-file"),
+                Ptr::from_string_literal(b"r"),
+            )
         }),
     ));
     assert!(((((*fp.borrow()).is_null()) as i32) != 0));

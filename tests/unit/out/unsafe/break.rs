@@ -35,8 +35,5 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return (unsafe {
-        let _n: i32 = 200;
-        for_test_0(_n)
-    });
+    return (unsafe { for_test_0(200) });
 }

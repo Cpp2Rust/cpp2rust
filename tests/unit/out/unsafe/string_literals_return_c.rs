@@ -30,10 +30,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*a.offset((5) as isize)) as i32) == ('\0' as i32)) as i32) != 0));
     let mut b: *const u8 = (unsafe { get_empty_1() });
     assert!((((((*b.offset((0) as isize)) as i32) == ('\0' as i32)) as i32) != 0));
-    let mut c: *const u8 = (unsafe {
-        let _x: i32 = 1;
-        get_branch_2(_x)
-    });
+    let mut c: *const u8 = (unsafe { get_branch_2(1) });
     assert!((((((*c.offset((0) as isize)) as i32) == ('p' as i32)) as i32) != 0));
     assert!((((((*c.offset((7) as isize)) as i32) == ('e' as i32)) as i32) != 0));
     assert!((((((*c.offset((8) as isize)) as i32) == ('\0' as i32)) as i32) != 0));

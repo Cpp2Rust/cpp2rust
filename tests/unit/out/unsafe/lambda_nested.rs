@@ -15,29 +15,25 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 10;
     assert!(
         ((unsafe {
-            let _y: i32 = 20;
             (|y: i32| {
                 return (unsafe {
-                    let _z: i32 = 1;
                     (|z: i32| {
                         return (((x) + (y)) + (z));
-                    })(_z)
+                    })(1)
                 });
-            })(_y)
+            })(20)
         }) == (31))
     );
     x = 100;
     assert!(
         ((unsafe {
-            let _y: i32 = 20;
             (|y: i32| {
                 return (unsafe {
-                    let _z: i32 = 1;
                     (|z: i32| {
                         return (((x) + (y)) + (z));
-                    })(_z)
+                    })(1)
                 });
-            })(_y)
+            })(20)
         }) == (121))
     );
     return 0;

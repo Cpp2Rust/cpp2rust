@@ -13,24 +13,14 @@ pub fn double_it_0(x: i32) -> i32 {
 pub fn test_roundtrip_1() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0)));
-    assert!(
-        (({
-            let _arg0: i32 = 5;
-            (*(*fn_.borrow()))(_arg0)
-        }) == 10)
-    );
+    assert!((({ (*(*fn_.borrow()))(5,) }) == 10));
     let gfn: Value<FnPtr<fn()>> =
         Rc::new(RefCell::new(((*fn_.borrow()).cast::<fn()>(None)).clone()));
     assert!(!((*gfn.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*gfn.borrow()).cast::<fn(i32) -> i32>(None)).clone(),
     ));
-    assert!(
-        (({
-            let _arg0: i32 = 5;
-            (*(*fn2.borrow()))(_arg0)
-        }) == 10)
-    );
+    assert!((({ (*(*fn2.borrow()))(5,) }) == 10));
     assert!({
         let _lhs = (*fn2.borrow()).clone();
         _lhs == (*fn_.borrow()).clone()
@@ -45,12 +35,7 @@ pub fn test_double_cast_2() {
             .cast::<fn(i32) -> i32>(None))
         .clone(),
     ));
-    assert!(
-        (({
-            let _arg0: i32 = 5;
-            (*(*fn2.borrow()))(_arg0)
-        }) == 10)
-    );
+    assert!((({ (*(*fn2.borrow()))(5,) }) == 10));
     assert!({
         let _lhs = (*fn2.borrow()).clone();
         _lhs == (*fn_.borrow()).clone()
@@ -78,12 +63,7 @@ pub fn test_void_ptr_to_fn_3() {
             .expect("ub:wrong fn type"))
         .clone(),
     ));
-    assert!(
-        (({
-            let _arg0: i32 = 5;
-            (*(*fn_.borrow()))(_arg0)
-        }) == 10)
-    );
+    assert!((({ (*(*fn_.borrow()))(5,) }) == 10));
 }
 pub fn add_offset_4(base: Ptr<i32>, offset: i32) -> i32 {
     let base: Value<Ptr<i32>> = Rc::new(RefCell::new(base));
@@ -104,8 +84,7 @@ pub fn test_call_through_cast_5() {
     let result: Value<i32> = Rc::new(RefCell::new(
         ({
             let _arg0: AnyPtr = ((val.as_pointer()) as Ptr<i32>).to_any();
-            let _arg1: i32 = 42;
-            (*(*gfn.borrow()))(_arg0, _arg1)
+            (*(*gfn.borrow()))(_arg0, 42)
         }),
     ));
     assert!(((*result.borrow()) == 142));

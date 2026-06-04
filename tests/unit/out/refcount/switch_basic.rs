@@ -37,23 +37,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 0;
-            basic_0(_x)
-        }) == 10)
-    );
-    assert!(
-        (({
-            let _x: i32 = 2;
-            basic_0(_x)
-        }) == 30)
-    );
-    assert!(
-        (({
-            let _x: i32 = 99;
-            basic_0(_x)
-        }) == 40)
-    );
+    assert!((({ basic_0(0,) }) == 10));
+    assert!((({ basic_0(2,) }) == 30));
+    assert!((({ basic_0(99,) }) == 40));
     return 0;
 }

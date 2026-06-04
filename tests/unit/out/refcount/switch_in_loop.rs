@@ -37,11 +37,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _n: i32 = 6;
-            switch_in_loop_0(_n)
-        }) == 72)
-    );
+    assert!((({ switch_in_loop_0(6,) }) == 72));
     return 0;
 }

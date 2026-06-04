@@ -48,10 +48,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
         x: (*raw_ptr2),
         y: 5,
     }));
-    (unsafe {
-        let _k: i32 = 10;
-        (*pair.as_deref_mut().unwrap()).inc(_k)
-    });
+    (unsafe { (*pair.as_deref_mut().unwrap()).inc(10) });
     (*(*(*safe_ptr).as_deref_mut().unwrap())
         .ptr
         .as_deref_mut()
@@ -110,10 +107,7 @@ pub unsafe fn RndStuff_2() {
     'loop_: while ((i) < (10)) {
         assert!((((*p3_0.offset((i) as isize)).x) == (1)));
         assert!((((*p3_0.offset((i) as isize)).y) == (2)));
-        (unsafe {
-            let _k: i32 = 10;
-            x3.as_mut().unwrap()[(i as u64) as usize].inc(_k)
-        });
+        (unsafe { x3.as_mut().unwrap()[(i as u64) as usize].inc(10) });
         assert!((((*p3_0.offset((i) as isize)).x) == (11)));
         assert!((((*p3_0.offset((i) as isize)).y) == (12)));
         i.prefix_inc();

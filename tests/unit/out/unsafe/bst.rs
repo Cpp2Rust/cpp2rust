@@ -104,43 +104,37 @@ unsafe fn main_0() -> i32 {
     });
     return (((((((((*(unsafe {
         let _node: *mut node_t = ptr1;
-        let _value: i32 = 0;
-        find_0(_node, _value)
+        find_0(_node, 0)
     }))
     .value)
         == (0))
         && (((*(unsafe {
             let _node: *mut node_t = ptr1;
-            let _value: i32 = 1;
-            find_0(_node, _value)
+            find_0(_node, 1)
         }))
         .value)
             == (1)))
         && (((*(unsafe {
             let _node: *mut node_t = ptr1;
-            let _value: i32 = 2;
-            find_0(_node, _value)
+            find_0(_node, 2)
         }))
         .value)
             == (2)))
         && (((*(unsafe {
             let _node: *mut node_t = ptr1;
-            let _value: i32 = 3;
-            find_0(_node, _value)
+            find_0(_node, 3)
         }))
         .value)
             == (3)))
         && (((*(unsafe {
             let _node: *mut node_t = ptr1;
-            let _value: i32 = 4;
-            find_0(_node, _value)
+            find_0(_node, 4)
         }))
         .value)
             == (4)))
         && ((unsafe {
             let _node: *mut node_t = ptr1;
-            let _value: i32 = 5;
-            find_0(_node, _value)
+            find_0(_node, 5)
         })
         .is_null())) as i32);
 }

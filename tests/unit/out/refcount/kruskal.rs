@@ -295,9 +295,8 @@ impl ByteRepr for Graph {}
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({
         let _arr: Ptr<Option<Value<Box<[Edge]>>>> = (*graph.upgrade().deref()).edges.as_pointer();
-        let _start: i32 = 0;
         let _end: i32 = ((*(*graph.upgrade().deref()).E.borrow()) - 1);
-        quicksort_1(_arr, _start, _end)
+        quicksort_1(_arr, 0, _end)
     });
     let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
         rank: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(

@@ -39,8 +39,7 @@ pub unsafe fn matmul_1(
     let mut m3: Option<Box<[Option<Box<[i32]>>]>> = (unsafe {
         let _n: i32 = n1;
         let _p: i32 = p2;
-        let _e: i32 = 0;
-        matalloc_0(_n, _p, _e)
+        matalloc_0(_n, _p, 0)
     });
     let mut i: i32 = 0;
     'loop_: while ((i) < (n1)) {
@@ -73,14 +72,12 @@ unsafe fn main_0() -> i32 {
     let mut m1: Option<Box<[Option<Box<[i32]>>]>> = (unsafe {
         let _n: i32 = n;
         let _p: i32 = p;
-        let _e: i32 = 1;
-        matalloc_0(_n, _p, _e)
+        matalloc_0(_n, _p, 1)
     });
     let mut m2: Option<Box<[Option<Box<[i32]>>]>> = (unsafe {
         let _n: i32 = p;
         let _p: i32 = n;
-        let _e: i32 = 2;
-        matalloc_0(_n, _p, _e)
+        matalloc_0(_n, _p, 2)
     });
     let mut m3: Option<Box<[Option<Box<[i32]>>]>> = (unsafe {
         let _m1: Option<Box<[Option<Box<[i32]>>]>> = m1;

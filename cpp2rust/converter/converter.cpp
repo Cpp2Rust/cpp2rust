@@ -1635,7 +1635,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                : proto->getParamType(i),
         .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
-        .kind = Kind::Hoisted,
+        .kind = IsLiteral(arg) ? Kind::Inline : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {
@@ -2373,7 +2373,6 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   default:
     return false;
   }
-  std::unreachable();
 }
 
 bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
@@ -2840,7 +2839,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       if (auto arr_ty = ctx_.getAsConstantArrayType(expr->getType())) {
         assert(
             (arr_ty->getSize().getZExtValue() - expr->getNumInits()) &&
-            "Number of initializers should be less that total size of array");
+            "Number of initializers should be less than total size of array");
         for (unsigned i = 0;
              i < arr_ty->getSize().getZExtValue() - expr->getNumInits(); ++i) {
           ConvertVarInit(expr->getArrayFiller()->getType(),
@@ -3028,7 +3027,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (ctor->isCopyOrMoveConstructor() ||
       (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
        ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
-    // Take supress before recursing into the child.
+    // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
     if (ctor->isCopyConstructor() && !suppress) {

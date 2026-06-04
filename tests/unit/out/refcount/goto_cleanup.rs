@@ -85,40 +85,10 @@ fn main_0() -> i32 {
         }) == -1_i32) as i32)
             != 0)
     );
-    assert!(
-        (((({
-            let _n: i32 = 5;
-            early_0(_n)
-        }) == 100) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 2;
-            from_loop_1(_n)
-        }) == 999) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 10;
-            from_loop_1(_n)
-        }) == 7) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 1;
-            from_switch_2(_n)
-        }) == 10) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 2;
-            from_switch_2(_n)
-        }) == 999) as i32)
-            != 0)
-    );
+    assert!((((({ early_0(5,) }) == 100) as i32) != 0));
+    assert!((((({ from_loop_1(2,) }) == 999) as i32) != 0));
+    assert!((((({ from_loop_1(10,) }) == 7) as i32) != 0));
+    assert!((((({ from_switch_2(1,) }) == 10) as i32) != 0));
+    assert!((((({ from_switch_2(2,) }) == 999) as i32) != 0));
     return 0;
 }

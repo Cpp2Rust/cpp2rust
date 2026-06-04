@@ -29,23 +29,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            case_then_default_0(_x)
-        }) == (10))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            case_then_default_0(_x)
-        }) == (20))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            case_then_default_0(_x)
-        }) == (10))
-    );
+    assert!(((unsafe { case_then_default_0(1,) }) == (10)));
+    assert!(((unsafe { case_then_default_0(2,) }) == (20)));
+    assert!(((unsafe { case_then_default_0(99,) }) == (10)));
     return 0;
 }

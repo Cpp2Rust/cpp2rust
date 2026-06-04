@@ -27,23 +27,20 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         (({
-            let _x: i32 = 5;
             let _fn: FnPtr<fn(i32) -> i32> = Default::default();
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == 5)
     );
     assert!(
         (({
-            let _x: i32 = 5;
             let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == 5)
     );
     assert!(
         (({
-            let _x: i32 = 5;
             let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(identity_0);
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == 5)
     );
     let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::new(
@@ -54,9 +51,8 @@ fn main_0() -> i32 {
     )));
     assert!(
         (({
-            let _x: i32 = 5;
             let _fn: FnPtr<fn(i32) -> i32> = (*negate.borrow()).clone();
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == -5_i32)
     );
     return 0;

@@ -42,8 +42,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         let _arr: *mut Option<Box<[i32]>> = &mut arr as *mut Option<Box<[i32]>>;
         let _N: i32 = N;
-        let _element: i32 = 1;
-        All_0(_arr, _N, _element)
+        All_0(_arr, _N, 1)
     });
     return (unsafe {
         let _arr: Option<Box<[i32]>> = arr;

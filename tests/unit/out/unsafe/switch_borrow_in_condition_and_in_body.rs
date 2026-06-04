@@ -21,17 +21,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 0;
-            borrow_in_condition_and_in_body_0(_x)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            borrow_in_condition_and_in_body_0(_x)
-        }) == (2))
-    );
+    assert!(((unsafe { borrow_in_condition_and_in_body_0(0,) }) == (1)));
+    assert!(((unsafe { borrow_in_condition_and_in_body_0(1,) }) == (2)));
     return 0;
 }

@@ -31,8 +31,7 @@ unsafe fn main_0() -> i32 {
                 return ((x) + (base));
             })
             .clone();
-            let _x: i32 = 5;
-            apply_0(_fn, _x)
+            apply_0(_fn, 5)
         }) == (15))
     );
     base = 100;
@@ -42,8 +41,7 @@ unsafe fn main_0() -> i32 {
                 return ((x) + (base));
             })
             .clone();
-            let _x: i32 = 5;
-            apply_0(_fn, _x)
+            apply_0(_fn, 5)
         }) == (105))
     );
     let mut factor: i32 = 3;
@@ -53,8 +51,7 @@ unsafe fn main_0() -> i32 {
                 return ((x) * (factor));
             })
             .clone();
-            let _x: i32 = 4;
-            apply_1(_fn, _x)
+            apply_1(_fn, 4)
         }) == (12))
     );
     return 0;

@@ -26,7 +26,6 @@ unsafe fn main_0() -> i32 {
     let s: [u8; 4] = [('s' as u8), ('t' as u8), ('r' as u8), ('\0' as u8)];
     return (unsafe {
         let _s: *const u8 = (&s[(0) as usize] as *const u8);
-        let _n: i32 = 0;
-        strlen_0(_s, _n)
+        strlen_0(_s, 0)
     });
 }

@@ -44,26 +44,13 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(
         (((({
-            let _n: i32 = 2;
-            top_level_2(
-                _n,
-                &[(100).into(), (200).into(), (300).into(), (400).into()],
-            )
+            top_level_2(2, &[(100).into(), (200).into(), (300).into(), (400).into()])
         }) == 300) as i32)
             != 0)
     );
+    assert!((((({ top_level_2(0, &[(42).into(), (99).into(),]) }) == 42) as i32) != 0));
     assert!(
-        (((({
-            let _n: i32 = 0;
-            top_level_2(_n, &[(42).into(), (99).into()])
-        }) == 42) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 3;
-            top_level_2(_n, &[(1).into(), (2).into(), (3).into(), (4).into()])
-        }) == 4) as i32)
+        (((({ top_level_2(3, &[(1).into(), (2).into(), (3).into(), (4).into(),]) }) == 4) as i32)
             != 0)
     );
     return 0;

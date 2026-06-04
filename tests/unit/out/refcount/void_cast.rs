@@ -63,10 +63,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    ({
-        let _x: i32 = 42;
-        unused_param_0(_x)
-    });
+    ({ unused_param_0(42) });
     let y: Value<i32> = Rc::new(RefCell::new(5));
     (*y.borrow_mut());
     let z: Value<i32> = Rc::new(RefCell::new({

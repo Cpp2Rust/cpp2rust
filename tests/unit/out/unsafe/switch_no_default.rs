@@ -30,17 +30,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 7;
-            no_default_0(_x)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 42;
-            no_default_0(_x)
-        }) == (-1_i32))
-    );
+    assert!(((unsafe { no_default_0(7,) }) == (1)));
+    assert!(((unsafe { no_default_0(42,) }) == (-1_i32)));
     return 0;
 }

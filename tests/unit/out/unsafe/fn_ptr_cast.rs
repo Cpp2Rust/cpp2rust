@@ -11,23 +11,13 @@ pub unsafe fn double_it_0(mut x: i32) -> i32 {
 }
 pub unsafe fn test_roundtrip_1() {
     let mut fn_: Option<unsafe fn(i32) -> i32> = Some(double_it_0);
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 5;
-            (fn_).unwrap()(_arg0)
-        }) == (10))
-    );
+    assert!(((unsafe { (fn_).unwrap()(5,) }) == (10)));
     let mut gfn: Option<unsafe fn()> =
         std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_);
     assert!(!((gfn).is_none()));
     let mut fn2: Option<unsafe fn(i32) -> i32> =
         std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(gfn);
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 5;
-            (fn2).unwrap()(_arg0)
-        }) == (10))
-    );
+    assert!(((unsafe { (fn2).unwrap()(5,) }) == (10)));
     assert!(((fn2) == (fn_)));
 }
 pub unsafe fn test_double_cast_2() {
@@ -36,12 +26,7 @@ pub unsafe fn test_double_cast_2() {
         std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(
             std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_),
         );
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 5;
-            (fn2).unwrap()(_arg0)
-        }) == (10))
-    );
+    assert!(((unsafe { (fn2).unwrap()(5,) }) == (10)));
     assert!(((fn2) == (fn_)));
 }
 #[repr(C)]
@@ -56,12 +41,7 @@ pub unsafe fn test_void_ptr_to_fn_3() {
     ));
     let mut fn_: Option<unsafe fn(i32) -> i32> =
         std::mem::transmute::<*mut ::libc::c_void, Option<unsafe fn(i32) -> i32>>(cmd.data);
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 5;
-            (fn_).unwrap()(_arg0)
-        }) == (10))
-    );
+    assert!(((unsafe { (fn_).unwrap()(5,) }) == (10)));
 }
 pub unsafe fn add_offset_4(mut base: *mut i32, mut offset: i32) -> i32 {
     return ((*base) + (offset));
@@ -75,8 +55,7 @@ pub unsafe fn test_call_through_cast_5() {
     let mut result: i32 = (unsafe {
         let _arg0: *mut ::libc::c_void =
             ((&mut val as *mut i32) as *mut i32 as *mut ::libc::c_void);
-        let _arg1: i32 = 42;
-        (gfn).unwrap()(_arg0, _arg1)
+        (gfn).unwrap()(_arg0, 42)
     });
     assert!(((result) == (142)));
 }

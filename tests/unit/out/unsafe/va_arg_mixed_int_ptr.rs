@@ -32,9 +32,8 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 100;
     assert!(
         ((((unsafe {
-            let _count: i32 = 3;
             mixed_args_0(
-                _count,
+                3,
                 &[
                     (0).into(),
                     (10).into(),
@@ -49,17 +48,13 @@ unsafe fn main_0() -> i32 {
     );
     let mut y: i32 = 50;
     assert!(
-        ((((unsafe {
-            let _count: i32 = 1;
-            mixed_args_0(_count, &[(1).into(), (&mut y as *mut i32).into()])
-        }) == (50)) as i32)
+        ((((unsafe { mixed_args_0(1, &[(1).into(), (&mut y as *mut i32).into(),]) }) == (50))
+            as i32)
             != 0)
     );
     assert!(
-        ((((unsafe {
-            let _count: i32 = 2;
-            mixed_args_0(_count, &[(0).into(), (5).into(), (0).into(), (3).into()])
-        }) == (8)) as i32)
+        ((((unsafe { mixed_args_0(2, &[(0).into(), (5).into(), (0).into(), (3).into(),]) }) == (8))
+            as i32)
             != 0)
     );
     return 0;

@@ -33,11 +33,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _n: i32 = 6;
-            continue_inside_switch_0(_n)
-        }) == (((1 + 3) + 5) + (3 * 1000)))
-    );
+    assert!((({ continue_inside_switch_0(6,) }) == (((1 + 3) + 5) + (3 * 1000))));
     return 0;
 }

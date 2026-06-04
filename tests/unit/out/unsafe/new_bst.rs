@@ -82,63 +82,53 @@ unsafe fn main_0() -> i32 {
     })) as *mut node_t);
     root = (unsafe {
         let _node: *mut node_t = root;
-        let _value: i32 = 1;
-        insert_1(_node, _value)
+        insert_1(_node, 1)
     });
     root = (unsafe {
         let _node: *mut node_t = root;
-        let _value: i32 = 2;
-        insert_1(_node, _value)
+        insert_1(_node, 2)
     });
     root = (unsafe {
         let _node: *mut node_t = root;
-        let _value: i32 = 3;
-        insert_1(_node, _value)
+        insert_1(_node, 3)
     });
     root = (unsafe {
         let _node: *mut node_t = root;
-        let _value: i32 = 4;
-        insert_1(_node, _value)
+        insert_1(_node, 4)
     });
     let mut out: bool = (((((((*(unsafe {
         let _node: *mut node_t = root;
-        let _value: i32 = 0;
-        find_0(_node, _value)
+        find_0(_node, 0)
     }))
     .value)
         == (0))
         && (((*(unsafe {
             let _node: *mut node_t = root;
-            let _value: i32 = 1;
-            find_0(_node, _value)
+            find_0(_node, 1)
         }))
         .value)
             == (1)))
         && (((*(unsafe {
             let _node: *mut node_t = root;
-            let _value: i32 = 2;
-            find_0(_node, _value)
+            find_0(_node, 2)
         }))
         .value)
             == (2)))
         && (((*(unsafe {
             let _node: *mut node_t = root;
-            let _value: i32 = 3;
-            find_0(_node, _value)
+            find_0(_node, 3)
         }))
         .value)
             == (3)))
         && (((*(unsafe {
             let _node: *mut node_t = root;
-            let _value: i32 = 4;
-            find_0(_node, _value)
+            find_0(_node, 4)
         }))
         .value)
             == (4)))
         && ((unsafe {
             let _node: *mut node_t = root;
-            let _value: i32 = 5;
-            find_0(_node, _value)
+            find_0(_node, 5)
         })
         .is_null());
     (unsafe {

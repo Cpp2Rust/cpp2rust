@@ -27,39 +27,15 @@ pub fn main() {
 fn main_0() -> i32 {
     let fn_: Value<FnPtr<fn(i32, i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32) -> i32>::new(add_0)));
-    assert!(
-        (({
-            let _arg0: i32 = 3;
-            let _arg1: i32 = 4;
-            (*(*fn_.borrow()))(_arg0, _arg1)
-        }) == 7)
-    );
+    assert!((({ (*(*fn_.borrow()))(3, 4,) }) == 7));
     (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::new(sub_1);
-    assert!(
-        (({
-            let _arg0: i32 = 10;
-            let _arg1: i32 = 3;
-            (*(*fn_.borrow()))(_arg0, _arg1)
-        }) == 7)
-    );
+    assert!((({ (*(*fn_.borrow()))(10, 3,) }) == 7));
     (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::new(mul_2);
-    assert!(
-        (({
-            let _arg0: i32 = 6;
-            let _arg1: i32 = 7;
-            (*(*fn_.borrow()))(_arg0, _arg1)
-        }) == 42)
-    );
+    assert!((({ (*(*fn_.borrow()))(6, 7,) }) == 42));
     (*fn_.borrow_mut()) = FnPtr::null();
     assert!((*fn_.borrow()).is_null());
     (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::new(add_0);
     assert!(!((*fn_.borrow()).is_null()));
-    assert!(
-        (({
-            let _arg0: i32 = 1;
-            let _arg1: i32 = 1;
-            (*(*fn_.borrow()))(_arg0, _arg1)
-        }) == 2)
-    );
+    assert!((({ (*(*fn_.borrow()))(1, 1,) }) == 2));
     return 0;
 }

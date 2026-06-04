@@ -46,10 +46,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 1;
     let mut out: i32 = 0;
-    out += (unsafe {
-        let _x: i32 = 0;
-        foo_0(_x)
-    });
+    out += (unsafe { foo_0(0) });
     out += (unsafe {
         let _x: *mut i32 = (&mut x as *mut i32);
         foo_1(_x)
@@ -70,11 +67,7 @@ unsafe fn main_0() -> i32 {
         foo_2(_x, _y)
     });
     let mut bar: i32 = 5;
-    out += (((bar)
-        + (unsafe {
-            let _x: i32 = 0;
-            foo_0(_x)
-        }))
+    out += (((bar) + (unsafe { foo_0(0) }))
         + (unsafe {
             let _x: *mut i32 = (&mut x as *mut i32);
             foo_1(_x)
@@ -82,14 +75,8 @@ unsafe fn main_0() -> i32 {
     let mut foo1: Foo = Foo {};
     let foo2: Foo = Foo {};
     (unsafe { foo1.foo() });
-    (unsafe {
-        let _x: i32 = 1;
-        foo1.method_i32(_x)
-    });
+    (unsafe { foo1.method_i32(1) });
     (unsafe { foo2.foo_const() });
-    (unsafe {
-        let _x: i32 = 2;
-        foo2.method_i32_const(_x)
-    });
+    (unsafe { foo2.method_i32_const(2) });
     return out;
 }

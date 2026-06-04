@@ -48,45 +48,26 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    assert!((({ (*({ pick_3(1,) }))(10,) }) == 11));
     assert!(
         (({
-            let _arg0: i32 = 10;
-            (*({
-                let _mode: i32 = 1;
-                pick_3(_mode)
-            }))(_arg0)
-        }) == 11)
-    );
-    assert!(
-        (({
-            let _arg0: i32 = 10;
             (*({
                 let _mode: i32 = -1_i32;
                 pick_3(_mode)
-            }))(_arg0)
+            }))(10)
         }) == 9)
     );
-    assert!(
-        (({
-            let _arg0: i32 = 10;
-            (*({
-                let _mode: i32 = 0;
-                pick_3(_mode)
-            }))(_arg0)
-        }) == 10)
-    );
+    assert!((({ (*({ pick_3(0,) }))(10,) }) == 10));
     assert!(
         (({
             let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(inc_0);
-            let _x: i32 = 5;
-            apply_4(_fn, _x)
+            apply_4(_fn, 5)
         }) == 6)
     );
     assert!(
         (({
             let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
-            let _x: i32 = 5;
-            apply_4(_fn, _x)
+            apply_4(_fn, 5)
         }) == 5)
     );
     return 0;

@@ -38,17 +38,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _n: i32 = 1;
-            switch_in_dowhile_0(_n)
-        }) == 1)
-    );
-    assert!(
-        (({
-            let _n: i32 = 3;
-            switch_in_dowhile_0(_n)
-        }) == ((1 + 10) + 100))
-    );
+    assert!((({ switch_in_dowhile_0(1,) }) == 1));
+    assert!((({ switch_in_dowhile_0(3,) }) == ((1 + 10) + 100)));
     return 0;
 }

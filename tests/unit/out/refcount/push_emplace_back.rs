@@ -182,8 +182,7 @@ fn main_0() -> i32 {
     let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
     ({
         let _jpg: Ptr<JPEGData> = (jpg.as_pointer());
-        let _cond: bool = true;
-        push_local_from_field_1(_jpg, _cond)
+        push_local_from_field_1(_jpg, true)
     });
     assert!(((*(*jpg.borrow()).com_data.borrow()).len() as u64 == 1_u64));
     assert!(
@@ -253,8 +252,7 @@ fn main_0() -> i32 {
     );
     ({
         let _jpg: Ptr<JPEGData> = (jpg.as_pointer());
-        let _cond: bool = false;
-        emplace_local_from_field_4(_jpg, _cond)
+        emplace_local_from_field_4(_jpg, false)
     });
     assert!(((*(*jpg.borrow()).app_data.borrow()).len() as u64 == 1_u64));
     assert!(

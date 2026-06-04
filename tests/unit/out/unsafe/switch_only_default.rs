@@ -25,11 +25,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            only_default_0(_x)
-        }) == (42))
-    );
+    assert!(((unsafe { only_default_0(1,) }) == (42)));
     return 0;
 }

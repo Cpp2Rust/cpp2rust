@@ -148,10 +148,7 @@ impl MinHeap {
             [((*self.size.borrow()) as u64) as usize])
             .clone();
         (*self.arr.borrow()).as_ref().unwrap().borrow_mut()[(0_u64) as usize] = __rhs;
-        ({
-            let _idx: i32 = 0;
-            self.Heapify(_idx)
-        });
+        ({ self.Heapify(0) });
         return (*out.borrow()).clone();
     }
     pub fn Insert(&self, node: Ptr<MinHeapNode>) {
@@ -261,12 +258,11 @@ pub fn Huffman_2(
         ));
         let top: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
             ({
-                let _data: u8 = ('$' as u8);
                 let _freq: i32 = {
                     let _lhs = (*(*(*left.borrow()).upgrade().deref()).freq.borrow());
                     _lhs + (*(*(*right.borrow()).upgrade().deref()).freq.borrow())
                 };
-                (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Alloc(_data, _freq)
+                (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Alloc(('$' as u8), _freq)
             }),
         ));
         (*(*(*top.borrow()).upgrade().deref()).left.borrow_mut()) = (*left.borrow()).clone();

@@ -49,11 +49,9 @@ fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(1));
     let x2: Value<i32> = Rc::new(RefCell::new(2));
     ({
-        let _x1: i32 = 3;
-        let _x2: i32 = 4;
         let _r1: Ptr<i32> = x1.as_pointer();
         let _r2: Ptr<i32> = x2.as_pointer();
-        more_refs_0(_x1, _x2, _r1, _r2)
+        more_refs_0(3, 4, _r1, _r2)
     });
     return ((*x1.borrow()) + (*x2.borrow()));
 }

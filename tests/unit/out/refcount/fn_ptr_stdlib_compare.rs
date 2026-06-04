@@ -67,10 +67,8 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: AnyPtr = AnyPtr::default();
-            let _arg1: u64 = 0_u64;
-            let _arg2: u64 = 0_u64;
             let _arg3: Ptr<::std::fs::File> = Ptr::null();
-            (*(*f3.borrow()))(_arg0, _arg1, _arg2, _arg3)
+            (*(*f3.borrow()))(_arg0, 0_u64, 0_u64, _arg3)
         }) == 22_u64)
     );
     let mut __do_while = true;
@@ -161,10 +159,8 @@ fn main_0() -> i32 {
         let n: Value<u64> = Rc::new(RefCell::new(
             ({
                 let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
-                let _arg1: u64 = 1_u64;
-                let _arg2: u64 = 10_u64;
                 let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
-                (*(*fn1.borrow()))(_arg0, _arg1, _arg2, _arg3)
+                (*(*fn1.borrow()))(_arg0, 1_u64, 10_u64, _arg3)
             }),
         ));
         assert!(((*n.borrow()) == 10_u64));
@@ -231,10 +227,8 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _arg0: AnyPtr = AnyPtr::default();
-            let _arg1: u64 = 0_u64;
-            let _arg2: u64 = 0_u64;
             let _arg3: Ptr<::std::fs::File> = Ptr::null();
-            (*(*g3.borrow()))(_arg0, _arg1, _arg2, _arg3)
+            (*(*g3.borrow()))(_arg0, 0_u64, 0_u64, _arg3)
         }) == 33_u64)
     );
     let mut __do_while = true;
@@ -315,10 +309,8 @@ fn main_0() -> i32 {
         let n: Value<u64> = Rc::new(RefCell::new(
             ({
                 let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
-                let _arg1: u64 = 1_u64;
-                let _arg2: u64 = 10_u64;
                 let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
-                (*(*gn1.borrow()))(_arg0, _arg1, _arg2, _arg3)
+                (*(*gn1.borrow()))(_arg0, 1_u64, 10_u64, _arg3)
             }),
         ));
         assert!(((*n.borrow()) == 10_u64));

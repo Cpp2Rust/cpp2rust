@@ -27,8 +27,5 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return (unsafe {
-        let _x: i32 = 0;
-        dowhile_0(_x)
-    });
+    return (unsafe { dowhile_0(0) });
 }

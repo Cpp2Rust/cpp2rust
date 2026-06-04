@@ -56,25 +56,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({
-            let _x: i32 = 5;
-            apply_unary_3(_x, &[(FnPtr::<fn(i32) -> i32>::new(square_0)).into()])
-        }) == 25) as i32)
+        (((({ apply_unary_3(5, &[(FnPtr::<fn(i32) -> i32>::new(square_0)).into(),]) }) == 25)
+            as i32)
             != 0)
     );
     assert!(
-        (((({
-            let _x: i32 = 7;
-            apply_unary_3(_x, &[(FnPtr::<fn(i32) -> i32>::new(negate_1)).into()])
-        }) == -7_i32) as i32)
+        (((({ apply_unary_3(7, &[(FnPtr::<fn(i32) -> i32>::new(negate_1)).into(),]) }) == -7_i32)
+            as i32)
             != 0)
     );
     assert!(
-        (((({
-            let _a: i32 = 3;
-            let _b: i32 = 4;
-            apply_binary_4(_a, _b, &[(FnPtr::<fn(i32, i32) -> i32>::new(add_2)).into()])
-        }) == 7) as i32)
+        (((({ apply_binary_4(3, 4, &[(FnPtr::<fn(i32, i32) -> i32>::new(add_2)).into(),]) }) == 7)
+            as i32)
             != 0)
     );
     return 0;

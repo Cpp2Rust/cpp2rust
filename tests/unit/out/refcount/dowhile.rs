@@ -26,8 +26,5 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({
-        let _x: i32 = 0;
-        dowhile_0(_x)
-    });
+    return ({ dowhile_0(0) });
 }

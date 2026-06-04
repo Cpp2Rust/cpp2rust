@@ -42,24 +42,16 @@ unsafe fn main_0() -> i32 {
         }))
         + ((*(unsafe {
             let _p: *mut i32 = (&mut x as *mut i32);
-            let _flag: bool = true;
-            bar_2(_p, _flag)
+            bar_2(_p, true)
         })) as f64))
         + (*(unsafe {
             let _p: *mut f64 = (&mut y as *mut f64);
-            let _flag: bool = true;
-            bar_3(_p, _flag)
+            bar_3(_p, true)
         })))
+        + ((unsafe { func_4(1, 2, 3) }) as f64))
         + ((unsafe {
-            let _x1: i32 = 1;
-            let _x2: i32 = 2;
-            let _x3: i32 = 3;
-            func_4(_x1, _x2, _x3)
-        }) as f64))
-        + ((unsafe {
-            let _x1: f64 = 2.0E+0;
             let _x2: i32 = x;
             let _x3: f64 = y;
-            func_5(_x1, _x2, _x3)
+            func_5(2.0E+0, _x2, _x3)
         }) as f64)) as i32);
 }

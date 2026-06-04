@@ -31,8 +31,7 @@ unsafe fn main_0() -> i32 {
     h.val = Some(Box::new(10));
     (unsafe {
         let _h: *const Holder = (&mut h as *mut Holder).cast_const();
-        let _v: i32 = 42;
-        write_val_1(_h, _v)
+        write_val_1(_h, 42)
     });
     return (unsafe {
         let _h: *const Holder = (&mut h as *mut Holder).cast_const();

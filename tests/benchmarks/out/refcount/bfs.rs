@@ -225,8 +225,7 @@ fn main_0() -> i32 {
     let pred: Value<Ptr<u32>> = Rc::new(RefCell::new(
         ({
             let _graph: Ptr<Graph> = graph.as_pointer();
-            let _start_vertex: u32 = 0_u32;
-            BFS_0(_graph, _start_vertex)
+            BFS_0(_graph, 0_u32)
         }),
     ));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));

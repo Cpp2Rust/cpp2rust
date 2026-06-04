@@ -67,23 +67,11 @@ unsafe fn main_0() -> i32 {
         assert!((1 != 0));
     }
     side_effect_0 = 0;
-    if ((((zero != 0)
-        && ((unsafe {
-            let _v: i32 = 1;
-            observe_1(_v)
-        }) != 0)) as i32)
-        != 0)
-    {
+    if ((((zero != 0) && ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
         assert!((0 != 0));
     }
     assert!(((((side_effect_0) == (0)) as i32) != 0));
-    if ((((n != 0)
-        || ((unsafe {
-            let _v: i32 = 1;
-            observe_1(_v)
-        }) != 0)) as i32)
-        != 0)
-    {
+    if ((((n != 0) || ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
     assert!(((((side_effect_0) == (0)) as i32) != 0));

@@ -74,9 +74,5 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return (({
-        let _x: f64 = 1.0E+0;
-        let _y: f64 = 2.0E+0;
-        f1_2(_x, _y)
-    }) as i32);
+    return (({ f1_2(1.0E+0, 2.0E+0) }) as i32);
 }

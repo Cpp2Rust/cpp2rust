@@ -35,20 +35,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((((unsafe {
-            let _n: i32 = 5;
-            classify_0(_n)
-        }) == (5)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((unsafe {
-            let _n: i32 = 0;
-            classify_0(_n)
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { classify_0(5,) }) == (5)) as i32) != 0));
+    assert!(((((unsafe { classify_0(0,) }) == (0)) as i32) != 0));
     assert!(
         ((((unsafe {
             let _n: i32 = -2_i32;

@@ -33,9 +33,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
-            let _count: i32 = 3;
             sum_mixed_0(
-                _count,
+                3,
                 &[
                     (0).into(),
                     (10).into(),
@@ -48,18 +47,11 @@ unsafe fn main_0() -> i32 {
         }) == (60)) as i32)
             != 0)
     );
+    assert!(((((unsafe { sum_mixed_0(1, &[(0).into(), (42).into(),]) }) == (42)) as i32) != 0));
     assert!(
         ((((unsafe {
-            let _count: i32 = 1;
-            sum_mixed_0(_count, &[(0).into(), (42).into()])
-        }) == (42)) as i32)
-            != 0)
-    );
-    assert!(
-        ((((unsafe {
-            let _count: i32 = 2;
             sum_mixed_0(
-                _count,
+                2,
                 &[(1).into(), (3.7E+0).into(), (2).into(), (100_i64).into()],
             )
         }) == (103)) as i32)

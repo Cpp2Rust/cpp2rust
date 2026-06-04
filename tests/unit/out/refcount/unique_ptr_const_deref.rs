@@ -34,8 +34,7 @@ fn main_0() -> i32 {
     (*(*h.borrow()).val.borrow_mut()) = Some(Rc::new(RefCell::new(10)));
     ({
         let _h: Ptr<Holder> = (h.as_pointer());
-        let _v: i32 = 42;
-        write_val_1(_h, _v)
+        write_val_1(_h, 42)
     });
     return ({
         let _h: Ptr<Holder> = (h.as_pointer());

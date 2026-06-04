@@ -35,9 +35,8 @@ fn main_0() -> i32 {
     let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy")));
     assert!(
         (((({
-            let _fmt: Ptr<u8> = Ptr::from_string_literal(b"hello %d %d");
             logf_1(
-                _fmt,
+                Ptr::from_string_literal(b"hello %d %d"),
                 &[
                     (10).into(),
                     ((*dummy.borrow()).to_string_iterator().count() as u64).into(),
@@ -48,8 +47,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            let _fmt: Ptr<u8> = Ptr::from_string_literal(b"x %d %d");
-            logf_1(_fmt, &[(1).into(), (2).into()])
+            logf_1(
+                Ptr::from_string_literal(b"x %d %d"),
+                &[(1).into(), (2).into()],
+            )
         }) == 3) as i32)
             != 0)
     );

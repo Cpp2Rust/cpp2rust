@@ -28,8 +28,5 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return ((unsafe {
-        let _n: u64 = 46_u64;
-        fib_0(_n)
-    }) as i32);
+    return ((unsafe { fib_0(46_u64) }) as i32);
 }

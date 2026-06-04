@@ -39,15 +39,13 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _p: Ptr<i32> = (p_val.as_pointer());
-            let _bias: i32 = 0;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 0)
         }) == 2)
     );
     assert!(
         (({
             let _p: Ptr<i32> = (p_val.as_pointer());
-            let _bias: i32 = 5;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 5)
         }) == 3)
     );
     assert!(
@@ -60,8 +58,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _p: Ptr<i32> = (p_val.as_pointer());
-            let _bias: i32 = 99;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 99)
         }) == 0)
     );
     return 0;

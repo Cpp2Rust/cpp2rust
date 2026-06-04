@@ -18,9 +18,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fp: *mut ::libc::FILE = (unsafe {
-        let _path: *const u8 = (b"/tmp/irrelevant-file\0".as_ptr().cast_mut()).cast_const();
-        let _mode: *const u8 = (b"r\0".as_ptr().cast_mut()).cast_const();
-        fopen_0(_path, _mode)
+        fopen_0(
+            (b"/tmp/irrelevant-file\0".as_ptr().cast_mut()).cast_const(),
+            (b"r\0".as_ptr().cast_mut()).cast_const(),
+        )
     });
     assert!(((((fp).is_null()) as i32) != 0));
     return 0;

@@ -28,9 +28,8 @@ unsafe fn main_0() -> i32 {
     let mut z: f32 = 3.0E+0;
     assert!(
         ((((unsafe {
-            let _count: i32 = 3;
             test_promotions_0(
-                _count,
+                3,
                 &[(x as i32).into(), (y as i32).into(), (z as f64).into()],
             )
         }) == (78)) as i32)

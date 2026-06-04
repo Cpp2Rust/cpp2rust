@@ -36,12 +36,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _n: i32 = 2;
-            scan_0(_n)
-        }) == 2010) as i32)
-            != 0)
-    );
+    assert!((((({ scan_0(2,) }) == 2010) as i32) != 0));
     return 0;
 }

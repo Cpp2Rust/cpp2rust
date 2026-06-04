@@ -146,8 +146,7 @@ fn main_0() -> i32 {
     (*ptr1.borrow_mut()) = __rhs;
     return ((((((((*(*({
         let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-        let _value: i32 = 0;
-        find_0(_node, _value)
+        find_0(_node, 0)
     })
     .upgrade()
     .deref())
@@ -156,8 +155,7 @@ fn main_0() -> i32 {
         == 0)
         && ((*(*({
             let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-            let _value: i32 = 1;
-            find_0(_node, _value)
+            find_0(_node, 1)
         })
         .upgrade()
         .deref())
@@ -166,8 +164,7 @@ fn main_0() -> i32 {
             == 1))
         && ((*(*({
             let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-            let _value: i32 = 2;
-            find_0(_node, _value)
+            find_0(_node, 2)
         })
         .upgrade()
         .deref())
@@ -176,8 +173,7 @@ fn main_0() -> i32 {
             == 2))
         && ((*(*({
             let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-            let _value: i32 = 3;
-            find_0(_node, _value)
+            find_0(_node, 3)
         })
         .upgrade()
         .deref())
@@ -186,8 +182,7 @@ fn main_0() -> i32 {
             == 3))
         && ((*(*({
             let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-            let _value: i32 = 4;
-            find_0(_node, _value)
+            find_0(_node, 4)
         })
         .upgrade()
         .deref())
@@ -196,8 +191,7 @@ fn main_0() -> i32 {
             == 4))
         && (({
             let _node: Ptr<node_t> = (*ptr1.borrow()).clone();
-            let _value: i32 = 5;
-            find_0(_node, _value)
+            find_0(_node, 5)
         })
         .is_null())) as i32);
 }
