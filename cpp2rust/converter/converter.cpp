@@ -3551,8 +3551,10 @@ void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
     return;
   }
 
-  PushParen paren(*this);
-  Convert(expr);
+  {
+    PushParen paren(*this);
+    Convert(expr);
+  }
   if (IsUniquePtr(expr->getType()) ||
       expr->getType()->isFunctionPointerType()) {
     StrCat(".is_none()");
