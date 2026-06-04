@@ -2550,13 +2550,13 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
     if (IsGlobalVar(expr)) {
-      StrCat("&raw", decl->getType().isConstQualified() ? keyword::kConst
-                                                        : keyword_mut_,
+      StrCat("&raw",
+             decl->getType().isConstQualified() ? keyword::kConst
+                                                : keyword_mut_,
              str);
     } else {
-      StrCat(token::kRef, decl->getType().isConstQualified() ? ""
-                                                             : keyword_mut_,
-             str);
+      StrCat(token::kRef,
+             decl->getType().isConstQualified() ? "" : keyword_mut_, str);
     }
     return false;
   }
