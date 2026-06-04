@@ -49,7 +49,6 @@ unsafe fn main_0() -> i32 {
         let _fn: Option<unsafe fn(i32) -> i32> = None;
         set_op_3(_fn)
     });
-<<<<<<< HEAD
     assert!(unsafe { (&raw const g_op_2).as_ref().unwrap().is_none() });
     assert!(
         ((unsafe {
@@ -57,9 +56,5 @@ unsafe fn main_0() -> i32 {
             call_op_4(_x)
         }) == (5))
     );
-=======
-    assert!((g_op_2).is_none());
-    assert!(((unsafe { call_op_4(5,) }) == (5)));
->>>>>>> origin/master
     return 0;
 }
