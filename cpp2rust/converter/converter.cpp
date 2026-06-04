@@ -1987,9 +1987,10 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       break;
     }
     if (IsGlobalVar(sub_expr)) {
-      StrCat("(&raw", dest_pointee_const ? keyword::kConst : keyword_mut_);
+      PushParen paren(*this);
+      StrCat("&raw", dest_pointee_const ? keyword::kConst : keyword_mut_);
       Convert(sub_expr);
-      StrCat(").cast::<",
+      StrCat(".cast::<",
              GetUnsafeTypeAsString(expr->getType()->getPointeeType()), ">()");
     } else {
       Convert(sub_expr);
