@@ -58,7 +58,7 @@ pub struct FnIr {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub return_type: Option<TypeInfo>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub is_variadic: Option<bool>,
+    pub is_extern: Option<bool>,
 }
 
 impl FnIr {
@@ -107,7 +107,7 @@ impl FnIr {
             &format!("Rule {name} generics"),
         );
         assert!(
-            self.is_variadic == Some(true) || !self.body.is_empty(),
+            self.is_extern == Some(true) || !self.body.is_empty(),
             "Rule {name}: body must not be empty"
         );
     }

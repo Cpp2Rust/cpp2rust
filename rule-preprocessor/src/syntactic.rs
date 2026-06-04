@@ -416,12 +416,11 @@ impl<'a> FnIrBuilder<'a> {
             .unwrap_or(Access::Read)
     }
 
-    fn is_variadic(&self) -> bool {
+    fn is_extern(&self) -> bool {
         self.fn_item
-            .param_list()
-            .into_iter()
-            .flat_map(|pl| pl.params())
-            .any(|p| p.dotdotdot_token().is_some())
+            .syntax()
+            .ancestors()
+            .any(|a| a.kind() == SyntaxKind::EXTERN_BLOCK)
     }
 
     fn returns_mut_ref(&self) -> bool {
@@ -525,7 +524,7 @@ impl<'a> FnIrBuilder<'a> {
             },
             multi_statement,
             body,
-            is_variadic: self.is_variadic().then_some(true),
+            is_extern: self.is_extern().then_some(true),
         };
         ir.validate(&format!("{}:{}", path.display(), fn_name));
         ir
