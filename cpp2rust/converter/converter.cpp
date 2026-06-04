@@ -1986,15 +1986,22 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       StrCat(keyword::kAs, dest_pointee_const ? "*const u8" : "*mut u8");
       break;
     }
-    Convert(sub_expr);
-    if (clang::isa<clang::StringLiteral>(sub_expr) ||
-        clang::isa<clang::PredefinedExpr>(sub_expr)) {
-      StrCat(".as_ptr()");
-      if (!dest_pointee_const) {
-        StrCat(".cast_mut()");
-      }
+    if (IsGlobalVar(sub_expr)) {
+      StrCat("(&raw", dest_pointee_const ? keyword::kConst : keyword_mut_);
+      Convert(sub_expr);
+      StrCat(").cast::<", GetUnsafeTypeAsString(expr->getType()->getPointeeType()),
+             ">()");
     } else {
-      StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
+      Convert(sub_expr);
+      if (clang::isa<clang::StringLiteral>(sub_expr) ||
+          clang::isa<clang::PredefinedExpr>(sub_expr)) {
+        StrCat(".as_ptr()");
+        if (!dest_pointee_const) {
+          StrCat(".cast_mut()");
+        }
+      } else {
+        StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
+      }
     }
     break;
   }
