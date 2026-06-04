@@ -77,17 +77,17 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal("rb").to_rust_string() {
+            match Ptr::from_string_literal(b"rb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
                     .read(true)
-                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 v if v == "wb" => std::fs::OpenOptions::new()
                     .write(true)
                     .create(true)
                     .truncate(true)
-                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 _ => panic!("unsupported mode"),
@@ -131,17 +131,17 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal("rb").to_rust_string() {
+            match Ptr::from_string_literal(b"rb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
                     .read(true)
-                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 v if v == "wb" => std::fs::OpenOptions::new()
                     .write(true)
                     .create(true)
                     .truncate(true)
-                    .open(Ptr::from_string_literal("/dev/zero").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 _ => panic!("unsupported mode"),
@@ -241,17 +241,17 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal("wb").to_rust_string() {
+            match Ptr::from_string_literal(b"wb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
                     .read(true)
-                    .open(Ptr::from_string_literal("/dev/null").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 v if v == "wb" => std::fs::OpenOptions::new()
                     .write(true)
                     .create(true)
                     .truncate(true)
-                    .open(Ptr::from_string_literal("/dev/null").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 _ => panic!("unsupported mode"),
@@ -285,17 +285,17 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal("wb").to_rust_string() {
+            match Ptr::from_string_literal(b"wb").to_rust_string() {
                 v if v == "rb" => std::fs::OpenOptions::new()
                     .read(true)
-                    .open(Ptr::from_string_literal("/dev/null").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 v if v == "wb" => std::fs::OpenOptions::new()
                     .write(true)
                     .create(true)
                     .truncate(true)
-                    .open(Ptr::from_string_literal("/dev/null").to_rust_string())
+                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
                     .ok()
                     .map_or(Ptr::null(), |f| Ptr::alloc(f)),
                 _ => panic!("unsupported mode"),
