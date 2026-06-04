@@ -1989,8 +1989,8 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     if (IsGlobalVar(sub_expr)) {
       StrCat("(&raw", dest_pointee_const ? keyword::kConst : keyword_mut_);
       Convert(sub_expr);
-      StrCat(").cast::<", GetUnsafeTypeAsString(expr->getType()->getPointeeType()),
-             ">()");
+      StrCat(").cast::<",
+             GetUnsafeTypeAsString(expr->getType()->getPointeeType()), ">()");
     } else {
       Convert(sub_expr);
       if (clang::isa<clang::StringLiteral>(sub_expr) ||
