@@ -2322,31 +2322,40 @@ bool Converter::IsReferenceType(const clang::Expr *expr) const {
 bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
   auto opcode = expr->getOpcode();
   auto *sub_expr = expr->getSubExpr();
+  auto emit_target = [&]() {
+    if (IsGlobalVar(sub_expr)) {
+      StrCat("(*(&raw", keyword_mut_);
+      Convert(sub_expr);
+      StrCat("))");
+    } else {
+      Convert(sub_expr);
+    }
+  };
   switch (opcode) {
   case clang::UO_PostInc: {
     PushExprKind push(*this, ExprKind::RValue);
-    Convert(sub_expr);
+    emit_target();
     StrCat(".postfix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PostDec: {
     PushExprKind push(*this, ExprKind::RValue);
-    Convert(sub_expr);
+    emit_target();
     StrCat(".postfix_dec()");
     SetFresh();
     return true;
   }
   case clang::UO_PreInc: {
     PushExprKind push(*this, ExprKind::RValue);
-    Convert(sub_expr);
+    emit_target();
     StrCat(".prefix_inc()");
     SetFresh();
     return true;
   }
   case clang::UO_PreDec: {
     PushExprKind push(*this, ExprKind::RValue);
-    Convert(sub_expr);
+    emit_target();
     StrCat(".prefix_dec()");
     SetFresh();
     return true;
@@ -2540,8 +2549,15 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
-    StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
-           str);
+    if (IsGlobalVar(expr)) {
+      StrCat("&raw", decl->getType().isConstQualified() ? keyword::kConst
+                                                        : keyword_mut_,
+             str);
+    } else {
+      StrCat(token::kRef, decl->getType().isConstQualified() ? ""
+                                                             : keyword_mut_,
+             str);
+    }
     return false;
   }
 

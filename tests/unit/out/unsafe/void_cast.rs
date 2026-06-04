@@ -22,7 +22,7 @@ pub unsafe fn unused_ptr_param_2(mut p: *const NonTrivial) {
 }
 pub static mut side_effect_counter_3: i32 = unsafe { 0 };
 pub unsafe fn bump_and_return_4() -> i32 {
-    side_effect_counter_3.prefix_inc();
+    (*(&raw mut side_effect_counter_3)).prefix_inc();
     return side_effect_counter_3;
 }
 #[repr(C)]
