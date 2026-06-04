@@ -112,9 +112,8 @@ unsafe fn main_0() -> i32 {
             (pfree).unwrap()(_arg0)
         });
         let mut zeros: *mut i32 = ((unsafe {
-            let _arg0: u64 = 4_u64;
             let _arg1: u64 = ::std::mem::size_of::<i32>() as u64;
-            (pcalloc).unwrap()(_arg0, _arg1)
+            (pcalloc).unwrap()(4_u64, _arg1)
         }) as *mut i32);
         let mut i: i32 = 0;
         'loop_: while ((((i) < (4)) as i32) != 0) {

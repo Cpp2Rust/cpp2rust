@@ -35,29 +35,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 0;
-            mixed_return_break_0(_x)
-        }) == (100))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            mixed_return_break_0(_x)
-        }) == (10))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            mixed_return_break_0(_x)
-        }) == (200))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            mixed_return_break_0(_x)
-        }) == (99))
-    );
+    assert!(((unsafe { mixed_return_break_0(0,) }) == (100)));
+    assert!(((unsafe { mixed_return_break_0(1,) }) == (10)));
+    assert!(((unsafe { mixed_return_break_0(2,) }) == (200)));
+    assert!(((unsafe { mixed_return_break_0(99,) }) == (99)));
     return 0;
 }

@@ -22,27 +22,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut ops: [Option<unsafe fn(i32, i32) -> i32>; 3] = [Some(add_0), Some(sub_1), Some(mul_2)];
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 2;
-            let _arg1: i32 = 3;
-            (ops[(0) as usize]).unwrap()(_arg0, _arg1)
-        }) == (5))
-    );
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 7;
-            let _arg1: i32 = 4;
-            (ops[(1) as usize]).unwrap()(_arg0, _arg1)
-        }) == (3))
-    );
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 6;
-            let _arg1: i32 = 5;
-            (ops[(2) as usize]).unwrap()(_arg0, _arg1)
-        }) == (30))
-    );
+    assert!(((unsafe { (ops[(0) as usize]).unwrap()(2, 3,) }) == (5)));
+    assert!(((unsafe { (ops[(1) as usize]).unwrap()(7, 4,) }) == (3)));
+    assert!(((unsafe { (ops[(2) as usize]).unwrap()(6, 5,) }) == (30)));
     assert!(!((ops[(0) as usize]).is_none()));
     assert!(((ops[(0) as usize]) == (Some(add_0))));
     assert!(((ops[(0) as usize]) != (Some(sub_1))));

@@ -97,10 +97,7 @@ impl MinHeap {
         self.size.prefix_dec();
         self.arr.as_mut().unwrap()[(0_u64) as usize] =
             self.arr.as_mut().unwrap()[(self.size as u64) as usize];
-        (unsafe {
-            let _idx: i32 = 0;
-            self.Heapify(_idx)
-        });
+        (unsafe { self.Heapify(0) });
         return out;
     }
     pub unsafe fn Insert(&mut self, mut node: *mut MinHeapNode) {
@@ -180,9 +177,8 @@ pub unsafe fn Huffman_2(
         let mut right: *mut MinHeapNode =
             (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
         let mut top: *mut MinHeapNode = (unsafe {
-            let _data: u8 = ('$' as u8);
             let _freq: i32 = (((*left).freq) + ((*right).freq));
-            (*minHeap.as_deref_mut().unwrap()).Alloc(_data, _freq)
+            (*minHeap.as_deref_mut().unwrap()).Alloc(('$' as u8), _freq)
         });
         (*top).left = left;
         (*top).right = right;

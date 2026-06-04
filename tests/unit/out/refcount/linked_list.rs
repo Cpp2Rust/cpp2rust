@@ -148,14 +148,12 @@ fn main_0() -> i32 {
     });
     let __rhs = ({
         let _head: Ptr<Node> = (*head.borrow()).clone();
-        let _val: i32 = 5;
-        Delete_2(_head, _val)
+        Delete_2(_head, 5)
     });
     (*head.borrow_mut()) = __rhs;
     let __rhs = ({
         let _head: Ptr<Node> = (*head.borrow()).clone();
-        let _val: i32 = 0;
-        Delete_2(_head, _val)
+        Delete_2(_head, 0)
     });
     (*head.borrow_mut()) = __rhs;
     let __rhs = ({
@@ -166,8 +164,7 @@ fn main_0() -> i32 {
     (*head.borrow_mut()) = __rhs;
     return (((((((*(*({
         let _head: Ptr<Node> = (*head.borrow()).clone();
-        let _idx: i32 = 0;
-        Find_0(_head, _idx)
+        Find_0(_head, 0)
     })
     .upgrade()
     .deref())
@@ -176,8 +173,7 @@ fn main_0() -> i32 {
         == 4)
         && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
-            let _idx: i32 = 1;
-            Find_0(_head, _idx)
+            Find_0(_head, 1)
         })
         .upgrade()
         .deref())
@@ -186,8 +182,7 @@ fn main_0() -> i32 {
             == 3))
         && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
-            let _idx: i32 = 2;
-            Find_0(_head, _idx)
+            Find_0(_head, 2)
         })
         .upgrade()
         .deref())
@@ -196,8 +191,7 @@ fn main_0() -> i32 {
             == 2))
         && ((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
-            let _idx: i32 = 3;
-            Find_0(_head, _idx)
+            Find_0(_head, 3)
         })
         .upgrade()
         .deref())
@@ -206,8 +200,7 @@ fn main_0() -> i32 {
             == 1))
         && (((*(*({
             let _head: Ptr<Node> = (*head.borrow()).clone();
-            let _idx: i32 = 4;
-            Find_0(_head, _idx)
+            Find_0(_head, 4)
         })
         .upgrade()
         .deref())
@@ -216,8 +209,7 @@ fn main_0() -> i32 {
             == -1_i32)
             && (({
                 let _head: Ptr<Node> = (*head.borrow()).clone();
-                let _idx: i32 = 5;
-                Find_0(_head, _idx)
+                Find_0(_head, 5)
             })
             .is_null()))) as i32);
 }

@@ -25,39 +25,19 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
-        ({
-            let _choose_inc: i32 = 1;
-            pick_2(_choose_inc)
-        }),
-    ));
+    let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(1) })));
     assert!(!((*f.borrow()).is_null()));
     assert!({
         let _lhs = (*f.borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(inc_0)
     });
-    assert!(
-        (({
-            let _arg0: i32 = 10;
-            (*(*f.borrow()))(_arg0)
-        }) == 11)
-    );
-    let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
-        ({
-            let _choose_inc: i32 = 0;
-            pick_2(_choose_inc)
-        }),
-    ));
+    assert!((({ (*(*f.borrow()))(10,) }) == 11));
+    let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(0) })));
     assert!({
         let _lhs = (*g.borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(dec_1)
     });
-    assert!(
-        (({
-            let _arg0: i32 = 10;
-            (*(*g.borrow()))(_arg0)
-        }) == 9)
-    );
+    assert!((({ (*(*g.borrow()))(10,) }) == 9));
     assert!({
         let _lhs = (*f.borrow()).clone();
         _lhs != (*g.borrow()).clone()

@@ -41,29 +41,14 @@ unsafe fn main_0() -> i32 {
             mixed_literal_cases_0(_x)
         }) == (1))
     );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 16;
-            mixed_literal_cases_0(_x)
-        }) == (2))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 65152;
-            mixed_literal_cases_0(_x)
-        }) == (3))
-    );
+    assert!(((unsafe { mixed_literal_cases_0(16,) }) == (2)));
+    assert!(((unsafe { mixed_literal_cases_0(65152,) }) == (3)));
     assert!(
         ((unsafe {
             let _x: i32 = -255_i32;
             mixed_literal_cases_0(_x)
         }) == (4))
     );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 7;
-            mixed_literal_cases_0(_x)
-        }) == (0))
-    );
+    assert!(((unsafe { mixed_literal_cases_0(7,) }) == (0)));
     return 0;
 }

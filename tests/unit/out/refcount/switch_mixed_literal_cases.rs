@@ -40,29 +40,14 @@ fn main_0() -> i32 {
             mixed_literal_cases_0(_x)
         }) == 1)
     );
-    assert!(
-        (({
-            let _x: i32 = 16;
-            mixed_literal_cases_0(_x)
-        }) == 2)
-    );
-    assert!(
-        (({
-            let _x: i32 = 65152;
-            mixed_literal_cases_0(_x)
-        }) == 3)
-    );
+    assert!((({ mixed_literal_cases_0(16,) }) == 2));
+    assert!((({ mixed_literal_cases_0(65152,) }) == 3));
     assert!(
         (({
             let _x: i32 = -255_i32;
             mixed_literal_cases_0(_x)
         }) == 4)
     );
-    assert!(
-        (({
-            let _x: i32 = 7;
-            mixed_literal_cases_0(_x)
-        }) == 0)
-    );
+    assert!((({ mixed_literal_cases_0(7,) }) == 0));
     return 0;
 }

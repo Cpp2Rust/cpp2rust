@@ -50,9 +50,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
-            let _x: i32 = 5;
             apply_unary_3(
-                _x,
+                5,
                 &[
                     (Some(square_0).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
                         .into(),
@@ -63,9 +62,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((unsafe {
-            let _x: i32 = 7;
             apply_unary_3(
-                _x,
+                7,
                 &[
                     (Some(negate_1).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
                         .into(),
@@ -76,11 +74,9 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((unsafe {
-            let _a: i32 = 3;
-            let _b: i32 = 4;
             apply_binary_4(
-                _a,
-                _b,
+                3,
+                4,
                 &[
                     (Some(add_2).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
                         .into(),

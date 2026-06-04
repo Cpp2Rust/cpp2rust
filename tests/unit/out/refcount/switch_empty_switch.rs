@@ -20,11 +20,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 5;
-            empty_switch_0(_x)
-        }) == 5)
-    );
+    assert!((({ empty_switch_0(5,) }) == 5));
     return 0;
 }

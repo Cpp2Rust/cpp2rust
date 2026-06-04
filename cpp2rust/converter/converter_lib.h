@@ -71,6 +71,8 @@ bool IsAsciiStringLiteral(const clang::StringLiteral *str);
 
 bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr);
 
+bool IsLiteral(const clang::Expr *expr);
+
 std::vector<clang::CXXConstructorDecl *>
 GetTemplateInstantiatedCtors(clang::CXXRecordDecl *decl);
 

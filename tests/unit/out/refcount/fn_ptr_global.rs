@@ -35,12 +35,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == 5)
-    );
+    assert!((({ call_op_4(5,) }) == 5));
     ({
         let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(double_it_0);
         set_op_3(_fn)
@@ -50,12 +45,7 @@ fn main_0() -> i32 {
         let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(double_it_0)
     });
-    assert!(
-        (({
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == 10)
-    );
+    assert!((({ call_op_4(5,) }) == 10));
     ({
         let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(triple_it_1);
         set_op_3(_fn)
@@ -64,22 +54,12 @@ fn main_0() -> i32 {
         let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
-    assert!(
-        (({
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == 15)
-    );
+    assert!((({ call_op_4(5,) }) == 15));
     ({
         let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
         set_op_3(_fn)
     });
     assert!((*g_op_2.with(Value::clone).borrow()).is_null());
-    assert!(
-        (({
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == 5)
-    );
+    assert!((({ call_op_4(5,) }) == 5));
     return 0;
 }

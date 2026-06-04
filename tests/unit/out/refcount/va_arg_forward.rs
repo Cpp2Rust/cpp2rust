@@ -34,26 +34,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _count: i32 = 3;
-            outer_1(_count, &[(10).into(), (20).into(), (30).into()])
-        }) == 60) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _count: i32 = 1;
-            outer_1(_count, &[(42).into()])
-        }) == 42) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _count: i32 = 0;
-            outer_1(_count, &[])
-        }) == 0) as i32)
-            != 0)
-    );
+    assert!((((({ outer_1(3, &[(10).into(), (20).into(), (30).into(),]) }) == 60) as i32) != 0));
+    assert!((((({ outer_1(1, &[(42).into(),]) }) == 42) as i32) != 0));
+    assert!((((({ outer_1(0, &[]) }) == 0) as i32) != 0));
     return 0;
 }

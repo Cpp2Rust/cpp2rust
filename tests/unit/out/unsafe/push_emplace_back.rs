@@ -93,8 +93,7 @@ unsafe fn main_0() -> i32 {
     let mut jpg: JPEGData = <JPEGData>::default();
     (unsafe {
         let _jpg: *mut JPEGData = (&mut jpg as *mut JPEGData);
-        let _cond: bool = true;
-        push_local_from_field_1(_jpg, _cond)
+        push_local_from_field_1(_jpg, true)
     });
     assert!(((jpg.com_data.len() as u64) == (1_u64)));
     assert!(((jpg.com_data[(0_u64) as usize].len() as u64) == (3_u64)));
@@ -119,8 +118,7 @@ unsafe fn main_0() -> i32 {
     assert!(((chunks[(0_u64) as usize].data) == (42)));
     (unsafe {
         let _jpg: *mut JPEGData = (&mut jpg as *mut JPEGData);
-        let _cond: bool = false;
-        emplace_local_from_field_4(_jpg, _cond)
+        emplace_local_from_field_4(_jpg, false)
     });
     assert!(((jpg.app_data.len() as u64) == (1_u64)));
     assert!(((jpg.app_data[(0_u64) as usize].len() as u64) == (3_u64)));

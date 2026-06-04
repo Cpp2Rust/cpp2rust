@@ -37,17 +37,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _n: i32 = 0;
-            for_in_switch_break_0(_n)
-        }) == (103))
-    );
-    assert!(
-        ((unsafe {
-            let _n: i32 = 99;
-            for_in_switch_break_0(_n)
-        }) == (-1_i32))
-    );
+    assert!(((unsafe { for_in_switch_break_0(0,) }) == (103)));
+    assert!(((unsafe { for_in_switch_break_0(99,) }) == (-1_i32)));
     return 0;
 }

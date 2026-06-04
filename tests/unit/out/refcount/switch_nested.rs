@@ -50,33 +50,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _a: i32 = 1;
-            let _b: i32 = 10;
-            nested_0(_a, _b)
-        }) == 12)
-    );
-    assert!(
-        (({
-            let _a: i32 = 1;
-            let _b: i32 = 99;
-            nested_0(_a, _b)
-        }) == 14)
-    );
-    assert!(
-        (({
-            let _a: i32 = 2;
-            let _b: i32 = 0;
-            nested_0(_a, _b)
-        }) == 2)
-    );
-    assert!(
-        (({
-            let _a: i32 = 3;
-            let _b: i32 = 3;
-            nested_0(_a, _b)
-        }) == -1_i32)
-    );
+    assert!((({ nested_0(1, 10,) }) == 12));
+    assert!((({ nested_0(1, 99,) }) == 14));
+    assert!((({ nested_0(2, 0,) }) == 2));
+    assert!((({ nested_0(3, 3,) }) == -1_i32));
     return 0;
 }

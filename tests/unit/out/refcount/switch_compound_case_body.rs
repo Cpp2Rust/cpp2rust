@@ -35,23 +35,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 1;
-            compound_case_body_0(_x)
-        }) == 30)
-    );
-    assert!(
-        (({
-            let _x: i32 = 2;
-            compound_case_body_0(_x)
-        }) == 99)
-    );
-    assert!(
-        (({
-            let _x: i32 = 9;
-            compound_case_body_0(_x)
-        }) == -1_i32)
-    );
+    assert!((({ compound_case_body_0(1,) }) == 30));
+    assert!((({ compound_case_body_0(2,) }) == 99));
+    assert!((({ compound_case_body_0(9,) }) == -1_i32));
     return 0;
 }

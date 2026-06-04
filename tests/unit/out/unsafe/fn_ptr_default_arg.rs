@@ -27,23 +27,20 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
-            let _x: i32 = 5;
             let _fn: Option<unsafe fn(i32) -> i32> = Default::default();
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == (5))
     );
     assert!(
         ((unsafe {
-            let _x: i32 = 5;
             let _fn: Option<unsafe fn(i32) -> i32> = None;
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == (5))
     );
     assert!(
         ((unsafe {
-            let _x: i32 = 5;
             let _fn: Option<unsafe fn(i32) -> i32> = Some(identity_0);
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == (5))
     );
     let mut negate: Option<unsafe fn(i32) -> i32> = Some(|x: i32| {
@@ -51,9 +48,8 @@ unsafe fn main_0() -> i32 {
     });
     assert!(
         ((unsafe {
-            let _x: i32 = 5;
             let _fn: Option<unsafe fn(i32) -> i32> = negate;
-            apply_1(_x, Some(_fn))
+            apply_1(5, Some(_fn))
         }) == (-5_i32))
     );
     return 0;

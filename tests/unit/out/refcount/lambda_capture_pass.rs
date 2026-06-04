@@ -38,16 +38,14 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _fn: _ = (*add_base.borrow()).clone();
-            let _x: i32 = 5;
-            apply_0(_fn, _x)
+            apply_0(_fn, 5)
         }) == 15)
     );
     (*base.borrow_mut()) = 100;
     assert!(
         (({
             let _fn: _ = (*add_base.borrow()).clone();
-            let _x: i32 = 5;
-            apply_0(_fn, _x)
+            apply_0(_fn, 5)
         }) == 105)
     );
     let factor: Value<i32> = Rc::new(RefCell::new(3));
@@ -60,8 +58,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _fn: _ = (*scale.borrow()).clone();
-            let _x: i32 = 4;
-            apply_1(_fn, _x)
+            apply_1(_fn, 4)
         }) == 12)
     );
     return 0;

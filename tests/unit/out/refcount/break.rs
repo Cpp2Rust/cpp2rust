@@ -35,8 +35,5 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({
-        let _n: i32 = 200;
-        for_test_0(_n)
-    });
+    return ({ for_test_0(200) });
 }

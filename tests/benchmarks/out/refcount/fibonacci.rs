@@ -27,8 +27,5 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return (({
-        let _n: u64 = 46_u64;
-        fib_0(_n)
-    }) as i32);
+    return (({ fib_0(46_u64) }) as i32);
 }

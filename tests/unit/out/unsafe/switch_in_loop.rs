@@ -38,11 +38,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _n: i32 = 6;
-            switch_in_loop_0(_n)
-        }) == (72))
-    );
+    assert!(((unsafe { switch_in_loop_0(6,) }) == (72)));
     return 0;
 }

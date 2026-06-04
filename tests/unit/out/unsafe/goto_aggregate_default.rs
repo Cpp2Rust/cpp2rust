@@ -49,12 +49,6 @@ unsafe fn main_0() -> i32 {
         }) == (0)) as i32)
             != 0)
     );
-    assert!(
-        ((((unsafe {
-            let _n: i32 = 1;
-            agg_0(_n)
-        }) == (1)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { agg_0(1,) }) == (1)) as i32) != 0));
     return 0;
 }

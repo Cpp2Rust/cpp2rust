@@ -25,10 +25,7 @@ unsafe fn main_0() -> i32 {
         let _str: *mut u8 = mutable_string_arr.as_mut_ptr();
         foo_mut_0(_str)
     });
-    (unsafe {
-        let _str: *const u8 = b"world\0".as_ptr();
-        foo_const_1(_str)
-    });
+    (unsafe { foo_const_1(b"world\0".as_ptr()) });
     (unsafe {
         let _str: *const u8 = immutable_string;
         foo_const_1(_str)
@@ -37,10 +34,7 @@ unsafe fn main_0() -> i32 {
         let _str: *const u8 = immutable_string_arr.as_ptr();
         foo_const_1(_str)
     });
-    (unsafe {
-        let _str: *const u8 = b"\0".as_ptr();
-        foo_const_1(_str)
-    });
+    (unsafe { foo_const_1(b"\0".as_ptr()) });
     (unsafe {
         let _str: *const u8 = immutable_empty;
         foo_const_1(_str)

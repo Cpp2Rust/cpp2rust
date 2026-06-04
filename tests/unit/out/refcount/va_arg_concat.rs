@@ -27,24 +27,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        (((({
-            let _first: i32 = 1;
-            sum_ints_0(_first, &[(2).into(), (3).into(), (4).into(), (0).into()])
-        }) == 10) as i32)
+        (((({ sum_ints_0(1, &[(2).into(), (3).into(), (4).into(), (0).into(),]) }) == 10) as i32)
             != 0)
     );
+    assert!((((({ sum_ints_0(100, &[(0).into(),]) }) == 100) as i32) != 0));
     assert!(
         (((({
-            let _first: i32 = 100;
-            sum_ints_0(_first, &[(0).into()])
-        }) == 100) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _first: i32 = 5;
             sum_ints_0(
-                _first,
+                5,
                 &[(5).into(), (5).into(), (5).into(), (5).into(), (0).into()],
             )
         }) == 25) as i32)

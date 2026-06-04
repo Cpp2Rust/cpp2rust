@@ -24,29 +24,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut f: Option<unsafe fn(i32) -> i32> = (unsafe {
-        let _choose_inc: i32 = 1;
-        pick_2(_choose_inc)
-    });
+    let mut f: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(1) });
     assert!(!((f).is_none()));
     assert!(((f) == (Some(inc_0))));
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 10;
-            (f).unwrap()(_arg0)
-        }) == (11))
-    );
-    let mut g: Option<unsafe fn(i32) -> i32> = (unsafe {
-        let _choose_inc: i32 = 0;
-        pick_2(_choose_inc)
-    });
+    assert!(((unsafe { (f).unwrap()(10,) }) == (11)));
+    let mut g: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(0) });
     assert!(((g) == (Some(dec_1))));
-    assert!(
-        ((unsafe {
-            let _arg0: i32 = 10;
-            (g).unwrap()(_arg0)
-        }) == (9))
-    );
+    assert!(((unsafe { (g).unwrap()(10,) }) == (9)));
     assert!(((f) != (g)));
     return 0;
 }

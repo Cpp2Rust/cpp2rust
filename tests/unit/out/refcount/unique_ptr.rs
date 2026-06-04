@@ -77,10 +77,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             x: Rc::new(RefCell::new(((*raw_ptr2.borrow()).read()))),
             y: Rc::new(RefCell::new(5)),
         })))));
-    ({
-        let _k: i32 = 10;
-        (*(*pair.borrow()).as_ref().unwrap().borrow()).inc(_k)
-    });
+    ({ (*(*pair.borrow()).as_ref().unwrap().borrow()).inc(10) });
     let __rhs = {
         let _lhs = {
             let _lhs = (*(*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
@@ -176,10 +173,7 @@ pub fn RndStuff_2() {
             .borrow())
                 == 2)
         );
-        ({
-            let _k: i32 = 10;
-            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as u64) as usize].inc(_k)
-        });
+        ({ (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as u64) as usize].inc(10) });
         assert!(
             ((*(*(*p3_0.borrow())
                 .offset((*i.borrow()) as isize)

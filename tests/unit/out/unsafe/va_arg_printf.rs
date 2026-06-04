@@ -29,9 +29,8 @@ unsafe fn main_0() -> i32 {
     let mut dummy: *const u8 = (b"dummy\0".as_ptr().cast_mut()).cast_const();
     assert!(
         ((((unsafe {
-            let _fmt: *const u8 = (b"hello %d %d\0".as_ptr().cast_mut()).cast_const();
             logf_1(
-                _fmt,
+                (b"hello %d %d\0".as_ptr().cast_mut()).cast_const(),
                 &[
                     (10).into(),
                     (libc::strlen(dummy as *const i8) as u64).into(),
@@ -42,8 +41,10 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((unsafe {
-            let _fmt: *const u8 = (b"x %d %d\0".as_ptr().cast_mut()).cast_const();
-            logf_1(_fmt, &[(1).into(), (2).into()])
+            logf_1(
+                (b"x %d %d\0".as_ptr().cast_mut()).cast_const(),
+                &[(1).into(), (2).into()],
+            )
         }) == (3)) as i32)
             != 0)
     );

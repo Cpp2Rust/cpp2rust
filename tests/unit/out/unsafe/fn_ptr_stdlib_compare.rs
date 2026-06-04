@@ -52,10 +52,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _arg0: *mut ::libc::c_void = std::ptr::null_mut();
-            let _arg1: u64 = 0_u64;
-            let _arg2: u64 = 0_u64;
             let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (f3).unwrap()(_arg0, _arg1, _arg2, _arg3)
+            (f3).unwrap()(_arg0, 0_u64, 0_u64, _arg3)
         }) == (22_u64))
     );
     let mut __do_while = true;
@@ -111,10 +109,8 @@ unsafe fn main_0() -> i32 {
         };
         let mut n: u64 = (unsafe {
             let _arg0: *mut ::libc::c_void = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void);
-            let _arg1: u64 = 1_u64;
-            let _arg2: u64 = 10_u64;
             let _arg3: *mut ::libc::FILE = stream;
-            (fn1).unwrap()(_arg0, _arg1, _arg2, _arg3)
+            (fn1).unwrap()(_arg0, 1_u64, 10_u64, _arg3)
         });
         assert!(((n) == (10_u64)));
         let mut i: i32 = 0;
@@ -153,10 +149,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _arg0: *const ::libc::c_void = std::ptr::null();
-            let _arg1: u64 = 0_u64;
-            let _arg2: u64 = 0_u64;
             let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (g3).unwrap()(_arg0, _arg1, _arg2, _arg3)
+            (g3).unwrap()(_arg0, 0_u64, 0_u64, _arg3)
         }) == (33_u64))
     );
     let mut __do_while = true;
@@ -203,10 +197,8 @@ unsafe fn main_0() -> i32 {
         let mut n: u64 = (unsafe {
             let _arg0: *const ::libc::c_void =
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void);
-            let _arg1: u64 = 1_u64;
-            let _arg2: u64 = 10_u64;
             let _arg3: *mut ::libc::FILE = stream;
-            (gn1).unwrap()(_arg0, _arg1, _arg2, _arg3)
+            (gn1).unwrap()(_arg0, 1_u64, 10_u64, _arg3)
         });
         assert!(((n) == (10_u64)));
         libc::fclose(stream);

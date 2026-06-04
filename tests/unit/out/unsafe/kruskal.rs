@@ -156,9 +156,8 @@ pub struct Graph {
 pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     (unsafe {
         let _arr: *mut Option<Box<[Edge]>> = &mut (*graph).edges as *mut Option<Box<[Edge]>>;
-        let _start: i32 = 0;
         let _end: i32 = (((*graph).E) - (1));
-        quicksort_1(_arr, _start, _end)
+        quicksort_1(_arr, 0, _end)
     });
     let mut set: DisjointSet = DisjointSet {
         rank: Some(

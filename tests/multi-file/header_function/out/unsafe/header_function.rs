@@ -12,13 +12,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((((unsafe {
-            let _x: i32 = 42;
-            helper_0(_x)
-        }) == (43)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { helper_0(42,) }) == (43)) as i32) != 0));
     return 0;
 }
 pub unsafe fn unrelated1_1() -> i32 {

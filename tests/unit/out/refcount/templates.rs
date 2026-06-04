@@ -60,26 +60,18 @@ fn main_0() -> i32 {
         }))
         + ((({
             let _p: Ptr<i32> = (x.as_pointer());
-            let _flag: bool = true;
-            bar_2(_p, _flag)
+            bar_2(_p, true)
         })
         .read()) as f64))
         + (({
             let _p: Ptr<f64> = (y.as_pointer());
-            let _flag: bool = true;
-            bar_3(_p, _flag)
+            bar_3(_p, true)
         })
         .read()))
+        + (({ func_4(1, 2, 3) }) as f64))
         + (({
-            let _x1: i32 = 1;
-            let _x2: i32 = 2;
-            let _x3: i32 = 3;
-            func_4(_x1, _x2, _x3)
-        }) as f64))
-        + (({
-            let _x1: f64 = 2.0E+0;
             let _x2: i32 = (*x.borrow());
             let _x3: f64 = (*y.borrow());
-            func_5(_x1, _x2, _x3)
+            func_5(2.0E+0, _x2, _x3)
         }) as f64)) as i32);
 }

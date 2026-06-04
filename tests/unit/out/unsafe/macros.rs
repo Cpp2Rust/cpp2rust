@@ -22,10 +22,8 @@ unsafe fn main_0() -> i32 {
         b"main\0".as_ptr(),
     );
     (unsafe {
-        let _file: *const u8 = b"macros.cpp\0".as_ptr();
-        let _line: i32 = 9;
         let _func: *const u8 = b"main\0".as_ptr();
-        log_0(_file, _line, _func)
+        log_0(b"macros.cpp\0".as_ptr(), 9, _func)
     });
     return 0;
 }

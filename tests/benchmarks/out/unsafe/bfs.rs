@@ -159,8 +159,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut pred: *mut u32 = (unsafe {
         let _graph: *const Graph = &graph as *const Graph;
-        let _start_vertex: u32 = 0_u32;
-        BFS_0(_graph, _start_vertex)
+        BFS_0(_graph, 0_u32)
     });
     let mut i: u32 = 0_u32;
     'loop_: while ((i as u64) < (V)) {

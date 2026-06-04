@@ -54,8 +54,7 @@ pub fn matmul_1(
         ({
             let _n: i32 = (*n1.borrow());
             let _p: i32 = (*p2.borrow());
-            let _e: i32 = 0;
-            matalloc_0(_n, _p, _e)
+            matalloc_0(_n, _p, 0)
         }),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
@@ -96,16 +95,14 @@ fn main_0() -> i32 {
         ({
             let _n: i32 = (*n.borrow());
             let _p: i32 = (*p.borrow());
-            let _e: i32 = 1;
-            matalloc_0(_n, _p, _e)
+            matalloc_0(_n, _p, 1)
         }),
     ));
     let m2: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(
         ({
             let _n: i32 = (*p.borrow());
             let _p: i32 = (*n.borrow());
-            let _e: i32 = 2;
-            matalloc_0(_n, _p, _e)
+            matalloc_0(_n, _p, 2)
         }),
     ));
     let m3: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(

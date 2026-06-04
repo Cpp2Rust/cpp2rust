@@ -1635,7 +1635,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                : proto->getParamType(i),
         .expr = arg,
         .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
-        .kind = Kind::Hoisted,
+        .kind = IsLiteral(arg) ? Kind::Inline : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
     if (is_materialize && ca.param_type->isLValueReferenceType()) {

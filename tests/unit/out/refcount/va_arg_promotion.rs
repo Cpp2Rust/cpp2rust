@@ -27,9 +27,8 @@ fn main_0() -> i32 {
     let z: Value<f32> = Rc::new(RefCell::new(3.0E+0));
     assert!(
         (((({
-            let _count: i32 = 3;
             test_promotions_0(
-                _count,
+                3,
                 &[
                     ((*x.borrow()) as i32).into(),
                     ((*y.borrow()) as i32).into(),

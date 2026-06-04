@@ -157,10 +157,7 @@ unsafe fn main_0() -> i32 {
     c = Color::from(2);
     assert!(((((c as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
     assert!(((((c as u32) == (2_u32)) as i32) != 0));
-    c = (unsafe {
-        let _n: i32 = 1;
-        make_color_6(_n)
-    });
+    c = (unsafe { make_color_6(1) });
     assert!(((((c as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
     let mut cmp: Color = Color::from(((c as u32).wrapping_add(1_u32)) as i32);
     assert!(((((cmp as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
@@ -176,10 +173,7 @@ unsafe fn main_0() -> i32 {
         classify_option_5(_option)
     });
     assert!(((((rc) == (2)) as i32) != 0));
-    rc = (unsafe {
-        let _option: i32 = 20;
-        classify_option_5(_option)
-    });
+    rc = (unsafe { classify_option_5(20) });
     assert!(((((rc) == (2)) as i32) != 0));
     rc = (unsafe {
         let _option: i32 = (Option::OPT_C as i32);

@@ -31,7 +31,6 @@ fn main_0() -> i32 {
     ])));
     return ({
         let _s: Ptr<u8> = ((s.as_pointer() as Ptr<u8>).offset(0 as isize));
-        let _n: i32 = 0;
-        strlen_0(_s, _n)
+        strlen_0(_s, 0)
     });
 }

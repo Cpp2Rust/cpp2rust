@@ -29,17 +29,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 7;
-            no_default_0(_x)
-        }) == 1)
-    );
-    assert!(
-        (({
-            let _x: i32 = 42;
-            no_default_0(_x)
-        }) == -1_i32)
-    );
+    assert!((({ no_default_0(7,) }) == 1));
+    assert!((({ no_default_0(42,) }) == -1_i32));
     return 0;
 }

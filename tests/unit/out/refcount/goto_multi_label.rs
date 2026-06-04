@@ -34,20 +34,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _n: i32 = 5;
-            classify_0(_n)
-        }) == 5) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _n: i32 = 0;
-            classify_0(_n)
-        }) == 0) as i32)
-            != 0)
-    );
+    assert!((((({ classify_0(5,) }) == 5) as i32) != 0));
+    assert!((((({ classify_0(0,) }) == 0) as i32) != 0));
     assert!(
         (((({
             let _n: i32 = -2_i32;

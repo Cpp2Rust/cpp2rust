@@ -31,45 +31,25 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == (5))
-    );
+    assert!(((unsafe { call_op_4(5,) }) == (5)));
     (unsafe {
         let _fn: Option<unsafe fn(i32) -> i32> = Some(double_it_0);
         set_op_3(_fn)
     });
     assert!(!((g_op_2).is_none()));
     assert!(((g_op_2) == (Some(double_it_0))));
-    assert!(
-        ((unsafe {
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == (10))
-    );
+    assert!(((unsafe { call_op_4(5,) }) == (10)));
     (unsafe {
         let _fn: Option<unsafe fn(i32) -> i32> = Some(triple_it_1);
         set_op_3(_fn)
     });
     assert!(((g_op_2) == (Some(triple_it_1))));
-    assert!(
-        ((unsafe {
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == (15))
-    );
+    assert!(((unsafe { call_op_4(5,) }) == (15)));
     (unsafe {
         let _fn: Option<unsafe fn(i32) -> i32> = None;
         set_op_3(_fn)
     });
     assert!((g_op_2).is_none());
-    assert!(
-        ((unsafe {
-            let _x: i32 = 5;
-            call_op_4(_x)
-        }) == (5))
-    );
+    assert!(((unsafe { call_op_4(5,) }) == (5)));
     return 0;
 }

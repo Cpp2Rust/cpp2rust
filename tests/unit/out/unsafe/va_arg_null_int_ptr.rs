@@ -30,9 +30,8 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 42;
     assert!(
         ((((unsafe {
-            let _count: i32 = 2;
             first_nonnull_0(
-                _count,
+                2,
                 &[
                     (0 as *mut ::libc::c_void).into(),
                     (&mut x as *mut i32).into(),
@@ -43,9 +42,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((unsafe {
-            let _count: i32 = 3;
             first_nonnull_0(
-                _count,
+                3,
                 &[
                     (0 as *mut ::libc::c_void).into(),
                     (0 as *mut ::libc::c_void).into(),
@@ -56,10 +54,8 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((unsafe {
-            let _count: i32 = 1;
-            first_nonnull_0(_count, &[(0 as *mut ::libc::c_void).into()])
-        }) == (-1_i32)) as i32)
+        ((((unsafe { first_nonnull_0(1, &[(0 as *mut ::libc::c_void).into(),]) }) == (-1_i32))
+            as i32)
             != 0)
     );
     return 0;

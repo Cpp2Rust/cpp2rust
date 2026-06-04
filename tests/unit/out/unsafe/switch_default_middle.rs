@@ -33,23 +33,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = 1;
-            default_middle_0(_x)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 2;
-            default_middle_0(_x)
-        }) == (2))
-    );
-    assert!(
-        ((unsafe {
-            let _x: i32 = 99;
-            default_middle_0(_x)
-        }) == (99))
-    );
+    assert!(((unsafe { default_middle_0(1,) }) == (1)));
+    assert!(((unsafe { default_middle_0(2,) }) == (2)));
+    assert!(((unsafe { default_middle_0(99,) }) == (99)));
     return 0;
 }

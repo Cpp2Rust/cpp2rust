@@ -47,8 +47,7 @@ fn main_0() -> i32 {
     ({
         let _arr: Ptr<Option<Value<Box<[i32]>>>> = arr.as_pointer();
         let _N: i32 = (*N.borrow());
-        let _element: i32 = 1;
-        All_0(_arr, _N, _element)
+        All_0(_arr, _N, 1)
     });
     return ({
         let _arr: Option<Value<Box<[i32]>>> = (*arr.borrow_mut()).take();

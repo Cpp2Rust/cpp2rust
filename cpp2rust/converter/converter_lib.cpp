@@ -265,6 +265,14 @@ bool IsAsciiStringLiteral(const clang::StringLiteral *str) {
   return true;
 }
 
+bool IsLiteral(const clang::Expr *expr) {
+  expr = expr->IgnoreParenImpCasts();
+  return clang::isa<clang::IntegerLiteral, clang::FloatingLiteral,
+                    clang::StringLiteral, clang::CharacterLiteral,
+                    clang::CXXBoolLiteralExpr, clang::FixedPointLiteral,
+                    clang::ImaginaryLiteral>(expr);
+}
+
 bool IsInitExprOfStringLiteral(const clang::InitListExpr *expr) {
   auto type = expr->getType();
   return expr->getNumInits() == 1 && type->isArrayType() &&

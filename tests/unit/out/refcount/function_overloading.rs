@@ -82,10 +82,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let out: Value<i32> = Rc::new(RefCell::new(0));
-    (*out.borrow_mut()) += ({
-        let _x: i32 = 0;
-        foo_0(_x)
-    });
+    (*out.borrow_mut()) += ({ foo_0(0) });
     (*out.borrow_mut()) += ({
         let _x: Ptr<i32> = (x.as_pointer());
         foo_1(_x)
@@ -106,11 +103,7 @@ fn main_0() -> i32 {
         foo_2(_x, _y)
     });
     let bar: Value<i32> = Rc::new(RefCell::new(5));
-    (*out.borrow_mut()) += (((*bar.borrow())
-        + ({
-            let _x: i32 = 0;
-            foo_0(_x)
-        }))
+    (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) }))
         + ({
             let _x: Ptr<i32> = (x.as_pointer());
             foo_1(_x)
@@ -118,14 +111,8 @@ fn main_0() -> i32 {
     let foo1: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     let foo2: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     ({ (*foo1.borrow()).foo() });
-    ({
-        let _x: i32 = 1;
-        (*foo1.borrow()).method_i32(_x)
-    });
+    ({ (*foo1.borrow()).method_i32(1) });
     ({ (*foo2.borrow()).foo_const() });
-    ({
-        let _x: i32 = 2;
-        (*foo2.borrow()).method_i32_const(_x)
-    });
+    ({ (*foo2.borrow()).method_i32_const(2) });
     return (*out.borrow());
 }

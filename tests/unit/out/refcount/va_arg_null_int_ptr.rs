@@ -30,20 +30,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(42));
     assert!(
-        (((({
-            let _count: i32 = 2;
-            first_nonnull_0(
-                _count,
-                &[(AnyPtr::default()).into(), (x.as_pointer()).into()],
-            )
-        }) == 42) as i32)
+        (((({ first_nonnull_0(2, &[(AnyPtr::default()).into(), (x.as_pointer()).into(),]) }) == 42)
+            as i32)
             != 0)
     );
     assert!(
         (((({
-            let _count: i32 = 3;
             first_nonnull_0(
-                _count,
+                3,
                 &[
                     (AnyPtr::default()).into(),
                     (AnyPtr::default()).into(),
@@ -53,12 +47,6 @@ fn main_0() -> i32 {
         }) == 42) as i32)
             != 0)
     );
-    assert!(
-        (((({
-            let _count: i32 = 1;
-            first_nonnull_0(_count, &[(AnyPtr::default()).into()])
-        }) == -1_i32) as i32)
-            != 0)
-    );
+    assert!((((({ first_nonnull_0(1, &[(AnyPtr::default()).into(),]) }) == -1_i32) as i32) != 0));
     return 0;
 }

@@ -174,10 +174,7 @@ fn main_0() -> i32 {
     (*c.borrow_mut()) = Color::from(2);
     assert!((((*c.borrow()) as i32) == (Color::BLUE as i32)));
     assert!((((*c.borrow()) as i32) == 2));
-    (*c.borrow_mut()) = ({
-        let _n: i32 = 1;
-        make_color_6(_n)
-    });
+    (*c.borrow_mut()) = ({ make_color_6(1) });
     assert!((((*c.borrow()) as i32) == (Color::GREEN as i32)));
     let cmp: Value<Color> = Rc::new(RefCell::new(Color::from((((*c.borrow()) as i32) + 1))));
     assert!((((*cmp.borrow()) as i32) == (Color::BLUE as i32)));
@@ -195,10 +192,7 @@ fn main_0() -> i32 {
         }),
     ));
     assert!(((*rc.borrow()) == 2));
-    (*rc.borrow_mut()) = ({
-        let _option: i32 = 20;
-        classify_option_5(_option)
-    });
+    (*rc.borrow_mut()) = ({ classify_option_5(20) });
     assert!(((*rc.borrow()) == 2));
     (*rc.borrow_mut()) = ({
         let _option: i32 = (Option::OPT_C as i32);

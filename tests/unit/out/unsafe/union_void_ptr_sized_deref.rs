@@ -77,24 +77,21 @@ unsafe fn main_0() -> i32 {
     s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
-        let _count: i64 = 1234605616436508552_i64;
-        write_count_1(_s, _count)
+        write_count_1(_s, 1234605616436508552_i64)
     });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width_enum::W_32;
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
-        let _count: i64 = 305419896_i64;
-        write_count_1(_s, _count)
+        write_count_1(_s, 305419896_i64)
     });
     assert!(((((buf32) == (305419896)) as i32) != 0));
     s.width = Width_enum::W_16;
     s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
     (unsafe {
         let _s: *mut Sink = (&mut s as *mut Sink);
-        let _count: i64 = 4660_i64;
-        write_count_1(_s, _count)
+        write_count_1(_s, 4660_i64)
     });
     assert!(((((buf16 as i32) == (4660)) as i32) != 0));
     return 0;

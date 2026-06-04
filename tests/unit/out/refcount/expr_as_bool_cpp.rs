@@ -82,12 +82,7 @@ fn main_0() -> i32 {
             cmp_eq_0(_rc)
         }) == 1)
     );
-    assert!(
-        (({
-            let _rc: i32 = 0;
-            cmp_eq_0(_rc)
-        }) == 0)
-    );
+    assert!((({ cmp_eq_0(0,) }) == 0));
     assert!(
         (({
             let _p: Ptr<u8> = (*p1.borrow()).clone();

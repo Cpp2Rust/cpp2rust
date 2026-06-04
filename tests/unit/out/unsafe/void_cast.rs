@@ -36,10 +36,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    (unsafe {
-        let _x: i32 = 42;
-        unused_param_0(_x)
-    });
+    (unsafe { unused_param_0(42) });
     let mut y: i32 = 5;
     &(y);
     let mut z: i32 = {

@@ -176,85 +176,9 @@ unsafe fn main_0() -> i32 {
     let mut safe_: i32 = 0;
     let mut vec_: i32 = 0;
     return (unsafe {
-        let _as: i32 = 0;
-        let _async: i32 = 0;
-        let _await: i32 = 0;
-        let _crate: i32 = 0;
-        let _dyn: i32 = 0;
-        let _fn: i32 = 0;
-        let _impl: i32 = 0;
-        let _in: i32 = 0;
-        let _let: i32 = 0;
-        let _loop: i32 = 0;
-        let _match: i32 = 0;
-        let _mod: i32 = 0;
-        let _move: i32 = 0;
-        let _mut: i32 = 0;
-        let _pub: i32 = 0;
-        let _ref: i32 = 0;
-        let _self: i32 = 0;
-        let _Self: i32 = 0;
-        let _super: i32 = 0;
-        let _trait: i32 = 0;
-        let _type: i32 = 0;
-        let _unsafe: i32 = 0;
-        let _use: i32 = 0;
-        let _where: i32 = 0;
-        let _abstract: i32 = 0;
-        let _become: i32 = 0;
-        let _box: i32 = 0;
-        let _final: i32 = 0;
-        let _gen: i32 = 0;
-        let _macro: i32 = 0;
-        let _override: i32 = 0;
-        let _priv: i32 = 0;
-        let _unsized: i32 = 0;
-        let _yield: i32 = 0;
-        let _macro_rules: i32 = 0;
-        let _raw: i32 = 0;
-        let _safe: i32 = 0;
-        let _vec: i32 = 0;
-        let _dummy: i32 = 0;
         foo_0(
-            _as,
-            _async,
-            _await,
-            _crate,
-            _dyn,
-            _fn,
-            _impl,
-            _in,
-            _let,
-            _loop,
-            _match,
-            _mod,
-            _move,
-            _mut,
-            _pub,
-            _ref,
-            _self,
-            _Self,
-            _super,
-            _trait,
-            _type,
-            _unsafe,
-            _use,
-            _where,
-            _abstract,
-            _become,
-            _box,
-            _final,
-            _gen,
-            _macro,
-            _override,
-            _priv,
-            _unsized,
-            _yield,
-            _macro_rules,
-            _raw,
-            _safe,
-            _vec,
-            _dummy,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         )
     });
 }

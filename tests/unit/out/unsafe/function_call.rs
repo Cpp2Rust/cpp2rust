@@ -16,10 +16,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut y: i32 = (unsafe {
-        let _y: i32 = 10;
-        let _z: i32 = 1;
-        function_0(_y, _z)
-    });
+    let mut y: i32 = (unsafe { function_0(10, 1) });
     return y;
 }

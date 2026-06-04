@@ -93,10 +93,7 @@ impl ByteRepr for Route {}
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if (((*(*(*route.upgrade().deref()).path.borrow()).first.borrow()) % 2) != 0) {
         return ({
-            let _new_first: i32 = ({
-                let _new_second: i32 = 10;
-                (*(*route.upgrade().deref()).path.borrow()).SetSecond(_new_second)
-            });
+            let _new_first: i32 = ({ (*(*route.upgrade().deref()).path.borrow()).SetSecond(10) });
             (*(*route.upgrade().deref()).path.borrow()).SetFirst(_new_first)
         });
     } else {
@@ -130,10 +127,7 @@ fn main_0() -> i32 {
     }));
     let old_cost: Value<f64> = Rc::new(RefCell::new(
         ({
-            let _new_cost: f64 = ({
-                let _new_cost: f64 = 15_f64;
-                (*route2.borrow()).SetCost(_new_cost)
-            });
+            let _new_cost: f64 = ({ (*route2.borrow()).SetCost(15_f64) });
             (*route1.borrow()).SetCost(_new_cost)
         }),
     ));

@@ -28,29 +28,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 1;
-            cases_and_default_stacked_0(_x)
-        }) == 42)
-    );
-    assert!(
-        (({
-            let _x: i32 = 2;
-            cases_and_default_stacked_0(_x)
-        }) == 42)
-    );
-    assert!(
-        (({
-            let _x: i32 = 3;
-            cases_and_default_stacked_0(_x)
-        }) == 3)
-    );
-    assert!(
-        (({
-            let _x: i32 = 99;
-            cases_and_default_stacked_0(_x)
-        }) == 42)
-    );
+    assert!((({ cases_and_default_stacked_0(1,) }) == 42));
+    assert!((({ cases_and_default_stacked_0(2,) }) == 42));
+    assert!((({ cases_and_default_stacked_0(3,) }) == 3));
+    assert!((({ cases_and_default_stacked_0(99,) }) == 42));
     return 0;
 }

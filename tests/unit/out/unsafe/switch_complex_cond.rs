@@ -36,15 +36,13 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
-            let _bias: i32 = 0;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 0)
         }) == (2))
     );
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
-            let _bias: i32 = 5;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 5)
         }) == (3))
     );
     assert!(
@@ -57,8 +55,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let _p: *mut i32 = (&mut p_val as *mut i32);
-            let _bias: i32 = 99;
-            switch_complex_cond_0(_p, _bias)
+            switch_complex_cond_0(_p, 99)
         }) == (0))
     );
     return 0;

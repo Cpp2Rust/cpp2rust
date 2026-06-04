@@ -36,10 +36,7 @@ fn main_0() -> i32 {
         let _str: Ptr<u8> = (mutable_string_arr.as_pointer() as Ptr<u8>);
         foo_mut_0(_str)
     });
-    ({
-        let _str: Ptr<u8> = Ptr::from_string_literal(b"world");
-        foo_const_1(_str)
-    });
+    ({ foo_const_1(Ptr::from_string_literal(b"world")) });
     ({
         let _str: Ptr<u8> = (*immutable_string.borrow()).clone();
         foo_const_1(_str)
@@ -48,10 +45,7 @@ fn main_0() -> i32 {
         let _str: Ptr<u8> = (immutable_string_arr.as_pointer() as Ptr<u8>);
         foo_const_1(_str)
     });
-    ({
-        let _str: Ptr<u8> = Ptr::from_string_literal(b"");
-        foo_const_1(_str)
-    });
+    ({ foo_const_1(Ptr::from_string_literal(b"")) });
     ({
         let _str: Ptr<u8> = (*immutable_empty.borrow()).clone();
         foo_const_1(_str)

@@ -79,13 +79,7 @@ unsafe fn main_0() -> i32 {
         }) == (1)) as i32)
             != 0)
     );
-    assert!(
-        ((((unsafe {
-            let _rc: i32 = 0;
-            cmp_eq_0(_rc)
-        }) == (0)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { cmp_eq_0(0,) }) == (0)) as i32) != 0));
     assert!(
         ((((unsafe {
             let _p: *const u8 = p1;

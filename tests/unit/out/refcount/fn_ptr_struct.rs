@@ -50,25 +50,10 @@ fn main_0() -> i32 {
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(negate_1))),
     }));
     assert!(!((*(*h1.borrow()).cb.borrow()).is_null()));
-    assert!(
-        (({
-            let _arg0: i32 = 5;
-            (*(*(*h1.borrow()).cb.borrow()))(_arg0)
-        }) == 10)
-    );
-    assert!(
-        (({
-            let _arg0: i32 = 7;
-            (*(*(*h2.borrow()).cb.borrow()))(_arg0)
-        }) == -7_i32)
-    );
+    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(5,) }) == 10));
+    assert!((({ (*(*(*h2.borrow()).cb.borrow()))(7,) }) == -7_i32));
     (*(*h1.borrow()).cb.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(negate_1);
-    assert!(
-        (({
-            let _arg0: i32 = 3;
-            (*(*(*h1.borrow()).cb.borrow()))(_arg0)
-        }) == -3_i32)
-    );
+    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(3,) }) == -3_i32));
     assert!({
         let _lhs = (*(*h1.borrow()).cb.borrow()).clone();
         _lhs == (*(*h2.borrow()).cb.borrow()).clone()

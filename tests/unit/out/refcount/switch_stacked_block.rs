@@ -29,17 +29,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _x: i32 = 2;
-            stacked_block_0(_x)
-        }) == 5)
-    );
-    assert!(
-        (({
-            let _x: i32 = 9;
-            stacked_block_0(_x)
-        }) == 0)
-    );
+    assert!((({ stacked_block_0(2,) }) == 5));
+    assert!((({ stacked_block_0(9,) }) == 0));
     return 0;
 }

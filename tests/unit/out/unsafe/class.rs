@@ -59,10 +59,7 @@ impl Route {
 pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
     if ((((*route).path.first) % (2)) != 0) {
         return (unsafe {
-            let _new_first: i32 = (unsafe {
-                let _new_second: i32 = 10;
-                (*route).path.SetSecond(_new_second)
-            });
+            let _new_first: i32 = (unsafe { (*route).path.SetSecond(10) });
             (*route).path.SetFirst(_new_first)
         });
     } else {
@@ -97,10 +94,7 @@ unsafe fn main_0() -> i32 {
         cost: 10_f64,
     };
     let mut old_cost: f64 = (unsafe {
-        let _new_cost: f64 = (unsafe {
-            let _new_cost: f64 = 15_f64;
-            route2.SetCost(_new_cost)
-        });
+        let _new_cost: f64 = (unsafe { route2.SetCost(15_f64) });
         route1.SetCost(_new_cost)
     });
     return (((((unsafe {
