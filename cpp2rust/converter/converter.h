@@ -476,6 +476,8 @@ protected:
 
   virtual void ConvertEqualsNullPtr(clang::Expr *expr);
 
+  void ConvertGlobalVarBaseSuffix(clang::Expr *expr);
+
   virtual void ConvertPointerSubscript(clang::ArraySubscriptExpr *expr);
 
   virtual void ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,

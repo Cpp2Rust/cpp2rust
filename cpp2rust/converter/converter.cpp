@@ -3535,19 +3535,67 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
   }
 }
 
-void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
-  if (IsGlobalVar(expr) &&
-      (IsUniquePtr(expr->getType()) ||
-       expr->getType()->isFunctionPointerType())) {
-    StrCat(keyword_unsafe_);
-    PushBrace unsafe_brace(*this);
+void Converter::ConvertGlobalVarBaseSuffix(clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  // Base case: this expression IS the global var root — no suffix to emit.
+  if (IsGlobalVar(expr)) {
+    return;
+  }
+  if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
+    ConvertGlobalVarBaseSuffix(member->getBase());
+    StrCat(token::kDot);
+    StrCat(GetNamedDeclAsString(member->getMemberDecl()));
+    return;
+  }
+  if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
+    ConvertGlobalVarBaseSuffix(subscript->getBase());
+    PushBracket bracket(*this);
     {
       PushParen paren(*this);
-      StrCat("&raw", keyword::kConst);
-      Convert(expr);
+      Convert(subscript->getIdx());
     }
-    StrCat(".as_ref().unwrap().is_none()");
+    StrCat(keyword::kAs, "usize");
     return;
+  }
+}
+
+void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
+  if (IsUniquePtr(expr->getType()) ||
+      expr->getType()->isFunctionPointerType()) {
+    // Walk up through member accesses and array subscripts to find the root
+    // global var (file-scope or static-local). Any fn-ptr field access on a
+    // static mut struct requires the raw-const pattern to avoid Rust 2024's
+    // shared-reference-to-static-mut restriction.
+    clang::Expr *root = expr;
+    while (root) {
+      if (IsGlobalVar(root)) {
+        break;
+      }
+      auto *r = root->IgnoreImplicit();
+      if (auto *member = clang::dyn_cast<clang::MemberExpr>(r)) {
+        root = member->getBase();
+        continue;
+      }
+      if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(r)) {
+        root = subscript->getBase();
+        continue;
+      }
+      root = nullptr;
+      break;
+    }
+    if (root != nullptr) {
+      StrCat(keyword_unsafe_);
+      PushBrace unsafe_brace(*this);
+      {
+        PushParen paren(*this);
+        StrCat("&raw", keyword::kConst);
+        Convert(root->IgnoreImplicit());
+      }
+      StrCat(".as_ref().unwrap()");
+      ConvertGlobalVarBaseSuffix(expr);
+      StrCat(".is_none()");
+      return;
+    }
   }
 
   {
