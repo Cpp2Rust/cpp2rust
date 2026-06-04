@@ -160,8 +160,16 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
         assert!((static_foo_array_4[(i) as usize].s2).is_null());
-        assert!(unsafe { (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize].fn1.is_none() });
-        assert!(unsafe { (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize].fn2.is_none() });
+        assert!(unsafe {
+            (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize]
+                .fn1
+                .is_none()
+        });
+        assert!(unsafe {
+            (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize]
+                .fn2
+                .is_none()
+        });
         i.prefix_inc();
     }
     (unsafe { check_local_static_5() });
