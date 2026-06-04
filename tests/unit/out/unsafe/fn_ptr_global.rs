@@ -17,7 +17,7 @@ pub unsafe fn set_op_3(mut fn_: Option<unsafe fn(i32) -> i32>) {
     g_op_2 = fn_;
 }
 pub unsafe fn call_op_4(mut x: i32) -> i32 {
-    if !(g_op_2).is_none() {
+    if !(unsafe { (&raw const g_op_2).as_ref().unwrap().is_none() }) {
         return (unsafe {
             let _arg0: i32 = x;
             (g_op_2).unwrap()(_arg0)
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
         let _fn: Option<unsafe fn(i32) -> i32> = Some(double_it_0);
         set_op_3(_fn)
     });
-    assert!(!((g_op_2).is_none()));
+    assert!(!(unsafe { (&raw const g_op_2).as_ref().unwrap().is_none() }));
     assert!(((g_op_2) == (Some(double_it_0))));
     assert!(
         ((unsafe {
@@ -64,7 +64,7 @@ unsafe fn main_0() -> i32 {
         let _fn: Option<unsafe fn(i32) -> i32> = None;
         set_op_3(_fn)
     });
-    assert!((g_op_2).is_none());
+    assert!(unsafe { (&raw const g_op_2).as_ref().unwrap().is_none() });
     assert!(
         ((unsafe {
             let _x: i32 = 5;

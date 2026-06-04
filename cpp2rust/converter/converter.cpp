@@ -3535,13 +3535,27 @@ void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 }
 
 void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
-  StrCat('(');
+  if (IsGlobalVar(expr) &&
+      (IsUniquePtr(expr->getType()) ||
+       expr->getType()->isFunctionPointerType())) {
+    StrCat(keyword_unsafe_);
+    PushBrace unsafe_brace(*this);
+    {
+      PushParen paren(*this);
+      StrCat("&raw", keyword::kConst);
+      Convert(expr);
+    }
+    StrCat(".as_ref().unwrap().is_none()");
+    return;
+  }
+
+  PushParen paren(*this);
   Convert(expr);
   if (IsUniquePtr(expr->getType()) ||
       expr->getType()->isFunctionPointerType()) {
-    StrCat(").is_none()");
+    StrCat(".is_none()");
   } else {
-    StrCat(").is_null()");
+    StrCat(".is_null()");
   }
 }
 
