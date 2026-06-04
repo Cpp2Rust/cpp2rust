@@ -225,19 +225,115 @@ pub unsafe fn test_ftruncate_5() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
-pub unsafe fn test_isatty_6() {
+pub unsafe fn test_open_6() {
+    let mut path: *const u8 = (b"/tmp/cpp2rust_open_test.tmp\0".as_ptr().cast_mut()).cast_const();
+    let mut fd: i32 =
+        (unsafe { libc::open(path as *const i8, (((1) | (64)) | (512)) as i32, (420)) });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(
+        ((((libc::write(
+            fd,
+            (b"hello world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void),
+            11_u64 as usize
+        ) as i64)
+            == (11_i64)) as i32)
+            != 0)
+    );
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    fd = (unsafe { libc::open(path as *const i8, 0 as i32) });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    let mut buf: [u8; 16] = [
+        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
+        0_u8,
+    ];
+    assert!(
+        ((((libc::read(
+            fd,
+            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            16_u64 as usize
+        ) as i64)
+            == (11_i64)) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            let sa = core::slice::from_raw_parts(
+                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                11_u64 as usize,
+            );
+            let sb = core::slice::from_raw_parts(
+                (b"hello world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void)
+                    as *const u8,
+                11_u64 as usize,
+            );
+            let mut diff = 0_i32;
+            for (x, y) in sa.iter().zip(sb.iter()) {
+                if x != y {
+                    diff = (*x as i32) - (*y as i32);
+                    break;
+                }
+            }
+            diff
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    libc::unlink(path as *const i8);
+}
+pub unsafe fn test_fcntl_7() {
+    let mut path: *const u8 = (b"/tmp/cpp2rust_fcntl_test.tmp\0".as_ptr().cast_mut()).cast_const();
+    let mut fd: i32 =
+        (unsafe { libc::open(path as *const i8, (((1) | (64)) | (512)) as i32, (420)) });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    let mut flags: i32 = (unsafe { libc::fcntl(fd as i32, 3 as i32) });
+    assert!(((((flags) != (-1_i32)) as i32) != 0));
+    assert!(
+        ((((unsafe { libc::fcntl(fd as i32, 4 as i32, ((flags) | (1024)),) }) == (0)) as i32) != 0)
+    );
+    assert!((((((unsafe { libc::fcntl(fd as i32, 3 as i32,) }) & (1024)) != (0)) as i32) != 0));
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    libc::unlink(path as *const i8);
+}
+pub unsafe fn test_ioctl_8() {
+    let mut fds: [i32; 2] = [0_i32; 2];
+    assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::write(
+            fds[(1) as usize],
+            (b"abcd\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void),
+            4_u64 as usize
+        ) as i64)
+            == (4_i64)) as i32)
+            != 0)
+    );
+    let mut navail: i32 = 0;
+    assert!(
+        ((((unsafe {
+            libc::ioctl(
+                fds[(0) as usize] as i32,
+                21531_u64 as u64,
+                (&mut navail as *mut i32),
+            )
+        }) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((navail) == (4)) as i32) != 0));
+    assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
+    assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
+}
+pub unsafe fn test_isatty_9() {
     printf(
         (b"%d\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::isatty(0),
     );
 }
-pub unsafe fn test_geteuid_7() {
+pub unsafe fn test_geteuid_10() {
     printf(
         (b"%u\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::geteuid(),
     );
 }
-pub unsafe fn test_gethostname_8() {
+pub unsafe fn test_gethostname_11() {
     let mut name: [u8; 256] = [0_u8; 256];
     assert!(
         ((((libc::gethostname(
@@ -263,8 +359,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_unlink_3() });
     (unsafe { test_pipe_4() });
     (unsafe { test_ftruncate_5() });
-    (unsafe { test_isatty_6() });
-    (unsafe { test_geteuid_7() });
-    (unsafe { test_gethostname_8() });
+    (unsafe { test_open_6() });
+    (unsafe { test_fcntl_7() });
+    (unsafe { test_ioctl_8() });
+    (unsafe { test_isatty_9() });
+    (unsafe { test_geteuid_10() });
+    (unsafe { test_gethostname_11() });
     return 0;
 }
