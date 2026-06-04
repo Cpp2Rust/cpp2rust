@@ -127,7 +127,7 @@ pub unsafe fn check_local_static_5() {
     static mut local_p_8: *mut i32 = unsafe { std::ptr::null_mut() };;
     assert!((local_outer_6.p1).is_null());
     assert!((local_outer_6.fn_).is_none());
-    assert!((local_fn_7).is_none());
+    assert!(unsafe { (&raw const local_fn_7).as_ref().unwrap().is_none() });
     assert!((local_p_8).is_null());
 }
 pub fn main() {
@@ -136,7 +136,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((static_fn_0).is_none());
+    assert!(unsafe { (&raw const static_fn_0).as_ref().unwrap().is_none() });
     assert!((static_outer_1.p1).is_null());
     assert!((static_outer_1.p2).is_null());
     assert!((static_outer_1.cp).is_null());
