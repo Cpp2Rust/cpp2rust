@@ -1488,7 +1488,6 @@ std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
 
 void Converter::ConvertVariadicArg(clang::Expr *arg) {
   if (arg->getType()->isFunctionPointerType()) {
-    PushParen p(*this);
     Convert(arg);
     StrCat(".map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void)");
     return;
