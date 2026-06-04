@@ -126,7 +126,7 @@ pub unsafe fn check_local_static_5() {
     static mut local_fn_7: Option<unsafe fn(i32) -> i32> = unsafe { None };;
     static mut local_p_8: *mut i32 = unsafe { std::ptr::null_mut() };;
     assert!((local_outer_6.p1).is_null());
-    assert!((local_outer_6.fn_).is_none());
+    assert!(unsafe { (&raw const local_outer_6).as_ref().unwrap().fn_.is_none() });
     assert!(unsafe { (&raw const local_fn_7).as_ref().unwrap().is_none() });
     assert!((local_p_8).is_null());
 }
@@ -141,7 +141,7 @@ unsafe fn main_0() -> i32 {
     assert!((static_outer_1.p2).is_null());
     assert!((static_outer_1.cp).is_null());
     assert!((static_outer_1.pp).is_null());
-    assert!((static_outer_1.fn_).is_none());
+    assert!(unsafe { (&raw const static_outer_1).as_ref().unwrap().fn_.is_none() });
     let mut i: i32 = 0;
     'loop_: while ((i) < (3)) {
         assert!((static_outer_1.arr[(i) as usize]).is_null());
@@ -154,14 +154,14 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     assert!((static_foo_3.s2).is_null());
-    assert!((static_foo_3.fn1).is_none());
-    assert!((static_foo_3.fn2).is_none());
+    assert!(unsafe { (&raw const static_foo_3).as_ref().unwrap().fn1.is_none() });
+    assert!(unsafe { (&raw const static_foo_3).as_ref().unwrap().fn2.is_none() });
     assert!(((static_foo_3.n) == (42)));
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
         assert!((static_foo_array_4[(i) as usize].s2).is_null());
-        assert!((static_foo_array_4[(i) as usize].fn1).is_none());
-        assert!((static_foo_array_4[(i) as usize].fn2).is_none());
+        assert!(unsafe { (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize].fn1.is_none() });
+        assert!(unsafe { (&raw const static_foo_array_4).as_ref().unwrap()[(i) as usize].fn2.is_none() });
         i.prefix_inc();
     }
     (unsafe { check_local_static_5() });
