@@ -224,6 +224,39 @@ public:
 
   std::optional<TempMaterializationCtx> ConvertCallExpr(clang::CallExpr *expr);
 
+  struct CallArg {
+    enum class Kind : int8_t {
+      Hoisted,
+      Inline,
+      Materialized,
+    };
+
+    std::string param_name;
+    std::string ref_temp_name;
+    clang::QualType param_type;
+    clang::Expr *expr;
+    bool has_default;
+    Kind kind;
+  };
+
+  struct CallInfo {
+    std::vector<CallArg> args;
+    std::vector<clang::Expr *> variadic_args;
+    clang::Expr *callee;
+    bool is_variadic;
+    bool is_fn_ptr_call;
+  };
+
+  CallInfo CollectCallInfo(clang::CallExpr *expr);
+
+  void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
+
+  void EmitHoistedArgs(CallInfo &info);
+
+  void EmitArgList(const CallInfo &info);
+
+  void EmitCall(CallInfo &&info);
+
   void ConvertGenericCallExpr(clang::CallExpr *expr);
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
