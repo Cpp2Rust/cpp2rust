@@ -8,6 +8,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <cstdlib>
 #include <format>
 #include <optional>
 #include <regex>
@@ -434,7 +435,18 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
     }
     for (auto &[_, rule] : type_rules) {
-      types_.emplace(GetTypeMapKey(rule.src), std::move(rule));
+      auto key = GetTypeMapKey(rule.src);
+      auto [begin, end] = types_.equal_range(key);
+      for (auto it = begin; it != end; ++it) {
+        if (it->second.src == rule.src) {
+          llvm::errs() << "ERROR: duplicate type rule for C++ type '"
+                       << rule.src << "': maps to both '"
+                       << it->second.type_info.type << "' and '"
+                       << rule.type_info.type << "'\n";
+          std::exit(EXIT_FAILURE);
+        }
+      }
+      types_.emplace(std::move(key), std::move(rule));
     }
   }
 }
@@ -929,8 +941,8 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   }
   translation_rules_loaded_ = true;
 
-  addRulesFromDirectory(rules_dir, model);
   addBuiltinTypes(model);
+  addRulesFromDirectory(rules_dir, model);
 
 #if 0
   for (auto &[src, rule] : exprs_) {
