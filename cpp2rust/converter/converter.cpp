@@ -3479,9 +3479,14 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
-    StrCat(token::kRef);
-    if (IsMut(qual_type)) {
-      StrCat(keyword_mut_);
+    if (IsGlobalVar(expr)) {
+      StrCat("&raw");
+      StrCat(IsMut(qual_type) ? keyword_mut_ : keyword::kConst);
+    } else {
+      StrCat(token::kRef);
+      if (IsMut(qual_type)) {
+        StrCat(keyword_mut_);
+      }
     }
   }
   if (qual_type->isFunctionPointerType()) {
