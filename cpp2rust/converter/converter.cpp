@@ -3479,14 +3479,9 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
-    if (IsGlobalVar(expr)) {
-      StrCat("&raw");
-      StrCat(IsMut(qual_type) ? keyword_mut_ : keyword::kConst);
-    } else {
-      StrCat(token::kRef);
-      if (IsMut(qual_type)) {
-        StrCat(keyword_mut_);
-      }
+    StrCat(token::kRef);
+    if (IsMut(qual_type)) {
+      StrCat(keyword_mut_);
     }
   }
   if (qual_type->isFunctionPointerType()) {
@@ -4179,12 +4174,35 @@ std::string Converter::ConvertIRFragment(
   auto all_args = BuildUnifiedArgs(expr, args, num_args);
 
   std::string result;
-  for (auto &frag : fragments) {
-    if (auto *t = std::get_if<TextFragment>(&frag)) {
-      result += t->text;
-    } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
+  for (size_t i = 0; i < fragments.size(); ++i) {
+    const auto &frag = fragments[i];
+    if (const auto *t = std::get_if<TextFragment>(&frag)) {
+      std::string text = t->text;
+      // If this text fragment ends with a lone '&' (reference operator, not
+      // '&&' or '&mut') and the immediately following fragment is a placeholder
+      // for a global variable, upgrade '&' to '&raw const' or '&raw mut' to
+      // comply with Rust 2024's ban on shared references to mutable statics.
+      if (!text.empty() && text.back() == '&' &&
+          (text.size() < 2 || text[text.size() - 2] != '&') &&
+          i + 1 < fragments.size()) {
+        if (const auto *next_ph =
+                std::get_if<PlaceholderFragment>(&fragments[i + 1])) {
+          auto next_idx = next_ph->n;
+          if (next_idx < all_args.size() && IsGlobalVar(all_args[next_idx])) {
+            const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(
+                all_args[next_idx]->IgnoreImplicit());
+            bool is_const =
+                decl_ref &&
+                decl_ref->getDecl()->getType().isConstQualified();
+            text.pop_back(); // remove '&'
+            text += is_const ? "&raw const " : std::string("&raw") + keyword_mut_;
+          }
+        }
+      }
+      result += text;
+    } else if (const auto *g = std::get_if<GenericFragment>(&frag)) {
       result += Mapper::InstantiateTemplate(GetCalleeOrExpr(expr), g->n);
-    } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
+    } else if (const auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
       auto *arg = all_args[arg_idx];
@@ -4204,7 +4222,7 @@ std::string Converter::ConvertIRFragment(
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
-    } else if (auto *mc =
+    } else if (const auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
     }
