@@ -3,7 +3,7 @@
 
 use proc_macro::TokenStream;
 use syn::parse::{Parse, ParseStream};
-use syn::{Expr, Pat, parse_macro_input};
+use syn::{Expr, ExprBlock, Pat, parse_macro_input};
 
 use crate::state_machine::{
     Arm, DispatchCase, GotoStateMachine, StateMachine, StateMachineNames, SwitchStateMachine,
@@ -14,16 +14,23 @@ pub fn expand(input: TokenStream) -> TokenStream {
     let mut cases = Vec::with_capacity(arms.len());
     let mut cfg_arms = Vec::with_capacity(arms.len());
     for (i, a) in arms.into_iter().enumerate() {
-        let label = format!("__c{}", i);
+        let (label, body) = match a.body {
+            Expr::Block(eb) if eb.label.is_some() => (
+                eb.label.unwrap().name.ident.to_string(),
+                Expr::Block(ExprBlock {
+                    attrs: eb.attrs,
+                    label: None,
+                    block: eb.block,
+                }),
+            ),
+            other => (format!("__c{}", i), other),
+        };
         cases.push(DispatchCase {
             pat: a.pat,
             guard: a.guard,
             target: label.clone(),
         });
-        cfg_arms.push(Arm {
-            label,
-            body: a.body,
-        });
+        cfg_arms.push(Arm { label, body });
     }
     SwitchStateMachine {
         goto: GotoStateMachine {

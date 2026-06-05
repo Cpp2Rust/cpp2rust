@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/translation_rule.h"
 #include "logging.h"
@@ -367,8 +368,7 @@ public:
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
-  void EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
-                     bool is_default);
+  void EmitSwitchArm(const SwitchArm &arm, bool is_default);
 
   bool ConvertSwitchCaseCondition(clang::SwitchCase *stmt);
 

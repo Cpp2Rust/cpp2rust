@@ -10,6 +10,7 @@
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
 
+#include <algorithm>
 #include <format>
 #include <utility>
 
@@ -3210,46 +3211,53 @@ bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
   }
 
   if (clang::isa<clang::CaseStmt>(last)) {
-    StrCat(" => {");
+    StrCat(" => ");
   } else /* DefaultStmt */ {
-    StrCat("_ => {");
+    StrCat("_ => ");
   }
   return false;
 }
 
-void Converter::EmitSwitchArm(clang::CompoundStmt *body, clang::SwitchCase *sc,
-                              bool is_default) {
+void Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
   if (is_default) {
-    StrCat("_ => {");
+    StrCat("_ => ");
   } else {
     StrCat("__v if __v == ");
-    ConvertSwitchCaseCondition(sc);
+    ConvertSwitchCaseCondition(arm.head);
   }
-  for (auto *t : GetSwitchCaseBody(body, sc)) {
+  if (!arm.label.empty()) {
+    StrCat(std::format("'{}: ", arm.label.str()));
+  }
+  StrCat(token::kOpenCurlyBracket);
+  for (auto *t : arm.body) {
     Convert(t);
   }
   StrCat("},");
 }
 
 bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
-  bool has_fallthrough = SwitchHasFallthrough(stmt);
-  PushBreakTarget push(break_target_, has_fallthrough
-                                          ? BreakTarget::FallthroughSwitch
-                                          : BreakTarget::Switch);
   auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
   assert(body);
+  auto arms = AnalyzeSwitchArms(body);
 
-  if (has_fallthrough) {
-    // Use the switch-with-fallthrough macro
+  bool needs_switch_macro = std::ranges::any_of(arms, [](const SwitchArm &arm) {
+    return !arm.label.empty() || arm.has_fallthrough;
+  });
+
+  PushBreakTarget push(break_target_, needs_switch_macro
+                                          ? BreakTarget::FallthroughSwitch
+                                          : BreakTarget::Switch);
+
+  if (needs_switch_macro) {
     StrCat("switch!");
   } else {
     StrCat("'switch:");
   }
 
-  PushParen switch_macro_paren(*this, has_fallthrough);
-  PushBrace switch_label_brace(*this, !has_fallthrough);
+  PushParen switch_macro_paren(*this, needs_switch_macro);
+  PushBrace switch_label_brace(*this, !needs_switch_macro);
 
-  if (has_fallthrough) {
+  if (needs_switch_macro) {
     StrCat("match", ToString(stmt->getCond()));
   } else {
     StrCat(
@@ -3259,17 +3267,17 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
 
   PushBrace match_brace(*this);
 
-  clang::SwitchCase *default_case = nullptr;
-  for (auto *sc : GetTopLevelSwitchCases(stmt)) {
-    if (SwitchCaseContainsDefault(sc)) {
-      default_case = sc;
+  const SwitchArm *default_arm = nullptr;
+  for (const auto &arm : arms) {
+    if (arm.is_default_case) {
+      default_arm = &arm;
       continue;
     }
-    EmitSwitchArm(body, sc, /*is_default=*/false);
+    EmitSwitchArm(arm, /*is_default=*/false);
   }
 
-  if (default_case) {
-    EmitSwitchArm(body, default_case, /*is_default=*/true);
+  if (default_arm) {
+    EmitSwitchArm(*default_arm, /*is_default=*/true);
   } else {
     StrCat(R"( _ => {})");
   }

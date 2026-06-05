@@ -183,15 +183,15 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
-std::vector<clang::SwitchCase *>
-GetTopLevelSwitchCases(clang::SwitchStmt *stmt);
+struct SwitchArm {
+  clang::SwitchCase *head;
+  llvm::StringRef label;
+  std::vector<clang::Stmt *> body;
+  bool is_default_case;
+  bool has_fallthrough;
+};
 
-bool SwitchCaseContainsDefault(clang::SwitchCase *c);
-
-std::vector<clang::Stmt *> GetSwitchCaseBody(clang::CompoundStmt *body,
-                                             clang::SwitchCase *head);
-
-bool SwitchHasFallthrough(clang::SwitchStmt *stmt);
+std::vector<SwitchArm> AnalyzeSwitchArms(clang::CompoundStmt *body);
 
 bool CompoundHasTopLevelLabel(const clang::CompoundStmt *compound);
 
