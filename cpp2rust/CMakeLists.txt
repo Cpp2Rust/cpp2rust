@@ -5,6 +5,7 @@ list(REMOVE_ITEM CORE_SOURCES
 )
 
 add_library(cpp2rust_core STATIC ${CORE_SOURCES})
+llvm_update_compile_flags(cpp2rust_core)
 
 target_link_libraries(cpp2rust_core PUBLIC
     clangAST
