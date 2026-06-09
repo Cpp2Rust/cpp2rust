@@ -16,8 +16,7 @@ pub unsafe fn test_close_0() {
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             1_usize
-        ) as i64)
-            == (-1_i32 as i64)) as i32)
+        )) == (-1_i32 as isize)) as i32)
             != 0)
     );
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
@@ -48,8 +47,7 @@ pub unsafe fn test_lseek_1() {
             fd,
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             5_usize
-        ) as i64)
-            == (5_i64)) as i32)
+        )) == (5_isize)) as i32)
             != 0)
     );
     assert!(
@@ -103,8 +101,7 @@ pub unsafe fn test_read_2() {
             fd,
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             16_usize
-        ) as i64)
-            == (11_i64)) as i32)
+        )) == (11_isize)) as i32)
             != 0)
     );
     assert!(
@@ -152,8 +149,7 @@ pub unsafe fn test_pipe_4() {
             fds[(1) as usize],
             (msg as *const u8 as *const ::libc::c_void),
             5_usize
-        ) as i64)
-            == (5_i64)) as i32)
+        )) == (5_isize)) as i32)
             != 0)
     );
     let mut buf: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
@@ -162,8 +158,7 @@ pub unsafe fn test_pipe_4() {
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             8_usize
-        ) as i64)
-            == (5_i64)) as i32)
+        )) == (5_isize)) as i32)
             != 0)
     );
     assert!(
@@ -193,8 +188,7 @@ pub unsafe fn test_pipe_4() {
             fds[(0) as usize],
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
             8_usize
-        ) as i64)
-            == (0_i64)) as i32)
+        )) == (0_isize)) as i32)
             != 0)
     );
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));

@@ -32,12 +32,12 @@ unsafe fn f8(a0: i32, a1: i32, a2: i32, a3: *mut ::libc::c_void, a4: *mut u32) -
     libc::getsockopt(a0, a1, a2, a3, a4)
 }
 
-unsafe fn f9(a0: i32, a1: *mut ::libc::c_void, a2: usize, a3: i32) -> i64 {
-    libc::recv(a0, a1, a2, a3) as i64
+unsafe fn f9(a0: i32, a1: *mut ::libc::c_void, a2: usize, a3: i32) -> isize {
+    libc::recv(a0, a1, a2, a3)
 }
 
-unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: usize, a3: i32) -> i64 {
-    libc::send(a0, a1, a2, a3) as i64
+unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: usize, a3: i32) -> isize {
+    libc::send(a0, a1, a2, a3)
 }
 
 unsafe fn f11(a0: i32, a1: i32, a2: i32, a3: *mut i32) -> i32 {
@@ -76,8 +76,8 @@ unsafe fn f18(
     a3: i32,
     a4: *mut ::libc::sockaddr,
     a5: *mut u32,
-) -> i64 {
-    libc::recvfrom(a0, a1, a2, a3, a4, a5) as i64
+) -> isize {
+    libc::recvfrom(a0, a1, a2, a3, a4, a5)
 }
 
 unsafe fn f19(
@@ -87,6 +87,6 @@ unsafe fn f19(
     a3: i32,
     a4: *const ::libc::sockaddr,
     a5: u32,
-) -> i64 {
-    libc::sendto(a0, a1, a2, a3, a4, a5) as i64
+) -> isize {
+    libc::sendto(a0, a1, a2, a3, a4, a5)
 }
