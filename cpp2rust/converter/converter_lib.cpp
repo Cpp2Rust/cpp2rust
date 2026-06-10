@@ -782,12 +782,16 @@ std::optional<clang::QualType>
 GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
                                    const clang::Expr *operand,
                                    const clang::Expr *sibling) {
-  bool same_type_op = op->isComparisonOp() || op->isAdditiveOp() ||
-                      op->isMultiplicativeOp() || op->isBitwiseOp();
-  if (same_type_op &&
-      NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
-      IsSizeType(sibling->getType())) {
-    return sibling->getType();
+  if (op->isComparisonOp()) {
+    if (NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
+        IsSizeType(sibling->getType())) {
+      return sibling->getType();
+    }
+    return std::nullopt;
+  }
+  if ((op->isAdditiveOp() || op->isMultiplicativeOp() || op->isBitwiseOp()) &&
+      NeedsImplicitScalarCast(operand->getType(), op->getType())) {
+    return op->getType();
   }
   return std::nullopt;
 }
