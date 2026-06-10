@@ -32,7 +32,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut tail_size: usize = 32_usize;
     let mut n: *mut node = (libcc2rs::malloc_unsafe(
-        ((::std::mem::size_of::<node>() as u64).wrapping_add(tail_size as u64) as usize),
+        ((::std::mem::size_of::<node>() as u64).wrapping_add((tail_size as u64)) as usize),
     ) as *mut node);
     (*n).len = tail_size;
     let mut i: usize = 0_usize;

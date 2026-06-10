@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut u8 = buf.as_mut_ptr();
     let mut q: *mut u8 = std::ptr::null_mut();
     q = {
-        p = (p).wrapping_add(1 as i32 as usize);
+        p = (p).wrapping_add((1 as i32) as usize);
         p
     };
     assert!(((((q) == (buf.as_mut_ptr().offset((1) as isize))) as i32) != 0));

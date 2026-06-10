@@ -25,8 +25,8 @@ unsafe fn main_0() -> i32 {
     let mut b: bool = ((xu64) == (64_u64));
     return (((((((((((((xu8 as i32) + (xu16 as i32)) as u32).wrapping_add(xu32)) as u64)
         .wrapping_add(xu64))
-    .wrapping_add(xsz1 as u64))
-    .wrapping_add(xsz2 as u64))
+    .wrapping_add((xsz1 as u64)))
+    .wrapping_add((xsz2 as u64)))
     .wrapping_add((xi1 as u64)))
     .wrapping_add((xi2 as u64)))
     .wrapping_add((xi3 as u64)))

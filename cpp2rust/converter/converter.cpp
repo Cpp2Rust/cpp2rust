@@ -3527,10 +3527,12 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
 
 void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
                                             clang::QualType type) {
+  bool needs_cast = (expr->isIntegerConstantExpr(ctx_) &&
+                     !clang::isa<clang::ImplicitCastExpr>(expr)) ||
+                    Mapper::Map(expr->getType()) != Mapper::Map(type);
+  PushParen paren(*this, needs_cast);
   Convert(expr);
-  if ((expr->isIntegerConstantExpr(ctx_) &&
-       !clang::isa<clang::ImplicitCastExpr>(expr)) ||
-      Mapper::Map(expr->getType()) != Mapper::Map(type)) {
+  if (needs_cast) {
     ConvertCast(type);
   }
 }

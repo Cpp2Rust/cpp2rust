@@ -36,9 +36,9 @@ unsafe fn main_0() -> i32 {
     assert!(((*q2) == (10)));
     assert!(((q2) == (p)));
     let mut q3: *mut i32 = p;
-    q3 = (q3).wrapping_add(4 as i32 as usize);
+    q3 = (q3).wrapping_add((4 as i32) as usize);
     assert!(((*q3) == (14)));
-    q3 = (q3).wrapping_sub(2 as i32 as usize);
+    q3 = (q3).wrapping_sub((2 as i32) as usize);
     assert!(((*q3) == (12)));
     let mut step: usize = 2_usize;
     let mut q4: *mut i32 = p.offset((step) as isize);

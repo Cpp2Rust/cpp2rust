@@ -39,15 +39,15 @@ fn main_0() -> i32 {
     assert!(!((*sz.borrow()) == ((*ul.borrow()) as usize)));
     let chain: Value<usize> = Rc::new(RefCell::new(
         (((((*sz.borrow()) as u64).wrapping_add((*ul.borrow()))).wrapping_add(5_u64))
-            .wrapping_add(::std::mem::size_of::<i64>() as u64) as usize),
+            .wrapping_add((::std::mem::size_of::<i64>() as u64)) as usize),
     ));
     assert!(
         ((*chain.borrow())
-            == (((20 + 10) + 5) as usize).wrapping_add(::std::mem::size_of::<i64>() as usize))
+            == (((20 + 10) + 5) as usize).wrapping_add((::std::mem::size_of::<i64>() as usize)))
     );
     let acc: Value<usize> = Rc::new(RefCell::new(100_usize));
     let rhs_0 =
-        (((*acc.borrow()) as u64).wrapping_add(::std::mem::size_of::<f64>() as u64)) as usize;
+        (((*acc.borrow()) as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize;
     (*acc.borrow_mut()) = rhs_0;
     let rhs_0 = (*acc.borrow()).wrapping_mul(2_usize);
     (*acc.borrow_mut()) = rhs_0;
@@ -55,7 +55,7 @@ fn main_0() -> i32 {
     (*acc.borrow_mut()) = rhs_0;
     assert!(
         ((*acc.borrow())
-            == ((((100_usize).wrapping_add(::std::mem::size_of::<f64>() as usize)) as usize)
+            == ((((100_usize).wrapping_add((::std::mem::size_of::<f64>() as usize))) as usize)
                 .wrapping_mul(2_usize) as usize)
                 .wrapping_sub(10_usize))
     );
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     let fr: Value<usize> = Rc::new(RefCell::new(
         ({
             let _a: usize = ((::std::mem::size_of::<i32>() as u64)
-                .wrapping_add((*sz.borrow()) as u64) as usize);
+                .wrapping_add(((*sz.borrow()) as u64)) as usize);
             let _b: usize = ((*ul.borrow()) as usize);
             add_sizes_0(_a, _b)
         }),
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
     let hi: Value<usize> = Rc::new(RefCell::new(
         ({
             let __tmp_0: Value<u64> = Rc::new(RefCell::new(
-                (::std::mem::size_of::<i32>() as u64).wrapping_add((*sz.borrow()) as u64),
+                (::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64)),
             ));
             (if __tmp_0.as_pointer().read() >= ul.as_pointer().read() {
                 __tmp_0.as_pointer()
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     ));
     let count: Value<usize> = Rc::new(RefCell::new(
         (::std::mem::size_of::<[i32; 8]>() as usize)
-            .wrapping_div(::std::mem::size_of::<i32>() as usize),
+            .wrapping_div((::std::mem::size_of::<i32>() as usize)),
     ));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((*i.borrow()) < (*count.borrow())) {
@@ -148,12 +148,12 @@ fn main_0() -> i32 {
     assert!(((*total.borrow()) == 56_usize));
     let cond: Value<usize> = Rc::new(RefCell::new(
         (if ((*sz.borrow()) > ((*ul.borrow()) as usize)) {
-            ((*sz.borrow()) as u64).wrapping_add(::std::mem::size_of::<i32>() as u64)
+            ((*sz.borrow()) as u64).wrapping_add((::std::mem::size_of::<i32>() as u64))
         } else {
             (*ul.borrow())
         } as usize),
     ));
-    assert!(((*cond.borrow()) == (21_usize).wrapping_add(::std::mem::size_of::<i32>() as usize)));
+    assert!(((*cond.borrow()) == (21_usize).wrapping_add((::std::mem::size_of::<i32>() as usize))));
     let arr: Value<Box<[usize]>> =
         Rc::new(RefCell::new(Box::new([0_usize, 1_usize, 2_usize, 3_usize])));
     let idx: Value<usize> = Rc::new(RefCell::new(
