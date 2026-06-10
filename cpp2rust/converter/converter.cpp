@@ -1812,6 +1812,15 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
   auto type_as_string = GetUnsafeTypeAsString(ty);
 
   if (ty->isFloatingType() || incl_type) {
+    if (Mapper::Contains(ty) && !Mapper::MapsToNumericPrimitive(ty)) {
+      if (auto init = Mapper::MapInitializer(ty);
+          !init.empty() && expr->getValue().isZero()) {
+        return init;
+      }
+      assert(!ty->isEnumeralType() &&
+             "integer literal maps to a type that cannot be cast");
+      return std::format("({} as {})", num_as_string.c_str(), type_as_string);
+    }
     return std::format("{}_{}", num_as_string.c_str(), type_as_string);
   }
 

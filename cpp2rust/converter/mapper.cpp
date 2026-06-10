@@ -461,6 +461,7 @@ void addBuiltinTypes(Model model) {
                              const std::string &initializer = {}) {
     auto plain = TranslationRule::TypeRule::Plain(rust);
     plain.initializer = initializer;
+    plain.numeric_primitive = rust != "bool";
     AddTypeRule(cxx, TranslationRule::TypeRule(plain));
     AddTypeRule("const " + cxx, std::move(plain));
 
@@ -699,6 +700,11 @@ bool MapsToPointer(clang::QualType qual_type) {
 bool MapsToRefcountPointer(clang::QualType qual_type) {
   auto rule = search(qual_type).first;
   return rule && rule->type_info.is_refcount_pointer;
+}
+
+bool MapsToNumericPrimitive(clang::QualType qual_type) {
+  auto rule = search(qual_type).first;
+  return rule && rule->numeric_primitive;
 }
 
 bool ReturnsPointer(const clang::Expr *expr) {
