@@ -22,10 +22,10 @@ fn main_0() -> i32 {
         ((*r.borrow()).clone() - (*p.borrow()).clone()) as i64,
     ));
     assert!(((*diff.borrow()) == 3_i64));
-    let idx: Value<u64> = Rc::new(RefCell::new(
-        ((((*r.borrow()).clone() - (*p.borrow()).clone()) as i64) as u64),
+    let idx: Value<usize> = Rc::new(RefCell::new(
+        ((((*r.borrow()).clone() - (*p.borrow()).clone()) as i64) as usize),
     ));
-    assert!(((*idx.borrow()) == 3_u64));
+    assert!(((*idx.borrow()) == 3_usize));
     let q2: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     (*q2.borrow_mut()).prefix_inc();
     assert!((((*q2.borrow()).read()) == 11));
@@ -44,7 +44,7 @@ fn main_0() -> i32 {
     assert!((((*q3.borrow()).read()) == 14));
     (*q3.borrow_mut()) -= 2;
     assert!((((*q3.borrow()).read()) == 12));
-    let step: Value<u64> = Rc::new(RefCell::new(2_u64));
+    let step: Value<usize> = Rc::new(RefCell::new(2_usize));
     let q4: Value<Ptr<i32>> = Rc::new(RefCell::new(
         (*p.borrow()).offset((*step.borrow()) as isize),
     ));
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
         ((*cq.borrow()).clone() - (*cp.borrow()).clone()) as i64,
     ));
     assert!(((*cdiff.borrow()) == 2_i64));
-    let n: Value<u64> = Rc::new(RefCell::new(3_u64));
+    let n: Value<usize> = Rc::new(RefCell::new(3_usize));
     let q5: Value<Ptr<i32>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<i32>).offset((*n.borrow()) as isize),
     ));

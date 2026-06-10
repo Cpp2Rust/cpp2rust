@@ -10,8 +10,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let size: Value<u64> = Rc::new(RefCell::new(1_u64));
-    if ((*size.borrow()) == 1_u64) {
+    let size: Value<usize> = Rc::new(RefCell::new(1_usize));
+    if ((*size.borrow()) == 1_usize) {
         return 1;
     }
     return 0;

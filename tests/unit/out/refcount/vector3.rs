@@ -12,47 +12,47 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let _a0 = 2_u64 as usize;
+        let _a0 = 2_usize as usize;
         (v.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
             __v.resize_with(_a0, <Value<Vec<i32>>>::default)
         })
     };
     {
-        let __a0 = 2_u64 as usize;
+        let __a0 = 2_usize as usize;
         (v.as_pointer() as Ptr<Value<Vec<i32>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .with_mut(|__v: &mut Value<Vec<i32>>| {
                 (*__v.borrow_mut()).resize_with(__a0, || <i32>::default())
             })
     };
     {
-        let __a0 = 1_u64 as usize;
+        let __a0 = 1_usize as usize;
         (v.as_pointer() as Ptr<Value<Vec<i32>>>)
-            .offset(1_u64 as isize)
+            .offset(1_usize as isize)
             .with_mut(|__v: &mut Value<Vec<i32>>| {
                 (*__v.borrow_mut()).resize_with(__a0, || <i32>::default())
             })
     };
     ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(0_u64 as isize)
+        .offset(0_usize as isize)
         .upgrade()
         .deref()
         .as_pointer() as Ptr<i32>)
-        .offset(0_u64 as isize)
+        .offset(0_usize as isize)
         .write(1);
     ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(0_u64 as isize)
+        .offset(0_usize as isize)
         .upgrade()
         .deref()
         .as_pointer() as Ptr<i32>)
-        .offset(1_u64 as isize)
+        .offset(1_usize as isize)
         .write(5);
     ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(1_u64 as isize)
+        .offset(1_usize as isize)
         .upgrade()
         .deref()
         .as_pointer() as Ptr<i32>)
-        .offset(0_u64 as isize)
+        .offset(0_usize as isize)
         .write(6);
     'loop_: for mut v2 in v.as_pointer() as Ptr<Value<Vec<i32>>> {
         let v2: Ptr<Vec<i32>> = v2.upgrade().deref().as_pointer();

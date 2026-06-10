@@ -13,7 +13,7 @@ fn main_0() -> i32 {
     let v: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
     (v.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
         __v.push(Rc::new(RefCell::new(
-            (0..(10_u64) as usize)
+            (0..(10_usize) as usize)
                 .map(|_| <i32>::default())
                 .collect::<Vec<_>>()
                 .clone(),

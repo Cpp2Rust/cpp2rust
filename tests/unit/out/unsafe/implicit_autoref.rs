@@ -24,22 +24,22 @@ unsafe fn main_0() -> i32 {
     v.push(10);
     v.push(20);
     let mut p: *mut Vec<i32> = (&mut v as *mut Vec<i32>);
-    let mut a: i32 = (&mut (*p))[(0_u64) as usize];
-    (&mut (*p))[(1_u64) as usize] = 30;
+    let mut a: i32 = (&mut (*p))[(0_usize) as usize];
+    (&mut (*p))[(1_usize) as usize] = 30;
     let mut h: Holder = <Holder>::default();
     h.v.push(40);
     h.v.push(50);
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    let mut b: i32 = (&mut (*hp)).v[(0_u64) as usize];
-    (&mut (*hp)).v[(1_u64) as usize] = 60;
+    let mut b: i32 = (&mut (*hp)).v[(0_usize) as usize];
+    (&mut (*hp)).v[(1_usize) as usize] = 60;
     assert!(((a) == (10)));
-    assert!((((&mut (*p))[(1_u64) as usize]) == (30)));
+    assert!((((&mut (*p))[(1_usize) as usize]) == (30)));
     assert!(((b) == (40)));
-    assert!((((&mut (*hp)).v[(1_u64) as usize]) == (60)));
+    assert!((((&mut (*hp)).v[(1_usize) as usize]) == (60)));
     (unsafe {
-        let _p: *mut i32 = (&mut (&mut (*p))[0_u64 as usize]);
+        let _p: *mut i32 = (&mut (&mut (*p))[0_usize as usize]);
         write_through_0(_p)
     });
-    assert!((((&mut (*p))[(0_u64) as usize]) == (42)));
+    assert!((((&mut (*p))[(0_usize) as usize]) == (42)));
     return 0;
 }

@@ -29,15 +29,15 @@ unsafe fn main_0() -> i32 {
     assert!(((((exact_buf[(0) as usize] as i32) == ('h' as i32)) as i32) != 0));
     assert!(((((exact_buf[(4) as usize] as i32) == ('o' as i32)) as i32) != 0));
     assert!(((((exact_buf[(5) as usize] as i32) == ('\0' as i32)) as i32) != 0));
-    assert!(((((::std::mem::size_of::<[u8; 6]>() as u64) == (6_u64)) as i32) != 0));
+    assert!(((((::std::mem::size_of::<[u8; 6]>()) == (6_usize)) as i32) != 0));
     assert!(
-        (((((::std::mem::size_of::<[u8; 6]>() as u64 as u64).wrapping_sub(1_u64)) == (5_u64))
+        (((((::std::mem::size_of::<[u8; 6]>() as usize).wrapping_sub(1_usize)) == (5_usize))
             as i32)
             != 0)
     );
-    assert!(((((::std::mem::size_of::<[u8; 1]>() as u64) == (1_u64)) as i32) != 0));
+    assert!(((((::std::mem::size_of::<[u8; 1]>()) == (1_usize)) as i32) != 0));
     assert!(
-        (((((::std::mem::size_of::<[u8; 16]>() as u64 as u64).wrapping_sub(1_u64)) == (15_u64))
+        (((((::std::mem::size_of::<[u8; 16]>() as usize).wrapping_sub(1_usize)) == (15_usize))
             as i32)
             != 0)
     );

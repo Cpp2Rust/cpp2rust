@@ -46,7 +46,7 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
     args.push("-L".to_string());
     args.push(format!("dependency={}", deps.display()));
 
-    for dep in &["libcc2rs", "libc", "brotli_sys"] {
+    for dep in &["libcc2rs", "libc", "brotli_sys", "rustls_ffi"] {
         if let Some(rlib) = find_rlib(deps.as_path(), dep) {
             args.push("--extern".to_string());
             args.push(format!("{}={}", dep, rlib.display()));

@@ -41,7 +41,7 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .write(3_u32);
-    assert!(((*m.borrow()).len() as u64 == 3_u64));
+    assert!(((*m.borrow()).len() == 3_usize));
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
@@ -80,7 +80,7 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .write(((*x.borrow()) as u32));
-    assert!(((*m.borrow()).len() as u64 == 3_u64));
+    assert!(((*m.borrow()).len() == 3_usize));
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
@@ -270,7 +270,7 @@ fn main_0() -> i32 {
     assert!((((*p.borrow()).read()) == 6_u32));
     assert!(((*x5.borrow()) == 5_u32));
     let r: Ptr<BTreeMap<i16, Value<u32>>> = m.as_pointer();
-    assert!(((*r.upgrade().deref()).len() as u64 == 4_u64));
+    assert!(((*r.upgrade().deref()).len() == 4_usize));
     assert!(
         RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &4_i16)
             != RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
@@ -279,14 +279,14 @@ fn main_0() -> i32 {
         ((r).clone() as Ptr<BTreeMap<i16, Value<u32>>>),
         &(*it4.borrow()).clone(),
     );
-    assert!(((*r.upgrade().deref()).len() as u64 == 3_u64));
+    assert!(((*r.upgrade().deref()).len() == 3_usize));
     assert!(
         RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &4_i16)
             == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
     );
     let other_map: Value<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>> =
         Rc::new(RefCell::new(BTreeMap::new()));
-    assert!(((*other_map.borrow()).len() as u64 == 0_u64));
+    assert!(((*other_map.borrow()).len() == 0_usize));
     let key0: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
@@ -307,7 +307,7 @@ fn main_0() -> i32 {
                 .as_pointer()
         })
         .read());
-    assert!(((*other_map.borrow()).len() as u64 == 1_u64));
+    assert!(((*other_map.borrow()).len() == 1_usize));
     assert!(
         (((other_map.as_pointer() as Ptr<BTreeMap<(Value<i32>, Value<i64>), Value<f64>>>)
             .with_mut(|__v: &mut BTreeMap<(Value<i32>, Value<i64>), Value<f64>>| {
@@ -318,7 +318,7 @@ fn main_0() -> i32 {
             .read())
             == (*value.borrow()))
     );
-    assert!(((*m.borrow()).len() as u64 == 3_u64));
+    assert!(((*m.borrow()).len() == 3_usize));
     let k: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
         (((*m.borrow())
@@ -347,7 +347,7 @@ fn main_0() -> i32 {
             == 4_u32)
     );
     let m2: Value<BTreeMap<i32, Value<bool>>> = Rc::new(RefCell::new(BTreeMap::new()));
-    assert!(((*m2.borrow()).len() as u64 == 0_u64));
+    assert!(((*m2.borrow()).len() == 0_usize));
     let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<u32> = Rc::new(RefCell::new(60_u32));
     'loop_: while ((*i.borrow()) > 30_u32) {
@@ -365,13 +365,13 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as u64) < (*indexes.borrow()).len() as u64) {
+    'loop_: while (((*i.borrow()) as usize) < (*indexes.borrow()).len()) {
         let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
         (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
                 __v.entry(
                     ((indexes.as_pointer() as Ptr<i32>)
-                        .offset(((*i.borrow()) as u64) as isize)
+                        .offset(((*i.borrow()) as usize) as isize)
                         .read())
                     .clone(),
                 )
@@ -381,7 +381,7 @@ fn main_0() -> i32 {
             .write(__rhs);
         (*i.borrow_mut()).prefix_inc();
     }
-    assert!(((*m2.borrow()).len() as u64 == (*indexes.borrow()).len() as u64));
+    assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));
     let last: Value<i32> = Rc::new(RefCell::new(-1_i32));
     'loop_: for pair in RefcountMapIter::begin(m2.as_pointer()) {
         assert!({
@@ -399,10 +399,10 @@ fn main_0() -> i32 {
         .get(&((*k.borrow()) as i16))
         .expect("out of range!")
         .as_pointer();
-    return (((((((((*m.borrow()).len() as u64).wrapping_add(((*x1.borrow()) as u64)))
-        .wrapping_add(((*x2.borrow()) as u64)))
-    .wrapping_add(((*x3.borrow()) as u64)))
-    .wrapping_add(((*x4.borrow()) as u64)))
-    .wrapping_add(((*x5.borrow()) as u64)))
-    .wrapping_add(((value_0.read()) as u64))) as i32);
+    return (((((((((*m.borrow()).len()).wrapping_add(((*x1.borrow()) as usize)))
+        .wrapping_add(((*x2.borrow()) as usize)))
+    .wrapping_add(((*x3.borrow()) as usize)))
+    .wrapping_add(((*x4.borrow()) as usize)))
+    .wrapping_add(((*x5.borrow()) as usize)))
+    .wrapping_add(((value_0.read()) as usize))) as i32);
 }

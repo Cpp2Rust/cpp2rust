@@ -20,8 +20,8 @@ unsafe fn main_0() -> i32 {
     let mut arr: [i32; 8] = [5, 2, 9, 1, 7, 3, 8, 4];
     libc::qsort(
         (arr.as_mut_ptr() as *mut i32 as *mut ::libc::c_void),
-        8_u64 as ::libc::size_t,
-        ::std::mem::size_of::<i32>() as u64 as ::libc::size_t,
+        8_usize,
+        ::std::mem::size_of::<i32>(),
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
@@ -36,8 +36,8 @@ unsafe fn main_0() -> i32 {
     let mut hit: *mut i32 = (libc::bsearch(
         ((&mut key as *mut i32) as *const i32 as *const ::libc::c_void),
         (arr.as_mut_ptr() as *const i32 as *const ::libc::c_void),
-        8_u64 as ::libc::size_t,
-        ::std::mem::size_of::<i32>() as u64 as ::libc::size_t,
+        8_usize,
+        ::std::mem::size_of::<i32>(),
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
@@ -49,8 +49,8 @@ unsafe fn main_0() -> i32 {
     let mut miss: *mut i32 = (libc::bsearch(
         ((&mut miss_key as *mut i32) as *const i32 as *const ::libc::c_void),
         (arr.as_mut_ptr() as *const i32 as *const ::libc::c_void),
-        8_u64 as ::libc::size_t,
-        ::std::mem::size_of::<i32>() as u64 as ::libc::size_t,
+        8_usize,
+        ::std::mem::size_of::<i32>(),
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,

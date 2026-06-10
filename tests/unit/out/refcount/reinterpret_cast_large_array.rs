@@ -12,7 +12,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(10000));
     let arr: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..((*N.borrow()) as u64))
+        (0..((*N.borrow()) as usize))
             .map(|_| <u32>::default())
             .collect::<Box<[u32]>>(),
     )));

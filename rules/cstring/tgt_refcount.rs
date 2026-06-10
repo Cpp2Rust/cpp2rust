@@ -13,8 +13,8 @@ fn f2(a0: AnyPtr, a1: u8, a2: usize) -> AnyPtr {
     a0.clone()
 }
 
-fn f3(a0: AnyPtr, a1: AnyPtr, a2: u64) -> i32 {
-    a0.memcmp(&a1, a2 as usize)
+fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
+    a0.memcmp(&a1, a2)
 }
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
@@ -22,6 +22,6 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0.clone()
 }
 
-unsafe fn f7(a0: Ptr<u8>) -> u64 {
-    a0.to_string_iterator().count() as u64
+unsafe fn f7(a0: Ptr<u8>) -> usize {
+    a0.to_string_iterator().count()
 }

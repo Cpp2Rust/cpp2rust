@@ -318,8 +318,9 @@ std::string ConverterRefCount::ConvertFreshObject(clang::Expr *expr) {
   return std::format("({}).clone()", std::move(str));
 }
 
-std::string ConverterRefCount::ConvertFresh(clang::Expr *expr) {
-  auto str = ToString(expr);
+std::string ConverterRefCount::ConvertFresh(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  auto str = ToString(expr, implicit_convert_to);
   if (isFresh() || expr->getType()->isVoidType() || isVoid()) {
     return str;
   }
@@ -327,8 +328,9 @@ std::string ConverterRefCount::ConvertFresh(clang::Expr *expr) {
   return std::format("({}).clone()", std::move(str));
 }
 
-std::string ConverterRefCount::ConvertFreshRValue(clang::Expr *expr) {
-  auto str = ConvertRValue(expr);
+std::string ConverterRefCount::ConvertFreshRValue(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  auto str = ConvertRValue(expr, implicit_convert_to);
   if (!isFresh() && !expr->getType()->isVoidType()) {
     SetFresh();
     return std::format("({}).clone()", std::move(str));
@@ -350,8 +352,9 @@ std::pair<std::string, std::string>
 ConverterRefCount::MaterializeTemp(const std::string &binding_name,
                                    clang::QualType param_type,
                                    clang::Expr *expr) {
-  auto value = ConvertRValue(expr);
-  auto type_str = ToStringBase(param_type.getNonReferenceType());
+  auto pointee = param_type.getNonReferenceType();
+  auto value = ConvertRValue(expr, pointee);
+  auto type_str = ToStringBase(pointee);
   std::string binding =
       std::format("let {} : Value < {} > = Rc::new(RefCell::new( {} )) ;",
                   binding_name, type_str, value);
@@ -696,14 +699,18 @@ bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
+  std::optional<clang::QualType> slot;
+  if (!expr->isGLValue()) {
+    slot = expr->getType();
+  }
   {
     PushBrace then_brace(*this);
-    StrCat(ConvertFresh(expr->getTrueExpr()));
+    StrCat(ConvertFresh(expr->getTrueExpr(), slot));
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    StrCat(ConvertFresh(expr->getFalseExpr()));
+    StrCat(ConvertFresh(expr->getFalseExpr(), slot));
   }
   return false;
 }
@@ -1811,9 +1818,11 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   bool is_ref = qual_type->isReferenceType();
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
   PushInitType init_type(*this, qual_type);
-  StrCat(BoxValue((is_ref || qual_type->isFunctionPointerType())
-                      ? ConvertFreshPointer(expr)
-                      : ConvertFreshRValue(expr)));
+  if (is_ref || qual_type->isFunctionPointerType()) {
+    StrCat(BoxValue(ConvertFreshPointer(expr)));
+  } else {
+    StrCat(BoxValue(ConvertFreshRValue(expr, qual_type)));
+  }
 }
 
 static std::unordered_set<const clang::ValueDecl *>
@@ -1874,7 +1883,7 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
 
 void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                           std::string_view assign_operator) {
-  auto rhs_as_string = ConvertFreshRValue(rhs);
+  auto rhs_as_string = ConvertFreshRValue(rhs, lhs->getType());
 
   PushBrace brace(*this, isRValue());
 
@@ -1935,16 +1944,20 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
        sides_contain_ptr_or_deref);
 
   if (may_cause_borrow_mut_err) {
-    StrCat(std::format("{{ let _lhs = {}; _lhs {} {} }}",
-                       ConvertFreshRValue(lhs), opcode,
-                       ConvertFreshRValue(rhs)));
+    StrCat(std::format(
+        "{{ let _lhs = {}; _lhs {} {} }}",
+        ConvertFreshRValue(lhs,
+                           GetOperandImplicitConversionTarget(expr, lhs, rhs)),
+        opcode,
+        ConvertFreshRValue(
+            rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs))));
     return;
   }
 
   PushParen outer(*this);
-  Convert(lhs);
+  Convert(lhs, GetOperandImplicitConversionTarget(expr, lhs, rhs));
   StrCat(opcode);
-  Convert(rhs);
+  Convert(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
 }
 
 void ConverterRefCount::ConvertUniquePtrDeref(

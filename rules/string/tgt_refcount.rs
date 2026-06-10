@@ -78,13 +78,12 @@ fn f15(a0: Ptr<u8>) -> Ptr<u8> {
     a0.to_last()
 }
 
-fn f16(a0: Vec<u8>, a1: Ptr<u8>) -> u64 {
+fn f16(a0: Vec<u8>, a1: Ptr<u8>) -> usize {
     let __lookup: Vec<u8> = a1.to_c_string_iterator().collect();
     a0.iter()
         .take(a0.len().saturating_sub(1))
         .rposition(|&x| __lookup.contains(&x))
-        .map(|idx| idx as u64)
-        .unwrap_or(u64::MAX)
+        .unwrap_or(usize::MAX)
 }
 
 // TODO: This should modify a0 in place

@@ -11,7 +11,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..2_u64).map(|_| <u32>::default()).collect::<Box<[u32]>>(),
+        (0..2_usize)
+            .map(|_| <u32>::default())
+            .collect::<Box<[u32]>>(),
     )));
     (*arr.borrow()).offset((0) as isize).write(67305985_u32);
     (*arr.borrow()).offset((1) as isize).write(134678021_u32);

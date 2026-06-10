@@ -6,13 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<u8>) -> u64 {
+pub fn strlen_0(s: Ptr<u8>) -> usize {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
     let begin: Value<Ptr<u8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
     'loop_: while (((*s.borrow()).read()) != 0) {
         (*s.borrow_mut()).prefix_inc();
     }
-    return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as u64);
+    return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as usize);
 }
 pub fn main() {
     std::process::exit(main_0());

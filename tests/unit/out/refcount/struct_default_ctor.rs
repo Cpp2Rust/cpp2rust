@@ -50,7 +50,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let params: Value<WOFF2Params> = Rc::new(RefCell::new(WOFF2Params::WOFF2Params()));
-    assert!((((*(*params.borrow()).extended_metadata.borrow()).len() - 1) as u64 == 0_u64));
+    assert!((((*(*params.borrow()).extended_metadata.borrow()).len() - 1) == 0_usize));
     assert!(((*(*params.borrow()).brotli_quality.borrow()) == 11));
     assert!((((*(*params.borrow()).allow_transforms.borrow()) as i32) == (true as i32)));
     return 0;

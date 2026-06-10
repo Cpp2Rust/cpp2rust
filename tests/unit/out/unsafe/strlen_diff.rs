@@ -6,12 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn strlen_0(mut s: *const u8) -> u64 {
+pub unsafe fn strlen_0(mut s: *const u8) -> usize {
     let mut begin: *const u8 = s;
     'loop_: while ((*s) != 0) {
         s.prefix_inc();
     }
-    return ((((s as usize - begin as usize) / ::std::mem::size_of::<u8>()) as i64) as u64);
+    return ((((s as usize - begin as usize) / ::std::mem::size_of::<u8>()) as i64) as usize);
 }
 pub fn main() {
     unsafe {

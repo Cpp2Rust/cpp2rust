@@ -23,6 +23,6 @@ unsafe fn main_0() -> i32 {
     assert!((((*bytes.offset((4) as isize)) as i32) == (5)));
     assert!((((*bytes.offset((7) as isize)) as i32) == (8)));
     (*bytes.offset((4) as isize)) = 255_u8;
-    assert!(((vec_[(1_u64) as usize]) == (134678271_u32)));
+    assert!(((vec_[(1_usize) as usize]) == (134678271_u32)));
     return 0;
 }

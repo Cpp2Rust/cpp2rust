@@ -31,8 +31,8 @@ unsafe fn main_0() -> i32 {
         let a0_clone = info.clone();
         o.runs.push(a0_clone)
     };
-    assert!(((o.runs.len() as u64) == (1_u64)));
-    assert!(((o.runs[(0_u64) as usize].block_idx) == (1)));
-    assert!(((o.runs[(0_u64) as usize].num_extra_zero_runs) == (2)));
+    assert!(((o.runs.len()) == (1_usize)));
+    assert!(((o.runs[(0_usize) as usize].block_idx) == (1)));
+    assert!(((o.runs[(0_usize) as usize].num_extra_zero_runs) == (2)));
     return 0;
 }

@@ -57,10 +57,10 @@ fn main_0() -> i32 {
         let a0_clone = (*info.borrow()).clone();
         (*(*o.borrow()).runs.borrow_mut()).push(a0_clone)
     };
-    assert!(((*(*o.borrow()).runs.borrow()).len() as u64 == 1_u64));
+    assert!(((*(*o.borrow()).runs.borrow()).len() == 1_usize));
     assert!(
         ((*(*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref())
         .block_idx
@@ -69,7 +69,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((*(*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref())
         .num_extra_zero_runs

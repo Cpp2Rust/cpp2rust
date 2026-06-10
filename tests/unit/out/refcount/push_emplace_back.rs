@@ -170,9 +170,9 @@ fn main_0() -> i32 {
         let _dest: Ptr<Vec<Value<Vec<u8>>>> = (vecs.as_pointer());
         push_param_0(_dest)
     });
-    assert!(((*vecs.borrow()).len() as u64 == 1_u64));
+    assert!(((*vecs.borrow()).len() == 1_usize));
     assert!((*((vecs.as_pointer() as Ptr<Value<Vec<u8>>>)
-        .offset(0_u64 as isize)
+        .offset(0_usize as isize)
         .upgrade()
         .deref()
         .as_pointer() as Ptr<Vec<u8>>)
@@ -184,45 +184,45 @@ fn main_0() -> i32 {
         let _jpg: Ptr<JPEGData> = (jpg.as_pointer());
         push_local_from_field_1(_jpg, true)
     });
-    assert!(((*(*jpg.borrow()).com_data.borrow()).len() as u64 == 1_u64));
+    assert!(((*(*jpg.borrow()).com_data.borrow()).len() == 1_usize));
     assert!(
         ((*(((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
-        .len() as u64
-            == 3_u64)
+        .len()
+            == 3_usize)
     );
     assert!(
         ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<u8>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .read()) as i32)
             == 1)
     );
     assert!(
         ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<u8>)
-            .offset(1_u64 as isize)
+            .offset(1_usize as isize)
             .read()) as i32)
             == 2)
     );
     assert!(
         ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<u8>)
-            .offset(2_u64 as isize)
+            .offset(2_usize as isize)
             .read()) as i32)
             == 3)
     );
@@ -240,10 +240,10 @@ fn main_0() -> i32 {
         let _bw: Ptr<Writer> = (w.as_pointer());
         nested_push_move_3(_bw)
     });
-    assert!(((*chunks.borrow()).len() as u64 == 1_u64));
+    assert!(((*chunks.borrow()).len() == 1_usize));
     assert!(
         ((*(*(chunks.as_pointer() as Ptr<Chunk>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref())
         .data
@@ -254,49 +254,49 @@ fn main_0() -> i32 {
         let _jpg: Ptr<JPEGData> = (jpg.as_pointer());
         emplace_local_from_field_4(_jpg, false)
     });
-    assert!(((*(*jpg.borrow()).app_data.borrow()).len() as u64 == 1_u64));
+    assert!(((*(*jpg.borrow()).app_data.borrow()).len() == 1_usize));
     assert!(
         ((*(((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
-        .len() as u64
-            == 3_u64)
+        .len()
+            == 3_usize)
     );
     assert!(
         ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<u8>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .read()) as i32)
             == 1)
     );
     assert!(
         ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<u8>)
-            .offset(2_u64 as isize)
+            .offset(2_usize as isize)
             .read()) as i32)
             == 3)
     );
-    assert!(((*(*jpg.borrow()).com_data.borrow()).len() as u64 == 1_u64));
+    assert!(((*(*jpg.borrow()).com_data.borrow()).len() == 1_usize));
     (*(*(*w.borrow()).chunk.borrow()).data.borrow_mut()) = 99;
     (*(*w.borrow()).output.borrow_mut()) = (chunks.as_pointer());
     ({
         let _bw: Ptr<Writer> = (w.as_pointer());
         nested_emplace_move_5(_bw)
     });
-    assert!(((*chunks.borrow()).len() as u64 == 2_u64));
+    assert!(((*chunks.borrow()).len() == 2_usize));
     assert!(
         ((*(*(chunks.as_pointer() as Ptr<Chunk>)
-            .offset(1_u64 as isize)
+            .offset(1_usize as isize)
             .upgrade()
             .deref())
         .data
@@ -307,10 +307,10 @@ fn main_0() -> i32 {
         let _comps: Ptr<Vec<Chunk>> = (chunks.as_pointer());
         self_ref_push_6(_comps)
     });
-    assert!(((*chunks.borrow()).len() as u64 == 3_u64));
+    assert!(((*chunks.borrow()).len() == 3_usize));
     assert!(
         ((*(*(chunks.as_pointer() as Ptr<Chunk>)
-            .offset(2_u64 as isize)
+            .offset(2_usize as isize)
             .upgrade()
             .deref())
         .data

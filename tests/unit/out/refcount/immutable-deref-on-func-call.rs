@@ -39,7 +39,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Ptr<Item>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..2_u64)
+        (0..2_usize)
             .map(|_| <Item>::default())
             .collect::<Box<[Item]>>(),
     )));

@@ -24,10 +24,8 @@ unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     a0.remove(pos);
     a1
 }
-// TODO: this should return usize. However std::size_t is translated as unsigned long which in turn
-// gets translated to u64.
-unsafe fn f2<T1>(a0: Vec<T1>) -> u64 {
-    a0.len() as u64
+unsafe fn f2<T1>(a0: Vec<T1>) -> usize {
+    a0.len()
 }
 unsafe fn f3<T1>(a0: Vec<T1>) -> bool {
     a0.is_empty()
@@ -55,8 +53,8 @@ unsafe fn f9<T1>(a0: &mut Vec<T1>) -> *mut T1 {
 unsafe fn f10<T1>(a0: &mut Vec<T1>) -> *mut T1 {
     ((a0).last_mut().unwrap())
 }
-unsafe fn f11<T1>(a0: Vec<T1>) -> u64 {
-    a0.capacity() as u64
+unsafe fn f11<T1>(a0: Vec<T1>) -> usize {
+    a0.capacity()
 }
 unsafe fn f12<T1>(a0: &mut Vec<T1>, a1: usize) {
     if a1 as usize > a0.capacity() as usize {

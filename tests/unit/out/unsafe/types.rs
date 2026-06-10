@@ -16,8 +16,8 @@ unsafe fn main_0() -> i32 {
     let xu16: u16 = 16_u16;
     let mut xu32: u32 = 32_u32;
     let mut xu64: u64 = 64_u64;
-    let xsz1: u64 = 64_u64;
-    let mut xsz2: u64 = 64_u64;
+    let xsz1: usize = 64_usize;
+    let mut xsz2: usize = 64_usize;
     let xi1: i8 = (-8_i32 as i8);
     let xi2: i16 = 16_i16;
     let mut xi3: i32 = 32;
@@ -25,8 +25,8 @@ unsafe fn main_0() -> i32 {
     let mut b: bool = ((xu64) == (64_u64));
     return (((((((((((((xu8 as i32) + (xu16 as i32)) as u32).wrapping_add(xu32)) as u64)
         .wrapping_add(xu64))
-    .wrapping_add(xsz1))
-    .wrapping_add(xsz2))
+    .wrapping_add(xsz1 as u64))
+    .wrapping_add(xsz2 as u64))
     .wrapping_add((xi1 as u64)))
     .wrapping_add((xi2 as u64)))
     .wrapping_add((xi3 as u64)))

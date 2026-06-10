@@ -159,6 +159,17 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
+
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type);
+
+bool IsSizeType(clang::QualType type);
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling);
+
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);

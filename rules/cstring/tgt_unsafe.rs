@@ -44,8 +44,8 @@ unsafe fn f6(a0: *const u8, a1: i32) -> *const u8 {
     libc::strchr(a0 as *const i8, a1) as *const u8
 }
 
-unsafe fn f7(a0: *const u8) -> u64 {
-    libc::strlen(a0 as *const i8) as u64
+unsafe fn f7(a0: *const u8) -> usize {
+    libc::strlen(a0 as *const i8)
 }
 
 unsafe fn f8(a0: *const u8, a1: *const u8) -> i32 {
@@ -80,12 +80,12 @@ unsafe fn f15(a0: *const u8) -> *mut u8 {
     libcc2rs::strdup_unsafe(a0)
 }
 
-unsafe fn f16(a0: *const u8, a1: *const u8) -> u64 {
-    libc::strcspn(a0 as *const i8, a1 as *const i8) as u64
+unsafe fn f16(a0: *const u8, a1: *const u8) -> usize {
+    libc::strcspn(a0 as *const i8, a1 as *const i8)
 }
 
-unsafe fn f17(a0: *const u8, a1: *const u8) -> u64 {
-    libc::strspn(a0 as *const i8, a1 as *const i8) as u64
+unsafe fn f17(a0: *const u8, a1: *const u8) -> usize {
+    libc::strspn(a0 as *const i8, a1 as *const i8)
 }
 
 unsafe fn f18(a0: *const u8, a1: *const u8) -> *mut u8 {

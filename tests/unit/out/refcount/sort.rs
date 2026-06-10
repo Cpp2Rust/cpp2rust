@@ -23,13 +23,13 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(6);
     (v.as_pointer() as Ptr<i32>).sort((v.as_pointer() as Ptr<i32>).to_end().get_offset());
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
-    'loop_: while (((*i.borrow()) as u64) < ((*v.borrow()).len() as u64).wrapping_sub(1_u64)) {
+    'loop_: while (((*i.borrow()) as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
         assert!(
             (((v.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as u64) as isize)
+                .offset(((*i.borrow()) as usize) as isize)
                 .read())
                 < ((v.as_pointer() as Ptr<i32>)
-                    .offset((((*i.borrow()).wrapping_add(1_u32)) as u64) as isize)
+                    .offset((((*i.borrow()).wrapping_add(1_u32)) as usize) as isize)
                     .read()))
         );
         (*i.borrow_mut()).prefix_inc();

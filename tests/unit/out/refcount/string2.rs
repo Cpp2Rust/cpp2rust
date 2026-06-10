@@ -17,7 +17,7 @@ fn main_0() -> i32 {
             .collect::<Vec<u8>>(),
     ));
     (arr.as_pointer() as Ptr<u8>)
-        .offset(1_u64 as isize)
+        .offset(1_usize as isize)
         .write(('b' as u8));
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).offset((1) as isize),

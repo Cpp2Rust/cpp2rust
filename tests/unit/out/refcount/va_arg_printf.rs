@@ -39,7 +39,7 @@ fn main_0() -> i32 {
                 Ptr::from_string_literal(b"hello %d %d"),
                 &[
                     (10).into(),
-                    ((*dummy.borrow()).to_string_iterator().count() as u64).into(),
+                    ((*dummy.borrow()).to_string_iterator().count()).into(),
                 ],
             )
         }) == 15) as i32)

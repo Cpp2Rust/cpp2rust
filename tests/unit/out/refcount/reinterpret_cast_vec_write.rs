@@ -25,7 +25,7 @@ fn main_0() -> i32 {
     (*bytes.borrow()).offset((4) as isize).write(255_u8);
     assert!(
         (((vec_.as_pointer() as Ptr<u32>)
-            .offset(1_u64 as isize)
+            .offset(1_usize as isize)
             .read())
             == 134678271_u32)
     );

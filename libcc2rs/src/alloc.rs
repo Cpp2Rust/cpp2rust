@@ -4,8 +4,8 @@
 /// # Safety
 ///
 /// Same contract as C's `malloc`.
-pub unsafe fn malloc_unsafe(a0: u64) -> *mut libc::c_void {
-    unsafe { libc::malloc(a0 as libc::size_t) }
+pub unsafe fn malloc_unsafe(a0: usize) -> *mut libc::c_void {
+    unsafe { libc::malloc(a0) }
 }
 
 /// # Safety
@@ -18,15 +18,15 @@ pub unsafe fn free_unsafe(a0: *mut libc::c_void) {
 /// # Safety
 ///
 /// Same contract as C's `realloc`.
-pub unsafe fn realloc_unsafe(a0: *mut libc::c_void, a1: u64) -> *mut libc::c_void {
-    unsafe { libc::realloc(a0, a1 as libc::size_t) }
+pub unsafe fn realloc_unsafe(a0: *mut libc::c_void, a1: usize) -> *mut libc::c_void {
+    unsafe { libc::realloc(a0, a1) }
 }
 
 /// # Safety
 ///
 /// Same contract as C's `calloc`.
-pub unsafe fn calloc_unsafe(a0: u64, a1: u64) -> *mut libc::c_void {
-    unsafe { libc::calloc(a0 as libc::size_t, a1 as libc::size_t) }
+pub unsafe fn calloc_unsafe(a0: usize, a1: usize) -> *mut libc::c_void {
+    unsafe { libc::calloc(a0, a1) }
 }
 
 /// # Safety

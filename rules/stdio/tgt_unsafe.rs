@@ -21,11 +21,11 @@ unsafe fn f4(a0: *mut ::libc::FILE, a1: i64, a2: i32) -> i32 {
     libc::fseek(a0, a1 as ::libc::c_long, a2)
 }
 
-unsafe fn f5(a0: *mut ::libc::c_void, a1: u64, a2: u64, a3: *mut ::libc::FILE) -> u64 {
+unsafe fn f5(a0: *mut ::libc::c_void, a1: usize, a2: usize, a3: *mut ::libc::FILE) -> usize {
     libcc2rs::fread_unsafe(a0, a1, a2, a3)
 }
 
-unsafe fn f6(a0: *const ::libc::c_void, a1: u64, a2: u64, a3: *mut ::libc::FILE) -> u64 {
+unsafe fn f6(a0: *const ::libc::c_void, a1: usize, a2: usize, a3: *mut ::libc::FILE) -> usize {
     libcc2rs::fwrite_unsafe(a0, a1, a2, a3)
 }
 
@@ -91,4 +91,8 @@ unsafe fn f22(a0: *const i8, a1: *const i8) -> i32 {
 
 unsafe fn f23(a0: *mut ::libc::FILE) -> i32 {
     libc::fgetc(a0)
+}
+
+unsafe fn f24(a0: *mut ::libc::FILE, a1: *mut u8, a2: i32, a3: usize) -> i32 {
+    libc::setvbuf(a0, a1 as *mut i8, a2, a3)
 }

@@ -38,8 +38,8 @@ unsafe fn main_0() -> i32 {
     )
     .write_all(
         &([
-            (&[vec_[(0_u64) as usize]] as &[u8]),
-            (&[vec_[(1_u64) as usize]] as &[u8]),
+            (&[vec_[(0_usize) as usize]] as &[u8]),
+            (&[vec_[(1_usize) as usize]] as &[u8]),
             (&[('o' as u8)] as &[u8]),
             (&(str)[..(str).len() - 1] as &[u8]),
             (&[b'\n'] as &[u8]),
@@ -102,9 +102,9 @@ unsafe fn main_0() -> i32 {
     )
     .write_all(
         &([
-            (&[vec_[(0_u64) as usize]] as &[u8]),
+            (&[vec_[(0_usize) as usize]] as &[u8]),
             (&[('\n' as u8)] as &[u8]),
-            (&[vec_[(1_u64) as usize]] as &[u8]),
+            (&[vec_[(1_usize) as usize]] as &[u8]),
             (&[('\n' as u8)] as &[u8]),
         ]
         .concat()),

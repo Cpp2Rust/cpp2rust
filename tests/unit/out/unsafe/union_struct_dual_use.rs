@@ -50,7 +50,7 @@ unsafe fn main_0() -> i32 {
     let mut outer: Outer = <Outer>::default();
     {
         let byte_0 = ((&mut outer as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Outer>() as u64 {
+        for offset in 0..::std::mem::size_of::<Outer>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut outer as *mut Outer) as *mut Outer as *mut ::libc::c_void)

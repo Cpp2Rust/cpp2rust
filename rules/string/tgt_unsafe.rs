@@ -14,8 +14,8 @@ unsafe fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {
     __tmp1.push(0);
     __tmp1
 }
-unsafe fn f2(a0: Vec<u8>) -> u64 {
-    (a0.len() - 1) as u64
+unsafe fn f2(a0: Vec<u8>) -> usize {
+    (a0.len() - 1)
 }
 unsafe fn f3(a0: Vec<u8>, a1: *const u8) -> Vec<u8> {
     let mut __tmp2 = a0.clone();
@@ -91,15 +91,15 @@ unsafe fn f14(a0: &mut Vec<u8>, a1: usize, a2: usize, a3: *const u8, a4: usize) 
 unsafe fn f15(a0: &mut Vec<u8>) -> *mut u8 {
     a0.as_mut_ptr().add(a0.len() - 1)
 }
-unsafe fn f16(a0: Vec<u8>, a1: *const u8) -> u64 {
+unsafe fn f16(a0: Vec<u8>, a1: *const u8) -> usize {
     match a0.iter().rposition(|&c| {
         ::std::ffi::CStr::from_ptr(a1 as *const i8)
             .to_str()
             .unwrap()
             .contains(c as u8 as char)
     }) {
-        Some(idx) => idx as u64,
-        None => u64::MAX,
+        Some(idx) => idx,
+        None => usize::MAX,
     }
 }
 unsafe fn f17(a0: Vec<u8>, a1: *const u8) -> Vec<u8> {
@@ -119,8 +119,8 @@ unsafe fn f18(a0: Vec<u8>, a1: *const u8) -> bool {
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     }
 }
-unsafe fn f19(a0: Vec<u8>) -> u64 {
-    (a0.len() - 1) as u64
+unsafe fn f19(a0: Vec<u8>) -> usize {
+    (a0.len() - 1)
 }
 unsafe fn f20(a0: *mut u8, a1: usize) -> *mut u8 {
     a0.add(a1 as usize)

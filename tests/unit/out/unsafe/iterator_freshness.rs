@@ -13,7 +13,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut vec_: Vec<i32> = (0..(4_u64) as usize)
+    let mut vec_: Vec<i32> = (0..(4_usize) as usize)
         .map(|_| <i32>::default())
         .collect::<Vec<_>>();
     let mut it: *mut i32 = vec_.as_mut_ptr();

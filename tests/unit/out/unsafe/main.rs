@@ -22,6 +22,6 @@ unsafe fn main_0(mut argc: i32, mut argv: *mut *mut u8) -> i32 {
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
     assert!(((argc) == (1)));
-    assert!((((s.len() - 1) as u64) > (0_u64)));
-    return ((argc) + ((((s.len() - 1) as u64) > (0_u64)) as i32));
+    assert!(((s.len() - 1) > (0_usize)));
+    return ((argc) + (((s.len() - 1) > (0_usize)) as i32));
 }

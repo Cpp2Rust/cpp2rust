@@ -13,7 +13,7 @@ pub struct S {
 }
 pub static mut s_0: *mut S = unsafe { std::ptr::null_mut() };
 pub static mut file_1: *mut ::libc::FILE = unsafe { std::ptr::null_mut() };
-pub static mut size_2: u64 = unsafe { 0_u64 };
+pub static mut size_2: usize = unsafe { 0_usize };
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -22,6 +22,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!((s_0).is_null());
     assert!((file_1).is_null());
-    assert!(((size_2) == (0_u64)));
+    assert!(((size_2) == (0_usize)));
     return 0;
 }

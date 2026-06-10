@@ -11,14 +11,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let array: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..100_u64)
+        (0..100_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
     {
         ((*array.borrow()).clone() as Ptr<i32>).to_any().memset(
             (0) as u8,
-            (::std::mem::size_of::<i32>() as u64 as u64).wrapping_mul(100_u64) as usize,
+            (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
         );
         ((*array.borrow()).clone() as Ptr<i32>).to_any().clone()
     };

@@ -61,8 +61,8 @@ unsafe fn main_0() -> i32 {
     };;
     let mut i: i32 = 0;
     'loop_: while ((i)
-        < (((::std::mem::size_of::<[u8; 41]>() as u64 as u64)
-            .wrapping_div(::std::mem::size_of::<u8>() as u64 as u64)) as i32))
+        < (((::std::mem::size_of::<[u8; 41]>() as usize)
+            .wrapping_div(::std::mem::size_of::<u8>() as usize)) as i32))
     {
         assert!((((*special.offset((i) as isize)) as i32) == (expected_0[(i) as usize] as i32)));
         i.postfix_inc();

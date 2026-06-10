@@ -65,7 +65,7 @@ unsafe fn main_0() -> i32 {
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() as u64 {
+        for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
@@ -85,8 +85,8 @@ unsafe fn main_0() -> i32 {
     src[(5) as usize] = 0_u8;
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
-    let mut len: u64 = 16_u64;
-    assert!(((((len) <= (::std::mem::size_of::<[u8; 256]>() as u64)) as i32) != 0));
+    let mut len: usize = 16_usize;
+    assert!(((((len) <= (::std::mem::size_of::<[u8; 256]>())) as i32) != 0));
     {
         if len != 0 {
             ::std::ptr::copy_nonoverlapping(
@@ -106,7 +106,7 @@ unsafe fn main_0() -> i32 {
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() as u64 {
+        for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)

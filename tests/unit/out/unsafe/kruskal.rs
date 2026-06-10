@@ -14,27 +14,27 @@ pub struct Edge {
     pub weight: f64,
 }
 pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) -> i32 {
-    let pivot: *mut Edge = &mut (*arr).as_mut().unwrap()[(start as u64) as usize] as *mut Edge;
+    let pivot: *mut Edge = &mut (*arr).as_mut().unwrap()[(start as usize) as usize] as *mut Edge;
     let mut count: i32 = 0;
     let mut i: i32 = ((start) + (1));
     'loop_: while ((i) <= (end)) {
-        if (((*arr).as_mut().unwrap()[(i as u64) as usize].weight) <= ((*pivot).weight)) {
+        if (((*arr).as_mut().unwrap()[(i as usize) as usize].weight) <= ((*pivot).weight)) {
             count.postfix_inc();
         }
         i.prefix_inc();
     }
     let mut pidx: i32 = ((start) + (count));
     let mut tmp: Edge = Edge {
-        u: (*arr).as_mut().unwrap()[(pidx as u64) as usize].u,
-        v: (*arr).as_mut().unwrap()[(pidx as u64) as usize].v,
-        weight: (*arr).as_mut().unwrap()[(pidx as u64) as usize].weight,
+        u: (*arr).as_mut().unwrap()[(pidx as usize) as usize].u,
+        v: (*arr).as_mut().unwrap()[(pidx as usize) as usize].v,
+        weight: (*arr).as_mut().unwrap()[(pidx as usize) as usize].weight,
     };
-    (*arr).as_mut().unwrap()[(pidx as u64) as usize] = Edge {
-        u: (*arr).as_mut().unwrap()[(start as u64) as usize].u,
-        v: (*arr).as_mut().unwrap()[(start as u64) as usize].v,
-        weight: (*arr).as_mut().unwrap()[(start as u64) as usize].weight,
+    (*arr).as_mut().unwrap()[(pidx as usize) as usize] = Edge {
+        u: (*arr).as_mut().unwrap()[(start as usize) as usize].u,
+        v: (*arr).as_mut().unwrap()[(start as usize) as usize].v,
+        weight: (*arr).as_mut().unwrap()[(start as usize) as usize].weight,
     };
-    (*arr).as_mut().unwrap()[(start as u64) as usize] = Edge {
+    (*arr).as_mut().unwrap()[(start as usize) as usize] = Edge {
         u: tmp.u,
         v: tmp.v,
         weight: tmp.weight,
@@ -42,25 +42,27 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
     let mut i: i32 = start;
     let mut j: i32 = end;
     'loop_: while ((i) < (pidx)) && ((j) > (pidx)) {
-        'loop_: while (((*arr).as_mut().unwrap()[(i as u64) as usize].weight) <= ((*pivot).weight))
+        'loop_: while (((*arr).as_mut().unwrap()[(i as usize) as usize].weight)
+            <= ((*pivot).weight))
         {
             i.prefix_inc();
         }
-        'loop_: while (((*arr).as_mut().unwrap()[(j as u64) as usize].weight) > ((*pivot).weight)) {
+        'loop_: while (((*arr).as_mut().unwrap()[(j as usize) as usize].weight) > ((*pivot).weight))
+        {
             j.prefix_dec();
         }
         if ((i) < (pidx)) && ((j) > (pidx)) {
             tmp = Edge {
-                u: (*arr).as_mut().unwrap()[(i as u64) as usize].u,
-                v: (*arr).as_mut().unwrap()[(i as u64) as usize].v,
-                weight: (*arr).as_mut().unwrap()[(i as u64) as usize].weight,
+                u: (*arr).as_mut().unwrap()[(i as usize) as usize].u,
+                v: (*arr).as_mut().unwrap()[(i as usize) as usize].v,
+                weight: (*arr).as_mut().unwrap()[(i as usize) as usize].weight,
             };
-            (*arr).as_mut().unwrap()[(i as u64) as usize] = Edge {
-                u: (*arr).as_mut().unwrap()[(j as u64) as usize].u,
-                v: (*arr).as_mut().unwrap()[(j as u64) as usize].v,
-                weight: (*arr).as_mut().unwrap()[(j as u64) as usize].weight,
+            (*arr).as_mut().unwrap()[(i as usize) as usize] = Edge {
+                u: (*arr).as_mut().unwrap()[(j as usize) as usize].u,
+                v: (*arr).as_mut().unwrap()[(j as usize) as usize].v,
+                weight: (*arr).as_mut().unwrap()[(j as usize) as usize].weight,
             };
-            (*arr).as_mut().unwrap()[(j as u64) as usize] = Edge {
+            (*arr).as_mut().unwrap()[(j as usize) as usize] = Edge {
                 u: tmp.u,
                 v: tmp.v,
                 weight: tmp.weight,
@@ -105,19 +107,19 @@ impl DisjointSet {
     pub unsafe fn makeSet(&mut self) {
         let mut i: i32 = 0;
         'loop_: while ((i) < (self.n)) {
-            self.parent.as_mut().unwrap()[(i as u64) as usize] = i;
-            self.rank.as_mut().unwrap()[(i as u64) as usize] = 1;
+            self.parent.as_mut().unwrap()[(i as usize) as usize] = i;
+            self.rank.as_mut().unwrap()[(i as usize) as usize] = 1;
             i.postfix_inc();
         }
     }
     pub unsafe fn find(&mut self, mut x: i32) -> i32 {
-        if ((self.parent.as_mut().unwrap()[(x as u64) as usize]) != (x)) {
-            self.parent.as_mut().unwrap()[(x as u64) as usize] = (unsafe {
-                let _x: i32 = self.parent.as_mut().unwrap()[(x as u64) as usize];
+        if ((self.parent.as_mut().unwrap()[(x as usize) as usize]) != (x)) {
+            self.parent.as_mut().unwrap()[(x as usize) as usize] = (unsafe {
+                let _x: i32 = self.parent.as_mut().unwrap()[(x as usize) as usize];
                 self.find(_x)
             });
         }
-        return self.parent.as_mut().unwrap()[(x as u64) as usize];
+        return self.parent.as_mut().unwrap()[(x as usize) as usize];
     }
     pub unsafe fn merge(&mut self, mut x: i32, mut y: i32) {
         let mut xset: i32 = (unsafe {
@@ -131,18 +133,18 @@ impl DisjointSet {
         if ((xset) == (yset)) {
             return;
         }
-        if ((self.rank.as_mut().unwrap()[(xset as u64) as usize])
-            < (self.rank.as_mut().unwrap()[(yset as u64) as usize]))
+        if ((self.rank.as_mut().unwrap()[(xset as usize) as usize])
+            < (self.rank.as_mut().unwrap()[(yset as usize) as usize]))
         {
-            self.parent.as_mut().unwrap()[(xset as u64) as usize] = yset;
-        } else if ((self.rank.as_mut().unwrap()[(xset as u64) as usize])
-            > (self.rank.as_mut().unwrap()[(yset as u64) as usize]))
+            self.parent.as_mut().unwrap()[(xset as usize) as usize] = yset;
+        } else if ((self.rank.as_mut().unwrap()[(xset as usize) as usize])
+            > (self.rank.as_mut().unwrap()[(yset as usize) as usize]))
         {
-            self.parent.as_mut().unwrap()[(yset as u64) as usize] = xset;
+            self.parent.as_mut().unwrap()[(yset as usize) as usize] = xset;
         } else {
-            self.parent.as_mut().unwrap()[(yset as u64) as usize] = xset;
-            self.rank.as_mut().unwrap()[(xset as u64) as usize] =
-                ((self.rank.as_mut().unwrap()[(xset as u64) as usize]) + (1));
+            self.parent.as_mut().unwrap()[(yset as usize) as usize] = xset;
+            self.rank.as_mut().unwrap()[(xset as usize) as usize] =
+                ((self.rank.as_mut().unwrap()[(xset as usize) as usize]) + (1));
         }
     }
 }
@@ -161,12 +163,12 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     });
     let mut set: DisjointSet = DisjointSet {
         rank: Some(
-            (0..((*graph).V as u64))
+            (0..((*graph).V as usize))
                 .map(|_| <i32>::default())
                 .collect::<Box<[_]>>(),
         ),
         parent: Some(
-            (0..((*graph).V as u64))
+            (0..((*graph).V as usize))
                 .map(|_| <i32>::default())
                 .collect::<Box<[_]>>(),
         ),
@@ -176,9 +178,9 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     let mut total_weight: f64 = 0_f64;
     let mut i: i32 = 0;
     'loop_: while ((i) < ((*graph).E)) {
-        let mut x: i32 = (*graph).edges.as_mut().unwrap()[(i as u64) as usize].u;
-        let mut y: i32 = (*graph).edges.as_mut().unwrap()[(i as u64) as usize].v;
-        let mut w: f64 = (*graph).edges.as_mut().unwrap()[(i as u64) as usize].weight;
+        let mut x: i32 = (*graph).edges.as_mut().unwrap()[(i as usize) as usize].u;
+        let mut y: i32 = (*graph).edges.as_mut().unwrap()[(i as usize) as usize].v;
+        let mut w: f64 = (*graph).edges.as_mut().unwrap()[(i as usize) as usize].weight;
         if ((unsafe {
             let _x: i32 = x;
             set.find(_x)
@@ -207,34 +209,34 @@ unsafe fn main_0() -> i32 {
     let mut E: i32 = 5;
     let mut graph: Graph = Graph {
         edges: Some(
-            (0..(E as u64))
+            (0..(E as usize))
                 .map(|_| <Edge>::default())
                 .collect::<Box<[_]>>(),
         ),
         V: V,
         E: E,
     };
-    graph.edges.as_mut().unwrap()[(0_u64) as usize] = Edge {
+    graph.edges.as_mut().unwrap()[(0_usize) as usize] = Edge {
         u: 0,
         v: 1,
         weight: 10_f64,
     };
-    graph.edges.as_mut().unwrap()[(1_u64) as usize] = Edge {
+    graph.edges.as_mut().unwrap()[(1_usize) as usize] = Edge {
         u: 1,
         v: 3,
         weight: 15_f64,
     };
-    graph.edges.as_mut().unwrap()[(2_u64) as usize] = Edge {
+    graph.edges.as_mut().unwrap()[(2_usize) as usize] = Edge {
         u: 2,
         v: 3,
         weight: 4_f64,
     };
-    graph.edges.as_mut().unwrap()[(3_u64) as usize] = Edge {
+    graph.edges.as_mut().unwrap()[(3_usize) as usize] = Edge {
         u: 2,
         v: 0,
         weight: 6_f64,
     };
-    graph.edges.as_mut().unwrap()[(4_u64) as usize] = Edge {
+    graph.edges.as_mut().unwrap()[(4_usize) as usize] = Edge {
         u: 0,
         v: 3,
         weight: 5_f64,

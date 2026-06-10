@@ -34,9 +34,9 @@ unsafe fn main_0() -> i32 {
         sum += (*x);
     }
     let mut v2: Vec<*mut i32> = Vec::new();
-    v2.push((&mut v1[(0_u64) as usize] as *mut i32));
-    v2.push((&mut v1[(1_u64) as usize] as *mut i32));
-    v2.push((&mut v1[(2_u64) as usize] as *mut i32));
+    v2.push((&mut v1[(0_usize) as usize] as *mut i32));
+    v2.push((&mut v1[(1_usize) as usize] as *mut i32));
+    v2.push((&mut v1[(2_usize) as usize] as *mut i32));
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();
         (*p) += 5;

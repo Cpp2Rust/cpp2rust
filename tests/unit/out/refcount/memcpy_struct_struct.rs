@@ -70,14 +70,15 @@ fn main_0() -> i32 {
             value: Rc::new(RefCell::new(0_u16)),
         },
     ])));
-    let table_size: Value<u64> = Rc::new(RefCell::new(4_u64));
+    let table_size: Value<usize> = Rc::new(RefCell::new(4_usize));
     {
         (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()) as isize))
             as Ptr<Entry>)
             .to_any()
             .memcpy(
                 &(((table.as_pointer() as Ptr<Entry>).offset(0 as isize)) as Ptr<Entry>).to_any(),
-                (*table_size.borrow()).wrapping_mul(::std::mem::size_of::<Entry>() as u64 as u64)
+                ((((*table_size.borrow()) as u64)
+                    .wrapping_mul(::std::mem::size_of::<Entry>() as u64)) as usize)
                     as usize,
             );
         (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()) as isize)) as Ptr<Entry>)

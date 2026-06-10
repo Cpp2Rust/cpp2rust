@@ -11,13 +11,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let g: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..2_u64).map(|_| <i32>::default()).collect::<Box<[_]>>(),
+        (0..2_usize).map(|_| <i32>::default()).collect::<Box<[_]>>(),
     )))));
-    (*g.borrow()).as_ref().unwrap().borrow_mut()[(0_u64) as usize] = 11;
-    (*g.borrow()).as_ref().unwrap().borrow_mut()[(1_u64) as usize] = 12;
+    (*g.borrow()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] = 11;
+    (*g.borrow()).as_ref().unwrap().borrow_mut()[(1_usize) as usize] = 12;
     let g_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((*g.borrow()).as_pointer()));
     (*g_ptr.borrow()).offset((0) as isize).write(13);
     (*g_ptr.borrow()).offset((1) as isize).write(14);
-    return ((*g.borrow()).as_ref().unwrap().borrow()[(0_u64) as usize]
-        + (*g.borrow()).as_ref().unwrap().borrow()[(1_u64) as usize]);
+    return ((*g.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize]
+        + (*g.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize]);
 }

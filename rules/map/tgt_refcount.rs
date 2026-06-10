@@ -29,8 +29,8 @@ fn f1<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
     })
 }
 
-fn f2<T1, T2>(a0: BTreeMap<T1, Value<T2>>) -> u64 {
-    a0.len() as u64
+fn f2<T1, T2>(a0: BTreeMap<T1, Value<T2>>) -> usize {
+    a0.len()
 }
 
 fn f3<T1: Ord + Clone + 'static, T2: 'static>(

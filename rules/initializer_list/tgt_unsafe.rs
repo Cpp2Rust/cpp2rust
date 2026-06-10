@@ -7,6 +7,6 @@ fn t1<T1>() -> Vec<T1> {
     Default::default()
 }
 
-unsafe fn f1<T1>(a0: Vec<T1>) -> u64 {
-    a0.len() as u64
+unsafe fn f1<T1>(a0: Vec<T1>) -> usize {
+    a0.len()
 }

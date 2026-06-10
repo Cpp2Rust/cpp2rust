@@ -113,7 +113,7 @@ pub fn RndStuff_2() {
     let x1: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(None));
     let x2: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         Ptr::alloc_array(
-            (0..100_u64)
+            (0..100_usize)
                 .map(|_| <i32>::default())
                 .collect::<Box<[i32]>>(),
         )
@@ -121,18 +121,18 @@ pub fn RndStuff_2() {
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 100) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] = 1;
+        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
         (*i.borrow_mut()).prefix_inc();
     }
     (*x2.borrow_mut()) = Ptr::alloc_array(
-        (0..200_u64)
+        (0..200_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] = 2;
+        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 2;
         (*i.borrow_mut()).prefix_inc();
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
@@ -142,11 +142,13 @@ pub fn RndStuff_2() {
         (*i.borrow_mut()).prefix_inc();
     }
     let x3: Value<Option<Value<Box<[Pair]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..10_u64).map(|_| <Pair>::default()).collect::<Box<[_]>>(),
+        (0..10_usize)
+            .map(|_| <Pair>::default())
+            .collect::<Box<[_]>>(),
     )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 10) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] = Pair {
+        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
             x: Rc::new(RefCell::new(1)),
             y: Rc::new(RefCell::new(2)),
         };
@@ -173,7 +175,7 @@ pub fn RndStuff_2() {
             .borrow())
                 == 2)
         );
-        ({ (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as u64) as usize].inc(10) });
+        ({ (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].inc(10) });
         assert!(
             ((*(*(*p3_0.borrow())
                 .offset((*i.borrow()) as isize)
@@ -195,14 +197,14 @@ pub fn RndStuff_2() {
         (*i.borrow_mut()).prefix_inc();
     }
     (*x3.borrow_mut()) = Ptr::alloc_array(
-        (0..50_u64)
+        (0..50_usize)
             .map(|_| <Pair>::default())
             .collect::<Box<[Pair]>>(),
     )
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as u64) as usize] = Pair {
+        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
             x: Rc::new(RefCell::new(-1_i32)),
             y: Rc::new(RefCell::new(-2_i32)),
         };
@@ -235,7 +237,7 @@ pub fn RndStuff_2() {
         );
         ({
             let _k: i32 = -10_i32;
-            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as u64) as usize].inc(_k)
+            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].inc(_k)
         });
         assert!(
             ((*(*(*p3_1.borrow())

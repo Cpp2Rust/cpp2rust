@@ -6,9 +6,9 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn f_0(mut bytes: Vec<i32>) -> u64 {
+pub unsafe fn f_0(mut bytes: Vec<i32>) -> usize {
     let mut buf: *mut Vec<i32> = (Box::leak(Box::new(bytes.clone())) as *mut Vec<i32>);
-    let mut n: u64 = bytes.len() as u64;
+    let mut n: usize = bytes.len();
     ::std::mem::drop(Box::from_raw(buf));
     return n;
 }
@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         ((unsafe {
             let _bytes: Vec<i32> = vec![1, 2, 3];
             f_0(_bytes)
-        }) == (3_u64))
+        }) == (3_usize))
     );
     return 0;
 }

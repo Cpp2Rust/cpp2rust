@@ -22,13 +22,13 @@ unsafe fn main_0() -> i32 {
     (*m.entry(0_i16).or_default().as_mut()) = 1_u32;
     (*m.entry(1_i16).or_default().as_mut()) = 2_u32;
     (*m.entry(2_i16).or_default().as_mut()) = 3_u32;
-    assert!(((m.len() as u64) == (3_u64)));
+    assert!(((m.len()) == (3_usize)));
     assert!(((*m.entry(0_i16).or_default().as_mut()) == (1_u32)));
     assert!(((*m.entry(1_i16).or_default().as_mut()) == (2_u32)));
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (3_u32)));
     let mut x: i32 = 4;
     (*m.entry(1_i16).or_default().as_mut()) = (x as u32);
-    assert!(((m.len() as u64) == (3_u64)));
+    assert!(((m.len()) == (3_usize)));
     assert!(((*m.entry(0_i16).or_default().as_mut()) == (1_u32)));
     assert!(((*m.entry(1_i16).or_default().as_mut()) == (4_u32)));
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (3_u32)));
@@ -87,26 +87,26 @@ unsafe fn main_0() -> i32 {
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
     let r: *mut BTreeMap<i16, Box<u32>> = &mut m as *mut BTreeMap<i16, Box<u32>>;
-    assert!((((*r).len() as u64) == (4_u64)));
+    assert!((((*r).len()) == (4_usize)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
             != UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>)
     );
     UnsafeMapIterator::erase(&(*r) as *const BTreeMap<i16, Box<u32>>, &it4.clone());
-    assert!((((*r).len() as u64) == (3_u64)));
+    assert!((((*r).len()) == (3_usize)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
             == UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>)
     );
     let mut other_map: BTreeMap<(i32, i64), Box<f64>> = BTreeMap::new();
-    assert!(((other_map.len() as u64) == (0_u64)));
+    assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());
     let mut value: f64 = 2_f64;
     (*other_map.entry(key0).or_default().as_mut()) = value;
     value = (*other_map.entry(key0).or_default().as_mut());
-    assert!(((other_map.len() as u64) == (1_u64)));
+    assert!(((other_map.len()) == (1_usize)));
     assert!(((*other_map.entry(key0).or_default().as_mut()) == (value)));
-    assert!(((m.len() as u64) == (3_u64)));
+    assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
     assert!(((*(m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32)) == (5_u32)));
     k.prefix_inc();
@@ -114,7 +114,7 @@ unsafe fn main_0() -> i32 {
     k.prefix_inc();
     assert!(((*(m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32)) == (4_u32)));
     let mut m2: BTreeMap<i32, Box<bool>> = BTreeMap::new();
-    assert!(((m2.len() as u64) == (0_u64)));
+    assert!(((m2.len()) == (0_usize)));
     let mut indexes: Vec<i32> = Vec::new();
     let mut i: u32 = 60_u32;
     'loop_: while ((i) > (30_u32)) {
@@ -132,12 +132,13 @@ unsafe fn main_0() -> i32 {
         i.prefix_dec();
     }
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as u64) < (indexes.len() as u64)) {
-        (*m2.entry(indexes[(i as u64) as usize]).or_default().as_mut()) =
-            ((i).wrapping_rem(2_u32) != 0);
+    'loop_: while ((i as usize) < (indexes.len())) {
+        (*m2.entry(indexes[(i as usize) as usize])
+            .or_default()
+            .as_mut()) = ((i).wrapping_rem(2_u32) != 0);
         i.prefix_inc();
     }
-    assert!(((m2.len() as u64) == (indexes.len() as u64)));
+    assert!(((m2.len()) == (indexes.len())));
     let mut last: i32 = -1_i32;
     'loop_: for pair in UnsafeMapIterator::begin(&m2 as *const BTreeMap<i32, Box<bool>>) {
         assert!(((*pair.first()) > (last)));
@@ -146,9 +147,9 @@ unsafe fn main_0() -> i32 {
     }
     k = 0;
     let value_0: *const u32 = (m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32);
-    return ((((((((m.len() as u64).wrapping_add((x1 as u64))).wrapping_add((x2 as u64)))
-        .wrapping_add((x3 as u64)))
-    .wrapping_add((x4 as u64)))
-    .wrapping_add((x5 as u64)))
-    .wrapping_add(((*value_0) as u64))) as i32);
+    return ((((((((m.len()).wrapping_add((x1 as usize))).wrapping_add((x2 as usize)))
+        .wrapping_add((x3 as usize)))
+    .wrapping_add((x4 as usize)))
+    .wrapping_add((x5 as usize)))
+    .wrapping_add(((*value_0) as usize))) as i32);
 }

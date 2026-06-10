@@ -14,10 +14,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let N: i32 = 3;
     let mut arr: *mut i32 =
-        Box::leak((0..(N as u64)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+        Box::leak((0..(N as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     {
         let byte_0 = (arr as *mut i32 as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..(::std::mem::size_of::<i32>() as u64 as u64).wrapping_mul((N as u64)) {
+        for offset in 0..(::std::mem::size_of::<i32>() as usize).wrapping_mul((N as usize)) {
             *byte_0.offset(offset as isize) = 1 as u8;
         }
         (arr as *mut i32 as *mut ::libc::c_void)

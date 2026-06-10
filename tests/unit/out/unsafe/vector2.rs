@@ -14,21 +14,21 @@ pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     v2.push(0);
     v2.push(1);
     v2.push(3);
-    x = (&mut (*v))[(2_u64) as usize];
-    v2[(0_u64) as usize] = 1;
-    (if true { &mut v3 } else { &mut (*v) })[(0_u64) as usize] = 7;
+    x = (&mut (*v))[(2_usize) as usize];
+    v2[(0_usize) as usize] = 1;
+    (if true { &mut v3 } else { &mut (*v) })[(0_usize) as usize] = 7;
     v2 = (*v).clone();
-    (&mut (*v4))[(1_u64) as usize] = 13;
+    (&mut (*v4))[(1_usize) as usize] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));
-    assert!((((&mut (*v))[(1_u64) as usize]) == (5)));
-    assert!((((&mut (*v))[(2_u64) as usize]) == (6)));
+    assert!((((&mut (*v))[(1_usize) as usize]) == (5)));
+    assert!((((&mut (*v))[(2_usize) as usize]) == (6)));
     assert!(((*((*v).last_mut().unwrap())) == (20)));
-    assert!(((v2[(0_u64) as usize]) == (4)));
-    assert!(((v2[(1_u64) as usize]) == (5)));
-    assert!(((v2[(2_u64) as usize]) == (6)));
-    assert!(((v3[(0_u64) as usize]) == (7)));
-    assert!(((v3[(1_u64) as usize]) == (13)));
+    assert!(((v2[(0_usize) as usize]) == (4)));
+    assert!(((v2[(1_usize) as usize]) == (5)));
+    assert!(((v2[(2_usize) as usize]) == (6)));
+    assert!(((v3[(0_usize) as usize]) == (7)));
+    assert!(((v3[(1_usize) as usize]) == (13)));
     (*v).push(20);
 }
 pub fn main() {

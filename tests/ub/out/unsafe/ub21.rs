@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn strlen_0(mut s: *const u8) -> u64 {
-    let mut count: u64 = 0_u64;
+pub unsafe fn strlen_0(mut s: *const u8) -> usize {
+    let mut count: usize = 0_usize;
     'loop_: while ((*s.postfix_inc()) != 0) {
         count.prefix_inc();
     }

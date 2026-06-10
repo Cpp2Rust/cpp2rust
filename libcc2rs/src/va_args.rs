@@ -30,7 +30,7 @@ macro_rules! impl_va_arg_from {
 }
 
 impl_va_arg_from!(direct: i32 => Int, u32 => UInt, i64 => Long, u64 => ULong, f64 => Double, AnyPtr => Ptr);
-impl_va_arg_from!(promote: i8 => Int as i32, i16 => Int as i32, u8 => UInt as u32, u16 => UInt as u32, f32 => Double as f64);
+impl_va_arg_from!(promote: i8 => Int as i32, i16 => Int as i32, u8 => UInt as u32, u16 => UInt as u32, f32 => Double as f64, usize => ULong as u64, isize => Long as i64);
 
 impl<T> From<*mut T> for VaArg {
     fn from(v: *mut T) -> Self {

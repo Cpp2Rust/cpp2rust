@@ -16,9 +16,9 @@ unsafe fn main_0() -> i32 {
     let mut inner: Vec<i32> = Vec::new();
     outer.push(inner.clone());
     let mut sink: *mut Vec<i32> = ((outer).last_mut().unwrap());
-    assert!((((*(sink).cast_const()).len() as u64) == (0_u64)));
+    assert!((((*(sink).cast_const()).len()) == (0_usize)));
     let mut p: *mut Vec<Vec<i32>> = (&mut outer as *mut Vec<Vec<i32>>);
     sink = ((*p).last_mut().unwrap());
-    assert!((((*(sink).cast_const()).len() as u64) == (0_u64)));
+    assert!((((*(sink).cast_const()).len()) == (0_usize)));
     return 0;
 }

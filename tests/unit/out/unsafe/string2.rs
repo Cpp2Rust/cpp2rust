@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
         let s = b"foo\0".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    arr[(1_u64) as usize] = ('b' as u8);
+    arr[(1_usize) as usize] = ('b' as u8);
     let mut p: *const u8 = arr.as_ptr().offset((1) as isize);
     assert!((((*p) as i32) == (('b' as u8) as i32)));
     assert!(

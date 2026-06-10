@@ -10,11 +10,11 @@ pub unsafe fn test_memcpy_0() {
     let src: [u8; 6] = *b"hello\0";
     let mut dst: [u8; 6] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
     let mut r: *mut ::libc::c_void = {
-        if 6_u64 != 0 {
+        if 6_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
                 (src.as_ptr() as *const u8 as *const ::libc::c_void),
                 (dst.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-                6_u64 as usize,
+                6_usize as usize,
             )
         }
         (dst.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
@@ -35,7 +35,7 @@ pub unsafe fn test_memset_1() {
     let mut buf: [u8; 4] = [0_u8; 4];
     let mut r: *mut ::libc::c_void = {
         let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..4_u64 {
+        for offset in 0..4_usize {
             *byte_0.offset(offset as isize) = (('x' as u8) as i32) as u8;
         }
         (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
@@ -56,11 +56,11 @@ pub unsafe fn test_memcmp_2() {
         (({
             let sa = core::slice::from_raw_parts(
                 (a.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (b.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -76,11 +76,11 @@ pub unsafe fn test_memcmp_2() {
         (({
             let sa = core::slice::from_raw_parts(
                 (a.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (c.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -96,11 +96,11 @@ pub unsafe fn test_memcmp_2() {
         (({
             let sa = core::slice::from_raw_parts(
                 (c.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (a.as_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_u64 as usize,
+                4_usize as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -123,11 +123,11 @@ pub unsafe fn test_memmove_3() {
         ('\0' as u8),
     ];
     let mut r: *mut ::libc::c_void = {
-        if 4_u64 != 0 {
+        if 4_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void),
                 (buf.as_mut_ptr().offset((1) as isize) as *mut u8 as *mut ::libc::c_void),
-                4_u64 as usize,
+                4_usize as usize,
             )
         }
         (buf.as_mut_ptr().offset((1) as isize) as *mut u8 as *mut ::libc::c_void)
@@ -152,9 +152,9 @@ pub unsafe fn test_strchr_4() {
     assert!((libc::strchr(s as *const i8, (('z' as u8) as i32)) as *const u8).is_null());
 }
 pub unsafe fn test_strlen_5() {
-    assert!(((libc::strlen(b"\0".as_ptr() as *const i8) as u64) == (0_u64)));
-    assert!(((libc::strlen(b"hello\0".as_ptr() as *const i8) as u64) == (5_u64)));
-    assert!(((libc::strlen(b"hello world\0".as_ptr() as *const i8) as u64) == (11_u64)));
+    assert!(((libc::strlen(b"\0".as_ptr() as *const i8)) == (0_usize)));
+    assert!(((libc::strlen(b"hello\0".as_ptr() as *const i8)) == (5_usize)));
+    assert!(((libc::strlen(b"hello world\0".as_ptr() as *const i8)) == (11_usize)));
 }
 pub unsafe fn test_strcmp_6() {
     assert!(
@@ -187,21 +187,21 @@ pub unsafe fn test_strncmp_7() {
         ((libc::strncmp(
             b"abcdef\0".as_ptr() as *const i8,
             b"abcxyz\0".as_ptr() as *const i8,
-            3_u64 as usize
+            3_usize as usize
         )) == (0))
     );
     assert!(
         ((libc::strncmp(
             b"abcdef\0".as_ptr() as *const i8,
             b"abcxyz\0".as_ptr() as *const i8,
-            4_u64 as usize
+            4_usize as usize
         )) < (0))
     );
     assert!(
         ((libc::strncmp(
             b"abcxyz\0".as_ptr() as *const i8,
             b"abcdef\0".as_ptr() as *const i8,
-            4_u64 as usize
+            4_usize as usize
         )) > (0))
     );
     let mut p: *const u8 = b"abcdef\0".as_ptr();
@@ -215,20 +215,20 @@ pub unsafe fn test_strncmp_7() {
         ('f' as u8),
         ('\0' as u8),
     ];
-    let mut n: u64 = 3_u64;
+    let mut n: usize = 3_usize;
     assert!(((libc::strncmp(p as *const i8, q as *const i8, n as usize)) == (0)));
     assert!(
         ((libc::strncmp(
             p as *const i8,
             q as *const i8,
-            (n).wrapping_add(1_u64) as usize
+            (n).wrapping_add(1_usize) as usize
         )) < (0))
     );
     assert!(
         ((libc::strncmp(
             (buf.as_mut_ptr()).cast_const() as *const i8,
             p as *const i8,
-            6_u64 as usize
+            6_usize as usize
         )) == (0))
     );
 }
@@ -237,17 +237,17 @@ pub unsafe fn test_memchr_8() {
     let mut r: *const ::libc::c_void = libc::memchr(
         (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
         48,
-        4_u64 as usize,
+        4_usize as usize,
     ) as *const ::libc::c_void;
     assert!(((r) == ((&data[(2) as usize] as *const u8) as *const u8 as *const ::libc::c_void)));
     assert!((libc::memchr(
         (data.as_ptr() as *const u8 as *const ::libc::c_void) as *const ::libc::c_void,
         153,
-        4_u64 as usize
+        4_usize as usize
     ) as *const ::libc::c_void)
         .is_null());
     let mut p: *const ::libc::c_void = (data.as_ptr() as *const u8 as *const ::libc::c_void);
-    let mut n: u64 = 4_u64;
+    let mut n: usize = 4_usize;
     assert!(
         ((libc::memchr(p as *const ::libc::c_void, 16, n as usize) as *const ::libc::c_void)
             == (p))
@@ -297,46 +297,40 @@ pub unsafe fn test_strcspn_11() {
         ((libc::strcspn(
             b"hello\0".as_ptr() as *const i8,
             b"el\0".as_ptr() as *const i8
-        ) as u64)
-            == (1_u64))
+        )) == (1_usize))
     );
     assert!(
         ((libc::strcspn(
             b"abc\0".as_ptr() as *const i8,
             b"xyz\0".as_ptr() as *const i8
-        ) as u64)
-            == (3_u64))
+        )) == (3_usize))
     );
     assert!(
-        ((libc::strcspn(b"\0".as_ptr() as *const i8, b"abc\0".as_ptr() as *const i8) as u64)
-            == (0_u64))
+        ((libc::strcspn(b"\0".as_ptr() as *const i8, b"abc\0".as_ptr() as *const i8)) == (0_usize))
     );
     let mut s: *const u8 = b"hello\0".as_ptr();
     let mut rej: *const u8 = b"el\0".as_ptr();
-    assert!(((libc::strcspn(s as *const i8, rej as *const i8) as u64) == (1_u64)));
+    assert!(((libc::strcspn(s as *const i8, rej as *const i8)) == (1_usize)));
 }
 pub unsafe fn test_strspn_12() {
     assert!(
         ((libc::strspn(
             b"hello\0".as_ptr() as *const i8,
             b"hel\0".as_ptr() as *const i8
-        ) as u64)
-            == (4_u64))
+        )) == (4_usize))
     );
     assert!(
         ((libc::strspn(
             b"abc\0".as_ptr() as *const i8,
             b"xyz\0".as_ptr() as *const i8
-        ) as u64)
-            == (0_u64))
+        )) == (0_usize))
     );
     assert!(
-        ((libc::strspn(b"aaa\0".as_ptr() as *const i8, b"a\0".as_ptr() as *const i8) as u64)
-            == (3_u64))
+        ((libc::strspn(b"aaa\0".as_ptr() as *const i8, b"a\0".as_ptr() as *const i8)) == (3_usize))
     );
     let mut s: *const u8 = b"hello\0".as_ptr();
     let mut acc: *const u8 = b"hel\0".as_ptr();
-    assert!(((libc::strspn(s as *const i8, acc as *const i8) as u64) == (4_u64)));
+    assert!(((libc::strspn(s as *const i8, acc as *const i8)) == (4_usize)));
 }
 pub unsafe fn test_strstr_13() {
     let mut h: *const u8 = b"hello world\0".as_ptr();

@@ -28,3 +28,7 @@ void f9(void *base, size_t nmemb, size_t size,
         int (*compar)(const void *, const void *)) {
   return qsort(base, nmemb, size, compar);
 }
+
+char *f10(const char *path, char *resolved_path) {
+  return realpath(path, resolved_path);
+}

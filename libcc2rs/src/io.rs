@@ -84,8 +84,8 @@ pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
     UNSAFE_STDERR.with(UnsafeCell::get)
 }
 
-pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
-    let total = a1.saturating_mul(a2) as usize;
+pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
+    let total = a1.saturating_mul(a2);
     let mut dst = a0
         .cast::<u8>()
         .expect("fread: only supporting u8 pointers")
@@ -118,11 +118,11 @@ pub fn fread_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) ->
         read_bytes += n;
     }
 
-    (read_bytes / a1 as usize) as u64
+    read_bytes / a1
 }
 
-pub fn fwrite_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -> u64 {
-    let total = a1.saturating_mul(a2) as usize;
+pub fn fwrite_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
+    let total = a1.saturating_mul(a2);
     let mut src = a0
         .cast::<u8>()
         .expect("fwrite: only supporting u8 pointers")
@@ -162,7 +162,7 @@ pub fn fwrite_refcount(a0: AnyPtr, a1: u64, a2: u64, a3: Ptr<::std::fs::File>) -
         written_bytes += off;
     }
 
-    (written_bytes / a1 as usize) as u64
+    written_bytes / a1
 }
 
 unsafe extern "C" {
@@ -214,11 +214,11 @@ pub unsafe fn stderr_unsafe() -> *mut libc::FILE {
 /// Same contract as C's `fwrite`.
 pub unsafe fn fwrite_unsafe(
     a0: *const ::std::ffi::c_void,
-    a1: u64,
-    a2: u64,
+    a1: usize,
+    a2: usize,
     a3: *mut libc::FILE,
-) -> u64 {
-    unsafe { libc::fwrite(a0, a1 as libc::size_t, a2 as libc::size_t, a3) as u64 }
+) -> usize {
+    unsafe { libc::fwrite(a0, a1, a2, a3) }
 }
 
 /// # Safety
@@ -226,9 +226,9 @@ pub unsafe fn fwrite_unsafe(
 /// Same contract as C's `fread`.
 pub unsafe fn fread_unsafe(
     a0: *mut ::std::ffi::c_void,
-    a1: u64,
-    a2: u64,
+    a1: usize,
+    a2: usize,
     a3: *mut libc::FILE,
-) -> u64 {
-    unsafe { libc::fread(a0, a1 as libc::size_t, a2 as libc::size_t, a3) as u64 }
+) -> usize {
+    unsafe { libc::fread(a0, a1, a2, a3) }
 }

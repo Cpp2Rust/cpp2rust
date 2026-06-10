@@ -9,8 +9,8 @@ unsafe fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
     libc::lseek(a0, a1, a2)
 }
 
-unsafe fn f3(a0: i32, a1: *mut ::libc::c_void, a2: u64) -> i64 {
-    libc::read(a0, a1, a2 as usize) as i64
+unsafe fn f3(a0: i32, a1: *mut ::libc::c_void, a2: usize) -> isize {
+    libc::read(a0, a1, a2)
 }
 
 unsafe fn f4(a0: *const u8) -> i32 {
@@ -33,12 +33,12 @@ unsafe fn f8() -> u32 {
     libc::geteuid()
 }
 
-unsafe fn f9(a0: *mut u8, a1: u64) -> i32 {
-    libc::gethostname(a0 as *mut i8, a1 as usize)
+unsafe fn f9(a0: *mut u8, a1: usize) -> i32 {
+    libc::gethostname(a0 as *mut i8, a1)
 }
 
-unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: u64) -> i64 {
-    libc::write(a0, a1, a2 as usize) as i64
+unsafe fn f10(a0: i32, a1: *const ::libc::c_void, a2: usize) -> isize {
+    libc::write(a0, a1, a2)
 }
 
 unsafe fn f11(a0: *const u8) -> i32 {

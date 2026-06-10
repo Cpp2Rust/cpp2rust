@@ -37,8 +37,8 @@ unsafe fn main_0() -> i32 {
             }
         })
     };
-    assert!(((v[(0_u64) as usize].key) == (1)));
-    assert!(((v[(1_u64) as usize].key) == (2)));
-    assert!(((v[(2_u64) as usize].key) == (3)));
+    assert!(((v[(0_usize) as usize].key) == (1)));
+    assert!(((v[(1_usize) as usize].key) == (2)));
+    assert!(((v[(2_usize) as usize].key) == (3)));
     return 0;
 }

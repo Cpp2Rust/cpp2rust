@@ -80,6 +80,8 @@ pub mod pair_tgt_unsafe;
 pub mod poll_tgt_unsafe;
 #[path = r#"../pwd/tgt_unsafe.rs"#]
 pub mod pwd_tgt_unsafe;
+#[path = r#"../rustls/tgt_unsafe.rs"#]
+pub mod rustls_tgt_unsafe;
 #[path = r#"../select/tgt_unsafe.rs"#]
 pub mod select_tgt_unsafe;
 #[path = r#"../signal/tgt_unsafe.rs"#]

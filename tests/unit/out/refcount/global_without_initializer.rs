@@ -35,7 +35,7 @@ thread_local!(
     pub static file_1: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
 );
 thread_local!(
-    pub static size_2: Value<u64> = <Value<u64>>::default();
+    pub static size_2: Value<usize> = Rc::new(RefCell::new(0_usize));
 );
 pub fn main() {
     std::process::exit(main_0());
@@ -43,6 +43,6 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((*s_0.with(Value::clone).borrow()).is_null());
     assert!((*file_1.with(Value::clone).borrow()).is_null());
-    assert!(((*size_2.with(Value::clone).borrow()) == 0_u64));
+    assert!(((*size_2.with(Value::clone).borrow()) == 0_usize));
     return 0;
 }

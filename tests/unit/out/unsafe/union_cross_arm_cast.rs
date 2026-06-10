@@ -68,13 +68,13 @@ unsafe fn main_0() -> i32 {
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() as u64 {
+        for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
     };
     c.u.a.code = 10_u16;
-    c.len = (::std::mem::size_of::<shape_b>() as u64 as u32);
+    c.len = (::std::mem::size_of::<shape_b>() as u32);
     (*(((&mut c.u.a as *mut shape_a) as *mut ::libc::c_void) as *mut shape_b)).tail =
         3735928559_u32;
     assert!(((((c.u.b.tail) == (3735928559_u32)) as i32) != 0));

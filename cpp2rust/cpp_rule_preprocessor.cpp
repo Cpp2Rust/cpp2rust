@@ -26,6 +26,7 @@
 #include <string>
 
 #include "compat/platform_flags.h"
+#include "converter/converter_lib.h"
 #include "converter/mapper.h"
 
 namespace fs = std::filesystem;
@@ -113,7 +114,8 @@ public:
       } else {
         type = var->getUnderlyingType();
       }
-      out_.try_emplace(var->getQualifiedNameAsString(), Mapper::ToString(type));
+      out_.try_emplace(var->getQualifiedNameAsString(),
+                       Mapper::ToString(type, Mapper::ScalarSugar::kPreserve));
       return;
     }
 

@@ -61,7 +61,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
-            .offset(0_u64 as isize)
+            .offset(0_usize as isize)
             .upgrade()
             .deref())
         .key
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
-            .offset(1_u64 as isize)
+            .offset(1_usize as isize)
             .upgrade()
             .deref())
         .key
@@ -79,7 +79,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
-            .offset(2_u64 as isize)
+            .offset(2_usize as isize)
             .upgrade()
             .deref())
         .key

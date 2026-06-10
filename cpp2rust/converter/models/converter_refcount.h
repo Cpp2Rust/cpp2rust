@@ -145,7 +145,11 @@ public:
   bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
   bool Convert(clang::QualType qual_type) override;
-  bool Convert(clang::Expr *expr) override { return Converter::Convert(expr); }
+  bool
+  Convert(clang::Expr *expr,
+          std::optional<clang::QualType> implicit_convert_to = {}) override {
+    return Converter::Convert(expr, implicit_convert_to);
+  }
   bool Convert(clang::Stmt *stmt) override {
     auto result = Converter::Convert(stmt);
     pending_deref_.assert_consumed();
@@ -218,8 +222,12 @@ private:
   std::string ConvertFreshLValue(clang::Expr *expr);
   std::string ConvertObject(clang::Expr *expr);
   std::string ConvertFreshObject(clang::Expr *expr) override;
-  std::string ConvertFresh(clang::Expr *expr);
-  std::string ConvertFreshRValue(clang::Expr *expr) override;
+  std::string
+  ConvertFresh(clang::Expr *expr,
+               std::optional<clang::QualType> implicit_convert_to = {});
+  std::string ConvertFreshRValue(
+      clang::Expr *expr,
+      std::optional<clang::QualType> implicit_convert_to = {}) override;
   std::string ConvertFreshPointer(clang::Expr *expr) override;
 
   std::string ConvertPtrType(clang::QualType type);

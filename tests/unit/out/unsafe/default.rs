@@ -33,7 +33,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut default_pointers: *mut Pointers = Box::leak(
-        (0..10_u64)
+        (0..10_usize)
             .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
     )

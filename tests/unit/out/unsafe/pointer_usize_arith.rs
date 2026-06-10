@@ -22,8 +22,9 @@ unsafe fn main_0() -> i32 {
     assert!(((*s) == (11)));
     let mut diff: i64 = ((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64;
     assert!(((diff) == (3_i64)));
-    let mut idx: u64 = ((((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64) as u64);
-    assert!(((idx) == (3_u64)));
+    let mut idx: usize =
+        ((((r as usize - p as usize) / ::std::mem::size_of::<i32>()) as i64) as usize);
+    assert!(((idx) == (3_usize)));
     let mut q2: *mut i32 = p;
     q2.prefix_inc();
     assert!(((*q2) == (11)));
@@ -39,7 +40,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*q3) == (14)));
     q3 = (q3).wrapping_sub(2 as i32 as usize);
     assert!(((*q3) == (12)));
-    let mut step: u64 = 2_u64;
+    let mut step: usize = 2_usize;
     let mut q4: *mut i32 = p.offset((step) as isize);
     assert!(((*q4) == (12)));
     let mut v: i32 = (*p.offset((3) as isize));
@@ -68,7 +69,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*cq) == (12)));
     let mut cdiff: i64 = ((cq as usize - cp as usize) / ::std::mem::size_of::<i32>()) as i64;
     assert!(((cdiff) == (2_i64)));
-    let mut n: u64 = 3_u64;
+    let mut n: usize = 3_usize;
     let mut q5: *mut i32 = arr.as_mut_ptr().offset((n) as isize);
     assert!(((*q5) == (13)));
     let mut q6: *mut i32 = (&mut arr[(n) as usize] as *mut i32);

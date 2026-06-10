@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<u8>) -> u64 {
+pub fn strlen_0(s: Ptr<u8>) -> usize {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
-    let count: Value<u64> = Rc::new(RefCell::new(0_u64));
+    let count: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while (((*s.borrow_mut()).postfix_inc().read()) != 0) {
         (*count.borrow_mut()).prefix_inc();
     }

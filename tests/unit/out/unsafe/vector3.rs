@@ -13,18 +13,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<i32>> = Vec::new();
-    v.resize_with(2_u64 as usize, || <Vec<i32>>::default());
+    v.resize_with(2_usize as usize, || <Vec<i32>>::default());
     {
-        let __a0 = 2_u64 as usize;
-        v[(0_u64) as usize].resize_with(__a0, || <i32>::default())
+        let __a0 = 2_usize as usize;
+        v[(0_usize) as usize].resize_with(__a0, || <i32>::default())
     };
     {
-        let __a0 = 1_u64 as usize;
-        v[(1_u64) as usize].resize_with(__a0, || <i32>::default())
+        let __a0 = 1_usize as usize;
+        v[(1_usize) as usize].resize_with(__a0, || <i32>::default())
     };
-    v[(0_u64) as usize][(0_u64) as usize] = 1;
-    v[(0_u64) as usize][(1_u64) as usize] = 5;
-    v[(1_u64) as usize][(0_u64) as usize] = 6;
+    v[(0_usize) as usize][(0_usize) as usize] = 1;
+    v[(0_usize) as usize][(1_usize) as usize] = 5;
+    v[(1_usize) as usize][(0_usize) as usize] = 6;
     'loop_: for v2 in 0..(v.len()) {
         let mut v2 = v.as_mut_ptr().add(v2);
         'loop_: for i in 0..((*v2).len()) {

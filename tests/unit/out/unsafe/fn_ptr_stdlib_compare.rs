@@ -8,19 +8,19 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn my_alternative_fread_0(
     mut p: *mut u8,
-    mut n: u64,
-    mut m: u64,
+    mut n: usize,
+    mut m: usize,
     mut f: *mut ::libc::c_void,
-) -> u64 {
-    return 22_u64;
+) -> usize {
+    return 22_usize;
 }
 pub unsafe fn my_alternative_fwrite_1(
     mut p: *const u8,
-    mut n: u64,
-    mut m: u64,
+    mut n: usize,
+    mut m: usize,
     mut f: *mut ::libc::c_void,
-) -> u64 {
-    return 33_u64;
+) -> usize {
+    return 33_usize;
 }
 pub fn main() {
     unsafe {
@@ -28,33 +28,33 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut fn1: Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64> =
+    let mut fn1: Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize> =
         Some(libcc2rs::fread_unsafe);
     assert!(((fn1) == (Some(libcc2rs::fread_unsafe))));
     assert!(!((fn1).is_none()));
-    let mut fn2: Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64> =
+    let mut fn2: Option<unsafe fn(*mut u8, usize, usize, *mut ::libc::c_void) -> usize> =
         std::mem::transmute::<
-            Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
-            Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64>,
+            Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
+            Option<unsafe fn(*mut u8, usize, usize, *mut ::libc::c_void) -> usize>,
         >(Some(libcc2rs::fread_unsafe));
     assert!(
         ((fn1)
             == (std::mem::transmute::<
-                Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64>,
-                Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
+                Option<unsafe fn(*mut u8, usize, usize, *mut ::libc::c_void) -> usize>,
+                Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
             >(fn2)))
     );
-    let mut f3: Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64> =
+    let mut f3: Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize> =
         std::mem::transmute::<
-            Option<unsafe fn(*mut u8, u64, u64, *mut ::libc::c_void) -> u64>,
-            Option<unsafe fn(*mut ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
+            Option<unsafe fn(*mut u8, usize, usize, *mut ::libc::c_void) -> usize>,
+            Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fread_0));
     assert!(
         ((unsafe {
             let _arg0: *mut ::libc::c_void = std::ptr::null_mut();
             let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (f3).unwrap()(_arg0, 0_u64, 0_u64, _arg3)
-        }) == (22_u64))
+            (f3).unwrap()(_arg0, 0_usize, 0_usize, _arg3)
+        }) == (22_usize))
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -67,18 +67,18 @@ unsafe fn main_0() -> i32 {
         let mut buf: [u8; 16] = [0_u8; 16];
         {
             let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[u8; 16]>() as u64 {
+            for offset in 0..::std::mem::size_of::<[u8; 16]>() {
                 *byte_0.offset(offset as isize) = (('X' as u8) as i32) as u8;
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = libcc2rs::fread_unsafe(
+        let mut n: usize = libcc2rs::fread_unsafe(
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
-            1_u64,
-            10_u64,
+            1_usize,
+            10_usize,
             stream,
         );
-        assert!(((n) == (10_u64)));
+        assert!(((n) == (10_usize)));
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
             assert!(((buf[(i) as usize] as i32) == (0)));
@@ -102,17 +102,17 @@ unsafe fn main_0() -> i32 {
         let mut buf: [u8; 16] = [0_u8; 16];
         {
             let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[u8; 16]>() as u64 {
+            for offset in 0..::std::mem::size_of::<[u8; 16]>() {
                 *byte_0.offset(offset as isize) = (('X' as u8) as i32) as u8;
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = (unsafe {
+        let mut n: usize = (unsafe {
             let _arg0: *mut ::libc::c_void = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void);
             let _arg3: *mut ::libc::FILE = stream;
-            (fn1).unwrap()(_arg0, 1_u64, 10_u64, _arg3)
+            (fn1).unwrap()(_arg0, 1_usize, 10_usize, _arg3)
         });
-        assert!(((n) == (10_u64)));
+        assert!(((n) == (10_usize)));
         let mut i: i32 = 0;
         'loop_: while ((i) < (10)) {
             assert!(((buf[(i) as usize] as i32) == (0)));
@@ -125,33 +125,34 @@ unsafe fn main_0() -> i32 {
         }
         libc::fclose(stream);
     }
-    let mut gn1: Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64> =
-        Some(libcc2rs::fwrite_unsafe);
+    let mut gn1: Option<
+        unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
+    > = Some(libcc2rs::fwrite_unsafe);
     assert!(((gn1) == (Some(libcc2rs::fwrite_unsafe))));
     assert!(!((gn1).is_none()));
-    let mut gn2: Option<unsafe fn(*const u8, u64, u64, *mut ::libc::c_void) -> u64> =
+    let mut gn2: Option<unsafe fn(*const u8, usize, usize, *mut ::libc::c_void) -> usize> =
         std::mem::transmute::<
-            Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
-            Option<unsafe fn(*const u8, u64, u64, *mut ::libc::c_void) -> u64>,
+            Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
+            Option<unsafe fn(*const u8, usize, usize, *mut ::libc::c_void) -> usize>,
         >(Some(libcc2rs::fwrite_unsafe));
     assert!(
         ((gn1)
             == (std::mem::transmute::<
-                Option<unsafe fn(*const u8, u64, u64, *mut ::libc::c_void) -> u64>,
-                Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
+                Option<unsafe fn(*const u8, usize, usize, *mut ::libc::c_void) -> usize>,
+                Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
             >(gn2)))
     );
-    let mut g3: Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64> =
+    let mut g3: Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize> =
         std::mem::transmute::<
-            Option<unsafe fn(*const u8, u64, u64, *mut ::libc::c_void) -> u64>,
-            Option<unsafe fn(*const ::libc::c_void, u64, u64, *mut ::libc::FILE) -> u64>,
+            Option<unsafe fn(*const u8, usize, usize, *mut ::libc::c_void) -> usize>,
+            Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         >(Some(my_alternative_fwrite_1));
     assert!(
         ((unsafe {
             let _arg0: *const ::libc::c_void = std::ptr::null();
             let _arg3: *mut ::libc::FILE = std::ptr::null_mut();
-            (g3).unwrap()(_arg0, 0_u64, 0_u64, _arg3)
-        }) == (33_u64))
+            (g3).unwrap()(_arg0, 0_usize, 0_usize, _arg3)
+        }) == (33_usize))
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -164,18 +165,18 @@ unsafe fn main_0() -> i32 {
         let mut buf: [u8; 10] = [0_u8; 10];
         {
             let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[u8; 10]>() as u64 {
+            for offset in 0..::std::mem::size_of::<[u8; 10]>() {
                 *byte_0.offset(offset as isize) = (('Y' as u8) as i32) as u8;
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = libcc2rs::fwrite_unsafe(
+        let mut n: usize = libcc2rs::fwrite_unsafe(
             (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void),
-            1_u64,
-            10_u64,
+            1_usize,
+            10_usize,
             stream,
         );
-        assert!(((n) == (10_u64)));
+        assert!(((n) == (10_usize)));
         libc::fclose(stream);
     }
     let mut __do_while = true;
@@ -189,18 +190,18 @@ unsafe fn main_0() -> i32 {
         let mut buf: [u8; 10] = [0_u8; 10];
         {
             let byte_0 = (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void) as *mut u8;
-            for offset in 0..::std::mem::size_of::<[u8; 10]>() as u64 {
+            for offset in 0..::std::mem::size_of::<[u8; 10]>() {
                 *byte_0.offset(offset as isize) = (('Y' as u8) as i32) as u8;
             }
             (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
         };
-        let mut n: u64 = (unsafe {
+        let mut n: usize = (unsafe {
             let _arg0: *const ::libc::c_void =
                 (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void);
             let _arg3: *mut ::libc::FILE = stream;
-            (gn1).unwrap()(_arg0, 1_u64, 10_u64, _arg3)
+            (gn1).unwrap()(_arg0, 1_usize, 10_usize, _arg3)
         });
-        assert!(((n) == (10_u64)));
+        assert!(((n) == (10_usize)));
         libc::fclose(stream);
     }
     return 0;

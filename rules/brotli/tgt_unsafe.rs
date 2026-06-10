@@ -30,10 +30,10 @@ unsafe fn f2(
     a2: brotli_sys::BrotliEncoderMode,
     a3: usize,
     a4: *mut u8,
-    a5: *mut u64,
+    a5: *mut usize,
     a6: *mut u8,
 ) -> libc::c_int {
-    ::brotli_sys::BrotliEncoderCompress(a0, a1, a2, a3 as usize, a4, a5 as *mut usize, a6)
+    ::brotli_sys::BrotliEncoderCompress(a0, a1, a2, a3, a4, a5, a6)
 }
 unsafe fn f3() -> ::brotli_sys::BrotliEncoderMode {
     ::brotli_sys::BROTLI_MODE_TEXT
@@ -44,10 +44,10 @@ unsafe fn f4() -> ::brotli_sys::BrotliDecoderResult {
 unsafe fn f5(
     a0: usize,
     a1: *mut u8,
-    a2: *mut u64,
+    a2: *mut usize,
     a3: *mut u8,
 ) -> ::brotli_sys::BrotliDecoderResult {
-    ::brotli_sys::BrotliDecoderDecompress(a0 as usize, a1, a2 as *mut usize, a3)
+    ::brotli_sys::BrotliDecoderDecompress(a0, a1, a2, a3)
 }
 
 unsafe fn f6() -> *mut ::brotli_sys::BrotliDecoderState {
@@ -60,24 +60,24 @@ unsafe fn f7(a0: *mut ::brotli_sys::BrotliDecoderState) {
 
 unsafe fn f8(
     a0: *mut ::brotli_sys::BrotliDecoderState,
-    a1: *const u64,
+    a1: *mut usize,
     a2: *mut *const u8,
-    a3: *const u64,
+    a3: *mut usize,
     a4: *const *const u8,
-    a5: *const u64,
+    a5: *mut usize,
 ) -> ::brotli_sys::BrotliDecoderResult {
     ::brotli_sys::BrotliDecoderDecompressStream(
         a0,
-        a1 as *mut usize,
+        a1,
         a2,
-        a3 as *mut usize,
+        a3,
         std::ptr::null_mut(),
         std::ptr::null_mut(),
     )
 }
 
-unsafe fn f9(a0: *mut ::brotli_sys::BrotliDecoderState, a1: *mut u64) -> *const u8 {
-    ::brotli_sys::BrotliDecoderTakeOutput(a0, a1 as *mut usize)
+unsafe fn f9(a0: *mut ::brotli_sys::BrotliDecoderState, a1: *mut usize) -> *const u8 {
+    ::brotli_sys::BrotliDecoderTakeOutput(a0, a1)
 }
 
 unsafe fn f10() -> ::brotli_sys::BrotliDecoderResult {

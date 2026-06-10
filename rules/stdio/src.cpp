@@ -62,3 +62,7 @@ int f22(const char *a0, const char *a1) {
 }
 
 int f23(FILE *stream) { return getc(stream); }
+
+int f24(FILE *stream, char *buf, int mode, size_t size) {
+  return setvbuf(stream, buf, mode, size);
+}

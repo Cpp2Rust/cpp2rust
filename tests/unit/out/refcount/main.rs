@@ -32,6 +32,6 @@ fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
             .collect::<Vec<u8>>(),
     ));
     assert!(((*argc.borrow()) == 1));
-    assert!((((*s.borrow()).len() - 1) as u64 > 0_u64));
-    return ((*argc.borrow()) + ((((*s.borrow()).len() - 1) as u64 > 0_u64) as i32));
+    assert!((((*s.borrow()).len() - 1) > 0_usize));
+    return ((*argc.borrow()) + ((((*s.borrow()).len() - 1) > 0_usize) as i32));
 }

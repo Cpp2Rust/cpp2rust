@@ -14,7 +14,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(
-        (0..(4_u64) as usize)
+        (0..(4_usize) as usize)
             .map(|_| <i32>::default())
             .collect::<Vec<_>>(),
     ));

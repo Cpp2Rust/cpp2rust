@@ -8,6 +8,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <cstdlib>
 #include <format>
 #include <optional>
 #include <regex>
@@ -25,6 +26,7 @@ namespace {
 clang::ASTContext *ctx_ = nullptr;
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
+bool builtin_types_loaded_ = false;
 
 std::unordered_multimap<std::string, TranslationRule::ExprRule>
     exprs_; // src -> ExprRule
@@ -400,12 +402,24 @@ TranslationRule::ExprRule *search(const clang::Expr *expr) {
   return rule;
 }
 
-TranslationRule::TypeRule *search(clang::QualType qual_type) {
+std::pair<TranslationRule::TypeRule *, std::vector<std::optional<std::string>>>
+search(clang::QualType qual_type) {
+  auto sugared = ToString(qual_type, ScalarSugar::kPreserve);
+  if (auto res = search(types_, sugared, GetTypeMapKey(sugared)); res.first) {
+    log() << "search type " << sugared
+          << ", result: " << res.first->type_info.type << '\n';
+    return res;
+  }
   auto type = ToString(qual_type);
-  auto [rule, subs] = search(types_, type, GetTypeMapKey(type));
+  if (type == sugared) {
+    log() << "search type " << type << ", result: None\n";
+    return {};
+  }
+  auto res = search(types_, type, GetTypeMapKey(type));
   log() << "search type " << type
-        << ", result: " << (rule ? rule->type_info.type : "None") << '\n';
-  return rule;
+        << ", result: " << (res.first ? res.first->type_info.type : "None")
+        << '\n';
+  return res;
 }
 
 void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
@@ -424,7 +438,18 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       exprs_.emplace(GetExprMapKey(rule.src), std::move(rule));
     }
     for (auto &[_, rule] : type_rules) {
-      types_.emplace(GetTypeMapKey(rule.src), std::move(rule));
+      auto key = GetTypeMapKey(rule.src);
+      auto [begin, end] = types_.equal_range(key);
+      for (auto it = begin; it != end; ++it) {
+        if (it->second.src == rule.src) {
+          llvm::errs() << "ERROR: duplicate type rule for C++ type '"
+                       << rule.src << "': maps to both '"
+                       << it->second.type_info.type << "' and '"
+                       << rule.type_info.type << "'\n";
+          std::exit(EXIT_FAILURE);
+        }
+      }
+      types_.emplace(std::move(key), std::move(rule));
     }
   }
 }
@@ -432,10 +457,12 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
 void addBuiltinTypes(Model model) {
   assert(ctx_);
 
-  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
-    auto cxx = ToString(qt);
-    AddTypeRule(cxx, TranslationRule::TypeRule::Plain(rust));
-    AddTypeRule("const " + cxx, TranslationRule::TypeRule::Plain(rust));
+  auto add_scalar_rule = [&](const std::string &cxx, const std::string &rust,
+                             const std::string &initializer = {}) {
+    auto plain = TranslationRule::TypeRule::Plain(rust);
+    plain.initializer = initializer;
+    AddTypeRule(cxx, TranslationRule::TypeRule(plain));
+    AddTypeRule("const " + cxx, std::move(plain));
 
     switch (model) {
     case Model::kUnsafe:
@@ -450,6 +477,24 @@ void addBuiltinTypes(Model model) {
       AddTypeRule("const " + cxx + " *", TranslationRule::TypeRule::RefcountPtr(
                                              "Ptr::<" + rust + ">"));
       break;
+    }
+  };
+
+  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
+    add_scalar_rule(ToString(qt), rust);
+  };
+
+  auto add_size_rules = [&](clang::QualType size_type,
+                            std::initializer_list<const char *> aliases,
+                            const std::string &rust) {
+    auto initializer = "0_" + rust;
+    for (const char *alias : aliases) {
+      add_scalar_rule(alias, rust, initializer);
+    }
+    if (const auto *predef = clang::dyn_cast<clang::PredefinedSugarType>(
+            size_type.getTypePtr())) {
+      add_scalar_rule(predef->getIdentifier()->getName().str(), rust,
+                      initializer);
     }
   };
 
@@ -495,6 +540,9 @@ void addBuiltinTypes(Model model) {
   add_builtin_rule(ctx_->LongLongTy, build_rust_type(ctx_->LongLongTy));
   add_builtin_rule(ctx_->UnsignedLongLongTy,
                    build_rust_type(ctx_->UnsignedLongLongTy));
+
+  add_size_rules(ctx_->getSizeType(), {"size_t", "size_type"}, "usize");
+  add_size_rules(ctx_->getSignedSizeType(), {"ssize_t"}, "isize");
 }
 
 clang::QualType normalizeQualType(clang::QualType qual_type) {
@@ -575,11 +623,15 @@ std::string normalizeTranslationRule(std::string rule) {
 
 PushASTContext::PushASTContext(clang::ASTContext &ctx) : prev_(ctx_) {
   ctx_ = &ctx;
+  if (!builtin_types_loaded_) {
+    builtin_types_loaded_ = true;
+    addBuiltinTypes(model_);
+  }
 }
 PushASTContext::~PushASTContext() { ctx_ = prev_; }
 
 bool Contains(clang::QualType qual_type) {
-  return search(qual_type) != nullptr;
+  return search(qual_type).first != nullptr;
 }
 
 bool Contains(const clang::Expr *expr) { return search(expr) != nullptr; }
@@ -614,8 +666,7 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
 }
 
 std::string Map(clang::QualType qual_type) {
-  auto type_str = ToString(qual_type);
-  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
+  auto [rule, subs] = search(qual_type);
   if (rule) {
     for (auto &ty : subs) {
       if (ty) {
@@ -628,8 +679,7 @@ std::string Map(clang::QualType qual_type) {
 }
 
 std::string MapInitializer(clang::QualType qual_type) {
-  auto type_str = ToString(qual_type);
-  auto [rule, subs] = search(types_, type_str, GetTypeMapKey(type_str));
+  auto [rule, subs] = search(qual_type);
   if (rule && !rule->initializer.empty()) {
     for (auto &ty : subs) {
       if (ty) {
@@ -642,12 +692,12 @@ std::string MapInitializer(clang::QualType qual_type) {
 }
 
 bool MapsToPointer(clang::QualType qual_type) {
-  auto rule = search(qual_type);
+  auto rule = search(qual_type).first;
   return rule && rule->type_info.is_pointer();
 }
 
 bool MapsToRefcountPointer(clang::QualType qual_type) {
-  auto rule = search(qual_type);
+  auto rule = search(qual_type).first;
   return rule && rule->type_info.is_refcount_pointer;
 }
 
@@ -722,8 +772,33 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
   }
 }
 
-std::string ToString(clang::QualType qual_type) {
+std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   assert(ctx_);
+
+  if (sugar == ScalarSugar::kPreserve) {
+    clang::QualType t = qual_type;
+    if (const auto *decltype_type =
+            clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
+      t = decltype_type->getUnderlyingType();
+    }
+    if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
+      if (t.getCanonicalType()->isBuiltinType()) {
+        return typedef_type->getDecl()->getNameAsString();
+      }
+    } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
+      return predef->getIdentifier()->getName().str();
+    } else if (const auto *ptr = t->getAs<clang::PointerType>()) {
+      auto pointee = ptr->getPointeeType();
+      auto canonical = pointee.getCanonicalType().getDesugaredType(*ctx_);
+      if (Map(pointee) == Map(canonical)) {
+        pointee = canonical;
+      }
+      std::string out;
+      llvm::raw_string_ostream os(out);
+      ctx_->getPointerType(pointee).print(os, getPrintPolicy());
+      return normalizeTranslationRule(std::move(out));
+    }
+  }
 
   if (auto cxx_record_decl = qual_type->getAsCXXRecordDecl()) {
     if (cxx_record_decl->isLambda()) {
@@ -921,8 +996,9 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   }
   translation_rules_loaded_ = true;
 
-  addRulesFromDirectory(rules_dir, model);
+  builtin_types_loaded_ = true;
   addBuiltinTypes(model);
+  addRulesFromDirectory(rules_dir, model);
 
 #if 0
   for (auto &[src, rule] : exprs_) {

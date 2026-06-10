@@ -39,7 +39,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut params: WOFF2Params = WOFF2Params::WOFF2Params();
-    assert!((((params.extended_metadata.len() - 1) as u64) == (0_u64)));
+    assert!(((params.extended_metadata.len() - 1) == (0_usize)));
     assert!(((params.brotli_quality) == (11)));
     assert!(((params.allow_transforms as i32) == (true as i32)));
     return 0;

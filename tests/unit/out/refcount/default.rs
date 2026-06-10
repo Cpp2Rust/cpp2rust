@@ -51,7 +51,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let default_pointers: Value<Ptr<Pointers>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..10_u64)
+        (0..10_usize)
             .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
     )));

@@ -31,10 +31,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             logf_1(
                 (b"hello %d %d\0".as_ptr().cast_mut()).cast_const(),
-                &[
-                    (10).into(),
-                    (libc::strlen(dummy as *const i8) as u64).into(),
-                ],
+                &[(10).into(), (libc::strlen(dummy as *const i8)).into()],
             )
         }) == (15)) as i32)
             != 0)

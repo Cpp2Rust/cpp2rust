@@ -40,7 +40,7 @@ impl Default for anon_0 {
 pub struct Container {
     pub view: anon_0,
 }
-pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: u64) {
+pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     let mut src: [u8; 16] = [
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -53,11 +53,11 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: u64) {
     src[(5) as usize] = 0_u8;
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
-    let mut n: u64 = if ((((::std::mem::size_of::<[u8; 16]>() as u64) < (cap)) as i32) != 0) {
-        ::std::mem::size_of::<[u8; 16]>() as u64
+    let mut n: usize = ((if ((((::std::mem::size_of::<[u8; 16]>()) < (cap)) as i32) != 0) {
+        ((::std::mem::size_of::<[u8; 16]>()) as u64)
     } else {
-        cap
-    };
+        ((cap) as u64)
+    }) as usize);
     {
         if n != 0 {
             ::std::ptr::copy_nonoverlapping(
@@ -79,14 +79,14 @@ unsafe fn main_0() -> i32 {
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
-        for offset in 0..::std::mem::size_of::<Container>() as u64 {
+        for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
     };
     (unsafe {
         let _out: *mut ::libc::c_void = ((&mut c.view as *mut anon_0) as *mut ::libc::c_void);
-        let _cap: u64 = ::std::mem::size_of::<anon_0>() as u64;
+        let _cap: usize = ::std::mem::size_of::<anon_0>();
         fill_1(_out, _cap)
     });
     assert!(((((c.view.h.code as i32) == (2)) as i32) != 0));

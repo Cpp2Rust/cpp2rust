@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = vec![1, 2];
     let mut p: *mut i32 = v.as_mut_ptr();
-    let r: *const i32 = &v[(1_u64) as usize] as *const i32;
+    let r: *const i32 = &v[(1_usize) as usize] as *const i32;
     (*p) = (*r);
-    return v[(0_u64) as usize];
+    return v[(0_usize) as usize];
 }

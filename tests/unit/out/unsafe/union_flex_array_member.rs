@@ -20,8 +20,8 @@ impl Default for anon_0 {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct node {
-    pub len: u64,
-    pub pos: u64,
+    pub len: usize,
+    pub pos: usize,
     pub x: anon_0,
 }
 pub fn main() {
@@ -30,21 +30,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut tail_size: u64 = 32_u64;
+    let mut tail_size: usize = 32_usize;
     let mut n: *mut node = (libcc2rs::malloc_unsafe(
-        (::std::mem::size_of::<node>() as u64 as u64).wrapping_add(tail_size),
+        (((::std::mem::size_of::<node>() as u64).wrapping_add(tail_size as u64)) as usize),
     ) as *mut node);
     (*n).len = tail_size;
-    let mut i: u64 = 0_u64;
+    let mut i: usize = 0_usize;
     'loop_: while ((((i) < (tail_size)) as i32) != 0) {
-        (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_u64)) as u8);
+        (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
         i.postfix_inc();
     }
-    let mut i: u64 = 0_u64;
+    let mut i: usize = 0_usize;
     'loop_: while ((((i) < (tail_size)) as i32) != 0) {
         assert!(
             (((((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
-                == ((((i) & (255_u64)) as u8) as i32)) as i32)
+                == ((((i) & (255_usize)) as u8) as i32)) as i32)
                 != 0)
         );
         i.postfix_inc();
@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*p) as i32) == (10)) as i32) != 0));
     (*p) = 170_u8;
     assert!((((((*(*n).x.bytes.as_mut_ptr().add((10) as usize)) as i32) == (170)) as i32) != 0));
-    (*n).pos = 20_u64;
+    (*n).pos = 20_usize;
     let mut q: *mut u8 = ((*n).x.bytes.as_mut_ptr().add(((*n).pos) as usize));
     assert!((((((*q) as i32) == (20)) as i32) != 0));
     (*q) = 187_u8;

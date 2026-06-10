@@ -14,8 +14,8 @@ fn main_0() -> i32 {
     let xu16: Value<u16> = Rc::new(RefCell::new(16_u16));
     let xu32: Value<u32> = Rc::new(RefCell::new(32_u32));
     let xu64: Value<u64> = Rc::new(RefCell::new(64_u64));
-    let xsz1: Value<u64> = Rc::new(RefCell::new(64_u64));
-    let xsz2: Value<u64> = Rc::new(RefCell::new(64_u64));
+    let xsz1: Value<usize> = Rc::new(RefCell::new(64_usize));
+    let xsz2: Value<usize> = Rc::new(RefCell::new(64_usize));
     let xi1: Value<i8> = Rc::new(RefCell::new((-8_i32 as i8)));
     let xi2: Value<i16> = Rc::new(RefCell::new(16_i16));
     let xi3: Value<i32> = Rc::new(RefCell::new(32));
@@ -24,8 +24,8 @@ fn main_0() -> i32 {
     return ((((((((((((((*xu8.borrow()) as i32) + ((*xu16.borrow()) as i32)) as u32)
         .wrapping_add((*xu32.borrow()))) as u64)
         .wrapping_add((*xu64.borrow())))
-    .wrapping_add((*xsz1.borrow())))
-    .wrapping_add((*xsz2.borrow())))
+    .wrapping_add((*xsz1.borrow()) as u64))
+    .wrapping_add((*xsz2.borrow()) as u64))
     .wrapping_add(((*xi1.borrow()) as u64)))
     .wrapping_add(((*xi2.borrow()) as u64)))
     .wrapping_add(((*xi3.borrow()) as u64)))

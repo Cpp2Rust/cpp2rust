@@ -753,6 +753,45 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
+bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
+  return !from.isNull() && !to.isNull() && from->isIntegerType() &&
+         to->isIntegerType() &&
+         from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(from) != Mapper::Map(to);
+}
+
+bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
+  if (!param_type->isLValueReferenceType()) {
+    return false;
+  }
+  if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
+    return true;
+  }
+  return param_type->getPointeeType().isConstQualified() &&
+         NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
+                                 param_type.getNonReferenceType());
+}
+
+bool IsSizeType(clang::QualType type) {
+  auto rust_type = Mapper::Map(type);
+  return rust_type == "usize" || rust_type == "isize";
+}
+
+std::optional<clang::QualType>
+GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
+                                   const clang::Expr *operand,
+                                   const clang::Expr *sibling) {
+  bool same_type_op = op->isComparisonOp() || op->isAdditiveOp() ||
+                      op->isMultiplicativeOp() || op->isBitwiseOp();
+  if (same_type_op &&
+      NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
+      IsSizeType(sibling->getType())) {
+    return sibling->getType();
+  }
+  return std::nullopt;
+}
+
 bool IsBuiltinVaEnd(const clang::CallExpr *expr) {
   if (auto *fn = expr->getDirectCallee()) {
     return fn->getBuiltinID() == clang::Builtin::BI__builtin_va_end;

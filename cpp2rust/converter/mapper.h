@@ -38,7 +38,13 @@ bool ParamIsPointer(const clang::Expr *expr, unsigned index);
 bool MapsToPointer(clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::QualType qual_type);
 
-std::string ToString(clang::QualType qual_type);
+enum class ScalarSugar {
+  kDesugar,
+  kPreserve,
+};
+
+std::string ToString(clang::QualType qual_type,
+                     ScalarSugar sugar = ScalarSugar::kDesugar);
 std::string ToString(const clang::Expr *expr);
 std::string ToString(const clang::NamedDecl *decl);
 
