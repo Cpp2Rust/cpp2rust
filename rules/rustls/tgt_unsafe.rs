@@ -275,7 +275,9 @@ unsafe fn f30(
 unsafe fn f31(a0: *const ::rustls_ffi::certificate::rustls_certified_key) {
     ::rustls_ffi::certificate::rustls_certified_key::rustls_certified_key_free(a0)
 }
-unsafe fn f32(a0: *const ::rustls_ffi::certificate::rustls_certified_key) -> ::rustls_ffi::rustls_result {
+unsafe fn f32(
+    a0: *const ::rustls_ffi::certificate::rustls_certified_key,
+) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::certificate::rustls_certified_key::rustls_certified_key_keys_match(a0)
 }
 unsafe fn f33(
@@ -322,7 +324,9 @@ unsafe fn f39(
 unsafe fn f40(a0: *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder) {
     ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder_free(a0)
 }
-unsafe fn f41(a0: *mut *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder) -> ::rustls_ffi::rustls_result {
+unsafe fn f41(
+    a0: *mut *mut ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder,
+) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::crypto_provider::rustls_crypto_provider_builder_new_from_default(a0)
 }
 unsafe fn f42(
@@ -349,7 +353,9 @@ unsafe fn f46(a0: *mut u8, a1: u64) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_random(a0, a1 as usize)
 }
 
-unsafe fn f47(a0: *mut *mut ::rustls_ffi::verifier::rustls_server_cert_verifier) -> ::rustls_ffi::rustls_result {
+unsafe fn f47(
+    a0: *mut *mut ::rustls_ffi::verifier::rustls_server_cert_verifier,
+) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::verifier::rustls_server_cert_verifier::rustls_platform_server_cert_verifier(a0)
 }
 unsafe fn f48(a0: *mut ::rustls_ffi::verifier::rustls_server_cert_verifier) {
