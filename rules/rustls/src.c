@@ -3,13 +3,13 @@
 
 #include "rustls.h"
 
-using t1 = rustls_connection *;
-using t2 = const rustls_connection *;
-using t3 = const rustls_certificate *;
-using t4 = rustls_str;
-using t5 = rustls_result;
-using t6 = rustls_io_result;
-using t7 = rustls_tls_version;
+typedef rustls_connection *t1;
+typedef const rustls_connection *t2;
+typedef const rustls_certificate *t3;
+typedef rustls_str t4;
+typedef rustls_result t5;
+typedef rustls_io_result t6;
+typedef rustls_tls_version t7;
 
 rustls_result f1() { return RUSTLS_RESULT_OK; }
 rustls_result f2() { return RUSTLS_RESULT_NULL_PARAMETER; }
@@ -64,28 +64,28 @@ const rustls_certificate *f19(const rustls_connection *conn, size_t i) {
 }
 void f20(rustls_connection *conn) { return rustls_connection_free(conn); }
 
-using t8 = rustls_client_config *;
-using t9 = const rustls_client_config *;
-using t10 = rustls_client_config_builder *;
-using t11 = const rustls_client_config_builder *;
-using t12 = rustls_certified_key *;
-using t13 = const rustls_certified_key *;
-using t14 = rustls_crypto_provider *;
-using t15 = const rustls_crypto_provider *;
-using t16 = rustls_crypto_provider_builder *;
-using t17 = const rustls_crypto_provider_builder *;
-using t18 = rustls_root_cert_store *;
-using t19 = const rustls_root_cert_store *;
-using t20 = rustls_root_cert_store_builder *;
-using t21 = const rustls_root_cert_store_builder *;
-using t22 = rustls_server_cert_verifier *;
-using t23 = const rustls_server_cert_verifier *;
-using t24 = rustls_web_pki_server_cert_verifier_builder *;
-using t25 = const rustls_web_pki_server_cert_verifier_builder *;
-using t26 = rustls_supported_ciphersuite *;
-using t27 = const rustls_supported_ciphersuite *;
-using t28 = rustls_slice_bytes;
-using t29 = rustls_verify_server_cert_params;
+typedef rustls_client_config *t8;
+typedef const rustls_client_config *t9;
+typedef rustls_client_config_builder *t10;
+typedef const rustls_client_config_builder *t11;
+typedef rustls_certified_key *t12;
+typedef const rustls_certified_key *t13;
+typedef rustls_crypto_provider *t14;
+typedef const rustls_crypto_provider *t15;
+typedef rustls_crypto_provider_builder *t16;
+typedef const rustls_crypto_provider_builder *t17;
+typedef rustls_root_cert_store *t18;
+typedef const rustls_root_cert_store *t19;
+typedef rustls_root_cert_store_builder *t20;
+typedef const rustls_root_cert_store_builder *t21;
+typedef rustls_server_cert_verifier *t22;
+typedef const rustls_server_cert_verifier *t23;
+typedef rustls_web_pki_server_cert_verifier_builder *t24;
+typedef const rustls_web_pki_server_cert_verifier_builder *t25;
+typedef rustls_supported_ciphersuite *t26;
+typedef const rustls_supported_ciphersuite *t27;
+typedef rustls_slice_bytes t28;
+typedef rustls_verify_server_cert_params t29;
 
 rustls_result f21(rustls_client_config_builder *builder,
                   const rustls_client_config **config_out) {

@@ -110,12 +110,12 @@ public:
       }
       return;
     }
-    if (auto var = R.Nodes.getNodeAs<clang::TypeAliasDecl>("tvar")) {
-      clang::QualType type;
-      if (auto *tdecl = var->getDescribedAliasTemplate()) {
-        type = lookupType(tdecl);
-      } else {
-        type = var->getUnderlyingType();
+    if (auto var = R.Nodes.getNodeAs<clang::TypedefNameDecl>("tvar")) {
+      clang::QualType type = var->getUnderlyingType();
+      if (auto *alias = llvm::dyn_cast<clang::TypeAliasDecl>(var)) {
+        if (auto *tdecl = alias->getDescribedAliasTemplate()) {
+          type = lookupType(tdecl);
+        }
       }
       auto src = GetNameOfScalarTypedef(type);
       if (src.empty()) {
@@ -712,7 +712,7 @@ public:
         &cb_);
 
     finder_.addMatcher(
-        typeAliasDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
+        typedefNameDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
         &cb_);
 
