@@ -349,6 +349,8 @@ public:
 
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
 
+  virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
+
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
   virtual void AddFromImpl(clang::EnumDecl *decl);

@@ -3052,6 +3052,24 @@ bool Converter::VisitTypeTraitExpr(clang::TypeTraitExpr *expr) {
   return false;
 }
 
+bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
+  std::string member_path;
+  for (unsigned i = 0; i < expr->getNumComponents(); ++i) {
+    const clang::OffsetOfNode &node = expr->getComponent(i);
+    ENSURE(node.getKind() == clang::OffsetOfNode::Field);
+    if (!member_path.empty()) {
+      member_path += '.';
+    }
+    member_path += GetNamedDeclAsString(node.getField());
+  }
+  StrCat(
+      std::format("::std::mem::offset_of!({}, {}) as u64",
+                  GetUnsafeTypeAsString(expr->getTypeSourceInfo()->getType()),
+                  member_path));
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
   if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
