@@ -16,6 +16,9 @@
 #include <clang/Sema/Template.h>
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
+#include <llvm/ADT/ArrayRef.h>
+#include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/StringRef.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/FormatVariadic.h>
 #include <llvm/Support/JSON.h>
@@ -760,8 +763,10 @@ private:
   Callback cb_;
 };
 
-void Extract(const std::filesystem::path &src_path, llvm::json::Object &out) {
+void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
+             llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   auto flags = getPlatformClangBeginFlags();
+  flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
   auto end_flags = getPlatformClangEndFlags();
   flags.insert(flags.end(), end_flags.begin(), end_flags.end());
   clang::tooling::FixedCompilationDatabase compilations(".", flags);
@@ -788,12 +793,19 @@ llvm::cl::opt<std::string>
             llvm::cl::value_desc("out.json"), llvm::cl::Required,
             llvm::cl::cat(cat));
 
+llvm::cl::list<std::string> CXXFlags("cxxflags",
+                                     llvm::cl::desc("Additional CXXFLAGS"),
+                                     llvm::cl::value_desc("cxxflags"),
+                                     llvm::cl::ZeroOrMore, llvm::cl::cat(cat));
+
 } // namespace
 
 int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
+  llvm::SmallVector<llvm::StringRef, 4> cxx_flags(CXXFlags.begin(),
+                                                  CXXFlags.end());
   fs::path dir = SrcDir.getValue();
   llvm::json::Object root;
   for (const char *name : {"src.c", "src.cpp"}) {
@@ -803,7 +815,7 @@ int main(int argc, char *argv[]) {
     }
     llvm::errs() << "Preprocessing " << path.string() << '\n';
     llvm::json::Object file_root;
-    cpp2rust::Extract(path, file_root);
+    cpp2rust::Extract(path, file_root, cxx_flags);
     for (auto &[k, v] : file_root) {
       if (!root.try_emplace(k, std::move(v)).second) {
         llvm::errs() << "ERROR: rule name " << k.str()
