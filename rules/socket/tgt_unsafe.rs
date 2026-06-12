@@ -1,3 +1,7 @@
+fn t1() -> libc::sockaddr {
+    unsafe { std::mem::zeroed() }
+}
+
 unsafe fn f1() -> i32 {
     libc::MSG_NOSIGNAL
 }
