@@ -184,9 +184,9 @@ bool ContainsVAArgExpr(const clang::Stmt *stmt);
 clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
 
 struct SwitchArm {
-  clang::SwitchCase *head;
-  llvm::StringRef label;
   std::vector<clang::Stmt *> body;
+  llvm::StringRef label;
+  clang::SwitchCase *head;
   bool is_default_case;
   bool has_fallthrough;
 };
