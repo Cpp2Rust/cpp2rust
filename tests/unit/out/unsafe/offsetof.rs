@@ -31,10 +31,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((::std::mem::offset_of!(Layout, a) as u64) == (0_u64)));
-    assert!(((::std::mem::offset_of!(Layout, b) as u64) == (4_u64)));
-    assert!(((::std::mem::offset_of!(Layout, c) as u64) == (8_u64)));
-    assert!(((::std::mem::offset_of!(Outer, inner.y) as u64) == (8_u64)));
+    assert!(((::std::mem::offset_of!(Layout, a)) == (0_usize)));
+    assert!(((::std::mem::offset_of!(Layout, b)) == (4_usize)));
+    assert!(((::std::mem::offset_of!(Layout, c)) == (8_usize)));
+    assert!(((::std::mem::offset_of!(Outer, inner.y)) == (8_usize)));
     let mut v: Layout = Layout {
         a: 0_u8,
         b: 0_u32,
@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
     v.b = 3735928559_u32;
     let mut base: *mut u8 = ((&mut v as *mut Layout) as *mut u8);
     let mut bp: *mut u32 =
-        ((base.offset((::std::mem::offset_of!(Layout, b) as u64) as isize)) as *mut u32);
+        ((base.offset((::std::mem::offset_of!(Layout, b)) as isize)) as *mut u32);
     assert!(((*bp) == (3735928559_u32)));
     return 0;
 }

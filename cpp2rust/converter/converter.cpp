@@ -3088,7 +3088,7 @@ bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
     member_path += GetNamedDeclAsString(node.getField());
   }
   StrCat(
-      std::format("::std::mem::offset_of!({}, {}) as u64",
+      std::format("::std::mem::offset_of!({}, {})",
                   GetUnsafeTypeAsString(expr->getTypeSourceInfo()->getType()),
                   member_path));
   computed_expr_type_ = ComputedExprType::FreshValue;
