@@ -237,7 +237,6 @@ fn type_derives<'tcx>(
     let infcx = tcx
         .infer_ctxt()
         .build(rustc_middle::ty::TypingMode::non_body_analysis());
-    let param_env = rustc_middle::ty::ParamEnv::empty();
 
     derivable
         .into_iter()
@@ -245,7 +244,7 @@ fn type_derives<'tcx>(
         .filter(|&trait_def_id| {
             let args = vec![ty; tcx.generics_of(trait_def_id).count()];
             infcx
-                .type_implements_trait(trait_def_id, args, param_env)
+                .type_implements_trait(trait_def_id, args, rustc_middle::ty::ParamEnv::empty())
                 .must_apply_modulo_regions()
         })
         .map(|trait_def_id| tcx.item_name(trait_def_id).to_string())
