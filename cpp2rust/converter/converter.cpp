@@ -670,7 +670,7 @@ bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
          std::find(derives->begin(), derives->end(), "Copy") != derives->end();
 }
 
-bool Converter::RecordFieldsCopyable(const clang::RecordDecl *decl) {
+bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -3504,7 +3504,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  if (RecordFieldsCopyable(decl)) {
+  if (RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 
