@@ -530,7 +530,7 @@ void addBuiltinTypes(Model model) {
   }
 
   // Char
-  add_builtin_rule(ctx_->CharTy, "u8");
+  add_builtin_rule(ctx_->CharTy, "::core::ffi::c_char");
   add_builtin_rule(ctx_->SignedCharTy, "i8");
   add_builtin_rule(ctx_->UnsignedCharTy, "u8");
 

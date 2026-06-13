@@ -123,8 +123,13 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     StrCat("f64");
     break;
   case clang::BuiltinType::Char_S:
-  case clang::BuiltinType::UChar:
+  case clang::BuiltinType::Char_U:
+    StrCat("::core::ffi::c_char");
+    break;
   case clang::BuiltinType::SChar:
+    StrCat("i8");
+    break;
+  case clang::BuiltinType::UChar:
     StrCat("u8");
     break;
   case clang::BuiltinType::UShort:
