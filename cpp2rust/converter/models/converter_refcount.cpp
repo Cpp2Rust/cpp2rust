@@ -2237,10 +2237,10 @@ void ConverterRefCount::ConvertFunctionMain(
   if (decl->getNumParams() != 0U) {
     StrCat(std::format(R"(
 pub fn main() {{
-    let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))
+    let argv: Vec<Value<Vec<::core::ffi::c_char>>> = ::std::env::args()
+        .map(|x| Rc::new(RefCell::new(x.bytes().map(|b| b as ::core::ffi::c_char).collect())))
         .collect();
-    let mut argv: Value<Vec<Ptr<u8>>> = Rc::new(RefCell::new(
+    let mut argv: Value<Vec<Ptr<::core::ffi::c_char>>> = Rc::new(RefCell::new(
         argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());
