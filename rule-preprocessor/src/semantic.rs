@@ -90,6 +90,7 @@ fn find_rlib(deps_dir: &Path, crate_name: &str) -> Option<PathBuf> {
 struct FnDecl<'tcx> {
     source_file: String,
     name: String,
+    def_id: rustc_span::def_id::DefId,
     body: &'tcx rustc_hir::Body<'tcx>,
 }
 
@@ -124,11 +125,17 @@ struct MethodResolver {
 }
 
 impl MethodResolver {
-    fn resolve_fn_decl<'tcx>(&mut self, tcx: rustc_middle::ty::TyCtxt<'tcx>, f: &FnDecl<'tcx>) {
-        if let Some(file_ir) = self.ir.all_ir.get_mut(&f.source_file)
-            && let Some(RuleIr::Fn(fn_ir)) = file_ir.get_mut(&f.name)
-        {
-            f.resolve_unknowns(tcx, fn_ir);
+    fn resolve_rule<'tcx>(&mut self, tcx: rustc_middle::ty::TyCtxt<'tcx>, f: &FnDecl<'tcx>) {
+        let Some(file_ir) = self.ir.all_ir.get_mut(&f.source_file) else {
+            return;
+        };
+        match file_ir.get_mut(&f.name) {
+            Some(RuleIr::Fn(fn_ir)) => f.resolve_unknowns(tcx, fn_ir),
+            Some(RuleIr::Type(type_ir)) => {
+                let ret_ty = tcx.fn_sig(f.def_id).skip_binder().output().skip_binder();
+                type_ir.type_info.derives = type_derives(tcx, ret_ty);
+            }
+            None => {}
         }
     }
 
@@ -154,7 +161,7 @@ impl rustc_driver::Callbacks for MethodResolver {
         tcx: rustc_middle::ty::TyCtxt<'_>,
     ) -> rustc_driver::Compilation {
         for f in iter_fn_decls(tcx) {
-            self.resolve_fn_decl(tcx, &f);
+            self.resolve_rule(tcx, &f);
         }
 
         rustc_driver::Compilation::Stop
@@ -181,6 +188,7 @@ fn iter_fn_decls<'tcx>(tcx: rustc_middle::ty::TyCtxt<'tcx>) -> Vec<FnDecl<'tcx>>
         result.push(FnDecl {
             source_file,
             name: ident.name.as_str().to_string(),
+            def_id: decl_id.owner_id.to_def_id(),
             body: tcx.hir_body(body_id),
         });
     }
@@ -203,6 +211,44 @@ fn decl_source_file(
             .to_string_lossy()
             .to_string(),
     )
+}
+
+fn type_derives<'tcx>(
+    tcx: rustc_middle::ty::TyCtxt<'tcx>,
+    ty: rustc_middle::ty::Ty<'tcx>,
+) -> Vec<String> {
+    use rustc_infer::infer::TyCtxtInferExt;
+    use rustc_span::sym;
+    use rustc_trait_selection::infer::InferCtxtExt;
+
+    let lang = tcx.lang_items();
+    let derivable = [
+        lang.copy_trait(),
+        lang.clone_trait(),
+        tcx.get_diagnostic_item(sym::Debug),
+        tcx.get_diagnostic_item(sym::Default),
+        tcx.get_diagnostic_item(sym::PartialEq),
+        tcx.get_diagnostic_item(sym::Eq),
+        tcx.get_diagnostic_item(sym::PartialOrd),
+        tcx.get_diagnostic_item(sym::Ord),
+        tcx.get_diagnostic_item(sym::Hash),
+    ];
+
+    let infcx = tcx
+        .infer_ctxt()
+        .build(rustc_middle::ty::TypingMode::non_body_analysis());
+
+    derivable
+        .into_iter()
+        .flatten()
+        .filter(|&trait_def_id| {
+            let args = vec![ty; tcx.generics_of(trait_def_id).count()];
+            infcx
+                .type_implements_trait(trait_def_id, args, rustc_middle::ty::ParamEnv::empty())
+                .must_apply_modulo_regions()
+        })
+        .map(|trait_def_id| tcx.item_name(trait_def_id).to_string())
+        .collect()
 }
 
 struct AstVisitor<'a, 'tcx> {

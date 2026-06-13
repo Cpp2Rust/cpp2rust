@@ -2,6 +2,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+typedef struct sockaddr t1;
+
 int f1() {
   return MSG_NOSIGNAL;
 }

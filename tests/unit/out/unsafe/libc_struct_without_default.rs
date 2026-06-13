@@ -23,12 +23,12 @@ impl Default for UserDefined {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct FieldIsLibcType {
-    pub addr: sockaddr,
+    pub addr: libc::sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         FieldIsLibcType {
-            addr: unsafe { std::mem::zeroed::<sockaddr>() },
+            addr: unsafe { std::mem::zeroed() },
         }
     }
 }

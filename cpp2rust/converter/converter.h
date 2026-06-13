@@ -587,6 +587,8 @@ protected:
 
   bool RecordDerivesCopy(const clang::RecordDecl *decl);
 
+  bool RecordHasCopyableFields(const clang::RecordDecl *decl);
+
   bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;
 
   std::string *rs_code_;

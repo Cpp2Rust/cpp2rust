@@ -665,6 +665,12 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+  auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
+  return derives &&
+         std::find(derives->begin(), derives->end(), "Copy") != derives->end();
+}
+
+bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
@@ -751,8 +757,11 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   if (EmitsReprCForRecords()) {
     StrCat("#[repr(C)]");
   }
+  auto attrs = GetStructAttributes(decl);
+  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+                     std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
-  for (auto *attr : GetStructAttributes(decl)) {
+  for (auto *attr : attrs) {
     StrCat(attr, ',');
   }
   StrCat(")]");
@@ -3107,6 +3116,8 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
     return false;
   }
   Mapper::AddRuleForUserDefinedType(decl);
+  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+                     {"Clone", "Copy", "PartialEq", "Debug", "Default"});
   StrCat("#[derive(Clone, Copy, PartialEq, Debug, Default)]");
   StrCat(std::format("enum {}", GetRecordName(decl)));
   StrCat('{');
@@ -3324,6 +3335,12 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
     auto size_as_string = GetNumAsString(array_type->getSize());
     auto element_type = array_type->getElementType();
     auto element_type_as_string = GetDefaultAsString(element_type);
+    if (auto *rec = element_type->getAsRecordDecl()) {
+      if (!RecordDerivesCopy(rec)) {
+        return std::format("std::array::from_fn::<_, {}, _>(|_| {})",
+                           size_as_string.c_str(), element_type_as_string);
+      }
+    }
     return std::format("[{}; {}]", element_type_as_string,
                        size_as_string.c_str());
   }
@@ -3487,7 +3504,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  if (RecordDerivesCopy(decl)) {
+  if (RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 

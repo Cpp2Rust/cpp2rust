@@ -322,6 +322,7 @@ impl<'a> FnIrBuilder<'a> {
                 ty: ty_str,
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                derives: Vec::new(),
             })
         }
     }
@@ -482,6 +483,7 @@ impl<'a> FnIrBuilder<'a> {
                         ty: p.ty.clone(),
                         is_refcount_pointer: p.is_refcount_pointer,
                         is_unsafe_pointer: p.is_unsafe_pointer,
+                        derives: Vec::new(),
                     },
                 )
             })
@@ -560,6 +562,7 @@ impl<'a> TypeIrBuilder<'a> {
                 ty: ty.syntax().text().to_string(),
                 is_refcount_pointer,
                 is_unsafe_pointer,
+                derives: Vec::new(),
             },
         }
     }

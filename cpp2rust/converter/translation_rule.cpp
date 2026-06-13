@@ -25,6 +25,12 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
   if (auto v = obj.getBoolean("is_unsafe_pointer"))
     info.is_unsafe_pointer = *v;
   assert(!(info.is_refcount_pointer && info.is_unsafe_pointer));
+  if (auto *arr = obj.getArray("derives")) {
+    for (const auto &elem : *arr) {
+      if (auto s = elem.getAsString())
+        info.derives.emplace_back(s->str());
+    }
+  }
   return info;
 }
 
@@ -329,6 +335,8 @@ void TypeInfo::dump() const {
     log() << " [rc_ptr]";
   if (is_unsafe_pointer)
     log() << " [unsafe_ptr]";
+  for (const auto &d : derives)
+    log() << " +" << d;
 }
 
 void TypeRule::dump() const {

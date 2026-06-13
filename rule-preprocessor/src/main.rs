@@ -5,9 +5,11 @@
 
 extern crate rustc_driver;
 extern crate rustc_hir;
+extern crate rustc_infer;
 extern crate rustc_interface;
 extern crate rustc_middle;
 extern crate rustc_span;
+extern crate rustc_trait_selection;
 
 mod ir;
 mod semantic;

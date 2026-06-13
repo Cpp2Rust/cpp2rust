@@ -37,6 +37,8 @@ std::string GetParamType(const clang::Expr *expr, unsigned index);
 bool ParamIsPointer(const clang::Expr *expr, unsigned index);
 bool MapsToPointer(clang::QualType qual_type);
 bool MapsToRefcountPointer(clang::QualType qual_type);
+const std::vector<std::string> *MappedDerives(clang::QualType qual_type);
+void SetDerives(clang::QualType qual_type, std::vector<std::string> derives);
 
 enum class ScalarSugar {
   kDesugar,
