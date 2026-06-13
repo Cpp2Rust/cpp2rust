@@ -40,6 +40,7 @@ clang::PrintingPolicy getPrintPolicy() {
   policy.SuppressScope = false;
   policy.FullyQualifiedName = true;
   policy.SuppressUnwrittenScope = true;
+  policy.UsePreferredNames = true;
   return policy;
 }
 
