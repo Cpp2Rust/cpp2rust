@@ -86,10 +86,7 @@ pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
 
 pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
     let total = a1.saturating_mul(a2);
-    let mut dst = a0
-        .cast::<u8>()
-        .expect("fread: only supporting u8 pointers")
-        .clone();
+    let mut dst = a0.reinterpret_cast::<u8>();
 
     let f = (*a3.upgrade().deref())
         .try_clone()
@@ -123,10 +120,7 @@ pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>
 
 pub fn fwrite_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
     let total = a1.saturating_mul(a2);
-    let mut src = a0
-        .cast::<u8>()
-        .expect("fwrite: only supporting u8 pointers")
-        .clone();
+    let mut src = a0.reinterpret_cast::<u8>();
 
     let f = (*a3.upgrade().deref())
         .try_clone()
