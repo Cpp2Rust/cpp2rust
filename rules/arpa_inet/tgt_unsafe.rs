@@ -13,15 +13,25 @@ unsafe fn f3(a0: u16) -> u16 {
 unsafe fn f4(a0: u32) -> u32 {
     u32::to_be(a0)
 }
-unsafe fn f5(a0: i32, a1: *const u8, a2: *mut ::libc::c_void) -> i32 {
+unsafe fn f5(a0: i32, a1: *const ::core::ffi::c_char, a2: *mut ::libc::c_void) -> i32 {
     unsafe extern "C" {
-        fn inet_pton(af: i32, src: *const u8, dst: *mut ::libc::c_void) -> i32;
+        fn inet_pton(af: i32, src: *const ::core::ffi::c_char, dst: *mut ::libc::c_void) -> i32;
     }
     inet_pton(a0, a1, a2)
 }
-unsafe fn f6(a0: i32, a1: *const ::libc::c_void, a2: *mut u8, a3: u32) -> *const u8 {
+unsafe fn f6(
+    a0: i32,
+    a1: *const ::libc::c_void,
+    a2: *mut ::core::ffi::c_char,
+    a3: u32,
+) -> *const ::core::ffi::c_char {
     unsafe extern "C" {
-        fn inet_ntop(af: i32, src: *const ::libc::c_void, dst: *mut u8, size: u32) -> *const u8;
+        fn inet_ntop(
+            af: i32,
+            src: *const ::libc::c_void,
+            dst: *mut ::core::ffi::c_char,
+            size: u32,
+        ) -> *const ::core::ffi::c_char;
     }
     inet_ntop(a0, a1, a2, a3)
 }

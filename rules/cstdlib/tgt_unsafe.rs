@@ -21,12 +21,12 @@ unsafe fn f5(a0: usize, a1: usize) -> *mut ::libc::c_void {
     libcc2rs::calloc_unsafe(a0, a1)
 }
 
-unsafe fn f6(a0: *const u8) -> *mut u8 {
-    libc::getenv(a0 as *const i8) as *mut u8
+unsafe fn f6(a0: *const ::core::ffi::c_char) -> *mut ::core::ffi::c_char {
+    libc::getenv(a0)
 }
 
-unsafe fn f7(a0: *const u8, a1: *const u8, a2: i32) -> i32 {
-    libc::setenv(a0 as *const i8, a1 as *const i8, a2)
+unsafe fn f7(a0: *const ::core::ffi::c_char, a1: *const ::core::ffi::c_char, a2: i32) -> i32 {
+    libc::setenv(a0, a1, a2)
 }
 
 unsafe fn f8(
@@ -65,6 +65,9 @@ unsafe fn f9(
     )
 }
 
-unsafe fn f10(a0: *const u8, a1: *mut u8) -> *mut u8 {
-    libc::realpath(a0 as *const i8, a1 as *mut i8) as *mut u8
+unsafe fn f10(
+    a0: *const ::core::ffi::c_char,
+    a1: *mut ::core::ffi::c_char,
+) -> *mut ::core::ffi::c_char {
+    libc::realpath(a0, a1)
 }

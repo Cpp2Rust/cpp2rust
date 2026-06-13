@@ -103,8 +103,16 @@ fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
 }
 
 // TODO: a2 should be passed as &mut
-fn f13(a0: Ptr<u8>, a1: Ptr<u8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
-    a2.write_all(a0.slice_until(&a1).as_slice());
+fn f13(
+    a0: Ptr<::core::ffi::c_char>,
+    a1: Ptr<::core::ffi::c_char>,
+    a2: &mut ::std::fs::File,
+) -> ::std::fs::File {
+    a2.write_all(
+        a0.reinterpret_cast::<u8>()
+            .slice_until(&a1.reinterpret_cast::<u8>())
+            .as_slice(),
+    );
     a2.try_clone().unwrap()
 }
 
@@ -125,9 +133,17 @@ where
 }
 
 fn f16<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    if a0.read() <= a1.read() { a0 } else { a1 }
+    if a0.read() <= a1.read() {
+        a0
+    } else {
+        a1
+    }
 }
 
 fn f17<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
-    if a0.read() >= a1.read() { a0 } else { a1 }
+    if a0.read() >= a1.read() {
+        a0
+    } else {
+        a1
+    }
 }

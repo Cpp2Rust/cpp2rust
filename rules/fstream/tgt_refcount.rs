@@ -5,10 +5,10 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn f1(a0: Ptr<u8>) -> ::std::fs::File {
+fn f1(a0: Ptr<::core::ffi::c_char>) -> ::std::fs::File {
     ::std::fs::File::create(a0.to_string()).expect("Failed to open file")
 }
 
-fn f5(a0: Ptr<u8>) -> ::std::fs::File {
+fn f5(a0: Ptr<::core::ffi::c_char>) -> ::std::fs::File {
     ::std::fs::File::open(a0.to_string()).expect("Failed to open file")
 }
