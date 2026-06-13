@@ -1852,6 +1852,14 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
   return std::nullopt;
 }
 
+static std::string getTypedLiteral(const char *num, std::string_view type) {
+  if (type.contains("::")) {
+    // Not a builtin type
+    return std::format("({} as {})", num, type);
+  }
+  return std::format("{}_{}", num, type);
+}
+
 std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
                                          bool incl_type,
                                          const clang::QualType *type) {
@@ -1873,7 +1881,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
         return init;
       }
     }
-    return std::format("{}_{}", num_as_string.c_str(), type_as_string);
+    return getTypedLiteral(num_as_string.c_str(), type_as_string);
   }
 
   return static_cast<std::string>(num_as_string);
@@ -3448,11 +3456,11 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   }
 
   if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
-    return std::format("0_{}", ToString(qual_type));
+    return getTypedLiteral("0", ToString(qual_type));
   }
 
   if (qual_type->isFloatingType()) {
-    return std::format("0.0_{}", ToString(qual_type));
+    return getTypedLiteral("0.0", ToString(qual_type));
   }
 
   if (auto record = qual_type->getAsRecordDecl();
