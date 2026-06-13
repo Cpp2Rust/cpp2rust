@@ -1415,7 +1415,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("Setw")) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(arg->getType()) != "Vec<u8>") {
+             Mapper::Map(arg->getType()) != "Vec<::core::ffi::c_char>") {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
     arg_str = ToString(arg);
@@ -1431,11 +1431,12 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
-    raw_args += "(&[" + ToString(arg) + ']';
-  } else if (Mapper::Map(arg->getType()) == "Vec<u8>") {
+    raw_args += "(&[" + ToString(arg) + " as u8]";
+  } else if (Mapper::Map(arg->getType()) == "Vec<::core::ffi::c_char>") {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
-    raw_args += "(&(" + str + ")[..(" + str + ").len() - 1]";
+    raw_args += "(&(" + str + ").iter().take((" + str +
+                ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
   } else if (Mapper::ToString(arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
