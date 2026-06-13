@@ -2159,7 +2159,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   if (decl->isMain() && (decl->getNumParams() != 0U)) {
-    StrCat(std::format("{}: i32, {}: Ptr<Ptr<u8>>",
+    StrCat(std::format("{}: i32, {}: Ptr<Ptr<::core::ffi::c_char>>",
                        GetNamedDeclAsString(decl->getParamDecl(0)),
                        GetNamedDeclAsString(decl->getParamDecl(1))));
   } else {
