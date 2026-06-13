@@ -723,9 +723,30 @@ bool ParamIsPointer(const clang::Expr *expr, unsigned index) {
   return GetParamInfo(expr, index).is_pointer();
 }
 
+clang::QualType GetTypeForDecl(const clang::NamedDecl *decl) {
+  if (const auto *spec =
+          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    llvm::ArrayRef<clang::TemplateArgument> args =
+        spec->getTemplateArgs().asArray();
+    llvm::SmallVector<clang::TemplateArgument, 4> canon(args.begin(),
+                                                        args.end());
+    ctx_->canonicalizeTemplateArguments(canon);
+
+    return ctx_->getTemplateSpecializationType(
+        clang::ElaboratedTypeKeyword::None,
+        clang::TemplateName(spec->getSpecializedTemplate()), args, canon);
+  }
+
+  const auto *rdecl = llvm::dyn_cast<clang::TagDecl>(decl);
+  assert(rdecl && "Unsupported decl type");
+
+  return ctx_->getTagType(clang::ElaboratedTypeKeyword::None,
+                          rdecl->getQualifier(), rdecl, /*OwnsTag*/ false);
+}
+
 void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
-  auto cpp_name = ToString(decl);
-  auto rs_name = ReplaceAll(cpp_name, "::", "_");
+  auto cpp_name = ToString(GetTypeForDecl(decl));
+  auto rs_name = ToRustName(cpp_name);
 
   AddTypeRule(cpp_name, TranslationRule::TypeRule::Plain(rs_name));
 
@@ -765,6 +786,16 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
       }
     }
   }
+}
+
+std::string ToRustName(std::string name) {
+  size_t pos = 0;
+  std::string chars = "<>, ";
+  while ((pos = name.find_first_of(chars, pos)) != std::string::npos) {
+    name.replace(pos, 1, 1, '_');
+    ++pos;
+  }
+  return ReplaceAll(name, "::", "_");
 }
 
 std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
