@@ -1301,8 +1301,13 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
                expr->getType()->isPointerType()) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
-                         ConvertPointeeType(expr->getType())));
+      if (expr->getType()->getPointeeType()->isCharType()) {
+        StrCat(std::format(".reinterpret_cast::<{}>()",
+                           ConvertPointeeType(expr->getType())));
+      } else {
+        StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
+                           ConvertPointeeType(expr->getType())));
+      }
       return false;
     } else if (expr->getType()->isVoidPointerType() &&
                expr->getSubExpr()->getType()->isPointerType()) {
