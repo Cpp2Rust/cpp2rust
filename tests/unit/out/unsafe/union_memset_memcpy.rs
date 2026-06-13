@@ -10,13 +10,13 @@ use std::rc::Rc;
 #[derive(Copy, Clone)]
 pub struct shape_a {
     pub code: u16,
-    pub pad: [::core::ffi::c_char; 14],
+    pub pad: [core::ffi::c_char; 14],
 }
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
             code: 0_u16,
-            pad: [(0 as ::core::ffi::c_char); 14],
+            pad: [(0 as core::ffi::c_char); 14],
         }
     }
 }
@@ -26,7 +26,7 @@ pub struct shape_b {
     pub code: u16,
     pub lo: u16,
     pub hi: u32,
-    pub fill: [::core::ffi::c_char; 8],
+    pub fill: [core::ffi::c_char; 8],
 }
 impl Default for shape_b {
     fn default() -> Self {
@@ -34,7 +34,7 @@ impl Default for shape_b {
             code: 0_u16,
             lo: 0_u16,
             hi: 0_u32,
-            fill: [(0 as ::core::ffi::c_char); 8],
+            fill: [(0 as core::ffi::c_char); 8],
         }
     }
 }
@@ -43,7 +43,7 @@ impl Default for shape_b {
 pub union anon_0 {
     pub a: shape_a,
     pub b: shape_b,
-    pub raw_: [::core::ffi::c_char; 256],
+    pub raw_: [core::ffi::c_char; 256],
 }
 impl Default for anon_0 {
     fn default() -> Self {
@@ -86,17 +86,17 @@ unsafe fn main_0() -> i32 {
     src[(6) as usize] = 0_u8;
     src[(7) as usize] = 1_u8;
     let mut len: usize = 16_usize;
-    assert!(((((len) <= (::std::mem::size_of::<[::core::ffi::c_char; 256]>())) as i32) != 0));
+    assert!(((((len) <= (::std::mem::size_of::<[core::ffi::c_char; 256]>())) as i32) != 0));
     {
         if len != 0 {
             ::std::ptr::copy_nonoverlapping(
                 (src.as_mut_ptr() as *const u8 as *const ::libc::c_void),
-                ((&mut c.view.raw_ as *mut [::core::ffi::c_char; 256])
-                    as *mut [::core::ffi::c_char; 256] as *mut ::libc::c_void),
+                ((&mut c.view.raw_ as *mut [core::ffi::c_char; 256])
+                    as *mut [core::ffi::c_char; 256] as *mut ::libc::c_void),
                 len as usize,
             )
         }
-        ((&mut c.view.raw_ as *mut [::core::ffi::c_char; 256]) as *mut [::core::ffi::c_char; 256]
+        ((&mut c.view.raw_ as *mut [core::ffi::c_char; 256]) as *mut [core::ffi::c_char; 256]
             as *mut ::libc::c_void)
     };
     assert!(((((c.view.b.code as i32) == (2)) as i32) != 0));

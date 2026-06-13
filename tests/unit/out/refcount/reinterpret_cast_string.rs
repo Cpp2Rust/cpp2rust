@@ -10,30 +10,30 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(
+    let s: Value<Vec<core::ffi::c_char>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"ABCD")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
-            .collect::<Vec<::core::ffi::c_char>>(),
+            .collect::<Vec<core::ffi::c_char>>(),
     ));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (s.as_pointer() as Ptr<::core::ffi::c_char>).reinterpret_cast::<u8>(),
+        (s.as_pointer() as Ptr<core::ffi::c_char>).reinterpret_cast::<u8>(),
     ));
     assert!(
         ((((*bytes.borrow()).offset((0) as isize).read()) as i32)
-            == (('A' as ::core::ffi::c_char) as i32))
+            == (('A' as core::ffi::c_char) as i32))
     );
     assert!(
         ((((*bytes.borrow()).offset((1) as isize).read()) as i32)
-            == (('B' as ::core::ffi::c_char) as i32))
+            == (('B' as core::ffi::c_char) as i32))
     );
     assert!(
         ((((*bytes.borrow()).offset((2) as isize).read()) as i32)
-            == (('C' as ::core::ffi::c_char) as i32))
+            == (('C' as core::ffi::c_char) as i32))
     );
     assert!(
         ((((*bytes.borrow()).offset((3) as isize).read()) as i32)
-            == (('D' as ::core::ffi::c_char) as i32))
+            == (('D' as core::ffi::c_char) as i32))
     );
     assert!(((((*bytes.borrow()).offset((4) as isize).read()) as i32) == 0));
     return 0;

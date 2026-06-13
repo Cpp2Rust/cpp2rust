@@ -23,7 +23,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut x: ::core::ffi::c_char = (('A' as i32) as ::core::ffi::c_char);
+    let mut x: core::ffi::c_char = (('A' as i32) as core::ffi::c_char);
     let mut y: i16 = 10_i16;
     let mut z: f32 = 3.0E+0;
     assert!(

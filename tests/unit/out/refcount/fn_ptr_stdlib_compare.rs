@@ -6,20 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn my_alternative_fread_0(p: Ptr<::core::ffi::c_char>, n: usize, m: usize, f: AnyPtr) -> usize {
-    let p: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(p));
+pub fn my_alternative_fread_0(p: Ptr<core::ffi::c_char>, n: usize, m: usize, f: AnyPtr) -> usize {
+    let p: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(p));
     let n: Value<usize> = Rc::new(RefCell::new(n));
     let m: Value<usize> = Rc::new(RefCell::new(m));
     let f: Value<AnyPtr> = Rc::new(RefCell::new(f));
     return 22_usize;
 }
-pub fn my_alternative_fwrite_1(
-    p: Ptr<::core::ffi::c_char>,
-    n: usize,
-    m: usize,
-    f: AnyPtr,
-) -> usize {
-    let p: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(p));
+pub fn my_alternative_fwrite_1(p: Ptr<core::ffi::c_char>, n: usize, m: usize, f: AnyPtr) -> usize {
+    let p: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(p));
     let n: Value<usize> = Rc::new(RefCell::new(n));
     let m: Value<usize> = Rc::new(RefCell::new(m));
     let f: Value<AnyPtr> = Rc::new(RefCell::new(f));
@@ -40,20 +35,20 @@ fn main_0() -> i32 {
         )
     });
     assert!(!((*fn1.borrow()).is_null()));
-    let fn2: Value<FnPtr<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>> =
+    let fn2: Value<FnPtr<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>> =
         Rc::new(RefCell::new(
             FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
                 libcc2rs::fread_refcount,
             )
-            .cast::<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>(Some(
-                (|a0: Ptr<::core::ffi::c_char>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
+            .cast::<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>(Some(
+                (|a0: Ptr<core::ffi::c_char>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
                     libcc2rs::fread_refcount(
                         a0.to_any(),
                         a1,
                         a2,
                         a3.cast::<::std::fs::File>().unwrap(),
                     )
-                }) as fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize,
+                }) as fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize,
             )),
         ));
     assert!({
@@ -64,13 +59,13 @@ fn main_0() -> i32 {
     });
     let f3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
         Rc::new(RefCell::new(
-            FnPtr::<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>::new(
+            FnPtr::<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>::new(
                 my_alternative_fread_0,
             )
             .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
                     my_alternative_fread_0(
-                        a0.cast::<::core::ffi::c_char>().unwrap(),
+                        a0.cast::<core::ffi::c_char>().unwrap(),
                         a1,
                         a2,
                         a3.to_any(),
@@ -106,25 +101,25 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+        let buf: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
             (0..16)
-                .map(|_| <::core::ffi::c_char>::default())
-                .collect::<Box<[::core::ffi::c_char]>>(),
+                .map(|_| <core::ffi::c_char>::default())
+                .collect::<Box<[core::ffi::c_char]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .memset(
-                    (('X' as ::core::ffi::c_char) as i32) as u8,
-                    ::std::mem::size_of::<[::core::ffi::c_char; 16]>() as usize,
+                    (('X' as core::ffi::c_char) as i32) as u8,
+                    ::std::mem::size_of::<[core::ffi::c_char; 16]>() as usize,
                 );
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
-                .to_any();
+            let __a0 =
+                ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
@@ -140,7 +135,7 @@ fn main_0() -> i32 {
         'loop_: while ((*i.borrow()) < 16) {
             assert!(
                 (((*buf.borrow())[(*i.borrow()) as usize] as i32)
-                    == (('X' as ::core::ffi::c_char) as i32))
+                    == (('X' as core::ffi::c_char) as i32))
             );
             (*i.borrow_mut()).prefix_inc();
         }
@@ -170,26 +165,26 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+        let buf: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
             (0..16)
-                .map(|_| <::core::ffi::c_char>::default())
-                .collect::<Box<[::core::ffi::c_char]>>(),
+                .map(|_| <core::ffi::c_char>::default())
+                .collect::<Box<[core::ffi::c_char]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .memset(
-                    (('X' as ::core::ffi::c_char) as i32) as u8,
-                    ::std::mem::size_of::<[::core::ffi::c_char; 16]>() as usize,
+                    (('X' as core::ffi::c_char) as i32) as u8,
+                    ::std::mem::size_of::<[core::ffi::c_char; 16]>() as usize,
                 );
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
-                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<::core::ffi::c_char>)
-                    as Ptr<::core::ffi::c_char>)
+                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<core::ffi::c_char>)
+                    as Ptr<core::ffi::c_char>)
                     .to_any();
                 let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
                 (*(*fn1.borrow()))(_arg0, 1_usize, 10_usize, _arg3)
@@ -205,7 +200,7 @@ fn main_0() -> i32 {
         'loop_: while ((*i.borrow()) < 16) {
             assert!(
                 (((*buf.borrow())[(*i.borrow()) as usize] as i32)
-                    == (('X' as ::core::ffi::c_char) as i32))
+                    == (('X' as core::ffi::c_char) as i32))
             );
             (*i.borrow_mut()).prefix_inc();
         }
@@ -225,20 +220,20 @@ fn main_0() -> i32 {
         )
     });
     assert!(!((*gn1.borrow()).is_null()));
-    let gn2: Value<FnPtr<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>> =
+    let gn2: Value<FnPtr<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>> =
         Rc::new(RefCell::new(
             FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
                 libcc2rs::fwrite_refcount,
             )
-            .cast::<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>(Some(
-                (|a0: Ptr<::core::ffi::c_char>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
+            .cast::<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>(Some(
+                (|a0: Ptr<core::ffi::c_char>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
                     libcc2rs::fwrite_refcount(
                         a0.to_any(),
                         a1,
                         a2,
                         a3.cast::<::std::fs::File>().unwrap(),
                     )
-                }) as fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize,
+                }) as fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize,
             )),
         ));
     assert!({
@@ -249,13 +244,13 @@ fn main_0() -> i32 {
     });
     let g3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
         Rc::new(RefCell::new(
-            FnPtr::<fn(Ptr<::core::ffi::c_char>, usize, usize, AnyPtr) -> usize>::new(
+            FnPtr::<fn(Ptr<core::ffi::c_char>, usize, usize, AnyPtr) -> usize>::new(
                 my_alternative_fwrite_1,
             )
             .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
                     my_alternative_fwrite_1(
-                        a0.cast::<::core::ffi::c_char>().unwrap(),
+                        a0.cast::<core::ffi::c_char>().unwrap(),
                         a1,
                         a2,
                         a3.to_any(),
@@ -291,25 +286,25 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+        let buf: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
             (0..10)
-                .map(|_| <::core::ffi::c_char>::default())
-                .collect::<Box<[::core::ffi::c_char]>>(),
+                .map(|_| <core::ffi::c_char>::default())
+                .collect::<Box<[core::ffi::c_char]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .memset(
-                    (('Y' as ::core::ffi::c_char) as i32) as u8,
-                    ::std::mem::size_of::<[::core::ffi::c_char; 10]>() as usize,
+                    (('Y' as core::ffi::c_char) as i32) as u8,
+                    ::std::mem::size_of::<[core::ffi::c_char; 10]>() as usize,
                 );
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
-                .to_any();
+            let __a0 =
+                ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
@@ -342,26 +337,26 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+        let buf: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
             (0..10)
-                .map(|_| <::core::ffi::c_char>::default())
-                .collect::<Box<[::core::ffi::c_char]>>(),
+                .map(|_| <core::ffi::c_char>::default())
+                .collect::<Box<[core::ffi::c_char]>>(),
         ));
         {
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .memset(
-                    (('Y' as ::core::ffi::c_char) as i32) as u8,
-                    ::std::mem::size_of::<[::core::ffi::c_char; 10]>() as usize,
+                    (('Y' as core::ffi::c_char) as i32) as u8,
+                    ::std::mem::size_of::<[core::ffi::c_char; 10]>() as usize,
                 );
-            ((buf.as_pointer() as Ptr<::core::ffi::c_char>) as Ptr<::core::ffi::c_char>)
+            ((buf.as_pointer() as Ptr<core::ffi::c_char>) as Ptr<core::ffi::c_char>)
                 .to_any()
                 .clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
-                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<::core::ffi::c_char>)
-                    as Ptr<::core::ffi::c_char>)
+                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<core::ffi::c_char>)
+                    as Ptr<core::ffi::c_char>)
                     .to_any();
                 let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
                 (*(*gn1.borrow()))(_arg0, 1_usize, 10_usize, _arg3)

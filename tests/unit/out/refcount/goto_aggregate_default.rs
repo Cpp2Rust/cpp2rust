@@ -25,10 +25,10 @@ impl ByteRepr for Point {
 }
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let buf40: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+    let buf40: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
         (0..40)
-            .map(|_| <::core::ffi::c_char>::default())
-            .collect::<Box<[::core::ffi::c_char]>>(),
+            .map(|_| <core::ffi::c_char>::default())
+            .collect::<Box<[core::ffi::c_char]>>(),
     ));
     let buf256: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..256).map(|_| <u8>::default()).collect::<Box<[u8]>>(),

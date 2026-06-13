@@ -10,13 +10,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[::core::ffi::c_char]>> =
+    let arr: Value<Box<[core::ffi::c_char]>> =
         Rc::new(RefCell::new(Box::from(libcc2rs::char_array(b"foobar\0"))));
     assert!((((((*arr.borrow())[(0) as usize] as i32) == ('f' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(3) as usize] as i32) == ('b' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(5) as usize] as i32) == ('r' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(6) as usize] as i32) == ('\0' as i32)) as i32) != 0));
-    let split_pieces: Value<Ptr<::core::ffi::c_char>> =
+    let split_pieces: Value<Ptr<core::ffi::c_char>> =
         Rc::new(RefCell::new(Ptr::from_string_literal(b"abcdefghi")));
     assert!(
         ((((((*split_pieces.borrow()).offset((0) as isize).read()) as i32) == ('a' as i32))

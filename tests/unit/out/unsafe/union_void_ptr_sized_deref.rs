@@ -27,7 +27,7 @@ libcc2rs::impl_enum_inc_dec!(Width_enum);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union anon_0 {
-    pub text: *const ::core::ffi::c_char,
+    pub text: *const core::ffi::c_char,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub f: f64,

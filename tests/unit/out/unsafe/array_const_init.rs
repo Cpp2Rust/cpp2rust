@@ -11,14 +11,14 @@ use std::rc::Rc;
 pub struct S {
     pub head: i32,
     pub tail: [i32; 3],
-    pub buf: [::core::ffi::c_char; 4],
+    pub buf: [core::ffi::c_char; 4],
 }
 impl Default for S {
     fn default() -> Self {
         S {
             head: 0_i32,
             tail: [0_i32; 3],
-            buf: [(0 as ::core::ffi::c_char); 4],
+            buf: [(0 as core::ffi::c_char); 4],
         }
     }
 }

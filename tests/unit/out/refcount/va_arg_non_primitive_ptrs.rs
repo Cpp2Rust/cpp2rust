@@ -41,8 +41,8 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
         let __match_cond = (*option.borrow());
         match __match_cond {
             __v if __v == (opt::OPT_STRING_OUT as i32) => {
-                let out: Value<Ptr<Ptr<::core::ffi::c_char>>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<::core::ffi::c_char>>>()).clone(),
+                let out: Value<Ptr<Ptr<core::ffi::c_char>>> = Rc::new(RefCell::new(
+                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<core::ffi::c_char>>>()).clone(),
                 ));
                 (*out.borrow()).write(Ptr::from_string_literal(b"hello"));
                 (*result.borrow_mut()) = 1;
@@ -79,8 +79,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<::core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null()));
+    let s: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null()));
     assert!(
         (((({
             let _option: i32 = (opt::OPT_STRING_OUT as i32);

@@ -6,10 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn log_0(file: Ptr<::core::ffi::c_char>, line: i32, func: Ptr<::core::ffi::c_char>) {
-    let file: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(file));
+pub fn log_0(file: Ptr<core::ffi::c_char>, line: i32, func: Ptr<core::ffi::c_char>) {
+    let file: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(file));
     let line: Value<i32> = Rc::new(RefCell::new(line));
-    let func: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(func));
+    let func: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(func));
     println!(
         "{} {} {}",
         (*file.borrow()),
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
         Ptr::from_string_literal(b"main")
     );
     ({
-        let _func: Ptr<::core::ffi::c_char> = Ptr::from_string_literal(b"main");
+        let _func: Ptr<core::ffi::c_char> = Ptr::from_string_literal(b"main");
         log_0(Ptr::from_string_literal(b"macros.cpp"), 9, _func)
     });
     return 0;

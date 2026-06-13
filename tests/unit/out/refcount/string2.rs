@@ -10,19 +10,19 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(
+    let arr: Value<Vec<core::ffi::c_char>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"foo")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
-            .collect::<Vec<::core::ffi::c_char>>(),
+            .collect::<Vec<core::ffi::c_char>>(),
     ));
-    (arr.as_pointer() as Ptr<::core::ffi::c_char>)
+    (arr.as_pointer() as Ptr<core::ffi::c_char>)
         .offset(1_usize as isize)
-        .write(('b' as ::core::ffi::c_char));
-    let p: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(
-        (arr.as_pointer() as Ptr<::core::ffi::c_char>).offset((1) as isize),
+        .write(('b' as core::ffi::c_char));
+    let p: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(
+        (arr.as_pointer() as Ptr<core::ffi::c_char>).offset((1) as isize),
     ));
-    assert!(((((*p.borrow()).read()) as i32) == (('b' as ::core::ffi::c_char) as i32)));
+    assert!(((((*p.borrow()).read()) as i32) == (('b' as core::ffi::c_char) as i32)));
     assert!(
         (*arr.borrow())
             .iter()

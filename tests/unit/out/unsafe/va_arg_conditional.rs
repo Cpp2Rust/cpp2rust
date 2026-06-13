@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn conditional_log_0(
     mut verbose: i32,
-    mut fmt: *const ::core::ffi::c_char,
+    mut fmt: *const core::ffi::c_char,
     __args: &[VaArg],
 ) -> i32 {
     if (verbose != 0) {

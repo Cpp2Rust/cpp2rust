@@ -10,14 +10,14 @@ pub fn cmp_eq_0(rc: i32) -> i32 {
     let rc: Value<i32> = Rc::new(RefCell::new(rc));
     return (((*rc.borrow()) == -1_i32) as i32);
 }
-pub fn cmp_or_ptr_1(p: Ptr<::core::ffi::c_char>, q: Ptr<::core::ffi::c_char>) -> i32 {
-    let p: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(p));
-    let q: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(q));
+pub fn cmp_or_ptr_1(p: Ptr<core::ffi::c_char>, q: Ptr<core::ffi::c_char>) -> i32 {
+    let p: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(p));
+    let q: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(q));
     return (((!(*p.borrow()).is_null()) || (!(*q.borrow()).is_null())) as i32).clone();
 }
-pub fn both_null_2(s1: Ptr<::core::ffi::c_char>, s2: Ptr<::core::ffi::c_char>) -> i32 {
-    let s1: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(s1));
-    let s2: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(s2));
+pub fn both_null_2(s1: Ptr<core::ffi::c_char>, s2: Ptr<core::ffi::c_char>) -> i32 {
+    let s1: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(s1));
+    let s2: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(s2));
     return ((((((*s1.borrow()).is_null()) as i32) != 0)
         && ((((*s2.borrow()).is_null()) as i32) != 0)) as i32)
         .clone();
@@ -71,10 +71,8 @@ fn main_0() -> i32 {
     assert!(((((*eq.borrow()) == 1) as i32) != 0));
     assert!(((((*lt.borrow()) == 0) as i32) != 0));
     assert!(((((*neq.borrow()) == 0) as i32) != 0));
-    let p1: Value<Ptr<::core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
-    let p2: Value<Ptr<::core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null()));
+    let p1: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
+    let p2: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null()));
     let either: Value<i32> = Rc::new(RefCell::new(
         (((!(*p1.borrow()).is_null()) || (!(*p2.borrow()).is_null())) as i32).clone(),
     ));
@@ -93,32 +91,32 @@ fn main_0() -> i32 {
     assert!((((({ cmp_eq_0(0,) }) == 0) as i32) != 0));
     assert!(
         (((({
-            let _p: Ptr<::core::ffi::c_char> = (*p1.borrow()).clone();
-            let _q: Ptr<::core::ffi::c_char> = (*p2.borrow()).clone();
+            let _p: Ptr<core::ffi::c_char> = (*p1.borrow()).clone();
+            let _q: Ptr<core::ffi::c_char> = (*p2.borrow()).clone();
             cmp_or_ptr_1(_p, _q)
         }) == 1) as i32)
             != 0)
     );
     assert!(
         (((({
-            let _p: Ptr<::core::ffi::c_char> = Ptr::<::core::ffi::c_char>::null();
-            let _q: Ptr<::core::ffi::c_char> = Ptr::<::core::ffi::c_char>::null();
+            let _p: Ptr<core::ffi::c_char> = Ptr::<core::ffi::c_char>::null();
+            let _q: Ptr<core::ffi::c_char> = Ptr::<core::ffi::c_char>::null();
             cmp_or_ptr_1(_p, _q)
         }) == 0) as i32)
             != 0)
     );
     assert!(
         (((({
-            let _s1: Ptr<::core::ffi::c_char> = Ptr::<::core::ffi::c_char>::null();
-            let _s2: Ptr<::core::ffi::c_char> = Ptr::<::core::ffi::c_char>::null();
+            let _s1: Ptr<core::ffi::c_char> = Ptr::<core::ffi::c_char>::null();
+            let _s2: Ptr<core::ffi::c_char> = Ptr::<core::ffi::c_char>::null();
             both_null_2(_s1, _s2)
         }) == 1) as i32)
             != 0)
     );
     assert!(
         (((({
-            let _s1: Ptr<::core::ffi::c_char> = (*p1.borrow()).clone();
-            let _s2: Ptr<::core::ffi::c_char> = Ptr::<::core::ffi::c_char>::null();
+            let _s1: Ptr<core::ffi::c_char> = (*p1.borrow()).clone();
+            let _s2: Ptr<core::ffi::c_char> = Ptr::<core::ffi::c_char>::null();
             both_null_2(_s1, _s2)
         }) == 0) as i32)
             != 0)

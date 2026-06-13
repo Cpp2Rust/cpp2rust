@@ -16,9 +16,9 @@ unsafe fn main_0() -> i32 {
     if !!(pw).is_null() {
         return 0;
     }
-    let mut home: *mut ::core::ffi::c_char = (*pw).pw_dir;
+    let mut home: *mut core::ffi::c_char = (*pw).pw_dir;
     let mut d: *mut dirent =
         libc::readdir(libc::opendir((c"/tmp".as_ptr().cast_mut()).cast_const()));
-    let mut dname: *mut ::core::ffi::c_char = (*d).d_name.as_mut_ptr();
+    let mut dname: *mut core::ffi::c_char = (*d).d_name.as_mut_ptr();
     return 0;
 }

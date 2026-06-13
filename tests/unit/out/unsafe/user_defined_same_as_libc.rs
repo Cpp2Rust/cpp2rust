@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn fopen_0(
-    mut path: *const ::core::ffi::c_char,
-    mut mode: *const ::core::ffi::c_char,
+    mut path: *const core::ffi::c_char,
+    mut mode: *const core::ffi::c_char,
 ) -> *mut ::libc::FILE {
     &(path);
     &(mode);

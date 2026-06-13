@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 pub struct S {
     pub head: Value<i32>,
     pub tail: Value<Box<[i32]>>,
-    pub buf: Value<Box<[::core::ffi::c_char]>>,
+    pub buf: Value<Box<[core::ffi::c_char]>>,
 }
 impl Default for S {
     fn default() -> Self {
@@ -21,8 +21,8 @@ impl Default for S {
             )),
             buf: Rc::new(RefCell::new(
                 (0..4)
-                    .map(|_| <::core::ffi::c_char>::default())
-                    .collect::<Box<[::core::ffi::c_char]>>(),
+                    .map(|_| <core::ffi::c_char>::default())
+                    .collect::<Box<[core::ffi::c_char]>>(),
             )),
         }
     }

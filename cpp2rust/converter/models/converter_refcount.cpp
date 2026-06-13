@@ -1098,7 +1098,7 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format(
-            "vec![0 as ::core::ffi::c_char; {}].into_boxed_slice()", arr_size));
+            "vec![0 as core::ffi::c_char; {}].into_boxed_slice()", arr_size));
         return false;
       }
       pad = arr_size > expr->getString().size()
@@ -2161,7 +2161,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   if (decl->isMain() && (decl->getNumParams() != 0U)) {
-    StrCat(std::format("{}: i32, {}: Ptr<Ptr<::core::ffi::c_char>>",
+    StrCat(std::format("{}: i32, {}: Ptr<Ptr<core::ffi::c_char>>",
                        GetNamedDeclAsString(decl->getParamDecl(0)),
                        GetNamedDeclAsString(decl->getParamDecl(1))));
   } else {
@@ -2244,10 +2244,10 @@ void ConverterRefCount::ConvertFunctionMain(
   if (decl->getNumParams() != 0U) {
     StrCat(std::format(R"(
 pub fn main() {{
-    let argv: Vec<Value<Vec<::core::ffi::c_char>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.bytes().map(|b| b as ::core::ffi::c_char).collect())))
+    let argv: Vec<Value<Vec<core::ffi::c_char>>> = ::std::env::args()
+        .map(|x| Rc::new(RefCell::new(x.bytes().map(|b| b as core::ffi::c_char).collect())))
         .collect();
-    let mut argv: Value<Vec<Ptr<::core::ffi::c_char>>> = Rc::new(RefCell::new(
+    let mut argv: Value<Vec<Ptr<core::ffi::c_char>>> = Rc::new(RefCell::new(
         argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());

@@ -13,7 +13,7 @@ pub struct Point {
     pub y: i32,
 }
 pub unsafe fn agg_0(mut n: i32) -> i32 {
-    let mut buf40: [::core::ffi::c_char; 40] = [(0 as ::core::ffi::c_char); 40];
+    let mut buf40: [core::ffi::c_char; 40] = [(0 as core::ffi::c_char); 40];
     let mut buf256: [u8; 256] = [0_u8; 256];
     let mut arr64: [i32; 64] = [0_i32; 64];
     let mut longs: [i64; 33] = [0_i64; 33];

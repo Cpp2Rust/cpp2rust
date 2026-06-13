@@ -4,7 +4,7 @@
 #[cfg(target_os = "linux")]
 unsafe fn f1(
     a0: i32,
-    a1: *const ::core::ffi::c_char,
+    a1: *const core::ffi::c_char,
     a2: *const ::libc::c_void,
     a3: usize,
     a4: i32,

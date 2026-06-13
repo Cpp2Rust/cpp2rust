@@ -14,7 +14,7 @@ pub struct context {
 }
 pub unsafe fn set_error_0(
     mut ctx: *mut context,
-    mut fmt: *const ::core::ffi::c_char,
+    mut fmt: *const core::ffi::c_char,
     __args: &[VaArg],
 ) {
     if ((*ctx).verbose != 0) {

@@ -15,7 +15,7 @@ pub unsafe fn test_setenv_getenv_0() {
         )) == (0)) as i32)
             != 0)
     );
-    let mut v: *const ::core::ffi::c_char =
+    let mut v: *const core::ffi::c_char =
         (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
     assert!((((!((v).is_null())) as i32) != 0));
     assert!(

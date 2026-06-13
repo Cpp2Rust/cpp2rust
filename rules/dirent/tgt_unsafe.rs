@@ -5,7 +5,7 @@ fn t1() -> *mut ::libc::DIR {
     std::ptr::null_mut()
 }
 
-unsafe fn f1(a0: *const ::core::ffi::c_char) -> *mut ::libc::DIR {
+unsafe fn f1(a0: *const core::ffi::c_char) -> *mut ::libc::DIR {
     libc::opendir(a0)
 }
 

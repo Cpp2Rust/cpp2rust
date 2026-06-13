@@ -102,8 +102,8 @@ unsafe fn f12<T1: Clone>(a0: *mut T1, a1: *mut T1, a2: T1) {
 }
 
 unsafe fn f13(
-    a0: *const ::core::ffi::c_char,
-    a1: *const ::core::ffi::c_char,
+    a0: *const core::ffi::c_char,
+    a1: *const core::ffi::c_char,
     a2: &mut ::std::fs::File,
 ) -> ::std::fs::File {
     let __start = a0 as *const u8;

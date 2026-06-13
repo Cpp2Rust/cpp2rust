@@ -22,13 +22,13 @@ pub unsafe fn convert_without_rhs_0() {
     let mut arr: [i32; 2] = [1, 2];
     let mut w: i32 = ((arr[(y) as usize]) + (arr[(x) as usize]));
     w += (((z) + (y)) + (x));
-    let mut arr2: [::core::ffi::c_char; 3] = [
-        ('a' as ::core::ffi::c_char),
-        ('b' as ::core::ffi::c_char),
-        ('c' as ::core::ffi::c_char),
+    let mut arr2: [core::ffi::c_char; 3] = [
+        ('a' as core::ffi::c_char),
+        ('b' as core::ffi::c_char),
+        ('c' as core::ffi::c_char),
     ];
     let mut p1: *const i32 = (&mut x as *mut i32).cast_const();
-    let mut c: ::core::ffi::c_char = arr2[(*p1) as usize];
+    let mut c: core::ffi::c_char = arr2[(*p1) as usize];
     c = arr2[(*p1) as usize];
     let mut p2: *mut i32 = (&mut x as *mut i32);
     (*p2) = 1;

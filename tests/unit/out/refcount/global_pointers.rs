@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Entry {
-    pub name: Value<Ptr<::core::ffi::c_char>>,
+    pub name: Value<Ptr<core::ffi::c_char>>,
     pub p: Value<Ptr<i32>>,
 }
 impl Clone for Entry {
@@ -40,11 +40,11 @@ thread_local!(
     ])));
 );
 thread_local!(
-    pub static arr_of_pointers_2: Value<Box<[Ptr<::core::ffi::c_char>]>> =
+    pub static arr_of_pointers_2: Value<Box<[Ptr<core::ffi::c_char>]>> =
         Rc::new(RefCell::new(Box::new([
-            Ptr::<::core::ffi::c_char>::null(),
-            Ptr::<::core::ffi::c_char>::null(),
-            Ptr::<::core::ffi::c_char>::null(),
+            Ptr::<core::ffi::c_char>::null(),
+            Ptr::<core::ffi::c_char>::null(),
+            Ptr::<core::ffi::c_char>::null(),
         ])));
 );
 pub fn main() {

@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Inner {
     pub v: Value<i32>,
-    pub name: Value<Ptr<::core::ffi::c_char>>,
+    pub name: Value<Ptr<core::ffi::c_char>>,
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
@@ -26,7 +26,7 @@ pub struct Outer {
     pub p1: Value<Ptr<i32>>,
     pub p2: Value<Ptr<i32>>,
     pub arr: Value<Box<[Ptr<i32>]>>,
-    pub cp: Value<Ptr<::core::ffi::c_char>>,
+    pub cp: Value<Ptr<core::ffi::c_char>>,
     pub pp: Value<Ptr<Ptr<i32>>>,
     pub inner: Value<Inner>,
     pub x: Value<i32>,
@@ -57,7 +57,7 @@ impl Default for Outer {
                     .map(|_| Ptr::<i32>::null())
                     .collect::<Box<[Ptr<i32>]>>(),
             )),
-            cp: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
+            cp: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
             pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
             inner: <Value<Inner>>::default(),
             x: <Value<i32>>::default(),
@@ -68,8 +68,8 @@ impl Default for Outer {
 impl ByteRepr for Outer {}
 #[derive()]
 pub struct Foo {
-    pub s1: Value<Ptr<::core::ffi::c_char>>,
-    pub s2: Value<Ptr<::core::ffi::c_char>>,
+    pub s1: Value<Ptr<core::ffi::c_char>>,
+    pub s2: Value<Ptr<core::ffi::c_char>>,
     pub fn1: Value<FnPtr<fn(i32) -> i32>>,
     pub fn2: Value<FnPtr<fn(i32) -> i32>>,
     pub n: Value<i32>,
@@ -89,8 +89,8 @@ impl Clone for Foo {
 impl Default for Foo {
     fn default() -> Self {
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
-            s2: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
+            s1: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
+            s2: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::null())),
             fn2: Rc::new(RefCell::new(FnPtr::null())),
             n: <Value<i32>>::default(),
@@ -112,7 +112,7 @@ thread_local!(
 thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
         s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"hello"))),
-        s2: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
+        s2: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
         fn1: Rc::new(RefCell::new(FnPtr::null())),
         fn2: Rc::new(RefCell::new(FnPtr::null())),
         n: Rc::new(RefCell::new(42)),
@@ -122,14 +122,14 @@ thread_local!(
     pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
-            s2: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
+            s2: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::null())),
             fn2: Rc::new(RefCell::new(FnPtr::null())),
             n: Rc::new(RefCell::new(1)),
         },
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
-            s2: Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null())),
+            s2: Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::null())),
             fn2: Rc::new(RefCell::new(FnPtr::null())),
             n: Rc::new(RefCell::new(2)),

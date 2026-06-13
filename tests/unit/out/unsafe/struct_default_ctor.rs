@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone)]
 pub struct WOFF2Params {
-    pub extended_metadata: Vec<::core::ffi::c_char>,
+    pub extended_metadata: Vec<core::ffi::c_char>,
     pub brotli_quality: i32,
     pub allow_transforms: bool,
 }

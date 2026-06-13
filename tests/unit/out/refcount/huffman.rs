@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct MinHeapNode {
-    pub data: Value<::core::ffi::c_char>,
+    pub data: Value<core::ffi::c_char>,
     pub freq: Value<i32>,
     pub left: Value<Ptr<MinHeapNode>>,
     pub right: Value<Ptr<MinHeapNode>>,
@@ -69,8 +69,8 @@ pub struct MinHeap {
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
 }
 impl MinHeap {
-    pub fn Alloc(&self, data: ::core::ffi::c_char, freq: i32) -> Ptr<MinHeapNode> {
-        let data: Value<::core::ffi::c_char> = Rc::new(RefCell::new(data));
+    pub fn Alloc(&self, data: core::ffi::c_char, freq: i32) -> Ptr<MinHeapNode> {
+        let data: Value<core::ffi::c_char> = Rc::new(RefCell::new(data));
         let freq: Value<i32> = Rc::new(RefCell::new(freq));
         (*self.alloc.borrow()).as_ref().unwrap().borrow_mut()
             [((*self.next.borrow()) as usize) as usize] = MinHeapNode {
@@ -179,7 +179,7 @@ impl MinHeap {
     }
     pub fn Build(
         &self,
-        data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>>,
+        data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>>,
         freq: Ptr<Option<Value<Box<[i32]>>>>,
         n: i32,
     ) {
@@ -188,9 +188,8 @@ impl MinHeap {
         'loop_: while ((*i.borrow()) < (*n.borrow())) {
             (*self.arr.borrow()).as_ref().unwrap().borrow_mut()
                 [((*self.size.borrow_mut()).postfix_inc() as usize) as usize] = ({
-                let _data: ::core::ffi::c_char =
-                    (*data.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize];
+                let _data: core::ffi::c_char = (*data.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*i.borrow()) as usize) as usize];
                 let _freq: i32 = (*freq.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*i.borrow()) as usize) as usize];
                 self.Alloc(_data, _freq)
@@ -229,7 +228,7 @@ pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     return (*minHeap.borrow_mut()).take();
 }
 pub fn Huffman_2(
-    data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>>,
+    data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>>,
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     size: i32,
 ) -> Option<Value<MinHeap>> {
@@ -241,7 +240,7 @@ pub fn Huffman_2(
         }),
     ));
     ({
-        let _data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>> = (data).clone();
+        let _data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>> = (data).clone();
         let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
         let _n: i32 = (*size.borrow());
         (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Build(_data, _freq, _n)
@@ -264,7 +263,7 @@ pub fn Huffman_2(
                     _lhs + (*(*(*right.borrow()).upgrade().deref()).freq.borrow())
                 };
                 (*(*minHeap.borrow()).as_ref().unwrap().borrow())
-                    .Alloc(('$' as ::core::ffi::c_char), _freq)
+                    .Alloc(('$' as core::ffi::c_char), _freq)
             }),
         ));
         (*(*(*top.borrow()).upgrade().deref()).left.borrow_mut()) = (*left.borrow()).clone();
@@ -349,14 +348,14 @@ pub fn CollectCodes_4(
     }
 }
 pub fn HuffmanCodes_5(
-    data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>>,
+    data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>>,
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     size: i32,
 ) -> Option<Value<Box<[i32]>>> {
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let minHeap: Value<Option<Value<MinHeap>>> = Rc::new(RefCell::new(
         ({
-            let _data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>> = (data).clone();
+            let _data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>> = (data).clone();
             let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
             let _size: i32 = (*size.borrow());
             Huffman_2(_data, _freq, _size)
@@ -392,19 +391,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let size: Value<i32> = Rc::new(RefCell::new(6));
-    let arr1: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(Box::new([
-        ('a' as ::core::ffi::c_char),
-        ('b' as ::core::ffi::c_char),
-        ('c' as ::core::ffi::c_char),
-        ('d' as ::core::ffi::c_char),
-        ('e' as ::core::ffi::c_char),
-        ('f' as ::core::ffi::c_char),
+    let arr1: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(Box::new([
+        ('a' as core::ffi::c_char),
+        ('b' as core::ffi::c_char),
+        ('c' as core::ffi::c_char),
+        ('d' as core::ffi::c_char),
+        ('e' as core::ffi::c_char),
+        ('f' as core::ffi::c_char),
     ])));
     let arr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 9, 12, 13, 16, 45])));
-    let data: Value<Option<Value<Box<[::core::ffi::c_char]>>>> =
+    let data: Value<Option<Value<Box<[core::ffi::c_char]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
             (0..((*size.borrow()) as usize))
-                .map(|_| <::core::ffi::c_char>::default())
+                .map(|_| <core::ffi::c_char>::default())
                 .collect::<Box<[_]>>(),
         )))));
     let freq: Value<Option<Value<Box<[i32]>>>> =
@@ -423,7 +422,7 @@ fn main_0() -> i32 {
     }
     let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         ({
-            let _data: Ptr<Option<Value<Box<[::core::ffi::c_char]>>>> = data.as_pointer();
+            let _data: Ptr<Option<Value<Box<[core::ffi::c_char]>>>> = data.as_pointer();
             let _freq: Ptr<Option<Value<Box<[i32]>>>> = freq.as_pointer();
             let _size: i32 = (*size.borrow());
             HuffmanCodes_5(_data, _freq, _size)

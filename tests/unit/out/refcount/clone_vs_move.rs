@@ -424,58 +424,58 @@ fn main_0() -> i32 {
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));
     assert!(((*(*pair3.borrow()).0.borrow()).len() == 0_usize));
     assert!(((*(*pair3.borrow()).1.borrow()) == 0));
-    let s1: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(
-        vec![('a' as ::core::ffi::c_char); (3_usize) as usize]
+    let s1: Value<Vec<core::ffi::c_char>> = Rc::new(RefCell::new(
+        vec![('a' as core::ffi::c_char); (3_usize) as usize]
             .iter()
             .cloned()
             .chain(std::iter::once(0))
             .collect(),
     ));
-    let s2: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
-    (s2.as_pointer() as Ptr<::core::ffi::c_char>)
+    let s2: Value<Vec<core::ffi::c_char>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
+    (s2.as_pointer() as Ptr<core::ffi::c_char>)
         .offset(0_usize as isize)
-        .write(('b' as ::core::ffi::c_char));
-    (s2.as_pointer() as Ptr<::core::ffi::c_char>)
+        .write(('b' as core::ffi::c_char));
+    (s2.as_pointer() as Ptr<core::ffi::c_char>)
         .offset(1_usize as isize)
-        .write(('b' as ::core::ffi::c_char));
-    (s2.as_pointer() as Ptr<::core::ffi::c_char>)
+        .write(('b' as core::ffi::c_char));
+    (s2.as_pointer() as Ptr<core::ffi::c_char>)
         .offset(2_usize as isize)
-        .write(('b' as ::core::ffi::c_char));
+        .write(('b' as core::ffi::c_char));
     assert!(
-        ((((s2.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s2.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(0_usize as isize)
             .read()) as i32)
-            == (('b' as ::core::ffi::c_char) as i32))
+            == (('b' as core::ffi::c_char) as i32))
     );
     assert!(
-        ((((s2.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s2.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(1_usize as isize)
             .read()) as i32)
-            == (('b' as ::core::ffi::c_char) as i32))
+            == (('b' as core::ffi::c_char) as i32))
     );
     assert!(
-        ((((s2.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s2.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(2_usize as isize)
             .read()) as i32)
-            == (('b' as ::core::ffi::c_char) as i32))
+            == (('b' as core::ffi::c_char) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s1.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(0_usize as isize)
             .read()) as i32)
-            == (('a' as ::core::ffi::c_char) as i32))
+            == (('a' as core::ffi::c_char) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s1.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(1_usize as isize)
             .read()) as i32)
-            == (('a' as ::core::ffi::c_char) as i32))
+            == (('a' as core::ffi::c_char) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<::core::ffi::c_char>)
+        ((((s1.as_pointer() as Ptr<core::ffi::c_char>)
             .offset(2_usize as isize)
             .read()) as i32)
-            == (('a' as ::core::ffi::c_char) as i32))
+            == (('a' as core::ffi::c_char) as i32))
     );
     let b1: Value<Bar> = Rc::new(RefCell::new(Bar {
         w: Rc::new(RefCell::new(1)),

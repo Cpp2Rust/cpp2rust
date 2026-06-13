@@ -64,7 +64,7 @@ impl From<i32> for Tag_enum {
 libcc2rs::impl_enum_inc_dec!(Tag_enum);
 #[derive(Default)]
 pub struct Entry {
-    pub name: Value<Ptr<::core::ffi::c_char>>,
+    pub name: Value<Ptr<core::ffi::c_char>>,
     pub color: Value<Color>,
     pub opt: Value<Option>,
 }

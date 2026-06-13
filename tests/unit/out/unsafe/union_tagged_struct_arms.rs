@@ -27,7 +27,7 @@ libcc2rs::impl_enum_inc_dec!(Choice_enum);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct anon_1 {
-    pub items: *mut *mut ::core::ffi::c_char,
+    pub items: *mut *mut core::ffi::c_char,
     pub count: i64,
     pub cursor: i64,
 }
@@ -73,7 +73,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: [*mut ::core::ffi::c_char; 3] = unsafe {
+    static mut items_4: [*mut core::ffi::c_char; 3] = unsafe {
         [
             c"a".as_ptr().cast_mut(),
             c"b".as_ptr().cast_mut(),

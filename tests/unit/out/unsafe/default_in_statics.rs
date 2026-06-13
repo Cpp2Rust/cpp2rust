@@ -10,7 +10,7 @@ use std::rc::Rc;
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
     pub v: i32,
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const core::ffi::c_char,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -18,7 +18,7 @@ pub struct Outer {
     pub p1: *mut i32,
     pub p2: *const i32,
     pub arr: [*mut i32; 3],
-    pub cp: *const ::core::ffi::c_char,
+    pub cp: *const core::ffi::c_char,
     pub pp: *mut *mut i32,
     pub inner: Inner,
     pub x: i32,
@@ -41,8 +41,8 @@ impl Default for Outer {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Foo {
-    pub s1: *const ::core::ffi::c_char,
-    pub s2: *const ::core::ffi::c_char,
+    pub s1: *const core::ffi::c_char,
+    pub s2: *const core::ffi::c_char,
     pub fn1: Option<unsafe fn(i32) -> i32>,
     pub fn2: Option<unsafe fn(i32) -> i32>,
     pub n: i32,

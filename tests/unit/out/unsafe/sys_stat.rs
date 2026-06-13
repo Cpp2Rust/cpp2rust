@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_stat_0() {
-    let mut path: *const ::core::ffi::c_char =
+    let mut path: *const core::ffi::c_char =
         (c"/tmp/cpp2rust_stat_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
@@ -20,7 +20,7 @@ pub unsafe fn test_stat_0() {
     libc::unlink(path);
 }
 pub unsafe fn test_fstat_1() {
-    let mut path: *const ::core::ffi::c_char =
+    let mut path: *const core::ffi::c_char =
         (c"/tmp/cpp2rust_fstat_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));

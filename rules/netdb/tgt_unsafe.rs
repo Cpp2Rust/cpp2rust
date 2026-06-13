@@ -2,8 +2,8 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 unsafe fn f1(
-    a0: *const ::core::ffi::c_char,
-    a1: *const ::core::ffi::c_char,
+    a0: *const core::ffi::c_char,
+    a1: *const core::ffi::c_char,
     a2: *const ::libc::addrinfo,
     a3: *mut *mut ::libc::addrinfo,
 ) -> i32 {

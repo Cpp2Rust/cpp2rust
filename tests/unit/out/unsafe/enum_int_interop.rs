@@ -65,7 +65,7 @@ libcc2rs::impl_enum_inc_dec!(Tag);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
-    pub name: *const ::core::ffi::c_char,
+    pub name: *const core::ffi::c_char,
     pub color: Color,
     pub opt: Option,
 }
