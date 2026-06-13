@@ -2061,15 +2061,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     bool dest_pointee_const =
         expr->getType()->getPointeeType().isConstQualified();
-    if (const auto *member =
-            clang::dyn_cast<clang::MemberExpr>(sub_expr->IgnoreParenImpCasts());
-        member && IsCharArrayFieldFromLibc(member->getMemberDecl())) {
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
-      StrCat(keyword::kAs, dest_pointee_const ? "*const u8" : "*mut u8");
-      break;
-    }
     Convert(sub_expr);
     if (clang::isa<clang::StringLiteral>(sub_expr) ||
         clang::isa<clang::PredefinedExpr>(sub_expr)) {
@@ -2754,16 +2745,6 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   if (!isAddrOf() && member->getType()->isFunctionPointerType()) {
     PushParen paren(*this);
     StrCat(str);
-    return false;
-  }
-
-  // char* fields in libc structs are *mut i8. We represent char* as *mut u8. Do
-  // the i8 -> u8 conversion here.
-  if (IsCharPointerFieldFromLibc(member)) {
-    StrCat(std::format("({} as {})", str,
-                       member->getType()->getPointeeType().isConstQualified()
-                           ? "*const u8"
-                           : "*mut u8"));
     return false;
   }
 
