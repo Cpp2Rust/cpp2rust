@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
-    let v: Value<Vec<u8>> = Rc::new(RefCell::new(v));
+pub fn fn_0(v: Vec<::core::ffi::c_char>) -> Vec<::core::ffi::c_char> {
+    let v: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(v));
     return {
         let mut r = (*v.borrow()).clone();
         r.pop();
@@ -16,7 +16,7 @@ pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
         r
     };
 }
-pub fn fn2_1(v: Ptr<Vec<u8>>) -> Ptr<Vec<u8>> {
+pub fn fn2_1(v: Ptr<Vec<::core::ffi::c_char>>) -> Ptr<Vec<::core::ffi::c_char>> {
     return (v).clone();
 }
 pub fn main() {
@@ -30,30 +30,34 @@ fn main_0() -> i32 {
     assert!(!((*in_.borrow()).is_null()));
     println!("{}", Ptr::from_string_literal(b"printf"));
     print!("hello world");
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new(
+    let s: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"a string")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
+            .collect::<Vec<::core::ffi::c_char>>(),
     ));
-    println!("{}", (s.as_pointer() as Ptr<u8>));
+    println!("{}", (s.as_pointer() as Ptr<::core::ffi::c_char>));
     println!(
         "{}",
         (Rc::new(RefCell::new(
             ({
-                fn_0(
-                    Ptr::from_string_literal(b"foo")
-                        .to_c_string_iterator()
-                        .chain(std::iter::once(0))
-                        .collect::<Vec<u8>>(),
-                )
+                let _v: Vec<::core::ffi::c_char> = Ptr::from_string_literal(b"foo")
+                    .to_c_string_iterator()
+                    .chain(std::iter::once(0))
+                    .collect::<Vec<::core::ffi::c_char>>();
+                fn_0(_v)
             })
         ))
-        .as_pointer() as Ptr<u8>)
+        .as_pointer() as Ptr<::core::ffi::c_char>)
     );
     println!(
         "{}",
-        (({ fn2_1(s.as_pointer(),) }).to_strong().as_pointer() as Ptr<u8>)
+        (({
+            let _v: Ptr<Vec<::core::ffi::c_char>> = s.as_pointer();
+            fn2_1(_v)
+        })
+        .to_strong()
+        .as_pointer() as Ptr<::core::ffi::c_char>)
     );
     return 0;
 }

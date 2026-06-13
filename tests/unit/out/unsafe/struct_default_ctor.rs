@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Clone)]
 pub struct WOFF2Params {
-    pub extended_metadata: Vec<u8>,
+    pub extended_metadata: Vec<::core::ffi::c_char>,
     pub brotli_quality: i32,
     pub allow_transforms: bool,
 }
@@ -17,7 +17,7 @@ impl WOFF2Params {
     pub unsafe fn WOFF2Params() -> Self {
         let mut this = Self {
             extended_metadata: {
-                let s = b"\0".as_ptr();
+                let s = c"".as_ptr();
                 std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1)
                     .to_vec()
             },

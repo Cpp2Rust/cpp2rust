@@ -13,43 +13,38 @@ pub unsafe fn test_fputc_0() {
 }
 pub unsafe fn test_fputs_1() {
     libc::fputs(
-        (b"hello\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        (c"hello".as_ptr().cast_mut()).cast_const(),
         libcc2rs::stdout_unsafe(),
     );
     libc::fputc(('\n' as i32), libcc2rs::stdout_unsafe());
-    let mut s: *const u8 = (b"from variable\0".as_ptr().cast_mut()).cast_const();
-    libc::fputs(s as *const i8, libcc2rs::stdout_unsafe());
+    let mut s: *const ::core::ffi::c_char = (c"from variable".as_ptr().cast_mut()).cast_const();
+    libc::fputs(s, libcc2rs::stdout_unsafe());
     libc::fputc(('\n' as i32), libcc2rs::stdout_unsafe());
-    let mut buf: [u8; 4] = [
-        (('b' as i32) as u8),
-        (('u' as i32) as u8),
-        (('f' as i32) as u8),
-        (('\0' as i32) as u8),
+    let mut buf: [::core::ffi::c_char; 4] = [
+        (('b' as i32) as ::core::ffi::c_char),
+        (('u' as i32) as ::core::ffi::c_char),
+        (('f' as i32) as ::core::ffi::c_char),
+        (('\0' as i32) as ::core::ffi::c_char),
     ];
-    libc::fputs(
-        (buf.as_mut_ptr()).cast_const() as *const i8,
-        libcc2rs::stdout_unsafe(),
-    );
+    libc::fputs((buf.as_mut_ptr()).cast_const(), libcc2rs::stdout_unsafe());
     libc::fputc(('\n' as i32), libcc2rs::stdout_unsafe());
 }
 pub unsafe fn test_puts_2() {
-    libc::puts((b"puts hello\0".as_ptr().cast_mut()).cast_const() as *const i8);
-    let mut s: *const u8 = (b"puts variable\0".as_ptr().cast_mut()).cast_const();
-    libc::puts(s as *const i8);
+    libc::puts((c"puts hello".as_ptr().cast_mut()).cast_const());
+    let mut s: *const ::core::ffi::c_char = (c"puts variable".as_ptr().cast_mut()).cast_const();
+    libc::puts(s);
 }
 pub unsafe fn test_fileno_3() {
     assert!(((((libc::fileno(libcc2rs::stdin_unsafe())) == (0)) as i32) != 0));
     assert!(((((libc::fileno(libcc2rs::stdout_unsafe())) == (1)) as i32) != 0));
     assert!(((((libc::fileno(libcc2rs::stderr_unsafe())) == (2)) as i32) != 0));
-    let mut file: *const u8 = (b"/tmp/cpp2rust_fileno_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::libc::FILE = libc::fopen(
-        file as *const i8,
-        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    let mut file: *const ::core::ffi::c_char =
+        (c"/tmp/cpp2rust_fileno_test.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(file, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fileno(fp)) > (2)) as i32) != 0));
     libc::fclose(fp);
-    assert!(((((libc::unlink(file as *const i8)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(file)) == (0)) as i32) != 0));
 }
 pub fn main() {
     unsafe {

@@ -10,11 +10,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    let buf: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(
+        (0..2)
+            .map(|_| <::core::ffi::c_char>::default())
+            .collect::<Box<[::core::ffi::c_char]>>(),
     ));
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<u8>)));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let p: Value<Ptr<::core::ffi::c_char>> =
+        Rc::new(RefCell::new((buf.as_pointer() as Ptr<::core::ffi::c_char>)));
+    let q: Value<Ptr<::core::ffi::c_char>> =
+        Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null()));
     (*q.borrow_mut()) = {
         (*p.borrow_mut()) += 1;
         (*p.borrow()).clone()
@@ -22,14 +26,14 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _lhs = (*q.borrow()).clone();
-            _lhs == (buf.as_pointer() as Ptr<u8>).offset((1) as isize)
+            _lhs == (buf.as_pointer() as Ptr<::core::ffi::c_char>).offset((1) as isize)
         }) as i32)
             != 0)
     );
-    let out: Value<u8> = <Value<u8>>::default();
+    let out: Value<::core::ffi::c_char> = <Value<::core::ffi::c_char>>::default();
     'switch: {
         let __match_cond = (({
-            (*out.borrow_mut()) = (('x' as i32) as u8);
+            (*out.borrow_mut()) = (('x' as i32) as ::core::ffi::c_char);
             (*out.borrow())
         }) as i32);
         match __match_cond {

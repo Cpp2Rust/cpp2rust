@@ -21,11 +21,11 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut i32 = (&mut *it.second() as *mut i32);
     assert!(
         ((*it.second()) == (sentinel))
-            && (!(b"iterator does not have correct value before insert\0".as_ptr()).is_null())
+            && (!(c"iterator does not have correct value before insert".as_ptr()).is_null())
     );
     assert!(
         ((*p) == (sentinel))
-            && (!(b"pointer does not have correct value before insert\0".as_ptr()).is_null())
+            && (!(c"pointer does not have correct value before insert".as_ptr()).is_null())
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (sentinel)) {
@@ -39,16 +39,16 @@ unsafe fn main_0() -> i32 {
     }
     assert!(
         ((*it.second()) != (0))
-            && (!(b"in refcount, iterator points to index 0 instead of sentinel\0".as_ptr())
+            && (!(c"in refcount, iterator points to index 0 instead of sentinel".as_ptr())
                 .is_null())
     );
     assert!(
         ((*it.second()) == (sentinel))
-            && (!(b"iterator does not have correct value after insert\0".as_ptr()).is_null())
+            && (!(c"iterator does not have correct value after insert".as_ptr()).is_null())
     );
     assert!(
         ((*p) == (sentinel))
-            && (!(b"pointer does not have correct value after insert\0".as_ptr()).is_null())
+            && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
     *it.second() = 57005;
     assert!(((*m.entry(sentinel).or_default().as_mut()) == (57005)));

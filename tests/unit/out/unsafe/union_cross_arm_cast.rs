@@ -10,13 +10,13 @@ use std::rc::Rc;
 #[derive(Copy, Clone)]
 pub struct shape_a {
     pub code: u16,
-    pub pad: [u8; 14],
+    pub pad: [::core::ffi::c_char; 14],
 }
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
             code: 0_u16,
-            pad: [0_u8; 14],
+            pad: [(0 as ::core::ffi::c_char); 14],
         }
     }
 }
@@ -45,7 +45,7 @@ impl Default for shape_b {
 pub union anon_0 {
     pub a: shape_a,
     pub b: shape_b,
-    pub raw_: [u8; 64],
+    pub raw_: [::core::ffi::c_char; 64],
 }
 impl Default for anon_0 {
     fn default() -> Self {
@@ -81,13 +81,15 @@ unsafe fn main_0() -> i32 {
     assert!(((((c.u.b.code as i32) == (10)) as i32) != 0));
     c.u.b.lo = 8080_u16;
     assert!(
-        (((((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((2) as isize)) as i32) == (144))
+        (((((*((&mut c.u.raw_ as *mut [::core::ffi::c_char; 64]) as *mut u8).offset((2) as isize))
             as i32)
+            == (144)) as i32)
             != 0)
     );
     assert!(
-        (((((*((&mut c.u.raw_ as *mut [u8; 64]) as *mut u8).offset((3) as isize)) as i32) == (31))
+        (((((*((&mut c.u.raw_ as *mut [::core::ffi::c_char; 64]) as *mut u8).offset((3) as isize))
             as i32)
+            == (31)) as i32)
             != 0)
     );
     return 0;

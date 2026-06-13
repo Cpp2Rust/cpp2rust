@@ -6,12 +6,13 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn strlen_0(mut s: *const u8) -> usize {
-    let mut begin: *const u8 = s;
+pub unsafe fn strlen_0(mut s: *const ::core::ffi::c_char) -> usize {
+    let mut begin: *const ::core::ffi::c_char = s;
     'loop_: while ((*s) != 0) {
         s.prefix_inc();
     }
-    return ((((s as usize - begin as usize) / ::std::mem::size_of::<u8>()) as i64) as usize);
+    return ((((s as usize - begin as usize) / ::std::mem::size_of::<::core::ffi::c_char>()) as i64)
+        as usize);
 }
 pub fn main() {
     unsafe {
@@ -19,14 +20,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let s: [u8; 7] = [
-        ('s' as u8),
-        ('t' as u8),
-        ('r' as u8),
-        ('i' as u8),
-        ('n' as u8),
-        ('g' as u8),
-        ('\0' as u8),
+    let s: [::core::ffi::c_char; 7] = [
+        ('s' as ::core::ffi::c_char),
+        ('t' as ::core::ffi::c_char),
+        ('r' as ::core::ffi::c_char),
+        ('i' as ::core::ffi::c_char),
+        ('n' as ::core::ffi::c_char),
+        ('g' as ::core::ffi::c_char),
+        ('\0' as ::core::ffi::c_char),
     ];
-    return ((unsafe { strlen_0((&s[(0) as usize] as *const u8)) }) as i32);
+    return ((unsafe {
+        let _s: *const ::core::ffi::c_char = (&s[(0) as usize] as *const ::core::ffi::c_char);
+        strlen_0(_s)
+    }) as i32);
 }

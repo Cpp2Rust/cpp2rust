@@ -10,7 +10,7 @@ use std::rc::Rc;
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
     pub v: i32,
-    pub name: *const u8,
+    pub name: *const ::core::ffi::c_char,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -18,7 +18,7 @@ pub struct Outer {
     pub p1: *mut i32,
     pub p2: *const i32,
     pub arr: [*mut i32; 3],
-    pub cp: *const u8,
+    pub cp: *const ::core::ffi::c_char,
     pub pp: *mut *mut i32,
     pub inner: Inner,
     pub x: i32,
@@ -41,8 +41,8 @@ impl Default for Outer {
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct Foo {
-    pub s1: *const u8,
-    pub s2: *const u8,
+    pub s1: *const ::core::ffi::c_char,
+    pub s2: *const ::core::ffi::c_char,
     pub fn1: Option<unsafe fn(i32) -> i32>,
     pub fn2: Option<unsafe fn(i32) -> i32>,
     pub n: i32,
@@ -82,7 +82,7 @@ pub static mut static_inner_array_2: [Inner; 2] = unsafe {
 };
 pub static mut static_foo_3: Foo = unsafe {
     Foo {
-        s1: b"hello\0".as_ptr(),
+        s1: c"hello".as_ptr(),
         s2: std::ptr::null(),
         fn1: None,
         fn2: None,
@@ -92,14 +92,14 @@ pub static mut static_foo_3: Foo = unsafe {
 pub static mut static_foo_array_4: [Foo; 2] = unsafe {
     [
         Foo {
-            s1: b"first\0".as_ptr(),
+            s1: c"first".as_ptr(),
             s2: std::ptr::null(),
             fn1: None,
             fn2: None,
             n: 1,
         },
         Foo {
-            s1: b"second\0".as_ptr(),
+            s1: c"second".as_ptr(),
             s2: std::ptr::null(),
             fn1: None,
             fn2: None,

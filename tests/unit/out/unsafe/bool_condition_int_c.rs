@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
     let mut u: u32 = 4_u32;
     let mut ul: u64 = 5_u64;
     let mut ll: i64 = 6_i64;
-    let mut ch: u8 = (('a' as i32) as u8);
+    let mut ch: ::core::ffi::c_char = (('a' as i32) as ::core::ffi::c_char);
     if (n != 0) {
         assert!((1 != 0));
     }

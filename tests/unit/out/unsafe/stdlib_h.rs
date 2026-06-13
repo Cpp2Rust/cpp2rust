@@ -9,42 +9,31 @@ use std::rc::Rc;
 pub unsafe fn test_setenv_getenv_0() {
     assert!(
         ((((libc::setenv(
-            (b"CPP2RUST_TEST_VAR\0".as_ptr().cast_mut()).cast_const() as *const i8,
-            (b"test_value\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
+            (c"test_value".as_ptr().cast_mut()).cast_const(),
             1
         )) == (0)) as i32)
             != 0)
     );
-    let mut v: *const u8 =
-        (libc::getenv((b"CPP2RUST_TEST_VAR\0".as_ptr().cast_mut()).cast_const() as *const i8)
-            as *mut u8)
-            .cast_const();
+    let mut v: *const ::core::ffi::c_char =
+        (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
     assert!((((!((v).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp(
-            v as *const i8,
-            (b"test_value\0".as_ptr().cast_mut()).cast_const() as *const i8
-        )) == (0)) as i32)
+        ((((libc::strcmp(v, (c"test_value".as_ptr().cast_mut()).cast_const())) == (0)) as i32)
             != 0)
     );
     assert!(
         ((((libc::setenv(
-            (b"CPP2RUST_TEST_VAR\0".as_ptr().cast_mut()).cast_const() as *const i8,
-            (b"replaced\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
+            (c"replaced".as_ptr().cast_mut()).cast_const(),
             1
         )) == (0)) as i32)
             != 0)
     );
-    v = (libc::getenv((b"CPP2RUST_TEST_VAR\0".as_ptr().cast_mut()).cast_const() as *const i8)
-        as *mut u8)
-        .cast_const();
+    v = (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
     assert!((((!((v).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp(
-            v as *const i8,
-            (b"replaced\0".as_ptr().cast_mut()).cast_const() as *const i8
-        )) == (0)) as i32)
-            != 0)
+        ((((libc::strcmp(v, (c"replaced".as_ptr().cast_mut()).cast_const())) == (0)) as i32) != 0)
     );
 }
 pub fn main() {

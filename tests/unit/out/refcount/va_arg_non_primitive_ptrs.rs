@@ -11,21 +11,7 @@ pub struct node {
     pub data: Value<i32>,
     pub next: Value<Ptr<node>>,
 }
-impl ByteRepr for node {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            next: Rc::new(RefCell::new(<Ptr<node>>::from_bytes(&buf[8..16]))),
-        }
-    }
-}
+impl ByteRepr for node {}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum opt {
     #[default]
@@ -46,14 +32,6 @@ impl From<i32> for opt {
     }
 }
 libcc2rs::impl_enum_inc_dec!(opt);
-impl ByteRepr for opt {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <opt>::from(i32::from_bytes(buf))
-    }
-}
 pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
@@ -63,8 +41,8 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
         let __match_cond = (*option.borrow());
         match __match_cond {
             __v if __v == (opt::OPT_STRING_OUT as i32) => {
-                let out: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()).clone(),
+                let out: Value<Ptr<Ptr<::core::ffi::c_char>>> = Rc::new(RefCell::new(
+                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<::core::ffi::c_char>>>()).clone(),
                 ));
                 (*out.borrow()).write(Ptr::from_string_literal(b"hello"));
                 (*result.borrow_mut()) = 1;
@@ -101,21 +79,28 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let s: Value<Ptr<::core::ffi::c_char>> =
+        Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null()));
     assert!(
-        (((({ dispatch_0((opt::OPT_STRING_OUT as i32), &[(s.as_pointer()).into(),]) }) == 1)
-            as i32)
+        (((({
+            let _option: i32 = (opt::OPT_STRING_OUT as i32);
+            dispatch_0(_option, &[(s.as_pointer()).into()])
+        }) == 1) as i32)
             != 0)
     );
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     assert!(
-        (((({ dispatch_0((opt::OPT_FILE as i32), &[(libcc2rs::cout()).into(),]) }) == 1) as i32)
+        (((({
+            let _option: i32 = (opt::OPT_FILE as i32);
+            dispatch_0(_option, &[(libcc2rs::cout()).into()])
+        }) == 1) as i32)
             != 0)
     );
     assert!(
         (((({
+            let _option: i32 = (opt::OPT_FILE as i32);
             dispatch_0(
-                (opt::OPT_FILE as i32),
+                _option,
                 &[((AnyPtr::default())
                     .cast::<::std::fs::File>()
                     .expect("ub:wrong type"))
@@ -129,13 +114,18 @@ fn main_0() -> i32 {
         next: Rc::new(RefCell::new(Ptr::<node>::null())),
     }));
     assert!(
-        (((({ dispatch_0((opt::OPT_NODE as i32), &[(head.as_pointer()).into(),]) }) == 42) as i32)
+        (((({
+            let _option: i32 = (opt::OPT_NODE as i32);
+            dispatch_0(_option, &[(head.as_pointer()).into()])
+        }) == 42) as i32)
             != 0)
     );
     let outp: Value<Ptr<node>> = Rc::new(RefCell::new((head.as_pointer())));
     assert!(
-        (((({ dispatch_0((opt::OPT_NODE_OUT as i32), &[(outp.as_pointer()).into(),]) }) == 2)
-            as i32)
+        (((({
+            let _option: i32 = (opt::OPT_NODE_OUT as i32);
+            dispatch_0(_option, &[(outp.as_pointer()).into()])
+        }) == 2) as i32)
             != 0)
     );
     assert!(((((*outp.borrow()).is_null()) as i32) != 0));

@@ -22,7 +22,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<u8> = Rc::new(RefCell::new((('A' as i32) as u8)));
+    let x: Value<::core::ffi::c_char> =
+        Rc::new(RefCell::new((('A' as i32) as ::core::ffi::c_char)));
     let y: Value<i16> = Rc::new(RefCell::new(10_i16));
     let z: Value<f32> = Rc::new(RefCell::new(3.0E+0));
     assert!(

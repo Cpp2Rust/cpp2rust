@@ -6,7 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn conditional_log_0(mut verbose: i32, mut fmt: *const u8, __args: &[VaArg]) -> i32 {
+pub unsafe fn conditional_log_0(
+    mut verbose: i32,
+    mut fmt: *const ::core::ffi::c_char,
+    __args: &[VaArg],
+) -> i32 {
     if (verbose != 0) {
         let mut ap: VaList = VaList::default();
         ap = VaList::new(__args);
@@ -23,21 +27,13 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
-            conditional_log_0(
-                1,
-                (b"%d\0".as_ptr().cast_mut()).cast_const(),
-                &[(42).into()],
-            )
+            conditional_log_0(1, (c"%d".as_ptr().cast_mut()).cast_const(), &[(42).into()])
         }) == (42)) as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
-            conditional_log_0(
-                0,
-                (b"%d\0".as_ptr().cast_mut()).cast_const(),
-                &[(99).into()],
-            )
+            conditional_log_0(0, (c"%d".as_ptr().cast_mut()).cast_const(), &[(99).into()])
         }) == (-1_i32)) as i32)
             != 0)
     );

@@ -114,8 +114,8 @@ unsafe fn main_0() -> i32 {
     if ((n) != (0)) || (((bits) & (256_i64)) != 0) {
         assert!(true);
     }
-    let mut cp: *const u8 = b"hi\0".as_ptr();
-    let mut cnp: *const u8 = std::ptr::null();
+    let mut cp: *const ::core::ffi::c_char = c"hi".as_ptr();
+    let mut cnp: *const ::core::ffi::c_char = std::ptr::null();
     if ((x) > (y)) && (!(cp).is_null()) {
         assert!(true);
     }

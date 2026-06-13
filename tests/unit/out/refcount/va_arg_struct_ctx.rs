@@ -12,9 +12,6 @@ pub struct context {
     pub last_error: Value<i32>,
 }
 impl ByteRepr for context {
-    fn byte_size() -> usize {
-        8
-    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.verbose.borrow()).to_bytes(&mut buf[0..4]);
         (*self.last_error.borrow()).to_bytes(&mut buf[4..8]);
@@ -26,9 +23,9 @@ impl ByteRepr for context {
         }
     }
 }
-pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
+pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<::core::ffi::c_char>, __args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
-    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
+    let fmt: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(fmt));
     if ((*(*(*ctx.borrow()).upgrade().deref()).verbose.borrow()) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
@@ -44,20 +41,14 @@ fn main_0() -> i32 {
     (*(*ctx.borrow()).verbose.borrow_mut()) = 1;
     (*(*ctx.borrow()).last_error.borrow_mut()) = 0;
     ({
-        set_error_0(
-            (ctx.as_pointer()),
-            Ptr::from_string_literal(b"error %d"),
-            &[(42).into()],
-        )
+        let _ctx: Ptr<context> = (ctx.as_pointer());
+        set_error_0(_ctx, Ptr::from_string_literal(b"error %d"), &[(42).into()])
     });
     assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
     (*(*ctx.borrow()).verbose.borrow_mut()) = 0;
     ({
-        set_error_0(
-            (ctx.as_pointer()),
-            Ptr::from_string_literal(b"error %d"),
-            &[(99).into()],
-        )
+        let _ctx: Ptr<context> = (ctx.as_pointer());
+        set_error_0(_ctx, Ptr::from_string_literal(b"error %d"), &[(99).into()])
     });
     assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
     return 0;

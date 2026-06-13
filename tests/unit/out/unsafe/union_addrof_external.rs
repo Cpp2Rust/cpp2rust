@@ -12,7 +12,7 @@ pub struct record {
     pub code: u16,
     pub lo: u16,
     pub hi: u32,
-    pub pad: [u8; 8],
+    pub pad: [::core::ffi::c_char; 8],
 }
 impl Default for record {
     fn default() -> Self {
@@ -20,7 +20,7 @@ impl Default for record {
             code: 0_u16,
             lo: 0_u16,
             hi: 0_u32,
-            pad: [0_u8; 8],
+            pad: [(0 as ::core::ffi::c_char); 8],
         }
     }
 }
@@ -28,7 +28,7 @@ impl Default for record {
 #[derive(Copy, Clone)]
 pub union anon_0 {
     pub h: record,
-    pub raw_: [u8; 128],
+    pub raw_: [::core::ffi::c_char; 128],
 }
 impl Default for anon_0 {
     fn default() -> Self {

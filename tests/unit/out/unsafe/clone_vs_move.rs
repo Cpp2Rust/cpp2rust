@@ -210,21 +210,21 @@ unsafe fn main_0() -> i32 {
     assert!(((pair4.1) == (1)));
     assert!(((pair3.0.len()) == (0_usize)));
     assert!(((pair3.1) == (0)));
-    let mut s1: Vec<u8> = vec![('a' as u8); (3_usize) as usize]
+    let mut s1: Vec<::core::ffi::c_char> = vec![('a' as ::core::ffi::c_char); (3_usize) as usize]
         .iter()
         .cloned()
         .chain(std::iter::once(0))
         .collect();
-    let mut s2: Vec<u8> = s1.clone();
-    s2[(0_usize)] = ('b' as u8);
-    s2[(1_usize)] = ('b' as u8);
-    s2[(2_usize)] = ('b' as u8);
-    assert!(((s2[(0_usize)] as i32) == (('b' as u8) as i32)));
-    assert!(((s2[(1_usize)] as i32) == (('b' as u8) as i32)));
-    assert!(((s2[(2_usize)] as i32) == (('b' as u8) as i32)));
-    assert!(((s1[(0_usize)] as i32) == (('a' as u8) as i32)));
-    assert!(((s1[(1_usize)] as i32) == (('a' as u8) as i32)));
-    assert!(((s1[(2_usize)] as i32) == (('a' as u8) as i32)));
+    let mut s2: Vec<::core::ffi::c_char> = s1.clone();
+    s2[(0_usize)] = ('b' as ::core::ffi::c_char);
+    s2[(1_usize)] = ('b' as ::core::ffi::c_char);
+    s2[(2_usize)] = ('b' as ::core::ffi::c_char);
+    assert!(((s2[(0_usize)] as i32) == (('b' as ::core::ffi::c_char) as i32)));
+    assert!(((s2[(1_usize)] as i32) == (('b' as ::core::ffi::c_char) as i32)));
+    assert!(((s2[(2_usize)] as i32) == (('b' as ::core::ffi::c_char) as i32)));
+    assert!(((s1[(0_usize)] as i32) == (('a' as ::core::ffi::c_char) as i32)));
+    assert!(((s1[(1_usize)] as i32) == (('a' as ::core::ffi::c_char) as i32)));
+    assert!(((s1[(2_usize)] as i32) == (('a' as ::core::ffi::c_char) as i32)));
     let mut b1: Bar = Bar { w: 1 };
     let mut b2: Bar = Bar { w: 2 };
     b2 = b1;

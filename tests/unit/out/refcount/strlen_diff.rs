@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<u8>) -> usize {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
-    let begin: Value<Ptr<u8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
+pub fn strlen_0(s: Ptr<::core::ffi::c_char>) -> usize {
+    let s: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(s));
+    let begin: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new((*s.borrow()).clone()));
     'loop_: while (((*s.borrow()).read()) != 0) {
         (*s.borrow_mut()).prefix_inc();
     }
@@ -18,14 +18,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        ('s' as u8),
-        ('t' as u8),
-        ('r' as u8),
-        ('i' as u8),
-        ('n' as u8),
-        ('g' as u8),
-        ('\0' as u8),
+    let s: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(Box::new([
+        ('s' as ::core::ffi::c_char),
+        ('t' as ::core::ffi::c_char),
+        ('r' as ::core::ffi::c_char),
+        ('i' as ::core::ffi::c_char),
+        ('n' as ::core::ffi::c_char),
+        ('g' as ::core::ffi::c_char),
+        ('\0' as ::core::ffi::c_char),
     ])));
-    return (({ strlen_0(((s.as_pointer() as Ptr<u8>).offset(0))) }) as i32);
+    return (({
+        let _s: Ptr<::core::ffi::c_char> =
+            ((s.as_pointer() as Ptr<::core::ffi::c_char>).offset(0 as isize));
+        strlen_0(_s)
+    }) as i32);
 }

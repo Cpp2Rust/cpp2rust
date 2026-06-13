@@ -10,58 +10,59 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let special: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let special: Value<Ptr<::core::ffi::c_char>> = Rc::new(RefCell::new(Ptr::from_string_literal(
         b"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff",
     )));
     thread_local!(
-        static expected_0: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-            7_u8,
-            8_u8,
-            9_u8,
-            10_u8,
-            11_u8,
-            12_u8,
-            13_u8,
-            32_u8,
-            33_u8,
-            34_u8,
-            35_u8,
-            36_u8,
-            37_u8,
-            38_u8,
-            39_u8,
-            40_u8,
-            41_u8,
-            42_u8,
-            43_u8,
-            44_u8,
-            45_u8,
-            46_u8,
-            47_u8,
-            58_u8,
-            59_u8,
-            60_u8,
-            61_u8,
-            62_u8,
-            63_u8,
-            64_u8,
-            91_u8,
-            92_u8,
-            93_u8,
-            94_u8,
-            95_u8,
-            96_u8,
-            123_u8,
-            124_u8,
-            125_u8,
-            126_u8,
-            (b'\xff' as u8),
+        static expected_0: Value<Box<[::core::ffi::c_char]>> = Rc::new(RefCell::new(Box::new([
+            (7 as ::core::ffi::c_char),
+            (8 as ::core::ffi::c_char),
+            (9 as ::core::ffi::c_char),
+            (10 as ::core::ffi::c_char),
+            (11 as ::core::ffi::c_char),
+            (12 as ::core::ffi::c_char),
+            (13 as ::core::ffi::c_char),
+            (32 as ::core::ffi::c_char),
+            (33 as ::core::ffi::c_char),
+            (34 as ::core::ffi::c_char),
+            (35 as ::core::ffi::c_char),
+            (36 as ::core::ffi::c_char),
+            (37 as ::core::ffi::c_char),
+            (38 as ::core::ffi::c_char),
+            (39 as ::core::ffi::c_char),
+            (40 as ::core::ffi::c_char),
+            (41 as ::core::ffi::c_char),
+            (42 as ::core::ffi::c_char),
+            (43 as ::core::ffi::c_char),
+            (44 as ::core::ffi::c_char),
+            (45 as ::core::ffi::c_char),
+            (46 as ::core::ffi::c_char),
+            (47 as ::core::ffi::c_char),
+            (58 as ::core::ffi::c_char),
+            (59 as ::core::ffi::c_char),
+            (60 as ::core::ffi::c_char),
+            (61 as ::core::ffi::c_char),
+            (62 as ::core::ffi::c_char),
+            (63 as ::core::ffi::c_char),
+            (64 as ::core::ffi::c_char),
+            (91 as ::core::ffi::c_char),
+            (92 as ::core::ffi::c_char),
+            (93 as ::core::ffi::c_char),
+            (94 as ::core::ffi::c_char),
+            (95 as ::core::ffi::c_char),
+            (96 as ::core::ffi::c_char),
+            (123 as ::core::ffi::c_char),
+            (124 as ::core::ffi::c_char),
+            (125 as ::core::ffi::c_char),
+            (126 as ::core::ffi::c_char),
+            (b'\xff' as ::core::ffi::c_char),
         ])));
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow())
-        < (((::std::mem::size_of::<[u8; 41]>() as usize)
-            .wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32))
+        < (((::std::mem::size_of::<[::core::ffi::c_char; 41]>() as usize)
+            .wrapping_div((::std::mem::size_of::<::core::ffi::c_char>() as usize)))
+            as i32))
     {
         assert!({
             let _lhs = (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32);

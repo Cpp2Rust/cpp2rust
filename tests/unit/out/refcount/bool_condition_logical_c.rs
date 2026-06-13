@@ -24,14 +24,6 @@ impl From<i32> for Code {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Code);
-impl ByteRepr for Code {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Code>::from(i32::from_bytes(buf))
-    }
-}
 thread_local!(
     pub static side_effect_0: Value<i32> = Rc::new(RefCell::new(0));
 );
@@ -148,8 +140,10 @@ fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
-    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let cp: Value<Ptr<::core::ffi::c_char>> =
+        Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
+    let cnp: Value<Ptr<::core::ffi::c_char>> =
+        Rc::new(RefCell::new(Ptr::<::core::ffi::c_char>::null()));
     if (((((((*x.borrow()) > (*y.borrow())) as i32) != 0) && (!(*cp.borrow()).is_null())) as i32)
         != 0)
     {

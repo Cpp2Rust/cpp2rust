@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct MinHeapNode {
-    pub data: u8,
+    pub data: ::core::ffi::c_char,
     pub freq: i32,
     pub left: *mut MinHeapNode,
     pub right: *mut MinHeapNode,
@@ -51,7 +51,11 @@ pub struct MinHeap {
     pub alloc: Option<Box<[MinHeapNode]>>,
 }
 impl MinHeap {
-    pub unsafe fn Alloc(&mut self, mut data: u8, mut freq: i32) -> *mut MinHeapNode {
+    pub unsafe fn Alloc(
+        &mut self,
+        mut data: ::core::ffi::c_char,
+        mut freq: i32,
+    ) -> *mut MinHeapNode {
         self.alloc.as_mut().unwrap()[(self.next as usize)] = MinHeapNode {
             data: data,
             freq: freq,
@@ -85,7 +89,10 @@ impl MinHeap {
                     &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
                 Swap_0(_a, _b)
             });
-            (unsafe { self.Heapify(smallest) });
+            (unsafe {
+                let _idx: i32 = smallest;
+                self.Heapify(_idx)
+            });
         }
     }
     pub unsafe fn ExtractMin(&mut self) -> *mut MinHeapNode {
@@ -110,14 +117,14 @@ impl MinHeap {
     }
     pub unsafe fn Build(
         &mut self,
-        data: *mut Option<Box<[u8]>>,
+        data: *mut Option<Box<[::core::ffi::c_char]>>,
         freq: *mut Option<Box<[i32]>>,
         mut n: i32,
     ) {
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
             self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize)] = (unsafe {
-                let _data: u8 = (*data).as_mut().unwrap()[(i as usize)];
+                let _data: ::core::ffi::c_char = (*data).as_mut().unwrap()[(i as usize)];
                 let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize)];
                 self.Alloc(_data, _freq)
             });
@@ -125,7 +132,10 @@ impl MinHeap {
         }
         let mut i: i32 = (((self.size) - (2)) / (2));
         'loop_: while ((i) >= (0)) {
-            (unsafe { self.Heapify(i) });
+            (unsafe {
+                let _idx: i32 = i;
+                self.Heapify(_idx)
+            });
             i.prefix_dec();
         }
     }
@@ -149,13 +159,16 @@ pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
     return minHeap;
 }
 pub unsafe fn Huffman_2(
-    data: *mut Option<Box<[u8]>>,
+    data: *mut Option<Box<[::core::ffi::c_char]>>,
     freq: *mut Option<Box<[i32]>>,
     mut size: i32,
 ) -> Option<Box<MinHeap>> {
-    let mut minHeap: Option<Box<MinHeap>> = (unsafe { AllocMinHeap_1(size) });
+    let mut minHeap: Option<Box<MinHeap>> = (unsafe {
+        let _capacity: i32 = size;
+        AllocMinHeap_1(_capacity)
+    });
     (unsafe {
-        let _data: *mut Option<Box<[u8]>> = data;
+        let _data: *mut Option<Box<[::core::ffi::c_char]>> = data;
         let _freq: *mut Option<Box<[i32]>> = freq;
         let _n: i32 = size;
         (*minHeap.as_deref_mut().unwrap()).Build(_data, _freq, _n)
@@ -166,12 +179,15 @@ pub unsafe fn Huffman_2(
         let mut right: *mut MinHeapNode =
             (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
         let mut top: *mut MinHeapNode = (unsafe {
-            (*minHeap.as_deref_mut().unwrap())
-                .Alloc(('$' as u8), (((*left).freq) + ((*right).freq)))
+            let _freq: i32 = (((*left).freq) + ((*right).freq));
+            (*minHeap.as_deref_mut().unwrap()).Alloc(('$' as ::core::ffi::c_char), _freq)
         });
         (*top).left = left;
         (*top).right = right;
-        (unsafe { (*minHeap.as_deref_mut().unwrap()).Insert(top) });
+        (unsafe {
+            let _node: *mut MinHeapNode = top;
+            (*minHeap.as_deref_mut().unwrap()).Insert(_node)
+        });
     }
     return minHeap;
 }
@@ -233,12 +249,12 @@ pub unsafe fn CollectCodes_4(
     }
 }
 pub unsafe fn HuffmanCodes_5(
-    data: *mut Option<Box<[u8]>>,
+    data: *mut Option<Box<[::core::ffi::c_char]>>,
     freq: *mut Option<Box<[i32]>>,
     mut size: i32,
 ) -> Option<Box<[i32]>> {
     let mut minHeap: Option<Box<MinHeap>> = (unsafe {
-        let _data: *mut Option<Box<[u8]>> = data;
+        let _data: *mut Option<Box<[::core::ffi::c_char]>> = data;
         let _freq: *mut Option<Box<[i32]>> = freq;
         let _size: i32 = size;
         Huffman_2(_data, _freq, _size)
@@ -257,13 +273,12 @@ pub unsafe fn HuffmanCodes_5(
     let mut top: i32 = 0;
     let mut next: i32 = 0;
     (unsafe {
-        CollectCodes_4(
-            root,
-            &mut arr as *mut Option<Box<[i32]>>,
-            top,
-            &mut out as *mut Option<Box<[i32]>>,
-            &mut next as *mut i32,
-        )
+        let _root: *mut MinHeapNode = root;
+        let _arr: *mut Option<Box<[i32]>> = &mut arr as *mut Option<Box<[i32]>>;
+        let _top: i32 = top;
+        let _out: *mut Option<Box<[i32]>> = &mut out as *mut Option<Box<[i32]>>;
+        let _next: *mut i32 = &mut next as *mut i32;
+        CollectCodes_4(_root, _arr, _top, _out, _next)
     });
     return out;
 }
@@ -274,18 +289,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut size: i32 = 6;
-    let mut arr1: [u8; 6] = [
-        ('a' as u8),
-        ('b' as u8),
-        ('c' as u8),
-        ('d' as u8),
-        ('e' as u8),
-        ('f' as u8),
+    let mut arr1: [::core::ffi::c_char; 6] = [
+        ('a' as ::core::ffi::c_char),
+        ('b' as ::core::ffi::c_char),
+        ('c' as ::core::ffi::c_char),
+        ('d' as ::core::ffi::c_char),
+        ('e' as ::core::ffi::c_char),
+        ('f' as ::core::ffi::c_char),
     ];
     let mut arr2: [i32; 6] = [5, 9, 12, 13, 16, 45];
-    let mut data: Option<Box<[u8]>> = Some(
+    let mut data: Option<Box<[::core::ffi::c_char]>> = Some(
         (0..(size as usize))
-            .map(|_| <u8>::default())
+            .map(|_| <::core::ffi::c_char>::default())
             .collect::<Box<[_]>>(),
     );
     let mut freq: Option<Box<[i32]>> = Some(
@@ -300,11 +315,11 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut out: Option<Box<[i32]>> = (unsafe {
-        HuffmanCodes_5(
-            &mut data as *mut Option<Box<[u8]>>,
-            &mut freq as *mut Option<Box<[i32]>>,
-            size,
-        )
+        let _data: *mut Option<Box<[::core::ffi::c_char]>> =
+            &mut data as *mut Option<Box<[::core::ffi::c_char]>>;
+        let _freq: *mut Option<Box<[i32]>> = &mut freq as *mut Option<Box<[i32]>>;
+        let _size: i32 = size;
+        HuffmanCodes_5(_data, _freq, _size)
     });
     return ((((((((out.as_mut().unwrap()[(0_usize)]) == (0))
         && ((out.as_mut().unwrap()[(1_usize)]) == (100)))

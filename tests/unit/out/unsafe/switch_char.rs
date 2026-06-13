@@ -6,20 +6,20 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn switch_char_0(mut c: u8) -> i32 {
+pub unsafe fn switch_char_0(mut c: ::core::ffi::c_char) -> i32 {
     'switch: {
         let __match_cond = (c as i32);
         match __match_cond {
-            __v if __v == (('a' as u8) as i32) => {
+            __v if __v == (('a' as ::core::ffi::c_char) as i32) => {
                 return 1;
             }
-            __v if __v == (('b' as u8) as i32) => {
+            __v if __v == (('b' as ::core::ffi::c_char) as i32) => {
                 return 2;
             }
-            __v if __v == (('\n' as u8) as i32) => {
+            __v if __v == (('\n' as ::core::ffi::c_char) as i32) => {
                 return 3;
             }
-            __v if __v == (('\0' as u8) as i32) => {
+            __v if __v == (('\0' as ::core::ffi::c_char) as i32) => {
                 return 4;
             }
             _ => {
@@ -53,10 +53,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { switch_char_0(('a' as u8),) }) == (1)));
-    assert!(((unsafe { switch_char_0(('b' as u8),) }) == (2)));
-    assert!(((unsafe { switch_char_0(('\n' as u8),) }) == (3)));
-    assert!(((unsafe { switch_char_0(('\0' as u8),) }) == (4)));
-    assert!(((unsafe { switch_char_0(('z' as u8),) }) == (0)));
+    assert!(((unsafe { switch_char_0(('a' as ::core::ffi::c_char),) }) == (1)));
+    assert!(((unsafe { switch_char_0(('b' as ::core::ffi::c_char),) }) == (2)));
+    assert!(((unsafe { switch_char_0(('\n' as ::core::ffi::c_char),) }) == (3)));
+    assert!(((unsafe { switch_char_0(('\0' as ::core::ffi::c_char),) }) == (4)));
+    assert!(((unsafe { switch_char_0(('z' as ::core::ffi::c_char),) }) == (0)));
     return 0;
 }

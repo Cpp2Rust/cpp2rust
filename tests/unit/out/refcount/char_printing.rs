@@ -12,19 +12,27 @@ pub fn main() {
 fn main_0() -> i32 {
     let vec_: Value<Vec<u8>> = Rc::new(RefCell::new(vec![195_u8, 167_u8]));
     let i: Value<i32> = Rc::new(RefCell::new(27));
-    let str: Value<Vec<u8>> = Rc::new(RefCell::new(
+    let str: Value<Vec<::core::ffi::c_char>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"rdas.")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
+            .collect::<Vec<::core::ffi::c_char>>(),
     ));
     write!(libcc2rs::cout(), "{:} a", (*i.borrow()),);
     libcc2rs::cout().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read())] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read())] as &[u8]),
-            (&[('o' as u8)] as &[u8]),
-            (&(*str.borrow())[..(*str.borrow()).len() - 1] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>)
+                .offset(0_usize as isize)
+                .read()) as u8] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>)
+                .offset(1_usize as isize)
+                .read()) as u8] as &[u8]),
+            (&[('o' as ::core::ffi::c_char) as u8] as &[u8]),
+            (&(*str.borrow())
+                .iter()
+                .take((*str.borrow()).len() - 1)
+                .map(|&c| c as u8)
+                .collect::<Vec<u8>>()[..] as &[u8]),
             (&[b'\n'] as &[u8]),
         ]
         .concat()),
@@ -33,7 +41,7 @@ fn main_0() -> i32 {
     libcc2rs::cout().write_all(
         &([
             (b" a\xc3\xa7ordas?" as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
+            (&[('\n' as ::core::ffi::c_char) as u8] as &[u8]),
             (b"Sim, 0x" as &[u8]),
         ]
         .concat()),
@@ -42,10 +50,14 @@ fn main_0() -> i32 {
     write!(libcc2rs::cout(), "Hello, World!\n",);
     libcc2rs::cout().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read())] as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read())] as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>)
+                .offset(0_usize as isize)
+                .read()) as u8] as &[u8]),
+            (&[('\n' as ::core::ffi::c_char) as u8] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>)
+                .offset(1_usize as isize)
+                .read()) as u8] as &[u8]),
+            (&[('\n' as ::core::ffi::c_char) as u8] as &[u8]),
         ]
         .concat()),
     );
