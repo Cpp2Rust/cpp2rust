@@ -1981,13 +1981,17 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
       uint64_t pad = arr_size > expr->getString().size()
                          ? arr_size - expr->getString().size()
                          : 0;
-      StrCat(token::kStar,
-             std::format("b{}", GetEscapedStringLiteral(expr, pad)));
+      StrCat(std::format("libcc2rs::char_array(b{})",
+                         GetEscapedStringLiteral(expr, pad)));
       return false;
     }
-    StrCat(token::kStar);
+    StrCat(std::format("libcc2rs::char_array(b{})",
+                       GetEscapedStringLiteral(expr, 1)));
+    return false;
   }
-  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
+  assert(!expr->getString().contains('\0') &&
+         "interior null byte in string literal");
+  StrCat(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
   return false;
 }
 

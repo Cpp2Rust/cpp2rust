@@ -1105,7 +1105,7 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 ? arr_size - expr->getString().size()
                 : 0;
     }
-    StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
+    StrCat(std::format("Box::from(libcc2rs::char_array(b{}))",
                        GetEscapedStringLiteral(expr, pad)));
     return false;
   }
