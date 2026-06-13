@@ -683,11 +683,11 @@ impl<T> Iterator for StringIterator<T> {
 }
 
 pub struct CStringIterator {
-    ptr: Ptr<u8>,
+    ptr: Ptr<core::ffi::c_char>,
 }
 
 impl Iterator for CStringIterator {
-    type Item = u8;
+    type Item = core::ffi::c_char;
     fn next(&mut self) -> Option<Self::Item> {
         // read until the null terminator
         match self.ptr.read() {
@@ -919,7 +919,7 @@ impl<T> fmt::Debug for Ptr<T> {
     }
 }
 
-impl fmt::Display for Ptr<u8> {
+impl fmt::Display for Ptr<core::ffi::c_char> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.kind {
             PtrKind::Null => write!(f, "NULL"),
@@ -929,7 +929,7 @@ impl fmt::Display for Ptr<u8> {
                     if ch == 0 {
                         break;
                     }
-                    write!(f, "{}", char::from(ch))?;
+                    write!(f, "{}", char::from(ch as u8))?;
                 }
                 Ok(())
             }
@@ -937,7 +937,7 @@ impl fmt::Display for Ptr<u8> {
     }
 }
 
-type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Vec<u8>>>>;
+type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Vec<core::ffi::c_char>>>>;
 
 thread_local! {
     static STRING_LITERALS: RefCell<StringLiteralMap> = RefCell::new(HashMap::new());
@@ -1016,14 +1016,17 @@ impl Ptr<u8> {
             }
         }
     }
+}
 
+impl Ptr<core::ffi::c_char> {
     #[inline]
     pub fn from_string_literal(s: &'static [u8]) -> Self {
         STRING_LITERALS.with(|literals| {
             let mut literals = literals.borrow_mut();
             let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
                 Rc::new(RefCell::new({
-                    let mut v = s.to_vec();
+                    let mut v: Vec<core::ffi::c_char> =
+                        s.iter().map(|&b| b as core::ffi::c_char).collect();
                     v.push(0);
                     v
                 }))
@@ -1040,7 +1043,7 @@ impl Ptr<u8> {
     }
 
     pub fn to_rust_string(&self) -> String {
-        let bytes: Vec<u8> = self.to_c_string_iterator().collect();
+        let bytes: Vec<u8> = self.to_c_string_iterator().map(|c| c as u8).collect();
         String::from_utf8_lossy(&bytes).into_owned()
     }
 }
