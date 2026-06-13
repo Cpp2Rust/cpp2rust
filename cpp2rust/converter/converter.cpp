@@ -1975,7 +1975,7 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format("[0u8; {}]", arr_size));
+        StrCat(std::format("[0 as ::core::ffi::c_char; {}]", arr_size));
         return false;
       }
       uint64_t pad = arr_size > expr->getString().size()

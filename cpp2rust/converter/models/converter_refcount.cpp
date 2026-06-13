@@ -211,7 +211,8 @@ std::string ConverterRefCount::BuildFnAdapter(
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
                                ConvertPointeeType(src_pty));
       } else if (src_pty->getPointeeType()->isCharType()) {
-        closure += std::format("a{}.reinterpret_cast::<u8>()", i);
+        closure += std::format("a{}.reinterpret_cast::<{}>()", i,
+                               ConvertPointeeType(src_pty));
       }
     } else {
       // UB: Incompatible types
@@ -1096,7 +1097,8 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
+        StrCat(std::format(
+            "vec![0 as ::core::ffi::c_char; {}].into_boxed_slice()", arr_size));
         return false;
       }
       pad = arr_size > expr->getString().size()
