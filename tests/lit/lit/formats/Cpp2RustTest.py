@@ -3,6 +3,7 @@
 
 import lit.Test
 import lit.util
+from .._buildconfig import CXX, CC
 from .base import TestFormat
 from dataclasses import dataclass
 from pathlib import Path
@@ -177,12 +178,7 @@ class TestContext:
             self.cpp_bin = self.build_dir / "app"
             return None
 
-        ## FIXME: these must use the detected/chosen compiler in cmake
-        cc = (
-            os.environ.get("CC", "clang")
-            if self.cc_input.suffix == ".c"
-            else os.environ.get("CXX", "clang++")
-        )
+        cc = CC if self.cc_input.suffix == ".c" else CXX
         self.cpp_bin = self.tmp_dir / "cpp"
         cmd = [
             cc,

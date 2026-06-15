@@ -50,6 +50,9 @@ execute_process(
 )
 message(STATUS ${CLANG_OUTPUT})
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate-buildconfig-py.cmake)
+generate_buildconfig_py("${CMAKE_CURRENT_SOURCE_DIR}/tests/lit/lit")
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/rust-toolchain.cmake)
 set(RUST_STAMP_FILE "${CMAKE_BINARY_DIR}/.rust-toolchain.stamp")
 

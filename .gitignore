@@ -1,5 +1,6 @@
 # CMake
 build/
+_buildconfig.py
 
 # Cargo
 target/
