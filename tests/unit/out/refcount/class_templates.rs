@@ -147,12 +147,12 @@ fn main_0() -> i32 {
     let fmc: Value<MyContainer_float_> = Rc::new(RefCell::new(<MyContainer_float_>::default()));
     assert!(({ (*fmc.borrow()).empty() }));
     ({
-        let _item: Value<f32> = Rc::new(RefCell::new((('a' as u8) as f32)));
+        let _item: Value<f32> = Rc::new(RefCell::new((1.0E+0 as f32)));
         (*fmc.borrow()).push_back(_item.as_pointer())
     });
     assert!(
         (({ (*fmc.borrow()).size() }) == 1_usize)
-            && ((({ (*fmc.borrow()).back() }).read()) == ((('a' as u8) as i32) as f32))
+            && (((({ (*fmc.borrow()).back() }).read()) as f64) == 1.0E+0)
     );
     ({ (*fmc.borrow()).pop_back() });
     assert!(({ (*fmc.borrow()).empty() }));

@@ -35,8 +35,8 @@ int main() {
 
   MyContainer<float> fmc;
   assert(fmc.empty());
-  fmc.push_back('a');
-  assert(fmc.size() == 1 && fmc.back() == 'a');
+  fmc.push_back(1.0);
+  assert(fmc.size() == 1 && fmc.back() == 1.0);
   fmc.pop_back();
   assert(fmc.empty());
   return 0;

@@ -123,12 +123,11 @@ unsafe fn main_0() -> i32 {
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
     assert!((unsafe { fmc.empty() }));
     (unsafe {
-        let mut _item = (('a' as u8) as f32);
+        let mut _item = (1.0E+0 as f32);
         fmc.push_back(&mut _item)
     });
     assert!(
-        ((unsafe { fmc.size() }) == (1_usize))
-            && ((*(unsafe { fmc.back() })) == ((('a' as u8) as i32) as f32))
+        ((unsafe { fmc.size() }) == (1_usize)) && (((*(unsafe { fmc.back() })) as f64) == (1.0E+0))
     );
     (unsafe { fmc.pop_back() });
     assert!((unsafe { fmc.empty() }));
