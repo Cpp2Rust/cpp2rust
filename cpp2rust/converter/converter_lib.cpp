@@ -481,7 +481,15 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   }
 
   if (name.empty()) {
-    name = "self";
+    auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);
+    assert(pdecl && "Unexpected unnamed construct");
+
+    const auto *ctor =
+        llvm::dyn_cast<clang::CXXConstructorDecl>(pdecl->getDeclContext());
+    name = (pdecl->isExplicitObjectParameter() ||
+            (ctor && ctor->isCopyOrMoveConstructor()))
+               ? "self"
+               : "_";
   }
 
   return name;
