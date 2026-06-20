@@ -483,7 +483,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   if ((hoisted_decls_.contains(decl) || !qual_type.isConstQualified()) &&
       !qual_type->isReferenceType() &&
       ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
-      !IsGlobalVar(decl)) {
+      !IsGlobalVar(decl) && name != "_") {
     StrCat(keyword_mut_);
   }
 

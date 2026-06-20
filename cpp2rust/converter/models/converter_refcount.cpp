@@ -594,6 +594,11 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   for (auto *param : params) {
     if (!param->getType()->isReferenceType()) {
       auto name = GetNamedDeclAsString(param);
+      // Skip emitting the preamble for unnamed parameters
+      if (name == "_") {
+        continue;
+      }
+
       auto type = ToString(param->getType());
       auto init = name;
 
