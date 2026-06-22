@@ -156,5 +156,14 @@ unsafe fn main_0() -> i32 {
     assert!(((smax) == (15_isize)));
     let mut delta: isize = ((sz as isize) - (ul as isize));
     assert!(((delta) == (11_isize)));
+    let mut a64: i64 = 100_i64;
+    let mut b: isize = 30_isize;
+    a64 -= (b as i64);
+    assert!(((a64) == (70_i64)));
+    a64 += (b as i64);
+    assert!(((a64) == (100_i64)));
+    let mut c: isize = (-20_i32 as isize);
+    a64 -= (c as i64);
+    assert!(((a64) == (120_i64)));
     return (((n).wrapping_rem(7_usize)) as i32);
 }

@@ -211,5 +211,14 @@ fn main_0() -> i32 {
         (((*sz.borrow()) as isize) - ((*ul.borrow()) as isize)),
     ));
     assert!(((*delta.borrow()) == 11_isize));
+    let a64: Value<i64> = Rc::new(RefCell::new(100_i64));
+    let b: Value<isize> = Rc::new(RefCell::new(30_isize));
+    (*a64.borrow_mut()) -= ((*b.borrow()) as i64);
+    assert!(((*a64.borrow()) == 70_i64));
+    (*a64.borrow_mut()) += ((*b.borrow()) as i64);
+    assert!(((*a64.borrow()) == 100_i64));
+    let c: Value<isize> = Rc::new(RefCell::new((-20_i32 as isize)));
+    (*a64.borrow_mut()) -= ((*c.borrow()) as i64);
+    assert!(((*a64.borrow()) == 120_i64));
     return (((*n.borrow()).wrapping_rem(7_usize)) as i32);
 }

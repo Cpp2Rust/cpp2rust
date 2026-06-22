@@ -2235,7 +2235,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       StrCat(op);
-      Convert(rhs);
+      Convert(rhs, computation_result_type);
     }
     if (lhs_type->isBooleanType()) {
       StrCat(token::kDiff, token::kZero);

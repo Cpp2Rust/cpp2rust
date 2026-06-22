@@ -219,19 +219,58 @@ pub unsafe fn test_ftruncate_5() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path as *const i8);
 }
-pub unsafe fn test_isatty_6() {
+pub unsafe fn test_open_6() {
+    let mut fd: i32 = (unsafe {
+        libc::open(
+            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            0 as i32,
+            (420),
+        )
+    });
+    assert!(((((fd) >= (-1_i32)) as i32) != 0));
+    if ((((fd) >= (0)) as i32) != 0) {
+        libc::close(fd);
+    }
+    fd = (unsafe {
+        libc::open(
+            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            0 as i32,
+        )
+    });
+    assert!(((((fd) >= (-1_i32)) as i32) != 0));
+    if ((((fd) >= (0)) as i32) != 0) {
+        libc::close(fd);
+    }
+}
+pub unsafe fn test_fcntl_7() {
+    assert!(((((unsafe { libc::fcntl(0 as i32, 1 as i32,) }) >= (-1_i32)) as i32) != 0));
+    let mut duped: i32 = (unsafe { libc::fcntl(0 as i32, 0 as i32, (100)) });
+    assert!(((((duped) >= (-1_i32)) as i32) != 0));
+    if ((((duped) >= (0)) as i32) != 0) {
+        libc::close(duped);
+    }
+}
+pub unsafe fn test_ioctl_8() {
+    let mut arg: i32 = 0;
+    assert!(
+        ((((unsafe { libc::ioctl(0 as i32, 0_u64 as u64, (&mut arg as *mut i32),) }) >= (-1_i32))
+            as i32)
+            != 0)
+    );
+}
+pub unsafe fn test_isatty_9() {
     printf(
         (b"%d\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::isatty(0),
     );
 }
-pub unsafe fn test_geteuid_7() {
+pub unsafe fn test_geteuid_10() {
     printf(
         (b"%u\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::geteuid(),
     );
 }
-pub unsafe fn test_gethostname_8() {
+pub unsafe fn test_gethostname_11() {
     let mut name: [u8; 256] = [0_u8; 256];
     assert!(
         ((((libc::gethostname(
@@ -257,8 +296,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_unlink_3() });
     (unsafe { test_pipe_4() });
     (unsafe { test_ftruncate_5() });
-    (unsafe { test_isatty_6() });
-    (unsafe { test_geteuid_7() });
-    (unsafe { test_gethostname_8() });
+    (unsafe { test_open_6() });
+    (unsafe { test_fcntl_7() });
+    (unsafe { test_ioctl_8() });
+    (unsafe { test_isatty_9() });
+    (unsafe { test_geteuid_10() });
+    (unsafe { test_gethostname_11() });
     return 0;
 }
