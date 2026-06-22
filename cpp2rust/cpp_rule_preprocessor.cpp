@@ -270,6 +270,7 @@ private:
 
         clang::DefaultArguments defaultArgs;
         clang::Sema::CheckTemplateArgumentInfo ctai;
+        clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
         auto invalid = sema_->CheckTemplateArgumentList(
             decl, decl->getTemplateParameters(), loc_, targsInfo, defaultArgs,
             true, ctai);
