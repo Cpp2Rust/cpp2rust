@@ -123,10 +123,21 @@ pub struct TypeIr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum BodyFragment {
-    Text { text: String },
-    Placeholder { placeholder: PlaceholderInner },
-    Generic { generic: i32 },
-    MethodCall { method_call: MethodCallInner },
+    Text {
+        text: String,
+    },
+    Placeholder {
+        placeholder: PlaceholderInner,
+    },
+    Generic {
+        generic: i32,
+    },
+    MethodCall {
+        method_call: MethodCallInner,
+    },
+    VaArgs {
+        va_args: std::marker::PhantomData<()>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
