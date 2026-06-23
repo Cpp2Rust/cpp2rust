@@ -474,7 +474,7 @@ void ConverterRefCount::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
   StrCat("fn default() -> Self");
   PushBrace fn_brace(*this);
-  StrCat(std::format("{} {{ __store: libcc2rs::UnionStore::new({}) }}", name,
+  StrCat(std::format("{} {{ __store: libcc2rs::UnionStorage::new({}) }}", name,
                      ctx_.getASTRecordLayout(decl).getSize().getQuantity()));
 }
 
@@ -491,14 +491,14 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   StrCat(")]");
 
   StrCat(
-      std::format("pub struct {} {{ __store: libcc2rs::UnionStore, }}", name));
+      std::format("pub struct {} {{ __store: libcc2rs::UnionStorage, }}", name));
 
   StrCat(std::format("impl {}", name));
   {
     PushBrace impl_brace(*this);
     for (auto *field : decl->fields()) {
       StrCat(std::format(
-          "pub fn {}(&self) -> Ptr<{}> {{ self.__store.pod(0) }}",
+          "pub fn {}(&self) -> Ptr<{}> {{ self.__store.reinterpret(0) }}",
           GetNamedDeclAsString(field), Mapper::Map(field->getType())));
     }
   }

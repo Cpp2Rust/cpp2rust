@@ -6,18 +6,18 @@ use std::{cell::RefCell, rc::Rc};
 use crate::Ptr;
 use crate::reinterpret::{ByteRepr, OriginalAlloc, SliceOriginalAlloc};
 
-pub struct UnionStore {
+pub struct UnionStorage {
     bytes: Rc<RefCell<Vec<u8>>>,
 }
 
-impl UnionStore {
+impl UnionStorage {
     pub fn new(size: usize) -> Self {
-        UnionStore {
+        UnionStorage {
             bytes: Rc::new(RefCell::new(vec![0u8; size])),
         }
     }
 
-    pub fn pod<T: ByteRepr>(&self, offset: usize) -> Ptr<T> {
+    pub fn reinterpret<T: ByteRepr>(&self, offset: usize) -> Ptr<T> {
         let alloc: Rc<dyn OriginalAlloc> = Rc::new(SliceOriginalAlloc {
             weak: Rc::downgrade(&self.bytes),
         });
@@ -25,9 +25,9 @@ impl UnionStore {
     }
 }
 
-impl Clone for UnionStore {
+impl Clone for UnionStorage {
     fn clone(&self) -> Self {
-        UnionStore {
+        UnionStorage {
             bytes: Rc::new(RefCell::new(self.bytes.borrow().clone())),
         }
     }
