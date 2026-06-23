@@ -36,7 +36,16 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.inner.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(<Option<Value<Inner>>>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

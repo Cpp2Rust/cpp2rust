@@ -28,7 +28,18 @@ pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
 }
-impl ByteRepr for Line {}
+impl ByteRepr for Line {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.start.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.end.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            start: Rc::new(RefCell::new(<Point>::from_bytes(&buf[0..8]))),
+            end: Rc::new(RefCell::new(<Point>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Node {
     pub value: Value<i32>,

@@ -121,7 +121,16 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub field: Value<Inner>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            field: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Inner_struct {
     pub typedef_field: Value<i32>,

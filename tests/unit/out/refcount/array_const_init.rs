@@ -25,7 +25,20 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.head.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.tail.borrow()).to_bytes(&mut buf[4..16]);
+        (*self.buf.borrow()).to_bytes(&mut buf[16..20]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            head: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            tail: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[4..16]))),
+            buf: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[16..20]))),
+        }
+    }
+}
 thread_local!(
     pub static s_0: Value<S> = Rc::new(RefCell::new(S {
         head: Rc::new(RefCell::new(5)),

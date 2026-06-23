@@ -42,7 +42,16 @@ impl Clone for MyContainer_int_ {
         this
     }
 }
-impl ByteRepr for MyContainer_int_ {}
+impl ByteRepr for MyContainer_int_ {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct MyContainer_char_ {
     vec_: Value<Vec<u8>>,
@@ -79,7 +88,16 @@ impl Clone for MyContainer_char_ {
         this
     }
 }
-impl ByteRepr for MyContainer_char_ {}
+impl ByteRepr for MyContainer_char_ {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: Rc::new(RefCell::new(<Vec<u8>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
@@ -116,7 +134,16 @@ impl Clone for MyContainer_float_ {
         this
     }
 }
-impl ByteRepr for MyContainer_float_ {}
+impl ByteRepr for MyContainer_float_ {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            vec_: Rc::new(RefCell::new(<Vec<f32>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

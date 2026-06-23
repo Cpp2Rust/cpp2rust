@@ -18,7 +18,16 @@ impl Clone for Holder {
         this
     }
 }
-impl ByteRepr for Holder {}
+impl ByteRepr for Holder {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 pub fn write_through_0(p: Ptr<i32>) {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
     (*p.borrow()).write(42);

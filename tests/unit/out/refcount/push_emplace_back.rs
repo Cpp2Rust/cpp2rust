@@ -67,7 +67,20 @@ impl Clone for JPEGData {
         this
     }
 }
-impl ByteRepr for JPEGData {}
+impl ByteRepr for JPEGData {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.com_data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.app_data.borrow()).to_bytes(&mut buf[24..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            com_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(&buf[0..24]))),
+            app_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(
+                &buf[24..48],
+            ))),
+        }
+    }
+}
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));
     ((*dest.borrow()).to_strong().as_pointer() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(

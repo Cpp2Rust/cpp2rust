@@ -44,7 +44,16 @@ impl Clone for Outer {
         this
     }
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.runs.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            runs: Rc::new(RefCell::new(<Vec<Outer_RunInfo>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

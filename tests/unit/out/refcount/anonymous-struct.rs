@@ -170,7 +170,20 @@ impl Clone for anon_3 {
         this
     }
 }
-impl ByteRepr for anon_3 {}
+impl ByteRepr for anon_3 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.i.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.inner_named.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.anon_5.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            i: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            inner_named: Rc::new(RefCell::new(<anon_4>::from_bytes(&buf[4..8]))),
+            anon_5: Rc::new(RefCell::new(<anon_5>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer {
     pub named: Value<Outer_Named>,
@@ -191,7 +204,24 @@ impl Clone for Outer {
         this
     }
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.named.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.anonymous_named_0.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.anonymous_named_1.borrow()).to_bytes(&mut buf[16..24]);
+        (*self.anon_2.borrow()).to_bytes(&mut buf[24..32]);
+        (*self.anon_3.borrow()).to_bytes(&mut buf[32..44]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            named: Rc::new(RefCell::new(<Outer_Named>::from_bytes(&buf[0..8]))),
+            anonymous_named_0: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..16]))),
+            anonymous_named_1: Rc::new(RefCell::new(<anon_1>::from_bytes(&buf[16..24]))),
+            anon_2: Rc::new(RefCell::new(<anon_2>::from_bytes(&buf[24..32]))),
+            anon_3: Rc::new(RefCell::new(<anon_3>::from_bytes(&buf[32..44]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
