@@ -644,25 +644,28 @@ clang::Expr *GetCallObject(clang::CallExpr *expr) {
   return nullptr;
 }
 
-std::unordered_set<const clang::ValueDecl *>
-GetAllVars(const clang::Stmt *stmt) {
-  std::unordered_set<const clang::ValueDecl *> vars;
+static void GetAllVarsImpl(const clang::Stmt *stmt,
+                           std::unordered_set<const clang::ValueDecl *> &vars) {
   if (!stmt) {
-    return vars;
+    return;
   }
 
   if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
     vars.insert(decl_ref->getDecl());
   } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
     vars.insert(member->getMemberDecl());
-    auto child_vars = GetAllVars(member->getBase());
-    vars.insert(child_vars.begin(), child_vars.end());
+    GetAllVarsImpl(member->getBase(), vars);
   }
 
   for (auto *child : stmt->children()) {
-    auto child_vars = GetAllVars(child);
-    vars.insert(child_vars.begin(), child_vars.end());
+    GetAllVarsImpl(child, vars);
   }
+}
+
+std::unordered_set<const clang::ValueDecl *>
+GetAllVars(const clang::Stmt *stmt) {
+  std::unordered_set<const clang::ValueDecl *> vars;
+  GetAllVarsImpl(stmt, vars);
   return vars;
 }
 
