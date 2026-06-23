@@ -1,4 +1,4 @@
-// no-compile: refcount
+// panic: refcount
 #include <assert.h>
 
 int main(void) {

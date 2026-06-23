@@ -1504,7 +1504,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       Buffer buf(*this);
       PushExprKind push(*this,
                         isLValue() ? ExprKind::LValue : ExprKind::RValue);
-      Converter::ConvertMemberExpr(expr); // e.g. (*u.borrow()).i
+      Converter::ConvertMemberExpr(expr);
       str = std::move(buf).str();
     }
     str += "()";
