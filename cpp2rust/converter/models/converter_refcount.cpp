@@ -537,30 +537,10 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat('}');
 }
 
-static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
-  if (decl->isUnion()) {
-    return false;
-  }
-
-  // ByteRepr is only supported for user-defined structs that contain ByteRepr
-  // fields.
-  for (auto *f : decl->fields()) {
-    auto qt = f->getType();
-    if (qt->isEnumeralType()) {
-      return false;
-    }
-    if (!qt->isIntegerType() && !qt->isFloatingType()) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
-  if (!recordImplementsByteRepr(decl)) {
+  if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace brace(*this);
     return;
@@ -588,6 +568,7 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   StrCat("fn from_bytes(buf: &[u8]) -> Self");
   {
     PushBrace fn_brace(*this);
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
     StrCat("Self");
     PushBrace lit_brace(*this);
     unsigned idx = 0;
@@ -596,7 +577,7 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
       StrCat(std::format(
           "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
-          GetNamedDeclAsString(field), Mapper::Map(field->getType()), byte_off,
+          GetNamedDeclAsString(field), ToString(field->getType()), byte_off,
           byte_off + byte_size));
       ++idx;
     }

@@ -51,6 +51,8 @@ bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
 bool IsMut(clang::QualType qual_type);
 
+bool TypeImplementsByteRepr(clang::QualType qt);
+
 bool IsMutatingCall(const clang::CallExpr *expr);
 
 bool IsOverloadedFunction(const clang::FunctionDecl *decl);
