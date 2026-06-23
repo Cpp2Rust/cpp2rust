@@ -1031,11 +1031,16 @@ impl Ptr<u8> {
 }
 
 pub(crate) trait ErasedPtr: std::any::Any {
-    fn pointee_type_id(&self) -> std::any::TypeId;
-    fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
+    fn as_bytes(&self) -> Ptr<u8>;
     fn as_any(&self) -> &dyn std::any::Any;
-    fn equals(&self, other: &dyn ErasedPtr) -> Option<bool>;
+    fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+}
+
+impl PartialEq for dyn ErasedPtr {
+    fn eq(&self, other: &Self) -> bool {
+        self.equals(other)
+    }
 }
 
 impl<T> ErasedPtr for Ptr<T>
@@ -1043,37 +1048,16 @@ where
     T: ByteRepr + 'static,
     Ptr<T>: PartialEq,
 {
-    fn pointee_type_id(&self) -> std::any::TypeId {
-        std::any::TypeId::of::<T>()
-    }
-
-    fn memcpy(&self, src: &dyn ErasedPtr, len: usize) {
-        if self.pointee_type_id() != src.pointee_type_id() {
-            panic!("memcpy: type mismatch");
-        }
-        let src_ptr = src
-            .as_any()
-            .downcast_ref::<Ptr<T>>()
-            .expect("memcpy: downcast to Ptr<T> failed");
-        let dst_bytes: Ptr<u8> = self.reinterpret_cast();
-        let src_bytes: Ptr<u8> = src_ptr.reinterpret_cast();
-        dst_bytes.memcpy(&src_bytes, len);
+    fn as_bytes(&self) -> Ptr<u8> {
+        self.reinterpret_cast::<u8>()
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
 
-    fn equals(&self, other: &dyn ErasedPtr) -> Option<bool> {
-        if self.pointee_type_id() != other.pointee_type_id() {
-            return None;
-        }
-
-        if let Some(other_ptr) = other.as_any().downcast_ref::<Ptr<T>>() {
-            return Some(self == other_ptr);
-        }
-
-        None
+    fn equals(&self, other: &dyn ErasedPtr) -> bool {
+        other.as_any().downcast_ref::<Ptr<T>>() == Some(self)
     }
 
     fn is_null(&self) -> bool {
@@ -1107,66 +1091,28 @@ impl AnyPtr {
         }
         self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
     }
-
-    pub fn reinterpret_cast<T: ByteRepr>(&self) -> Ptr<T> {
-        macro_rules! try_src {
-            ($ty:ty) => {{
-                if let Some(p) = self.cast::<$ty>() {
-                    return p.reinterpret_cast::<T>();
-                }
-                if let Some(pv) = self.cast::<Vec<$ty>>() {
-                    return pv.reinterpret_cast::<T>();
-                }
-            }};
-        }
-
-        try_src!(u8);
-        try_src!(i8);
-        try_src!(u16);
-        try_src!(i16);
-        try_src!(u32);
-        try_src!(i32);
-        try_src!(u64);
-        try_src!(i64);
-        try_src!(usize);
-        try_src!(isize);
-
-        panic!("reinterpret_cast: unsupported AnyPtr source");
-    }
 }
 
 impl PartialEq for AnyPtr {
     fn eq(&self, other: &Self) -> bool {
-        let lhs: &dyn ErasedPtr = self.ptr.as_ref();
-        let rhs: &dyn ErasedPtr = other.ptr.as_ref();
-
-        lhs.equals(rhs).unwrap_or_default()
+        *self.ptr == *other.ptr
     }
 }
 
 impl AnyPtr {
     pub fn memcpy(&self, src: &AnyPtr, len: usize) {
-        let dst_erased = &*self.ptr;
-        let src_erased = &*src.ptr;
-
-        if dst_erased.pointee_type_id() == src_erased.pointee_type_id() {
-            dst_erased.memcpy(src_erased, len);
-            return;
-        }
-
-        let dst_u8: Ptr<u8> = self.reinterpret_cast();
-        let src_u8: Ptr<u8> = src.reinterpret_cast();
+        let dst_u8 = self.ptr.as_bytes();
+        let src_u8 = src.ptr.as_bytes();
         dst_u8.memcpy(&src_u8, len);
     }
 
     pub fn memset(&self, value: u8, num: usize) {
-        let dst_u8: Ptr<u8> = self.reinterpret_cast();
-        dst_u8.memset(value, num);
+        self.ptr.as_bytes().memset(value, num);
     }
 
     pub fn memcmp(&self, other: &AnyPtr, len: usize) -> i32 {
-        let a: Ptr<u8> = self.reinterpret_cast();
-        let b: Ptr<u8> = other.reinterpret_cast();
+        let a = self.ptr.as_bytes();
+        let b = other.ptr.as_bytes();
         a.memcmp(&b, len)
     }
 }
