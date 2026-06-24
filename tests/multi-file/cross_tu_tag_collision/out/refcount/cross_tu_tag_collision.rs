@@ -51,6 +51,14 @@ impl From<i32> for widget_enum {
     }
 }
 libcc2rs::impl_enum_inc_dec!(widget_enum);
+impl ByteRepr for widget_enum {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <widget_enum>::from(i32::from_bytes(buf))
+    }
+}
 pub fn b_value_1() -> i32 {
     let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum::WIDGET_C));
     return ((*w.borrow()) as i32).clone();

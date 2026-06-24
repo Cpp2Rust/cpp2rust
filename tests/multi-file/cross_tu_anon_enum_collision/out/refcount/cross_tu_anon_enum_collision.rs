@@ -20,6 +20,14 @@ impl From<i32> for anon_0 {
     }
 }
 libcc2rs::impl_enum_inc_dec!(anon_0);
+impl ByteRepr for anon_0 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <anon_0>::from(i32::from_bytes(buf))
+    }
+}
 pub fn a_value_1() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     (*x.borrow_mut()) |= (anon_0::ALPHA as i32);
@@ -47,6 +55,14 @@ impl From<i32> for anon_3 {
     }
 }
 libcc2rs::impl_enum_inc_dec!(anon_3);
+impl ByteRepr for anon_3 {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <anon_3>::from(i32::from_bytes(buf))
+    }
+}
 pub fn b_value_2() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     (*x.borrow_mut()) |= (anon_3::BETA as i32);

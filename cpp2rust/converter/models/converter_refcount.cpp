@@ -510,10 +510,8 @@ static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
   // fields.
   for (auto *f : decl->fields()) {
     auto qt = f->getType();
-    if (qt->isEnumeralType()) {
-      return false;
-    }
-    if (!qt->isIntegerType() && !qt->isFloatingType()) {
+    if (!qt->isIntegerType() && !qt->isFloatingType() &&
+        !qt->isEnumeralType()) {
       return false;
     }
   }
@@ -565,6 +563,17 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
       ++idx;
     }
   }
+}
+
+void ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat(std::format("impl ByteRepr for {}", name));
+  PushBrace impl_brace(*this);
+  StrCat(
+      "fn to_bytes(&self, buf: &mut [u8]) { (*self as i32).to_bytes(buf); }");
+  StrCat(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
+                     "<{}>::from(i32::from_bytes(buf)) }}",
+                     name));
 }
 
 std::string

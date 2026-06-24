@@ -39,6 +39,8 @@ public:
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
+  void AddByteReprTrait(const clang::EnumDecl *decl) override;
+
   void AddDefaultTrait(const clang::RecordDecl *decl) override;
 
   void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;

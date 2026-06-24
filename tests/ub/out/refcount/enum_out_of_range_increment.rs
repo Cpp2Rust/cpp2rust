@@ -24,6 +24,14 @@ impl From<i32> for color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(color);
+impl ByteRepr for color {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <color>::from(i32::from_bytes(buf))
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

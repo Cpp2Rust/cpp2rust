@@ -32,6 +32,14 @@ impl From<i32> for opt {
     }
 }
 libcc2rs::impl_enum_inc_dec!(opt);
+impl ByteRepr for opt {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <opt>::from(i32::from_bytes(buf))
+    }
+}
 pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));

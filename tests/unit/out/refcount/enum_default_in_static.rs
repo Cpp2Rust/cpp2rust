@@ -24,12 +24,31 @@ impl From<i32> for Mode {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Mode);
+impl ByteRepr for Mode {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Mode>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct Config {
     pub count: Value<i32>,
     pub mode: Value<Mode>,
 }
-impl ByteRepr for Config {}
+impl ByteRepr for Config {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.count.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            count: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            mode: Rc::new(RefCell::new(<Mode>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 thread_local!(
     pub static config_0: Value<Config> = <Value<Config>>::default();
 );

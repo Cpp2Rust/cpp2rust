@@ -24,6 +24,14 @@ impl From<i32> for Color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Color);
+impl ByteRepr for Color {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Color>::from(i32::from_bytes(buf))
+    }
+}
 pub fn switch_enum_0(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
     'switch: {

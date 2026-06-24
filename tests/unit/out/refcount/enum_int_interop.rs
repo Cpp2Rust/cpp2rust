@@ -24,6 +24,14 @@ impl From<i32> for Color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Color);
+impl ByteRepr for Color {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Color>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Option {
     #[default]
@@ -44,6 +52,14 @@ impl From<i32> for Option {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Option);
+impl ByteRepr for Option {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Option>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 enum Tag {
     #[default]
@@ -62,6 +78,14 @@ impl From<i32> for Tag {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Tag);
+impl ByteRepr for Tag {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Tag>::from(i32::from_bytes(buf))
+    }
+}
 #[derive(Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,
