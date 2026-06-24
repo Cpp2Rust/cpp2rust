@@ -606,6 +606,19 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   }
 }
 
+void ConverterRefCount::AddByteReprTrait(const clang::EnumDecl *decl) {
+  auto name = GetRecordName(decl);
+  StrCat(std::format("impl ByteRepr for {}", name));
+  PushBrace impl_brace(*this);
+  StrCat(std::format("fn byte_size() -> usize {{ {} }}",
+                     ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
+  StrCat(
+      "fn to_bytes(&self, buf: &mut [u8]) { (*self as i32).to_bytes(buf); }");
+  StrCat(std::format("fn from_bytes(buf: &[u8]) -> Self {{ "
+                     "<{}>::from(i32::from_bytes(buf)) }}",
+                     name));
+}
+
 std::string
 ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
   return "&self";

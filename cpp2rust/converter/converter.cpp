@@ -3165,6 +3165,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
 
   AddFromImpl(decl);
   AddIncDecImpls(decl);
+  AddByteReprTrait(decl);
   return false;
 }
 
@@ -3946,6 +3947,8 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
 }
 
 void Converter::AddByteReprTrait(const clang::RecordDecl *decl) {}
+
+void Converter::AddByteReprTrait(const clang::EnumDecl *decl) {}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
                                                    clang::Expr *expr) {

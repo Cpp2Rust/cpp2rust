@@ -200,9 +200,6 @@ bool IsMut(clang::QualType qual_type) {
 }
 
 bool TypeImplementsByteRepr(clang::QualType qt) {
-  if (qt->isEnumeralType()) {
-    return false;
-  }
   if (qt->isIntegerType() || qt->isFloatingType()) {
     return true;
   }
