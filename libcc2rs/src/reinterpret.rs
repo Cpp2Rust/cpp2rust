@@ -8,7 +8,7 @@ pub trait ByteRepr: 'static {
     where
         Self: Sized,
     {
-        std::mem::size_of::<Self>()
+        panic!("byte_size is not implemented for {}", std::any::type_name::<Self>())
     }
     fn to_bytes(&self, _buf: &mut [u8]) {
         panic!("ByteRepr not supported for this type");
@@ -24,6 +24,10 @@ pub trait ByteRepr: 'static {
 macro_rules! impl_byte_repr {
     ($ty:ty) => {
         impl ByteRepr for $ty {
+            #[inline]
+            fn byte_size() -> usize {
+                std::mem::size_of::<$ty>()
+            }
             #[inline]
             fn to_bytes(&self, buf: &mut [u8]) {
                 buf.copy_from_slice(&self.to_ne_bytes());
@@ -52,6 +56,10 @@ impl_byte_repr!(f32);
 impl_byte_repr!(f64);
 
 impl ByteRepr for bool {
+    #[inline]
+    fn byte_size() -> usize {
+        1
+    }
     #[inline]
     fn to_bytes(&self, buf: &mut [u8]) {
         buf[0] = *self as u8;
