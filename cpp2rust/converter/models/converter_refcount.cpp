@@ -545,27 +545,8 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat('}');
 }
 
-static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
-  if (decl->isUnion()) {
-    return false;
-  }
-
-  // ByteRepr is only supported for user-defined structs that contain ByteRepr
-  // fields.
-  for (auto *f : decl->fields()) {
-    auto qt = f->getType();
-    if (!qt->isIntegerType() && !qt->isFloatingType() &&
-        !qt->isEnumeralType()) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
-
 
   if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
