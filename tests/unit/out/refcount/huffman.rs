@@ -200,31 +200,7 @@ impl MinHeap {
         }
     }
 }
-impl ByteRepr for MinHeap {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.size.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.capacity.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.next.borrow()).to_bytes(&mut buf[16..20]);
-        (*self.alloc.borrow()).to_bytes(&mut buf[24..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            capacity: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            arr: Rc::new(RefCell::new(
-                <Option<Value<Box<[Ptr<MinHeapNode>]>>>>::from_bytes(&buf[8..16]),
-            )),
-            next: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
-            alloc: Rc::new(RefCell::new(
-                <Option<Value<Box<[MinHeapNode]>>>>::from_bytes(&buf[24..32]),
-            )),
-        }
-    }
-}
+impl ByteRepr for MinHeap {}
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     let capacity: Value<i32> = Rc::new(RefCell::new(capacity));
     let minHeap: Value<Option<Value<MinHeap>>> =

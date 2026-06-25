@@ -280,52 +280,14 @@ impl DisjointSet {
         }
     }
 }
-impl ByteRepr for DisjointSet {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.rank.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.parent.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.n.borrow()).to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            rank: Rc::new(RefCell::new(<Option<Value<Box<[i32]>>>>::from_bytes(
-                &buf[0..8],
-            ))),
-            parent: Rc::new(RefCell::new(<Option<Value<Box<[i32]>>>>::from_bytes(
-                &buf[8..16],
-            ))),
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
-        }
-    }
-}
+impl ByteRepr for DisjointSet {}
 #[derive(Default)]
 pub struct Graph {
     pub edges: Value<Option<Value<Box<[Edge]>>>>,
     pub V: Value<i32>,
     pub E: Value<i32>,
 }
-impl ByteRepr for Graph {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.edges.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.V.borrow()).to_bytes(&mut buf[8..12]);
-        (*self.E.borrow()).to_bytes(&mut buf[12..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            edges: Rc::new(RefCell::new(<Option<Value<Box<[Edge]>>>>::from_bytes(
-                &buf[0..8],
-            ))),
-            V: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-            E: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
-        }
-    }
-}
+impl ByteRepr for Graph {}
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({
         let _arr: Ptr<Option<Value<Box<[Edge]>>>> = (*graph.upgrade().deref()).edges.as_pointer();

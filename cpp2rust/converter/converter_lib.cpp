@@ -208,6 +208,10 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
     return TypeImplementsByteRepr(arr->getElementType());
   }
   if (const auto *rd = qt->getAsRecordDecl()) {
+    if (rd->getASTContext().getSourceManager().isInSystemHeader(
+            rd->getLocation())) {
+      return false;
+    }
     if (rd->isUnion()) {
       return true;
     }

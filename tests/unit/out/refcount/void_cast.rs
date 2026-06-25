@@ -22,19 +22,7 @@ impl Clone for NonTrivial {
         this
     }
 }
-impl ByteRepr for NonTrivial {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-        }
-    }
-}
+impl ByteRepr for NonTrivial {}
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     (*x.upgrade().deref()).clone();
 }

@@ -20,21 +20,7 @@ impl Clone for NonCopy {
         this
     }
 }
-impl ByteRepr for NonCopy {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.tag.borrow()).to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
-        }
-    }
-}
+impl ByteRepr for NonCopy {}
 pub fn main() {
     std::process::exit(main_0());
 }

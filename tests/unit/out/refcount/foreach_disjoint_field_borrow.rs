@@ -20,21 +20,7 @@ impl Clone for S {
         this
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.a.borrow()).to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
-        }
-    }
-}
+impl ByteRepr for S {}
 pub fn main() {
     std::process::exit(main_0());
 }
