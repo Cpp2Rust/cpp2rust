@@ -30,6 +30,9 @@ impl Clone for X1 {
     }
 }
 impl ByteRepr for X1 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.v.borrow()).to_bytes(&mut buf[0..4]);
     }

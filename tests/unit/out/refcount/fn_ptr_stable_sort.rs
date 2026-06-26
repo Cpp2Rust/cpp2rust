@@ -21,6 +21,9 @@ impl Clone for Item {
     }
 }
 impl ByteRepr for Item {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.key.borrow()).to_bytes(&mut buf[0..4]);
         (*self.value.borrow()).to_bytes(&mut buf[4..8]);

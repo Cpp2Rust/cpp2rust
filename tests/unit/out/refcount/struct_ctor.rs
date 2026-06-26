@@ -40,6 +40,9 @@ impl Clone for StructWithCtor {
     }
 }
 impl ByteRepr for StructWithCtor {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1_.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2_.borrow()).to_bytes(&mut buf[4..8]);

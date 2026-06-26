@@ -47,6 +47,9 @@ pub struct anon_2 {
     pub step: Value<u8>,
 }
 impl ByteRepr for anon_2 {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.lo.borrow()).to_bytes(&mut buf[0..4]);
         (*self.hi.borrow()).to_bytes(&mut buf[4..8]);
@@ -71,6 +74,9 @@ pub struct anon_3 {
     pub width: Value<i32>,
 }
 impl ByteRepr for anon_3 {
+    fn byte_size() -> usize {
+        40
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.lo.borrow()).to_bytes(&mut buf[0..8]);
         (*self.hi.borrow()).to_bytes(&mut buf[8..16]);

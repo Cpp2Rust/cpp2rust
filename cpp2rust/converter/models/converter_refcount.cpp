@@ -545,28 +545,10 @@ void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
   StrCat('}');
 }
 
-static bool recordImplementsByteRepr(const clang::RecordDecl *decl) {
-  if (decl->isUnion()) {
-    return false;
-  }
-
-  // ByteRepr is only supported for user-defined structs that contain ByteRepr
-  // fields.
-  for (auto *f : decl->fields()) {
-    auto qt = f->getType();
-    if (!qt->isIntegerType() && !qt->isFloatingType() &&
-        !qt->isEnumeralType()) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
-  if (!recordImplementsByteRepr(decl)) {
+  if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace brace(*this);
     return;
@@ -576,6 +558,9 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   PushBrace impl_brace(*this);
 
   const auto &layout = ctx_.getASTRecordLayout(decl);
+
+  StrCat(std::format("fn byte_size() -> usize {{ {} }}",
+                     ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
 
   StrCat("fn to_bytes(&self, buf: &mut [u8])");
   {
@@ -600,9 +585,12 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     for (auto *field : decl->fields()) {
       auto byte_off = layout.getFieldOffset(idx) / 8;
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
       StrCat(std::format(
           "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
-          GetNamedDeclAsString(field), Mapper::Map(field->getType()), byte_off,
+          GetNamedDeclAsString(field), storage_ty, byte_off,
           byte_off + byte_size));
       ++idx;
     }
@@ -1320,6 +1308,20 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   default:
     return Convert(expr->getSubExpr());
   }
+}
+
+bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
+    clang::UnaryExprOrTypeTraitExpr *expr) {
+  if (expr->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf) {
+    auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
+                                           : expr->getArgumentExpr()->getType();
+    if (RustSizeDivergesFromC(arg_type)) {
+      StrCat(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+  }
+  return Converter::VisitUnaryExprOrTypeTraitExpr(expr);
 }
 
 bool ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {

@@ -82,6 +82,9 @@ impl Clone for X1 {
     }
 }
 impl ByteRepr for X1 {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}

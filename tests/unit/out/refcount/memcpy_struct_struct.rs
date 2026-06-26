@@ -21,6 +21,9 @@ impl Clone for Entry {
     }
 }
 impl ByteRepr for Entry {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.bits.borrow()).to_bytes(&mut buf[0..1]);
         (*self.value.borrow()).to_bytes(&mut buf[2..4]);
@@ -77,9 +80,7 @@ fn main_0() -> i32 {
             .to_any()
             .memcpy(
                 &(((table.as_pointer() as Ptr<Entry>).offset(0 as isize)) as Ptr<Entry>).to_any(),
-                (((*table_size.borrow()) as u64)
-                    .wrapping_mul((::std::mem::size_of::<Entry>() as u64))
-                    as usize) as usize,
+                (((*table_size.borrow()) as u64).wrapping_mul((4usize as u64)) as usize) as usize,
             );
         (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()) as isize)) as Ptr<Entry>)
             .to_any()

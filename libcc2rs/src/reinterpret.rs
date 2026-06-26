@@ -4,20 +4,39 @@
 use std::{cell::RefCell, rc::Weak};
 
 pub trait ByteRepr: 'static {
+    fn byte_size() -> usize
+    where
+        Self: Sized,
+    {
+        panic!(
+            "byte_size is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
+    }
     fn to_bytes(&self, _buf: &mut [u8]) {
-        panic!("ByteRepr not supported for this type");
+        panic!(
+            "to_bytes is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
     }
     fn from_bytes(_buf: &[u8]) -> Self
     where
         Self: Sized,
     {
-        panic!("ByteRepr not supported for this type");
+        panic!(
+            "from_bytes is not implemented for {}",
+            std::any::type_name::<Self>()
+        )
     }
 }
 
 macro_rules! impl_byte_repr {
     ($ty:ty) => {
         impl ByteRepr for $ty {
+            #[inline]
+            fn byte_size() -> usize {
+                std::mem::size_of::<$ty>()
+            }
             #[inline]
             fn to_bytes(&self, buf: &mut [u8]) {
                 buf.copy_from_slice(&self.to_ne_bytes());
@@ -46,6 +65,10 @@ impl_byte_repr!(f32);
 impl_byte_repr!(f64);
 
 impl ByteRepr for bool {
+    #[inline]
+    fn byte_size() -> usize {
+        1
+    }
     #[inline]
     fn to_bytes(&self, buf: &mut [u8]) {
         buf[0] = *self as u8;
@@ -83,7 +106,7 @@ pub trait OriginalAlloc {
 // Only serializes the overlapping elements, not the whole slice.
 fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]) {
     let len = buf.len();
-    let elem_size = std::mem::size_of::<S>();
+    let elem_size = S::byte_size();
     let first_elem = byte_offset / elem_size;
     let last_elem = (byte_offset + len).div_ceil(elem_size);
     let tmp_len = (last_elem - first_elem) * elem_size;
@@ -98,7 +121,7 @@ fn slice_read_bytes<S: ByteRepr>(slice: &[S], byte_offset: usize, buf: &mut [u8]
 // Write `data` at `byte_offset` into a slice of S elements.
 // Only deserializes/reserializes the overlapping elements.
 fn slice_write_bytes<S: ByteRepr>(slice: &mut [S], byte_offset: usize, data: &[u8]) {
-    let elem_size = std::mem::size_of::<S>();
+    let elem_size = S::byte_size();
     let mut elem_buf = vec![0u8; elem_size];
     let first_elem = byte_offset / elem_size;
     let num_elem = data.len().div_ceil(elem_size);
@@ -136,7 +159,7 @@ impl<T: ByteRepr> OriginalAlloc for SingleOriginalAlloc<T> {
     }
 
     fn total_byte_len(&self) -> usize {
-        std::mem::size_of::<T>()
+        T::byte_size()
     }
 
     fn address(&self) -> usize {
@@ -190,7 +213,7 @@ impl<T: AsSlice + 'static> OriginalAlloc for SliceOriginalAlloc<T> {
     fn total_byte_len(&self) -> usize {
         let rc = self.weak.upgrade().expect("ub: dangling pointer");
         let val = rc.borrow();
-        std::mem::size_of_val(val.as_slice())
+        val.as_slice().len() * <T::Elem as ByteRepr>::byte_size()
     }
 
     fn address(&self) -> usize {

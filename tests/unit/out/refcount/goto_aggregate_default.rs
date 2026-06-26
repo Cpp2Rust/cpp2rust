@@ -12,6 +12,9 @@ pub struct Point {
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);

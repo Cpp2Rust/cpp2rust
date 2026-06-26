@@ -12,6 +12,9 @@ pub struct Point {
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -28,7 +31,21 @@ pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
 }
-impl ByteRepr for Line {}
+impl ByteRepr for Line {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.start.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.end.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            start: Rc::new(RefCell::new(<Point>::from_bytes(&buf[0..8]))),
+            end: Rc::new(RefCell::new(<Point>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Node {
     pub value: Value<i32>,
@@ -67,6 +84,9 @@ pub struct Inner {
     pub b: Value<i32>,
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..8]);
@@ -84,7 +104,23 @@ pub struct Container {
     pub color: Value<Color>,
     pub count: Value<i32>,
 }
-impl ByteRepr for Container {}
+impl ByteRepr for Container {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.inner.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.color.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.count.borrow()).to_bytes(&mut buf[12..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..8]))),
+            color: Rc::new(RefCell::new(<Color>::from_bytes(&buf[8..12]))),
+            count: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

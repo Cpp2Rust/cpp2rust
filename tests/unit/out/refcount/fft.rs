@@ -21,6 +21,9 @@ impl Clone for Complex {
     }
 }
 impl ByteRepr for Complex {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.re.borrow()).to_bytes(&mut buf[0..8]);
         (*self.img.borrow()).to_bytes(&mut buf[8..16]);

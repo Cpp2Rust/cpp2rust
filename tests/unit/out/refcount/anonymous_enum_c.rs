@@ -59,6 +59,9 @@ pub struct S {
     pub a: Value<i32>,
 }
 impl ByteRepr for S {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -122,6 +125,9 @@ pub struct WithAnonField {
     pub field: Value<anon_2>,
 }
 impl ByteRepr for WithAnonField {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.field.borrow()).to_bytes(&mut buf[4..8]);

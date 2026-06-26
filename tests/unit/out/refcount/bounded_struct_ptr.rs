@@ -21,6 +21,9 @@ impl Clone for Foo {
     }
 }
 impl ByteRepr for Foo {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2.borrow()).to_bytes(&mut buf[4..8]);

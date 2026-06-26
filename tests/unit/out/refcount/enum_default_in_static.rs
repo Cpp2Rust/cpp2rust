@@ -38,6 +38,9 @@ pub struct Config {
     pub mode: Value<Mode>,
 }
 impl ByteRepr for Config {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.count.borrow()).to_bytes(&mut buf[0..4]);
         (*self.mode.borrow()).to_bytes(&mut buf[4..8]);

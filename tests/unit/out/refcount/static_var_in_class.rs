@@ -23,6 +23,9 @@ impl Clone for C {
     }
 }
 impl ByteRepr for C {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}
@@ -40,6 +43,9 @@ impl Clone for S {
     }
 }
 impl ByteRepr for S {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}

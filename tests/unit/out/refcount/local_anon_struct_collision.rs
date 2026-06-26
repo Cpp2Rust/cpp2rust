@@ -13,6 +13,9 @@ pub fn first_0() -> i32 {
         pub y: Value<i32>,
     }
     impl ByteRepr for anon_1 {
+        fn byte_size() -> usize {
+            8
+        }
         fn to_bytes(&self, buf: &mut [u8]) {
             (*self.x.borrow()).to_bytes(&mut buf[0..4]);
             (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -36,6 +39,9 @@ pub fn second_2() -> i32 {
         pub b: Value<i64>,
     }
     impl ByteRepr for anon_3 {
+        fn byte_size() -> usize {
+            16
+        }
         fn to_bytes(&self, buf: &mut [u8]) {
             (*self.a.borrow()).to_bytes(&mut buf[0..8]);
             (*self.b.borrow()).to_bytes(&mut buf[8..16]);

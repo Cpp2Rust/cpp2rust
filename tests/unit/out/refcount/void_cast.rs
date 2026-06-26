@@ -50,6 +50,9 @@ impl Clone for Holder {
     }
 }
 impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.field.borrow()).to_bytes(&mut buf[0..4]);
     }

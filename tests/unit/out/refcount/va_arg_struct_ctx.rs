@@ -12,6 +12,9 @@ pub struct context {
     pub last_error: Value<i32>,
 }
 impl ByteRepr for context {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.verbose.borrow()).to_bytes(&mut buf[0..4]);
         (*self.last_error.borrow()).to_bytes(&mut buf[4..8]);

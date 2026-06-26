@@ -23,6 +23,9 @@ impl Clone for POD {
     }
 }
 impl ByteRepr for POD {
+    fn byte_size() -> usize {
+        12
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2.borrow()).to_bytes(&mut buf[4..8]);

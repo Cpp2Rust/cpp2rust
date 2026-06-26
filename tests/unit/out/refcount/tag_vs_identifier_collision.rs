@@ -38,6 +38,9 @@ pub struct widget {
     pub mode: Value<widget_enum>,
 }
 impl ByteRepr for widget {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.id.borrow()).to_bytes(&mut buf[0..4]);
         (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
@@ -55,6 +58,9 @@ pub struct point_struct {
     pub y: Value<i32>,
 }
 impl ByteRepr for point_struct {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -147,6 +153,9 @@ pub struct Inner {
     pub tag_field: Value<i32>,
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.tag_field.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -160,12 +169,27 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub field: Value<Inner>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            field: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Inner_struct {
     pub typedef_field: Value<i32>,
 }
 impl ByteRepr for Inner_struct {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.typedef_field.borrow()).to_bytes(&mut buf[0..4]);
     }

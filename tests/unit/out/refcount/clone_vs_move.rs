@@ -19,6 +19,9 @@ impl Clone for Bar {
     }
 }
 impl ByteRepr for Bar {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.w.borrow()).to_bytes(&mut buf[0..4]);
     }

@@ -23,6 +23,9 @@ impl Clone for Edge {
     }
 }
 impl ByteRepr for Edge {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.u.borrow()).to_bytes(&mut buf[0..4]);
         (*self.v.borrow()).to_bytes(&mut buf[4..8]);

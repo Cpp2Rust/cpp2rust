@@ -63,6 +63,9 @@ impl Clone for Foo {
     }
 }
 impl ByteRepr for Foo {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}

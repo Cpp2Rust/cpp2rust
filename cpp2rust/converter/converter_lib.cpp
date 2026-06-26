@@ -200,6 +200,43 @@ bool IsMut(clang::QualType qual_type) {
            qual_type->getPointeeType().isConstQualified());
 }
 
+bool TypeImplementsByteRepr(clang::QualType qt) {
+  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
+    return true;
+  }
+  if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return TypeImplementsByteRepr(arr->getElementType());
+  }
+  if (const auto *rd = qt->getAsRecordDecl()) {
+    if (rd->getASTContext().getSourceManager().isInSystemHeader(
+            rd->getLocation())) {
+      return false;
+    }
+    if (rd->isUnion()) {
+      return false;
+    }
+    for (const auto *field : rd->fields()) {
+      if (!TypeImplementsByteRepr(field->getType())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+bool RustSizeDivergesFromC(clang::QualType qt) {
+  qt = qt.getCanonicalType();
+  // Records have Rc<RefCell<>> fields that diverge from the C size
+  if (qt->isRecordType()) {
+    return true;
+  }
+  if (auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return RustSizeDivergesFromC(arr->getElementType());
+  }
+  return false;
+}
+
 bool IsMutatingCall(const clang::CallExpr *expr) {
   if (auto *callee = expr->getDirectCallee()) {
     if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
