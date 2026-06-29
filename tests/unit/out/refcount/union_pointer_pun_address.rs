@@ -61,7 +61,19 @@ fn main_0() -> i32 {
             }
         }
     }
-    impl ByteRepr for anon_0 {};
+    impl ByteRepr for anon_0 {
+        fn byte_size() -> usize {
+            8
+        }
+        fn to_bytes(&self, buf: &mut [u8]) {
+            buf.copy_from_slice(&self.__bytes.borrow());
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            anon_0 {
+                __bytes: Rc::new(RefCell::new(Box::from(buf))),
+            }
+        }
+    };
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));

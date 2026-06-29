@@ -106,13 +106,39 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {}
+impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        64
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Container {
     pub len: Value<u32>,
     pub u: Value<anon_0>,
 }
-impl ByteRepr for Container {}
+impl ByteRepr for Container {
+    fn byte_size() -> usize {
+        68
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.len.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.u.borrow()).to_bytes(&mut buf[4..68]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            len: Rc::new(RefCell::new(<u32>::from_bytes(&buf[0..4]))),
+            u: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[4..68]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

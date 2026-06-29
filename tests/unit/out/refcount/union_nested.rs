@@ -61,12 +61,36 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {}
+impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        128
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct inner {
     pub view: Value<anon_0>,
 }
-impl ByteRepr for inner {}
+impl ByteRepr for inner {
+    fn byte_size() -> usize {
+        128
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.view.borrow()).to_bytes(&mut buf[0..128]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            view: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[0..128]))),
+        }
+    }
+}
 pub struct anon_1 {
     __bytes: Value<Box<[u8]>>,
 }
@@ -92,7 +116,19 @@ impl Default for anon_1 {
         }
     }
 }
-impl ByteRepr for anon_1 {}
+impl ByteRepr for anon_1 {
+    fn byte_size() -> usize {
+        128
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_1 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer {
     pub kind: Value<i32>,
@@ -101,7 +137,27 @@ pub struct Outer {
     pub len: Value<u32>,
     pub body: Value<anon_1>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        144
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.kind.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.level.borrow()).to_bytes(&mut buf[4..8]);
+        (*self.variant.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.len.borrow()).to_bytes(&mut buf[12..16]);
+        (*self.body.borrow()).to_bytes(&mut buf[16..144]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            kind: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            level: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            variant: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            len: Rc::new(RefCell::new(<u32>::from_bytes(&buf[12..16]))),
+            body: Rc::new(RefCell::new(<anon_1>::from_bytes(&buf[16..144]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

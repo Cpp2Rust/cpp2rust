@@ -58,12 +58,36 @@ impl Default for anon_1 {
         }
     }
 }
-impl ByteRepr for anon_1 {}
+impl ByteRepr for anon_1 {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_1 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Outer {
     pub u: Value<anon_1>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.u.borrow()).to_bytes(&mut buf[0..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            u: Rc::new(RefCell::new(<anon_1>::from_bytes(&buf[0..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
