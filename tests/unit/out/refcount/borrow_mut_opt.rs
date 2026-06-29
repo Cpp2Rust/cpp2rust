@@ -63,7 +63,7 @@ pub fn convert_with_rhs_1() {
     (*x.borrow_mut()) += __rhs;
     let __rhs = ((*p.borrow()).read());
     (*y.borrow_mut()) += __rhs;
-    (*p.borrow_mut()) = ((arr.as_pointer() as Ptr<i32>).offset(0 as isize));
+    (*p.borrow_mut()) = ((arr.as_pointer() as Ptr<i32>).offset(0));
     let __rhs = ((*p.borrow()).read());
     (*arr.borrow_mut())[(0) as usize] = __rhs;
     let __rhs = (*x.borrow());

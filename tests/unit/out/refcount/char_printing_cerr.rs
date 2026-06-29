@@ -21,12 +21,8 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "{:} a", (*i.borrow()),);
     libcc2rs::cerr().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(0_usize as isize)
-                .read())] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(1_usize as isize)
-                .read())] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read())] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read())] as &[u8]),
             (&[('o' as u8)] as &[u8]),
             (&(*str.borrow())[..(*str.borrow()).len() - 1] as &[u8]),
             (&[b'\n'] as &[u8]),
@@ -46,13 +42,9 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "Hello, World!\n",);
     libcc2rs::cerr().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(0_usize as isize)
-                .read())] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read())] as &[u8]),
             (&[('\n' as u8)] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(1_usize as isize)
-                .read())] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read())] as &[u8]),
             (&[('\n' as u8)] as &[u8]),
         ]
         .concat()),

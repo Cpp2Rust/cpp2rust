@@ -26,10 +26,10 @@ fn main_0() -> i32 {
     'loop_: while (((*i.borrow()) as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
         assert!(
             (((v.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize) as isize)
+                .offset(((*i.borrow()) as usize))
                 .read())
                 < ((v.as_pointer() as Ptr<i32>)
-                    .offset((((*i.borrow()).wrapping_add(1_u32)) as usize) as isize)
+                    .offset((((*i.borrow()).wrapping_add(1_u32)) as usize))
                     .read()))
         );
         (*i.borrow_mut()).prefix_inc();

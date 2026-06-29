@@ -91,7 +91,7 @@ fn main_0() -> i32 {
     ));
     assert!((((*q5.borrow()).read()) == 13));
     let q6: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((arr.as_pointer() as Ptr<i32>).offset((*n.borrow()) as isize)),
+        ((arr.as_pointer() as Ptr<i32>).offset((*n.borrow()))),
     ));
     assert!({
         let _lhs = (*q6.borrow()).clone();
@@ -104,10 +104,10 @@ fn main_0() -> i32 {
     ])));
     let row1: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ((((matrix.as_pointer() as Ptr<Value<Box<[i32]>>>)
-            .offset(1 as isize)
+            .offset(1)
             .read()
             .as_pointer()) as Ptr<i32>)
-            .offset(0 as isize)),
+            .offset(0)),
     ));
     assert!((((*row1.borrow()).offset((2) as isize).read()) == 6));
     let back: Value<Ptr<i32>> = Rc::new(RefCell::new((*end.borrow()).offset(-((1) as isize))));

@@ -371,7 +371,7 @@ fn main_0() -> i32 {
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
                 __v.entry(
                     ((indexes.as_pointer() as Ptr<i32>)
-                        .offset(((*i.borrow()) as usize) as isize)
+                        .offset(((*i.borrow()) as usize))
                         .read())
                     .clone(),
                 )

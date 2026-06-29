@@ -32,9 +32,9 @@ fn main_0() -> i32 {
         (*sum.borrow_mut()) += __rhs;
     }
     let v2: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(0_usize as isize)));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(1_usize as isize)));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(2_usize as isize)));
+    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(0_usize)));
+    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(1_usize)));
+    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(2_usize)));
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
         {
