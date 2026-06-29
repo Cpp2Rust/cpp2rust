@@ -1488,6 +1488,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
 }
 
 void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
+  auto member = expr->getMemberDecl();
   std::string str;
   {
     Buffer buf(*this);
@@ -1498,15 +1499,24 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   str += "()";
 
   if (isAddrOf()) {
-    StrCat(str);
+    if (member->getType()->isArrayType()) {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      StrCat(std::format(
+          "{}.reinterpret_cast::<{}>()", str,
+          ToString(
+              member->getType()->getAsArrayTypeUnsafe()->getElementType())));
+    } else {
+      StrCat(str);
+    }
     computed_expr_type_ = ComputedExprType::Pointer;
     return;
   }
+
   if (isLValue()) {
     pending_deref_.set(str);
     return;
   }
-  StrCat(DerefPtrExpr(str, expr->getMemberDecl()->getType()));
+  StrCat(DerefPtrExpr(str, member->getType()));
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
