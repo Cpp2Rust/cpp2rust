@@ -89,7 +89,7 @@ impl anon_0 {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_sized(64)
     }
 }
 impl Clone for anon_0 {
@@ -157,7 +157,8 @@ fn main_0() -> i32 {
     (*(*(((*(*c.borrow()).u.borrow()).a())
         .clone()
         .to_any()
-        .reinterpret_cast::<shape_b>())
+        .cast::<shape_b>()
+        .expect("ub:wrong type"))
     .upgrade()
     .deref())
     .tail

@@ -41,7 +41,7 @@ impl anon_1 {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn raw_(&self) -> Ptr<Box<[u8]>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_sized(16)
     }
 }
 impl Clone for anon_1 {
