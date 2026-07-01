@@ -50,25 +50,8 @@ pub enum StrongPtr<T> {
         byte_offset: usize,
         // Local buffer for deref(). None until first access.
         // Read-through: refreshed from alloc on every deref() call.
-        cell: RefCell<Option<Vec<T>>>,
+        cell: RefCell<Option<T>>,
     },
-}
-
-fn read_reinterpreted_region<T: ByteRepr>(
-    data: &dyn OriginalAlloc,
-    offset: usize,
-) -> (Vec<u8>, Vec<T>) {
-    let elem_size = std::mem::size_of::<T>();
-    let num_elems = data
-        .total_byte_len()
-        .saturating_sub(offset)
-        .checked_div(elem_size)
-        .unwrap_or(0);
-    assert!(num_elems > 0, "ub: dereference out of bounds");
-    let mut buf = vec![0u8; num_elems * elem_size];
-    data.read_bytes(offset, &mut buf);
-    let vals = buf.chunks_exact(elem_size).map(T::from_bytes).collect();
-    (buf, vals)
 }
 
 impl<T: ByteRepr> StrongPtr<T> {
