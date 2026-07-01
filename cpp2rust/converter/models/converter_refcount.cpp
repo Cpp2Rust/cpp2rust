@@ -1097,16 +1097,14 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format(
-            "vec![0 as core::ffi::c_char; {}].into_boxed_slice()", arr_size));
+        StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
         return false;
       }
       pad = arr_size > expr->getString().size()
                 ? arr_size - expr->getString().size()
                 : 0;
     }
-    StrCat(std::format("Box::from(libcc2rs::char_array(b{}))",
-                       GetEscapedStringLiteral(expr, pad)));
+    StrCat(std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
     return false;
   }
   StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0)));
