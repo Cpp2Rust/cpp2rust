@@ -8,7 +8,7 @@ unsafe fn f1(a0: u32) -> *mut ::libc::passwd {
 unsafe fn f2(
     a0: u32,
     a1: *mut ::libc::passwd,
-    a2: *mut core::ffi::c_char,
+    a2: *mut libc::c_char,
     a3: usize,
     a4: *mut *mut ::libc::passwd,
 ) -> i32 {

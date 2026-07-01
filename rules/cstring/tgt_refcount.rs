@@ -22,6 +22,6 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0.clone()
 }
 
-unsafe fn f7(a0: Ptr<core::ffi::c_char>) -> usize {
+unsafe fn f7(a0: Ptr<u8>) -> usize {
     a0.to_string_iterator().count()
 }

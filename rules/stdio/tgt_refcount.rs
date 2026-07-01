@@ -9,7 +9,7 @@ fn t1() -> Ptr<::std::fs::File> {
     Ptr::null()
 }
 
-fn f1(a0: Ptr<core::ffi::c_char>, a1: Ptr<core::ffi::c_char>) -> Ptr<::std::fs::File> {
+fn f1(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<::std::fs::File> {
     match a1.to_rust_string() {
         v if v == "rb" => std::fs::OpenOptions::new()
             .read(true)

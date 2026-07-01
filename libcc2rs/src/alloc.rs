@@ -32,6 +32,6 @@ pub unsafe fn calloc_unsafe(a0: usize, a1: usize) -> *mut libc::c_void {
 /// # Safety
 ///
 /// Same contract as C's `strdup`.
-pub unsafe fn strdup_unsafe(a0: *const core::ffi::c_char) -> *mut core::ffi::c_char {
+pub unsafe fn strdup_unsafe(a0: *const libc::c_char) -> *mut libc::c_char {
     unsafe { libc::strdup(a0) }
 }
