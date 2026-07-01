@@ -35,13 +35,3 @@ mod va_args;
 pub use va_args::*;
 
 pub use libcc2rs_macros::{goto, goto_block, switch};
-
-pub const fn char_array<const N: usize>(s: &[u8; N]) -> [core::ffi::c_char; N] {
-    let mut out = [0 as core::ffi::c_char; N];
-    let mut i = 0;
-    while i < N {
-        out[i] = s[i] as core::ffi::c_char;
-        i += 1;
-    }
-    out
-}
