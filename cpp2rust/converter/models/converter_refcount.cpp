@@ -1313,9 +1313,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
                    ctx_, clang::Expr::NPC_ValueDependentIsNull)) {
-      StrCat(std::format("({}.to_strong().as_pointer() as {})",
+      StrCat(std::format("{}.reinterpret_cast::<{}>()",
                          ToString(expr->getSubExpr()),
-                         ToString(expr->getType())));
+                         ConvertPointeeType(expr->getType())));
       return false;
     }
     return Converter::VisitExplicitCastExpr(expr);
