@@ -24,12 +24,7 @@ fn main_0() -> i32 {
     {
         (*ofs.borrow_mut()).write_all(
             (str.as_pointer() as Ptr<u8>)
-                .reinterpret_cast::<u8>()
-                .slice_until(
-                    &(str.as_pointer() as Ptr<u8>)
-                        .to_last()
-                        .reinterpret_cast::<u8>(),
-                )
+                .slice_until(&(str.as_pointer() as Ptr<u8>).to_last())
                 .as_slice(),
         );
         (*ofs.borrow_mut()).try_clone().unwrap()

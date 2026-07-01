@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 
 pub fn main() {
     let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.bytes().collect())))
+        .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))
         .collect();
     let mut argv: Value<Vec<Ptr<u8>>> = Rc::new(RefCell::new(
         argv.iter()

@@ -26,9 +26,8 @@ unsafe fn main_0() -> i32 {
     ];
     let mut mutable_string: *mut libc::c_char = c"hello".as_ptr().cast_mut();
     let mut immutable_string: *const libc::c_char = (c"hello".as_ptr().cast_mut()).cast_const();
-    let mut mutable_string_arr: [libc::c_char; 9] =
-        unsafe { ::std::mem::transmute(*b"papanasi\0") };
-    let immutable_string_arr: [libc::c_char; 9] = unsafe { ::std::mem::transmute(*b"papanasi\0") };
+    let mut mutable_string_arr: [libc::c_char; 9] = std::mem::transmute(*b"papanasi\0");
+    let immutable_string_arr: [libc::c_char; 9] = std::mem::transmute(*b"papanasi\0");
     let mut mutable_empty: *mut libc::c_char = c"".as_ptr().cast_mut();
     let mut immutable_empty: *const libc::c_char = (c"".as_ptr().cast_mut()).cast_const();
     let mut mutable_empty_arr: [libc::c_char; 1] = [0 as libc::c_char; 1];
@@ -47,7 +46,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { foo_const_1((mutable_empty_arr.as_mut_ptr()).cast_const()) });
     (unsafe { foo_const_1(immutable_empty_arr.as_ptr()) });
     let inited_through_init_list: [libc::c_char; 21] =
-        unsafe { ::std::mem::transmute(*b"papanasi cu smantana\0") };
+        std::mem::transmute(*b"papanasi cu smantana\0");
     (unsafe { foo_const_1(inited_through_init_list.as_ptr()) });
     return 0;
 }
