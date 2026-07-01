@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(((*(*arr.borrow())[(1) as usize].data.borrow()).len() == 1_usize));
     assert!(
         ((((*arr.borrow())[(1) as usize].data.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
+            .offset(0_usize)
             .read())
             == 42)
     );

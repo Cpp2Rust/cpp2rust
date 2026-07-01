@@ -2084,7 +2084,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       StrCat(
           std::format("{}.as_ref().unwrap()", ConvertRValue(expr->getArg(0))));
       if (isAddrOf()) {
-        StrCat(std::format(".as_pointer().offset(({}) as isize)",
+        StrCat(std::format(".as_pointer().offset(({}))",
                            ConvertRValue(expr->getArg(1))));
       } else {
         if (isRValue()) {
@@ -2104,7 +2104,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);
-      pending_deref_.set(std::format("({} as {}).offset({} as isize)",
+      pending_deref_.set(std::format("({} as {}).offset({})",
                                      ConvertObject(expr->getArg(0)),
                                      ConvertPtrType(expr->getArg(0)->getType()),
                                      ConvertRValue(expr->getArg(1))),
@@ -2124,7 +2124,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       }
 
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat(std::format("({} as {}).offset({} as isize)",
+      StrCat(std::format("({} as {}).offset({})",
                          ConvertObject(expr->getArg(0)),
                          ConvertPtrType(expr->getArg(0)->getType()),
                          ConvertRValue(expr->getArg(1))));
@@ -2175,7 +2175,7 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
 
     {
       PushParen paren(*this, is_inner_boxed);
-      StrCat(std::format("({} as {}).offset({} as isize)",
+      StrCat(std::format("({} as {}).offset({})",
                          ToString(base->IgnoreImplicit()),
                          ConvertPtrType(base->IgnoreImplicit()->getType()),
                          ConvertRValue(idx)));

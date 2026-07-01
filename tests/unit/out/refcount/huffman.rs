@@ -101,7 +101,7 @@ impl MinHeap {
             .as_ref()
             .unwrap()
             .as_pointer()
-            .offset(((*self.next.borrow_mut()).postfix_inc() as usize) as isize))
+            .offset(((*self.next.borrow_mut()).postfix_inc() as usize)))
         .clone();
     }
     pub fn Heapify(&self, idx: i32) {

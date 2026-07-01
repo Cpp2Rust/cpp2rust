@@ -46,7 +46,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
         .as_ref()
         .unwrap()
         .as_pointer()
-        .offset(((*start.borrow()) as usize) as isize))
+        .offset(((*start.borrow()) as usize)))
     .clone();
     let count: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(((*start.borrow()) + 1)));
