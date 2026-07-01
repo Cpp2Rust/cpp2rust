@@ -63,7 +63,7 @@ pub fn cerr() -> Ptr<std::fs::File> {
 /// # Safety
 ///
 /// The caller must ensure that the returned pointer is not used after the
-//  thread finishes.
+/// thread finishes.
 pub unsafe fn cin_unsafe() -> *mut std::fs::File {
     UNSAFE_STDIN.with(UnsafeCell::get)
 }
@@ -71,7 +71,7 @@ pub unsafe fn cin_unsafe() -> *mut std::fs::File {
 /// # Safety
 ///
 /// The caller must ensure that the returned pointer is not used after the
-//  thread finishes.
+/// thread finishes.
 pub unsafe fn cout_unsafe() -> *mut std::fs::File {
     UNSAFE_STDOUT.with(UnsafeCell::get)
 }
@@ -79,7 +79,7 @@ pub unsafe fn cout_unsafe() -> *mut std::fs::File {
 /// # Safety
 ///
 /// The caller must ensure that the returned pointer is not used after the
-//  thread finishes.
+/// thread finishes.
 pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
     UNSAFE_STDERR.with(UnsafeCell::get)
 }
