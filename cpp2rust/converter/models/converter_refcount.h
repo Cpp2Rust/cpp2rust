@@ -32,6 +32,8 @@ public:
 
   bool EmitsReprCForRecords() const override { return false; }
 
+  const char *CharRustType() const override { return "u8"; }
+
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                      const clang::FunctionDecl *op) override;
 

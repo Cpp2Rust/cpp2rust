@@ -124,7 +124,7 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     break;
   case clang::BuiltinType::Char_S:
   case clang::BuiltinType::Char_U:
-    StrCat("core::ffi::c_char");
+    StrCat(CharRustType());
     break;
   case clang::BuiltinType::SChar:
     StrCat("i8");
@@ -1415,7 +1415,8 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("Setw")) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(arg->getType()) != "Vec<core::ffi::c_char>") {
+             Mapper::Map(arg->getType()) !=
+                 std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
     arg_str = ToString(arg);
@@ -1432,7 +1433,8 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
     raw_args += "(&[" + ToString(arg) + " as u8]";
-  } else if (Mapper::Map(arg->getType()) == "Vec<core::ffi::c_char>") {
+  } else if (Mapper::Map(arg->getType()) ==
+             std::format("Vec<{}>", CharRustType())) {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
     raw_args += "(&(" + str + ").iter().take((" + str +
@@ -1975,7 +1977,7 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format("[0 as core::ffi::c_char; {}]", arr_size));
+        StrCat(std::format("[0 as {}; {}]", CharRustType(), arr_size));
         return false;
       }
       uint64_t pad = arr_size > expr->getString().size()

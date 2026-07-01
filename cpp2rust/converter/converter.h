@@ -116,6 +116,8 @@ public:
 
   virtual bool EmitsReprCForRecords() const { return true; }
 
+  virtual const char *CharRustType() const { return "libc::c_char"; }
+
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
 
