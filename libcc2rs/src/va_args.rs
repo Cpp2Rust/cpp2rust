@@ -119,10 +119,10 @@ impl<T> VaArgGet for *const T {
     }
 }
 
-impl<T: 'static> VaArgGet for crate::rc::Ptr<T> {
+impl<T: 'static + crate::ByteRepr> VaArgGet for crate::rc::Ptr<T> {
     fn get(v: &VaArg) -> Self {
         match v {
-            VaArg::Ptr(any) => any.cast::<T>().expect("VaArgGet: Ptr type mismatch"),
+            VaArg::Ptr(any) => any.reinterpret_cast::<T>(),
             _ => panic!("VaArgGet: expected Ptr"),
         }
     }

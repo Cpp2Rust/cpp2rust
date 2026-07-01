@@ -1096,11 +1096,14 @@ impl Default for AnyPtr {
 }
 
 impl AnyPtr {
-    pub fn cast<T: 'static>(&self) -> Option<Ptr<T>> {
+    pub fn reinterpret_cast<T: ByteRepr>(&self) -> Ptr<T> {
         if self.ptr.is_null() {
-            return Some(Ptr::<T>::null());
+            return Ptr::<T>::null();
         }
-        self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
+        if let Some(p) = self.ptr.as_any().downcast_ref::<Ptr<T>>() {
+            return p.clone();
+        }
+        self.ptr.as_bytes().reinterpret_cast::<T>()
     }
 }
 
@@ -1260,27 +1263,23 @@ mod tests {
     fn anyptr_null_cast() {
         // void* nullptr
         let any = Ptr::<()>::null().to_any();
-        let p: Option<Ptr<u32>> = any.cast::<u32>();
-        assert!(p.is_some());
-        assert!(p.unwrap().is_null());
+        let p = any.reinterpret_cast::<u32>();
+        assert!(p.is_null());
 
-        let p2: Option<Ptr<u8>> = any.cast::<u8>();
-        assert!(p2.is_some());
-        assert!(p2.unwrap().is_null());
+        let p2 = any.reinterpret_cast::<u8>();
+        assert!(p2.is_null());
 
         // int* nullptr
         let any2 = Ptr::<i32>::null().to_any();
-        let p3: Option<Ptr<f32>> = any2.cast::<f32>();
-        assert!(p3.is_some());
-        assert!(p3.unwrap().is_null());
+        let p3 = any2.reinterpret_cast::<f32>();
+        assert!(p3.is_null());
     }
 
     #[test]
     fn to_any_without_clone() {
         let p: Ptr<std::fs::File> = Ptr::null(); // std::fs::File is not Clone
         let any = p.to_any();
-        let recovered = any.cast::<std::fs::File>();
-        assert!(recovered.is_some());
-        assert!(recovered.unwrap().is_null());
+        let recovered = any.reinterpret_cast::<std::fs::File>();
+        assert!(recovered.is_null());
     }
 }
