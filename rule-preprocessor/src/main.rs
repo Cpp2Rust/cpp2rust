@@ -19,11 +19,13 @@ use semantic::SemanticAnalysis;
 use syntactic::SyntacticAnalysis;
 
 fn main() {
-    let out_dir = std::env::args()
-        .nth(1)
-        .expect("usage: rule-preprocessor <out-dir>");
+    let mut args = std::env::args().skip(1);
+    let out_dir = args
+        .next()
+        .expect("usage: rule-preprocessor <out-dir> [rules-crate-dir]");
+    let in_dir = args.next().unwrap_or_else(|| "../rules".to_string());
     SemanticAnalysis::run(SyntacticAnalysis::run(
-        &std::fs::canonicalize("../rules").unwrap(),
+        &std::fs::canonicalize(&in_dir).unwrap(),
     ))
     .write_ir(&std::path::PathBuf::from(out_dir));
 }
