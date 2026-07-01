@@ -157,7 +157,8 @@ fn main_0() -> i32 {
     (*(*(((*(*c.borrow()).u.borrow()).a())
         .clone()
         .to_any()
-        .reinterpret_cast::<shape_b>())
+        .cast::<shape_b>()
+        .expect("ub:wrong type"))
     .upgrade()
     .deref())
     .tail
