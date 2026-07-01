@@ -1983,11 +1983,11 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
       uint64_t pad = arr_size > expr->getString().size()
                          ? arr_size - expr->getString().size()
                          : 0;
-      StrCat(std::format("unsafe {{ ::std::mem::transmute(*b{}) }}",
+      StrCat(std::format("std::mem::transmute(*b{})",
                          GetEscapedStringLiteral(expr, pad)));
       return false;
     }
-    StrCat(std::format("unsafe {{ ::std::mem::transmute(*b{}) }}",
+    StrCat(std::format("std::mem::transmute(*b{})",
                        GetEscapedStringLiteral(expr, 1)));
     return false;
   }
