@@ -33,11 +33,13 @@ fn main_0() -> i32 {
     assert!(
         ((((s1.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == (('o' as u8) as i32))
     );
-    assert!((*s1.borrow())
-        .iter()
-        .copied()
-        .take((*s1.borrow()).len().saturating_sub(1))
-        .eq(Ptr::from_string_literal(b"hello").to_c_string_iterator()));
+    assert!(
+        (*s1.borrow())
+            .iter()
+            .copied()
+            .take((*s1.borrow()).len().saturating_sub(1))
+            .eq(Ptr::from_string_literal(b"hello").to_c_string_iterator())
+    );
     let p1: Value<Ptr<u8>> = Rc::new(RefCell::new((s1.as_pointer() as Ptr<u8>)));
     assert!(((((*p1.borrow()).offset((0) as isize).read()) as i32) == (('h' as u8) as i32)));
     assert!(((((*p1.borrow()).offset((1) as isize).read()) as i32) == (('e' as u8) as i32)));
@@ -194,11 +196,13 @@ fn main_0() -> i32 {
         ((((string.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32)
             == (('r' as u8) as i32))
     );
-    assert!((*string.borrow())
-        .iter()
-        .copied()
-        .take((*string.borrow()).len().saturating_sub(1))
-        .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator()));
+    assert!(
+        (*string.borrow())
+            .iter()
+            .copied()
+            .take((*string.borrow()).len().saturating_sub(1))
+            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
+    );
     {
         (*string.borrow_mut()).pop();
         (*string.borrow_mut()).resize((3_usize) as usize, 0);
@@ -217,11 +221,13 @@ fn main_0() -> i32 {
         ((((string.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32)
             == (('r' as u8) as i32))
     );
-    assert!((*string.borrow())
-        .iter()
-        .copied()
-        .take((*string.borrow()).len().saturating_sub(1))
-        .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator()));
+    assert!(
+        (*string.borrow())
+            .iter()
+            .copied()
+            .take((*string.borrow()).len().saturating_sub(1))
+            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
+    );
     {
         (*string.borrow_mut()).pop();
         (*string.borrow_mut()).resize((5_usize) as usize, 0);

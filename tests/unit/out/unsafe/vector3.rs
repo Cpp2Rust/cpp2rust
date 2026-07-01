@@ -36,14 +36,14 @@ unsafe fn main_0() -> i32 {
         let mut v2 = v.as_mut_ptr().add(v2);
         'loop_: for i in 0..((*v2).len()) {
             let mut i = (&(*v2))[i].clone();
-            printf(b"%d\n\0".as_ptr() as *const i8, ((i) + (3)));
+            printf(c"%d\n".as_ptr() as *const i8, ((i) + (3)));
         }
     }
     'loop_: for v2 in 0..(v.len()) {
         let mut v2 = v[v2].clone();
         'loop_: for i in 0..(v2.len()) {
             let mut i = v2[i].clone();
-            printf(b"%d\n\0".as_ptr() as *const i8, i);
+            printf(c"%d\n".as_ptr() as *const i8, i);
         }
     }
     return 0;

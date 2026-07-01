@@ -65,7 +65,7 @@ libcc2rs::impl_enum_inc_dec!(Tag);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
-    pub name: *const u8,
+    pub name: *const libc::c_char,
     pub color: Color,
     pub opt: Option,
 }
@@ -75,17 +75,17 @@ pub static mut global_tag_2: Tag = unsafe { Tag::TAG_TWO };
 pub static mut entries_3: [Entry; 3] = unsafe {
     [
         Entry {
-            name: b"first\0".as_ptr(),
+            name: c"first".as_ptr(),
             color: Color::RED,
             opt: Option::OPT_NONE,
         },
         Entry {
-            name: b"second\0".as_ptr(),
+            name: c"second".as_ptr(),
             color: Color::GREEN,
             opt: Option::OPT_A,
         },
         Entry {
-            name: b"third\0".as_ptr(),
+            name: c"third".as_ptr(),
             color: Color::BLUE,
             opt: Option::OPT_C,
         },

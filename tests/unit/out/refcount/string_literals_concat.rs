@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     assert!(((((*joined.borrow()).offset((0) as isize).read()) as i32) == (('a' as u8) as i32)));
     assert!(((((*joined.borrow()).offset((5) as isize).read()) as i32) == (('\n' as u8) as i32)));
     assert!(((((*joined.borrow()).offset((6) as isize).read()) as i32) == (('b' as u8) as i32)));
-    let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::<[u8]>::from(b"foobar\0".as_slice())));
+    let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"foobar\0")));
     assert!((((*arr.borrow())[(0) as usize] as i32) == (('f' as u8) as i32)));
     assert!((((*arr.borrow())[(3) as usize] as i32) == (('b' as u8) as i32)));
     assert!((((*arr.borrow())[(5) as usize] as i32) == (('r' as u8) as i32)));

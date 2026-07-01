@@ -5,6 +5,10 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+fn t1() -> Vec<u8> {
+    Vec::new()
+}
+
 fn t2() -> Ptr<u8> {
     Ptr::null()
 }
@@ -120,4 +124,53 @@ fn f26(a0: Ptr<Vec<u8>>, a1: usize) -> Ptr<u8> {
     } else {
         (a0.to_strong().as_pointer() as Ptr<u8>).offset(a1 as isize)
     }
+}
+
+fn f2(a0: Vec<u8>) -> usize {
+    (a0.len() - 1)
+}
+
+fn f8(a0: std::fs::File, a1: std::fs::File) -> Vec<u8> {
+    use std::io::Read;
+    let mut __bytes: Vec<u8> = Vec::new();
+    let mut __f = &a0;
+    __f.read_to_end(&mut __bytes)
+        .expect("couldn't read the file");
+    __bytes.push(0);
+    __bytes
+}
+
+fn f9(a0: usize, a1: u8) -> Vec<u8> {
+    vec![a1; (a0) as usize]
+        .iter()
+        .cloned()
+        .chain(std::iter::once(0))
+        .collect()
+}
+
+fn f13(a0: &mut Vec<u8>, a1: usize) {
+    a0.pop();
+    a0.resize((a1) as usize, 0);
+    a0.push(0)
+}
+
+fn f19(a0: Vec<u8>) -> usize {
+    (a0.len() - 1)
+}
+
+fn f22(a0: Vec<u8>) -> bool {
+    a0.len() <= 1
+}
+
+fn f23() -> Vec<u8> {
+    vec![0]
+}
+
+fn f24(a0: &mut Vec<u8>) {
+    a0.clear();
+    a0.push(0)
+}
+
+fn f25(a0: &mut Vec<u8>) {
+    a0.shrink_to_fit()
 }

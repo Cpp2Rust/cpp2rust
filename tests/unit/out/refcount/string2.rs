@@ -23,10 +23,12 @@ fn main_0() -> i32 {
         (arr.as_pointer() as Ptr<u8>).offset((1) as isize),
     ));
     assert!(((((*p.borrow()).read()) as i32) == (('b' as u8) as i32)));
-    assert!((*arr.borrow())
-        .iter()
-        .copied()
-        .take((*arr.borrow()).len().saturating_sub(1))
-        .eq(Ptr::from_string_literal(b"fbo").to_c_string_iterator()));
+    assert!(
+        (*arr.borrow())
+            .iter()
+            .copied()
+            .take((*arr.borrow()).len().saturating_sub(1))
+            .eq(Ptr::from_string_literal(b"fbo").to_c_string_iterator())
+    );
     return 0;
 }

@@ -530,7 +530,14 @@ void addBuiltinTypes(Model model) {
   }
 
   // Char
-  add_builtin_rule(ctx_->CharTy, "u8");
+  switch (model) {
+  case Model::kUnsafe:
+    add_builtin_rule(ctx_->CharTy, "libc::c_char");
+    break;
+  case Model::kRefCount:
+    add_builtin_rule(ctx_->CharTy, "u8");
+    break;
+  }
   add_builtin_rule(ctx_->SignedCharTy, "i8");
   add_builtin_rule(ctx_->UnsignedCharTy, "u8");
 

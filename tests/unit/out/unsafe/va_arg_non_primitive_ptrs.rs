@@ -40,8 +40,8 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
         let __match_cond = option;
         match __match_cond {
             __v if __v == (opt::OPT_STRING_OUT as i32) => {
-                let mut out: *mut *const u8 = ap.arg::<*mut *const u8>();
-                (*out) = (b"hello\0".as_ptr().cast_mut()).cast_const();
+                let mut out: *mut *const libc::c_char = ap.arg::<*mut *const libc::c_char>();
+                (*out) = (c"hello".as_ptr().cast_mut()).cast_const();
                 result = 1;
                 break 'switch;
             }
@@ -72,12 +72,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: *const u8 = std::ptr::null();
+    let mut s: *const libc::c_char = std::ptr::null();
     assert!(
         ((((unsafe {
             dispatch_0(
                 (opt::OPT_STRING_OUT as i32),
-                &[(&mut s as *mut *const u8).into()],
+                &[(&mut s as *mut *const libc::c_char).into()],
             )
         }) == (1)) as i32)
             != 0)

@@ -40,10 +40,6 @@ bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
 bool IsInMainFile(const clang::Decl *decl);
 
-bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl);
-
-bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl);
-
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr);

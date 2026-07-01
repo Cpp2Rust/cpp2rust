@@ -9,28 +9,28 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
-    pub name: *const u8,
+    pub name: *const libc::c_char,
     pub p: *mut i32,
 }
 pub static mut single_entry_0: Entry = unsafe {
     Entry {
-        name: b"alone\0".as_ptr(),
+        name: c"alone".as_ptr(),
         p: std::ptr::null_mut(),
     }
 };
 pub static mut entries_1: [Entry; 2] = unsafe {
     [
         Entry {
-            name: b"first\0".as_ptr(),
+            name: c"first".as_ptr(),
             p: std::ptr::null_mut(),
         },
         Entry {
-            name: b"second\0".as_ptr(),
+            name: c"second".as_ptr(),
             p: std::ptr::null_mut(),
         },
     ]
 };
-pub static mut arr_of_pointers_2: [*mut u8; 3] = unsafe {
+pub static mut arr_of_pointers_2: [*mut libc::c_char; 3] = unsafe {
     [
         std::ptr::null_mut(),
         std::ptr::null_mut(),

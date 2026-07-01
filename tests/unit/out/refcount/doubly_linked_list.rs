@@ -286,12 +286,14 @@ fn main_0() -> i32 {
         .borrow())
             == 4)
     );
-    assert!((*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
-        .upgrade()
-        .deref())
-    .prev
-    .borrow())
-    .is_null());
+    assert!(
+        (*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
+            .upgrade()
+            .deref())
+        .prev
+        .borrow())
+        .is_null()
+    );
     assert!(
         ((*(*(*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
             .next

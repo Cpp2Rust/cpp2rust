@@ -12,7 +12,7 @@ pub struct context {
     pub verbose: i32,
     pub last_error: i32,
 }
-pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const u8, __args: &[VaArg]) {
+pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const libc::c_char, __args: &[VaArg]) {
     if ((*ctx).verbose != 0) {
         let mut ap: VaList = VaList::default();
         ap = VaList::new(__args);
@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         set_error_0(
             (&mut ctx as *mut context),
-            (b"error %d\0".as_ptr().cast_mut()).cast_const(),
+            (c"error %d".as_ptr().cast_mut()).cast_const(),
             &[(42).into()],
         )
     });
@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         set_error_0(
             (&mut ctx as *mut context),
-            (b"error %d\0".as_ptr().cast_mut()).cast_const(),
+            (c"error %d".as_ptr().cast_mut()).cast_const(),
             &[(99).into()],
         )
     });

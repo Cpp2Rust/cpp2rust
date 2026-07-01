@@ -123,8 +123,13 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     StrCat("f64");
     break;
   case clang::BuiltinType::Char_S:
-  case clang::BuiltinType::UChar:
+  case clang::BuiltinType::Char_U:
+    StrCat(CharRustType());
+    break;
   case clang::BuiltinType::SChar:
+    StrCat("i8");
+    break;
+  case clang::BuiltinType::UChar:
     StrCat("u8");
     break;
   case clang::BuiltinType::UShort:
@@ -1410,7 +1415,8 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("Setw")) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(arg->getType()) != "Vec<u8>") {
+             Mapper::Map(arg->getType()) !=
+                 std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
     arg_str = ToString(arg);
@@ -1426,11 +1432,13 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
-    raw_args += "(&[" + ToString(arg) + ']';
-  } else if (Mapper::Map(arg->getType()) == "Vec<u8>") {
+    raw_args += "(&[" + ToString(arg) + " as u8]";
+  } else if (Mapper::Map(arg->getType()) ==
+             std::format("Vec<{}>", CharRustType())) {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
-    raw_args += "(&(" + str + ")[..(" + str + ").len() - 1]";
+    raw_args += "(&(" + str + ").iter().take((" + str +
+                ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
   } else if (Mapper::ToString(arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
@@ -1847,6 +1855,14 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
   return std::nullopt;
 }
 
+static std::string getTypedLiteral(const char *num, std::string_view type) {
+  if (type.contains("::")) {
+    // Not a builtin type
+    return std::format("({} as {})", num, type);
+  }
+  return std::format("{}_{}", num, type);
+}
+
 std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
                                          bool incl_type,
                                          const clang::QualType *type) {
@@ -1868,7 +1884,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
         return init;
       }
     }
-    return std::format("{}_{}", num_as_string.c_str(), type_as_string);
+    return getTypedLiteral(num_as_string.c_str(), type_as_string);
   }
 
   return static_cast<std::string>(num_as_string);
@@ -1961,19 +1977,23 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format("[0u8; {}]", arr_size));
+        StrCat(std::format("[0 as libc::c_char; {}]", arr_size));
         return false;
       }
       uint64_t pad = arr_size > expr->getString().size()
                          ? arr_size - expr->getString().size()
                          : 0;
-      StrCat(token::kStar,
-             std::format("b{}", GetEscapedStringLiteral(expr, pad)));
+      StrCat(std::format("std::mem::transmute(*b{})",
+                         GetEscapedStringLiteral(expr, pad)));
       return false;
     }
-    StrCat(token::kStar);
+    StrCat(std::format("std::mem::transmute(*b{})",
+                       GetEscapedStringLiteral(expr, 1)));
+    return false;
   }
-  StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 1)));
+  assert(!expr->getString().contains('\0') &&
+         "interior null byte in string literal");
+  StrCat(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
   return false;
 }
 
@@ -2056,15 +2076,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     bool dest_pointee_const =
         expr->getType()->getPointeeType().isConstQualified();
-    if (const auto *member =
-            clang::dyn_cast<clang::MemberExpr>(sub_expr->IgnoreParenImpCasts());
-        member && IsCharArrayFieldFromLibc(member->getMemberDecl())) {
-      PushParen paren(*this);
-      Convert(sub_expr);
-      StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
-      StrCat(keyword::kAs, dest_pointee_const ? "*const u8" : "*mut u8");
-      break;
-    }
     Convert(sub_expr);
     if (clang::isa<clang::StringLiteral>(sub_expr) ||
         clang::isa<clang::PredefinedExpr>(sub_expr)) {
@@ -2749,16 +2760,6 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   if (!isAddrOf() && member->getType()->isFunctionPointerType()) {
     PushParen paren(*this);
     StrCat(str);
-    return false;
-  }
-
-  // char* fields in libc structs are *mut i8. We represent char* as *mut u8. Do
-  // the i8 -> u8 conversion here.
-  if (IsCharPointerFieldFromLibc(member)) {
-    StrCat(std::format("({} as {})", str,
-                       member->getType()->getPointeeType().isConstQualified()
-                           ? "*const u8"
-                           : "*mut u8"));
     return false;
   }
 
@@ -3462,11 +3463,11 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   }
 
   if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
-    return std::format("0_{}", ToString(qual_type));
+    return getTypedLiteral("0", ToString(qual_type));
   }
 
   if (qual_type->isFloatingType()) {
-    return std::format("0.0_{}", ToString(qual_type));
+    return getTypedLiteral("0.0", ToString(qual_type));
   }
 
   if (auto record = qual_type->getAsRecordDecl();
@@ -3781,7 +3782,7 @@ void Converter::ConvertFunctionMain(const clang::FunctionDecl *decl,
 pub fn main() {{
     let mut args: Vec<Vec<u8>> = std::env::args().map(|arg| arg.as_bytes().to_vec()).collect();
     args.iter_mut().for_each(|v| v.push(0));
-    let mut argv: Vec<*mut u8> = args.iter().map(|arg| arg.as_ptr() as *mut u8).collect();
+    let mut argv: Vec<*mut libc::c_char> = args.iter().map(|arg| arg.as_ptr() as *mut libc::c_char).collect();
     argv.push(::std::ptr::null_mut());
     unsafe {{
         ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)

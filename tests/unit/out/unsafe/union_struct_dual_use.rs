@@ -19,7 +19,7 @@ pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
 #[derive(Copy, Clone)]
 pub union anon_1 {
     pub inner: Inner,
-    pub raw_: [u8; 16],
+    pub raw_: [libc::c_char; 16],
 }
 impl Default for anon_1 {
     fn default() -> Self {

@@ -211,7 +211,8 @@ std::string ConverterRefCount::BuildFnAdapter(
         closure += std::format("a{}.reinterpret_cast::<{}>()", i,
                                ConvertPointeeType(src_pty));
       } else if (src_pty->getPointeeType()->isCharType()) {
-        closure += std::format("a{}.reinterpret_cast::<u8>()", i);
+        closure += std::format("a{}.reinterpret_cast::<{}>()", i,
+                               ConvertPointeeType(src_pty));
       }
     } else {
       // UB: Incompatible types
@@ -1103,8 +1104,7 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 ? arr_size - expr->getString().size()
                 : 0;
     }
-    StrCat(std::format("Box::<[u8]>::from(b{}.as_slice())",
-                       GetEscapedStringLiteral(expr, pad)));
+    StrCat(std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
     return false;
   }
   StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0)));

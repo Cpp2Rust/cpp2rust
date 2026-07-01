@@ -6,11 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn logf_impl_0(mut fmt: *const u8, mut ap: VaList) -> i32 {
+pub unsafe fn logf_impl_0(mut fmt: *const libc::c_char, mut ap: VaList) -> i32 {
     &(fmt);
     return ((ap.arg::<i32>()) + (ap.arg::<i32>()));
 }
-pub unsafe fn logf_1(mut fmt: *const u8, __args: &[VaArg]) -> i32 {
+pub unsafe fn logf_1(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
     let mut result: i32 = (unsafe { logf_impl_0(fmt, ap) });
@@ -22,12 +22,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut dummy: *const u8 = (b"dummy\0".as_ptr().cast_mut()).cast_const();
+    let mut dummy: *const libc::c_char = (c"dummy".as_ptr().cast_mut()).cast_const();
     assert!(
         ((((unsafe {
             logf_1(
-                (b"hello %d %d\0".as_ptr().cast_mut()).cast_const(),
-                &[(10).into(), (libc::strlen(dummy as *const i8)).into()],
+                (c"hello %d %d".as_ptr().cast_mut()).cast_const(),
+                &[(10).into(), (libc::strlen(dummy)).into()],
             )
         }) == (15)) as i32)
             != 0)
@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             logf_1(
-                (b"x %d %d\0".as_ptr().cast_mut()).cast_const(),
+                (c"x %d %d".as_ptr().cast_mut()).cast_const(),
                 &[(1).into(), (2).into()],
             )
         }) == (3)) as i32)

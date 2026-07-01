@@ -12,18 +12,18 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut buf: [u8; 2] = [0_u8; 2];
-    let mut p: *mut u8 = buf.as_mut_ptr();
-    let mut q: *mut u8 = std::ptr::null_mut();
+    let mut buf: [libc::c_char; 2] = [(0 as libc::c_char); 2];
+    let mut p: *mut libc::c_char = buf.as_mut_ptr();
+    let mut q: *mut libc::c_char = std::ptr::null_mut();
     q = {
         p = (p).wrapping_add((1 as i32) as usize);
         p
     };
     assert!(((((q) == (buf.as_mut_ptr().offset((1) as isize))) as i32) != 0));
-    let mut out: u8 = 0_u8;
+    let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
         let __match_cond = (({
-            out = (('x' as i32) as u8);
+            out = (('x' as i32) as libc::c_char);
             out
         }) as i32);
         match __match_cond {
