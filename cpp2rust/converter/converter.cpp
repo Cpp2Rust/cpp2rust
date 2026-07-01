@@ -1991,8 +1991,15 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                        GetEscapedStringLiteral(expr, 1)));
     return false;
   }
-  assert(!expr->getString().contains('\0') &&
-         "interior null byte in string literal");
+  if (expr->getString().contains('\0')) {
+    std::string out = "(&[";
+    for (unsigned char c : expr->getString()) {
+      out += getTypedLiteral(std::to_string(c).c_str(), CharRustType()) + ", ";
+    }
+    out += getTypedLiteral("0", CharRustType()) + "])";
+    StrCat(out);
+    return false;
+  }
   StrCat(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
   return false;
 }
@@ -2927,7 +2934,8 @@ bool Converter::VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr) {
 
 bool Converter::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
-  if (base->IgnoreCasts()->getType()->isPointerType()) {
+  if (base->IgnoreCasts()->getType()->isPointerType() ||
+      clang::isa<clang::StringLiteral>(base->IgnoreCasts())) {
     ConvertPointerSubscript(expr);
   } else {
     ConvertArraySubscript(base, expr->getIdx(), expr->getType());
