@@ -1016,16 +1016,14 @@ impl Ptr<u8> {
             }
         }
     }
-}
 
-impl Ptr<u8> {
     #[inline]
     pub fn from_string_literal(s: &'static [u8]) -> Self {
         STRING_LITERALS.with(|literals| {
             let mut literals = literals.borrow_mut();
             let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
                 Rc::new(RefCell::new({
-                    let mut v: Vec<u8> = s.to_vec();
+                    let mut v = s.to_vec();
                     v.push(0);
                     v
                 }))
