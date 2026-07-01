@@ -30,7 +30,7 @@ fn main_0() -> i32 {
         _lhs == ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()
     });
     assert!({
-        let _lhs = (((*ptr.borrow()).cast::<u32>().expect("ub:wrong type"))
+        let _lhs = (((*ptr.borrow()).reinterpret_cast::<u32>())
             .offset((0) as isize)
             .read());
         _lhs == (*a1.borrow())[(0) as usize]

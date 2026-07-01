@@ -106,8 +106,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
                 ((*(*(*s.borrow()).upgrade().deref()).out.borrow())
                     .handle()
                     .read())
-                .cast::<i64>()
-                .expect("ub:wrong type")
+                .reinterpret_cast::<i64>()
                 .write((*count.borrow()));
                 break 'switch;
             }
@@ -115,8 +114,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
                 ((*(*(*s.borrow()).upgrade().deref()).out.borrow())
                     .handle()
                     .read())
-                .cast::<i32>()
-                .expect("ub:wrong type")
+                .reinterpret_cast::<i32>()
                 .write(((*count.borrow()) as i32));
                 break 'switch;
             }
@@ -124,8 +122,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
                 ((*(*(*s.borrow()).upgrade().deref()).out.borrow())
                     .handle()
                     .read())
-                .cast::<i16>()
-                .expect("ub:wrong type")
+                .reinterpret_cast::<i16>()
                 .write(((*count.borrow()) as i16));
                 break 'switch;
             }

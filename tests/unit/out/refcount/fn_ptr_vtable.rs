@@ -62,11 +62,11 @@ pub fn int_create_1(val: i32) -> AnyPtr {
 }
 pub fn int_get_2(p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).cast::<i32>().expect("ub:wrong type").read());
+    return ((*p.borrow()).reinterpret_cast::<i32>().read());
 }
 pub fn int_destroy_3(p: AnyPtr) {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
-    (*p.borrow()).cast::<i32>().expect("ub:wrong type").write(0);
+    (*p.borrow()).reinterpret_cast::<i32>().write(0);
 }
 pub fn main() {
     std::process::exit(main_0());

@@ -203,7 +203,7 @@ std::string ConverterRefCount::BuildFnAdapter(
       closure += std::format("a{}", i);
     } else if (src_pty->isPointerType() && tgt_pty->isPointerType()) {
       if (tgt_pty->isVoidPointerType()) {
-        closure += std::format("a{}.cast::<{}>().unwrap()", i,
+        closure += std::format("a{}.reinterpret_cast::<{}>()", i,
                                ConvertPointeeType(src_pty));
       } else if (src_pty->isVoidPointerType()) {
         closure += std::format("a{}.to_any()", i);
@@ -1303,13 +1303,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
                expr->getType()->isPointerType()) {
       Convert(expr->getSubExpr());
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      if (expr->getType()->getPointeeType()->isCharType()) {
-        StrCat(std::format(".reinterpret_cast::<{}>()",
-                           ConvertPointeeType(expr->getType())));
-      } else {
-        StrCat(std::format(".cast::<{}>().expect(\"ub:wrong type\")",
-                           ConvertPointeeType(expr->getType())));
-      }
+      StrCat(std::format(".reinterpret_cast::<{}>()",
+                         ConvertPointeeType(expr->getType())));
       return false;
     } else if (expr->getType()->isVoidPointerType() &&
                expr->getSubExpr()->getType()->isPointerType()) {
