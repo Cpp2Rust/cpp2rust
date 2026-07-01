@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_memcpy_0() {
-    let src: [libc::c_char; 6] = libcc2rs::char_array(b"hello\0");
+    let src: [libc::c_char; 6] = unsafe { ::std::mem::transmute(*b"hello\0") };
     let mut dst: [libc::c_char; 6] = [
         (0 as libc::c_char),
         (0 as libc::c_char),
