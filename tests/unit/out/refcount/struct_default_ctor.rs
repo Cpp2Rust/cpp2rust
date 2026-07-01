@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive()]
 pub struct WOFF2Params {
-    pub extended_metadata: Value<Vec<core::ffi::c_char>>,
+    pub extended_metadata: Value<Vec<u8>>,
     pub brotli_quality: Value<i32>,
     pub allow_transforms: Value<bool>,
 }
@@ -19,7 +19,7 @@ impl WOFF2Params {
                 Ptr::from_string_literal(b"")
                     .to_c_string_iterator()
                     .chain(std::iter::once(0))
-                    .collect::<Vec<core::ffi::c_char>>(),
+                    .collect::<Vec<u8>>(),
             )),
             brotli_quality: Rc::new(RefCell::new(11)),
             allow_transforms: Rc::new(RefCell::new(true)),

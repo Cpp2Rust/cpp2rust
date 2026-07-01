@@ -13,8 +13,7 @@ thread_local!(
     pub static p_const_1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 thread_local!(
-    pub static cp_2: Value<Ptr<core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null()));
+    pub static cp_2: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
 );
 thread_local!(
     pub static arr_of_ptr_3: Value<Box<[Ptr<i32>]>> = Rc::new(RefCell::new(
@@ -34,8 +33,7 @@ thread_local!(
     ));
 );
 thread_local!(
-    pub static cp_explicit_null_6: Value<Ptr<core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::<core::ffi::c_char>::null()));
+    pub static cp_explicit_null_6: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
 );
 thread_local!(
     pub static p_zero_7: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));

@@ -44,10 +44,7 @@ pub unsafe fn Append_2(head: *mut Node, new_node: *mut Node) {
     'loop_: while !(((*curr).next).is_null()) {
         curr = (*curr).next;
     }
-    (unsafe {
-        let _n: *mut Node = (new_node);
-        (*curr).SetNext(_n)
-    });
+    (unsafe { (*curr).SetNext((new_node)) });
     (unsafe {
         let _p: *mut Node = curr;
         (*new_node).SetPrev(_p)
@@ -164,264 +161,48 @@ unsafe fn main_0() -> i32 {
         let _new_node: *mut Node = &mut n7 as *mut Node;
         Append_2(_head, _new_node)
     });
-    head = (unsafe {
-        let _head: *mut Node = head;
-        Delete_3(_head, 5)
-    });
-    head = (unsafe {
-        let _head: *mut Node = head;
-        Delete_3(_head, 0)
-    });
-    head = (unsafe {
-        let _head: *mut Node = head;
-        let _val: i32 = -2_i32;
-        Delete_3(_head, _val)
-    });
-    let mut tail: *mut Node = (unsafe {
-        let _head: *mut Node = head;
-        Tail_4(_head)
-    });
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 0)
-        }))
-        .val)
-            == (4))
-    );
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 1)
-        }))
-        .val)
-            == (3))
-    );
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 2)
-        }))
-        .val)
-            == (2))
-    );
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 3)
-        }))
-        .val)
-            == (1))
-    );
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 4)
-        }))
-        .val)
-            == (-1_i32))
-    );
-    assert!(
-        (unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 5)
-        })
-        .is_null()
-    );
-    assert!(
-        (((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 0)
-        }))
-        .val)
-            == (-1_i32))
-    );
-    assert!(
-        (((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 1)
-        }))
-        .val)
-            == (1))
-    );
-    assert!(
-        (((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 2)
-        }))
-        .val)
-            == (2))
-    );
-    assert!(
-        (((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 3)
-        }))
-        .val)
-            == (3))
-    );
-    assert!(
-        (((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 4)
-        }))
-        .val)
-            == (4))
-    );
-    assert!(
-        ((*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 4)
-        }))
-        .prev)
-            .is_null()
-    );
-    assert!(
-        (((*(*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 0)
-        }))
-        .next)
-            .val)
-            == (3))
-    );
-    assert!(
-        (((*(*(*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 1)
-        }))
-        .next)
-            .next)
-            .val)
-            == (1))
-    );
-    assert!(
-        (((*(*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 2)
-        }))
-        .prev)
-            .val)
-            == (3))
-    );
-    assert!(
-        ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 4)
-        }))
-        .next)
-            .is_null()
-    );
-    assert!(
-        (((*(*(*(unsafe {
-            let _tail: *mut Node = tail;
-            FindBack_1(_tail, 1)
-        }))
-        .prev)
-            .prev)
-            .val)
-            == (3))
-    );
-    (*(*(unsafe {
-        let _head: *mut Node = head;
-        Find_0(_head, 0)
-    }))
-    .next)
-        .val = 30;
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 1)
-        }))
-        .val)
-            == (30))
-    );
-    (*(*(unsafe {
-        let _head: *mut Node = head;
-        Find_0(_head, 1)
-    }))
-    .next)
-        .val = (((*(unsafe {
-        let _head: *mut Node = head;
-        Find_0(_head, 0)
-    }))
-    .val)
-        + ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 3)
-        }))
-        .val));
-    assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 2)
-        }))
-        .val)
-            == ((4) + (1)))
-    );
-    let mut sum: i32 = ((((((*(unsafe {
-        let _head: *mut Node = head;
-        Find_0(_head, 0)
-    }))
-    .val)
-        + ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 1)
-        }))
-        .val))
-        + ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 2)
-        }))
-        .val))
-        + ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 3)
-        }))
-        .val))
-        + ((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 4)
-        }))
-        .val));
+    head = (unsafe { Delete_3(head, 5) });
+    head = (unsafe { Delete_3(head, 0) });
+    head = (unsafe { Delete_3(head, -2_i32) });
+    let mut tail: *mut Node = (unsafe { Tail_4(head) });
+    assert!((((*(unsafe { Find_0(head, 0,) })).val) == (4)));
+    assert!((((*(unsafe { Find_0(head, 1,) })).val) == (3)));
+    assert!((((*(unsafe { Find_0(head, 2,) })).val) == (2)));
+    assert!((((*(unsafe { Find_0(head, 3,) })).val) == (1)));
+    assert!((((*(unsafe { Find_0(head, 4,) })).val) == (-1_i32)));
+    assert!((unsafe { Find_0(head, 5,) }).is_null());
+    assert!((((*(unsafe { FindBack_1(tail, 0,) })).val) == (-1_i32)));
+    assert!((((*(unsafe { FindBack_1(tail, 1,) })).val) == (1)));
+    assert!((((*(unsafe { FindBack_1(tail, 2,) })).val) == (2)));
+    assert!((((*(unsafe { FindBack_1(tail, 3,) })).val) == (3)));
+    assert!((((*(unsafe { FindBack_1(tail, 4,) })).val) == (4)));
+    assert!(((*(unsafe { FindBack_1(tail, 4,) })).prev).is_null());
+    assert!((((*(*(unsafe { Find_0(head, 0,) })).next).val) == (3)));
+    assert!((((*(*(*(unsafe { Find_0(head, 1,) })).next).next).val) == (1)));
+    assert!((((*(*(unsafe { Find_0(head, 2,) })).prev).val) == (3)));
+    assert!(((*(unsafe { Find_0(head, 4,) })).next).is_null());
+    assert!((((*(*(*(unsafe { FindBack_1(tail, 1,) })).prev).prev).val) == (3)));
+    (*(*(unsafe { Find_0(head, 0) })).next).val = 30;
+    assert!((((*(unsafe { Find_0(head, 1,) })).val) == (30)));
+    (*(*(unsafe { Find_0(head, 1) })).next).val =
+        (((*(unsafe { Find_0(head, 0) })).val) + ((*(unsafe { Find_0(head, 3) })).val));
+    assert!((((*(unsafe { Find_0(head, 2,) })).val) == ((4) + (1))));
+    let mut sum: i32 = ((((((*(unsafe { Find_0(head, 0) })).val)
+        + ((*(unsafe { Find_0(head, 1) })).val))
+        + ((*(unsafe { Find_0(head, 2) })).val))
+        + ((*(unsafe { Find_0(head, 3) })).val))
+        + ((*(unsafe { Find_0(head, 4) })).val));
     assert!(((sum) == (((((4) + (30)) + (5)) + (1)) + (-1_i32))));
     assert!(
-        ((((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 0)
-        }))
-        .val)
-            + ((*(unsafe {
-                let _tail: *mut Node = tail;
-                FindBack_1(_tail, 0)
-            }))
-            .val))
+        ((((*(unsafe { Find_0(head, 0,) })).val) + ((*(unsafe { FindBack_1(tail, 0,) })).val))
             == ((4) + (-1_i32)))
     );
     assert!(
-        (((*(*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 2)
-        }))
-        .next)
-            .val)
-            == ((*(unsafe {
-                let _tail: *mut Node = tail;
-                FindBack_1(_tail, 1)
-            }))
-            .val))
+        (((*(*(unsafe { Find_0(head, 2,) })).next).val)
+            == ((*(unsafe { FindBack_1(tail, 1,) })).val))
     );
     assert!(
-        (((*(unsafe {
-            let _head: *mut Node = head;
-            Find_0(_head, 0)
-        }))
-        .prev)
-            == ((*(unsafe {
-                let _tail: *mut Node = tail;
-                FindBack_1(_tail, 4)
-            }))
-            .prev))
+        (((*(unsafe { Find_0(head, 0,) })).prev) == ((*(unsafe { FindBack_1(tail, 4,) })).prev))
     );
     return 0;
 }

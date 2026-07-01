@@ -14,7 +14,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut vec_: Vec<u8> = vec![195_u8, 167_u8];
     let mut i: i32 = 27;
-    let mut str: Vec<core::ffi::c_char> = {
+    let mut str: Vec<libc::c_char> = {
         let s = c"rdas.".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
         &([
             (&[vec_[(0_usize)] as u8] as &[u8]),
             (&[vec_[(1_usize)] as u8] as &[u8]),
-            (&[('o' as core::ffi::c_char) as u8] as &[u8]),
+            (&[('o' as libc::c_char) as u8] as &[u8]),
             (&(str)
                 .iter()
                 .take((str).len() - 1)
@@ -71,7 +71,7 @@ unsafe fn main_0() -> i32 {
     .write_all(
         &([
             (b" a\xc3\xa7ordas?" as &[u8]),
-            (&[('\n' as core::ffi::c_char) as u8] as &[u8]),
+            (&[('\n' as libc::c_char) as u8] as &[u8]),
             (b"Sim, 0x" as &[u8]),
         ]
         .concat()),
@@ -107,9 +107,9 @@ unsafe fn main_0() -> i32 {
     .write_all(
         &([
             (&[vec_[(0_usize)] as u8] as &[u8]),
-            (&[('\n' as core::ffi::c_char) as u8] as &[u8]),
+            (&[('\n' as libc::c_char) as u8] as &[u8]),
             (&[vec_[(1_usize)] as u8] as &[u8]),
-            (&[('\n' as core::ffi::c_char) as u8] as &[u8]),
+            (&[('\n' as libc::c_char) as u8] as &[u8]),
         ]
         .concat()),
     );

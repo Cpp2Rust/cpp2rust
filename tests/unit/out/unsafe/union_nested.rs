@@ -10,13 +10,13 @@ use std::rc::Rc;
 #[derive(Copy, Clone)]
 pub struct record {
     pub code: u16,
-    pub pad: [core::ffi::c_char; 14],
+    pub pad: [libc::c_char; 14],
 }
 impl Default for record {
     fn default() -> Self {
         record {
             code: 0_u16,
-            pad: [(0 as core::ffi::c_char); 14],
+            pad: [(0 as libc::c_char); 14],
         }
     }
 }
@@ -24,7 +24,7 @@ impl Default for record {
 #[derive(Copy, Clone)]
 pub union anon_0 {
     pub h: record,
-    pub raw_: [core::ffi::c_char; 128],
+    pub raw_: [libc::c_char; 128],
 }
 impl Default for anon_0 {
     fn default() -> Self {
@@ -75,7 +75,7 @@ unsafe fn main_0() -> i32 {
     ex.variant = 6;
     ex.len = (::std::mem::size_of::<record>() as u32);
     ex.body.h.code = 2_u16;
-    ex.body.h.pad[(0) as usize] = (('X' as i32) as core::ffi::c_char);
+    ex.body.h.pad[(0) as usize] = (('X' as i32) as libc::c_char);
     assert!(((((ex.body.h.code as i32) == (2)) as i32) != 0));
     assert!(((((ex.body.h.pad[(0) as usize] as i32) == ('X' as i32)) as i32) != 0));
     assert!(((((ex.body.nested.view.h.code as i32) == (2)) as i32) != 0));

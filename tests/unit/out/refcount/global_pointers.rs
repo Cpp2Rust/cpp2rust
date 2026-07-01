@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct Entry {
-    pub name: Value<Ptr<core::ffi::c_char>>,
+    pub name: Value<Ptr<u8>>,
     pub p: Value<Ptr<i32>>,
 }
 impl Clone for Entry {
@@ -20,7 +20,21 @@ impl Clone for Entry {
         this
     }
 }
-impl ByteRepr for Entry {}
+impl ByteRepr for Entry {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.name.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.p.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
+            p: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 thread_local!(
     pub static single_entry_0: Value<Entry> = Rc::new(RefCell::new(Entry {
         name: Rc::new(RefCell::new(Ptr::from_string_literal(b"alone"))),
@@ -40,12 +54,11 @@ thread_local!(
     ])));
 );
 thread_local!(
-    pub static arr_of_pointers_2: Value<Box<[Ptr<core::ffi::c_char>]>> =
-        Rc::new(RefCell::new(Box::new([
-            Ptr::<core::ffi::c_char>::null(),
-            Ptr::<core::ffi::c_char>::null(),
-            Ptr::<core::ffi::c_char>::null(),
-        ])));
+    pub static arr_of_pointers_2: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
+        Ptr::<u8>::null(),
+        Ptr::<u8>::null(),
+        Ptr::<u8>::null(),
+    ])));
 );
 pub fn main() {
     std::process::exit(main_0());

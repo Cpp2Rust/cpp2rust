@@ -12,11 +12,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut str: Vec<core::ffi::c_char> = {
+    let mut str: Vec<libc::c_char> = {
         let s = c"Hello, world!\n".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    let file: [core::ffi::c_char; 25] = libcc2rs::char_array(b"test_stdcopy_ostream.txt\0");
+    let file: [libc::c_char; 25] = libcc2rs::char_array(b"test_stdcopy_ostream.txt\0");
     let mut ofs: ::std::fs::File =
         ::std::fs::File::create(::std::ffi::CStr::from_ptr(file.as_ptr()).to_str().unwrap())
             .unwrap();

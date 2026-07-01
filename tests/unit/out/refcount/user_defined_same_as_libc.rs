@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fopen_0(path: Ptr<core::ffi::c_char>, mode: Ptr<core::ffi::c_char>) -> Ptr<::std::fs::File> {
-    let path: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(path));
-    let mode: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(mode));
+pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<::std::fs::File> {
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(path));
+    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(mode));
     (*path.borrow()).clone();
     (*mode.borrow()).clone();
     return Ptr::null();

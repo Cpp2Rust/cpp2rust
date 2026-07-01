@@ -24,13 +24,13 @@ pub fn convert_without_rhs_0() {
         ((*arr.borrow())[(*y.borrow()) as usize] + (*arr.borrow())[(*x.borrow()) as usize]),
     ));
     (*w.borrow_mut()) += (((*z.borrow()) + (*y.borrow())) + (*x.borrow()));
-    let arr2: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(Box::new([
-        ('a' as core::ffi::c_char),
-        ('b' as core::ffi::c_char),
-        ('c' as core::ffi::c_char),
+    let arr2: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        ('a' as u8),
+        ('b' as u8),
+        ('c' as u8),
     ])));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    let c: Value<core::ffi::c_char> = Rc::new(RefCell::new(
+    let c: Value<u8> = Rc::new(RefCell::new(
         (*arr2.borrow())[((*p1.borrow()).read()) as usize],
     ));
     (*c.borrow_mut()) = (*arr2.borrow())[((*p1.borrow()).read()) as usize];
@@ -63,7 +63,7 @@ pub fn convert_with_rhs_1() {
     (*x.borrow_mut()) += __rhs;
     let __rhs = ((*p.borrow()).read());
     (*y.borrow_mut()) += __rhs;
-    (*p.borrow_mut()) = ((arr.as_pointer() as Ptr<i32>).offset(0 as isize));
+    (*p.borrow_mut()) = ((arr.as_pointer() as Ptr<i32>).offset(0));
     let __rhs = ((*p.borrow()).read());
     (*arr.borrow_mut())[(0) as usize] = __rhs;
     let __rhs = (*x.borrow());

@@ -9,7 +9,7 @@ use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
-    pub name: *const core::ffi::c_char,
+    pub name: *const libc::c_char,
     pub p: *mut i32,
 }
 pub static mut single_entry_0: Entry = unsafe {
@@ -30,7 +30,7 @@ pub static mut entries_1: [Entry; 2] = unsafe {
         },
     ]
 };
-pub static mut arr_of_pointers_2: [*mut core::ffi::c_char; 3] = unsafe {
+pub static mut arr_of_pointers_2: [*mut libc::c_char; 3] = unsafe {
     [
         std::ptr::null_mut(),
         std::ptr::null_mut(),

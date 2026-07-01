@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn logf_impl_0(fmt: Ptr<core::ffi::c_char>, ap: VaList) -> i32 {
-    let fmt: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(fmt));
+pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
+    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     (*fmt.borrow()).clone();
     return {
@@ -15,16 +15,12 @@ pub fn logf_impl_0(fmt: Ptr<core::ffi::c_char>, ap: VaList) -> i32 {
         _lhs + ((*ap.borrow_mut()).arg::<i32>()).clone()
     };
 }
-pub fn logf_1(fmt: Ptr<core::ffi::c_char>, __args: &[VaArg]) -> i32 {
-    let fmt: Value<Ptr<core::ffi::c_char>> = Rc::new(RefCell::new(fmt));
+pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
+    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _fmt: Ptr<core::ffi::c_char> = (*fmt.borrow()).clone();
-            let _ap: VaList = (*ap.borrow()).clone();
-            logf_impl_0(_fmt, _ap)
-        }),
+        ({ logf_impl_0((*fmt.borrow()).clone(), (*ap.borrow()).clone()) }),
     ));
     return (*result.borrow());
 }
@@ -32,8 +28,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let dummy: Value<Ptr<core::ffi::c_char>> =
-        Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy")));
+    let dummy: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"dummy")));
     assert!(
         (((({
             logf_1(

@@ -15,7 +15,7 @@ fn main_0() -> i32 {
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let ul: Value<u64> = Rc::new(RefCell::new(5_u64));
     let ll: Value<i64> = Rc::new(RefCell::new(6_i64));
-    let ch: Value<core::ffi::c_char> = Rc::new(RefCell::new(('a' as core::ffi::c_char)));
+    let ch: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
     if ((*n.borrow()) != 0) {
         assert!(true);
     }

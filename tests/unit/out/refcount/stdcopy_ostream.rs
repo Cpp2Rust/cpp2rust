@@ -10,25 +10,23 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let str: Value<Vec<core::ffi::c_char>> = Rc::new(RefCell::new(
+    let str: Value<Vec<u8>> = Rc::new(RefCell::new(
         Ptr::from_string_literal(b"Hello, world!\n")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
-            .collect::<Vec<core::ffi::c_char>>(),
+            .collect::<Vec<u8>>(),
     ));
-    let file: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(Box::from(
-        libcc2rs::char_array(b"test_stdcopy_ostream.txt\0"),
-    )));
+    let file: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"test_stdcopy_ostream.txt\0")));
     let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-        ::std::fs::File::create((file.as_pointer() as Ptr<core::ffi::c_char>).to_string())
+        ::std::fs::File::create((file.as_pointer() as Ptr<u8>).to_string())
             .expect("Failed to open file"),
     ));
     {
         (*ofs.borrow_mut()).write_all(
-            (str.as_pointer() as Ptr<core::ffi::c_char>)
+            (str.as_pointer() as Ptr<u8>)
                 .reinterpret_cast::<u8>()
                 .slice_until(
-                    &(str.as_pointer() as Ptr<core::ffi::c_char>)
+                    &(str.as_pointer() as Ptr<u8>)
                         .to_last()
                         .reinterpret_cast::<u8>(),
                 )
@@ -36,6 +34,6 @@ fn main_0() -> i32 {
         );
         (*ofs.borrow_mut()).try_clone().unwrap()
     };
-    libc::unlink((file.as_pointer() as Ptr<core::ffi::c_char>));
+    libc::unlink((file.as_pointer() as Ptr<u8>));
     return 0;
 }

@@ -12,15 +12,15 @@ pub fn main() {
         .map(|arg| arg.as_bytes().to_vec())
         .collect();
     args.iter_mut().for_each(|v| v.push(0));
-    let mut argv: Vec<*mut core::ffi::c_char> = args
+    let mut argv: Vec<*mut libc::c_char> = args
         .iter()
-        .map(|arg| arg.as_ptr() as *mut core::ffi::c_char)
+        .map(|arg| arg.as_ptr() as *mut libc::c_char)
         .collect();
     argv.push(::std::ptr::null_mut());
     unsafe { ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32) }
 }
-unsafe fn main_0(mut argc: i32, mut argv: *mut *mut core::ffi::c_char) -> i32 {
-    let mut s: Vec<core::ffi::c_char> = {
+unsafe fn main_0(mut argc: i32, mut argv: *mut *mut libc::c_char) -> i32 {
+    let mut s: Vec<libc::c_char> = {
         let s = (*argv.offset((0) as isize)).cast_const();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };

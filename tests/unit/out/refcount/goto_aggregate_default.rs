@@ -12,6 +12,9 @@ pub struct Point {
     pub y: Value<i32>,
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -25,10 +28,8 @@ impl ByteRepr for Point {
 }
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let buf40: Value<Box<[core::ffi::c_char]>> = Rc::new(RefCell::new(
-        (0..40)
-            .map(|_| <core::ffi::c_char>::default())
-            .collect::<Box<[core::ffi::c_char]>>(),
+    let buf40: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..40).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     let buf256: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..256).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
@@ -62,13 +63,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _n: i32 = -1_i32;
-            agg_0(_n)
-        }) == 0) as i32)
-            != 0)
-    );
+    assert!((((({ agg_0(-1_i32,) }) == 0) as i32) != 0));
     assert!((((({ agg_0(1,) }) == 1) as i32) != 0));
     return 0;
 }
