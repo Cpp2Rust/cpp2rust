@@ -48,6 +48,7 @@ pub enum StrongPtr<T> {
     Reinterpreted {
         alloc: Rc<dyn OriginalAlloc>,
         byte_offset: usize,
+        elem_byte_size: usize,
         // Local buffer for deref(). None until first access.
         // Read-through: refreshed from alloc on every deref() call.
         cell: RefCell<Option<T>>,
@@ -63,10 +64,11 @@ impl<T: ByteRepr> StrongPtr<T> {
             StrongPtr::Reinterpreted {
                 alloc,
                 byte_offset,
+                elem_byte_size,
                 cell,
             } => {
                 // Read-through: always re-read from the original allocation.
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; *elem_byte_size];
                 alloc.read_bytes(*byte_offset, &mut buf);
                 *cell.borrow_mut() = Some(T::from_bytes(&buf));
                 Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
@@ -353,6 +355,7 @@ impl<T> Ptr<T> {
             PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
                 alloc: Rc::clone(&data.alloc),
                 byte_offset: self.offset,
+                elem_byte_size: data.elem_byte_size,
                 cell: RefCell::new(None),
             },
         }
@@ -377,7 +380,7 @@ impl<T> Ptr<T> {
                 rc.borrow_mut()[self.offset] = value;
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; data.elem_byte_size];
                 value.to_bytes(&mut buf);
                 data.alloc.write_bytes(self.offset, &buf);
             }
@@ -406,20 +409,26 @@ impl<T> Ptr<T> {
             panic!("cannot reinterpret_cast to zero-sized type");
         }
 
-        let src_byte_off = self.offset.wrapping_mul(T::byte_size());
+        self.reinterpret_sized::<U>(U::byte_size())
+    }
+
+    pub fn reinterpret_sized<U>(&self, elem_byte_size: usize) -> Ptr<U>
+    where
+        T: ByteRepr,
+    {
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
             PtrKind::Null => return Ptr::null(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::Vec(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
         };
@@ -428,7 +437,7 @@ impl<T> Ptr<T> {
             offset: abs_byte_off,
             kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
                 alloc,
-                elem_byte_size: U::byte_size(),
+                elem_byte_size,
             })),
         }
     }
@@ -457,7 +466,7 @@ impl<T> Ptr<T> {
                 f(&mut borrow[self.offset])
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; data.elem_byte_size];
                 data.alloc.read_bytes(self.offset, &mut buf);
                 let mut val = T::from_bytes(&buf);
                 let ret = f(&mut val);
@@ -490,7 +499,7 @@ impl<T> Ptr<T> {
                 f(&borrow[self.offset])
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; data.elem_byte_size];
                 data.alloc.read_bytes(self.offset, &mut buf);
                 let val = T::from_bytes(&buf);
                 f(&val)
@@ -517,7 +526,7 @@ impl<T: Clone + ByteRepr> Ptr<T> {
                 weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
             }
             PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; T::byte_size()];
+                let mut buf = vec![0u8; data.elem_byte_size];
                 data.alloc.read_bytes(self.offset, &mut buf);
                 T::from_bytes(&buf)
             }

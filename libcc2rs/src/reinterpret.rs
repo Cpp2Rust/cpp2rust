@@ -85,7 +85,18 @@ impl<T: ByteRepr> ByteRepr for Vec<T> {}
 impl<T: ByteRepr> ByteRepr for Option<T> {}
 impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {}
 impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {}
-impl<T: ByteRepr> ByteRepr for Box<[T]> {}
+impl<T: ByteRepr> ByteRepr for Box<[T]> {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        let size = T::byte_size();
+        for (i, elem) in self.iter().enumerate() {
+            elem.to_bytes(&mut buf[i * size..(i + 1) * size]);
+        }
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        let size = T::byte_size();
+        buf.chunks(size).map(|c| T::from_bytes(c)).collect()
+    }
+}
 impl<T: ByteRepr> ByteRepr for Box<T> {}
 impl<T: 'static> ByteRepr for *const T {}
 impl<T: 'static> ByteRepr for *mut T {}
