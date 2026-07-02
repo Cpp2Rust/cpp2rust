@@ -104,6 +104,7 @@ pub trait OriginalAlloc {
     // Stable address used for pointer equality across PtrKind variants.
     fn address(&self) -> usize;
     fn delete(&self);
+    fn is_dangling(&self) -> bool;
 }
 
 // Read bytes starting at `byte_offset` from a slice of S elements into `buf`.
@@ -178,6 +179,10 @@ impl<T: ByteRepr> OriginalAlloc for SingleOriginalAlloc<T> {
         }
         assert_eq!(Weak::strong_count(&self.weak), 0, "ub: double free");
     }
+
+    fn is_dangling(&self) -> bool {
+        self.weak.strong_count() == 0
+    }
 }
 
 pub(crate) trait AsSlice {
@@ -240,5 +245,9 @@ impl<T: AsSlice + 'static> OriginalAlloc for SliceOriginalAlloc<T> {
             Rc::from_raw(Rc::as_ptr(&strong));
         }
         assert_eq!(Weak::strong_count(&self.weak), 0, "ub: double free");
+    }
+
+    fn is_dangling(&self) -> bool {
+        self.weak.strong_count() == 0
     }
 }

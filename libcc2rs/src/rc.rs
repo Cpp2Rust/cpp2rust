@@ -1091,6 +1091,7 @@ pub(crate) trait ErasedPtr: std::any::Any {
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    fn is_dangling(&self) -> bool;
 }
 
 impl PartialEq for dyn ErasedPtr {
@@ -1121,6 +1122,16 @@ where
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn is_dangling(&self) -> bool {
+        match &self.kind {
+            PtrKind::Null => false,
+            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.strong_count() == 0,
+            PtrKind::Vec(w) => w.strong_count() == 0,
+            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
+            PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
+        }
     }
 }
 
