@@ -389,13 +389,17 @@ impl<T> Ptr<T> {
             return self_any.downcast_ref::<Ptr<U>>().unwrap().clone();
         }
 
+        if self.is_null() {
+            return Ptr::null();
+        }
+
         if U::byte_size() == 0 {
             panic!("cannot reinterpret_cast to zero-sized type");
         }
 
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
-            PtrKind::Null => return Ptr::null(),
+            PtrKind::Null => unreachable!(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
                 src_byte_off,
