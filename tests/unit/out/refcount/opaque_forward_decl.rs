@@ -11,14 +11,6 @@ pub struct container {
     pub p: Value<Ptr<opaque>>,
     pub x: Value<i32>,
 }
-impl Clone for container {
-    fn clone(&self) -> Self {
-        Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-        }
-    }
-}
 impl ByteRepr for container {
     fn byte_size() -> usize {
         16
@@ -46,3 +38,4 @@ fn main_0() -> i32 {
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
 pub struct opaque;
+impl ByteRepr for opaque {}
