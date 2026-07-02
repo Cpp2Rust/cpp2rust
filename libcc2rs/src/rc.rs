@@ -1286,7 +1286,7 @@ impl RangeAllocator {
         }
     }
 
-    fn base_for(&mut self, real_addr: RealAddr, byte_len: ByteLen) -> SyntheticAddr {
+    fn get_synthetic_addr(&mut self, real_addr: RealAddr, byte_len: ByteLen) -> SyntheticAddr {
         if let Some(&(base, capacity)) = self.bases.get(&real_addr)
             && byte_len <= capacity
         {
@@ -1299,10 +1299,50 @@ impl RangeAllocator {
     }
 }
 
+struct PtrRegistry {
+    ranges: RangeAllocator,
+    entries: BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>,
+    swept_len: usize,
+}
+
+impl PtrRegistry {
+    fn new() -> Self {
+        Self {
+            ranges: RangeAllocator::new(),
+            entries: BTreeMap::new(),
+            swept_len: 0,
+        }
+    }
+
+    fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: AnyPtr) -> SyntheticAddr {
+        self.evict_dead();
+        let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
+        self.entries.insert(base, (ptr, byte_len));
+        base
+    }
+
+    fn get(&self, addr: SyntheticAddr) -> Option<(SyntheticAddr, AnyPtr, ByteLen)> {
+        self.entries
+            .range(..=addr)
+            .next_back()
+            .map(|(base, (any, len))| (*base, any.clone(), *len))
+    }
+
+    fn evict_dead(&mut self) {
+        if self.entries.len() < 16.max(2 * self.swept_len) {
+            return;
+        }
+        self.entries.retain(|_, (any, _)| !any.ptr.is_dangling());
+        let entries = &self.entries;
+        self.ranges
+            .bases
+            .retain(|_, &mut (base, _)| entries.contains_key(&base));
+        self.swept_len = self.entries.len();
+    }
+}
+
 thread_local! {
-    static PTR_RANGE_ALLOC: RefCell<RangeAllocator> = RefCell::new(RangeAllocator::new());
-    static PTR_REGISTRY: RefCell<BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>> =
-        const { RefCell::new(BTreeMap::new()) };
+    static PTR_REGISTRY: RefCell<PtrRegistry> = RefCell::new(PtrRegistry::new());
 }
 
 impl<T: ByteRepr> ByteRepr for Ptr<T> {
@@ -1322,13 +1362,13 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
                 self.len() * T::byte_size(),
             ),
         };
-        let base = PTR_RANGE_ALLOC.with(|a| a.borrow_mut().base_for(self.kind.address(), byte_len));
         let rebased = Ptr {
             offset: 0,
             kind: self.kind.clone(),
         };
-        PTR_REGISTRY.with(|r| {
-            r.borrow_mut().insert(base, (rebased.to_any(), byte_len));
+        let base = PTR_REGISTRY.with(|r| {
+            r.borrow_mut()
+                .put(self.kind.address(), byte_len, rebased.to_any())
         });
         base.wrapping_add(byte_off).to_bytes(buf);
     }
@@ -1338,12 +1378,7 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
         if addr == 0 {
             return Ptr::null();
         }
-        let entry = PTR_REGISTRY.with(|r| {
-            r.borrow()
-                .range(..=addr)
-                .next_back()
-                .map(|(base, (any, len))| (*base, any.clone(), *len))
-        });
+        let entry = PTR_REGISTRY.with(|r| r.borrow().get(addr));
         let Some((base, any, byte_len)) = entry else {
             panic!("ub: cast of invalid address 0x{addr:x} to pointer");
         };
