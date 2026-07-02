@@ -3,7 +3,7 @@
 
 use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use std::{
     cell::{Ref, RefCell, RefMut},
@@ -1208,8 +1208,110 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
     }
 }
 
-impl<T: 'static> ByteRepr for Ptr<T> {}
-impl ByteRepr for AnyPtr {}
+type RealAddr = usize;
+type SyntheticAddr = usize;
+type ByteLen = usize;
+
+struct RangeAllocator {
+    cursor: SyntheticAddr,
+    bases: HashMap<RealAddr, (SyntheticAddr, ByteLen)>,
+}
+
+impl RangeAllocator {
+    fn new() -> Self {
+        Self {
+            // Increase this if you need higher alignment. In general, malloc returns
+            // 16-bits-aligned pointers, but that's not relevant for now.
+            cursor: 1,
+            bases: HashMap::new(),
+        }
+    }
+
+    fn base_for(&mut self, real_addr: RealAddr, byte_len: ByteLen) -> SyntheticAddr {
+        if let Some(&(base, capacity)) = self.bases.get(&real_addr) {
+            if byte_len <= capacity {
+                return base;
+            }
+        }
+        let base = self.cursor;
+        self.cursor = base + byte_len + 1;
+        self.bases.insert(real_addr, (base, byte_len));
+        base
+    }
+}
+
+thread_local! {
+    static PTR_RANGE_ALLOC: RefCell<RangeAllocator> = RefCell::new(RangeAllocator::new());
+    static PTR_REGISTRY: RefCell<BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>> =
+        const { RefCell::new(BTreeMap::new()) };
+}
+
+impl<T: ByteRepr> ByteRepr for Ptr<T> {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        if self.is_null() {
+            0usize.to_bytes(buf);
+            return;
+        }
+        let (byte_off, byte_len) = match &self.kind {
+            PtrKind::Reinterpreted(data) => (self.offset, data.alloc.total_byte_len()),
+            _ => (
+                self.offset.wrapping_mul(T::byte_size()),
+                self.len() * T::byte_size(),
+            ),
+        };
+        let base =
+            PTR_RANGE_ALLOC.with(|a| a.borrow_mut().base_for(self.kind.address(), byte_len));
+        let rebased = Ptr {
+            offset: 0,
+            kind: self.kind.clone(),
+        };
+        PTR_REGISTRY.with(|r| {
+            r.borrow_mut().insert(base, (rebased.to_any(), byte_len));
+        });
+        base.wrapping_add(byte_off).to_bytes(buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let addr = usize::from_bytes(buf);
+        if addr == 0 {
+            return Ptr::null();
+        }
+        let entry = PTR_REGISTRY.with(|r| {
+            r.borrow()
+                .range(..=addr)
+                .next_back()
+                .map(|(base, (any, len))| (*base, any.clone(), *len))
+        });
+        let Some((base, any, byte_len)) = entry else {
+            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+        };
+        let delta = addr - base;
+        if delta > byte_len {
+            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+        }
+        let elem_size = T::byte_size();
+        assert_eq!(delta % elem_size, 0, "ub: misaligned pointer");
+        any.reinterpret_cast::<T>().offset(delta / elem_size)
+    }
+}
+
+impl ByteRepr for AnyPtr {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ptr.as_bytes().to_bytes(buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Ptr::<u8>::from_bytes(buf).to_any()
+    }
+}
 
 #[cfg(test)]
 mod tests {
