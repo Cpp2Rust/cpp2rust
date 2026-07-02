@@ -344,6 +344,91 @@ private:
     }
   }
 
+  clang::QualType
+  getTemplateIdType(clang::ClassTemplateDecl *decl,
+                    llvm::ArrayRef<clang::TemplateArgument> args) {
+    clang::TemplateArgumentListInfo info(loc_, loc_);
+    for (const clang::TemplateArgument &arg : args) {
+      info.addArgument(
+          sema_->getTrivialTemplateArgumentLoc(arg, getNTTPType(arg), loc_));
+    }
+    return sema_->CheckTemplateIdType(clang::ElaboratedTypeKeyword::None,
+                                      clang::TemplateName(decl), loc_, info,
+                                      sema_->getCurScope(),
+                                      /*ForNestedNameSpecifier=*/false);
+  }
+
+  using MirrorMap = llvm::SmallDenseMap<const clang::ClassTemplateDecl *,
+                                        clang::ClassTemplateDecl *>;
+
+  clang::TypeSourceInfo *findMatch(MirrorMap &substs, clang::QualType type) {
+    const auto *tst = type->getAs<clang::TemplateSpecializationType>();
+    if (!tst) {
+      return nullptr;
+    }
+
+    const auto *tdecl = llvm::dyn_cast_or_null<clang::ClassTemplateDecl>(
+        tst->getTemplateName().getAsTemplateDecl());
+    if (!tdecl) {
+      return nullptr;
+    }
+
+    if (auto it = substs.find(tdecl->getCanonicalDecl()); it != substs.end()) {
+      auto match = getTemplateIdType(it->second, tst->template_arguments());
+      assert(!match.isNull());
+      return sema_->Context.getTrivialTypeSourceInfo(match, loc_);
+    }
+    return nullptr;
+  }
+
+  clang::ClassTemplateDecl *
+  createInheritingTemplate(llvm::StringRef name, clang::ClassTemplateDecl *decl,
+                           MirrorMap &substs) {
+    clang::ASTContext &ctx = sema_->Context;
+    auto *pattern = clang::CXXRecordDecl::Create(
+        ctx, clang::TagTypeKind::Struct, sema_->CurContext, loc_, loc_,
+        &ctx.Idents.get(name));
+
+    auto *mirror = clang::ClassTemplateDecl::Create(
+        ctx, sema_->CurContext, loc_,
+        clang::DeclarationName(&ctx.Idents.get(name)),
+        decl->getTemplateParameters(), pattern);
+    pattern->setDescribedClassTemplate(mirror);
+    mirror->setAccess(clang::AS_public);
+    substs.try_emplace(decl->getCanonicalDecl(), mirror);
+
+    clang::QualType base_t = getTemplateIdType(
+        decl, decl->getTemplateParameters()->getInjectedTemplateArgs(ctx));
+    assert(!base_t.isNull() && "Failed building mirror base");
+
+    pattern->startDefinition();
+    clang::CXXBaseSpecifier base(clang::SourceRange(loc_, loc_), false, true,
+                                 clang::AS_public,
+                                 ctx.getTrivialTypeSourceInfo(base_t, loc_),
+                                 /*EllipsisLoc=*/clang::SourceLocation());
+    const clang::CXXBaseSpecifier *bases[] = {&base};
+    pattern->setBases(bases, 1);
+
+    for (auto *member : decl->getTemplatedDecl()->decls()) {
+      if (const auto *td = llvm::dyn_cast<clang::TypedefNameDecl>(member)) {
+        if (auto *replacement = findMatch(substs, td->getUnderlyingType())) {
+          auto *copy = clang::TypedefDecl::Create(
+              ctx, pattern, loc_, loc_, td->getIdentifier(), replacement);
+          copy->setAccess(clang::AS_public);
+          pattern->addDecl(copy);
+        }
+      } else if (auto *tdecl =
+                     llvm::dyn_cast<clang::ClassTemplateDecl>(member)) {
+        clang::Sema::ContextRAII savedContext(*sema_, pattern);
+        createInheritingTemplate(tdecl->getName(), tdecl, substs);
+      }
+    }
+
+    pattern->completeDefinition();
+    sema_->CurContext->addDecl(mirror);
+    return mirror;
+  }
+
   clang::QualType createMirrorType(llvm::StringRef name, clang::QualType hint) {
     clang::ASTContext &ctx = sema_->Context;
     forceCompleteDefinition(hint);
@@ -361,48 +446,11 @@ private:
                             rdecl->getQualifier(), rdecl, false);
     }
 
-    auto *pattern = clang::CXXRecordDecl::Create(
-        ctx, clang::TagTypeKind::Struct, sema_->CurContext, loc_, loc_,
-        &ctx.Idents.get(name));
-
-    auto *htdecl = hspec->getSpecializedTemplate();
-    auto *mirror = clang::ClassTemplateDecl::Create(
-        ctx, sema_->CurContext, loc_,
-        clang::DeclarationName(&ctx.Idents.get(name)),
-        htdecl->getTemplateParameters(), pattern);
-    pattern->setDescribedClassTemplate(mirror);
-
-    clang::TemplateArgumentListInfo bargs(loc_, loc_);
-    for (const clang::TemplateArgument &arg :
-         htdecl->getTemplateParameters()->getInjectedTemplateArgs(ctx)) {
-      bargs.addArgument(
-          sema_->getTrivialTemplateArgumentLoc(arg, getNTTPType(arg), loc_));
-    }
-    clang::QualType base_t = sema_->CheckTemplateIdType(
-        clang::ElaboratedTypeKeyword::None, clang::TemplateName(htdecl), loc_,
-        bargs, sema_->getCurScope(), /*ForNestedNameSpecifier=*/false);
-    assert(!base_t.isNull() && "Failed building mirror base");
-
-    pattern->startDefinition();
-    clang::CXXBaseSpecifier base(clang::SourceRange(loc_, loc_), false, true,
-                                 clang::AS_public,
-                                 ctx.getTrivialTypeSourceInfo(base_t, loc_),
-                                 /*EllipsisLoc=*/clang::SourceLocation());
-    const clang::CXXBaseSpecifier *bases[] = {&base};
-    pattern->setBases(bases, 1);
-    pattern->completeDefinition();
-    sema_->CurContext->addDecl(mirror);
-
-    clang::TemplateArgumentListInfo args(loc_, loc_);
-    for (const clang::TemplateArgument &arg :
-         hspec->getTemplateArgs().asArray()) {
-      args.addArgument(
-          sema_->getTrivialTemplateArgumentLoc(arg, getNTTPType(arg), loc_));
-    }
-
-    clang::QualType spec = sema_->CheckTemplateIdType(
-        clang::ElaboratedTypeKeyword::None, clang::TemplateName(mirror), loc_,
-        args, sema_->getCurScope(), /*ForNestedNameSpecifier=*/false);
+    MirrorMap substs;
+    auto *mirror =
+        createInheritingTemplate(name, hspec->getSpecializedTemplate(), substs);
+    clang::QualType spec =
+        getTemplateIdType(mirror, hspec->getTemplateArgs().asArray());
     assert(!spec.isNull() && spec->getAsCXXRecordDecl());
 
     // required to print Tn instead of Tn<arg1, arg2, ...>
