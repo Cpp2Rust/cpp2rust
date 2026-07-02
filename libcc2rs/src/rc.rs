@@ -1113,7 +1113,10 @@ where
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
-        other.as_any().downcast_ref::<Ptr<T>>() == Some(self)
+        if let Some(o) = other.as_any().downcast_ref::<Ptr<T>>() {
+            return o == self;
+        }
+        self.as_bytes() == other.as_bytes()
     }
 
     fn is_null(&self) -> bool {
