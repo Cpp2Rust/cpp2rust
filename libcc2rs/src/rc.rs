@@ -1276,11 +1276,10 @@ impl RangeAllocator {
     }
 
     fn base_for(&mut self, real_addr: RealAddr, byte_len: ByteLen) -> SyntheticAddr {
-        if let Some(&(base, capacity)) = self.bases.get(&real_addr) {
-            if byte_len <= capacity {
+        if let Some(&(base, capacity)) = self.bases.get(&real_addr)
+            && byte_len <= capacity {
                 return base;
             }
-        }
         let base = self.cursor;
         self.cursor = base + byte_len + 1;
         self.bases.insert(real_addr, (base, byte_len));
@@ -1311,8 +1310,7 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
                 self.len() * T::byte_size(),
             ),
         };
-        let base =
-            PTR_RANGE_ALLOC.with(|a| a.borrow_mut().base_for(self.kind.address(), byte_len));
+        let base = PTR_RANGE_ALLOC.with(|a| a.borrow_mut().base_for(self.kind.address(), byte_len));
         let rebased = Ptr {
             offset: 0,
             kind: self.kind.clone(),
