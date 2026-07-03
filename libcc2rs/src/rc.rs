@@ -438,6 +438,24 @@ impl<T> Ptr<T> {
     }
 }
 
+impl<T: ByteRepr> Ptr<T> {
+    #[inline]
+    fn c_byte_len(&self) -> usize {
+        match &self.kind {
+            PtrKind::Reinterpreted(data) => data.alloc.total_byte_len(),
+            _ => self.len().wrapping_mul(T::byte_size()),
+        }
+    }
+
+    #[inline]
+    fn c_byte_offset(&self) -> usize {
+        match &self.kind {
+            PtrKind::Reinterpreted(_) => self.offset,
+            _ => self.offset.wrapping_mul(T::byte_size()),
+        }
+    }
+}
+
 impl<T> Ptr<T> {
     pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R
     where
@@ -1314,22 +1332,18 @@ impl<T: ByteRepr> ByteRepr for Ptr<T> {
             0usize.to_bytes(buf);
             return;
         }
-        let (byte_off, byte_len) = match &self.kind {
-            PtrKind::Reinterpreted(data) => (self.offset, data.alloc.total_byte_len()),
-            _ => (
-                self.offset.wrapping_mul(T::byte_size()),
-                self.len() * T::byte_size(),
-            ),
-        };
-        let rebased = Ptr {
-            offset: 0,
-            kind: self.kind.clone(),
-        };
         let base = PTR_REGISTRY.with(|r| {
-            r.borrow_mut()
-                .put(self.kind.address(), byte_len, rebased.to_any())
+            r.borrow_mut().put(
+                self.kind.address(),
+                self.c_byte_len(),
+                Ptr {
+                    offset: 0,
+                    kind: self.kind.clone(),
+                }
+                .to_any(),
+            )
         });
-        base.wrapping_add(byte_off).to_bytes(buf);
+        base.wrapping_add(self.c_byte_offset()).to_bytes(buf);
     }
 
     fn from_bytes(buf: &[u8]) -> Self {
