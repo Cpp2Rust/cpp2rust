@@ -1279,7 +1279,7 @@ impl RangeAllocator {
 struct PtrRegistry {
     ranges: RangeAllocator,
     entries: BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>,
-    swept_len: usize,
+    evicted_len: usize,
 }
 
 impl PtrRegistry {
@@ -1287,7 +1287,7 @@ impl PtrRegistry {
         Self {
             ranges: RangeAllocator::new(),
             entries: BTreeMap::new(),
-            swept_len: 0,
+            evicted_len: 0,
         }
     }
 
@@ -1306,7 +1306,7 @@ impl PtrRegistry {
     }
 
     fn evict_dead(&mut self) {
-        if self.entries.len() < 16.max(2 * self.swept_len) {
+        if self.entries.len() < 16.max(2 * self.evicted_len) {
             return;
         }
         self.entries.retain(|_, (any, _)| !any.ptr.is_dangling());
@@ -1314,7 +1314,7 @@ impl PtrRegistry {
         self.ranges
             .bases
             .retain(|_, &mut (base, _)| entries.contains_key(&base));
-        self.swept_len = self.entries.len();
+        self.evicted_len = self.entries.len();
     }
 }
 
