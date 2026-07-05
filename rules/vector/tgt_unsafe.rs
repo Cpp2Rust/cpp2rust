@@ -19,6 +19,20 @@ fn t4<T1>() -> *const T1 {
     Default::default()
 }
 
+fn t5<T1>() -> Vec<T1> {
+    Default::default()
+}
+
+#[cfg(target_os = "linux")]
+fn t6<T1>() -> *mut T1 {
+    Default::default()
+}
+
+#[cfg(target_os = "linux")]
+fn t7<T1>() -> *const T1 {
+    Default::default()
+}
+
 unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     let pos = a1.offset_from(a0.as_ptr()) as usize;
     a0.remove(pos);
@@ -237,5 +251,225 @@ unsafe fn f58<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
 }
 
 unsafe fn f59<T1>(a0: &mut Vec<T1>) {
+    a0.shrink_to_fit()
+}
+
+unsafe fn f60<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
+    let pos = a1.offset_from(a0.as_ptr()) as usize;
+    a0.remove(pos);
+    a1
+}
+
+unsafe fn f61<T1>(a0: Vec<T1>) -> usize {
+    a0.len()
+}
+
+unsafe fn f62<T1>(a0: Vec<T1>) -> bool {
+    a0.is_empty()
+}
+
+unsafe fn f63<T1>() -> Vec<T1> {
+    Vec::new()
+}
+
+unsafe fn f64<T1>(a0: &mut Vec<T1>) {
+    a0.pop();
+}
+
+unsafe fn f65<T1>(a0: &mut Vec<T1>) -> *mut T1 {
+    a0.as_mut_ptr()
+}
+
+unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
+    &mut (a0)[a1 as usize]
+}
+
+unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {
+    (0..(a0) as usize)
+        .map(|_| <T1>::default())
+        .collect::<Vec<_>>()
+}
+
+unsafe fn f68<T1>(a0: &mut Vec<T1>) -> *mut T1 {
+    ((a0).first_mut().unwrap())
+}
+
+unsafe fn f69<T1>(a0: &mut Vec<T1>) -> *mut T1 {
+    ((a0).last_mut().unwrap())
+}
+
+unsafe fn f70<T1>(a0: Vec<T1>) -> usize {
+    a0.capacity()
+}
+
+unsafe fn f71<T1>(a0: &mut Vec<T1>, a1: usize) {
+    if a1 as usize > a0.capacity() as usize {
+        let len_0 = a0.len();
+        a0.reserve_exact(a1 as usize - len_0 as usize);
+    }
+}
+
+unsafe fn f72<T1>(a0: &mut Vec<T1>) -> *mut T1 {
+    a0.as_mut_ptr()
+}
+
+unsafe fn f73<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
+    a0.push(std::mem::take(&mut *a1))
+}
+
+unsafe fn f74<T1: Default>(a0: &mut Vec<T1>, a1: usize) {
+    let __a0 = a1 as usize;
+    a0.resize_with(__a0, || <T1>::default())
+}
+
+unsafe fn f75<T1>(a0: &mut Vec<T1>) {
+    a0.clear()
+}
+
+unsafe fn f76<T1>(a0: &mut Vec<T1>) -> *mut T1 {
+    a0.as_mut_ptr().add(a0.len())
+}
+
+unsafe fn f77<T1>(a0: &mut Vec<T1>, a1: *const T1, a2: T1) {
+    let pos = a1.offset_from(a0.as_ptr()) as usize;
+    a0.insert(pos, a2);
+}
+
+unsafe fn f78<T1: Default + Clone>(a0: usize, a1: T1) -> Vec<T1> {
+    vec![a1; a0 as usize]
+}
+
+unsafe fn f79<T1>(a0: &mut Vec<T1>, a1: *const T1, a2: T1) {
+    let pos = a1.offset_from(a0.as_ptr()) as usize;
+    a0.insert(pos, a2);
+}
+
+unsafe fn f80<T1: Clone>(a0: &mut Vec<T1>, a1: T1) {
+    let a0_clone = a1.clone();
+    a0.push(a0_clone)
+}
+
+unsafe fn f81<T1>(a0: *mut T1) -> *mut T1 {
+    a0
+}
+
+unsafe fn f82<T1>(a0: *const T1) -> *const T1 {
+    a0
+}
+
+unsafe fn f83<T1>(a0: *const T1) -> *const T1 {
+    a0
+}
+
+unsafe fn f84<T1>(a0: *mut T1, a1: usize) -> *mut T1 {
+    a0.add(a1 as usize)
+}
+
+unsafe fn f85<T1>(a0: *const T1, a1: *const T1) -> bool {
+    a0 != a1
+}
+unsafe fn f86<T1>(a0: *const T1, a1: *const T1) -> bool {
+    a0 == a1
+}
+
+unsafe fn f87<T1>(a0: &mut *mut T1) -> *mut T1 {
+    a0.postfix_inc()
+}
+
+unsafe fn f88<T1>(a0: *const T1, a1: *const T1) -> isize {
+    a0.offset_from(a1)
+}
+
+unsafe fn f89<T1>(a0: &mut *mut T1) -> *mut T1 {
+    a0.prefix_inc()
+}
+
+unsafe fn f90<T1: Clone>(a0: *const T1, a1: *const T1) -> Vec<T1> {
+    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize).to_vec()
+}
+
+unsafe fn f91<T1>(a0: Vec<T1>) -> Vec<T1> {
+    a0
+}
+
+unsafe fn f92<T1: TryFrom<T2>, T2: Clone>(a0: *mut T2, a1: *mut T2) -> Vec<T1> {
+    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
+        .iter()
+        .map(|x| T1::try_from(x.clone()).ok().unwrap())
+        .collect()
+}
+
+unsafe fn f93<T1>(a0: &mut Vec<T1>) -> *const T1 {
+    a0.as_ptr()
+}
+
+unsafe fn f94<T1: Ord>(a0: *const T1, a1: *const T1) -> *const T1 {
+    core::slice::from_raw_parts(a0, (a1).offset_from(a0) as usize)
+        .iter()
+        .max()
+        .unwrap()
+}
+
+unsafe fn f95<T1>(a0: Vec<T1>) -> *const T1 {
+    a0.as_ptr()
+}
+
+unsafe fn f96<T1>(a0: Vec<T1>) -> *const T1 {
+    a0.as_ptr().add(a0.len())
+}
+
+unsafe fn f97(a0: &mut Vec<bool>, a1: &mut Vec<bool>) {
+    std::mem::swap(&mut *a0, &mut *a1)
+}
+
+unsafe fn f98<T1: Copy>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
+    if a1 as usize >= a0.len() {
+        panic!("out of bounds access")
+    } else {
+        (a0).as_mut_ptr().add(a1 as usize)
+    }
+}
+
+unsafe fn f99<T1>(a0: &Vec<T1>) -> &T1 {
+    ((a0).last().unwrap())
+}
+
+unsafe fn f100<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
+    a0.push(a1.clone())
+}
+
+unsafe fn f101<T1: Clone>(
+    a0: &mut Vec<T1>,
+    a1: *const T1,
+    a2: *const T1,
+    a3: *const T1,
+) -> *mut T1 {
+    let __off = a1.offset_from(a0.as_ptr()) as usize;
+    let count = a3.offset_from(a2) as usize;
+    a0.splice(
+        __off..__off,
+        std::slice::from_raw_parts(a2, count).iter().cloned(),
+    );
+    a0.as_mut_ptr().add(__off)
+}
+
+unsafe fn f102<T1: Default + Clone>(a0: &mut Vec<T1>, a1: usize, a2: T1) {
+    let __a0 = a1 as usize;
+    a0.resize(__a0, a2)
+}
+
+unsafe fn f103<T1: Clone>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
+    *a0 = std::mem::take(&mut *a1)
+}
+
+unsafe fn f104<T1>(a0: Vec<T1>) -> *const T1 {
+    a0.as_ptr().add(a0.len())
+}
+
+unsafe fn f105<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
+    *a0 = a1.clone()
+}
+
+unsafe fn f106<T1>(a0: &mut Vec<T1>) {
     a0.shrink_to_fit()
 }

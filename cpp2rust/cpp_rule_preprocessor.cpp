@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <clang/AST/ASTContext.h>
+#include <clang/AST/Attr.h>
 #include <clang/AST/Decl.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/PrettyPrinter.h>
@@ -58,10 +59,15 @@ struct LookupInfo {
       name = dm->getMember();
       kind = LookupKind::CXXMethodName;
       explicitArgs = dm->template_arguments();
+    } else if (const auto *um =
+                   llvm::dyn_cast<clang::UnresolvedMemberExpr>(expr)) {
+      name = um->getMemberName();
+      kind = LookupKind::CXXMethodName;
+      explicitArgs = um->template_arguments();
     } else if (const auto *dref =
                    llvm::dyn_cast<clang::DependentScopeDeclRefExpr>(expr)) {
       clang::DeclarationName dname = dref->getDeclName();
-      if (name.getNameKind() ==
+      if (dname.getNameKind() ==
           clang::DeclarationName::NameKind::CXXConstructorName) {
         name = dname;
         kind = LookupKind::CXXConstructorName;
@@ -260,7 +266,8 @@ private:
       return spec;
     }
 
-    if (result == clang::TemplateDeductionResult::SubstitutionFailure) {
+    if (result == clang::TemplateDeductionResult::SubstitutionFailure ||
+        result == clang::TemplateDeductionResult::ConstraintsNotSatisfied) {
       if (const auto *deduced = info.takeCanonical()) {
         clang::TemplateArgumentListInfo targsInfo;
         for (const auto &arg : deduced->asArray()) {
@@ -293,7 +300,9 @@ private:
     return ns;
   }
 
-  clang::RecordDecl *createRecordDecl(llvm::StringRef name) {
+  clang::RecordDecl *
+  createRecordDecl(llvm::StringRef name,
+                   clang::QualType base = clang::QualType()) {
     bool owned = true;
     bool dependent = false;
     clang::CXXScopeSpec scope;
@@ -306,9 +315,181 @@ private:
         clang::TypeResult(), false, false, clang::OffsetOfKind::Outside);
     assert(decl.isUsable() && "Record decl creation failed");
     auto *rdecl = decl.getAs<clang::RecordDecl>();
+
     rdecl->startDefinition();
+    if (!base.isNull()) {
+      clang::CXXBaseSpecifier baseSpec(
+          clang::SourceRange(loc_, loc_), false, true, clang::AS_public,
+          sema_->Context.getTrivialTypeSourceInfo(base, loc_),
+          /*EllipsisLoc=*/clang::SourceLocation());
+      const clang::CXXBaseSpecifier *bases[] = {&baseSpec};
+      llvm::cast<clang::CXXRecordDecl>(rdecl)->setBases(bases, 1);
+    }
     rdecl->completeDefinition();
     return rdecl;
+  }
+
+  static clang::QualType getNTTPType(const clang::TemplateArgument &arg) {
+    switch (arg.getKind()) {
+    case clang::TemplateArgument::Integral:
+      return arg.getIntegralType();
+    case clang::TemplateArgument::Declaration:
+      return arg.getParamTypeForDecl();
+    case clang::TemplateArgument::NullPtr:
+      return arg.getNullPtrType();
+    case clang::TemplateArgument::StructuralValue:
+      return arg.getStructuralValueType();
+    default:
+      return clang::QualType();
+    }
+  }
+
+  clang::QualType
+  getTemplateIdType(clang::ClassTemplateDecl *decl,
+                    llvm::ArrayRef<clang::TemplateArgument> args) {
+    clang::TemplateArgumentListInfo info(loc_, loc_);
+    for (const clang::TemplateArgument &arg : args) {
+      info.addArgument(
+          sema_->getTrivialTemplateArgumentLoc(arg, getNTTPType(arg), loc_));
+    }
+    return sema_->CheckTemplateIdType(clang::ElaboratedTypeKeyword::None,
+                                      clang::TemplateName(decl), loc_, info,
+                                      sema_->getCurScope(),
+                                      /*ForNestedNameSpecifier=*/false);
+  }
+
+  using MirrorMap = llvm::SmallDenseMap<const clang::ClassTemplateDecl *,
+                                        clang::ClassTemplateDecl *>;
+
+  clang::TypeSourceInfo *findMatch(MirrorMap &substs, clang::QualType type) {
+    const auto *tst = type->getAs<clang::TemplateSpecializationType>();
+    if (!tst) {
+      return nullptr;
+    }
+
+    const auto *tdecl = llvm::dyn_cast_or_null<clang::ClassTemplateDecl>(
+        tst->getTemplateName().getAsTemplateDecl());
+    if (!tdecl) {
+      return nullptr;
+    }
+
+    if (auto it = substs.find(tdecl->getCanonicalDecl()); it != substs.end()) {
+      auto match = getTemplateIdType(it->second, tst->template_arguments());
+      assert(!match.isNull());
+      return sema_->Context.getTrivialTypeSourceInfo(match, loc_);
+    }
+    return nullptr;
+  }
+
+  clang::ClassTemplateDecl *
+  createInheritingTemplate(llvm::StringRef name, clang::ClassTemplateDecl *decl,
+                           MirrorMap &substs) {
+    clang::ASTContext &ctx = sema_->Context;
+    auto *pattern = clang::CXXRecordDecl::Create(
+        ctx, clang::TagTypeKind::Struct, sema_->CurContext, loc_, loc_,
+        &ctx.Idents.get(name));
+
+    auto *mirror = clang::ClassTemplateDecl::Create(
+        ctx, sema_->CurContext, loc_,
+        clang::DeclarationName(&ctx.Idents.get(name)),
+        decl->getTemplateParameters(), pattern);
+    pattern->setDescribedClassTemplate(mirror);
+    mirror->setAccess(clang::AS_public);
+    substs.try_emplace(decl->getCanonicalDecl(), mirror);
+
+    clang::QualType base_t = getTemplateIdType(
+        decl, decl->getTemplateParameters()->getInjectedTemplateArgs(ctx));
+    assert(!base_t.isNull() && "Failed building mirror base");
+
+    pattern->startDefinition();
+    clang::CXXBaseSpecifier base(clang::SourceRange(loc_, loc_), false, true,
+                                 clang::AS_public,
+                                 ctx.getTrivialTypeSourceInfo(base_t, loc_),
+                                 /*EllipsisLoc=*/clang::SourceLocation());
+    const clang::CXXBaseSpecifier *bases[] = {&base};
+    pattern->setBases(bases, 1);
+
+    for (auto *member : decl->getTemplatedDecl()->decls()) {
+      if (const auto *td = llvm::dyn_cast<clang::TypedefNameDecl>(member)) {
+        if (auto *replacement = findMatch(substs, td->getUnderlyingType())) {
+          auto *copy = clang::TypedefDecl::Create(
+              ctx, pattern, loc_, loc_, td->getIdentifier(), replacement);
+          copy->setAccess(clang::AS_public);
+          pattern->addDecl(copy);
+        }
+      } else if (auto *tdecl =
+                     llvm::dyn_cast<clang::ClassTemplateDecl>(member)) {
+        clang::Sema::ContextRAII savedContext(*sema_, pattern);
+        createInheritingTemplate(tdecl->getName(), tdecl, substs);
+      }
+    }
+
+    pattern->completeDefinition();
+    sema_->CurContext->addDecl(mirror);
+    return mirror;
+  }
+
+  clang::QualType createMirrorType(llvm::StringRef name, clang::QualType hint) {
+    clang::ASTContext &ctx = sema_->Context;
+    forceCompleteDefinition(hint);
+
+    const auto *hdecl = hint->getAsCXXRecordDecl();
+    assert(hdecl && "Failed resolving hint record declaration");
+    assert(hdecl->isCompleteDefinition() && "Incomplete hint");
+
+    const auto *hspec =
+        llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(hdecl);
+    if (!hspec) {
+      // if it is not a template specialization inheriting from it suffices
+      clang::RecordDecl *rdecl = createRecordDecl(name, hint);
+      return ctx.getTagType(clang::ElaboratedTypeKeyword::None,
+                            rdecl->getQualifier(), rdecl, false);
+    }
+
+    MirrorMap substs;
+    auto *mirror =
+        createInheritingTemplate(name, hspec->getSpecializedTemplate(), substs);
+    clang::QualType spec =
+        getTemplateIdType(mirror, hspec->getTemplateArgs().asArray());
+    assert(!spec.isNull() && spec->getAsCXXRecordDecl());
+
+    // required to print Tn instead of Tn<arg1, arg2, ...>
+    clang::NamespaceDecl *ns = createNamespaceDecl();
+    auto *alias =
+        clang::TypeAliasDecl::Create(ctx, ns, loc_, loc_, &ctx.Idents.get(name),
+                                     ctx.getTrivialTypeSourceInfo(spec, loc_));
+    ns->addDecl(alias);
+
+    clang::QualType alias_t = ctx.getTypedefType(
+        clang::ElaboratedTypeKeyword::None, std::nullopt, alias);
+    spec->getAsCXXRecordDecl()->addAttr(
+        clang::PreferredNameAttr::CreateImplicit(
+            ctx, ctx.getTrivialTypeSourceInfo(alias_t, loc_)));
+
+    return ctx.getCanonicalType(spec);
+  }
+
+  clang::QualType
+  getDefaultArg(clang::TemplateDecl *decl,
+                const clang::TemplateTypeParmDecl *parm,
+                llvm::ArrayRef<clang::TemplateArgument> currentArgs) {
+    clang::QualType type = parm->getDefaultArgument().getArgument().getAsType();
+    if (!type->isDependentType()) {
+      return type;
+    }
+
+    clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+    assert(!Inst.isInvalid() && "Invalid instantiation context");
+
+    clang::MultiLevelTemplateArgumentList mtal;
+    mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
+    mtal.addOuterTemplateArguments(currentArgs);
+
+    clang::TypeSourceInfo *tsi =
+        sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type), mtal,
+                         loc_, clang::DeclarationName());
+    assert(tsi && "Template argument type instantiation failed");
+    return tsi->getType();
   }
 
   clang::VarDecl *createVarDecl(clang::QualType type, llvm::StringRef name,
@@ -355,11 +536,19 @@ private:
   createTemplateArguments(clang::TemplateDecl *decl,
                           llvm::SmallVectorImpl<clang::TemplateArgument> &out) {
     for (clang::NamedDecl *param : *decl->getTemplateParameters()) {
-      if (llvm::isa<clang::TemplateTypeParmDecl>(param)) {
-        clang::RecordDecl *rdecl = createRecordDecl(param->getName());
-        clang::QualType type =
-            sema_->Context.getTagType(clang::ElaboratedTypeKeyword::None,
-                                      rdecl->getQualifier(), rdecl, false);
+      if (const auto *ttp =
+              llvm::dyn_cast<clang::TemplateTypeParmDecl>(param)) {
+        clang::QualType type;
+        if (ttp->hasDefaultArgument()) {
+          clang::QualType hint = getDefaultArg(decl, ttp, out);
+          assert(!hint.isNull() && "Failed retrieving type hint");
+          type = createMirrorType(param->getName(), hint);
+        } else {
+          clang::RecordDecl *rdecl = createRecordDecl(param->getName());
+          type = sema_->Context.getTagType(clang::ElaboratedTypeKeyword::None,
+                                           rdecl->getQualifier(), rdecl, false);
+        }
+        assert(!type.isNull() && "Template type argument creation failed");
         out.emplace_back(type);
       } else if (const auto *nttp =
                      llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param)) {
@@ -505,6 +694,7 @@ private:
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
     clang::FunctionDecl *rule = instantiateRuleDecl(decl);
+    assert(rule && "Rule instantiation failed");
     llvm::ArrayRef<clang::ParmVarDecl *> parms = rule->parameters();
     auto csk = lookup.name.getNameKind() ==
                        clang::DeclarationName::NameKind::CXXOperatorName
@@ -611,6 +801,7 @@ private:
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
     clang::FunctionDecl *rule = instantiateRuleDecl(decl);
+    assert(rule && "Rule instantiation failed");
     clang::CXXRecordDecl *rdecl =
         resolveCXXRecordDecl(rule->getParamDecl(0)->getType());
     assert(rdecl && "Failed fetching record decl");
@@ -628,6 +819,7 @@ private:
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
     clang::FunctionDecl *rule = instantiateRuleDecl(decl);
+    assert(rule && "Rule instantiation failed");
 
     clang::Expr *obj = createOpaqueValueExpr(
         rule->getParamDecl(0)->getType().getNonReferenceType());
