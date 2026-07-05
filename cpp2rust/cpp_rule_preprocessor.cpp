@@ -469,6 +469,21 @@ private:
     return ctx.getCanonicalType(spec);
   }
 
+  clang::QualType getSubstType(const clang::Sema::InstantiatingTemplate &Inst,
+                               clang::QualType type,
+                               llvm::ArrayRef<clang::TemplateArgument> args) {
+    assert(!Inst.isInvalid() && "Invalid instantiation context");
+    clang::MultiLevelTemplateArgumentList mtal;
+    mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
+    mtal.addOuterTemplateArguments(args);
+
+    clang::TypeSourceInfo *tsi =
+        sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type), mtal,
+                         loc_, clang::DeclarationName());
+    assert(tsi && "Template argument type instantiation failed");
+    return tsi->getType();
+  }
+
   clang::QualType
   getDefaultArg(clang::TemplateDecl *decl,
                 const clang::TemplateTypeParmDecl *parm,
@@ -478,18 +493,8 @@ private:
       return type;
     }
 
-    clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
-    assert(!Inst.isInvalid() && "Invalid instantiation context");
-
-    clang::MultiLevelTemplateArgumentList mtal;
-    mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
-    mtal.addOuterTemplateArguments(currentArgs);
-
-    clang::TypeSourceInfo *tsi =
-        sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type), mtal,
-                         loc_, clang::DeclarationName());
-    assert(tsi && "Template argument type instantiation failed");
-    return tsi->getType();
+    const clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+    return getSubstType(Inst, type, currentArgs);
   }
 
   clang::VarDecl *createVarDecl(clang::QualType type, llvm::StringRef name,
@@ -553,6 +558,10 @@ private:
       } else if (const auto *nttp =
                      llvm::dyn_cast<clang::NonTypeTemplateParmDecl>(param)) {
         clang::QualType type = nttp->getType();
+        if (type->isDependentType()) {
+          const clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+          type = getSubstType(Inst, type, out);
+        }
         clang::DeclRefExpr *var =
             createConstexprDeclRefExpr(type, param->getName());
         out.emplace_back(var, true);
@@ -713,7 +722,7 @@ private:
     clang::TemplateArgumentListInfo explicitTArgs;
 
     {
-      clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+      const clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
       assert(!Inst.isInvalid() && "Invalid instantiation context");
       for (const auto &argloc : lookup.explicitArgs) {
         const auto &arg = argloc.getArgument();
@@ -724,16 +733,8 @@ private:
 
         clang::TemplateArgument inst;
         if (arg.getKind() == clang::TemplateArgument::Type) {
-          clang::QualType type = arg.getAsType();
-          clang::MultiLevelTemplateArgumentList mtal;
-          mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
-          mtal.addOuterTemplateArguments(ruleTArgs);
-
-          clang::TypeSourceInfo *tsi =
-              sema_->SubstType(sema_->Context.getTrivialTypeSourceInfo(type),
-                               mtal, loc_, clang::DeclarationName());
-          assert(tsi && "Template argument type instantiation failed");
-          inst = clang::TemplateArgument(tsi->getType());
+          inst = clang::TemplateArgument(
+              getSubstType(Inst, arg.getAsType(), ruleTArgs));
         } else if (arg.getKind() == clang::TemplateArgument::Expression) {
           if (auto *expr =
                   llvm::dyn_cast<clang::DeclRefExpr>(arg.getAsExpr())) {
@@ -753,7 +754,17 @@ private:
       }
     }
 
-    clang::DeclarationName &name = lookup.name;
+    clang::DeclarationName name = lookup.name;
+    if (clang::QualType nameType = name.getCXXNameType();
+        !nameType.isNull() && nameType->isDependentType()) {
+      const clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, decl);
+      assert(!Inst.isInvalid() && "Invalid instantiation context");
+      clang::MultiLevelTemplateArgumentList mtal;
+      mtal.setKind(clang::TemplateSubstitutionKind::Rewrite);
+      mtal.addOuterTemplateArguments(ruleTArgs);
+      name = sema_->SubstDeclarationNameInfo({name, loc_}, mtal).getName();
+    }
+
     clang::OverloadCandidateSet candidates(loc_, csk);
     switch (lookup.kind) {
     case LookupKind::RegularName:
