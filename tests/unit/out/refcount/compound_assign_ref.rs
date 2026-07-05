@@ -12,8 +12,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (*v.borrow_mut()).push(10);
-    let rhs_0 = ((((v.as_pointer() as Ptr<i32>).read()) as i32) + 5) as i32;
-    (v.as_pointer() as Ptr<i32>).write(rhs_0);
+    {
+        let _ptr = (v.as_pointer() as Ptr<i32>).clone();
+        _ptr.write(_ptr.read() + 5)
+    };
     assert!((((v.as_pointer() as Ptr<i32>).read()) == 15));
     return ((v.as_pointer() as Ptr<i32>).read());
 }

@@ -109,6 +109,14 @@ ConverterRefCount::PushUnboxedIfSimple::PushUnboxedIfSimple(
                                        : ConversionKind::FullRefCount);
 }
 
+std::string
+ConverterRefCount::GetSafeTypeAsString(clang::QualType qual_type) const {
+  std::string type_as_string;
+  ConverterRefCount converter(type_as_string, ctx_);
+  converter.Convert(qual_type);
+  return std::string(Trim(type_as_string));
+}
+
 std::string ConverterRefCount::BoxType(std::string &&str) const {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
@@ -1362,7 +1370,8 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   std::string_view opcode_as_string = expr->getOpcodeStr();
 
   if (auto *assign = llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
-      assign && lhs_type != assign->getComputationResultType()) {
+      assign && GetSafeTypeAsString(lhs_type) !=
+                    GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
     StrCat(keyword::kLet, "rhs_0", token::kAssign);
     if (IsUnsignedArithOp(assign)) {

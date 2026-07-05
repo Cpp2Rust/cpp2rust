@@ -2274,7 +2274,8 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   if (auto *cmpd_assign_op =
           llvm::dyn_cast<clang::CompoundAssignOperator>(expr);
       expr->isCompoundAssignmentOp() &&
-      lhs_type != cmpd_assign_op->getComputationResultType()) {
+      GetUnsafeTypeAsString(lhs_type) !=
+          GetUnsafeTypeAsString(cmpd_assign_op->getComputationResultType())) {
     auto computation_result_type = cmpd_assign_op->getComputationResultType();
     if (IsUnsignedArithOp(cmpd_assign_op)) {
       Convert(lhs);
