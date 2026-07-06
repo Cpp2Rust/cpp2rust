@@ -1373,6 +1373,7 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       assign && GetSafeTypeAsString(lhs_type) !=
                     GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
+    PushBrace brace(*this);
     StrCat(keyword::kLet, "rhs_0", token::kAssign);
     if (IsUnsignedArithOp(assign)) {
       PushParen outer(*this);
@@ -1405,6 +1406,7 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   }
 
   if (IsUnsignedArithOp(expr)) {
+    PushBrace brace(*this, expr->isCompoundAssignmentOp());
     if (expr->isCompoundAssignmentOp()) {
       StrCat(keyword::kLet, "rhs_0", token::kAssign);
     }
