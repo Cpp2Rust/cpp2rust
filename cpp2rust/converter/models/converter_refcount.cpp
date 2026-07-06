@@ -1160,6 +1160,12 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
                            ToString(sub_expr->getType())));
       }
       computed_expr_type_ = ComputedExprType::FreshPointer;
+    } else if (sub_expr->getType()->isVoidPointerType() &&
+               expr->getType()->isPointerType()) {
+      Convert(sub_expr);
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      StrCat(std::format(".reinterpret_cast::<{}>()",
+                         ConvertPointeeType(expr->getType())));
     } else {
       Convert(sub_expr);
     }
