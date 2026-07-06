@@ -15,9 +15,20 @@ int logf(const char *fmt, ...) {
   return result;
 }
 
+int lenf(const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  const char *s = va_arg(ap, const char *);
+  int result = (int)strlen(s);
+  va_end(ap);
+  return result;
+}
+
 int main() {
   const char *dummy = "dummy";
   assert(logf("hello %d %d", 10, strlen(dummy)) == 15);
   assert(logf("x %d %d", 1, 2) == 3);
+  assert(lenf("%s", dummy) == 5);
+  assert(lenf("%s", dummy[0] ? dummy : "") == 5);
   return 0;
 }
