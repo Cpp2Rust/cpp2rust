@@ -92,6 +92,15 @@ pub struct Entry {
     pub color: Value<Color>,
     pub opt: Value<Option>,
 }
+impl Clone for Entry {
+    fn clone(&self) -> Self {
+        Self {
+            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
+            color: Rc::new(RefCell::new((*self.color.borrow()).clone())),
+            opt: Rc::new(RefCell::new((*self.opt.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Entry {
     fn byte_size() -> usize {
         16

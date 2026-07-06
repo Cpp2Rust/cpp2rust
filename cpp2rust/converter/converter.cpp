@@ -819,9 +819,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Traits
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     AddOrdTrait(cxx);
-    AddCloneTrait(cxx);
     AddDropTrait(cxx);
   }
+  AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
 }

@@ -11,6 +11,14 @@ pub struct record {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
 }
+impl Clone for record {
+    fn clone(&self) -> Self {
+        Self {
+            code: Rc::new(RefCell::new((*self.code.borrow()).clone())),
+            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
+        }
+    }
+}
 impl Default for record {
     fn default() -> Self {
         record {
@@ -78,6 +86,13 @@ impl ByteRepr for anon_0 {
 pub struct inner {
     pub view: Value<anon_0>,
 }
+impl Clone for inner {
+    fn clone(&self) -> Self {
+        Self {
+            view: Rc::new(RefCell::new((*self.view.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for inner {
     fn byte_size() -> usize {
         128
@@ -136,6 +151,17 @@ pub struct Outer {
     pub variant: Value<i32>,
     pub len: Value<u32>,
     pub body: Value<anon_1>,
+}
+impl Clone for Outer {
+    fn clone(&self) -> Self {
+        Self {
+            kind: Rc::new(RefCell::new((*self.kind.borrow()).clone())),
+            level: Rc::new(RefCell::new((*self.level.borrow()).clone())),
+            variant: Rc::new(RefCell::new((*self.variant.borrow()).clone())),
+            len: Rc::new(RefCell::new((*self.len.borrow()).clone())),
+            body: Rc::new(RefCell::new((*self.body.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Outer {
     fn byte_size() -> usize {

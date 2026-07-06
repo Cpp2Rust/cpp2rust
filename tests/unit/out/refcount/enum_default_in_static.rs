@@ -37,6 +37,14 @@ pub struct Config {
     pub count: Value<i32>,
     pub mode: Value<Mode>,
 }
+impl Clone for Config {
+    fn clone(&self) -> Self {
+        Self {
+            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
+            mode: Rc::new(RefCell::new((*self.mode.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Config {
     fn byte_size() -> usize {
         8

@@ -465,7 +465,22 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   }
 
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (!cxx || cxx->defaultedCopyConstructorIsDeleted()) {
+  if (!cxx) {
+    StrCat(keyword::kImpl, "Clone for", record_name);
+    PushBrace impl_brace(*this);
+    StrCat("fn clone(&self) -> Self");
+    PushBrace fn_brace(*this);
+    StrCat("Self");
+    PushBrace init_brace(*this);
+    for (auto *field : decl->fields()) {
+      auto name = GetNamedDeclAsString(field);
+      StrCat(std::format(
+          "{0}: Rc::new(RefCell::new((*self.{0}.borrow()).clone())),", name));
+    }
+    return;
+  }
+
+  if (cxx->defaultedCopyConstructorIsDeleted()) {
     return;
   }
 

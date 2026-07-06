@@ -12,6 +12,14 @@ pub fn first_0() -> i32 {
         pub x: Value<i32>,
         pub y: Value<i32>,
     }
+    impl Clone for anon_1 {
+        fn clone(&self) -> Self {
+            Self {
+                x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+                y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+            }
+        }
+    }
     impl ByteRepr for anon_1 {
         fn byte_size() -> usize {
             8
@@ -37,6 +45,14 @@ pub fn second_2() -> i32 {
     pub struct anon_3 {
         pub a: Value<i64>,
         pub b: Value<i64>,
+    }
+    impl Clone for anon_3 {
+        fn clone(&self) -> Self {
+            Self {
+                a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+                b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
+            }
+        }
     }
     impl ByteRepr for anon_3 {
         fn byte_size() -> usize {

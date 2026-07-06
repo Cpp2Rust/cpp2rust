@@ -11,6 +11,14 @@ pub struct node {
     pub data: Value<i32>,
     pub next: Value<Ptr<node>>,
 }
+impl Clone for node {
+    fn clone(&self) -> Self {
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for node {
     fn byte_size() -> usize {
         16

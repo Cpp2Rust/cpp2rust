@@ -11,6 +11,14 @@ pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
+impl Clone for Inner {
+    fn clone(&self) -> Self {
+        Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         8
@@ -74,6 +82,13 @@ impl ByteRepr for anon_1 {
 #[derive(Default)]
 pub struct Outer {
     pub u: Value<anon_1>,
+}
+impl Clone for Outer {
+    fn clone(&self) -> Self {
+        Self {
+            u: Rc::new(RefCell::new((*self.u.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Outer {
     fn byte_size() -> usize {

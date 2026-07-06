@@ -81,6 +81,14 @@ pub struct Sink {
     pub width: Value<Width_enum>,
     pub out: Value<anon_0>,
 }
+impl Clone for Sink {
+    fn clone(&self) -> Self {
+        Self {
+            width: Rc::new(RefCell::new((*self.width.borrow()).clone())),
+            out: Rc::new(RefCell::new((*self.out.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Sink {
     fn byte_size() -> usize {
         16

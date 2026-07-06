@@ -12,6 +12,15 @@ pub struct S {
     pub tail: Value<Box<[i32]>>,
     pub buf: Value<Box<[u8]>>,
 }
+impl Clone for S {
+    fn clone(&self) -> Self {
+        Self {
+            head: Rc::new(RefCell::new((*self.head.borrow()).clone())),
+            tail: Rc::new(RefCell::new((*self.tail.borrow()).clone())),
+            buf: Rc::new(RefCell::new((*self.buf.borrow()).clone())),
+        }
+    }
+}
 impl Default for S {
     fn default() -> Self {
         S {

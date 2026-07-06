@@ -49,6 +49,14 @@ pub struct node {
     pub next: Value<Ptr<node>>,
     pub x: Value<anon_0>,
 }
+impl Clone for node {
+    fn clone(&self) -> Self {
+        Self {
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for node {
     fn byte_size() -> usize {
         16

@@ -11,6 +11,14 @@ pub struct context {
     pub verbose: Value<i32>,
     pub last_error: Value<i32>,
 }
+impl Clone for context {
+    fn clone(&self) -> Self {
+        Self {
+            verbose: Rc::new(RefCell::new((*self.verbose.borrow()).clone())),
+            last_error: Rc::new(RefCell::new((*self.last_error.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for context {
     fn byte_size() -> usize {
         8

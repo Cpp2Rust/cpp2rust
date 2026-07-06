@@ -29,6 +29,12 @@ int main() {
   assert(p.x == 10);
   assert(p.y == 20);
 
+  struct Point q = p;
+  q.x = 99;
+  assert(p.x == 10);
+  assert(q.x == 99);
+  assert(q.y == 20);
+
   struct Line l = {{1, 2}, {3, 4}};
   assert(l.start.x == 1);
   assert(l.end.y == 4);

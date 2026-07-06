@@ -74,6 +74,15 @@ pub struct Event {
     pub handle: Value<AnyPtr>,
     pub payload: Value<anon_0>,
 }
+impl Clone for Event {
+    fn clone(&self) -> Self {
+        Self {
+            kind: Rc::new(RefCell::new((*self.kind.borrow()).clone())),
+            handle: Rc::new(RefCell::new((*self.handle.borrow()).clone())),
+            payload: Rc::new(RefCell::new((*self.payload.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Event {
     fn byte_size() -> usize {
         24

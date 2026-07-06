@@ -64,6 +64,11 @@ unsafe fn main_0() -> i32 {
     let mut p: Point = Point { x: 10, y: 20 };
     assert!(((((p.x) == (10)) as i32) != 0));
     assert!(((((p.y) == (20)) as i32) != 0));
+    let mut q: Point = p;
+    q.x = 99;
+    assert!(((((p.x) == (10)) as i32) != 0));
+    assert!(((((q.x) == (99)) as i32) != 0));
+    assert!(((((q.y) == (20)) as i32) != 0));
     let mut l: Line = Line {
         start: Point { x: 1, y: 2 },
         end: Point { x: 3, y: 4 },

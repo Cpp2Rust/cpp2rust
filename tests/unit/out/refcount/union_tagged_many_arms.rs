@@ -88,6 +88,14 @@ pub struct Slot {
     pub tag: Value<Tag_enum>,
     pub payload: Value<anon_0>,
 }
+impl Clone for Slot {
+    fn clone(&self) -> Self {
+        Self {
+            tag: Rc::new(RefCell::new((*self.tag.borrow()).clone())),
+            payload: Rc::new(RefCell::new((*self.payload.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Slot {
     fn byte_size() -> usize {
         16

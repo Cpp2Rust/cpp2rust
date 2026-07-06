@@ -11,6 +11,14 @@ pub struct shape_a {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
 }
+impl Clone for shape_a {
+    fn clone(&self) -> Self {
+        Self {
+            code: Rc::new(RefCell::new((*self.code.borrow()).clone())),
+            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
+        }
+    }
+}
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
@@ -43,6 +51,17 @@ pub struct shape_b {
     pub mid: Value<u32>,
     pub fill: Value<Box<[u8]>>,
     pub tail: Value<u32>,
+}
+impl Clone for shape_b {
+    fn clone(&self) -> Self {
+        Self {
+            code: Rc::new(RefCell::new((*self.code.borrow()).clone())),
+            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
+            mid: Rc::new(RefCell::new((*self.mid.borrow()).clone())),
+            fill: Rc::new(RefCell::new((*self.fill.borrow()).clone())),
+            tail: Rc::new(RefCell::new((*self.tail.borrow()).clone())),
+        }
+    }
 }
 impl Default for shape_b {
     fn default() -> Self {
@@ -123,6 +142,14 @@ impl ByteRepr for anon_0 {
 pub struct Container {
     pub len: Value<u32>,
     pub u: Value<anon_0>,
+}
+impl Clone for Container {
+    fn clone(&self) -> Self {
+        Self {
+            len: Rc::new(RefCell::new((*self.len.borrow()).clone())),
+            u: Rc::new(RefCell::new((*self.u.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Container {
     fn byte_size() -> usize {

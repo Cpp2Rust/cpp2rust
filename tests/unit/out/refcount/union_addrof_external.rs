@@ -13,6 +13,16 @@ pub struct record {
     pub hi: Value<u32>,
     pub pad: Value<Box<[u8]>>,
 }
+impl Clone for record {
+    fn clone(&self) -> Self {
+        Self {
+            code: Rc::new(RefCell::new((*self.code.borrow()).clone())),
+            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
+            hi: Rc::new(RefCell::new((*self.hi.borrow()).clone())),
+            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
+        }
+    }
+}
 impl Default for record {
     fn default() -> Self {
         record {
@@ -85,6 +95,13 @@ impl ByteRepr for anon_0 {
 #[derive(Default)]
 pub struct Container {
     pub view: Value<anon_0>,
+}
+impl Clone for Container {
+    fn clone(&self) -> Self {
+        Self {
+            view: Rc::new(RefCell::new((*self.view.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Container {
     fn byte_size() -> usize {

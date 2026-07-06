@@ -10,6 +10,13 @@ use std::rc::{Rc, Weak};
 pub struct widget {
     pub id: Value<i32>,
 }
+impl Clone for widget {
+    fn clone(&self) -> Self {
+        Self {
+            id: Rc::new(RefCell::new((*self.id.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for widget {
     fn byte_size() -> usize {
         4

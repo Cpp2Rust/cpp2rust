@@ -11,6 +11,14 @@ pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Clone for Point {
+    fn clone(&self) -> Self {
+        Self {
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Point {
     fn byte_size() -> usize {
         8

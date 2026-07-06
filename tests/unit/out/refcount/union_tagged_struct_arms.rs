@@ -38,6 +38,15 @@ pub struct anon_1 {
     pub count: Value<i64>,
     pub cursor: Value<i64>,
 }
+impl Clone for anon_1 {
+    fn clone(&self) -> Self {
+        Self {
+            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
+            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
+            cursor: Rc::new(RefCell::new((*self.cursor.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for anon_1 {
     fn byte_size() -> usize {
         24
@@ -61,6 +70,16 @@ pub struct anon_2 {
     pub hi: Value<i32>,
     pub curr: Value<i32>,
     pub step: Value<u8>,
+}
+impl Clone for anon_2 {
+    fn clone(&self) -> Self {
+        Self {
+            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
+            hi: Rc::new(RefCell::new((*self.hi.borrow()).clone())),
+            curr: Rc::new(RefCell::new((*self.curr.borrow()).clone())),
+            step: Rc::new(RefCell::new((*self.step.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for anon_2 {
     fn byte_size() -> usize {
@@ -88,6 +107,17 @@ pub struct anon_3 {
     pub curr: Value<i64>,
     pub step: Value<i64>,
     pub width: Value<i32>,
+}
+impl Clone for anon_3 {
+    fn clone(&self) -> Self {
+        Self {
+            lo: Rc::new(RefCell::new((*self.lo.borrow()).clone())),
+            hi: Rc::new(RefCell::new((*self.hi.borrow()).clone())),
+            curr: Rc::new(RefCell::new((*self.curr.borrow()).clone())),
+            step: Rc::new(RefCell::new((*self.step.borrow()).clone())),
+            width: Rc::new(RefCell::new((*self.width.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for anon_3 {
     fn byte_size() -> usize {
@@ -156,6 +186,15 @@ pub struct Branch {
     pub choice: Value<Choice_enum>,
     pub index: Value<i32>,
     pub v: Value<anon_0>,
+}
+impl Clone for Branch {
+    fn clone(&self) -> Self {
+        Self {
+            choice: Rc::new(RefCell::new((*self.choice.borrow()).clone())),
+            index: Rc::new(RefCell::new((*self.index.borrow()).clone())),
+            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Branch {
     fn byte_size() -> usize {

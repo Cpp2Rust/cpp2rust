@@ -10,6 +10,13 @@ use std::rc::{Rc, Weak};
 pub struct node_a {
     pub n: Value<i32>,
 }
+impl Clone for node_a {
+    fn clone(&self) -> Self {
+        Self {
+            n: Rc::new(RefCell::new((*self.n.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for node_a {
     fn byte_size() -> usize {
         4
@@ -27,6 +34,14 @@ impl ByteRepr for node_a {
 pub struct node_b {
     pub data: Value<AnyPtr>,
     pub next: Value<Ptr<node_b>>,
+}
+impl Clone for node_b {
+    fn clone(&self) -> Self {
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for node_b {
     fn byte_size() -> usize {

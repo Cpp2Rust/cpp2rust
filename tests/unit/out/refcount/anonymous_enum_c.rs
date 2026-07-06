@@ -58,6 +58,13 @@ impl ByteRepr for anon_1 {
 pub struct S {
     pub a: Value<i32>,
 }
+impl Clone for S {
+    fn clone(&self) -> Self {
+        Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
@@ -123,6 +130,14 @@ impl ByteRepr for anon_2 {
 pub struct WithAnonField {
     pub a: Value<i32>,
     pub field: Value<anon_2>,
+}
+impl Clone for WithAnonField {
+    fn clone(&self) -> Self {
+        Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            field: Rc::new(RefCell::new((*self.field.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for WithAnonField {
     fn byte_size() -> usize {

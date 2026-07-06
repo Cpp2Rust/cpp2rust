@@ -11,6 +11,14 @@ pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Clone for Point {
+    fn clone(&self) -> Self {
+        Self {
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Point {
     fn byte_size() -> usize {
         8
@@ -31,6 +39,14 @@ pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
 }
+impl Clone for Line {
+    fn clone(&self) -> Self {
+        Self {
+            start: Rc::new(RefCell::new((*self.start.borrow()).clone())),
+            end: Rc::new(RefCell::new((*self.end.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Line {
     fn byte_size() -> usize {
         16
@@ -50,6 +66,14 @@ impl ByteRepr for Line {
 pub struct Node {
     pub value: Value<i32>,
     pub next: Value<Ptr<Node>>,
+}
+impl Clone for Node {
+    fn clone(&self) -> Self {
+        Self {
+            value: Rc::new(RefCell::new((*self.value.borrow()).clone())),
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Node {
     fn byte_size() -> usize {
@@ -97,6 +121,14 @@ pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
 }
+impl Clone for Inner {
+    fn clone(&self) -> Self {
+        Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         8
@@ -117,6 +149,15 @@ pub struct Container {
     pub inner: Value<Inner>,
     pub color: Value<Color>,
     pub count: Value<i32>,
+}
+impl Clone for Container {
+    fn clone(&self) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
+            color: Rc::new(RefCell::new((*self.color.borrow()).clone())),
+            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for Container {
     fn byte_size() -> usize {
@@ -145,6 +186,11 @@ fn main_0() -> i32 {
     }));
     assert!(((((*(*p.borrow()).x.borrow()) == 10) as i32) != 0));
     assert!(((((*(*p.borrow()).y.borrow()) == 20) as i32) != 0));
+    let q: Value<Point> = Rc::new(RefCell::new((*p.borrow()).clone()));
+    (*(*q.borrow()).x.borrow_mut()) = 99;
+    assert!(((((*(*p.borrow()).x.borrow()) == 10) as i32) != 0));
+    assert!(((((*(*q.borrow()).x.borrow()) == 99) as i32) != 0));
+    assert!(((((*(*q.borrow()).y.borrow()) == 20) as i32) != 0));
     let l: Value<Line> = Rc::new(RefCell::new(Line {
         start: Rc::new(RefCell::new(Point {
             x: Rc::new(RefCell::new(1)),

@@ -11,6 +11,14 @@ pub struct list {
     pub head: Value<Ptr<node>>,
     pub size: Value<i32>,
 }
+impl Clone for list {
+    fn clone(&self) -> Self {
+        Self {
+            head: Rc::new(RefCell::new((*self.head.borrow()).clone())),
+            size: Rc::new(RefCell::new((*self.size.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for list {
     fn byte_size() -> usize {
         16
@@ -30,6 +38,14 @@ impl ByteRepr for list {
 pub struct node {
     pub value: Value<i32>,
     pub next: Value<Ptr<node>>,
+}
+impl Clone for node {
+    fn clone(&self) -> Self {
+        Self {
+            value: Rc::new(RefCell::new((*self.value.borrow()).clone())),
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+        }
+    }
 }
 impl ByteRepr for node {
     fn byte_size() -> usize {
