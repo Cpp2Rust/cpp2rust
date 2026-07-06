@@ -16,6 +16,13 @@ pub unsafe fn logf_1(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
     let mut result: i32 = (unsafe { logf_impl_0(fmt, ap) });
     return result;
 }
+pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
+    let mut ap: VaList = VaList::default();
+    ap = VaList::new(__args);
+    let mut s: *const libc::c_char = ap.arg::<*const libc::c_char>();
+    let mut result: i32 = (libc::strlen(s) as i32);
+    return result;
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -39,6 +46,25 @@ unsafe fn main_0() -> i32 {
                 &[(1).into(), (2).into()],
             )
         }) == (3)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe { lenf_2((c"%s".as_ptr().cast_mut()).cast_const(), &[(dummy).into(),]) }) == (5))
+            as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe {
+            lenf_2(
+                (c"%s".as_ptr().cast_mut()).cast_const(),
+                &[(if (((*dummy.offset((0) as isize)) as i32) != 0) {
+                    dummy
+                } else {
+                    (c"".as_ptr().cast_mut() as *const libc::c_char)
+                })
+                .into()],
+            )
+        }) == (5)) as i32)
             != 0)
     );
     return 0;

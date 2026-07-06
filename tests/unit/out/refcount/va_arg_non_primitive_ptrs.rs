@@ -109,7 +109,12 @@ fn main_0() -> i32 {
     );
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     assert!(
-        (((({ dispatch_0((opt::OPT_FILE as i32), &[(libcc2rs::cout()).into(),]) }) == 1) as i32)
+        (((({
+            dispatch_0(
+                (opt::OPT_FILE as i32),
+                &[((libcc2rs::cout()).clone()).into()],
+            )
+        }) == 1) as i32)
             != 0)
     );
     assert!(

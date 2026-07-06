@@ -1827,7 +1827,13 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
   return Converter::VisitImplicitValueInitExpr(expr);
 }
 
-void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) { Convert(arg); }
+void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
+  if (arg->getType()->isPointerType()) {
+    StrCat(ConvertFreshPointer(arg));
+    return;
+  }
+  Convert(arg);
+}
 
 bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
   auto va_list_expr = expr->getSubExpr();
