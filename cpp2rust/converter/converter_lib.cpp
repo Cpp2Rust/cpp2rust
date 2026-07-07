@@ -140,6 +140,12 @@ bool IsUnionArrayMember(const clang::Expr *base) {
   return false;
 }
 
+bool IsStringLiteralExpr(const clang::Expr *expr) {
+  const auto *stripped = expr->IgnoreParens()->IgnoreImplicit();
+  return clang::isa<clang::StringLiteral>(stripped) ||
+         clang::isa<clang::PredefinedExpr>(stripped);
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();

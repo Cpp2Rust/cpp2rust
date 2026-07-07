@@ -1170,6 +1170,8 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
                                         ->getPointeeType()
                                         ->getAsArrayTypeUnsafe()
                                         ->getElementType())));
+      } else if (IsStringLiteralExpr(sub_expr)) {
+        StrCat(std::format("{}.to_any()", ConvertFreshPointer(sub_expr)));
       } else {
         StrCat(std::format("({} as {}).to_any()", ConvertFreshPointer(sub_expr),
                            ToString(sub_expr->getType())));
@@ -1209,9 +1211,9 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       Convert(sub_expr);
       return false;
     }
-    if (clang::isa<clang::StringLiteral>(sub_expr) ||
-        clang::isa<clang::PredefinedExpr>(sub_expr)) {
-      StrCat(std::format("Ptr::from_string_literal({})", ToString(sub_expr)));
+    if (IsStringLiteralExpr(sub_expr)) {
+      StrCat(std::format("Ptr::from_string_literal({})",
+                         ToString(sub_expr->IgnoreParens())));
       return false;
     } else {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
@@ -2222,10 +2224,16 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
 
     {
       PushParen paren(*this, is_inner_boxed);
-      StrCat(std::format("({} as {}).offset({})",
-                         ToString(base->IgnoreImplicit()),
-                         ConvertPtrType(base->IgnoreImplicit()->getType()),
-                         ConvertRValue(idx)));
+      if (IsStringLiteralExpr(base)) {
+        StrCat(std::format("Ptr::from_string_literal({}).offset({})",
+                           ToString(base->IgnoreParens()->IgnoreImplicit()),
+                           ConvertRValue(idx)));
+      } else {
+        StrCat(std::format("({} as {}).offset({})",
+                           ToString(base->IgnoreImplicit()),
+                           ConvertPtrType(base->IgnoreImplicit()->getType()),
+                           ConvertRValue(idx)));
+      }
 
       if (is_inner_boxed) {
         StrCat(GetPointerDerefSuffix(type), ".as_pointer()");

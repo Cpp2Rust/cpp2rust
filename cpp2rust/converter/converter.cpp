@@ -2084,8 +2084,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     bool dest_pointee_const =
         expr->getType()->getPointeeType().isConstQualified();
     Convert(sub_expr);
-    if (clang::isa<clang::StringLiteral>(sub_expr) ||
-        clang::isa<clang::PredefinedExpr>(sub_expr)) {
+    if (IsStringLiteralExpr(sub_expr)) {
       StrCat(".as_ptr()");
       if (!dest_pointee_const) {
         StrCat(".cast_mut()");
