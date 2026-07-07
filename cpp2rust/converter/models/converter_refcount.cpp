@@ -2459,6 +2459,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
 
 std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   assert(!ptr_type.isNull() && ptr_type->isPointerType());
+  PushConversionKind push(*this, ConversionKind::Unboxed);
   auto pointee = ptr_type->getPointeeType();
   if (!pointee->isRecordType()) {
     return ToString(pointee);
