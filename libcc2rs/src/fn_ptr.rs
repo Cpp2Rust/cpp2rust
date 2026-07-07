@@ -15,7 +15,7 @@ pub trait FnAddr {
 
 macro_rules! impl_fn_addr {
     () => {
-        impl_fn_addr!(@gen A B C D E F G H I J);
+        impl_fn_addr!(@gen A B C D E F G H I J K L M N O P);
     };
     (@gen $($a:ident)*) => {
         impl<R $(, $a)*> FnAddr for fn($($a,)*) -> R {
