@@ -210,32 +210,38 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn delete(&self) {
-        assert_eq!(self.offset, 0, "ub: invalid delete");
-        let weak = match self.kind {
-            PtrKind::HeapSingle(ref weak) => weak,
+        match &self.kind {
+            PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid delete");
+                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
+                unsafe {
+                    let strong = weak.upgrade().expect("ub: dangling pointer");
+                    Rc::from_raw(Rc::as_ptr(&strong));
+                }
+                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
+            }
+            PtrKind::Reinterpreted(data) => data.alloc.delete(),
+            PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
-        };
-        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-        unsafe {
-            let strong = weak.upgrade().expect("ub: dangling pointer");
-            Rc::from_raw(Rc::as_ptr(&strong));
         }
-        assert_eq!(Weak::strong_count(weak), 0, "ub: strong count is not zero");
     }
 
     #[inline]
     pub fn delete_array(&self) {
-        assert_eq!(self.offset, 0, "ub: invalid delete");
-        let weak = match self.kind {
-            PtrKind::HeapArray(ref weak) => weak,
+        match &self.kind {
+            PtrKind::HeapArray(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid delete");
+                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
+                unsafe {
+                    let strong = weak.upgrade().expect("ub: dangling pointer");
+                    Rc::from_raw(Rc::as_ptr(&strong));
+                }
+                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
+            }
+            PtrKind::Reinterpreted(data) => data.alloc.delete(),
+            PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
-        };
-        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-        unsafe {
-            let strong = weak.upgrade().expect("ub: dangling pointer");
-            Rc::from_raw(Rc::as_ptr(&strong));
         }
-        assert_eq!(Weak::strong_count(weak), 0, "ub: strong count is not zero");
     }
 
     #[inline]
