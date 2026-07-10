@@ -49,10 +49,7 @@ unsafe fn main_0() -> i32 {
         let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;
         v2.insert(pos, 100);
     };
-    (unsafe {
-        let _copy_vector: Vec<i32> = v2.clone();
-        copy_0(_copy_vector)
-    });
+    (unsafe { copy_0(v2.clone()) });
     assert!(((v2.len()) == (3_usize)));
     assert!(((v2[(0_usize)]) == (100)));
     assert!(((v2[(1_usize)]) == (2)));

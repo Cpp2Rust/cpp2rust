@@ -16,10 +16,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut alloc: *mut i32 = (Box::leak(Box::new(1)) as *mut i32);
-    (unsafe {
-        let _ptr: *mut i32 = alloc;
-        escape_0(_ptr)
-    });
+    (unsafe { escape_0(alloc) });
     ::std::mem::drop(Box::from_raw(alloc));
     return 0;
 }

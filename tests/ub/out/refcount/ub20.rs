@@ -19,9 +19,6 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    ({
-        let _single: Ptr<i32> = (*x.borrow()).clone();
-        foo_0(_single)
-    });
+    ({ foo_0((*x.borrow()).clone()) });
     return 0;
 }

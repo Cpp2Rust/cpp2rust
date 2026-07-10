@@ -6,7 +6,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 use std::rc::Rc;
 
-use crate::rc::{AnyPtr, ErasedPtr};
+use crate::rc::{AnyPtr, ErasedPtr, Ptr};
 use crate::reinterpret::ByteRepr;
 
 pub trait FnAddr {
@@ -146,20 +146,14 @@ impl<T> Eq for FnPtr<T> {}
 impl<T: 'static> ByteRepr for FnPtr<T> {}
 
 impl<T: 'static> ErasedPtr for FnPtr<T> {
-    fn pointee_type_id(&self) -> TypeId {
-        TypeId::of::<T>()
-    }
-    fn memcpy(&self, _src: &dyn ErasedPtr, _len: usize) {
-        panic!("memcpy not supported on fn pointer");
+    fn as_bytes(&self) -> Ptr<u8> {
+        panic!("byte view not supported on fn pointer");
     }
     fn as_any(&self) -> &dyn Any {
         self
     }
-    fn equals(&self, other: &dyn ErasedPtr) -> Option<bool> {
-        if self.pointee_type_id() != other.pointee_type_id() {
-            return None;
-        }
-        other.as_any().downcast_ref::<FnPtr<T>>().map(|o| self == o)
+    fn equals(&self, other: &dyn ErasedPtr) -> bool {
+        other.as_any().downcast_ref::<FnPtr<T>>() == Some(self)
     }
     fn is_null(&self) -> bool {
         FnPtr::is_null(self)

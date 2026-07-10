@@ -26,12 +26,7 @@ pub fn apply_unary_3(x: i32, __args: &[VaArg]) -> i32 {
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*ap.borrow_mut()).arg::<FnPtr<fn(i32) -> i32>>()).clone(),
     ));
-    let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _arg0: i32 = (*x.borrow());
-            (*(*fn_.borrow()))(_arg0)
-        }),
-    ));
+    let result: Value<i32> = Rc::new(RefCell::new(({ (*(*fn_.borrow()))((*x.borrow())) })));
     return (*result.borrow());
 }
 pub fn apply_binary_4(a: i32, b: i32, __args: &[VaArg]) -> i32 {
@@ -43,11 +38,7 @@ pub fn apply_binary_4(a: i32, b: i32, __args: &[VaArg]) -> i32 {
         ((*ap.borrow_mut()).arg::<FnPtr<fn(i32, i32) -> i32>>()).clone(),
     ));
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _arg0: i32 = (*a.borrow());
-            let _arg1: i32 = (*b.borrow());
-            (*(*fn_.borrow()))(_arg0, _arg1)
-        }),
+        ({ (*(*fn_.borrow()))((*a.borrow()), (*b.borrow())) }),
     ));
     return (*result.borrow());
 }

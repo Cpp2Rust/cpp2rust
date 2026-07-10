@@ -15,20 +15,12 @@ pub unsafe fn extract_nth_0(mut n: i32, mut ap: VaList) -> i32 {
     return ap.arg::<i32>();
 }
 pub unsafe fn middle_layer_1(mut n: i32, mut ap: VaList) -> i32 {
-    return (unsafe {
-        let _n: i32 = n;
-        let _ap: VaList = ap;
-        extract_nth_0(_n, _ap)
-    });
+    return (unsafe { extract_nth_0(n, ap) });
 }
 pub unsafe fn top_level_2(mut n: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
-    let mut result: i32 = (unsafe {
-        let _n: i32 = n;
-        let _ap: VaList = ap;
-        middle_layer_1(_n, _ap)
-    });
+    let mut result: i32 = (unsafe { middle_layer_1(n, ap) });
     return result;
 }
 pub fn main() {

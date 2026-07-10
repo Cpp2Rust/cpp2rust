@@ -11,7 +11,18 @@ pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Clone for Point {
+    fn clone(&self) -> Self {
+        Self {
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -60,13 +71,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _n: i32 = -1_i32;
-            agg_0(_n)
-        }) == 0) as i32)
-            != 0)
-    );
+    assert!((((({ agg_0(-1_i32,) }) == 0) as i32) != 0));
     assert!((((({ agg_0(1,) }) == 1) as i32) != 0));
     return 0;
 }

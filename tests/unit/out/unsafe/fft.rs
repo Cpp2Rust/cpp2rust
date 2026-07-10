@@ -82,16 +82,10 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         };
         i.postfix_inc();
     }
-    let mut y0: Option<Box<[Complex]>> = (unsafe {
-        let _a: *mut Option<Box<[Complex]>> = &mut A0 as *mut Option<Box<[Complex]>>;
-        let _N: i32 = ((N) / (2));
-        fft_3(_a, _N)
-    });
-    let mut y1: Option<Box<[Complex]>> = (unsafe {
-        let _a: *mut Option<Box<[Complex]>> = &mut A1 as *mut Option<Box<[Complex]>>;
-        let _N: i32 = ((N) / (2));
-        fft_3(_a, _N)
-    });
+    let mut y0: Option<Box<[Complex]>> =
+        (unsafe { fft_3(&mut A0 as *mut Option<Box<[Complex]>>, ((N) / (2))) });
+    let mut y1: Option<Box<[Complex]>> =
+        (unsafe { fft_3(&mut A1 as *mut Option<Box<[Complex]>>, ((N) / (2))) });
     let mut k: i32 = 0;
     'loop_: while ((k) < ((N) / (2))) {
         let mut yk: Complex = (unsafe {
@@ -110,12 +104,13 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         let mut yk_n2: Complex = (unsafe {
             let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
             let _z2: Complex = (unsafe {
-                let _z1: Complex = (unsafe {
-                    let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
-                    let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
-                    Product_0(_z1, _z2)
-                });
-                Neg_2(_z1)
+                Neg_2(
+                    (unsafe {
+                        let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
+                        let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
+                        Product_0(_z1, _z2)
+                    }),
+                )
             });
             Sum_1(_z1, _z2)
         });
@@ -147,11 +142,8 @@ unsafe fn main_0() -> i32 {
         };
         i.postfix_inc();
     }
-    let mut b: Option<Box<[Complex]>> = (unsafe {
-        let _a: *mut Option<Box<[Complex]>> = &mut a as *mut Option<Box<[Complex]>>;
-        let _N: i32 = N;
-        fft_3(_a, _N)
-    });
+    let mut b: Option<Box<[Complex]>> =
+        (unsafe { fft_3(&mut a as *mut Option<Box<[Complex]>>, N) });
     let mut reals: Option<Box<[i32]>> = Some(
         (0..(N as usize))
             .map(|_| <i32>::default())

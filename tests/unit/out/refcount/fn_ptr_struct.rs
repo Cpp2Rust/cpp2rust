@@ -28,7 +28,23 @@ impl Default for Handler {
         }
     }
 }
-impl ByteRepr for Handler {}
+impl ByteRepr for Handler {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.cb.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            cb: Rc::new(RefCell::new(<FnPtr<fn(i32) -> i32>>::from_bytes(
+                &buf[8..16],
+            ))),
+        }
+    }
+}
 pub fn double_it_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return ((*x.borrow()) * 2);

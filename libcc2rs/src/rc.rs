@@ -16,6 +16,13 @@ use crate::reinterpret::{ByteRepr, OriginalAlloc, SingleOriginalAlloc, SliceOrig
 
 pub type Value<T> = Rc<RefCell<T>>;
 
+struct ReinterpretedView {
+    // Pointer to the source of reinterpret
+    alloc: Rc<dyn OriginalAlloc>,
+    // C++ size of the reinterpreted view
+    elem_byte_size: usize,
+}
+
 #[derive(Default)]
 enum PtrKind<T> {
     #[default]
@@ -25,7 +32,7 @@ enum PtrKind<T> {
     HeapSingle(Weak<RefCell<T>>),
     HeapArray(Weak<RefCell<Box<[T]>>>),
     Vec(Weak<RefCell<Vec<T>>>),
-    Reinterpreted(Rc<dyn OriginalAlloc>),
+    Reinterpreted(Rc<ReinterpretedView>),
 }
 
 pub enum StrongPtr<T> {
@@ -59,7 +66,7 @@ impl<T: ByteRepr> StrongPtr<T> {
                 cell,
             } => {
                 // Read-through: always re-read from the original allocation.
-                let mut buf = vec![0u8; std::mem::size_of::<T>()];
+                let mut buf = vec![0u8; T::byte_size()];
                 alloc.read_bytes(*byte_offset, &mut buf);
                 *cell.borrow_mut() = Some(T::from_bytes(&buf));
                 Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
@@ -78,7 +85,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::StackArray(w) => write!(f, "StackArray({:?})", w.as_ptr()),
             PtrKind::HeapArray(w) => write!(f, "HeapArray({:?})", w.as_ptr()),
             PtrKind::Reinterpreted(data) => {
-                write!(f, "Reinterpreted(0x{:x})", data.address())
+                write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
         }
     }
@@ -105,7 +112,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::Vec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
-            PtrKind::Reinterpreted(data) => data.address(),
+            PtrKind::Reinterpreted(data) => data.alloc.address(),
         }
     }
 }
@@ -251,45 +258,49 @@ impl<T> Ptr<T> {
     #[inline]
     fn elem_step(&self) -> usize {
         match &self.kind {
-            PtrKind::Reinterpreted(_) => std::mem::size_of::<T>(),
+            PtrKind::Reinterpreted(data) => data.elem_byte_size,
             _ => 1,
         }
     }
 
     #[inline]
     pub fn len(&self) -> usize {
-        match self.kind {
+        match &self.kind {
             PtrKind::Null => 0,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => 1,
-            PtrKind::Vec(ref weak) => weak.upgrade().expect("ub: dangling pointer").borrow().len(),
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
+            PtrKind::Vec(weak) => weak.upgrade().expect("ub: dangling pointer").borrow().len(),
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
-            PtrKind::Reinterpreted(ref data) => data.total_byte_len() / std::mem::size_of::<T>(),
+            PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
         }
     }
 
     #[inline]
     pub fn is_empty(&self) -> bool {
-        match self.kind {
+        match &self.kind {
             PtrKind::Null => true,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => false,
-            PtrKind::Vec(ref weak) => weak
+            PtrKind::Vec(weak) => weak
                 .upgrade()
                 .expect("ub: dangling pointer")
                 .borrow()
                 .is_empty(),
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => weak
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => weak
                 .upgrade()
                 .expect("ub: dangling pointer")
                 .borrow()
                 .is_empty(),
-            PtrKind::Reinterpreted(ref data) => self.offset >= data.total_byte_len(),
+            PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
         }
     }
 
     #[inline]
-    pub fn offset(&self, offset: isize) -> Self {
+    pub fn offset(&self, offset: impl TryInto<isize>) -> Self {
+        let offset = offset
+            .try_into()
+            .ok()
+            .expect("the offset must fit in a isize");
         let step = self.elem_step();
         Self {
             kind: self.kind.clone(),
@@ -340,7 +351,7 @@ impl<T> Ptr<T> {
                 offset: self.offset,
             },
             PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
-                alloc: Rc::clone(data),
+                alloc: Rc::clone(&data.alloc),
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
@@ -366,9 +377,9 @@ impl<T> Ptr<T> {
                 rc.borrow_mut()[self.offset] = value;
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; std::mem::size_of::<T>()];
+                let mut buf = vec![0u8; T::byte_size()];
                 value.to_bytes(&mut buf);
-                data.write_bytes(self.offset, &buf);
+                data.alloc.write_bytes(self.offset, &buf);
             }
         }
     }
@@ -391,30 +402,34 @@ impl<T> Ptr<T> {
             return self_any.downcast_ref::<Ptr<U>>().unwrap().clone();
         }
 
-        if std::mem::size_of::<U>() == 0 {
+        if U::byte_size() == 0 {
             panic!("cannot reinterpret_cast to zero-sized type");
         }
 
+        let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
             PtrKind::Null => return Ptr::null(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
-                self.byte_offset(),
+                src_byte_off,
             ),
             PtrKind::Vec(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                self.byte_offset(),
+                src_byte_off,
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
                 Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                self.byte_offset(),
+                src_byte_off,
             ),
-            PtrKind::Reinterpreted(data) => (Rc::clone(data), self.offset),
+            PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
         };
 
         Ptr {
             offset: abs_byte_off,
-            kind: PtrKind::Reinterpreted(alloc),
+            kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
+                alloc,
+                elem_byte_size: U::byte_size(),
+            })),
         }
     }
 }
@@ -442,12 +457,12 @@ impl<T> Ptr<T> {
                 f(&mut borrow[self.offset])
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; std::mem::size_of::<T>()];
-                data.read_bytes(self.offset, &mut buf);
+                let mut buf = vec![0u8; T::byte_size()];
+                data.alloc.read_bytes(self.offset, &mut buf);
                 let mut val = T::from_bytes(&buf);
                 let ret = f(&mut val);
                 val.to_bytes(&mut buf);
-                data.write_bytes(self.offset, &buf);
+                data.alloc.write_bytes(self.offset, &buf);
                 ret
             }
         }
@@ -475,8 +490,8 @@ impl<T> Ptr<T> {
                 f(&borrow[self.offset])
             }
             PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; std::mem::size_of::<T>()];
-                data.read_bytes(self.offset, &mut buf);
+                let mut buf = vec![0u8; T::byte_size()];
+                data.alloc.read_bytes(self.offset, &mut buf);
                 let val = T::from_bytes(&buf);
                 f(&val)
             }
@@ -502,8 +517,8 @@ impl<T: Clone + ByteRepr> Ptr<T> {
                 weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
             }
             PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; std::mem::size_of::<T>()];
-                data.read_bytes(self.offset, &mut buf);
+                let mut buf = vec![0u8; T::byte_size()];
+                data.alloc.read_bytes(self.offset, &mut buf);
                 T::from_bytes(&buf)
             }
         }
@@ -535,7 +550,7 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
-            PtrKind::Reinterpreted(..) => {
+            PtrKind::Reinterpreted(_) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
         }
@@ -580,7 +595,7 @@ impl<T: Clone> Ptr<T> {
                 let mut borrow = strong.borrow_mut();
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
-            PtrKind::Reinterpreted(..) => {
+            PtrKind::Reinterpreted(_) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
         }
@@ -856,7 +871,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
             }
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
-            PtrKind::Reinterpreted(..) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
         }
     }
 }
@@ -882,7 +897,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
             }
             PtrKind::Vec(_) => panic!("Can't own a vector"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
-            PtrKind::Reinterpreted(..) => panic!("Can't own a reinterpreted pointer"),
+            PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
         }
     }
 }
@@ -898,7 +913,7 @@ impl<T> fmt::Debug for Ptr<T> {
                 (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
             }
             PtrKind::Vec(w) => (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset()),
-            PtrKind::Reinterpreted(data) => data.address().wrapping_add(self.byte_offset()),
+            PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)
     }
@@ -996,7 +1011,7 @@ impl Ptr<u8> {
             }
             PtrKind::Reinterpreted(ref data) => {
                 let mut buf = vec![0u8; end.wrapping_sub(start)];
-                data.read_bytes(start, &mut buf);
+                data.alloc.read_bytes(start, &mut buf);
                 buf
             }
         }
@@ -1031,11 +1046,16 @@ impl Ptr<u8> {
 }
 
 pub(crate) trait ErasedPtr: std::any::Any {
-    fn pointee_type_id(&self) -> std::any::TypeId;
-    fn memcpy(&self, src: &dyn ErasedPtr, len: usize);
+    fn as_bytes(&self) -> Ptr<u8>;
     fn as_any(&self) -> &dyn std::any::Any;
-    fn equals(&self, other: &dyn ErasedPtr) -> Option<bool>;
+    fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+}
+
+impl PartialEq for dyn ErasedPtr {
+    fn eq(&self, other: &Self) -> bool {
+        self.equals(other)
+    }
 }
 
 impl<T> ErasedPtr for Ptr<T>
@@ -1043,37 +1063,16 @@ where
     T: ByteRepr + 'static,
     Ptr<T>: PartialEq,
 {
-    fn pointee_type_id(&self) -> std::any::TypeId {
-        std::any::TypeId::of::<T>()
-    }
-
-    fn memcpy(&self, src: &dyn ErasedPtr, len: usize) {
-        if self.pointee_type_id() != src.pointee_type_id() {
-            panic!("memcpy: type mismatch");
-        }
-        let src_ptr = src
-            .as_any()
-            .downcast_ref::<Ptr<T>>()
-            .expect("memcpy: downcast to Ptr<T> failed");
-        let dst_bytes: Ptr<u8> = self.reinterpret_cast();
-        let src_bytes: Ptr<u8> = src_ptr.reinterpret_cast();
-        dst_bytes.memcpy(&src_bytes, len);
+    fn as_bytes(&self) -> Ptr<u8> {
+        self.reinterpret_cast::<u8>()
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }
 
-    fn equals(&self, other: &dyn ErasedPtr) -> Option<bool> {
-        if self.pointee_type_id() != other.pointee_type_id() {
-            return None;
-        }
-
-        if let Some(other_ptr) = other.as_any().downcast_ref::<Ptr<T>>() {
-            return Some(self == other_ptr);
-        }
-
-        None
+    fn equals(&self, other: &dyn ErasedPtr) -> bool {
+        other.as_any().downcast_ref::<Ptr<T>>() == Some(self)
     }
 
     fn is_null(&self) -> bool {
@@ -1101,72 +1100,37 @@ impl Default for AnyPtr {
 }
 
 impl AnyPtr {
-    pub fn cast<T: 'static>(&self) -> Option<Ptr<T>> {
-        if self.ptr.is_null() {
-            return Some(Ptr::<T>::null());
-        }
-        self.ptr.as_any().downcast_ref::<Ptr<T>>().cloned()
-    }
-
     pub fn reinterpret_cast<T: ByteRepr>(&self) -> Ptr<T> {
-        macro_rules! try_src {
-            ($ty:ty) => {{
-                if let Some(p) = self.cast::<$ty>() {
-                    return p.reinterpret_cast::<T>();
-                }
-                if let Some(pv) = self.cast::<Vec<$ty>>() {
-                    return pv.reinterpret_cast::<T>();
-                }
-            }};
+        if self.ptr.is_null() {
+            return Ptr::<T>::null();
         }
-
-        try_src!(u8);
-        try_src!(i8);
-        try_src!(u16);
-        try_src!(i16);
-        try_src!(u32);
-        try_src!(i32);
-        try_src!(u64);
-        try_src!(i64);
-        try_src!(usize);
-        try_src!(isize);
-
-        panic!("reinterpret_cast: unsupported AnyPtr source");
+        if let Some(p) = self.ptr.as_any().downcast_ref::<Ptr<T>>() {
+            return p.clone();
+        }
+        self.ptr.as_bytes().reinterpret_cast::<T>()
     }
 }
 
 impl PartialEq for AnyPtr {
     fn eq(&self, other: &Self) -> bool {
-        let lhs: &dyn ErasedPtr = self.ptr.as_ref();
-        let rhs: &dyn ErasedPtr = other.ptr.as_ref();
-
-        lhs.equals(rhs).unwrap_or_default()
+        *self.ptr == *other.ptr
     }
 }
 
 impl AnyPtr {
     pub fn memcpy(&self, src: &AnyPtr, len: usize) {
-        let dst_erased = &*self.ptr;
-        let src_erased = &*src.ptr;
-
-        if dst_erased.pointee_type_id() == src_erased.pointee_type_id() {
-            dst_erased.memcpy(src_erased, len);
-            return;
-        }
-
-        let dst_u8: Ptr<u8> = self.reinterpret_cast();
-        let src_u8: Ptr<u8> = src.reinterpret_cast();
+        let dst_u8 = self.ptr.as_bytes();
+        let src_u8 = src.ptr.as_bytes();
         dst_u8.memcpy(&src_u8, len);
     }
 
     pub fn memset(&self, value: u8, num: usize) {
-        let dst_u8: Ptr<u8> = self.reinterpret_cast();
-        dst_u8.memset(value, num);
+        self.ptr.as_bytes().memset(value, num);
     }
 
     pub fn memcmp(&self, other: &AnyPtr, len: usize) -> i32 {
-        let a: Ptr<u8> = self.reinterpret_cast();
-        let b: Ptr<u8> = other.reinterpret_cast();
+        let a = self.ptr.as_bytes();
+        let b = other.ptr.as_bytes();
         a.memcmp(&b, len)
     }
 }
@@ -1245,6 +1209,7 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 }
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
+impl ByteRepr for AnyPtr {}
 
 #[cfg(test)]
 mod tests {
@@ -1303,27 +1268,23 @@ mod tests {
     fn anyptr_null_cast() {
         // void* nullptr
         let any = Ptr::<()>::null().to_any();
-        let p: Option<Ptr<u32>> = any.cast::<u32>();
-        assert!(p.is_some());
-        assert!(p.unwrap().is_null());
+        let p = any.reinterpret_cast::<u32>();
+        assert!(p.is_null());
 
-        let p2: Option<Ptr<u8>> = any.cast::<u8>();
-        assert!(p2.is_some());
-        assert!(p2.unwrap().is_null());
+        let p2 = any.reinterpret_cast::<u8>();
+        assert!(p2.is_null());
 
         // int* nullptr
         let any2 = Ptr::<i32>::null().to_any();
-        let p3: Option<Ptr<f32>> = any2.cast::<f32>();
-        assert!(p3.is_some());
-        assert!(p3.unwrap().is_null());
+        let p3 = any2.reinterpret_cast::<f32>();
+        assert!(p3.is_null());
     }
 
     #[test]
     fn to_any_without_clone() {
         let p: Ptr<std::fs::File> = Ptr::null(); // std::fs::File is not Clone
         let any = p.to_any();
-        let recovered = any.cast::<std::fs::File>();
-        assert!(recovered.is_some());
-        assert!(recovered.unwrap().is_null());
+        let recovered = any.reinterpret_cast::<std::fs::File>();
+        assert!(recovered.is_null());
     }
 }

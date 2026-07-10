@@ -11,10 +11,7 @@ pub unsafe fn double_it_0(mut v: i32) -> i32 {
 }
 pub unsafe fn switch_on_call_1(mut x: i32) -> i32 {
     'switch: {
-        let __match_cond = (unsafe {
-            let _v: i32 = x;
-            double_it_0(_v)
-        });
+        let __match_cond = (unsafe { double_it_0(x) });
         match __match_cond {
             __v if __v == 0 => {
                 return 100;

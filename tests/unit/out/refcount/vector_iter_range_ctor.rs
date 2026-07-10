@@ -22,18 +22,9 @@ fn main_0() -> i32 {
     }));
     assert!(((*v1.borrow()).len() == 3_usize));
     assert!(
-        ((((v1.as_pointer() as Ptr<u32>)
-            .offset(0_usize as isize)
-            .read())
-            == 1_u32)
-            && (((v1.as_pointer() as Ptr<u32>)
-                .offset(1_usize as isize)
-                .read())
-                == 2_u32))
-            && (((v1.as_pointer() as Ptr<u32>)
-                .offset(2_usize as isize)
-                .read())
-                == 3_u32)
+        ((((v1.as_pointer() as Ptr<u32>).offset(0_usize).read()) == 1_u32)
+            && (((v1.as_pointer() as Ptr<u32>).offset(1_usize).read()) == 2_u32))
+            && (((v1.as_pointer() as Ptr<u32>).offset(2_usize).read()) == 3_u32)
     );
     let v2: Value<Vec<u64>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
@@ -46,18 +37,9 @@ fn main_0() -> i32 {
     }));
     assert!(((*v2.borrow()).len() == 3_usize));
     assert!(
-        ((((v2.as_pointer() as Ptr<u64>)
-            .offset(0_usize as isize)
-            .read())
-            == 1_u64)
-            && (((v2.as_pointer() as Ptr<u64>)
-                .offset(1_usize as isize)
-                .read())
-                == 2_u64))
-            && (((v2.as_pointer() as Ptr<u64>)
-                .offset(2_usize as isize)
-                .read())
-                == 3_u64)
+        ((((v2.as_pointer() as Ptr<u64>).offset(0_usize).read()) == 1_u64)
+            && (((v2.as_pointer() as Ptr<u64>).offset(1_usize).read()) == 2_u64))
+            && (((v2.as_pointer() as Ptr<u64>).offset(2_usize).read()) == 3_u64)
     );
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new({
         let __count = (src.as_pointer() as Ptr<u32>)
@@ -70,18 +52,9 @@ fn main_0() -> i32 {
     }));
     assert!(((*v3.borrow()).len() == 3_usize));
     assert!(
-        ((((v3.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read())
-            == 1)
-            && (((v3.as_pointer() as Ptr<i32>)
-                .offset(1_usize as isize)
-                .read())
-                == 2))
-            && (((v3.as_pointer() as Ptr<i32>)
-                .offset(2_usize as isize)
-                .read())
-                == 3)
+        ((((v3.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 1)
+            && (((v3.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 2))
+            && (((v3.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 3)
     );
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let v4: Value<Vec<u32>> = Rc::new(RefCell::new({
@@ -91,18 +64,9 @@ fn main_0() -> i32 {
     }));
     assert!(((*v4.borrow()).len() == 3_usize));
     assert!(
-        ((((v4.as_pointer() as Ptr<u32>)
-            .offset(0_usize as isize)
-            .read())
-            == 1_u32)
-            && (((v4.as_pointer() as Ptr<u32>)
-                .offset(1_usize as isize)
-                .read())
-                == 2_u32))
-            && (((v4.as_pointer() as Ptr<u32>)
-                .offset(2_usize as isize)
-                .read())
-                == 3_u32)
+        ((((v4.as_pointer() as Ptr<u32>).offset(0_usize).read()) == 1_u32)
+            && (((v4.as_pointer() as Ptr<u32>).offset(1_usize).read()) == 2_u32))
+            && (((v4.as_pointer() as Ptr<u32>).offset(2_usize).read()) == 3_u32)
     );
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
@@ -117,8 +81,8 @@ fn main_0() -> i32 {
     }));
     assert!(((*v5.borrow()).len() == 5_usize));
     assert!(
-        ((((v5.as_pointer() as Ptr<u8>).offset(0_usize as isize).read()) as i32) == 10)
-            && ((((v5.as_pointer() as Ptr<u8>).offset(4_usize as isize).read()) as i32) == 50)
+        ((((v5.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == 10)
+            && ((((v5.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == 50)
     );
     return 0;
 }

@@ -16,8 +16,8 @@ fn t4() -> ::rustls_ffi::rslice::rustls_str<'static> {
 fn t5() -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::rustls_result::Ok
 }
-fn t6() -> ::rustls_ffi::rustls_io_result {
-    ::rustls_ffi::rustls_io_result(0)
+fn t6() -> i32 {
+    0
 }
 fn t7() -> ::rustls_ffi::enums::rustls_tls_version {
     ::rustls_ffi::enums::rustls_tls_version::Unknown
@@ -346,8 +346,8 @@ unsafe fn f43(a0: *const ::rustls_ffi::crypto_provider::rustls_crypto_provider) 
 unsafe fn f44(a0: u64) -> *const ::rustls_ffi::cipher::rustls_supported_ciphersuite {
     ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_get(a0 as usize)
 }
-unsafe fn f45() -> u64 {
-    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_len() as u64
+unsafe fn f45() -> usize {
+    ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_ciphersuites_len()
 }
 unsafe fn f46(a0: *mut u8, a1: u64) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::crypto_provider::rustls_default_crypto_provider_random(a0, a1 as usize)

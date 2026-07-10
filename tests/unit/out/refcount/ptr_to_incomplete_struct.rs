@@ -13,10 +13,7 @@ fn main_0() -> i32 {
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new((libcc2rs::cout()).clone()));
     let p: Value<AnyPtr> = Rc::new(RefCell::new((*fp.borrow()).clone().to_any()));
     let fp2: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-        ((*p.borrow())
-            .cast::<::std::fs::File>()
-            .expect("ub:wrong type"))
-        .clone(),
+        ((*p.borrow()).reinterpret_cast::<::std::fs::File>()).clone(),
     ));
     assert!(
         ((({

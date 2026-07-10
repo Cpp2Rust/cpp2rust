@@ -18,11 +18,7 @@ pub unsafe fn inner_0(mut count: i32, mut ap: VaList) -> i32 {
 pub unsafe fn outer_1(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
-    let mut result: i32 = (unsafe {
-        let _count: i32 = count;
-        let _ap: VaList = ap;
-        inner_0(_count, _ap)
-    });
+    let mut result: i32 = (unsafe { inner_0(count, ap) });
     return result;
 }
 pub fn main() {

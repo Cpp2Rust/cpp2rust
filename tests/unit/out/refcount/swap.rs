@@ -33,24 +33,11 @@ fn main_0() -> i32 {
     let local: Value<i32> = Rc::new(RefCell::new(0));
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let b: Value<i32> = Rc::new(RefCell::new(2));
-    let c: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _x: i32 = (*local.borrow());
-            identity_0(_x)
-        }),
-    ));
+    let c: Value<i32> = Rc::new(RefCell::new(({ identity_0((*local.borrow())) })));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((a.as_pointer())));
     (*p.borrow_mut()) = (b.as_pointer());
     (*p.borrow_mut()) = (a.as_pointer());
-    ({
-        let _a: Ptr<i32> = (*p.borrow()).clone();
-        let _b: Ptr<i32> = (b.as_pointer());
-        swap_by_ptr_1(_a, _b)
-    });
-    ({
-        let _a: Ptr<i32> = a.as_pointer();
-        let _b: Ptr<i32> = c.as_pointer();
-        swap_by_ref_2(_a, _b)
-    });
+    ({ swap_by_ptr_1((*p.borrow()).clone(), (b.as_pointer())) });
+    ({ swap_by_ref_2(a.as_pointer(), c.as_pointer()) });
     return (*c.borrow());
 }

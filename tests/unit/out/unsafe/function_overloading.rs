@@ -47,14 +47,8 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 1;
     let mut out: i32 = 0;
     out += (unsafe { foo_0(0) });
-    out += (unsafe {
-        let _x: *mut i32 = (&mut x as *mut i32);
-        foo_1(_x)
-    });
-    out += (unsafe {
-        let _x: *mut i32 = &mut x as *mut i32;
-        bar_4(_x)
-    });
+    out += (unsafe { foo_1((&mut x as *mut i32)) });
+    out += (unsafe { bar_4(&mut x as *mut i32) });
     out += (unsafe {
         let _x: *mut i32 = (&mut x as *mut i32);
         let _y: *mut i32 = (&mut x as *mut i32);
@@ -67,11 +61,7 @@ unsafe fn main_0() -> i32 {
         foo_2(_x, _y)
     });
     let mut bar: i32 = 5;
-    out += (((bar) + (unsafe { foo_0(0) }))
-        + (unsafe {
-            let _x: *mut i32 = (&mut x as *mut i32);
-            foo_1(_x)
-        }));
+    out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
     let mut foo1: Foo = Foo {};
     let foo2: Foo = Foo {};
     (unsafe { foo1.foo() });

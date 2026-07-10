@@ -29,11 +29,6 @@ fn main_0() -> i32 {
         ('c' as u8),
         ('\0' as u8),
     ])));
-    return (({
-        let _p: Ptr<i32> = (a.as_pointer() as Ptr<i32>);
-        deref_0(_p)
-    }) + ({
-        let _s: Ptr<u8> = (s.as_pointer() as Ptr<u8>);
-        strlen_1(_s)
-    }));
+    return (({ deref_0((a.as_pointer() as Ptr<i32>)) })
+        + ({ strlen_1((s.as_pointer() as Ptr<u8>)) }));
 }

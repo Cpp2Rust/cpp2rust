@@ -33,12 +33,7 @@ fn main_0() -> i32 {
     assert!(((((*c.borrow()).offset((0) as isize).read()) as i32) == (('p' as u8) as i32)));
     assert!(((((*c.borrow()).offset((7) as isize).read()) as i32) == (('e' as u8) as i32)));
     assert!(((((*c.borrow()).offset((8) as isize).read()) as i32) == (('\0' as u8) as i32)));
-    let d: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ({
-            let _x: i32 = -1_i32;
-            get_branch_2(_x)
-        }),
-    ));
+    let d: Value<Ptr<u8>> = Rc::new(RefCell::new(({ get_branch_2(-1_i32) })));
     assert!(((((*d.borrow()).offset((0) as isize).read()) as i32) == (('n' as u8) as i32)));
     assert!(((((*d.borrow()).offset((11) as isize).read()) as i32) == (('e' as u8) as i32)));
     assert!(((((*d.borrow()).offset((12) as isize).read()) as i32) == (('\0' as u8) as i32)));

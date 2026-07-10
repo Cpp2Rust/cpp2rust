@@ -135,6 +135,10 @@ impl SyntacticAnalysis {
         let mut file_ir = FileIr::new();
 
         for fn_item in source_file.syntax().descendants().filter_map(ast::Fn::cast) {
+            if !cfg_matches_host(&fn_item) {
+                continue;
+            }
+
             let Some(name) = fn_item.name() else { continue };
             let fn_name = name.text().to_string();
 
@@ -144,9 +148,6 @@ impl SyntacticAnalysis {
                     RuleIr::Type(TypeIrBuilder::new(&fn_item).build()),
                 );
             } else if fn_name.starts_with('f') {
-                if !cfg_matches_host(&fn_item) {
-                    continue;
-                }
                 file_ir.insert(
                     fn_name.clone(),
                     RuleIr::Fn(FnIrBuilder::new(&fn_item).build(path)),

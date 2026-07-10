@@ -31,6 +31,9 @@ impl Clone for Pair {
     }
 }
 impl ByteRepr for Pair {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -236,8 +239,8 @@ pub fn RndStuff_2() {
                 == -2_i32)
         );
         ({
-            let _k: i32 = -10_i32;
-            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].inc(_k)
+            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]
+                .inc(-10_i32)
         });
         assert!(
             ((*(*(*p3_1.borrow())
@@ -269,12 +272,6 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(SafePointer {
             ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
         })))));
-    ({
-        let _safe_ptr: Ptr<Option<Value<SafePointer>>> = safe_ptr.as_pointer();
-        DoStuffWithSafePointer_0(_safe_ptr)
-    });
-    return ({
-        let _safe_ptr: Option<Value<SafePointer>> = (*safe_ptr.borrow_mut()).take();
-        Consume_1(_safe_ptr)
-    });
+    ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
+    return ({ Consume_1((*safe_ptr.borrow_mut()).take()) });
 }

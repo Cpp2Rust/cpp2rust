@@ -79,13 +79,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((((unsafe {
-            let _n: i32 = -1_i32;
-            early_0(_n)
-        }) == (-1_i32)) as i32)
-            != 0)
-    );
+    assert!(((((unsafe { early_0(-1_i32,) }) == (-1_i32)) as i32) != 0));
     assert!(((((unsafe { early_0(5,) }) == (100)) as i32) != 0));
     assert!(((((unsafe { from_loop_1(2,) }) == (999)) as i32) != 0));
     assert!(((((unsafe { from_loop_1(10,) }) == (7)) as i32) != 0));

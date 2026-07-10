@@ -45,7 +45,27 @@ impl Default for Pointers {
         }
     }
 }
-impl ByteRepr for Pointers {}
+impl ByteRepr for Pointers {
+    fn byte_size() -> usize {
+        144
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x1.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.x2.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.x3.borrow()).to_bytes(&mut buf[16..56]);
+        (*self.x4.borrow()).to_bytes(&mut buf[56..136]);
+        (*self.x5.borrow()).to_bytes(&mut buf[136..140]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x1: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[0..8]))),
+            x2: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[8..16]))),
+            x3: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[16..56]))),
+            x4: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[56..136]))),
+            x5: Rc::new(RefCell::new(<i32>::from_bytes(&buf[136..140]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

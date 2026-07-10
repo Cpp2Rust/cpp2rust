@@ -17,34 +17,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
-    let y: Value<i32> = Rc::new(RefCell::new(
-        (({
-            let _x: Ptr<i32> = x.as_pointer();
-            foo_1(_x)
-        })
-        .read()),
-    ));
-    let z: Ptr<i32> = ({
-        let _x: Ptr<i32> = x.as_pointer();
-        foo_1(_x)
-    });
+    let y: Value<i32> = Rc::new(RefCell::new((({ foo_1(x.as_pointer()) }).read())));
+    let z: Ptr<i32> = ({ foo_1(x.as_pointer()) });
     return {
         let _lhs = {
-            let _lhs = ((({
-                let _x: Ptr<i32> = x.as_pointer();
-                foo_1(_x)
-            })
-            .read())
-                + (({
-                    let _x: Ptr<i32> = y.as_pointer();
-                    foo_1(_x)
-                })
-                .read()));
-            _lhs + (({
-                let _x: Ptr<i32> = (z).clone();
-                foo_1(_x)
-            })
-            .read())
+            let _lhs =
+                ((({ foo_1(x.as_pointer()) }).read()) + (({ foo_1(y.as_pointer()) }).read()));
+            _lhs + (({ foo_1((z).clone()) }).read())
         };
         _lhs + ({ bar_0() })
     };

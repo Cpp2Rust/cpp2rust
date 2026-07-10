@@ -69,14 +69,6 @@ fn main_0() -> i32 {
                 .map(|_| <Ptr<i32>>::default())
                 .collect::<Box<[_]>>(),
         )))));
-    ({
-        let _arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>> = arr.as_pointer();
-        let _n1: Ptr<i32> = n.as_pointer();
-        fill_1(_arr, _n1)
-    });
-    return (({
-        let _arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>> = arr.as_pointer();
-        let _n1: Ptr<i32> = n.as_pointer();
-        any_2(_arr, _n1)
-    }) as i32);
+    ({ fill_1(arr.as_pointer(), n.as_pointer()) });
+    return (({ any_2(arr.as_pointer(), n.as_pointer()) }) as i32);
 }

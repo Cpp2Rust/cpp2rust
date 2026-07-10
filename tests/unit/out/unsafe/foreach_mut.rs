@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     }
     'loop_: for x in 0..(v1.len()) {
         let mut x = v1.as_mut_ptr().add(x);
-        (*x) = (((*x) as i32) + 10) as i32;
+        (*x) += 10;
     }
     'loop_: for x in 0..(v1.len()) {
         let mut x = v1.as_ptr().add(x);
@@ -47,7 +47,7 @@ unsafe fn main_0() -> i32 {
     }
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();
-        (*p) = (((*p) as i32) + 5) as i32;
+        (*p) += 5;
     }
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();

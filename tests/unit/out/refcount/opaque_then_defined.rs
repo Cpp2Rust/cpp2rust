@@ -11,13 +11,57 @@ pub struct list {
     pub head: Value<Ptr<node>>,
     pub size: Value<i32>,
 }
-impl ByteRepr for list {}
+impl Clone for list {
+    fn clone(&self) -> Self {
+        Self {
+            head: Rc::new(RefCell::new((*self.head.borrow()).clone())),
+            size: Rc::new(RefCell::new((*self.size.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for list {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.head.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.size.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            head: Rc::new(RefCell::new(<Ptr<node>>::from_bytes(&buf[0..8]))),
+            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct node {
     pub value: Value<i32>,
     pub next: Value<Ptr<node>>,
 }
-impl ByteRepr for node {}
+impl Clone for node {
+    fn clone(&self) -> Self {
+        Self {
+            value: Rc::new(RefCell::new((*self.value.borrow()).clone())),
+            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for node {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            next: Rc::new(RefCell::new(<Ptr<node>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

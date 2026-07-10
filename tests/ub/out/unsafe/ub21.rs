@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn strlen_0(mut s: *const u8) -> usize {
+pub unsafe fn strlen_0(mut s: *const libc::c_char) -> usize {
     let mut count: usize = 0_usize;
     'loop_: while ((*s.postfix_inc()) != 0) {
         count.prefix_inc();
@@ -19,9 +19,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let s: [u8; 3] = [('s' as u8), ('t' as u8), ('r' as u8)];
-    return ((unsafe {
-        let _s: *const u8 = s.as_ptr();
-        strlen_0(_s)
-    }) as i32);
+    let s: [libc::c_char; 3] = [
+        ('s' as libc::c_char),
+        ('t' as libc::c_char),
+        ('r' as libc::c_char),
+    ];
+    return ((unsafe { strlen_0(s.as_ptr()) }) as i32);
 }

@@ -85,5 +85,16 @@ int main() {
   ssize_t delta = (ssize_t)sz - (ssize_t)ul;
   assert(delta == 11);
 
+  typedef long long ll_t;
+  ll_t a64 = 100;
+  ssize_t b = 30;
+  a64 -= b;
+  assert(a64 == 70);
+  a64 += b;
+  assert(a64 == 100);
+  ssize_t c = -20;
+  a64 -= c;
+  assert(a64 == 120);
+
   return (int)(n % 7);
 }

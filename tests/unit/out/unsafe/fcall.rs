@@ -10,54 +10,28 @@ pub unsafe fn f2_0(mut x: f64, mut y: f64) -> f64 {
     return ((x) - (y));
 }
 pub unsafe fn f3_1(mut x: f64, mut y: f64, mut z: f64) -> f64 {
-    return ((unsafe {
-        let _x: f64 = x;
-        let _y: f64 = y;
-        f2_0(_x, _y)
-    }) + (z));
+    return ((unsafe { f2_0(x, y) }) + (z));
 }
 pub unsafe fn f1_2(mut x: f64, mut y: f64) -> f64 {
-    let mut z1: f64 = (unsafe {
-        let _x: f64 = x;
-        let _y: f64 = y;
-        f2_0(_x, _y)
-    });
-    if ((unsafe {
-        let _x: f64 = z1;
-        let _y: f64 = y;
-        f2_0(_x, _y)
-    }) < (0_f64))
-    {
+    let mut z1: f64 = (unsafe { f2_0(x, y) });
+    if ((unsafe { f2_0(z1, y) }) < (0_f64)) {
         let mut z2: f64 = -(unsafe {
-            let _x: f64 = z1;
-            let _y: f64 = (unsafe {
-                let _x: f64 = x;
-                let _y: f64 = y;
-                f2_0(_x, _y)
-            });
+            let _y: f64 = (unsafe { f2_0(x, y) });
             let _z: f64 = y;
-            f3_1(_x, _y, _z)
+            f3_1(z1, _y, _z)
         });
         return (unsafe {
-            let _x: f64 = (unsafe {
-                let _x: f64 = z2;
-                let _y: f64 = (unsafe {
-                    let _x: f64 = z1;
-                    let _y: f64 = z2;
-                    let _z: f64 = x;
-                    f3_1(_x, _y, _z)
-                });
-                f2_0(_x, _y)
-            });
-            let _y: f64 = y;
-            f2_0(_x, _y)
+            f2_0(
+                (unsafe {
+                    let _x: f64 = z2;
+                    let _y: f64 = (unsafe { f3_1(z1, z2, x) });
+                    f2_0(_x, _y)
+                }),
+                y,
+            )
         });
     }
-    return (unsafe {
-        let _x: f64 = z1;
-        let _y: f64 = x;
-        f2_0(_x, _y)
-    });
+    return (unsafe { f2_0(z1, x) });
 }
 pub fn main() {
     unsafe {

@@ -33,30 +33,17 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(0));
     write!(libcc2rs::cout(), "{:}\n", (*x.borrow()),);
     let a: Value<i32> = Rc::new(RefCell::new(1));
-    let b: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _x: i32 = (*a.borrow());
-            identity_0(_x)
-        }),
-    ));
+    let b: Value<i32> = Rc::new(RefCell::new(({ identity_0((*a.borrow())) })));
     write!(libcc2rs::cout(), "{:}\n", (*b.borrow()),);
     let c: Value<i32> = Rc::new(RefCell::new(2));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((c.as_pointer())));
     write!(libcc2rs::cout(), "{:}\n", ((*p.borrow()).read()),);
     let d: Value<i32> = Rc::new(RefCell::new(3));
     let e: Value<i32> = Rc::new(RefCell::new(4));
-    ({
-        let _a: Ptr<i32> = (d.as_pointer());
-        let _b: Ptr<i32> = (e.as_pointer());
-        swap_by_ptr_1(_a, _b)
-    });
+    ({ swap_by_ptr_1((d.as_pointer()), (e.as_pointer())) });
     let f: Value<i32> = Rc::new(RefCell::new(4));
     let g: Value<i32> = Rc::new(RefCell::new(5));
-    ({
-        let _a: Ptr<i32> = f.as_pointer();
-        let _b: Ptr<i32> = g.as_pointer();
-        swap_by_ref_2(_a, _b)
-    });
+    ({ swap_by_ref_2(f.as_pointer(), g.as_pointer()) });
     let h: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(6)));
     write!(libcc2rs::cout(), "{:}\n", ((*h.borrow()).read()),);
     (*h.borrow()).delete();
@@ -72,25 +59,19 @@ fn main_0() -> i32 {
         ((*i.borrow()).offset((1) as isize).read()),
     );
     (*i.borrow()).delete_array();
+    ({ swap_by_ptr_1(Ptr::alloc(7), Ptr::alloc(8)) });
     ({
-        let _a: Ptr<i32> = Ptr::alloc(7);
-        let _b: Ptr<i32> = Ptr::alloc(8);
-        swap_by_ptr_1(_a, _b)
+        swap_by_ptr_1(
+            Ptr::alloc(7).offset((0) as isize),
+            Ptr::alloc(8).offset((0) as isize),
+        )
     });
+    ({ swap_by_ref_2(Ptr::alloc(9), Ptr::alloc(10)) });
     ({
-        let _a: Ptr<i32> = Ptr::alloc(7).offset((0) as isize);
-        let _b: Ptr<i32> = Ptr::alloc(8).offset((0) as isize);
-        swap_by_ptr_1(_a, _b)
-    });
-    ({
-        let _a: Ptr<i32> = Ptr::alloc(9);
-        let _b: Ptr<i32> = Ptr::alloc(10);
-        swap_by_ref_2(_a, _b)
-    });
-    ({
-        let _a: Ptr<i32> = (Ptr::alloc(9)).offset((0) as isize);
-        let _b: Ptr<i32> = (Ptr::alloc(10)).offset((0) as isize);
-        swap_by_ref_2(_a, _b)
+        swap_by_ref_2(
+            (Ptr::alloc(9)).offset((0) as isize),
+            (Ptr::alloc(10)).offset((0) as isize),
+        )
     });
     let j: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(11).to_owned_opt()));
     let k: Value<Ptr<i32>> = Rc::new(RefCell::new((*j.borrow()).as_pointer()));

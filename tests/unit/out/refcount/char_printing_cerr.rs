@@ -21,14 +21,14 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "{:} a", (*i.borrow()),);
     libcc2rs::cerr().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(0_usize as isize)
-                .read())] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(1_usize as isize)
-                .read())] as &[u8]),
-            (&[('o' as u8)] as &[u8]),
-            (&(*str.borrow())[..(*str.borrow()).len() - 1] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read()) as u8] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read()) as u8] as &[u8]),
+            (&[('o' as u8) as u8] as &[u8]),
+            (&(*str.borrow())
+                .iter()
+                .take((*str.borrow()).len() - 1)
+                .map(|&c| c as u8)
+                .collect::<Vec<u8>>()[..] as &[u8]),
             (&[b'\n'] as &[u8]),
         ]
         .concat()),
@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     libcc2rs::cerr().write_all(
         &([
             (b" a\xc3\xa7ordas?" as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
+            (&[('\n' as u8) as u8] as &[u8]),
             (b"Sim, 0x" as &[u8]),
         ]
         .concat()),
@@ -46,14 +46,10 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "Hello, World!\n",);
     libcc2rs::cerr().write_all(
         &([
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(0_usize as isize)
-                .read())] as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
-            (&[((vec_.as_pointer() as Ptr<u8>)
-                .offset(1_usize as isize)
-                .read())] as &[u8]),
-            (&[('\n' as u8)] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(0_usize).read()) as u8] as &[u8]),
+            (&[('\n' as u8) as u8] as &[u8]),
+            (&[((vec_.as_pointer() as Ptr<u8>).offset(1_usize).read()) as u8] as &[u8]),
+            (&[('\n' as u8) as u8] as &[u8]),
         ]
         .concat()),
     );

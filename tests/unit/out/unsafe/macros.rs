@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn log_0(mut file: *const u8, mut line: i32, mut func: *const u8) {
-    printf(b"%s %d %s\n\0".as_ptr() as *const i8, file, line, func);
+pub unsafe fn log_0(mut file: *const libc::c_char, mut line: i32, mut func: *const libc::c_char) {
+    printf(c"%s %d %s\n".as_ptr() as *const i8, file, line, func);
 }
 pub fn main() {
     unsafe {
@@ -16,14 +16,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     printf(
-        b"%s %d %s\n\0".as_ptr() as *const i8,
-        b"macros.cpp\0".as_ptr(),
+        c"%s %d %s\n".as_ptr() as *const i8,
+        c"macros.cpp".as_ptr(),
         8,
-        b"main\0".as_ptr(),
+        c"main".as_ptr(),
     );
-    (unsafe {
-        let _func: *const u8 = b"main\0".as_ptr();
-        log_0(b"macros.cpp\0".as_ptr(), 9, _func)
-    });
+    (unsafe { log_0(c"macros.cpp".as_ptr(), 9, c"main".as_ptr()) });
     return 0;
 }

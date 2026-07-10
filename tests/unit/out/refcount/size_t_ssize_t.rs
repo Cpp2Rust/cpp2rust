@@ -46,13 +46,19 @@ fn main_0() -> i32 {
             == (((20 + 10) + 5) as usize).wrapping_add((::std::mem::size_of::<i64>() as usize)))
     );
     let acc: Value<usize> = Rc::new(RefCell::new(100_usize));
-    let rhs_0 =
-        (((*acc.borrow()) as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize;
-    (*acc.borrow_mut()) = rhs_0;
-    let rhs_0 = (*acc.borrow()).wrapping_mul(2_usize);
-    (*acc.borrow_mut()) = rhs_0;
-    let rhs_0 = (((*acc.borrow()) as u64).wrapping_sub((*ul.borrow()))) as usize;
-    (*acc.borrow_mut()) = rhs_0;
+    {
+        let rhs_0 =
+            (((*acc.borrow()) as u64).wrapping_add((::std::mem::size_of::<f64>() as u64))) as usize;
+        (*acc.borrow_mut()) = rhs_0
+    };
+    {
+        let rhs_0 = (*acc.borrow()).wrapping_mul(2_usize);
+        (*acc.borrow_mut()) = rhs_0
+    };
+    {
+        let rhs_0 = (((*acc.borrow()) as u64).wrapping_sub((*ul.borrow()))) as usize;
+        (*acc.borrow_mut()) = rhs_0
+    };
     assert!(
         ((*acc.borrow())
             == ((((100_usize).wrapping_add((::std::mem::size_of::<f64>() as usize))) as usize)
@@ -64,10 +70,11 @@ fn main_0() -> i32 {
     assert!(((*sz.borrow()) == 21_usize));
     let fr: Value<usize> = Rc::new(RefCell::new(
         ({
-            let _a: usize = ((::std::mem::size_of::<i32>() as u64)
-                .wrapping_add(((*sz.borrow()) as u64)) as usize);
-            let _b: usize = ((*ul.borrow()) as usize);
-            add_sizes_0(_a, _b)
+            add_sizes_0(
+                ((::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64))
+                    as usize),
+                ((*ul.borrow()) as usize),
+            )
         }),
     ));
     assert!(
@@ -75,12 +82,7 @@ fn main_0() -> i32 {
             == ((::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize) as usize)
                 .wrapping_add(10_usize))
     );
-    let fr2: Value<u64> = Rc::new(RefCell::new(
-        ({
-            let _x: u64 = ((*sz.borrow()) as u64);
-            take_ulong_1(_x)
-        }),
-    ));
+    let fr2: Value<u64> = Rc::new(RefCell::new(({ take_ulong_1(((*sz.borrow()) as u64)) })));
     assert!(((*fr2.borrow()) == 21_u64));
     let lo: Value<usize> = Rc::new(RefCell::new(
         ({
@@ -140,9 +142,11 @@ fn main_0() -> i32 {
     let total: Value<usize> = Rc::new(RefCell::new(0_usize));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((*i.borrow()) < (*count.borrow())) {
-        let rhs_0 =
-            (*total.borrow()).wrapping_add(((*data.borrow())[(*i.borrow()) as usize] as usize));
-        (*total.borrow_mut()) = rhs_0;
+        {
+            let rhs_0 =
+                (*total.borrow()).wrapping_add(((*data.borrow())[(*i.borrow()) as usize] as usize));
+            (*total.borrow_mut()) = rhs_0
+        };
         (*i.borrow_mut()).postfix_inc();
     }
     assert!(((*total.borrow()) == 56_usize));
@@ -167,11 +171,7 @@ fn main_0() -> i32 {
     let s1: Value<isize> = Rc::new(RefCell::new(5_isize));
     let s2: Value<isize> = Rc::new(RefCell::new(12_isize));
     let sd: Value<isize> = Rc::new(RefCell::new(
-        ({
-            let _a: isize = (*s1.borrow());
-            let _b: isize = (*s2.borrow());
-            sub_signed_2(_a, _b)
-        }),
+        ({ sub_signed_2((*s1.borrow()), (*s2.borrow())) }),
     ));
     assert!(((*sd.borrow()) == (-7_i32 as isize)));
     assert!(((*sd.borrow()) < 0_isize));
@@ -211,5 +211,14 @@ fn main_0() -> i32 {
         (((*sz.borrow()) as isize) - ((*ul.borrow()) as isize)),
     ));
     assert!(((*delta.borrow()) == 11_isize));
+    let a64: Value<i64> = Rc::new(RefCell::new(100_i64));
+    let b: Value<isize> = Rc::new(RefCell::new(30_isize));
+    (*a64.borrow_mut()) -= ((*b.borrow()) as i64);
+    assert!(((*a64.borrow()) == 70_i64));
+    (*a64.borrow_mut()) += ((*b.borrow()) as i64);
+    assert!(((*a64.borrow()) == 100_i64));
+    let c: Value<isize> = Rc::new(RefCell::new((-20_i32 as isize)));
+    (*a64.borrow_mut()) -= ((*c.borrow()) as i64);
+    assert!(((*a64.borrow()) == 120_i64));
     return (((*n.borrow()).wrapping_rem(7_usize)) as i32);
 }

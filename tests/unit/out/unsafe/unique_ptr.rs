@@ -136,10 +136,7 @@ pub unsafe fn RndStuff_2() {
     'loop_: while ((i) < (50)) {
         assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
         assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
-        (unsafe {
-            let _k: i32 = -10_i32;
-            x3.as_mut().unwrap()[(i as usize)].inc(_k)
-        });
+        (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(-10_i32) });
         assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
         assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
         i.prefix_inc();
@@ -153,13 +150,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: Option<Box<i32>> = Some(Box::new(0));
     let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x }));
-    (unsafe {
-        let _safe_ptr: *mut Option<Box<SafePointer>> =
-            &mut safe_ptr as *mut Option<Box<SafePointer>>;
-        DoStuffWithSafePointer_0(_safe_ptr)
-    });
-    return (unsafe {
-        let _safe_ptr: Option<Box<SafePointer>> = safe_ptr;
-        Consume_1(_safe_ptr)
-    });
+    (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr as *mut Option<Box<SafePointer>>) });
+    return (unsafe { Consume_1(safe_ptr) });
 }

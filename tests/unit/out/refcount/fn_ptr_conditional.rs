@@ -39,36 +39,16 @@ pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
         } else {
             FnPtr::<fn(i32) -> i32>::new(identity_2)
         }));
-    return ({
-        let _arg0: i32 = (*x.borrow());
-        (*(*actual.borrow()))(_arg0)
-    });
+    return ({ (*(*actual.borrow()))((*x.borrow())) });
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ (*({ pick_3(1,) }))(10,) }) == 11));
-    assert!(
-        (({
-            (*({
-                let _mode: i32 = -1_i32;
-                pick_3(_mode)
-            }))(10)
-        }) == 9)
-    );
+    assert!((({ (*({ pick_3(-1_i32,) }))(10,) }) == 9));
     assert!((({ (*({ pick_3(0,) }))(10,) }) == 10));
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(inc_0);
-            apply_4(_fn, 5)
-        }) == 6)
-    );
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
-            apply_4(_fn, 5)
-        }) == 5)
-    );
+    assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::new(inc_0), 5,) }) == 6));
+    assert!((({ apply_4(FnPtr::null(), 5,) }) == 5));
     return 0;
 }

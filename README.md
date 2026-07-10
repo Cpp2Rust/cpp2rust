@@ -60,7 +60,7 @@ ninja check
 ./build/cpp2rust/cpp2rust --file=<file>.cpp -o=<file>.rs
 ```
 
-By default, the reference couting model is used (fully safe output).
+By default, the reference counting model is used (fully safe output).
 To generate unsafe Rust instead:
 
 ```bash
@@ -128,7 +128,7 @@ ninja check-unit
 ninja check-libcc2rs
 
 # Run libcc2rs-macros unit tests
-ninja check-benchmarks
+ninja check-libcc2rs-macros
 
 # Regenerate expected output for unit tests after intentional changes
 REPLACE_EXPECTED=1 ninja check-unit

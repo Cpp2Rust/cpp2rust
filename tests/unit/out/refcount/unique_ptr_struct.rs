@@ -21,6 +21,9 @@ impl Clone for Point {
     }
 }
 impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
         (*self.y.borrow()).to_bytes(&mut buf[4..8]);
@@ -50,10 +53,7 @@ fn main_0() -> i32 {
         + (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow()));
     (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow_mut()) = __rhs;
     let s: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _p: Point = (*(*p.borrow()).as_ref().unwrap().borrow()).clone();
-            sum_0(_p)
-        }),
+        ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));
     return (*s.borrow());
 }

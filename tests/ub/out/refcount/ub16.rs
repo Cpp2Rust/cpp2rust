@@ -20,12 +20,9 @@ fn main_0() -> i32 {
             .collect::<Box<[i32]>>(),
     )));
     let out: Value<i32> = Rc::new(RefCell::new(
-        (({
-            let _a: Ptr<i32> = ((*p1.borrow()).offset((1) as isize));
-            foo_0(_a)
-        })
-        .offset((4) as isize)
-        .read()),
+        (({ foo_0(((*p1.borrow()).offset((1) as isize))) })
+            .offset((4) as isize)
+            .read()),
     ));
     (*p1.borrow()).delete_array();
     return 0;

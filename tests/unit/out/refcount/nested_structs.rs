@@ -19,6 +19,9 @@ impl Clone for Level0_Level1_1_Level2_1_Level3_1 {
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -43,6 +46,9 @@ impl Clone for Level0_Level1_1_Level2_1_Level3_2 {
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
@@ -67,6 +73,9 @@ impl Clone for Level0_Level1_1_Level2_1 {
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -89,6 +98,9 @@ impl Clone for Level0_Level1_1 {
     }
 }
 impl ByteRepr for Level0_Level1_1 {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -113,6 +125,9 @@ impl Clone for Level0_Level1_2 {
     }
 }
 impl ByteRepr for Level0_Level1_2 {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
@@ -133,6 +148,9 @@ impl Clone for Level0 {
     }
 }
 impl ByteRepr for Level0 {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}

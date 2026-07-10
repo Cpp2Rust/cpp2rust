@@ -20,8 +20,5 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({
-        let _fn: FnPtr<fn() -> bool> = FnPtr::<fn() -> bool>::new(test1_0);
-        test_1(_fn)
-    });
+    return ({ test_1(FnPtr::<fn() -> bool>::new(test1_0)) });
 }

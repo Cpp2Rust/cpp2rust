@@ -36,10 +36,7 @@ unsafe fn main_0() -> i32 {
     assert!((((&mut (*p))[(1_usize)]) == (30)));
     assert!(((b) == (40)));
     assert!((((&mut (*hp)).v[(1_usize)]) == (60)));
-    (unsafe {
-        let _p: *mut i32 = (&mut (&mut (*p))[0_usize as usize]);
-        write_through_0(_p)
-    });
+    (unsafe { write_through_0((&mut (&mut (*p))[0_usize as usize])) });
     assert!((((&mut (*p))[(0_usize)]) == (42)));
     return 0;
 }

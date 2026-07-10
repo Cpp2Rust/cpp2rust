@@ -35,20 +35,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            let _x: i32 = -1_i32;
-            mixed_literal_cases_0(_x)
-        }) == (1))
-    );
+    assert!(((unsafe { mixed_literal_cases_0(-1_i32,) }) == (1)));
     assert!(((unsafe { mixed_literal_cases_0(16,) }) == (2)));
     assert!(((unsafe { mixed_literal_cases_0(65152,) }) == (3)));
-    assert!(
-        ((unsafe {
-            let _x: i32 = -255_i32;
-            mixed_literal_cases_0(_x)
-        }) == (4))
-    );
+    assert!(((unsafe { mixed_literal_cases_0(-255_i32,) }) == (4)));
     assert!(((unsafe { mixed_literal_cases_0(7,) }) == (0)));
     return 0;
 }

@@ -35,6 +35,9 @@ impl Clone for Test {
     }
 }
 impl ByteRepr for Test {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -49,11 +52,7 @@ pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let y: Value<i32> = Rc::new(RefCell::new(2));
     (*x.borrow_mut()).prefix_inc();
-    ({
-        let _x: i32 = (*x.borrow());
-        let _y: i32 = (*y.borrow());
-        (*(*t.borrow()).upgrade().deref()).update(_x, _y)
-    });
+    ({ (*(*t.borrow()).upgrade().deref()).update((*x.borrow()), (*y.borrow())) });
     (*x.borrow_mut()) = (*(*(*t.borrow()).upgrade().deref()).x.borrow());
     (*y.borrow_mut()) = (*(*(*t.borrow()).upgrade().deref()).x.borrow());
     ({
@@ -70,12 +69,7 @@ fn main_0() -> i32 {
     let t1: Value<Test> = Rc::new(RefCell::new(Test {
         x: Rc::new(RefCell::new(100)),
     }));
-    let t2: Value<Ptr<Test>> = Rc::new(RefCell::new(
-        ({
-            let _t: Ptr<Test> = (t1.as_pointer());
-            Update_0(_t)
-        }),
-    ));
+    let t2: Value<Ptr<Test>> = Rc::new(RefCell::new(({ Update_0((t1.as_pointer())) })));
     let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;

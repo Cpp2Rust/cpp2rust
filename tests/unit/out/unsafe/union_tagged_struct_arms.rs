@@ -27,7 +27,7 @@ libcc2rs::impl_enum_inc_dec!(Choice_enum);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct anon_1 {
-    pub items: *mut *mut u8,
+    pub items: *mut *mut libc::c_char,
     pub count: i64,
     pub cursor: i64,
 }
@@ -73,11 +73,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: [*mut u8; 3] = unsafe {
+    static mut items_4: [*mut libc::c_char; 3] = unsafe {
         [
-            b"a\0".as_ptr().cast_mut(),
-            b"b\0".as_ptr().cast_mut(),
-            b"c\0".as_ptr().cast_mut(),
+            c"a".as_ptr().cast_mut(),
+            c"b".as_ptr().cast_mut(),
+            c"c".as_ptr().cast_mut(),
         ]
     };;
     let mut p_list: Branch = <Branch>::default();

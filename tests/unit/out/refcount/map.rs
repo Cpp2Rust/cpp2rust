@@ -112,14 +112,15 @@ fn main_0() -> i32 {
             == 3_u32)
     );
     ({
-        let _x: u32 = ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
-            .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(0_i16.clone())
-                    .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
-                    .as_pointer()
-            })
-            .read());
-        foo_0(_x)
+        foo_0(
+            ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
+                .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
+                    __v.entry(0_i16.clone())
+                        .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
+                        .as_pointer()
+                })
+                .read()),
+        )
     });
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
@@ -132,14 +133,13 @@ fn main_0() -> i32 {
             == 1_u32)
     );
     ({
-        let _x: Ptr<u32> = (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>).with_mut(
+        bar_1((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>).with_mut(
             |__v: &mut BTreeMap<i16, Value<u32>>| {
                 __v.entry(2_i16.clone())
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             },
-        );
-        bar_1(_x)
+        ))
     });
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
@@ -371,7 +371,7 @@ fn main_0() -> i32 {
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
                 __v.entry(
                     ((indexes.as_pointer() as Ptr<i32>)
-                        .offset(((*i.borrow()) as usize) as isize)
+                        .offset(((*i.borrow()) as usize))
                         .read())
                     .clone(),
                 )

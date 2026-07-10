@@ -11,7 +11,29 @@ pub struct container {
     pub p: Value<Ptr<opaque>>,
     pub x: Value<i32>,
 }
-impl ByteRepr for container {}
+impl Clone for container {
+    fn clone(&self) -> Self {
+        Self {
+            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for container {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.x.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            p: Rc::new(RefCell::new(<Ptr<opaque>>::from_bytes(&buf[0..8]))),
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -20,10 +42,7 @@ fn main_0() -> i32 {
         p: Rc::new(RefCell::new(Ptr::<opaque>::null())),
         x: Rc::new(RefCell::new(42)),
     }));
-    ({
-        let _c: Ptr<container> = (c.as_pointer());
-        touch_0(_c)
-    });
+    ({ touch_0((c.as_pointer())) });
     assert!(((((*(*c.borrow()).x.borrow()) == 42) as i32) != 0));
     assert!(((((*(*c.borrow()).p.borrow()).is_null()) as i32) != 0));
     return 0;

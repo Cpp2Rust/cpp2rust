@@ -16,9 +16,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(5)))));
-    ({
-        let _p: Ptr<Option<Value<i32>>> = a.as_pointer();
-        change_0(_p)
-    });
+    ({ change_0(a.as_pointer()) });
     return (*(*a.borrow()).as_ref().unwrap().borrow());
 }

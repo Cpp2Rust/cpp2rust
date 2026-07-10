@@ -15,10 +15,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let alloc: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(1)));
-    ({
-        let _ptr: Ptr<i32> = (*alloc.borrow()).clone();
-        escape_0(_ptr)
-    });
+    ({ escape_0((*alloc.borrow()).clone()) });
     (*alloc.borrow()).delete();
     return 0;
 }

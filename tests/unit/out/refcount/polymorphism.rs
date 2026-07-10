@@ -23,6 +23,9 @@ impl Clone for Dog {
     }
 }
 impl ByteRepr for Dog {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}
@@ -47,6 +50,9 @@ impl Clone for Cat {
     }
 }
 impl ByteRepr for Cat {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}

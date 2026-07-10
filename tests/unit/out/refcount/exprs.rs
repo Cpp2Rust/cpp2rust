@@ -19,6 +19,9 @@ impl Clone for X {
     }
 }
 impl ByteRepr for X {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -50,7 +53,21 @@ impl Clone for Y {
         this
     }
 }
-impl ByteRepr for Y {}
+impl ByteRepr for Y {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.p.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<X>::from_bytes(&buf[0..4]))),
+            p: Rc::new(RefCell::new(<Ptr<X>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

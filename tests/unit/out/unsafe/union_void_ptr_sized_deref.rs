@@ -27,7 +27,7 @@ libcc2rs::impl_enum_inc_dec!(Width_enum);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union anon_0 {
-    pub text: *const u8,
+    pub text: *const libc::c_char,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub f: f64,
@@ -75,24 +75,15 @@ unsafe fn main_0() -> i32 {
     let mut s: Sink = <Sink>::default();
     s.width = Width_enum::W_64;
     s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
-    (unsafe {
-        let _s: *mut Sink = (&mut s as *mut Sink);
-        write_count_1(_s, 1234605616436508552_i64)
-    });
+    (unsafe { write_count_1((&mut s as *mut Sink), 1234605616436508552_i64) });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width_enum::W_32;
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
-    (unsafe {
-        let _s: *mut Sink = (&mut s as *mut Sink);
-        write_count_1(_s, 305419896_i64)
-    });
+    (unsafe { write_count_1((&mut s as *mut Sink), 305419896_i64) });
     assert!(((((buf32) == (305419896)) as i32) != 0));
     s.width = Width_enum::W_16;
     s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
-    (unsafe {
-        let _s: *mut Sink = (&mut s as *mut Sink);
-        write_count_1(_s, 4660_i64)
-    });
+    (unsafe { write_count_1((&mut s as *mut Sink), 4660_i64) });
     assert!(((((buf16 as i32) == (4660)) as i32) != 0));
     return 0;
 }

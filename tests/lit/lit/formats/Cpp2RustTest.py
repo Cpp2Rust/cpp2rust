@@ -18,6 +18,7 @@ MODELS = ("refcount", "unsafe")
 PTR_RE = re.compile(r"0x[0-9a-fA-F]+")
 
 RE_XFAIL = re.compile(r"//\s*XFAIL:\s*(.*)")
+RE_PANIC_UB = re.compile(r"//\s*panic-ub\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_PANIC = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_NOCOMPILE = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_TRANS_FAIL = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
@@ -27,6 +28,7 @@ RE_NONDET = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
 @dataclass
 class TestExpectations:
     should_panic: bool = False
+    should_panic_ub: bool = False
     should_not_compile: bool = False
     should_not_translate: bool = False
     is_nondet_result: bool = False
@@ -47,6 +49,7 @@ class TestExpectations:
         xfail = xfail_m is not None and model in re.split(r"\s*,\s*", xfail_m.group(1))
         return cls(
             should_panic=matches(RE_PANIC.search(text)),
+            should_panic_ub=matches(RE_PANIC_UB.search(text)),
             should_not_compile=matches(RE_NOCOMPILE.search(text)),
             should_not_translate=matches(RE_TRANS_FAIL.search(text)),
             is_nondet_result=matches(RE_NONDET.search(text)),
@@ -254,13 +257,21 @@ class TestContext:
             return None
         self.rust_result = RunResult(*lit.util.executeCommand(str(self.rust_bin)))
 
-        if exp.should_panic:
+        if exp.should_panic_ub:
             err = str(self.rust_result.stderr)
             if not re.search(
                 r"thread 'main' \(\d+\) panicked at", err
             ) or self.rust_result.returncode not in [-6, 101]:
                 return (exp.fail_code, "expected panic\n" + err)
             return self.success_result()
+
+        if exp.should_panic:
+            err = str(self.rust_result.stderr)
+            if not re.search(
+                r"thread 'main' \(\d+\) panicked at", err
+            ) or self.rust_result.returncode not in [-6, 101]:
+                return (exp.fail_code, "expected panic\n" + err)
+            return (lit.Test.XFAIL, "")
 
         if exp.is_nondet_result:
             return self.success_result()

@@ -101,7 +101,11 @@ unsafe fn f12<T1: Clone>(a0: *mut T1, a1: *mut T1, a2: T1) {
     std::slice::from_raw_parts_mut(a0, count).fill(a2)
 }
 
-unsafe fn f13(a0: *const u8, a1: *const u8, a2: &mut ::std::fs::File) -> ::std::fs::File {
+unsafe fn f13(
+    a0: *const libc::c_char,
+    a1: *const libc::c_char,
+    a2: &mut ::std::fs::File,
+) -> ::std::fs::File {
     let __start = a0 as *const u8;
     let __end = a1 as *const u8;
     let __len = __end.offset_from(__start) as usize;

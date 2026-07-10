@@ -36,30 +36,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p_val: Value<i32> = Rc::new(RefCell::new(5));
-    assert!(
-        (({
-            let _p: Ptr<i32> = (p_val.as_pointer());
-            switch_complex_cond_0(_p, 0)
-        }) == 2)
-    );
-    assert!(
-        (({
-            let _p: Ptr<i32> = (p_val.as_pointer());
-            switch_complex_cond_0(_p, 5)
-        }) == 3)
-    );
-    assert!(
-        (({
-            let _p: Ptr<i32> = (p_val.as_pointer());
-            let _bias: i32 = -5_i32;
-            switch_complex_cond_0(_p, _bias)
-        }) == 1)
-    );
-    assert!(
-        (({
-            let _p: Ptr<i32> = (p_val.as_pointer());
-            switch_complex_cond_0(_p, 99)
-        }) == 0)
-    );
+    assert!((({ switch_complex_cond_0((p_val.as_pointer()), 0,) }) == 2));
+    assert!((({ switch_complex_cond_0((p_val.as_pointer()), 5,) }) == 3));
+    assert!((({ switch_complex_cond_0((p_val.as_pointer()), -5_i32,) }) == 1));
+    assert!((({ switch_complex_cond_0((p_val.as_pointer()), 99,) }) == 0));
     return 0;
 }

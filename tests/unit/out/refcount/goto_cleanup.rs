@@ -81,13 +81,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (((({
-            let _n: i32 = -1_i32;
-            early_0(_n)
-        }) == -1_i32) as i32)
-            != 0)
-    );
+    assert!((((({ early_0(-1_i32,) }) == -1_i32) as i32) != 0));
     assert!((((({ early_0(5,) }) == 100) as i32) != 0));
     assert!((((({ from_loop_1(2,) }) == 999) as i32) != 0));
     assert!((((({ from_loop_1(10,) }) == 7) as i32) != 0));

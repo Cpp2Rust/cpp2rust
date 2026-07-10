@@ -36,12 +36,6 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((((({ classify_0(5,) }) == 5) as i32) != 0));
     assert!((((({ classify_0(0,) }) == 0) as i32) != 0));
-    assert!(
-        (((({
-            let _n: i32 = -2_i32;
-            classify_0(_n)
-        }) == -1_i32) as i32)
-            != 0)
-    );
+    assert!((((({ classify_0(-2_i32,) }) == -1_i32) as i32) != 0));
     return 0;
 }

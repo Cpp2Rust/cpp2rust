@@ -24,6 +24,14 @@ impl From<i32> for Color {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Color);
+impl ByteRepr for Color {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Color>::from(i32::from_bytes(buf))
+    }
+}
 pub fn switch_enum_0(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
     'switch: {
@@ -47,23 +55,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _c: Color = Color::kRed;
-            switch_enum_0(_c)
-        }) == 10)
-    );
-    assert!(
-        (({
-            let _c: Color = Color::kGreen;
-            switch_enum_0(_c)
-        }) == 20)
-    );
-    assert!(
-        (({
-            let _c: Color = Color::kBlue;
-            switch_enum_0(_c)
-        }) == 30)
-    );
+    assert!((({ switch_enum_0(Color::kRed,) }) == 10));
+    assert!((({ switch_enum_0(Color::kGreen,) }) == 20));
+    assert!((({ switch_enum_0(Color::kBlue,) }) == 30));
     return 0;
 }

@@ -10,11 +10,7 @@ pub unsafe fn fatorial_0(mut n: i32) -> i32 {
     if ((n) == (0)) {
         return 1;
     }
-    return ((n)
-        * (unsafe {
-            let _n: i32 = ((n) - (1));
-            fatorial_0(_n)
-        }));
+    return ((n) * (unsafe { fatorial_0(((n) - (1))) }));
 }
 pub unsafe fn fatorial_by_ref_1(n: *mut i32) {
     if ((*n) == (1)) {
@@ -22,10 +18,7 @@ pub unsafe fn fatorial_by_ref_1(n: *mut i32) {
         return;
     }
     let mut n_1: i32 = ((*n) - (1));
-    (unsafe {
-        let _n: *mut i32 = &mut n_1 as *mut i32;
-        fatorial_by_ref_1(_n)
-    });
+    (unsafe { fatorial_by_ref_1(&mut n_1 as *mut i32) });
     (*n) *= n_1;
 }
 pub unsafe fn fatorial_by_ptr_2(mut n: *mut i32) {
@@ -34,10 +27,7 @@ pub unsafe fn fatorial_by_ptr_2(mut n: *mut i32) {
         return;
     }
     let mut n_1: i32 = ((*n) - (1));
-    (unsafe {
-        let _n: *mut i32 = (&mut n_1 as *mut i32);
-        fatorial_by_ptr_2(_n)
-    });
+    (unsafe { fatorial_by_ptr_2((&mut n_1 as *mut i32)) });
     (*n) *= n_1;
 }
 pub fn main() {
@@ -47,17 +37,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut n1: i32 = 2;
-    (unsafe {
-        let _n: *mut i32 = (&mut n1 as *mut i32);
-        fatorial_by_ptr_2(_n)
-    });
+    (unsafe { fatorial_by_ptr_2((&mut n1 as *mut i32)) });
     let mut n: i32 = ((n1) + (1));
-    (unsafe {
-        let _n: *mut i32 = &mut n as *mut i32;
-        fatorial_by_ref_1(_n)
-    });
-    return (unsafe {
-        let _n: i32 = n;
-        fatorial_0(_n)
-    });
+    (unsafe { fatorial_by_ref_1(&mut n as *mut i32) });
+    return (unsafe { fatorial_0(n) });
 }

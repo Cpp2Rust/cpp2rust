@@ -23,11 +23,6 @@ fn main_0() -> i32 {
     assert!(((((*bytes.borrow()).offset((4) as isize).read()) as i32) == 5));
     assert!(((((*bytes.borrow()).offset((7) as isize).read()) as i32) == 8));
     (*bytes.borrow()).offset((4) as isize).write(255_u8);
-    assert!(
-        (((vec_.as_pointer() as Ptr<u32>)
-            .offset(1_usize as isize)
-            .read())
-            == 134678271_u32)
-    );
+    assert!((((vec_.as_pointer() as Ptr<u32>).offset(1_usize).read()) == 134678271_u32));
     return 0;
 }

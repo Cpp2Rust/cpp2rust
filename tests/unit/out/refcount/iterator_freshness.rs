@@ -19,9 +19,6 @@ fn main_0() -> i32 {
             .collect::<Vec<_>>(),
     ));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new((vec_.as_pointer() as Ptr<i32>)));
-    ({
-        let _a0: Ptr<i32> = (*it.borrow()).clone();
-        foo_0(_a0)
-    });
+    ({ foo_0((*it.borrow()).clone()) });
     return 0;
 }

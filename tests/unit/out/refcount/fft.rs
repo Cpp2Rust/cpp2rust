@@ -21,6 +21,9 @@ impl Clone for Complex {
     }
 }
 impl ByteRepr for Complex {
+    fn byte_size() -> usize {
+        16
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.re.borrow()).to_bytes(&mut buf[0..8]);
         (*self.img.borrow()).to_bytes(&mut buf[8..16]);
@@ -162,18 +165,10 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
         (*i.borrow_mut()).postfix_inc();
     }
     let y0: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
-        ({
-            let _a: Ptr<Option<Value<Box<[Complex]>>>> = A0.as_pointer();
-            let _N: i32 = ((*N.borrow()) / 2);
-            fft_3(_a, _N)
-        }),
+        ({ fft_3(A0.as_pointer(), ((*N.borrow()) / 2)) }),
     ));
     let y1: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
-        ({
-            let _a: Ptr<Option<Value<Box<[Complex]>>>> = A1.as_pointer();
-            let _N: i32 = ((*N.borrow()) / 2);
-            fft_3(_a, _N)
-        }),
+        ({ fft_3(A1.as_pointer(), ((*N.borrow()) / 2)) }),
     ));
     let k: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*k.borrow()) < ((*N.borrow()) / 2)) {
@@ -204,16 +199,17 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
                     [((*k.borrow()) as usize) as usize])
                     .clone();
                 let _z2: Complex = ({
-                    let _z1: Complex = ({
-                        let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
-                            [((*k.borrow()) as usize) as usize])
-                            .clone();
-                        let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
-                            [((*k.borrow()) as usize) as usize])
-                            .clone();
-                        Product_0(_z1, _z2)
-                    });
-                    Neg_2(_z1)
+                    Neg_2(
+                        ({
+                            let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
+                                [((*k.borrow()) as usize) as usize])
+                                .clone();
+                            let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
+                                [((*k.borrow()) as usize) as usize])
+                                .clone();
+                            Product_0(_z1, _z2)
+                        }),
+                    )
                 });
                 Sum_1(_z1, _z2)
             }),
@@ -247,13 +243,8 @@ fn main_0() -> i32 {
         (*a.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
-    let b: Value<Option<Value<Box<[Complex]>>>> = Rc::new(RefCell::new(
-        ({
-            let _a: Ptr<Option<Value<Box<[Complex]>>>> = a.as_pointer();
-            let _N: i32 = (*N.borrow());
-            fft_3(_a, _N)
-        }),
-    ));
+    let b: Value<Option<Value<Box<[Complex]>>>> =
+        Rc::new(RefCell::new(({ fft_3(a.as_pointer(), (*N.borrow())) })));
     let reals: Value<Option<Value<Box<[i32]>>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
             (0..((*N.borrow()) as usize))

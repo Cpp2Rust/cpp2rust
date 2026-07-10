@@ -24,10 +24,7 @@ pub fn set_op_3(fn_: FnPtr<fn(i32) -> i32>) {
 pub fn call_op_4(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     if !(*g_op_2.with(Value::clone).borrow()).is_null() {
-        return ({
-            let _arg0: i32 = (*x.borrow());
-            (*(*g_op_2.with(Value::clone).borrow()))(_arg0)
-        });
+        return ({ (*(*g_op_2.with(Value::clone).borrow()))((*x.borrow())) });
     }
     return (*x.borrow());
 }
@@ -36,29 +33,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((({ call_op_4(5,) }) == 5));
-    ({
-        let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(double_it_0);
-        set_op_3(_fn)
-    });
+    ({ set_op_3(FnPtr::<fn(i32) -> i32>::new(double_it_0)) });
     assert!(!((*g_op_2.with(Value::clone).borrow()).is_null()));
     assert!({
         let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(double_it_0)
     });
     assert!((({ call_op_4(5,) }) == 10));
-    ({
-        let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(triple_it_1);
-        set_op_3(_fn)
-    });
+    ({ set_op_3(FnPtr::<fn(i32) -> i32>::new(triple_it_1)) });
     assert!({
         let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
     assert!((({ call_op_4(5,) }) == 15));
-    ({
-        let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
-        set_op_3(_fn)
-    });
+    ({ set_op_3(FnPtr::null()) });
     assert!((*g_op_2.with(Value::clone).borrow()).is_null());
     assert!((({ call_op_4(5,) }) == 5));
     return 0;

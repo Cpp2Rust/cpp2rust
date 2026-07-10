@@ -2,7 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 // ub: unsafe
-// panic: refcount
+// panic-ub: refcount
 
 #include <algorithm>
 

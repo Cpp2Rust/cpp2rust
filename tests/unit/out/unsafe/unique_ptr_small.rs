@@ -17,9 +17,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut n: Option<Box<i32>> = Some(Box::new(10));
-    (unsafe {
-        let _n: *mut Option<Box<i32>> = &mut n as *mut Option<Box<i32>>;
-        change_0(_n)
-    });
+    (unsafe { change_0(&mut n as *mut Option<Box<i32>>) });
     return (*n.as_deref_mut().unwrap());
 }

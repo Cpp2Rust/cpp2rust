@@ -23,9 +23,6 @@ fn main_0() -> i32 {
     ])));
     let arr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
-    ({
-        let _list: Vec<i32> = vec![1, 2, 3, 4];
-        f_0(_list)
-    });
+    ({ f_0(vec![1, 2, 3, 4]) });
     return 0;
 }

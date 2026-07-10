@@ -12,7 +12,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<u32> = Rc::new(RefCell::new(0_u32));
     let p: Value<Ptr<u32>> = Rc::new(RefCell::new((a.as_pointer())));
-    let rhs_0 = ((*p.borrow()).read()).wrapping_add(((*p.borrow()).read()));
-    (*p.borrow()).write(rhs_0);
+    {
+        let rhs_0 = ((*p.borrow()).read()).wrapping_add(((*p.borrow()).read()));
+        (*p.borrow()).write(rhs_0)
+    };
     return (((*p.borrow()).read()) as i32);
 }

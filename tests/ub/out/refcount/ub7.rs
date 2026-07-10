@@ -26,8 +26,5 @@ fn main_0() -> i32 {
         ('n' as u8),
         ('g' as u8),
     ])));
-    return (({
-        let _s: Ptr<u8> = ((s.as_pointer() as Ptr<u8>).offset(0 as isize));
-        strlen_0(_s)
-    }) as i32);
+    return (({ strlen_0(((s.as_pointer() as Ptr<u8>).offset(0))) }) as i32);
 }

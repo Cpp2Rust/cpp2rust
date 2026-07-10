@@ -17,11 +17,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _bytes: Vec<i32> = vec![1, 2, 3];
-            f_0(_bytes)
-        }) == 3_usize)
-    );
+    assert!((({ f_0(vec![1, 2, 3,],) }) == 3_usize));
     return 0;
 }

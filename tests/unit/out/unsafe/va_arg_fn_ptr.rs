@@ -22,10 +22,7 @@ pub unsafe fn apply_unary_3(mut x: i32, __args: &[VaArg]) -> i32 {
         *mut ::libc::c_void,
         Option<unsafe fn(i32) -> i32>,
     >(ap.arg::<*mut ::libc::c_void>());
-    let mut result: i32 = (unsafe {
-        let _arg0: i32 = x;
-        (fn_).unwrap()(_arg0)
-    });
+    let mut result: i32 = (unsafe { (fn_).unwrap()(x) });
     return result;
 }
 pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, __args: &[VaArg]) -> i32 {
@@ -35,11 +32,7 @@ pub unsafe fn apply_binary_4(mut a: i32, mut b: i32, __args: &[VaArg]) -> i32 {
         *mut ::libc::c_void,
         Option<unsafe fn(i32, i32) -> i32>,
     >(ap.arg::<*mut ::libc::c_void>());
-    let mut result: i32 = (unsafe {
-        let _arg0: i32 = a;
-        let _arg1: i32 = b;
-        (fn_).unwrap()(_arg0, _arg1)
-    });
+    let mut result: i32 = (unsafe { (fn_).unwrap()(a, b) });
     return result;
 }
 pub fn main() {

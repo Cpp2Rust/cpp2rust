@@ -44,14 +44,6 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     )))));
-    ({
-        let _arr: Ptr<Option<Value<Box<[i32]>>>> = arr.as_pointer();
-        let _N: i32 = (*N.borrow());
-        All_0(_arr, _N, 1)
-    });
-    return ({
-        let _arr: Option<Value<Box<[i32]>>> = (*arr.borrow_mut()).take();
-        let _N: i32 = (*N.borrow());
-        Consume_1(_arr, _N)
-    });
+    ({ All_0(arr.as_pointer(), (*N.borrow()), 1) });
+    return ({ Consume_1((*arr.borrow_mut()).take(), (*N.borrow())) });
 }

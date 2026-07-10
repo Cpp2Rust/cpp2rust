@@ -19,11 +19,7 @@ unsafe fn main_0() -> i32 {
     let mut x1: i32 = 1;
     if (x1 != 0) {
         let mut x2: i32 = -1_i32;
-        out = (unsafe {
-            let _x1: *mut i32 = &mut x1 as *mut i32;
-            let _x2: *mut i32 = &mut x2 as *mut i32;
-            smaller_0(_x1, _x2)
-        });
+        out = (unsafe { smaller_0(&mut x1 as *mut i32, &mut x2 as *mut i32) });
     }
     return (*out);
 }

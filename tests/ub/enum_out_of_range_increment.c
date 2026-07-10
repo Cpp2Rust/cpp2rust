@@ -1,4 +1,4 @@
-// panic
+// panic-ub
 
 enum color { RED, GREEN, BLUE };
 

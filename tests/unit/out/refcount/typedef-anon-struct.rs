@@ -21,6 +21,9 @@ impl Clone for Outer_RunInfo {
     }
 }
 impl ByteRepr for Outer_RunInfo {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.block_idx.borrow()).to_bytes(&mut buf[0..4]);
         (*self.num_extra_zero_runs.borrow()).to_bytes(&mut buf[4..8]);
@@ -60,7 +63,7 @@ fn main_0() -> i32 {
     assert!(((*(*o.borrow()).runs.borrow()).len() == 1_usize));
     assert!(
         ((*(*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
-            .offset(0_usize as isize)
+            .offset(0_usize)
             .upgrade()
             .deref())
         .block_idx
@@ -69,7 +72,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((*(*((*o.borrow()).runs.as_pointer() as Ptr<Outer_RunInfo>)
-            .offset(0_usize as isize)
+            .offset(0_usize)
             .upgrade()
             .deref())
         .num_extra_zero_runs

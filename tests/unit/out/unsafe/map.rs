@@ -32,15 +32,9 @@ unsafe fn main_0() -> i32 {
     assert!(((*m.entry(0_i16).or_default().as_mut()) == (1_u32)));
     assert!(((*m.entry(1_i16).or_default().as_mut()) == (4_u32)));
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (3_u32)));
-    (unsafe {
-        let _x: u32 = (*m.entry(0_i16).or_default().as_mut());
-        foo_0(_x)
-    });
+    (unsafe { foo_0((*m.entry(0_i16).or_default().as_mut())) });
     assert!(((*m.entry(0_i16).or_default().as_mut()) == (1_u32)));
-    (unsafe {
-        let _x: *mut u32 = &mut (*m.entry(2_i16).or_default().as_mut()) as *mut u32;
-        bar_1(_x)
-    });
+    (unsafe { bar_1(&mut (*m.entry(2_i16).or_default().as_mut()) as *mut u32) });
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (4_u32)));
     (*m.entry(0_i16).or_default().as_mut()) = (*m.entry(0_i16).or_default().as_mut())
         .wrapping_add((*m.entry(2_i16).or_default().as_mut()));

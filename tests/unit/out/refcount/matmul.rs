@@ -51,11 +51,7 @@ pub fn matmul_1(
     let n2: Value<i32> = Rc::new(RefCell::new(n2));
     let p2: Value<i32> = Rc::new(RefCell::new(p2));
     let m3: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(
-        ({
-            let _n: i32 = (*n1.borrow());
-            let _p: i32 = (*p2.borrow());
-            matalloc_0(_n, _p, 0)
-        }),
+        ({ matalloc_0((*n1.borrow()), (*p2.borrow()), 0) }),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n1.borrow())) {
@@ -92,18 +88,10 @@ fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(1));
     let p: Value<i32> = Rc::new(RefCell::new(10));
     let m1: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(
-        ({
-            let _n: i32 = (*n.borrow());
-            let _p: i32 = (*p.borrow());
-            matalloc_0(_n, _p, 1)
-        }),
+        ({ matalloc_0((*n.borrow()), (*p.borrow()), 1) }),
     ));
     let m2: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(
-        ({
-            let _n: i32 = (*p.borrow());
-            let _p: i32 = (*n.borrow());
-            matalloc_0(_n, _p, 2)
-        }),
+        ({ matalloc_0((*p.borrow()), (*n.borrow()), 2) }),
     ));
     let m3: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> = Rc::new(RefCell::new(
         ({

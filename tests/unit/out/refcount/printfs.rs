@@ -41,23 +41,19 @@ fn main_0() -> i32 {
         "{}",
         (Rc::new(RefCell::new(
             ({
-                let _v: Vec<u8> = Ptr::from_string_literal(b"foo")
-                    .to_c_string_iterator()
-                    .chain(std::iter::once(0))
-                    .collect::<Vec<u8>>();
-                fn_0(_v)
+                fn_0(
+                    Ptr::from_string_literal(b"foo")
+                        .to_c_string_iterator()
+                        .chain(std::iter::once(0))
+                        .collect::<Vec<u8>>(),
+                )
             })
         ))
         .as_pointer() as Ptr<u8>)
     );
     println!(
         "{}",
-        (({
-            let _v: Ptr<Vec<u8>> = s.as_pointer();
-            fn2_1(_v)
-        })
-        .to_strong()
-        .as_pointer() as Ptr<u8>)
+        (({ fn2_1(s.as_pointer(),) }).to_strong().as_pointer() as Ptr<u8>)
     );
     return 0;
 }

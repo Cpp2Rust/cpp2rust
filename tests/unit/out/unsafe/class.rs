@@ -30,16 +30,14 @@ impl Pair {
         return ((unsafe { self.GetFirst() })
             + (unsafe {
                 let _field: *mut i32 = &mut self.first as *mut i32;
-                let _new_val: i32 = new_first;
-                self.Set(_field, _new_val)
+                self.Set(_field, new_first)
             }));
     }
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
         return ((unsafe { self.GetSecond() })
             + (unsafe {
                 let _field: *mut i32 = &mut self.second as *mut i32;
-                let _new_val: i32 = new_second;
-                self.Set(_field, _new_val)
+                self.Set(_field, new_second)
             }));
     }
 }
@@ -64,10 +62,7 @@ pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
         });
     } else {
         return (unsafe {
-            let _new_second: i32 = (unsafe {
-                let _new_first: i32 = -10_i32;
-                (*route).path.SetFirst(_new_first)
-            });
+            let _new_second: i32 = (unsafe { (*route).path.SetFirst(-10_i32) });
             (*route).path.SetSecond(_new_second)
         });
     }
@@ -93,16 +88,8 @@ unsafe fn main_0() -> i32 {
         },
         cost: 10_f64,
     };
-    let mut old_cost: f64 = (unsafe {
-        let _new_cost: f64 = (unsafe { route2.SetCost(15_f64) });
-        route1.SetCost(_new_cost)
-    });
-    return (((((unsafe {
-        let _route: *mut Route = &mut route1 as *mut Route;
-        RandomRoute_0(_route)
-    }) + (unsafe {
-        let _route: *mut Route = &mut route2 as *mut Route;
-        RandomRoute_0(_route)
-    })) as f64)
+    let mut old_cost: f64 = (unsafe { route1.SetCost((unsafe { route2.SetCost(15_f64) })) });
+    return (((((unsafe { RandomRoute_0(&mut route1 as *mut Route) })
+        + (unsafe { RandomRoute_0(&mut route2 as *mut Route) })) as f64)
         + (old_cost)) as i32);
 }

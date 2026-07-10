@@ -32,7 +32,23 @@ impl Clone for Node {
         this
     }
 }
-impl ByteRepr for Node {}
+impl ByteRepr for Node {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.val.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.prev.borrow()).to_bytes(&mut buf[16..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            val: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            next: Rc::new(RefCell::new(<Ptr<Node>>::from_bytes(&buf[8..16]))),
+            prev: Rc::new(RefCell::new(<Ptr<Node>>::from_bytes(&buf[16..24]))),
+        }
+    }
+}
 pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let idx: Value<i32> = Rc::new(RefCell::new(idx));
@@ -63,10 +79,7 @@ pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
         let __rhs = (*(*(*curr.borrow()).upgrade().deref()).next.borrow()).clone();
         (*curr.borrow_mut()) = __rhs;
     }
-    ({
-        let _n: Ptr<Node> = (new_node).clone();
-        (*(*curr.borrow()).upgrade().deref()).SetNext(_n)
-    });
+    ({ (*(*curr.borrow()).upgrade().deref()).SetNext((new_node).clone()) });
     ({
         let _p: Ptr<Node> = (*curr.borrow()).clone();
         (*new_node.upgrade().deref()).SetPrev(_p)
@@ -195,161 +208,96 @@ fn main_0() -> i32 {
         let _new_node: Ptr<Node> = n7.as_pointer();
         Append_2(_head, _new_node)
     });
-    let __rhs = ({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Delete_3(_head, 5)
-    });
+    let __rhs = ({ Delete_3((*head.borrow()).clone(), 5) });
     (*head.borrow_mut()) = __rhs;
-    let __rhs = ({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Delete_3(_head, 0)
-    });
+    let __rhs = ({ Delete_3((*head.borrow()).clone(), 0) });
     (*head.borrow_mut()) = __rhs;
-    let __rhs = ({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        let _val: i32 = -2_i32;
-        Delete_3(_head, _val)
-    });
+    let __rhs = ({ Delete_3((*head.borrow()).clone(), -2_i32) });
     (*head.borrow_mut()) = __rhs;
-    let tail: Value<Ptr<Node>> = Rc::new(RefCell::new(
-        ({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Tail_4(_head)
-        }),
-    ));
+    let tail: Value<Ptr<Node>> = Rc::new(RefCell::new(({ Tail_4((*head.borrow()).clone()) })));
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 0)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
+            .val
+            .borrow())
             == 4)
     );
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 1)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
+            .val
+            .borrow())
             == 3)
     );
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 2)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
+            .val
+            .borrow())
             == 2)
     );
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 3)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 3,) }).upgrade().deref())
+            .val
+            .borrow())
             == 1)
     );
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 4)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref())
+            .val
+            .borrow())
             == -1_i32)
     );
-    assert!(({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Find_0(_head, 5)
-    })
-    .is_null());
+    assert!(({ Find_0((*head.borrow()).clone(), 5,) }).is_null());
     assert!(
-        ((*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 0)
-        })
-        .upgrade()
-        .deref())
+        ((*(*({ FindBack_1((*tail.borrow()).clone(), 0,) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
             == -1_i32)
     );
     assert!(
-        ((*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 1)
-        })
-        .upgrade()
-        .deref())
+        ((*(*({ FindBack_1((*tail.borrow()).clone(), 1,) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
             == 1)
     );
     assert!(
-        ((*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 2)
-        })
-        .upgrade()
-        .deref())
+        ((*(*({ FindBack_1((*tail.borrow()).clone(), 2,) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
             == 2)
     );
     assert!(
-        ((*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 3)
-        })
-        .upgrade()
-        .deref())
+        ((*(*({ FindBack_1((*tail.borrow()).clone(), 3,) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
             == 3)
     );
     assert!(
-        ((*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 4)
-        })
-        .upgrade()
-        .deref())
+        ((*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
             == 4)
     );
-    assert!((*(*({
-        let _tail: Ptr<Node> = (*tail.borrow()).clone();
-        FindBack_1(_tail, 4)
-    })
-    .upgrade()
-    .deref())
-    .prev
-    .borrow())
-    .is_null());
     assert!(
-        ((*(*(*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 0)
-        })
-        .upgrade()
-        .deref())
-        .next
+        (*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
+            .upgrade()
+            .deref())
+        .prev
         .borrow())
+        .is_null()
+    );
+    assert!(
+        ((*(*(*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
+            .next
+            .borrow())
         .upgrade()
         .deref())
         .val
@@ -357,14 +305,9 @@ fn main_0() -> i32 {
             == 3)
     );
     assert!(
-        ((*(*(*(*(*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 1)
-        })
-        .upgrade()
-        .deref())
-        .next
-        .borrow())
+        ((*(*(*(*(*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
+            .next
+            .borrow())
         .upgrade()
         .deref())
         .next
@@ -376,36 +319,25 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*(*(*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 2)
-        })
-        .upgrade()
-        .deref())
-        .prev
-        .borrow())
+        ((*(*(*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
+            .prev
+            .borrow())
         .upgrade()
         .deref())
         .val
         .borrow())
             == 3)
     );
-    assert!((*(*({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Find_0(_head, 4)
-    })
-    .upgrade()
-    .deref())
-    .next
-    .borrow())
-    .is_null());
     assert!(
-        ((*(*(*(*(*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 1)
-        })
-        .upgrade()
-        .deref())
+        (*(*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref())
+            .next
+            .borrow())
+        .is_null()
+    );
+    assert!(
+        ((*(*(*(*(*(*({ FindBack_1((*tail.borrow()).clone(), 1,) })
+            .upgrade()
+            .deref())
         .prev
         .borrow())
         .upgrade()
@@ -418,169 +350,90 @@ fn main_0() -> i32 {
         .borrow())
             == 3)
     );
-    (*(*(*(*({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Find_0(_head, 0)
-    })
-    .upgrade()
-    .deref())
-    .next
-    .borrow())
+    (*(*(*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
+        .next
+        .borrow())
     .upgrade()
     .deref())
     .val
     .borrow_mut()) = 30;
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 1)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
+            .val
+            .borrow())
             == 30)
     );
-    let __rhs = ((*(*({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Find_0(_head, 0)
-    })
-    .upgrade()
-    .deref())
-    .val
-    .borrow())
-        + (*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 3)
-        })
-        .upgrade()
-        .deref())
+    let __rhs = ((*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
         .val
-        .borrow()));
-    (*(*(*(*({
-        let _head: Ptr<Node> = (*head.borrow()).clone();
-        Find_0(_head, 1)
-    })
-    .upgrade()
-    .deref())
-    .next
-    .borrow())
+        .borrow())
+        + (*(*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref())
+            .val
+            .borrow()));
+    (*(*(*(*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
+        .next
+        .borrow())
     .upgrade()
     .deref())
     .val
     .borrow_mut()) = __rhs;
     assert!(
-        ((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 2)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
+        ((*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
+            .val
+            .borrow())
             == (4 + 1))
     );
     let sum: Value<i32> = Rc::new(RefCell::new(
-        (((((*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 0)
-        })
-        .upgrade()
-        .deref())
-        .val
-        .borrow())
-            + (*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                Find_0(_head, 1)
-            })
-            .upgrade()
-            .deref())
+        (((((*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
             .val
-            .borrow()))
-            + (*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                Find_0(_head, 2)
-            })
-            .upgrade()
-            .deref())
-            .val
-            .borrow()))
-            + (*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                Find_0(_head, 3)
-            })
-            .upgrade()
-            .deref())
-            .val
-            .borrow()))
-            + (*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                Find_0(_head, 4)
-            })
-            .upgrade()
-            .deref())
-            .val
-            .borrow())),
+            .borrow())
+            + (*(*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
+                .val
+                .borrow()))
+            + (*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
+                .val
+                .borrow()))
+            + (*(*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref())
+                .val
+                .borrow()))
+            + (*(*({ Find_0((*head.borrow()).clone(), 4) }).upgrade().deref())
+                .val
+                .borrow())),
     ));
     assert!(((*sum.borrow()) == ((((4 + 30) + 5) + 1) + -1_i32)));
     assert!(
         ({
-            let _lhs = (*(*({
-                let _head: Ptr<Node> = (*head.borrow()).clone();
-                Find_0(_head, 0)
-            })
-            .upgrade()
-            .deref())
-            .val
-            .borrow());
-            _lhs + (*(*({
-                let _tail: Ptr<Node> = (*tail.borrow()).clone();
-                FindBack_1(_tail, 0)
-            })
-            .upgrade()
-            .deref())
+            let _lhs = (*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
+                .val
+                .borrow());
+            _lhs + (*(*({ FindBack_1((*tail.borrow()).clone(), 0) })
+                .upgrade()
+                .deref())
             .val
             .borrow())
         } == (4 + -1_i32))
     );
     assert!({
-        let _lhs = (*(*(*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 2)
-        })
-        .upgrade()
-        .deref())
-        .next
-        .borrow())
+        let _lhs = (*(*(*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
+            .next
+            .borrow())
         .upgrade()
         .deref())
         .val
         .borrow());
-        _lhs == (*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 1)
-        })
-        .upgrade()
-        .deref())
+        _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 1) })
+            .upgrade()
+            .deref())
         .val
         .borrow())
     });
     assert!({
-        let _lhs = (*(*({
-            let _head: Ptr<Node> = (*head.borrow()).clone();
-            Find_0(_head, 0)
-        })
-        .upgrade()
-        .deref())
-        .prev
-        .borrow())
+        let _lhs = (*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
+            .prev
+            .borrow())
         .clone();
-        _lhs == (*(*({
-            let _tail: Ptr<Node> = (*tail.borrow()).clone();
-            FindBack_1(_tail, 4)
-        })
-        .upgrade()
-        .deref())
+        _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 4) })
+            .upgrade()
+            .deref())
         .prev
         .borrow())
         .clone()

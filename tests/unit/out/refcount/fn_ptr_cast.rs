@@ -53,7 +53,19 @@ impl Clone for Command {
         this
     }
 }
-impl ByteRepr for Command {}
+impl ByteRepr for Command {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
     (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
@@ -76,16 +88,13 @@ pub fn add_offset_4(base: Ptr<i32>, offset: i32) -> i32 {
 pub fn test_call_through_cast_5() {
     let gfn: Value<FnPtr<fn(AnyPtr, i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(Ptr<i32>, i32) -> i32>::new(add_offset_4).cast::<fn(AnyPtr, i32) -> i32>(Some(
-            (|a0: AnyPtr, a1: i32| -> i32 { add_offset_4(a0.cast::<i32>().unwrap(), a1) })
+            (|a0: AnyPtr, a1: i32| -> i32 { add_offset_4(a0.reinterpret_cast::<i32>(), a1) })
                 as fn(AnyPtr, i32) -> i32,
         )),
     ));
     let val: Value<i32> = Rc::new(RefCell::new(100));
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _arg0: AnyPtr = ((val.as_pointer()) as Ptr<i32>).to_any();
-            (*(*gfn.borrow()))(_arg0, 42)
-        }),
+        ({ (*(*gfn.borrow()))(((val.as_pointer()) as Ptr<i32>).to_any(), 42) }),
     ));
     assert!(((*result.borrow()) == 142));
 }

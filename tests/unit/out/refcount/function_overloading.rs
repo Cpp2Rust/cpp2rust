@@ -63,6 +63,9 @@ impl Clone for Foo {
     }
 }
 impl ByteRepr for Foo {
+    fn byte_size() -> usize {
+        1
+    }
     fn to_bytes(&self, buf: &mut [u8]) {}
     fn from_bytes(buf: &[u8]) -> Self {
         Self {}
@@ -83,14 +86,8 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let out: Value<i32> = Rc::new(RefCell::new(0));
     (*out.borrow_mut()) += ({ foo_0(0) });
-    (*out.borrow_mut()) += ({
-        let _x: Ptr<i32> = (x.as_pointer());
-        foo_1(_x)
-    });
-    (*out.borrow_mut()) += ({
-        let _x: Ptr<i32> = x.as_pointer();
-        bar_4(_x)
-    });
+    (*out.borrow_mut()) += ({ foo_1((x.as_pointer())) });
+    (*out.borrow_mut()) += ({ bar_4(x.as_pointer()) });
     (*out.borrow_mut()) += ({
         let _x: Ptr<i32> = (x.as_pointer());
         let _y: Ptr<i32> = (x.as_pointer());
@@ -103,11 +100,7 @@ fn main_0() -> i32 {
         foo_2(_x, _y)
     });
     let bar: Value<i32> = Rc::new(RefCell::new(5));
-    (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) }))
-        + ({
-            let _x: Ptr<i32> = (x.as_pointer());
-            foo_1(_x)
-        }));
+    (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) })) + ({ foo_1((x.as_pointer())) }));
     let foo1: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     let foo2: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     ({ (*foo1.borrow()).foo() });

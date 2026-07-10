@@ -26,12 +26,9 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let out: Value<i32> = Rc::new(RefCell::new(
-        (({
-            let _p: Ptr<i32> = ((*p1.borrow()).offset((1) as isize));
-            foo_0(_p)
-        })
-        .offset((3) as isize)
-        .read()),
+        (({ foo_0(((*p1.borrow()).offset((1) as isize))) })
+            .offset((3) as isize)
+            .read()),
     ));
     (*p1.borrow()).delete_array();
     return (*out.borrow());

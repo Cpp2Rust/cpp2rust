@@ -24,11 +24,7 @@ fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(1));
     if ((*x1.borrow()) != 0) {
         let x2: Value<i32> = Rc::new(RefCell::new(-1_i32));
-        (*out.borrow_mut()) = ({
-            let _x1: Ptr<i32> = x1.as_pointer();
-            let _x2: Ptr<i32> = x2.as_pointer();
-            smaller_0(_x1, _x2)
-        });
+        (*out.borrow_mut()) = ({ smaller_0(x1.as_pointer(), x2.as_pointer()) });
     }
     return ((*out.borrow()).read());
 }

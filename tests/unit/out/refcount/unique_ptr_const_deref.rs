@@ -32,12 +32,6 @@ pub fn main() {
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     (*(*h.borrow()).val.borrow_mut()) = Some(Rc::new(RefCell::new(10)));
-    ({
-        let _h: Ptr<Holder> = (h.as_pointer());
-        write_val_1(_h, 42)
-    });
-    return ({
-        let _h: Ptr<Holder> = (h.as_pointer());
-        read_val_0(_h)
-    });
+    ({ write_val_1((h.as_pointer()), 42) });
+    return ({ read_val_0((h.as_pointer())) });
 }

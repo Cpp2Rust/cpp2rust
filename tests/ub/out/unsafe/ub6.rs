@@ -46,14 +46,7 @@ unsafe fn main_0() -> i32 {
             .map(|_| <*mut i32>::default())
             .collect::<Box<[_]>>(),
     );
-    (unsafe {
-        let _arr: *mut Option<Box<[*mut i32]>> = &mut arr as *mut Option<Box<[*mut i32]>>;
-        let _n1: *mut i32 = &mut n as *mut i32;
-        fill_1(_arr, _n1)
-    });
-    return ((unsafe {
-        let _arr: *mut Option<Box<[*mut i32]>> = &mut arr as *mut Option<Box<[*mut i32]>>;
-        let _n1: *mut i32 = &mut n as *mut i32;
-        any_2(_arr, _n1)
-    }) as i32);
+    (unsafe { fill_1(&mut arr as *mut Option<Box<[*mut i32]>>, &mut n as *mut i32) });
+    return ((unsafe { any_2(&mut arr as *mut Option<Box<[*mut i32]>>, &mut n as *mut i32) })
+        as i32);
 }

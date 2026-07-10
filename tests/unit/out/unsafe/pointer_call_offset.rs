@@ -22,11 +22,8 @@ unsafe fn main_0() -> i32 {
         (*p1.offset((i) as isize)) = (i as i32);
         i.prefix_inc();
     }
-    let mut out: i32 = (*(unsafe {
-        let _p: *mut i32 = (&mut (*p1.offset((1) as isize)) as *mut i32);
-        foo_0(_p)
-    })
-    .offset((3) as isize));
+    let mut out: i32 =
+        (*(unsafe { foo_0((&mut (*p1.offset((1) as isize)) as *mut i32)) }).offset((3) as isize));
 
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         p1,

@@ -29,7 +29,19 @@ impl Default for StackArray {
         }
     }
 }
-impl ByteRepr for StackArray {}
+impl ByteRepr for StackArray {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.arr.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            arr: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 pub fn IncrementAll_0(s: Ptr<StackArray>) {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
@@ -52,9 +64,6 @@ fn main_0() -> i32 {
             (x.as_pointer()),
         ]))),
     }));
-    ({
-        let _s: Ptr<StackArray> = s.as_pointer();
-        IncrementAll_0(_s)
-    });
+    ({ IncrementAll_0(s.as_pointer()) });
     return (*x.borrow());
 }

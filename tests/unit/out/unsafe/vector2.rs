@@ -44,10 +44,6 @@ unsafe fn main_0() -> i32 {
     v.push(6);
     v2.push(8);
     v2.push(9);
-    (unsafe {
-        let _v: *mut Vec<i32> = &mut v as *mut Vec<i32>;
-        let _v3: Vec<i32> = v2.clone();
-        fn_0(_v, _v3)
-    });
+    (unsafe { fn_0(&mut v as *mut Vec<i32>, v2.clone()) });
     return 0;
 }

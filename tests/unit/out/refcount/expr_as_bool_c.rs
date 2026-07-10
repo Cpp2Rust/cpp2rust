@@ -81,45 +81,13 @@ fn main_0() -> i32 {
     ));
     assert!(((((*either.borrow()) == 1) as i32) != 0));
     assert!(((((*both.borrow()) == 0) as i32) != 0));
-    assert!(
-        (((({
-            let _rc: i32 = -1_i32;
-            cmp_eq_0(_rc)
-        }) == 1) as i32)
-            != 0)
-    );
+    assert!((((({ cmp_eq_0(-1_i32,) }) == 1) as i32) != 0));
     assert!((((({ cmp_eq_0(0,) }) == 0) as i32) != 0));
     assert!(
-        (((({
-            let _p: Ptr<u8> = (*p1.borrow()).clone();
-            let _q: Ptr<u8> = (*p2.borrow()).clone();
-            cmp_or_ptr_1(_p, _q)
-        }) == 1) as i32)
-            != 0)
+        (((({ cmp_or_ptr_1((*p1.borrow()).clone(), (*p2.borrow()).clone(),) }) == 1) as i32) != 0)
     );
-    assert!(
-        (((({
-            let _p: Ptr<u8> = Ptr::<u8>::null();
-            let _q: Ptr<u8> = Ptr::<u8>::null();
-            cmp_or_ptr_1(_p, _q)
-        }) == 0) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _s1: Ptr<u8> = Ptr::<u8>::null();
-            let _s2: Ptr<u8> = Ptr::<u8>::null();
-            both_null_2(_s1, _s2)
-        }) == 1) as i32)
-            != 0)
-    );
-    assert!(
-        (((({
-            let _s1: Ptr<u8> = (*p1.borrow()).clone();
-            let _s2: Ptr<u8> = Ptr::<u8>::null();
-            both_null_2(_s1, _s2)
-        }) == 0) as i32)
-            != 0)
-    );
+    assert!((((({ cmp_or_ptr_1(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 0) as i32) != 0));
+    assert!((((({ both_null_2(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 1) as i32) != 0));
+    assert!((((({ both_null_2((*p1.borrow()).clone(), Ptr::<u8>::null(),) }) == 0) as i32) != 0));
     return 0;
 }

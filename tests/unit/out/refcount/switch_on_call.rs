@@ -13,10 +13,7 @@ pub fn double_it_0(v: i32) -> i32 {
 pub fn switch_on_call_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     'switch: {
-        let __match_cond = ({
-            let _v: i32 = (*x.borrow());
-            double_it_0(_v)
-        });
+        let __match_cond = ({ double_it_0((*x.borrow())) });
         match __match_cond {
             __v if __v == 0 => {
                 return 100;

@@ -13,6 +13,7 @@
 #include <cctype>
 #include <filesystem>
 #include <format>
+#include <ranges>
 #include <unordered_set>
 
 #include "converter/lex.h"
@@ -129,24 +130,14 @@ bool IsInMainFile(const clang::Decl *decl) {
   return src_mgr.isInMainFile(src_mgr.getExpansionLoc(loc));
 }
 
-bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl) {
-  auto field = clang::dyn_cast<clang::FieldDecl>(decl);
-  if (!field || !field->getType()->isPointerType() ||
-      !field->getType()->getPointeeType()->isCharType()) {
-    return false;
+bool IsUnionArrayMember(const clang::Expr *base) {
+  if (auto *me =
+          clang::dyn_cast<clang::MemberExpr>(base->IgnoreParenImpCasts())) {
+    if (auto *fd = clang::dyn_cast<clang::FieldDecl>(me->getMemberDecl())) {
+      return fd->getParent()->isUnion() && fd->getType()->isArrayType();
+    }
   }
-  return field->getASTContext().getSourceManager().isInSystemHeader(
-      field->getParent()->getLocation());
-}
-
-bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl) {
-  auto field = clang::dyn_cast<clang::FieldDecl>(decl);
-  if (!field || !field->getType()->isArrayType() ||
-      !field->getType()->getArrayElementTypeNoTypeQual()->isCharType()) {
-    return false;
-  }
-  return field->getASTContext().getSourceManager().isInSystemHeader(
-      field->getParent()->getLocation());
+  return false;
 }
 
 bool IsUserDefinedDecl(const clang::Decl *decl) {
@@ -197,6 +188,46 @@ bool IsMut(clang::QualType qual_type) {
   return !qual_type.isConstQualified() &&
          !(qual_type->isReferenceType() &&
            qual_type->getPointeeType().isConstQualified());
+}
+
+bool TypeImplementsByteRepr(clang::QualType qt) {
+  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
+    return true;
+  }
+  if (qt->isPointerType()) {
+    return true;
+  }
+  if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return TypeImplementsByteRepr(arr->getElementType());
+  }
+  if (const auto *rd = qt->getAsRecordDecl()) {
+    if (rd->getASTContext().getSourceManager().isInSystemHeader(
+            rd->getLocation())) {
+      return false;
+    }
+    if (rd->isUnion()) {
+      return true;
+    }
+    for (const auto *field : rd->fields()) {
+      if (!TypeImplementsByteRepr(field->getType())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+bool RustSizeDivergesFromC(clang::QualType qt) {
+  qt = qt.getCanonicalType();
+  // Records have Rc<RefCell<>> fields that diverge from the C size
+  if (qt->isRecordType()) {
+    return true;
+  }
+  if (auto *arr = qt->getAsArrayTypeUnsafe()) {
+    return RustSizeDivergesFromC(arr->getElementType());
+  }
+  return false;
 }
 
 bool IsMutatingCall(const clang::CallExpr *expr) {
@@ -641,6 +672,78 @@ clang::Expr *GetCallObject(clang::CallExpr *expr) {
       return opcall->getArg(0)->IgnoreParenImpCasts();
   }
   return nullptr;
+}
+
+static void GetAllVarsImpl(const clang::Stmt *stmt,
+                           std::unordered_set<const clang::ValueDecl *> &vars) {
+  if (!stmt) {
+    return;
+  }
+
+  if (auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(stmt)) {
+    vars.insert(decl_ref->getDecl());
+  } else if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
+    vars.insert(member->getMemberDecl());
+    GetAllVarsImpl(member->getBase(), vars);
+  }
+
+  for (auto *child : stmt->children()) {
+    GetAllVarsImpl(child, vars);
+  }
+}
+
+std::unordered_set<const clang::ValueDecl *>
+GetAllVars(const clang::Stmt *stmt) {
+  std::unordered_set<const clang::ValueDecl *> vars;
+  GetAllVarsImpl(stmt, vars);
+  return vars;
+}
+
+bool ReferencesThis(const clang::Stmt *stmt) {
+  if (!stmt) {
+    return false;
+  }
+  if (clang::isa<clang::CXXThisExpr>(stmt)) {
+    return true;
+  }
+  for (auto *child : stmt->children()) {
+    if (ReferencesThis(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs) {
+  auto lhs_vars = GetAllVars(lhs);
+  auto rhs_vars = GetAllVars(rhs);
+
+  auto predicate = [lhs](auto *var) {
+    auto qual_type = var->getType();
+    return (qual_type->isPointerType() || qual_type->isReferenceType()) &&
+           qual_type->getPointeeType()
+                   .getCanonicalType()
+                   .getUnqualifiedType() ==
+               lhs->getType().getCanonicalType().getUnqualifiedType();
+  };
+
+  if (std::ranges::any_of(rhs_vars, predicate) ||
+      (std::ranges::any_of(lhs_vars, predicate) && !rhs_vars.empty())) {
+    return true;
+  }
+
+  for (auto *lhs_var : lhs_vars) {
+    if (rhs_vars.count(lhs_var))
+      return true;
+  }
+  return false;
+}
+
+bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b) {
+  if (ReferencesThis(a) && ReferencesThis(b)) {
+    return true;
+  }
+  return MayCauseBorrowMutError(a, b) || MayCauseBorrowMutError(b, a);
 }
 
 std::vector<clang::Expr *>

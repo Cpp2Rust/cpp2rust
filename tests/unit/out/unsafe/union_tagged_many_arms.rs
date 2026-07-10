@@ -31,7 +31,7 @@ libcc2rs::impl_enum_inc_dec!(Tag_enum);
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union anon_0 {
-    pub text: *const u8,
+    pub text: *const libc::c_char,
     pub handle: *mut ::libc::c_void,
     pub signed_n: i64,
     pub unsigned_n: u64,
@@ -64,7 +64,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((b.payload.unsigned_n) == (3735928559_u64)) as i32) != 0));
     let mut c: Slot = <Slot>::default();
     c.tag = Tag_enum::T_TEXT;
-    c.payload.text = (b"hello\0".as_ptr().cast_mut()).cast_const();
+    c.payload.text = (c"hello".as_ptr().cast_mut()).cast_const();
     assert!((((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
     let mut d: Slot = <Slot>::default();
     d.tag = Tag_enum::T_FLOAT;

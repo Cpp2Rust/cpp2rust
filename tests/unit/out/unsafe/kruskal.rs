@@ -119,14 +119,8 @@ impl DisjointSet {
         return self.parent.as_mut().unwrap()[(x as usize)];
     }
     pub unsafe fn merge(&mut self, mut x: i32, mut y: i32) {
-        let mut xset: i32 = (unsafe {
-            let _x: i32 = x;
-            self.find(_x)
-        });
-        let mut yset: i32 = (unsafe {
-            let _x: i32 = y;
-            self.find(_x)
-        });
+        let mut xset: i32 = (unsafe { self.find(x) });
+        let mut yset: i32 = (unsafe { self.find(y) });
         if ((xset) == (yset)) {
             return;
         }
@@ -178,18 +172,8 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
         let mut x: i32 = (*graph).edges.as_mut().unwrap()[(i as usize)].u;
         let mut y: i32 = (*graph).edges.as_mut().unwrap()[(i as usize)].v;
         let mut w: f64 = (*graph).edges.as_mut().unwrap()[(i as usize)].weight;
-        if ((unsafe {
-            let _x: i32 = x;
-            set.find(_x)
-        }) != (unsafe {
-            let _x: i32 = y;
-            set.find(_x)
-        })) {
-            (unsafe {
-                let _x: i32 = x;
-                let _y: i32 = y;
-                set.merge(_x, _y)
-            });
+        if ((unsafe { set.find(x) }) != (unsafe { set.find(y) })) {
+            (unsafe { set.merge(x, y) });
             total_weight += w;
         }
         i.prefix_inc();
@@ -238,9 +222,6 @@ unsafe fn main_0() -> i32 {
         v: 3,
         weight: 5_f64,
     };
-    let mut total_weight: f64 = (unsafe {
-        let _graph: *mut Graph = &mut graph as *mut Graph;
-        MSTKruskal_2(_graph)
-    });
+    let mut total_weight: f64 = (unsafe { MSTKruskal_2(&mut graph as *mut Graph) });
     return (total_weight as i32);
 }

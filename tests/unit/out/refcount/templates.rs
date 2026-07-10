@@ -50,28 +50,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(10));
     let y: Value<f64> = Rc::new(RefCell::new(((*x.borrow()) as f64)));
-    return (((((((({
-        let _x: i32 = (*x.borrow());
-        foo_0(_x)
-    }) as f64)
-        + ({
-            let _x: f64 = (*y.borrow());
-            foo_1(_x)
-        }))
-        + ((({
-            let _p: Ptr<i32> = (x.as_pointer());
-            bar_2(_p, true)
-        })
-        .read()) as f64))
-        + (({
-            let _p: Ptr<f64> = (y.as_pointer());
-            bar_3(_p, true)
-        })
-        .read()))
+    return (((((((({ foo_0((*x.borrow())) }) as f64) + ({ foo_1((*y.borrow())) }))
+        + ((({ bar_2((x.as_pointer()), true) }).read()) as f64))
+        + (({ bar_3((y.as_pointer()), true) }).read()))
         + (({ func_4(1, 2, 3) }) as f64))
-        + (({
-            let _x2: i32 = (*x.borrow());
-            let _x3: f64 = (*y.borrow());
-            func_5(2.0E+0, _x2, _x3)
-        }) as f64)) as i32);
+        + (({ func_5(2.0E+0, (*x.borrow()), (*y.borrow())) }) as f64)) as i32);
 }

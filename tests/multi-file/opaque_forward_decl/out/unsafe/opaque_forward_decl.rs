@@ -22,10 +22,7 @@ unsafe fn main_0() -> i32 {
         p: std::ptr::null_mut(),
         x: 42,
     };
-    (unsafe {
-        let _c: *mut container = (&mut c as *mut container);
-        touch_0(_c)
-    });
+    (unsafe { touch_0((&mut c as *mut container)) });
     assert!(((((c.x) == (42)) as i32) != 0));
     assert!(((((c.p).is_null()) as i32) != 0));
     return 0;

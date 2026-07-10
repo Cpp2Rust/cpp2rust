@@ -17,10 +17,11 @@ pub unsafe fn test_errno_0() {
 }
 pub unsafe fn test_errno_preserved_across_strdup_1() {
     (*libcc2rs::cpp2rust_errno()) = 99;
-    let mut d: *mut u8 = libcc2rs::strdup_unsafe((b"hello\0".as_ptr().cast_mut()).cast_const());
+    let mut d: *mut libc::c_char =
+        libcc2rs::strdup_unsafe((c"hello".as_ptr().cast_mut()).cast_const());
     assert!((((!((d).is_null())) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno()) == (99)) as i32) != 0));
-    libcc2rs::free_unsafe((d as *mut u8 as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d as *mut libc::c_char as *mut ::libc::c_void));
     (*libcc2rs::cpp2rust_errno()) = 0;
 }
 pub unsafe fn test_errno_from_fseek_2() {

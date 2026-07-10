@@ -6,17 +6,17 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub unsafe fn get_greeting_0() -> *const u8 {
-    return (b"hello\0".as_ptr().cast_mut()).cast_const();
+pub unsafe fn get_greeting_0() -> *const libc::c_char {
+    return (c"hello".as_ptr().cast_mut()).cast_const();
 }
-pub unsafe fn get_empty_1() -> *const u8 {
-    return (b"\0".as_ptr().cast_mut()).cast_const();
+pub unsafe fn get_empty_1() -> *const libc::c_char {
+    return (c"".as_ptr().cast_mut()).cast_const();
 }
-pub unsafe fn get_branch_2(mut x: i32) -> *const u8 {
+pub unsafe fn get_branch_2(mut x: i32) -> *const libc::c_char {
     if ((((x) > (0)) as i32) != 0) {
-        return (b"positive\0".as_ptr().cast_mut()).cast_const();
+        return (c"positive".as_ptr().cast_mut()).cast_const();
     }
-    return (b"non-positive\0".as_ptr().cast_mut()).cast_const();
+    return (c"non-positive".as_ptr().cast_mut()).cast_const();
 }
 pub fn main() {
     unsafe {
@@ -24,20 +24,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: *const u8 = (unsafe { get_greeting_0() });
+    let mut a: *const libc::c_char = (unsafe { get_greeting_0() });
     assert!((((((*a.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
     assert!((((((*a.offset((4) as isize)) as i32) == ('o' as i32)) as i32) != 0));
     assert!((((((*a.offset((5) as isize)) as i32) == ('\0' as i32)) as i32) != 0));
-    let mut b: *const u8 = (unsafe { get_empty_1() });
+    let mut b: *const libc::c_char = (unsafe { get_empty_1() });
     assert!((((((*b.offset((0) as isize)) as i32) == ('\0' as i32)) as i32) != 0));
-    let mut c: *const u8 = (unsafe { get_branch_2(1) });
+    let mut c: *const libc::c_char = (unsafe { get_branch_2(1) });
     assert!((((((*c.offset((0) as isize)) as i32) == ('p' as i32)) as i32) != 0));
     assert!((((((*c.offset((7) as isize)) as i32) == ('e' as i32)) as i32) != 0));
     assert!((((((*c.offset((8) as isize)) as i32) == ('\0' as i32)) as i32) != 0));
-    let mut d: *const u8 = (unsafe {
-        let _x: i32 = -1_i32;
-        get_branch_2(_x)
-    });
+    let mut d: *const libc::c_char = (unsafe { get_branch_2(-1_i32) });
     assert!((((((*d.offset((0) as isize)) as i32) == ('n' as i32)) as i32) != 0));
     assert!((((((*d.offset((11) as isize)) as i32) == ('e' as i32)) as i32) != 0));
     assert!((((((*d.offset((12) as isize)) as i32) == ('\0' as i32)) as i32) != 0));

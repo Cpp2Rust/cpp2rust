@@ -93,13 +93,7 @@ unsafe fn main_0() -> i32 {
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     &((*hp).field);
     let mut nt: NonTrivial = <NonTrivial>::default();
-    (unsafe {
-        let _x: *const NonTrivial = &nt as *const NonTrivial;
-        unused_ref_param_1(_x)
-    });
-    (unsafe {
-        let _p: *const NonTrivial = (&mut nt as *mut NonTrivial).cast_const();
-        unused_ptr_param_2(_p)
-    });
+    (unsafe { unused_ref_param_1(&nt as *const NonTrivial) });
+    (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
     return 0;
 }

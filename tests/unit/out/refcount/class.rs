@@ -32,8 +32,7 @@ impl Pair {
         return (({ self.GetFirst() })
             + ({
                 let _field: Ptr<i32> = self.first.as_pointer();
-                let _new_val: i32 = (*new_first.borrow());
-                self.Set(_field, _new_val)
+                self.Set(_field, (*new_first.borrow()))
             }));
     }
     pub fn SetSecond(&self, new_second: i32) -> i32 {
@@ -41,8 +40,7 @@ impl Pair {
         return (({ self.GetSecond() })
             + ({
                 let _field: Ptr<i32> = self.second.as_pointer();
-                let _new_val: i32 = (*new_second.borrow());
-                self.Set(_field, _new_val)
+                self.Set(_field, (*new_second.borrow()))
             }));
     }
 }
@@ -56,6 +54,9 @@ impl Clone for Pair {
     }
 }
 impl ByteRepr for Pair {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.first.borrow()).to_bytes(&mut buf[0..4]);
         (*self.second.borrow()).to_bytes(&mut buf[4..8]);
@@ -89,7 +90,21 @@ impl Clone for Route {
         this
     }
 }
-impl ByteRepr for Route {}
+impl ByteRepr for Route {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.path.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.cost.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            path: Rc::new(RefCell::new(<Pair>::from_bytes(&buf[0..8]))),
+            cost: Rc::new(RefCell::new(<f64>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if (((*(*(*route.upgrade().deref()).path.borrow()).first.borrow()) % 2) != 0) {
         return ({
@@ -98,10 +113,8 @@ pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
         });
     } else {
         return ({
-            let _new_second: i32 = ({
-                let _new_first: i32 = -10_i32;
-                (*(*route.upgrade().deref()).path.borrow()).SetFirst(_new_first)
-            });
+            let _new_second: i32 =
+                ({ (*(*route.upgrade().deref()).path.borrow()).SetFirst(-10_i32) });
             (*(*route.upgrade().deref()).path.borrow()).SetSecond(_new_second)
         });
     }
@@ -126,17 +139,9 @@ fn main_0() -> i32 {
         cost: Rc::new(RefCell::new(10_f64)),
     }));
     let old_cost: Value<f64> = Rc::new(RefCell::new(
-        ({
-            let _new_cost: f64 = ({ (*route2.borrow()).SetCost(15_f64) });
-            (*route1.borrow()).SetCost(_new_cost)
-        }),
+        ({ (*route1.borrow()).SetCost(({ (*route2.borrow()).SetCost(15_f64) })) }),
     ));
-    return ((((({
-        let _route: Ptr<Route> = route1.as_pointer();
-        RandomRoute_0(_route)
-    }) + ({
-        let _route: Ptr<Route> = route2.as_pointer();
-        RandomRoute_0(_route)
-    })) as f64)
+    return ((((({ RandomRoute_0(route1.as_pointer()) }) + ({ RandomRoute_0(route2.as_pointer()) }))
+        as f64)
         + (*old_cost.borrow())) as i32);
 }

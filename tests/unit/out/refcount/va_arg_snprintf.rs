@@ -26,16 +26,24 @@ fn main_0() -> i32 {
     ));
     assert!(
         (((({
-            let _buf: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
-            extract_first_0(_buf, 1, Ptr::from_string_literal(b"%d"), &[(42).into()])
+            extract_first_0(
+                (buf.as_pointer() as Ptr<u8>),
+                1,
+                Ptr::from_string_literal(b"%d"),
+                &[(42).into()],
+            )
         }) == 42) as i32)
             != 0)
     );
     assert!((((((*buf.borrow())[(0) as usize] as i32) == 42) as i32) != 0));
     assert!(
         (((({
-            let _buf: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
-            extract_first_0(_buf, 1, Ptr::from_string_literal(b"%d"), &[(65).into()])
+            extract_first_0(
+                (buf.as_pointer() as Ptr<u8>),
+                1,
+                Ptr::from_string_literal(b"%d"),
+                &[(65).into()],
+            )
         }) == 65) as i32)
             != 0)
     );

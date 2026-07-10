@@ -24,6 +24,14 @@ impl From<i32> for Code {
     }
 }
 libcc2rs::impl_enum_inc_dec!(Code);
+impl ByteRepr for Code {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self as i32).to_bytes(buf);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        <Code>::from(i32::from_bytes(buf))
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

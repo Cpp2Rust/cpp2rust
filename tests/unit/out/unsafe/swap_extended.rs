@@ -38,10 +38,7 @@ unsafe fn main_0() -> i32 {
         x,
     );
     let mut a: i32 = 1;
-    let mut b: i32 = (unsafe {
-        let _x: i32 = a;
-        identity_0(_x)
-    });
+    let mut b: i32 = (unsafe { identity_0(a) });
     write!(
         std::fs::File::from_raw_fd(
             std::io::stdout()
@@ -68,18 +65,10 @@ unsafe fn main_0() -> i32 {
     );
     let mut d: i32 = 3;
     let mut e: i32 = 4;
-    (unsafe {
-        let _a: *mut i32 = (&mut d as *mut i32);
-        let _b: *mut i32 = (&mut e as *mut i32);
-        swap_by_ptr_1(_a, _b)
-    });
+    (unsafe { swap_by_ptr_1((&mut d as *mut i32), (&mut e as *mut i32)) });
     let mut f: i32 = 4;
     let mut g: i32 = 5;
-    (unsafe {
-        let _a: *mut i32 = &mut f as *mut i32;
-        let _b: *mut i32 = &mut g as *mut i32;
-        swap_by_ref_2(_a, _b)
-    });
+    (unsafe { swap_by_ref_2(&mut f as *mut i32, &mut g as *mut i32) });
     let mut h: *mut i32 = (Box::leak(Box::new(6)) as *mut i32);
     write!(
         std::fs::File::from_raw_fd(
@@ -112,26 +101,28 @@ unsafe fn main_0() -> i32 {
         libcc2rs::malloc_usable_size(i as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
     )));
     (unsafe {
-        let _a: *mut i32 = (Box::leak(Box::new(7)) as *mut i32);
-        let _b: *mut i32 = (Box::leak(Box::new(8)) as *mut i32);
-        swap_by_ptr_1(_a, _b)
+        swap_by_ptr_1(
+            (Box::leak(Box::new(7)) as *mut i32),
+            (Box::leak(Box::new(8)) as *mut i32),
+        )
     });
     (unsafe {
-        let _a: *mut i32 = (Box::leak(Box::new(7)) as *mut i32).offset((0) as isize);
-        let _b: *mut i32 = (Box::leak(Box::new(8)) as *mut i32).offset((0) as isize);
-        swap_by_ptr_1(_a, _b)
+        swap_by_ptr_1(
+            (Box::leak(Box::new(7)) as *mut i32).offset((0) as isize),
+            (Box::leak(Box::new(8)) as *mut i32).offset((0) as isize),
+        )
     });
     (unsafe {
-        let _a: *mut i32 = &mut (*(Box::leak(Box::new(9)) as *mut i32)) as *mut i32;
-        let _b: *mut i32 = &mut (*(Box::leak(Box::new(10)) as *mut i32)) as *mut i32;
-        swap_by_ref_2(_a, _b)
+        swap_by_ref_2(
+            &mut (*(Box::leak(Box::new(9)) as *mut i32)) as *mut i32,
+            &mut (*(Box::leak(Box::new(10)) as *mut i32)) as *mut i32,
+        )
     });
     (unsafe {
-        let _a: *mut i32 =
-            &mut (*(Box::leak(Box::new(9)) as *mut i32).offset((0) as isize)) as *mut i32;
-        let _b: *mut i32 =
-            &mut (*(Box::leak(Box::new(10)) as *mut i32).offset((0) as isize)) as *mut i32;
-        swap_by_ref_2(_a, _b)
+        swap_by_ref_2(
+            &mut (*(Box::leak(Box::new(9)) as *mut i32).offset((0) as isize)) as *mut i32,
+            &mut (*(Box::leak(Box::new(10)) as *mut i32).offset((0) as isize)) as *mut i32,
+        )
     });
     let mut j: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(11)) as *mut i32)));
     let mut k: *mut i32 = j

@@ -12,17 +12,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut str: Vec<u8> = {
-        let s = b"Hello, world!\n\0".as_ptr();
+    let mut str: Vec<libc::c_char> = {
+        let s = c"Hello, world!\n".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
     };
-    let file: [u8; 25] = *b"test_stdcopy_ostream.txt\0";
-    let mut ofs: ::std::fs::File = ::std::fs::File::create(
-        ::std::ffi::CStr::from_ptr(file.as_ptr() as *const i8)
-            .to_str()
-            .unwrap(),
-    )
-    .unwrap();
+    let file: [libc::c_char; 25] = std::mem::transmute(*b"test_stdcopy_ostream.txt\0");
+    let mut ofs: ::std::fs::File =
+        ::std::fs::File::create(::std::ffi::CStr::from_ptr(file.as_ptr()).to_str().unwrap())
+            .unwrap();
     {
         let __start = str.as_mut_ptr() as *const u8;
         let __end = str.as_mut_ptr().add(str.len() - 1) as *const u8;
@@ -30,6 +27,6 @@ unsafe fn main_0() -> i32 {
         ofs.write_all(::std::slice::from_raw_parts(__start, __len));
         ofs.try_clone().unwrap()
     };
-    libc::unlink(file.as_ptr() as *const i8);
+    libc::unlink(file.as_ptr());
     return 0;
 }

@@ -41,7 +41,12 @@ fn main_0() -> i32 {
         )
         .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
             (|a0: Ptr<u8>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
-                libcc2rs::fread_refcount(a0.to_any(), a1, a2, a3.cast::<::std::fs::File>().unwrap())
+                libcc2rs::fread_refcount(
+                    a0.to_any(),
+                    a1,
+                    a2,
+                    a3.reinterpret_cast::<::std::fs::File>(),
+                )
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
@@ -56,16 +61,12 @@ fn main_0() -> i32 {
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fread_0)
                 .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
-                    my_alternative_fread_0(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
+                    my_alternative_fread_0(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
                 }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
             )),
         ));
     assert!(
-        (({
-            let _arg0: AnyPtr = AnyPtr::default();
-            let _arg3: Ptr<::std::fs::File> = Ptr::null();
-            (*(*f3.borrow()))(_arg0, 0_usize, 0_usize, _arg3)
-        }) == 22_usize)
+        (({ (*(*f3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 22_usize)
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -154,9 +155,12 @@ fn main_0() -> i32 {
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
-                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
-                let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
-                (*(*fn1.borrow()))(_arg0, 1_usize, 10_usize, _arg3)
+                (*(*fn1.borrow()))(
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                    1_usize,
+                    10_usize,
+                    (*stream.borrow()).clone(),
+                )
             }),
         ));
         assert!(((*n.borrow()) == 10_usize));
@@ -196,7 +200,7 @@ fn main_0() -> i32 {
                     a0.to_any(),
                     a1,
                     a2,
-                    a3.cast::<::std::fs::File>().unwrap(),
+                    a3.reinterpret_cast::<::std::fs::File>(),
                 )
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
@@ -212,16 +216,12 @@ fn main_0() -> i32 {
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
                 .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
                 (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
-                    my_alternative_fwrite_1(a0.cast::<u8>().unwrap(), a1, a2, a3.to_any())
+                    my_alternative_fwrite_1(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
                 }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
             )),
         ));
     assert!(
-        (({
-            let _arg0: AnyPtr = AnyPtr::default();
-            let _arg3: Ptr<::std::fs::File> = Ptr::null();
-            (*(*g3.borrow()))(_arg0, 0_usize, 0_usize, _arg3)
-        }) == 33_usize)
+        (({ (*(*g3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 33_usize)
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
@@ -300,9 +300,12 @@ fn main_0() -> i32 {
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
-                let _arg0: AnyPtr = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
-                let _arg3: Ptr<::std::fs::File> = (*stream.borrow()).clone();
-                (*(*gn1.borrow()))(_arg0, 1_usize, 10_usize, _arg3)
+                (*(*gn1.borrow()))(
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                    1_usize,
+                    10_usize,
+                    (*stream.borrow()).clone(),
+                )
             }),
         ));
         assert!(((*n.borrow()) == 10_usize));

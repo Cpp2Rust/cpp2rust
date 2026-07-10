@@ -19,22 +19,14 @@ pub fn extract_nth_0(n: i32, ap: VaList) -> i32 {
 pub fn middle_layer_1(n: i32, ap: VaList) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
-    return ({
-        let _n: i32 = (*n.borrow());
-        let _ap: VaList = (*ap.borrow()).clone();
-        extract_nth_0(_n, _ap)
-    });
+    return ({ extract_nth_0((*n.borrow()), (*ap.borrow()).clone()) });
 }
 pub fn top_level_2(n: i32, __args: &[VaArg]) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _n: i32 = (*n.borrow());
-            let _ap: VaList = (*ap.borrow()).clone();
-            middle_layer_1(_n, _ap)
-        }),
+        ({ middle_layer_1((*n.borrow()), (*ap.borrow()).clone()) }),
     ));
     return (*result.borrow());
 }

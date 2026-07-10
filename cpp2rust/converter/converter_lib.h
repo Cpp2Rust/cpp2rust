@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <vector>
 
 #include "logging.h"
@@ -39,9 +40,7 @@ bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
 bool IsInMainFile(const clang::Decl *decl);
 
-bool IsCharPointerFieldFromLibc(const clang::ValueDecl *decl);
-
-bool IsCharArrayFieldFromLibc(const clang::ValueDecl *decl);
+bool IsUnionArrayMember(const clang::Expr *base);
 
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
@@ -50,6 +49,10 @@ bool RefersToUserDefinedDecl(const clang::Expr *expr);
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
 bool IsMut(clang::QualType qual_type);
+
+bool TypeImplementsByteRepr(clang::QualType qt);
+
+bool RustSizeDivergesFromC(clang::QualType qt);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
 
@@ -140,6 +143,15 @@ void ForEachTemplateArgument(
 clang::Expr *GetCallObject(clang::CallExpr *expr);
 
 clang::Expr *GetCallee(clang::CallExpr *expr);
+
+std::unordered_set<const clang::ValueDecl *>
+GetAllVars(const clang::Stmt *stmt);
+
+bool ReferencesThis(const clang::Stmt *stmt);
+
+bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
+
+bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
 clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
 

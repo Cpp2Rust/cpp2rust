@@ -10,11 +10,11 @@ pub unsafe fn test_close_0() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
-    let mut buf: [u8; 1] = [0_u8; 1];
+    let mut buf: [libc::c_char; 1] = [(0 as libc::c_char); 1];
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
             1_usize
         )) == (-1_i32 as isize)) as i32)
             != 0)
@@ -22,30 +22,31 @@ pub unsafe fn test_close_0() {
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
 }
 pub unsafe fn test_lseek_1() {
-    let mut path: *const u8 = (b"/tmp/cpp2rust_lseek_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::libc::FILE = libc::fopen(
-        path as *const i8,
-        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_lseek_test.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    libc::fputs(
-        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
-        fp,
-    );
+    libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    fp = libc::fopen(
-        path as *const i8,
-        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     let mut fd: i32 = libc::fileno(fp);
     assert!(((((libc::lseek(fd, 0_i64, 2)) == (11_i64)) as i32) != 0));
     assert!(((((libc::lseek(fd, 6_i64, 0)) == (6_i64)) as i32) != 0));
-    let mut buf: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
+    let mut buf: [libc::c_char; 8] = [
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+    ];
     assert!(
         ((((libc::read(
             fd,
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
             5_usize
         )) == (5_isize)) as i32)
             != 0)
@@ -53,11 +54,12 @@ pub unsafe fn test_lseek_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (b"world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void) as *const u8,
+                (c"world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
+                    as *const u8,
                 5_usize as usize,
             );
             let mut diff = 0_i32;
@@ -72,34 +74,40 @@ pub unsafe fn test_lseek_1() {
             != 0)
     );
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    libc::unlink(path as *const i8);
+    libc::unlink(path);
 }
 pub unsafe fn test_read_2() {
-    let mut path: *const u8 = (b"/tmp/cpp2rust_read_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::libc::FILE = libc::fopen(
-        path as *const i8,
-        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_read_test.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    libc::fputs(
-        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
-        fp,
-    );
+    libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    fp = libc::fopen(
-        path as *const i8,
-        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     let mut fd: i32 = libc::fileno(fp);
-    let mut buf: [u8; 16] = [
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
-        0_u8,
+    let mut buf: [libc::c_char; 16] = [
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
     ];
     assert!(
         ((((libc::read(
             fd,
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
             16_usize
         )) == (11_isize)) as i32)
             != 0)
@@ -107,11 +115,11 @@ pub unsafe fn test_read_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
                 11_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (b"hello world\0".as_ptr().cast_mut() as *const u8 as *const ::libc::c_void)
+                (c"hello world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
                     as *const u8,
                 11_usize as usize,
             );
@@ -127,36 +135,43 @@ pub unsafe fn test_read_2() {
             != 0)
     );
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    libc::unlink(path as *const i8);
+    libc::unlink(path);
 }
 pub unsafe fn test_unlink_3() {
-    let mut path: *const u8 = (b"/tmp/cpp2rust_unlink_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::libc::FILE = libc::fopen(
-        path as *const i8,
-        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_unlink_test.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    assert!(((((libc::unlink(path as *const i8)) == (0)) as i32) != 0));
-    assert!(((((libc::unlink(path as *const i8)) == (-1_i32)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (-1_i32)) as i32) != 0));
 }
 pub unsafe fn test_pipe_4() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
-    let mut msg: *const u8 = (b"world\0".as_ptr().cast_mut()).cast_const();
+    let mut msg: *const libc::c_char = (c"world".as_ptr().cast_mut()).cast_const();
     assert!(
         ((((libc::write(
             fds[(1) as usize],
-            (msg as *const u8 as *const ::libc::c_void),
+            (msg as *const libc::c_char as *const ::libc::c_void),
             5_usize
         )) == (5_isize)) as i32)
             != 0)
     );
-    let mut buf: [u8; 8] = [0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8];
+    let mut buf: [libc::c_char; 8] = [
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+        (0 as libc::c_char),
+    ];
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
             8_usize
         )) == (5_isize)) as i32)
             != 0)
@@ -164,11 +179,11 @@ pub unsafe fn test_pipe_4() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (msg as *const u8 as *const ::libc::c_void) as *const u8,
+                (msg as *const libc::c_char as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let mut diff = 0_i32;
@@ -186,7 +201,7 @@ pub unsafe fn test_pipe_4() {
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
             8_usize
         )) == (0_isize)) as i32)
             != 0)
@@ -194,35 +209,26 @@ pub unsafe fn test_pipe_4() {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
 }
 pub unsafe fn test_ftruncate_5() {
-    let mut path: *const u8 =
-        (b"/tmp/cpp2rust_ftruncate_test.tmp\0".as_ptr().cast_mut()).cast_const();
-    let mut fp: *mut ::libc::FILE = libc::fopen(
-        path as *const i8,
-        (b"wb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_ftruncate_test.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    libc::fputs(
-        (b"hello world\0".as_ptr().cast_mut()).cast_const() as *const i8,
-        fp,
-    );
+    libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
     libc::fflush(fp);
     let mut fd: i32 = libc::fileno(fp);
     assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    fp = libc::fopen(
-        path as *const i8,
-        (b"rb\0".as_ptr().cast_mut()).cast_const() as *const i8,
-    );
+    fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     fd = (libc::fileno(fp)).clone();
     assert!(((((libc::lseek(fd, 0_i64, 2)) == (5_i64)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
-    libc::unlink(path as *const i8);
+    libc::unlink(path);
 }
 pub unsafe fn test_open_6() {
     let mut fd: i32 = (unsafe {
         libc::open(
-            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (c"/dev/null".as_ptr().cast_mut()).cast_const() as *const i8,
             0 as i32,
             (420),
         )
@@ -233,7 +239,7 @@ pub unsafe fn test_open_6() {
     }
     fd = (unsafe {
         libc::open(
-            (b"/dev/null\0".as_ptr().cast_mut()).cast_const() as *const i8,
+            (c"/dev/null".as_ptr().cast_mut()).cast_const() as *const i8,
             0 as i32,
         )
     });
@@ -260,27 +266,27 @@ pub unsafe fn test_ioctl_8() {
 }
 pub unsafe fn test_isatty_9() {
     printf(
-        (b"%d\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        (c"%d\n".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::isatty(0),
     );
 }
 pub unsafe fn test_geteuid_10() {
     printf(
-        (b"%u\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        (c"%u\n".as_ptr().cast_mut()).cast_const() as *const i8,
         libc::geteuid(),
     );
 }
 pub unsafe fn test_gethostname_11() {
-    let mut name: [u8; 256] = [0_u8; 256];
+    let mut name: [libc::c_char; 256] = [(0 as libc::c_char); 256];
     assert!(
         ((((libc::gethostname(
-            name.as_mut_ptr() as *mut i8,
-            ::std::mem::size_of::<[u8; 256]>()
+            name.as_mut_ptr(),
+            ::std::mem::size_of::<[libc::c_char; 256]>()
         )) == (0)) as i32)
             != 0)
     );
     printf(
-        (b"%s\n\0".as_ptr().cast_mut()).cast_const() as *const i8,
+        (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
         name.as_mut_ptr(),
     );
 }

@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <assert.h>
 
 typedef enum { MODE_IDLE, MODE_ACTIVE, MODE_DONE } widget;

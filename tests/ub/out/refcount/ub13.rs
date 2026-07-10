@@ -15,9 +15,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(1)));
-    ({
-        let _p: Ptr<i32> = (*p1.borrow()).clone();
-        escape_0(_p)
-    });
+    ({ escape_0((*p1.borrow()).clone()) });
     return ((*p1.borrow()).read());
 }

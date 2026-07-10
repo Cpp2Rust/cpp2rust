@@ -39,9 +39,7 @@ impl Clone for WOFF2Params {
 }
 impl Default for WOFF2Params {
     fn default() -> Self {
-        {
-            WOFF2Params::WOFF2Params()
-        }
+        { WOFF2Params::WOFF2Params() }
     }
 }
 impl ByteRepr for WOFF2Params {}

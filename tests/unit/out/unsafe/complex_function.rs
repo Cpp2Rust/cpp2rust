@@ -57,60 +57,22 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x1: i32 = 0;
-    let mut x2: i32 = (unsafe {
-        let _x: i32 = x1;
-        foo_0(_x)
-    });
-    let mut x3: i32 = (((unsafe {
-        let _x: i32 = x2;
-        foo_0(_x)
-    }) + (unsafe {
-        let _x: i32 = x1;
-        foo_0(_x)
-    })) + (1));
+    let mut x2: i32 = (unsafe { foo_0(x1) });
+    let mut x3: i32 = (((unsafe { foo_0(x2) }) + (unsafe { foo_0(x1) })) + (1));
     x2 += 1;
-    x2 += (unsafe {
-        let _x: i32 = x1;
-        foo_0(_x)
-    });
-    x3 += (((unsafe {
-        let _x: i32 = x2;
-        foo_0(_x)
-    }) + (unsafe {
-        let _x: i32 = x3;
-        foo_0(_x)
-    })) + (1));
+    x2 += (unsafe { foo_0(x1) });
+    x3 += (((unsafe { foo_0(x2) }) + (unsafe { foo_0(x3) })) + (1));
     let mut p1: *mut i32 = (&mut x1 as *mut i32);
-    let mut p2: *mut i32 = (unsafe {
-        let _x: *mut i32 = p1;
-        ptr_1(_x)
-    });
+    let mut p2: *mut i32 = (unsafe { ptr_1(p1) });
     p1 = p2;
-    p2 = (unsafe {
-        let _x: *mut i32 = p1;
-        ptr_1(_x)
-    });
+    p2 = (unsafe { ptr_1(p1) });
     let r1: *mut i32 = &mut x1 as *mut i32;
-    let r2: *mut i32 = (unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    });
-    let r3: *mut i32 = (unsafe {
-        let _x: *mut i32 = r1;
-        bar_2(_x)
-    });
+    let r2: *mut i32 = (unsafe { bar_2(&mut x1 as *mut i32) });
+    let r3: *mut i32 = (unsafe { bar_2(r1) });
     (*r2) += x1;
     (*r3) += (*r1);
-    let mut x4: i32 = (((unsafe {
-        let _x: i32 = x3;
-        foo_0(_x)
-    }) + (*(unsafe {
-        let _x: *mut i32 = (&mut x3 as *mut i32);
-        ptr_1(_x)
-    }))) + (*(unsafe {
-        let _x: *mut i32 = &mut x2 as *mut i32;
-        bar_2(_x)
-    })));
+    let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&mut x3 as *mut i32)) })))
+        + (*(unsafe { bar_2(&mut x2 as *mut i32) })));
     let mut a: X1 = X1 { v: 0 };
     let mut b: X2 = X2 {
         v: &mut a as *mut X1,
@@ -130,127 +92,106 @@ unsafe fn main_0() -> i32 {
     let r7: *mut X3 = &mut d.v as *mut X3;
     let r8: *mut i32 = &mut (*(unsafe { (*(unsafe { d.v.get() })).get() })).v as *mut i32;
     let mut x5: i32 = (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v;
-    (*(unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    })) += 10;
-    (*(unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    }))
-    .postfix_inc();
+    (*(unsafe { bar_2(&mut x1 as *mut i32) })) += 10;
+    (*(unsafe { bar_2(&mut x1 as *mut i32) })).postfix_inc();
     let mut bar_out: i32 = (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }));
-    let mut bar_inc: i32 = (*(unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    }))
-    .prefix_inc();
-    bar_inc = (*(unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    }))
-    .postfix_inc();
-    bar_inc = (((*(unsafe {
-        let _x: *mut i32 = &mut x1 as *mut i32;
-        bar_2(_x)
-    })) + (unsafe {
-        let _x: i32 = x4;
-        foo_0(_x)
-    })) + (1));
+    let mut bar_inc: i32 = (*(unsafe { bar_2(&mut x1 as *mut i32) })).prefix_inc();
+    bar_inc = (*(unsafe { bar_2(&mut x1 as *mut i32) })).postfix_inc();
+    bar_inc = (((*(unsafe { bar_2(&mut x1 as *mut i32) })) + (unsafe { foo_0(x4) })) + (1));
     (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     })) += 10;
     (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }))
     .postfix_inc();
     let mut bar_inc2: i32 = (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }))
     .prefix_inc();
     bar_inc2 = (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }))
     .postfix_inc();
+    (*(unsafe { ptr_1((&mut x1 as *mut i32)) })).prefix_inc();
+    (*(unsafe { ptr_1((&mut x1 as *mut i32)) })) += 1;
     (*(unsafe {
-        let _x: *mut i32 = (&mut x1 as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     }))
     .prefix_inc();
     (*(unsafe {
-        let _x: *mut i32 = (&mut x1 as *mut i32);
-        ptr_1(_x)
-    })) += 1;
-    (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
-    }))
-    .prefix_inc();
-    (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     })) += 1;
     (*(&mut (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     })) as *mut i32)) += 1;
     let mut ptr1: i32 = (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     }))
     .postfix_inc();
     let ptr2: *mut i32 = &mut (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     })) as *mut i32;
     let mut ptr3: *mut i32 = (&mut (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     })) as *mut i32);
     let mut vptr: i32 = (*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     }));
     let mut pref: *mut i32 = (unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     });
     (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }))
     .postfix_inc();
     return (((*(unsafe {
-        let _x: *mut i32 = (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() }))
-            .v as *mut i32);
-        ptr_1(_x)
+        ptr_1(
+            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                as *mut i32),
+        )
     })) + (*(unsafe {
-        let _x: *mut i32 =
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32;
-        bar_2(_x)
+        bar_2(
+            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
+        )
     }))) + (unsafe {
-        let _x: i32 = (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v;
-        foo_0(_x)
+        foo_0((*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v)
     }));
 }

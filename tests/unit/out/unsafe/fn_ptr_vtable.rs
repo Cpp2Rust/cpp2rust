@@ -48,16 +48,8 @@ unsafe fn main_0() -> i32 {
     assert!(!((vt.get).is_none()));
     assert!(!((vt.destroy).is_none()));
     let mut obj: *mut ::libc::c_void = (unsafe { (vt.create).unwrap()(42) });
-    assert!(
-        ((unsafe {
-            let _arg0: *mut ::libc::c_void = obj;
-            (vt.get).unwrap()(_arg0)
-        }) == (42))
-    );
-    (unsafe {
-        let _arg0: *mut ::libc::c_void = obj;
-        (vt.destroy).unwrap()(_arg0)
-    });
+    assert!(((unsafe { (vt.get).unwrap()(obj,) }) == (42)));
+    (unsafe { (vt.destroy).unwrap()(obj) });
     assert!(((storage_0) == (0)));
     (vt.get) = None;
     assert!((vt.get).is_none());

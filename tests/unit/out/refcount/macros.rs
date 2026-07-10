@@ -28,8 +28,11 @@ fn main_0() -> i32 {
         Ptr::from_string_literal(b"main")
     );
     ({
-        let _func: Ptr<u8> = Ptr::from_string_literal(b"main");
-        log_0(Ptr::from_string_literal(b"macros.cpp"), 9, _func)
+        log_0(
+            Ptr::from_string_literal(b"macros.cpp"),
+            9,
+            Ptr::from_string_literal(b"main"),
+        )
     });
     return 0;
 }

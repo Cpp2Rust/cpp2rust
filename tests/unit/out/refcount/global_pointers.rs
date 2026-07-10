@@ -20,7 +20,21 @@ impl Clone for Entry {
         this
     }
 }
-impl ByteRepr for Entry {}
+impl ByteRepr for Entry {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.name.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.p.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
+            p: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 thread_local!(
     pub static single_entry_0: Value<Entry> = Rc::new(RefCell::new(Entry {
         name: Rc::new(RefCell::new(Ptr::from_string_literal(b"alone"))),

@@ -32,10 +32,7 @@ pub unsafe fn apply_4(mut fn_: Option<unsafe fn(i32) -> i32>, mut x: i32) -> i32
     } else {
         Some(identity_2)
     };
-    return (unsafe {
-        let _arg0: i32 = x;
-        (actual).unwrap()(_arg0)
-    });
+    return (unsafe { (actual).unwrap()(x) });
 }
 pub fn main() {
     unsafe {
@@ -44,27 +41,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { (unsafe { pick_3(1,) }).unwrap()(10,) }) == (11)));
-    assert!(
-        ((unsafe {
-            (unsafe {
-                let _mode: i32 = -1_i32;
-                pick_3(_mode)
-            })
-            .unwrap()(10)
-        }) == (9))
-    );
+    assert!(((unsafe { (unsafe { pick_3(-1_i32,) }).unwrap()(10,) }) == (9)));
     assert!(((unsafe { (unsafe { pick_3(0,) }).unwrap()(10,) }) == (10)));
-    assert!(
-        ((unsafe {
-            let _fn: Option<unsafe fn(i32) -> i32> = Some(inc_0);
-            apply_4(_fn, 5)
-        }) == (6))
-    );
-    assert!(
-        ((unsafe {
-            let _fn: Option<unsafe fn(i32) -> i32> = None;
-            apply_4(_fn, 5)
-        }) == (5))
-    );
+    assert!(((unsafe { apply_4(Some(inc_0), 5,) }) == (6)));
+    assert!(((unsafe { apply_4(None, 5,) }) == (5)));
     return 0;
 }

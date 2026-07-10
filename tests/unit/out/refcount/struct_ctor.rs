@@ -40,6 +40,9 @@ impl Clone for StructWithCtor {
     }
 }
 impl ByteRepr for StructWithCtor {
+    fn byte_size() -> usize {
+        8
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.x1_.borrow()).to_bytes(&mut buf[0..4]);
         (*self.x2_.borrow()).to_bytes(&mut buf[4..8]);
@@ -61,12 +64,7 @@ fn main_0() -> i32 {
     let struct_with_ctor: Value<StructWithCtor> =
         Rc::new(RefCell::new(StructWithCtor::StructWithCtor(1, 2)));
     let x: Value<i32> = Rc::new(RefCell::new(3));
-    return (((((({
-        let _x: Ptr<i32> = x.as_pointer();
-        foo_0(_x)
-    })
-    .read())
-        == 3)
+    return (((((({ foo_0(x.as_pointer()) }).read()) == 3)
         && ((({ (*struct_with_ctor.borrow()).x1() }).read()) == 2))
         && ((({ (*struct_with_ctor.borrow()).x2() }).read()) == 1)) as i32);
 }

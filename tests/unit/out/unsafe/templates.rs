@@ -32,26 +32,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 10;
     let mut y: f64 = (x as f64);
-    return ((((((((unsafe {
-        let _x: i32 = x;
-        foo_0(_x)
-    }) as f64)
-        + (unsafe {
-            let _x: f64 = y;
-            foo_1(_x)
-        }))
-        + ((*(unsafe {
-            let _p: *mut i32 = (&mut x as *mut i32);
-            bar_2(_p, true)
-        })) as f64))
-        + (*(unsafe {
-            let _p: *mut f64 = (&mut y as *mut f64);
-            bar_3(_p, true)
-        })))
+    return ((((((((unsafe { foo_0(x) }) as f64) + (unsafe { foo_1(y) }))
+        + ((*(unsafe { bar_2((&mut x as *mut i32), true) })) as f64))
+        + (*(unsafe { bar_3((&mut y as *mut f64), true) })))
         + ((unsafe { func_4(1, 2, 3) }) as f64))
-        + ((unsafe {
-            let _x2: i32 = x;
-            let _x3: f64 = y;
-            func_5(2.0E+0, _x2, _x3)
-        }) as f64)) as i32);
+        + ((unsafe { func_5(2.0E+0, x, y) }) as f64)) as i32);
 }

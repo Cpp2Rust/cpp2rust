@@ -20,11 +20,17 @@ pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let _fmt: Ptr<u8> = (*fmt.borrow()).clone();
-            let _ap: VaList = (*ap.borrow()).clone();
-            logf_impl_0(_fmt, _ap)
-        }),
+        ({ logf_impl_0((*fmt.borrow()).clone(), (*ap.borrow()).clone()) }),
+    ));
+    return (*result.borrow());
+}
+pub fn lenf_2(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
+    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
+    let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
+    (*ap.borrow_mut()) = VaList::new(__args);
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<Ptr<u8>>()).clone()));
+    let result: Value<i32> = Rc::new(RefCell::new(
+        ((*s.borrow()).to_string_iterator().count() as i32),
     ));
     return (*result.borrow());
 }
@@ -52,6 +58,31 @@ fn main_0() -> i32 {
                 &[(1).into(), (2).into()],
             )
         }) == 3) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            lenf_2(
+                Ptr::from_string_literal(b"%s"),
+                &[((*dummy.borrow()).clone()).into()],
+            )
+        }) == 5) as i32)
+            != 0)
+    );
+    assert!(
+        (((({
+            lenf_2(
+                Ptr::from_string_literal(b"%s"),
+                &[
+                    (if ((((*dummy.borrow()).offset((0) as isize).read()) as i32) != 0) {
+                        (*dummy.borrow()).clone()
+                    } else {
+                        Ptr::from_string_literal(b"")
+                    })
+                    .into(),
+                ],
+            )
+        }) == 5) as i32)
             != 0)
     );
     return 0;

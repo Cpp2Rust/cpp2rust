@@ -17,26 +17,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    ({
-        let _a1: Ptr<u32> = (a1.as_pointer() as Ptr<u32>);
-        decay_cast_0(_a1)
-    });
-    ({
-        let _a1: Ptr<u32> = ((a1.as_pointer() as Ptr<u32>).offset(0 as isize));
-        decay_cast_0(_a1)
-    });
-    ({
-        let _p: AnyPtr = ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any();
-        bit_cast_1(_p)
-    });
-    ({
-        let _p: AnyPtr = (((a1.as_pointer() as Ptr<u32>).offset(0 as isize)) as Ptr<u32>).to_any();
-        bit_cast_1(_p)
-    });
-    ({
-        let _p: AnyPtr = ((a1.as_pointer()) as Ptr<u32>).to_any();
-        bit_cast_1(_p)
-    });
+    ({ decay_cast_0((a1.as_pointer() as Ptr<u32>)) });
+    ({ decay_cast_0(((a1.as_pointer() as Ptr<u32>).offset(0))) });
+    ({ bit_cast_1(((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()) });
+    ({ bit_cast_1((((a1.as_pointer() as Ptr<u32>).offset(0)) as Ptr<u32>).to_any()) });
+    ({ bit_cast_1(((a1.as_pointer()) as Ptr<u32>).to_any()) });
     let ptr: Value<AnyPtr> = Rc::new(RefCell::new(
         ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any(),
     ));
@@ -45,7 +30,7 @@ fn main_0() -> i32 {
         _lhs == ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()
     });
     assert!({
-        let _lhs = (((*ptr.borrow()).cast::<u32>().expect("ub:wrong type"))
+        let _lhs = (((*ptr.borrow()).reinterpret_cast::<u32>())
             .offset((0) as isize)
             .read());
         _lhs == (*a1.borrow())[(0) as usize]

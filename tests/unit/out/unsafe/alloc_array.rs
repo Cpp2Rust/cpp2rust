@@ -39,14 +39,6 @@ unsafe fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     );
-    (unsafe {
-        let _arr: *mut Option<Box<[i32]>> = &mut arr as *mut Option<Box<[i32]>>;
-        let _N: i32 = N;
-        All_0(_arr, _N, 1)
-    });
-    return (unsafe {
-        let _arr: Option<Box<[i32]>> = arr;
-        let _N: i32 = N;
-        Consume_1(_arr, _N)
-    });
+    (unsafe { All_0(&mut arr as *mut Option<Box<[i32]>>, N, 1) });
+    return (unsafe { Consume_1(arr, N) });
 }

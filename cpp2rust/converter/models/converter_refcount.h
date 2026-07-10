@@ -28,16 +28,25 @@ public:
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
+  void EmitRustUnion(clang::RecordDecl *decl) override;
+
   bool EmitsReprCForRecords() const override { return false; }
+
+  const char *CharRustType() const override { return "u8"; }
 
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
                                      const clang::FunctionDecl *op) override;
 
-  void AddCloneTrait(const clang::CXXRecordDecl *decl) override;
+  void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddDropTrait(const clang::CXXRecordDecl *decl) override;
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
+
+  void AddByteReprTrait(const clang::EnumDecl *decl) override;
+
+  bool
+  VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
 
   void AddDefaultTrait(const clang::RecordDecl *decl) override;
 
@@ -101,6 +110,8 @@ public:
 
   bool VisitMemberExpr(clang::MemberExpr *expr) override;
 
+  void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
+
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
@@ -141,8 +152,6 @@ public:
 
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
-
-  bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
   bool Convert(clang::QualType qual_type) override;
   bool
@@ -232,6 +241,8 @@ private:
 
   std::string ConvertPtrType(clang::QualType type);
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
+
+  std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {

@@ -42,10 +42,7 @@ fn main_0() -> i32 {
             1
         },
     ));
-    (*r.borrow_mut()) += ({
-        let _it: RefcountMapIter<i32, i32> = (*it0.borrow()).clone();
-        sink_0(_it)
-    });
+    (*r.borrow_mut()) += ({ sink_0((*it0.borrow()).clone()) });
     (*r.borrow_mut()) += if (*end.borrow()) == (*end.borrow()) {
         0
     } else {

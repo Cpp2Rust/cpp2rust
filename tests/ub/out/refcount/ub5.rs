@@ -16,10 +16,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    ({
-        let _p: Ptr<Ptr<i32>> = (p.as_pointer());
-        null_0(_p)
-    });
+    ({ null_0((p.as_pointer())) });
     let r: Ptr<i32> = (*p.borrow()).clone();
     return (r.read());
 }

@@ -65,7 +65,7 @@ libcc2rs::impl_enum_inc_dec!(Tag);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
-    pub name: *const u8,
+    pub name: *const libc::c_char,
     pub color: Color,
     pub opt: Option,
 }
@@ -75,17 +75,17 @@ pub static mut global_tag_2: Tag = unsafe { Tag::TAG_TWO };
 pub static mut entries_3: [Entry; 3] = unsafe {
     [
         Entry {
-            name: b"first\0".as_ptr(),
+            name: c"first".as_ptr(),
             color: Color::RED,
             opt: Option::OPT_NONE,
         },
         Entry {
-            name: b"second\0".as_ptr(),
+            name: c"second".as_ptr(),
             color: Color::GREEN,
             opt: Option::OPT_A,
         },
         Entry {
-            name: b"third\0".as_ptr(),
+            name: c"third".as_ptr(),
             color: Color::BLUE,
             opt: Option::OPT_C,
         },
@@ -168,17 +168,11 @@ unsafe fn main_0() -> i32 {
     assert!(((oi) == (10)));
     o = Option::from(20);
     assert!(((o as i32) == (Option::OPT_B as i32)));
-    let mut rc: i32 = (unsafe {
-        let _option: i32 = (o as i32);
-        classify_option_5(_option)
-    });
+    let mut rc: i32 = (unsafe { classify_option_5((o as i32)) });
     assert!(((rc) == (2)));
     rc = (unsafe { classify_option_5(20) });
     assert!(((rc) == (2)));
-    rc = (unsafe {
-        let _option: i32 = (Option::OPT_C as i32);
-        classify_option_5(_option)
-    });
+    rc = (unsafe { classify_option_5((Option::OPT_C as i32)) });
     assert!(((rc) == (3)));
     let mut t: Tag = Tag::TAG_ONE;
     assert!(((t as i32) == (1)));

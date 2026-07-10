@@ -39,9 +39,6 @@ unsafe fn main_0() -> i32 {
             (&mut x as *mut i32),
         ],
     };
-    (unsafe {
-        let _s: *mut StackArray = &mut s as *mut StackArray;
-        IncrementAll_0(_s)
-    });
+    (unsafe { IncrementAll_0(&mut s as *mut StackArray) });
     return x;
 }

@@ -20,7 +20,21 @@ impl Clone for GraphNode {
         this
     }
 }
-impl ByteRepr for GraphNode {}
+impl ByteRepr for GraphNode {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.dst.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            dst: Rc::new(RefCell::new(<u32>::from_bytes(&buf[0..4]))),
+            next: Rc::new(RefCell::new(<Ptr<GraphNode>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 #[derive(Default)]
 pub struct Graph {
     pub V: Value<u32>,
@@ -59,7 +73,21 @@ impl Clone for Graph {
         this
     }
 }
-impl ByteRepr for Graph {}
+impl ByteRepr for Graph {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.V.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.adj.borrow()).to_bytes(&mut buf[8..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            V: Rc::new(RefCell::new(<u32>::from_bytes(&buf[0..4]))),
+            adj: Rc::new(RefCell::new(<Ptr<Ptr<GraphNode>>>::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

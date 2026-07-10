@@ -112,7 +112,11 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  virtual void EmitRustUnion(clang::RecordDecl *decl);
+
   virtual bool EmitsReprCForRecords() const { return true; }
+
+  virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
@@ -528,7 +532,7 @@ protected:
                                          std::string_view second_return,
                                          std::string_view record_name);
 
-  virtual void AddCloneTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
   virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
 
@@ -539,6 +543,8 @@ protected:
   void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
 
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
+
+  virtual void AddByteReprTrait(const clang::EnumDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,

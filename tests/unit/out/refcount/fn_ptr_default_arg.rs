@@ -14,10 +14,7 @@ pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_.unwrap_or(FnPtr::null())));
     if !(*fn_.borrow()).is_null() {
-        return ({
-            let _arg0: i32 = (*x.borrow());
-            (*(*fn_.borrow()))(_arg0)
-        });
+        return ({ (*(*fn_.borrow()))((*x.borrow())) });
     }
     return (*x.borrow());
 }
@@ -25,35 +22,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = Default::default();
-            apply_1(5, Some(_fn))
-        }) == 5)
-    );
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::null();
-            apply_1(5, Some(_fn))
-        }) == 5)
-    );
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(identity_0);
-            apply_1(5, Some(_fn))
-        }) == 5)
-    );
+    assert!((({ apply_1(5, Some(Default::default()),) }) == 5));
+    assert!((({ apply_1(5, Some(FnPtr::null()),) }) == 5));
+    assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::new(identity_0)),) }) == 5));
     let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::new(
         (|x: i32| {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             return -(*x.borrow());
         }),
     )));
-    assert!(
-        (({
-            let _fn: FnPtr<fn(i32) -> i32> = (*negate.borrow()).clone();
-            apply_1(5, Some(_fn))
-        }) == -5_i32)
-    );
+    assert!((({ apply_1(5, Some((*negate.borrow()).clone()),) }) == -5_i32));
     return 0;
 }

@@ -10,7 +10,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::<[u8]>::from(b"foobar\0".as_slice())));
+    let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"foobar\0")));
     assert!((((((*arr.borrow())[(0) as usize] as i32) == ('f' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(3) as usize] as i32) == ('b' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(5) as usize] as i32) == ('r' as i32)) as i32) != 0));

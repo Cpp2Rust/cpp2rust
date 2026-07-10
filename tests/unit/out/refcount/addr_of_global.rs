@@ -19,6 +19,9 @@ impl Clone for Inner {
     }
 }
 impl ByteRepr for Inner {
+    fn byte_size() -> usize {
+        4
+    }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.value.borrow()).to_bytes(&mut buf[0..4]);
     }
@@ -40,7 +43,19 @@ impl Clone for Outer {
         this
     }
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            p: Rc::new(RefCell::new(<Ptr<Inner>>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 thread_local!(
     pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner {
         value: Rc::new(RefCell::new(1)),

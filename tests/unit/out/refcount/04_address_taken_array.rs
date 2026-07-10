@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     let arr2_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((arr2.as_pointer() as Ptr<i32>)));
     (*arr2_ptr.borrow()).offset((0) as isize).write(5);
     (*arr2_ptr.borrow()).offset((1) as isize).write(6);
-    let arr2_ref1: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>).offset(1 as isize);
+    let arr2_ref1: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>).offset(1);
     arr2_ref1.write(7);
     return ((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]);
 }

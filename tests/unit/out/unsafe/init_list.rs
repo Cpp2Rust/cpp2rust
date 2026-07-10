@@ -19,9 +19,6 @@ unsafe fn main_0() -> i32 {
     let mut carr2: [i32; 3] = [1, 0_i32, 0_i32];
     let mut arr: Vec<i32> = vec![1, 2, 3];
     let mut vec_: Vec<i32> = vec![1, 2, 3];
-    (unsafe {
-        let _list: Vec<i32> = vec![1, 2, 3, 4];
-        f_0(_list)
-    });
+    (unsafe { f_0(vec![1, 2, 3, 4]) });
     return 0;
 }

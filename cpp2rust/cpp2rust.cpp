@@ -190,7 +190,8 @@ int main(int argc, char *argv[]) {
   file.close();
 
   // call rustfmt.
-  std::string rustfmt_command = "rustfmt " + RsFile;
+  std::string rustfmt_command =
+      "rustfmt +" RUST_STABLE_VERSION " --edition 2024 " + RsFile;
   if (std::system(rustfmt_command.c_str()) != 0) {
     llvm::errs() << "ERROR: failed to run rustfmt\n";
     return EXIT_FAILURE;

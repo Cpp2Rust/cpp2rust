@@ -21,7 +21,7 @@ unsafe fn main_0() -> i32 {
     let mut sum: i32 = 0;
     'loop_: for elem in 0..(v.len()) {
         let mut elem = v[elem].clone();
-        sum = ((sum as i32) + elem) as i32;
+        sum += elem;
     }
     return sum;
 }

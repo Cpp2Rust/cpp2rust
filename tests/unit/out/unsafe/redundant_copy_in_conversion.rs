@@ -24,10 +24,7 @@ unsafe fn main_0() -> i32 {
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i32, Box<i32>>, &0);
     let mut const_it: UnsafeMapIterator<i32, i32> = it0.clone();
     let mut r: i32 = if const_it == end.clone() { 0 } else { 1 };
-    r += (unsafe {
-        let _it: UnsafeMapIterator<i32, i32> = it0.clone();
-        sink_0(_it)
-    });
+    r += (unsafe { sink_0(it0.clone()) });
     r += if end == end { 0 } else { 1 };
     return r;
 }

@@ -18,10 +18,7 @@ pub unsafe fn set_op_3(mut fn_: Option<unsafe fn(i32) -> i32>) {
 }
 pub unsafe fn call_op_4(mut x: i32) -> i32 {
     if !(g_op_2).is_none() {
-        return (unsafe {
-            let _arg0: i32 = x;
-            (g_op_2).unwrap()(_arg0)
-        });
+        return (unsafe { (g_op_2).unwrap()(x) });
     }
     return x;
 }
@@ -32,23 +29,14 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { call_op_4(5,) }) == (5)));
-    (unsafe {
-        let _fn: Option<unsafe fn(i32) -> i32> = Some(double_it_0);
-        set_op_3(_fn)
-    });
+    (unsafe { set_op_3(Some(double_it_0)) });
     assert!(!((g_op_2).is_none()));
     assert!(((g_op_2) == (Some(double_it_0))));
     assert!(((unsafe { call_op_4(5,) }) == (10)));
-    (unsafe {
-        let _fn: Option<unsafe fn(i32) -> i32> = Some(triple_it_1);
-        set_op_3(_fn)
-    });
+    (unsafe { set_op_3(Some(triple_it_1)) });
     assert!(((g_op_2) == (Some(triple_it_1))));
     assert!(((unsafe { call_op_4(5,) }) == (15)));
-    (unsafe {
-        let _fn: Option<unsafe fn(i32) -> i32> = None;
-        set_op_3(_fn)
-    });
+    (unsafe { set_op_3(None) });
     assert!((g_op_2).is_none());
     assert!(((unsafe { call_op_4(5,) }) == (5)));
     return 0;

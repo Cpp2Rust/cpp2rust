@@ -11,11 +11,7 @@ pub fn fatorial_0(n: i32) -> i32 {
     if ((*n.borrow()) == 0) {
         return 1;
     }
-    return ((*n.borrow())
-        * ({
-            let _n: i32 = ((*n.borrow()) - 1);
-            fatorial_0(_n)
-        }));
+    return ((*n.borrow()) * ({ fatorial_0(((*n.borrow()) - 1)) }));
 }
 pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     if ((n.read()) == 1) {
@@ -26,10 +22,7 @@ pub fn fatorial_by_ref_1(n: Ptr<i32>) {
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new(((n.read()) - 1)));
-    ({
-        let _n: Ptr<i32> = n_1.as_pointer();
-        fatorial_by_ref_1(_n)
-    });
+    ({ fatorial_by_ref_1(n_1.as_pointer()) });
     let __rhs = (*n_1.borrow());
     {
         let _ptr = n.clone();
@@ -46,10 +39,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new((((*n.borrow()).read()) - 1)));
-    ({
-        let _n: Ptr<i32> = (n_1.as_pointer());
-        fatorial_by_ptr_2(_n)
-    });
+    ({ fatorial_by_ptr_2((n_1.as_pointer())) });
     let __rhs = (*n_1.borrow());
     {
         let _ptr = (*n.borrow()).clone();
@@ -61,17 +51,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let n1: Value<i32> = Rc::new(RefCell::new(2));
-    ({
-        let _n: Ptr<i32> = (n1.as_pointer());
-        fatorial_by_ptr_2(_n)
-    });
+    ({ fatorial_by_ptr_2((n1.as_pointer())) });
     let n: Value<i32> = Rc::new(RefCell::new(((*n1.borrow()) + 1)));
-    ({
-        let _n: Ptr<i32> = n.as_pointer();
-        fatorial_by_ref_1(_n)
-    });
-    return ({
-        let _n: i32 = (*n.borrow());
-        fatorial_0(_n)
-    });
+    ({ fatorial_by_ref_1(n.as_pointer()) });
+    return ({ fatorial_0((*n.borrow())) });
 }
