@@ -417,6 +417,14 @@ bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   return false;
 }
 
+bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
+  clang::Expr::EvalResult result;
+  ENSURE(expr->EvaluateAsInt(result, ctx_));
+  StrCat(std::format("{}_usize", result.Val.getInt().getZExtValue()));
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 void ConverterRefCount::ConvertOrdAndPartialOrdTraits(
     const clang::CXXRecordDecl *decl, const clang::FunctionDecl *op) {
   std::string first_branch, second_branch, first_return, second_return;

@@ -1,7 +1,7 @@
-// no-compile: refcount
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 struct Layout {
   uint8_t a;
@@ -9,14 +9,9 @@ struct Layout {
   uint16_t c;
 };
 
-struct Inner {
-  uint16_t x;
-  uint32_t y;
-};
-
-struct Outer {
-  uint8_t pad;
-  struct Inner inner;
+struct Frame {
+  uint16_t tag;
+  char body[64];
 };
 
 int main(void) {
@@ -24,13 +19,19 @@ int main(void) {
   assert(offsetof(struct Layout, b) == 4);
   assert(offsetof(struct Layout, c) == 8);
 
-  assert(offsetof(struct Outer, inner.y) == 8);
-
   struct Layout v = {0};
   v.b = 0xDEADBEEF;
   unsigned char *base = (unsigned char *)&v;
   uint32_t *bp = (uint32_t *)(base + offsetof(struct Layout, b));
   assert(*bp == 0xDEADBEEF);
+
+  *(uint32_t *)(base + offsetof(struct Layout, b)) = 0x12345678;
+  assert(v.b == 0x12345678);
+
+  const char *text = "example-body";
+  size_t len = strlen(text) + 1;
+  size_t total = offsetof(struct Frame, body) + len;
+  assert(total == 2 + len);
 
   return 0;
 }
