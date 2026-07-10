@@ -3,7 +3,7 @@
 
 use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use std::{
     cell::{Ref, RefCell, RefMut},
@@ -402,13 +402,17 @@ impl<T> Ptr<T> {
             return self_any.downcast_ref::<Ptr<U>>().unwrap().clone();
         }
 
+        if self.is_null() {
+            return Ptr::null();
+        }
+
         if U::byte_size() == 0 {
             panic!("cannot reinterpret_cast to zero-sized type");
         }
 
         let src_byte_off = self.offset.wrapping_mul(T::byte_size());
         let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
-            PtrKind::Null => return Ptr::null(),
+            PtrKind::Null => unreachable!(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
                 Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
                 src_byte_off,
@@ -430,6 +434,24 @@ impl<T> Ptr<T> {
                 alloc,
                 elem_byte_size: U::byte_size(),
             })),
+        }
+    }
+}
+
+impl<T: ByteRepr> Ptr<T> {
+    #[inline]
+    fn c_byte_len(&self) -> usize {
+        match &self.kind {
+            PtrKind::Reinterpreted(data) => data.alloc.total_byte_len(),
+            _ => self.len().wrapping_mul(T::byte_size()),
+        }
+    }
+
+    #[inline]
+    fn c_byte_offset(&self) -> usize {
+        match &self.kind {
+            PtrKind::Reinterpreted(_) => self.offset,
+            _ => self.offset.wrapping_mul(T::byte_size()),
         }
     }
 }
@@ -1050,6 +1072,7 @@ pub(crate) trait ErasedPtr: std::any::Any {
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
     fn is_null(&self) -> bool;
+    fn is_dangling(&self) -> bool;
 }
 
 impl PartialEq for dyn ErasedPtr {
@@ -1072,11 +1095,24 @@ where
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
-        other.as_any().downcast_ref::<Ptr<T>>() == Some(self)
+        if let Some(o) = other.as_any().downcast_ref::<Ptr<T>>() {
+            return o == self;
+        }
+        self.as_bytes() == other.as_bytes()
     }
 
     fn is_null(&self) -> bool {
         Ptr::is_null(self)
+    }
+
+    fn is_dangling(&self) -> bool {
+        match &self.kind {
+            PtrKind::Null => false,
+            PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.strong_count() == 0,
+            PtrKind::Vec(w) => w.strong_count() == 0,
+            PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.strong_count() == 0,
+            PtrKind::Reinterpreted(data) => data.alloc.is_dangling(),
+        }
     }
 }
 
@@ -1208,8 +1244,140 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
     }
 }
 
-impl<T: 'static> ByteRepr for Ptr<T> {}
-impl ByteRepr for AnyPtr {}
+type RealAddr = usize;
+type SyntheticAddr = usize;
+type ByteLen = usize;
+
+struct RangeAllocator {
+    cursor: SyntheticAddr,
+    bases: HashMap<RealAddr, (SyntheticAddr, ByteLen)>,
+}
+
+impl RangeAllocator {
+    fn new() -> Self {
+        Self {
+            // Increase this if you need higher alignment. In general, malloc returns
+            // 16-bits-aligned pointers, but that's not relevant for now.
+            cursor: 1,
+            bases: HashMap::new(),
+        }
+    }
+
+    fn get_synthetic_addr(&mut self, real_addr: RealAddr, byte_len: ByteLen) -> SyntheticAddr {
+        if let Some(&(base, capacity)) = self.bases.get(&real_addr)
+            && byte_len <= capacity
+        {
+            return base;
+        }
+        let base = self.cursor;
+        self.cursor = base + byte_len + 1;
+        self.bases.insert(real_addr, (base, byte_len));
+        base
+    }
+}
+
+struct PtrRegistry {
+    ranges: RangeAllocator,
+    entries: BTreeMap<SyntheticAddr, (AnyPtr, ByteLen)>,
+    evicted_len: usize,
+}
+
+impl PtrRegistry {
+    fn new() -> Self {
+        Self {
+            ranges: RangeAllocator::new(),
+            entries: BTreeMap::new(),
+            evicted_len: 0,
+        }
+    }
+
+    fn put(&mut self, real_addr: RealAddr, byte_len: ByteLen, ptr: AnyPtr) -> SyntheticAddr {
+        self.evict_dead();
+        let base = self.ranges.get_synthetic_addr(real_addr, byte_len);
+        self.entries.insert(base, (ptr, byte_len));
+        base
+    }
+
+    fn get(&self, addr: SyntheticAddr) -> Option<(SyntheticAddr, AnyPtr, ByteLen)> {
+        self.entries
+            .range(..=addr)
+            .next_back()
+            .map(|(base, (any, len))| (*base, any.clone(), *len))
+    }
+
+    fn evict_dead(&mut self) {
+        if self.entries.len() < 16.max(2 * self.evicted_len) {
+            return;
+        }
+        self.entries.retain(|_, (any, _)| !any.ptr.is_dangling());
+        let entries = &self.entries;
+        self.ranges
+            .bases
+            .retain(|_, &mut (base, _)| entries.contains_key(&base));
+        self.evicted_len = self.entries.len();
+    }
+}
+
+thread_local! {
+    static PTR_REGISTRY: RefCell<PtrRegistry> = RefCell::new(PtrRegistry::new());
+}
+
+impl<T: ByteRepr> ByteRepr for Ptr<T> {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        if self.is_null() {
+            0usize.to_bytes(buf);
+            return;
+        }
+        let base = PTR_REGISTRY.with(|r| {
+            r.borrow_mut().put(
+                self.kind.address(),
+                self.c_byte_len(),
+                Ptr {
+                    offset: 0,
+                    kind: self.kind.clone(),
+                }
+                .to_any(),
+            )
+        });
+        base.wrapping_add(self.c_byte_offset()).to_bytes(buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let addr = usize::from_bytes(buf);
+        if addr == 0 {
+            return Ptr::null();
+        }
+        let entry = PTR_REGISTRY.with(|r| r.borrow().get(addr));
+        let Some((base, any, byte_len)) = entry else {
+            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+        };
+        let delta = addr - base;
+        if delta > byte_len {
+            panic!("ub: cast of invalid address 0x{addr:x} to pointer");
+        }
+        let elem_size = T::byte_size();
+        assert_eq!(delta % elem_size, 0, "ub: misaligned pointer");
+        any.reinterpret_cast::<T>().offset(delta / elem_size)
+    }
+}
+
+impl ByteRepr for AnyPtr {
+    fn byte_size() -> usize {
+        std::mem::size_of::<usize>()
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.ptr.as_bytes().to_bytes(buf);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Ptr::<u8>::from_bytes(buf).to_any()
+    }
+}
 
 #[cfg(test)]
 mod tests {

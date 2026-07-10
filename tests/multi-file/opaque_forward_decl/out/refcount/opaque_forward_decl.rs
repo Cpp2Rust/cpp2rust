@@ -52,3 +52,4 @@ pub fn touch_0(c: Ptr<container>) {
     (*(*(*c.borrow()).upgrade().deref()).p.borrow()).clone();
 }
 pub struct opaque;
+impl ByteRepr for opaque {}

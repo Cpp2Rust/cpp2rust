@@ -1,4 +1,3 @@
-// panic: refcount
 #include <assert.h>
 
 struct node_a {
