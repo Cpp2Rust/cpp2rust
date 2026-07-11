@@ -128,6 +128,15 @@ impl<T: 'static + crate::ByteRepr> VaArgGet for crate::rc::Ptr<T> {
     }
 }
 
+impl VaArgGet for crate::rc::AnyPtr {
+    fn get(v: &VaArg) -> Self {
+        match v {
+            VaArg::Ptr(any) => any.clone(),
+            _ => panic!("VaArgGet: expected Ptr"),
+        }
+    }
+}
+
 impl<T: 'static> From<crate::FnPtr<T>> for VaArg {
     fn from(v: crate::FnPtr<T>) -> Self {
         VaArg::Ptr(v.to_any())
