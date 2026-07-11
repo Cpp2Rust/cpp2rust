@@ -1181,6 +1181,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".reinterpret_cast::<{}>()",
                          ConvertPointeeType(expr->getType())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
     } else {
       Convert(sub_expr);
     }
