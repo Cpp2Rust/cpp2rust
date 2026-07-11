@@ -64,9 +64,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let text: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((text.as_pointer() as Ptr<u8>)));
-    let u: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*cp.borrow()).reinterpret_cast::<u8>()).clone(),
-    ));
+    let u: Value<Ptr<u8>> = Rc::new(RefCell::new((*cp.borrow()).reinterpret_cast::<u8>()));
     assert!(((((((*u.borrow()).offset((0) as isize).read()) as i32) == ('h' as i32)) as i32) != 0));
     assert!(((((((*u.borrow()).offset((1) as isize).read()) as i32) == ('i' as i32)) as i32) != 0));
     let h: Value<header> = Rc::new(RefCell::new(header {
@@ -74,9 +72,7 @@ fn main_0() -> i32 {
         size: Rc::new(RefCell::new(32)),
     }));
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
-    let v: Value<Ptr<view>> = Rc::new(RefCell::new(
-        ((*hp.borrow()).reinterpret_cast::<view>()).clone(),
-    ));
+    let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
     assert!(((((*(*(*v.borrow()).upgrade().deref()).tag.borrow()) == 7) as i32) != 0));
     return 0;
 }

@@ -73,9 +73,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let vt: Value<Vtable> = Rc::new(RefCell::new(Vtable {
-        create: Rc::new(RefCell::new(
-            (FnPtr::<fn(i32) -> AnyPtr>::new(int_create_1)).clone(),
-        )),
+        create: Rc::new(RefCell::new(FnPtr::<fn(i32) -> AnyPtr>::new(int_create_1))),
         get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_2))),
         destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::new(int_destroy_3))),
     }));

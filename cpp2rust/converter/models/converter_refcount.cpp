@@ -1326,6 +1326,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     StrCat(
         std::format("{}.reinterpret_cast::<{}>()", ToString(expr->getSubExpr()),
                     GetUnsafeTypeAsString(expr->getType()->getPointeeType())));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
@@ -1337,6 +1338,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       PushConversionKind push(*this, ConversionKind::Unboxed);
       StrCat(std::format(".reinterpret_cast::<{}>()",
                          ConvertPointeeType(expr->getType())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     } else if (expr->getType()->isVoidPointerType() &&
                expr->getSubExpr()->getType()->isPointerType()) {
@@ -1350,6 +1352,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       StrCat(std::format("{}.reinterpret_cast::<{}>()",
                          ToString(expr->getSubExpr()),
                          ConvertPointeeType(expr->getType())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }
     return Converter::VisitExplicitCastExpr(expr);
@@ -1556,10 +1559,11 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
           "{}.reinterpret_cast::<{}>()", str,
           ToString(
               member->getType()->getAsArrayTypeUnsafe()->getElementType())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
     } else {
       StrCat(str);
+      computed_expr_type_ = ComputedExprType::Pointer;
     }
-    computed_expr_type_ = ComputedExprType::Pointer;
     return;
   }
 

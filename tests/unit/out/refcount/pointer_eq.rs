@@ -39,12 +39,9 @@ fn main_0() -> i32 {
     });
     let val: Value<i32> = Rc::new(RefCell::new(42));
     let orig: Value<Ptr<i32>> = Rc::new(RefCell::new((val.as_pointer())));
-    let as_bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*orig.borrow()).reinterpret_cast::<u8>()).clone(),
-    ));
-    let back: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((*as_bytes.borrow()).reinterpret_cast::<i32>()).clone(),
-    ));
+    let as_bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((*orig.borrow()).reinterpret_cast::<u8>()));
+    let back: Value<Ptr<i32>> =
+        Rc::new(RefCell::new((*as_bytes.borrow()).reinterpret_cast::<i32>()));
     assert!({
         let _lhs = (*orig.borrow()).clone();
         _lhs == (*back.borrow()).clone()
@@ -53,7 +50,7 @@ fn main_0() -> i32 {
         (arr.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>(),
     ));
     let arr_back: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        ((*arr_bytes.borrow()).reinterpret_cast::<i32>()).clone(),
+        (*arr_bytes.borrow()).reinterpret_cast::<i32>(),
     ));
     assert!({
         let _lhs = (*arr_back.borrow()).clone();
