@@ -102,14 +102,7 @@ fn main_0() -> i32 {
     assert!(((*(*v.borrow()).b.borrow()) == 305419896_u32));
     let text: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"example-body")));
     let len: Value<usize> = Rc::new(RefCell::new(
-        ({
-            let mut __i: usize = 0;
-            while (*text.borrow()).offset(__i).read() != 0 {
-                __i += 1;
-            }
-            __i
-        })
-        .wrapping_add(1_usize),
+        ((*text.borrow()).to_string_iterator().count()).wrapping_add(1_usize),
     ));
     let total: Value<usize> = Rc::new(RefCell::new(
         ((2_usize as u64).wrapping_add(((*len.borrow()) as u64)) as usize),
