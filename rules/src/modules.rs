@@ -40,6 +40,8 @@ pub mod deque_tgt_refcount;
 pub mod deque_tgt_unsafe;
 #[path = r#"../dirent/tgt_unsafe.rs"#]
 pub mod dirent_tgt_unsafe;
+#[path = r#"../errno/tgt_refcount.rs"#]
+pub mod errno_tgt_refcount;
 #[path = r#"../errno/tgt_unsafe.rs"#]
 pub mod errno_tgt_unsafe;
 #[path = r#"../eventfd/tgt_unsafe.rs"#]

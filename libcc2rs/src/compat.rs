@@ -45,7 +45,7 @@ pub unsafe fn malloc_usable_size(ptr: *mut c_void) -> usize {
 /// # Safety
 ///
 /// Invokes the platform specific errno.
-pub unsafe fn cpp2rust_errno() -> *mut i32 {
+pub unsafe fn cpp2rust_errno_unsafe() -> *mut i32 {
     unsafe { platform_errno_location() }
 }
 
