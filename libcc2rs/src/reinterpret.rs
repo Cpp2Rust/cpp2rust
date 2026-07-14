@@ -1,7 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use std::{cell::RefCell, rc::Weak};
+use std::{
+    cell::RefCell,
+    rc::{Rc, Weak},
+};
 
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
@@ -100,6 +103,7 @@ pub trait OriginalAlloc {
     fn total_byte_len(&self) -> usize;
     // Stable address used for pointer equality across PtrKind variants.
     fn address(&self) -> usize;
+    fn delete(&self);
 }
 
 // Read bytes starting at `byte_offset` from a slice of S elements into `buf`.
@@ -165,6 +169,15 @@ impl<T: ByteRepr> OriginalAlloc for SingleOriginalAlloc<T> {
     fn address(&self) -> usize {
         self.weak.as_ptr() as usize
     }
+
+    fn delete(&self) {
+        assert_eq!(Weak::strong_count(&self.weak), 1, "ub: invalid delete");
+        unsafe {
+            let strong = self.weak.upgrade().expect("ub: dangling pointer");
+            Rc::from_raw(Rc::as_ptr(&strong));
+        }
+        assert_eq!(Weak::strong_count(&self.weak), 0, "ub: double free");
+    }
 }
 
 pub(crate) trait AsSlice {
@@ -218,5 +231,14 @@ impl<T: AsSlice + 'static> OriginalAlloc for SliceOriginalAlloc<T> {
 
     fn address(&self) -> usize {
         self.weak.as_ptr() as usize
+    }
+
+    fn delete(&self) {
+        assert_eq!(Weak::strong_count(&self.weak), 1, "ub: invalid delete");
+        unsafe {
+            let strong = self.weak.upgrade().expect("ub: dangling pointer");
+            Rc::from_raw(Rc::as_ptr(&strong));
+        }
+        assert_eq!(Weak::strong_count(&self.weak), 0, "ub: double free");
     }
 }

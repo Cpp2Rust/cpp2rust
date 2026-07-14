@@ -11,9 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::alloc(67305985_u32)));
-    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*p.borrow()).reinterpret_cast::<u8>()).clone(),
-    ));
+    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((*p.borrow()).reinterpret_cast::<u8>()));
     assert!(((((*bytes.borrow()).offset((0) as isize).read()) as i32) == 1));
     assert!(((((*bytes.borrow()).offset((1) as isize).read()) as i32) == 2));
     assert!(((((*bytes.borrow()).offset((2) as isize).read()) as i32) == 3));

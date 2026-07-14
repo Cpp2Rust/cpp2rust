@@ -211,6 +211,18 @@ pub unsafe fn test_strlen_5() {
             as i32)
             != 0)
     );
+    let buf: [libc::c_char; 8] = std::mem::transmute(*b"one\0two\0");
+    let mut first: *const libc::c_char = buf.as_ptr();
+    let mut second: *const libc::c_char =
+        (&buf[((libc::strlen(first)).wrapping_add(1_usize))] as *const libc::c_char);
+    assert!(
+        ((((libc::strcmp(second, (c"two".as_ptr().cast_mut()).cast_const())) == (0)) as i32) != 0)
+    );
+    let mut big : [ libc::c_char ; 64] = std::mem::transmute(*b"hi\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0") ;
+    assert!(((((libc::strlen((big.as_mut_ptr()).cast_const())) == (2_usize)) as i32) != 0));
+    big[(2) as usize] = (('x' as i32) as libc::c_char);
+    big[(3) as usize] = (('\0' as i32) as libc::c_char);
+    assert!(((((libc::strlen((big.as_mut_ptr()).cast_const())) == (3_usize)) as i32) != 0));
 }
 pub unsafe fn test_strcmp_6() {
     assert!(
@@ -350,37 +362,7 @@ pub unsafe fn test_strrchr_9() {
             != 0)
     );
 }
-pub unsafe fn test_strdup_10() {
-    let mut d: *mut libc::c_char =
-        libcc2rs::strdup_unsafe((c"hello".as_ptr().cast_mut()).cast_const());
-    assert!((((!((d).is_null())) as i32) != 0));
-    assert!(
-        ((((libc::strcmp(
-            (d).cast_const(),
-            (c"hello".as_ptr().cast_mut()).cast_const()
-        )) == (0)) as i32)
-            != 0)
-    );
-    libcc2rs::free_unsafe((d as *mut libc::c_char as *mut ::libc::c_void));
-    let mut p: *const libc::c_char = (c"world".as_ptr().cast_mut()).cast_const();
-    let mut buf: [libc::c_char; 4] = [
-        (('a' as i32) as libc::c_char),
-        (('b' as i32) as libc::c_char),
-        (('c' as i32) as libc::c_char),
-        (('\0' as i32) as libc::c_char),
-    ];
-    let mut d2: *mut libc::c_char = libcc2rs::strdup_unsafe(p);
-    assert!((((!((d2).is_null())) as i32) != 0));
-    assert!(((((libc::strcmp((d2).cast_const(), p)) == (0)) as i32) != 0));
-    libcc2rs::free_unsafe((d2 as *mut libc::c_char as *mut ::libc::c_void));
-    let mut d3: *mut libc::c_char = libcc2rs::strdup_unsafe((buf.as_mut_ptr()).cast_const());
-    assert!((((!((d3).is_null())) as i32) != 0));
-    assert!(
-        ((((libc::strcmp((d3).cast_const(), (buf.as_mut_ptr()).cast_const())) == (0)) as i32) != 0)
-    );
-    libcc2rs::free_unsafe((d3 as *mut libc::c_char as *mut ::libc::c_void));
-}
-pub unsafe fn test_strcspn_11() {
+pub unsafe fn test_strcspn_10() {
     assert!(
         ((((libc::strcspn(
             (c"hello".as_ptr().cast_mut()).cast_const(),
@@ -406,7 +388,7 @@ pub unsafe fn test_strcspn_11() {
     let mut rej: *const libc::c_char = (c"el".as_ptr().cast_mut()).cast_const();
     assert!(((((libc::strcspn(s, rej)) == (1_usize)) as i32) != 0));
 }
-pub unsafe fn test_strspn_12() {
+pub unsafe fn test_strspn_11() {
     assert!(
         ((((libc::strspn(
             (c"hello".as_ptr().cast_mut()).cast_const(),
@@ -432,7 +414,7 @@ pub unsafe fn test_strspn_12() {
     let mut acc: *const libc::c_char = (c"hel".as_ptr().cast_mut()).cast_const();
     assert!(((((libc::strspn(s, acc)) == (4_usize)) as i32) != 0));
 }
-pub unsafe fn test_strstr_13() {
+pub unsafe fn test_strstr_12() {
     let mut h: *const libc::c_char = (c"hello world".as_ptr().cast_mut()).cast_const();
     let mut r: *mut libc::c_char = libc::strstr(
         (h as *mut libc::c_char).cast_const(),
@@ -464,7 +446,7 @@ pub unsafe fn test_strstr_13() {
             != 0)
     );
 }
-pub unsafe fn test_strpbrk_14() {
+pub unsafe fn test_strpbrk_13() {
     let mut s: *const libc::c_char = (c"hello world".as_ptr().cast_mut()).cast_const();
     let mut r: *mut libc::c_char = libc::strpbrk(
         (s as *mut libc::c_char).cast_const(),
@@ -494,7 +476,7 @@ pub unsafe fn test_strpbrk_14() {
             != 0)
     );
 }
-pub unsafe fn test_strcasecmp_15() {
+pub unsafe fn test_strcasecmp_14() {
     assert!(
         ((((libc::strcasecmp(
             (c"HELLO".as_ptr().cast_mut()).cast_const(),
@@ -536,11 +518,10 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_strncmp_7() });
     (unsafe { test_memchr_8() });
     (unsafe { test_strrchr_9() });
-    (unsafe { test_strdup_10() });
-    (unsafe { test_strcspn_11() });
-    (unsafe { test_strspn_12() });
-    (unsafe { test_strstr_13() });
-    (unsafe { test_strpbrk_14() });
-    (unsafe { test_strcasecmp_15() });
+    (unsafe { test_strcspn_10() });
+    (unsafe { test_strspn_11() });
+    (unsafe { test_strstr_12() });
+    (unsafe { test_strpbrk_13() });
+    (unsafe { test_strcasecmp_14() });
     return 0;
 }

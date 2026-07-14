@@ -140,5 +140,16 @@ int main() {
   assert(entries[2].color == BLUE);
   assert(entries[2].opt == OPT_C);
 
+  const char *names[] = {"red", "green", "blue"};
+  enum Color idx = GREEN;
+  assert(names[idx][0] == 'g');
+  assert(entries[idx].opt == OPT_A);
+  assert(names[global_tag][0] == 'b');
+
+  const char **pp = &names[idx];
+  assert((*pp)[0] == 'g');
+  struct Entry *pe = &entries[idx];
+  assert(pe->opt == OPT_A);
+
   return 0;
 }

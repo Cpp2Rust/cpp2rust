@@ -48,10 +48,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let u: Value<basic> = <Value<basic>>::default();
+    let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
     (*u.borrow_mut()).i().write(42);
-    assert!((((((*u.borrow()).i().read()) == 42) as i32) != 0));
+    assert!((((*u.borrow()).i().read()) == 42));
     (*u.borrow_mut()).f().write(3.140000105E+0);
-    assert!((((((*u.borrow()).f().read()) == 3.140000105E+0) as i32) != 0));
+    assert!((((*u.borrow()).f().read()) == 3.140000105E+0));
     return 0;
 }

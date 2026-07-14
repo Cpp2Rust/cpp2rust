@@ -1,7 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use std::cell::RefCell;
 use std::ffi::c_void;
+use std::rc::Rc;
+
+use crate::rc::Ptr;
+use crate::{AsPointer, Value};
 
 unsafe extern "C" {
     #[cfg(target_os = "linux")]
@@ -40,6 +45,14 @@ pub unsafe fn malloc_usable_size(ptr: *mut c_void) -> usize {
 /// # Safety
 ///
 /// Invokes the platform specific errno.
-pub unsafe fn cpp2rust_errno() -> *mut i32 {
+pub unsafe fn cpp2rust_errno_unsafe() -> *mut i32 {
     unsafe { platform_errno_location() }
+}
+
+thread_local! {
+    static ERRNO: Value<i32> = Rc::new(RefCell::new(0));
+}
+
+pub fn cpp2rust_errno() -> Ptr<i32> {
+    ERRNO.with(AsPointer::as_pointer)
 }

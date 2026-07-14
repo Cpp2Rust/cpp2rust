@@ -26,9 +26,18 @@ int apply_binary(int a, int b, ...) {
   return result;
 }
 
+static int not_supported(void *ctx, unary fn, void *extra) {
+  (void)ctx;
+  (void)fn;
+  (void)extra;
+  return -3;
+}
+
 int main() {
   assert(apply_unary(5, square) == 25);
   assert(apply_unary(7, negate) == -7);
   assert(apply_binary(3, 4, add) == 7);
+  int dummy = 0;
+  assert(not_supported(&dummy, square, &dummy) == -3);
   return 0;
 }

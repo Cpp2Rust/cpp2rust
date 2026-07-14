@@ -274,6 +274,13 @@ public:
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 
+  bool TypeIsCopyable(clang::QualType ty) const {
+    if (ty->isFunctionPointerType() || ty->isFunctionType()) {
+      return FunctionPointerImplementsCopy();
+    }
+    return ty->isIntegerType();
+  }
+
   virtual void ConvertPrintf(clang::CallExpr *expr);
 
   void ConvertVAArgCall(clang::CallExpr *expr);

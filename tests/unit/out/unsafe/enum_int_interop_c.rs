@@ -220,5 +220,26 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((entries_3[(2) as usize].opt as u32) == ((Option::OPT_C as i32) as u32)) as i32) != 0)
     );
+    let mut names: [*const libc::c_char; 3] = [
+        (c"red".as_ptr().cast_mut()).cast_const(),
+        (c"green".as_ptr().cast_mut()).cast_const(),
+        (c"blue".as_ptr().cast_mut()).cast_const(),
+    ];
+    let mut idx: Color = Color::GREEN;
+    assert!(
+        (((((*names[(idx) as usize].offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0)
+    );
+    assert!(
+        ((((entries_3[(idx) as usize].opt as u32) == ((Option::OPT_A as i32) as u32)) as i32) != 0)
+    );
+    assert!(
+        (((((*names[(global_tag_2) as usize].offset((0) as isize)) as i32) == ('b' as i32))
+            as i32)
+            != 0)
+    );
+    let mut pp: *mut *const libc::c_char = (&mut names[(idx) as usize] as *mut *const libc::c_char);
+    assert!((((((*(*pp).offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0));
+    let mut pe: *mut Entry = (&mut entries_3[(idx) as usize] as *mut Entry);
+    assert!((((((*pe).opt as u32) == ((Option::OPT_A as i32) as u32)) as i32) != 0));
     return 0;
 }

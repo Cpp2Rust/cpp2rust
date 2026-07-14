@@ -188,3 +188,12 @@ add_custom_command(
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
+
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
+  "${PROJECT_SOURCE_DIR}/libcc2rs/target"
+  "${PROJECT_SOURCE_DIR}/libcc2rs-macros/target"
+  "${PROJECT_SOURCE_DIR}/libc-dep/target"
+  "${PROJECT_SOURCE_DIR}/rules/target"
+  "${PROJECT_SOURCE_DIR}/rule-preprocessor/target"
+  "${CMAKE_BINARY_DIR}/target_preprocessor"
+)

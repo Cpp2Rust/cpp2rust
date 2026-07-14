@@ -210,32 +210,38 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn delete(&self) {
-        assert_eq!(self.offset, 0, "ub: invalid delete");
-        let weak = match self.kind {
-            PtrKind::HeapSingle(ref weak) => weak,
+        match &self.kind {
+            PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid delete");
+                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
+                unsafe {
+                    let strong = weak.upgrade().expect("ub: dangling pointer");
+                    Rc::from_raw(Rc::as_ptr(&strong));
+                }
+                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
+            }
+            PtrKind::Reinterpreted(data) => data.alloc.delete(),
+            PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
-        };
-        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-        unsafe {
-            let strong = weak.upgrade().expect("ub: dangling pointer");
-            Rc::from_raw(Rc::as_ptr(&strong));
         }
-        assert_eq!(Weak::strong_count(weak), 0, "ub: strong count is not zero");
     }
 
     #[inline]
     pub fn delete_array(&self) {
-        assert_eq!(self.offset, 0, "ub: invalid delete");
-        let weak = match self.kind {
-            PtrKind::HeapArray(ref weak) => weak,
+        match &self.kind {
+            PtrKind::HeapArray(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid delete");
+                assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
+                unsafe {
+                    let strong = weak.upgrade().expect("ub: dangling pointer");
+                    Rc::from_raw(Rc::as_ptr(&strong));
+                }
+                assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
+            }
+            PtrKind::Reinterpreted(data) => data.alloc.delete(),
+            PtrKind::Null => {}
             _ => panic!("ub: invalid delete"),
-        };
-        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
-        unsafe {
-            let strong = weak.upgrade().expect("ub: dangling pointer");
-            Rc::from_raw(Rc::as_ptr(&strong));
         }
-        assert_eq!(Weak::strong_count(weak), 0, "ub: strong count is not zero");
     }
 
     #[inline]
@@ -730,7 +736,7 @@ macro_rules! impl_ptr_add_sub_assign {
         }
     )+ }
 }
-impl_ptr_add_sub_assign!(i32, u32, u64, isize, usize);
+impl_ptr_add_sub_assign!(i32, u32, i64, u64, isize, usize);
 
 macro_rules! impl_ptr_add_sub {
     ($($rhs:ty),+) => { $(
@@ -1109,6 +1115,10 @@ impl AnyPtr {
         }
         self.ptr.as_bytes().reinterpret_cast::<T>()
     }
+
+    pub fn is_null(&self) -> bool {
+        self.ptr.is_null()
+    }
 }
 
 impl PartialEq for AnyPtr {
@@ -1210,6 +1220,30 @@ impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
 
 impl<T: 'static> ByteRepr for Ptr<T> {}
 impl ByteRepr for AnyPtr {}
+
+impl<T: 'static> Ptr<T> {
+    pub fn to_int(&self) -> usize {
+        let mut buf = vec![0u8; Self::byte_size()];
+        self.to_bytes(&mut buf);
+        usize::from_bytes(&buf[..std::mem::size_of::<usize>()])
+    }
+
+    pub fn from_int(value: usize) -> Self {
+        let mut buf = vec![0u8; Self::byte_size()];
+        value.to_bytes(&mut buf[..std::mem::size_of::<usize>()]);
+        Self::from_bytes(&buf)
+    }
+}
+
+impl AnyPtr {
+    pub fn to_int(&self) -> usize {
+        self.reinterpret_cast::<u8>().to_int()
+    }
+
+    pub fn from_int(value: usize) -> Self {
+        Ptr::<u8>::from_int(value).to_any()
+    }
+}
 
 #[cfg(test)]
 mod tests {
