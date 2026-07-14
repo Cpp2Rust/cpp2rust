@@ -74,5 +74,30 @@ fn main_0() -> i32 {
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
     let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
     assert!(((((*(*(*v.borrow()).upgrade().deref()).tag.borrow()) == 7) as i32) != 0));
+    let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
+    let vp: Value<AnyPtr> = Rc::new(RefCell::new(
+        ((data.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+    ));
+    let n: Value<i32> = Rc::new(RefCell::new(2));
+    let sel: Value<Ptr<u8>> = Rc::new(RefCell::new(
+        if ((((*n.borrow()) < 100) as i32) != 0) {
+            (*vp.borrow()).clone()
+        } else {
+            (AnyPtr::default())
+        }
+        .reinterpret_cast::<u8>(),
+    ));
+    assert!((((!((*sel.borrow()).is_null())) as i32) != 0));
+    assert!(
+        ((((((*sel.borrow()).offset((0) as isize).read()) as i32) == ('h' as i32)) as i32) != 0)
+    );
+    (*n.borrow_mut()) = 200;
+    (*sel.borrow_mut()) = if ((((*n.borrow()) < 100) as i32) != 0) {
+        (*vp.borrow()).clone()
+    } else {
+        (AnyPtr::default())
+    }
+    .reinterpret_cast::<u8>();
+    assert!(((((*sel.borrow()).is_null()) as i32) != 0));
     return 0;
 }

@@ -28,6 +28,8 @@ public:
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
+  bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
+
   void EmitRustUnion(clang::RecordDecl *decl) override;
 
   bool EmitsReprCForRecords() const override { return false; }

@@ -42,6 +42,8 @@ bool IsInMainFile(const clang::Decl *decl);
 
 bool IsUnionArrayMember(const clang::Expr *base);
 
+bool IsStringLiteralExpr(const clang::Expr *expr);
+
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr);

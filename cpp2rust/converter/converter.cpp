@@ -892,6 +892,11 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
 
     EmitRustStructOrUnion(decl);
+  } else if (decl->isUnion()) {
+    if (!record_decls_.MarkDefined(GetRecordName(decl))) {
+      return false;
+    }
+    EmitRustStructOrUnion(decl);
   } else {
     // FIXME: improve error handling
     assert(0 && "unsupported record kind");
@@ -2084,8 +2089,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     bool dest_pointee_const =
         expr->getType()->getPointeeType().isConstQualified();
     Convert(sub_expr);
-    if (clang::isa<clang::StringLiteral>(sub_expr) ||
-        clang::isa<clang::PredefinedExpr>(sub_expr)) {
+    if (IsStringLiteralExpr(sub_expr)) {
       StrCat(".as_ptr()");
       if (!dest_pointee_const) {
         StrCat(".cast_mut()");
