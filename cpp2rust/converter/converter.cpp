@@ -892,6 +892,11 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
 
     EmitRustStructOrUnion(decl);
+  } else if (decl->isUnion()) {
+    if (!record_decls_.MarkDefined(GetRecordName(decl))) {
+      return false;
+    }
+    EmitRustStructOrUnion(decl);
   } else {
     // FIXME: improve error handling
     assert(0 && "unsupported record kind");
