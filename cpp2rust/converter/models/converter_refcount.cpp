@@ -1315,6 +1315,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   }
   if (expr->getCastKind() == clang::CK_NullToPointer) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
     StrCat(GetDefaultAsString(expr->getType()));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
