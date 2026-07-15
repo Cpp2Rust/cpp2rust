@@ -30,15 +30,7 @@ pub fn lenf_2(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     (*ap.borrow_mut()) = VaList::new(__args);
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<Ptr<u8>>()).clone()));
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({
-            let mut __p = (*s.borrow()).clone();
-            let mut __i: usize = 0;
-            while __p.read() != 0 {
-                __p += 1;
-                __i += 1;
-            }
-            __i
-        } as i32),
+        ((*s.borrow()).to_c_string_iterator().count() as i32),
     ));
     return (*result.borrow());
 }
@@ -53,16 +45,7 @@ fn main_0() -> i32 {
                 Ptr::from_string_literal(b"hello %d %d"),
                 &[
                     (10).into(),
-                    ({
-                        let mut __p = (*dummy.borrow()).clone();
-                        let mut __i: usize = 0;
-                        while __p.read() != 0 {
-                            __p += 1;
-                            __i += 1;
-                        }
-                        __i
-                    })
-                    .into(),
+                    ((*dummy.borrow()).to_c_string_iterator().count()).into(),
                 ],
             )
         }) == 15) as i32)

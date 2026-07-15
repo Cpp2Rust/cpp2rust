@@ -33,65 +33,52 @@ fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
 }
 
 fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    loop {
-        let __c = __p.read();
-        if __c == a1 as u8 {
-            break __p;
+    let __s = a0.clone();
+    let __t = a1 as u8;
+    match __s.to_c_string_iterator().position(|__c| __c == __t) {
+        Some(__i) => __s.offset(__i),
+        None => {
+            if __t == 0 {
+                __s.offset(__s.to_c_string_iterator().count())
+            } else {
+                Ptr::null()
+            }
         }
-        if __c == 0 {
-            break Ptr::null();
-        }
-        __p += 1;
     }
 }
 
 fn f7(a0: Ptr<u8>) -> usize {
-    let mut __p = a0.clone();
-    let mut __i: usize = 0;
-    while __p.read() != 0 {
-        __p += 1;
-        __i += 1;
-    }
-    __i
+    a0.to_c_string_iterator().count()
 }
 
 fn f8(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
-    let mut __p1 = a0.clone();
-    let mut __p2 = a1.clone();
+    let mut __it1 = a0.to_c_string_iterator();
+    let mut __it2 = a1.to_c_string_iterator();
     loop {
-        let __c1 = __p1.read();
-        let __c2 = __p2.read();
+        let __c1 = __it1.next();
+        let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1 as i32) - (__c2 as i32);
+            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
         }
-        if __c1 == 0 {
+        if __c1.is_none() {
             break 0;
         }
-        __p1 += 1;
-        __p2 += 1;
     }
 }
 
 fn f9(a0: Ptr<u8>, a1: Ptr<u8>, a2: usize) -> i32 {
-    let mut __p1 = a0.clone();
-    let mut __p2 = a1.clone();
-    let mut __i: usize = 0;
+    let __n = a2;
+    let mut __it1 = a0.to_c_string_iterator().take(__n);
+    let mut __it2 = a1.to_c_string_iterator().take(__n);
     loop {
-        if __i == a2 {
-            break 0;
-        }
-        let __c1 = __p1.read();
-        let __c2 = __p2.read();
+        let __c1 = __it1.next();
+        let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1 as i32) - (__c2 as i32);
+            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
         }
-        if __c1 == 0 {
+        if __c1.is_none() {
             break 0;
         }
-        __p1 += 1;
-        __p2 += 1;
-        __i += 1;
     }
 }
 
@@ -111,17 +98,22 @@ fn f10(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    let mut __found = Ptr::null();
-    loop {
-        let __c = __p.read();
-        if __c == a1 as u8 {
-            __found = __p.clone();
+    let __s = a0.clone();
+    let __t = a1 as u8;
+    match __s
+        .to_c_string_iterator()
+        .enumerate()
+        .filter(|__e| __e.1 == __t)
+        .last()
+    {
+        Some((__i, _)) => __s.offset(__i),
+        None => {
+            if __t == 0 {
+                __s.offset(__s.to_c_string_iterator().count())
+            } else {
+                Ptr::null()
+            }
         }
-        if __c == 0 {
-            break __found;
-        }
-        __p += 1;
     }
 }
 
@@ -130,76 +122,28 @@ fn f15(a0: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f16(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
-    let mut __p = a0.clone();
-    let mut __i: usize = 0;
-    loop {
-        let __c = __p.read();
-        if __c == 0 {
-            break __i;
-        }
-        let mut __q = a1.clone();
-        let __hit = loop {
-            let __r = __q.read();
-            if __r == 0 {
-                break false;
-            }
-            if __r == __c {
-                break true;
-            }
-            __q += 1;
-        };
-        if __hit {
-            break __i;
-        }
-        __p += 1;
-        __i += 1;
-    }
+    let __set = a1.clone();
+    a0.to_c_string_iterator()
+        .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+        .count()
 }
 
 fn f17(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
-    let mut __p = a0.clone();
-    let mut __i: usize = 0;
-    loop {
-        let __c = __p.read();
-        if __c == 0 {
-            break __i;
-        }
-        let mut __q = a1.clone();
-        let __hit = loop {
-            let __r = __q.read();
-            if __r == 0 {
-                break false;
-            }
-            if __r == __c {
-                break true;
-            }
-            __q += 1;
-        };
-        if !__hit {
-            break __i;
-        }
-        __p += 1;
-        __i += 1;
-    }
+    let __set = a1.clone();
+    a0.to_c_string_iterator()
+        .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+        .count()
 }
 
 fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let __needle = a1.clone();
     let mut __p = a0.clone();
     loop {
-        let mut __h = __p.clone();
-        let mut __n = a1.clone();
-        let __matched = loop {
-            let __c = __n.read();
-            if __c == 0 {
-                break true;
-            }
-            if __h.read() != __c {
-                break false;
-            }
-            __h += 1;
-            __n += 1;
-        };
-        if __matched {
+        let mut __h = __p.to_c_string_iterator();
+        if __needle
+            .to_c_string_iterator()
+            .all(|__c| __h.next() == Some(__c))
+        {
             break __p;
         }
         if __p.read() == 0 {
@@ -210,27 +154,14 @@ fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f21(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    loop {
-        let __c = __p.read();
-        if __c == 0 {
-            break Ptr::null();
-        }
-        let mut __q = a1.clone();
-        let __hit = loop {
-            let __r = __q.read();
-            if __r == 0 {
-                break false;
-            }
-            if __r == __c {
-                break true;
-            }
-            __q += 1;
-        };
-        if __hit {
-            break __p;
-        }
-        __p += 1;
+    let __s = a0.clone();
+    let __set = a1.clone();
+    match __s
+        .to_c_string_iterator()
+        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+    {
+        Some(__i) => __s.offset(__i),
+        None => Ptr::null(),
     }
 }
 
@@ -251,19 +182,21 @@ fn f24(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f27(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
-    let mut __p1 = a0.clone();
-    let mut __p2 = a1.clone();
+    let mut __it1 = a0
+        .to_c_string_iterator()
+        .map(|__c| __c.to_ascii_lowercase());
+    let mut __it2 = a1
+        .to_c_string_iterator()
+        .map(|__c| __c.to_ascii_lowercase());
     loop {
-        let __c1 = __p1.read().to_ascii_lowercase();
-        let __c2 = __p2.read().to_ascii_lowercase();
+        let __c1 = __it1.next();
+        let __c2 = __it2.next();
         if __c1 != __c2 {
-            break (__c1 as i32) - (__c2 as i32);
+            break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
         }
-        if __c1 == 0 {
+        if __c1.is_none() {
             break 0;
         }
-        __p1 += 1;
-        __p2 += 1;
     }
 }
 
@@ -298,16 +231,17 @@ fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
 }
 
 fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    loop {
-        let __c = __p.read();
-        if __c == a1 as u8 {
-            break __p;
+    let __s = a0.clone();
+    let __t = a1 as u8;
+    match __s.to_c_string_iterator().position(|__c| __c == __t) {
+        Some(__i) => __s.offset(__i),
+        None => {
+            if __t == 0 {
+                __s.offset(__s.to_c_string_iterator().count())
+            } else {
+                Ptr::null()
+            }
         }
-        if __c == 0 {
-            break Ptr::null();
-        }
-        __p += 1;
     }
 }
 
@@ -327,52 +261,54 @@ fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    let mut __found = Ptr::null();
-    loop {
-        let __c = __p.read();
-        if __c == a1 as u8 {
-            __found = __p.clone();
+    let __s = a0.clone();
+    let __t = a1 as u8;
+    match __s
+        .to_c_string_iterator()
+        .enumerate()
+        .filter(|__e| __e.1 == __t)
+        .last()
+    {
+        Some((__i, _)) => __s.offset(__i),
+        None => {
+            if __t == 0 {
+                __s.offset(__s.to_c_string_iterator().count())
+            } else {
+                Ptr::null()
+            }
         }
-        if __c == 0 {
-            break __found;
-        }
-        __p += 1;
     }
 }
 
 fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    let mut __found = Ptr::null();
-    loop {
-        let __c = __p.read();
-        if __c == a1 as u8 {
-            __found = __p.clone();
+    let __s = a0.clone();
+    let __t = a1 as u8;
+    match __s
+        .to_c_string_iterator()
+        .enumerate()
+        .filter(|__e| __e.1 == __t)
+        .last()
+    {
+        Some((__i, _)) => __s.offset(__i),
+        None => {
+            if __t == 0 {
+                __s.offset(__s.to_c_string_iterator().count())
+            } else {
+                Ptr::null()
+            }
         }
-        if __c == 0 {
-            break __found;
-        }
-        __p += 1;
     }
 }
 
 fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let __needle = a1.clone();
     let mut __p = a0.clone();
     loop {
-        let mut __h = __p.clone();
-        let mut __n = a1.clone();
-        let __matched = loop {
-            let __c = __n.read();
-            if __c == 0 {
-                break true;
-            }
-            if __h.read() != __c {
-                break false;
-            }
-            __h += 1;
-            __n += 1;
-        };
-        if __matched {
+        let mut __h = __p.to_c_string_iterator();
+        if __needle
+            .to_c_string_iterator()
+            .all(|__c| __h.next() == Some(__c))
+        {
             break __p;
         }
         if __p.read() == 0 {
@@ -383,22 +319,14 @@ fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let __needle = a1.clone();
     let mut __p = a0.clone();
     loop {
-        let mut __h = __p.clone();
-        let mut __n = a1.clone();
-        let __matched = loop {
-            let __c = __n.read();
-            if __c == 0 {
-                break true;
-            }
-            if __h.read() != __c {
-                break false;
-            }
-            __h += 1;
-            __n += 1;
-        };
-        if __matched {
+        let mut __h = __p.to_c_string_iterator();
+        if __needle
+            .to_c_string_iterator()
+            .all(|__c| __h.next() == Some(__c))
+        {
             break __p;
         }
         if __p.read() == 0 {
@@ -409,52 +337,26 @@ fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    loop {
-        let __c = __p.read();
-        if __c == 0 {
-            break Ptr::null();
-        }
-        let mut __q = a1.clone();
-        let __hit = loop {
-            let __r = __q.read();
-            if __r == 0 {
-                break false;
-            }
-            if __r == __c {
-                break true;
-            }
-            __q += 1;
-        };
-        if __hit {
-            break __p;
-        }
-        __p += 1;
+    let __s = a0.clone();
+    let __set = a1.clone();
+    match __s
+        .to_c_string_iterator()
+        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+    {
+        Some(__i) => __s.offset(__i),
+        None => Ptr::null(),
     }
 }
 
 fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let mut __p = a0.clone();
-    loop {
-        let __c = __p.read();
-        if __c == 0 {
-            break Ptr::null();
-        }
-        let mut __q = a1.clone();
-        let __hit = loop {
-            let __r = __q.read();
-            if __r == 0 {
-                break false;
-            }
-            if __r == __c {
-                break true;
-            }
-            __q += 1;
-        };
-        if __hit {
-            break __p;
-        }
-        __p += 1;
+    let __s = a0.clone();
+    let __set = a1.clone();
+    match __s
+        .to_c_string_iterator()
+        .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+    {
+        Some(__i) => __s.offset(__i),
+        None => Ptr::null(),
     }
 }
 
