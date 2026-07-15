@@ -18,6 +18,7 @@ pub struct SockaddrIn {
     pub sin_zero: Value<Box<[u8]>>,
 }
 
+#[derive(Default)]
 pub struct SockaddrIn6 {
     pub sin6_family: Value<u16>,
     pub sin6_port: Value<u16>,
@@ -52,18 +53,6 @@ impl Default for SockaddrIn {
             sin_port: Rc::new(RefCell::new(0)),
             sin_addr: Rc::new(RefCell::new(InAddr::default())),
             sin_zero: Rc::new(RefCell::new(vec![0u8; 8].into_boxed_slice())),
-        }
-    }
-}
-
-impl Default for SockaddrIn6 {
-    fn default() -> Self {
-        Self {
-            sin6_family: Rc::new(RefCell::new(0)),
-            sin6_port: Rc::new(RefCell::new(0)),
-            sin6_flowinfo: Rc::new(RefCell::new(0)),
-            sin6_addr: Rc::new(RefCell::new(In6Addr::default())),
-            sin6_scope_id: Rc::new(RefCell::new(0)),
         }
     }
 }

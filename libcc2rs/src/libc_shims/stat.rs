@@ -5,6 +5,7 @@ use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Default)]
 pub struct Stat {
     pub st_dev: Value<u64>,
     pub st_ino: Value<u64>,
@@ -19,26 +20,6 @@ pub struct Stat {
     pub st_atime: Value<i64>,
     pub st_mtime: Value<i64>,
     pub st_ctime: Value<i64>,
-}
-
-impl Default for Stat {
-    fn default() -> Self {
-        Self {
-            st_dev: Rc::new(RefCell::new(0)),
-            st_ino: Rc::new(RefCell::new(0)),
-            st_nlink: Rc::new(RefCell::new(0)),
-            st_mode: Rc::new(RefCell::new(0)),
-            st_uid: Rc::new(RefCell::new(0)),
-            st_gid: Rc::new(RefCell::new(0)),
-            st_rdev: Rc::new(RefCell::new(0)),
-            st_size: Rc::new(RefCell::new(0)),
-            st_blksize: Rc::new(RefCell::new(0)),
-            st_blocks: Rc::new(RefCell::new(0)),
-            st_atime: Rc::new(RefCell::new(0)),
-            st_mtime: Rc::new(RefCell::new(0)),
-            st_ctime: Rc::new(RefCell::new(0)),
-        }
-    }
 }
 
 impl Clone for Stat {

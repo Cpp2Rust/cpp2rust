@@ -5,6 +5,7 @@ use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Default)]
 pub struct Tm {
     pub tm_sec: Value<i32>,
     pub tm_min: Value<i32>,
@@ -17,24 +18,6 @@ pub struct Tm {
     pub tm_isdst: Value<i32>,
     pub tm_gmtoff: Value<i64>,
     pub tm_zone: Value<Ptr<u8>>,
-}
-
-impl Default for Tm {
-    fn default() -> Self {
-        Self {
-            tm_sec: Rc::new(RefCell::new(0)),
-            tm_min: Rc::new(RefCell::new(0)),
-            tm_hour: Rc::new(RefCell::new(0)),
-            tm_mday: Rc::new(RefCell::new(0)),
-            tm_mon: Rc::new(RefCell::new(0)),
-            tm_year: Rc::new(RefCell::new(0)),
-            tm_wday: Rc::new(RefCell::new(0)),
-            tm_yday: Rc::new(RefCell::new(0)),
-            tm_isdst: Rc::new(RefCell::new(0)),
-            tm_gmtoff: Rc::new(RefCell::new(0)),
-            tm_zone: Rc::new(RefCell::new(Ptr::null())),
-        }
-    }
 }
 
 impl Clone for Tm {
@@ -57,18 +40,10 @@ impl Clone for Tm {
 
 impl ByteRepr for Tm {}
 
+#[derive(Default)]
 pub struct Timeval {
     pub tv_sec: Value<i64>,
     pub tv_usec: Value<i64>,
-}
-
-impl Default for Timeval {
-    fn default() -> Self {
-        Self {
-            tv_sec: Rc::new(RefCell::new(0)),
-            tv_usec: Rc::new(RefCell::new(0)),
-        }
-    }
 }
 
 impl Clone for Timeval {
@@ -82,18 +57,10 @@ impl Clone for Timeval {
 
 impl ByteRepr for Timeval {}
 
+#[derive(Default)]
 pub struct Timespec {
     pub tv_sec: Value<i64>,
     pub tv_nsec: Value<i64>,
-}
-
-impl Default for Timespec {
-    fn default() -> Self {
-        Self {
-            tv_sec: Rc::new(RefCell::new(0)),
-            tv_nsec: Rc::new(RefCell::new(0)),
-        }
-    }
 }
 
 impl Clone for Timespec {

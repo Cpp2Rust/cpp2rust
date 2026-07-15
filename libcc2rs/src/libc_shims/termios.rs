@@ -48,22 +48,12 @@ impl Clone for Termios {
 
 impl ByteRepr for Termios {}
 
+#[derive(Default)]
 pub struct Winsize {
     pub ws_row: Value<u16>,
     pub ws_col: Value<u16>,
     pub ws_xpixel: Value<u16>,
     pub ws_ypixel: Value<u16>,
-}
-
-impl Default for Winsize {
-    fn default() -> Self {
-        Self {
-            ws_row: Rc::new(RefCell::new(0)),
-            ws_col: Rc::new(RefCell::new(0)),
-            ws_xpixel: Rc::new(RefCell::new(0)),
-            ws_ypixel: Rc::new(RefCell::new(0)),
-        }
-    }
 }
 
 impl Clone for Winsize {

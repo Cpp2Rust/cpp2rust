@@ -5,20 +5,11 @@ use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Default)]
 pub struct Pollfd {
     pub fd: Value<i32>,
     pub events: Value<i16>,
     pub revents: Value<i16>,
-}
-
-impl Default for Pollfd {
-    fn default() -> Self {
-        Self {
-            fd: Rc::new(RefCell::new(0)),
-            events: Rc::new(RefCell::new(0)),
-            revents: Rc::new(RefCell::new(0)),
-        }
-    }
 }
 
 impl Clone for Pollfd {

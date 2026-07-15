@@ -6,24 +6,13 @@ use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Default)]
 pub struct Ifaddrs {
     pub ifa_next: Value<Ptr<Ifaddrs>>,
     pub ifa_name: Value<Ptr<u8>>,
     pub ifa_flags: Value<u32>,
     pub ifa_addr: Value<Ptr<Sockaddr>>,
     pub ifa_netmask: Value<Ptr<Sockaddr>>,
-}
-
-impl Default for Ifaddrs {
-    fn default() -> Self {
-        Self {
-            ifa_next: Rc::new(RefCell::new(Ptr::null())),
-            ifa_name: Rc::new(RefCell::new(Ptr::null())),
-            ifa_flags: Rc::new(RefCell::new(0)),
-            ifa_addr: Rc::new(RefCell::new(Ptr::null())),
-            ifa_netmask: Rc::new(RefCell::new(Ptr::null())),
-        }
-    }
 }
 
 impl Clone for Ifaddrs {
