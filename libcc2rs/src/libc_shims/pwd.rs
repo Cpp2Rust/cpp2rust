@@ -5,7 +5,7 @@ use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct passwd {
+pub struct Passwd {
     pub pw_name: Value<Ptr<u8>>,
     pub pw_passwd: Value<Ptr<u8>>,
     pub pw_uid: Value<u32>,
@@ -15,7 +15,7 @@ pub struct passwd {
     pub pw_shell: Value<Ptr<u8>>,
 }
 
-impl Default for passwd {
+impl Default for Passwd {
     fn default() -> Self {
         Self {
             pw_name: Rc::new(RefCell::new(Ptr::null())),
@@ -29,7 +29,7 @@ impl Default for passwd {
     }
 }
 
-impl Clone for passwd {
+impl Clone for Passwd {
     fn clone(&self) -> Self {
         Self {
             pw_name: Rc::new(RefCell::new(self.pw_name.borrow().clone())),
@@ -43,6 +43,6 @@ impl Clone for passwd {
     }
 }
 
-impl ByteRepr for passwd {}
+impl ByteRepr for Passwd {}
 
 impl ByteRepr for ::libc::passwd {}

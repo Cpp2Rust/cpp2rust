@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <array>
 #include <assert.h>
 #include <netinet/in.h>

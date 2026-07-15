@@ -1,20 +1,20 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use super::sockaddr;
+use super::Sockaddr;
 use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct ifaddrs {
-    pub ifa_next: Value<Ptr<ifaddrs>>,
+pub struct Ifaddrs {
+    pub ifa_next: Value<Ptr<Ifaddrs>>,
     pub ifa_name: Value<Ptr<u8>>,
     pub ifa_flags: Value<u32>,
-    pub ifa_addr: Value<Ptr<sockaddr>>,
-    pub ifa_netmask: Value<Ptr<sockaddr>>,
+    pub ifa_addr: Value<Ptr<Sockaddr>>,
+    pub ifa_netmask: Value<Ptr<Sockaddr>>,
 }
 
-impl Default for ifaddrs {
+impl Default for Ifaddrs {
     fn default() -> Self {
         Self {
             ifa_next: Rc::new(RefCell::new(Ptr::null())),
@@ -26,7 +26,7 @@ impl Default for ifaddrs {
     }
 }
 
-impl Clone for ifaddrs {
+impl Clone for Ifaddrs {
     fn clone(&self) -> Self {
         Self {
             ifa_next: Rc::new(RefCell::new(self.ifa_next.borrow().clone())),
@@ -38,6 +38,6 @@ impl Clone for ifaddrs {
     }
 }
 
-impl ByteRepr for ifaddrs {}
+impl ByteRepr for Ifaddrs {}
 
 impl ByteRepr for ::libc::ifaddrs {}

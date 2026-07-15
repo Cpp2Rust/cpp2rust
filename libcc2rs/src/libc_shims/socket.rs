@@ -1,42 +1,42 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use super::{in6_addr, in_addr};
-use crate::{ByteRepr, Ptr, Value};
+use super::{In6Addr, InAddr};
+use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct sockaddr {
+pub struct Sockaddr {
     pub sa_family: Value<u16>,
     pub sa_data: Value<Box<[u8]>>,
 }
 
-pub struct sockaddr_in {
+pub struct SockaddrIn {
     pub sin_family: Value<u16>,
     pub sin_port: Value<u16>,
-    pub sin_addr: Value<in_addr>,
+    pub sin_addr: Value<InAddr>,
     pub sin_zero: Value<Box<[u8]>>,
 }
 
-pub struct sockaddr_in6 {
+pub struct SockaddrIn6 {
     pub sin6_family: Value<u16>,
     pub sin6_port: Value<u16>,
     pub sin6_flowinfo: Value<u32>,
-    pub sin6_addr: Value<in6_addr>,
+    pub sin6_addr: Value<In6Addr>,
     pub sin6_scope_id: Value<u32>,
 }
 
-pub struct sockaddr_un {
+pub struct SockaddrUn {
     pub sun_family: Value<u16>,
     pub sun_path: Value<Box<[u8]>>,
 }
 
-pub struct sockaddr_storage {
+pub struct SockaddrStorage {
     pub ss_family: Value<u16>,
     pub __pad: Value<Box<[u8]>>,
 }
 
-impl Default for sockaddr {
+impl Default for Sockaddr {
     fn default() -> Self {
         Self {
             sa_family: Rc::new(RefCell::new(0)),
@@ -45,30 +45,30 @@ impl Default for sockaddr {
     }
 }
 
-impl Default for sockaddr_in {
+impl Default for SockaddrIn {
     fn default() -> Self {
         Self {
             sin_family: Rc::new(RefCell::new(0)),
             sin_port: Rc::new(RefCell::new(0)),
-            sin_addr: Rc::new(RefCell::new(in_addr::default())),
+            sin_addr: Rc::new(RefCell::new(InAddr::default())),
             sin_zero: Rc::new(RefCell::new(vec![0u8; 8].into_boxed_slice())),
         }
     }
 }
 
-impl Default for sockaddr_in6 {
+impl Default for SockaddrIn6 {
     fn default() -> Self {
         Self {
             sin6_family: Rc::new(RefCell::new(0)),
             sin6_port: Rc::new(RefCell::new(0)),
             sin6_flowinfo: Rc::new(RefCell::new(0)),
-            sin6_addr: Rc::new(RefCell::new(in6_addr::default())),
+            sin6_addr: Rc::new(RefCell::new(In6Addr::default())),
             sin6_scope_id: Rc::new(RefCell::new(0)),
         }
     }
 }
 
-impl Default for sockaddr_un {
+impl Default for SockaddrUn {
     fn default() -> Self {
         Self {
             sun_family: Rc::new(RefCell::new(0)),
@@ -77,7 +77,7 @@ impl Default for sockaddr_un {
     }
 }
 
-impl Default for sockaddr_storage {
+impl Default for SockaddrStorage {
     fn default() -> Self {
         Self {
             ss_family: Rc::new(RefCell::new(0)),
@@ -86,7 +86,7 @@ impl Default for sockaddr_storage {
     }
 }
 
-impl Clone for sockaddr {
+impl Clone for Sockaddr {
     fn clone(&self) -> Self {
         Self {
             sa_family: Rc::new(RefCell::new(*self.sa_family.borrow())),
@@ -95,7 +95,7 @@ impl Clone for sockaddr {
     }
 }
 
-impl Clone for sockaddr_in {
+impl Clone for SockaddrIn {
     fn clone(&self) -> Self {
         Self {
             sin_family: Rc::new(RefCell::new(*self.sin_family.borrow())),
@@ -106,7 +106,7 @@ impl Clone for sockaddr_in {
     }
 }
 
-impl Clone for sockaddr_in6 {
+impl Clone for SockaddrIn6 {
     fn clone(&self) -> Self {
         Self {
             sin6_family: Rc::new(RefCell::new(*self.sin6_family.borrow())),
@@ -118,7 +118,7 @@ impl Clone for sockaddr_in6 {
     }
 }
 
-impl Clone for sockaddr_un {
+impl Clone for SockaddrUn {
     fn clone(&self) -> Self {
         Self {
             sun_family: Rc::new(RefCell::new(*self.sun_family.borrow())),
@@ -127,7 +127,7 @@ impl Clone for sockaddr_un {
     }
 }
 
-impl Clone for sockaddr_storage {
+impl Clone for SockaddrStorage {
     fn clone(&self) -> Self {
         Self {
             ss_family: Rc::new(RefCell::new(*self.ss_family.borrow())),
@@ -136,7 +136,7 @@ impl Clone for sockaddr_storage {
     }
 }
 
-impl ByteRepr for sockaddr {
+impl ByteRepr for Sockaddr {
     fn byte_size() -> usize {
         16
     }
@@ -152,7 +152,7 @@ impl ByteRepr for sockaddr {
     }
 }
 
-impl ByteRepr for sockaddr_in {
+impl ByteRepr for SockaddrIn {
     fn byte_size() -> usize {
         16
     }
@@ -166,13 +166,13 @@ impl ByteRepr for sockaddr_in {
         Self {
             sin_family: Rc::new(RefCell::new(<u16>::from_bytes(&buf[0..2]))),
             sin_port: Rc::new(RefCell::new(<u16>::from_bytes(&buf[2..4]))),
-            sin_addr: Rc::new(RefCell::new(<in_addr>::from_bytes(&buf[4..8]))),
+            sin_addr: Rc::new(RefCell::new(<InAddr>::from_bytes(&buf[4..8]))),
             sin_zero: Rc::new(RefCell::new(buf[8..16].to_vec().into_boxed_slice())),
         }
     }
 }
 
-impl ByteRepr for sockaddr_in6 {
+impl ByteRepr for SockaddrIn6 {
     fn byte_size() -> usize {
         28
     }
@@ -188,13 +188,13 @@ impl ByteRepr for sockaddr_in6 {
             sin6_family: Rc::new(RefCell::new(<u16>::from_bytes(&buf[0..2]))),
             sin6_port: Rc::new(RefCell::new(<u16>::from_bytes(&buf[2..4]))),
             sin6_flowinfo: Rc::new(RefCell::new(<u32>::from_bytes(&buf[4..8]))),
-            sin6_addr: Rc::new(RefCell::new(<in6_addr>::from_bytes(&buf[8..24]))),
+            sin6_addr: Rc::new(RefCell::new(<In6Addr>::from_bytes(&buf[8..24]))),
             sin6_scope_id: Rc::new(RefCell::new(<u32>::from_bytes(&buf[24..28]))),
         }
     }
 }
 
-impl ByteRepr for sockaddr_un {
+impl ByteRepr for SockaddrUn {
     fn byte_size() -> usize {
         110
     }
@@ -210,7 +210,7 @@ impl ByteRepr for sockaddr_un {
     }
 }
 
-impl ByteRepr for sockaddr_storage {
+impl ByteRepr for SockaddrStorage {
     fn byte_size() -> usize {
         128
     }
@@ -226,7 +226,7 @@ impl ByteRepr for sockaddr_storage {
     }
 }
 
-impl sockaddr_in {
+impl SockaddrIn {
     pub fn to_libc(&self) -> ::libc::sockaddr_in {
         let mut sin_zero = [0u8; 8];
         sin_zero.copy_from_slice(&self.sin_zero.borrow());
@@ -243,7 +243,7 @@ impl sockaddr_in {
         Self {
             sin_family: Rc::new(RefCell::new(l.sin_family)),
             sin_port: Rc::new(RefCell::new(l.sin_port)),
-            sin_addr: Rc::new(RefCell::new(in_addr {
+            sin_addr: Rc::new(RefCell::new(InAddr {
                 s_addr: Rc::new(RefCell::new(l.sin_addr.s_addr)),
             })),
             sin_zero: Rc::new(RefCell::new(l.sin_zero.to_vec().into_boxed_slice())),
@@ -251,7 +251,7 @@ impl sockaddr_in {
     }
 }
 
-impl sockaddr_in6 {
+impl SockaddrIn6 {
     pub fn to_libc(&self) -> ::libc::sockaddr_in6 {
         let mut s6 = [0u8; 16];
         s6.copy_from_slice(&self.sin6_addr.borrow().s6_addr.borrow());
@@ -268,7 +268,7 @@ impl sockaddr_in6 {
             sin6_family: Rc::new(RefCell::new(l.sin6_family)),
             sin6_port: Rc::new(RefCell::new(l.sin6_port)),
             sin6_flowinfo: Rc::new(RefCell::new(l.sin6_flowinfo)),
-            sin6_addr: Rc::new(RefCell::new(in6_addr {
+            sin6_addr: Rc::new(RefCell::new(In6Addr {
                 s6_addr: Rc::new(RefCell::new(
                     l.sin6_addr.s6_addr.to_vec().into_boxed_slice(),
                 )),
@@ -276,52 +276,6 @@ impl sockaddr_in6 {
             sin6_scope_id: Rc::new(RefCell::new(l.sin6_scope_id)),
         }
     }
-}
-
-pub fn decode_sockaddr(
-    addr: &Ptr<sockaddr>,
-    _len: u32,
-) -> Option<Box<dyn nix::sys::socket::SockaddrLike>> {
-    let family = addr.reinterpret_cast::<u16>().read();
-    if family == ::libc::AF_INET as u16 {
-        let m = addr.reinterpret_cast::<sockaddr_in>().read();
-        Some(Box::new(nix::sys::socket::SockaddrIn::from(m.to_libc())))
-    } else if family == ::libc::AF_INET6 as u16 {
-        let m = addr.reinterpret_cast::<sockaddr_in6>().read();
-        Some(Box::new(nix::sys::socket::SockaddrIn6::from(m.to_libc())))
-    } else if family == ::libc::AF_UNIX as u16 {
-        let m = addr.reinterpret_cast::<sockaddr_un>().read();
-        let path = m.sun_path.borrow();
-        let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
-        let bytes: Vec<u8> = path[..end].to_vec();
-        nix::sys::socket::UnixAddr::new(&bytes[..])
-            .ok()
-            .map(|u| Box::new(u) as Box<dyn nix::sys::socket::SockaddrLike>)
-    } else {
-        None
-    }
-}
-
-pub fn encode_sockaddr(
-    ss: &nix::sys::socket::SockaddrStorage,
-    out: &Ptr<sockaddr>,
-    out_len: &Ptr<u32>,
-) {
-    use nix::sys::socket::{AddressFamily, SockaddrLike};
-    match ss.family() {
-        Some(AddressFamily::Inet) => {
-            let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
-            out.reinterpret_cast::<sockaddr_in>()
-                .write(sockaddr_in::from_libc(&l));
-        }
-        Some(AddressFamily::Inet6) => {
-            let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
-            out.reinterpret_cast::<sockaddr_in6>()
-                .write(sockaddr_in6::from_libc(&l));
-        }
-        _ => {}
-    }
-    out_len.write(ss.len());
 }
 
 impl ByteRepr for ::libc::sockaddr {}

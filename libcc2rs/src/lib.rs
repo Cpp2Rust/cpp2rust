@@ -7,6 +7,9 @@ pub use reinterpret::ByteRepr;
 mod rc;
 pub use rc::*;
 
+mod libc_shims;
+pub use libc_shims::*;
+
 mod fn_ptr;
 pub use fn_ptr::FnPtr;
 

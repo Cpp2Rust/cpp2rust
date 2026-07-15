@@ -5,7 +5,7 @@ use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct termios {
+pub struct Termios {
     pub c_iflag: Value<u32>,
     pub c_oflag: Value<u32>,
     pub c_cflag: Value<u32>,
@@ -16,7 +16,7 @@ pub struct termios {
     pub c_ospeed: Value<u32>,
 }
 
-impl Default for termios {
+impl Default for Termios {
     fn default() -> Self {
         Self {
             c_iflag: Rc::new(RefCell::new(0)),
@@ -31,7 +31,7 @@ impl Default for termios {
     }
 }
 
-impl Clone for termios {
+impl Clone for Termios {
     fn clone(&self) -> Self {
         Self {
             c_iflag: Rc::new(RefCell::new(*self.c_iflag.borrow())),
@@ -46,16 +46,16 @@ impl Clone for termios {
     }
 }
 
-impl ByteRepr for termios {}
+impl ByteRepr for Termios {}
 
-pub struct winsize {
+pub struct Winsize {
     pub ws_row: Value<u16>,
     pub ws_col: Value<u16>,
     pub ws_xpixel: Value<u16>,
     pub ws_ypixel: Value<u16>,
 }
 
-impl Default for winsize {
+impl Default for Winsize {
     fn default() -> Self {
         Self {
             ws_row: Rc::new(RefCell::new(0)),
@@ -66,7 +66,7 @@ impl Default for winsize {
     }
 }
 
-impl Clone for winsize {
+impl Clone for Winsize {
     fn clone(&self) -> Self {
         Self {
             ws_row: Rc::new(RefCell::new(*self.ws_row.borrow())),
@@ -77,4 +77,4 @@ impl Clone for winsize {
     }
 }
 
-impl ByteRepr for winsize {}
+impl ByteRepr for Winsize {}

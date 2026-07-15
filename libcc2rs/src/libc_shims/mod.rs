@@ -1,8 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#![allow(non_camel_case_types)]
-
 mod dirent;
 mod ifaddrs;
 mod ip;

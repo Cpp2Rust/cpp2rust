@@ -1,23 +1,23 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use super::sockaddr;
+use super::Sockaddr;
 use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct addrinfo {
+pub struct Addrinfo {
     pub ai_flags: Value<i32>,
     pub ai_family: Value<i32>,
     pub ai_socktype: Value<i32>,
     pub ai_protocol: Value<i32>,
     pub ai_addrlen: Value<u32>,
-    pub ai_addr: Value<Ptr<sockaddr>>,
+    pub ai_addr: Value<Ptr<Sockaddr>>,
     pub ai_canonname: Value<Ptr<u8>>,
-    pub ai_next: Value<Ptr<addrinfo>>,
+    pub ai_next: Value<Ptr<Addrinfo>>,
 }
 
-impl Default for addrinfo {
+impl Default for Addrinfo {
     fn default() -> Self {
         Self {
             ai_flags: Rc::new(RefCell::new(0)),
@@ -32,7 +32,7 @@ impl Default for addrinfo {
     }
 }
 
-impl Clone for addrinfo {
+impl Clone for Addrinfo {
     fn clone(&self) -> Self {
         Self {
             ai_flags: Rc::new(RefCell::new(*self.ai_flags.borrow())),
@@ -47,6 +47,6 @@ impl Clone for addrinfo {
     }
 }
 
-impl ByteRepr for addrinfo {}
+impl ByteRepr for Addrinfo {}
 
 impl ByteRepr for ::libc::addrinfo {}

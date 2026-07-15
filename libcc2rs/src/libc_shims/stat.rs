@@ -5,7 +5,7 @@ use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct stat {
+pub struct Stat {
     pub st_dev: Value<u64>,
     pub st_ino: Value<u64>,
     pub st_nlink: Value<u64>,
@@ -21,7 +21,7 @@ pub struct stat {
     pub st_ctime: Value<i64>,
 }
 
-impl Default for stat {
+impl Default for Stat {
     fn default() -> Self {
         Self {
             st_dev: Rc::new(RefCell::new(0)),
@@ -41,7 +41,7 @@ impl Default for stat {
     }
 }
 
-impl Clone for stat {
+impl Clone for Stat {
     fn clone(&self) -> Self {
         Self {
             st_dev: Rc::new(RefCell::new(*self.st_dev.borrow())),
@@ -61,9 +61,9 @@ impl Clone for stat {
     }
 }
 
-impl ByteRepr for stat {}
+impl ByteRepr for Stat {}
 
-impl stat {
+impl Stat {
     pub fn from_libc(l: &::libc::stat) -> Self {
         Self {
             st_dev: Rc::new(RefCell::new(l.st_dev)),

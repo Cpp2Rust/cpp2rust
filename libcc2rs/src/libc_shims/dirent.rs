@@ -5,7 +5,7 @@ use crate::{ByteRepr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct dirent {
+pub struct Dirent {
     pub d_ino: Value<u64>,
     pub d_off: Value<i64>,
     pub d_reclen: Value<u16>,
@@ -13,7 +13,7 @@ pub struct dirent {
     pub d_name: Value<Box<[u8]>>,
 }
 
-impl Default for dirent {
+impl Default for Dirent {
     fn default() -> Self {
         Self {
             d_ino: Rc::new(RefCell::new(0)),
@@ -25,7 +25,7 @@ impl Default for dirent {
     }
 }
 
-impl Clone for dirent {
+impl Clone for Dirent {
     fn clone(&self) -> Self {
         Self {
             d_ino: Rc::new(RefCell::new(*self.d_ino.borrow())),
@@ -37,7 +37,7 @@ impl Clone for dirent {
     }
 }
 
-impl ByteRepr for dirent {}
+impl ByteRepr for Dirent {}
 
 pub struct CDir {
     pub entries: Vec<(u64, Vec<u8>, u8)>,

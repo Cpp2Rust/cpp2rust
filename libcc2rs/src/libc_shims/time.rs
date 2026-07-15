@@ -5,7 +5,7 @@ use crate::{ByteRepr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub struct tm {
+pub struct Tm {
     pub tm_sec: Value<i32>,
     pub tm_min: Value<i32>,
     pub tm_hour: Value<i32>,
@@ -19,7 +19,7 @@ pub struct tm {
     pub tm_zone: Value<Ptr<u8>>,
 }
 
-impl Default for tm {
+impl Default for Tm {
     fn default() -> Self {
         Self {
             tm_sec: Rc::new(RefCell::new(0)),
@@ -37,7 +37,7 @@ impl Default for tm {
     }
 }
 
-impl Clone for tm {
+impl Clone for Tm {
     fn clone(&self) -> Self {
         Self {
             tm_sec: Rc::new(RefCell::new(*self.tm_sec.borrow())),
@@ -55,14 +55,14 @@ impl Clone for tm {
     }
 }
 
-impl ByteRepr for tm {}
+impl ByteRepr for Tm {}
 
-pub struct timeval {
+pub struct Timeval {
     pub tv_sec: Value<i64>,
     pub tv_usec: Value<i64>,
 }
 
-impl Default for timeval {
+impl Default for Timeval {
     fn default() -> Self {
         Self {
             tv_sec: Rc::new(RefCell::new(0)),
@@ -71,7 +71,7 @@ impl Default for timeval {
     }
 }
 
-impl Clone for timeval {
+impl Clone for Timeval {
     fn clone(&self) -> Self {
         Self {
             tv_sec: Rc::new(RefCell::new(*self.tv_sec.borrow())),
@@ -80,14 +80,14 @@ impl Clone for timeval {
     }
 }
 
-impl ByteRepr for timeval {}
+impl ByteRepr for Timeval {}
 
-pub struct timespec {
+pub struct Timespec {
     pub tv_sec: Value<i64>,
     pub tv_nsec: Value<i64>,
 }
 
-impl Default for timespec {
+impl Default for Timespec {
     fn default() -> Self {
         Self {
             tv_sec: Rc::new(RefCell::new(0)),
@@ -96,7 +96,7 @@ impl Default for timespec {
     }
 }
 
-impl Clone for timespec {
+impl Clone for Timespec {
     fn clone(&self) -> Self {
         Self {
             tv_sec: Rc::new(RefCell::new(*self.tv_sec.borrow())),
@@ -105,7 +105,7 @@ impl Clone for timespec {
     }
 }
 
-impl ByteRepr for timespec {}
+impl ByteRepr for Timespec {}
 
 impl ByteRepr for ::libc::tm {}
 impl ByteRepr for ::libc::timeval {}
