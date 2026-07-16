@@ -124,21 +124,12 @@ pub fn test_memmove_3() {
         (('\0' as i32) as u8),
     ])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        let mut __src = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
             .to_any()
-            .reinterpret_cast::<u8>();
-        let mut __tmp: Vec<u8> = Vec::with_capacity(4_usize);
-        for _ in 0..4_usize {
-            __tmp.push(__src.read());
-            __src += 1;
-        }
-        let mut __dst = ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
-            .to_any()
-            .reinterpret_cast::<u8>();
-        for __i in 0..4_usize {
-            __dst.write(__tmp[__i]);
-            __dst += 1;
-        }
+            .memcpy(
+                &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                4_usize as usize,
+            );
         ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
             .to_any()
             .clone()

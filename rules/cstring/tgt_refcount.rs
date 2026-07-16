@@ -18,17 +18,7 @@ fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
 }
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
-    let mut __src = a1.reinterpret_cast::<u8>();
-    let mut __tmp: Vec<u8> = Vec::with_capacity(a2);
-    for _ in 0..a2 {
-        __tmp.push(__src.read());
-        __src += 1;
-    }
-    let mut __dst = a0.reinterpret_cast::<u8>();
-    for __i in 0..a2 {
-        __dst.write(__tmp[__i]);
-        __dst += 1;
-    }
+    a0.memcpy(&a1, a2 as usize);
     a0.clone()
 }
 
