@@ -29,6 +29,20 @@ fn main_0() -> i32 {
         );
         (*ofs.borrow_mut()).try_clone().unwrap()
     };
-    libc::unlink((file.as_pointer() as Ptr<u8>));
+    match nix::unistd::unlink(
+        ::std::ffi::CString::new(
+            (file.as_pointer() as Ptr<u8>)
+                .to_c_string_iterator()
+                .collect::<Vec<u8>>(),
+        )
+        .unwrap()
+        .as_c_str(),
+    ) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    };
     return 0;
 }

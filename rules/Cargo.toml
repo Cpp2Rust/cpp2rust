@@ -13,3 +13,4 @@ libc = "0.2.148"
 libcc2rs = { version = "0.1.0", path = "../libcc2rs" }
 brotli-sys = "0.3"
 rustls-ffi = { version = "0.15.3", default-features = false }
+nix = { version = "0.30.1", features = ["socket", "net", "fs", "poll", "time", "user", "dir", "term", "event", "hostname"] }
