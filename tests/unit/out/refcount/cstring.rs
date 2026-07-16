@@ -101,21 +101,12 @@ pub fn test_memmove_3() {
         ('\0' as u8),
     ])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        let mut __src = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
             .to_any()
-            .reinterpret_cast::<u8>();
-        let mut __tmp: Vec<u8> = Vec::with_capacity(4_usize);
-        for _ in 0..4_usize {
-            __tmp.push(__src.read());
-            __src += 1;
-        }
-        let mut __dst = ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
-            .to_any()
-            .reinterpret_cast::<u8>();
-        for __i in 0..4_usize {
-            __dst.write(__tmp[__i]);
-            __dst += 1;
-        }
+            .memcpy(
+                &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                4_usize as usize,
+            );
         ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
             .to_any()
             .clone()
@@ -138,124 +129,100 @@ pub fn test_memmove_3() {
 pub fn test_strchr_4() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let mut __p = (*s.borrow()).clone();
-        loop {
-            let __c = __p.read();
-            if __c == (('w' as u8) as i32) as u8 {
-                break __p;
+        let __s = (*s.borrow()).clone();
+        let __t = (('w' as u8) as i32) as u8;
+        match __s.to_c_string_iterator().position(|__c| __c == __t) {
+            Some(__i) => __s.offset(__i),
+            None => {
+                if __t == 0 {
+                    __s.offset(__s.to_c_string_iterator().count())
+                } else {
+                    Ptr::null()
+                }
             }
-            if __c == 0 {
-                break Ptr::null();
-            }
-            __p += 1;
         }
     }));
     assert!(!((*r.borrow()).is_null()));
     assert!(((((*r.borrow()).read()) as i32) == (('w' as u8) as i32)));
     assert!(
         ({
-            let mut __p = (*s.borrow()).clone();
-            loop {
-                let __c = __p.read();
-                if __c == (('z' as u8) as i32) as u8 {
-                    break __p;
+            let __s = (*s.borrow()).clone();
+            let __t = (('z' as u8) as i32) as u8;
+            match __s.to_c_string_iterator().position(|__c| __c == __t) {
+                Some(__i) => __s.offset(__i),
+                None => {
+                    if __t == 0 {
+                        __s.offset(__s.to_c_string_iterator().count())
+                    } else {
+                        Ptr::null()
+                    }
                 }
-                if __c == 0 {
-                    break Ptr::null();
-                }
-                __p += 1;
             }
         })
         .is_null()
     );
 }
 pub fn test_strlen_5() {
+    assert!((Ptr::from_string_literal(b"").to_c_string_iterator().count() == 0_usize));
     assert!(
-        ({
-            let mut __p = Ptr::from_string_literal(b"").clone();
-            let mut __i: usize = 0;
-            while __p.read() != 0 {
-                __p += 1;
-                __i += 1;
-            }
-            __i
-        } == 0_usize)
+        (Ptr::from_string_literal(b"hello")
+            .to_c_string_iterator()
+            .count()
+            == 5_usize)
     );
     assert!(
-        ({
-            let mut __p = Ptr::from_string_literal(b"hello").clone();
-            let mut __i: usize = 0;
-            while __p.read() != 0 {
-                __p += 1;
-                __i += 1;
-            }
-            __i
-        } == 5_usize)
-    );
-    assert!(
-        ({
-            let mut __p = Ptr::from_string_literal(b"hello world").clone();
-            let mut __i: usize = 0;
-            while __p.read() != 0 {
-                __p += 1;
-                __i += 1;
-            }
-            __i
-        } == 11_usize)
+        (Ptr::from_string_literal(b"hello world")
+            .to_c_string_iterator()
+            .count()
+            == 11_usize)
     );
 }
 pub fn test_strcmp_6() {
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abc").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abc").clone();
+            let mut __it1 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abc").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abd").clone();
+            let mut __it1 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abd").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } < 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abd").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abc").clone();
+            let mut __it1 = Ptr::from_string_literal(b"abd").to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"abc").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } > 0)
     );
@@ -269,55 +236,49 @@ pub fn test_strcmp_6() {
     ])));
     assert!(
         ({
-            let mut __p1 = (*p.borrow()).clone();
-            let mut __p2 = (*p.borrow()).clone();
+            let mut __it1 = (*p.borrow()).to_c_string_iterator();
+            let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
     assert!(
         ({
-            let mut __p1 = (*p.borrow()).clone();
-            let mut __p2 = (*q.borrow()).clone();
+            let mut __it1 = (*p.borrow()).to_c_string_iterator();
+            let mut __it2 = (*q.borrow()).to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } < 0)
     );
     assert!(
         ({
-            let mut __p1 = (buf.as_pointer() as Ptr<u8>).clone();
-            let mut __p2 = (*p.borrow()).clone();
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
+            let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
@@ -325,70 +286,64 @@ pub fn test_strcmp_6() {
 pub fn test_strncmp_7() {
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abcdef").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abcxyz").clone();
-            let mut __i: usize = 0;
+            let __n = 3_usize;
+            let mut __it1 = Ptr::from_string_literal(b"abcdef")
+                .to_c_string_iterator()
+                .take(__n);
+            let mut __it2 = Ptr::from_string_literal(b"abcxyz")
+                .to_c_string_iterator()
+                .take(__n);
             loop {
-                if __i == 3_usize {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } == 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abcdef").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abcxyz").clone();
-            let mut __i: usize = 0;
+            let __n = 4_usize;
+            let mut __it1 = Ptr::from_string_literal(b"abcdef")
+                .to_c_string_iterator()
+                .take(__n);
+            let mut __it2 = Ptr::from_string_literal(b"abcxyz")
+                .to_c_string_iterator()
+                .take(__n);
             loop {
-                if __i == 4_usize {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } < 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abcxyz").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abcdef").clone();
-            let mut __i: usize = 0;
+            let __n = 4_usize;
+            let mut __it1 = Ptr::from_string_literal(b"abcxyz")
+                .to_c_string_iterator()
+                .take(__n);
+            let mut __it2 = Ptr::from_string_literal(b"abcdef")
+                .to_c_string_iterator()
+                .take(__n);
             loop {
-                if __i == 4_usize {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } > 0)
     );
@@ -406,70 +361,54 @@ pub fn test_strncmp_7() {
     let n: Value<usize> = Rc::new(RefCell::new(3_usize));
     assert!(
         ({
-            let mut __p1 = (*p.borrow()).clone();
-            let mut __p2 = (*q.borrow()).clone();
-            let mut __i: usize = 0;
+            let __n = (*n.borrow());
+            let mut __it1 = (*p.borrow()).to_c_string_iterator().take(__n);
+            let mut __it2 = (*q.borrow()).to_c_string_iterator().take(__n);
             loop {
-                if __i == (*n.borrow()) {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } == 0)
     );
     assert!(
         ({
-            let mut __p1 = (*p.borrow()).clone();
-            let mut __p2 = (*q.borrow()).clone();
-            let mut __i: usize = 0;
+            let __n = (*n.borrow()).wrapping_add(1_usize);
+            let mut __it1 = (*p.borrow()).to_c_string_iterator().take(__n);
+            let mut __it2 = (*q.borrow()).to_c_string_iterator().take(__n);
             loop {
-                if __i == (*n.borrow()).wrapping_add(1_usize) {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } < 0)
     );
     assert!(
         ({
-            let mut __p1 = (buf.as_pointer() as Ptr<u8>).clone();
-            let mut __p2 = (*p.borrow()).clone();
-            let mut __i: usize = 0;
+            let __n = 6_usize;
+            let mut __it1 = (buf.as_pointer() as Ptr<u8>)
+                .to_c_string_iterator()
+                .take(__n);
+            let mut __it2 = (*p.borrow()).to_c_string_iterator().take(__n);
             loop {
-                if __i == 6_usize {
-                    break 0;
-                }
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
-                __i += 1;
             }
         } == 0)
     );
@@ -540,17 +479,22 @@ pub fn test_memchr_8() {
 pub fn test_strrchr_9() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let mut __p = (*s.borrow()).clone();
-        let mut __found = Ptr::null();
-        loop {
-            let __c = __p.read();
-            if __c == (('l' as u8) as i32) as u8 {
-                __found = __p.clone();
+        let __s = (*s.borrow()).clone();
+        let __t = (('l' as u8) as i32) as u8;
+        match __s
+            .to_c_string_iterator()
+            .enumerate()
+            .filter(|__e| __e.1 == __t)
+            .last()
+        {
+            Some((__i, _)) => __s.offset(__i),
+            None => {
+                if __t == 0 {
+                    __s.offset(__s.to_c_string_iterator().count())
+                } else {
+                    Ptr::null()
+                }
             }
-            if __c == 0 {
-                break __found;
-            }
-            __p += 1;
         }
     }));
     assert!(!((*r.borrow()).is_null()));
@@ -561,17 +505,22 @@ pub fn test_strrchr_9() {
     });
     assert!(
         ({
-            let mut __p = (*s.borrow()).clone();
-            let mut __found = Ptr::null();
-            loop {
-                let __c = __p.read();
-                if __c == (('z' as u8) as i32) as u8 {
-                    __found = __p.clone();
+            let __s = (*s.borrow()).clone();
+            let __t = (('z' as u8) as i32) as u8;
+            match __s
+                .to_c_string_iterator()
+                .enumerate()
+                .filter(|__e| __e.1 == __t)
+                .last()
+            {
+                Some((__i, _)) => __s.offset(__i),
+                None => {
+                    if __t == 0 {
+                        __s.offset(__s.to_c_string_iterator().count())
+                    } else {
+                        Ptr::null()
+                    }
                 }
-                if __c == 0 {
-                    break __found;
-                }
-                __p += 1;
             }
         })
         .is_null()
@@ -584,17 +533,22 @@ pub fn test_strrchr_9() {
     ])));
     assert!(
         ({
-            let mut __p = (buf.as_pointer() as Ptr<u8>).clone();
-            let mut __found = Ptr::null();
-            loop {
-                let __c = __p.read();
-                if __c == (('a' as u8) as i32) as u8 {
-                    __found = __p.clone();
+            let __s = (buf.as_pointer() as Ptr<u8>).clone();
+            let __t = (('a' as u8) as i32) as u8;
+            match __s
+                .to_c_string_iterator()
+                .enumerate()
+                .filter(|__e| __e.1 == __t)
+                .last()
+            {
+                Some((__i, _)) => __s.offset(__i),
+                None => {
+                    if __t == 0 {
+                        __s.offset(__s.to_c_string_iterator().count())
+                    } else {
+                        Ptr::null()
+                    }
                 }
-                if __c == 0 {
-                    break __found;
-                }
-                __p += 1;
             }
         } == ((buf.as_pointer() as Ptr<u8>).offset(2)))
     );
@@ -606,19 +560,17 @@ pub fn test_strdup_10() {
     assert!(!((*d.borrow()).is_null()));
     assert!(
         ({
-            let mut __p1 = (*d.borrow()).clone();
-            let mut __p2 = Ptr::from_string_literal(b"hello").clone();
+            let mut __it1 = (*d.borrow()).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"hello").to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
@@ -636,19 +588,17 @@ pub fn test_strdup_10() {
     assert!(!((*d2.borrow()).is_null()));
     assert!(
         ({
-            let mut __p1 = (*d2.borrow()).clone();
-            let mut __p2 = (*p.borrow()).clone();
+            let mut __it1 = (*d2.borrow()).to_c_string_iterator();
+            let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
@@ -659,19 +609,17 @@ pub fn test_strdup_10() {
     assert!(!((*d3.borrow()).is_null()));
     assert!(
         ({
-            let mut __p1 = (*d3.borrow()).clone();
-            let mut __p2 = (buf.as_pointer() as Ptr<u8>).clone();
+            let mut __it1 = (*d3.borrow()).to_c_string_iterator();
+            let mut __it2 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
             loop {
-                let __c1 = __p1.read();
-                let __c2 = __p2.read();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
@@ -680,254 +628,94 @@ pub fn test_strdup_10() {
 pub fn test_strcspn_11() {
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"hello").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"el").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"el").clone();
+            Ptr::from_string_literal(b"hello")
+                .to_c_string_iterator()
+                .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 1_usize)
     );
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"abc").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"xyz").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"xyz").clone();
+            Ptr::from_string_literal(b"abc")
+                .to_c_string_iterator()
+                .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 3_usize)
     );
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"abc").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"abc").clone();
+            Ptr::from_string_literal(b"")
+                .to_c_string_iterator()
+                .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 0_usize)
     );
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
     let rej: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"el")));
     assert!(
         ({
-            let mut __p = (*s.borrow()).clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = (*rej.borrow()).clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = (*rej.borrow()).clone();
+            (*s.borrow())
+                .to_c_string_iterator()
+                .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 1_usize)
     );
 }
 pub fn test_strspn_12() {
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"hello").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"hel").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if !__hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"hel").clone();
+            Ptr::from_string_literal(b"hello")
+                .to_c_string_iterator()
+                .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 4_usize)
     );
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"abc").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"xyz").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if !__hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"xyz").clone();
+            Ptr::from_string_literal(b"abc")
+                .to_c_string_iterator()
+                .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 0_usize)
     );
     assert!(
         ({
-            let mut __p = Ptr::from_string_literal(b"aaa").clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = Ptr::from_string_literal(b"a").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if !__hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = Ptr::from_string_literal(b"a").clone();
+            Ptr::from_string_literal(b"aaa")
+                .to_c_string_iterator()
+                .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 3_usize)
     );
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello")));
     let acc: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hel")));
     assert!(
         ({
-            let mut __p = (*s.borrow()).clone();
-            let mut __i: usize = 0;
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break __i;
-                }
-                let mut __q = (*acc.borrow()).clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if !__hit {
-                    break __i;
-                }
-                __p += 1;
-                __i += 1;
-            }
+            let __set = (*acc.borrow()).clone();
+            (*s.borrow())
+                .to_c_string_iterator()
+                .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
+                .count()
         } == 4_usize)
     );
 }
 pub fn test_strstr_13() {
     let h: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
+        let __needle = Ptr::from_string_literal(b"world").clone();
         let mut __p = (*h.borrow()).clone();
         loop {
-            let mut __h = __p.clone();
-            let mut __n = Ptr::from_string_literal(b"world").clone();
-            let __matched = loop {
-                let __c = __n.read();
-                if __c == 0 {
-                    break true;
-                }
-                if __h.read() != __c {
-                    break false;
-                }
-                __h += 1;
-                __n += 1;
-            };
-            if __matched {
+            let mut __h = __p.to_c_string_iterator();
+            if __needle
+                .to_c_string_iterator()
+                .all(|__c| __h.next() == Some(__c))
+            {
                 break __p;
             }
             if __p.read() == 0 {
@@ -943,22 +731,14 @@ pub fn test_strstr_13() {
     });
     assert!(
         ({
+            let __needle = Ptr::from_string_literal(b"xyz").clone();
             let mut __p = (*h.borrow()).clone();
             loop {
-                let mut __h = __p.clone();
-                let mut __n = Ptr::from_string_literal(b"xyz").clone();
-                let __matched = loop {
-                    let __c = __n.read();
-                    if __c == 0 {
-                        break true;
-                    }
-                    if __h.read() != __c {
-                        break false;
-                    }
-                    __h += 1;
-                    __n += 1;
-                };
-                if __matched {
+                let mut __h = __p.to_c_string_iterator();
+                if __needle
+                    .to_c_string_iterator()
+                    .all(|__c| __h.next() == Some(__c))
+                {
                     break __p;
                 }
                 if __p.read() == 0 {
@@ -979,22 +759,14 @@ pub fn test_strstr_13() {
     ])));
     assert!(
         ({
+            let __needle = Ptr::from_string_literal(b"ll").clone();
             let mut __p = (buf.as_pointer() as Ptr<u8>).clone();
             loop {
-                let mut __h = __p.clone();
-                let mut __n = Ptr::from_string_literal(b"ll").clone();
-                let __matched = loop {
-                    let __c = __n.read();
-                    if __c == 0 {
-                        break true;
-                    }
-                    if __h.read() != __c {
-                        break false;
-                    }
-                    __h += 1;
-                    __n += 1;
-                };
-                if __matched {
+                let mut __h = __p.to_c_string_iterator();
+                if __needle
+                    .to_c_string_iterator()
+                    .all(|__c| __h.next() == Some(__c))
+                {
                     break __p;
                 }
                 if __p.read() == 0 {
@@ -1008,27 +780,14 @@ pub fn test_strstr_13() {
 pub fn test_strpbrk_14() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let mut __p = (*s.borrow()).clone();
-        loop {
-            let __c = __p.read();
-            if __c == 0 {
-                break Ptr::null();
-            }
-            let mut __q = Ptr::from_string_literal(b"wo").clone();
-            let __hit = loop {
-                let __r = __q.read();
-                if __r == 0 {
-                    break false;
-                }
-                if __r == __c {
-                    break true;
-                }
-                __q += 1;
-            };
-            if __hit {
-                break __p;
-            }
-            __p += 1;
+        let __s = (*s.borrow()).clone();
+        let __set = Ptr::from_string_literal(b"wo").clone();
+        match __s
+            .to_c_string_iterator()
+            .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+        {
+            Some(__i) => __s.offset(__i),
+            None => Ptr::null(),
         }
     }));
     assert!(!((*r.borrow()).is_null()));
@@ -1038,27 +797,14 @@ pub fn test_strpbrk_14() {
     });
     assert!(
         ({
-            let mut __p = (*s.borrow()).clone();
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break Ptr::null();
-                }
-                let mut __q = Ptr::from_string_literal(b"xyz").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __p;
-                }
-                __p += 1;
+            let __s = (*s.borrow()).clone();
+            let __set = Ptr::from_string_literal(b"xyz").clone();
+            match __s
+                .to_c_string_iterator()
+                .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+            {
+                Some(__i) => __s.offset(__i),
+                None => Ptr::null(),
             }
         })
         .is_null()
@@ -1071,27 +817,14 @@ pub fn test_strpbrk_14() {
     ])));
     assert!(
         ({
-            let mut __p = (buf.as_pointer() as Ptr<u8>).clone();
-            loop {
-                let __c = __p.read();
-                if __c == 0 {
-                    break Ptr::null();
-                }
-                let mut __q = Ptr::from_string_literal(b"b").clone();
-                let __hit = loop {
-                    let __r = __q.read();
-                    if __r == 0 {
-                        break false;
-                    }
-                    if __r == __c {
-                        break true;
-                    }
-                    __q += 1;
-                };
-                if __hit {
-                    break __p;
-                }
-                __p += 1;
+            let __s = (buf.as_pointer() as Ptr<u8>).clone();
+            let __set = Ptr::from_string_literal(b"b").clone();
+            match __s
+                .to_c_string_iterator()
+                .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
+            {
+                Some(__i) => __s.offset(__i),
+                None => Ptr::null(),
             }
         } == ((buf.as_pointer() as Ptr<u8>).offset(1)))
     );
@@ -1099,55 +832,61 @@ pub fn test_strpbrk_14() {
 pub fn test_strcasecmp_15() {
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"HELLO").clone();
-            let mut __p2 = Ptr::from_string_literal(b"hello").clone();
+            let mut __it1 = Ptr::from_string_literal(b"HELLO")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
+            let mut __it2 = Ptr::from_string_literal(b"hello")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
             loop {
-                let __c1 = __p1.read().to_ascii_lowercase();
-                let __c2 = __p2.read().to_ascii_lowercase();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abc").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abd").clone();
+            let mut __it1 = Ptr::from_string_literal(b"abc")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
+            let mut __it2 = Ptr::from_string_literal(b"abd")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
             loop {
-                let __c1 = __p1.read().to_ascii_lowercase();
-                let __c2 = __p2.read().to_ascii_lowercase();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } < 0)
     );
     assert!(
         ({
-            let mut __p1 = Ptr::from_string_literal(b"abd").clone();
-            let mut __p2 = Ptr::from_string_literal(b"abc").clone();
+            let mut __it1 = Ptr::from_string_literal(b"abd")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
+            let mut __it2 = Ptr::from_string_literal(b"abc")
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
             loop {
-                let __c1 = __p1.read().to_ascii_lowercase();
-                let __c2 = __p2.read().to_ascii_lowercase();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } > 0)
     );
@@ -1155,19 +894,21 @@ pub fn test_strcasecmp_15() {
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"foo")));
     assert!(
         ({
-            let mut __p1 = (*p.borrow()).clone();
-            let mut __p2 = (*q.borrow()).clone();
+            let mut __it1 = (*p.borrow())
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
+            let mut __it2 = (*q.borrow())
+                .to_c_string_iterator()
+                .map(|__c| __c.to_ascii_lowercase());
             loop {
-                let __c1 = __p1.read().to_ascii_lowercase();
-                let __c2 = __p2.read().to_ascii_lowercase();
+                let __c1 = __it1.next();
+                let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1 as i32) - (__c2 as i32);
+                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
                 }
-                if __c1 == 0 {
+                if __c1.is_none() {
                     break 0;
                 }
-                __p1 += 1;
-                __p2 += 1;
             }
         } == 0)
     );
