@@ -202,11 +202,14 @@ class TestContext:
 
         parent = Path(__file__).resolve().parent.parent.parent.parent.parent
         cc2rs_dir = parent / "libcc2rs" / "target" / "release"
+        libc_dep_deps = parent / "libc-dep" / "target" / "release" / "deps"
         # pick the most recently compiled libc
         libc_rlib = max(
-            (parent / "libc-dep" / "target" / "release" / "deps").glob(
-                "liblibc-*.rlib"
-            ),
+            libc_dep_deps.glob("liblibc-*.rlib"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        nix_rlib = max(
+            libc_dep_deps.glob("libnix-*.rlib"),
             key=lambda p: p.stat().st_mtime,
         )
         cmd = [
@@ -229,10 +232,14 @@ class TestContext:
             str(self.tmp_dir),
             "-L",
             f"dependency={cc2rs_dir / 'deps'}",
+            "-L",
+            f"dependency={libc_dep_deps}",
             "--extern",
             f"libcc2rs={cc2rs_dir / 'liblibcc2rs.rlib'}",
             "--extern",
             f"libc={libc_rlib}",
+            "--extern",
+            f"nix={nix_rlib}",
         ]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
