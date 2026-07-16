@@ -212,6 +212,10 @@ class TestContext:
             libc_dep_deps.glob("libnix-*.rlib"),
             key=lambda p: p.stat().st_mtime,
         )
+        jiff_rlib = max(
+            libc_dep_deps.glob("libjiff-*.rlib"),
+            key=lambda p: p.stat().st_mtime,
+        )
         cmd = [
             "rustc",
             "+" + read_rust_version(),
@@ -240,6 +244,8 @@ class TestContext:
             f"libc={libc_rlib}",
             "--extern",
             f"nix={nix_rlib}",
+            "--extern",
+            f"jiff={jiff_rlib}",
         ]
         _, err, returncode = lit.util.executeCommand(cmd, str(self.tmp_dir))
         if exp.should_not_compile:
