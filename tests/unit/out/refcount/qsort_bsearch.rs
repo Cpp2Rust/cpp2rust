@@ -72,26 +72,23 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
             let mut __hi: isize = 8_usize as isize - 1;
-            let mut __found: Option<AnyPtr> = None;
-            while __lo <= __hi && __found.is_none() {
-                let __mid = (__lo + __hi) / 2;
+            let mut __found = AnyPtr::default();
+            while __lo <= __hi && __found.is_null() {
+                let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
                 let __r = cmp_int_0(
                     ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );
                 if __r == 0 {
-                    __found = Some(__elem.to_any());
+                    __found = __elem.to_any();
                 } else if __r < 0 {
                     __hi = __mid - 1;
                 } else {
                     __lo = __mid + 1;
                 }
             }
-            match __found {
-                Some(__p) => __p,
-                None => AnyPtr::default(),
-            }
+            __found
         }
         .reinterpret_cast::<i32>(),
     ));
@@ -105,26 +102,23 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
             let mut __hi: isize = 8_usize as isize - 1;
-            let mut __found: Option<AnyPtr> = None;
-            while __lo <= __hi && __found.is_none() {
-                let __mid = (__lo + __hi) / 2;
+            let mut __found = AnyPtr::default();
+            while __lo <= __hi && __found.is_null() {
+                let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
                 let __r = cmp_int_0(
                     ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );
                 if __r == 0 {
-                    __found = Some(__elem.to_any());
+                    __found = __elem.to_any();
                 } else if __r < 0 {
                     __hi = __mid - 1;
                 } else {
                     __lo = __mid + 1;
                 }
             }
-            match __found {
-                Some(__p) => __p,
-                None => AnyPtr::default(),
-            }
+            __found
         }
         .reinterpret_cast::<i32>(),
     ));

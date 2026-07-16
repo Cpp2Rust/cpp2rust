@@ -23,23 +23,20 @@ fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i3
     let __base = a1.reinterpret_cast::<u8>();
     let mut __lo: isize = 0;
     let mut __hi: isize = a2 as isize - 1;
-    let mut __found: Option<AnyPtr> = None;
-    while __lo <= __hi && __found.is_none() {
-        let __mid = (__lo + __hi) / 2;
+    let mut __found = AnyPtr::default();
+    while __lo <= __hi && __found.is_null() {
+        let __mid = __lo + (__hi - __lo) / 2;
         let __elem = __base.offset(__mid as usize * a3);
         let __r = a4(a0.clone(), __elem.to_any());
         if __r == 0 {
-            __found = Some(__elem.to_any());
+            __found = __elem.to_any();
         } else if __r < 0 {
             __hi = __mid - 1;
         } else {
             __lo = __mid + 1;
         }
     }
-    match __found {
-        Some(__p) => __p,
-        None => AnyPtr::default(),
-    }
+    __found
 }
 
 fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
