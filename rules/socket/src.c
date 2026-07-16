@@ -88,3 +88,11 @@ ssize_t f19(int sockfd, const void *buf, size_t len, int flags,
             const struct sockaddr *dest_addr, socklen_t addrlen) {
   return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
 }
+
+int f20() {
+  return AF_INET;
+}
+
+int f21() {
+  return AF_INET6;
+}

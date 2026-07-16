@@ -102,3 +102,11 @@ unsafe fn f19(
 ) -> isize {
     libc::sendto(a0, a1, a2, a3, a4, a5)
 }
+
+unsafe fn f20() -> i32 {
+    libc::AF_INET
+}
+
+unsafe fn f21() -> i32 {
+    libc::AF_INET6
+}
