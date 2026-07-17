@@ -23,22 +23,21 @@ pub struct Stat {
 }
 
 impl Stat {
-    #[allow(clippy::unnecessary_cast)]
     pub fn from_libc(s: &::libc::stat) -> Self {
         Self {
-            st_dev: Rc::new(RefCell::new(s.st_dev as u64)),
-            st_ino: Rc::new(RefCell::new(s.st_ino as u64)),
-            st_nlink: Rc::new(RefCell::new(s.st_nlink as u64)),
-            st_mode: Rc::new(RefCell::new(s.st_mode as u32)),
+            st_dev: Rc::new(RefCell::new(s.st_dev)),
+            st_ino: Rc::new(RefCell::new(s.st_ino)),
+            st_nlink: Rc::new(RefCell::new(s.st_nlink)),
+            st_mode: Rc::new(RefCell::new(s.st_mode)),
             st_uid: Rc::new(RefCell::new(s.st_uid)),
             st_gid: Rc::new(RefCell::new(s.st_gid)),
-            st_rdev: Rc::new(RefCell::new(s.st_rdev as u64)),
-            st_size: Rc::new(RefCell::new(s.st_size as i64)),
-            st_blksize: Rc::new(RefCell::new(s.st_blksize as i64)),
-            st_blocks: Rc::new(RefCell::new(s.st_blocks as i64)),
-            st_atime: Rc::new(RefCell::new(s.st_atime as i64)),
-            st_mtime: Rc::new(RefCell::new(s.st_mtime as i64)),
-            st_ctime: Rc::new(RefCell::new(s.st_ctime as i64)),
+            st_rdev: Rc::new(RefCell::new(s.st_rdev)),
+            st_size: Rc::new(RefCell::new(s.st_size)),
+            st_blksize: Rc::new(RefCell::new(s.st_blksize)),
+            st_blocks: Rc::new(RefCell::new(s.st_blocks)),
+            st_atime: Rc::new(RefCell::new(s.st_atime)),
+            st_mtime: Rc::new(RefCell::new(s.st_mtime)),
+            st_ctime: Rc::new(RefCell::new(s.st_ctime)),
         }
     }
 }
