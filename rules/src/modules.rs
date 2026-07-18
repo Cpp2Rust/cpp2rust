@@ -114,6 +114,8 @@ pub mod pwd_tgt_refcount;
 pub mod pwd_tgt_unsafe;
 #[path = r#"../rustls/tgt_unsafe.rs"#]
 pub mod rustls_tgt_unsafe;
+#[path = r#"../select/tgt_refcount.rs"#]
+pub mod select_tgt_refcount;
 #[path = r#"../select/tgt_unsafe.rs"#]
 pub mod select_tgt_unsafe;
 #[path = r#"../signal/tgt_unsafe.rs"#]

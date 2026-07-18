@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 mod dirent;
+mod fdset;
 mod ifaddrs;
 mod ip;
 mod netdb;
@@ -13,6 +14,7 @@ mod termios;
 mod time;
 
 pub use dirent::*;
+pub use fdset::*;
 pub use ifaddrs::*;
 pub use ip::*;
 pub use netdb::*;
