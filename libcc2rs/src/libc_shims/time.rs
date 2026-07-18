@@ -33,7 +33,11 @@ impl Tm {
         *tm.tm_yday.borrow_mut() = dt.day_of_year() as i32 - 1;
         *tm.tm_isdst.borrow_mut() = 0;
         *tm.tm_gmtoff.borrow_mut() = dt.offset().seconds() as i64;
-        *tm.tm_zone.borrow_mut() = Ptr::from_string_literal(b"GMT");
+        #[cfg(target_os = "linux")]
+        let zone: &'static [u8] = b"GMT";
+        #[cfg(target_os = "macos")]
+        let zone: &'static [u8] = b"UTC";
+        *tm.tm_zone.borrow_mut() = Ptr::from_string_literal(zone);
         tm
     }
 
