@@ -1,4 +1,3 @@
-// no-compile: refcount
 #define _GNU_SOURCE
 #include <assert.h>
 #include <netinet/in.h>
