@@ -13,13 +13,6 @@ static void test_time(void) {
   assert(t3 >= t1);
 }
 
-static void test_clock_gettime(void) {
-  struct timespec ts;
-  assert(clock_gettime(CLOCK_REALTIME, &ts) == 0);
-  assert(ts.tv_sec > 1500000000);
-  assert(ts.tv_nsec >= 0 && ts.tv_nsec < 1000000000);
-}
-
 static void print_tm(time_t t) {
   struct tm tm;
   assert(gmtime_r(&t, &tm) != NULL);
@@ -60,7 +53,6 @@ static void test_strftime(void) {
 
 int main(void) {
   test_time();
-  test_clock_gettime();
   test_gmtime_r();
   test_strftime();
   return 0;

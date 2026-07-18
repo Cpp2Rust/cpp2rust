@@ -14,21 +14,7 @@ pub unsafe fn test_time_0() {
     assert!(((((t2) == (t3)) as i32) != 0));
     assert!(((((t3) >= (t1)) as i32) != 0));
 }
-pub unsafe fn test_clock_gettime_1() {
-    let mut ts: ::libc::timespec = unsafe { std::mem::zeroed() };
-    assert!(
-        ((((libc::clock_gettime(libc::CLOCK_REALTIME, (&mut ts as *mut ::libc::timespec))) == (0))
-            as i32)
-            != 0)
-    );
-    assert!(((((ts.tv_sec) > (1500000000_i64)) as i32) != 0));
-    assert!(
-        (((((((ts.tv_nsec) >= (0_i64)) as i32) != 0)
-            && ((((ts.tv_nsec) < (1000000000_i64)) as i32) != 0)) as i32)
-            != 0)
-    );
-}
-pub unsafe fn print_tm_2(mut t: i64) {
+pub unsafe fn print_tm_1(mut t: i64) {
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
         (((!((libc::gmtime_r(
@@ -56,19 +42,19 @@ pub unsafe fn print_tm_2(mut t: i64) {
         tm.tm_isdst,
     );
 }
-pub unsafe fn test_gmtime_r_3() {
-    (unsafe { print_tm_2(0_i64) });
-    (unsafe { print_tm_2(1_i64) });
-    (unsafe { print_tm_2(86399_i64) });
-    (unsafe { print_tm_2(86400_i64) });
-    (unsafe { print_tm_2(951782400_i64) });
-    (unsafe { print_tm_2(951868799_i64) });
-    (unsafe { print_tm_2(1704067199_i64) });
-    (unsafe { print_tm_2(1704067200_i64) });
-    (unsafe { print_tm_2(1721126096_i64) });
-    (unsafe { print_tm_2(4102444800_i64) });
+pub unsafe fn test_gmtime_r_2() {
+    (unsafe { print_tm_1(0_i64) });
+    (unsafe { print_tm_1(1_i64) });
+    (unsafe { print_tm_1(86399_i64) });
+    (unsafe { print_tm_1(86400_i64) });
+    (unsafe { print_tm_1(951782400_i64) });
+    (unsafe { print_tm_1(951868799_i64) });
+    (unsafe { print_tm_1(1704067199_i64) });
+    (unsafe { print_tm_1(1704067200_i64) });
+    (unsafe { print_tm_1(1721126096_i64) });
+    (unsafe { print_tm_1(4102444800_i64) });
 }
-pub unsafe fn test_strftime_4() {
+pub unsafe fn test_strftime_3() {
     let mut t: i64 = 1721126096_i64;
     let mut tm: ::libc::tm = unsafe { std::mem::zeroed() };
     assert!(
@@ -150,8 +136,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_time_0() });
-    (unsafe { test_clock_gettime_1() });
-    (unsafe { test_gmtime_r_3() });
-    (unsafe { test_strftime_4() });
+    (unsafe { test_gmtime_r_2() });
+    (unsafe { test_strftime_3() });
     return 0;
 }

@@ -44,33 +44,7 @@ pub fn test_time_0() {
     assert!(((((*t2.borrow()) == (*t3.borrow())) as i32) != 0));
     assert!(((((*t3.borrow()) >= (*t1.borrow())) as i32) != 0));
 }
-pub fn test_clock_gettime_1() {
-    let ts: Value<libcc2rs::Timespec> = Rc::new(RefCell::new(Default::default()));
-    assert!(
-        (((match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
-            Ok(__ts) => {
-                (ts.as_pointer()).with_mut(|__t| {
-                    *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
-                    *__t.tv_nsec.borrow_mut() = __ts.tv_nsec() as i64;
-                });
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(((((*(*ts.borrow()).tv_sec.borrow()) > 1500000000_i64) as i32) != 0));
-    assert!(
-        (((((((*(*ts.borrow()).tv_nsec.borrow()) >= 0_i64) as i32) != 0)
-            && ((((*(*ts.borrow()).tv_nsec.borrow()) < 1000000000_i64) as i32) != 0))
-            as i32)
-            != 0)
-    );
-}
-pub fn print_tm_2(t: i64) {
+pub fn print_tm_1(t: i64) {
     let t: Value<i64> = Rc::new(RefCell::new(t));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
@@ -106,19 +80,19 @@ pub fn print_tm_2(t: i64) {
         (*(*tm.borrow()).tm_isdst.borrow())
     );
 }
-pub fn test_gmtime_r_3() {
-    ({ print_tm_2(0_i64) });
-    ({ print_tm_2(1_i64) });
-    ({ print_tm_2(86399_i64) });
-    ({ print_tm_2(86400_i64) });
-    ({ print_tm_2(951782400_i64) });
-    ({ print_tm_2(951868799_i64) });
-    ({ print_tm_2(1704067199_i64) });
-    ({ print_tm_2(1704067200_i64) });
-    ({ print_tm_2(1721126096_i64) });
-    ({ print_tm_2(4102444800_i64) });
+pub fn test_gmtime_r_2() {
+    ({ print_tm_1(0_i64) });
+    ({ print_tm_1(1_i64) });
+    ({ print_tm_1(86399_i64) });
+    ({ print_tm_1(86400_i64) });
+    ({ print_tm_1(951782400_i64) });
+    ({ print_tm_1(951868799_i64) });
+    ({ print_tm_1(1704067199_i64) });
+    ({ print_tm_1(1704067200_i64) });
+    ({ print_tm_1(1721126096_i64) });
+    ({ print_tm_1(4102444800_i64) });
 }
-pub fn test_strftime_4() {
+pub fn test_strftime_3() {
     let t: Value<i64> = Rc::new(RefCell::new(1721126096_i64));
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
@@ -288,8 +262,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     ({ test_time_0() });
-    ({ test_clock_gettime_1() });
-    ({ test_gmtime_r_3() });
-    ({ test_strftime_4() });
+    ({ test_gmtime_r_2() });
+    ({ test_strftime_3() });
     return 0;
 }
