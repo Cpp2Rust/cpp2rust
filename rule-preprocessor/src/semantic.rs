@@ -406,10 +406,10 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             rustc_hir::ExprKind::Lit(_)
             | rustc_hir::ExprKind::Path(_)
             | rustc_hir::ExprKind::Ret(None)
-            | rustc_hir::ExprKind::Break(_, _)
+            | rustc_hir::ExprKind::Break(_, None)
             | rustc_hir::ExprKind::Continue(_) => {}
 
-            rustc_hir::ExprKind::Ret(Some(e)) => {
+            rustc_hir::ExprKind::Ret(Some(e)) | rustc_hir::ExprKind::Break(_, Some(e)) => {
                 self.visit_expr(e, Access::Read);
             }
 

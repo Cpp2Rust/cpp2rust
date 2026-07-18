@@ -1,4 +1,3 @@
-// no-compile: refcount
 #define _GNU_SOURCE
 #include <cassert>
 #include <cstdlib>

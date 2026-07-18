@@ -1169,6 +1169,9 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
   if (expr->getCastKind() == clang::CastKind::CK_BitCast) {
     if (expr->getType()->isVoidPointerType()) {
+      if (sub_expr->getType()->isVoidPointerType()) {
+        return Convert(sub_expr);
+      }
       PushConversionKind push(*this, ConversionKind::Unboxed);
       if (sub_expr->getType()->isPointerType() &&
           sub_expr->getType()->getPointeeType()->isArrayType()) {

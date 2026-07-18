@@ -952,6 +952,16 @@ thread_local! {
 impl Ptr<u8> {
     #[allow(clippy::explicit_counter_loop)]
     pub fn memcpy(&self, src: &Self, len: usize) {
+        if *self > *src {
+            let mut dst = self.offset(len);
+            let mut s = src.offset(len);
+            for _ in 0..len {
+                dst -= 1;
+                s -= 1;
+                dst.write(s.read());
+            }
+            return;
+        }
         let mut dst = self.clone();
         let mut i: usize = 0;
         for value in src {
