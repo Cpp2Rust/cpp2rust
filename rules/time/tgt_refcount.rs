@@ -32,8 +32,8 @@ fn f1(a0: Ptr<::libc::time_t>) -> ::libc::time_t {
     }
 }
 
-fn f2(a0: ::libc::clockid_t, a1: Ptr<Timespec>) -> i32 {
-    match nix::time::clock_gettime(nix::time::ClockId::from_raw(a0)) {
+fn f2(a0: nix::time::ClockId, a1: Ptr<Timespec>) -> i32 {
+    match nix::time::clock_gettime(a0) {
         Ok(__ts) => {
             a1.with_mut(|__t| {
                 *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
@@ -145,4 +145,8 @@ fn f8(a0: Ptr<Timeval>, a1: AnyPtr) -> i32 {
             -1
         }
     }
+}
+
+unsafe fn f9() -> nix::time::ClockId {
+    nix::time::ClockId::CLOCK_REALTIME
 }

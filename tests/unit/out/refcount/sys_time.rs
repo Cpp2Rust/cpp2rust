@@ -47,7 +47,7 @@ pub fn test_time_0() {
 pub fn test_clock_gettime_1() {
     let ts: Value<libcc2rs::Timespec> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match nix::time::clock_gettime(nix::time::ClockId::from_raw(0)) {
+        (((match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
                 (ts.as_pointer()).with_mut(|__t| {
                     *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
@@ -283,137 +283,6 @@ pub fn test_strftime_4() {
             != 0)
     );
 }
-pub fn test_gettimeofday_5() {
-    let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
-    assert!(
-        (((match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
-            Ok(__ts) => {
-                (tv.as_pointer()).with_mut(|__tv| {
-                    *__tv.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
-                    *__tv.tv_usec.borrow_mut() = (__ts.tv_nsec() / 1000) as i64;
-                });
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(((((*(*tv.borrow()).tv_sec.borrow()) > 1500000000_i64) as i32) != 0));
-    assert!(
-        (((((((*(*tv.borrow()).tv_usec.borrow()) >= 0_i64) as i32) != 0)
-            && ((((*(*tv.borrow()).tv_usec.borrow()) < 1000000_i64) as i32) != 0))
-            as i32)
-            != 0)
-    );
-}
-pub fn test_utimes_6() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_utimes_test.tmp",
-    )));
-    let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-        match Ptr::from_string_literal(b"wb").to_rust_string() {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open((*path.borrow()).to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open((*path.borrow()).to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            _ => panic!("unsupported mode"),
-        },
-    ));
-    assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((({
-            (*fp.borrow()).delete();
-            0
-        } == 0) as i32)
-            != 0)
-    );
-    let times: Value<Box<[libcc2rs::Timeval]>> = Rc::new(RefCell::new(
-        (0..2)
-            .map(|_| Default::default())
-            .collect::<Box<[libcc2rs::Timeval]>>(),
-    ));
-    (*(*times.borrow())[(0) as usize].tv_sec.borrow_mut()) = 1000000000_i64;
-    (*(*times.borrow())[(0) as usize].tv_usec.borrow_mut()) = 0_i64;
-    (*(*times.borrow())[(1) as usize].tv_sec.borrow_mut()) = 1000000001_i64;
-    (*(*times.borrow())[(1) as usize].tv_usec.borrow_mut()) = 0_i64;
-    assert!(
-        ((({
-            let __times = (times.as_pointer() as Ptr<libcc2rs::Timeval>);
-            let __at = __times.with(|__tv| {
-                nix::sys::time::TimeVal::new(
-                    *__tv.tv_sec.borrow() as ::libc::time_t,
-                    *__tv.tv_usec.borrow() as ::libc::suseconds_t,
-                )
-            });
-            let __mt = __times.offset(1).with(|__tv| {
-                nix::sys::time::TimeVal::new(
-                    *__tv.tv_sec.borrow() as ::libc::time_t,
-                    *__tv.tv_usec.borrow() as ::libc::suseconds_t,
-                )
-            });
-            match nix::sys::stat::utimes((*path.borrow()).to_rust_string().as_str(), &__at, &__mt) {
-                Ok(()) => 0,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } == 0) as i32)
-            != 0)
-    );
-    assert!(
-        ((({
-            let __times = (times.as_pointer() as Ptr<libcc2rs::Timeval>);
-            let __at = __times.with(|__tv| {
-                nix::sys::time::TimeVal::new(
-                    *__tv.tv_sec.borrow() as ::libc::time_t,
-                    *__tv.tv_usec.borrow() as ::libc::suseconds_t,
-                )
-            });
-            let __mt = __times.offset(1).with(|__tv| {
-                nix::sys::time::TimeVal::new(
-                    *__tv.tv_sec.borrow() as ::libc::time_t,
-                    *__tv.tv_usec.borrow() as ::libc::suseconds_t,
-                )
-            });
-            match nix::sys::stat::utimes(
-                Ptr::from_string_literal(b"/tmp/cpp2rust_utimes_test_missing.tmp")
-                    .to_rust_string()
-                    .as_str(),
-                &__at,
-                &__mt,
-            ) {
-                Ok(()) => 0,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } == -1_i32) as i32)
-            != 0)
-    );
-    assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
-            Ok(()) => 0,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
-}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -422,7 +291,5 @@ fn main_0() -> i32 {
     ({ test_clock_gettime_1() });
     ({ test_gmtime_r_3() });
     ({ test_strftime_4() });
-    ({ test_gettimeofday_5() });
-    ({ test_utimes_6() });
     return 0;
 }

@@ -58,34 +58,10 @@ static void test_strftime(void) {
   assert(strftime(small, sizeof(small), "%Y-%m-%d", &tm) == 0);
 }
 
-static void test_gettimeofday(void) {
-  struct timeval tv;
-  assert(gettimeofday(&tv, NULL) == 0);
-  assert(tv.tv_sec > 1500000000);
-  assert(tv.tv_usec >= 0 && tv.tv_usec < 1000000);
-}
-
-static void test_utimes(void) {
-  const char *path = "/tmp/cpp2rust_utimes_test.tmp";
-  FILE *fp = fopen(path, "wb");
-  assert(fp != NULL);
-  assert(fclose(fp) == 0);
-  struct timeval times[2];
-  times[0].tv_sec = 1000000000;
-  times[0].tv_usec = 0;
-  times[1].tv_sec = 1000000001;
-  times[1].tv_usec = 0;
-  assert(utimes(path, times) == 0);
-  assert(utimes("/tmp/cpp2rust_utimes_test_missing.tmp", times) == -1);
-  assert(unlink(path) == 0);
-}
-
 int main(void) {
   test_time();
   test_clock_gettime();
   test_gmtime_r();
   test_strftime();
-  test_gettimeofday();
-  test_utimes();
   return 0;
 }

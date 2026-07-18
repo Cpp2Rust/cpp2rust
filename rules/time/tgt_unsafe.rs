@@ -51,3 +51,7 @@ unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::timezone) -> i32 {
 unsafe fn f8(a0: *mut libc::timeval, a1: *mut libc::c_void) -> i32 {
     libc::gettimeofday(a0, a1)
 }
+
+unsafe fn f9() -> libc::clockid_t {
+    libc::CLOCK_REALTIME
+}

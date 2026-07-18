@@ -41,3 +41,7 @@ int f8(struct timeval *tv, void *tz) {
 #else
 #error "Unsupported platform for gettimeofday"
 #endif
+
+clockid_t f9() {
+  return CLOCK_REALTIME;
+}
