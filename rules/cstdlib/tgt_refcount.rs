@@ -30,6 +30,26 @@ fn f6(a0: Ptr<u8>) -> Ptr<u8> {
     }
 }
 
+fn f10(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+    let __resolved = a1.clone();
+    match ::std::fs::canonicalize(a0.to_rust_string()) {
+        Ok(__p) => {
+            let mut __bytes = __p.into_os_string().into_encoded_bytes();
+            __bytes.push(0);
+            if __resolved.is_null() {
+                Ptr::alloc_array(__bytes.into_boxed_slice())
+            } else {
+                __resolved.with_slice_mut(__bytes.len(), |__s| __s.copy_from_slice(&__bytes));
+                __resolved
+            }
+        }
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e.raw_os_error().unwrap_or(::libc::EIO));
+            Ptr::null()
+        }
+    }
+}
+
 fn f8(a0: AnyPtr, a1: AnyPtr, a2: usize, a3: usize, a4: fn(AnyPtr, AnyPtr) -> i32) -> AnyPtr {
     let __base = a1.reinterpret_cast::<u8>();
     let mut __lo: isize = 0;
