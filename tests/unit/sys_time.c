@@ -23,8 +23,9 @@ static void test_clock_gettime(void) {
 static void print_tm(time_t t) {
   struct tm tm;
   assert(gmtime_r(&t, &tm) != NULL);
-  printf("%d-%d-%d %d:%d:%d wday=%d yday=%d\n", tm.tm_year, tm.tm_mon,
-         tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, tm.tm_wday, tm.tm_yday);
+  printf("%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n",
+         tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,
+         tm.tm_wday, tm.tm_yday, tm.tm_zone, tm.tm_gmtoff, tm.tm_isdst);
 }
 
 static void test_gmtime_r(void) {

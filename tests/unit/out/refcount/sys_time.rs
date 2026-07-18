@@ -75,23 +75,11 @@ pub fn print_tm_2(t: i64) {
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
-            let __res = (tm.as_pointer());
+            let __res = (tm.as_pointer()).clone();
             match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-                    __res.with_mut(|__tm| {
-                        *__tm.tm_sec.borrow_mut() = __dt.second() as i32;
-                        *__tm.tm_min.borrow_mut() = __dt.minute() as i32;
-                        *__tm.tm_hour.borrow_mut() = __dt.hour() as i32;
-                        *__tm.tm_mday.borrow_mut() = __dt.day() as i32;
-                        *__tm.tm_mon.borrow_mut() = __dt.month() as i32 - 1;
-                        *__tm.tm_year.borrow_mut() = __dt.year() as i32 - 1900;
-                        *__tm.tm_wday.borrow_mut() = __dt.weekday().to_sunday_zero_offset() as i32;
-                        *__tm.tm_yday.borrow_mut() = __dt.day_of_year() as i32 - 1;
-                        *__tm.tm_isdst.borrow_mut() = 0;
-                        *__tm.tm_gmtoff.borrow_mut() = 0;
-                        *__tm.tm_zone.borrow_mut() = Ptr::from_string_literal(b"GMT");
-                    });
+                    __res.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
                     __res
                 }
                 Err(_) => {
@@ -104,7 +92,7 @@ pub fn print_tm_2(t: i64) {
             != 0)
     );
     println!(
-        "{}-{}-{} {}:{}:{} wday={} yday={}",
+        "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
         (*(*tm.borrow()).tm_year.borrow()),
         (*(*tm.borrow()).tm_mon.borrow()),
         (*(*tm.borrow()).tm_mday.borrow()),
@@ -112,7 +100,10 @@ pub fn print_tm_2(t: i64) {
         (*(*tm.borrow()).tm_min.borrow()),
         (*(*tm.borrow()).tm_sec.borrow()),
         (*(*tm.borrow()).tm_wday.borrow()),
-        (*(*tm.borrow()).tm_yday.borrow())
+        (*(*tm.borrow()).tm_yday.borrow()),
+        (*(*tm.borrow()).tm_zone.borrow()),
+        (*(*tm.borrow()).tm_gmtoff.borrow()),
+        (*(*tm.borrow()).tm_isdst.borrow())
     );
 }
 pub fn test_gmtime_r_3() {
@@ -132,23 +123,11 @@ pub fn test_strftime_4() {
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
-            let __res = (tm.as_pointer());
+            let __res = (tm.as_pointer()).clone();
             match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-                    __res.with_mut(|__tm| {
-                        *__tm.tm_sec.borrow_mut() = __dt.second() as i32;
-                        *__tm.tm_min.borrow_mut() = __dt.minute() as i32;
-                        *__tm.tm_hour.borrow_mut() = __dt.hour() as i32;
-                        *__tm.tm_mday.borrow_mut() = __dt.day() as i32;
-                        *__tm.tm_mon.borrow_mut() = __dt.month() as i32 - 1;
-                        *__tm.tm_year.borrow_mut() = __dt.year() as i32 - 1900;
-                        *__tm.tm_wday.borrow_mut() = __dt.weekday().to_sunday_zero_offset() as i32;
-                        *__tm.tm_yday.borrow_mut() = __dt.day_of_year() as i32 - 1;
-                        *__tm.tm_isdst.borrow_mut() = 0;
-                        *__tm.tm_gmtoff.borrow_mut() = 0;
-                        *__tm.tm_zone.borrow_mut() = Ptr::from_string_literal(b"GMT");
-                    });
+                    __res.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
                     __res
                 }
                 Err(_) => {
@@ -165,17 +144,7 @@ pub fn test_strftime_4() {
     ));
     assert!(
         ((({
-            let __dt = (tm.as_pointer()).with(|__tm| {
-                jiff::civil::DateTime::new(
-                    (*__tm.tm_year.borrow() + 1900) as i16,
-                    (*__tm.tm_mon.borrow() + 1) as i8,
-                    *__tm.tm_mday.borrow() as i8,
-                    *__tm.tm_hour.borrow() as i8,
-                    *__tm.tm_min.borrow() as i8,
-                    *__tm.tm_sec.borrow() as i8,
-                    0,
-                )
-            });
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
                     Ptr::from_string_literal(b"%Y-%m-%d %H:%M:%S")
@@ -203,17 +172,7 @@ pub fn test_strftime_4() {
     println!("{}", (buf.as_pointer() as Ptr::<u8>));
     assert!(
         ((({
-            let __dt = (tm.as_pointer()).with(|__tm| {
-                jiff::civil::DateTime::new(
-                    (*__tm.tm_year.borrow() + 1900) as i16,
-                    (*__tm.tm_mon.borrow() + 1) as i8,
-                    *__tm.tm_mday.borrow() as i8,
-                    *__tm.tm_hour.borrow() as i8,
-                    *__tm.tm_min.borrow() as i8,
-                    *__tm.tm_sec.borrow() as i8,
-                    0,
-                )
-            });
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
                     Ptr::from_string_literal(b"%a, %d %b %Y %T")
@@ -241,17 +200,7 @@ pub fn test_strftime_4() {
     println!("{}", (buf.as_pointer() as Ptr::<u8>));
     assert!(
         ((({
-            let __dt = (tm.as_pointer()).with(|__tm| {
-                jiff::civil::DateTime::new(
-                    (*__tm.tm_year.borrow() + 1900) as i16,
-                    (*__tm.tm_mon.borrow() + 1) as i8,
-                    *__tm.tm_mday.borrow() as i8,
-                    *__tm.tm_hour.borrow() as i8,
-                    *__tm.tm_min.borrow() as i8,
-                    *__tm.tm_sec.borrow() as i8,
-                    0,
-                )
-            });
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
                     Ptr::from_string_literal(b"day %j 100%%")
@@ -279,17 +228,7 @@ pub fn test_strftime_4() {
     println!("{}", (buf.as_pointer() as Ptr::<u8>));
     assert!(
         ((({
-            let __dt = (tm.as_pointer()).with(|__tm| {
-                jiff::civil::DateTime::new(
-                    (*__tm.tm_year.borrow() + 1900) as i16,
-                    (*__tm.tm_mon.borrow() + 1) as i8,
-                    *__tm.tm_mday.borrow() as i8,
-                    *__tm.tm_hour.borrow() as i8,
-                    *__tm.tm_min.borrow() as i8,
-                    *__tm.tm_sec.borrow() as i8,
-                    0,
-                )
-            });
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
                     Ptr::from_string_literal(b"%e").to_rust_string().as_str(),
@@ -318,17 +257,7 @@ pub fn test_strftime_4() {
     ));
     assert!(
         ((({
-            let __dt = (tm.as_pointer()).with(|__tm| {
-                jiff::civil::DateTime::new(
-                    (*__tm.tm_year.borrow() + 1900) as i16,
-                    (*__tm.tm_mon.borrow() + 1) as i8,
-                    *__tm.tm_mday.borrow() as i8,
-                    *__tm.tm_hour.borrow() as i8,
-                    *__tm.tm_min.borrow() as i8,
-                    *__tm.tm_sec.borrow() as i8,
-                    0,
-                )
-            });
+            let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
                     Ptr::from_string_literal(b"%Y-%m-%d")

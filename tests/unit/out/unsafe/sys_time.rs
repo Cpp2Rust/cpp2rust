@@ -35,7 +35,10 @@ pub unsafe fn print_tm_2(mut t: i64) {
             != 0)
     );
     printf(
-        (c"%d-%d-%d %d:%d:%d wday=%d yday=%d\n".as_ptr().cast_mut()).cast_const() as *const i8,
+        (c"%d-%d-%d %d:%d:%d wday=%d yday=%d %s gmtoff=%ld isdst=%d\n"
+            .as_ptr()
+            .cast_mut())
+        .cast_const() as *const i8,
         tm.tm_year,
         tm.tm_mon,
         tm.tm_mday,
@@ -44,6 +47,9 @@ pub unsafe fn print_tm_2(mut t: i64) {
         tm.tm_sec,
         tm.tm_wday,
         tm.tm_yday,
+        tm.tm_zone,
+        tm.tm_gmtoff,
+        tm.tm_isdst,
     );
 }
 pub unsafe fn test_gmtime_r_3() {
