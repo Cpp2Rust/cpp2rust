@@ -20,14 +20,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..4 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -38,14 +34,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..16 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -73,14 +65,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..4 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -91,14 +79,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..16 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -116,14 +100,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..4 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -134,14 +114,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..16 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -159,14 +135,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..4 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -177,14 +149,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..16 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -207,14 +175,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..4 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -225,14 +189,10 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    let __octets = __ip.octets();
-                    for __i in 0..16 {
-                        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .write(__octets[__i]);
-                    }
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
@@ -258,24 +218,16 @@ fn main_0() -> i32 {
         ((({
             let mut __it1 = {
                 let __text = if libc::AF_INET == libc::AF_INET {
-                    let mut __b = [0u8; 4];
-                    for __i in 0..4 {
-                        __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .read();
-                    }
+                    let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
                 } else if libc::AF_INET == libc::AF_INET6 {
-                    let mut __b = [0u8; 16];
-                    for __i in 0..16 {
-                        __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .read();
-                    }
+                    let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice(16, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv6Addr::from(__b).to_string())
                 } else {
                     None
@@ -284,12 +236,11 @@ fn main_0() -> i32 {
                     Some(__s)
                         if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
                     {
-                        for __i in 0..__s.len() {
-                            (text.as_pointer() as Ptr<u8>)
-                                .offset(__i)
-                                .write(__s.as_bytes()[__i]);
-                        }
-                        (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
+                        let __n = __s.len();
+                        (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
+                            __sl[..__n].copy_from_slice(__s.as_bytes());
+                            __sl[__n] = 0;
+                        });
                         (text.as_pointer() as Ptr<u8>).clone()
                     }
                     Some(_) => {
@@ -340,24 +291,16 @@ fn main_0() -> i32 {
         ((({
             let mut __it1 = {
                 let __text = if libc::AF_INET6 == libc::AF_INET {
-                    let mut __b = [0u8; 4];
-                    for __i in 0..4 {
-                        __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .read();
-                    }
+                    let __b: [u8; 4] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
                 } else if libc::AF_INET6 == libc::AF_INET6 {
-                    let mut __b = [0u8; 16];
-                    for __i in 0..16 {
-                        __b[__i] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                            .to_any()
-                            .reinterpret_cast::<u8>()
-                            .offset(__i)
-                            .read();
-                    }
+                    let __b: [u8; 16] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                        .to_any()
+                        .reinterpret_cast::<u8>()
+                        .with_slice(16, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv6Addr::from(__b).to_string())
                 } else {
                     None
@@ -366,12 +309,11 @@ fn main_0() -> i32 {
                     Some(__s)
                         if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
                     {
-                        for __i in 0..__s.len() {
-                            (text.as_pointer() as Ptr<u8>)
-                                .offset(__i)
-                                .write(__s.as_bytes()[__i]);
-                        }
-                        (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
+                        let __n = __s.len();
+                        (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
+                            __sl[..__n].copy_from_slice(__s.as_bytes());
+                            __sl[__n] = 0;
+                        });
                         (text.as_pointer() as Ptr<u8>).clone()
                     }
                     Some(_) => {
@@ -402,36 +344,27 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let __text = if libc::AF_INET == libc::AF_INET {
-                let mut __b = [0u8; 4];
-                for __i in 0..4 {
-                    __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
-                        .reinterpret_cast::<u8>()
-                        .offset(__i)
-                        .read();
-                }
+                let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                    .to_any()
+                    .reinterpret_cast::<u8>()
+                    .with_slice(4, |__s| __s.try_into().unwrap());
                 Some(std::net::Ipv4Addr::from(__b).to_string())
             } else if libc::AF_INET == libc::AF_INET6 {
-                let mut __b = [0u8; 16];
-                for __i in 0..16 {
-                    __b[__i] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
-                        .reinterpret_cast::<u8>()
-                        .offset(__i)
-                        .read();
-                }
+                let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                    .to_any()
+                    .reinterpret_cast::<u8>()
+                    .with_slice(16, |__s| __s.try_into().unwrap());
                 Some(std::net::Ipv6Addr::from(__b).to_string())
             } else {
                 None
             };
             match __text {
                 Some(__s) if (__s.len() as u32) < 4_u32 => {
-                    for __i in 0..__s.len() {
-                        (text.as_pointer() as Ptr<u8>)
-                            .offset(__i)
-                            .write(__s.as_bytes()[__i]);
-                    }
-                    (text.as_pointer() as Ptr<u8>).offset(__s.len()).write(0);
+                    let __n = __s.len();
+                    (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
+                        __sl[..__n].copy_from_slice(__s.as_bytes());
+                        __sl[__n] = 0;
+                    });
                     (text.as_pointer() as Ptr<u8>).clone()
                 }
                 Some(_) => {
