@@ -17,7 +17,7 @@ fn main_0() -> i32 {
         (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>((*fd.borrow()))
         {
             Ok(__ss) => {
-                libcc2rs::encode_sockaddr(
+                Sockaddr::encode(
                     &__ss,
                     &(ssloc.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>(),
                     &(slen.as_pointer()),
@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         (((match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>((*fd.borrow()))
         {
             Ok(__ss) => {
-                libcc2rs::encode_sockaddr(
+                Sockaddr::encode(
                     &__ss,
                     &(sin.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>(),
                     &(inlen.as_pointer()),

@@ -305,47 +305,45 @@ impl ByteRepr for ::libc::sockaddr_in6 {}
 impl ByteRepr for ::libc::sockaddr_un {}
 impl ByteRepr for ::libc::sockaddr_storage {}
 
-pub fn decode_sockaddr(
-    addr: &Ptr<Sockaddr>,
-    _len: u32,
-) -> Option<Box<dyn nix::sys::socket::SockaddrLike>> {
-    let family = addr.reinterpret_cast::<u16>().read();
-    if family == ::libc::AF_INET as u16 {
-        let m = addr.reinterpret_cast::<SockaddrIn>().read();
-        Some(Box::new(nix::sys::socket::SockaddrIn::from(m.to_libc())))
-    } else if family == ::libc::AF_INET6 as u16 {
-        let m = addr.reinterpret_cast::<SockaddrIn6>().read();
-        Some(Box::new(nix::sys::socket::SockaddrIn6::from(m.to_libc())))
-    } else if family == ::libc::AF_UNIX as u16 {
-        let m = addr.reinterpret_cast::<SockaddrUn>().read();
-        let path = m.sun_path.borrow();
-        let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
-        nix::sys::socket::UnixAddr::new(&path[..end])
-            .ok()
-            .map(|u| Box::new(u) as Box<dyn nix::sys::socket::SockaddrLike>)
-    } else {
-        None
+impl Sockaddr {
+    pub fn decode(
+        addr: &Ptr<Sockaddr>,
+        _len: u32,
+    ) -> Option<Box<dyn nix::sys::socket::SockaddrLike>> {
+        let family = addr.reinterpret_cast::<u16>().read();
+        if family == ::libc::AF_INET as u16 {
+            let m = addr.reinterpret_cast::<SockaddrIn>().read();
+            Some(Box::new(nix::sys::socket::SockaddrIn::from(m.to_libc())))
+        } else if family == ::libc::AF_INET6 as u16 {
+            let m = addr.reinterpret_cast::<SockaddrIn6>().read();
+            Some(Box::new(nix::sys::socket::SockaddrIn6::from(m.to_libc())))
+        } else if family == ::libc::AF_UNIX as u16 {
+            let m = addr.reinterpret_cast::<SockaddrUn>().read();
+            let path = m.sun_path.borrow();
+            let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
+            nix::sys::socket::UnixAddr::new(&path[..end])
+                .ok()
+                .map(|u| Box::new(u) as Box<dyn nix::sys::socket::SockaddrLike>)
+        } else {
+            None
+        }
     }
-}
 
-pub fn encode_sockaddr(
-    ss: &nix::sys::socket::SockaddrStorage,
-    out: &Ptr<Sockaddr>,
-    out_len: &Ptr<u32>,
-) {
-    use nix::sys::socket::{AddressFamily, SockaddrLike};
-    match ss.family() {
-        Some(AddressFamily::Inet) => {
-            let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
-            out.reinterpret_cast::<SockaddrIn>()
-                .write(SockaddrIn::from_libc(&l));
+    pub fn encode(ss: &nix::sys::socket::SockaddrStorage, out: &Ptr<Sockaddr>, out_len: &Ptr<u32>) {
+        use nix::sys::socket::{AddressFamily, SockaddrLike};
+        match ss.family() {
+            Some(AddressFamily::Inet) => {
+                let l = ::libc::sockaddr_in::from(*ss.as_sockaddr_in().unwrap());
+                out.reinterpret_cast::<SockaddrIn>()
+                    .write(SockaddrIn::from_libc(&l));
+            }
+            Some(AddressFamily::Inet6) => {
+                let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
+                out.reinterpret_cast::<SockaddrIn6>()
+                    .write(SockaddrIn6::from_libc(&l));
+            }
+            _ => {}
         }
-        Some(AddressFamily::Inet6) => {
-            let l = ::libc::sockaddr_in6::from(*ss.as_sockaddr_in6().unwrap());
-            out.reinterpret_cast::<SockaddrIn6>()
-                .write(SockaddrIn6::from_libc(&l));
-        }
-        _ => {}
+        out_len.write(ss.len());
     }
-    out_len.write(ss.len());
 }

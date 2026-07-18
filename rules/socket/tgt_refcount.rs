@@ -18,7 +18,7 @@ fn t3() -> libcc2rs::SockaddrUn {
 fn f12(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
     match nix::sys::socket::getsockname::<nix::sys::socket::SockaddrStorage>(a0) {
         Ok(__ss) => {
-            libcc2rs::encode_sockaddr(&__ss, &a1, &a2);
+            Sockaddr::encode(&__ss, &a1, &a2);
             0
         }
         Err(__e) => {
@@ -29,7 +29,7 @@ fn f12(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
 }
 
 fn f13(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
-    match libcc2rs::decode_sockaddr(&a1, a2) {
+    match Sockaddr::decode(&a1, a2) {
         Some(__addr) => match nix::sys::socket::connect(a0, &*__addr) {
             Ok(()) => 0,
             Err(__e) => {
@@ -47,7 +47,7 @@ fn f13(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
 fn f14(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
     match nix::sys::socket::getpeername::<nix::sys::socket::SockaddrStorage>(a0) {
         Ok(__ss) => {
-            libcc2rs::encode_sockaddr(&__ss, &a1, &a2);
+            Sockaddr::encode(&__ss, &a1, &a2);
             0
         }
         Err(__e) => {
@@ -58,7 +58,7 @@ fn f14(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>) -> i32 {
 }
 
 fn f16(a0: i32, a1: Ptr<Sockaddr>, a2: u32) -> i32 {
-    match libcc2rs::decode_sockaddr(&a1, a2) {
+    match Sockaddr::decode(&a1, a2) {
         Some(__addr) => match nix::sys::socket::bind(a0, &*__addr) {
             Ok(()) => 0,
             Err(__e) => {
@@ -80,7 +80,7 @@ fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>)
     }) {
         Ok((__n, __from)) => {
             match __from {
-                Some(__ss) => libcc2rs::encode_sockaddr(&__ss, &a4, &a5),
+                Some(__ss) => Sockaddr::encode(&__ss, &a4, &a5),
                 None => {}
             }
             __n as isize
@@ -94,7 +94,7 @@ fn f18(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: Ptr<u32>)
 
 fn f19(a0: i32, a1: AnyPtr, a2: usize, a3: i32, a4: Ptr<Sockaddr>, a5: u32) -> isize {
     let __buf = a1.reinterpret_cast::<u8>();
-    match libcc2rs::decode_sockaddr(&a4, a5) {
+    match Sockaddr::decode(&a4, a5) {
         Some(__addr) => match __buf.with_slice(a2, |__s| {
             nix::sys::socket::sendto(
                 a0,
