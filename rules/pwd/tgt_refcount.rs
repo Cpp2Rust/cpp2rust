@@ -24,7 +24,6 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
             let __needed: usize = __strs.iter().map(|__s| __s.len() + 1).sum();
             if __needed > __buflen {
                 __out.write(Ptr::null());
-                libcc2rs::cpp2rust_errno().write(::libc::ERANGE);
                 ::libc::ERANGE
             } else {
                 let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
@@ -49,7 +48,6 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
         }
         Err(__e) => {
             __out.write(Ptr::null());
-            libcc2rs::cpp2rust_errno().write(__e as i32);
             __e as i32
         }
     }

@@ -40,10 +40,8 @@ static void test_getpwuid_r_erange(void) {
   struct passwd pw;
   char tiny[1];
   struct passwd *result = NULL;
-  errno = 0;
   assert(getpwuid_r(geteuid(), &pw, tiny, sizeof(tiny), &result) == ERANGE);
   assert(result == NULL);
-  assert(errno == ERANGE);
 }
 
 int main(void) {
