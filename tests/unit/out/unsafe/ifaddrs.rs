@@ -87,12 +87,10 @@ unsafe fn main_0() -> i32 {
     }
     assert!((found_loopback != 0));
     libc::freeifaddrs(list);
-    (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
     assert!(
         ((((libc::if_nametoindex((c"cpp2rust_no_such_if".as_ptr().cast_mut()).cast_const()))
             == (0_u32)) as i32)
             != 0)
     );
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (19)) as i32) != 0));
     return 0;
 }

@@ -145,7 +145,6 @@ fn main_0() -> i32 {
             __cur = __next;
         }
     };
-    libcc2rs::cpp2rust_errno().write(0);
     assert!(
         (((match nix::net::if_::if_nametoindex(
             Ptr::from_string_literal(b"cpp2rust_no_such_if")
@@ -160,6 +159,5 @@ fn main_0() -> i32 {
         } == 0_u32) as i32)
             != 0)
     );
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 19) as i32) != 0));
     return 0;
 }

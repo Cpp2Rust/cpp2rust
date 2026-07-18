@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <errno.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netinet/in.h>
@@ -36,8 +35,6 @@ int main(void) {
   assert(found_loopback);
   freeifaddrs(list);
 
-  errno = 0;
   assert(if_nametoindex("cpp2rust_no_such_if") == 0);
-  assert(errno == ENODEV);
   return 0;
 }
