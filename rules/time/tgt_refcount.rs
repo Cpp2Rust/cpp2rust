@@ -107,6 +107,9 @@ fn f7(a0: Ptr<u8>, a1: Ptr<Timeval>) -> i32 {
     }
 }
 
+// a1 is ignored intentionally, see: https://man7.org/linux/man-pages/man2/gettimeofday.2.html
+//
+// "The use of the timezone structure is obsolete; the tz argument should normally be specified as NULL."
 #[cfg(target_os = "linux")]
 fn f8(a0: Ptr<Timeval>, a1: Ptr<::libc::timezone>) -> i32 {
     match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
@@ -124,6 +127,9 @@ fn f8(a0: Ptr<Timeval>, a1: Ptr<::libc::timezone>) -> i32 {
     }
 }
 
+// a1 is ignored intentionally, see: https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/gettimeofday.2.html
+//
+// "Note: timezone is no longer used; this information is kept outside the kernel."
 #[cfg(target_os = "macos")]
 fn f8(a0: Ptr<Timeval>, a1: AnyPtr) -> i32 {
     match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
