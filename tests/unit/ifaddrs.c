@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <ifaddrs.h>
+#include <net/if.h>
 #include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -28,9 +29,12 @@ int main(void) {
       struct sockaddr_in *mask = (struct sockaddr_in *)ifa->ifa_netmask;
       unsigned char mask_be[4] = {255, 0, 0, 0};
       assert(memcmp(&mask->sin_addr, mask_be, 4) == 0);
+      assert(if_nametoindex(ifa->ifa_name) > 0);
     }
   }
   assert(found_loopback);
   freeifaddrs(list);
+
+  assert(if_nametoindex("cpp2rust_no_such_if") == 0);
   return 0;
 }

@@ -104,6 +104,20 @@ fn main_0() -> i32 {
                     == 0) as i32)
                     != 0)
             );
+            assert!(
+                (((match nix::net::if_::if_nametoindex(
+                    (*(*(*ifa.borrow()).upgrade().deref()).ifa_name.borrow())
+                        .to_rust_string()
+                        .as_str()
+                ) {
+                    Ok(__i) => __i,
+                    Err(__e) => {
+                        libcc2rs::cpp2rust_errno().write(__e as i32);
+                        0
+                    }
+                } > 0_u32) as i32)
+                    != 0)
+            );
         }
         let __rhs = (*(*(*ifa.borrow()).upgrade().deref()).ifa_next.borrow()).clone();
         (*ifa.borrow_mut()) = __rhs;
@@ -131,5 +145,19 @@ fn main_0() -> i32 {
             __cur = __next;
         }
     };
+    assert!(
+        (((match nix::net::if_::if_nametoindex(
+            Ptr::from_string_literal(b"cpp2rust_no_such_if")
+                .to_rust_string()
+                .as_str()
+        ) {
+            Ok(__i) => __i,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                0
+            }
+        } == 0_u32) as i32)
+            != 0)
+    );
     return 0;
 }

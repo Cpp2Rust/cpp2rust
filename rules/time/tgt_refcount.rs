@@ -96,12 +96,10 @@ fn f6(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: Ptr<Tm>) -> usize {
     if __text.is_empty() || __text.len() + 1 > a1 {
         0
     } else {
-        let mut __dst = a0.clone();
-        for __b in __text.as_bytes() {
-            __dst.write(*__b);
-            __dst += 1;
-        }
-        __dst.write(0);
+        a0.with_slice_mut(__text.len() + 1, |__s| {
+            __s[..__text.len()].copy_from_slice(__text.as_bytes());
+            __s[__text.len()] = 0;
+        });
         __text.len()
     }
 }

@@ -46,7 +46,7 @@ pub fn test_errno_from_fseek_2() {
         },
     ));
     assert!(((((*r.borrow()) == -1_i32) as i32) != 0));
-    assert!(((((libcc2rs::cpp2rust_errno().read()) == 29) as i32) != 0));
+    assert!(((((libcc2rs::cpp2rust_errno().read()) == libc::ESPIPE) as i32) != 0));
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn main() {

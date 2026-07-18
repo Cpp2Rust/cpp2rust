@@ -79,10 +79,18 @@ unsafe fn main_0() -> i32 {
                 }) == (0)) as i32)
                     != 0)
             );
+            assert!(
+                ((((libc::if_nametoindex(((*ifa).ifa_name).cast_const())) > (0_u32)) as i32) != 0)
+            );
         }
         ifa = (*ifa).ifa_next;
     }
     assert!((found_loopback != 0));
     libc::freeifaddrs(list);
+    assert!(
+        ((((libc::if_nametoindex((c"cpp2rust_no_such_if".as_ptr().cast_mut()).cast_const()))
+            == (0_u32)) as i32)
+            != 0)
+    );
     return 0;
 }

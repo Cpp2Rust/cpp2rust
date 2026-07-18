@@ -22,13 +22,11 @@ fn f9(a0: Ptr<u8>, a1: usize) -> i32 {
         Ok(__name) => {
             let __bytes = __name.as_encoded_bytes();
             let __n = __bytes.len().min(a1.saturating_sub(1));
-            let mut __dst = a0.clone();
-            for __b in &__bytes[..__n] {
-                __dst.write(*__b);
-                __dst += 1;
-            }
             if a1 > 0 {
-                __dst.write(0);
+                a0.with_slice_mut(__n + 1, |__s| {
+                    __s[..__n].copy_from_slice(&__bytes[..__n]);
+                    __s[__n] = 0;
+                });
             }
             0
         }

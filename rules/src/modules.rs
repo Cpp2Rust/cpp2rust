@@ -94,6 +94,8 @@ pub mod map_tgt_refcount;
 pub mod map_tgt_unsafe;
 #[path = r#"../math/tgt_unsafe.rs"#]
 pub mod math_tgt_unsafe;
+#[path = r#"../net_if/tgt_refcount.rs"#]
+pub mod net_if_tgt_refcount;
 #[path = r#"../net_if/tgt_unsafe.rs"#]
 pub mod net_if_tgt_unsafe;
 #[path = r#"../netdb/tgt_refcount.rs"#]

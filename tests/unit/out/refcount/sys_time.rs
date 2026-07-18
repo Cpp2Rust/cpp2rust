@@ -182,12 +182,10 @@ pub fn test_strftime_5() {
             if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
                 0
             } else {
-                let mut __dst = (buf.as_pointer() as Ptr<u8>).clone();
-                for __b in __text.as_bytes() {
-                    __dst.write(*__b);
-                    __dst += 1;
-                }
-                __dst.write(0);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
+                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
+                    __s[__text.len()] = 0;
+                });
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -210,12 +208,10 @@ pub fn test_strftime_5() {
             if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
                 0
             } else {
-                let mut __dst = (buf.as_pointer() as Ptr<u8>).clone();
-                for __b in __text.as_bytes() {
-                    __dst.write(*__b);
-                    __dst += 1;
-                }
-                __dst.write(0);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
+                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
+                    __s[__text.len()] = 0;
+                });
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -238,12 +234,10 @@ pub fn test_strftime_5() {
             if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
                 0
             } else {
-                let mut __dst = (buf.as_pointer() as Ptr<u8>).clone();
-                for __b in __text.as_bytes() {
-                    __dst.write(*__b);
-                    __dst += 1;
-                }
-                __dst.write(0);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
+                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
+                    __s[__text.len()] = 0;
+                });
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -264,12 +258,10 @@ pub fn test_strftime_5() {
             if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
                 0
             } else {
-                let mut __dst = (buf.as_pointer() as Ptr<u8>).clone();
-                for __b in __text.as_bytes() {
-                    __dst.write(*__b);
-                    __dst += 1;
-                }
-                __dst.write(0);
+                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
+                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
+                    __s[__text.len()] = 0;
+                });
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -295,12 +287,10 @@ pub fn test_strftime_5() {
             if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 4]>() {
                 0
             } else {
-                let mut __dst = (small.as_pointer() as Ptr<u8>).clone();
-                for __b in __text.as_bytes() {
-                    __dst.write(*__b);
-                    __dst += 1;
-                }
-                __dst.write(0);
+                (small.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
+                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
+                    __s[__text.len()] = 0;
+                });
                 __text.len()
             }
         } == 0_usize) as i32)
