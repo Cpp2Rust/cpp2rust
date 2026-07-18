@@ -20,6 +20,36 @@ pub struct Tm {
     pub tm_zone: Value<Ptr<u8>>,
 }
 
+impl Tm {
+    pub fn from_zoned(dt: &jiff::Zoned) -> Self {
+        let tm = Tm::default();
+        *tm.tm_sec.borrow_mut() = dt.second() as i32;
+        *tm.tm_min.borrow_mut() = dt.minute() as i32;
+        *tm.tm_hour.borrow_mut() = dt.hour() as i32;
+        *tm.tm_mday.borrow_mut() = dt.day() as i32;
+        *tm.tm_mon.borrow_mut() = dt.month() as i32 - 1;
+        *tm.tm_year.borrow_mut() = dt.year() as i32 - 1900;
+        *tm.tm_wday.borrow_mut() = dt.weekday().to_sunday_zero_offset() as i32;
+        *tm.tm_yday.borrow_mut() = dt.day_of_year() as i32 - 1;
+        *tm.tm_isdst.borrow_mut() = 0;
+        *tm.tm_gmtoff.borrow_mut() = dt.offset().seconds() as i64;
+        *tm.tm_zone.borrow_mut() = Ptr::from_string_literal(b"GMT");
+        tm
+    }
+
+    pub fn to_civil(&self) -> Result<jiff::civil::DateTime, jiff::Error> {
+        jiff::civil::DateTime::new(
+            (*self.tm_year.borrow() + 1900) as i16,
+            (*self.tm_mon.borrow() + 1) as i8,
+            *self.tm_mday.borrow() as i8,
+            *self.tm_hour.borrow() as i8,
+            *self.tm_min.borrow() as i8,
+            *self.tm_sec.borrow() as i8,
+            0,
+        )
+    }
+}
+
 impl Clone for Tm {
     fn clone(&self) -> Self {
         Self {

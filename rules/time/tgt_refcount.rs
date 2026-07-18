@@ -49,23 +49,11 @@ fn f2(a0: ::libc::clockid_t, a1: Ptr<Timespec>) -> i32 {
 }
 
 fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
-    let __res = a1;
+    let __res = a1.clone();
     match jiff::Timestamp::from_second(a0.read()) {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
-            __res.with_mut(|__tm| {
-                *__tm.tm_sec.borrow_mut() = __dt.second() as i32;
-                *__tm.tm_min.borrow_mut() = __dt.minute() as i32;
-                *__tm.tm_hour.borrow_mut() = __dt.hour() as i32;
-                *__tm.tm_mday.borrow_mut() = __dt.day() as i32;
-                *__tm.tm_mon.borrow_mut() = __dt.month() as i32 - 1;
-                *__tm.tm_year.borrow_mut() = __dt.year() as i32 - 1900;
-                *__tm.tm_wday.borrow_mut() = __dt.weekday().to_sunday_zero_offset() as i32;
-                *__tm.tm_yday.borrow_mut() = __dt.day_of_year() as i32 - 1;
-                *__tm.tm_isdst.borrow_mut() = 0;
-                *__tm.tm_gmtoff.borrow_mut() = 0;
-                *__tm.tm_zone.borrow_mut() = Ptr::from_string_literal(b"GMT");
-            });
+            __res.with_mut(|__tm| *__tm = Tm::from_zoned(&__dt));
             __res
         }
         Err(_) => {
@@ -76,17 +64,7 @@ fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
 }
 
 fn f6(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, a3: Ptr<Tm>) -> usize {
-    let __dt = a3.with(|__tm| {
-        jiff::civil::DateTime::new(
-            (*__tm.tm_year.borrow() + 1900) as i16,
-            (*__tm.tm_mon.borrow() + 1) as i8,
-            *__tm.tm_mday.borrow() as i8,
-            *__tm.tm_hour.borrow() as i8,
-            *__tm.tm_min.borrow() as i8,
-            *__tm.tm_sec.borrow() as i8,
-            0,
-        )
-    });
+    let __dt = a3.with(|__tm| __tm.to_civil());
     let __text = match __dt {
         Ok(__d) => {
             jiff::fmt::strtime::format(a2.to_rust_string().as_str(), __d).unwrap_or_default()
