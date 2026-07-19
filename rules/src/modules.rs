@@ -2,6 +2,8 @@
 pub mod algorithm_tgt_refcount;
 #[path = r#"../algorithm/tgt_unsafe.rs"#]
 pub mod algorithm_tgt_unsafe;
+#[path = r#"../arpa_inet/tgt_refcount.rs"#]
+pub mod arpa_inet_tgt_refcount;
 #[path = r#"../arpa_inet/tgt_unsafe.rs"#]
 pub mod arpa_inet_tgt_unsafe;
 #[path = r#"../array/tgt_refcount.rs"#]
