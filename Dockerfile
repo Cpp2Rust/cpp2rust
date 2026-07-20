@@ -1,5 +1,8 @@
 FROM ubuntu:latest
 
+RUN mkdir /opt/source
+RUN mkdir /opt/workdir
+
 RUN apt-get -y update
 RUN apt-get -y install \
 	clang++-22 \
@@ -22,12 +25,23 @@ RUN rustup component add --toolchain "1.96.1-x86_64-unknown-linux-gnu" rust-src 
 ENV PATH="/root/.cargo/bin:${PATH}"
 ENV RUST_BACKTRACE=full 
 
-WORKDIR /opt/workdir
+COPY cpp2rust /opt/source/cpp2rust
+COPY libc-dep /opt/source/libc-dep
+COPY libcc2rs /opt/source/libcc2rs
+COPY libcc2rs-macros /opt/source/libcc2rs-macros
+COPY cmake /opt/source/cmake
+COPY tests /opt/source/tests
 
-CMD cmake \
+COPY CMakeLists.txt /opt/source/CMakeLists.txt
+
+WORKDIR /opt/source
+
+RUN cmake \
 	-G Ninja \
 	-B build \
 	-D CMAKE_C_COMPILER="$(which clang-22)" \
 	-D CMAKE_CXX_COMPILER="$(which clang++-22)" \
 	.; \
 	cmake --build build -j$(nproc)
+
+WORKDIR /opt/workdir

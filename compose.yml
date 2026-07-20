@@ -5,4 +5,4 @@ services:
       context: .
     volumes:
       - "$PWD:/opt/workdir"
-      
+    entrypoint: ./misc/containers/build.sh
