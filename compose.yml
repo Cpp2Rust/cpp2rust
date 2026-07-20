@@ -5,7 +5,4 @@ services:
       context: .
     volumes:
       - "$PWD:/opt/workdir"
-    dns: 1.1.1.1
-    cap_add:
-      - NET_ADMIN
-
+      
