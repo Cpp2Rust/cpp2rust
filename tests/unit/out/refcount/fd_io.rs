@@ -435,6 +435,36 @@ fn main_0() -> i32 {
         } == 5_i64) as i32)
             != 0)
     );
+    let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
+    assert!(
+        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::sys::stat::fstat(__fd)) {
+            Ok(__s) => {
+                (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
+                0
+            }
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(((((*(*st.borrow()).st_size.borrow()) == 5_i64) as i32) != 0));
+    assert!((((((*(*st.borrow()).st_mode.borrow()) & 61440_u32) == 32768_u32) as i32) != 0));
+    let tio: Value<libcc2rs::Termios> = Rc::new(RefCell::new(Default::default()));
+    assert!(
+        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::sys::termios::tcgetattr(__fd)) {
+            Ok(__t) => {
+                (tio.as_pointer()).with_mut(|__dst| *__dst = Termios::from_libc(&__t.into()));
+                0
+            }
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == -1_i32) as i32)
+            != 0)
+    );
     assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {

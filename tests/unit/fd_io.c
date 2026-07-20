@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <termios.h>
 #include <unistd.h>
 
 int main(void) {
@@ -44,6 +46,12 @@ int main(void) {
   assert(strcmp(buf, "world") == 0);
   assert(ftruncate(fd, 5) == 0);
   assert(lseek(fd, 0, SEEK_END) == 5);
+  struct stat st;
+  assert(fstat(fd, &st) == 0);
+  assert(st.st_size == 5);
+  assert((st.st_mode & S_IFMT) == S_IFREG);
+  struct termios tio;
+  assert(tcgetattr(fd, &tio) == -1);
   assert(close(fd) == 0);
   assert(unlink(path) == 0);
   return 0;

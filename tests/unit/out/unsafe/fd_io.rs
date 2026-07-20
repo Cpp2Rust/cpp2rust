@@ -156,6 +156,14 @@ unsafe fn main_0() -> i32 {
     );
     assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
     assert!(((((libc::lseek(fd, 0_i64, 2)) == (5_i64)) as i32) != 0));
+    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(((((st.st_size) == (5_i64)) as i32) != 0));
+    assert!((((((st.st_mode) & (61440_u32)) == (32768_u32)) as i32) != 0));
+    let mut tio: ::libc::termios = unsafe { std::mem::zeroed() };
+    assert!(
+        ((((libc::tcgetattr(fd, (&mut tio as *mut ::libc::termios))) == (-1_i32)) as i32) != 0)
+    );
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;
