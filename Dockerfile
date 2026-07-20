@@ -36,8 +36,8 @@ WORKDIR /opt/workdir
 
 CMD 	cmake \
 	-G Ninja \
-	-B target/container/ubuntu/release \
+	-B build \
 	-D CMAKE_C_COMPILER="$(which clang-22)" \
 	-D CMAKE_CXX_COMPILER="$(which clang++-22)" \
 	.; \
-	cmake --build target/container/ubuntu/release -j$(nproc)
+	cmake --build build -j$(nproc)
