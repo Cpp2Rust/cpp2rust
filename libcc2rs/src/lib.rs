@@ -37,4 +37,7 @@ pub use compat::*;
 mod va_args;
 pub use va_args::*;
 
+mod format;
+pub use format::*;
+
 pub use libcc2rs_macros::{goto, goto_block, switch};
