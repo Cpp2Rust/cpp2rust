@@ -9,5 +9,6 @@ fn f1(a0: i32, a1: u64, va: &[VaArg]) -> i32 {
         a0,
         a1,
         va.len()
-    )
+    );
+    0
 }
