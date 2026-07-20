@@ -28,21 +28,9 @@ pub fn test_errno_preserved_across_strdup_1() {
 pub fn test_errno_from_fseek_2() {
     libcc2rs::cpp2rust_errno().write(0);
     let r: Value<i32> = Rc::new(RefCell::new(
-        if (match 0 {
-            0 => libcc2rs::cin().with_mut(|__v: &mut ::std::fs::File| {
-                __v.seek(std::io::SeekFrom::Start(0_i64 as u64))
-            }),
-            1 => libcc2rs::cin()
-                .with_mut(|__v: &mut ::std::fs::File| __v.seek(std::io::SeekFrom::Current(0_i64))),
-            2 => libcc2rs::cin()
-                .with_mut(|__v: &mut ::std::fs::File| __v.seek(std::io::SeekFrom::End(0_i64))),
-            _ => Err(std::io::Error::other("unsupported whence for fseek.")),
-        })
-        .is_ok()
-        {
-            0
-        } else {
-            -1
+        match libcc2rs::c_stdin().with_mut(|__v: &mut CFile| __v.seek(0_i64, 0)) {
+            -1 => -1,
+            _ => 0,
         },
     ));
     assert!(((((*r.borrow()) == -1_i32) as i32) != 0));

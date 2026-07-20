@@ -24,45 +24,37 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
+    let fn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(FnPtr::<
-            fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
+            fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fread_refcount)));
     assert!({
         let _lhs = (*fn1.borrow()).clone();
-        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
+        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
             libcc2rs::fread_refcount,
         )
     });
     assert!(!((*fn1.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
-        FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
-            libcc2rs::fread_refcount,
-        )
-        .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
+        FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fread_refcount)
+            .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
             (|a0: Ptr<u8>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
-                libcc2rs::fread_refcount(
-                    a0.to_any(),
-                    a1,
-                    a2,
-                    a3.reinterpret_cast::<::std::fs::File>(),
-                )
+                libcc2rs::fread_refcount(a0.to_any(), a1, a2, a3.reinterpret_cast::<CFile>())
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
     assert!({
         let _lhs = (*fn1.borrow()).clone();
-        _lhs == ((*fn2.borrow())
-            .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(None))
-        .clone()
+        _lhs == ((*fn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
+            .clone()
     });
-    let f3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
+    let f3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fread_0)
-                .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
-                (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
+                .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(Some(
+                (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>| -> usize {
                     my_alternative_fread_0(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
-                }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
+                }) as fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
             )),
         ));
     assert!(
@@ -71,21 +63,13 @@ fn main_0() -> i32 {
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal(b"rb").to_rust_string() {
-                v if v == "rb" => std::fs::OpenOptions::new()
-                    .read(true)
-                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                v if v == "wb" => std::fs::OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .truncate(true)
-                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                _ => panic!("unsupported mode"),
+        let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+            match CFile::open(
+                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::from_string_literal(b"rb").to_rust_string(),
+            ) {
+                Some(__f) => Ptr::alloc(__f),
+                None => Ptr::null(),
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
@@ -118,28 +102,21 @@ fn main_0() -> i32 {
             (*i.borrow_mut()).prefix_inc();
         }
         {
+            let __r = (*stream.borrow()).with(|__f| __f.close());
             (*stream.borrow()).delete();
-            0
+            __r
         };
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal(b"rb").to_rust_string() {
-                v if v == "rb" => std::fs::OpenOptions::new()
-                    .read(true)
-                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                v if v == "wb" => std::fs::OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .truncate(true)
-                    .open(Ptr::from_string_literal(b"/dev/zero").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                _ => panic!("unsupported mode"),
+        let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+            match CFile::open(
+                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::from_string_literal(b"rb").to_rust_string(),
+            ) {
+                Some(__f) => Ptr::alloc(__f),
+                None => Ptr::null(),
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
@@ -175,72 +152,56 @@ fn main_0() -> i32 {
             (*i.borrow_mut()).prefix_inc();
         }
         {
+            let __r = (*stream.borrow()).with(|__f| __f.close());
             (*stream.borrow()).delete();
-            0
+            __r
         };
     }
-    let gn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
+    let gn1: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(FnPtr::<
-            fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
+            fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fwrite_refcount)));
     assert!({
         let _lhs = (*gn1.borrow()).clone();
-        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
+        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
             libcc2rs::fwrite_refcount,
         )
     });
     assert!(!((*gn1.borrow()).is_null()));
     let gn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
-        FnPtr::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>::new(
-            libcc2rs::fwrite_refcount,
-        )
-        .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
+        FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fwrite_refcount)
+            .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
             (|a0: Ptr<u8>, a1: usize, a2: usize, a3: AnyPtr| -> usize {
-                libcc2rs::fwrite_refcount(
-                    a0.to_any(),
-                    a1,
-                    a2,
-                    a3.reinterpret_cast::<::std::fs::File>(),
-                )
+                libcc2rs::fwrite_refcount(a0.to_any(), a1, a2, a3.reinterpret_cast::<CFile>())
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
     assert!({
         let _lhs = (*gn1.borrow()).clone();
-        _lhs == ((*gn2.borrow())
-            .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(None))
-        .clone()
+        _lhs == ((*gn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
+            .clone()
     });
-    let g3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>> =
-        Rc::new(RefCell::new(
-            FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
-                .cast::<fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize>(Some(
-                (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>| -> usize {
-                    my_alternative_fwrite_1(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
-                }) as fn(AnyPtr, usize, usize, Ptr<::std::fs::File>) -> usize,
-            )),
-        ));
+    let g3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> = Rc::new(RefCell::new(
+        FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
+            .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(Some(
+            (|a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>| -> usize {
+                my_alternative_fwrite_1(a0.reinterpret_cast::<u8>(), a1, a2, a3.to_any())
+            }) as fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
+        )),
+    ));
     assert!(
         (({ (*(*g3.borrow()))(AnyPtr::default(), 0_usize, 0_usize, Ptr::null(),) }) == 33_usize)
     );
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal(b"wb").to_rust_string() {
-                v if v == "rb" => std::fs::OpenOptions::new()
-                    .read(true)
-                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                v if v == "wb" => std::fs::OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .truncate(true)
-                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                _ => panic!("unsupported mode"),
+        let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+            match CFile::open(
+                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::from_string_literal(b"wb").to_rust_string(),
+            ) {
+                Some(__f) => Ptr::alloc(__f),
+                None => Ptr::null(),
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
@@ -263,28 +224,21 @@ fn main_0() -> i32 {
         }));
         assert!(((*n.borrow()) == 10_usize));
         {
+            let __r = (*stream.borrow()).with(|__f| __f.close());
             (*stream.borrow()).delete();
-            0
+            __r
         };
     }
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
-        let stream: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-            match Ptr::from_string_literal(b"wb").to_rust_string() {
-                v if v == "rb" => std::fs::OpenOptions::new()
-                    .read(true)
-                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                v if v == "wb" => std::fs::OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .truncate(true)
-                    .open(Ptr::from_string_literal(b"/dev/null").to_rust_string())
-                    .ok()
-                    .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-                _ => panic!("unsupported mode"),
+        let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+            match CFile::open(
+                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::from_string_literal(b"wb").to_rust_string(),
+            ) {
+                Some(__f) => Ptr::alloc(__f),
+                None => Ptr::null(),
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
@@ -310,8 +264,9 @@ fn main_0() -> i32 {
         ));
         assert!(((*n.borrow()) == 10_usize));
         {
+            let __r = (*stream.borrow()).with(|__f| __f.close());
             (*stream.borrow()).delete();
-            0
+            __r
         };
     }
     return 0;

@@ -407,6 +407,127 @@ pub unsafe fn test_poll_11() {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
 }
+pub unsafe fn test_fileno_12() {
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_fd_io_fileno.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fwrite_unsafe(
+            (c"hello".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            1_usize,
+            5_usize,
+            fp
+        )) == (5_usize)) as i32)
+            != 0)
+    );
+    assert!(((((libc::fflush(fp)) == (0)) as i32) != 0));
+    let mut fd: i32 = libc::fileno(fp);
+    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(((((libc::fileno(fp)) == (fd)) as i32) != 0));
+    let mut st: ::libc::stat = unsafe { std::mem::zeroed() };
+    assert!(((((libc::fstat(fd, (&mut st as *mut ::libc::stat))) == (0)) as i32) != 0));
+    assert!(((((st.st_size) == (5_i64)) as i32) != 0));
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+}
+pub unsafe fn test_fdopen_13() {
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_fd_io_fdopen.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fd: i32 = (unsafe {
+        libc::open(
+            path as *const i8,
+            (((::libc::O_WRONLY) | (::libc::O_CREAT)) | (::libc::O_TRUNC)) as i32,
+            (420),
+        )
+    });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    let mut fp: *mut ::libc::FILE = libc::fdopen(fd, (c"wb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fwrite_unsafe(
+            (c"hi".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            1_usize,
+            2_usize,
+            fp
+        )) == (2_usize)) as i32)
+            != 0)
+    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fd = (unsafe { libc::open(path as *const i8, ::libc::O_RDONLY as i32) });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
+    {
+        let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
+        for offset in 0..::std::mem::size_of::<[libc::c_char; 4]>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
+        }
+        (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
+    };
+    assert!(
+        ((((libc::read(
+            fd,
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            ::std::mem::size_of::<[libc::c_char; 4]>()
+        )) == (2_isize)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"hi".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+}
+pub unsafe fn test_feof_ferror_14() {
+    let mut path: *const libc::c_char =
+        (c"/tmp/cpp2rust_fd_io_eof.tmp".as_ptr().cast_mut()).cast_const();
+    let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fwrite_unsafe(
+            (c"ab".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            1_usize,
+            2_usize,
+            fp
+        )) == (2_usize)) as i32)
+            != 0)
+    );
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
+    assert!((((!((fp).is_null())) as i32) != 0));
+    assert!(((!(libc::feof(fp) != 0) as i32) != 0));
+    assert!(((!(libc::ferror(fp) != 0) as i32) != 0));
+    let mut buf: [libc::c_char; 2] = [(0 as libc::c_char); 2];
+    assert!(
+        ((((libcc2rs::fread_unsafe(
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            1_usize,
+            2_usize,
+            fp
+        )) == (2_usize)) as i32)
+            != 0)
+    );
+    assert!(((!(libc::feof(fp) != 0) as i32) != 0));
+    assert!(
+        ((((libcc2rs::fread_unsafe(
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            1_usize,
+            1_usize,
+            fp
+        )) == (0_usize)) as i32)
+            != 0)
+    );
+    assert!((libc::feof(fp) != 0));
+    assert!(((!(libc::ferror(fp) != 0) as i32) != 0));
+    assert!(((((libc::fseek(fp, 0_i64 as ::libc::c_long, 0)) == (0)) as i32) != 0));
+    assert!(((!(libc::feof(fp) != 0) as i32) != 0));
+    assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -425,5 +546,8 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_fcntl_9() });
     (unsafe { test_select_10() });
     (unsafe { test_poll_11() });
+    (unsafe { test_fileno_12() });
+    (unsafe { test_fdopen_13() });
+    (unsafe { test_feof_ferror_14() });
     return 0;
 }

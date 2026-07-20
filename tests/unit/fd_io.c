@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <poll.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -176,6 +177,62 @@ static void test_poll(void) {
   assert(close(fds[1]) == 0);
 }
 
+static void test_fileno(void) {
+  const char *path = "/tmp/cpp2rust_fd_io_fileno.tmp";
+  FILE *fp = fopen(path, "wb");
+  assert(fp != NULL);
+  assert(fwrite("hello", 1, 5, fp) == 5);
+  assert(fflush(fp) == 0);
+  int fd = fileno(fp);
+  assert(fd >= 0);
+  assert(fileno(fp) == fd);
+  struct stat st;
+  assert(fstat(fd, &st) == 0);
+  assert(st.st_size == 5);
+  assert(fclose(fp) == 0);
+  assert(unlink(path) == 0);
+}
+
+static void test_fdopen(void) {
+  const char *path = "/tmp/cpp2rust_fd_io_fdopen.tmp";
+  int fd = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  assert(fd >= 0);
+  FILE *fp = fdopen(fd, "wb");
+  assert(fp != NULL);
+  assert(fwrite("hi", 1, 2, fp) == 2);
+  assert(fclose(fp) == 0);
+  fd = open(path, O_RDONLY);
+  assert(fd >= 0);
+  char buf[4];
+  memset(buf, 0, sizeof(buf));
+  assert(read(fd, buf, sizeof(buf)) == 2);
+  assert(strcmp(buf, "hi") == 0);
+  assert(close(fd) == 0);
+  assert(unlink(path) == 0);
+}
+
+static void test_feof_ferror(void) {
+  const char *path = "/tmp/cpp2rust_fd_io_eof.tmp";
+  FILE *fp = fopen(path, "wb");
+  assert(fp != NULL);
+  assert(fwrite("ab", 1, 2, fp) == 2);
+  assert(fclose(fp) == 0);
+  fp = fopen(path, "rb");
+  assert(fp != NULL);
+  assert(!feof(fp));
+  assert(!ferror(fp));
+  char buf[2];
+  assert(fread(buf, 1, 2, fp) == 2);
+  assert(!feof(fp));
+  assert(fread(buf, 1, 1, fp) == 0);
+  assert(feof(fp));
+  assert(!ferror(fp));
+  assert(fseek(fp, 0, SEEK_SET) == 0);
+  assert(!feof(fp));
+  assert(fclose(fp) == 0);
+  assert(unlink(path) == 0);
+}
+
 int main(void) {
   test_open_read_write();
   test_pipe();
@@ -189,5 +246,8 @@ int main(void) {
   test_fcntl();
   test_select();
   test_poll();
+  test_fileno();
+  test_fdopen();
+  test_feof_ferror();
   return 0;
 }

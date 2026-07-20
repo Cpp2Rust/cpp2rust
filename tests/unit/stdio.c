@@ -1,4 +1,3 @@
-// no-compile: refcount
 #include <assert.h>
 #include <stdio.h>
 #include <unistd.h>
