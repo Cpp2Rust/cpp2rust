@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     println!("{}", Ptr::from_string_literal(b"fprintf stdout"));
     println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
-    let in_: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new((libcc2rs::cin()).clone()));
+    let in_: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdin()).clone()));
     assert!(!((*in_.borrow()).is_null()));
     println!("{}", Ptr::from_string_literal(b"printf"));
     print!("hello world");
