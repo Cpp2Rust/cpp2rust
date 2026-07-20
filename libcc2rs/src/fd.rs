@@ -27,15 +27,26 @@ impl FdRegistry {
         raw
     }
 
+    fn lookup(&self, fd: i32) -> BorrowedFd<'_> {
+        self.fds
+            .get(fd as usize)
+            .and_then(|slot| slot.as_ref())
+            .unwrap_or_else(|| panic!("ub: bad fd {fd}"))
+            .as_fd()
+    }
+
     pub fn with_fd<R>(fd: i32, f: impl FnOnce(BorrowedFd<'_>) -> R) -> R {
         FD_REGISTRY.with(|r| {
             let reg = r.borrow();
-            let owned = reg
-                .fds
-                .get(fd as usize)
-                .and_then(|slot| slot.as_ref())
-                .unwrap_or_else(|| panic!("ub: bad fd {fd}"));
-            f(owned.as_fd())
+            f(reg.lookup(fd))
+        })
+    }
+
+    pub fn with_fds<R>(fds: &[i32], f: impl FnOnce(&[BorrowedFd<'_>]) -> R) -> R {
+        FD_REGISTRY.with(|r| {
+            let reg = r.borrow();
+            let borrowed: Vec<BorrowedFd<'_>> = fds.iter().map(|&fd| reg.lookup(fd)).collect();
+            f(&borrowed)
         })
     }
 
