@@ -243,7 +243,40 @@ pub unsafe fn test_tcgetattr_7() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_select_8() {
+pub unsafe fn test_fcntl_8() {
+    let mut fds: [i32; 2] = [0_i32; 2];
+    assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
+    let mut flags: i32 = (unsafe { libc::fcntl(fds[(0) as usize] as i32, 3 as i32, (0)) });
+    assert!(((((flags) >= (0)) as i32) != 0));
+    assert!((((((flags) & (::libc::O_NONBLOCK)) == (0)) as i32) != 0));
+    assert!(
+        ((((unsafe {
+            libc::fcntl(
+                fds[(0) as usize] as i32,
+                4 as i32,
+                ((flags) | (::libc::O_NONBLOCK)),
+            )
+        }) == (0)) as i32)
+            != 0)
+    );
+    flags = (unsafe { libc::fcntl(fds[(0) as usize] as i32, 3 as i32, (0)) });
+    assert!((((((flags) & (::libc::O_NONBLOCK)) != (0)) as i32) != 0));
+    let mut b: libc::c_char = (0 as libc::c_char);
+    assert!(
+        ((((libc::read(
+            fds[(0) as usize],
+            ((&mut b as *mut libc::c_char) as *mut libc::c_char as *mut ::libc::c_void),
+            1_usize
+        )) == (-1_i32 as isize)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((unsafe { libc::fcntl(fds[(0) as usize] as i32, 2 as i32, (1),) }) == (0)) as i32) != 0)
+    );
+    assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
+    assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
+}
+pub unsafe fn test_select_9() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     let mut rset: ::libc::fd_set = std::mem::zeroed::<::libc::fd_set>();
@@ -302,7 +335,7 @@ pub unsafe fn test_select_8() {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
 }
-pub unsafe fn test_poll_9() {
+pub unsafe fn test_poll_10() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     assert!(
@@ -349,7 +382,8 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_fstat_5() });
     (unsafe { test_isatty_6() });
     (unsafe { test_tcgetattr_7() });
-    (unsafe { test_select_8() });
-    (unsafe { test_poll_9() });
+    (unsafe { test_fcntl_8() });
+    (unsafe { test_select_9() });
+    (unsafe { test_poll_10() });
     return 0;
 }
