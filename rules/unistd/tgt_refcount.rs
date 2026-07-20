@@ -30,6 +30,21 @@ fn f4(a0: Ptr<u8>) -> i32 {
     }
 }
 
+fn f5(a0: Ptr<i32>) -> i32 {
+    match nix::unistd::pipe() {
+        Ok((__r, __w)) => {
+            let __fds = a0.clone();
+            __fds.write(FdRegistry::register(__r));
+            __fds.offset(1).write(FdRegistry::register(__w));
+            0
+        }
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
 fn f8() -> u32 {
     nix::unistd::geteuid().as_raw()
 }
