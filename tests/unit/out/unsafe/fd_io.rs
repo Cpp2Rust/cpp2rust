@@ -113,7 +113,46 @@ pub unsafe fn test_socket_listen_2() {
     assert!(((((libc::listen(s, 5)) == (0)) as i32) != 0));
     assert!(((((libc::close(s)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_lseek_3() {
+pub unsafe fn test_sockopt_3() {
+    let mut s: i32 = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
+    assert!(((((s) >= (0)) as i32) != 0));
+    let mut on: i32 = 1;
+    assert!(
+        ((((libc::setsockopt(
+            s,
+            1,
+            9,
+            ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
+            (::std::mem::size_of::<i32>() as u32)
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::setsockopt(
+            s,
+            libc::IPPROTO_TCP,
+            1,
+            ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
+            (::std::mem::size_of::<i32>() as u32)
+        )) == (0)) as i32)
+            != 0)
+    );
+    let mut err: i32 = -1_i32;
+    let mut len: u32 = (::std::mem::size_of::<i32>() as u32);
+    assert!(
+        ((((libc::getsockopt(
+            s,
+            1,
+            4,
+            ((&mut err as *mut i32) as *mut i32 as *mut ::libc::c_void),
+            (&mut len as *mut u32)
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((err) == (0)) as i32) != 0));
+    assert!(((((libc::close(s)) == (0)) as i32) != 0));
+}
+pub unsafe fn test_lseek_4() {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_lseek.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
@@ -160,7 +199,7 @@ pub unsafe fn test_lseek_3() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_ftruncate_4() {
+pub unsafe fn test_ftruncate_5() {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_trunc.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
@@ -184,7 +223,7 @@ pub unsafe fn test_ftruncate_4() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_fstat_5() {
+pub unsafe fn test_fstat_6() {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_fstat.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
@@ -210,7 +249,7 @@ pub unsafe fn test_fstat_5() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_isatty_6() {
+pub unsafe fn test_isatty_7() {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_tty.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
@@ -225,7 +264,7 @@ pub unsafe fn test_isatty_6() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_tcgetattr_7() {
+pub unsafe fn test_tcgetattr_8() {
     let mut path: *const libc::c_char =
         (c"/tmp/cpp2rust_fd_io_termios.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
@@ -243,7 +282,7 @@ pub unsafe fn test_tcgetattr_7() {
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
-pub unsafe fn test_fcntl_8() {
+pub unsafe fn test_fcntl_9() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     let mut flags: i32 = (unsafe { libc::fcntl(fds[(0) as usize] as i32, 3 as i32, (0)) });
@@ -276,7 +315,7 @@ pub unsafe fn test_fcntl_8() {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
 }
-pub unsafe fn test_select_9() {
+pub unsafe fn test_select_10() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     let mut rset: ::libc::fd_set = std::mem::zeroed::<::libc::fd_set>();
@@ -335,7 +374,7 @@ pub unsafe fn test_select_9() {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     assert!(((((libc::close(fds[(1) as usize])) == (0)) as i32) != 0));
 }
-pub unsafe fn test_poll_10() {
+pub unsafe fn test_poll_11() {
     let mut fds: [i32; 2] = [0_i32; 2];
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     assert!(
@@ -377,13 +416,14 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_open_read_write_0() });
     (unsafe { test_pipe_1() });
     (unsafe { test_socket_listen_2() });
-    (unsafe { test_lseek_3() });
-    (unsafe { test_ftruncate_4() });
-    (unsafe { test_fstat_5() });
-    (unsafe { test_isatty_6() });
-    (unsafe { test_tcgetattr_7() });
-    (unsafe { test_fcntl_8() });
-    (unsafe { test_select_9() });
-    (unsafe { test_poll_10() });
+    (unsafe { test_sockopt_3() });
+    (unsafe { test_lseek_4() });
+    (unsafe { test_ftruncate_5() });
+    (unsafe { test_fstat_6() });
+    (unsafe { test_isatty_7() });
+    (unsafe { test_tcgetattr_8() });
+    (unsafe { test_fcntl_9() });
+    (unsafe { test_select_10() });
+    (unsafe { test_poll_11() });
     return 0;
 }

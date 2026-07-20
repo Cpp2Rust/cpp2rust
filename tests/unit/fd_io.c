@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <fcntl.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <poll.h>
 #include <string.h>
 #include <sys/select.h>
@@ -42,6 +44,19 @@ static void test_socket_listen(void) {
   int s = socket(AF_INET, SOCK_STREAM, 0);
   assert(s >= 0);
   assert(listen(s, 5) == 0);
+  assert(close(s) == 0);
+}
+
+static void test_sockopt(void) {
+  int s = socket(AF_INET, SOCK_STREAM, 0);
+  assert(s >= 0);
+  int on = 1;
+  assert(setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on)) == 0);
+  assert(setsockopt(s, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) == 0);
+  int err = -1;
+  socklen_t len = sizeof(err);
+  assert(getsockopt(s, SOL_SOCKET, SO_ERROR, &err, &len) == 0);
+  assert(err == 0);
   assert(close(s) == 0);
 }
 
@@ -165,6 +180,7 @@ int main(void) {
   test_open_read_write();
   test_pipe();
   test_socket_listen();
+  test_sockopt();
   test_lseek();
   test_ftruncate();
   test_fstat();
