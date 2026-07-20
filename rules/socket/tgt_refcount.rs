@@ -229,3 +229,19 @@ fn f15(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>, a3: i32) -> i32 {
         }
     }
 }
+
+fn f17(a0: i32, a1: i32) -> i32 {
+    match nix::sys::socket::Backlog::new(a1) {
+        Ok(__b) => match FdRegistry::with_fd(a0, |__fd| nix::sys::socket::listen(&__fd, __b)) {
+            Ok(()) => 0,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        },
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}

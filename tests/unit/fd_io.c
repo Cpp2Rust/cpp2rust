@@ -31,6 +31,20 @@ int main(void) {
   assert(close(fds[0]) == 0);
   int s = socket(AF_INET, SOCK_STREAM, 0);
   assert(s >= 0);
+  assert(listen(s, 5) == 0);
   assert(close(s) == 0);
+  fd = open(path, O_RDWR | O_CREAT | O_TRUNC, 0644);
+  assert(fd >= 0);
+  assert(isatty(fd) == 0);
+  assert(write(fd, "hello world", 11) == 11);
+  assert(lseek(fd, 0, SEEK_END) == 11);
+  assert(lseek(fd, 6, SEEK_SET) == 6);
+  memset(buf, 0, sizeof(buf));
+  assert(read(fd, buf, sizeof(buf)) == 5);
+  assert(strcmp(buf, "world") == 0);
+  assert(ftruncate(fd, 5) == 0);
+  assert(lseek(fd, 0, SEEK_END) == 5);
+  assert(close(fd) == 0);
+  assert(unlink(path) == 0);
   return 0;
 }

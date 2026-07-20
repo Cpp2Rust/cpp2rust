@@ -7,6 +7,22 @@ fn f1(a0: i32) -> i32 {
     FdRegistry::close(a0)
 }
 
+fn f2(a0: i32, a1: i64, a2: i32) -> i64 {
+    let __whence = match a2 {
+        0 => nix::unistd::Whence::SeekSet,
+        1 => nix::unistd::Whence::SeekCur,
+        2 => nix::unistd::Whence::SeekEnd,
+        __w => panic!("lseek: unsupported whence {__w}"),
+    };
+    match FdRegistry::with_fd(a0, |__fd| nix::unistd::lseek(__fd, a1, __whence)) {
+        Ok(__off) => __off,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
 fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
     match FdRegistry::with_fd(a0, |__fd| {
         a1.reinterpret_cast::<u8>()
@@ -41,6 +57,26 @@ fn f5(a0: Ptr<i32>) -> i32 {
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
             -1
+        }
+    }
+}
+
+fn f6(a0: i32, a1: i64) -> i32 {
+    match FdRegistry::with_fd(a0, |__fd| nix::unistd::ftruncate(__fd, a1)) {
+        Ok(()) => 0,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f7(a0: i32) -> i32 {
+    match FdRegistry::with_fd(a0, |__fd| nix::unistd::isatty(__fd)) {
+        Ok(__tty) => __tty as i32,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            0
         }
     }
 }

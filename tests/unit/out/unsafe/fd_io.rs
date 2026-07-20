@@ -111,6 +111,52 @@ unsafe fn main_0() -> i32 {
     assert!(((((libc::close(fds[(0) as usize])) == (0)) as i32) != 0));
     let mut s: i32 = libc::socket(libc::AF_INET, libc::SOCK_STREAM, 0);
     assert!(((((s) >= (0)) as i32) != 0));
+    assert!(((((libc::listen(s, 5)) == (0)) as i32) != 0));
     assert!(((((libc::close(s)) == (0)) as i32) != 0));
+    fd = (unsafe {
+        libc::open(
+            path as *const i8,
+            (((::libc::O_RDWR) | (::libc::O_CREAT)) | (::libc::O_TRUNC)) as i32,
+            (420),
+        )
+    });
+    assert!(((((fd) >= (0)) as i32) != 0));
+    assert!(((((libc::isatty(fd)) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::write(
+            fd,
+            (c"hello world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            11_usize
+        )) == (11_isize)) as i32)
+            != 0)
+    );
+    assert!(((((libc::lseek(fd, 0_i64, 2)) == (11_i64)) as i32) != 0));
+    assert!(((((libc::lseek(fd, 6_i64, 0)) == (6_i64)) as i32) != 0));
+    {
+        let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
+        for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
+            *byte_0.offset(offset as isize) = 0 as u8;
+        }
+        (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
+    };
+    assert!(
+        ((((libc::read(
+            fd,
+            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            ::std::mem::size_of::<[libc::c_char; 16]>()
+        )) == (5_isize)) as i32)
+            != 0)
+    );
+    assert!(
+        ((((libc::strcmp(
+            (buf.as_mut_ptr()).cast_const(),
+            (c"world".as_ptr().cast_mut()).cast_const()
+        )) == (0)) as i32)
+            != 0)
+    );
+    assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
+    assert!(((((libc::lseek(fd, 0_i64, 2)) == (5_i64)) as i32) != 0));
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;
 }
