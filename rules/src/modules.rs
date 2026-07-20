@@ -48,6 +48,8 @@ pub mod dirent_tgt_unsafe;
 pub mod errno_tgt_refcount;
 #[path = r#"../errno/tgt_unsafe.rs"#]
 pub mod errno_tgt_unsafe;
+#[path = r#"../eventfd/tgt_refcount.rs"#]
+pub mod eventfd_tgt_refcount;
 #[path = r#"../eventfd/tgt_unsafe.rs"#]
 pub mod eventfd_tgt_unsafe;
 #[path = r#"../fcntl/tgt_refcount.rs"#]
@@ -160,5 +162,7 @@ pub mod unistd_tgt_unsafe;
 pub mod vector_tgt_refcount;
 #[path = r#"../vector/tgt_unsafe.rs"#]
 pub mod vector_tgt_unsafe;
+#[path = r#"../xattr/tgt_refcount.rs"#]
+pub mod xattr_tgt_refcount;
 #[path = r#"../xattr/tgt_unsafe.rs"#]
 pub mod xattr_tgt_unsafe;

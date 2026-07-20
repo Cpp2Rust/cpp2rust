@@ -40,4 +40,7 @@ pub use va_args::*;
 mod format;
 pub use format::*;
 
+mod fd;
+pub use fd::*;
+
 pub use libcc2rs_macros::{goto, goto_block, switch};

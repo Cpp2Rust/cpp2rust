@@ -48,6 +48,68 @@ impl Clone for Termios {
 
 impl ByteRepr for Termios {}
 
+impl Termios {
+    #[allow(clippy::unnecessary_cast)]
+    pub fn from_libc(t: &::libc::termios) -> Self {
+        let s = Self::default();
+        *s.c_iflag.borrow_mut() = t.c_iflag as u32;
+        *s.c_oflag.borrow_mut() = t.c_oflag as u32;
+        *s.c_cflag.borrow_mut() = t.c_cflag as u32;
+        *s.c_lflag.borrow_mut() = t.c_lflag as u32;
+        #[cfg(target_os = "linux")]
+        {
+            *s.c_line.borrow_mut() = t.c_line;
+        }
+        {
+            let mut cc = s.c_cc.borrow_mut();
+            let n = t.c_cc.len().min(cc.len());
+            cc[..n].copy_from_slice(&t.c_cc[..n]);
+        }
+        *s.c_ispeed.borrow_mut() = t.c_ispeed as u32;
+        *s.c_ospeed.borrow_mut() = t.c_ospeed as u32;
+        s
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn to_libc(&self) -> ::libc::termios {
+        ::libc::termios {
+            c_iflag: *self.c_iflag.borrow(),
+            c_oflag: *self.c_oflag.borrow(),
+            c_cflag: *self.c_cflag.borrow(),
+            c_lflag: *self.c_lflag.borrow(),
+            c_line: *self.c_line.borrow(),
+            c_cc: {
+                let mut cc = [0u8; 32];
+                let src = self.c_cc.borrow();
+                let n = src.len().min(cc.len());
+                cc[..n].copy_from_slice(&src[..n]);
+                cc
+            },
+            c_ispeed: *self.c_ispeed.borrow(),
+            c_ospeed: *self.c_ospeed.borrow(),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    pub fn to_libc(&self) -> ::libc::termios {
+        ::libc::termios {
+            c_iflag: *self.c_iflag.borrow() as u64,
+            c_oflag: *self.c_oflag.borrow() as u64,
+            c_cflag: *self.c_cflag.borrow() as u64,
+            c_lflag: *self.c_lflag.borrow() as u64,
+            c_cc: {
+                let mut cc = [0u8; 20];
+                let src = self.c_cc.borrow();
+                let n = src.len().min(cc.len());
+                cc[..n].copy_from_slice(&src[..n]);
+                cc
+            },
+            c_ispeed: *self.c_ispeed.borrow() as u64,
+            c_ospeed: *self.c_ospeed.borrow() as u64,
+        }
+    }
+}
+
 #[derive(Default)]
 pub struct Winsize {
     pub ws_row: Value<u16>,

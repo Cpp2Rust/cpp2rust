@@ -53,6 +53,7 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "rustls_ffi",
         "nix",
         "jiff",
+        "xattr",
     ] {
         if let Some(rlib) = find_rlib(deps.as_path(), dep) {
             args.push("--extern".to_string());
