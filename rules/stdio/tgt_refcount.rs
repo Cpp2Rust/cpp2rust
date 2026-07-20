@@ -213,16 +213,6 @@ fn f19(a0: Ptr<::std::fs::File>, a1: i64, a2: i32) -> i32 {
     }
 }
 
-fn f21(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, va: &[VaArg]) -> i32 {
-    panic!(
-        "snprintf is not supported in the refcount model (buf_is_null={}, size={}, fmt={:?}, varargs={})",
-        a0.is_null(),
-        a1,
-        a2.to_rust_string(),
-        va.len()
-    )
-}
-
 fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
     match ::std::fs::rename(a0.to_rust_string(), a1.to_rust_string()) {
         Ok(()) => 0,
