@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use std::cell::RefCell;
+use std::io::{ErrorKind, Read, Write};
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -260,6 +261,134 @@ impl ByteRepr for RustlsSupportedCiphersuite {}
 
 pub struct RustlsCertificate(pub CertificateDer<'static>);
 impl ByteRepr for RustlsCertificate {}
+
+pub struct RustlsConnection {
+    pub conn: rustls::ClientConnection,
+}
+impl ByteRepr for RustlsConnection {}
+
+pub fn rustls_connection_read(
+    conn: Ptr<RustlsConnection>,
+    buf: Ptr<u8>,
+    count: usize,
+    out_n: Ptr<usize>,
+) -> RustlsResult {
+    if buf.is_null() || out_n.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let n_read = conn.with_mut(|c| buf.with_slice_mut(count, |dst| c.conn.reader().read(dst)));
+    match n_read {
+        Ok(n) => {
+            out_n.write(n);
+            RustlsResult::Ok
+        }
+        Err(e) if e.kind() == ErrorKind::UnexpectedEof => RustlsResult::UnexpectedEof,
+        Err(e) if e.kind() == ErrorKind::WouldBlock => RustlsResult::PlaintextEmpty,
+        Err(_) => RustlsResult::Io,
+    }
+}
+
+pub fn rustls_connection_write(
+    conn: Ptr<RustlsConnection>,
+    buf: Ptr<u8>,
+    count: usize,
+    out_n: Ptr<usize>,
+) -> RustlsResult {
+    if buf.is_null() || out_n.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let n_written = conn.with_mut(|c| buf.with_slice(count, |src| c.conn.writer().write(src)));
+    match n_written {
+        Ok(n) => {
+            out_n.write(n);
+            RustlsResult::Ok
+        }
+        Err(_) => RustlsResult::Io,
+    }
+}
+
+pub fn rustls_connection_process_new_packets(conn: Ptr<RustlsConnection>) -> RustlsResult {
+    match conn.with_mut(|c| c.conn.process_new_packets().map(|_| ())) {
+        Ok(()) => RustlsResult::Ok,
+        Err(e) => map_rustls_error(&e),
+    }
+}
+
+pub fn rustls_connection_wants_read(conn: Ptr<RustlsConnection>) -> bool {
+    conn.with(|c| c.conn.wants_read())
+}
+
+pub fn rustls_connection_wants_write(conn: Ptr<RustlsConnection>) -> bool {
+    conn.with(|c| c.conn.wants_write())
+}
+
+pub fn rustls_connection_is_handshaking(conn: Ptr<RustlsConnection>) -> bool {
+    conn.with(|c| c.conn.is_handshaking())
+}
+
+pub fn rustls_connection_send_close_notify(conn: Ptr<RustlsConnection>) {
+    conn.with_mut(|c| c.conn.send_close_notify());
+}
+
+pub fn rustls_connection_get_alpn_protocol(
+    conn: Ptr<RustlsConnection>,
+    protocol_out: Ptr<Ptr<u8>>,
+    protocol_out_len: Ptr<usize>,
+) {
+    if protocol_out.is_null() || protocol_out_len.is_null() {
+        return;
+    }
+    conn.with(|c| match c.conn.alpn_protocol() {
+        Some(p) => {
+            protocol_out.write(Ptr::alloc_array(p.to_vec().into_boxed_slice()));
+            protocol_out_len.write(p.len());
+        }
+        None => {
+            protocol_out.write(Ptr::null());
+            protocol_out_len.write(0);
+        }
+    });
+}
+
+pub fn rustls_connection_get_protocol_version(conn: Ptr<RustlsConnection>) -> u16 {
+    conn.with(|c| c.conn.protocol_version().map(u16::from).unwrap_or_default())
+}
+
+pub fn rustls_connection_get_negotiated_ciphersuite_name(conn: Ptr<RustlsConnection>) -> RustlsStr {
+    conn.with(|c| {
+        RustlsStr::copy_from(
+            c.conn
+                .negotiated_cipher_suite()
+                .and_then(|cs| cs.suite().as_str())
+                .unwrap_or_default(),
+        )
+    })
+}
+
+pub fn rustls_connection_get_negotiated_key_exchange_group_name(
+    conn: Ptr<RustlsConnection>,
+) -> RustlsStr {
+    conn.with(|c| {
+        RustlsStr::copy_from(
+            c.conn
+                .negotiated_key_exchange_group()
+                .and_then(|kxg| kxg.name().as_str())
+                .unwrap_or_default(),
+        )
+    })
+}
+
+pub fn rustls_connection_get_peer_certificate(
+    conn: Ptr<RustlsConnection>,
+    i: usize,
+) -> Ptr<RustlsCertificate> {
+    conn.with(|c| {
+        match c.conn.peer_certificates().and_then(|certs| certs.get(i)) {
+            Some(cert) => Ptr::alloc(RustlsCertificate(cert.clone().into_owned())),
+            None => Ptr::null(),
+        }
+    })
+}
 
 pub fn rustls_certificate_get_der(
     cert: Ptr<RustlsCertificate>,
