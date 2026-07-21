@@ -8,8 +8,11 @@ use std::sync::Arc;
 
 use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
+use rustls::DigitallySignedStruct;
 use rustls::client::ResolvesClientCert;
 use rustls::client::WebPkiServerVerifier;
+use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified};
+use rustls::pki_types::UnixTime;
 use rustls::{ClientConfig, KeyLog, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
 use rustls::pki_types::ServerName;
 use rustls::client::danger::ServerCertVerifier;
@@ -641,6 +644,87 @@ pub fn rustls_client_config_builder_set_certified_key(
     }
     builder.with_mut(|b| {
         b.cert_resolver = Some(Arc::new(ResolvesClientCertFromChoices { keys }))
+    });
+    RustlsResult::Ok
+}
+
+#[derive(Default)]
+pub struct RustlsVerifyServerCertParams;
+impl ByteRepr for RustlsVerifyServerCertParams {}
+
+pub type RustlsVerifyServerCertCallback = fn(AnyPtr, Ptr<RustlsVerifyServerCertParams>) -> u32;
+
+#[derive(Debug)]
+struct CallbackVerifier {
+    cb: RustlsVerifyServerCertCallback,
+    provider: Arc<CryptoProvider>,
+}
+
+impl ServerCertVerifier for CallbackVerifier {
+    fn verify_server_cert(
+        &self,
+        _end_entity: &CertificateDer<'_>,
+        _intermediates: &[CertificateDer<'_>],
+        _server_name: &ServerName<'_>,
+        _ocsp_response: &[u8],
+        _now: UnixTime,
+    ) -> Result<ServerCertVerified, rustls::Error> {
+        match (self.cb)(AnyPtr::default(), Ptr::null()) {
+            7000 => Ok(ServerCertVerified::assertion()),
+            _ => Err(rustls::Error::General(
+                "custom certificate verifier rejected the certificate".to_string(),
+            )),
+        }
+    }
+
+    fn verify_tls12_signature(
+        &self,
+        message: &[u8],
+        cert: &CertificateDer<'_>,
+        dss: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, rustls::Error> {
+        rustls::crypto::verify_tls12_signature(
+            message,
+            cert,
+            dss,
+            &self.provider.signature_verification_algorithms,
+        )
+    }
+
+    fn verify_tls13_signature(
+        &self,
+        message: &[u8],
+        cert: &CertificateDer<'_>,
+        dss: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, rustls::Error> {
+        rustls::crypto::verify_tls13_signature(
+            message,
+            cert,
+            dss,
+            &self.provider.signature_verification_algorithms,
+        )
+    }
+
+    fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
+        self.provider
+            .signature_verification_algorithms
+            .supported_schemes()
+    }
+}
+
+pub fn rustls_client_config_builder_dangerous_set_certificate_verifier(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    callback: FnPtr<RustlsVerifyServerCertCallback>,
+) -> RustlsResult {
+    if callback.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let cb = *callback;
+    builder.with_mut(|b| {
+        b.verifier = Some(Arc::new(CallbackVerifier {
+            cb,
+            provider: b.provider.clone(),
+        }));
     });
     RustlsResult::Ok
 }
