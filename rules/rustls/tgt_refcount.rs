@@ -11,8 +11,8 @@ fn t4() -> libcc2rs::RustlsStr {
     Default::default()
 }
 
-fn t5() -> u32 {
-    0
+fn t5() -> libcc2rs::RustlsResult {
+    libcc2rs::RustlsResult::Ok
 }
 
 fn t6() -> i32 {
@@ -23,20 +23,20 @@ fn t7() -> u16 {
     0
 }
 
-fn f1() -> u32 {
-    libcc2rs::RUSTLS_RESULT_OK
+fn f1() -> libcc2rs::RustlsResult {
+    libcc2rs::RustlsResult::Ok
 }
 
-fn f2() -> u32 {
-    libcc2rs::RUSTLS_RESULT_NULL_PARAMETER
+fn f2() -> libcc2rs::RustlsResult {
+    libcc2rs::RustlsResult::NullParameter
 }
 
-fn f3() -> u32 {
-    libcc2rs::RUSTLS_RESULT_PLAINTEXT_EMPTY
+fn f3() -> libcc2rs::RustlsResult {
+    libcc2rs::RustlsResult::PlaintextEmpty
 }
 
-fn f4() -> u32 {
-    libcc2rs::RUSTLS_RESULT_UNEXPECTED_EOF
+fn f4() -> libcc2rs::RustlsResult {
+    libcc2rs::RustlsResult::UnexpectedEof
 }
 
 fn f5() -> u16 {
@@ -87,14 +87,14 @@ fn f29(
     a0: Ptr<libcc2rs::RustlsCertificate>,
     a1: Ptr<Ptr<u8>>,
     a2: Ptr<usize>,
-) -> u32 {
+) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_certificate_get_der(a0.clone(), a1.clone(), a2.clone())
 }
 
 fn f39(
     a0: Ptr<libcc2rs::RustlsCryptoProviderBuilder>,
     a1: Ptr<Ptr<libcc2rs::RustlsCryptoProvider>>,
-) -> u32 {
+) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_crypto_provider_builder_build(a0.clone(), a1.clone())
 }
 
@@ -102,7 +102,7 @@ fn f40(a0: Ptr<libcc2rs::RustlsCryptoProviderBuilder>) {
     a0.delete()
 }
 
-fn f41(a0: Ptr<Ptr<libcc2rs::RustlsCryptoProviderBuilder>>) -> u32 {
+fn f41(a0: Ptr<Ptr<libcc2rs::RustlsCryptoProviderBuilder>>) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_crypto_provider_builder_new_from_default(a0.clone())
 }
 
@@ -110,7 +110,7 @@ fn f42(
     a0: Ptr<libcc2rs::RustlsCryptoProviderBuilder>,
     a1: Ptr<Ptr<libcc2rs::RustlsSupportedCiphersuite>>,
     a2: usize,
-) -> u32 {
+) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_crypto_provider_builder_set_cipher_suites(a0.clone(), a1.clone(), a2)
 }
 
@@ -126,7 +126,7 @@ fn f45() -> usize {
     libcc2rs::rustls_default_crypto_provider_ciphersuites_len()
 }
 
-fn f46(a0: Ptr<u8>, a1: usize) -> u32 {
+fn f46(a0: Ptr<u8>, a1: usize) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_default_crypto_provider_random(a0.clone(), a1)
 }
 
