@@ -214,13 +214,16 @@ fn f19(a0: Ptr<::std::fs::File>, a1: i64, a2: i32) -> i32 {
 }
 
 fn f21(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, va: &[VaArg]) -> i32 {
-    panic!(
-        "snprintf is not supported in the refcount model (buf_is_null={}, size={}, fmt={:?}, varargs={})",
-        a0.is_null(),
-        a1,
-        a2.to_rust_string(),
-        va.len()
-    )
+    let __s = libcc2rs::format_c(&a2.to_rust_string(), va);
+    let __b = __s.as_bytes();
+    if a1 > 0 {
+        let __n = ::std::cmp::min(__b.len(), a1 - 1);
+        a0.with_slice_mut(__n + 1, |__dst| {
+            __dst[..__n].copy_from_slice(&__b[..__n]);
+            __dst[__n] = 0;
+        });
+    }
+    __b.len() as i32
 }
 
 fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
