@@ -185,6 +185,10 @@ fn f13(a0: Ptr<libcc2rs::RustlsConnection>) {
     libcc2rs::rustls_connection_send_close_notify(a0.clone())
 }
 
+fn f14(a0: Ptr<libcc2rs::RustlsConnection>, a1: AnyPtr) {
+    libcc2rs::rustls_connection_set_userdata(a0.clone(), a1.clone())
+}
+
 fn f15(
     a0: Ptr<libcc2rs::RustlsConnection>,
     a1: Ptr<Ptr<u8>>,
@@ -403,6 +407,24 @@ fn f52(
     a0: Ptr<libcc2rs::RustlsRootCertStore>,
 ) -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
     libcc2rs::rustls_web_pki_server_cert_verifier_builder_new(a0.clone())
+}
+
+fn f58(
+    a0: Ptr<libcc2rs::RustlsConnection>,
+    a1: FnPtr<libcc2rs::RustlsReadCallback>,
+    a2: AnyPtr,
+    a3: Ptr<usize>,
+) -> i32 {
+    libcc2rs::rustls_connection_read_tls(a0.clone(), a1.clone(), a2.clone(), a3.clone())
+}
+
+fn f59(
+    a0: Ptr<libcc2rs::RustlsConnection>,
+    a1: FnPtr<libcc2rs::RustlsWriteCallback>,
+    a2: AnyPtr,
+    a3: Ptr<usize>,
+) -> i32 {
+    libcc2rs::rustls_connection_write_tls(a0.clone(), a1.clone(), a2.clone(), a3.clone())
 }
 
 fn f53(a0: Ptr<libcc2rs::RustlsSupportedCiphersuite>) -> u16 {

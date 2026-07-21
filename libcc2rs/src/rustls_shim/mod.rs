@@ -21,7 +21,7 @@ use rustls::pki_types::pem::PemObject;
 use rustls::server::VerifierBuilderError;
 use rustls::sign::CertifiedKey;
 
-use crate::{ByteRepr, Ptr, Value};
+use crate::{AnyPtr, ByteRepr, FnPtr, Ptr, Value};
 
 pub struct RustlsStr {
     pub data: Value<Ptr<u8>>,
@@ -657,7 +657,10 @@ pub fn rustls_client_connection_new(
     let config = config.with(|c| c.0.clone());
     match rustls::ClientConnection::new(config, server_name) {
         Ok(conn) => {
-            conn_out.write(Ptr::alloc(RustlsConnection { conn }));
+            conn_out.write(Ptr::alloc(RustlsConnection {
+                conn,
+                userdata: AnyPtr::default(),
+            }));
             RustlsResult::Ok
         }
         Err(e) => map_rustls_error(&e),
@@ -666,8 +669,108 @@ pub fn rustls_client_connection_new(
 
 pub struct RustlsConnection {
     pub conn: rustls::ClientConnection,
+    pub userdata: AnyPtr,
 }
 impl ByteRepr for RustlsConnection {}
+
+pub fn rustls_connection_set_userdata(conn: Ptr<RustlsConnection>, userdata: AnyPtr) {
+    conn.with_mut(|c| c.userdata = userdata.clone());
+}
+
+pub type RustlsReadCallback = fn(AnyPtr, Ptr<u8>, usize, Ptr<usize>) -> i32;
+pub type RustlsWriteCallback = fn(AnyPtr, Ptr<u8>, usize, Ptr<usize>) -> i32;
+
+struct CallbackReader {
+    cb: RustlsReadCallback,
+    userdata: AnyPtr,
+}
+
+impl Read for CallbackReader {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let tmp = Ptr::alloc_array(vec![0u8; buf.len()].into_boxed_slice());
+        let out_n = Ptr::alloc(0usize);
+        let rc = (self.cb)(self.userdata.clone(), tmp.clone(), buf.len(), out_n.clone());
+        let result = if rc != 0 {
+            Err(std::io::Error::from_raw_os_error(rc))
+        } else {
+            let n = out_n.read();
+            tmp.with_slice(n, |s| buf[..n].copy_from_slice(s));
+            Ok(n)
+        };
+        tmp.delete_array();
+        out_n.delete();
+        result
+    }
+}
+
+struct CallbackWriter {
+    cb: RustlsWriteCallback,
+    userdata: AnyPtr,
+}
+
+impl Write for CallbackWriter {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let tmp = Ptr::alloc_array(buf.to_vec().into_boxed_slice());
+        let out_n = Ptr::alloc(0usize);
+        let rc = (self.cb)(self.userdata.clone(), tmp.clone(), buf.len(), out_n.clone());
+        let result = if rc != 0 {
+            Err(std::io::Error::from_raw_os_error(rc))
+        } else {
+            Ok(out_n.read())
+        };
+        tmp.delete_array();
+        out_n.delete();
+        result
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
+pub fn rustls_connection_read_tls(
+    conn: Ptr<RustlsConnection>,
+    callback: FnPtr<RustlsReadCallback>,
+    userdata: AnyPtr,
+    out_n: Ptr<usize>,
+) -> i32 {
+    if callback.is_null() || out_n.is_null() {
+        return libc::EINVAL;
+    }
+    let mut reader = CallbackReader {
+        cb: *callback,
+        userdata,
+    };
+    match conn.with_mut(|c| c.conn.read_tls(&mut reader)) {
+        Ok(n) => {
+            out_n.write(n);
+            0
+        }
+        Err(e) => e.raw_os_error().unwrap_or(libc::EIO),
+    }
+}
+
+pub fn rustls_connection_write_tls(
+    conn: Ptr<RustlsConnection>,
+    callback: FnPtr<RustlsWriteCallback>,
+    userdata: AnyPtr,
+    out_n: Ptr<usize>,
+) -> i32 {
+    if callback.is_null() || out_n.is_null() {
+        return libc::EINVAL;
+    }
+    let mut writer = CallbackWriter {
+        cb: *callback,
+        userdata,
+    };
+    match conn.with_mut(|c| c.conn.write_tls(&mut writer)) {
+        Ok(n) => {
+            out_n.write(n);
+            0
+        }
+        Err(e) => e.raw_os_error().unwrap_or(libc::EIO),
+    }
+}
 
 pub fn rustls_connection_read(
     conn: Ptr<RustlsConnection>,
