@@ -43,4 +43,7 @@ pub use format::*;
 mod fd;
 pub use fd::*;
 
+mod rustls_shim;
+pub use rustls_shim::*;
+
 pub use libcc2rs_macros::{goto, goto_block, switch};

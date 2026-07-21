@@ -118,6 +118,8 @@ pub mod poll_tgt_unsafe;
 pub mod pwd_tgt_refcount;
 #[path = r#"../pwd/tgt_unsafe.rs"#]
 pub mod pwd_tgt_unsafe;
+#[path = r#"../rustls/tgt_refcount.rs"#]
+pub mod rustls_tgt_refcount;
 #[path = r#"../rustls/tgt_unsafe.rs"#]
 pub mod rustls_tgt_unsafe;
 #[path = r#"../select/tgt_refcount.rs"#]
