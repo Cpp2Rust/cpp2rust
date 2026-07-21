@@ -3,6 +3,23 @@
 
 use libcc2rs::*;
 
+fn f1(a0: i32) -> i32 {
+    FdRegistry::close(a0)
+}
+
+fn f3(a0: i32, a1: AnyPtr, a2: usize) -> isize {
+    match FdRegistry::with_fd(a0, |__fd| {
+        a1.reinterpret_cast::<u8>()
+            .with_slice_mut(a2, |__buf| nix::unistd::read(__fd, __buf))
+    }) {
+        Ok(__n) => __n as isize,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
 fn f4(a0: Ptr<u8>) -> i32 {
     match nix::unistd::unlink(a0.to_rust_string().as_str()) {
         Ok(()) => 0,
@@ -30,6 +47,19 @@ fn f9(a0: Ptr<u8>, a1: usize) -> i32 {
             }
             0
         }
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
+fn f10(a0: i32, a1: AnyPtr, a2: usize) -> isize {
+    match FdRegistry::with_fd(a0, |__fd| {
+        a1.reinterpret_cast::<u8>()
+            .with_slice(a2, |__buf| nix::unistd::write(__fd, __buf))
+    }) {
+        Ok(__n) => __n as isize,
         Err(__e) => {
             libcc2rs::cpp2rust_errno().write(__e as i32);
             -1

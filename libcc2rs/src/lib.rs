@@ -37,6 +37,9 @@ pub use compat::*;
 mod va_args;
 pub use va_args::*;
 
+mod fd;
+pub use fd::*;
+
 mod format;
 pub use format::*;
 
