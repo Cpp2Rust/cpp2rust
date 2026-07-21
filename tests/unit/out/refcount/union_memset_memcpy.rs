@@ -230,7 +230,8 @@ fn main_0() -> i32 {
     {
         (((*(*c.borrow()).view.borrow())
             .raw_()
-            .reinterpret_cast::<u8>()) as Ptr<u8>)
+            .reinterpret_cast::<u8>() as Ptr<u8>)
+            .clone() as Ptr<u8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
@@ -238,7 +239,8 @@ fn main_0() -> i32 {
             );
         (((*(*c.borrow()).view.borrow())
             .raw_()
-            .reinterpret_cast::<u8>()) as Ptr<u8>)
+            .reinterpret_cast::<u8>() as Ptr<u8>)
+            .clone() as Ptr<u8>)
             .to_any()
             .clone()
     };
