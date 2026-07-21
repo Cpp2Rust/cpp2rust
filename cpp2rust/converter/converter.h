@@ -272,6 +272,8 @@ public:
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
+  virtual std::string ConvertFunctionPointerPlaceholder(clang::Expr *arg);
+
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 

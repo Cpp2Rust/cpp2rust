@@ -87,6 +87,8 @@ public:
   void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
 
+  std::string ConvertFunctionPointerPlaceholder(clang::Expr *arg) override;
+
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
 

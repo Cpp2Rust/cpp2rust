@@ -1257,6 +1257,11 @@ void ConverterRefCount::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(')');
 }
 
+std::string
+ConverterRefCount::ConvertFunctionPointerPlaceholder(clang::Expr *arg) {
+  return ConvertRValue(arg);
+}
+
 void ConverterRefCount::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
   StrCat(std::format("FnPtr::<{}>::new({})",
