@@ -818,8 +818,8 @@ pub fn rustls_connection_set_userdata(conn: Ptr<RustlsConnection>, userdata: Any
     conn.with_mut(|c| c.userdata = userdata.clone());
 }
 
-pub type RustlsReadCallback = fn(AnyPtr, Ptr<u8>, usize, Ptr<usize>) -> i32;
-pub type RustlsWriteCallback = fn(AnyPtr, Ptr<u8>, usize, Ptr<usize>) -> i32;
+pub type RustlsReadCallback = fn(AnyPtr, Ptr<u8>, u64, Ptr<u64>) -> i32;
+pub type RustlsWriteCallback = fn(AnyPtr, Ptr<u8>, u64, Ptr<u64>) -> i32;
 
 struct CallbackReader {
     cb: RustlsReadCallback,
@@ -829,12 +829,17 @@ struct CallbackReader {
 impl Read for CallbackReader {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let tmp = Ptr::alloc_array(vec![0u8; buf.len()].into_boxed_slice());
-        let out_n = Ptr::alloc(0usize);
-        let rc = (self.cb)(self.userdata.clone(), tmp.clone(), buf.len(), out_n.clone());
+        let out_n = Ptr::alloc(0u64);
+        let rc = (self.cb)(
+            self.userdata.clone(),
+            tmp.clone(),
+            buf.len() as u64,
+            out_n.clone(),
+        );
         let result = if rc != 0 {
             Err(std::io::Error::from_raw_os_error(rc))
         } else {
-            let n = out_n.read();
+            let n = out_n.read() as usize;
             tmp.with_slice(n, |s| buf[..n].copy_from_slice(s));
             Ok(n)
         };
@@ -852,12 +857,17 @@ struct CallbackWriter {
 impl Write for CallbackWriter {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let tmp = Ptr::alloc_array(buf.to_vec().into_boxed_slice());
-        let out_n = Ptr::alloc(0usize);
-        let rc = (self.cb)(self.userdata.clone(), tmp.clone(), buf.len(), out_n.clone());
+        let out_n = Ptr::alloc(0u64);
+        let rc = (self.cb)(
+            self.userdata.clone(),
+            tmp.clone(),
+            buf.len() as u64,
+            out_n.clone(),
+        );
         let result = if rc != 0 {
             Err(std::io::Error::from_raw_os_error(rc))
         } else {
-            Ok(out_n.read())
+            Ok(out_n.read() as usize)
         };
         tmp.delete_array();
         out_n.delete();
