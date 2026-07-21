@@ -37,7 +37,97 @@ impl RustlsStr {
     }
 }
 
+pub struct RustlsSliceBytes {
+    pub data: Value<Ptr<u8>>,
+    pub len: Value<usize>,
+}
+
+impl Default for RustlsSliceBytes {
+    fn default() -> Self {
+        RustlsSliceBytes {
+            data: Rc::new(RefCell::new(Ptr::null())),
+            len: Rc::new(RefCell::new(0)),
+        }
+    }
+}
+
+impl ByteRepr for RustlsSliceBytes {}
+
+impl RustlsSliceBytes {
+    pub fn to_vec(&self) -> Vec<u8> {
+        let len = *self.len.borrow();
+        self.data.borrow().with_slice(len, |s| s.to_vec())
+    }
+}
+
 const RUSTLS_SHIM_VERSION: &str = "rustls-ffi/0.15.3/rustls/0.23.0";
+
+pub const RUSTLS_RESULT_OK: u32 = 7000;
+pub const RUSTLS_RESULT_IO: u32 = 7001;
+pub const RUSTLS_RESULT_NULL_PARAMETER: u32 = 7002;
+pub const RUSTLS_RESULT_INVALID_DNS_NAME_ERROR: u32 = 7003;
+pub const RUSTLS_RESULT_CERTIFICATE_PARSE_ERROR: u32 = 7005;
+pub const RUSTLS_RESULT_PRIVATE_KEY_PARSE_ERROR: u32 = 7006;
+pub const RUSTLS_RESULT_UNEXPECTED_EOF: u32 = 7010;
+pub const RUSTLS_RESULT_PLAINTEXT_EMPTY: u32 = 7011;
+pub const RUSTLS_RESULT_ALREADY_USED: u32 = 7013;
+pub const RUSTLS_RESULT_CRL_PARSE_ERROR: u32 = 7014;
+pub const RUSTLS_RESULT_NO_SERVER_CERT_VERIFIER: u32 = 7015;
+pub const RUSTLS_RESULT_GET_RANDOM_FAILED: u32 = 7017;
+pub const RUSTLS_RESULT_GENERAL: u32 = 7112;
+
+pub fn map_rustls_error(err: &rustls::Error) -> u32 {
+    use rustls::AlertDescription;
+    use rustls::CertificateError;
+    use rustls::Error;
+    match err {
+        Error::InappropriateMessage { .. } => 7109,
+        Error::InappropriateHandshakeMessage { .. } => 7110,
+        Error::NoCertificatesPresented => 7101,
+        Error::DecryptError => 7102,
+        Error::PeerIncompatible(_) => 7107,
+        Error::PeerMisbehaved(_) => 7108,
+        Error::UnsupportedNameType => 7115,
+        Error::EncryptError => 7116,
+        Error::FailedToGetCurrentTime => 7103,
+        Error::FailedToGetRandomBytes => 7113,
+        Error::HandshakeNotComplete => 7104,
+        Error::PeerSentOversizedRecord => 7105,
+        Error::NoApplicationProtocol => 7106,
+        Error::BadMaxFragmentSize => 7114,
+        Error::InvalidCertificate(e) => match e {
+            CertificateError::BadEncoding => 7121,
+            CertificateError::Expired | CertificateError::ExpiredContext { .. } => 7122,
+            CertificateError::NotValidYet | CertificateError::NotValidYetContext { .. } => 7123,
+            CertificateError::Revoked => 7124,
+            CertificateError::UnhandledCriticalExtension => 7125,
+            CertificateError::UnknownIssuer => 7126,
+            CertificateError::UnknownRevocationStatus => 7154,
+            CertificateError::ExpiredRevocationList
+            | CertificateError::ExpiredRevocationListContext { .. } => 7156,
+            CertificateError::BadSignature => 7127,
+            CertificateError::UnsupportedSignatureAlgorithmContext { .. } => 7157,
+            CertificateError::NotValidForName
+            | CertificateError::NotValidForNameContext { .. } => 7128,
+            CertificateError::InvalidPurpose
+            | CertificateError::InvalidPurposeContext { .. } => 7129,
+            CertificateError::ApplicationVerificationFailure => 7130,
+            _ => 7131,
+        },
+        Error::AlertReceived(alert) => match alert {
+            AlertDescription::CloseNotify => 7200,
+            AlertDescription::HandshakeFailure => 7206,
+            AlertDescription::BadCertificate => 7208,
+            AlertDescription::UnknownCA => 7214,
+            AlertDescription::DecodeError => 7216,
+            AlertDescription::ProtocolVersion => 7219,
+            AlertDescription::InternalError => 7221,
+            _ => RUSTLS_RESULT_GENERAL,
+        },
+        Error::InvalidCertRevocationList(_) => RUSTLS_RESULT_CRL_PARSE_ERROR,
+        _ => RUSTLS_RESULT_GENERAL,
+    }
+}
 
 pub fn rustls_version() -> RustlsStr {
     RustlsStr::copy_from(RUSTLS_SHIM_VERSION)
@@ -116,31 +206,34 @@ impl ByteRepr for RustlsSupportedCiphersuite {}
 pub fn rustls_crypto_provider_builder_build(
     builder: Ptr<RustlsCryptoProviderBuilder>,
     provider_out: Ptr<Ptr<RustlsCryptoProvider>>,
-) {
+) -> u32 {
     provider_out.write(Ptr::alloc(RustlsCryptoProvider(
         builder.with(|b| b.build()),
     )));
+    RUSTLS_RESULT_OK
 }
 
 pub fn rustls_crypto_provider_builder_new_from_default(
     builder_out: Ptr<Ptr<RustlsCryptoProviderBuilder>>,
-) {
+) -> u32 {
     builder_out.write(Ptr::alloc(RustlsCryptoProviderBuilder {
         base: Arc::new(default_crypto_provider()),
         cipher_suites: Vec::new(),
     }));
+    RUSTLS_RESULT_OK
 }
 
 pub fn rustls_crypto_provider_builder_set_cipher_suites(
     builder: Ptr<RustlsCryptoProviderBuilder>,
     cipher_suites: Ptr<Ptr<RustlsSupportedCiphersuite>>,
     cipher_suites_len: usize,
-) {
+) -> u32 {
     let mut suites = Vec::with_capacity(cipher_suites_len);
     for i in 0..cipher_suites_len {
         suites.push(cipher_suites.offset(i).read().with(|c| c.0));
     }
     builder.with_mut(|b| b.cipher_suites = suites);
+    RUSTLS_RESULT_OK
 }
 
 pub fn rustls_default_crypto_provider_ciphersuites_get(
@@ -156,7 +249,7 @@ pub fn rustls_default_crypto_provider_ciphersuites_len() -> usize {
     default_crypto_provider().cipher_suites.len()
 }
 
-pub fn rustls_default_crypto_provider_random(buf: Ptr<u8>, len: usize) -> bool {
+pub fn rustls_default_crypto_provider_random(buf: Ptr<u8>, len: usize) -> u32 {
     let mut tmp = Vec::new();
     tmp.resize(len, 0u8);
     match default_crypto_provider().secure_random.fill(&mut tmp) {
@@ -164,9 +257,9 @@ pub fn rustls_default_crypto_provider_random(buf: Ptr<u8>, len: usize) -> bool {
             if len > 0 {
                 buf.with_slice_mut(len, |dst| dst.copy_from_slice(&tmp));
             }
-            true
+            RUSTLS_RESULT_OK
         }
-        Err(_) => false,
+        Err(_) => RUSTLS_RESULT_GET_RANDOM_FAILED,
     }
 }
 
