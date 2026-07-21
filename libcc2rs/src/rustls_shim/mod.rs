@@ -6,9 +6,11 @@ use std::io::{ErrorKind, Read, Write};
 use std::rc::Rc;
 use std::sync::Arc;
 
+use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
 use rustls::crypto::CryptoProvider;
 use rustls::pki_types::CertificateDer;
+use rustls::pki_types::pem::PemObject;
 
 use crate::{ByteRepr, Ptr, Value};
 
@@ -261,6 +263,89 @@ impl ByteRepr for RustlsSupportedCiphersuite {}
 
 pub struct RustlsCertificate(pub CertificateDer<'static>);
 impl ByteRepr for RustlsCertificate {}
+
+pub struct RustlsRootCertStore(pub Arc<RootCertStore>);
+impl ByteRepr for RustlsRootCertStore {}
+
+pub struct RustlsRootCertStoreBuilder(pub Option<RootCertStore>);
+impl ByteRepr for RustlsRootCertStoreBuilder {}
+
+pub fn rustls_root_cert_store_builder_new() -> Ptr<RustlsRootCertStoreBuilder> {
+    Ptr::alloc(RustlsRootCertStoreBuilder(Some(RootCertStore::empty())))
+}
+
+fn add_certs_to_builder(
+    builder: Ptr<RustlsRootCertStoreBuilder>,
+    certs: Vec<CertificateDer<'static>>,
+    strict: bool,
+) -> RustlsResult {
+    builder.with_mut(|b| match b.0.as_mut() {
+        None => RustlsResult::AlreadyUsed,
+        Some(roots) => {
+            let mut new_store = RootCertStore::empty();
+            let (parsed, rejected) = new_store.add_parsable_certificates(certs);
+            if strict && (rejected > 0 || parsed == 0) {
+                return RustlsResult::CertificateParseError;
+            }
+            roots.roots.append(&mut new_store.roots);
+            RustlsResult::Ok
+        }
+    })
+}
+
+pub fn rustls_root_cert_store_builder_add_pem(
+    builder: Ptr<RustlsRootCertStoreBuilder>,
+    pem: Ptr<u8>,
+    pem_len: usize,
+    strict: bool,
+) -> RustlsResult {
+    if pem.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let certs = match pem.with_slice(pem_len, |s| {
+        CertificateDer::pem_slice_iter(s).collect::<Result<Vec<_>, _>>()
+    }) {
+        Ok(certs) => certs,
+        Err(_) => return RustlsResult::CertificateParseError,
+    };
+    add_certs_to_builder(builder, certs, strict)
+}
+
+pub fn rustls_root_cert_store_builder_load_roots_from_file(
+    builder: Ptr<RustlsRootCertStoreBuilder>,
+    filename: Ptr<u8>,
+    strict: bool,
+) -> RustlsResult {
+    if filename.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let filename = filename.to_rust_string();
+    let certs = match CertificateDer::pem_file_iter(&filename) {
+        Ok(certs) => certs,
+        Err(_) => return RustlsResult::Io,
+    };
+    let certs = match certs.collect::<Result<Vec<_>, _>>() {
+        Ok(certs) => certs,
+        Err(_) => return RustlsResult::CertificateParseError,
+    };
+    add_certs_to_builder(builder, certs, strict)
+}
+
+pub fn rustls_root_cert_store_builder_build(
+    builder: Ptr<RustlsRootCertStoreBuilder>,
+    root_cert_store_out: Ptr<Ptr<RustlsRootCertStore>>,
+) -> RustlsResult {
+    if root_cert_store_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    builder.with_mut(|b| match b.0.take() {
+        None => RustlsResult::AlreadyUsed,
+        Some(roots) => {
+            root_cert_store_out.write(Ptr::alloc(RustlsRootCertStore(Arc::new(roots))));
+            RustlsResult::Ok
+        }
+    })
+}
 
 pub struct RustlsConnection {
     pub conn: rustls::ClientConnection,

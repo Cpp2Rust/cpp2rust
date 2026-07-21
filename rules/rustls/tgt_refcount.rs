@@ -83,6 +83,22 @@ fn t28() -> libcc2rs::RustlsSliceBytes {
     Default::default()
 }
 
+fn t18() -> Ptr<libcc2rs::RustlsRootCertStore> {
+    Ptr::null()
+}
+
+fn t19() -> Ptr<libcc2rs::RustlsRootCertStore> {
+    Ptr::null()
+}
+
+fn t20() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
+    Ptr::null()
+}
+
+fn t21() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
+    Ptr::null()
+}
+
 fn t26() -> Ptr<libcc2rs::RustlsSupportedCiphersuite> {
     Ptr::null()
 }
@@ -166,6 +182,42 @@ fn f29(
     a2: Ptr<usize>,
 ) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_certificate_get_der(a0.clone(), a1.clone(), a2.clone())
+}
+
+fn f33(
+    a0: Ptr<libcc2rs::RustlsRootCertStoreBuilder>,
+    a1: Ptr<u8>,
+    a2: usize,
+    a3: bool,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_root_cert_store_builder_add_pem(a0.clone(), a1.clone(), a2, a3)
+}
+
+fn f34(
+    a0: Ptr<libcc2rs::RustlsRootCertStoreBuilder>,
+    a1: Ptr<Ptr<libcc2rs::RustlsRootCertStore>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_root_cert_store_builder_build(a0.clone(), a1.clone())
+}
+
+fn f35(a0: Ptr<libcc2rs::RustlsRootCertStoreBuilder>) {
+    a0.delete()
+}
+
+fn f36(
+    a0: Ptr<libcc2rs::RustlsRootCertStoreBuilder>,
+    a1: Ptr<u8>,
+    a2: bool,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_root_cert_store_builder_load_roots_from_file(a0.clone(), a1.clone(), a2)
+}
+
+fn f37() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
+    libcc2rs::rustls_root_cert_store_builder_new()
+}
+
+fn f38(a0: Ptr<libcc2rs::RustlsRootCertStore>) {
+    a0.delete()
 }
 
 fn f39(
