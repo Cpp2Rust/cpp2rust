@@ -63,6 +63,14 @@ fn f56(a0: u32, a1: Ptr<u8>, a2: usize, a3: Ptr<usize>) {
     libcc2rs::rustls_error(a0, a1, a2, a3)
 }
 
+fn t12() -> Ptr<libcc2rs::RustlsCertifiedKey> {
+    Ptr::null()
+}
+
+fn t13() -> Ptr<libcc2rs::RustlsCertifiedKey> {
+    Ptr::null()
+}
+
 fn t14() -> Ptr<libcc2rs::RustlsCryptoProvider> {
     Ptr::null()
 }
@@ -96,6 +104,22 @@ fn t20() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
 }
 
 fn t21() -> Ptr<libcc2rs::RustlsRootCertStoreBuilder> {
+    Ptr::null()
+}
+
+fn t22() -> Ptr<libcc2rs::RustlsServerCertVerifier> {
+    Ptr::null()
+}
+
+fn t23() -> Ptr<libcc2rs::RustlsServerCertVerifier> {
+    Ptr::null()
+}
+
+fn t24() -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
+    Ptr::null()
+}
+
+fn t25() -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
     Ptr::null()
 }
 
@@ -184,6 +208,24 @@ fn f29(
     libcc2rs::rustls_certificate_get_der(a0.clone(), a1.clone(), a2.clone())
 }
 
+fn f30(
+    a0: Ptr<u8>,
+    a1: usize,
+    a2: Ptr<u8>,
+    a3: usize,
+    a4: Ptr<Ptr<libcc2rs::RustlsCertifiedKey>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_certified_key_build(a0.clone(), a1, a2.clone(), a3, a4.clone())
+}
+
+fn f31(a0: Ptr<libcc2rs::RustlsCertifiedKey>) {
+    a0.delete()
+}
+
+fn f32(a0: Ptr<libcc2rs::RustlsCertifiedKey>) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_certified_key_keys_match(a0.clone())
+}
+
 fn f33(
     a0: Ptr<libcc2rs::RustlsRootCertStoreBuilder>,
     a1: Ptr<u8>,
@@ -257,6 +299,39 @@ fn f45() -> usize {
 
 fn f46(a0: Ptr<u8>, a1: usize) -> libcc2rs::RustlsResult {
     libcc2rs::rustls_default_crypto_provider_random(a0.clone(), a1)
+}
+
+fn f47(a0: Ptr<Ptr<libcc2rs::RustlsServerCertVerifier>>) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_platform_server_cert_verifier(a0.clone())
+}
+
+fn f48(a0: Ptr<libcc2rs::RustlsServerCertVerifier>) {
+    a0.delete()
+}
+
+fn f49(
+    a0: Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder>,
+    a1: Ptr<u8>,
+    a2: usize,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_web_pki_server_cert_verifier_builder_add_crl(a0.clone(), a1.clone(), a2)
+}
+
+fn f50(
+    a0: Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder>,
+    a1: Ptr<Ptr<libcc2rs::RustlsServerCertVerifier>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_web_pki_server_cert_verifier_builder_build(a0.clone(), a1.clone())
+}
+
+fn f51(a0: Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder>) {
+    a0.delete()
+}
+
+fn f52(
+    a0: Ptr<libcc2rs::RustlsRootCertStore>,
+) -> Ptr<libcc2rs::RustlsWebPkiServerCertVerifierBuilder> {
+    libcc2rs::rustls_web_pki_server_cert_verifier_builder_new(a0.clone())
 }
 
 fn f53(a0: Ptr<libcc2rs::RustlsSupportedCiphersuite>) -> u16 {

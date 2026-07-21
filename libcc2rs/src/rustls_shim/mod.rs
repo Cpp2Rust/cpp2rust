@@ -8,9 +8,15 @@ use std::sync::Arc;
 
 use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
+use rustls::client::WebPkiServerVerifier;
+use rustls::client::danger::ServerCertVerifier;
 use rustls::crypto::CryptoProvider;
 use rustls::pki_types::CertificateDer;
+use rustls::pki_types::CertificateRevocationListDer;
+use rustls::pki_types::PrivateKeyDer;
 use rustls::pki_types::pem::PemObject;
+use rustls::server::VerifierBuilderError;
+use rustls::sign::CertifiedKey;
 
 use crate::{ByteRepr, Ptr, Value};
 
@@ -345,6 +351,145 @@ pub fn rustls_root_cert_store_builder_build(
             RustlsResult::Ok
         }
     })
+}
+
+pub struct RustlsCertifiedKey(pub Arc<CertifiedKey>);
+impl ByteRepr for RustlsCertifiedKey {}
+
+pub fn rustls_certified_key_build(
+    cert_chain: Ptr<u8>,
+    cert_chain_len: usize,
+    private_key: Ptr<u8>,
+    private_key_len: usize,
+    certified_key_out: Ptr<Ptr<RustlsCertifiedKey>>,
+) -> RustlsResult {
+    if cert_chain.is_null() || private_key.is_null() || certified_key_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let private_key_der = match private_key.with_slice(private_key_len, |s| {
+        PrivateKeyDer::from_pem_slice(s)
+    }) {
+        Ok(der) => der,
+        Err(_) => return RustlsResult::PrivateKeyParseError,
+    };
+    let signing_key = match default_crypto_provider()
+        .key_provider
+        .load_private_key(private_key_der)
+    {
+        Ok(key) => key,
+        Err(e) => return map_rustls_error(&e),
+    };
+    let parsed_chain = match cert_chain.with_slice(cert_chain_len, |s| {
+        CertificateDer::pem_slice_iter(s).collect::<Result<Vec<_>, _>>()
+    }) {
+        Ok(chain) => chain,
+        Err(_) => return RustlsResult::CertificateParseError,
+    };
+    certified_key_out.write(Ptr::alloc(RustlsCertifiedKey(Arc::new(CertifiedKey::new(
+        parsed_chain,
+        signing_key,
+    )))));
+    RustlsResult::Ok
+}
+
+pub fn rustls_certified_key_keys_match(key: Ptr<RustlsCertifiedKey>) -> RustlsResult {
+    match key.with(|k| k.0.keys_match()) {
+        Ok(()) => RustlsResult::Ok,
+        Err(e) => map_rustls_error(&e),
+    }
+}
+
+pub struct RustlsServerCertVerifier(pub Arc<dyn ServerCertVerifier>);
+impl ByteRepr for RustlsServerCertVerifier {}
+
+pub struct WebPkiVerifierBuilderState {
+    pub roots: Arc<RootCertStore>,
+    pub crls: Vec<CertificateRevocationListDer<'static>>,
+}
+
+pub struct RustlsWebPkiServerCertVerifierBuilder(pub Option<WebPkiVerifierBuilderState>);
+impl ByteRepr for RustlsWebPkiServerCertVerifierBuilder {}
+
+pub fn rustls_web_pki_server_cert_verifier_builder_new(
+    store: Ptr<RustlsRootCertStore>,
+) -> Ptr<RustlsWebPkiServerCertVerifierBuilder> {
+    let roots = store.with(|s| s.0.clone());
+    Ptr::alloc(RustlsWebPkiServerCertVerifierBuilder(Some(
+        WebPkiVerifierBuilderState {
+            roots,
+            crls: Vec::new(),
+        },
+    )))
+}
+
+pub fn rustls_web_pki_server_cert_verifier_builder_add_crl(
+    builder: Ptr<RustlsWebPkiServerCertVerifierBuilder>,
+    crl_pem: Ptr<u8>,
+    crl_pem_len: usize,
+) -> RustlsResult {
+    if crl_pem.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let crls = match crl_pem.with_slice(crl_pem_len, |s| {
+        CertificateRevocationListDer::pem_slice_iter(s).collect::<Result<Vec<_>, _>>()
+    }) {
+        Ok(crls) => crls,
+        Err(_) => return RustlsResult::CertificateRevocationListParseError,
+    };
+    if crls.is_empty() {
+        return RustlsResult::CertificateRevocationListParseError;
+    }
+    builder.with_mut(|b| match b.0.as_mut() {
+        None => RustlsResult::AlreadyUsed,
+        Some(state) => {
+            state.crls.extend(crls);
+            RustlsResult::Ok
+        }
+    })
+}
+
+pub fn rustls_web_pki_server_cert_verifier_builder_build(
+    builder: Ptr<RustlsWebPkiServerCertVerifierBuilder>,
+    verifier_out: Ptr<Ptr<RustlsServerCertVerifier>>,
+) -> RustlsResult {
+    if verifier_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    builder.with_mut(|b| match b.0.take() {
+        None => RustlsResult::AlreadyUsed,
+        Some(state) => {
+            let verifier_builder = WebPkiServerVerifier::builder_with_provider(
+                state.roots,
+                Arc::new(default_crypto_provider()),
+            )
+            .with_crls(state.crls);
+            match verifier_builder.build() {
+                Ok(verifier) => {
+                    verifier_out.write(Ptr::alloc(RustlsServerCertVerifier(verifier)));
+                    RustlsResult::Ok
+                }
+                Err(VerifierBuilderError::InvalidCrl(_)) => {
+                    RustlsResult::CertificateRevocationListParseError
+                }
+                Err(_) => RustlsResult::General,
+            }
+        }
+    })
+}
+
+pub fn rustls_platform_server_cert_verifier(
+    verifier_out: Ptr<Ptr<RustlsServerCertVerifier>>,
+) -> RustlsResult {
+    if verifier_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    match rustls_platform_verifier::Verifier::new(Arc::new(default_crypto_provider())) {
+        Ok(verifier) => {
+            verifier_out.write(Ptr::alloc(RustlsServerCertVerifier(Arc::new(verifier))));
+            RustlsResult::Ok
+        }
+        Err(e) => map_rustls_error(&e),
+    }
 }
 
 pub struct RustlsConnection {
