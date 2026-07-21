@@ -58,13 +58,62 @@ impl ByteRepr for view {
         }
     }
 }
+#[derive(Default)]
+pub struct entry {
+    pub id: Value<i32>,
+}
+impl Clone for entry {
+    fn clone(&self) -> Self {
+        Self {
+            id: Rc::new(RefCell::new((*self.id.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for entry {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.id.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            id: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+thread_local!(
+    pub static e0_0: Value<entry> = Rc::new(RefCell::new(entry {
+        id: Rc::new(RefCell::new(1)),
+    }));
+);
+thread_local!(
+    pub static e1_1: Value<entry> = Rc::new(RefCell::new(entry {
+        id: Rc::new(RefCell::new(2)),
+    }));
+);
+thread_local!(
+    pub static registry_2: Value<Box<[Ptr<entry>]>> = Rc::new(RefCell::new(Box::new([
+        (e0_0.with(Value::clone).as_pointer()),
+        (e1_1.with(Value::clone).as_pointer()),
+        Ptr::<entry>::null(),
+    ])));
+);
+pub fn get_registry_3(out: Ptr<Ptr<Ptr<entry>>>) {
+    let out: Value<Ptr<Ptr<Ptr<entry>>>> = Rc::new(RefCell::new(out));
+    let __rhs = (registry_2.with(Value::clone).as_pointer() as Ptr<Ptr<entry>>)
+        .reinterpret_cast::<Ptr<entry>>();
+    (*out.borrow()).write(__rhs);
+}
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let text: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((text.as_pointer() as Ptr<u8>)));
-    let u: Value<Ptr<u8>> = Rc::new(RefCell::new((*cp.borrow()).reinterpret_cast::<u8>()));
+    let u: Value<Ptr<u8>> = Rc::new(RefCell::new(
+        ((*cp.borrow()).reinterpret_cast::<u8>()).clone(),
+    ));
     assert!(((((((*u.borrow()).offset((0) as isize).read()) as i32) == ('h' as i32)) as i32) != 0));
     assert!(((((((*u.borrow()).offset((1) as isize).read()) as i32) == ('i' as i32)) as i32) != 0));
     let h: Value<header> = Rc::new(RefCell::new(header {
@@ -72,7 +121,9 @@ fn main_0() -> i32 {
         size: Rc::new(RefCell::new(32)),
     }));
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
-    let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
+    let v: Value<Ptr<view>> = Rc::new(RefCell::new(
+        ((*hp.borrow()).reinterpret_cast::<view>()).clone(),
+    ));
     assert!(((((*(*(*v.borrow()).upgrade().deref()).tag.borrow()) == 7) as i32) != 0));
     let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
     let vp: Value<AnyPtr> = Rc::new(RefCell::new(
@@ -99,5 +150,27 @@ fn main_0() -> i32 {
     }
     .reinterpret_cast::<u8>();
     assert!(((((*sel.borrow()).is_null()) as i32) != 0));
+    let avail: Value<Ptr<Ptr<entry>>> = Rc::new(RefCell::new(Ptr::<Ptr<entry>>::null()));
+    ({ get_registry_3((avail.as_pointer())) });
+    assert!((((!((*avail.borrow()).is_null())) as i32) != 0));
+    assert!(
+        ((((*(*((*avail.borrow()).offset((0) as isize).read())
+            .upgrade()
+            .deref())
+        .id
+        .borrow())
+            == 1) as i32)
+            != 0)
+    );
+    assert!(
+        ((((*(*((*avail.borrow()).offset((1) as isize).read())
+            .upgrade()
+            .deref())
+        .id
+        .borrow())
+            == 2) as i32)
+            != 0)
+    );
+    assert!((((((*avail.borrow()).offset((2) as isize).read()).is_null()) as i32) != 0));
     return 0;
 }

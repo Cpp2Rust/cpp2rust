@@ -419,7 +419,7 @@ fn f58(
     a2: AnyPtr,
     a3: Ptr<usize>,
 ) -> i32 {
-    libcc2rs::rustls_connection_read_tls(a0.clone(), a1.clone(), a2.clone(), a3.clone())
+    libcc2rs::rustls_connection_read_tls(a0.clone(), a1, a2.clone(), a3.clone())
 }
 
 fn f59(
@@ -428,14 +428,14 @@ fn f59(
     a2: AnyPtr,
     a3: Ptr<usize>,
 ) -> i32 {
-    libcc2rs::rustls_connection_write_tls(a0.clone(), a1.clone(), a2.clone(), a3.clone())
+    libcc2rs::rustls_connection_write_tls(a0.clone(), a1, a2.clone(), a3.clone())
 }
 
 fn f61(
     a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
     a1: FnPtr<libcc2rs::RustlsVerifyServerCertCallback>,
 ) -> libcc2rs::RustlsResult {
-    libcc2rs::rustls_client_config_builder_dangerous_set_certificate_verifier(a0.clone(), a1.clone())
+    libcc2rs::rustls_client_config_builder_dangerous_set_certificate_verifier(a0.clone(), a1)
 }
 
 fn f60(
@@ -443,7 +443,7 @@ fn f60(
     a1: FnPtr<libcc2rs::RustlsKeylogLogCallback>,
     a2: FnPtr<libcc2rs::RustlsKeylogWillLogCallback>,
 ) -> libcc2rs::RustlsResult {
-    libcc2rs::rustls_client_config_builder_set_key_log(a0.clone(), a1.clone(), a2.clone())
+    libcc2rs::rustls_client_config_builder_set_key_log(a0.clone(), a1, a2)
 }
 
 fn f53(a0: Ptr<libcc2rs::RustlsSupportedCiphersuite>) -> u16 {
