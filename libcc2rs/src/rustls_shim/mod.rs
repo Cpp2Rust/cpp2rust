@@ -10,7 +10,7 @@ use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
 use rustls::client::ResolvesClientCert;
 use rustls::client::WebPkiServerVerifier;
-use rustls::{ClientConfig, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
+use rustls::{ClientConfig, KeyLog, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
 use rustls::pki_types::ServerName;
 use rustls::client::danger::ServerCertVerifier;
 use rustls::crypto::CryptoProvider;
@@ -504,8 +504,60 @@ pub struct RustlsClientConfigBuilder {
     pub verifier: Option<Arc<dyn ServerCertVerifier>>,
     pub alpn_protocols: Vec<Vec<u8>>,
     pub cert_resolver: Option<Arc<dyn ResolvesClientCert>>,
+    pub key_log: Option<Arc<dyn KeyLog>>,
 }
 impl ByteRepr for RustlsClientConfigBuilder {}
+
+pub type RustlsKeylogLogCallback = fn(RustlsStr, Ptr<u8>, usize, Ptr<u8>, usize);
+pub type RustlsKeylogWillLogCallback = fn(RustlsStr) -> i32;
+
+#[derive(Debug)]
+struct CallbackKeyLog {
+    log_cb: RustlsKeylogLogCallback,
+    will_log_cb: Option<RustlsKeylogWillLogCallback>,
+}
+
+impl KeyLog for CallbackKeyLog {
+    fn log(&self, label: &str, client_random: &[u8], secret: &[u8]) {
+        let cr = Ptr::alloc_array(client_random.to_vec().into_boxed_slice());
+        let sec = Ptr::alloc_array(secret.to_vec().into_boxed_slice());
+        (self.log_cb)(
+            RustlsStr::copy_from(label),
+            cr.clone(),
+            client_random.len(),
+            sec.clone(),
+            secret.len(),
+        );
+        cr.delete_array();
+        sec.delete_array();
+    }
+
+    fn will_log(&self, label: &str) -> bool {
+        match self.will_log_cb {
+            Some(cb) => cb(RustlsStr::copy_from(label)) != 0,
+            None => true,
+        }
+    }
+}
+
+pub fn rustls_client_config_builder_set_key_log(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    log_cb: FnPtr<RustlsKeylogLogCallback>,
+    will_log_cb: FnPtr<RustlsKeylogWillLogCallback>,
+) -> RustlsResult {
+    if log_cb.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let key_log = CallbackKeyLog {
+        log_cb: *log_cb,
+        will_log_cb: match will_log_cb.is_null() {
+            true => None,
+            false => Some(*will_log_cb),
+        },
+    };
+    builder.with_mut(|b| b.key_log = Some(Arc::new(key_log)));
+    RustlsResult::Ok
+}
 
 #[derive(Debug)]
 struct ResolvesClientCertFromChoices {
@@ -556,6 +608,7 @@ pub fn rustls_client_config_builder_new_custom(
         verifier: None,
         alpn_protocols: Vec::new(),
         cert_resolver: None,
+        key_log: None,
     }));
     RustlsResult::Ok
 }
@@ -607,13 +660,14 @@ pub fn rustls_client_config_builder_build(
     if config_out.is_null() {
         return RustlsResult::NullParameter;
     }
-    let (provider, versions, verifier, alpn_protocols, cert_resolver) = builder.with(|b| {
+    let (provider, versions, verifier, alpn_protocols, cert_resolver, key_log) = builder.with(|b| {
         (
             b.provider.clone(),
             b.versions.clone(),
             b.verifier.clone(),
             b.alpn_protocols.clone(),
             b.cert_resolver.clone(),
+            b.key_log.clone(),
         )
     });
     let verifier = match verifier {
@@ -638,6 +692,9 @@ pub fn rustls_client_config_builder_build(
         None => config.with_no_client_auth(),
     };
     config.alpn_protocols = alpn_protocols;
+    if let Some(key_log) = key_log {
+        config.key_log = key_log;
+    }
     config_out.write(Ptr::alloc(RustlsClientConfig(Arc::new(config))));
     RustlsResult::Ok
 }

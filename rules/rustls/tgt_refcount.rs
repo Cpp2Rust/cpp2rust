@@ -427,6 +427,14 @@ fn f59(
     libcc2rs::rustls_connection_write_tls(a0.clone(), a1.clone(), a2.clone(), a3.clone())
 }
 
+fn f60(
+    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
+    a1: FnPtr<libcc2rs::RustlsKeylogLogCallback>,
+    a2: FnPtr<libcc2rs::RustlsKeylogWillLogCallback>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_config_builder_set_key_log(a0.clone(), a1.clone(), a2.clone())
+}
+
 fn f53(a0: Ptr<libcc2rs::RustlsSupportedCiphersuite>) -> u16 {
     libcc2rs::rustls_supported_ciphersuite_get_suite(a0.clone())
 }
