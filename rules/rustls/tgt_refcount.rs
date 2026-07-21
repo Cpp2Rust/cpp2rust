@@ -63,6 +63,22 @@ fn f56(a0: u32, a1: Ptr<u8>, a2: usize, a3: Ptr<usize>) {
     libcc2rs::rustls_error(a0, a1, a2, a3)
 }
 
+fn t8() -> Ptr<libcc2rs::RustlsClientConfig> {
+    Ptr::null()
+}
+
+fn t9() -> Ptr<libcc2rs::RustlsClientConfig> {
+    Ptr::null()
+}
+
+fn t10() -> Ptr<libcc2rs::RustlsClientConfigBuilder> {
+    Ptr::null()
+}
+
+fn t11() -> Ptr<libcc2rs::RustlsClientConfigBuilder> {
+    Ptr::null()
+}
+
 fn t12() -> Ptr<libcc2rs::RustlsCertifiedKey> {
     Ptr::null()
 }
@@ -198,6 +214,61 @@ fn f19(
 
 fn f20(a0: Ptr<libcc2rs::RustlsConnection>) {
     a0.delete()
+}
+
+fn f21(
+    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
+    a1: Ptr<Ptr<libcc2rs::RustlsClientConfig>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_config_builder_build(a0.clone(), a1.clone())
+}
+
+fn f22(a0: Ptr<libcc2rs::RustlsClientConfigBuilder>) {
+    a0.delete()
+}
+
+fn f23(
+    a0: Ptr<libcc2rs::RustlsCryptoProvider>,
+    a1: Ptr<u16>,
+    a2: usize,
+    a3: Ptr<Ptr<libcc2rs::RustlsClientConfigBuilder>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_config_builder_new_custom(a0.clone(), a1.clone(), a2, a3.clone())
+}
+
+fn f24(
+    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
+    a1: Ptr<libcc2rs::RustlsSliceBytes>,
+    a2: usize,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_config_builder_set_alpn_protocols(a0.clone(), a1.clone(), a2)
+}
+
+fn f25(
+    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
+    a1: Ptr<Ptr<libcc2rs::RustlsCertifiedKey>>,
+    a2: usize,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_config_builder_set_certified_key(a0.clone(), a1.clone(), a2)
+}
+
+fn f26(
+    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
+    a1: Ptr<libcc2rs::RustlsServerCertVerifier>,
+) {
+    libcc2rs::rustls_client_config_builder_set_server_verifier(a0.clone(), a1.clone())
+}
+
+fn f27(a0: Ptr<libcc2rs::RustlsClientConfig>) {
+    a0.delete()
+}
+
+fn f28(
+    a0: Ptr<libcc2rs::RustlsClientConfig>,
+    a1: Ptr<u8>,
+    a2: Ptr<Ptr<libcc2rs::RustlsConnection>>,
+) -> libcc2rs::RustlsResult {
+    libcc2rs::rustls_client_connection_new(a0.clone(), a1.clone(), a2.clone())
 }
 
 fn f29(

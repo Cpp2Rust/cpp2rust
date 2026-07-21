@@ -8,7 +8,10 @@ use std::sync::Arc;
 
 use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
+use rustls::client::ResolvesClientCert;
 use rustls::client::WebPkiServerVerifier;
+use rustls::{ClientConfig, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
+use rustls::pki_types::ServerName;
 use rustls::client::danger::ServerCertVerifier;
 use rustls::crypto::CryptoProvider;
 use rustls::pki_types::CertificateDer;
@@ -486,6 +489,175 @@ pub fn rustls_platform_server_cert_verifier(
     match rustls_platform_verifier::Verifier::new(Arc::new(default_crypto_provider())) {
         Ok(verifier) => {
             verifier_out.write(Ptr::alloc(RustlsServerCertVerifier(Arc::new(verifier))));
+            RustlsResult::Ok
+        }
+        Err(e) => map_rustls_error(&e),
+    }
+}
+
+pub struct RustlsClientConfig(pub Arc<ClientConfig>);
+impl ByteRepr for RustlsClientConfig {}
+
+pub struct RustlsClientConfigBuilder {
+    pub provider: Arc<CryptoProvider>,
+    pub versions: Vec<&'static SupportedProtocolVersion>,
+    pub verifier: Option<Arc<dyn ServerCertVerifier>>,
+    pub alpn_protocols: Vec<Vec<u8>>,
+    pub cert_resolver: Option<Arc<dyn ResolvesClientCert>>,
+}
+impl ByteRepr for RustlsClientConfigBuilder {}
+
+#[derive(Debug)]
+struct ResolvesClientCertFromChoices {
+    keys: Vec<Arc<CertifiedKey>>,
+}
+
+impl ResolvesClientCert for ResolvesClientCertFromChoices {
+    fn resolve(
+        &self,
+        _root_hint_subjects: &[&[u8]],
+        sig_schemes: &[SignatureScheme],
+    ) -> Option<Arc<CertifiedKey>> {
+        for key in self.keys.iter() {
+            if key.key.choose_scheme(sig_schemes).is_some() {
+                return Some(key.clone());
+            }
+        }
+        None
+    }
+
+    fn has_certs(&self) -> bool {
+        !self.keys.is_empty()
+    }
+}
+
+pub fn rustls_client_config_builder_new_custom(
+    provider: Ptr<RustlsCryptoProvider>,
+    tls_versions: Ptr<u16>,
+    tls_versions_len: usize,
+    builder_out: Ptr<Ptr<RustlsClientConfigBuilder>>,
+) -> RustlsResult {
+    if provider.is_null() || builder_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let provider = provider.with(|p| Arc::new(p.0.clone()));
+    let mut versions = Vec::new();
+    for i in 0..tls_versions_len {
+        let proto = ProtocolVersion::from(tls_versions.offset(i).read());
+        if proto == rustls::version::TLS12.version {
+            versions.push(&rustls::version::TLS12);
+        } else if proto == rustls::version::TLS13.version {
+            versions.push(&rustls::version::TLS13);
+        }
+    }
+    builder_out.write(Ptr::alloc(RustlsClientConfigBuilder {
+        provider,
+        versions,
+        verifier: None,
+        alpn_protocols: Vec::new(),
+        cert_resolver: None,
+    }));
+    RustlsResult::Ok
+}
+
+pub fn rustls_client_config_builder_set_alpn_protocols(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    protocols: Ptr<RustlsSliceBytes>,
+    len: usize,
+) -> RustlsResult {
+    let mut vv = Vec::with_capacity(len);
+    for i in 0..len {
+        vv.push(protocols.offset(i).with(|p| p.to_vec()));
+    }
+    builder.with_mut(|b| b.alpn_protocols = vv);
+    RustlsResult::Ok
+}
+
+pub fn rustls_client_config_builder_set_certified_key(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    certified_keys: Ptr<Ptr<RustlsCertifiedKey>>,
+    certified_keys_len: usize,
+) -> RustlsResult {
+    let mut keys = Vec::new();
+    for i in 0..certified_keys_len {
+        let key_ptr = certified_keys.offset(i).read();
+        if key_ptr.is_null() {
+            return RustlsResult::NullParameter;
+        }
+        keys.push(key_ptr.with(|k| k.0.clone()));
+    }
+    builder.with_mut(|b| {
+        b.cert_resolver = Some(Arc::new(ResolvesClientCertFromChoices { keys }))
+    });
+    RustlsResult::Ok
+}
+
+pub fn rustls_client_config_builder_set_server_verifier(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    verifier: Ptr<RustlsServerCertVerifier>,
+) {
+    let verifier = verifier.with(|v| v.0.clone());
+    builder.with_mut(|b| b.verifier = Some(verifier));
+}
+
+pub fn rustls_client_config_builder_build(
+    builder: Ptr<RustlsClientConfigBuilder>,
+    config_out: Ptr<Ptr<RustlsClientConfig>>,
+) -> RustlsResult {
+    if config_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let (provider, versions, verifier, alpn_protocols, cert_resolver) = builder.with(|b| {
+        (
+            b.provider.clone(),
+            b.versions.clone(),
+            b.verifier.clone(),
+            b.alpn_protocols.clone(),
+            b.cert_resolver.clone(),
+        )
+    });
+    let verifier = match verifier {
+        Some(v) => v,
+        None => return RustlsResult::NoServerCertVerifier,
+    };
+    let versions = match versions.is_empty() {
+        true => rustls::DEFAULT_VERSIONS,
+        false => versions.as_slice(),
+    };
+    let wants_verifier = match ClientConfig::builder_with_provider(provider)
+        .with_protocol_versions(versions)
+    {
+        Ok(config) => config,
+        Err(e) => return map_rustls_error(&e),
+    };
+    let config = wants_verifier
+        .dangerous()
+        .with_custom_certificate_verifier(verifier);
+    let mut config = match cert_resolver {
+        Some(r) => config.with_client_cert_resolver(r),
+        None => config.with_no_client_auth(),
+    };
+    config.alpn_protocols = alpn_protocols;
+    config_out.write(Ptr::alloc(RustlsClientConfig(Arc::new(config))));
+    RustlsResult::Ok
+}
+
+pub fn rustls_client_connection_new(
+    config: Ptr<RustlsClientConfig>,
+    server_name: Ptr<u8>,
+    conn_out: Ptr<Ptr<RustlsConnection>>,
+) -> RustlsResult {
+    if server_name.is_null() || conn_out.is_null() {
+        return RustlsResult::NullParameter;
+    }
+    let server_name: ServerName<'static> = match server_name.to_rust_string().try_into() {
+        Ok(name) => name,
+        Err(_) => return RustlsResult::InvalidDnsNameError,
+    };
+    let config = config.with(|c| c.0.clone());
+    match rustls::ClientConnection::new(config, server_name) {
+        Ok(conn) => {
+            conn_out.write(Ptr::alloc(RustlsConnection { conn }));
             RustlsResult::Ok
         }
         Err(e) => map_rustls_error(&e),
