@@ -3,6 +3,10 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::Arc;
+
+use rustls::SupportedCipherSuite;
+use rustls::crypto::CryptoProvider;
 
 use crate::{ByteRepr, Ptr, Value};
 
@@ -73,4 +77,105 @@ pub fn rustls_error(result: u32, buf: Ptr<u8>, len: usize, out_n: Ptr<usize>) {
         buf.with_slice_mut(n, |dst| dst.copy_from_slice(&bytes[..n]));
     }
     out_n.write(n);
+}
+
+pub fn default_crypto_provider() -> CryptoProvider {
+    rustls::crypto::aws_lc_rs::default_provider()
+}
+
+pub struct RustlsCryptoProvider(pub CryptoProvider);
+impl ByteRepr for RustlsCryptoProvider {}
+
+pub struct RustlsCryptoProviderBuilder {
+    pub base: Arc<CryptoProvider>,
+    pub cipher_suites: Vec<SupportedCipherSuite>,
+}
+impl ByteRepr for RustlsCryptoProviderBuilder {}
+
+impl RustlsCryptoProviderBuilder {
+    pub fn build(&self) -> CryptoProvider {
+        let cipher_suites = if self.cipher_suites.is_empty() {
+            self.base.cipher_suites.clone()
+        } else {
+            self.cipher_suites.clone()
+        };
+        CryptoProvider {
+            cipher_suites,
+            kx_groups: self.base.kx_groups.clone(),
+            signature_verification_algorithms: self.base.signature_verification_algorithms,
+            secure_random: self.base.secure_random,
+            key_provider: self.base.key_provider,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct RustlsSupportedCiphersuite(pub SupportedCipherSuite);
+impl ByteRepr for RustlsSupportedCiphersuite {}
+
+pub fn rustls_crypto_provider_builder_build(
+    builder: Ptr<RustlsCryptoProviderBuilder>,
+    provider_out: Ptr<Ptr<RustlsCryptoProvider>>,
+) {
+    provider_out.write(Ptr::alloc(RustlsCryptoProvider(
+        builder.with(|b| b.build()),
+    )));
+}
+
+pub fn rustls_crypto_provider_builder_new_from_default(
+    builder_out: Ptr<Ptr<RustlsCryptoProviderBuilder>>,
+) {
+    builder_out.write(Ptr::alloc(RustlsCryptoProviderBuilder {
+        base: Arc::new(default_crypto_provider()),
+        cipher_suites: Vec::new(),
+    }));
+}
+
+pub fn rustls_crypto_provider_builder_set_cipher_suites(
+    builder: Ptr<RustlsCryptoProviderBuilder>,
+    cipher_suites: Ptr<Ptr<RustlsSupportedCiphersuite>>,
+    cipher_suites_len: usize,
+) {
+    let mut suites = Vec::with_capacity(cipher_suites_len);
+    for i in 0..cipher_suites_len {
+        suites.push(cipher_suites.offset(i).read().with(|c| c.0));
+    }
+    builder.with_mut(|b| b.cipher_suites = suites);
+}
+
+pub fn rustls_default_crypto_provider_ciphersuites_get(
+    index: usize,
+) -> Ptr<RustlsSupportedCiphersuite> {
+    match default_crypto_provider().cipher_suites.get(index) {
+        Some(cs) => Ptr::alloc(RustlsSupportedCiphersuite(*cs)),
+        None => Ptr::null(),
+    }
+}
+
+pub fn rustls_default_crypto_provider_ciphersuites_len() -> usize {
+    default_crypto_provider().cipher_suites.len()
+}
+
+pub fn rustls_default_crypto_provider_random(buf: Ptr<u8>, len: usize) -> bool {
+    let mut tmp = Vec::new();
+    tmp.resize(len, 0u8);
+    match default_crypto_provider().secure_random.fill(&mut tmp) {
+        Ok(()) => {
+            if len > 0 {
+                buf.with_slice_mut(len, |dst| dst.copy_from_slice(&tmp));
+            }
+            true
+        }
+        Err(_) => false,
+    }
+}
+
+pub fn rustls_supported_ciphersuite_get_suite(suite: Ptr<RustlsSupportedCiphersuite>) -> u16 {
+    suite.with(|c| u16::from(c.0.suite()))
+}
+
+pub fn rustls_supported_ciphersuite_protocol_version(
+    suite: Ptr<RustlsSupportedCiphersuite>,
+) -> u16 {
+    suite.with(|c| u16::from(c.0.version().version))
 }
