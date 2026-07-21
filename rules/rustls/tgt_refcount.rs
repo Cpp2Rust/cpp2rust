@@ -8,5 +8,9 @@ fn t4() -> libcc2rs::RustlsStr {
 }
 
 fn f55() -> libcc2rs::RustlsStr {
-    libcc2rs::rustls_version_refcount()
+    libcc2rs::rustls_version()
+}
+
+fn f56(a0: u32, a1: Ptr<u8>, a2: usize, a3: Ptr<usize>) {
+    libcc2rs::rustls_error(a0, a1, a2, a3)
 }
