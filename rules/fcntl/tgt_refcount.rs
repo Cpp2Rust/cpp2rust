@@ -14,6 +14,9 @@ fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 {
                 nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
             })
         }
+        ::libc::F_GETFD => FdRegistry::with_fd(a0, |__fd| {
+            nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
+        }),
         ::libc::F_SETFD => {
             let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&va[0]));
             FdRegistry::with_fd(a0, |__fd| {
