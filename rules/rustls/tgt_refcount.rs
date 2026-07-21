@@ -3,6 +3,10 @@
 
 use libcc2rs::*;
 
+fn t3() -> Ptr<libcc2rs::RustlsCertificate> {
+    Ptr::null()
+}
+
 fn t4() -> libcc2rs::RustlsStr {
     Default::default()
 }
@@ -77,6 +81,14 @@ fn t26() -> Ptr<libcc2rs::RustlsSupportedCiphersuite> {
 
 fn t27() -> Ptr<libcc2rs::RustlsSupportedCiphersuite> {
     Ptr::null()
+}
+
+fn f29(
+    a0: Ptr<libcc2rs::RustlsCertificate>,
+    a1: Ptr<Ptr<u8>>,
+    a2: Ptr<usize>,
+) -> u32 {
+    libcc2rs::rustls_certificate_get_der(a0.clone(), a1.clone(), a2.clone())
 }
 
 fn f39(

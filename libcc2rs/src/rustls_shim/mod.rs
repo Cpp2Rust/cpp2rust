@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 use rustls::SupportedCipherSuite;
 use rustls::crypto::CryptoProvider;
+use rustls::pki_types::CertificateDer;
 
 use crate::{ByteRepr, Ptr, Value};
 
@@ -202,6 +203,25 @@ impl RustlsCryptoProviderBuilder {
 #[derive(Clone, Copy)]
 pub struct RustlsSupportedCiphersuite(pub SupportedCipherSuite);
 impl ByteRepr for RustlsSupportedCiphersuite {}
+
+pub struct RustlsCertificate(pub CertificateDer<'static>);
+impl ByteRepr for RustlsCertificate {}
+
+pub fn rustls_certificate_get_der(
+    cert: Ptr<RustlsCertificate>,
+    out_der_data: Ptr<Ptr<u8>>,
+    out_der_len: Ptr<usize>,
+) -> u32 {
+    if out_der_data.is_null() || out_der_len.is_null() {
+        return RUSTLS_RESULT_NULL_PARAMETER;
+    }
+    cert.with(|c| {
+        let der = c.0.as_ref();
+        out_der_data.write(Ptr::alloc_array(der.to_vec().into_boxed_slice()));
+        out_der_len.write(der.len());
+    });
+    RUSTLS_RESULT_OK
+}
 
 pub fn rustls_crypto_provider_builder_build(
     builder: Ptr<RustlsCryptoProviderBuilder>,
