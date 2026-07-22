@@ -1,0 +1,8 @@
+services:
+  build:
+    image: cpp2rust/local-build:ubuntu
+    build:
+      context: .
+    volumes:
+      - "$PWD:/opt/workdir"
+    entrypoint: ./misc/containers/build.sh
