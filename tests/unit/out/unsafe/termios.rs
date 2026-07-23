@@ -26,6 +26,11 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::tcgetattr(fd, (&mut tio as *mut ::libc::termios))) == (-1_i32)) as i32) != 0)
     );
+    assert!(
+        ((((libc::tcsetattr(fd, 0, (&mut tio as *mut ::libc::termios).cast_const())) == (-1_i32))
+            as i32)
+            != 0)
+    );
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;

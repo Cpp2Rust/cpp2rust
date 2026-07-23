@@ -47,6 +47,28 @@ fn main_0() -> i32 {
         } == -1_i32) as i32)
             != 0)
     );
+    assert!(
+        ((({
+            let __action = match 0 {
+                0 => nix::sys::termios::SetArg::TCSANOW,
+                1 => nix::sys::termios::SetArg::TCSADRAIN,
+                2 => nix::sys::termios::SetArg::TCSAFLUSH,
+                __a => panic!("tcsetattr: unsupported action {__a}"),
+            };
+            let __t =
+                nix::sys::termios::Termios::from((tio.as_pointer()).with(|__src| __src.to_libc()));
+            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+                nix::sys::termios::tcsetattr(__fd, __action, &__t)
+            }) {
+                Ok(()) => 0,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        } == -1_i32) as i32)
+            != 0)
+    );
     assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {

@@ -9,6 +9,7 @@ int main(void) {
   assert(fd >= 0);
   struct termios tio;
   assert(tcgetattr(fd, &tio) == -1);
+  assert(tcsetattr(fd, TCSANOW, &tio) == -1);
   assert(close(fd) == 0);
   assert(unlink(path) == 0);
   return 0;
