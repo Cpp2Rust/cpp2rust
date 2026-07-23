@@ -220,104 +220,11 @@ fn f17(a0: i32, a1: i32) -> i32 {
 }
 
 fn f7(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: u32) -> i32 {
-    let __res = match (a1, a2) {
-        (::libc::IPPROTO_TCP, ::libc::TCP_NODELAY) => {
-            let __v = a3.reinterpret_cast::<i32>().read() != 0;
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::TcpNoDelay, &__v)
-            })
-        }
-        (::libc::SOL_SOCKET, ::libc::SO_KEEPALIVE) => {
-            let __v = a3.reinterpret_cast::<i32>().read() != 0;
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::KeepAlive, &__v)
-            })
-        }
-        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPINTVL) => {
-            let __v = a3.reinterpret_cast::<u32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(
-                    &__fd,
-                    nix::sys::socket::sockopt::TcpKeepInterval,
-                    &__v,
-                )
-            })
-        }
-        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPCNT) => {
-            let __v = a3.reinterpret_cast::<u32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::TcpKeepCount, &__v)
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::IPPROTO_IP, ::libc::IP_TOS) => {
-            let __v = a3.reinterpret_cast::<i32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::Ipv4Tos, &__v)
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::IPPROTO_IPV6, ::libc::IPV6_TCLASS) => {
-            let __v = a3.reinterpret_cast::<i32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::Ipv6TClass, &__v)
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPIDLE) => {
-            let __v = a3.reinterpret_cast::<u32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::TcpKeepIdle, &__v)
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::SOL_SOCKET, ::libc::SO_BINDTODEVICE) => {
-            let __v = ::std::ffi::OsString::from(a3.reinterpret_cast::<u8>().to_rust_string());
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::BindToDevice, &__v)
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::IPPROTO_IP, ::libc::IP_BIND_ADDRESS_NO_PORT) => {
-            let __v = a3.reinterpret_cast::<i32>().read() != 0;
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(
-                    &__fd,
-                    nix::sys::socket::sockopt::IpBindAddressNoPort,
-                    &__v,
-                )
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::IPPROTO_TCP, ::libc::TCP_FASTOPEN_CONNECT) => {
-            let __v = a3.reinterpret_cast::<i32>().read() != 0;
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(
-                    &__fd,
-                    nix::sys::socket::sockopt::TcpFastOpenConnect,
-                    &__v,
-                )
-            })
-        }
-        #[cfg(target_os = "linux")]
-        (::libc::SOL_SOCKET, ::libc::SO_PRIORITY) => {
-            let __v = a3.reinterpret_cast::<i32>().read();
-            FdRegistry::with_fd(a0, |__fd| {
-                nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::Priority, &__v)
-            })
-        }
-        (__l, __o) => panic!(
-            "setsockopt: unsupported option (level={}, optname={})",
-            __l, __o
-        ),
-    };
-    match __res {
-        Ok(()) => 0,
-        Err(__e) => {
-            libcc2rs::cpp2rust_errno().write(__e as i32);
-            -1
-        }
-    }
+    let __a0 = a0;
+    let __a1 = a1;
+    let __a2 = a2;
+    let __a3 = a3;
+    libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
 }
 
 fn f8(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: Ptr<u32>) -> i32 {
