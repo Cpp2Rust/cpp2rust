@@ -4,12 +4,34 @@
 use libcc2rs::*;
 
 fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 {
-    panic!(
-        "fcntl is not supported in the refcount model (fd={}, cmd={}, varargs={})",
-        a0,
-        a1,
-        va.len()
-    )
+    let __res = match a1 {
+        ::libc::F_GETFL => FdRegistry::with_fd(a0, |__fd| {
+            nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
+        }),
+        ::libc::F_SETFL => {
+            let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&va[0]));
+            FdRegistry::with_fd(a0, |__fd| {
+                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
+            })
+        }
+        ::libc::F_GETFD => FdRegistry::with_fd(a0, |__fd| {
+            nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
+        }),
+        ::libc::F_SETFD => {
+            let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&va[0]));
+            FdRegistry::with_fd(a0, |__fd| {
+                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
+            })
+        }
+        __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
+    };
+    match __res {
+        Ok(__r) => __r,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
 }
 
 fn f2(a0: Ptr<u8>, a1: i32, va: &[VaArg]) -> i32 {
