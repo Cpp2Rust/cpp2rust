@@ -54,8 +54,8 @@ fn is_va_args_type(ty: &ast::Type) -> bool {
     false
 }
 
-fn cfg_matches_host(attrs: impl Iterator<Item = ast::Attr>) -> bool {
-    for attr in attrs {
+fn cfg_matches_host(fn_item: &ast::Fn) -> bool {
+    for attr in fn_item.attrs() {
         let Some(meta) = attr.meta() else { continue };
         let Some(path) = meta.path() else { continue };
         if path.syntax().text() != "cfg" {
@@ -135,7 +135,7 @@ impl SyntacticAnalysis {
         let mut file_ir = FileIr::new();
 
         for fn_item in source_file.syntax().descendants().filter_map(ast::Fn::cast) {
-            if !cfg_matches_host(fn_item.attrs()) {
+            if !cfg_matches_host(&fn_item) {
                 continue;
             }
 
@@ -202,16 +202,6 @@ impl<'a> FragmentCtx<'a> {
         match child {
             ra_ap_syntax::NodeOrToken::Token(token) => self.visit_token(&token),
             ra_ap_syntax::NodeOrToken::Node(node) => {
-                if ast::Attr::can_cast(node.kind()) {
-                    self.text_buf.push_str(&node.text().to_string());
-                    return;
-                }
-                if let Some(has_attrs) = ast::AnyHasAttrs::cast(node.clone())
-                    && !cfg_matches_host(has_attrs.attrs())
-                {
-                    self.text_buf.push_str(&node.text().to_string());
-                    return;
-                }
                 if let Some(call) = ast::MethodCallExpr::cast(node.clone()) {
                     self.emit_method_call(&call);
                     return;
