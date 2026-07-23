@@ -6,16 +6,16 @@ use std::os::fd::{AsFd, AsRawFd, BorrowedFd, OwnedFd};
 
 pub struct FdRegistry {
     fds: Vec<Option<OwnedFd>>,
-    seeded: bool,
 }
 
 thread_local! {
-    static FD_REGISTRY: RefCell<FdRegistry> = const {
-        RefCell::new(FdRegistry {
-            fds: Vec::new(),
-            seeded: false,
-        })
-    };
+    static FD_REGISTRY: RefCell<FdRegistry> = RefCell::new(FdRegistry {
+        fds: vec![
+            std::io::stdin().as_fd().try_clone_to_owned().ok(),
+            std::io::stdout().as_fd().try_clone_to_owned().ok(),
+            std::io::stderr().as_fd().try_clone_to_owned().ok(),
+        ],
+    });
 }
 
 impl FdRegistry {
@@ -33,19 +33,6 @@ impl FdRegistry {
         raw
     }
 
-    fn seed_std(&mut self) {
-        if self.seeded {
-            return;
-        }
-        self.seeded = true;
-        if self.fds.len() < 3 {
-            self.fds.resize_with(3, || None);
-        }
-        self.fds[0] = std::io::stdin().as_fd().try_clone_to_owned().ok();
-        self.fds[1] = std::io::stdout().as_fd().try_clone_to_owned().ok();
-        self.fds[2] = std::io::stderr().as_fd().try_clone_to_owned().ok();
-    }
-
     fn lookup(&self, fd: i32) -> BorrowedFd<'_> {
         self.fds
             .get(fd as usize)
@@ -56,7 +43,6 @@ impl FdRegistry {
 
     pub fn with_fd<R>(fd: i32, f: impl FnOnce(BorrowedFd<'_>) -> R) -> R {
         FD_REGISTRY.with(|r| {
-            r.borrow_mut().seed_std();
             let reg = r.borrow();
             f(reg.lookup(fd))
         })
@@ -64,7 +50,6 @@ impl FdRegistry {
 
     pub fn with_fds<R>(fds: &[i32], f: impl FnOnce(&[BorrowedFd<'_>]) -> R) -> R {
         FD_REGISTRY.with(|r| {
-            r.borrow_mut().seed_std();
             let reg = r.borrow();
             let borrowed: Vec<BorrowedFd<'_>> = fds.iter().map(|&fd| reg.lookup(fd)).collect();
             f(&borrowed)
