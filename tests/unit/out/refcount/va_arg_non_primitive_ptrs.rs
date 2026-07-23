@@ -79,8 +79,8 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
                 break 'switch;
             }
             __v if __v == (opt::OPT_FILE as i32) => {
-                let f: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<::std::fs::File>>()).clone(),
+                let f: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+                    ((*ap.borrow_mut()).arg::<Ptr<CFile>>()).clone(),
                 ));
                 (*result.borrow_mut()) = ((!((*f.borrow()).is_null())) as i32).clone();
                 break 'switch;
@@ -120,7 +120,7 @@ fn main_0() -> i32 {
         (((({
             dispatch_0(
                 (opt::OPT_FILE as i32),
-                &[((libcc2rs::cout()).clone()).into()],
+                &[((libcc2rs::c_stdout()).clone()).into()],
             )
         }) == 1) as i32)
             != 0)
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
         (((({
             dispatch_0(
                 (opt::OPT_FILE as i32),
-                &[((AnyPtr::default()).reinterpret_cast::<::std::fs::File>()).into()],
+                &[((AnyPtr::default()).reinterpret_cast::<CFile>()).into()],
             )
         }) == 0) as i32)
             != 0)

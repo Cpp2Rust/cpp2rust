@@ -51,7 +51,7 @@ pub fn agg_0(n: i32) -> i32 {
     let p: Value<Point> = <Value<Point>>::default();
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let fp: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
-    let file: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
+    let file: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
     let total: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {

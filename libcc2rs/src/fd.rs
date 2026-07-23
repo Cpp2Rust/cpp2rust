@@ -9,7 +9,13 @@ pub struct FdRegistry {
 }
 
 thread_local! {
-    static FD_REGISTRY: RefCell<FdRegistry> = const { RefCell::new(FdRegistry { fds: Vec::new() }) };
+    static FD_REGISTRY: RefCell<FdRegistry> = RefCell::new(FdRegistry {
+        fds: vec![
+            std::io::stdin().as_fd().try_clone_to_owned().ok(),
+            std::io::stdout().as_fd().try_clone_to_owned().ok(),
+            std::io::stderr().as_fd().try_clone_to_owned().ok(),
+        ],
+    });
 }
 
 impl FdRegistry {

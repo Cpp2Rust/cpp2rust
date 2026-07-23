@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{AnyPtr, AsPointer, Ptr, Value};
+use crate::{AnyPtr, AsPointer, CFile, Ptr, Value};
 use std::cell::{RefCell, UnsafeCell};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
@@ -48,6 +48,24 @@ thread_local! {
     };
 }
 
+thread_local! {
+    static C_STDIN: Value<CFile> = Rc::new(RefCell::new(CFile::new(0)));
+    static C_STDOUT: Value<CFile> = Rc::new(RefCell::new(CFile::new(1)));
+    static C_STDERR: Value<CFile> = Rc::new(RefCell::new(CFile::new(2)));
+}
+
+pub fn c_stdin() -> Ptr<CFile> {
+    C_STDIN.with(AsPointer::as_pointer)
+}
+
+pub fn c_stdout() -> Ptr<CFile> {
+    C_STDOUT.with(AsPointer::as_pointer)
+}
+
+pub fn c_stderr() -> Ptr<CFile> {
+    C_STDERR.with(AsPointer::as_pointer)
+}
+
 pub fn cin() -> Ptr<std::fs::File> {
     SAFE_STDIN.with(AsPointer::as_pointer)
 }
@@ -84,79 +102,24 @@ pub unsafe fn cerr_unsafe() -> *mut std::fs::File {
     UNSAFE_STDERR.with(UnsafeCell::get)
 }
 
-pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
+pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
     let total = a1.saturating_mul(a2);
-    let mut dst = a0.reinterpret_cast::<u8>();
-
-    let f = (*a3.upgrade().deref())
-        .try_clone()
-        .expect("try_clone failed");
-    let mut reader = std::io::BufReader::with_capacity(64 * 1024, f);
-
-    let mut read_bytes: usize = 0;
-    let mut buffer: [u8; 8192] = [0; 8192];
-
-    while read_bytes < total {
-        let remaining = total - read_bytes;
-        let to_read = std::cmp::min(buffer.len(), remaining);
-
-        let n = match std::io::Read::read(&mut reader, &mut buffer[..to_read]) {
-            Ok(0) => break,
-            Ok(n) => n,
-            Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-            Err(e) => panic!("Unhandled error in fread: {e}"),
-        };
-
-        for &byte in &buffer[..n] {
-            dst.write(byte);
-            dst += 1;
-        }
-
-        read_bytes += n;
+    if total == 0 {
+        return 0;
     }
-
+    let dst = a0.reinterpret_cast::<u8>();
+    let read_bytes = dst.with_slice_mut(total, |buf| a3.with_mut(|f| f.read(buf)));
     read_bytes / a1
 }
 
-pub fn fwrite_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<::std::fs::File>) -> usize {
+pub fn fwrite_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
     let total = a1.saturating_mul(a2);
-    let mut src = a0.reinterpret_cast::<u8>();
-
-    let f = (*a3.upgrade().deref())
-        .try_clone()
-        .expect("try_clone failed");
-    let mut writer = std::io::BufWriter::with_capacity(64 * 1024, f);
-
-    let mut written_bytes: usize = 0;
-    let mut buffer: [u8; 8192] = [0; 8192];
-
-    while written_bytes < total {
-        let remaining = total - written_bytes;
-        let to_fill = std::cmp::min(buffer.len(), remaining);
-
-        for b in buffer.iter_mut().take(to_fill) {
-            *b = src.read();
-            src += 1;
-        }
-
-        let mut off = 0;
-        while off < to_fill {
-            match std::io::Write::write(&mut writer, &buffer[off..to_fill]) {
-                Ok(0) => break,
-                Ok(n) => off += n,
-                Err(ref e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-                Err(e) => panic!("Unhandled error in fwrite: {e}"),
-            }
-        }
-
-        if off == 0 {
-            break;
-        }
-
-        written_bytes += off;
+    if total == 0 {
+        return 0;
     }
-
-    written_bytes / a1
+    let src = a0.reinterpret_cast::<u8>();
+    let written = src.with_slice(total, |bytes| a3.with_mut(|f| f.write(bytes)));
+    written / a1
 }
 
 unsafe extern "C" {

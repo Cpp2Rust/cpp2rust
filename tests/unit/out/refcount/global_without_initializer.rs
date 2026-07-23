@@ -35,7 +35,7 @@ thread_local!(
     pub static s_0: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::<S>::null()));
 );
 thread_local!(
-    pub static file_1: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(Ptr::null()));
+    pub static file_1: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
 );
 thread_local!(
     pub static size_2: Value<usize> = Rc::new(RefCell::new(0_usize));
