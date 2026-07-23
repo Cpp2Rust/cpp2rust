@@ -107,25 +107,8 @@ pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize
     if total == 0 {
         return 0;
     }
-    let mut dst = a0.reinterpret_cast::<u8>();
-    let mut buffer: [u8; 8192] = [0; 8192];
-    let mut read_bytes: usize = 0;
-
-    a3.with_mut(|f| {
-        while read_bytes < total {
-            let to_read = std::cmp::min(buffer.len(), total - read_bytes);
-            let n = f.read(&mut buffer[..to_read]);
-            if n == 0 {
-                break;
-            }
-            for &byte in &buffer[..n] {
-                dst.write(byte);
-                dst += 1;
-            }
-            read_bytes += n;
-        }
-    });
-
+    let dst = a0.reinterpret_cast::<u8>();
+    let read_bytes = dst.with_slice_mut(total, |buf| a3.with_mut(|f| f.read(buf)));
     read_bytes / a1
 }
 
