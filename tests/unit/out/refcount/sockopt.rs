@@ -41,7 +41,7 @@ fn main_0() -> i32 {
     let on: Value<i32> = Rc::new(RefCell::new(1));
     assert!(
         ((({
-            let __res = match (1, 9) {
+            let __res = match (libc::SOL_SOCKET, libc::SO_KEEPALIVE) {
                 (::libc::IPPROTO_TCP, ::libc::TCP_NODELAY) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
@@ -213,7 +213,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __res = match (libc::IPPROTO_TCP, 1) {
+            let __res = match (libc::IPPROTO_TCP, libc::TCP_NODELAY) {
                 (::libc::IPPROTO_TCP, ::libc::TCP_NODELAY) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
@@ -386,7 +386,7 @@ fn main_0() -> i32 {
     let err: Value<i32> = Rc::new(RefCell::new(-1_i32));
     let len: Value<u32> = Rc::new(RefCell::new((::std::mem::size_of::<i32>() as u32)));
     assert!(
-        (((match (1, 4) {
+        (((match (libc::SOL_SOCKET, libc::SO_ERROR) {
             (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
                 match FdRegistry::with_fd((*s.borrow()), |__fd| {
                     nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)

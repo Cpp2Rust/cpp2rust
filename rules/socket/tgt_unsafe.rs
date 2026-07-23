@@ -110,3 +110,15 @@ unsafe fn f20() -> i32 {
 unsafe fn f21() -> i32 {
     libc::AF_INET6
 }
+
+unsafe fn f22() -> i32 {
+    libc::SOL_SOCKET
+}
+
+unsafe fn f23() -> i32 {
+    libc::SO_KEEPALIVE
+}
+
+unsafe fn f24() -> i32 {
+    libc::SO_ERROR
+}

@@ -18,8 +18,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::setsockopt(
             s,
-            1,
-            9,
+            libc::SOL_SOCKET,
+            libc::SO_KEEPALIVE,
             ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as u32)
         )) == (0)) as i32)
@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
         ((((libc::setsockopt(
             s,
             libc::IPPROTO_TCP,
-            1,
+            libc::TCP_NODELAY,
             ((&mut on as *mut i32) as *const i32 as *const ::libc::c_void),
             (::std::mem::size_of::<i32>() as u32)
         )) == (0)) as i32)
@@ -40,8 +40,8 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::getsockopt(
             s,
-            1,
-            4,
+            libc::SOL_SOCKET,
+            libc::SO_ERROR,
             ((&mut err as *mut i32) as *mut i32 as *mut ::libc::c_void),
             (&mut len as *mut u32)
         )) == (0)) as i32)
