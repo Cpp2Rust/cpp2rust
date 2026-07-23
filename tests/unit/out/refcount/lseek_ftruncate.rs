@@ -48,8 +48,46 @@ fn main_0() -> i32 {
         } == 11_isize) as i32)
             != 0)
     );
-    assert!((((libc::lseek((*fd.borrow()), 0_i64, 2) == 11_i64) as i32) != 0));
-    assert!((((libc::lseek((*fd.borrow()), 6_i64, 0) == 6_i64) as i32) != 0));
+    assert!(
+        ((({
+            let __whence = match 2 {
+                0 => nix::unistd::Whence::SeekSet,
+                1 => nix::unistd::Whence::SeekCur,
+                2 => nix::unistd::Whence::SeekEnd,
+                __w => panic!("lseek: unsupported whence {__w}"),
+            };
+            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+                nix::unistd::lseek(__fd, 0_i64, __whence)
+            }) {
+                Ok(__off) => __off,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        } == 11_i64) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __whence = match 0 {
+                0 => nix::unistd::Whence::SeekSet,
+                1 => nix::unistd::Whence::SeekCur,
+                2 => nix::unistd::Whence::SeekEnd,
+                __w => panic!("lseek: unsupported whence {__w}"),
+            };
+            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+                nix::unistd::lseek(__fd, 6_i64, __whence)
+            }) {
+                Ok(__off) => __off,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        } == 6_i64) as i32)
+            != 0)
+    );
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
         (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
@@ -93,8 +131,36 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!((((libc::ftruncate((*fd.borrow()), 5_i64) == 0) as i32) != 0));
-    assert!((((libc::lseek((*fd.borrow()), 0_i64, 2) == 5_i64) as i32) != 0));
+    assert!(
+        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
+            Ok(()) => 0,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
+    assert!(
+        ((({
+            let __whence = match 2 {
+                0 => nix::unistd::Whence::SeekSet,
+                1 => nix::unistd::Whence::SeekCur,
+                2 => nix::unistd::Whence::SeekEnd,
+                __w => panic!("lseek: unsupported whence {__w}"),
+            };
+            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+                nix::unistd::lseek(__fd, 0_i64, __whence)
+            }) {
+                Ok(__off) => __off,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        } == 5_i64) as i32)
+            != 0)
+    );
     assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {

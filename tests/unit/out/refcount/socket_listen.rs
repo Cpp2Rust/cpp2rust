@@ -38,7 +38,24 @@ fn main_0() -> i32 {
         }
     }));
     assert!(((((*s.borrow()) >= 0) as i32) != 0));
-    assert!((((libc::listen((*s.borrow()), 5) == 0) as i32) != 0));
+    assert!(
+        (((match nix::sys::socket::Backlog::new(5) {
+            Ok(__b) => match FdRegistry::with_fd((*s.borrow()), |__fd| nix::sys::socket::listen(
+                &__fd, __b
+            )) {
+                Ok(()) => 0,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            },
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        } == 0) as i32)
+            != 0)
+    );
     assert!((((FdRegistry::close((*s.borrow())) == 0) as i32) != 0));
     return 0;
 }

@@ -33,7 +33,16 @@ fn main_0() -> i32 {
         }
     }));
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
-    assert!((((libc::isatty((*fd.borrow())) == 0) as i32) != 0));
+    assert!(
+        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::isatty(__fd)) {
+            Ok(__tty) => __tty as i32,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                0
+            }
+        } == 0) as i32)
+            != 0)
+    );
     assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
