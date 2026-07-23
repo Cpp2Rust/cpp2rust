@@ -218,3 +218,35 @@ fn f17(a0: i32, a1: i32) -> i32 {
         }
     }
 }
+
+fn f7(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: u32) -> i32 {
+    let __a0 = a0;
+    let __a1 = a1;
+    let __a2 = a2;
+    let __a3 = a3;
+    libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
+}
+
+fn f8(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: Ptr<u32>) -> i32 {
+    match (a1, a2) {
+        (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
+            match FdRegistry::with_fd(a0, |__fd| {
+                nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
+            }) {
+                Ok(__err) => {
+                    a3.reinterpret_cast::<i32>().write(__err);
+                    a4.write(::std::mem::size_of::<i32>() as u32);
+                    0
+                }
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        }
+        (__l, __o) => panic!(
+            "getsockopt: unsupported option (level={}, optname={})",
+            __l, __o
+        ),
+    }
+}

@@ -96,3 +96,15 @@ int f20() {
 int f21() {
   return AF_INET6;
 }
+
+int f22() {
+  return SOL_SOCKET;
+}
+
+int f23() {
+  return SO_KEEPALIVE;
+}
+
+int f24() {
+  return SO_ERROR;
+}

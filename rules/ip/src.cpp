@@ -1,4 +1,5 @@
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 
 typedef struct sockaddr_in t1;
 typedef struct in_addr t2;
@@ -26,3 +27,7 @@ int f5() {
   return IPPROTO_MPTCP;
 }
 #endif
+
+int f6() {
+  return TCP_NODELAY;
+}

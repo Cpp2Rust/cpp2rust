@@ -34,3 +34,7 @@ unsafe fn f4() -> i32 {
 unsafe fn f5() -> i32 {
     libc::IPPROTO_MPTCP
 }
+
+unsafe fn f6() -> i32 {
+    libc::TCP_NODELAY
+}
