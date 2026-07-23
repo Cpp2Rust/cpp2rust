@@ -249,12 +249,14 @@ fn f7(a0: i32, a1: i32, a2: i32, a3: AnyPtr, a4: u32) -> i32 {
                 nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::TcpKeepCount, &__v)
             })
         }
+        #[cfg(target_os = "linux")]
         (::libc::IPPROTO_IP, ::libc::IP_TOS) => {
             let __v = a3.reinterpret_cast::<i32>().read();
             FdRegistry::with_fd(a0, |__fd| {
                 nix::sys::socket::setsockopt(&__fd, nix::sys::socket::sockopt::Ipv4Tos, &__v)
             })
         }
+        #[cfg(target_os = "linux")]
         (::libc::IPPROTO_IPV6, ::libc::IPV6_TCLASS) => {
             let __v = a3.reinterpret_cast::<i32>().read();
             FdRegistry::with_fd(a0, |__fd| {

@@ -96,6 +96,7 @@ fn main_0() -> i32 {
                         )
                     })
                 }
+                #[cfg(target_os = "linux")]
                 (::libc::IPPROTO_IP, ::libc::IP_TOS) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
@@ -109,6 +110,7 @@ fn main_0() -> i32 {
                         )
                     })
                 }
+                #[cfg(target_os = "linux")]
                 (::libc::IPPROTO_IPV6, ::libc::IPV6_TCLASS) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
@@ -268,6 +270,7 @@ fn main_0() -> i32 {
                         )
                     })
                 }
+                #[cfg(target_os = "linux")]
                 (::libc::IPPROTO_IP, ::libc::IP_TOS) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
@@ -281,6 +284,7 @@ fn main_0() -> i32 {
                         )
                     })
                 }
+                #[cfg(target_os = "linux")]
                 (::libc::IPPROTO_IPV6, ::libc::IPV6_TCLASS) => {
                     let __v = ((on.as_pointer()) as Ptr<i32>)
                         .to_any()
