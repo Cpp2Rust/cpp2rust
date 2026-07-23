@@ -87,19 +87,7 @@ pub fn test_fstat_1() {
     0;
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
-    assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::sys::stat::fstat(__fd)) {
-            Ok(__s) => {
-                (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
-                0
-            }
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        } == 0) as i32)
-            != 0)
-    );
+    assert!((((libc::fstat((*fd.borrow()), (st.as_pointer())) == 0) as i32) != 0));
     assert!(((((*(*st.borrow()).st_size.borrow()) == 11_i64) as i32) != 0));
     assert!(((((*(*st.borrow()).st_mtime.borrow()) > 0_i64) as i32) != 0));
     assert!(

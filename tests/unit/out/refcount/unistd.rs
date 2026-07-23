@@ -536,62 +536,20 @@ pub fn test_open_6() {
 }
 pub fn test_fcntl_7() {
     assert!(
-        ((({
-            let __res = match 1 {
-                ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-                }),
-                ::libc::F_SETFL => {
-                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[][0]));
-                    FdRegistry::with_fd(0, |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                    })
-                }
-                ::libc::F_SETFD => {
-                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[][0]));
-                    FdRegistry::with_fd(0, |__fd| {
-                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                    })
-                }
-                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-            };
-            match __res {
-                Ok(__r) => __r,
-                Err(__e) => {
-                    libcc2rs::cpp2rust_errno().write(__e as i32);
-                    -1
-                }
-            }
-        } >= -1_i32) as i32)
+        (((panic!(
+            "fcntl is not supported in the refcount model (fd={}, cmd={}, varargs={})",
+            0,
+            1,
+            &[].len()
+        ) >= -1_i32) as i32)
             != 0)
     );
-    let duped: Value<i32> = Rc::new(RefCell::new({
-        let __res = match 0 {
-            ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
-                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
-            }),
-            ::libc::F_SETFL => {
-                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
-                FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
-                })
-            }
-            ::libc::F_SETFD => {
-                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
-                FdRegistry::with_fd(0, |__fd| {
-                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
-                })
-            }
-            __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
-        };
-        match __res {
-            Ok(__r) => __r,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        }
-    }));
+    let duped: Value<i32> = Rc::new(RefCell::new(panic!(
+        "fcntl is not supported in the refcount model (fd={}, cmd={}, varargs={})",
+        0,
+        0,
+        &[(100).into(),].len()
+    )));
     assert!(((((*duped.borrow()) >= -1_i32) as i32) != 0));
     if ((((*duped.borrow()) >= 0) as i32) != 0) {
         FdRegistry::close((*duped.borrow()));
@@ -600,13 +558,12 @@ pub fn test_fcntl_7() {
 pub fn test_ioctl_8() {
     let arg: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
-        ((({
-            panic!(
-                "ioctl is not supported in the refcount model (fd={}, request={})",
-                0, 0_u64
-            );
-            0
-        } >= -1_i32) as i32)
+        (((panic!(
+            "ioctl is not supported in the refcount model (fd={}, request={}, varargs={})",
+            0,
+            0_u64,
+            &[(arg.as_pointer()).into(),].len()
+        ) >= -1_i32) as i32)
             != 0)
     );
 }
