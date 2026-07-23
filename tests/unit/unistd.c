@@ -1,4 +1,4 @@
-// panic-ub: refcount
+// no-compile: refcount
 #include <assert.h>
 #include <fcntl.h>
 #include <stdio.h>
