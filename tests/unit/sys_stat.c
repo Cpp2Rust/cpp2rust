@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 static void test_stat(void) {
-  const char *path = "/tmp/cpp2rust_stat_test.tmp";
+  const char *path = "cpp2rust_stat_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   fputs("hello", fp);
@@ -19,7 +19,7 @@ static void test_stat(void) {
 }
 
 static void test_fstat(void) {
-  const char *path = "/tmp/cpp2rust_fstat_test.tmp";
+  const char *path = "cpp2rust_fstat_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   fputs("hello world", fp);

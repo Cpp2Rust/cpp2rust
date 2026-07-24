@@ -39,7 +39,7 @@ pub unsafe fn test_fileno_3() {
     assert!(((((libc::fileno(libcc2rs::stdout_unsafe())) == (1)) as i32) != 0));
     assert!(((((libc::fileno(libcc2rs::stderr_unsafe())) == (2)) as i32) != 0));
     let mut file: *const libc::c_char =
-        (c"/tmp/cpp2rust_fileno_test.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_fileno_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(file, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fileno(fp)) > (2)) as i32) != 0));

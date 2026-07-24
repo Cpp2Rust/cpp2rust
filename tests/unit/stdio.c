@@ -30,7 +30,7 @@ static void test_fileno(void) {
   assert(fileno(stdin) == 0);
   assert(fileno(stdout) == 1);
   assert(fileno(stderr) == 2);
-  const char *file = "/tmp/cpp2rust_fileno_test.tmp";
+  const char *file = "cpp2rust_fileno_test.tmp";
   FILE *fp = fopen(file, "wb");
   assert(fp != NULL);
   assert(fileno(fp) > 2);

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_fputc_fputs_0() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_puts.tmp",
+        b"cpp2rust_stdio_nofd_puts.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {
@@ -154,7 +154,7 @@ pub fn test_puts_1() {
 }
 pub fn test_fgets_getc_2() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_gets.tmp",
+        b"cpp2rust_stdio_nofd_gets.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {
@@ -464,7 +464,7 @@ pub fn test_fgets_getc_2() {
 }
 pub fn test_freopen_3() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_reopen.tmp",
+        b"cpp2rust_stdio_nofd_reopen.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {
@@ -571,7 +571,7 @@ pub fn test_freopen_3() {
 }
 pub fn test_fseeko_4() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_seek.tmp",
+        b"cpp2rust_stdio_nofd_seek.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {
@@ -758,10 +758,10 @@ pub fn test_fseeko_4() {
 }
 pub fn test_rename_5() {
     let from: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_from.tmp",
+        b"cpp2rust_stdio_nofd_from.tmp",
     )));
     let to: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_to.tmp",
+        b"cpp2rust_stdio_nofd_to.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {
@@ -884,7 +884,7 @@ pub fn test_rename_5() {
 }
 pub fn test_setvbuf_6() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stdio_nofd_vbuf.tmp",
+        b"cpp2rust_stdio_nofd_vbuf.tmp",
     )));
     let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
         match Ptr::from_string_literal(b"wb").to_rust_string() {

@@ -12,10 +12,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut path: *const libc::c_char = (c"/tmp/cpp2rust_lseek_ftruncate_test.tmp"
-        .as_ptr()
-        .cast_mut())
-    .cast_const();
+    let mut path: *const libc::c_char =
+        (c"cpp2rust_lseek_ftruncate_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fd: i32 = (unsafe {
         libc::open(
             path as *const i8,

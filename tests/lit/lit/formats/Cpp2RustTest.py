@@ -261,14 +261,18 @@ class TestContext:
     def run_cpp(self):
         if self.skip_run:
             return None
-        self.cpp_result = RunResult(*lit.util.executeCommand(str(self.cpp_bin)))
+        self.cpp_result = RunResult(
+            *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
+        )
         return None
 
     def run_rust(self):
         exp = self.expectations
         if self.skip_run:
             return None
-        self.rust_result = RunResult(*lit.util.executeCommand(str(self.rust_bin)))
+        self.rust_result = RunResult(
+            *lit.util.executeCommand(str(self.rust_bin), str(self.tmp_dir))
+        )
 
         if exp.should_panic_ub:
             err = str(self.rust_result.stderr)
