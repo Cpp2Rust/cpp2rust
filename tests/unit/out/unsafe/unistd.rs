@@ -23,7 +23,7 @@ pub unsafe fn test_close_0() {
 }
 pub unsafe fn test_lseek_1() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_lseek_test.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_lseek_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
@@ -78,7 +78,7 @@ pub unsafe fn test_lseek_1() {
 }
 pub unsafe fn test_read_2() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_read_test.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_read_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);
@@ -139,7 +139,7 @@ pub unsafe fn test_read_2() {
 }
 pub unsafe fn test_unlink_3() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_unlink_test.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_unlink_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
@@ -210,7 +210,7 @@ pub unsafe fn test_pipe_4() {
 }
 pub unsafe fn test_ftruncate_5() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_ftruncate_test.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_ftruncate_test.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     libc::fputs((c"hello world".as_ptr().cast_mut()).cast_const(), fp);

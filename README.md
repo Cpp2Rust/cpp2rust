@@ -37,7 +37,7 @@ On Ubuntu, install the required dependencies with:
 
 ```bash
 sudo apt install libclang-22-dev clang++-22 ninja-build cmake
-curl -LsSf https://astral.sh/ruff/install.sh | sh
+pip install ruff==0.15.22
 ```
 
 

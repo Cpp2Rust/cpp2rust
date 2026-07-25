@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_termios_test.tmp",
+        b"cpp2rust_termios_test.tmp",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({
         let __mode = match &[(420).into()].first() {

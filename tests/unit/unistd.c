@@ -17,7 +17,7 @@ static void test_close(void) {
 }
 
 static void test_lseek(void) {
-  const char *path = "/tmp/cpp2rust_lseek_test.tmp";
+  const char *path = "cpp2rust_lseek_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   fputs("hello world", fp);
@@ -35,7 +35,7 @@ static void test_lseek(void) {
 }
 
 static void test_read(void) {
-  const char *path = "/tmp/cpp2rust_read_test.tmp";
+  const char *path = "cpp2rust_read_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   fputs("hello world", fp);
@@ -51,7 +51,7 @@ static void test_read(void) {
 }
 
 static void test_unlink(void) {
-  const char *path = "/tmp/cpp2rust_unlink_test.tmp";
+  const char *path = "cpp2rust_unlink_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(fclose(fp) == 0);
@@ -73,7 +73,7 @@ static void test_pipe(void) {
 }
 
 static void test_ftruncate(void) {
-  const char *path = "/tmp/cpp2rust_ftruncate_test.tmp";
+  const char *path = "cpp2rust_ftruncate_test.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   fputs("hello world", fp);

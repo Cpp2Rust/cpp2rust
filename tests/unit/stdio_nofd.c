@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 static void test_fputc_fputs(void) {
-  const char *path = "/tmp/cpp2rust_stdio_nofd_puts.tmp";
+  const char *path = "cpp2rust_stdio_nofd_puts.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(fputc('A', fp) == 'A');
@@ -22,7 +22,7 @@ static void test_fputc_fputs(void) {
 static void test_puts(void) { assert(puts("hello from puts") >= 0); }
 
 static void test_fgets_getc(void) {
-  const char *path = "/tmp/cpp2rust_stdio_nofd_gets.tmp";
+  const char *path = "cpp2rust_stdio_nofd_gets.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(fputs("line1\nline2\n", fp) >= 0);
@@ -44,7 +44,7 @@ static void test_fgets_getc(void) {
 }
 
 static void test_freopen(void) {
-  const char *path = "/tmp/cpp2rust_stdio_nofd_reopen.tmp";
+  const char *path = "cpp2rust_stdio_nofd_reopen.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(fputs("hello", fp) >= 0);
@@ -58,7 +58,7 @@ static void test_freopen(void) {
 }
 
 static void test_fseeko(void) {
-  const char *path = "/tmp/cpp2rust_stdio_nofd_seek.tmp";
+  const char *path = "cpp2rust_stdio_nofd_seek.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(fputs("hello world", fp) >= 0);
@@ -78,8 +78,8 @@ static void test_fseeko(void) {
 }
 
 static void test_rename(void) {
-  const char *from = "/tmp/cpp2rust_stdio_nofd_from.tmp";
-  const char *to = "/tmp/cpp2rust_stdio_nofd_to.tmp";
+  const char *from = "cpp2rust_stdio_nofd_from.tmp";
+  const char *to = "cpp2rust_stdio_nofd_to.tmp";
   FILE *fp = fopen(from, "wb");
   assert(fp != NULL);
   assert(fputs("data", fp) >= 0);
@@ -94,7 +94,7 @@ static void test_rename(void) {
 }
 
 static void test_setvbuf(void) {
-  const char *path = "/tmp/cpp2rust_stdio_nofd_vbuf.tmp";
+  const char *path = "cpp2rust_stdio_nofd_vbuf.tmp";
   FILE *fp = fopen(path, "wb");
   assert(fp != NULL);
   assert(setvbuf(fp, NULL, _IONBF, 0) == 0);

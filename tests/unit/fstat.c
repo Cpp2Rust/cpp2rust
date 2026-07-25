@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 int main(void) {
-  const char *path = "/tmp/cpp2rust_fstat_test.tmp";
+  const char *path = "cpp2rust_fstat_test.tmp";
   int fd = open(path, O_RDWR | O_CREAT | O_TRUNC, 0644);
   assert(fd >= 0);
   assert(write(fd, "hello", 5) == 5);
