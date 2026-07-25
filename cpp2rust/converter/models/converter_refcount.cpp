@@ -1322,7 +1322,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
     PushExprKind push(*this, ExprKind::Void);
     Convert(expr->getSubExpr());
-    if (!TypeIsCopyable(expr->getSubExpr()->getType())) {
+    if (!TypeIsCopyable(expr->getSubExpr()->getType()) &&
+        !expr->getSubExpr()->getType()->isFunctionPointerType()) {
       StrCat(".clone()");
     }
     return false;

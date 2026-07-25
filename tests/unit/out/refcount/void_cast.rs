@@ -106,9 +106,9 @@ fn main_0() -> i32 {
     assert!(((*chosen.borrow()) == 123));
     bump_and_return_4.clone();
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
-    (FnPtr::<fn() -> i32>::new(bump_and_return_4)).clone();
+    (FnPtr::<fn() -> i32>::new(bump_and_return_4));
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
-    ((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>(None)).clone();
+    ((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>(None));
     assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
