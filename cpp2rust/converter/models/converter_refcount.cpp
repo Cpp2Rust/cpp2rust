@@ -1326,9 +1326,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     // Variable references to fn-ptrs still need .clone() because FnPtr is
     // non-Copy and (*var.borrow()) would otherwise attempt a move.
     auto *inner = expr->getSubExpr()->IgnoreParenImpCasts();
-    bool is_fn_ptr_var_ref =
-        clang::isa<clang::DeclRefExpr>(inner) &&
-        inner->getType()->isFunctionPointerType();
+    bool is_fn_ptr_var_ref = clang::isa<clang::DeclRefExpr>(inner) &&
+                             inner->getType()->isFunctionPointerType();
     if (!TypeIsCopyable(expr->getSubExpr()->getType()) &&
         (!expr->getSubExpr()->getType()->isFunctionPointerType() ||
          is_fn_ptr_var_ref)) {
