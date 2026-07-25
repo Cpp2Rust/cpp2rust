@@ -1322,8 +1322,16 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
     PushExprKind push(*this, ExprKind::Void);
     Convert(expr->getSubExpr());
+    // Skip .clone() for fresh fn-ptr values (cast/constructor results).
+    // Variable references to fn-ptrs still need .clone() because FnPtr is
+    // non-Copy and (*var.borrow()) would otherwise attempt a move.
+    auto *inner = expr->getSubExpr()->IgnoreParenImpCasts();
+    bool is_fn_ptr_var_ref =
+        clang::isa<clang::DeclRefExpr>(inner) &&
+        inner->getType()->isFunctionPointerType();
     if (!TypeIsCopyable(expr->getSubExpr()->getType()) &&
-        !expr->getSubExpr()->getType()->isFunctionPointerType()) {
+        (!expr->getSubExpr()->getType()->isFunctionPointerType() ||
+         is_fn_ptr_var_ref)) {
       StrCat(".clone()");
     }
     return false;

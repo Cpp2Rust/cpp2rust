@@ -47,7 +47,7 @@ pub fn not_supported_5(ctx: AnyPtr, fn_: FnPtr<fn(i32) -> i32>, extra: AnyPtr) -
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
     let extra: Value<AnyPtr> = Rc::new(RefCell::new(extra));
     (*ctx.borrow()).clone();
-    (*fn_.borrow());
+    (*fn_.borrow()).clone();
     (*extra.borrow()).clone();
     return -3_i32;
 }
