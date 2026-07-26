@@ -40,7 +40,7 @@ pub unsafe fn registry_update_0(mut r: *mut registry, mut field: field, __args: 
                 break 'switch;
             }
             __v if __v == ((field::FIELD_LEVEL as i32) as u32) => {
-                (*r).level = (ap.arg::<i64>()).clone();
+                (*r).level = ap.arg::<i64>();
                 break 'switch;
             }
             _ => {

@@ -15,7 +15,7 @@ pub struct MinHeapNode {
 }
 impl MinHeapNode {
     pub fn IsLeaf(&self) -> bool {
-        return (((*self.left.borrow()).is_null()) && ((*self.right.borrow()).is_null())).clone();
+        return ((*self.left.borrow()).is_null()) && ((*self.right.borrow()).is_null());
     }
 }
 impl Clone for MinHeapNode {

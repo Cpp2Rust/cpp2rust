@@ -669,7 +669,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   return true;
 }
 
-bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
   auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
   return derives &&
          std::find(derives->begin(), derives->end(), "Copy") != derives->end();
@@ -2005,6 +2005,7 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format("[0 as libc::c_char; {}]", arr_size));
+        computed_expr_type_ = ComputedExprType::FreshValue;
         return false;
       }
       uint64_t pad = arr_size > expr->getString().size()
@@ -2012,10 +2013,12 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
                          : 0;
       StrCat(std::format("std::mem::transmute(*b{})",
                          GetEscapedStringLiteral(expr, pad)));
+      computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
     StrCat(std::format("std::mem::transmute(*b{})",
                        GetEscapedStringLiteral(expr, 1)));
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
   if (expr->getString().contains('\0')) {
@@ -2025,9 +2028,11 @@ bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
     }
     out += getTypedLiteral("0", CharRustType()) + "])";
     StrCat(out);
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
   StrCat(std::format("c{}", GetEscapedStringLiteral(expr, 0)));
+  computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 
@@ -2349,6 +2354,9 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       ConvertUnsignedArithOperand(lhs, type);
     }
     ConvertUnsignedArithBinaryOperator(expr, rhs);
+    if (!expr->isCompoundAssignmentOp()) {
+      computed_expr_type_ = ComputedExprType::FreshValue;
+    }
   } else if (expr->isAssignmentOp()) {
     if (expr->isCompoundAssignmentOp() &&
         expr->getLHS()->getType()->isPointerType() &&
@@ -2408,6 +2416,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       PushParen paren(*this);
       ConvertCondition(expr->getRHS());
     }
+    computed_expr_type_ = ComputedExprType::FreshValue;
   } else {
     ConvertGenericBinaryOperator(expr);
   }
@@ -2429,6 +2438,7 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
     PushParen rhs_paren(*this);
     Convert(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
   }
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
@@ -2991,12 +3001,14 @@ bool Converter::VisitVAArgExpr(clang::VAArgExpr *expr) {
       Convert(va_list_expr);
     }
     StrCat(".arg::<*mut ::libc::c_void>()");
+    SetFreshType(expr->getType());
     return false;
   }
   Convert(va_list_expr);
   StrCat(".arg::<");
   Convert(expr->getType());
   StrCat(">()");
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -3246,6 +3258,7 @@ void Converter::AddIncDecImpls(clang::EnumDecl *decl) {
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   if (expr->getType()->isPointerType()) {
     StrCat(token::kDefault);
+    computed_expr_type_ = ComputedExprType::FreshPointer;
   }
   return false;
 }
@@ -3278,11 +3291,13 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
       auto elem_ty = const_arr_ty->getElementType();
       if (elem_ty->isIntegerType() && !elem_ty->isEnumeralType()) {
         StrCat(std::format("[0; {}]", const_arr_ty->getSize().getZExtValue()));
+        computed_expr_type_ = ComputedExprType::FreshValue;
         return false;
       }
       StrCat(
           std::format("std::array::from_fn::<_, {}, _>(|_| Default::default())",
                       const_arr_ty->getSize().getZExtValue()));
+      computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
   }
@@ -3681,6 +3696,7 @@ void Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
   } else {
     StrCat(").is_null()");
   }
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 void Converter::ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) {
@@ -4378,15 +4394,8 @@ void Converter::SetFresh() {
   }
 }
 
-static bool hasCopyTrait(clang::QualType type) {
-  if (type->isBuiltinType())
-    return true;
-
-  return false;
-}
-
 void Converter::SetValueFreshness(clang::QualType type) {
-  if (hasCopyTrait(type)) {
+  if (TypeIsCopyable(type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
   } else if (type->isPointerType() || type->isReferenceType()) {
     computed_expr_type_ = ComputedExprType::Pointer;

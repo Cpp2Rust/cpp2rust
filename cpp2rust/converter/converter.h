@@ -279,7 +279,13 @@ public:
     if (ty->isFunctionPointerType() || ty->isFunctionType()) {
       return FunctionPointerImplementsCopy();
     }
-    return ty->isIntegerType();
+    if (ty->isBuiltinType() || ty->isEnumeralType()) {
+      return true;
+    }
+    if (auto *record = ty->getAsRecordDecl()) {
+      return RecordDerivesCopy(record);
+    }
+    return false;
   }
 
   virtual void ConvertPrintf(clang::CallExpr *expr);
@@ -602,7 +608,7 @@ protected:
 
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
-  bool RecordDerivesCopy(const clang::RecordDecl *decl);
+  bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
 
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 

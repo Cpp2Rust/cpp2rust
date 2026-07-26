@@ -15,13 +15,13 @@ pub fn sum_with_copy_0(count: i32, __args: &[VaArg]) -> i32 {
     let sum1: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        (*sum1.borrow_mut()) += ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*sum1.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }
     let sum2: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        (*sum2.borrow_mut()) += ((*aq.borrow_mut()).arg::<i32>()).clone();
+        (*sum2.borrow_mut()) += (*aq.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }
     assert!(((((*sum1.borrow()) == (*sum2.borrow())) as i32) != 0));

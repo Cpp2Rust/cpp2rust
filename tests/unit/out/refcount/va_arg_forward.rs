@@ -12,7 +12,7 @@ pub fn inner_0(count: i32, ap: VaList) -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*total.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }
     return (*total.borrow());

@@ -14,7 +14,7 @@ pub fn extract_nth_0(n: i32, ap: VaList) -> i32 {
         (*ap.borrow_mut()).arg::<i32>();
         (*i.borrow_mut()).postfix_inc();
     }
-    return ((*ap.borrow_mut()).arg::<i32>()).clone();
+    return (*ap.borrow_mut()).arg::<i32>();
 }
 pub fn middle_layer_1(n: i32, ap: VaList) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));

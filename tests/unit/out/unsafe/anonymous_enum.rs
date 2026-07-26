@@ -108,12 +108,12 @@ unsafe fn main_0() -> i32 {
     assert!(((anon_3::THIRD_A as i32) != (anon_3::THIRD_B as i32)));
     let mut td: TdEnum = TdEnum::TD_A;
     assert!(((td as i32) == (TdEnum::TD_A as i32)));
-    td = (TdEnum::TD_B).clone();
+    td = TdEnum::TD_B;
     assert!(((td as i32) == (TdEnum::TD_B as i32)));
     let mut w: WithAnonField = <WithAnonField>::default();
     w.field = anon_2::FIELD_A;
     assert!(((w.field as i32) == (anon_2::FIELD_A as i32)));
-    w.field = (anon_2::FIELD_B).clone();
+    w.field = anon_2::FIELD_B;
     assert!(((w.field as i32) == (anon_2::FIELD_B as i32)));
     return 0;
 }

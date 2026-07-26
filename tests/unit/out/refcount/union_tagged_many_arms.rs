@@ -135,7 +135,7 @@ fn main_0() -> i32 {
     (*(*c.borrow()).tag.borrow_mut()) = Tag_enum::T_TEXT;
     (*(*c.borrow()).payload.borrow_mut())
         .text()
-        .write((Ptr::from_string_literal(b"hello")).clone());
+        .write(Ptr::from_string_literal(b"hello"));
     assert!(
         (((((((*(*c.borrow()).payload.borrow()).text().read())
             .offset((0) as isize)
