@@ -2391,7 +2391,7 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
     Convert(expr);
     if (deref) {
       StrCat(GetPointerDerefSuffix(pointee_type));
-      SetValueFreshness(expr->getType());
+      SetValueFreshness(pointee_type);
     }
   }
 

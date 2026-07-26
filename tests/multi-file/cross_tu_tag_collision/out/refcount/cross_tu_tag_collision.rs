@@ -71,5 +71,5 @@ impl ByteRepr for widget_enum {
 }
 pub fn b_value_1() -> i32 {
     let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum::WIDGET_C));
-    return ((*w.borrow()) as i32).clone();
+    return ((*w.borrow()) as i32);
 }

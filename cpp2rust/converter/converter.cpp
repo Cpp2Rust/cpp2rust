@@ -669,7 +669,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   return true;
 }
 
-bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) {
+bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
   auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
   return derives &&
          std::find(derives->begin(), derives->end(), "Copy") != derives->end();
@@ -4394,15 +4394,8 @@ void Converter::SetFresh() {
   }
 }
 
-static bool hasCopyTrait(clang::QualType type) {
-  if (type->isBuiltinType())
-    return true;
-
-  return false;
-}
-
 void Converter::SetValueFreshness(clang::QualType type) {
-  if (hasCopyTrait(type)) {
+  if (TypeIsCopyable(type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
   } else if (type->isPointerType() || type->isReferenceType()) {
     computed_expr_type_ = ComputedExprType::Pointer;

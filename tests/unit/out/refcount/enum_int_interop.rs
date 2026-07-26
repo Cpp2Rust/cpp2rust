@@ -96,8 +96,8 @@ impl Clone for Entry {
     fn clone(&self) -> Self {
         let mut this = Self {
             name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-            color: Rc::new(RefCell::new((*self.color.borrow()).clone())),
-            opt: Rc::new(RefCell::new((*self.opt.borrow()).clone())),
+            color: Rc::new(RefCell::new((*self.color.borrow()))),
+            opt: Rc::new(RefCell::new((*self.opt.borrow()))),
         };
         this
     }
@@ -149,7 +149,7 @@ thread_local!(
 );
 pub fn as_int_4(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
-    return ((*c.borrow()) as i32).clone();
+    return ((*c.borrow()) as i32);
 }
 pub fn classify_option_5(option: i32) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
@@ -207,7 +207,7 @@ fn main_0() -> i32 {
             }
         }
     };
-    let x: Value<i32> = Rc::new(RefCell::new(((*c.borrow()) as i32).clone()));
+    let x: Value<i32> = Rc::new(RefCell::new(((*c.borrow()) as i32)));
     assert!(((*x.borrow()) == 0));
     let y: Value<i32> = Rc::new(RefCell::new((((*c.borrow()) as i32) + 1)));
     assert!(((*y.borrow()) == 1));
@@ -221,12 +221,12 @@ fn main_0() -> i32 {
     let o: Value<Option> = Rc::new(RefCell::new(Option::OPT_A));
     assert!((((*o.borrow()) as i32) == (Option::OPT_A as i32)));
     assert!((((*o.borrow()) as i32) == 10));
-    let oi: Value<i32> = Rc::new(RefCell::new(((*o.borrow()) as i32).clone()));
+    let oi: Value<i32> = Rc::new(RefCell::new(((*o.borrow()) as i32)));
     assert!(((*oi.borrow()) == 10));
     (*o.borrow_mut()) = Option::from(20);
     assert!((((*o.borrow()) as i32) == (Option::OPT_B as i32)));
     let rc: Value<i32> = Rc::new(RefCell::new(
-        ({ classify_option_5(((*o.borrow()) as i32).clone()) }),
+        ({ classify_option_5(((*o.borrow()) as i32)) }),
     ));
     assert!(((*rc.borrow()) == 2));
     (*rc.borrow_mut()) = ({ classify_option_5(20) });
@@ -236,7 +236,7 @@ fn main_0() -> i32 {
     let t: Value<Tag> = Rc::new(RefCell::new(Tag::TAG_ONE));
     assert!((((*t.borrow()) as i32) == 1));
     assert!((((*t.borrow()) as i32) == (Tag::TAG_ONE as i32)));
-    let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32).clone()));
+    let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32)));
     assert!(((*ti.borrow()) == 1));
     (*t.borrow_mut()) = Tag::from(2);
     assert!((((*t.borrow()) as i32) == (Tag::TAG_TWO as i32)));

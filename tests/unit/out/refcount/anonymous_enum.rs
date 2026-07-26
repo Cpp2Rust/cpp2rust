@@ -136,7 +136,7 @@ impl Clone for WithAnonField {
     fn clone(&self) -> Self {
         let mut this = Self {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
-            field: Rc::new(RefCell::new((*self.field.borrow()).clone())),
+            field: Rc::new(RefCell::new((*self.field.borrow()))),
         };
         this
     }
