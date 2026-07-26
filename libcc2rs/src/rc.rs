@@ -429,6 +429,7 @@ impl<T> Ptr<T> {
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let mut borrow = rc.borrow_mut();
                 f(&mut *borrow)
