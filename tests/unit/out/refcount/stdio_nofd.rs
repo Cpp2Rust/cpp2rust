@@ -494,7 +494,7 @@ pub fn test_fseeko_4() {
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
-        (((match (*fp.borrow()).with_mut(|__f| __f.seek(6_i64, 0)) {
+        (((match (*fp.borrow()).with_mut(|__f| __f.seek(6_i64, ::libc::SEEK_SET)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)
@@ -528,7 +528,7 @@ pub fn test_fseeko_4() {
             != 0)
     );
     assert!(
-        (((match (*fp.borrow()).with_mut(|__f| __f.seek((-5_i32 as i64), 2)) {
+        (((match (*fp.borrow()).with_mut(|__f| __f.seek((-5_i32 as i64), ::libc::SEEK_END)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)
@@ -536,7 +536,7 @@ pub fn test_fseeko_4() {
     );
     assert!(((((*fp.borrow()).with_mut(|__f| __f.getc()) == ('w' as i32)) as i32) != 0));
     assert!(
-        (((match (*fp.borrow()).with_mut(|__f| __f.seek(1_i64, 1)) {
+        (((match (*fp.borrow()).with_mut(|__f| __f.seek(1_i64, ::libc::SEEK_CUR)) {
             -1 => -1,
             _ => 0,
         } == 0) as i32)
