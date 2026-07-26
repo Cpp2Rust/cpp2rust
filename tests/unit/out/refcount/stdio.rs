@@ -110,7 +110,7 @@ pub fn test_fileno_3() {
     assert!((((libcc2rs::c_stdout().with(|__f| __f.fd) == 1) as i32) != 0));
     assert!((((libcc2rs::c_stderr().with(|__f| __f.fd) == 2) as i32) != 0));
     let file: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_fileno_test.tmp",
+        b"cpp2rust_fileno_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_stat_0() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_stat_test.tmp",
+        b"cpp2rust_stat_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
@@ -63,7 +63,7 @@ pub fn test_stat_0() {
 }
 pub fn test_fstat_1() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_fstat_test.tmp",
+        b"cpp2rust_fstat_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
