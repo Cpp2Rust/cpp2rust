@@ -11,8 +11,8 @@ pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     (*fmt.borrow()).clone();
     return {
-        let _lhs = ((*ap.borrow_mut()).arg::<i32>()).clone();
-        _lhs + ((*ap.borrow_mut()).arg::<i32>()).clone()
+        let _lhs = (*ap.borrow_mut()).arg::<i32>();
+        _lhs + (*ap.borrow_mut()).arg::<i32>()
     };
 }
 pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
@@ -28,7 +28,7 @@ pub fn lenf_2(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(((*ap.borrow_mut()).arg::<Ptr<u8>>()).clone()));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<u8>>()));
     let result: Value<i32> = Rc::new(RefCell::new(
         ((*s.borrow()).to_c_string_iterator().count() as i32),
     ));

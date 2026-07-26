@@ -71,31 +71,27 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
         let __match_cond = (*option.borrow());
         match __match_cond {
             __v if __v == (opt::OPT_STRING_OUT as i32) => {
-                let out: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()).clone(),
-                ));
+                let out: Value<Ptr<Ptr<u8>>> =
+                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()));
                 (*out.borrow()).write(Ptr::from_string_literal(b"hello"));
                 (*result.borrow_mut()) = 1;
                 break 'switch;
             }
             __v if __v == (opt::OPT_FILE as i32) => {
-                let f: Value<Ptr<CFile>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<CFile>>()).clone(),
-                ));
-                (*result.borrow_mut()) = ((!((*f.borrow()).is_null())) as i32).clone();
+                let f: Value<Ptr<CFile>> =
+                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<CFile>>()));
+                (*result.borrow_mut()) = ((!((*f.borrow()).is_null())) as i32);
                 break 'switch;
             }
             __v if __v == (opt::OPT_NODE as i32) => {
-                let n: Value<Ptr<node>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<node>>()).clone(),
-                ));
+                let n: Value<Ptr<node>> =
+                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<node>>()));
                 (*result.borrow_mut()) = (*(*(*n.borrow()).upgrade().deref()).data.borrow());
                 break 'switch;
             }
             __v if __v == (opt::OPT_NODE_OUT as i32) => {
-                let out: Value<Ptr<Ptr<node>>> = Rc::new(RefCell::new(
-                    ((*ap.borrow_mut()).arg::<Ptr<Ptr<node>>>()).clone(),
-                ));
+                let out: Value<Ptr<Ptr<node>>> =
+                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<node>>>()));
                 (*out.borrow()).write(Ptr::<node>::null());
                 (*result.borrow_mut()) = 2;
                 break 'switch;

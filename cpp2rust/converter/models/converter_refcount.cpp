@@ -402,6 +402,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
       StrCat(GetPointerDerefPrefix(expr->getType()));
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
       StrCat(GetPointerDerefSuffix(expr->getType()));
+      SetValueFreshness(expr->getType());
     } else {
       ConvertArraySubscript(base, expr->getIdx(), expr->getType());
     }
@@ -788,6 +789,7 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
   } else {
     StrCat(str, '.', method, "()");
   }
+  SetFreshType(expr->getType());
   return true;
 }
 
@@ -1133,6 +1135,7 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
+        computed_expr_type_ = ComputedExprType::FreshValue;
         return false;
       }
       pad = arr_size > expr->getString().size()
@@ -1140,9 +1143,11 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 : 0;
     }
     StrCat(std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
   StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0)));
+  computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 
@@ -1270,6 +1275,7 @@ void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat('(');
   Convert(expr);
   StrCat(").is_null()");
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 bool ConverterRefCount::VisitFunctionPointerCast(
@@ -1421,6 +1427,7 @@ void ConverterRefCount::EmitStmtExprTail(clang::Expr *tail) {
   Convert(tail);
   StrCat(token::kSemiColon);
   StrCat("__result");
+  SetFreshType(tail->getType());
 }
 
 void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
@@ -1483,6 +1490,8 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isCompoundAssignmentOp()) {
       StrCat(token::kSemiColon);
       EmitSetOrAssign(lhs, "rhs_0");
+    } else {
+      computed_expr_type_ = ComputedExprType::FreshValue;
     }
     return;
   }
@@ -1608,6 +1617,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
     return;
   }
   StrCat(DerefPtrExpr(str, member->getType()));
+  SetValueFreshness(member->getType());
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
@@ -1882,6 +1892,7 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
       StrCat("Box::new(");
       Converter::VisitImplicitValueInitExpr(expr);
       StrCat(')');
+      computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
   }
@@ -1909,6 +1920,7 @@ bool ConverterRefCount::VisitVAArgExpr(clang::VAArgExpr *expr) {
     StrCat(ToString(expr->getType()));
   }
   StrCat(">()");
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -1936,10 +1948,12 @@ ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
 
 std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   if (IsVaListType(qual_type)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue("VaList::default()");
   }
 
   if (auto arr = GetArrayDefaultAsString(qual_type); !arr.empty()) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue(std::move(arr));
   }
 
@@ -1964,6 +1978,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
   } else {
     return Converter::GetDefaultAsString(qual_type);
   }
+  computed_expr_type_ = ComputedExprType::FreshPointer;
   return BoxValue(std::move(ret));
 }
 
@@ -2103,6 +2118,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
         opcode,
         ConvertFreshRValue(
             rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs))));
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return;
   }
 
@@ -2110,6 +2126,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
   Convert(lhs, GetOperandImplicitConversionTarget(expr, lhs, rhs));
   StrCat(opcode);
   Convert(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 void ConverterRefCount::ConvertUniquePtrDeref(
@@ -2394,6 +2411,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
   if (!is_overloaded_arrow) {
     auto ptr = ToString(expr);
     StrCat(DerefPtrExpr(ptr, expr->getType()->getPointeeType()));
+    SetValueFreshness(expr->getType()->getPointeeType());
     return;
   }
 

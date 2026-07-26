@@ -14,7 +14,7 @@ pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     (*ap.borrow_mut()) = VaList::new(__args);
     let val: Value<i32> = <Value<i32>>::default();
     'loop_: while (((({
-        (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*val.borrow_mut()) = (*ap.borrow_mut()).arg::<i32>();
         (*val.borrow())
     }) != 0) as i32)
         != 0)
@@ -23,7 +23,7 @@ pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     }
     (*ap.borrow_mut()) = VaList::new(__args);
     'loop_: while (((({
-        (*val.borrow_mut()) = ((*ap.borrow_mut()).arg::<i32>()).clone();
+        (*val.borrow_mut()) = (*ap.borrow_mut()).arg::<i32>();
         (*val.borrow())
     }) != 0) as i32)
         != 0)
