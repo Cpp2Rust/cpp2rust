@@ -231,7 +231,7 @@ pub unsafe fn test_fseeko_4() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    assert!(((((libc::fseeko(fp, 6_i64 as ::libc::off_t, 0)) == (0)) as i32) != 0));
+    assert!(((((libc::fseeko(fp, 6_i64 as ::libc::off_t, ::libc::SEEK_SET)) == (0)) as i32) != 0));
     let mut buf: [libc::c_char; 8] = [
         (0 as libc::c_char),
         (0 as libc::c_char),
@@ -273,9 +273,12 @@ pub unsafe fn test_fseeko_4() {
         }) == (0)) as i32)
             != 0)
     );
-    assert!(((((libc::fseeko(fp, (-5_i32 as i64) as ::libc::off_t, 2)) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::fseeko(fp, (-5_i32 as i64) as ::libc::off_t, ::libc::SEEK_END)) == (0)) as i32)
+            != 0)
+    );
     assert!(((((libc::fgetc(fp)) == ('w' as i32)) as i32) != 0));
-    assert!(((((libc::fseeko(fp, 1_i64 as ::libc::off_t, 1)) == (0)) as i32) != 0));
+    assert!(((((libc::fseeko(fp, 1_i64 as ::libc::off_t, ::libc::SEEK_CUR)) == (0)) as i32) != 0));
     assert!(((((libc::fgetc(fp)) == ('r' as i32)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));

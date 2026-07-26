@@ -8,7 +8,7 @@ FILE *fopen(const char *path, const char *mode) {
 }
 
 int main() {
-  FILE *fp = fopen("/tmp/irrelevant-file", "r");
+  FILE *fp = fopen("irrelevant-file", "r");
   assert(fp == NULL);
   return 0;
 }

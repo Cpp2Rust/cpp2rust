@@ -12,21 +12,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"testfile.txt")));
     let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"rb")));
-    let file_ptr: Value<Ptr<::std::fs::File>> =
-        Rc::new(RefCell::new(match (*mode.borrow()).to_rust_string() {
-            v if v == "rb" => std::fs::OpenOptions::new()
-                .read(true)
-                .open((*fname.borrow()).to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            v if v == "wb" => std::fs::OpenOptions::new()
-                .write(true)
-                .create(true)
-                .truncate(true)
-                .open((*fname.borrow()).to_rust_string())
-                .ok()
-                .map_or(Ptr::null(), |f| Ptr::alloc(f)),
-            _ => panic!("unsupported mode"),
-        }));
+    let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(
+        match CFile::open(
+            &(*fname.borrow()).to_rust_string(),
+            &(*mode.borrow()).to_rust_string(),
+        ) {
+            Some(__f) => Ptr::alloc(__f),
+            None => Ptr::null(),
+        },
+    ));
     return 0;
 }

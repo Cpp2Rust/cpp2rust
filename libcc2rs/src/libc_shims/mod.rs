@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+mod cfile;
 mod dirent;
 mod fdset;
 mod ifaddrs;
@@ -13,6 +14,7 @@ mod stat;
 mod termios;
 mod time;
 
+pub use cfile::*;
 pub use dirent::*;
 pub use fdset::*;
 pub use ifaddrs::*;

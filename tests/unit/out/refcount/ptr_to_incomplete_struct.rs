@@ -10,11 +10,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fp: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new((libcc2rs::cout()).clone()));
+    let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdout()).clone()));
     let p: Value<AnyPtr> = Rc::new(RefCell::new((*fp.borrow()).clone().to_any()));
-    let fp2: Value<Ptr<::std::fs::File>> = Rc::new(RefCell::new(
-        (*p.borrow()).reinterpret_cast::<::std::fs::File>(),
-    ));
+    let fp2: Value<Ptr<CFile>> = Rc::new(RefCell::new((*p.borrow()).reinterpret_cast::<CFile>()));
     assert!(
         ((({
             let _lhs = (*fp.borrow()).clone();

@@ -71,3 +71,9 @@ int f23(FILE *stream) { return getc(stream); }
 int f24(FILE *stream, char *buf, int mode, size_t size) {
   return setvbuf(stream, buf, mode, size);
 }
+
+int f25(void) { return SEEK_SET; }
+
+int f26(void) { return SEEK_CUR; }
+
+int f27(void) { return SEEK_END; }

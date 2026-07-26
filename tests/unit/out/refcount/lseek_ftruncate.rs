@@ -50,7 +50,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match 2 {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match 0 {
+            let __whence = match ::libc::SEEK_SET {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
@@ -143,7 +143,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match 2 {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,

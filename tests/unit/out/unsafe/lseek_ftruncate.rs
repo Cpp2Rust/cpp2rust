@@ -30,8 +30,8 @@ unsafe fn main_0() -> i32 {
         )) == (11_isize)) as i32)
             != 0)
     );
-    assert!(((((libc::lseek(fd, 0_i64, 2)) == (11_i64)) as i32) != 0));
-    assert!(((((libc::lseek(fd, 6_i64, 0)) == (6_i64)) as i32) != 0));
+    assert!(((((libc::lseek(fd, 0_i64, ::libc::SEEK_END)) == (11_i64)) as i32) != 0));
+    assert!(((((libc::lseek(fd, 6_i64, ::libc::SEEK_SET)) == (6_i64)) as i32) != 0));
     let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     {
         let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
@@ -56,7 +56,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     assert!(((((libc::ftruncate(fd, 5_i64)) == (0)) as i32) != 0));
-    assert!(((((libc::lseek(fd, 0_i64, 2)) == (5_i64)) as i32) != 0));
+    assert!(((((libc::lseek(fd, 0_i64, ::libc::SEEK_END)) == (5_i64)) as i32) != 0));
     assert!(((((libc::close(fd)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;
