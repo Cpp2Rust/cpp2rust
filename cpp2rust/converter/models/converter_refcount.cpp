@@ -1263,6 +1263,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),
                      Mapper::MapFunctionName(fn_decl)));
+  computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
@@ -1322,7 +1323,7 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
     PushExprKind push(*this, ExprKind::Void);
     Convert(expr->getSubExpr());
-    if (!TypeIsCopyable(expr->getSubExpr()->getType())) {
+    if (!TypeIsCopyable(expr->getSubExpr()->getType()) && !isFresh()) {
       StrCat(".clone()");
     }
     return false;
