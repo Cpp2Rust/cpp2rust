@@ -18,6 +18,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
+#include "converter/rs_expr.h"
 #include "converter/translation_rule.h"
 #include "logging.h"
 
@@ -46,7 +47,7 @@ public:
     return *sema_;
   }
 
-  bool VisitRecoveryExpr(clang::RecoveryExpr *expr);
+  RsExpr *VisitRecoveryExpr(clang::RecoveryExpr *expr);
 
   virtual void EmitFilePreamble();
 
@@ -294,13 +295,13 @@ public:
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
 
-  virtual bool VisitCallExpr(clang::CallExpr *expr);
+  virtual RsExpr *VisitCallExpr(clang::CallExpr *expr);
 
-  virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
+  virtual RsExpr *VisitIntegerLiteral(clang::IntegerLiteral *expr);
 
-  virtual bool VisitFloatingLiteral(clang::FloatingLiteral *expr);
+  virtual RsExpr *VisitFloatingLiteral(clang::FloatingLiteral *expr);
 
-  virtual bool VisitCharacterLiteral(clang::CharacterLiteral *expr);
+  virtual RsExpr *VisitCharacterLiteral(clang::CharacterLiteral *expr);
 
   std::string GetEscapedCharLiteral(char character) const;
 
@@ -308,69 +309,70 @@ public:
 
   std::string GetEscapedStringLiteral(clang::Expr *expr,
                                       uint64_t pad_nulls = 0) const;
-  virtual bool VisitStringLiteral(clang::StringLiteral *expr);
+  virtual RsExpr *VisitStringLiteral(clang::StringLiteral *expr);
 
-  virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
+  virtual RsExpr *VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
 
   void ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr);
 
-  virtual bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr);
+  virtual RsExpr *VisitImplicitCastExpr(clang::ImplicitCastExpr *expr);
 
-  virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
+  virtual RsExpr *VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
 
-  virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
+  virtual RsExpr *VisitBinaryOperator(clang::BinaryOperator *expr);
 
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
   virtual bool ConvertIncAndDec(clang::UnaryOperator *expr);
 
-  virtual bool VisitUnaryOperator(clang::UnaryOperator *expr);
+  virtual RsExpr *VisitUnaryOperator(clang::UnaryOperator *expr);
 
-  virtual bool VisitStmtExpr(clang::StmtExpr *expr);
+  virtual RsExpr *VisitStmtExpr(clang::StmtExpr *expr);
 
   virtual void EmitStmtExprTail(clang::Expr *tail);
 
-  virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
+  virtual RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr);
 
-  virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);
+  virtual RsExpr *VisitDeclRefExpr(clang::DeclRefExpr *expr);
   std::string ConvertDeclRefExpr(clang::DeclRefExpr *expr);
 
-  virtual bool VisitParenExpr(clang::ParenExpr *expr);
+  virtual RsExpr *VisitParenExpr(clang::ParenExpr *expr);
 
   void ConvertMemberExpr(clang::MemberExpr *expr);
 
-  virtual bool VisitMemberExpr(clang::MemberExpr *expr);
+  virtual RsExpr *VisitMemberExpr(clang::MemberExpr *expr);
 
-  virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
+  virtual RsExpr *VisitCXXThisExpr(clang::CXXThisExpr *expr);
 
-  virtual bool VisitInitListExpr(clang::InitListExpr *expr);
+  virtual RsExpr *VisitInitListExpr(clang::InitListExpr *expr);
 
-  virtual bool VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
+  virtual RsExpr *VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
 
-  virtual bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr);
+  virtual RsExpr *VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr);
 
-  virtual bool VisitCXXNullPtrLiteralExpr(clang::CXXNullPtrLiteralExpr *expr);
+  virtual RsExpr *
+  VisitCXXNullPtrLiteralExpr(clang::CXXNullPtrLiteralExpr *expr);
 
-  virtual bool VisitGNUNullExpr(clang::GNUNullExpr *expr);
+  virtual RsExpr *VisitGNUNullExpr(clang::GNUNullExpr *expr);
 
-  virtual bool VisitCXXNewExpr(clang::CXXNewExpr *expr);
+  virtual RsExpr *VisitCXXNewExpr(clang::CXXNewExpr *expr);
 
-  virtual bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr);
+  virtual RsExpr *VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr);
 
-  virtual bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr);
+  virtual RsExpr *VisitCXXConstructExpr(clang::CXXConstructExpr *expr);
 
   void ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr);
 
   virtual void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr);
 
-  virtual bool
+  virtual RsExpr *
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr);
 
-  virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
+  virtual RsExpr *VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
 
-  virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
+  virtual RsExpr *VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
@@ -378,11 +380,12 @@ public:
 
   virtual void AddIncDecImpls(clang::EnumDecl *decl);
 
-  virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
+  virtual RsExpr *VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
-  virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
+  virtual RsExpr *VisitLambdaExpr(clang::LambdaExpr *expr);
 
-  virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
+  virtual RsExpr *
+  VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
@@ -390,18 +393,22 @@ public:
 
   bool ConvertSwitchCaseCondition(clang::SwitchCase *stmt);
 
-  virtual bool VisitVAArgExpr(clang::VAArgExpr *expr);
+  virtual RsExpr *VisitVAArgExpr(clang::VAArgExpr *expr);
 
-  virtual bool VisitCXXDefaultInitExpr(clang::CXXDefaultInitExpr *expr);
+  virtual RsExpr *VisitCXXDefaultInitExpr(clang::CXXDefaultInitExpr *expr);
 
-  virtual bool VisitPredefinedExpr(clang::PredefinedExpr *expr);
+  virtual RsExpr *VisitPredefinedExpr(clang::PredefinedExpr *expr);
 
   virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
 
-  virtual bool
+  virtual RsExpr *
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
 
 protected:
+  RsExpr *ConvertExpr(clang::Expr *expr);
+
+  RsArena arena_;
+
   const clang::Expr *GetParentExpr(const clang::Expr *expr);
   bool IsSubExprOf(const clang::Expr *sub_expr, const clang::Expr *parent_expr);
 

@@ -28,7 +28,7 @@ public:
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
-  bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
+  RsExpr *VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
 
   void EmitRustUnion(clang::RecordDecl *decl) override;
 
@@ -47,7 +47,7 @@ public:
 
   void AddByteReprTrait(const clang::EnumDecl *decl) override;
 
-  bool
+  RsExpr *
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
 
   void AddDefaultTrait(const clang::RecordDecl *decl) override;
@@ -74,11 +74,11 @@ public:
 
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
-  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
+  RsExpr *VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
-  bool VisitConditionalOperator(clang::ConditionalOperator *expr) override;
+  RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 
   void ConvertPrintf(clang::CallExpr *expr) override;
 
@@ -90,33 +90,33 @@ public:
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
 
-  bool VisitCallExpr(clang::CallExpr *expr) override;
+  RsExpr *VisitCallExpr(clang::CallExpr *expr) override;
 
-  bool VisitStringLiteral(clang::StringLiteral *expr) override;
+  RsExpr *VisitStringLiteral(clang::StringLiteral *expr) override;
 
-  bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
+  RsExpr *VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 
   bool VisitFunctionPointerCast(clang::ExplicitCastExpr *expr);
 
-  bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) override;
+  RsExpr *VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) override;
 
   void ConvertBinaryOperator(clang::BinaryOperator *expr) override;
 
-  bool VisitStmtExpr(clang::StmtExpr *expr) override;
+  RsExpr *VisitStmtExpr(clang::StmtExpr *expr) override;
 
   void EmitStmtExprTail(clang::Expr *tail) override;
 
-  bool VisitInitListExpr(clang::InitListExpr *expr) override;
+  RsExpr *VisitInitListExpr(clang::InitListExpr *expr) override;
 
-  bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
+  RsExpr *VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
 
-  bool VisitMemberExpr(clang::MemberExpr *expr) override;
+  RsExpr *VisitMemberExpr(clang::MemberExpr *expr) override;
 
   void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
 
-  bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
+  RsExpr *VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
-  bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
+  RsExpr *VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
 
   bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) override;
 
@@ -130,17 +130,18 @@ public:
 
   std::string ConvertStream(clang::Expr *expr) override;
 
-  bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
+  RsExpr *VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
-  bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
+  RsExpr *
+  VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
 
-  bool VisitVAArgExpr(clang::VAArgExpr *expr) override;
+  RsExpr *VisitVAArgExpr(clang::VAArgExpr *expr) override;
 
   void ConvertVariadicArg(clang::Expr *arg) override;
 
   void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
-  bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) override;
+  RsExpr *VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) override;
 
   std::string GetDefaultAsString(clang::QualType qual_type) override;
 
