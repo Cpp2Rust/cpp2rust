@@ -1097,22 +1097,20 @@ bool Converter::Convert(clang::Stmt *stmt) {
   if (stmt == nullptr) {
     return true;
   }
-  bool exited_visit;
-  if (auto *expr = clang::dyn_cast<clang::Expr>(stmt)) {
-    PushExprKind push(*this, ExprKind::Void);
-    exited_visit = Convert(expr);
-  } else {
+  {
     PushExprKind push(*this, ExprKind::Void);
     StrCat(ConvertStmt(stmt)->print());
-    exited_visit = false;
   }
   if (IsaSemiColonStmt(stmt)) {
     StrCat(token::kSemiColon);
   }
-  return exited_visit;
+  return false;
 }
 
 RsExpr *Converter::ConvertStmt(clang::Stmt *stmt) {
+  if (auto *expr = clang::dyn_cast<clang::Expr>(stmt)) {
+    return ConvertExpr(expr);
+  }
   switch (stmt->getStmtClass()) {
   case clang::Stmt::CompoundStmtClass:
     return VisitCompoundStmt(clang::cast<clang::CompoundStmt>(stmt));
