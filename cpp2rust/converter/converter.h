@@ -132,41 +132,41 @@ public:
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
 
-  virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
+  virtual RsExpr *VisitCompoundStmt(clang::CompoundStmt *stmt);
 
-  virtual bool VisitDeclStmt(clang::DeclStmt *stmt);
+  virtual RsExpr *VisitDeclStmt(clang::DeclStmt *stmt);
 
-  virtual bool VisitReturnStmt(clang::ReturnStmt *stmt);
+  virtual RsExpr *VisitReturnStmt(clang::ReturnStmt *stmt);
 
-  virtual bool VisitGotoStmt(clang::GotoStmt *stmt);
+  virtual RsExpr *VisitGotoStmt(clang::GotoStmt *stmt);
 
   void ConvertCondition(clang::Expr *cond);
 
-  virtual bool VisitIfStmt(clang::IfStmt *stmt);
+  virtual RsExpr *VisitIfStmt(clang::IfStmt *stmt);
 
-  virtual bool VisitWhileStmt(clang::WhileStmt *stmt);
+  virtual RsExpr *VisitWhileStmt(clang::WhileStmt *stmt);
 
-  virtual bool VisitDoStmt(clang::DoStmt *stmt);
+  virtual RsExpr *VisitDoStmt(clang::DoStmt *stmt);
 
-  virtual bool VisitForStmt(clang::ForStmt *stmt);
+  virtual RsExpr *VisitForStmt(clang::ForStmt *stmt);
 
-  virtual bool VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
+  virtual RsExpr *VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt);
 
-  virtual bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt);
+  virtual RsExpr *VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt);
 
-  virtual bool VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt);
+  virtual RsExpr *VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt);
 
-  virtual bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt);
+  virtual RsExpr *VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt);
 
-  bool VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
-                                      const char *len_suffix);
+  RsExpr *VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
+                                         const char *len_suffix);
 
   void ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
                            const clang::VarDecl *map_iter_decl = nullptr);
 
-  virtual bool VisitBreakStmt(clang::BreakStmt *stmt);
+  virtual RsExpr *VisitBreakStmt(clang::BreakStmt *stmt);
 
-  virtual bool VisitContinueStmt(clang::ContinueStmt *stmt);
+  virtual RsExpr *VisitContinueStmt(clang::ContinueStmt *stmt);
 
   bool GetFmtArg(clang::Expr *arg, std::string &fmt, std::string &fmt_args,
                  const char *&fmt_trait, std::string &fmt_width);
@@ -387,7 +387,7 @@ public:
   virtual RsExpr *
   VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
 
-  virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
+  virtual RsExpr *VisitSwitchStmt(clang::SwitchStmt *stmt);
 
   void EmitSwitchArm(const SwitchArm &arm, bool is_default);
 
@@ -406,6 +406,8 @@ public:
 
 protected:
   RsExpr *ConvertExpr(clang::Expr *expr);
+
+  RsExpr *ConvertStmt(clang::Stmt *stmt);
 
   RsArena arena_;
 

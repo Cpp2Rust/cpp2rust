@@ -118,11 +118,11 @@ public:
 
   RsExpr *VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
 
-  bool VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) override;
+  RsExpr *VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) override;
 
-  bool VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) override;
+  RsExpr *VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) override;
 
-  bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
+  RsExpr *VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
 
   void EmitByValueShadow(const std::string &loop_var_name, clang::QualType type,
                          std::string box_expr,

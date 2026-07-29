@@ -1762,85 +1762,94 @@ void ConverterRefCount::EmitByValueShadow(const std::string &loop_var_name,
   }
 }
 
-bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
+RsExpr *
+ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
+  Buffer node_buf(*this);
+  {
+    auto *loop_var = stmt->getLoopVariable();
+    auto loop_var_name = GetNamedDeclAsString(loop_var);
 
-  StrCat("'loop_:");
-  StrCat(keyword::kFor, loop_var_name, keyword::kIn, "RefcountMapIter::begin(",
-         ConvertObject(stmt->getRangeInit()), ')');
-  PushBrace brace(*this);
+    StrCat("'loop_:");
+    StrCat(keyword::kFor, loop_var_name, keyword::kIn,
+           "RefcountMapIter::begin(", ConvertObject(stmt->getRangeInit()), ')');
+    PushBrace brace(*this);
 
-  EmitByValueShadow(
-      loop_var_name, loop_var->getType(), std::string(loop_var_name),
-      "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + '>');
+    EmitByValueShadow(
+        loop_var_name, loop_var->getType(), std::string(loop_var_name),
+        "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + '>');
 
-  ConvertForRangeBody(stmt, loop_var);
-
-  return false;
+    ConvertForRangeBody(stmt, loop_var);
+  }
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool ConverterRefCount::VisitCXXForRangeStmtVector(
-    clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
+RsExpr *
+ConverterRefCount::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
+  Buffer node_buf(*this);
+  {
+    auto *loop_var = stmt->getLoopVariable();
+    auto loop_var_name = GetNamedDeclAsString(loop_var);
 
-  StrCat("'loop_:");
-  StrCat(keyword::kFor,
-         stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
-         loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
-  StrCat(keyword::kAs, ConvertPtrType(stmt->getRangeInit()->getType()));
+    StrCat("'loop_:");
+    StrCat(keyword::kFor,
+           stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
+           loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
+    StrCat(keyword::kAs, ConvertPtrType(stmt->getRangeInit()->getType()));
 
-  PushBrace brace(*this);
+    PushBrace brace(*this);
 
-  // handle multi-level types such as Vec<Value<Vec<T>>>
-  if (IsBoxedType(stmt->getRangeInit()->getType()) &&
-      GetInnerType(stmt->getRangeInit()->getType()).starts_with("Value<")) {
-    StrCat(keyword::kLet, loop_var_name, token::kColon);
+    // handle multi-level types such as Vec<Value<Vec<T>>>
+    if (IsBoxedType(stmt->getRangeInit()->getType()) &&
+        GetInnerType(stmt->getRangeInit()->getType()).starts_with("Value<")) {
+      StrCat(keyword::kLet, loop_var_name, token::kColon);
 
-    if (loop_var->getType()->isReferenceType()) {
-      StrCat(ToString(loop_var->getType()), token::kAssign, loop_var_name,
-             GetPointerDerefSuffix(loop_var->getType().getNonReferenceType()),
-             ".as_pointer()");
+      if (loop_var->getType()->isReferenceType()) {
+        StrCat(ToString(loop_var->getType()), token::kAssign, loop_var_name,
+               GetPointerDerefSuffix(loop_var->getType().getNonReferenceType()),
+               ".as_pointer()");
+      } else {
+        PushConversionKind push(*this, ConversionKind::FullRefCount);
+        StrCat(ToString(loop_var->getType()), token::kAssign,
+               "Rc::new(RefCell::new(", loop_var_name,
+               GetPointerDerefSuffix(loop_var->getType()),
+               ".borrow().clone()))");
+      }
+      StrCat(token::kSemiColon);
     } else {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      StrCat(ToString(loop_var->getType()), token::kAssign,
-             "Rc::new(RefCell::new(", loop_var_name,
-             GetPointerDerefSuffix(loop_var->getType()), ".borrow().clone()))");
+      EmitByValueShadow(loop_var_name, loop_var->getType(),
+                        loop_var_name +
+                            GetPointerDerefSuffix(loop_var->getType()) +
+                            ".clone()");
     }
-    StrCat(token::kSemiColon);
-  } else {
+
+    ConvertForRangeBody(stmt);
+  }
+  return arena_.Verbatim(std::move(node_buf).str());
+}
+
+RsExpr *
+ConverterRefCount::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
+  Buffer node_buf(*this);
+  {
+    auto *loop_var = stmt->getLoopVariable();
+    auto loop_var_name = GetNamedDeclAsString(loop_var);
+
+    StrCat("'loop_:");
+    StrCat(keyword::kFor,
+           stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
+           loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
+    StrCat(".to_string_iterator() as StringIterator<",
+           ToString(loop_var->getType().getNonReferenceType()), '>');
+
+    PushBrace brace(*this);
+
     EmitByValueShadow(loop_var_name, loop_var->getType(),
                       loop_var_name +
                           GetPointerDerefSuffix(loop_var->getType()) +
                           ".clone()");
+    ConvertForRangeBody(stmt);
   }
-
-  ConvertForRangeBody(stmt);
-
-  return false;
-}
-
-bool ConverterRefCount::VisitCXXForRangeStmtString(
-    clang::CXXForRangeStmt *stmt) {
-  auto *loop_var = stmt->getLoopVariable();
-  auto loop_var_name = GetNamedDeclAsString(loop_var);
-
-  StrCat("'loop_:");
-  StrCat(keyword::kFor,
-         stmt->getLoopVariable()->getType().isConstQualified() ? "" : "mut",
-         loop_var_name, keyword::kIn, ConvertObject(stmt->getRangeInit()));
-  StrCat(".to_string_iterator() as StringIterator<",
-         ToString(loop_var->getType().getNonReferenceType()), '>');
-
-  PushBrace brace(*this);
-
-  EmitByValueShadow(loop_var_name, loop_var->getType(),
-                    loop_var_name + GetPointerDerefSuffix(loop_var->getType()) +
-                        ".clone()");
-  ConvertForRangeBody(stmt);
-
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void ConverterRefCount::ConvertArrayCXXConstructExpr(

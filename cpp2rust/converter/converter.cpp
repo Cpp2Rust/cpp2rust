@@ -1094,40 +1094,85 @@ static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
 }
 
 bool Converter::Convert(clang::Stmt *stmt) {
+  if (stmt == nullptr) {
+    return true;
+  }
   bool exited_visit;
-  if (auto *expr = clang::dyn_cast_or_null<clang::Expr>(stmt)) {
+  if (auto *expr = clang::dyn_cast<clang::Expr>(stmt)) {
     PushExprKind push(*this, ExprKind::Void);
     exited_visit = Convert(expr);
   } else {
     PushExprKind push(*this, ExprKind::Void);
-    exited_visit = TraverseStmt(stmt);
+    StrCat(ConvertStmt(stmt)->print());
+    exited_visit = false;
   }
-  if (stmt && IsaSemiColonStmt(stmt)) {
+  if (IsaSemiColonStmt(stmt)) {
     StrCat(token::kSemiColon);
   }
   return exited_visit;
 }
 
-bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
+RsExpr *Converter::ConvertStmt(clang::Stmt *stmt) {
+  switch (stmt->getStmtClass()) {
+  case clang::Stmt::CompoundStmtClass:
+    return VisitCompoundStmt(clang::cast<clang::CompoundStmt>(stmt));
+  case clang::Stmt::DeclStmtClass:
+    return VisitDeclStmt(clang::cast<clang::DeclStmt>(stmt));
+  case clang::Stmt::ReturnStmtClass:
+    return VisitReturnStmt(clang::cast<clang::ReturnStmt>(stmt));
+  case clang::Stmt::GotoStmtClass:
+    return VisitGotoStmt(clang::cast<clang::GotoStmt>(stmt));
+  case clang::Stmt::IfStmtClass:
+    return VisitIfStmt(clang::cast<clang::IfStmt>(stmt));
+  case clang::Stmt::WhileStmtClass:
+    return VisitWhileStmt(clang::cast<clang::WhileStmt>(stmt));
+  case clang::Stmt::DoStmtClass:
+    return VisitDoStmt(clang::cast<clang::DoStmt>(stmt));
+  case clang::Stmt::ForStmtClass:
+    return VisitForStmt(clang::cast<clang::ForStmt>(stmt));
+  case clang::Stmt::CXXForRangeStmtClass:
+    return VisitCXXForRangeStmt(clang::cast<clang::CXXForRangeStmt>(stmt));
+  case clang::Stmt::BreakStmtClass:
+    return VisitBreakStmt(clang::cast<clang::BreakStmt>(stmt));
+  case clang::Stmt::ContinueStmtClass:
+    return VisitContinueStmt(clang::cast<clang::ContinueStmt>(stmt));
+  case clang::Stmt::SwitchStmtClass:
+    return VisitSwitchStmt(clang::cast<clang::SwitchStmt>(stmt));
+  case clang::Stmt::AttributedStmtClass:
+    return ConvertStmt(clang::cast<clang::AttributedStmt>(stmt)->getSubStmt());
+  case clang::Stmt::NullStmtClass:
+    return arena_.Verbatim("");
+  default:
+    llvm::errs() << "ConvertStmt: unhandled statement class "
+                 << stmt->getStmtClassName() << '\n';
+    assert(false && "statement class not handled by ConvertStmt dispatch");
+    return arena_.Verbatim("");
+  }
+}
+
+RsExpr *Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
+  Buffer node_buf(*this);
   if (CompoundHasTopLevelLabel(stmt)) {
     ConvertGotoBlock(stmt);
-    return false;
+    return arena_.Verbatim(std::move(node_buf).str());
   }
   for (auto *child : stmt->body()) {
     Convert(child);
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
+RsExpr *Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
+  Buffer node_buf(*this);
   for (auto *decl : stmt->decls()) {
     Convert(decl);
     StrCat(token::kSemiColon);
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
+RsExpr *Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
+  Buffer node_buf(*this);
   auto return_type = curr_function_->getReturnType();
   if (!return_type->isVoidType()) {
     StrCat(keyword::kReturn);
@@ -1136,12 +1181,12 @@ bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
     Convert(stmt->getRetValue());
     StrCat(token::kSemiColon, keyword::kReturn, token::kSemiColon);
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitGotoStmt(clang::GotoStmt *stmt) {
-  StrCat(std::format("goto!('{})", stmt->getLabel()->getName().str()));
-  return false;
+RsExpr *Converter::VisitGotoStmt(clang::GotoStmt *stmt) {
+  return arena_.Verbatim(
+      std::format("goto!('{})", stmt->getLabel()->getName().str()));
 }
 
 void Converter::ConvertCondition(clang::Expr *cond) {
@@ -1149,7 +1194,8 @@ void Converter::ConvertCondition(clang::Expr *cond) {
   Convert(NormalizeToBool(cond, ctx_));
 }
 
-bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+RsExpr *Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  Buffer node_buf(*this);
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
   {
@@ -1165,10 +1211,11 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
       Convert(stmt->getElse());
     }
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
+RsExpr *Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
+  Buffer node_buf(*this);
   PushBreakTarget push(break_target_, BreakTarget::Loop);
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
@@ -1179,10 +1226,11 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
     Convert(stmt->getBody());
     curr_for_inc_.pop_back();
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
+RsExpr *Converter::VisitDoStmt(clang::DoStmt *stmt) {
+  Buffer node_buf(*this);
   PushBreakTarget push(break_target_, BreakTarget::Loop);
   const char *control_var = "__do_while";
   StrCat(keyword::kLet, "mut", control_var, token::kAssign, keyword::kTrue,
@@ -1199,10 +1247,11 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
     Convert(stmt->getBody());
     curr_for_inc_.pop_back();
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitForStmt(clang::ForStmt *stmt) {
+RsExpr *Converter::VisitForStmt(clang::ForStmt *stmt) {
+  Buffer node_buf(*this);
   PushBreakTarget push(break_target_, BreakTarget::Loop);
   Convert(stmt->getInit());
   StrCat("'loop_:");
@@ -1220,7 +1269,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
     Convert(stmt->getInc());
     StrCat(token::kSemiColon);
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::ConvertLoopVariable(clang::VarDecl *decl,
@@ -1257,7 +1306,7 @@ void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
   curr_for_inc_.pop_back();
 }
 
-bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
+RsExpr *Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   auto range_init_type = stmt->getRangeInit()->getType();
 
   if (!Mapper::Contains(range_init_type.getUnqualifiedType())) {
@@ -1276,7 +1325,8 @@ bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   return VisitCXXForRangeStmtVector(stmt);
 }
 
-bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
+RsExpr *Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
+  Buffer node_buf(*this);
   auto *loop_var = stmt->getLoopVariable();
   auto loop_var_name = GetNamedDeclAsString(loop_var);
 
@@ -1291,19 +1341,20 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
     ConvertForRangeBody(stmt, loop_var);
   }
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
+RsExpr *Converter::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
   return VisitCXXForRangeStmtIndexBased(stmt, "len()-1");
 }
 
-bool Converter::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
+RsExpr *Converter::VisitCXXForRangeStmtVector(clang::CXXForRangeStmt *stmt) {
   return VisitCXXForRangeStmtIndexBased(stmt, "len()");
 }
 
-bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
-                                               const char *len_suffix) {
+RsExpr *Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
+                                                  const char *len_suffix) {
+  Buffer node_buf(*this);
   auto *loop_var = stmt->getLoopVariable();
   auto loop_var_name = GetNamedDeclAsString(loop_var);
 
@@ -1332,25 +1383,28 @@ bool Converter::VisitCXXForRangeStmtIndexBased(clang::CXXForRangeStmt *stmt,
     ConvertForRangeBody(stmt);
   }
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
+RsExpr *Converter::VisitBreakStmt([[maybe_unused]] clang::BreakStmt *stmt) {
+  Buffer node_buf(*this);
   StrCat(keyword::kBreak);
   if (isSwitchBreak()) {
     StrCat("'switch");
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
+RsExpr *
+Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
+  Buffer node_buf(*this);
   if (!curr_for_inc_.empty()) {
     Convert(curr_for_inc_.back());
     StrCat(token::kSemiColon);
   }
   StrCat(keyword::kContinue);
   StrCat("'loop_");
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 RsExpr *Converter::ConvertExpr(clang::Expr *expr) {
@@ -3521,54 +3575,57 @@ void Converter::EmitSwitchArm(const SwitchArm &arm, bool is_default) {
   StrCat("},");
 }
 
-bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
-  auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
-  assert(body);
-  auto arms = AnalyzeSwitchArms(body);
+RsExpr *Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
+  Buffer node_buf(*this);
+  {
+    auto *body = clang::dyn_cast<clang::CompoundStmt>(stmt->getBody());
+    assert(body);
+    auto arms = AnalyzeSwitchArms(body);
 
-  bool needs_switch_macro = std::ranges::any_of(arms, [](const SwitchArm &arm) {
-    return !arm.label.empty() || arm.has_fallthrough;
-  });
+    bool needs_switch_macro =
+        std::ranges::any_of(arms, [](const SwitchArm &arm) {
+          return !arm.label.empty() || arm.has_fallthrough;
+        });
 
-  PushBreakTarget push(break_target_, needs_switch_macro
-                                          ? BreakTarget::FallthroughSwitch
-                                          : BreakTarget::Switch);
+    PushBreakTarget push(break_target_, needs_switch_macro
+                                            ? BreakTarget::FallthroughSwitch
+                                            : BreakTarget::Switch);
 
-  if (needs_switch_macro) {
-    StrCat("switch!");
-  } else {
-    StrCat("'switch:");
-  }
-
-  PushParen switch_macro_paren(*this, needs_switch_macro);
-  PushBrace switch_label_brace(*this, !needs_switch_macro);
-
-  if (needs_switch_macro) {
-    StrCat("match", ToString(stmt->getCond()));
-  } else {
-    StrCat(
-        std::format("let __match_cond = {};", ConvertRValue(stmt->getCond())));
-    StrCat("match __match_cond");
-  }
-
-  PushBrace match_brace(*this);
-
-  const SwitchArm *default_arm = nullptr;
-  for (const auto &arm : arms) {
-    if (arm.is_default_case) {
-      default_arm = &arm;
-      continue;
+    if (needs_switch_macro) {
+      StrCat("switch!");
+    } else {
+      StrCat("'switch:");
     }
-    EmitSwitchArm(arm, /*is_default=*/false);
-  }
 
-  if (default_arm) {
-    EmitSwitchArm(*default_arm, /*is_default=*/true);
-  } else {
-    StrCat(R"( _ => {})");
-  }
+    PushParen switch_macro_paren(*this, needs_switch_macro);
+    PushBrace switch_label_brace(*this, !needs_switch_macro);
 
-  return false;
+    if (needs_switch_macro) {
+      StrCat("match", ToString(stmt->getCond()));
+    } else {
+      StrCat(std::format("let __match_cond = {};",
+                         ConvertRValue(stmt->getCond())));
+      StrCat("match __match_cond");
+    }
+
+    PushBrace match_brace(*this);
+
+    const SwitchArm *default_arm = nullptr;
+    for (const auto &arm : arms) {
+      if (arm.is_default_case) {
+        default_arm = &arm;
+        continue;
+      }
+      EmitSwitchArm(arm, /*is_default=*/false);
+    }
+
+    if (default_arm) {
+      EmitSwitchArm(*default_arm, /*is_default=*/true);
+    } else {
+      StrCat(R"( _ => {})");
+    }
+  }
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 // TODO: right now defaults go into the constructor, but they should also be
