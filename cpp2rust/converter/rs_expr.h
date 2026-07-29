@@ -39,7 +39,10 @@ struct Verbatim : RsExpr {
 
 class RsArena {
 public:
-  RsExpr *Verbatim(std::string text);
+  template <typename T, typename... Args> T *New(Args &&...args) {
+    pool_.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+    return static_cast<T *>(pool_.back().get());
+  }
 
 private:
   std::vector<std::unique_ptr<RsExpr>> pool_;
