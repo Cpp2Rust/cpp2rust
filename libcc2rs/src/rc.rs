@@ -1420,7 +1420,7 @@ impl ByteRepr for AnyPtr {
     }
 }
 
-impl<T: 'static> Ptr<T> {
+impl<T: ByteRepr + 'static> Ptr<T> {
     pub fn to_int(&self) -> usize {
         let mut buf = vec![0u8; Self::byte_size()];
         self.to_bytes(&mut buf);
