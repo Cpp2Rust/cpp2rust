@@ -12,6 +12,6 @@ void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
   if (first_) {
     converter->EmitFilePreamble();
   }
-  converter->TraverseDecl(ctx.getTranslationUnitDecl());
+  converter->Convert(ctx.getTranslationUnitDecl());
 }
 } // namespace cpp2rust

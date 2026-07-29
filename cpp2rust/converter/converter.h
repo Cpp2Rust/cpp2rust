@@ -47,6 +47,8 @@ public:
     return *sema_;
   }
 
+  virtual bool Convert(clang::Decl *decl);
+
   RsExpr *VisitRecoveryExpr(clang::RecoveryExpr *expr);
 
   virtual void EmitFilePreamble();
@@ -77,9 +79,9 @@ public:
 
   virtual bool VisitUsingType(clang::UsingType *type);
 
-  virtual bool VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl);
+  virtual RsExpr *VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl);
 
-  virtual bool VisitFunctionDecl(clang::FunctionDecl *decl);
+  virtual RsExpr *VisitFunctionDecl(clang::FunctionDecl *decl);
 
   virtual void EmitFunctionPreamble(clang::FunctionDecl *decl);
 
@@ -89,9 +91,9 @@ public:
 
   void EmitHoistedDecls(clang::CompoundStmt *body);
 
-  virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
+  virtual RsExpr *VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
 
-  virtual bool VisitVarDecl(clang::VarDecl *decl);
+  virtual RsExpr *VisitVarDecl(clang::VarDecl *decl);
 
   void ConvertVarDecl(clang::VarDecl *decl);
 
@@ -107,9 +109,9 @@ public:
 
   virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
-  bool VisitRecordDecl(clang::RecordDecl *decl);
+  RsExpr *VisitRecordDecl(clang::RecordDecl *decl);
 
-  virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
+  virtual RsExpr *VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
@@ -119,18 +121,18 @@ public:
 
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
-  virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+  virtual RsExpr *VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
 
   void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
 
-  virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
+  virtual RsExpr *VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
-  virtual bool VisitFieldDecl(clang::FieldDecl *decl);
+  virtual RsExpr *VisitFieldDecl(clang::FieldDecl *decl);
 
-  virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
+  virtual RsExpr *VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
-  virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
+  virtual RsExpr *VisitTypedefDecl(clang::TypedefDecl *decl);
 
   virtual RsExpr *VisitCompoundStmt(clang::CompoundStmt *stmt);
 
@@ -374,7 +376,7 @@ public:
 
   virtual RsExpr *VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 
-  virtual bool VisitEnumDecl(clang::EnumDecl *decl);
+  virtual RsExpr *VisitEnumDecl(clang::EnumDecl *decl);
 
   virtual void AddFromImpl(clang::EnumDecl *decl);
 
@@ -399,7 +401,7 @@ public:
 
   virtual RsExpr *VisitPredefinedExpr(clang::PredefinedExpr *expr);
 
-  virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
+  virtual RsExpr *VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
 
   virtual RsExpr *
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
@@ -408,6 +410,8 @@ protected:
   RsExpr *ConvertExpr(clang::Expr *expr);
 
   RsExpr *ConvertStmt(clang::Stmt *stmt);
+
+  RsExpr *ConvertDecl(clang::Decl *decl);
 
   RsArena arena_;
 
@@ -484,7 +488,6 @@ protected:
 
   virtual std::string ConvertPointeeType(clang::QualType ptr_type);
 
-  virtual bool Convert(clang::Decl *decl);
   virtual bool Convert(clang::Stmt *stmt);
   virtual bool Convert(clang::Expr *expr,
                        std::optional<clang::QualType> implicit_convert_to = {});

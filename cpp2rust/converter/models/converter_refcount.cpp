@@ -413,12 +413,11 @@ ConverterRefCount::VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) {
   return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
+RsExpr *ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (decl_ids_.count(GetID(decl))) {
-    return false;
+    return arena_.Verbatim("");
   }
-  Converter::VisitCXXRecordDecl(decl);
-  return false;
+  return Converter::VisitCXXRecordDecl(decl);
 }
 
 RsExpr *ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
@@ -668,13 +667,13 @@ ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
   return "&self";
 }
 
-bool ConverterRefCount::VisitCXXConstructorDecl(
-    clang::CXXConstructorDecl *decl) {
+RsExpr *
+ConverterRefCount::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
   return Converter::VisitCXXConstructorDecl(decl);
 }
 
-bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
+RsExpr *ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
   return Converter::VisitFieldDecl(decl);
 }
@@ -752,17 +751,15 @@ void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   StrCat(token::kSemiColon);
 }
 
-bool ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
+RsExpr *ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
   bool unboxed = in_function_formals_;
   PushConversionKind push(*this, unboxed ? ConversionKind::Unboxed
                                          : ConversionKind::FullRefCount);
   if (decl->getType()->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
-    Converter::VisitVarDecl(decl);
-  } else {
-    Converter::VisitVarDecl(decl);
+    return Converter::VisitVarDecl(decl);
   }
-  return false;
+  return Converter::VisitVarDecl(decl);
 }
 
 bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {

@@ -26,7 +26,7 @@ public:
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
                              FnProtoType kind = FnProtoType::FnPtr) override;
 
-  bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
+  RsExpr *VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
   RsExpr *VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
 
@@ -56,13 +56,13 @@ public:
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 
-  bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
+  RsExpr *VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
-  bool VisitFieldDecl(clang::FieldDecl *decl) override;
+  RsExpr *VisitFieldDecl(clang::FieldDecl *decl) override;
 
   void EmitFunctionPreamble(clang::FunctionDecl *decl) override;
 
-  bool VisitVarDecl(clang::VarDecl *decl) override;
+  RsExpr *VisitVarDecl(clang::VarDecl *decl) override;
 
   void ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 

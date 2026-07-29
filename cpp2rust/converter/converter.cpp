@@ -309,28 +309,85 @@ bool Converter::VisitUsingType(clang::UsingType *type) {
   return Convert(type->desugar());
 }
 
-bool Converter::Convert(clang::Decl *decl) { return TraverseDecl(decl); }
+bool Converter::Convert(clang::Decl *decl) {
+  if (decl == nullptr) {
+    return true;
+  }
+  StrCat(ConvertDecl(decl)->print());
+  return false;
+}
 
-bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
+RsExpr *Converter::ConvertDecl(clang::Decl *decl) {
+  switch (decl->getKind()) {
+  case clang::Decl::TranslationUnit:
+    return VisitTranslationUnitDecl(
+        clang::cast<clang::TranslationUnitDecl>(decl));
+  case clang::Decl::Function:
+  case clang::Decl::CXXMethod:
+  case clang::Decl::CXXConstructor:
+  case clang::Decl::CXXDestructor:
+  case clang::Decl::CXXConversion:
+    return VisitFunctionDecl(clang::cast<clang::FunctionDecl>(decl));
+  case clang::Decl::CXXRecord:
+  case clang::Decl::ClassTemplateSpecialization:
+    return VisitCXXRecordDecl(clang::cast<clang::CXXRecordDecl>(decl));
+  case clang::Decl::Record:
+    return VisitRecordDecl(clang::cast<clang::RecordDecl>(decl));
+  case clang::Decl::Enum:
+    return VisitEnumDecl(clang::cast<clang::EnumDecl>(decl));
+  case clang::Decl::Var:
+    return VisitVarDecl(clang::cast<clang::VarDecl>(decl));
+  case clang::Decl::Field:
+    return VisitFieldDecl(clang::cast<clang::FieldDecl>(decl));
+  case clang::Decl::Namespace:
+    return VisitNamespaceDecl(clang::cast<clang::NamespaceDecl>(decl));
+  case clang::Decl::Typedef:
+    return VisitTypedefDecl(clang::cast<clang::TypedefDecl>(decl));
+  case clang::Decl::ClassTemplate:
+    return VisitClassTemplateDecl(clang::cast<clang::ClassTemplateDecl>(decl));
+  case clang::Decl::FunctionTemplate:
+    return VisitFunctionTemplateDecl(
+        clang::cast<clang::FunctionTemplateDecl>(decl));
+  case clang::Decl::LinkageSpec: {
+    Buffer node_buf(*this);
+    for (auto *child : clang::cast<clang::LinkageSpecDecl>(decl)->decls()) {
+      Convert(child);
+    }
+    return arena_.Verbatim(std::move(node_buf).str());
+  }
+  case clang::Decl::TypeAlias:
+  case clang::Decl::Empty:
+    return arena_.Verbatim("");
+  default:
+    llvm::errs() << "ConvertDecl: unhandled declaration kind "
+                 << decl->getDeclKindName() << '\n';
+    assert(false && "declaration kind not handled by ConvertDecl dispatch");
+    return arena_.Verbatim("");
+  }
+}
+
+RsExpr *Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
+  Buffer node_buf(*this);
   for (auto *child : decl->decls()) {
     if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
       Convert(child);
     }
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
+RsExpr *Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
     return VisitCXXMethodDecl(method);
   }
   if (!IsConvertibleFunctionDecl(decl)) {
-    return false;
+    return arena_.Verbatim("");
   }
   if (!IsInMainFile(decl) && !decl_ids_.insert(GetID(decl)).second) {
-    return false;
+    return arena_.Verbatim("");
   }
+  Buffer node_buf(*this);
   decl->dump(log());
   curr_function_ = decl;
   std::string function_name;
@@ -364,7 +421,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
       auto type = decl->getParamDecl(0)->getType().getNonReferenceType();
       if (auto cxx_record_decl = type->getAsCXXRecordDecl()) {
         ConvertOrdAndPartialOrdTraits(cxx_record_decl, decl);
-        return false;
+        return arena_.Verbatim(std::move(node_buf).str());
       }
       break;
     }
@@ -372,7 +429,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
       assert(0 && "Unsupported out-of-line operator");
     }
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
@@ -440,11 +497,13 @@ void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
   }
 }
 
-bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
+RsExpr *
+Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
+  Buffer node_buf(*this);
   for (auto *function_decl : decl->specializations()) {
-    VisitFunctionDecl(function_decl);
+    StrCat(VisitFunctionDecl(function_decl)->print());
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
@@ -572,18 +631,19 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   StrCat(token::kSemiColon);
 }
 
-bool Converter::VisitVarDecl(clang::VarDecl *decl) {
+RsExpr *Converter::VisitVarDecl(clang::VarDecl *decl) {
   if (ConvertLambdaVarDecl(decl)) {
-    return false;
+    return arena_.Verbatim("");
   }
 
+  Buffer node_buf(*this);
   if (IsGlobalVar(decl)) {
     ConvertGlobalVarDecl(decl);
   } else {
     ConvertVarDecl(decl);
   }
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
@@ -711,36 +771,37 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   return true;
 }
 
-bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
+RsExpr *Converter::VisitRecordDecl(clang::RecordDecl *decl) {
   decl->dump(log());
 
   // VisitCXXRecordDecl already visited the record
   if (clang::isa<clang::CXXRecordDecl>(decl)) {
-    return true;
+    return arena_.Verbatim("");
   }
 
   if (!decl->isCompleteDefinition()) {
-    return false;
+    return arena_.Verbatim("");
   }
 
   if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-    return false;
+    return arena_.Verbatim("");
   }
 
+  Buffer node_buf(*this);
   Mapper::AddRuleForUserDefinedType(decl);
   EmitRustStructOrUnion(decl);
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Enums and static variables. In rust they live outside the record
   for (auto *d : decl->decls()) {
     if (auto *enum_decl = llvm::dyn_cast<clang::EnumDecl>(d)) {
-      VisitEnumDecl(enum_decl);
+      StrCat(VisitEnumDecl(enum_decl)->print());
     }
     if (auto *var_decl = clang::dyn_cast<clang::VarDecl>(d)) {
-      VisitVarDecl(var_decl);
+      StrCat(VisitVarDecl(var_decl)->print());
     }
   }
 
@@ -750,9 +811,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
       if (!nested->isImplicit()) {
         inner_structs_[GetID(nested)] = GetRecordName(nested);
         if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(nested)) {
-          VisitCXXRecordDecl(cxx);
+          StrCat(VisitCXXRecordDecl(cxx)->print());
         } else {
-          VisitRecordDecl(nested);
+          StrCat(VisitRecordDecl(nested)->print());
         }
       }
     }
@@ -784,7 +845,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   {
     PushBrace brace(*this);
     for (auto *field : decl->fields()) {
-      VisitFieldDecl(field);
+      StrCat(VisitFieldDecl(field)->print());
     }
   }
 
@@ -841,7 +902,7 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   {
     PushBrace brace(*this);
     for (auto *field : decl->fields()) {
-      VisitFieldDecl(field);
+      StrCat(VisitFieldDecl(field)->print());
     }
   }
 
@@ -849,7 +910,7 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   AddByteReprTrait(decl);
 }
 
-bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
+RsExpr *Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
     materializeTemplateSpecialization(decl);
   }
@@ -858,25 +919,26 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
   Mapper::AddRuleForUserDefinedType(decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
-    return false;
+    return arena_.Verbatim("");
   }
 
+  Buffer node_buf(*this);
   if (decl->isStruct() || decl->isClass()) {
     for (auto c : GetTemplateInstantiatedCtors(decl)) {
       if (!decl_ids_.contains(GetID(c))) {
         StrCat(keyword::kImpl, GetRecordName(decl));
         PushBrace brace(*this);
-        VisitCXXMethodDecl(c);
+        StrCat(VisitCXXMethodDecl(c)->print());
       }
     }
 
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-      return false;
+      return arena_.Verbatim(std::move(node_buf).str());
     }
 
     if (decl->isAbstract()) {
       ConvertAbstractClass(decl);
-      return false;
+      return arena_.Verbatim(std::move(node_buf).str());
     }
 
     if (hasUserDefinedNonDefaultCopyOrMoveCtor(decl)) {
@@ -894,7 +956,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     EmitRustStructOrUnion(decl);
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-      return false;
+      return arena_.Verbatim(std::move(node_buf).str());
     }
     EmitRustStructOrUnion(decl);
   } else {
@@ -902,61 +964,64 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     assert(0 && "unsupported record kind");
   }
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
+RsExpr *Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   decl->dump(log());
   if (!IsConvertibleCXXMethodDecl(decl)) {
-    return false;
+    return arena_.Verbatim("");
   }
   curr_function_ = decl;
 
   if (decl->isOutOfLine() && !decl->overridden_methods().empty()) {
-    return false;
+    return arena_.Verbatim("");
   }
-  bool out_of_line = decl->isOutOfLine();
-  if (out_of_line) {
-    StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
-  }
-  PushBrace impl_brace(*this, out_of_line);
-
-  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
-    return VisitCXXConstructorDecl(ctor);
-  }
-
-  if (decl->isStatic() ||
-      (!decl->isVirtual() && !decl->getParent()->isAbstract())) {
-    ConvertFunctionQualifiers(decl);
-  }
-  StrCat(keyword_unsafe_, keyword::kFn);
-
-  std::string function_name;
-  if (decl->isOverloadedOperator()) {
-    function_name = GetOverloadedOperator(decl);
-  } else if (IsOverloadedMethod(decl)) {
-    function_name = GetOverloadedFunctionName(decl);
-  } else {
-    function_name = GetNamedDeclAsString(decl);
-  }
-  StrCat(std::move(function_name));
-
+  Buffer node_buf(*this);
   {
-    PushParen paren(*this);
-    if (!decl->isStatic()) {
-      StrCat(GetSelfMaybeWithMut(decl), token::kComma);
+    bool out_of_line = decl->isOutOfLine();
+    if (out_of_line) {
+      StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
     }
-    ConvertFunctionParameters(decl);
+    PushBrace impl_brace(*this, out_of_line);
+
+    if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
+      StrCat(VisitCXXConstructorDecl(ctor)->print());
+    } else {
+      if (decl->isStatic() ||
+          (!decl->isVirtual() && !decl->getParent()->isAbstract())) {
+        ConvertFunctionQualifiers(decl);
+      }
+      StrCat(keyword_unsafe_, keyword::kFn);
+
+      std::string function_name;
+      if (decl->isOverloadedOperator()) {
+        function_name = GetOverloadedOperator(decl);
+      } else if (IsOverloadedMethod(decl)) {
+        function_name = GetOverloadedFunctionName(decl);
+      } else {
+        function_name = GetNamedDeclAsString(decl);
+      }
+      StrCat(std::move(function_name));
+
+      {
+        PushParen paren(*this);
+        if (!decl->isStatic()) {
+          StrCat(GetSelfMaybeWithMut(decl), token::kComma);
+        }
+        ConvertFunctionParameters(decl);
+      }
+      ConvertFunctionReturnType(decl);
+      if (decl->isPureVirtual()) {
+        StrCat(token::kSemiColon);
+      } else {
+        PushBrace body(*this);
+        EmitFunctionPreamble(decl);
+        ConvertFunctionBody(decl);
+      }
+    }
   }
-  ConvertFunctionReturnType(decl);
-  if (decl->isPureVirtual()) {
-    StrCat(token::kSemiColon);
-  } else {
-    PushBrace body(*this);
-    EmitFunctionPreamble(decl);
-    ConvertFunctionBody(decl);
-  }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
@@ -966,10 +1031,11 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
              : std::format("&mut {}", keyword::kSelfValue);
 }
 
-bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
+RsExpr *Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   if (decl->isOutOfLine() || decl->isImplicit()) {
-    return false;
+    return arena_.Verbatim("");
   }
+  Buffer node_buf(*this);
   curr_function_ = decl;
 
   if (decl->isCopyOrMoveConstructor()) {
@@ -993,7 +1059,7 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
     ConvertCXXConstructorBody(decl);
   }
 
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
@@ -1036,13 +1102,14 @@ void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   StrCat("this");
 }
 
-bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {
+RsExpr *Converter::VisitFieldDecl(clang::FieldDecl *decl) {
+  Buffer node_buf(*this);
   auto access_spec = AccessSpecifierAsString(decl->getAccess());
   auto field_name = GetNamedDeclAsString(decl);
   StrCat(access_spec, std::move(field_name), token::kColon);
   Convert(decl->getType());
   StrCat(token::kComma);
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
@@ -1064,17 +1131,18 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   }
 }
 
-bool Converter::VisitNamespaceDecl(clang::NamespaceDecl *decl) {
+RsExpr *Converter::VisitNamespaceDecl(clang::NamespaceDecl *decl) {
+  Buffer node_buf(*this);
   for (auto *child : decl->decls()) {
     if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
       Convert(child);
     }
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
-  return false;
+RsExpr *Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
+  return arena_.Verbatim("");
 }
 
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
@@ -3419,11 +3487,12 @@ RsExpr *Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return arena_.Verbatim(std::move(node_buf).str());
 }
 
-bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
+RsExpr *Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
   if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
-    return false;
+    return arena_.Verbatim("");
   }
+  Buffer node_buf(*this);
   Mapper::AddRuleForUserDefinedType(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      {"Clone", "Copy", "PartialEq", "Debug", "Default"});
@@ -3446,7 +3515,7 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   AddFromImpl(decl);
   AddIncDecImpls(decl);
   AddByteReprTrait(decl);
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 void Converter::AddFromImpl(clang::EnumDecl *decl) {
@@ -3634,11 +3703,12 @@ RsExpr *Converter::VisitPredefinedExpr(clang::PredefinedExpr *expr) {
   return ConvertExpr(expr->getFunctionName());
 }
 
-bool Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
+RsExpr *Converter::VisitClassTemplateDecl(clang::ClassTemplateDecl *decl) {
+  Buffer node_buf(*this);
   for (auto decl : decl->specializations()) {
-    VisitCXXRecordDecl(decl);
+    StrCat(VisitCXXRecordDecl(decl)->print());
   }
-  return false;
+  return arena_.Verbatim(std::move(node_buf).str());
 }
 
 RsExpr *Converter::VisitCXXStdInitializerListExpr(
@@ -4096,7 +4166,7 @@ void Converter::ConvertCXXMethodDecls(
         StrCat(signature, token::kOpenCurlyBracket);
         first = false;
       }
-      VisitCXXMethodDecl(method);
+      StrCat(VisitCXXMethodDecl(method)->print());
     }
   }
   if (!first) {
