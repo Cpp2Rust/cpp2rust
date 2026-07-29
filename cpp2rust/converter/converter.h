@@ -409,6 +409,8 @@ public:
 protected:
   RsExpr *ConvertExpr(clang::Expr *expr);
 
+  RsExpr *DispatchExpr(clang::Expr *expr);
+
   RsExpr *ConvertStmt(clang::Stmt *stmt);
 
   RsExpr *ConvertDecl(clang::Decl *decl);

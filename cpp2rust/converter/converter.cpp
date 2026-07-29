@@ -1472,6 +1472,12 @@ Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
 }
 
 RsExpr *Converter::ConvertExpr(clang::Expr *expr) {
+  RsExpr *node = DispatchExpr(expr);
+  node->expr = expr;
+  return node;
+}
+
+RsExpr *Converter::DispatchExpr(clang::Expr *expr) {
   switch (expr->getStmtClass()) {
   case clang::Stmt::IntegerLiteralClass:
     return VisitIntegerLiteral(clang::cast<clang::IntegerLiteral>(expr));

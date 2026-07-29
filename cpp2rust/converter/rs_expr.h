@@ -9,11 +9,16 @@
 #include <utility>
 #include <vector>
 
+namespace clang {
+class Expr;
+}
+
 namespace cpp2rust {
 
 struct RsExpr {
   enum class Kind : uint8_t {
     Verbatim,
+    Unary,
   };
 
   explicit RsExpr(Kind kind) : kind(kind) {}
@@ -22,6 +27,7 @@ struct RsExpr {
   virtual std::string print() const = 0;
 
   Kind kind;
+  const clang::Expr *expr = nullptr;
 };
 
 struct Verbatim : RsExpr {
@@ -35,6 +41,33 @@ struct Verbatim : RsExpr {
   std::string print() const override { return text; }
 
   std::string text;
+};
+
+struct Unary : RsExpr {
+  enum class Op : uint8_t {
+    Deref,
+    Not,
+    Neg,
+  };
+
+  Unary(Op op, RsExpr *operand)
+      : RsExpr(Kind::Unary), op(op), operand(operand) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Unary; }
+
+  std::string print() const override {
+    switch (op) {
+    case Op::Deref:
+      return "*" + operand->print();
+    case Op::Not:
+      return "!" + operand->print();
+    case Op::Neg:
+      return "-" + operand->print();
+    }
+  }
+
+  Op op;
+  RsExpr *operand;
 };
 
 class RsArena {
