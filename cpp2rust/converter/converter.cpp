@@ -1473,7 +1473,7 @@ bool Converter::Convert(clang::Expr *expr,
       NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(),
                               *implicit_convert_to);
   PushParen paren(*this, needs_conversion);
-  StrCat(Print(ConvertExpr(expr)));
+  StrCat(ConvertExpr(expr)->print());
   if (needs_conversion) {
     ConvertCast(*implicit_convert_to);
     computed_expr_type_ = ComputedExprType::FreshValue;
@@ -2815,7 +2815,7 @@ RsExpr *Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
                 init->IgnoreUnlessSpelledInSource())) {
           {
             PushParen paren(*this);
-            StrCat(Print(VisitLambdaExpr(lambda)));
+            StrCat(VisitLambdaExpr(lambda)->print());
           }
           return arena_.Verbatim(std::move(node_buf).str());
         }
@@ -3067,7 +3067,7 @@ RsExpr *Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     if (record->getQualifiedNameAsString() == "std::array") {
       StrCat("vec!");
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
-        StrCat(Print(VisitInitListExpr(init)));
+        StrCat(VisitInitListExpr(init)->print());
       } else {
         StrCat("[]");
       }
@@ -3811,7 +3811,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
             expr->IgnoreUnlessSpelledInSource())) {
       PushExprKind push(*this, ExprKind::AddrOf);
       PushInitType init_type(*this, qual_type);
-      StrCat(Print(VisitLambdaExpr(lambda)));
+      StrCat(VisitLambdaExpr(lambda)->print());
       return;
     }
   }

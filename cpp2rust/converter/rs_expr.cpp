@@ -6,10 +6,8 @@
 namespace cpp2rust {
 
 RsExpr *RsArena::Verbatim(std::string text) {
-  pool_.push_back(RsExpr{RsExpr::Kind::Verbatim, std::move(text)});
-  return &pool_.back();
+  pool_.push_back(std::make_unique<cpp2rust::Verbatim>(std::move(text)));
+  return pool_.back().get();
 }
-
-std::string Print(const RsExpr *expr) { return expr->text; }
 
 } // namespace cpp2rust

@@ -5,7 +5,9 @@
 
 #include <cstdint>
 #include <deque>
+#include <memory>
 #include <string>
+#include <utility>
 
 namespace cpp2rust {
 
@@ -14,7 +16,24 @@ struct RsExpr {
     Verbatim,
   };
 
+  explicit RsExpr(Kind kind) : kind(kind) {}
+  virtual ~RsExpr() = default;
+
+  virtual std::string print() const = 0;
+
   Kind kind;
+};
+
+struct Verbatim : RsExpr {
+  explicit Verbatim(std::string text)
+      : RsExpr(Kind::Verbatim), text(std::move(text)) {}
+
+  static bool classof(const RsExpr *expr) {
+    return expr->kind == Kind::Verbatim;
+  }
+
+  std::string print() const override { return text; }
+
   std::string text;
 };
 
@@ -23,9 +42,7 @@ public:
   RsExpr *Verbatim(std::string text);
 
 private:
-  std::deque<RsExpr> pool_;
+  std::deque<std::unique_ptr<RsExpr>> pool_;
 };
-
-std::string Print(const RsExpr *expr);
 
 } // namespace cpp2rust

@@ -1547,7 +1547,7 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   auto qual_type = expr->getType();
   if (qual_type->isScalarType()) {
     PushConversionKind push(*this, ConversionKind::Unboxed);
-    StrCat(Print(Converter::VisitInitListExpr(expr)));
+    StrCat(Converter::VisitInitListExpr(expr)->print());
     computed_expr_type_ = ComputedExprType::FreshValue;
     return arena_.Verbatim(std::move(node_buf).str());
   }
@@ -1558,7 +1558,7 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       StrCat("vec!");
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
-        StrCat(Print(ConverterRefCount::VisitInitListExpr(init)));
+        StrCat(ConverterRefCount::VisitInitListExpr(init)->print());
       } else {
         StrCat("[]");
       }
@@ -1596,11 +1596,11 @@ RsExpr *ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   switch (conv) {
   case ConversionKind::Unboxed:
   case ConversionKind::Ptr:
-    StrCat(Print(Converter::VisitInitListExpr(expr)));
+    StrCat(Converter::VisitInitListExpr(expr)->print());
     break;
   case ConversionKind::FullRefCount:
     StrCat("Box::new(");
-    StrCat(Print(Converter::VisitInitListExpr(expr)));
+    StrCat(Converter::VisitInitListExpr(expr)->print());
     StrCat(')');
     break;
   }
@@ -1918,7 +1918,7 @@ RsExpr *ConverterRefCount::VisitImplicitValueInitExpr(
     if (clang::isa<clang::ConstantArrayType>(arr_ty)) {
       Buffer node_buf(*this);
       StrCat("Box::new(");
-      StrCat(Print(Converter::VisitImplicitValueInitExpr(expr)));
+      StrCat(Converter::VisitImplicitValueInitExpr(expr)->print());
       StrCat(')');
       computed_expr_type_ = ComputedExprType::FreshValue;
       return arena_.Verbatim(std::move(node_buf).str());
@@ -2045,10 +2045,10 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     PushConversionKind push(*this, ConversionKind::Unboxed);
     if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
       StrCat("FnPtr::new(");
-      StrCat(Print(VisitLambdaExpr(lambda)));
+      StrCat(VisitLambdaExpr(lambda)->print());
       StrCat(')');
     } else {
-      StrCat(Print(VisitLambdaExpr(lambda)));
+      StrCat(VisitLambdaExpr(lambda)->print());
     }
     return std::move(buf).str();
   }
