@@ -11,6 +11,14 @@ pub struct pair {
     pub a: Value<Box<[i32]>>,
     pub b: Value<Box<[i32]>>,
 }
+impl Clone for pair {
+    fn clone(&self) -> Self {
+        Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
+        }
+    }
+}
 impl Default for pair {
     fn default() -> Self {
         pair {

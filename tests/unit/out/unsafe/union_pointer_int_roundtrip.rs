@@ -26,15 +26,13 @@ unsafe fn main_0() -> i32 {
     };
     let mut u: anon_0 = <anon_0>::default();
     u.p = (&mut arr[(1) as usize] as *mut i32);
-    u.bits = ((u.bits as u64)
-        .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64)))
-        as u64;
+    u.bits = (u.bits)
+        .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
     let mut q: *mut i32 = u.p;
     assert!(((((*q) == (40)) as i32) != 0));
     assert!(((((q) == (&mut arr[(3) as usize] as *mut i32)) as i32) != 0));
-    u.bits = ((u.bits as u64)
-        .wrapping_sub(((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64)))
-        as u64;
+    u.bits = (u.bits)
+        .wrapping_sub(((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
     assert!(((((u.p) == (&mut arr[(0) as usize] as *mut i32)) as i32) != 0));
     assert!(((((*u.p) == (10)) as i32) != 0));
     u.p = arr.as_mut_ptr().offset((4) as isize);

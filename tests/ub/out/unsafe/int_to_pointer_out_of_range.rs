@@ -26,9 +26,8 @@ unsafe fn main_0() -> i32 {
     };
     let mut u: anon_0 = <anon_0>::default();
     u.p = arr.as_mut_ptr();
-    u.bits = ((u.bits as u64)
-        .wrapping_add(((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64)))
-        as u64;
+    u.bits = (u.bits)
+        .wrapping_add(((100_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
     let mut p: *mut i32 = u.p;
     return if ((((*p) == (0)) as i32) != 0) { 0 } else { 1 };
 }

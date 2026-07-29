@@ -11,6 +11,14 @@ pub struct pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Clone for pair {
+    fn clone(&self) -> Self {
+        Self {
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+        }
+    }
+}
 impl ByteRepr for pair {
     fn byte_size() -> usize {
         8
@@ -87,8 +95,10 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    let rhs_0 = ((((*u.borrow()).bits().read()) as u64).wrapping_add((8usize as u64))) as u64;
-    (*u.borrow_mut()).bits().write(rhs_0);
+    {
+        let rhs_0 = ((*u.borrow()).bits().read()).wrapping_add((8usize as u64));
+        (*u.borrow_mut()).bits().write(rhs_0)
+    };
     assert!(((((*(*((*u.borrow()).p().read()).upgrade().deref()).x.borrow()) == 30) as i32) != 0));
     assert!(
         ((({
@@ -97,9 +107,11 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    let rhs_0 = ((((*u.borrow()).bits().read()) as u64)
-        .wrapping_sub(((2_usize).wrapping_mul((8usize as usize)) as u64))) as u64;
-    (*u.borrow_mut()).bits().write(rhs_0);
+    {
+        let rhs_0 = ((*u.borrow()).bits().read())
+            .wrapping_sub(((2_usize).wrapping_mul((8usize as usize)) as u64));
+        (*u.borrow_mut()).bits().write(rhs_0)
+    };
     assert!(((((*(*((*u.borrow()).p().read()).upgrade().deref()).x.borrow()) == 10) as i32) != 0));
     assert!(
         ((({

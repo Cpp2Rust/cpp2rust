@@ -53,10 +53,11 @@ fn main_0() -> i32 {
     (*u.borrow_mut())
         .p()
         .write(((arr.as_pointer() as Ptr<i32>).offset(1)));
-    let rhs_0 = ((((*u.borrow()).bits().read()) as u64)
-        .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64)))
-        as u64;
-    (*u.borrow_mut()).bits().write(rhs_0);
+    {
+        let rhs_0 = ((*u.borrow()).bits().read())
+            .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
+        (*u.borrow_mut()).bits().write(rhs_0)
+    };
     let q: Value<Ptr<i32>> = Rc::new(RefCell::new(((*u.borrow()).p().read()).clone()));
     assert!((((((*q.borrow()).read()) == 40) as i32) != 0));
     assert!(
@@ -66,10 +67,11 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    let rhs_0 = ((((*u.borrow()).bits().read()) as u64)
-        .wrapping_sub(((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64)))
-        as u64;
-    (*u.borrow_mut()).bits().write(rhs_0);
+    {
+        let rhs_0 = ((*u.borrow()).bits().read())
+            .wrapping_sub(((3_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as u64));
+        (*u.borrow_mut()).bits().write(rhs_0)
+    };
     assert!(
         ((({
             let _lhs = ((*u.borrow()).p().read()).clone();
