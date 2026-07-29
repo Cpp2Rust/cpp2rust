@@ -4,10 +4,10 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <cstdint>
-#include <deque>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace cpp2rust {
 
@@ -42,7 +42,7 @@ public:
   RsExpr *Verbatim(std::string text);
 
 private:
-  std::deque<std::unique_ptr<RsExpr>> pool_;
+  std::vector<std::unique_ptr<RsExpr>> pool_;
 };
 
 } // namespace cpp2rust
