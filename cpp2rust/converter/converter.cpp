@@ -1097,10 +1097,8 @@ bool Converter::Convert(clang::Stmt *stmt) {
   if (stmt == nullptr) {
     return true;
   }
-  {
-    PushExprKind push(*this, ExprKind::Void);
-    StrCat(ConvertStmt(stmt)->print());
-  }
+  PushExprKind push(*this, ExprKind::Void);
+  StrCat(ConvertStmt(stmt)->print());
   if (IsaSemiColonStmt(stmt)) {
     StrCat(token::kSemiColon);
   }
