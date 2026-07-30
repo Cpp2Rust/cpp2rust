@@ -570,8 +570,8 @@ RsExpr *Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
                                               decl->isStaticLocal());
   auto *init = ConvertVarDeclInitializer(decl);
-  return Cat(header, Text(token::kAssign), Text(keyword_unsafe_),
-             Braces(init), Text(token::kSemiColon));
+  return Cat(header, Text(token::kAssign), Text(keyword_unsafe_), Braces(init),
+             Text(token::kSemiColon));
 }
 
 RsExpr *Converter::VisitVarDecl(clang::VarDecl *decl) {
@@ -1231,13 +1231,12 @@ RsExpr *Converter::VisitDoStmt(clang::DoStmt *stmt) {
   curr_for_inc_.emplace_back(nullptr);
   auto *body = ConvertFullStmt(stmt->getBody());
   curr_for_inc_.pop_back();
-  return Cat(
-      Text(keyword::kLet), Text("mut"), Text(control_var),
-      Text(token::kAssign), Text(keyword::kTrue), Text(token::kSemiColon),
-      Text("'loop_:"), Text(keyword::kWhile), Text(control_var), Text("||"),
-      Parens(cond),
-      Braces(Cat(Text(control_var), Text(token::kAssign),
-                 Text(keyword::kFalse), Text(token::kSemiColon), body)));
+  return Cat(Text(keyword::kLet), Text("mut"), Text(control_var),
+             Text(token::kAssign), Text(keyword::kTrue),
+             Text(token::kSemiColon), Text("'loop_:"), Text(keyword::kWhile),
+             Text(control_var), Text("||"), Parens(cond),
+             Braces(Cat(Text(control_var), Text(token::kAssign),
+                        Text(keyword::kFalse), Text(token::kSemiColon), body)));
 }
 
 RsExpr *Converter::VisitForStmt(clang::ForStmt *stmt) {
@@ -1268,16 +1267,14 @@ RsExpr *Converter::ConvertLoopVariable(clang::VarDecl *decl,
     if (pointee_type.isConstQualified()) {
       return Cat(node, Text(std::format(".as_ptr().add({})", loop_var_name)));
     }
-    return Cat(node,
-               Text(std::format(".as_mut_ptr().add({})", loop_var_name)));
+    return Cat(node, Text(std::format(".as_mut_ptr().add({})", loop_var_name)));
   }
   RsExpr *node = nullptr;
   {
     PushExplicitAutoref autoref(*this, /*is_mut=*/false);
     node = ConvertExpr(range_init);
   }
-  return Cat(node, Text(std::format("[{}]", loop_var_name)),
-             Text(".clone()"));
+  return Cat(node, Text(std::format("[{}]", loop_var_name)), Text(".clone()"));
 }
 
 RsExpr *Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
@@ -1320,9 +1317,8 @@ RsExpr *Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto *body = ConvertForRangeBody(stmt, loop_var);
 
   return Cat(Text("'loop_:"), Text(keyword::kFor), Text(loop_var_name),
-             Text(keyword::kIn), Text("UnsafeMapIterator::begin(&"),
-             range_init, Text(std::format(" as *const {})", map_type)),
-             Braces(body));
+             Text(keyword::kIn), Text("UnsafeMapIterator::begin(&"), range_init,
+             Text(std::format(" as *const {})", map_type)), Braces(body));
 }
 
 RsExpr *Converter::VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) {
@@ -1795,8 +1791,8 @@ RsExpr *Converter::VisitCallExpr(clang::CallExpr *expr) {
   auto ref = clang::dyn_cast<clang::ReferenceType>(ty);
 
   if (ref && !isAddrOf() && !isVoid()) {
-    auto *node = Parens(Cat(
-        Text(GetPointerDerefPrefix(ref->getPointeeType())), call_node));
+    auto *node = Parens(
+        Cat(Text(GetPointerDerefPrefix(ref->getPointeeType())), call_node));
     SetValueFreshness(ref->getPointeeType());
     return node;
   }
@@ -1909,8 +1905,7 @@ RsExpr *Converter::EmitHoistedArgs(CallInfo &info) {
   for (auto &ca : info.args) {
     switch (ca.kind) {
     case Kind::Hoisted: {
-      parts.push_back(
-          Text(std::format("let {}:", ca.param_name)));
+      parts.push_back(Text(std::format("let {}:", ca.param_name)));
       parts.push_back(Convert(ca.param_type));
       parts.push_back(Text("="));
       parts.push_back(ConvertParamTy(ca.param_type, ca.expr));
@@ -1949,10 +1944,10 @@ RsExpr *Converter::EmitArgList(const CallInfo &info) {
     case Kind::Inline:
       arg_node = ConvertParamTy(ca.param_type, ca.expr);
       if (info.is_libc_passthrough) {
-        arg_node = Cat(arg_node,
-                       Text(std::format("as {}",
-                                        Mapper::GetParamType(
-                                            GetCalleeOrExpr(info.expr), i))));
+        arg_node =
+            Cat(arg_node,
+                Text(std::format("as {}", Mapper::GetParamType(
+                                              GetCalleeOrExpr(info.expr), i))));
       }
       break;
     }
@@ -2262,8 +2257,7 @@ RsExpr *Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       }
       return node;
     }
-    return Cat(node,
-               Text(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()"));
+    return Cat(node, Text(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()"));
   }
   case clang::CastKind::CK_BitCast: {
     auto *inner = ConvertExpr(sub_expr);
@@ -2355,8 +2349,8 @@ RsExpr *Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       auto *src_type = Convert(sub_expr->getType());
       auto *dst_type = Convert(type);
       auto *sub_node = ConvertExpr(sub_expr);
-      return Cat(Text("std::mem::transmute::<"), src_type, Text(','),
-                 dst_type, Text(">("), sub_node, Text(')'));
+      return Cat(Text("std::mem::transmute::<"), src_type, Text(','), dst_type,
+                 Text(">("), sub_node, Text(')'));
     }
     if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
       return ConvertIntegerToEnumeralCast(expr, sub_expr);
@@ -2410,20 +2404,20 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       auto *lhs_node = ConvertExpr(lhs);
       auto *lhs_again = ConvertExpr(lhs);
       auto *arith = ConvertUnsignedArithBinaryOperator(expr, rhs);
-      node = Cat(lhs_node, Text(token::kAssign),
-                 Parens(Cat(Parens(Cat(lhs_again,
-                                       CastTo(computation_result_type))),
-                            arith)));
+      node = Cat(
+          lhs_node, Text(token::kAssign),
+          Parens(Cat(Parens(Cat(lhs_again, CastTo(computation_result_type))),
+                     arith)));
     } else {
       auto *lhs_node = ConvertExpr(lhs);
       auto *lhs_again = ConvertExpr(lhs);
       auto op = opcode_as_string;
       op.remove_suffix(1); // remove '=' from operator
       auto *rhs_node = ConvertExpr(rhs, computation_result_type);
-      node = Cat(lhs_node, Text(token::kAssign),
-                 Parens(Cat(Parens(Cat(lhs_again,
-                                       CastTo(computation_result_type))),
-                            Text(std::string(op)), rhs_node)));
+      node = Cat(
+          lhs_node, Text(token::kAssign),
+          Parens(Cat(Parens(Cat(lhs_again, CastTo(computation_result_type))),
+                     Text(std::string(op)), rhs_node)));
     }
     if (lhs_type->isBooleanType()) {
       return Cat(node, Text(token::kDiff), Text(token::kZero));
@@ -2478,16 +2472,15 @@ RsExpr *Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
   if (expr->isAdditiveOp() && expr->getType()->isPointerType()) {
     auto [base, idx] = lhs_type->isPointerType() ? std::make_tuple(lhs, rhs)
                                                  : std::make_tuple(rhs, lhs);
-    return ConvertPointerOffset(base, idx,
-                                expr->getOpcode() == clang::BO_Add);
+    return ConvertPointerOffset(base, idx, expr->getOpcode() == clang::BO_Add);
   }
   if (expr->isAdditiveOp() && lhs_type->isPointerType() &&
       rhs_type->isPointerType()) {
     auto *lhs_node = ConvertExpr(lhs);
     auto *rhs_node = ConvertExpr(rhs);
     auto *pointee_type_node = ConvertPointeeType(lhs_type);
-    auto *size_of_node = Cat(Text("::std::mem::size_of::<"), pointee_type_node,
-                             Text(">()"));
+    auto *size_of_node =
+        Cat(Text("::std::mem::size_of::<"), pointee_type_node, Text(">()"));
     auto *diff = Parens(Cat(lhs_node, Text(keyword::kAs), Text("usize"),
                             Text(token::kMinus), rhs_node, Text(keyword::kAs),
                             Text("usize")));
@@ -2598,10 +2591,10 @@ RsExpr *Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
     if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       if (sub_expr->getType()->isUnsignedIntegerType()) {
-        return Text(std::format(
-            "(-{}_i{} as {})", getIntegerLiteral(literal, false),
-            ctx_.getTypeSize(expr->getType()),
-            GetUnsafeTypeAsString(expr->getType())));
+        return Text(std::format("(-{}_i{} as {})",
+                                getIntegerLiteral(literal, false),
+                                ctx_.getTypeSize(expr->getType()),
+                                GetUnsafeTypeAsString(expr->getType())));
       }
       return Cat(Text(token::kMinus), Text(getIntegerLiteral(literal, true)));
     }
@@ -2645,10 +2638,9 @@ RsExpr *Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   {
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
-    then_node = ConvertExpr(expr->getTrueExpr(),
-                            branch_is_addr
-                                ? std::nullopt
-                                : std::make_optional(expr->getType()));
+    then_node = ConvertExpr(
+        expr->getTrueExpr(),
+        branch_is_addr ? std::nullopt : std::make_optional(expr->getType()));
   }
   if (branch_is_addr) {
     then_node = Cat(Text(token::kRef), Text(keyword_mut_), then_node);
@@ -2658,10 +2650,9 @@ RsExpr *Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   {
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
-    else_node = ConvertExpr(expr->getFalseExpr(),
-                            branch_is_addr
-                                ? std::nullopt
-                                : std::make_optional(expr->getType()));
+    else_node = ConvertExpr(
+        expr->getFalseExpr(),
+        branch_is_addr ? std::nullopt : std::make_optional(expr->getType()));
   }
   if (branch_is_addr) {
     else_node = Cat(Text(token::kRef), Text(keyword_mut_), else_node);
@@ -2762,7 +2753,8 @@ RsExpr *Converter::VisitParenExpr(clang::ParenExpr *expr) {
   return Parens(ConvertExpr(expr->getSubExpr()));
 }
 
-RsExpr *Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
+RsExpr *
+Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   switch (expr->getOperator()) {
   case clang::OverloadedOperatorKind::OO_Equal:
     return ConvertAssignment(expr->getArg(0), expr->getArg(1), "=");
@@ -2776,8 +2768,7 @@ RsExpr *Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) 
       return ConvertExpr(expr->getArg(0));
     }
     if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
-      return Parens(
-          Cat(Text(token::kStar), ConvertExpr(expr->getArg(0))));
+      return Parens(Cat(Text(token::kStar), ConvertExpr(expr->getArg(0))));
     }
     return ConvertExpr(expr->getArg(0));
   case clang::OverloadedOperatorKind::OO_Subscript: {
@@ -3084,9 +3075,9 @@ RsExpr *Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
       return Cat(
           Text("::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts("),
           argument, Text(", libcc2rs::malloc_usable_size("), argument,
-          Text(" as *mut ::libc::c_void) / ::std::mem::size_of::<"),
-          type_node, Text(">()) as *const ["), type_node, Text("] as *mut ["),
-          type_node, Text("]))"));
+          Text(" as *mut ::libc::c_void) / ::std::mem::size_of::<"), type_node,
+          Text(">()) as *const ["), type_node, Text("] as *mut ["), type_node,
+          Text("]))"));
     }
     return Cat(
         Text(
@@ -3098,8 +3089,7 @@ RsExpr *Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   return Cat(Text("::std::mem::drop(Box::from_raw("), argument, Text("))"));
 }
 
-RsExpr *
-Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
+RsExpr *Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
   auto *args = ConvertCXXConstructExprArgs(expr);
   return Cat(Text(std::format("std::array::from_fn::<_, {}, _>",
                               GetArraySize(expr->getType()))),
@@ -3133,12 +3123,12 @@ RsExpr *Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     parts.push_back(Text(token::kComma));
   }
 
-  return Cat(Text(ctor_name), Text(token::kDoubleColon),
-             Text(ctor_name +
-                  (GetNumberOfConvertingCtors(ctor->getParent()) != 1
-                       ? std::to_string(GetCtorIndex(ctor))
-                       : "")),
-             Parens(arena_.New<Concat>(std::move(parts))));
+  return Cat(
+      Text(ctor_name), Text(token::kDoubleColon),
+      Text(ctor_name + (GetNumberOfConvertingCtors(ctor->getParent()) != 1
+                            ? std::to_string(GetCtorIndex(ctor))
+                            : "")),
+      Parens(arena_.New<Concat>(std::move(parts))));
 }
 
 RsExpr *Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
@@ -3253,19 +3243,17 @@ RsExpr *Converter::AddFromImpl(clang::EnumDecl *decl) {
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    arms.push_back(
-        Text(std::format("{} => {}::{},",
-                         std::string_view(init.data(), init.size()), name,
-                         std::string_view(e->getName()))));
+    arms.push_back(Text(std::format("{} => {}::{},",
+                                    std::string_view(init.data(), init.size()),
+                                    name, std::string_view(e->getName()))));
   }
   arms.push_back(
       Text(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name)));
 
-  return Cat(
-      Text(std::format("impl From<i32> for {}", name)),
-      Braces(Cat(Text(std::format("fn from(n: i32) -> {}", name)),
-                 Braces(Cat(Text("match n"),
-                            Braces(arena_.New<Concat>(std::move(arms))))))));
+  return Cat(Text(std::format("impl From<i32> for {}", name)),
+             Braces(Cat(Text(std::format("fn from(n: i32) -> {}", name)),
+                        Braces(Cat(Text("match n"), Braces(arena_.New<Concat>(
+                                                        std::move(arms))))))));
 }
 
 RsExpr *Converter::AddIncDecImpls(clang::EnumDecl *decl) {
@@ -3286,8 +3274,7 @@ RsExpr *Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
 
   std::vector<RsExpr *> parts;
   parts.push_back(Text('|'));
-  for (auto p :
-       expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
+  for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
     parts.push_back(Text(GetNamedDeclAsString(p)));
     parts.push_back(Text(token::kColon));
     parts.push_back(Convert(p->getType()));
@@ -3687,8 +3674,8 @@ RsExpr *Converter::ConvertVarInit(clang::QualType qual_type,
       PushInitType init_type(*this, qual_type);
       inner = ConvertExpr(expr);
     }
-    parts.push_back(Cat(Parens(Cat(Text(token::kStar), inner)),
-                        Text(".clone()")));
+    parts.push_back(
+        Cat(Parens(Cat(Text(token::kStar), inner)), Text(".clone()")));
   } else if (IsReferenceType(expr) || qual_type->isFunctionPointerType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     PushInitType init_type(*this, qual_type);
@@ -3719,10 +3706,10 @@ RsExpr *Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
 
 RsExpr *Converter::ConvertEqualsNullPtr(clang::Expr *expr) {
   auto *node = ConvertExpr(expr);
-  const char *suffix = IsUniquePtr(expr->getType()) ||
-                               expr->getType()->isFunctionPointerType()
-                           ? ").is_none()"
-                           : ").is_null()";
+  const char *suffix =
+      IsUniquePtr(expr->getType()) || expr->getType()->isFunctionPointerType()
+          ? ").is_none()"
+          : ").is_null()";
   computed_expr_type_ = ComputedExprType::FreshValue;
   return Cat(Text('('), node, Text(suffix));
 }
@@ -3877,9 +3864,10 @@ RsExpr *Converter::ConvertAbstractClass(clang::CXXRecordDecl *decl) {
   return ConvertCXXMethodDecls(decl, signature, predicate);
 }
 
-RsExpr *Converter::ConvertCXXMethodDecls(
-    const clang::CXXRecordDecl *decl, const std::string_view signature,
-    bool (*predicate)(clang::CXXMethodDecl *)) {
+RsExpr *
+Converter::ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
+                                 const std::string_view signature,
+                                 bool (*predicate)(clang::CXXMethodDecl *)) {
   std::vector<RsExpr *> methods;
   for (auto *method : decl->methods()) {
     if (predicate(method)) {
@@ -3925,8 +3913,8 @@ RsExpr *Converter::ConvertOrdAndPartialOrdTraitsBase(
   parts.push_back(Text('{'));
   parts.push_back(Text("fn eq(&self, other: &Self) -> bool {"));
   parts.push_back(Text(std::format("{} {{", keyword_unsafe_)));
-  parts.push_back(Text(std::format("!( {} ) && !( {} )", first_branch,
-                                   second_branch)));
+  parts.push_back(
+      Text(std::format("!( {} ) && !( {} )", first_branch, second_branch)));
   parts.push_back(Text("}}}"));
 
   parts.push_back(Text(keyword::kImpl));
@@ -4144,11 +4132,9 @@ RsExpr *Converter::ConvertAddrOf(clang::Expr *expr,
   return Cat(Text(token::kRef), node, CastTo(pointer_type));
 }
 
-
 RsExpr *Converter::EmitDeref(RsExpr *inner, clang::QualType pointee_type) {
   auto wrap = std::exchange(autoref_mut_, std::nullopt);
-  auto *node =
-      Parens(Cat(Text(GetPointerDerefPrefix(pointee_type)), inner));
+  auto *node = Parens(Cat(Text(GetPointerDerefPrefix(pointee_type)), inner));
   if (wrap) {
     return Parens(Cat(Text(*wrap ? "&mut" : "&"), node));
   }
@@ -4373,8 +4359,7 @@ RsExpr *Converter::AccessLValueObject(clang::MemberExpr *member) {
   }
   if (type->isPointerType() ||
       (IsReferenceType(object) && clang::isa<clang::CallExpr>(object))) {
-    return Cat(Text('('),
-               Text(GetPointerDerefPrefix(type->getPointeeType())),
+    return Cat(Text('('), Text(GetPointerDerefPrefix(type->getPointeeType())),
                ConvertExpr(object), Text(')'));
   }
   return ConvertExpr(object);
@@ -4507,8 +4492,9 @@ void Converter::dump_expr_kinds() {
         << ", isVoid: " << isVoid() << '\n';
 }
 
-RsExpr *Converter::emplace_back_plugin_construct_arg(
-    clang::QualType elem_type, clang::CXXConstructExpr *ctor) {
+RsExpr *
+Converter::emplace_back_plugin_construct_arg(clang::QualType elem_type,
+                                             clang::CXXConstructExpr *ctor) {
   return ConvertVarInit(elem_type, ctor);
 }
 

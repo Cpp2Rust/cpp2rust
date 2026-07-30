@@ -60,7 +60,8 @@ public:
 
   RsExpr *ConvertVaListVarDecl(clang::VarDecl *decl) override;
 
-  std::pair<RsExpr *, bool> ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
+  std::pair<RsExpr *, bool>
+  ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
 
   RsExpr *EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
@@ -162,13 +163,15 @@ public:
   RsExpr *ConvertFunctionParameters(clang::FunctionDecl *decl) override;
 
   RsExpr *ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
-                             clang::QualType type) override;
+                                clang::QualType type) override;
   RsExpr *ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) override;
 
-  RsExpr *ConvertFunctionMain(const clang::FunctionDecl *decl,
-                              const std::string_view main_function_name) override;
+  RsExpr *
+  ConvertFunctionMain(const clang::FunctionDecl *decl,
+                      const std::string_view main_function_name) override;
 
-  RsExpr *ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
+  RsExpr *ConvertAddrOf(clang::Expr *expr,
+                        clang::QualType pointer_type) override;
 
   RsExpr *ConvertDeref(clang::Expr *expr) override;
 
@@ -180,23 +183,21 @@ public:
 
   bool IsReferenceType(const clang::Expr *expr) const override;
 
-  RsExpr *
-  ConvertMappedMethodCall(clang::Expr *expr,
-                          const TranslationRule::MethodCallFragment &mc,
-                          clang::Expr **args, unsigned num_args,
-                          TempMaterializationCtx *ctx) override;
+  RsExpr *ConvertMappedMethodCall(clang::Expr *expr,
+                                  const TranslationRule::MethodCallFragment &mc,
+                                  clang::Expr **args, unsigned num_args,
+                                  TempMaterializationCtx *ctx) override;
 
 private:
-  std::pair<RsExpr *, RsExpr *>
-  MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
-                  clang::Expr *expr) override;
+  std::pair<RsExpr *, RsExpr *> MaterializeTemp(const std::string &binding_name,
+                                                clang::QualType param_type,
+                                                clang::Expr *expr) override;
 
   RsExpr *
   emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                     clang::CXXConstructExpr *ctor) override;
   RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
-  RsExpr *
-  emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
+  RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
 
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;

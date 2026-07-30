@@ -134,8 +134,7 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 
 } // namespace
 
-RsExpr *
-Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+RsExpr *Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   RsExpr *callee = nullptr;
   {
     PushExprKind push(*this, ExprKind::LValue);

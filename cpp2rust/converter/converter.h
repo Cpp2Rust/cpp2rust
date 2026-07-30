@@ -87,7 +87,8 @@ public:
 
   virtual RsExpr *ConvertVaListVarDecl(clang::VarDecl *decl);
 
-  virtual std::pair<RsExpr *, bool> ConvertVarDeclSkipInit(clang::VarDecl *decl);
+  virtual std::pair<RsExpr *, bool>
+  ConvertVarDeclSkipInit(clang::VarDecl *decl);
 
   virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
@@ -168,11 +169,10 @@ public:
     TempMaterializationCtx(size_t num_args)
         : materialized_args(num_args), materialized_refs_(num_args) {}
 
-    RsExpr *GetOrMaterialize(
-        unsigned argument_num,
-        std::function<std::pair<RsExpr *, RsExpr *>(const std::string &,
-                                                    clang::QualType)>
-            materialize_fn);
+    RsExpr *GetOrMaterialize(unsigned argument_num,
+                             std::function<std::pair<RsExpr *, RsExpr *>(
+                                 const std::string &, clang::QualType)>
+                                 materialize_fn);
 
   private:
     std::vector<RsExpr *> materialized_refs_;
@@ -460,23 +460,23 @@ protected:
   virtual RsExpr *ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
 
   virtual RsExpr *ConvertUnsignedArithOperand(clang::Expr *expr,
-                                           clang::QualType type);
+                                              clang::QualType type);
 
   virtual RsExpr *ConvertEqualsNullPtr(clang::Expr *expr);
 
   virtual RsExpr *ConvertPointerSubscript(clang::ArraySubscriptExpr *expr);
 
   virtual RsExpr *ConvertPointerOffset(clang::Expr *base, clang::Expr *idx,
-                                    bool is_addition = true);
+                                       bool is_addition = true);
 
   virtual RsExpr *ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
-                                     clang::QualType type);
+                                        clang::QualType type);
 
   RsExpr *EmitFlexibleArrayElementPtr(clang::Expr *array, clang::Expr *idx,
-                                   bool is_mut);
+                                      bool is_mut);
 
   virtual RsExpr *ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                                 std::string_view assign_operator);
+                                    std::string_view assign_operator);
 
   virtual RsExpr *ConvertFunctionParameters(clang::FunctionDecl *decl);
 
@@ -484,25 +484,27 @@ protected:
 
   virtual RsExpr *ConvertFunctionReturnType(clang::FunctionDecl *decl);
 
-  virtual RsExpr *ConvertFunctionMain(const clang::FunctionDecl *decl,
-                                   const std::string_view main_function_name);
+  virtual RsExpr *
+  ConvertFunctionMain(const clang::FunctionDecl *decl,
+                      const std::string_view main_function_name);
 
   virtual RsExpr *ConvertAbstractClass(clang::CXXRecordDecl *decl);
 
   RsExpr *ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
-                             const std::string_view signature,
-                             bool (*predicate)(clang::CXXMethodDecl *));
+                                const std::string_view signature,
+                                bool (*predicate)(clang::CXXMethodDecl *));
 
   virtual RsExpr *AddOrdTrait(const clang::CXXRecordDecl *decl);
 
-  virtual RsExpr *ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                             const clang::FunctionDecl *op);
+  virtual RsExpr *
+  ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                const clang::FunctionDecl *op);
 
   RsExpr *ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
-                                         std::string_view second_branch,
-                                         std::string_view first_return,
-                                         std::string_view second_return,
-                                         std::string_view record_name);
+                                            std::string_view second_branch,
+                                            std::string_view first_return,
+                                            std::string_view second_return,
+                                            std::string_view record_name);
 
   virtual RsExpr *AddCloneTrait(const clang::RecordDecl *decl);
 
@@ -522,7 +524,8 @@ protected:
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
                                      clang::Expr *expr);
 
-  virtual RsExpr *ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type);
+  virtual RsExpr *ConvertAddrOf(clang::Expr *expr,
+                                clang::QualType pointer_type);
 
   virtual RsExpr *ConvertDeref(clang::Expr *expr);
 
@@ -531,7 +534,7 @@ protected:
   virtual RsExpr *ConvertArrow(clang::Expr *expr);
 
   virtual RsExpr *ConvertLoopVariable(clang::VarDecl *decl,
-                                   clang::Expr *range_init);
+                                      clang::Expr *range_init);
 
   virtual RsExpr *ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr);
 
@@ -839,8 +842,9 @@ protected:
 
   bool emplace_back_plugin_match(clang::CallExpr *call);
   virtual RsExpr *emplace_back_plugin_convert(clang::CallExpr *call);
-  virtual RsExpr *emplace_back_plugin_construct_arg(clang::QualType elem_type,
-                                                 clang::CXXConstructExpr *ctor);
+  virtual RsExpr *
+  emplace_back_plugin_construct_arg(clang::QualType elem_type,
+                                    clang::CXXConstructExpr *ctor);
   virtual RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
   virtual RsExpr *emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
 
