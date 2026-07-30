@@ -37,11 +37,11 @@ pub use compat::*;
 mod va_args;
 pub use va_args::*;
 
-mod format;
-pub use format::*;
-
 mod fd;
 pub use fd::*;
+
+mod format;
+pub use format::*;
 
 mod rustls_shim;
 pub use rustls_shim::*;

@@ -368,26 +368,7 @@ impl<T> Ptr<T> {
     where
         T: ByteRepr,
     {
-        match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                *rc.borrow_mut() = value;
-            }
-            PtrKind::Vec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                rc.borrow_mut()[self.offset] = value;
-            }
-            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                rc.borrow_mut()[self.offset] = value;
-            }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
-                value.to_bytes(&mut buf);
-                data.alloc.write_bytes(self.offset, &buf);
-            }
-        }
+        self.with_mut(|v| *v = value);
     }
 
     pub fn to_strong(&self) -> Value<T> {
@@ -448,6 +429,7 @@ impl<T> Ptr<T> {
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let mut borrow = rc.borrow_mut();
                 f(&mut *borrow)
@@ -481,6 +463,7 @@ impl<T> Ptr<T> {
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let borrow = rc.borrow();
                 f(&*borrow)
@@ -507,27 +490,7 @@ impl<T> Ptr<T> {
 
 impl<T: Clone + ByteRepr> Ptr<T> {
     pub fn read(&self) -> T {
-        match self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
-            PtrKind::StackSingle(ref weak) | PtrKind::HeapSingle(ref weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                weak.upgrade()
-                    .expect("ub: dangling pointer")
-                    .borrow()
-                    .clone()
-            }
-            PtrKind::Vec(ref weak) => {
-                weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
-            }
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
-                weak.upgrade().expect("ub: dangling pointer").borrow()[self.offset].clone()
-            }
-            PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; T::byte_size()];
-                data.alloc.read_bytes(self.offset, &mut buf);
-                T::from_bytes(&buf)
-            }
-        }
+        self.with(|v| v.clone())
     }
 }
 

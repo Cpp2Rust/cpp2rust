@@ -47,7 +47,7 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
             }
             __v if __v == (opt::OPT_FILE as i32) => {
                 let mut f: *mut ::libc::FILE = ap.arg::<*mut ::libc::FILE>();
-                result = ((!((f).is_null())) as i32).clone();
+                result = ((!((f).is_null())) as i32);
                 break 'switch;
             }
             __v if __v == (opt::OPT_NODE as i32) => {

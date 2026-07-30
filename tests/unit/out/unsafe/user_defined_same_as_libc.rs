@@ -22,7 +22,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut fp: *mut ::libc::FILE = (unsafe {
         fopen_0(
-            (c"/tmp/irrelevant-file".as_ptr().cast_mut()).cast_const(),
+            (c"irrelevant-file".as_ptr().cast_mut()).cast_const(),
             (c"r".as_ptr().cast_mut()).cast_const(),
         )
     });

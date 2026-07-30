@@ -28,7 +28,7 @@ pub fn test_errno_preserved_across_strdup_1() {
 pub fn test_errno_from_fseek_2() {
     libcc2rs::cpp2rust_errno().write(0);
     let r: Value<i32> = Rc::new(RefCell::new(
-        match libcc2rs::c_stdin().with_mut(|__v: &mut CFile| __v.seek(0_i64, 0)) {
+        match libcc2rs::c_stdin().with_mut(|__v: &mut CFile| __v.seek(0_i64, ::libc::SEEK_SET)) {
             -1 => -1,
             _ => 0,
         },

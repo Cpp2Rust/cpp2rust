@@ -378,3 +378,104 @@ impl Sockaddr {
         out_len.write(ss.len());
     }
 }
+
+pub fn setsockopt_refcount(fd: i32, level: i32, optname: i32, optval: crate::AnyPtr) -> i32 {
+    let res = match (level, optname) {
+        (::libc::IPPROTO_TCP, ::libc::TCP_NODELAY) => {
+            let v = optval.reinterpret_cast::<i32>().read() != 0;
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::TcpNoDelay, &v)
+            })
+        }
+        (::libc::SOL_SOCKET, ::libc::SO_KEEPALIVE) => {
+            let v = optval.reinterpret_cast::<i32>().read() != 0;
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::KeepAlive, &v)
+            })
+        }
+        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPINTVL) => {
+            let v = optval.reinterpret_cast::<u32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(
+                    &borrowed,
+                    nix::sys::socket::sockopt::TcpKeepInterval,
+                    &v,
+                )
+            })
+        }
+        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPCNT) => {
+            let v = optval.reinterpret_cast::<u32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::TcpKeepCount, &v)
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::IPPROTO_IP, ::libc::IP_TOS) => {
+            let v = optval.reinterpret_cast::<i32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::Ipv4Tos, &v)
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::IPPROTO_IPV6, ::libc::IPV6_TCLASS) => {
+            let v = optval.reinterpret_cast::<i32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::Ipv6TClass, &v)
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::IPPROTO_TCP, ::libc::TCP_KEEPIDLE) => {
+            let v = optval.reinterpret_cast::<u32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::TcpKeepIdle, &v)
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::SOL_SOCKET, ::libc::SO_BINDTODEVICE) => {
+            let v = ::std::ffi::OsString::from(optval.reinterpret_cast::<u8>().to_rust_string());
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::BindToDevice, &v)
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::IPPROTO_IP, ::libc::IP_BIND_ADDRESS_NO_PORT) => {
+            let v = optval.reinterpret_cast::<i32>().read() != 0;
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(
+                    &borrowed,
+                    nix::sys::socket::sockopt::IpBindAddressNoPort,
+                    &v,
+                )
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::IPPROTO_TCP, ::libc::TCP_FASTOPEN_CONNECT) => {
+            let v = optval.reinterpret_cast::<i32>().read() != 0;
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(
+                    &borrowed,
+                    nix::sys::socket::sockopt::TcpFastOpenConnect,
+                    &v,
+                )
+            })
+        }
+        #[cfg(target_os = "linux")]
+        (::libc::SOL_SOCKET, ::libc::SO_PRIORITY) => {
+            let v = optval.reinterpret_cast::<i32>().read();
+            crate::FdRegistry::with_fd(fd, |borrowed| {
+                nix::sys::socket::setsockopt(&borrowed, nix::sys::socket::sockopt::Priority, &v)
+            })
+        }
+        (l, o) => panic!(
+            "setsockopt: unsupported option (level={}, optname={})",
+            l, o
+        ),
+    };
+    match res {
+        Ok(()) => 0,
+        Err(e) => {
+            crate::cpp2rust_errno().write(e as i32);
+            -1
+        }
+    }
+}

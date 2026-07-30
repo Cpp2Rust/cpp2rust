@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn test_fputc_fputs_0() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_puts.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_puts.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fputc(('A' as i32), fp)) == ('A' as i32)) as i32) != 0));
@@ -78,7 +78,7 @@ pub unsafe fn test_puts_1() {
 }
 pub unsafe fn test_fgets_getc_2() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_gets.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_gets.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(
@@ -166,7 +166,7 @@ pub unsafe fn test_fgets_getc_2() {
 }
 pub unsafe fn test_freopen_3() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_reopen.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_reopen.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(
@@ -221,7 +221,7 @@ pub unsafe fn test_freopen_3() {
 }
 pub unsafe fn test_fseeko_4() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_seek.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_seek.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(
@@ -231,7 +231,7 @@ pub unsafe fn test_fseeko_4() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    assert!(((((libc::fseeko(fp, 6_i64 as ::libc::off_t, 0)) == (0)) as i32) != 0));
+    assert!(((((libc::fseeko(fp, 6_i64 as ::libc::off_t, ::libc::SEEK_SET)) == (0)) as i32) != 0));
     let mut buf: [libc::c_char; 8] = [
         (0 as libc::c_char),
         (0 as libc::c_char),
@@ -273,18 +273,21 @@ pub unsafe fn test_fseeko_4() {
         }) == (0)) as i32)
             != 0)
     );
-    assert!(((((libc::fseeko(fp, (-5_i32 as i64) as ::libc::off_t, 2)) == (0)) as i32) != 0));
+    assert!(
+        ((((libc::fseeko(fp, (-5_i32 as i64) as ::libc::off_t, ::libc::SEEK_END)) == (0)) as i32)
+            != 0)
+    );
     assert!(((((libc::fgetc(fp)) == ('w' as i32)) as i32) != 0));
-    assert!(((((libc::fseeko(fp, 1_i64 as ::libc::off_t, 1)) == (0)) as i32) != 0));
+    assert!(((((libc::fseeko(fp, 1_i64 as ::libc::off_t, ::libc::SEEK_CUR)) == (0)) as i32) != 0));
     assert!(((((libc::fgetc(fp)) == ('r' as i32)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
 }
 pub unsafe fn test_rename_5() {
     let mut from: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_from.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_from.tmp".as_ptr().cast_mut()).cast_const();
     let mut to: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_to.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_to.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(from, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::fputs((c"data".as_ptr().cast_mut()).cast_const(), fp)) >= (0)) as i32) != 0));
@@ -301,7 +304,7 @@ pub unsafe fn test_rename_5() {
 }
 pub unsafe fn test_setvbuf_6() {
     let mut path: *const libc::c_char =
-        (c"/tmp/cpp2rust_stdio_nofd_vbuf.tmp".as_ptr().cast_mut()).cast_const();
+        (c"cpp2rust_stdio_nofd_vbuf.tmp".as_ptr().cast_mut()).cast_const();
     let mut fp: *mut ::libc::FILE = libc::fopen(path, (c"wb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
     assert!(((((libc::setvbuf(fp, std::ptr::null_mut(), 2, 0_usize)) == (0)) as i32) != 0));

@@ -89,7 +89,23 @@ impl Clone for Timeval {
     }
 }
 
-impl ByteRepr for Timeval {}
+impl ByteRepr for Timeval {
+    fn byte_size() -> usize {
+        16
+    }
+
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.tv_sec.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.tv_usec.borrow()).to_bytes(&mut buf[8..16]);
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            tv_sec: Rc::new(RefCell::new(i64::from_bytes(&buf[0..8]))),
+            tv_usec: Rc::new(RefCell::new(i64::from_bytes(&buf[8..16]))),
+        }
+    }
+}
 
 #[derive(Default)]
 pub struct Timespec {

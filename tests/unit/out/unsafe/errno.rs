@@ -26,7 +26,11 @@ pub unsafe fn test_errno_preserved_across_strdup_1() {
 }
 pub unsafe fn test_errno_from_fseek_2() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
-    let mut r: i32 = libc::fseek(libcc2rs::stdin_unsafe(), 0_i64 as ::libc::c_long, 0);
+    let mut r: i32 = libc::fseek(
+        libcc2rs::stdin_unsafe(),
+        0_i64 as ::libc::c_long,
+        ::libc::SEEK_SET,
+    );
     assert!(((((r) == (-1_i32)) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ESPIPE)) as i32) != 0));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;

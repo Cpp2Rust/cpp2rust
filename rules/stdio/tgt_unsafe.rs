@@ -104,3 +104,15 @@ unsafe fn f23(a0: *mut ::libc::FILE) -> i32 {
 unsafe fn f24(a0: *mut ::libc::FILE, a1: *mut libc::c_char, a2: i32, a3: usize) -> i32 {
     libc::setvbuf(a0, a1, a2, a3)
 }
+
+unsafe fn f25() -> i32 {
+    ::libc::SEEK_SET
+}
+
+unsafe fn f26() -> i32 {
+    ::libc::SEEK_CUR
+}
+
+unsafe fn f27() -> i32 {
+    ::libc::SEEK_END
+}

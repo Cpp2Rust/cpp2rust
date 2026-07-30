@@ -5,6 +5,10 @@ fn t1() -> ::libc::pollfd {
     unsafe { std::mem::zeroed() }
 }
 
-unsafe fn f1(a0: *mut ::libc::pollfd, a1: u64, a2: i32) -> i32 {
+fn t2() -> ::libc::nfds_t {
+    0
+}
+
+unsafe fn f1(a0: *mut ::libc::pollfd, a1: ::libc::nfds_t, a2: i32) -> i32 {
     libc::poll(a0, a1 as ::libc::nfds_t, a2)
 }
