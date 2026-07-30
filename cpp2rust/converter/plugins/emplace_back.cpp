@@ -134,26 +134,39 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 
 } // namespace
 
-void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+RsExpr *Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+  RsExpr *callee = nullptr;
   {
     PushExprKind push(*this, ExprKind::LValue);
-    StrCat(ReplaceAll(ToString(call->getCallee()), "emplace_back", "push"));
+    callee = ConvertExpr(call->getCallee());
   }
-  StrCat('(');
+  // Rewrite the trailing `emplace_back` member name to `push` in the tree.
+  if (auto *concat = clang::dyn_cast<Concat>(callee)) {
+    if (!concat->parts.empty()) {
+      if (auto *name = clang::dyn_cast<Verbatim>(concat->parts.back())) {
+        if (name->text == "emplace_back") {
+          name->text = "push";
+        }
+      }
+    }
+  }
+  return Cat(callee, Text('('));
 }
 
-void Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
-  StrCat(')');
+RsExpr *
+Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
+  return Text(')');
 }
 
-bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
+RsExpr *Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
   auto member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(call);
   assert(member_call);
 
   auto [elem_ty, ctor] = analyzeEmplaceCall(member_call, GetSema());
   assert(!elem_ty.isNull() && "Could not analyze emplace_back type");
 
-  emplace_back_emit_push_open(member_call);
+  std::vector<RsExpr *> parts;
+  parts.push_back(emplace_back_emit_push_open(member_call));
 
   if (ctor) {
     auto is_argument_moved = false;
@@ -164,31 +177,31 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
     }
 
     if (is_argument_moved) {
-      StrCat("std::mem::take(&mut");
+      parts.push_back(Text("std::mem::take(&mut"));
     }
-    emplace_back_plugin_construct_arg(
-        elem_ty, buildConstructExpr(member_call, GetSema()));
+    parts.push_back(emplace_back_plugin_construct_arg(
+        elem_ty, buildConstructExpr(member_call, GetSema())));
     if (is_argument_moved) {
-      StrCat(')');
+      parts.push_back(Text(')'));
     }
   } else if (elem_ty.isPODType(ctx_)) {
     if (call->getNumArgs() == 0) {
-      StrCat(GetDefaultAsString(elem_ty));
+      parts.push_back(GetDefaultAsString(elem_ty));
     } else {
       assert(call->getNumArgs() == 1 &&
              "multiple arguments passed for building POD type");
-      Convert(call->getArg(0));
-      StrCat("as");
-      StrCat(GetUnsafeTypeAsString(elem_ty));
+      parts.push_back(ConvertExpr(call->getArg(0)));
+      parts.push_back(Text("as"));
+      parts.push_back(Text(GetUnsafeTypeAsString(elem_ty)));
     }
   } else {
     call->dump();
     assert(0 && "no ctor and no pod type");
-    return false;
+    return nullptr;
   }
 
-  emplace_back_emit_push_close(member_call);
-  return true;
+  parts.push_back(emplace_back_emit_push_close(member_call));
+  return arena_.New<Concat>(std::move(parts));
 }
 
 } // namespace cpp2rust

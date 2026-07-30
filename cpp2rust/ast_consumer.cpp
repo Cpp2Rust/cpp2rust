@@ -10,8 +10,8 @@ void ASTConsumer::HandleTranslationUnit(clang::ASTContext &ctx) {
   auto converter = CreateConverter(rs_code_, ctx, model_, rules_dir_);
   converter->SetSema(CI_.getSema());
   if (first_) {
-    converter->EmitFilePreamble();
+    rs_code_ += converter->EmitFilePreamble();
   }
-  converter->TraverseDecl(ctx.getTranslationUnitDecl());
+  converter->Convert(ctx.getTranslationUnitDecl());
 }
 } // namespace cpp2rust

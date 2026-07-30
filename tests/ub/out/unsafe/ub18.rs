@@ -14,7 +14,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut arr: [i32; 3] = [1, 2, 3];
     let mut p: *mut i32 = arr.as_mut_ptr();
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         p,
         libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
