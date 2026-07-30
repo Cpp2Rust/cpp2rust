@@ -48,7 +48,7 @@ pub fn test_close_0() {
 }
 pub fn test_lseek_1() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_lseek_test.tmp",
+        b"cpp2rust_lseek_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
@@ -88,7 +88,7 @@ pub fn test_lseek_1() {
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));
     assert!(
         ((({
-            let __whence = match 2 {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
@@ -108,7 +108,7 @@ pub fn test_lseek_1() {
     );
     assert!(
         ((({
-            let __whence = match 0 {
+            let __whence = match ::libc::SEEK_SET {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
@@ -176,7 +176,7 @@ pub fn test_lseek_1() {
 }
 pub fn test_read_2() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_read_test.tmp",
+        b"cpp2rust_read_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
@@ -272,7 +272,7 @@ pub fn test_read_2() {
 }
 pub fn test_unlink_3() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_unlink_test.tmp",
+        b"cpp2rust_unlink_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
@@ -400,7 +400,7 @@ pub fn test_pipe_4() {
 }
 pub fn test_ftruncate_5() {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
-        b"/tmp/cpp2rust_ftruncate_test.tmp",
+        b"cpp2rust_ftruncate_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
@@ -452,7 +452,7 @@ pub fn test_ftruncate_5() {
     (*fd.borrow_mut()) = (*fp.borrow()).with(|__f| __f.fd);
     assert!(
         ((({
-            let __whence = match 2 {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
@@ -536,20 +536,68 @@ pub fn test_open_6() {
 }
 pub fn test_fcntl_7() {
     assert!(
-        (((panic!(
-            "fcntl is not supported in the refcount model (fd={}, cmd={}, varargs={})",
-            0,
-            1,
-            &[].len()
-        ) >= -1_i32) as i32)
+        ((({
+            let __res = match 1 {
+                ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
+                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
+                }),
+                ::libc::F_SETFL => {
+                    let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[][0]));
+                    FdRegistry::with_fd(0, |__fd| {
+                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
+                    })
+                }
+                ::libc::F_GETFD => FdRegistry::with_fd(0, |__fd| {
+                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
+                }),
+                ::libc::F_SETFD => {
+                    let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[][0]));
+                    FdRegistry::with_fd(0, |__fd| {
+                        nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
+                    })
+                }
+                __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
+            };
+            match __res {
+                Ok(__r) => __r,
+                Err(__e) => {
+                    libcc2rs::cpp2rust_errno().write(__e as i32);
+                    -1
+                }
+            }
+        } >= -1_i32) as i32)
             != 0)
     );
-    let duped: Value<i32> = Rc::new(RefCell::new(panic!(
-        "fcntl is not supported in the refcount model (fd={}, cmd={}, varargs={})",
-        0,
-        0,
-        &[(100).into(),].len()
-    )));
+    let duped: Value<i32> = Rc::new(RefCell::new({
+        let __res = match 0 {
+            ::libc::F_GETFL => FdRegistry::with_fd(0, |__fd| {
+                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFL)
+            }),
+            ::libc::F_SETFL => {
+                let __flags = nix::fcntl::OFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
+                FdRegistry::with_fd(0, |__fd| {
+                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFL(__flags))
+                })
+            }
+            ::libc::F_GETFD => FdRegistry::with_fd(0, |__fd| {
+                nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_GETFD)
+            }),
+            ::libc::F_SETFD => {
+                let __flags = nix::fcntl::FdFlag::from_bits_retain(i32::get(&&[(100).into()][0]));
+                FdRegistry::with_fd(0, |__fd| {
+                    nix::fcntl::fcntl(__fd, nix::fcntl::FcntlArg::F_SETFD(__flags))
+                })
+            }
+            __cmd => panic!("fcntl: unsupported cmd {}", __cmd),
+        };
+        match __res {
+            Ok(__r) => __r,
+            Err(__e) => {
+                libcc2rs::cpp2rust_errno().write(__e as i32);
+                -1
+            }
+        }
+    }));
     assert!(((((*duped.borrow()) >= -1_i32) as i32) != 0));
     if ((((*duped.borrow()) >= 0) as i32) != 0) {
         FdRegistry::close((*duped.borrow()));
@@ -558,12 +606,13 @@ pub fn test_fcntl_7() {
 pub fn test_ioctl_8() {
     let arg: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
-        (((panic!(
-            "ioctl is not supported in the refcount model (fd={}, request={}, varargs={})",
-            0,
-            0_u64,
-            &[(arg.as_pointer()).into(),].len()
-        ) >= -1_i32) as i32)
+        ((({
+            panic!(
+                "ioctl is not supported in the refcount model (fd={}, request={})",
+                0, 0_u64
+            );
+            0
+        } >= -1_i32) as i32)
             != 0)
     );
 }
