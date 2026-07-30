@@ -17,23 +17,6 @@ pub struct header {
 pub struct view {
     pub tag: i32,
 }
-#[repr(C)]
-#[derive(Copy, Clone, Default)]
-pub struct entry {
-    pub id: i32,
-}
-pub static mut e0_0: entry = unsafe { entry { id: 1 } };
-pub static mut e1_1: entry = unsafe { entry { id: 2 } };
-pub static mut registry_2: [*const entry; 3] = unsafe {
-    [
-        (&raw const e0_0 as *const entry),
-        (&raw const e1_1 as *const entry),
-        std::ptr::null(),
-    ]
-};
-pub unsafe fn get_registry_3(mut out: *mut *mut *const entry) {
-    (*out) = ((&raw mut registry_2 as *mut [*const entry; 3]) as *mut *const entry);
-}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -67,11 +50,5 @@ unsafe fn main_0() -> i32 {
         (0 as *mut ::libc::c_void)
     } as *mut libc::c_char);
     assert!(((((sel).is_null()) as i32) != 0));
-    let mut avail: *mut *const entry = std::ptr::null_mut();
-    (unsafe { get_registry_3((&mut avail as *mut *mut *const entry)) });
-    assert!((((!((avail).is_null())) as i32) != 0));
-    assert!((((((*(*avail.offset((0) as isize))).id) == (1)) as i32) != 0));
-    assert!((((((*(*avail.offset((1) as isize))).id) == (2)) as i32) != 0));
-    assert!(((((*avail.offset((2) as isize)).is_null()) as i32) != 0));
     return 0;
 }

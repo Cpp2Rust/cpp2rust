@@ -1140,7 +1140,6 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 : 0;
     }
     StrCat(std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
-    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
   StrCat(std::format("b{}", GetEscapedStringLiteral(expr, 0)));
@@ -2359,12 +2358,6 @@ pub fn main() {{
 
 void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
                                       clang::QualType pointer_type) {
-  if (const auto *arr = ctx_.getAsArrayType(expr->getType())) {
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    StrCat(std::format("({} as Ptr<{}>)", ConvertPointer(expr),
-                       ToString(arr->getElementType())));
-    return;
-  }
   StrCat(ConvertPointer(expr));
 }
 
