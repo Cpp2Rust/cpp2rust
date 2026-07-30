@@ -203,6 +203,7 @@ fn f11(a0: i32, a1: i32, a2: i32, a3: Ptr<i32>) -> i32 {
     }
 }
 
+#[cfg(target_os = "linux")]
 fn f15(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>, a3: i32) -> i32 {
     let __flags = nix::sys::socket::SockFlag::from_bits_truncate(a3);
     let __raw = FdRegistry::with_fd(a0, |__fd| {
