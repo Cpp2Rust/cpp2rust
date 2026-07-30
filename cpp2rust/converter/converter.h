@@ -67,19 +67,19 @@ public:
   virtual RsExpr *
   VisitLValueReferenceType(const clang::LValueReferenceType *type);
 
-  virtual RsExpr *VisitDecayedType(const clang::DecayedType *type);
-
   virtual RsExpr *VisitPointerType(const clang::PointerType *type);
-
-  virtual RsExpr *VisitTypedefType(const clang::TypedefType *type);
-
-  virtual RsExpr *VisitUsingType(const clang::UsingType *type);
 
   enum class FnProtoType { LambdaCallOperator, FnPtr };
 
   virtual RsExpr *
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
                              FnProtoType kind = FnProtoType::FnPtr);
+
+  virtual RsExpr *VisitDecayedType(const clang::DecayedType *type);
+
+  virtual RsExpr *VisitTypedefType(const clang::TypedefType *type);
+
+  virtual RsExpr *VisitUsingType(const clang::UsingType *type);
 
   virtual RsExpr *VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl);
 

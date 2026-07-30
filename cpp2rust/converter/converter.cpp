@@ -117,6 +117,23 @@ RsExpr *Converter::Convert(clang::QualType qual_type) {
   return Text("");
 }
 
+std::string Converter::RenderType(clang::QualType qual_type) {
+  return std::string(Trim(Convert(qual_type)->print()));
+}
+
+RsExpr *Converter::ConvertPointeeType(clang::QualType ptr_type) {
+  assert(!ptr_type.isNull() && ptr_type->isPointerType());
+  auto pointee = ptr_type->getPointeeType();
+  if (!pointee->isRecordType()) {
+    return Convert(pointee);
+  }
+
+  auto str = RenderType(ptr_type);
+  Unwrap(str, "*mut ", "");
+  Unwrap(str, "*const ", "");
+  return Text(std::move(str));
+}
+
 RsExpr *Converter::VisitBuiltinType(const clang::BuiltinType *type) {
   switch (type->getKind()) {
   case clang::BuiltinType::Bool:
@@ -197,8 +214,22 @@ Converter::VisitLValueReferenceType(const clang::LValueReferenceType *type) {
              Convert(pointee_type));
 }
 
-RsExpr *Converter::VisitDecayedType(const clang::DecayedType *type) {
-  return Convert(type->getDecayedType());
+RsExpr *
+Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
+                                      FnProtoType kind) {
+  std::vector<RsExpr *> parts;
+  parts.push_back(
+      Text(kind == FnProtoType::LambdaCallOperator ? "impl Fn(" : "fn("));
+  for (auto p_ty : proto->param_types()) {
+    parts.push_back(Convert(p_ty));
+    parts.push_back(Text(','));
+  }
+  parts.push_back(Text(')'));
+  if (!proto->getReturnType()->isVoidType()) {
+    parts.push_back(Text("->"));
+    parts.push_back(Convert(proto->getReturnType()));
+  }
+  return arena_.New<Concat>(std::move(parts));
 }
 
 RsExpr *Converter::VisitPointerType(const clang::PointerType *type) {
@@ -222,47 +253,16 @@ RsExpr *Converter::VisitPointerType(const clang::PointerType *type) {
   return arena_.New<Concat>(std::move(parts));
 }
 
+RsExpr *Converter::VisitDecayedType(const clang::DecayedType *type) {
+  return Convert(type->getDecayedType());
+}
+
 RsExpr *Converter::VisitTypedefType(const clang::TypedefType *type) {
   return Convert(type->desugar());
 }
 
 RsExpr *Converter::VisitUsingType(const clang::UsingType *type) {
   return Convert(type->desugar());
-}
-
-std::string Converter::RenderType(clang::QualType qual_type) {
-  return std::string(Trim(Convert(qual_type)->print()));
-}
-
-RsExpr *Converter::ConvertPointeeType(clang::QualType ptr_type) {
-  assert(!ptr_type.isNull() && ptr_type->isPointerType());
-  auto pointee = ptr_type->getPointeeType();
-  if (!pointee->isRecordType()) {
-    return Convert(pointee);
-  }
-
-  auto str = RenderType(ptr_type);
-  Unwrap(str, "*mut ", "");
-  Unwrap(str, "*const ", "");
-  return Text(std::move(str));
-}
-
-RsExpr *
-Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                                      FnProtoType kind) {
-  std::vector<RsExpr *> parts;
-  parts.push_back(
-      Text(kind == FnProtoType::LambdaCallOperator ? "impl Fn(" : "fn("));
-  for (auto p_ty : proto->param_types()) {
-    parts.push_back(Convert(p_ty));
-    parts.push_back(Text(','));
-  }
-  parts.push_back(Text(')'));
-  if (!proto->getReturnType()->isVoidType()) {
-    parts.push_back(Text("->"));
-    parts.push_back(Convert(proto->getReturnType()));
-  }
-  return arena_.New<Concat>(std::move(parts));
 }
 
 bool Converter::Convert(clang::Decl *decl) {

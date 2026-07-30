@@ -172,55 +172,6 @@ RsExpr *ConverterRefCount::VisitLValueReferenceType(
   return Cat(Text("Ptr<"), Convert(type->getPointeeType()), Text('>'));
 }
 
-RsExpr *ConverterRefCount::VisitPointerType(const clang::PointerType *type) {
-  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-    return Cat(Text("FnPtr<"), ConvertFunctionPointerType(proto), Text('>'));
-  }
-
-  if (IsVaListType(clang::QualType(type, 0))) {
-    return Text("VaList");
-  }
-
-  if (type->isVoidPointerType()) {
-    return Text("AnyPtr");
-  }
-
-  auto pointee_type = type->getPointeeType();
-  PushConversionKind push1(*this, ConversionKind::Ptr,
-                           !pointee_type->isArrayType());
-  PushConversionKind push2(*this, ConversionKind::FullRefCount,
-                           pointee_type->isArrayType());
-  const char *open = "Ptr<";
-  if (pointee_type->isRecordType() &&
-      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
-    open = "PtrDyn<dyn";
-  }
-  return Cat(Text(open), Convert(pointee_type), Text('>'));
-}
-
-RsExpr *ConverterRefCount::VisitRecordType(const clang::RecordType *type) {
-  PushConversionKind push(*this, ConversionKind::Unboxed);
-  return Converter::VisitRecordType(type);
-}
-
-RsExpr *ConverterRefCount::VisitConstantArrayType(
-    const clang::ConstantArrayType *type) {
-  auto conv = getConversionKind();
-  PushConversionKind push(*this, ConversionKind::Unboxed);
-
-  switch (conv) {
-  case ConversionKind::Unboxed:
-    return Cat(
-        Text('['), Convert(type->getElementType()),
-        Text(std::format("; {}]", GetNumAsString(type->getSize()).c_str())));
-  case ConversionKind::Ptr:
-    return Convert(type->getElementType());
-  case ConversionKind::FullRefCount:
-    return Cat(Text("Box<["), Convert(type->getElementType()), Text("]>"));
-  }
-  std::unreachable();
-}
-
 RsExpr *ConverterRefCount::BuildFnAdapter(
     const clang::FunctionDecl *src_fn,
     const clang::FunctionProtoType *src_proto,
@@ -289,6 +240,55 @@ RsExpr *ConverterRefCount::ConvertFunctionPointerType(
     const clang::FunctionProtoType *proto, FnProtoType kind) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   return Converter::ConvertFunctionPointerType(proto, kind);
+}
+
+RsExpr *ConverterRefCount::VisitPointerType(const clang::PointerType *type) {
+  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+    return Cat(Text("FnPtr<"), ConvertFunctionPointerType(proto), Text('>'));
+  }
+
+  if (IsVaListType(clang::QualType(type, 0))) {
+    return Text("VaList");
+  }
+
+  if (type->isVoidPointerType()) {
+    return Text("AnyPtr");
+  }
+
+  auto pointee_type = type->getPointeeType();
+  PushConversionKind push1(*this, ConversionKind::Ptr,
+                           !pointee_type->isArrayType());
+  PushConversionKind push2(*this, ConversionKind::FullRefCount,
+                           pointee_type->isArrayType());
+  const char *open = "Ptr<";
+  if (pointee_type->isRecordType() &&
+      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+    open = "PtrDyn<dyn";
+  }
+  return Cat(Text(open), Convert(pointee_type), Text('>'));
+}
+
+RsExpr *ConverterRefCount::VisitRecordType(const clang::RecordType *type) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitRecordType(type);
+}
+
+RsExpr *ConverterRefCount::VisitConstantArrayType(
+    const clang::ConstantArrayType *type) {
+  auto conv = getConversionKind();
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+
+  switch (conv) {
+  case ConversionKind::Unboxed:
+    return Cat(
+        Text('['), Convert(type->getElementType()),
+        Text(std::format("; {}]", GetNumAsString(type->getSize()).c_str())));
+  case ConversionKind::Ptr:
+    return Convert(type->getElementType());
+  case ConversionKind::FullRefCount:
+    return Cat(Text("Box<["), Convert(type->getElementType()), Text("]>"));
+  }
+  std::unreachable();
 }
 
 RsExpr *ConverterRefCount::ConvertFreshLValue(clang::Expr *expr) {
