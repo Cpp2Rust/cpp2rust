@@ -203,6 +203,33 @@ fn f11(a0: i32, a1: i32, a2: i32, a3: Ptr<i32>) -> i32 {
     }
 }
 
+fn f15(a0: i32, a1: Ptr<Sockaddr>, a2: Ptr<u32>, a3: i32) -> i32 {
+    let __flags = nix::sys::socket::SockFlag::from_bits_truncate(a3);
+    let __raw = FdRegistry::with_fd(a0, |__fd| {
+        nix::sys::socket::accept4(std::os::fd::AsRawFd::as_raw_fd(&__fd), __flags)
+    });
+    match __raw {
+        Ok(__new) => {
+            let __addr = a1.clone();
+            let __len = a2.clone();
+            if !__addr.is_null() {
+                match nix::sys::socket::getpeername::<nix::sys::socket::SockaddrStorage>(__new) {
+                    Ok(__ss) => Sockaddr::encode(&__ss, &__addr, &__len),
+                    Err(__e) => panic!("accept4: getpeername failed: {__e}"),
+                }
+            }
+            /* nix 0.30 accept4 returns RawFd; no safe OwnedFd constructor exists */
+            FdRegistry::register(unsafe {
+                <std::os::fd::OwnedFd as std::os::fd::FromRawFd>::from_raw_fd(__new)
+            })
+        }
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    }
+}
+
 fn f17(a0: i32, a1: i32) -> i32 {
     match nix::sys::socket::Backlog::new(a1) {
         Ok(__b) => match FdRegistry::with_fd(a0, |__fd| nix::sys::socket::listen(&__fd, __b)) {
