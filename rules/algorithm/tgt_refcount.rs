@@ -43,11 +43,12 @@ where
     a0.sort_with_cmp(a1.get_offset(), a2)
 }
 
-fn f7<T1: Ord + Clone, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
-where
-    T2: FnMut(Ptr<T1>, Ptr<T1>) -> bool,
-{
-    a0.sort_with_cmp(a1.get_offset(), a2)
+fn f7<T1: Ord + Clone + 'static>(
+    a0: Ptr<T1>,
+    a1: Ptr<T1>,
+    a2: FnPtr<fn(Ptr<T1>, Ptr<T1>) -> bool>,
+) {
+    a0.sort_with_cmp(a1.get_offset(), *a2)
 }
 
 fn f8<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
@@ -116,12 +117,14 @@ where
     a0.sort_with_cmp(a1.get_offset(), fun)
 }
 
-fn f15<T1: Ord + Clone + ByteRepr, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
-where
-    T2: Fn(T1, T1) -> bool,
-{
-    let fun = |x: Ptr<T1>, y: Ptr<T1>| a2((x.read()).clone(), (y.read()).clone());
-    a0.sort_with_cmp(a1.get_offset(), fun)
+fn f15<T1: Ord + Clone + ByteRepr + 'static>(
+    a0: Ptr<T1>,
+    a1: Ptr<T1>,
+    a2: FnPtr<fn(T1, T1) -> bool>,
+) {
+    let __cmp = *a2;
+    let __fun = |x: Ptr<T1>, y: Ptr<T1>| __cmp((x.read()).clone(), (y.read()).clone());
+    a0.sort_with_cmp(a1.get_offset(), __fun)
 }
 
 fn f16<T1: PartialOrd + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {

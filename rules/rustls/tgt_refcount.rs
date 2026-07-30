@@ -193,11 +193,7 @@ fn f14(a0: Ptr<libcc2rs::RustlsConnection>, a1: AnyPtr) {
     libcc2rs::rustls_connection_set_userdata(a0.clone(), a1.clone())
 }
 
-fn f15(
-    a0: Ptr<libcc2rs::RustlsConnection>,
-    a1: Ptr<Ptr<u8>>,
-    a2: Ptr<usize>,
-) {
+fn f15(a0: Ptr<libcc2rs::RustlsConnection>, a1: Ptr<Ptr<u8>>, a2: Ptr<usize>) {
     libcc2rs::rustls_connection_get_alpn_protocol(a0.clone(), a1.clone(), a2.clone())
 }
 
@@ -213,10 +209,7 @@ fn f18(a0: Ptr<libcc2rs::RustlsConnection>) -> libcc2rs::RustlsStr {
     libcc2rs::rustls_connection_get_negotiated_key_exchange_group_name(a0.clone())
 }
 
-fn f19(
-    a0: Ptr<libcc2rs::RustlsConnection>,
-    a1: usize,
-) -> Ptr<libcc2rs::RustlsCertificate> {
+fn f19(a0: Ptr<libcc2rs::RustlsConnection>, a1: usize) -> Ptr<libcc2rs::RustlsCertificate> {
     libcc2rs::rustls_connection_get_peer_certificate(a0.clone(), a1)
 }
 
@@ -260,10 +253,7 @@ fn f25(
     libcc2rs::rustls_client_config_builder_set_certified_key(a0.clone(), a1.clone(), a2)
 }
 
-fn f26(
-    a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
-    a1: Ptr<libcc2rs::RustlsServerCertVerifier>,
-) {
+fn f26(a0: Ptr<libcc2rs::RustlsClientConfigBuilder>, a1: Ptr<libcc2rs::RustlsServerCertVerifier>) {
     libcc2rs::rustls_client_config_builder_set_server_verifier(a0.clone(), a1.clone())
 }
 
@@ -435,7 +425,10 @@ fn f61(
     a0: Ptr<libcc2rs::RustlsClientConfigBuilder>,
     a1: FnPtr<libcc2rs::RustlsVerifyServerCertCallback>,
 ) -> libcc2rs::RustlsResult {
-    libcc2rs::rustls_client_config_builder_dangerous_set_certificate_verifier(a0.clone(), a1.clone())
+    libcc2rs::rustls_client_config_builder_dangerous_set_certificate_verifier(
+        a0.clone(),
+        a1.clone(),
+    )
 }
 
 fn f60(
