@@ -6,23 +6,23 @@ use std::io::{ErrorKind, Read, Write};
 use std::rc::Rc;
 use std::sync::Arc;
 
+use rustls::DigitallySignedStruct;
 use rustls::RootCertStore;
 use rustls::SupportedCipherSuite;
-use rustls::DigitallySignedStruct;
 use rustls::client::ResolvesClientCert;
 use rustls::client::WebPkiServerVerifier;
-use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified};
-use rustls::pki_types::UnixTime;
-use rustls::{ClientConfig, KeyLog, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
-use rustls::pki_types::ServerName;
 use rustls::client::danger::ServerCertVerifier;
+use rustls::client::danger::{HandshakeSignatureValid, ServerCertVerified};
 use rustls::crypto::CryptoProvider;
 use rustls::pki_types::CertificateDer;
 use rustls::pki_types::CertificateRevocationListDer;
 use rustls::pki_types::PrivateKeyDer;
+use rustls::pki_types::ServerName;
+use rustls::pki_types::UnixTime;
 use rustls::pki_types::pem::PemObject;
 use rustls::server::VerifierBuilderError;
 use rustls::sign::CertifiedKey;
+use rustls::{ClientConfig, KeyLog, ProtocolVersion, SignatureScheme, SupportedProtocolVersion};
 
 use crate::{AnyPtr, ByteRepr, FnPtr, Ptr, Value};
 
@@ -175,13 +175,13 @@ pub fn map_rustls_error(err: &rustls::Error) -> RustlsResult {
             CertificateError::UnsupportedSignatureAlgorithmContext { .. } => {
                 CertUnsupportedSignatureAlgorithm
             }
-            CertificateError::NotValidForName
-            | CertificateError::NotValidForNameContext { .. } => CertNotValidForName,
-            CertificateError::InvalidPurpose
-            | CertificateError::InvalidPurposeContext { .. } => CertInvalidPurpose,
-            CertificateError::ApplicationVerificationFailure => {
-                CertApplicationVerificationFailure
+            CertificateError::NotValidForName | CertificateError::NotValidForNameContext { .. } => {
+                CertNotValidForName
             }
+            CertificateError::InvalidPurpose | CertificateError::InvalidPurposeContext { .. } => {
+                CertInvalidPurpose
+            }
+            CertificateError::ApplicationVerificationFailure => CertApplicationVerificationFailure,
             _ => CertOtherError,
         },
         Error::AlertReceived(alert) => match alert {
@@ -218,8 +218,9 @@ fn rustls_result_message(result: u32) -> String {
         7010 => "peer closed TCP connection without first closing TLS connection".to_string(),
         7011 => "no plaintext available; call rustls_connection_read_tls again".to_string(),
         7014 => "error parsing certificate revocation list (CRL)".to_string(),
-        7015 => "no server certificate verifier was configured on the client config builder"
-            .to_string(),
+        7015 => {
+            "no server certificate verifier was configured on the client config builder".to_string()
+        }
         7016 => "no default process-wide crypto provider has been installed".to_string(),
         7017 => "failed to get random bytes from the crypto provider".to_string(),
         other => format!("rustls result {other}"),
@@ -372,12 +373,11 @@ pub fn rustls_certified_key_build(
     if cert_chain.is_null() || private_key.is_null() || certified_key_out.is_null() {
         return RustlsResult::NullParameter;
     }
-    let private_key_der = match private_key.with_slice(private_key_len, |s| {
-        PrivateKeyDer::from_pem_slice(s)
-    }) {
-        Ok(der) => der,
-        Err(_) => return RustlsResult::PrivateKeyParseError,
-    };
+    let private_key_der =
+        match private_key.with_slice(private_key_len, PrivateKeyDer::from_pem_slice) {
+            Ok(der) => der,
+            Err(_) => return RustlsResult::PrivateKeyParseError,
+        };
     let signing_key = match default_crypto_provider()
         .key_provider
         .load_private_key(private_key_der)
@@ -642,9 +642,7 @@ pub fn rustls_client_config_builder_set_certified_key(
         }
         keys.push(key_ptr.with(|k| k.0.clone()));
     }
-    builder.with_mut(|b| {
-        b.cert_resolver = Some(Arc::new(ResolvesClientCertFromChoices { keys }))
-    });
+    builder.with_mut(|b| b.cert_resolver = Some(Arc::new(ResolvesClientCertFromChoices { keys })));
     RustlsResult::Ok
 }
 
@@ -744,16 +742,17 @@ pub fn rustls_client_config_builder_build(
     if config_out.is_null() {
         return RustlsResult::NullParameter;
     }
-    let (provider, versions, verifier, alpn_protocols, cert_resolver, key_log) = builder.with(|b| {
-        (
-            b.provider.clone(),
-            b.versions.clone(),
-            b.verifier.clone(),
-            b.alpn_protocols.clone(),
-            b.cert_resolver.clone(),
-            b.key_log.clone(),
-        )
-    });
+    let (provider, versions, verifier, alpn_protocols, cert_resolver, key_log) =
+        builder.with(|b| {
+            (
+                b.provider.clone(),
+                b.versions.clone(),
+                b.verifier.clone(),
+                b.alpn_protocols.clone(),
+                b.cert_resolver.clone(),
+                b.key_log.clone(),
+            )
+        });
     let verifier = match verifier {
         Some(v) => v,
         None => return RustlsResult::NoServerCertVerifier,
@@ -762,12 +761,11 @@ pub fn rustls_client_config_builder_build(
         true => rustls::DEFAULT_VERSIONS,
         false => versions.as_slice(),
     };
-    let wants_verifier = match ClientConfig::builder_with_provider(provider)
-        .with_protocol_versions(versions)
-    {
-        Ok(config) => config,
-        Err(e) => return map_rustls_error(&e),
-    };
+    let wants_verifier =
+        match ClientConfig::builder_with_provider(provider).with_protocol_versions(versions) {
+            Ok(config) => config,
+            Err(e) => return map_rustls_error(&e),
+        };
     let config = wants_verifier
         .dangerous()
         .with_custom_certificate_verifier(verifier);
@@ -1038,12 +1036,12 @@ pub fn rustls_connection_get_peer_certificate(
     conn: Ptr<RustlsConnection>,
     i: usize,
 ) -> Ptr<RustlsCertificate> {
-    conn.with(|c| {
-        match c.conn.peer_certificates().and_then(|certs| certs.get(i)) {
+    conn.with(
+        |c| match c.conn.peer_certificates().and_then(|certs| certs.get(i)) {
             Some(cert) => Ptr::alloc(RustlsCertificate(cert.clone().into_owned())),
             None => Ptr::null(),
-        }
-    })
+        },
+    )
 }
 
 pub fn rustls_certificate_get_der(
@@ -1109,8 +1107,7 @@ pub fn rustls_default_crypto_provider_ciphersuites_len() -> usize {
 }
 
 pub fn rustls_default_crypto_provider_random(buf: Ptr<u8>, len: usize) -> RustlsResult {
-    let mut tmp = Vec::new();
-    tmp.resize(len, 0u8);
+    let mut tmp = vec![0; len];
     match default_crypto_provider().secure_random.fill(&mut tmp) {
         Ok(()) => {
             if len > 0 {
