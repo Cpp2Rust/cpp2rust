@@ -87,117 +87,147 @@ RsExpr *Converter::Convert(clang::QualType qual_type) {
   const clang::Type *type = qual_type.getTypePtr();
 
   if (auto *builtin = clang::dyn_cast<clang::BuiltinType>(type)) {
-    switch (builtin->getKind()) {
-    case clang::BuiltinType::Bool:
-      return Text("bool");
-    case clang::BuiltinType::Float:
-      return Text("f32");
-    case clang::BuiltinType::Double:
-      return Text("f64");
-    case clang::BuiltinType::Char_S:
-    case clang::BuiltinType::Char_U:
-      return Text(CharRustType());
-    case clang::BuiltinType::SChar:
-      return Text("i8");
-    case clang::BuiltinType::UChar:
-      return Text("u8");
-    case clang::BuiltinType::UShort:
-    case clang::BuiltinType::UInt:
-    case clang::BuiltinType::ULong:
-    case clang::BuiltinType::ULongLong:
-    case clang::BuiltinType::Short:
-    case clang::BuiltinType::Int:
-    case clang::BuiltinType::Long:
-    case clang::BuiltinType::LongLong:
-      return Text(std::format("{}{}", builtin->isSignedInteger() ? 'i' : 'u',
-                              ctx_.getTypeSize(builtin)));
-    case clang::BuiltinType::Void:
-      return Text("::libc::c_void");
-    case clang::BuiltinType::UInt128:
-      return Text("u128");
-    case clang::BuiltinType::Int128:
-      return Text("i128");
-    default:
-      // FIXME: improve error handling
-      log() << "unsupported builtin type\n";
-      return Text("");
-    }
+    return VisitBuiltinType(builtin);
   }
-
   if (auto *record = clang::dyn_cast<clang::RecordType>(type)) {
-    auto *decl = record->getDecl();
-    if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-      if (lambda->isLambda()) {
-        if (in_function_formals_) {
-          return ConvertFunctionPointerType(
-              lambda->getLambdaCallOperator()
-                  ->getType()
-                  ->getAs<clang::FunctionProtoType>(),
-              FnProtoType::LambdaCallOperator);
-        }
-        return Text("_");
-      }
-    }
-
-    auto name = GetRecordName(decl);
-    if (!ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
-      record_decls_.MarkReferenced(name);
-    }
-    Mapper::AddRuleForUserDefinedType(decl);
-    return Text(std::move(name));
+    return VisitRecordType(record);
   }
-
   if (auto *constant_array = clang::dyn_cast<clang::ConstantArrayType>(type)) {
-    auto *elem = Convert(constant_array->getElementType());
-    auto size = GetNumAsString(constant_array->getSize());
-    return Cat(Text('['), elem, Text(std::format("; {}]", size.c_str())));
+    return VisitConstantArrayType(constant_array);
   }
-
   if (auto *incomplete_array =
           clang::dyn_cast<clang::IncompleteArrayType>(type)) {
-    return Cat(Text('['), Convert(incomplete_array->getElementType()),
-               Text(']'));
+    return VisitIncompleteArrayType(incomplete_array);
   }
-
   if (auto *reference = clang::dyn_cast<clang::LValueReferenceType>(type)) {
-    auto pointee_type = reference->getPointeeType();
-    return Cat(Text(pointee_type.isConstQualified() ? "*const" : "*mut"),
-               Convert(pointee_type));
+    return VisitLValueReferenceType(reference);
   }
-
   if (auto *decayed = clang::dyn_cast<clang::DecayedType>(type)) {
-    return Convert(decayed->getDecayedType());
+    return VisitDecayedType(decayed);
   }
-
   if (auto *pointer = clang::dyn_cast<clang::PointerType>(type)) {
-    if (auto proto =
-            pointer->getPointeeType()->getAs<clang::FunctionProtoType>()) {
-      return Cat(Text(std::format("Option<{}", keyword_unsafe_)),
-                 ConvertFunctionPointerType(proto), Text('>'));
-    }
-
-    if (IsVaListType(clang::QualType(pointer, 0))) {
-      return Text("VaList");
-    }
-
-    auto pointee_type = pointer->getPointeeType();
-    std::vector<RsExpr *> parts;
-    parts.push_back(Text(pointee_type.isConstQualified() ? "*const" : "*mut"));
-    if (pointee_type->isRecordType() &&
-        abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
-      parts.push_back(Text(keyword::kDyn));
-    }
-    parts.push_back(Convert(pointee_type));
-    return arena_.New<Concat>(std::move(parts));
+    return VisitPointerType(pointer);
   }
-
   if (auto *typedef_type = clang::dyn_cast<clang::TypedefType>(type)) {
-    return Convert(typedef_type->desugar());
+    return VisitTypedefType(typedef_type);
   }
   if (auto *using_type = clang::dyn_cast<clang::UsingType>(type)) {
-    return Convert(using_type->desugar());
+    return VisitUsingType(using_type);
   }
   return Text("");
+}
+
+RsExpr *Converter::VisitBuiltinType(const clang::BuiltinType *type) {
+  switch (type->getKind()) {
+  case clang::BuiltinType::Bool:
+    return Text("bool");
+  case clang::BuiltinType::Float:
+    return Text("f32");
+  case clang::BuiltinType::Double:
+    return Text("f64");
+  case clang::BuiltinType::Char_S:
+  case clang::BuiltinType::Char_U:
+    return Text(CharRustType());
+  case clang::BuiltinType::SChar:
+    return Text("i8");
+  case clang::BuiltinType::UChar:
+    return Text("u8");
+  case clang::BuiltinType::UShort:
+  case clang::BuiltinType::UInt:
+  case clang::BuiltinType::ULong:
+  case clang::BuiltinType::ULongLong:
+  case clang::BuiltinType::Short:
+  case clang::BuiltinType::Int:
+  case clang::BuiltinType::Long:
+  case clang::BuiltinType::LongLong:
+    return Text(std::format("{}{}", type->isSignedInteger() ? 'i' : 'u',
+                            ctx_.getTypeSize(type)));
+  case clang::BuiltinType::Void:
+    return Text("::libc::c_void");
+  case clang::BuiltinType::UInt128:
+    return Text("u128");
+  case clang::BuiltinType::Int128:
+    return Text("i128");
+  default:
+    // FIXME: improve error handling
+    log() << "unsupported builtin type\n";
+    return Text("");
+  }
+}
+
+RsExpr *Converter::VisitRecordType(const clang::RecordType *type) {
+  auto *decl = type->getDecl();
+  if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    if (lambda->isLambda()) {
+      if (in_function_formals_) {
+        return ConvertFunctionPointerType(
+            lambda->getLambdaCallOperator()
+                ->getType()
+                ->getAs<clang::FunctionProtoType>(),
+            FnProtoType::LambdaCallOperator);
+      }
+      return Text("_");
+    }
+  }
+
+  auto name = GetRecordName(decl);
+  if (!ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
+    record_decls_.MarkReferenced(name);
+  }
+  Mapper::AddRuleForUserDefinedType(decl);
+  return Text(std::move(name));
+}
+
+RsExpr *
+Converter::VisitConstantArrayType(const clang::ConstantArrayType *type) {
+  auto *elem = Convert(type->getElementType());
+  auto size = GetNumAsString(type->getSize());
+  return Cat(Text('['), elem, Text(std::format("; {}]", size.c_str())));
+}
+
+RsExpr *
+Converter::VisitIncompleteArrayType(const clang::IncompleteArrayType *type) {
+  return Cat(Text('['), Convert(type->getElementType()), Text(']'));
+}
+
+RsExpr *
+Converter::VisitLValueReferenceType(const clang::LValueReferenceType *type) {
+  auto pointee_type = type->getPointeeType();
+  return Cat(Text(pointee_type.isConstQualified() ? "*const" : "*mut"),
+             Convert(pointee_type));
+}
+
+RsExpr *Converter::VisitDecayedType(const clang::DecayedType *type) {
+  return Convert(type->getDecayedType());
+}
+
+RsExpr *Converter::VisitPointerType(const clang::PointerType *type) {
+  if (auto proto = type->getPointeeType()->getAs<clang::FunctionProtoType>()) {
+    return Cat(Text(std::format("Option<{}", keyword_unsafe_)),
+               ConvertFunctionPointerType(proto), Text('>'));
+  }
+
+  if (IsVaListType(clang::QualType(type, 0))) {
+    return Text("VaList");
+  }
+
+  auto pointee_type = type->getPointeeType();
+  std::vector<RsExpr *> parts;
+  parts.push_back(Text(pointee_type.isConstQualified() ? "*const" : "*mut"));
+  if (pointee_type->isRecordType() &&
+      abstract_structs_.contains(GetID(pointee_type->getAsRecordDecl()))) {
+    parts.push_back(Text(keyword::kDyn));
+  }
+  parts.push_back(Convert(pointee_type));
+  return arena_.New<Concat>(std::move(parts));
+}
+
+RsExpr *Converter::VisitTypedefType(const clang::TypedefType *type) {
+  return Convert(type->desugar());
+}
+
+RsExpr *Converter::VisitUsingType(const clang::UsingType *type) {
+  return Convert(type->desugar());
 }
 
 std::string Converter::RenderType(clang::QualType qual_type) {

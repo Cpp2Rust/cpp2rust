@@ -55,6 +55,26 @@ public:
 
   virtual RsExpr *Convert(clang::QualType qual_type);
 
+  virtual RsExpr *VisitBuiltinType(const clang::BuiltinType *type);
+
+  virtual RsExpr *VisitRecordType(const clang::RecordType *type);
+
+  virtual RsExpr *VisitConstantArrayType(const clang::ConstantArrayType *type);
+
+  virtual RsExpr *
+  VisitIncompleteArrayType(const clang::IncompleteArrayType *type);
+
+  virtual RsExpr *
+  VisitLValueReferenceType(const clang::LValueReferenceType *type);
+
+  virtual RsExpr *VisitDecayedType(const clang::DecayedType *type);
+
+  virtual RsExpr *VisitPointerType(const clang::PointerType *type);
+
+  virtual RsExpr *VisitTypedefType(const clang::TypedefType *type);
+
+  virtual RsExpr *VisitUsingType(const clang::UsingType *type);
+
   enum class FnProtoType { LambdaCallOperator, FnPtr };
 
   virtual RsExpr *

@@ -15,6 +15,18 @@ public:
   RsExpr *Convert(clang::QualType qual_type) override;
 
   RsExpr *
+  VisitIncompleteArrayType(const clang::IncompleteArrayType *type) override;
+
+  RsExpr *
+  VisitLValueReferenceType(const clang::LValueReferenceType *type) override;
+
+  RsExpr *VisitPointerType(const clang::PointerType *type) override;
+
+  RsExpr *VisitRecordType(const clang::RecordType *type) override;
+
+  RsExpr *VisitConstantArrayType(const clang::ConstantArrayType *type) override;
+
+  RsExpr *
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
                              FnProtoType kind = FnProtoType::FnPtr) override;
 
