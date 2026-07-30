@@ -18,6 +18,8 @@ namespace cpp2rust {
 struct RsExpr {
   enum class Kind : uint8_t {
     Verbatim,
+    Concat,
+    Delim,
     Unary,
   };
 
@@ -41,6 +43,45 @@ struct Verbatim : RsExpr {
   std::string print() const override { return text; }
 
   std::string text;
+};
+
+struct Concat : RsExpr {
+  explicit Concat(std::vector<RsExpr *> parts)
+      : RsExpr(Kind::Concat), parts(std::move(parts)) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Concat; }
+
+  std::string print() const override {
+    std::string result;
+    for (auto *part : parts) {
+      result += part->print();
+      result += ' ';
+    }
+    return result;
+  }
+
+  std::vector<RsExpr *> parts;
+};
+
+struct Delim : RsExpr {
+  Delim(char open, char close, RsExpr *inner)
+      : RsExpr(Kind::Delim), open(open), close(close), inner(inner) {}
+
+  static bool classof(const RsExpr *expr) { return expr->kind == Kind::Delim; }
+
+  std::string print() const override {
+    std::string result;
+    result += open;
+    result += ' ';
+    result += inner->print();
+    result += close;
+    result += ' ';
+    return result;
+  }
+
+  char open;
+  char close;
+  RsExpr *inner;
 };
 
 struct Unary : RsExpr {
@@ -69,6 +110,10 @@ struct Unary : RsExpr {
   Op op;
   RsExpr *operand;
 };
+
+inline bool SameRendered(const RsExpr *lhs, const RsExpr *rhs) {
+  return lhs->print() == rhs->print();
+}
 
 class RsArena {
 public:

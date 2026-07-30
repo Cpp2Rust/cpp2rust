@@ -10,19 +10,11 @@ class ConverterRefCount final : public Converter {
 public:
   ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx);
 
-  void EmitFilePreamble() override;
+  std::string EmitFilePreamble() override;
 
-  bool VisitRecordType(clang::RecordType *type) override;
+  RsExpr *Convert(clang::QualType qual_type) override;
 
-  bool VisitConstantArrayType(clang::ConstantArrayType *type) override;
-
-  bool VisitIncompleteArrayType(clang::IncompleteArrayType *type) override;
-
-  bool VisitLValueReferenceType(clang::LValueReferenceType *type) override;
-
-  bool VisitPointerType(clang::PointerType *type) override;
-
-  std::string
+  RsExpr *
   ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
                              FnProtoType kind = FnProtoType::FnPtr) override;
 
@@ -30,29 +22,29 @@ public:
 
   RsExpr *VisitOffsetOfExpr(clang::OffsetOfExpr *expr) override;
 
-  void EmitRustUnion(clang::RecordDecl *decl) override;
+  RsExpr *EmitRustUnion(clang::RecordDecl *decl) override;
 
   bool EmitsReprCForRecords() const override { return false; }
 
   const char *CharRustType() const override { return "u8"; }
 
-  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                     const clang::FunctionDecl *op) override;
+  RsExpr *ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                        const clang::FunctionDecl *op) override;
 
-  void AddCloneTrait(const clang::RecordDecl *decl) override;
+  RsExpr *AddCloneTrait(const clang::RecordDecl *decl) override;
 
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override;
+  RsExpr *AddDropTrait(const clang::CXXRecordDecl *decl) override;
 
-  void AddByteReprTrait(const clang::RecordDecl *decl) override;
+  RsExpr *AddByteReprTrait(const clang::RecordDecl *decl) override;
 
-  void AddByteReprTrait(const clang::EnumDecl *decl) override;
+  RsExpr *AddByteReprTrait(const clang::EnumDecl *decl) override;
 
   RsExpr *
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
 
-  void AddDefaultTrait(const clang::RecordDecl *decl) override;
+  RsExpr *AddDefaultTrait(const clang::RecordDecl *decl) override;
 
-  void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
+  RsExpr *AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
 
@@ -60,31 +52,31 @@ public:
 
   RsExpr *VisitFieldDecl(clang::FieldDecl *decl) override;
 
-  void EmitFunctionPreamble(clang::FunctionDecl *decl) override;
+  RsExpr *EmitFunctionPreamble(clang::FunctionDecl *decl) override;
 
   RsExpr *VisitVarDecl(clang::VarDecl *decl) override;
 
-  void ConvertGlobalVarDecl(clang::VarDecl *decl) override;
+  RsExpr *ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 
-  void ConvertVaListVarDecl(clang::VarDecl *decl) override;
+  RsExpr *ConvertVaListVarDecl(clang::VarDecl *decl) override;
 
-  bool ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
+  std::pair<RsExpr *, bool> ConvertVarDeclSkipInit(clang::VarDecl *decl) override;
 
-  void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
+  RsExpr *EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
   RsExpr *VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
 
-  bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
+  RsExpr *ConvertIncAndDec(clang::UnaryOperator *expr) override;
 
   RsExpr *VisitConditionalOperator(clang::ConditionalOperator *expr) override;
 
-  void ConvertPrintf(clang::CallExpr *expr) override;
+  RsExpr *ConvertPrintf(clang::CallExpr *expr) override;
 
-  void EmitFnPtrCall(clang::Expr *callee) override;
+  RsExpr *EmitFnPtrCall(clang::Expr *callee) override;
 
-  void
+  RsExpr *
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
 
   // FnPtr does not implement Copy
@@ -96,15 +88,15 @@ public:
 
   RsExpr *VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) override;
 
-  bool VisitFunctionPointerCast(clang::ExplicitCastExpr *expr);
+  RsExpr *VisitFunctionPointerCast(clang::ExplicitCastExpr *expr);
 
   RsExpr *VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) override;
 
-  void ConvertBinaryOperator(clang::BinaryOperator *expr) override;
+  RsExpr *ConvertBinaryOperator(clang::BinaryOperator *expr) override;
 
   RsExpr *VisitStmtExpr(clang::StmtExpr *expr) override;
 
-  void EmitStmtExprTail(clang::Expr *tail) override;
+  RsExpr *EmitStmtExprTail(clang::Expr *tail) override;
 
   RsExpr *VisitInitListExpr(clang::InitListExpr *expr) override;
 
@@ -112,7 +104,7 @@ public:
 
   RsExpr *VisitMemberExpr(clang::MemberExpr *expr) override;
 
-  void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
+  RsExpr *ConvertUnionMemberAccessor(clang::MemberExpr *expr);
 
   RsExpr *VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
@@ -124,11 +116,11 @@ public:
 
   RsExpr *VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
 
-  void EmitByValueShadow(const std::string &loop_var_name, clang::QualType type,
-                         std::string box_expr,
-                         const std::string &type_override = "");
+  RsExpr *EmitByValueShadow(const std::string &loop_var_name,
+                            clang::QualType type, RsExpr *box_expr,
+                            const std::string &type_override = "");
 
-  std::string ConvertStream(clang::Expr *expr) override;
+  RsExpr *ConvertStream(clang::Expr *expr) override;
 
   RsExpr *VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
@@ -137,117 +129,104 @@ public:
 
   RsExpr *VisitVAArgExpr(clang::VAArgExpr *expr) override;
 
-  void ConvertVariadicArg(clang::Expr *arg) override;
+  RsExpr *ConvertVariadicArg(clang::Expr *arg) override;
 
-  void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
+  RsExpr *ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
   RsExpr *VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) override;
 
-  std::string GetDefaultAsString(clang::QualType qual_type) override;
+  RsExpr *GetDefaultAsString(clang::QualType qual_type) override;
 
-  std::string GetArrayDefaultAsString(clang::QualType qual_type) override;
+  RsExpr *GetArrayDefaultAsString(clang::QualType qual_type) override;
 
-  void ConvertEqualsNullPtr(clang::Expr *expr) override;
+  RsExpr *ConvertEqualsNullPtr(clang::Expr *expr) override;
 
-  std::string GetDefaultAsStringFallback(clang::QualType qual_type) override;
+  RsExpr *GetDefaultAsStringFallback(clang::QualType qual_type) override;
 
-  std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
+  RsExpr *ConvertVarDefaultInit(clang::QualType qual_type) override;
 
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
 
-  bool Convert(clang::QualType qual_type) override;
-  bool
-  Convert(clang::Expr *expr,
-          std::optional<clang::QualType> implicit_convert_to = {}) override {
-    return Converter::Convert(expr, implicit_convert_to);
-  }
-  bool Convert(clang::Stmt *stmt) override {
-    auto result = Converter::Convert(stmt);
-    pending_deref_.assert_consumed();
-    return result;
-  }
+  RsExpr *ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) override;
 
-  void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) override;
+  RsExpr *ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
 
-  std::string ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
+  RsExpr *ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
+                            std::string_view assign_operator) override;
 
-  void ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
-                         std::string_view assign_operator) override;
+  RsExpr *ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) override;
 
-  void ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) override;
+  RsExpr *ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
 
-  bool ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) override;
+  RsExpr *ConvertFunctionParameters(clang::FunctionDecl *decl) override;
 
-  void ConvertFunctionParameters(clang::FunctionDecl *decl) override;
-
-  void ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
+  RsExpr *ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                              clang::QualType type) override;
-  void ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) override;
+  RsExpr *ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) override;
 
-  void ConvertFunctionMain(const clang::FunctionDecl *decl,
-                           const std::string_view main_function_name) override;
+  RsExpr *ConvertFunctionMain(const clang::FunctionDecl *decl,
+                              const std::string_view main_function_name) override;
 
-  void ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
+  RsExpr *ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) override;
 
-  void ConvertDeref(clang::Expr *expr) override;
+  RsExpr *ConvertDeref(clang::Expr *expr) override;
 
-  void ConvertArrow(clang::Expr *expr) override;
+  RsExpr *ConvertArrow(clang::Expr *expr) override;
 
-  std::string AccessLValueObject(clang::MemberExpr *member) override;
+  RsExpr *AccessLValueObject(clang::MemberExpr *member) override;
 
-  void ConvertGenericBinaryOperator(clang::BinaryOperator *expr) override;
+  RsExpr *ConvertGenericBinaryOperator(clang::BinaryOperator *expr) override;
 
   bool IsReferenceType(const clang::Expr *expr) const override;
 
-  std::string
+  RsExpr *
   ConvertMappedMethodCall(clang::Expr *expr,
                           const TranslationRule::MethodCallFragment &mc,
                           clang::Expr **args, unsigned num_args,
                           TempMaterializationCtx *ctx) override;
 
 private:
-  std::pair<std::string, std::string>
+  std::pair<RsExpr *, RsExpr *>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;
 
-  void
+  RsExpr *
   emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                     clang::CXXConstructExpr *ctor) override;
-  void emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
-  void emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
+  RsExpr *emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
+  RsExpr *
+  emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
 
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
-  std::string BuildFnAdapter(const clang::FunctionDecl *src_fn,
-                             const clang::FunctionProtoType *src_proto,
-                             const clang::FunctionProtoType *target_proto);
+  RsExpr *BuildFnAdapter(const clang::FunctionDecl *src_fn,
+                         const clang::FunctionProtoType *src_proto,
+                         const clang::FunctionProtoType *target_proto);
 
-  void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
+  RsExpr *EmitSetOrAssign(clang::Expr *lhs, RsExpr *rhs);
 
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
-  std::string DerefPtrExpr(std::string_view ptr_expr,
-                           clang::QualType pointee_type);
+  RsExpr *DerefPtrExpr(RsExpr *ptr, clang::QualType pointee_type);
 
   std::string GetInnerType(clang::QualType type);
 
-  std::string ConvertFreshLValue(clang::Expr *expr);
-  std::string ConvertObject(clang::Expr *expr);
-  std::string ConvertFreshObject(clang::Expr *expr) override;
-  std::string
-  ConvertFresh(clang::Expr *expr,
-               std::optional<clang::QualType> implicit_convert_to = {});
-  std::string ConvertFreshRValue(
+  RsExpr *ConvertFreshLValue(clang::Expr *expr);
+  RsExpr *ConvertObject(clang::Expr *expr);
+  RsExpr *ConvertFreshObject(clang::Expr *expr) override;
+  RsExpr *ConvertFresh(clang::Expr *expr,
+                       std::optional<clang::QualType> implicit_convert_to = {});
+  RsExpr *ConvertFreshRValue(
       clang::Expr *expr,
       std::optional<clang::QualType> implicit_convert_to = {}) override;
-  std::string ConvertFreshPointer(clang::Expr *expr) override;
+  RsExpr *ConvertFreshPointer(clang::Expr *expr) override;
 
-  std::string ConvertPtrType(clang::QualType type);
-  std::string ConvertPointeeType(clang::QualType ptr_type) override;
+  RsExpr *ConvertPtrType(clang::QualType type);
+  RsExpr *ConvertPointeeType(clang::QualType ptr_type) override;
 
-  std::string ConvertSubscriptIndex(clang::Expr *idx);
+  RsExpr *ConvertSubscriptIndex(clang::Expr *idx);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 
@@ -308,34 +287,34 @@ private:
     ~PushUnboxedIfSimple() { c.conversion_kind_.pop_back(); }
   };
 
-  std::string BoxType(std::string &&str) const;
-  std::string BoxValue(std::string &&str) const;
+  RsExpr *BoxType(RsExpr *node);
+  RsExpr *BoxValue(RsExpr *node);
 
   std::vector<ConversionKind> conversion_kind_;
 
   // Set by pointer-related visit methods (ConvertDeref,
   // ConvertPointerSubscript, etc.) when converting an LValue that goes through
-  // a Ptr. Contains the ptr expression string. Consumed by EmitSetOrAssign to
+  // a Ptr. Contains the ptr expression node. Consumed by EmitSetOrAssign to
   // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
   // ptr.with_mut(...).
   struct PendingDeref {
-    void set(std::string str, clang::Expr *expr = nullptr);
-    void set_unchecked(std::string str, clang::Expr *expr = nullptr);
-    std::string take() {
-      auto result = std::move(value);
-      value.clear();
+    void set(RsExpr *node, clang::Expr *expr = nullptr);
+    void set_unchecked(RsExpr *node, clang::Expr *expr = nullptr);
+    RsExpr *take() {
+      auto *result = value;
+      value = nullptr;
       pointee_is_boxed = false;
       return result;
     }
-    bool empty() const { return value.empty(); }
+    bool empty() const { return value == nullptr; }
     bool is_boxed() const { return pointee_is_boxed; }
     void assert_consumed() const {
-      assert(value.empty() && "pending_deref_ not consumed");
+      assert(value == nullptr && "pending_deref_ not consumed");
     }
 
   private:
     static bool compute_inner_boxed(clang::Expr *expr);
-    std::string value;
+    RsExpr *value = nullptr;
     bool pointee_is_boxed = false;
   } pending_deref_;
 };

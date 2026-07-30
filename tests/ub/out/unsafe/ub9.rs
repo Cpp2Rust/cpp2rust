@@ -15,7 +15,6 @@ unsafe fn main_0() -> i32 {
     let mut arr: *mut i32 =
         Box::leak((0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     let mut out: i32 = (*arr.offset((10) as isize));
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         arr,
         libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),

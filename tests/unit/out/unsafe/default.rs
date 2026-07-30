@@ -38,7 +38,6 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[Pointers]>>(),
     )
     .as_mut_ptr();
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         default_pointers,
         libcc2rs::malloc_usable_size(default_pointers as *mut ::libc::c_void)

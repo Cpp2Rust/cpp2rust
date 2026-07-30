@@ -218,7 +218,7 @@ pub unsafe fn test_strlen_5() {
     assert!(
         ((((libc::strcmp(second, (c"two".as_ptr().cast_mut()).cast_const())) == (0)) as i32) != 0)
     );
-    let mut big : [ libc::c_char ; 64] = std::mem::transmute(*b"hi\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")  ;
+    let mut big : [ libc::c_char ; 64]   = std::mem::transmute(*b"hi\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")  ;
     assert!(((((libc::strlen((big.as_mut_ptr()).cast_const())) == (2_usize)) as i32) != 0));
     big[(2) as usize] = (('x' as i32) as libc::c_char);
     big[(3) as usize] = (('\0' as i32) as libc::c_char);

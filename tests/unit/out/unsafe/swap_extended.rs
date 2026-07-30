@@ -95,7 +95,6 @@ unsafe fn main_0() -> i32 {
         (*i.offset((0) as isize)),
         (*i.offset((1) as isize)),
     );
-
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         i,
         libcc2rs::malloc_usable_size(i as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
