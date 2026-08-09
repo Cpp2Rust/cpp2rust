@@ -15,7 +15,8 @@ pub fn triple_it_1(x: i32) -> i32 {
     return ((*x.borrow()) * 3);
 }
 thread_local!(
-    pub static g_op_2: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    pub static g_op_2: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 pub fn set_op_3(fn_: FnPtr<fn(i32) -> i32>) {
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
@@ -46,7 +47,7 @@ fn main_0() -> i32 {
         _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
     assert!((({ call_op_4(5,) }) == 15));
-    ({ set_op_3(FnPtr::null()) });
+    ({ set_op_3(FnPtr::<fn(i32) -> i32>::null()) });
     assert!((*g_op_2.with(Value::clone).borrow()).is_null());
     assert!((({ call_op_4(5,) }) == 5));
     return 0;

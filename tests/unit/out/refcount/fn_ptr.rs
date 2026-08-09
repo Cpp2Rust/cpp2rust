@@ -19,7 +19,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::null()));
     assert!((*fn_.borrow()).is_null());
     assert!({
         let _lhs = (*fn_.borrow()).clone();

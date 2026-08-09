@@ -25,9 +25,9 @@ impl Clone for Vtable {
 impl Default for Vtable {
     fn default() -> Self {
         Vtable {
-            create: Rc::new(RefCell::new(FnPtr::null())),
-            get: Rc::new(RefCell::new(FnPtr::null())),
-            destroy: Rc::new(RefCell::new(FnPtr::null())),
+            create: Rc::new(RefCell::new(FnPtr::<fn(i32) -> AnyPtr>::null())),
+            get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::null())),
+            destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::null())),
         }
     }
 }
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
     assert!((({ (*(*(*vt.borrow()).get.borrow()))((*obj.borrow()).clone(),) }) == 42));
     ({ (*(*(*vt.borrow()).destroy.borrow()))((*obj.borrow()).clone()) });
     assert!(((*storage_0.with(Value::clone).borrow()) == 0));
-    (*(*vt.borrow()).get.borrow_mut()) = FnPtr::null();
+    (*(*vt.borrow()).get.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::null();
     assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;
 }

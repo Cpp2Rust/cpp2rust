@@ -75,7 +75,7 @@ impl Default for Outer {
             pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
             inner: <Value<Inner>>::default(),
             x: <Value<i32>>::default(),
-            fn_: Rc::new(RefCell::new(FnPtr::null())),
+            fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
 }
@@ -133,8 +133,8 @@ impl Default for Foo {
         Foo {
             s1: Rc::new(RefCell::new(Ptr::<u8>::null())),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: <Value<i32>>::default(),
         }
     }
@@ -165,7 +165,8 @@ impl ByteRepr for Foo {
     }
 }
 thread_local!(
-    pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
     pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
@@ -179,8 +180,8 @@ thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
         s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"hello"))),
         s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        fn1: Rc::new(RefCell::new(FnPtr::null())),
-        fn2: Rc::new(RefCell::new(FnPtr::null())),
+        fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+        fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         n: Rc::new(RefCell::new(42)),
     }));
 );
@@ -189,15 +190,15 @@ thread_local!(
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: Rc::new(RefCell::new(1)),
         },
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: Rc::new(RefCell::new(2)),
         },
     ])));
@@ -207,7 +208,8 @@ pub fn check_local_static_5() {
         static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     );
     thread_local!(
-        static local_fn_7: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+        static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =
+            Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
     );
     thread_local!(
         static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));

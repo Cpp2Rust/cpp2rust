@@ -25,7 +25,7 @@ impl Default for label {
     fn default() -> Self {
         label {
             name: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            probe: Rc::new(RefCell::new(FnPtr::null())),
+            probe: Rc::new(RefCell::new(FnPtr::<fn() -> i32>::null())),
             mask: <Value<i32>>::default(),
         }
     }
@@ -54,7 +54,7 @@ thread_local!(
     pub static table_1: Value<Box<[label]>> = Rc::new(RefCell::new(Box::new([
         label {
             name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
-            probe: Rc::new(RefCell::new(FnPtr::null())),
+            probe: Rc::new(RefCell::new(FnPtr::<fn() -> i32>::null())),
             mask: Rc::new(RefCell::new((1 << 4))),
         },
         label {

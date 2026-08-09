@@ -24,7 +24,7 @@ impl Default for Handler {
     fn default() -> Self {
         Handler {
             tag: <Value<i32>>::default(),
-            cb: Rc::new(RefCell::new(FnPtr::null())),
+            cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
 }
