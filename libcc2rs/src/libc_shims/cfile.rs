@@ -23,12 +23,8 @@ impl CFile {
         let mut chars = mode.chars();
         let mut flags = match chars.next() {
             Some('r') => OFlag::O_RDONLY,
-            Some('w') => OFlag::O_WRONLY
-                .union(OFlag::O_CREAT)
-                .union(OFlag::O_TRUNC),
-            Some('a') => OFlag::O_WRONLY
-                .union(OFlag::O_CREAT)
-                .union(OFlag::O_APPEND),
+            Some('w') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_TRUNC),
+            Some('a') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_APPEND),
             _ => panic!("fopen: unsupported mode {:?}", mode),
         };
         for c in chars {
