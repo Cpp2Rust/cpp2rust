@@ -6,15 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[repr(C)]
 #[derive(Default)]
 pub struct Holder {
-    pub v: Vec<i32>,
+    pub v: Value<Vec<i32>>,
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let mut this = Self {
-            v: (self.v).clone(),
+            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
         };
         this
     }
@@ -24,11 +23,11 @@ impl ByteRepr for Holder {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..24]);
+        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: <Vec<i32>>::from_bytes(&buf[0..24]),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
         }
     }
 }
@@ -53,23 +52,15 @@ fn main_0() -> i32 {
         .offset(1_usize)
         .write(30);
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    (*h.borrow_mut()).v.push(40);
-    (*h.borrow_mut()).v.push(50);
+    (*(*h.borrow()).v.borrow_mut()).push(40);
+    (*(*h.borrow()).v.borrow_mut()).push(50);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     let b: Value<i32> = Rc::new(RefCell::new(
-        (((*hp.borrow()).field_ptr(
-            0,
-            |__v: &Holder| &__v.v[..],
-            |__v: &mut Holder| &mut __v.v[..],
-        ) as Ptr<i32>)
+        (((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
             .offset(0_usize)
             .read()),
     ));
-    ((*hp.borrow()).field_ptr(
-        0,
-        |__v: &Holder| &__v.v[..],
-        |__v: &mut Holder| &mut __v.v[..],
-    ) as Ptr<i32>)
+    ((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
         .offset(1_usize)
         .write(60);
     assert!(((*a.borrow()) == 10));
@@ -81,11 +72,7 @@ fn main_0() -> i32 {
     );
     assert!(((*b.borrow()) == 40));
     assert!(
-        ((((*hp.borrow()).field_ptr(
-            0,
-            |__v: &Holder| &__v.v[..],
-            |__v: &mut Holder| &mut __v.v[..]
-        ) as Ptr<i32>)
+        ((((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
             .offset(1_usize)
             .read())
             == 60)
