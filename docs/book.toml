@@ -1,0 +1,20 @@
+[book]
+title = "Cpp2Rust"
+description = "Developer documentation for Cpp2Rust, an automatic C++ to safe Rust translator."
+authors = ["Lucian Popescu"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+default-theme = "light"
+git-repository-url = "https://github.com/cpp2rust/cpp2rust"
+edit-url-template = "https://github.com/cpp2rust/cpp2rust/edit/main/docs/{path}"
+no-section-label = false
+
+[output.html.fold]
+enable = true
+level = 1
