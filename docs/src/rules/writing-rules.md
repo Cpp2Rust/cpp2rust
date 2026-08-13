@@ -39,6 +39,10 @@ not emitted as a function of its own: it is spliced inline into the generated
 code as a block expression, so a `return` would not end the rule, it would
 return from whatever generated function the rule happens to be expanded in.
 
+When the pattern's type cannot be named, the rule uses an `auto` return
+type: `rules/iomanip` writes `auto f1(int n) { return std::setw(n); }`
+because `std::setw` returns an unspecified type.
+
 ## Methods
 
 There is no special syntax for member functions: write a free function that
@@ -64,6 +68,28 @@ matched positionally. The rule is written against the open template
 `std::vector<T1>`, with `T1` left as a placeholder, so a single rule covers
 every instantiation: when the input program calls `size()` on, say, a
 `std::vector<int>`, the matcher binds `T1 = int`.
+
+## Static member functions
+
+A static member function is also written with a receiver parameter, which
+exists only to name the class. The call site has no receiver argument, so
+the Rust side drops it and numbers the remaining parameters from `a0`; here
+there are none:
+
+```cpp
+// rules/limits/src.cpp
+template <typename T1> T1 f1(std::numeric_limits<T1> &a0) { return a0.max(); }
+```
+
+```rust
+// rules/limits/tgt_unsafe.rs
+unsafe fn f1<T1: HasMinMax>() -> T1 {
+    <T1>::MAX
+}
+```
+
+(`HasMinMax` is a helper trait defined alongside the rules in the same
+file.)
 
 ## Constructors
 
@@ -100,9 +126,55 @@ bool f11(typename std::map<T1, T2>::iterator a,
 ```
 
 Post-increment is distinguished from pre-increment by the usual dummy `int`
-parameter: `a0.operator++(a1)` versus `it.operator++()`. Member accesses
-through iterators are also rules (e.g. `it->first`, `it->second`, `o.second`
-in `rules/map` and `rules/pair`).
+parameter: `a0.operator++(a1)` versus `it.operator++()`. Conversion
+operators use the same explicit syntax: `a0.operator T1 &()` in
+`rules/functional` matches the conversion of a `std::reference_wrapper<T1>`
+back to a reference. Field accesses are rules of their own, matched by the
+field: `it->first` and `it->second` through iterators, plain `o.second` on
+a pair (`rules/map`, `rules/pair`).
+
+## Callable arguments
+
+A rule parameter may be a callable. Function pointers are spelled directly;
+for a lambda, whose type cannot be written, the rule declares a file-scope
+lambda and takes `decltype(lambda)`:
+
+```cpp
+// rules/algorithm/src.cpp
+auto lambda = [](const T2 &a, const T2 &b) { return false; };
+void f6(T1 first, T1 last, decltype(lambda) comp) {
+  return std::stable_sort(first, last, comp);
+}
+```
+
+```rust
+// rules/algorithm/tgt_unsafe.rs
+unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
+where
+    T2: FnMut(&T1, &T1) -> bool,
+{ ... }
+```
+
+`T1` and `T2` are not template parameters here but file-scope helper
+structs modelling an iterator and its value type; being named like
+generics, they bind as `T1`/`T2` at the use site. The function pointer
+version of the comparator is a separate rule (`f7`).
+
+## Iterators
+
+There is no iterator abstraction: an iterator type gets a type rule, and
+every operation on it its own expression rule (`operator*`, `operator++`,
+`operator!=`, ...). What the type maps to is up to the rule:
+`std::string::iterator` becomes a plain pointer (`*mut libc::c_char`
+unsafe, `Ptr<u8>` refcount), while `std::map` iterators become the runtime
+types `libcc2rs::UnsafeMapIterator`/`MapIterator`. Dependent iterator
+types are named with `typename`:
+
+```cpp
+// rules/map/src.cpp
+template <typename T1, typename T2>
+using t2 = typename std::map<T1, T2>::const_iterator;
+```
 
 ## Types
 
@@ -163,7 +235,9 @@ unsafe fn f3() -> i32 { ::libc::O_CREAT }
 For macros that expand to integer literals, the preprocessor records the
 *macro name* rather than the value, so `O_CREAT` in the input matches this
 rule by name. Enum constants and global variables (e.g. `std::cout`) are
-matched by their qualified name.
+matched by their qualified name. A global and its address are separate
+rules: `rules/iostream` maps both `std::cout` (`f1`) and `&std::cout`
+(`f3`).
 
 Integer-literal macros are the only macros matchable directly. Macros whose
 expansions are platform internals with no stable callee, such as `errno` or
@@ -197,6 +271,9 @@ int f1(int a0, int a1, Args... args) {
 // rules/fcntl/tgt_refcount.rs
 fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 { ... }
 ```
+
+Bodies read the arguments through the va-args API in `libcc2rs`
+(`VaArg`, `VaList`, the `VaArgGet` accessors, `format_c`).
 
 ## Passthrough rules
 
@@ -244,3 +321,24 @@ unsafe fn f4() -> i32 {
 The Rust preprocessor evaluates `#[cfg]` attributes against the host target
 (only `target_os = linux|macos` and `target_arch = x86_64|x86` are accepted)
 and drops non-matching rules.
+
+Mutually exclusive platform branches use `#elif` with disjoint rule
+numbers: `rules/errno` defines `f91`–`f135` under `__linux__` and
+`f136`–`f153` under `__APPLE__`. Feature-test macros a pattern needs must
+come before the includes, as with `#define _GNU_SOURCE` in
+`rules/socket/src.c`.
+
+## Pattern resolution limits
+
+The preprocessor resolves a template pattern by instantiating its template
+parameters with synthesized types
+([The Rule Preprocessors](./preprocessors.md#cpp-rule-preprocessor)):
+
+* A bare `T1` becomes an empty struct, so the pattern cannot use members,
+  operators, or nested types of `T1`.
+* A parameter pack instantiates to the empty pack.
+* A non-type parameter is pinned to the value `1`.
+
+Unqualified callees are looked up in `namespace std` first and in the
+global scope only when `std` has no match, so an unqualified name that
+exists in both resolves to the `std` one.
