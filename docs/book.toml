@@ -1,0 +1,16 @@
+[book]
+title = "Cpp2Rust"
+description = "Developer documentation for Cpp2Rust, an automatic C++ to safe Rust translator."
+authors = ["The Cpp2Rust Authors"]
+language = "en"
+
+[build]
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/cpp2rust/cpp2rust"
+edit-url-template = "https://github.com/cpp2rust/cpp2rust/edit/master/docs/{path}"
+
+[output.html.fold]
+enable = true
+level = 1
