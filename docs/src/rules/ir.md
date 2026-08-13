@@ -57,7 +57,8 @@ The fragment kinds are:
   * `arg`: the parameter index N.
   * `access`: how the body uses the argument: `read`, `write`, or `move`.
   * `is_index_base`: the placeholder is the base of an index expression.
-* `generic`: a `TN` slot, replaced with the instantiated Rust type.
+* `generic`: a `TN` slot, replaced with the instantiated Rust type;
+  serialized as the 1-based index N.
 * `method_call`: a method call split into `receiver` and `body` fragment
   lists, so the code generator can rewrite the pair (see
   [Rule Rewriting](./rewriting.md)).
@@ -71,14 +72,19 @@ Every type in the IR (in `params`, `return_type`, and type rules) is a
 * `derives` (type rules only): the standard traits the mapped type
   implements (`Copy`, `Clone`, `Default`, ...).
 
+The two pointer flags are mutually exclusive; the loader rejects a type
+with both set.
+
 An `ExprRule` carries two flags of its own:
 
-* `multi_statement`: the body has more than one statement and must be
-  wrapped in a block to stay a single expression.
+* `multi_statement`: the body has more than one statement, or a statement
+  followed by a tail expression, and must be wrapped in a block to stay a
+  single expression.
 * `is_extern`: the rule is an extern passthrough declaration and has no
   body.
 
-Fields that are false, empty, or unset are omitted from the JSON.
+Fields that are false, empty, or unset are omitted from the JSON. A `va`
+parameter is never listed in `params`, and a `()` return type is omitted.
 
 A type rule serializes as a `TypeRule` object: its `TypeInfo` plus the
 `init` initializer expression, merged into one object:
@@ -86,6 +92,9 @@ A type rule serializes as a `TypeRule` object: its `TypeInfo` plus the
 ```json
 "t1": { "type": "Vec<T1>", "init": "Default::default()" }
 ```
+
+There is no explicit tag distinguishing the two rule kinds: an entry with
+`body` is an expression rule, one with `type` and `init` a type rule.
 
 ## In-memory form
 
