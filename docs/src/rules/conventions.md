@@ -54,9 +54,18 @@ guarantee.
   write one rule per overload (including separate rules for `const T &`
   versus `T &&` parameters).
 
+## Argument accesses
+
+Every use of an `aN` parameter in a rule body is classified as a read,
+write, or move by the
+[rule preprocessor](./preprocessors.md#rule-preprocessor). Passing an
+argument by value counts as a read, not a move; the only way to record a
+move is `std::mem::take(&mut aN)`.
+
 ## Type checking
 
 All `tgt_*.rs` files are compiled as part of the `rules` crate, so a rule body
 that does not type-check against `libcc2rs`, `libc`, `nix`, etc. breaks the
 build. If a rule needs a new crate dependency, add it to `rules/Cargo.toml`
-and teach `rule-preprocessor` to locate its rlib.
+and to the hardcoded crate list in `rule-preprocessor/src/semantic.rs`
+(see [The Rule Preprocessors](./preprocessors.md#rule-preprocessor)).
