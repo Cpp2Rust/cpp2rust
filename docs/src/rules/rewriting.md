@@ -18,18 +18,20 @@ impl<T> Ptr<T> {
 
 which checks the pointer, borrows the pointee mutably, and runs the closure
 on it (with an immutable sibling `Ptr::with`). The refcount converter uses it
-to bridge the gap. The rewrite fires when all three hold:
+to bridge the gap; the unsafe converter never rewrites and simply emits
+receiver followed by body. The rewrite fires when all three hold:
 
 1. The rule body fragment is a method call whose receiver contains a
    placeholder (the preprocessor splits every method call into receiver and
-   body fragments precisely to enable this).
+   body fragments precisely to enable this). If the receiver contains
+   several placeholders, the first one is used.
 2. The receiver placeholder's access is write or move, i.e. the method takes
    `&mut self` or the rule mutates the parameter. Read access does not need
    the rewrite, since a read can go through a
    [`StrongPtr`](../codegen/pointers.md) obtained with `Ptr::upgrade`, or
    through a `read()` copy.
-3. The call-site argument is a pointer or a reference reached through a
-   pointer.
+3. The call-site argument is a pointer, or an expression of reference type
+   (which includes an operator call returning a reference).
 
 The rule's method call `a0.method(...)` is then emitted as
 
@@ -55,13 +57,24 @@ When the receiver is a plain local value rather than a pointer, condition 3
 fails and no closure is emitted; the same rule produces a direct call like
 `(*v2.borrow_mut()).push(0);`.
 
+The rewrite applies to pointer dereferences (`p->push_back(20)`) and to
+reference usages (`r.push_back(20)` with `std::vector<int> &r = *p`); both
+are [translated as a `Ptr`](../codegen/pointers.md), and that `Ptr` is what
+`with_mut` is called on.
+
 When the pointee is itself a boxed value (`Value<T>`, i.e.
 `Rc<RefCell<T>>`), the closure takes `&mut Value<T>` and an extra borrow is
-inserted:
+inserted. This is the case for nested containers: the refcount model
+translates `std::vector<std::vector<int>>` as `Vec<Value<Vec<i32>>>` so
+that each element has interior mutability of its own, and a `Ptr` to an
+inner vector therefore points at a `Value<Vec<i32>>`, not a `Vec<i32>`:
 
 ```rust
 ptr.with_mut(|__v: &mut Value<Vec<i32>>| (*__v.borrow_mut()).push(20))
 ```
+
+The closure type is built from the C++ argument's type, not the rule's
+declared parameter type.
 
 ## The read-access counterpart
 
@@ -75,11 +88,14 @@ whose rule parameter is a value or `&` type is simply dereferenced
 ## Preprocessor-side rewrites
 
 Two rewrites in `rule-preprocessor` exist to make the `with_mut` rewrite
-possible:
+possible. Both apply only to `&mut` parameters:
 
-* A `*` deref in front of a `&mut` parameter is dropped from the body, since
+* A `*` deref in front of the parameter is dropped from the body, since
   the substituted argument is already an lvalue or pointer expression.
-* `std::mem::take(&mut aN)` collapses to a bare placeholder marked as a move,
-  so the converter can re-express the move against the actual argument (for a
+* `std::mem::take(&mut aN)` collapses to a bare placeholder, so the
+  converter can re-express the move against the actual argument (for a
   pointer that becomes `std::mem::take(&mut <lvalue>)` on the borrowed
-  pointee).
+  pointee). The spelling must be exactly this fully qualified form:
+  `mem::take` or an imported `take` is not rewritten. The collapsed
+  placeholder's access is left `unknown` in phase 1; phase 2 resolves the
+  `std::mem::take` call to a move.
