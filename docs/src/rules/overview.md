@@ -45,5 +45,7 @@ The rest of this part covers each stage:
 * [The Rules IR](./ir.md): the JSON format the preprocessors emit.
 * [Loading and Matching](./loading.md): how `cpp2rust` loads the IR and
   matches rules against the input AST.
+* [The Matching Engine](./matching.md): how a candidate rule's signature
+  is unified against the input.
 * [Rule Rewriting](./rewriting.md): how rule bodies are adapted at
   application time, in particular the `with_mut` rewrite.

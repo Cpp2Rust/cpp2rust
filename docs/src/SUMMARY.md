@@ -17,6 +17,7 @@
 * [The Rule Preprocessors](./rules/preprocessors.md)
 * [The Rules IR](./rules/ir.md)
 * [Loading and Matching](./rules/loading.md)
+* [The Matching Engine](./rules/matching.md)
 * [Rule Rewriting](./rules/rewriting.md)
 
 # Code Generation

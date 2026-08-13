@@ -13,9 +13,14 @@ picks up the generated IR without any flags.
 
 Rules are loaded once per process by `Mapper::LoadTranslationRules`:
 
-1. Built-in type mappings are registered first: scalars, `void *`, `size_t`,
-   and the per-model pointer forms (`*mut T` for unsafe, `Ptr<T>` for
-   refcount).
+1. Built-in type mappings are registered first. Every scalar is mapped
+   with its width taken from the host (`int` maps to `i32`,
+   `unsigned long` to `u64`), together with its `const` form and its
+   pointer forms: `*mut`/`*const` in the unsafe model, `Ptr<T>` in the
+   refcount model, where constness is dropped. `char` maps to
+   `libc::c_char` in the unsafe model and to `u8` in refcount;
+   `size_t`/`ssize_t` map to `usize`/`isize`; `void *` maps to
+   `*mut ::libc::c_void`, or in refcount to `AnyPtr`.
 2. Every subdirectory of the rules directory is loaded with
    `TranslationRule::Load`, which reads `ir_unsafe.json`, overlays
    `ir_refcount.json` when translating with the refcount model, and then
@@ -30,9 +35,9 @@ rules for the same C++ type are rejected.
 
 Loaded rules are indexed in two multimaps, one for expression rules and one
 for type rules. The multimap key is only a coarse bucket for collecting
-candidate rules; whether a candidate actually matches is decided by the
-unification step described below. The bucket key is derived from the C++
-signature:
+candidate rules; whether a candidate actually matches is decided by
+[the matching engine](./matching.md). The bucket key is derived from the
+C++ signature:
 
 * For expressions, the qualified function name with the return type, the
   parameter list, and all template arguments stripped, so the rule for
@@ -50,12 +55,16 @@ the two sides comparable:
 * Enum constants and global variables print as their qualified name.
 * Integer literals expanded from a macro print as the macro name.
 
-All rules in the matching bucket are then unified against this string with a
-template matcher that binds `T1`...`T9` to the concrete types at the use
-site. If several rules match, the one with the longest source signature wins,
-so more specific rules take precedence. Type lookups first try the
-sugar-preserving spelling (so a rule can match `size_t` as written) and retry
-with the desugared type on failure.
+All rules in the matching bucket are then unified against this string by
+[the matching engine](./matching.md), which binds `T1`...`T9` to the
+concrete types at the use site and picks the most specific rule when
+several match. Type lookups first try the sugar-preserving spelling (so a
+rule can match `size_t` as written) and retry with the desugared type on
+failure.
+
+Running `cpp2rust` with `--verbose` logs every lookup and the rule it
+matched, which is the quickest way to see why a rule does or does not
+fire.
 
 ## Application
 
@@ -81,8 +90,9 @@ When a rule matches, the converter walks its body fragments and emits:
     substitutes `x1.as_pointer()` and `x2.as_pointer()` for the
     placeholders, while `std::max(30, 40)` first materializes `__tmp_0`
     and `__tmp_1` values for the literals and points into those.
-  * If the argument is a pointer but the rule expects a value, the
-    converter dereferences it.
+  * If the receiver argument is a pointer but the rule expects a value,
+    the converter dereferences it; this only happens for receivers, not
+    for ordinary arguments.
 * `generic` fragments as the Rust mapping of the bound C++ type,
 * `va_args` fragments as the converted variadic tail,
 * `method_call` fragments as receiver followed by body, possibly rewritten

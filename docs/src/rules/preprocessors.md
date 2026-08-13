@@ -124,6 +124,6 @@ The preprocessor assumes the `rules` crate is buildable, which the earlier
 are therefore only reported as a warning.
 
 The result is one `ir_<model>.json` per input file, keyed by rule name. The
-output file name is derived from the input file name (`tgt_unsafe.rs` →
+output file name is derived from the input file name (`tgt_unsafe.rs` becomes
 `ir_unsafe.json`) and the module directory is the direct parent of the
 `tgt_*.rs` file.

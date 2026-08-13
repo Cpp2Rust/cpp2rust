@@ -323,8 +323,8 @@ The Rust preprocessor evaluates `#[cfg]` attributes against the host target
 and drops non-matching rules.
 
 Mutually exclusive platform branches use `#elif` with disjoint rule
-numbers: `rules/errno` defines `f91`–`f135` under `__linux__` and
-`f136`–`f153` under `__APPLE__`. Feature-test macros a pattern needs must
+numbers: `rules/errno` defines `f91` to `f135` under `__linux__` and
+`f136` to `f153` under `__APPLE__`. Feature-test macros a pattern needs must
 come before the includes, as with `#define _GNU_SOURCE` in
 `rules/socket/src.c`.
 
