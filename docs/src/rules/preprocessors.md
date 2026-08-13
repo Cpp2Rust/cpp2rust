@@ -19,8 +19,17 @@ once per rule directory:
 cpp-rule-preprocessor --dir rules/string --out <build>/rules/string/ir_src.json
 ```
 
-Extra compiler flags can be passed with repeated `--cxxflags` options. CMake
-invokes it for every rule module via the `preprocess-cpp-rules` target.
+Extra compiler flags can be passed with repeated `--cxxflags` options,
+though CMake, which invokes the tool for every rule module via the
+`preprocess-cpp-rules` target, passes none. Note that the parent directory
+of `--out` must already exist; CMake creates it before each invocation, so
+a manual run must do the same.
+
+Rule sources are always compiled with the fixed flag set from
+`cpp2rust/compat/platform_flags.h`, the same one used to parse input
+programs (see [Compat Shims](./compat.md)). There is no compilation
+database and no `-std=` flag: the language is chosen by clang from the
+file extension, and `src.c` is processed before `src.cpp`.
 
 For each rule it:
 
@@ -31,17 +40,20 @@ For each rule it:
    synthesized dummy types and runs overload resolution to find the function
    the rule refers to.
 3. Prints the resolved declaration as a canonical signature string:
-   `<return type> <qualified::name>(<param types>)[ const][ volatile][ &|&&]`.
-   For `tN` aliases it prints the underlying type.
+   `<return type> <qualified::name>(<param types>[, ...])[ const][ volatile][ &|&&]`,
+   where `, ...` appears for C-variadic functions and the trailing
+   qualifiers only for methods. For `tN` aliases it prints the underlying
+   type.
 
 The output is a flat JSON object mapping rule names to these signature
 strings.
 
-Two details of the printer matter for matching. Typedefs that resolve to
-builtin types are kept as written instead of being desugared: `size_t` prints
-as `size_t`, not `unsigned long`, which is what lets it map to `usize` while
-plain `unsigned long` maps to `u64`. And integer literals expanded from a
-macro are recorded as the macro *name*, which is how
+The printer preserves typedef sugar instead of desugaring it: `size_t`
+prints as `size_t`, not `unsigned long`, which is what lets it map to
+`usize` while plain `unsigned long` maps to `u64` (for `tN` aliases this
+preservation is explicit; inside function signatures the spelling survives
+through the printing policy). Integer literals expanded from a macro are
+recorded as the macro *name*, which is how
 [constant rules](./writing-rules.md#enum-values-constants-and-macros) like the
 `O_CREAT` one match by name.
 
@@ -56,9 +68,30 @@ CARGO_TARGET_DIR=<target> cargo +nightly run --release \
     --manifest-path rule-preprocessor/Cargo.toml -- <build>/rules [rules-dir]
 ```
 
-CMake first builds the `rules` crate (which also regenerates
-`rules/src/modules.rs`) and then runs the preprocessor via the
-`preprocess-rust-rules` target. It works in two phases.
+The environment is load-bearing:
+
+* `CARGO_TARGET_DIR` must be set (the tool aborts otherwise): the rlibs of
+  the rule dependencies (`libcc2rs`, `libc`, `nix`, ...) are looked up in
+  `$CARGO_TARGET_DIR/<profile>/deps`, which the `cargo run` above
+  populates. The crate list is hardcoded, so a new dependency in
+  `rules/Cargo.toml` also needs an entry in
+  `rule-preprocessor/src/semantic.rs`.
+
+  > [!WARNING]
+  > Stale rlibs from an earlier build can be picked up silently. Run `ninja
+  > clean` to fix this.
+* The sysroot comes from running `rustc --print=sysroot`, so the `rustc` on
+  `PATH` must be the same nightly the preprocessor was built with (running
+  through `cargo +nightly run` guarantees this).
+* `rules-dir` is optional and defaults to the relative path `../rules`,
+  resolved against the *current working directory* of the process.
+
+CMake drives all of this via the `preprocess-rust-rules` target: it first
+builds the `rules` crate with the stable toolchain (which also regenerates
+`rules/src/modules.rs`), then runs the preprocessor with
+`CARGO_TARGET_DIR=<build>/target_preprocessor`. That initial `cargo build`
+of the `rules` crate is what actually gates the build on rule bodies
+type-checking (see below). The preprocessor works in two phases.
 
 **Phase 1, syntactic.** Each `tgt_*.rs` file is parsed with rust-analyzer's
 parser, and functions whose `#[cfg]` does not match the host are dropped.
@@ -81,8 +114,16 @@ support rule rewriting.
 with `rustc` and walks the typed HIR. This gives it the real signature of
 every callee, which resolves the `unknown` accesses: passing to a
 `&mut`/`*mut` parameter is a write, to a `&`/`*const` parameter a read, and
-to `std::mem::take` a move. For type rules it also records which standard
-traits (`Copy`, `Clone`, `Default`, ...) the mapped type implements. A
-placeholder still `unknown` after this phase fails the build.
+to `std::mem::take` a move. For type rules it also records which of the
+nine derivable standard traits (`Copy`, `Clone`, `Debug`, `Default`,
+`PartialEq`, `Eq`, `PartialOrd`, `Ord`, `Hash`) the mapped type implements.
+A placeholder still `unknown` after this phase fails the build.
 
-The result is one `ir_<model>.json` per input file, keyed by rule name.
+The preprocessor assumes the `rules` crate is buildable, which the earlier
+`cargo build` of the crate ensures; errors from the in-process compilation
+are therefore only reported as a warning.
+
+The result is one `ir_<model>.json` per input file, keyed by rule name. The
+output file name is derived from the input file name (`tgt_unsafe.rs` →
+`ir_unsafe.json`) and the module directory is the direct parent of the
+`tgt_*.rs` file.
