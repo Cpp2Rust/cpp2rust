@@ -19,13 +19,26 @@ impl CFile {
     }
 
     pub fn open(path: &str, mode: &str) -> Option<CFile> {
-        let flags = match mode {
-            "rb" => nix::fcntl::OFlag::O_RDONLY,
-            "wb" => nix::fcntl::OFlag::O_WRONLY
-                .union(nix::fcntl::OFlag::O_CREAT)
-                .union(nix::fcntl::OFlag::O_TRUNC),
-            m => panic!("fopen: unsupported mode {:?}", m),
+        use nix::fcntl::OFlag;
+        let mut chars = mode.chars();
+        let mut flags = match chars.next() {
+            Some('r') => OFlag::O_RDONLY,
+            Some('w') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_TRUNC),
+            Some('a') => OFlag::O_WRONLY.union(OFlag::O_CREAT).union(OFlag::O_APPEND),
+            _ => panic!("fopen: unsupported mode {:?}", mode),
         };
+        for c in chars {
+            match c {
+                'b' => {}
+                '+' => {
+                    flags.remove(OFlag::O_WRONLY);
+                    flags.insert(OFlag::O_RDWR);
+                }
+                'x' => flags.insert(OFlag::O_EXCL),
+                'e' => flags.insert(OFlag::O_CLOEXEC),
+                _ => panic!("fopen: unsupported mode {:?}", mode),
+            }
+        }
         match nix::fcntl::open(path, flags, nix::sys::stat::Mode::from_bits_truncate(0o666)) {
             Ok(ofd) => Some(CFile::new(FdRegistry::register(ofd))),
             Err(e) => {
