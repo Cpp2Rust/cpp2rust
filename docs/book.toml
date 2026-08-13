@@ -1,7 +1,7 @@
 [book]
 title = "Cpp2Rust"
 description = "Developer documentation for Cpp2Rust, an automatic C++ to safe Rust translator."
-authors = ["Lucian Popescu"]
+authors = ["The Cpp2Rust Authors"]
 language = "en"
 src = "src"
 
