@@ -36,6 +36,8 @@ The rest of this part covers each stage:
   the two models are layered.
 * [Writing Rules](./writing-rules.md): how to write rules for functions,
   methods, operators, types, constants, and variadics.
+* [Compat Shims](./compat.md): how macro-based libc APIs like `errno` and
+  `FD_SET` are rewritten into matchable function calls.
 * [Conventions](./conventions.md): naming and style conventions rule authors
   must follow.
 * [The Rule Preprocessors](./preprocessors.md): the two build-time tools that

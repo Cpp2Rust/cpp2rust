@@ -165,6 +165,11 @@ For macros that expand to integer literals, the preprocessor records the
 rule by name. Enum constants and global variables (e.g. `std::cout`) are
 matched by their qualified name.
 
+Integer-literal macros are the only macros matchable directly. Macros whose
+expansions are platform internals with no stable callee, such as `errno` or
+`FD_SET`, are first rewritten into calls to synthetic `cpp2rust_*` functions
+by the [compat shims](./compat.md); rules then match the shim call.
+
 ## Variadic functions
 
 The C++ side uses a template parameter pack rather than a C-style `...`
