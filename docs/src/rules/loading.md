@@ -2,12 +2,12 @@
 
 ## Finding the rules directory
 
-`cpp2rust` takes the IR directory via `--rules <dir>`. If the flag is omitted
+`cpp2rust` takes the Rules IR directory via `--rules <dir>`. If the flag is omitted
 it tries `./rules` and then `<executable dir>/../rules`, accepting the first
 candidate that contains (recursively) a subdirectory with `ir_src.json` plus
-`ir_unsafe.json` or `ir_refcount.json`. Since the build writes the IR to
+`ir_unsafe.json` or `ir_refcount.json`. Since the build writes the Rules IR to
 `<build>/rules` and the binary lands in `<build>/bin`, the default resolution
-picks up the generated IR without any flags.
+picks up the generated Rules IR without any flags.
 
 ## Loading
 
@@ -51,7 +51,7 @@ same canonical printer used by `cpp-rule-preprocessor`, which is what makes
 the two sides comparable:
 
 * Functions and methods print as
-  `<return type> <qualified name>(<param types>)[ const][ &|&&]`.
+  `<return type> <qualified::name>(<param types>[, ...])[ const][ volatile][ &|&&]`.
 * Enum constants and global variables print as their qualified name.
 * Integer literals expanded from a macro print as the macro name.
 

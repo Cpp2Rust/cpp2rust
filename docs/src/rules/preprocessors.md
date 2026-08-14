@@ -1,6 +1,6 @@
 # The Rule Preprocessors
 
-Two build-time tools compile rule modules into the [JSON IR](./ir.md) that
+Two build-time tools compile rule modules into the [Rules IR](./ir.md) that
 `cpp2rust` loads at runtime. Both write into `<build>/rules/<module>/`:
 
 * `cpp-rule-preprocessor` compiles `src.cpp`/`src.c` into `ir_src.json`.

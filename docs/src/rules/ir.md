@@ -64,7 +64,7 @@ The fragment kinds are:
   [Rule Rewriting](./rewriting.md)).
 * `va_args`: the expansion point for a variadic tail.
 
-Every type in the IR (in `params`, `return_type`, and type rules) is a
+Every type in the Rules IR (in `params`, `return_type`, and type rules) is a
 `TypeInfo` object, the type text plus a set of flags:
 
 * `is_refcount_pointer`: the type is a `Ptr<...>`.
@@ -83,7 +83,7 @@ An `ExprRule` carries two flags of its own:
 * `is_extern`: the rule is an extern passthrough declaration and has no
   body.
 
-Fields that are false, empty, or unset are omitted from the JSON. A `va`
+Fields that are false, empty, or unset are omitted from the Rules IR. A `va`
 parameter is never listed in `params`, and a `()` return type is omitted.
 
 A type rule serializes as a `TypeRule` object: its `TypeInfo` plus the
@@ -98,21 +98,28 @@ There is no explicit tag distinguishing the two rule kinds: an entry with
 
 ## In-memory form
 
-`cpp2rust` mirrors this JSON in C++ structs of the same names, defined in
-`cpp2rust/converter/translation_rule.h`. `TranslationRule::Load` reads one
+`cpp2rust` mirrors the Rules IR in C++ structs of the same names, defined in
+[`cpp2rust/converter/translation_rule.h`][translation-rule-h].
+`TranslationRule::Load` reads one
 module directory (the `ir_*.json` files described above) and produces two
-maps keyed by rule name, one holding `ExprRule`s and one holding `TypeRule`s:
+maps keyed by rule name, one holding [`ExprRule`]s and one holding
+[`TypeRule`]s:
+
+[translation-rule-h]: https://github.com/cpp2rust/cpp2rust/blob/master/cpp2rust/converter/translation_rule.h
+[`ExprRule`]: https://github.com/cpp2rust/cpp2rust/blob/master/cpp2rust/converter/translation_rule.h#L71
+[`TypeRule`]: https://github.com/cpp2rust/cpp2rust/blob/master/cpp2rust/converter/translation_rule.h#L84
 
 * An `ExprRule` holds the body
   [fragments](#target-ir-ir_unsafejson--ir_refcountjson), the parameter and
-  return `TypeInfo`s, and the two rule-level flags. The name-keyed JSON maps become
+  return `TypeInfo`s, and the two rule-level flags (`multi_statement` and `is_extern`). The
+  name-keyed Rules IR maps become
   positional vectors: parameter `aN` is entry N of `params`, generic `TN` is
   entry N-1 of `generics` (each entry being the bound list). Rules support
   at most 9 generic parameters (`kMaxGenerics`).
 * A `TypeRule` holds the mapped type's `TypeInfo` and the `initializer`
   expression. The same struct also represents the built-in type mappings
   (scalars, pointers, ...) that the loader registers directly in code,
-  without any JSON behind them: for example, `int` maps to `i32`, and
+  without any Rules IR behind them: for example, `int` maps to `i32`, and
   `int *` to `*mut i32` in the unsafe model or `Ptr<i32>` in the refcount
   model.
 
@@ -120,6 +127,6 @@ Both also carry `src`, the canonical C++ signature attached from
 [`ir_src.json`](#source-ir-ir_srcjson); it is the key the rule is matched
 by.
 
-How the loader finds the IR directory, overlays the refcount model on the
+How the loader finds the Rules IR directory, overlays the refcount model on the
 unsafe one, and indexes the loaded rules for matching is covered in
 [Loading and Matching](./loading.md).

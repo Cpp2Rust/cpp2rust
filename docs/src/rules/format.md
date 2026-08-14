@@ -70,7 +70,7 @@ template <typename T1> using t1 = std::vector<T1>;
 ```rust
 // rules/vector/tgt_unsafe.rs
 fn t1<T1>() -> Vec<T1> {
-    Default::default()
+    Vec::new()
 }
 ```
 
