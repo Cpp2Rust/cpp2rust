@@ -39,4 +39,5 @@ jobs:
         run: git diff --exit-code
 
       - name: Check markdown formatting
-        run: npx prettier@3.6.2 --check "docs/src/**/*.md"
+        run: npx prettier@3.6.2 --check "src/**/*.md"
+        working-directory: docs
