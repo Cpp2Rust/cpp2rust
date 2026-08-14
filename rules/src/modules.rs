@@ -28,6 +28,8 @@ pub mod carray_tgt_refcount;
 pub mod carray_tgt_unsafe;
 #[path = r#"../cmath/tgt_unsafe.rs"#]
 pub mod cmath_tgt_unsafe;
+#[path = r#"../cstddef/tgt_unsafe.rs"#]
+pub mod cstddef_tgt_unsafe;
 #[path = r#"../cstdlib/tgt_refcount.rs"#]
 pub mod cstdlib_tgt_refcount;
 #[path = r#"../cstdlib/tgt_unsafe.rs"#]
@@ -86,6 +88,8 @@ pub mod iostream_tgt_unsafe;
 pub mod ip_tgt_refcount;
 #[path = r#"../ip/tgt_unsafe.rs"#]
 pub mod ip_tgt_unsafe;
+#[path = r#"../iterator/tgt_unsafe.rs"#]
+pub mod iterator_tgt_unsafe;
 #[path = r#"../limits/tgt_unsafe.rs"#]
 pub mod limits_tgt_unsafe;
 #[path = r#"../locale/tgt_refcount.rs"#]

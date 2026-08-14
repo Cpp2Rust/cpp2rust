@@ -3,8 +3,7 @@
 
 #include <array>
 
-template <typename T1, std::size_t T2>
-using t1 = std::array<T1, T2>;
+template <typename T1, std::size_t T2> using t1 = std::array<T1, T2>;
 
 template <typename T1, std::size_t T2>
 const T1 *f1(const std::array<T1, T2> &o) {

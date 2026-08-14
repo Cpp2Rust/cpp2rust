@@ -43,3 +43,5 @@ target_link_libraries(cpp2rust PRIVATE cpp2rust_core)
 
 add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED cpp_rule_preprocessor.cpp)
 target_link_libraries(cpp-rule-preprocessor PRIVATE cpp2rust_core)
+target_compile_definitions(cpp-rule-preprocessor PRIVATE
+  "-DRULES_LIB_INCLUDE_DIR=\"${PROJECT_SOURCE_DIR}/rules/lib\"")

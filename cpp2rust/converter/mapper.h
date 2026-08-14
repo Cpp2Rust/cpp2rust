@@ -48,9 +48,12 @@ enum class ScalarSugar {
 
 clang::QualType GetTypeForDecl(const clang::NamedDecl *decl);
 std::string ToString(clang::QualType qual_type,
-                     ScalarSugar sugar = ScalarSugar::kDesugar);
-std::string ToString(const clang::Expr *expr);
-std::string ToString(const clang::NamedDecl *decl);
+                     ScalarSugar sugar = ScalarSugar::kDesugar,
+                     const clang::DeclContext *dctx = nullptr);
+std::string ToString(const clang::Expr *expr,
+                     const clang::DeclContext *dctx = nullptr);
+std::string ToString(const clang::NamedDecl *decl,
+                     const clang::DeclContext *dctx = nullptr);
 std::string ToRustName(std::string name);
 
 void LoadTranslationRules(Model model, clang::ASTContext &ctx,

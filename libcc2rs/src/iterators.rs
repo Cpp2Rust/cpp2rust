@@ -1,7 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, Value};
+use crate::{
+    PostfixDec, PostfixInc, PrefixDec, PrefixInc, Ptr, UnsafePostfixDec, UnsafePostfixInc,
+    UnsafePrefixDec, UnsafePrefixInc, Value,
+};
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::ops::Bound;
@@ -224,4 +227,10 @@ impl<K: Ord + Clone, MapRef: MapAccess<Key = K>> PostfixDec for MapIter<K, MapRe
         self.dec();
         ret
     }
+}
+
+pub trait UnsafeIterator:
+    UnsafePrefixInc + UnsafePostfixInc + UnsafePrefixDec + UnsafePostfixDec + Default + PartialEq
+{
+    fn offset(&self, n: isize) -> Self;
 }

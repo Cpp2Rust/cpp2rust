@@ -4,6 +4,8 @@
 #include <map>
 #include <utility>
 
+#include "rule_hints.h"
+
 template <typename T1, typename T2> using t1 = std::map<T1, T2>;
 
 template <typename T1, typename T2>
@@ -12,7 +14,8 @@ using t2 = typename std::map<T1, T2>::const_iterator;
 template <typename T1, typename T2>
 using t3 = typename std::map<T1, T2>::iterator;
 
-template <typename T1, typename T2> T2 &f1(std::map<T1, T2> &o, const T1 &key) {
+template <typename T1 = Comparable, typename T2>
+T2 &f1(std::map<T1, T2> &o, const T1 &key) {
   return o.operator[](key);
 }
 
@@ -35,11 +38,13 @@ std::map<T1, T2> f6(const std::map<T1, T2> &&o) {
   return std::map<T1, T2>(std::move(o));
 }
 
-template <typename T1, typename T2> T2 &f7(std::map<T1, T2> &o, const T1 &key) {
+template <typename T1 = Comparable, typename T2>
+T2 &f7(std::map<T1, T2> &o, const T1 &key) {
   return o.at(key);
 }
 
-template <typename T1, typename T2> T2 &f8(std::map<T1, T2> &o, T1 &&key) {
+template <typename T1 = Comparable, typename T2>
+T2 &f8(std::map<T1, T2> &o, T1 &&key) {
   return o.operator[](std::move(key));
 }
 
@@ -48,7 +53,7 @@ typename std::map<T1, T2>::const_iterator f9(const std::map<T1, T2> &o) {
   return o.end();
 }
 
-template <typename T1, typename T2>
+template <typename T1 = Comparable, typename T2>
 typename std::map<T1, T2>::iterator f10(std::map<T1, T2> &o, const T1 &key) {
   return o.find(key);
 }
@@ -75,7 +80,7 @@ typename std::map<T1, T2>::iterator f14(std::map<T1, T2> &o) {
   return o.end();
 }
 
-template <typename T1, typename T2>
+template <typename T1 = Comparable, typename T2>
 const T2 &f15(const std::map<T1, T2> &o, const T1 &key) {
   return o.at(key);
 }
@@ -86,7 +91,7 @@ bool f16(typename std::map<T1, T2>::iterator a,
   return operator==(a, b);
 }
 
-template <typename T1, typename T2>
+template <typename T1 = Comparable, typename T2>
 typename std::map<T1, T2>::const_iterator f17(const std::map<T1, T2> &o,
                                               const T1 &key) {
   return o.find(key);

@@ -3,6 +3,8 @@
 
 #include <utility>
 
+#include "rule_hints.h"
+
 template <typename T1, typename T2> using t1 = std::pair<T1, T2>;
 
 template <typename T1, typename T2> T2 &f1(std::pair<T1, T2> &o) {
@@ -19,17 +21,20 @@ std::pair<T1, T2> f4(const T1 &a0, const T2 &a1) {
   return std::pair<T1, T2>(a0, a1);
 }
 
-template <class T1, class T2, class T3, class T4>
+template <typename T1, typename T2, typename T3 = ExplicitlyConvertible,
+          typename T4 = ExplicitlyConvertible>
 std::pair<T1, T2> f5(const T3 &a0, T4 &a1) {
   return std::pair<T1, T2>(a0, a1);
 }
 
-template <class T1, class T2, class T3, class T4>
+template <typename T1, typename T2, typename T3 = ExplicitlyConvertible,
+          typename T4 = ExplicitlyConvertible>
 std::pair<T1, T2> f6(T3 &a0, T4 &a1) {
   return std::pair<T1, T2>(a0, a1);
 }
 
-template <typename T1, typename T2, typename T3, typename T4>
+template <typename T1, typename T2, typename T3 = ExplicitlyConvertible,
+          typename T4 = ExplicitlyConvertible>
 std::pair<T1, T2> f7(T3 &&a0, T4 &&a1) {
   return std::pair<T1, T2>(std::move(a0), std::move(a1));
 }

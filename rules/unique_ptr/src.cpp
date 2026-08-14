@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <memory>
 
+#include "rule_hints.h"
+
 template <typename T1> using t1 = std::unique_ptr<T1>;
 template <typename T1> using t2 = std::unique_ptr<T1[]>;
 
@@ -40,7 +42,8 @@ template <typename T1> T1 *f7(std::unique_ptr<T1[]> &o) { return o.get(); }
 // versions for make_unique with 1, 2, 3, etc arguments and translate the
 // specialized versions.
 
-template <typename T1, typename T2> std::unique_ptr<T1> f8(T2 &&a0) {
+template <typename T1, typename T2 = ImplicitlyConvertible>
+std::unique_ptr<T1> f8(T2 &&a0) {
   return std::make_unique<T1>(std::move(a0));
 }
 
