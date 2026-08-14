@@ -25,3 +25,4 @@
 - [Overview](./codegen/overview.md)
 - [Pointers and References](./codegen/pointers.md)
 - [Temporary Materialization](./codegen/temporaries.md)
+- [Translation Plugins](./codegen/plugins.md)
