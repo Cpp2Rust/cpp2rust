@@ -225,3 +225,27 @@ impl<K: Ord + Clone, MapRef: MapAccess<Key = K>> PostfixDec for MapIter<K, MapRe
         ret
     }
 }
+
+impl<T> Ptr<T> {
+    pub fn to_string_iterator(&self) -> StringIterator<T> {
+        StringIterator { ptr: self.clone() }
+    }
+}
+
+pub struct StringIterator<T> {
+    ptr: Ptr<T>,
+}
+
+impl<T> Iterator for StringIterator<T> {
+    type Item = Ptr<T>;
+    fn next(&mut self) -> Option<Self::Item> {
+        // stop before the null terminator at the last position
+        if self.ptr.get_offset().wrapping_add(1) < self.ptr.len() {
+            let value = self.ptr.clone();
+            self.ptr += 1;
+            Some(value)
+        } else {
+            None
+        }
+    }
+}

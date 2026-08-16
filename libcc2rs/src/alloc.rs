@@ -1,7 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::rc::{AnyPtr, Ptr};
+use crate::rc::Ptr;
+use crate::void::AnyPtr;
 
 pub fn malloc_refcount(a0: usize) -> AnyPtr {
     Ptr::alloc_array(vec![0u8; a0].into_boxed_slice()).to_any()

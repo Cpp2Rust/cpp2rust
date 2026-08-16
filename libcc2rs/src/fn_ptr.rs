@@ -6,8 +6,9 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 use std::rc::Rc;
 
-use crate::rc::{AnyPtr, ErasedPtr, Ptr};
+use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
+use crate::void::{AnyPtr, ErasedPtr};
 
 pub trait FnAddr {
     fn fn_addr(&self) -> usize;
