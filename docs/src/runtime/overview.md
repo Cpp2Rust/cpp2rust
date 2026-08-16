@@ -41,8 +41,8 @@ Language-feature emulation, used by both models:
 
 - [`inc` and `dec`](./inc-dec.md): traits implementing the four `++`/`--`
   operator forms.
-- `iterators`: iteration for C++ containers that need stable iterators, with an
-  implementation for both refcount and unsafe.
+- [`iterators`](./iterators.md): iteration for C++ containers that need stable
+  iterators, with an implementation for both refcount and unsafe.
 - `fn_ptr`: `FnPtr`, function pointers with C-style address identity.
 - `va_args`: `VaArg` and `VaList`, the representation of variadic calls.
 - The `goto`, `goto_block`, and `switch` proc macros, re-exported from

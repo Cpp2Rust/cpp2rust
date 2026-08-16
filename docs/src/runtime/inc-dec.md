@@ -32,9 +32,10 @@ while (*x.borrow_mut()).postfix_inc() < 100 && *x.borrow() != 50 {
 The traits are implemented for the integer types with wrapping arithmetic, so
 overflow behaves as C's unsigned wraparound and never panics, and for `f32` and
 `f64`. [`Ptr<T>`](./rc.md#arithmetic) implements them by moving its offset one
-element, and the map iterators by stepping to the neighbouring key. For each
-translated enum the code generator emits `impl_enum_inc_dec!`, a macro exported
-by `inc` that implements the four traits by converting through `i32`.
+element, and the [map iterators](./iterators.md#stable-iterators) by stepping to
+the neighbouring key. For each translated enum the code generator emits
+`impl_enum_inc_dec!`, a macro exported by `inc` that implements the four traits
+by converting through `i32`.
 
 The unsafe model uses the same traits for integers and floats. For raw pointers
 the same method names come from separate `Unsafe*` traits (`UnsafePrefixInc` and
