@@ -28,6 +28,7 @@
 - [void Pointers](./runtime/void.md)
 - [Virtual Classes](./runtime/ptr-dyn.md)
 - [Type Reinterpretation](./runtime/reinterpret.md)
+- [Increment and Decrement](./runtime/inc-dec.md)
 - [I/O and Formatting](./runtime/io.md)
 - [libc Shims](./runtime/libc-shims.md)
 - [Compat Helpers](./runtime/compat.md)

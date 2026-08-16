@@ -34,12 +34,13 @@ The refcounted pointer model, the core of the refcount output:
 - [`reinterpret`](./reinterpret.md): the `ByteRepr` trait and allocation views
   that let a refcounted allocation be reinterpreted at the byte level, as C
   pointer casts do.
-- `alloc`: `malloc`, `free`, `realloc`, and `calloc` over refcounted byte
-  arrays.
+- [`alloc`](./rc.md#the-heap): `malloc`, `free`, `realloc`, and `calloc` over
+  refcounted byte arrays.
 
 Language-feature emulation, used by both models:
 
-- `inc` and `dec`: traits implementing the four `++`/`--` operator forms.
+- [`inc` and `dec`](./inc-dec.md): traits implementing the four `++`/`--`
+  operator forms.
 - `iterators`: iteration for C++ containers that need stable iterators, with an
   implementation for both refcount and unsafe.
 - `fn_ptr`: `FnPtr`, function pointers with C-style address identity.
