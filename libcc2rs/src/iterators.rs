@@ -226,6 +226,24 @@ impl<K: Ord + Clone, MapRef: MapAccess<Key = K>> PostfixDec for MapIter<K, MapRe
     }
 }
 
+pub struct CStringIterator {
+    pub(crate) ptr: Ptr<u8>,
+}
+
+impl Iterator for CStringIterator {
+    type Item = u8;
+    fn next(&mut self) -> Option<Self::Item> {
+        // read until the null terminator
+        match self.ptr.read() {
+            0 => None,
+            ch => {
+                self.ptr += 1;
+                Some(ch)
+            }
+        }
+    }
+}
+
 impl<T> Ptr<T> {
     pub fn to_string_iterator(&self) -> StringIterator<T> {
         StringIterator { ptr: self.clone() }

@@ -8,7 +8,6 @@ mod rc;
 pub use rc::*;
 
 mod cstr;
-pub use cstr::*;
 
 mod void;
 pub use void::*;

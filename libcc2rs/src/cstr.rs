@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use crate::CStringIterator;
 use crate::rc::{Ptr, PtrKind};
 
 impl fmt::Display for Ptr<u8> {
@@ -199,23 +200,5 @@ impl Ptr<u8> {
     pub fn to_rust_string(&self) -> String {
         let bytes: Vec<u8> = self.to_c_string_iterator().collect();
         String::from_utf8_lossy(&bytes).into_owned()
-    }
-}
-
-pub struct CStringIterator {
-    ptr: Ptr<u8>,
-}
-
-impl Iterator for CStringIterator {
-    type Item = u8;
-    fn next(&mut self) -> Option<Self::Item> {
-        // read until the null terminator
-        match self.ptr.read() {
-            0 => None,
-            ch => {
-                self.ptr += 1;
-                Some(ch)
-            }
-        }
     }
 }

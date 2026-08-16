@@ -27,8 +27,8 @@ The refcounted pointer model, the core of the refcount output:
 
 - [`rc`](./rc.md): `Value<T>` and `Ptr<T>`, the refcounted stand-ins for C
   values and pointers.
-- [`cstr`](./cstr.md): string literals, the `string.h` memory functions, and
-  iteration over `Ptr<u8>` byte strings.
+- [`cstr`](./cstr.md): string literals and the `string.h` memory functions
+  over `Ptr<u8>` byte strings.
 - [`void`](./void.md): `AnyPtr`, the type-erased pointer for `void *`.
 - [`ptr_dyn`](./ptr-dyn.md): `PtrDyn<dyn T>`, pointers to virtual classes.
 - [`reinterpret`](./reinterpret.md): the `ByteRepr` trait and allocation views
@@ -42,7 +42,8 @@ Language-feature emulation, used by both models:
 - [`inc` and `dec`](./inc-dec.md): traits implementing the four `++`/`--`
   operator forms.
 - [`iterators`](./iterators.md): iteration for C++ containers that need stable
-  iterators, with an implementation for both refcount and unsafe.
+  iterators, with an implementation for both refcount and unsafe, and over C
+  strings up to the null terminator.
 - [`fn_ptr`](./fn-ptr.md): `FnPtr`, function pointers with C-style address
   identity.
 - [`va_args`](./va-args.md): `VaArg` and `VaList`, the representation of
