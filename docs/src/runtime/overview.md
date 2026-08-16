@@ -34,10 +34,11 @@ The modules fall into three groups.
 
 The refcounted pointer model, the core of the refcount output:
 
-- `rc`: `Value<T>`, `Ptr<T>`, and `AnyPtr`, the refcounted stand-ins for C
-  values and pointers.
-- `reinterpret`: the `ByteRepr` trait and allocation views that let a refcounted
-  allocation be reinterpreted at the byte level, as C pointer casts do.
+- [`rc`](./rc.md): `Value<T>`, `Ptr<T>`, and `AnyPtr`, the refcounted stand-ins
+  for C values and pointers.
+- [`reinterpret`](./reinterpret.md): the `ByteRepr` trait and allocation views
+  that let a refcounted allocation be reinterpreted at the byte level, as C
+  pointer casts do.
 - `alloc`: `malloc`, `free`, `realloc`, and `calloc` over refcounted byte
   arrays.
 
@@ -54,14 +55,16 @@ Language-feature emulation, used by both models:
 
 The OS and libc surface:
 
-- `io`: `CFile` streams, the standard streams, and read/write helpers.
-- `format`: `printf`-style format string evaluation.
-- `fd`: a registry tying integer file descriptors to their owning objects.
-- `libc_shims`: safe wrappers over libc APIs, one submodule per area (files,
-  directories, sockets, name resolution, polling, terminal control, time, and so
-  on).
-- `compat`: platform-specific definitions, such as the location of `errno` and
-  `malloc_usable_size`.
+- [`io`](./io.md): `CFile` streams, the standard streams, and read/write
+  helpers.
+- [`format`](./io.md#formatting): `printf`-style format string evaluation.
+- [`fd`](./io.md#file-descriptors): a registry tying integer file descriptors to
+  their owning objects.
+- [`libc_shims`](./libc-shims.md): safe wrappers over libc APIs, one submodule
+  per area (files, directories, sockets, name resolution, polling, terminal
+  control, time, and so on).
+- [`compat`](./compat.md): platform-specific definitions, such as the location
+  of `errno` and `malloc_usable_size`.
 
 ## Dependencies
 

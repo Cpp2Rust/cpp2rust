@@ -23,6 +23,8 @@
 # The Runtime Library
 
 - [Overview](./runtime/overview.md)
+- [Reference Counting](./runtime/rc.md)
+- [Type Reinterpretation](./runtime/reinterpret.md)
 - [I/O and Formatting](./runtime/io.md)
 - [libc Shims](./runtime/libc-shims.md)
 - [Compat Helpers](./runtime/compat.md)
