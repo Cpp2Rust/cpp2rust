@@ -43,7 +43,8 @@ Language-feature emulation, used by both models:
   operator forms.
 - [`iterators`](./iterators.md): iteration for C++ containers that need stable
   iterators, with an implementation for both refcount and unsafe.
-- `fn_ptr`: `FnPtr`, function pointers with C-style address identity.
+- [`fn_ptr`](./fn-ptr.md): `FnPtr`, function pointers with C-style address
+  identity.
 - `va_args`: `VaArg` and `VaList`, the representation of variadic calls.
 - The `goto`, `goto_block`, and `switch` proc macros, re-exported from
   `libcc2rs-macros`, which rewrite unstructured control flow into state
