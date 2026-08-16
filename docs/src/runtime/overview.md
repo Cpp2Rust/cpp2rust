@@ -27,8 +27,8 @@ The refcounted pointer model, the core of the refcount output:
 
 - [`rc`](./rc.md): `Value<T>` and `Ptr<T>`, the refcounted stand-ins for C
   values and pointers.
-- [`cstr`](./cstr.md): string literals and the `string.h` memory functions
-  over `Ptr<u8>` byte strings.
+- [`cstr`](./cstr.md): string literals and the `string.h` memory functions over
+  `Ptr<u8>` byte strings.
 - [`void`](./void.md): `AnyPtr`, the type-erased pointer for `void *`.
 - [`ptr_dyn`](./ptr-dyn.md): `PtrDyn<dyn T>`, pointers to virtual classes.
 - [`reinterpret`](./reinterpret.md): the `ByteRepr` trait and allocation views
