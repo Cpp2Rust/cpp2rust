@@ -19,7 +19,7 @@ jobs:
         run: cargo install mdbook
       - name: Build book
         run: mdbook build docs
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/book
 
