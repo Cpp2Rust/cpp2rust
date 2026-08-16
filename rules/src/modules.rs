@@ -14,8 +14,6 @@ pub mod array_tgt_unsafe;
 pub mod assert_tgt_refcount;
 #[path = r#"../assert/tgt_unsafe.rs"#]
 pub mod assert_tgt_unsafe;
-#[path = r#"../bitset/tgt_unsafe.rs"#]
-pub mod bitset_tgt_unsafe;
 #[path = r#"../brotli/tgt_refcount.rs"#]
 pub mod brotli_tgt_refcount;
 #[path = r#"../brotli/tgt_unsafe.rs"#]
@@ -30,6 +28,8 @@ pub mod carray_tgt_refcount;
 pub mod carray_tgt_unsafe;
 #[path = r#"../cmath/tgt_unsafe.rs"#]
 pub mod cmath_tgt_unsafe;
+#[path = r#"../cstddef/tgt_unsafe.rs"#]
+pub mod cstddef_tgt_unsafe;
 #[path = r#"../cstdlib/tgt_refcount.rs"#]
 pub mod cstdlib_tgt_refcount;
 #[path = r#"../cstdlib/tgt_unsafe.rs"#]
