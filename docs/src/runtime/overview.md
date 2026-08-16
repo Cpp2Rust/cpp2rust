@@ -45,7 +45,8 @@ Language-feature emulation, used by both models:
   iterators, with an implementation for both refcount and unsafe.
 - [`fn_ptr`](./fn-ptr.md): `FnPtr`, function pointers with C-style address
   identity.
-- `va_args`: `VaArg` and `VaList`, the representation of variadic calls.
+- [`va_args`](./va-args.md): `VaArg` and `VaList`, the representation of
+  variadic calls.
 - The `goto`, `goto_block`, and `switch` proc macros, re-exported from
   `libcc2rs-macros`, which rewrite unstructured control flow into state
   machines.

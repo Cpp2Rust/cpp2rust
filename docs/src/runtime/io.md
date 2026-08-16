@@ -45,8 +45,8 @@ value. For those cases, and for functions that format into a buffer such as
 `snprintf`, the refcount model falls back to `format_c`; the unsafe model calls
 libc directly.
 
-`format_c` evaluates a C format string against a slice of variadic arguments and
-returns the formatted `String`:
+`format_c` evaluates a C format string against a slice of
+[variadic arguments](./va-args.md) and returns the formatted `String`:
 
 ```rust
 pub fn format_c(fmt: &str, va: &[VaArg]) -> String;
