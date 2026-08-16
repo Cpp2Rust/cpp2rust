@@ -11,8 +11,8 @@ flags that `feof` and `ferror` report long after the read that set them.
 as a `Ptr<CFile>`, a [libc shim](./libc-shims.md) that holds the file descriptor
 together with these two flags. The standard streams are thread-local `CFile`
 values over descriptors 0, 1, and 2, returned by `c_stdin`, `c_stdout`, and
-`c_stderr`. `CFile` does no buffering at present: every read or write on it is
-a system call on the descriptor.
+`c_stderr`. `CFile` does no buffering at present: every read or write on it is a
+system call on the descriptor.
 
 In the unsafe model streams stay raw: `stdin_unsafe`, `stdout_unsafe`, and
 `stderr_unsafe` return the process's `*mut libc::FILE` handles, whose symbol

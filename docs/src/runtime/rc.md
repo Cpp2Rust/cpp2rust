@@ -76,13 +76,12 @@ comparison does.
 
 `new` and `new[]` are translated as `Ptr::alloc` and `Ptr::alloc_array`, and
 `malloc`, `calloc`, `realloc`, and `strdup` allocate through `Ptr::alloc_array`
-as well; the `alloc` module defines them as named functions
-(`malloc_refcount`, `free_refcount`, `realloc_refcount`, `calloc_refcount`,
-`strdup_refcount`, and their `_unsafe` twins for the unsafe model). The
-allocation's `Rc` is deliberately leaked so the object outlives the
-statement that created it. The leak is legitimate: a Rust program that leaks
-memory is still well typed. `delete` and `delete_array` recover the leaked
-reference and drop it:
+as well; the `alloc` module defines them as named functions (`malloc_refcount`,
+`free_refcount`, `realloc_refcount`, `calloc_refcount`, `strdup_refcount`, and
+their `_unsafe` twins for the unsafe model). The allocation's `Rc` is
+deliberately leaked so the object outlives the statement that created it. The
+leak is legitimate: a Rust program that leaks memory is still well typed.
+`delete` and `delete_array` recover the leaked reference and drop it:
 
 ```c
 int *d = new int(0);
@@ -185,8 +184,8 @@ Its one operation is `deref`, which returns a `Ref<'_, T>` to the pointee. The
 `Ref` borrows the `StrongPtr`, so the borrow of the `RefCell` lasts as long as
 the strong pointer does: in `p.upgrade().deref().field`, the temporary
 `StrongPtr` lives until the end of the enclosing statement, and so does the
-borrow. That is what makes a member access through a pointer expressible
-without a closure. There is no `deref_mut`; writes go through `with_mut`.
+borrow. That is what makes a member access through a pointer expressible without
+a closure. There is no `deref_mut`; writes go through `with_mut`.
 
 For the `Reinterpreted` variant there is no value to reference, only bytes in
 another allocation. `deref` reads those bytes into the local `cell` and hands
@@ -194,9 +193,8 @@ out a `Ref` to that copy, refreshing it on every call. The copy is what
 [Type Reinterpretation](./reinterpret.md#known-limitations) is about: writes
 into the copy never reach the original allocation.
 
-> [!WARNING]
-> `StrongPtr` is set to be removed. Holding a strong reference, even briefly,
-> undermines the model in two ways:
+> [!WARNING] `StrongPtr` is set to be removed. Holding a strong reference, even
+> briefly, undermines the model in two ways:
 >
 > 1. Nothing prevents a `StrongPtr` from outliving its statement. One that is
 >    stored, returned, or bound to a local keeps the object alive past the point
@@ -224,10 +222,10 @@ pointer is dereferenced. Subtracting two pointers yields their element distance
 and requires both to point into the same allocation.
 
 The pointer also knows the extent of its allocation: `len` is the number of
-elements in it, whatever the pointer's offset, and `get_offset` is the
-pointer's element index within it. The container rules build `end()` and
-`back()` pointers from these (`to_end`, `to_last`) and turn a `[first, last)`
-range into a count or an absolute index the same way.
+elements in it, whatever the pointer's offset, and `get_offset` is the pointer's
+element index within it. The container rules build `end()` and `back()` pointers
+from these (`to_end`, `to_last`) and turn a `[first, last)` range into a count
+or an absolute index the same way.
 
 ## Integer casts
 

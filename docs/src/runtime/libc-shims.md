@@ -50,11 +50,11 @@ stdio stream logic (see [I/O and Formatting](./io.md)), and the `time` shims
 convert through the `jiff` crate. `CFdSet` and the `sockaddr` family depart
 further from their C counterparts.
 
-Each shim module also gives the raw `libc` struct it mirrors an empty
-`ByteRepr` impl (`impl ByteRepr for ::libc::stat {}`), whose methods panic.
-These exist so that the generated `ByteRepr` implementation of a translated
-struct with a libc struct member still compiles; reinterpreting such a struct
-is not supported at present.
+Each shim module also gives the raw `libc` struct it mirrors an empty `ByteRepr`
+impl (`impl ByteRepr for ::libc::stat {}`), whose methods panic. These exist so
+that the generated `ByteRepr` implementation of a translated struct with a libc
+struct member still compiles; reinterpreting such a struct is not supported at
+present.
 
 ## CFdSet
 
