@@ -75,8 +75,11 @@ comparison does.
 ## The heap
 
 `new` and `new[]` are translated as `Ptr::alloc` and `Ptr::alloc_array`, and
-`malloc`, `calloc`, and `realloc` allocate through `Ptr::alloc_array` as well.
-The allocation's `Rc` is deliberately leaked so the object outlives the
+`malloc`, `calloc`, `realloc`, and `strdup` allocate through `Ptr::alloc_array`
+as well; the `alloc` module defines them as named functions
+(`malloc_refcount`, `free_refcount`, `realloc_refcount`, `calloc_refcount`,
+`strdup_refcount`, and their `_unsafe` twins for the unsafe model). The
+allocation's `Rc` is deliberately leaked so the object outlives the
 statement that created it. The leak is legitimate: a Rust program that leaks
 memory is still well typed. `delete` and `delete_array` recover the leaked
 reference and drop it:
@@ -96,6 +99,27 @@ let d: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(0)));
 `delete` checks that the pointer still points at the start of a live heap
 allocation: freeing twice, freeing through an offset pointer, or freeing a stack
 value panics with `ub:`.
+
+A heap allocation can also change hands instead of being freed. `to_owned_opt`
+recovers the leaked reference the same way `delete` does, but returns it to the
+caller as an owning `Option<Value<T>>` (or `Option<Value<Box<[T]>>>` for an
+array), with `None` for the null pointer; from then on the allocation lives
+exactly as long as that binding. It panics for stack, `Vec`, and reinterpreted
+pointers, which have no leaked reference to recover. This is how
+`std::unique_ptr<T>` is translated: the smart pointer is an `Option<Value<T>>`,
+its constructor and `reset` adopt a raw pointer with `to_owned_opt`, and
+`as_pointer`, which is also implemented for `Option<Value<T>>` and yields null
+for `None`, stands in for `get()`:
+
+```cpp
+std::unique_ptr<int> u(new int(1));
+int *raw = u.get();
+```
+
+```rust
+let u: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt()));
+let raw: Value<Ptr<i32>> = Rc::new(RefCell::new((*u.borrow()).as_pointer()));
+```
 
 ## Dereferences
 
@@ -132,8 +156,8 @@ In every case the `RefCell` is borrowed only for the duration of the access,
 which is what lets freely aliasing C++ pointers coexist with the borrow checker:
 no borrow outlives the expression that created it. When an expression needs an
 actual Rust reference, the pointer is upgraded to a
-[`StrongPtr`](../codegen/pointers.md), which holds the allocation alive and
-hands out a `Ref`.
+[`StrongPtr`](#strong-pointers), which holds the allocation alive and hands out
+a `Ref`.
 
 These borrows are the model's mutability checks, moved from compile time to run
 time. Rust's rule still holds, any number of readers or one writer, but it is
@@ -143,6 +167,54 @@ traps. The code generator is responsible for not emitting such expressions: it
 stores intermediate results in temporaries, so the reading borrow ends before
 the writing borrow starts.
 
+## Strong pointers
+
+`upgrade` turns a `Ptr<T>` into a `StrongPtr<T>`, the same pointer holding a
+strong `Rc` to its allocation instead of a weak one:
+
+```rust
+pub enum StrongPtr<T> {
+    StackSingle(Rc<RefCell<T>>),
+    Vec { rc: Rc<RefCell<Vec<T>>>, offset: usize },
+    StackArray { rc: Rc<RefCell<Box<[T]>>>, offset: usize },
+    Reinterpreted { alloc: Rc<dyn OriginalAlloc>, byte_offset: usize, cell: RefCell<Option<T>> },
+}
+```
+
+Its one operation is `deref`, which returns a `Ref<'_, T>` to the pointee. The
+`Ref` borrows the `StrongPtr`, so the borrow of the `RefCell` lasts as long as
+the strong pointer does: in `p.upgrade().deref().field`, the temporary
+`StrongPtr` lives until the end of the enclosing statement, and so does the
+borrow. That is what makes a member access through a pointer expressible
+without a closure. There is no `deref_mut`; writes go through `with_mut`.
+
+For the `Reinterpreted` variant there is no value to reference, only bytes in
+another allocation. `deref` reads those bytes into the local `cell` and hands
+out a `Ref` to that copy, refreshing it on every call. The copy is what
+[Type Reinterpretation](./reinterpret.md#known-limitations) is about: writes
+into the copy never reach the original allocation.
+
+> [!WARNING]
+> `StrongPtr` is set to be removed. Holding a strong reference, even briefly,
+> undermines the model in two ways:
+>
+> 1. Nothing prevents a `StrongPtr` from outliving its statement. One that is
+>    stored, returned, or bound to a local keeps the object alive past the point
+>    where C++ destroys it, so its destructor runs late and dangling accesses go
+>    unnoticed; a heap object held this way makes the later `delete` panic. The
+>    generator only ever emits it as a temporary, but hand-edited code or a rule
+>    can break that.
+> 2. Even as a temporary, it lives for the whole statement. In
+>    `(*p.upgrade().deref()).method()` the strong reference is alive during the
+>    call, so a method that runs `delete this`, or otherwise deletes the object
+>    it was called on, hits `delete`'s reference-count check and panics with a
+>    spurious `ub: invalid delete`.
+
+`to_strong` skips the `StrongPtr` and returns the `Value<T>` itself. It is only
+defined for the single-value kinds and is what the code generator uses when it
+needs the owning cell of a pointee, for example to coerce a `Value<Derived>` to
+a `Value<dyn Base>` (see [Virtual Classes](./ptr-dyn.md)).
+
 ## Arithmetic
 
 The offset lives in the pointer, so arithmetic never touches the allocation.
@@ -150,6 +222,12 @@ The offset lives in the pointer, so arithmetic never touches the allocation.
 end of the allocation, exactly as C++ allows; bounds are checked only when the
 pointer is dereferenced. Subtracting two pointers yields their element distance
 and requires both to point into the same allocation.
+
+The pointer also knows the extent of its allocation: `len` is the number of
+elements in it, whatever the pointer's offset, and `get_offset` is the
+pointer's element index within it. The container rules build `end()` and
+`back()` pointers from these (`to_end`, `to_last`) and turn a `[first, last)`
+range into a count or an absolute index the same way.
 
 ## Integer casts
 
@@ -166,4 +244,4 @@ let q: Value<Ptr<i32>> = Rc::new(RefCell::new(<Ptr<i32>>::from_int(*n.borrow()))
 ```
 
 Both currently panic when executed. Giving them well-defined semantics is work
-in progress.
+in progress ([#225](https://github.com/Cpp2Rust/cpp2rust/pull/225)).

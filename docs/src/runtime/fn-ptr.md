@@ -21,6 +21,12 @@ impl<T> FnPtr<T> {
 `FnPtr` dereferences to the function, so a call through it is `(*fp)(args)`.
 Calling a null pointer panics with `ub:`.
 
+`FnPtr` stores its function type-erased and identifies it by address through
+the `FnAddr` trait. Rust has no way to write an impl for every `fn` arity at
+once, so `FnAddr` is implemented by a macro for `fn` types of zero to sixteen
+parameters. A function with more parameters cannot be wrapped in an `FnPtr`,
+and taking its address fails to compile with a missing `FnAddr` bound.
+
 ```cpp
 typedef int (*int_fn)(int);
 int double_it(int x) { return x * 2; }

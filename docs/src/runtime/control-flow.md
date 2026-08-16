@@ -128,7 +128,9 @@ switch!(match (*x.borrow()) {
 `switch!` desugars to a `goto_block!` whose first block dispatches on the
 condition to the block of the matching case; the case bodies follow as
 consecutive blocks, so falling off the end of one enters the next, and `break`
-leaves the whole `switch!`. `goto` and `switch` mix freely: a `switch!` can be
+leaves the whole `switch!`. A `continue` in a case is not captured by the
+`switch!`: as in C, it continues the loop enclosing the `switch`, and is a
+compile error when there is none. `goto` and `switch` mix freely: a `switch!` can be
 nested in a `goto_block!`, a `goto!` inside a case can target a label of the
 enclosing block, and a label attached to a `case` is supported. Statements
 between the `switch` and its first `case` are not supported yet.

@@ -48,7 +48,9 @@ Because it stores a key rather than a position, it survives insertions and
 removals elsewhere in the map, as C++ guarantees. `begin`, `end`, and `find_key`
 construct one; `inc` and `dec` move to the neighbouring key; `erase` removes the
 current entry and returns the iterator to the next; the `++`/`--` traits and
-`Iterator` are implemented on top of these:
+`Iterator` are implemented on top of these. Two iterators compare equal when
+they hold the same key, whichever map they came from, so `it != m.end()`
+compares `Some(key)` against `None`:
 
 ```cpp
 std::map<int, double> m;

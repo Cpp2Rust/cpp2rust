@@ -66,7 +66,7 @@ The OS and libc surface:
 
 ## Dependencies
 
-The crate has four dependencies:
+The crate has five dependencies:
 
 - `libcc2rs-macros` provides the control-flow proc macros.
 - `libc` and `nix` provide the raw and safe OS interfaces the shims wrap.

@@ -54,8 +54,8 @@ sum_0(3, &[10.into(), 20.into(), 30.into()]);
 `arg::<T>()` goes through the `VaArgGet` trait, implemented for the integer and
 floating types, raw pointers, `Ptr<T>`, `AnyPtr`, and `FnPtr<T>`. Integer
 variants convert freely among the integer types, as `va_arg` does with types of
-the same rank; asking for a pointer where an integer was passed, or the reverse,
-panics.
+the same rank; asking for a pointer where an integer was passed, or the
+reverse, panics, as does reading past the last argument.
 
 Variadic libc functions such as `printf` and `fcntl` are handled by
 [variadic rules](../rules/writing-rules.md#variadic-functions), whose bodies

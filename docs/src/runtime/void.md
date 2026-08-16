@@ -40,5 +40,12 @@ free_refcount((*p.borrow()).to_any());
 `Ptr<u8>` versions from [C Strings](./cstr.md) over the byte view of its
 pointee.
 
+> [!WARNING]
+> Two `AnyPtr` values are equal only when they were erased from the same
+> pointer type and compare equal as that type. A `void *` obtained from a
+> `Ptr<i32>` and one obtained from a `Ptr<u8>` into the same allocation compare
+> unequal, where C would consider them the same address. This is set to be
+> fixed by comparing through the byte view instead.
+
 Casts between `AnyPtr` and integers use the same `to_int` and `from_int` as
 [`Ptr<T>`](./rc.md#integer-casts).

@@ -11,7 +11,8 @@ flags that `feof` and `ferror` report long after the read that set them.
 as a `Ptr<CFile>`, a [libc shim](./libc-shims.md) that holds the file descriptor
 together with these two flags. The standard streams are thread-local `CFile`
 values over descriptors 0, 1, and 2, returned by `c_stdin`, `c_stdout`, and
-`c_stderr`.
+`c_stderr`. `CFile` does no buffering at present: every read or write on it is
+a system call on the descriptor.
 
 In the unsafe model streams stay raw: `stdin_unsafe`, `stdout_unsafe`, and
 `stderr_unsafe` return the process's `*mut libc::FILE` handles, whose symbol
@@ -31,9 +32,13 @@ through the `CFile`; the unsafe variant forwards to `libc::fread`.
 ## C++ Streams
 
 In the refcount model `cin`, `cout`, and `cerr` are translated as
-`Ptr<std::fs::File>` values over duplicates of the standard descriptors. In the
-unsafe model `cin_unsafe`, `cout_unsafe`, and `cerr_unsafe` return raw pointers
-to thread-local `std::fs::File` values. C++ streams do not map fully onto
+`Ptr<std::fs::File>` values over duplicates of the standard descriptors,
+returned by the `cin`, `cout`, and `cerr` functions. `Ptr<T>` implements
+`write_fmt` and `write_all` whenever `T: Write`, forwarding to the pointee
+through `with_mut`, so `cout << x` becomes `write!(cout(), "{}", x)` and a raw
+byte range is written with `cout().write_all(..)`. In the unsafe model
+`cin_unsafe`, `cout_unsafe`, and `cerr_unsafe` return raw pointers to
+thread-local `std::fs::File` values. C++ streams do not map fully onto
 `std::fs::File`, so this translation may change in the future.
 
 ## Formatting
@@ -55,7 +60,14 @@ pub fn format_c(fmt: &str, va: &[VaArg]) -> String;
 Parsing and rendering come from the `sprintf` crate. The integer, character,
 string, and floating-point conversions are supported, and `%s` reads the
 argument through the refcounted pointer as a Rust string. A malformed format
-string or an argument of the wrong kind is a panic.
+string or an argument of the wrong kind is a panic. Three things are not
+supported yet:
+
+1. `%p` renders through the pointer's [integer cast](./rc.md#integer-casts),
+   which currently panics.
+2. `%n` is not handled.
+3. A `*` width or precision (`%*d`, `%.*s`) is parsed but its integer argument
+   is not consumed, so the remaining arguments are misaligned.
 
 ## File descriptors
 
