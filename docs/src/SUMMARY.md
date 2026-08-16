@@ -32,6 +32,7 @@
 - [Iterators](./runtime/iterators.md)
 - [Function Pointers](./runtime/fn-ptr.md)
 - [Variadic Functions](./runtime/va-args.md)
+- [Control Flow Macros](./runtime/control-flow.md)
 - [I/O and Formatting](./runtime/io.md)
 - [libc Shims](./runtime/libc-shims.md)
 - [Compat Helpers](./runtime/compat.md)

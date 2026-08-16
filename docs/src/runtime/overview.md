@@ -47,9 +47,9 @@ Language-feature emulation, used by both models:
   identity.
 - [`va_args`](./va-args.md): `VaArg` and `VaList`, the representation of
   variadic calls.
-- The `goto`, `goto_block`, and `switch` proc macros, re-exported from
-  `libcc2rs-macros`, which rewrite unstructured control flow into state
-  machines.
+- The [`goto`, `goto_block`, and `switch`](./control-flow.md) proc macros,
+  re-exported from `libcc2rs-macros`, which rewrite unstructured control flow
+  into state machines.
 
 The OS and libc surface:
 
