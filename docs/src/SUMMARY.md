@@ -24,6 +24,9 @@
 
 - [Overview](./runtime/overview.md)
 - [Reference Counting](./runtime/rc.md)
+- [C Strings](./runtime/cstr.md)
+- [void Pointers](./runtime/void.md)
+- [Virtual Classes](./runtime/ptr-dyn.md)
 - [Type Reinterpretation](./runtime/reinterpret.md)
 - [I/O and Formatting](./runtime/io.md)
 - [libc Shims](./runtime/libc-shims.md)
@@ -33,5 +36,7 @@
 
 - [Overview](./codegen/overview.md)
 - [Pointers and References](./codegen/pointers.md)
+- [Unions](./codegen/unions.md)
+- [Global Variables](./codegen/globals.md)
 - [Temporary Materialization](./codegen/temporaries.md)
 - [Translation Plugins](./codegen/plugins.md)

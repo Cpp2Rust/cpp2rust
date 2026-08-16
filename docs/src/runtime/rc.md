@@ -74,11 +74,12 @@ comparison does.
 
 ## The heap
 
-`new` and `new[]` are translated as `Ptr::alloc` and `Ptr::alloc_array`. The
-allocation's `Rc` is deliberately leaked so the object outlives the statement
-that created it. The leak is legitimate: a Rust program that leaks memory is
-still well typed. `delete` and `delete_array` recover the leaked reference and
-drop it:
+`new` and `new[]` are translated as `Ptr::alloc` and `Ptr::alloc_array`, and
+`malloc`, `calloc`, and `realloc` allocate through `Ptr::alloc_array` as well.
+The allocation's `Rc` is deliberately leaked so the object outlives the
+statement that created it. The leak is legitimate: a Rust program that leaks
+memory is still well typed. `delete` and `delete_array` recover the leaked
+reference and drop it:
 
 ```c
 int *d = new int(0);
@@ -130,8 +131,9 @@ is defined as `with_mut(|v| *v = value)`.
 In every case the `RefCell` is borrowed only for the duration of the access,
 which is what lets freely aliasing C++ pointers coexist with the borrow checker:
 no borrow outlives the expression that created it. When an expression needs an
-actual Rust reference, the pointer is upgraded to a `StrongPtr`, which holds the
-allocation alive and hands out a `Ref`.
+actual Rust reference, the pointer is upgraded to a
+[`StrongPtr`](../codegen/pointers.md), which holds the allocation alive and
+hands out a `Ref`.
 
 These borrows are the model's mutability checks, moved from compile time to run
 time. Rust's rule still holds, any number of readers or one writer, but it is
@@ -149,38 +151,19 @@ end of the allocation, exactly as C++ allows; bounds are checked only when the
 pointer is dereferenced. Subtracting two pointers yields their element distance
 and requires both to point into the same allocation.
 
-## Strings
+## Integer casts
 
-C and C++ strings are byte strings: programs manipulate individual bytes and the
-contents need not be valid UTF-8, so strings are translated as `u8` buffers
-rather than Rust `String` values. A string literal becomes a per-thread interned
-buffer with a trailing zero byte, handed out as a `Ptr<u8>` by
-`Ptr::from_string_literal`. `Ptr<u8>` also carries the memory functions C
-strings rely on: `memcpy` (which copies backwards when the ranges overlap),
-`memset`, `memcmp`, and `to_rust_string` for crossing into Rust APIs.
+Casts between pointers and integers are translated as `to_int` and `from_int`:
 
-## Virtual classes
+```c
+uintptr_t n = (uintptr_t)p;
+int *q = (int *)n;
+```
 
-A pointer to a virtual class cannot be a `Ptr<T>`. The class is translated as a
-Rust trait, and trait objects are unsized, which Rust marks with `dyn`. The
-runtime provides a dedicated `PtrDyn<dyn T>` type for these pointers, kept
-separate so the generic `Ptr` pays no cost for dynamic dispatch. `to_strong`
-upgrades a `Ptr<T>` into a `Value<T>`, and `as_pointer_dyn` turns a
-`Value<dyn T>` into a `PtrDyn<dyn T>`; a virtual call upgrades the pointer and
-dispatches through the trait.
+```rust
+let n: Value<usize> = Rc::new(RefCell::new((*p.borrow()).to_int()));
+let q: Value<Ptr<i32>> = Rc::new(RefCell::new(<Ptr<i32>>::from_int(*n.borrow())));
+```
 
-## void pointers
-
-`void *` is translated as `AnyPtr`, a type-erased `Ptr`. `to_any` erases the
-element type; `reinterpret_cast` recovers it, returning the original pointer
-when the types match and a byte-level view otherwise. The `malloc` family
-allocates and frees through `AnyPtr`.
-
-## Global variables
-
-Global variables are mapped to thread-local storage, because a `Value<T>` cannot
-be a true Rust global. A global must be `Sync`, since every thread can reach it,
-and both `Rc` and `RefCell` are single-threaded types: the reference counter and
-the borrow checks are not atomic. Thread-local storage sidesteps the requirement
-by giving each thread its own copy, which matches the original semantics because
-`cpp2rust` does not currently support multi-threaded code.
+Both currently panic when executed. Giving them well-defined semantics is work
+in progress.

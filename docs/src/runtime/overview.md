@@ -1,32 +1,23 @@
 # Overview
 
-`libcc2rs` is the runtime library that translated programs link against. Every
-Rust file `cpp2rust` emits begins with the same import:
+Proving ownership in the presence of C++'s unrestricted aliasing is undecidable
+in general, so `cpp2rust` does not try to satisfy Rust's borrow checker
+statically. Its default output, the refcount model, moves Rust's ownership and
+mutability checks to run time: reference counting replaces static ownership, and
+dynamic borrow checks replace static mutability checks. This trades some speed
+for safety, and it lets every program be translated.
+
+`libcc2rs` is the runtime library where those checks live: a small crate of
+auxiliary types and functions, such as `Value<T>`, `Ptr<T>`, and `AnyPtr`, that
+translated programs link against. Keeping this machinery in one library keeps
+the generated refcount code free of `unsafe`.
+
+Every Rust file `cpp2rust` emits imports the whole crate:
 
 ```rust
 extern crate libcc2rs;
 use libcc2rs::*;
 ```
-
-The crate re-exports everything at its root, so this single glob import gives
-the generated code access to the whole API without qualified paths. The build is
-wired into CMake: the crate is compiled with Cargo into an `rlib`, and
-translated programs are compiled against that `rlib` together with
-`libcc2rs-macros`, the companion proc-macro crate.
-
-## The two output models
-
-The library serves both output models. The refcount model depends on it for its
-entire pointer representation: refcounted values, pointers, and byte-level views
-all come from the runtime. The unsafe model expresses pointers as raw Rust
-pointers and calls libc directly (its output also imports `libc::*`), so it only
-uses the runtime for constructs that raw pointers cannot express, such as
-`goto`, `switch` fallthrough, and variadic calls.
-
-Some libc functions exist in the crate as real named functions, such as
-`fread_refcount` and `fread_unsafe`, because translated programs can take their
-address. A [rule body](../rules/format.md) alone has nothing to take the address
-of, so the runtime defines a function with the signature the model expects.
 
 ## Module map
 
@@ -34,8 +25,12 @@ The modules fall into three groups.
 
 The refcounted pointer model, the core of the refcount output:
 
-- [`rc`](./rc.md): `Value<T>`, `Ptr<T>`, and `AnyPtr`, the refcounted stand-ins
-  for C values and pointers.
+- [`rc`](./rc.md): `Value<T>` and `Ptr<T>`, the refcounted stand-ins for C
+  values and pointers.
+- [`cstr`](./cstr.md): string literals, the `string.h` memory functions, and
+  iteration over `Ptr<u8>` byte strings.
+- [`void`](./void.md): `AnyPtr`, the type-erased pointer for `void *`.
+- [`ptr_dyn`](./ptr-dyn.md): `PtrDyn<dyn T>`, pointers to virtual classes.
 - [`reinterpret`](./reinterpret.md): the `ByteRepr` trait and allocation views
   that let a refcounted allocation be reinterpreted at the byte level, as C
   pointer casts do.
