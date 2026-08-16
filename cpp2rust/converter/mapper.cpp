@@ -943,7 +943,7 @@ std::string ToString(const clang::NamedDecl *decl) {
       os << "shreq";
       break;
     default:
-      std::unreachable();
+      assert(0 && "Unexpected overloaded operator kind");
     }
   } else if (const auto *method_decl =
                  llvm::dyn_cast<clang::CXXMethodDecl>(func_decl)) {
