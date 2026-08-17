@@ -193,8 +193,10 @@ out a `Ref` to that copy, refreshing it on every call. The copy is what
 [Type Reinterpretation](./reinterpret.md#known-limitations) is about: writes
 into the copy never reach the original allocation.
 
-> [!WARNING] `StrongPtr` is set to be removed. Holding a strong reference, even
-> briefly, undermines the model in two ways:
+> [!WARNING]
+>
+> `StrongPtr` is set to be removed. Holding a strong reference, even briefly,
+> undermines the model in two ways:
 >
 > 1. Nothing prevents a `StrongPtr` from outliving its statement. One that is
 >    stored, returned, or bound to a local keeps the object alive past the point

@@ -31,7 +31,9 @@ A virtual call goes through `upgrade`, which returns a `StrongPtrDyn<dyn T>`
 holding the strong reference; its `deref` and `deref_mut` borrow the object and
 the call dispatches through the trait's vtable.
 
-> [!WARNING] `StrongPtrDyn` is set to be removed for the same reasons as
+> [!WARNING]
+>
+> `StrongPtrDyn` is set to be removed for the same reasons as
 > [`StrongPtr`](./rc.md#strong-pointers): it holds a strong reference that can
 > outlive the object's C++ lifetime, and even as a temporary it spans the whole
 > virtual call, so a method that deletes its own object panics on `delete`.
