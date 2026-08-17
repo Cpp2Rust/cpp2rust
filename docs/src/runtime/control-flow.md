@@ -62,8 +62,19 @@ becomes:
 let mut state: u32 = 0;
 'sm: loop {
     match state {
-        0 => { /* entry body */ state = 1; continue 'sm; }
-        1 => { /* again body, with goto!('again) as */ { state = 1; continue 'sm; } break 'sm; }
+        0 => {
+            /* entry body */
+            state = 1;
+            continue 'sm;
+        }
+        1 => {
+            /* again body, with goto!('again) as */
+            {
+                state = 1;
+                continue 'sm;
+            }
+            break 'sm;
+        }
         _ => break 'sm,
     }
 }

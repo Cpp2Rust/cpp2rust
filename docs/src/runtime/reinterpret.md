@@ -125,7 +125,8 @@ let any: AnyPtr = p.to_any();
 let back: Ptr<u64> = any.reinterpret_cast::<u64>();
 assert!(back == p);
 
-// Different type: a byte view over p's allocation, as with Ptr::reinterpret_cast.
+// Different type: a byte view over p's allocation, as with
+// Ptr::reinterpret_cast.
 let bytes: Ptr<u8> = any.reinterpret_cast::<u8>();
 assert_eq!(bytes.read(), 0x01);
 ```

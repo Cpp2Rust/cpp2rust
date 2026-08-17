@@ -64,12 +64,16 @@ through the cast pointer go through the adapter:
 
 ```rust
 let gfn: Value<FnPtr<fn(AnyPtr, i32) -> i32>> = Rc::new(RefCell::new(
-    FnPtr::<fn(Ptr<i32>, i32) -> i32>::new(add_offset_4).cast::<fn(AnyPtr, i32) -> i32>(Some(
-        (|a0: AnyPtr, a1: i32| -> i32 { add_offset_4(a0.reinterpret_cast::<i32>(), a1) })
-            as fn(AnyPtr, i32) -> i32,
-    )),
+    FnPtr::<fn(Ptr<i32>, i32) -> i32>::new(add_offset_4)
+        .cast::<fn(AnyPtr, i32) -> i32>(Some(
+            (|a0: AnyPtr, a1: i32| -> i32 {
+                add_offset_4(a0.reinterpret_cast::<i32>(), a1)
+            }) as fn(AnyPtr, i32) -> i32,
+        )),
 ));
-let result: Value<i32> = Rc::new(RefCell::new((*(*gfn.borrow()))(val.as_pointer().to_any(), 42)));
+let result: Value<i32> = Rc::new(RefCell::new(
+    (*(*gfn.borrow()))(val.as_pointer().to_any(), 42),
+));
 ```
 
 The code generator can build an adapter when the arguments and return type of
@@ -82,9 +86,3 @@ Casting a function pointer to `void *` is `to_any`, and `AnyPtr::cast_fn::<T>`
 recovers it. `reinterpret_cast` on an `AnyPtr` holding a function currently
 panics, as do [integer casts](./rc.md#integer-casts) on a `Ptr`; both are set to
 be fixed in the near future.
-
-## The unsafe model
-
-The unsafe model uses `Option<unsafe fn(...)>` directly, with `None` as the null
-pointer, and casts between function pointer types with `std::mem::transmute`; it
-does not use `FnPtr`.

@@ -22,8 +22,18 @@ names differ per platform (`stdin` on Linux, `__stdinp` on macOS).
 programs take their address:
 
 ```rust
-pub fn fread_refcount(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize;
-pub unsafe fn fread_unsafe(a0: *mut c_void, a1: usize, a2: usize, a3: *mut libc::FILE) -> usize;
+pub fn fread_refcount(
+    a0: AnyPtr,
+    a1: usize,
+    a2: usize,
+    a3: Ptr<CFile>,
+) -> usize;
+pub unsafe fn fread_unsafe(
+    a0: *mut c_void,
+    a1: usize,
+    a2: usize,
+    a3: *mut libc::FILE,
+) -> usize;
 ```
 
 The refcount variant reinterprets the destination as a byte array and reads
@@ -91,7 +101,9 @@ In the `fstat` rule, the descriptor argument goes through `with_fd`:
 
 ```rust
 fn f2(a0: i32, a1: Ptr<Stat>) -> i32 {
-    match FdRegistry::with_fd(a0, |fd: BorrowedFd<'_>| nix::sys::stat::fstat(fd)) {
+    match FdRegistry::with_fd(a0, |fd: BorrowedFd<'_>| {
+        nix::sys::stat::fstat(fd)
+    }) {
         // ...
     }
 }

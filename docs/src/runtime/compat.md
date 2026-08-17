@@ -23,10 +23,11 @@ pub fn cpp2rust_errno() -> Ptr<i32>;
 ```
 
 Refcount code reaches the operating system through the libc shims and nix, so
-libc's `errno` is never read by this model. Instead, each rule is responsible
-for writing the error code of a failed call into the refcounted value. Nothing
-enforces this on the rule side, but a rule that skips the write breaks programs
-that check `errno`, so it is part of writing a correct rule.
+libc's `errno` is never read by this model. Keeping the cell current is a
+discipline of the rules: every rule that translates a call that can fail must
+write the error code into `cpp2rust_errno()` on the failure path (see
+[Compat Shims](../rules/compat.md)); nothing enforces this, and a rule that
+skips the write breaks programs that check `errno`.
 
 `malloc_usable_size` is bound under one name for both platforms (the symbol is
 `malloc_size` on macOS).

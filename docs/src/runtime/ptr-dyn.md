@@ -1,14 +1,24 @@
 # Virtual Classes
 
-A pointer to a virtual class cannot be a `Ptr<T>`. The class is translated as a
-Rust trait, and trait objects are unsized, which Rust marks with `dyn`. The
-runtime provides a dedicated `PtrDyn<dyn T>` type for these pointers, kept
-separate so the generic `Ptr` pays no cost for dynamic dispatch.
+A pointer to a virtual class cannot be a `Ptr<T>`. `Ptr<T>` requires `T: Sized`,
+the implicit bound on every generic parameter, and a virtual class is translated
+as a Rust trait, whose trait object `dyn T` is unsized and cannot satisfy that
+bound. The runtime provides a dedicated `PtrDyn<dyn T>` type, declared with
+`T: ?Sized`, for these pointers, kept separate so the generic `Ptr` pays no cost
+for dynamic dispatch.
 
 A `PtrDyn` is created at the point where C++ converts a derived pointer to a
 base pointer. `to_strong` upgrades the `Ptr<Derived>` into its `Value<Derived>`,
 Rust's unsized coercion turns that into a `Value<dyn Base>`, and
-`as_pointer_dyn` takes the weak reference back out:
+`as_pointer_dyn` takes the weak reference back out.
+
+> [!NOTE]
+>
+> This coercion is why `Value` is a type alias for `Rc<RefCell<T>>` rather than
+> a struct of its own: `Rc` already implements it, and a new type could only opt
+> in through the nightly-only `CoerceUnsized` trait.
+
+The conversion looks like this:
 
 ```cpp
 struct Base { virtual int f() const = 0; };
@@ -24,7 +34,9 @@ let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
 let b: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
     ((d.as_pointer()).to_strong() as Value<dyn Base>).as_pointer_dyn(),
 ));
-let r: Value<i32> = Rc::new(RefCell::new(({ (*(*b.borrow()).upgrade().deref()).f() })));
+let r: Value<i32> = Rc::new(RefCell::new(
+    ({ (*(*b.borrow()).upgrade().deref()).f() }),
+));
 ```
 
 A virtual call goes through `upgrade`, which returns a `StrongPtrDyn<dyn T>`

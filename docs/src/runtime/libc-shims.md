@@ -47,8 +47,8 @@ success nix returns a raw `libc::stat`, so the result goes through
 
 Most shims are plain data plus conversions like `Stat`. `CFile` carries the
 stdio stream logic (see [I/O and Formatting](./io.md)), and the `time` shims
-convert through the `jiff` crate. `CFdSet` and the `sockaddr` family depart
-further from their C counterparts.
+convert through the `jiff` crate. `CFdSet` and the `sockaddr` family need more
+than a field-by-field mirror and are described in their own sections below.
 
 Each shim module also gives the raw `libc` struct it mirrors an empty `ByteRepr`
 impl (`impl ByteRepr for ::libc::stat {}`), whose methods panic. These exist so
@@ -82,7 +82,10 @@ the first two bytes and reinterprets the pointer as the concrete type before
 handing nix a typed address:
 
 ```rust
-pub fn decode(addr: &Ptr<Sockaddr>, _len: u32) -> Option<Box<dyn SockaddrLike>> {
+pub fn decode(
+    addr: &Ptr<Sockaddr>,
+    _len: u32,
+) -> Option<Box<dyn SockaddrLike>> {
     let family = addr.reinterpret_cast::<u16>().read();
     if family == libc::AF_INET as u16 {
         let m = addr.reinterpret_cast::<SockaddrIn>().read();

@@ -49,8 +49,7 @@ removals elsewhere in the map, as C++ guarantees. `begin`, `end`, and `find_key`
 construct one; `inc` and `dec` move to the neighbouring key; `erase` removes the
 current entry and returns the iterator to the next; the `++`/`--` traits and
 `Iterator` are implemented on top of these. Two iterators compare equal when
-they hold the same key, whichever map they came from, so `it != m.end()`
-compares `Some(key)` against `None`:
+they hold the same key, so `it != m.end()` compares `Some(key)` against `None`:
 
 ```cpp
 std::map<int, double> m;
@@ -59,11 +58,19 @@ for (const auto &i : m)
 ```
 
 ```rust
-let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
+let m: Value<BTreeMap<i32, Value<f64>>> =
+    Rc::new(RefCell::new(BTreeMap::new()));
 for i in RefcountMapIter::begin(m.as_pointer()) {
     (*sum.borrow_mut()) += (*i.second().borrow());
 }
 ```
+
+> [!WARNING]
+>
+> Equality only looks at the key: iterators into two different maps compare
+> equal when they hold the same key. In C++ comparing them is undefined
+> behaviour, so the translation should panic with `ub:` instead; this will be
+> fixed by comparing the map handles as well.
 
 `first()` and `second()` come from the `MapIterator` trait and take the place of
 `it->first` and `it->second`. `MapIter` is generic over how the map is reached,

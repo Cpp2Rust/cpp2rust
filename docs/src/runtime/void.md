@@ -11,12 +11,15 @@ char *cp = vp;
 
 ```rust
 let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
-let vp: Value<AnyPtr> = Rc::new(RefCell::new((data.as_pointer() as Ptr<u8>).to_any()));
-let cp: Value<Ptr<u8>> = Rc::new(RefCell::new((*vp.borrow()).reinterpret_cast::<u8>()));
+let vp: Value<AnyPtr> =
+    Rc::new(RefCell::new((data.as_pointer() as Ptr<u8>).to_any()));
+let cp: Value<Ptr<u8>> =
+    Rc::new(RefCell::new((*vp.borrow()).reinterpret_cast::<u8>()));
 ```
 
 `reinterpret_cast` returns the original pointer when the requested type matches
-the erased one, and a [byte-level view](./reinterpret.md) otherwise.
+the erased one, and a [byte-level view](./reinterpret.md) otherwise, because C
+code commonly casts `A *` to `void *` and reads it back as `B *`.
 
 The `malloc` family allocates and frees through `AnyPtr`, so the returned
 pointer is cast to the requested type and cast back to free it:
@@ -28,7 +31,8 @@ free(p);
 ```
 
 ```rust
-// malloc_refcount(n) is Ptr::alloc_array(vec![0u8; n].into_boxed_slice()).to_any()
+// malloc_refcount(n) is
+// Ptr::alloc_array(vec![0u8; n].into_boxed_slice()).to_any()
 let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
     malloc_refcount(::std::mem::size_of::<i32>()).reinterpret_cast::<i32>(),
 ));

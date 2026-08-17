@@ -78,9 +78,8 @@ comparison does.
 `malloc`, `calloc`, `realloc`, and `strdup` allocate through `Ptr::alloc_array`
 as well; the `alloc` module defines them as named functions (`malloc_refcount`,
 `free_refcount`, `realloc_refcount`, `calloc_refcount`, `strdup_refcount`, and
-their `_unsafe` twins for the unsafe model). The allocation's `Rc` is
-deliberately leaked so the object outlives the statement that created it. The
-leak is legitimate: a Rust program that leaks memory is still well typed.
+their `_unsafe` twins for the unsafe model). The allocation's `Rc` is leaked
+with `Rc::into_raw` so the object outlives the statement that created it, and
 `delete` and `delete_array` recover the leaked reference and drop it:
 
 ```c
@@ -97,18 +96,17 @@ let d: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(0)));
 
 `delete` checks that the pointer still points at the start of a live heap
 allocation: freeing twice, freeing through an offset pointer, or freeing a stack
-value panics with `ub:`.
+or `Vec` pointer panics with `ub:`.
 
 A heap allocation can also change hands instead of being freed. `to_owned_opt`
 recovers the leaked reference the same way `delete` does, but returns it to the
 caller as an owning `Option<Value<T>>` (or `Option<Value<Box<[T]>>>` for an
 array), with `None` for the null pointer; from then on the allocation lives
 exactly as long as that binding. It panics for stack, `Vec`, and reinterpreted
-pointers, which have no leaked reference to recover. This is how
-`std::unique_ptr<T>` is translated: the smart pointer is an `Option<Value<T>>`,
-its constructor and `reset` adopt a raw pointer with `to_owned_opt`, and
-`as_pointer`, which is also implemented for `Option<Value<T>>` and yields null
-for `None`, stands in for `get()`:
+pointers. This is how `std::unique_ptr<T>` is translated: the smart pointer is
+an `Option<Value<T>>`, its constructor and `reset` adopt a raw pointer with
+`to_owned_opt`, and `as_pointer`, which is also implemented for
+`Option<Value<T>>` and yields null for `None`, stands in for `get()`:
 
 ```cpp
 std::unique_ptr<int> u(new int(1));
@@ -116,7 +114,8 @@ int *raw = u.get();
 ```
 
 ```rust
-let u: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt()));
+let u: Value<Option<Value<i32>>> =
+    Rc::new(RefCell::new(Ptr::alloc(1).to_owned_opt()));
 let raw: Value<Ptr<i32>> = Rc::new(RefCell::new((*u.borrow()).as_pointer()));
 ```
 
@@ -176,7 +175,11 @@ pub enum StrongPtr<T> {
     StackSingle(Rc<RefCell<T>>),
     Vec { rc: Rc<RefCell<Vec<T>>>, offset: usize },
     StackArray { rc: Rc<RefCell<Box<[T]>>>, offset: usize },
-    Reinterpreted { alloc: Rc<dyn OriginalAlloc>, byte_offset: usize, cell: RefCell<Option<T>> },
+    Reinterpreted {
+        alloc: Rc<dyn OriginalAlloc>,
+        byte_offset: usize,
+        cell: RefCell<Option<T>>,
+    },
 }
 ```
 
@@ -240,7 +243,8 @@ int *q = (int *)n;
 
 ```rust
 let n: Value<usize> = Rc::new(RefCell::new((*p.borrow()).to_int()));
-let q: Value<Ptr<i32>> = Rc::new(RefCell::new(<Ptr<i32>>::from_int(*n.borrow())));
+let q: Value<Ptr<i32>> =
+    Rc::new(RefCell::new(<Ptr<i32>>::from_int(*n.borrow())));
 ```
 
 Both currently panic when executed. Giving them well-defined semantics is work
