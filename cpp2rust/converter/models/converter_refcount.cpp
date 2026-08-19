@@ -740,6 +740,9 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
 }
 
 void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
+  if (!IsConvertableGlobalVarDecl(decl)) {
+    return;
+  }
   StrCat("thread_local!");
   {
     PushParen paren(*this);

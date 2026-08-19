@@ -100,6 +100,8 @@ public:
 
   virtual void ConvertGlobalVarDecl(clang::VarDecl *decl);
 
+  bool IsConvertableGlobalVarDecl(clang::VarDecl *decl);
+
   virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
 
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);

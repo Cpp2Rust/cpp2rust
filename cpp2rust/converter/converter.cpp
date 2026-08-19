@@ -457,6 +457,17 @@ void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
   StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");
 }
 
+bool Converter::IsConvertableGlobalVarDecl(clang::VarDecl *decl) {
+  if (!decl->isFileVarDecl()) {
+    return true;
+  }
+  if (decl->isThisDeclarationADefinition() == clang::VarDecl::DeclarationOnly &&
+      !decl->hasInit()) {
+    return false;
+  }
+  return !globals_.contains(GetNamedDeclAsString(decl));
+}
+
 bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
   auto name = GetNamedDeclAsString(decl);
@@ -467,12 +478,10 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   }
 
   if (decl->isFileVarDecl()) {
-    if ((decl->isThisDeclarationADefinition() ==
-             clang::VarDecl::DeclarationOnly &&
-         !decl->hasInit()) ||
-        !globals_.insert(name).second) {
+    if (!IsConvertableGlobalVarDecl(decl)) {
       return false;
     }
+    globals_.insert(name);
     StrCat(AccessSpecifierAsString(decl->getAccess()), keyword::kStatic,
            keyword_mut_);
     ENSURE(decl_ids_.insert(GetID(decl)).second);
