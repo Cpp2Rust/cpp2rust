@@ -6,8 +6,8 @@
 ./build/cpp2rust/cpp2rust --file=<file>.cpp -o=<file>.rs
 ```
 
-By default, the reference counting model is used (fully safe output).
-To generate unsafe Rust instead:
+By default, the reference counting model is used (fully safe output). To
+generate unsafe Rust instead:
 
 ```bash
 ./build/cpp2rust/cpp2rust --file=<file>.cpp -o=<file>.rs --model=unsafe
