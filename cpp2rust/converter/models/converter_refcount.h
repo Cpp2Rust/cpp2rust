@@ -18,7 +18,7 @@ public:
 
   bool VisitIncompleteArrayType(clang::IncompleteArrayType *type) override;
 
-  bool VisitLValueReferenceType(clang::LValueReferenceType *type) override;
+  bool VisitReferenceType(clang::ReferenceType *type) override;
 
   bool VisitPointerType(clang::PointerType *type) override;
 
@@ -249,6 +249,9 @@ private:
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
+
+  bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
+                llvm::StringRef /*name*/) const override;
 
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {

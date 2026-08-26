@@ -11,18 +11,21 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(3));
-    let i2: Value<i32> = Rc::new(RefCell::new((*i1.borrow_mut())));
+    let i2: Value<i32> = Rc::new(RefCell::new((*i1.borrow())));
     assert!(((*i1.borrow()) == 3));
     assert!(((*i2.borrow()) == 3));
-    let i3: Value<i32> = 40;
+    let __tmp_0: Value<i32> = Rc::new(RefCell::new(40));
+    let i3: Ptr<i32> = __tmp_0.as_pointer();
     {
         let _ptr = i3.clone();
         _ptr.write(_ptr.read() + 2)
     };
     assert!(((i3.read()) == 42));
-    let i4: Value<i32> = (2 + 3);
+    let __tmp_1: Value<i32> = Rc::new(RefCell::new((2 + 3)));
+    let i4: Ptr<i32> = __tmp_1.as_pointer();
     assert!(((i4.read()) == 5));
-    let i5: Ptr<i32> = 40;
+    let __tmp_2: Value<i32> = Rc::new(RefCell::new(40));
+    let i5: Ptr<i32> = __tmp_2.as_pointer();
     let i6: Ptr<i32> = (i3).clone();
     let i7: Ptr<i32> = (i4).clone();
     assert!({

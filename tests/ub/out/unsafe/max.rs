@@ -13,8 +13,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let a: *const i32 = {
-        let mut __tmp_0 = 1;
-        let mut __tmp_1 = 2;
+        let mut __tmp_0: i32 = 1;
+        let mut __tmp_1: i32 = 2;
         if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
@@ -22,8 +22,8 @@ unsafe fn main_0() -> i32 {
         }
     };
     let b: *const i32 = {
-        let mut __tmp_0 = 1;
-        let mut __tmp_1 = 2;
+        let mut __tmp_0: i32 = 1;
+        let mut __tmp_1: i32 = 2;
         if *&mut __tmp_0 >= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {

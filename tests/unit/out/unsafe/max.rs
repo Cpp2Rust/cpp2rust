@@ -18,29 +18,29 @@ unsafe fn main_0() -> i32 {
     let mut x4: i32 = 20;
     let mut p1: *mut i32 = (&mut x1 as *mut i32);
     let mut p2: *mut i32 = (&mut x2 as *mut i32);
-    let mut r1: i32 = (*if *&mut x1 >= *&mut x2 {
-        (&mut x1) as *const _
+    let mut r1: i32 = (*if *(&mut x1 as *const i32) >= *(&mut x2 as *const i32) {
+        (&mut x1 as *const i32) as *const _
     } else {
-        (&mut x2) as *const _
+        (&mut x2 as *const i32) as *const _
     });
-    let mut r2: i32 = (*if *&mut x3 <= *&mut x4 {
-        (&mut x3) as *const _
+    let mut r2: i32 = (*if *(&mut x3 as *const i32) <= *(&mut x4 as *const i32) {
+        (&mut x3 as *const i32) as *const _
     } else {
-        (&mut x4) as *const _
+        (&mut x4 as *const i32) as *const _
     });
-    let mut r3: i32 = (*if *p1 >= *&mut x2 {
-        (p1) as *const _
+    let mut r3: i32 = (*if *(p1 as *const i32) >= *(&mut x2 as *const i32) {
+        (p1 as *const i32) as *const _
     } else {
-        (&mut x2) as *const _
+        (&mut x2 as *const i32) as *const _
     });
-    let mut r4: i32 = (*if *p2 <= *&mut x3 {
-        (p2) as *const _
+    let mut r4: i32 = (*if *(p2 as *const i32) <= *(&mut x3 as *const i32) {
+        (p2 as *const i32) as *const _
     } else {
-        (&mut x3) as *const _
+        (&mut x3 as *const i32) as *const _
     });
     let mut r5: i32 = {
-        let mut __tmp_0 = 30;
-        let mut __tmp_1 = 40;
+        let mut __tmp_0: i32 = 30;
+        let mut __tmp_1: i32 = 40;
         (*if *&mut __tmp_0 >= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {

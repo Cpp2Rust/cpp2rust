@@ -12,10 +12,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let a0: Value<f64> = Rc::new(RefCell::new(3.14E+0));
     let a1: Value<f64> = Rc::new(RefCell::new(2.71E+0));
-    if a0.as_pointer().read() <= a1.as_pointer().read() {
-        a0.as_pointer()
+    if (a0.as_pointer() as Ptr<f64>).read() <= (a1.as_pointer() as Ptr<f64>).read() {
+        (a0.as_pointer() as Ptr<f64>)
     } else {
-        a1.as_pointer()
+        (a1.as_pointer() as Ptr<f64>)
     };
     return 0;
 }

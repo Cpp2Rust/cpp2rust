@@ -32,9 +32,9 @@ std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
-bool IsGlobalVar(clang::VarDecl *decl);
+bool IsGlobalVar(const clang::VarDecl *decl);
 
-bool IsGlobalVar(clang::Expr *expr);
+bool IsGlobalVar(const clang::Expr *expr);
 
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 

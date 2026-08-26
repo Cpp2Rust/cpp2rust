@@ -67,13 +67,13 @@ static const char rust_keywords[][12] = {
 
 namespace cpp2rust {
 
-bool IsGlobalVar(clang::VarDecl *decl) {
+bool IsGlobalVar(const clang::VarDecl *decl) {
   return decl->isFileVarDecl() || decl->isStaticLocal();
 }
 
-bool IsGlobalVar(clang::Expr *expr) {
+bool IsGlobalVar(const clang::Expr *expr) {
   expr = expr->IgnoreImplicit();
-  clang::DeclRefExpr *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
+  const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
   if (!decl_ref) {
     return false;
   }
@@ -907,7 +907,7 @@ bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
 }
 
 bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
-  if (!param_type->isLValueReferenceType()) {
+  if (!param_type->isReferenceType()) {
     return false;
   }
   // Materialize a prvalue into a const lvalue reference:

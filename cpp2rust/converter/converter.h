@@ -27,7 +27,7 @@ class Converter : public clang::RecursiveASTVisitor<Converter> {
 public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
                      const char *keyword_unsafe = "unsafe",
-                     const char *keyword_mut = "mut",
+                     const char *keyword_mut = keyword::kMut,
                      const char *keyword_const_fn = keyword::kConst)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
         keyword_mut_(keyword_mut), keyword_const_fn_(keyword_const_fn) {}
@@ -60,7 +60,7 @@ public:
 
   virtual bool VisitIncompleteArrayType(clang::IncompleteArrayType *type);
 
-  virtual bool VisitLValueReferenceType(clang::LValueReferenceType *type);
+  virtual bool VisitReferenceType(clang::ReferenceType *type);
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
@@ -498,6 +498,9 @@ protected:
 
   virtual std::string GetUnsafeTypeAsString(clang::QualType qual_type) const;
 
+  virtual bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
+                        llvm::StringRef name) const;
+
   virtual void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
 
   virtual void ConvertUnsignedArithOperand(clang::Expr *expr,
@@ -741,6 +744,32 @@ protected:
     std::unordered_set<const clang::VarDecl *> saved_;
   };
 
+  unsigned materialized_temp_id_ = 0;
+  std::string *materialized_temp_bindings_ = nullptr;
+  class HoistMaterializedTempBindings {
+    Converter &c;
+    std::string *prev;
+    std::string bindings;
+    std::optional<Buffer> buf;
+
+  public:
+    explicit HoistMaterializedTempBindings(Converter &c)
+        : c(c), prev(c.materialized_temp_bindings_), buf(c) {
+      c.materialized_temp_bindings_ = &bindings;
+    }
+    ~HoistMaterializedTempBindings() {
+      c.materialized_temp_bindings_ = prev;
+      std::string body = std::move(*buf).str();
+      buf.reset();
+
+      c.StrCat(bindings, body);
+    }
+    HoistMaterializedTempBindings(const HoistMaterializedTempBindings &) =
+        delete;
+    HoistMaterializedTempBindings &
+    operator=(const HoistMaterializedTempBindings &) = delete;
+  };
+
   struct ScopedMapIterDecl {
     Converter &c;
     const clang::VarDecl *decl;
@@ -875,6 +904,11 @@ protected:
   virtual std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr);
+
+  /// Emits binding_code to materialized_temp_bindings_.
+  /// Returns ref_expression.
+  std::string EmitMaterializedTempBinding(clang::QualType param_type,
+                                          clang::Expr *expr);
 
   // TODO: move this into the Plugin infrastructure. Plugins are used for
   // functions that cannot be translated using the rules/ directory. For

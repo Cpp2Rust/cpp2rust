@@ -7,7 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn foo_0() -> *const i32 {
-    return &5 as *const i32;
+    let mut __tmp_0: i32 = 5;
+    return &mut __tmp_0;
 }
 pub fn main() {
     unsafe {

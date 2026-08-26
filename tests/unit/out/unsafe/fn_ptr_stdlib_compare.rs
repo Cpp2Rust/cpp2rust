@@ -62,7 +62,8 @@ unsafe fn main_0() -> i32 {
         {
             let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
             for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
-                *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+                *byte_0.offset(offset as isize) =
+                    ((('X' as libc::c_char) as i32) as *const u8) as u8;
             }
             (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
         };
@@ -94,7 +95,8 @@ unsafe fn main_0() -> i32 {
         {
             let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
             for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
-                *byte_0.offset(offset as isize) = (('X' as libc::c_char) as i32) as u8;
+                *byte_0.offset(offset as isize) =
+                    ((('X' as libc::c_char) as i32) as *const u8) as u8;
             }
             (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
         };
@@ -155,7 +157,8 @@ unsafe fn main_0() -> i32 {
         {
             let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
             for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
-                *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+                *byte_0.offset(offset as isize) =
+                    ((('Y' as libc::c_char) as i32) as *const u8) as u8;
             }
             (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
         };
@@ -177,7 +180,8 @@ unsafe fn main_0() -> i32 {
         {
             let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
             for offset in 0..::std::mem::size_of::<[libc::c_char; 10]>() {
-                *byte_0.offset(offset as isize) = (('Y' as libc::c_char) as i32) as u8;
+                *byte_0.offset(offset as isize) =
+                    ((('Y' as libc::c_char) as i32) as *const u8) as u8;
             }
             (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
         };

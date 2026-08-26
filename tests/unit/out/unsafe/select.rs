@@ -22,7 +22,7 @@ unsafe fn main_0() -> i32 {
         let byte_0 = ((&mut tv as *mut ::libc::timeval) as *mut ::libc::timeval
             as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<::libc::timeval>() {
-            *byte_0.offset(offset as isize) = 0 as u8;
+            *byte_0.offset(offset as isize) = (0 as *const u8) as u8;
         }
         ((&mut tv as *mut ::libc::timeval) as *mut ::libc::timeval as *mut ::libc::c_void)
     };

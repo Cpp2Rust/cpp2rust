@@ -10,10 +10,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let r: Value<i32> = <Value<i32>>::default();
+    let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
+    let mut r: Ptr<i32> = <Ptr<i32>>::default();
     goto_block!({
         '__entry: {
-            *r.borrow_mut() = 5;
+            r = __tmp_0.as_pointer();
             goto!('body);
         }
         'body: {

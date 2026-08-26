@@ -57,6 +57,7 @@ inline constexpr const char kFor[] = "for";
 inline constexpr const char kIn[] = "in";
 inline constexpr const char kTrait[] = "trait";
 inline constexpr const char kDyn[] = "dyn";
+inline constexpr const char kMut[] = "mut";
 } // namespace keyword
 
 namespace token {

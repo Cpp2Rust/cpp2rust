@@ -16,12 +16,15 @@ unsafe fn main_0() -> i32 {
     let mut i2: i32 = i1;
     assert!(((i1) == (3)));
     assert!(((i2) == (3)));
-    let i3: i32 = &mut 40 as i32;
+    let mut __tmp_0: i32 = 40;
+    let i3: *mut i32 = &mut __tmp_0;
     (*i3) += 2;
     assert!(((*i3) == (42)));
-    let i4: i32 = &mut ((2) + (3)) as i32;
+    let mut __tmp_1: i32 = ((2) + (3));
+    let i4: *mut i32 = &mut __tmp_1;
     assert!(((*i4) == (5)));
-    let i5: *const i32 = &40 as *const i32;
+    let mut __tmp_2: i32 = 40;
+    let i5: *const i32 = &mut __tmp_2;
     let i6: *mut i32 = i3;
     let i7: *mut i32 = i4;
     assert!(((*i6) == (*i3)));

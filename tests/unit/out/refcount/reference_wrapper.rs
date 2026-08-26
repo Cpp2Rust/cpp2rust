@@ -50,7 +50,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(10));
-    let ref_1: Value<Ptr<i32>> = Rc::new(RefCell::new(i1.as_pointer()));
+    let ref_1: Value<Ptr<i32>> = Rc::new(RefCell::new((i1.as_pointer() as Ptr<i32>)));
     (*ref_1.borrow()).clone().write(20);
     let i2: Ptr<i32> = (*ref_1.borrow()).clone();
     {
@@ -60,8 +60,8 @@ fn main_0() -> i32 {
     write!(libcc2rs::cout(), "{:}\n", (*i1.borrow()),);
     let i3: Value<i32> = Rc::new(RefCell::new(1));
     let i4: Value<i32> = Rc::new(RefCell::new(2));
-    let ref_3: Value<Ptr<i32>> = Rc::new(RefCell::new(i3.as_pointer()));
-    let ref_4: Value<Ptr<i32>> = Rc::new(RefCell::new(i4.as_pointer()));
+    let ref_3: Value<Ptr<i32>> = Rc::new(RefCell::new((i3.as_pointer() as Ptr<i32>)));
+    let ref_4: Value<Ptr<i32>> = Rc::new(RefCell::new((i4.as_pointer() as Ptr<i32>)));
     let __rhs = ((*ref_4.borrow()).clone().read());
     (*ref_3.borrow()).clone().write(__rhs);
     write!(
@@ -81,7 +81,7 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(3)),
         y: Rc::new(RefCell::new(4)),
     }));
-    let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));
+    let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new((point.as_pointer() as Ptr<Point>)));
     (*(*(*point_ref.borrow()).clone().upgrade().deref())
         .x
         .borrow_mut()) = 30;

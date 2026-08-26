@@ -12,10 +12,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let r: *const i32 = <*const i32>::default();
+    let mut __tmp_0: i32 = 5;
+    let mut r: *const i32 = <*const i32>::default();
     goto_block!({
         '__entry: {
-            r = &5 as *const i32;
+            r = &mut __tmp_0;
             goto!('body);
         }
         'body: {
