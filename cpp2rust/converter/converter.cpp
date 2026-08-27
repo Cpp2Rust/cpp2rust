@@ -4236,7 +4236,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     }
   }
 
-  if (ph_ctx.needs_pointer_receiver() || ph_ctx.needs_ptr_wrap()) {
+  if (ph_ctx.needs_pointer_receiver()) {
     return std::format("({} as {})", ConvertFreshObject(arg),
                        ph_ctx.param_type);
   }
@@ -4251,6 +4251,10 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     PushExprKind push(*this, ExprKind::RValue);
     ConvertDeref(arg);
     return std::move(buf).str();
+  }
+
+  if (ph_ctx.needs_ptr_wrap()) {
+    return ConvertFreshObject(arg);
   }
 
   if (ph_ctx.needs_lvalue()) {

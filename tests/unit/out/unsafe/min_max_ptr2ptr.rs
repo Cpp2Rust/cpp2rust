@@ -18,15 +18,15 @@ unsafe fn main_0() -> i32 {
     let mut pb: *mut i32 = (&mut b as *mut i32);
     let mut ppa: *mut *mut i32 = (&mut pa as *mut *mut i32);
     let mut ppb: *mut *mut i32 = (&mut pb as *mut *mut i32);
-    let mut r1: i32 = (*if *((*ppa) as *const i32) >= *((*ppb) as *const i32) {
-        ((*ppa) as *const i32) as *const _
+    let mut r1: i32 = (*if *(*ppa) >= *(*ppb) {
+        (*ppa) as *const _
     } else {
-        ((*ppb) as *const i32) as *const _
+        (*ppb) as *const _
     });
-    let mut r2: i32 = (*if *((*ppa) as *const i32) <= *((*ppb) as *const i32) {
-        ((*ppa) as *const i32) as *const _
+    let mut r2: i32 = (*if *(*ppa) <= *(*ppb) {
+        (*ppa) as *const _
     } else {
-        ((*ppb) as *const i32) as *const _
+        (*ppb) as *const _
     });
     return ((r1) + (r2));
 }

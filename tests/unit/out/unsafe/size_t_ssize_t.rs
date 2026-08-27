@@ -73,10 +73,10 @@ unsafe fn main_0() -> i32 {
     } as usize);
     let mut hi: usize = ({
         let mut __tmp_0: u64 = (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64));
-        (*if *&mut __tmp_0 >= *(&mut ul as *const u64) {
+        (*if *&mut __tmp_0 >= *&mut ul {
             (&mut __tmp_0) as *const _
         } else {
-            (&mut ul as *const u64) as *const _
+            (&mut ul) as *const _
         })
     } as usize);
     assert!(((lo) == ((::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize))));

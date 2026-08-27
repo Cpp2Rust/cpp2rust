@@ -66,7 +66,7 @@ unsafe fn main_0() -> i32 {
     {
         let byte_0 = ((&mut ex as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Outer>() {
-            *byte_0.offset(offset as isize) = (0 as *const u8) as u8;
+            *byte_0.offset(offset as isize) = 0 as u8;
         }
         ((&mut ex as *mut Outer) as *mut Outer as *mut ::libc::c_void)
     };

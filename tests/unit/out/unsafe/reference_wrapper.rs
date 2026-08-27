@@ -26,7 +26,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut i1: i32 = 10;
-    let mut ref_1: *mut i32 = (&mut i1 as *mut i32);
+    let mut ref_1: *mut i32 = &mut i1;
     (*ref_1) = 20;
     let i2: *mut i32 = ref_1;
     (*i2) += 5;
@@ -43,8 +43,8 @@ unsafe fn main_0() -> i32 {
     );
     let mut i3: i32 = 1;
     let mut i4: i32 = 2;
-    let mut ref_3: *mut i32 = (&mut i3 as *mut i32);
-    let mut ref_4: *mut i32 = (&mut i4 as *mut i32);
+    let mut ref_3: *mut i32 = &mut i3;
+    let mut ref_4: *mut i32 = &mut i4;
     (*ref_3) = (*ref_4);
     write!(
         std::fs::File::from_raw_fd(
@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
         (unsafe { read_1(ref_1.clone(),) }),
     );
     let mut point: Point = Point { x: 3, y: 4 };
-    let mut point_ref: *mut Point = (&mut point as *mut Point);
+    let mut point_ref: *mut Point = &mut point;
     (*point_ref).x = 30;
     (*point_ref).y = 40;
     write!(

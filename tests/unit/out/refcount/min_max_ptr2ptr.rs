@@ -17,22 +17,18 @@ fn main_0() -> i32 {
     let ppa: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((pa.as_pointer())));
     let ppb: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((pb.as_pointer())));
     let r1: Value<i32> = Rc::new(RefCell::new(
-        (if (((*ppa.borrow()).read()).clone() as Ptr<i32>).read()
-            >= (((*ppb.borrow()).read()).clone() as Ptr<i32>).read()
-        {
-            (((*ppa.borrow()).read()).clone() as Ptr<i32>)
+        (if ((*ppa.borrow()).read()).clone().read() >= ((*ppb.borrow()).read()).clone().read() {
+            ((*ppa.borrow()).read()).clone()
         } else {
-            (((*ppb.borrow()).read()).clone() as Ptr<i32>)
+            ((*ppb.borrow()).read()).clone()
         }
         .read()),
     ));
     let r2: Value<i32> = Rc::new(RefCell::new(
-        (if (((*ppa.borrow()).read()).clone() as Ptr<i32>).read()
-            <= (((*ppb.borrow()).read()).clone() as Ptr<i32>).read()
-        {
-            (((*ppa.borrow()).read()).clone() as Ptr<i32>)
+        (if ((*ppa.borrow()).read()).clone().read() <= ((*ppb.borrow()).read()).clone().read() {
+            ((*ppa.borrow()).read()).clone()
         } else {
-            (((*ppb.borrow()).read()).clone() as Ptr<i32>)
+            ((*ppb.borrow()).read()).clone()
         }
         .read()),
     ));

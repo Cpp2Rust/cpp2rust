@@ -103,10 +103,10 @@ fn main_0() -> i32 {
             let __tmp_0: Value<u64> = Rc::new(RefCell::new(
                 (::std::mem::size_of::<i32>() as u64).wrapping_add(((*sz.borrow()) as u64)),
             ));
-            (if __tmp_0.as_pointer().read() >= (ul.as_pointer() as Ptr<u64>).read() {
+            (if __tmp_0.as_pointer().read() >= ul.as_pointer().read() {
                 __tmp_0.as_pointer()
             } else {
-                (ul.as_pointer() as Ptr<u64>)
+                ul.as_pointer()
             }
             .read())
         } as usize),
