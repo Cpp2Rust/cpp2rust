@@ -181,10 +181,7 @@ fn find_artifact_in_dir(dir: &Path, crate_name: &str, kind: ArtifactKind) -> Opt
                     }
                 }
                 ArtifactKind::ProcMacro => {
-                    if name.ends_with(".so")
-                        || name.ends_with(".dylib")
-                        || name.ends_with(".dll")
-                    {
+                    if name.ends_with(".so") || name.ends_with(".dylib") || name.ends_with(".dll") {
                         return Some(entry.path());
                     }
                 }
