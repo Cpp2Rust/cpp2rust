@@ -368,8 +368,7 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
   auto pointee = param_type.getNonReferenceType();
   auto value = ConvertRValue(expr, pointee);
   auto type_str = ToStringBase(pointee);
-  auto decl = in_const_initializer_ ? std::string("pub ") + keyword::kStatic
-                                    : keyword::kLet;
+  const char *decl = in_const_initializer_ ? "pub static" : keyword::kLet;
 
   auto binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
                              decl, binding_name, type_str, value);
