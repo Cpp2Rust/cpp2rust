@@ -11,6 +11,7 @@ pub struct SemanticAnalysis;
 impl SemanticAnalysis {
     pub fn run(ir: RulesIR) -> RulesIR {
         let args = build_rustc_args(&ir.crate_root);
+        eprintln!("DEBUG: rustc args = {:?}", args);
         let mut resolver = MethodResolver { ir };
 
         if rustc_driver::catch_fatal_errors(|| {
