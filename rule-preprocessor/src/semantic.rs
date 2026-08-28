@@ -61,6 +61,14 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         }
     }
 
+    // Proc-macro crates needed as transitive dependencies
+    for dep in &["libcc2rs_macros"] {
+        if let Some(dylib) = find_proc_macro(deps.as_path(), dep) {
+            args.push("--extern".to_string());
+            args.push(format!("{}={}", dep, dylib.display()));
+        }
+    }
+
     args
 }
 
@@ -92,6 +100,26 @@ fn find_rlib(deps_dir: &Path, crate_name: &str) -> Option<PathBuf> {
         for entry in entries.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
             if name.ends_with(".rlib") && prefixes.iter().any(|p| name.starts_with(p)) {
+                return Some(entry.path());
+            }
+        }
+    }
+    None
+}
+
+fn find_proc_macro(deps_dir: &Path, crate_name: &str) -> Option<PathBuf> {
+    let prefixes = if crate_name.starts_with("lib") {
+        vec![format!("{}-", crate_name), format!("lib{}-", crate_name)]
+    } else {
+        vec![format!("lib{}-", crate_name)]
+    };
+    if let Ok(entries) = std::fs::read_dir(deps_dir) {
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().to_string();
+            let is_dylib = name.ends_with(".so")
+                || name.ends_with(".dylib")
+                || name.ends_with(".dll");
+            if is_dylib && prefixes.iter().any(|p| name.starts_with(p)) {
                 return Some(entry.path());
             }
         }
