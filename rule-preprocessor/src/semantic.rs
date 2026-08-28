@@ -83,11 +83,15 @@ fn find_deps_dir() -> PathBuf {
 }
 
 fn find_rlib(deps_dir: &Path, crate_name: &str) -> Option<PathBuf> {
-    let prefix = format!("lib{}-", crate_name);
+    let prefixes = if crate_name.starts_with("lib") {
+        vec![format!("{}-", crate_name), format!("lib{}-", crate_name)]
+    } else {
+        vec![format!("lib{}-", crate_name)]
+    };
     if let Ok(entries) = std::fs::read_dir(deps_dir) {
         for entry in entries.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.starts_with(&prefix) && name.ends_with(".rlib") {
+            if name.ends_with(".rlib") && prefixes.iter().any(|p| name.starts_with(p)) {
                 return Some(entry.path());
             }
         }
