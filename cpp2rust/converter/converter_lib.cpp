@@ -7,6 +7,7 @@
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/Support/Path.h>
 
 #include <algorithm>
 #include <array>

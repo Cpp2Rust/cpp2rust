@@ -60,6 +60,7 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
 
     for dep in &[
         "libcc2rs",
+        "libcc2rs_macros",
         "libc",
         "brotli_sys",
         "rustls_ffi",
@@ -67,27 +68,14 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "jiff",
         "xattr",
     ] {
-        if let Some(rlib) = find_artifact(&build_dir, dep, ArtifactKind::Rlib) {
+        if let Some(lib) = find_artifact(&build_dir, dep) {
             args.push("--extern".to_string());
-            args.push(format!("{}={}", dep, rlib.display()));
-        } else if let Some(ref deps) = legacy_deps {
-            if let Some(rlib) = find_artifact_in_dir(deps, dep, ArtifactKind::Rlib) {
-                args.push("--extern".to_string());
-                args.push(format!("{}={}", dep, rlib.display()));
-            }
-        }
-    }
-
-    // Proc-macro crates needed as transitive dependencies
-    for dep in &["libcc2rs_macros"] {
-        if let Some(dylib) = find_artifact(&build_dir, dep, ArtifactKind::ProcMacro) {
+            args.push(format!("{}={}", dep, lib.display()));
+        } else if let Some(ref deps) = legacy_deps
+            && let Some(lib) = find_artifact_in_dir(deps, dep)
+        {
             args.push("--extern".to_string());
-            args.push(format!("{}={}", dep, dylib.display()));
-        } else if let Some(ref deps) = legacy_deps {
-            if let Some(dylib) = find_artifact_in_dir(deps, dep, ArtifactKind::ProcMacro) {
-                args.push("--extern".to_string());
-                args.push(format!("{}={}", dep, dylib.display()));
-            }
+            args.push(format!("{}={}", dep, lib.display()));
         }
     }
 
@@ -133,24 +121,18 @@ fn find_all_out_dirs(build_dir: &Path) -> Vec<PathBuf> {
     out_dirs
 }
 
-#[derive(Clone, Copy, PartialEq)]
-enum ArtifactKind {
-    Rlib,
-    ProcMacro,
-}
-
 /// Find an artifact in the new Cargo build layout: build/<pkg>/<hash>/out/
-fn find_artifact(build_dir: &Path, crate_name: &str, kind: ArtifactKind) -> Option<PathBuf> {
+fn find_artifact(build_dir: &Path, crate_name: &str) -> Option<PathBuf> {
     // Package directory name uses hyphens where crate name uses underscores
     let pkg_name = crate_name.replace('_', "-");
     let pkg_dir = build_dir.join(&pkg_name);
     if let Ok(entries) = std::fs::read_dir(&pkg_dir) {
         for entry in entries.flatten() {
             let out_dir = entry.path().join("out");
-            if out_dir.is_dir() {
-                if let Some(path) = find_artifact_in_dir(&out_dir, crate_name, kind) {
-                    return Some(path);
-                }
+            if out_dir.is_dir()
+                && let Some(path) = find_artifact_in_dir(&out_dir, crate_name)
+            {
+                return Some(path);
             }
         }
     }
@@ -158,12 +140,8 @@ fn find_artifact(build_dir: &Path, crate_name: &str, kind: ArtifactKind) -> Opti
 }
 
 /// Find an artifact by crate name in a specific directory.
-fn find_artifact_in_dir(dir: &Path, crate_name: &str, kind: ArtifactKind) -> Option<PathBuf> {
-    let prefixes = if crate_name.starts_with("lib") {
-        vec![format!("{}-", crate_name), format!("lib{}-", crate_name)]
-    } else {
-        vec![format!("lib{}-", crate_name)]
-    };
+fn find_artifact_in_dir(dir: &Path, crate_name: &str) -> Option<PathBuf> {
+    let prefixes = [format!("{}-", crate_name), format!("lib{}-", crate_name)];
     let mut fallback = None;
     if let Ok(entries) = std::fs::read_dir(dir) {
         for entry in entries.flatten() {
@@ -171,20 +149,15 @@ fn find_artifact_in_dir(dir: &Path, crate_name: &str, kind: ArtifactKind) -> Opt
             if !prefixes.iter().any(|p| name.starts_with(p)) {
                 continue;
             }
-            match kind {
-                ArtifactKind::Rlib => {
-                    if name.ends_with(".rmeta") {
-                        return Some(entry.path());
-                    }
-                    if name.ends_with(".rlib") {
-                        fallback = Some(entry.path());
-                    }
-                }
-                ArtifactKind::ProcMacro => {
-                    if name.ends_with(".so") || name.ends_with(".dylib") || name.ends_with(".dll") {
-                        return Some(entry.path());
-                    }
-                }
+            if name.ends_with(".rmeta")
+                || name.ends_with(".so")
+                || name.ends_with(".dylib")
+                || name.ends_with(".dll")
+            {
+                return Some(entry.path());
+            }
+            if name.ends_with(".rlib") {
+                fallback = Some(entry.path());
             }
         }
     }
