@@ -29,6 +29,9 @@ unsafe fn main_0() -> i32 {
     let i7: *mut i32 = i4;
     assert!(((*i6) == (*i3)));
     assert!(((*i7) == (*i4)));
+    let mut i8: i32 = 3;
+    let i9: *mut i32 = &mut i8;
+    assert!(((*i9) == (3)));
     let mut p1: *mut i32 = (&mut i1 as *mut i32);
     let mut p2: *mut i32 = (i3);
     let mut p3: *mut i32 = (i6);

@@ -23,6 +23,10 @@ int main() {
   assert(i6 == i3);
   assert(i7 == i4);
 
+  int i8 = 3;
+  int &&i9 = std::move(i8);
+  assert(i9 == 3);
+
   int *p1 = &i1;
   int *p2 = &i3;
   int *p3 = &i6;
