@@ -9,6 +9,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/ASTMatchers/ASTMatchFinder.h>
 #include <clang/ASTMatchers/ASTMatchers.h>
+#include <clang/Frontend/ASTUnit.h>
 #include <clang/Frontend/FrontendActions.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Lookup.h>
