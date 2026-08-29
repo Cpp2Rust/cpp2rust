@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
+    static __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
     pub static g_0: Ptr<i32> = __tmp_0.with(Value::as_pointer);
 );
 pub fn main() {

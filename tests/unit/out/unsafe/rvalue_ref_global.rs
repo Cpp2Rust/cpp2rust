@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut __tmp_0: i32 = 5;
+static mut __tmp_0: i32 = 5;
 pub static mut g_0: *mut i32 = unsafe { &mut __tmp_0 };
 pub fn main() {
     unsafe {

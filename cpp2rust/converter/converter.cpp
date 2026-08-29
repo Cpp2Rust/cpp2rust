@@ -237,7 +237,7 @@ Converter::MaterializeTemp(const std::string &binding_name,
   auto pointee = param_type.getNonReferenceType();
   auto value = ConvertRValue(expr, pointee);
   auto type_str = ToStringBase(pointee);
-  const char *decl = in_const_initializer_ ? "pub static" : keyword::kLet;
+  const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
 
   auto binding =
       std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
