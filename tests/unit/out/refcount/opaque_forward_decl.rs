@@ -46,3 +46,4 @@ fn main_0() -> i32 {
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
 pub struct opaque;
+impl ByteRepr for opaque {}

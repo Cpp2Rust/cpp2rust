@@ -31,3 +31,4 @@ pub unsafe fn touch_0(mut c: *mut container) {
     &((*c).p);
 }
 pub struct opaque;
+impl ByteRepr for opaque {}
