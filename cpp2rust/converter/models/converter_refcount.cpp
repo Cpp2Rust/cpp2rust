@@ -2391,6 +2391,12 @@ pub fn main() {{
 
 void ConverterRefCount::ConvertAddrOf(clang::Expr *expr,
                                       clang::QualType pointer_type) {
+  if (const auto *arr = ctx_.getAsArrayType(expr->getType())) {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    StrCat(std::format("({} as Ptr<{}>)", ConvertPointer(expr),
+                       ToString(arr->getElementType())));
+    return;
+  }
   StrCat(ConvertPointer(expr));
 }
 
