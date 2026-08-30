@@ -1694,6 +1694,13 @@ void Converter::ConvertFunctionToFunctionPointer(
   StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
 }
 
+std::string Converter::ConvertFunctionPointerPlaceholder(clang::Expr *arg) {
+  PushExprKind push(*this, ExprKind::Callee);
+  Buffer buf(*this);
+  Convert(arg);
+  return std::move(buf).str();
+}
+
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
@@ -4213,10 +4220,7 @@ void Converter::PlaceholderCtx::dump() const {
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
   if (arg->getType()->isFunctionPointerType()) {
-    PushExprKind push(*this, ExprKind::Callee);
-    Buffer buf(*this);
-    Convert(arg);
-    return std::move(buf).str();
+    return ConvertFunctionPointerPlaceholder(arg);
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {

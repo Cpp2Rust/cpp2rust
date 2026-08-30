@@ -5,9 +5,8 @@ use libcc2rs::*;
 
 fn f1(a0: i32, a1: u64, va: &[VaArg]) -> i32 {
     panic!(
-        "ioctl is not supported in the refcount model (fd={}, request={}, varargs={})",
-        a0,
-        a1,
-        va.len()
-    )
+        "ioctl is not supported in the refcount model (fd={}, request={})",
+        a0, a1
+    );
+    0
 }
