@@ -2165,6 +2165,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_NoOp: {
     const char *suffix = nullptr;
+    bool type_changed = false;
     if (expr->getType()->isPointerType() &&
         sub_expr->getType()->isPointerType() &&
         !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
@@ -2177,15 +2178,22 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         suffix = ".cast_mut()";
         break;
       default:
+        type_changed = !IsCastRedundantInRust(sub_expr, type);
         break;
       }
     }
-    {
-      PushParen paren(*this, suffix);
+    if (type_changed) {
+      PushParen paren(*this);
       Convert(sub_expr);
-    }
-    if (suffix) {
-      StrCat(suffix);
+      ConvertCast(type);
+    } else {
+      {
+        PushParen paren(*this, suffix);
+        Convert(sub_expr);
+      }
+      if (suffix) {
+        StrCat(suffix);
+      }
     }
     break;
   }
