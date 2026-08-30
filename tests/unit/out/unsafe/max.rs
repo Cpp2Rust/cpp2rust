@@ -39,8 +39,8 @@ unsafe fn main_0() -> i32 {
         (&mut x3) as *const _
     });
     let mut r5: i32 = {
-        let mut __tmp_0 = 30;
-        let mut __tmp_1 = 40;
+        let mut __tmp_0: i32 = 30;
+        let mut __tmp_1: i32 = 40;
         (*if *&mut __tmp_0 >= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {

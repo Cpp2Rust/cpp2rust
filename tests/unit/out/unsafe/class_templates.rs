@@ -102,7 +102,7 @@ unsafe fn main_0() -> i32 {
     let mut imc: MyContainer_int_ = <MyContainer_int_>::default();
     assert!((unsafe { imc.empty() }));
     (unsafe {
-        let mut _item = 1;
+        let mut _item: i32 = 1;
         imc.push_back(&mut _item)
     });
     assert!(((unsafe { imc.size() }) == (1_usize)) && ((*(unsafe { imc.back() })) == (1)));
@@ -111,7 +111,7 @@ unsafe fn main_0() -> i32 {
     let mut cmc: MyContainer_char_ = <MyContainer_char_>::default();
     assert!((unsafe { cmc.empty() }));
     (unsafe {
-        let mut _item = ('a' as libc::c_char);
+        let mut _item: libc::c_char = ('a' as libc::c_char);
         cmc.push_back(&mut _item)
     });
     assert!(
@@ -123,7 +123,7 @@ unsafe fn main_0() -> i32 {
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
     assert!((unsafe { fmc.empty() }));
     (unsafe {
-        let mut _item = (1.0E+0 as f32);
+        let mut _item: f32 = (1.0E+0 as f32);
         fmc.push_back(&mut _item)
     });
     assert!(

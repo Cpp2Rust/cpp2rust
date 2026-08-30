@@ -63,8 +63,8 @@ unsafe fn main_0() -> i32 {
     let mut fr2: u64 = (unsafe { take_ulong_1((sz as u64)) });
     assert!(((fr2) == (21_u64)));
     let mut lo: usize = ({
-        let mut __tmp_0 = (sz as u64);
-        let mut __tmp_1 = (::std::mem::size_of::<i64>() as u64).wrapping_add(ul);
+        let mut __tmp_0: u64 = (sz as u64);
+        let mut __tmp_1: u64 = (::std::mem::size_of::<i64>() as u64).wrapping_add(ul);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
         })
     } as usize);
     let mut hi: usize = ({
-        let mut __tmp_0 = (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64));
+        let mut __tmp_0: u64 = (::std::mem::size_of::<i32>() as u64).wrapping_add((sz as u64));
         (*if *&mut __tmp_0 >= *&mut ul {
             (&mut __tmp_0) as *const _
         } else {
@@ -82,8 +82,8 @@ unsafe fn main_0() -> i32 {
     assert!(((lo) == ((::std::mem::size_of::<i64>() as usize).wrapping_add(10_usize))));
     assert!(((hi) == ((::std::mem::size_of::<i32>() as usize).wrapping_add(21_usize))));
     let mut bound: usize = ({
-        let mut __tmp_0 = (sz as u64);
-        let mut __tmp_1 = (4_usize as u64);
+        let mut __tmp_0: u64 = (sz as u64);
+        let mut __tmp_1: u64 = (4_usize as u64);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
@@ -129,8 +129,8 @@ unsafe fn main_0() -> i32 {
     assert!(((sm) == (15_isize)));
     assert!(((sm) > (l as isize)));
     let mut smin: isize = ({
-        let mut __tmp_0 = (sd as i64);
-        let mut __tmp_1 = (sm as i64);
+        let mut __tmp_0: i64 = (sd as i64);
+        let mut __tmp_1: i64 = (sm as i64);
         (*if *&mut __tmp_0 <= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {
@@ -138,8 +138,8 @@ unsafe fn main_0() -> i32 {
         })
     } as isize);
     let mut smax: isize = ({
-        let mut __tmp_0 = (sd as i64);
-        let mut __tmp_1 = (sm as i64);
+        let mut __tmp_0: i64 = (sd as i64);
+        let mut __tmp_1: i64 = (sm as i64);
         (*if *&mut __tmp_0 >= *&mut __tmp_1 {
             (&mut __tmp_0) as *const _
         } else {

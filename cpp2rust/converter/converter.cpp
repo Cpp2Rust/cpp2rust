@@ -234,9 +234,25 @@ std::string Converter::ConvertFreshRValue(
 std::pair<std::string, std::string>
 Converter::MaterializeTemp(const std::string &binding_name,
                            clang::QualType param_type, clang::Expr *expr) {
-  return {std::format("let mut {} = {} ;", binding_name,
-                      ConvertRValue(expr, param_type.getNonReferenceType())),
-          std::format("& mut {}", binding_name)};
+  auto pointee = param_type.getNonReferenceType();
+  auto value = ConvertRValue(expr, pointee);
+  auto type_str = ToStringBase(pointee);
+  const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
+
+  auto binding =
+      std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
+  auto ref = std::format("& mut {}", binding_name);
+  return {binding, ref};
+}
+
+std::string Converter::EmitMaterializedTempBinding(clang::QualType param_type,
+                                                   clang::Expr *expr) {
+  assert(materialized_temp_bindings_ && "materialized temp emitted outside a "
+                                        "HoistMaterializedTempBindings scope");
+  auto [binding, ref] = MaterializeTemp(
+      std::format("__tmp_{}", materialized_temp_id_++), param_type, expr);
+  *materialized_temp_bindings_ += std::move(binding);
+  return ref;
 }
 
 bool Converter::VisitConstantArrayType(clang::ConstantArrayType *type) {
@@ -254,7 +270,7 @@ bool Converter::VisitIncompleteArrayType(clang::IncompleteArrayType *type) {
   return false;
 }
 
-bool Converter::VisitLValueReferenceType(clang::LValueReferenceType *type) {
+bool Converter::VisitReferenceType(clang::ReferenceType *type) {
   auto pointee_type = type->getPointeeType();
   StrCat(pointee_type.isConstQualified() ? "*const" : "*mut");
   return Convert(pointee_type);
@@ -393,6 +409,7 @@ void Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
 }
 
 void Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
+  HoistMaterializedTempBindings hoist_temps(*this);
   PushHoistedDecls push(hoisted_decls_);
   EmitHoistedDecls(body);
 
@@ -457,6 +474,17 @@ void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
   StrCat(keyword_mut_, GetNamedDeclAsString(decl), token::kColon, "VaList");
 }
 
+bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
+                         llvm::StringRef name) const {
+  auto *method_or_null =
+      curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
+                     : nullptr;
+  return ((hoisted_decls_.contains(decl) ||
+           (!type.isConstQualified() && !type->isReferenceType())) &&
+          ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
+          !IsGlobalVar(decl) && name != "_");
+}
+
 bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
   auto name = GetNamedDeclAsString(decl);
@@ -482,16 +510,10 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     StrCat(keyword::kLet);
   }
 
-  auto *method_or_null =
-      curr_function_ ? clang::dyn_cast<clang::CXXMethodDecl>(curr_function_)
-                     : nullptr;
-  if ((hoisted_decls_.contains(decl) || !qual_type.isConstQualified()) &&
-      !qual_type->isReferenceType() &&
-      ((method_or_null == nullptr) || !method_or_null->isVirtual()) &&
-      !IsGlobalVar(decl) && name != "_") {
-    StrCat(keyword_mut_);
+  if (NeedsMut(decl, qual_type, name)) {
+    // If this decl requires 'mut', print it irregardless of the model
+    StrCat(keyword::kMut);
   }
-
   StrCat(name, token::kColon);
 
   bool is_parm_with_default_value = false;
@@ -545,6 +567,8 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
     EmitHoistedInArmAssignment(decl);
     return;
   }
+
+  HoistMaterializedTempBindings hoist_temps(*this);
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
@@ -557,6 +581,7 @@ void Converter::ConvertVarDecl(clang::VarDecl *decl) {
 }
 
 void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
+  HoistMaterializedTempBindings hoist_temps(*this);
   if (!ConvertVarDeclSkipInit(decl)) {
     // Skip global variables declared extern
     return;
@@ -1124,6 +1149,7 @@ bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
 bool Converter::VisitReturnStmt(clang::ReturnStmt *stmt) {
   auto return_type = curr_function_->getReturnType();
   if (!return_type->isVoidType()) {
+    HoistMaterializedTempBindings hoist_temps(*this);
     StrCat(keyword::kReturn);
     ConvertVarInit(return_type, stmt->getRetValue());
   } else {
@@ -1714,7 +1740,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                                              : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
-    if (is_materialize && ca.param_type->isLValueReferenceType()) {
+    if (is_materialize && ca.param_type->isReferenceType()) {
       ca.kind = Kind::Materialized;
     } else if (is_materialize) {
       ca.kind = Kind::Inline;
@@ -1750,7 +1776,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
 }
 
 void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
-  if (param_type->isLValueReferenceType()) {
+  if (param_type->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     ConvertVarInit(param_type, expr);
   } else {
@@ -3106,6 +3132,8 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
 
     if (arg_idx < expr->getNumArgs()) {
       clang::Expr *arg = expr->getArg(arg_idx++);
+      PushBrace brace(*this);
+      HoistMaterializedTempBindings hoist_temps(*this);
 
       if (has_default) {
         StrCat("Some(");
@@ -3629,6 +3657,10 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
+    if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+      StrCat(EmitMaterializedTempBinding(qual_type, expr));
+      return;
+    }
     StrCat(token::kRef);
     if (IsMut(qual_type)) {
       StrCat(keyword_mut_);

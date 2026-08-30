@@ -117,6 +117,12 @@ ConverterRefCount::GetSafeTypeAsString(clang::QualType qual_type) const {
   return std::string(Trim(type_as_string));
 }
 
+bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
+                                 clang::QualType type,
+                                 llvm::StringRef /*name*/) const {
+  return hoisted_decls_.contains(decl) && type->isReferenceType();
+}
+
 std::string ConverterRefCount::BoxType(std::string &&str) const {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
@@ -149,8 +155,7 @@ bool ConverterRefCount::Convert(clang::QualType qual_type) {
   if (!Mapper::Contains(qual_type))
     qual_type = qual_type.getUnqualifiedType().getDesugaredType(ctx_);
 
-  if (qual_type->isLValueReferenceType() ||
-      qual_type->isIncompleteArrayType()) {
+  if (qual_type->isReferenceType() || qual_type->isIncompleteArrayType()) {
     return Converter::Convert(qual_type);
   }
 
@@ -169,8 +174,7 @@ bool ConverterRefCount::VisitIncompleteArrayType(
   return false;
 }
 
-bool ConverterRefCount::VisitLValueReferenceType(
-    clang::LValueReferenceType *type) {
+bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   StrCat("Ptr<");
   Convert(type->getPointeeType());
@@ -364,11 +368,13 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
   auto pointee = param_type.getNonReferenceType();
   auto value = ConvertRValue(expr, pointee);
   auto type_str = ToStringBase(pointee);
-  std::string binding =
-      std::format("let {} : Value < {} > = Rc::new(RefCell::new( {} )) ;",
-                  binding_name, type_str, value);
-  std::string ref = std::format("{}.as_pointer()", binding_name);
-  return {binding, ref};
+  const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
+
+  auto binding = std::format("{} {} : Value<{}> = Rc::new(RefCell::new({}));",
+                             decl, binding_name, type_str, value);
+  auto ref =
+      in_const_initializer_ ? ".with(Value::as_pointer)" : ".as_pointer()";
+  return {binding, binding_name + ref};
 }
 
 std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
@@ -732,10 +738,17 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
   if (!decl->hasInit()) {
     return;
   }
+
+  const auto type = decl->getType();
+  if (type->isReferenceType()) {
+    StrCat(GetNamedDeclAsString(decl));
+  } else {
+    StrCat(token::kStar, GetNamedDeclAsString(decl), ".borrow_mut()");
+  }
+
   PushConversionKind push(*this, ConversionKind::FullRefCount);
-  StrCat(token::kStar, GetNamedDeclAsString(decl), ".borrow_mut()",
-         token::kAssign);
-  StrCat(ConvertVarInitValue(decl->getType(), decl->getInit()));
+  StrCat(token::kAssign);
+  StrCat(ConvertVarInitValue(type, decl->getInit()));
   StrCat(token::kSemiColon);
 }
 
@@ -842,11 +855,13 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
+  const auto decl_t = decl->getType();
   if (IsGlobalVar(expr)) {
-    str = std::format("{}.with(Value::clone)", str);
+    auto tp = decl_t->isReferenceType() ? "Ptr" : "Value";
+    str = std::format("{}.with({}::clone)", str, std::move(tp));
   }
 
-  if (auto *ref = decl->getType()->getAs<clang::ReferenceType>()) {
+  if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
     if (map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
       StrCat(str);
       return false;
@@ -1060,7 +1075,6 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     if (IsUniquePtr(expr->getArg(0)->getType())) {
       StrCat(std::format("{}.take()", ConvertLValue(expr->getArg(0))));
     } else {
-      PushExprKind push(*this, ExprKind::XValue);
       Convert(expr->getArg(0));
     }
     computed_expr_type_ = ComputedExprType::FreshValue;
@@ -2028,6 +2042,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
 
   PushInitType init_type(*this, qual_type);
   if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
+    if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+      return EmitMaterializedTempBinding(qual_type, expr);
+    }
     return ConvertFreshPointer(expr);
   }
   return ConvertFreshRValue(expr, qual_type);
