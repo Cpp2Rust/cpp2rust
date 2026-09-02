@@ -262,7 +262,9 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
-               return method->getDefinition() || method->isPureVirtual();
+               return method->getDefinition() || method->isPureVirtual() ||
+                      method->getTemplateInstantiationPattern() ||
+                      method->getDescribedFunctionTemplate();
              });
 }
 
@@ -425,6 +427,10 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 std::string GetID(const clang::Decl *decl) {
   assert(decl);
   return GetLocationID(decl) + GetParamSignature(decl);
+}
+
+std::string GetMethodID(const clang::CXXMethodDecl *decl) {
+  return decl->getQualifiedNameAsString() + GetID(decl);
 }
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
