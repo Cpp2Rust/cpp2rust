@@ -634,22 +634,6 @@ static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
   return false;
 }
 
-void Converter::materializeTemplateSpecialization(clang::CXXRecordDecl *decl) {
-  for (auto method : decl->methods()) {
-    const clang::FunctionDecl *definition = nullptr;
-    if (method->isDefined(definition)) {
-      continue;
-    }
-
-    if (auto pattern = method->getTemplateInstantiationPattern()) {
-      if (pattern->doesThisDeclarationHaveABody()) {
-        sema_->InstantiateFunctionDefinition(method->getLocation(), method,
-                                             /*Recursive=*/true);
-      }
-    }
-  }
-}
-
 bool IsPointerType(clang::QualType qual_type) {
   return qual_type->isPointerType() ||
          (qual_type->isArrayType() &&
@@ -875,10 +859,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-  if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
-    materializeTemplateSpecialization(decl);
-  }
-
   decl->dump(log());
 
   Mapper::AddRuleForUserDefinedType(decl);
