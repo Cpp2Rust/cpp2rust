@@ -1690,6 +1690,12 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  // p->~T() on a scalar is a no-op
+  if (clang::isa<clang::CXXPseudoDestructorExpr>(
+          expr->getCallee()->IgnoreParenImpCasts())) {
+    return false;
+  }
+
   if (auto plugin_str = TryPluginConvert(expr)) {
     StrCat(*plugin_str);
     return false;
