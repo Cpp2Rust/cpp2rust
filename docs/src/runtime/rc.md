@@ -150,6 +150,11 @@ Applied rule bodies are the main producer of these calls (see
 [Rule Rewriting](../rules/rewriting.md)). `write` itself is a thin wrapper: it
 is defined as `with_mut(|v| *v = value)`.
 
+`with_slice` and `with_slice_mut` are the same idea over a range of elements:
+they expose `len` bytes starting at the pointer as a Rust slice for the duration
+of a closure, which is how a C buffer is passed to Rust and nix functions such
+as `read` and `write`.
+
 In every case the `RefCell` is borrowed only for the duration of the access,
 which is what lets freely aliasing C++ pointers coexist with the borrow checker:
 no borrow outlives the expression that created it. When an expression needs an

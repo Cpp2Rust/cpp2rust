@@ -483,6 +483,66 @@ impl<T> Ptr<T> {
     }
 }
 
+impl Ptr<u8> {
+    pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [u8]) -> R) -> R {
+        let off = self.offset;
+        match &self.kind {
+            PtrKind::Null => panic!("ub: null pointer"),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert!(off == 0 && len <= 1, "ub: with_slice_mut out of bounds");
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut std::slice::from_mut(&mut *b)[..len])
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut b[off..off + len])
+            }
+            PtrKind::Vec(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let mut b = rc.borrow_mut();
+                f(&mut b[off..off + len])
+            }
+            PtrKind::Reinterpreted(data) => {
+                let mut buf = vec![0u8; len];
+                data.alloc.read_bytes(off, &mut buf);
+                let r = f(&mut buf);
+                data.alloc.write_bytes(off, &buf);
+                r
+            }
+        }
+    }
+
+    pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[u8]) -> R) -> R {
+        let off = self.offset;
+        match &self.kind {
+            PtrKind::Null => panic!("ub: null pointer"),
+            PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
+                assert!(off == 0 && len <= 1, "ub: with_slice out of bounds");
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&std::slice::from_ref(&*b)[..len])
+            }
+            PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&b[off..off + len])
+            }
+            PtrKind::Vec(weak) => {
+                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let b = rc.borrow();
+                f(&b[off..off + len])
+            }
+            PtrKind::Reinterpreted(data) => {
+                let mut buf = vec![0u8; len];
+                data.alloc.read_bytes(off, &mut buf);
+                f(&buf)
+            }
+        }
+    }
+}
+
 impl<T: Clone + ByteRepr> Ptr<T> {
     pub fn read(&self) -> T {
         self.with(|v| v.clone())
