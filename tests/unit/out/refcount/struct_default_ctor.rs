@@ -7,55 +7,45 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive()]
-pub struct WOFF2Params {
-    pub extended_metadata: Value<Vec<u8>>,
-    pub brotli_quality: Value<i32>,
-    pub allow_transforms: Value<bool>,
+pub struct S {
+    pub a: Value<i32>,
+    pub b: Value<bool>,
 }
-impl WOFF2Params {
-    pub fn WOFF2Params() -> Self {
+impl S {
+    pub fn S() -> Self {
         let mut this = Self {
-            extended_metadata: Rc::new(RefCell::new(
-                Ptr::from_string_literal(b"")
-                    .to_c_string_iterator()
-                    .chain(std::iter::once(0))
-                    .collect::<Vec<u8>>(),
-            )),
-            brotli_quality: Rc::new(RefCell::new(11)),
-            allow_transforms: Rc::new(RefCell::new(true)),
+            a: Rc::new(RefCell::new(11)),
+            b: Rc::new(RefCell::new(true)),
         };
         this
     }
 }
-impl Clone for WOFF2Params {
+impl Clone for S {
     fn clone(&self) -> Self {
         let mut this = Self {
-            extended_metadata: Rc::new(RefCell::new((*self.extended_metadata.borrow()).clone())),
-            brotli_quality: Rc::new(RefCell::new((*self.brotli_quality.borrow()))),
-            allow_transforms: Rc::new(RefCell::new((*self.allow_transforms.borrow()))),
+            a: Rc::new(RefCell::new((*self.a.borrow()))),
+            b: Rc::new(RefCell::new((*self.b.borrow()))),
         };
         this
     }
 }
-impl Default for WOFF2Params {
+impl Default for S {
     fn default() -> Self {
-        { WOFF2Params::WOFF2Params() }
+        { S::S() }
     }
 }
-impl ByteRepr for WOFF2Params {
+impl ByteRepr for S {
     fn byte_size() -> usize {
-        40
+        8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.extended_metadata.borrow()).to_bytes(&mut buf[0..32]);
-        (*self.brotli_quality.borrow()).to_bytes(&mut buf[32..36]);
-        (*self.allow_transforms.borrow()).to_bytes(&mut buf[36..37]);
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.b.borrow()).to_bytes(&mut buf[4..5]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            extended_metadata: Rc::new(RefCell::new(<Vec<u8>>::from_bytes(&buf[0..32]))),
-            brotli_quality: Rc::new(RefCell::new(<i32>::from_bytes(&buf[32..36]))),
-            allow_transforms: Rc::new(RefCell::new(<bool>::from_bytes(&buf[36..37]))),
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            b: Rc::new(RefCell::new(<bool>::from_bytes(&buf[4..5]))),
         }
     }
 }
@@ -63,9 +53,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let params: Value<WOFF2Params> = Rc::new(RefCell::new(WOFF2Params::WOFF2Params()));
-    assert!((((*(*params.borrow()).extended_metadata.borrow()).len() - 1) == 0_usize));
-    assert!(((*(*params.borrow()).brotli_quality.borrow()) == 11));
-    assert!((((*(*params.borrow()).allow_transforms.borrow()) as i32) == (true as i32)));
+    let s: Value<S> = Rc::new(RefCell::new(S::S()));
+    assert!(((*(*s.borrow()).a.borrow()) == 11));
+    assert!((((*(*s.borrow()).b.borrow()) as i32) == (true as i32)));
     return 0;
 }
