@@ -405,7 +405,11 @@ public:
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr);
 
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
+
   virtual bool VisitSizeOfPackExpr(clang::SizeOfPackExpr *expr);
+
+  virtual bool
+  VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *expr);
 
   virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 
