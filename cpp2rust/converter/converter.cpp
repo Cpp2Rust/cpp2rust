@@ -3400,6 +3400,15 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
                                   : expr->getArgumentExpr()->getType())));
     computed_expr_type_ = ComputedExprType::FreshValue;
     break;
+  case clang::UnaryExprOrTypeTrait::UETT_AlignOf:
+  case clang::UnaryExprOrTypeTrait::UETT_PreferredAlignOf:
+    StrCat(std::format(
+        "::std::mem::align_of::<{}>()",
+        GetUnsafeTypeAsString(expr->isArgumentType()
+                                  ? expr->getArgumentType()
+                                  : expr->getArgumentExpr()->getType())));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    break;
   default:
     // FIXME: improve error handling
     log() << "unsupported unary expr or type trait expr\n";
