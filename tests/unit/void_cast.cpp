@@ -1,4 +1,5 @@
 #include <cassert>
+#include <memory>
 #include <vector>
 
 void unused_param(int x) { (void)x; }
@@ -20,6 +21,12 @@ int bump_and_return() {
 struct Holder {
   int field;
 };
+
+struct NonCopyable {
+  std::unique_ptr<int> value;
+};
+
+void unused_noncopyable_param(const NonCopyable &x) { (void)x; }
 
 int main() {
   unused_param(42);
@@ -83,6 +90,12 @@ int main() {
   NonTrivial nt;
   unused_ref_param(nt);
   unused_ptr_param(&nt);
+
+  NonCopyable g{std::make_unique<int>(9)};
+  ((void)g);
+  (void)g;
+  unused_noncopyable_param(g);
+  assert(*g.value == 9);
 
   return 0;
 }
