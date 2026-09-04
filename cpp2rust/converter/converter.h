@@ -86,6 +86,10 @@ public:
 
   void ConvertGotoBlock(clang::CompoundStmt *body);
 
+  void ConvertBody(clang::Stmt *body);
+
+  void ConvertBodyStmts(clang::Stmt *body);
+
   void EmitHoistedDecls(clang::CompoundStmt *body);
 
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
