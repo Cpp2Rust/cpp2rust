@@ -374,9 +374,7 @@ public:
 
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
-  virtual void AddFromImpl(clang::EnumDecl *decl);
-
-  virtual void AddIncDecImpls(clang::EnumDecl *decl);
+  virtual std::string EnumeratorName(const clang::EnumConstantDecl *decl) const;
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
@@ -560,7 +558,6 @@ protected:
 
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
-  virtual void AddByteReprTrait(const clang::EnumDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
