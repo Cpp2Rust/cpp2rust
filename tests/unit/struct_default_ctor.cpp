@@ -1,22 +1,15 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
-
 #include <assert.h>
-#include <string>
 
-struct WOFF2Params {
-  WOFF2Params()
-      : extended_metadata(""), brotli_quality(11), allow_transforms(true) {}
+struct S {
+  S() : a(11), b(true) {}
 
-  std::string extended_metadata;
-  int brotli_quality;
-  bool allow_transforms;
+  int a;
+  bool b;
 };
 
 int main() {
-  WOFF2Params params;
-  assert(params.extended_metadata.size() == 0);
-  assert(params.brotli_quality == 11);
-  assert(params.allow_transforms == true);
+  S s;
+  assert(s.a == 11);
+  assert(s.b == true);
   return 0;
 }
