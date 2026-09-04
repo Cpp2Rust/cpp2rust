@@ -133,5 +133,6 @@ fn main_0() -> i32 {
     (*(*({ (*y.borrow()).ptr() }).upgrade().deref())
         .x
         .borrow_mut()) = 50;
-    return (*(*x.borrow()).x.borrow());
+    assert!(((*(*x.borrow()).x.borrow()) == 100));
+    return 0;
 }

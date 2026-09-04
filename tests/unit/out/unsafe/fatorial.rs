@@ -40,5 +40,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { fatorial_by_ptr_2((&mut n1 as *mut i32)) });
     let mut n: i32 = ((n1) + (1));
     (unsafe { fatorial_by_ref_1(&mut n as *mut i32) });
-    return (unsafe { fatorial_0(n) });
+    assert!(((unsafe { fatorial_0(n,) }) == (720)));
+    return 0;
 }

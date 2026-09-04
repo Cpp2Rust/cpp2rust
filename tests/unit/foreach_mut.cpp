@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <vector>
 
 int main() {
@@ -37,5 +38,6 @@ int main() {
   for (const auto *p : v2)
     sum += *p;
 
-  return sum;
+  assert(sum == 168);
+  return 0;
 }

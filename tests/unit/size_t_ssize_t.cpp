@@ -96,5 +96,6 @@ int main() {
   a64 -= c;
   assert(a64 == 120);
 
-  return (int)(n % 7);
+  assert((int)(n % 7) == 1);
+  return 0;
 }

@@ -125,5 +125,6 @@ unsafe fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
     o.field.tag_field = 33;
     assert!(((((o.field.tag_field) == (33)) as i32) != 0));
-    return w.id;
+    assert!(((((w.id) == (7)) as i32) != 0));
+    return 0;
 }

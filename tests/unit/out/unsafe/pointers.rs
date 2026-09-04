@@ -51,5 +51,6 @@ unsafe fn main_0() -> i32 {
     t3 = t2;
     (*t3).x = 15;
     (*(unsafe { (*t3).as_ptr() })) += 10;
-    return ((((*t3).x) + ((*t2).x)) + (t1.x));
+    assert!((((((*t3).x) + ((*t2).x)) + (t1.x)) == (75)));
+    return 0;
 }

@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int foo(int x) { return x; }
 int *ptr(int *x) { return x; }
 int &bar(int &x) { return x; }
@@ -71,6 +73,8 @@ int main() {
   [[maybe_unused]] int vptr = *ptr(&d.get().get()->get().v);
   [[maybe_unused]] int *pref = &bar(d.get().get()->get().v);
   (*(&bar(d.get().get()->get().v)))++;
-  return *ptr(&d.get().get()->get().v) + bar(d.get().get()->get().v) +
-         foo(d.get().get()->get().v);
+  assert(*ptr(&d.get().get()->get().v) + bar(d.get().get()->get().v) +
+             foo(d.get().get()->get().v) ==
+         54);
+  return 0;
 }

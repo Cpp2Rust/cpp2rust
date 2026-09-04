@@ -463,24 +463,10 @@ fn main_0() -> i32 {
         )
     })
     .with_mut(|__v| __v.postfix_inc());
-    return (((({
-        ptr_1(
-            ((*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer()),
-        )
-    })
-    .read())
-        + (({
-            bar_2(
-                (*({
+    assert!(
+        ((((({
+            ptr_1(
+                ((*({
                     (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
                         .upgrade()
                         .deref())
@@ -489,22 +475,40 @@ fn main_0() -> i32 {
                 .upgrade()
                 .deref())
                 .v
-                .as_pointer(),
+                .as_pointer()),
             )
         })
-        .read()))
-        + ({
-            foo_0(
-                (*(*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
-                .v
-                .borrow()),
-            )
-        }));
+        .read())
+            + (({
+                bar_2(
+                    (*({
+                        (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+                            .upgrade()
+                            .deref())
+                        .get()
+                    })
+                    .upgrade()
+                    .deref())
+                    .v
+                    .as_pointer(),
+                )
+            })
+            .read()))
+            + ({
+                foo_0(
+                    (*(*({
+                        (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+                            .upgrade()
+                            .deref())
+                        .get()
+                    })
+                    .upgrade()
+                    .deref())
+                    .v
+                    .borrow()),
+                )
+            }))
+            == 54)
+    );
+    return 0;
 }

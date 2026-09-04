@@ -30,5 +30,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ((({ foo_0() }) + ({ foo_0() })) + ({ foo_0() }));
+    assert!((((({ foo_0() }) + ({ foo_0() })) + ({ foo_0() })) == 15));
+    return 0;
 }

@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct Node {
   int val;
   Node *next;
@@ -60,7 +62,8 @@ int main() {
   head = Delete(head, 5);
   head = Delete(head, 0);
   head = Delete(head, -2);
-  return (Find(head, 0)->val == 4) && (Find(head, 1)->val == 3) &&
-         (Find(head, 2)->val == 2) && (Find(head, 3)->val == 1) &&
-         (Find(head, 4)->val == -1 && (Find(head, 5) == nullptr));
+  assert(Find(head, 0)->val == 4 && Find(head, 1)->val == 3 &&
+         Find(head, 2)->val == 2 && Find(head, 3)->val == 1 &&
+         Find(head, 4)->val == -1 && Find(head, 5) == nullptr);
+  return 0;
 }

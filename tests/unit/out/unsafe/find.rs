@@ -35,12 +35,15 @@ unsafe fn main_0() -> i32 {
     let mut m_end: UnsafeMapIterator<i32, f64> =
         UnsafeMapIterator::end(&m as *const BTreeMap<i32, Box<f64>>);
     let mut m_result_true: bool = m_begin != m_end;
-    return ((((v_result_true) && (m_result_true))
-        && ({
-            let mut it = v.as_mut_ptr();
-            while it != v.as_mut_ptr() && *it != 2 {
-                it = it.add(1);
-            }
-            it
-        } == v.as_mut_ptr())) as i32);
+    assert!(
+        ((v_result_true) && (m_result_true))
+            && ({
+                let mut it = v.as_mut_ptr();
+                while it != v.as_mut_ptr() && *it != 2 {
+                    it = it.add(1);
+                }
+                it
+            } == v.as_mut_ptr())
+    );
+    return 0;
 }

@@ -403,5 +403,6 @@ fn main_0() -> i32 {
         weight: Rc::new(RefCell::new(5_f64)),
     };
     let total_weight: Value<f64> = Rc::new(RefCell::new(({ MSTKruskal_2(graph.as_pointer()) })));
-    return ((*total_weight.borrow()) as i32);
+    assert!(((*total_weight.borrow()) == 19_f64));
+    return 0;
 }

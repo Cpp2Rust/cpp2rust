@@ -50,5 +50,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut pair1: Pair = Pair { x: 1, y: 2 };
     let mut pair2: Pair = Pair { x: 1, y: 3 };
-    return (pair1.lt(&mut pair2) as i32);
+    assert!(pair1.lt(&mut pair2));
+    return 0;
 }

@@ -137,6 +137,7 @@ int main() {
   auto t2 = t1 + s2.length();
   auto t3 = t2 + s3.size();
   auto t4 = t3 + s4.size();
-  return t4 + s5.size();
+  assert(t4 + s5.size() == 139);
+  return 0;
   // return s1.length() + *p1 + s2.length() + s3.size() + s4.size() + s5.size();
 }

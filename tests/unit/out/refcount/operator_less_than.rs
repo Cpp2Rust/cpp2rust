@@ -88,5 +88,6 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(1)),
         y: Rc::new(RefCell::new(3)),
     }));
-    return ((*pair1.borrow()).lt(pair2.as_pointer()) as i32);
+    assert!((*pair1.borrow()).lt(pair2.as_pointer()));
+    return 0;
 }

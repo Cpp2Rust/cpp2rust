@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <map>
 
 int main() {
@@ -15,5 +16,6 @@ int main() {
   for (auto i : m) {
     sum += i.first;
   }
-  return sum;
+  assert(sum == 7475);
+  return 0;
 }

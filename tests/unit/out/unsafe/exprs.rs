@@ -63,5 +63,6 @@ unsafe fn main_0() -> i32 {
     (*(*p3).p).x = 100;
     (*(unsafe { y.ptr() })).x = 1;
     (*(unsafe { y.ptr() })).x = 50;
-    return x.x;
+    assert!(((x.x) == (100)));
+    return 0;
 }

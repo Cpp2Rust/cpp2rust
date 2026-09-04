@@ -154,5 +154,6 @@ unsafe fn main_0() -> i32 {
         "{:}\n",
         (*m),
     );
-    return c;
+    assert!(((c) == (2)));
+    return 0;
 }

@@ -65,5 +65,6 @@ fn main_0() -> i32 {
         ]))),
     }));
     ({ IncrementAll_0(s.as_pointer()) });
-    return (*x.borrow());
+    assert!(((*x.borrow()) == 3));
+    return 0;
 }

@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 class Animal {
 public:
   virtual bool bark() const = 0;
@@ -22,5 +24,6 @@ int main() {
   Cat cat{};
   animal = &cat;
   bool eat2 = animal->bark();
-  return eat1 && !eat2;
+  assert(eat1 && !eat2);
+  return 0;
 }

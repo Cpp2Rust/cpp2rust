@@ -241,6 +241,9 @@ unsafe fn main_0() -> i32 {
     .to_vec();
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
-    return ((((s1).wrapping_add(s2)).wrapping_add(((*&mut (v2)[0_usize as usize]) as usize)))
-        as i32);
+    assert!(
+        ((((s1).wrapping_add(s2)).wrapping_add(((*&mut (v2)[0_usize as usize]) as usize)))
+            == (103_usize))
+    );
+    return 0;
 }

@@ -53,5 +53,6 @@ unsafe fn main_0() -> i32 {
         let mut p = v2[p].clone();
         sum += (*p);
     }
-    return sum;
+    assert!(((sum) == (168)));
+    return 0;
 }

@@ -109,5 +109,6 @@ int main() {
   assert(x1 == 6.5);
   x1 -= 1.5;
   assert(v6.at(s2 - 1) == 6.5);
-  return s1 + s2 + v2.at(0);
+  assert(s1 + s2 + v2.at(0) == 103);
+  return 0;
 }

@@ -158,5 +158,6 @@ fn main_0() -> i32 {
             && (({ find_0((*root.borrow()).clone(), 5) }).is_null()),
     ));
     ({ del_2((*root.borrow()).clone()) });
-    return ((*out.borrow()) as i32);
+    assert!((*out.borrow()));
+    return 0;
 }

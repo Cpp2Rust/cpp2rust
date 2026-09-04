@@ -21,5 +21,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return (unsafe { test_1(Some(test1_0)) });
+    assert!(((unsafe { test_1(Some(test1_0),) }) == (1)));
+    return 0;
 }

@@ -15,5 +15,6 @@ fn main_0() -> i32 {
     let r: Ptr<i32> = (v.as_pointer() as Ptr<i32>).offset(1_usize);
     let __rhs = (r.read());
     (*p.borrow()).write(__rhs);
-    return ((v.as_pointer() as Ptr<i32>).offset(0_usize).read());
+    assert!((((v.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 2));
+    return 0;
 }

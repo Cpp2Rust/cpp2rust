@@ -20,5 +20,6 @@ fn main_0() -> i32 {
     let offset: Value<usize> = Rc::new(RefCell::new(
         ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize),
     ));
-    return (*b.borrow());
+    assert!(((*b.borrow()) == 4));
+    return 0;
 }

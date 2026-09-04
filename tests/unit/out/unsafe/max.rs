@@ -47,5 +47,6 @@ unsafe fn main_0() -> i32 {
             (&mut __tmp_1) as *const _
         })
     };
-    return (((((r1) + (r2)) + (r3)) + (r4)) + (r5));
+    assert!(((((((r1) + (r2)) + (r3)) + (r4)) + (r5)) == (56)));
+    return 0;
 }

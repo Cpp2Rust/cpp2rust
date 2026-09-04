@@ -58,5 +58,6 @@ unsafe fn main_0() -> i32 {
         out.prefix_inc();
         k1.postfix_inc();
     }
-    return out;
+    assert!(((out) == (81)));
+    return 0;
 }

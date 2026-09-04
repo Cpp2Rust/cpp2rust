@@ -159,5 +159,6 @@ unsafe fn main_0() -> i32 {
     let mut c: isize = (-20_i32 as isize);
     a64 -= (c as i64);
     assert!(((a64) == (120_i64)));
-    return (((n).wrapping_rem(7_usize)) as i32);
+    assert!(((((n).wrapping_rem(7_usize)) as i32) == (1)));
+    return 0;
 }

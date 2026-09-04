@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <cmath>
 #include <memory>
 
@@ -65,6 +66,7 @@ int main() {
     reals[i] = round(b[i].re);
     imgs[i] = round(b[i].img);
   }
-  return (reals[0] == 10 && imgs[0] == 0) && (reals[1] == -2 && imgs[1] == 2) &&
-         (reals[2] == -2 && imgs[2] == 0) && (reals[3] == -2 && imgs[3] == -2);
+  assert(reals[0] == 10 && imgs[0] == 0 && reals[1] == -2 && imgs[1] == 2 &&
+         reals[2] == -2 && imgs[2] == 0 && reals[3] == -2 && imgs[3] == -2);
+  return 0;
 }

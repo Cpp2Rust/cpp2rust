@@ -54,5 +54,6 @@ fn main_0() -> i32 {
     ({ fatorial_by_ptr_2((n1.as_pointer())) });
     let n: Value<i32> = Rc::new(RefCell::new(((*n1.borrow()) + 1)));
     ({ fatorial_by_ref_1(n.as_pointer()) });
-    return ({ fatorial_0((*n.borrow())) });
+    assert!((({ fatorial_0((*n.borrow()),) }) == 720));
+    return 0;
 }

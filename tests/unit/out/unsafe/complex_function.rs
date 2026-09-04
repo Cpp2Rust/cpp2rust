@@ -182,16 +182,20 @@ unsafe fn main_0() -> i32 {
         )
     }))
     .postfix_inc();
-    return (((*(unsafe {
-        ptr_1(
-            (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
-                as *mut i32),
-        )
-    })) + (*(unsafe {
-        bar_2(
-            &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v as *mut i32,
-        )
-    }))) + (unsafe {
-        foo_0((*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v)
-    }));
+    assert!(
+        ((((*(unsafe {
+            ptr_1(
+                (&mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                    as *mut i32),
+            )
+        })) + (*(unsafe {
+            bar_2(
+                &mut (*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v
+                    as *mut i32,
+            )
+        }))) + (unsafe {
+            foo_0((*(unsafe { (*(unsafe { (*(unsafe { d.get() })).get() })).get() })).v)
+        })) == (54))
+    );
+    return 0;
 }

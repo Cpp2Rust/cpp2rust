@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int main() {
   int out = 0;
   int i = 0;
@@ -36,5 +38,6 @@ int main() {
       continue;
     ++out;
   }
-  return out;
+  assert(out == 81);
+  return 0;
 }

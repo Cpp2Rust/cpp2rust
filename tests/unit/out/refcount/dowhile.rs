@@ -26,5 +26,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({ dowhile_0(0) });
+    assert!((({ dowhile_0(0,) }) == 202));
+    return 0;
 }

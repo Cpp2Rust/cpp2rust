@@ -1,3 +1,4 @@
+#include <cassert>
 #include <map>
 
 static int sink(std::map<int, int>::iterator it) {
@@ -22,5 +23,6 @@ int main() {
   int r = const_it == end ? 0 : 1;
   r += sink(it0);
   r += end == end ? 0 : 1;
-  return r;
+  assert(r == 2);
+  return 0;
 }

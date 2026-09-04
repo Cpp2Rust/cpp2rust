@@ -356,9 +356,12 @@ fn main_0() -> i32 {
         ((((v13.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == 10)
             && ((((v13.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == 50)
     );
-    return ((((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
-        (((v2.as_pointer() as Ptr<i32>)
-            .offset(0_usize as isize)
-            .read()) as usize),
-    )) as i32);
+    assert!(
+        (((*s1.borrow()).wrapping_add((*s2.borrow()))).wrapping_add(
+            (((v2.as_pointer() as Ptr<i32>)
+                .offset(0_usize as isize)
+                .read()) as usize)
+        ) == 103_usize)
+    );
+    return 0;
 }

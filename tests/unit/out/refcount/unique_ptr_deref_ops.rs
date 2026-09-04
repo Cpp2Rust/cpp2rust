@@ -18,5 +18,6 @@ fn main_0() -> i32 {
     let sum: Value<i32> = Rc::new(RefCell::new(
         ((*(*p.borrow()).as_ref().unwrap().borrow()) + (*(*q.borrow()).as_ref().unwrap().borrow())),
     ));
-    return (*sum.borrow());
+    assert!(((*sum.borrow()) == 25));
+    return 0;
 }

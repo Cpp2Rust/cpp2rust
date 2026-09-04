@@ -300,5 +300,6 @@ fn main_0() -> i32 {
     let o: Value<Outer> = <Value<Outer>>::default();
     (*(*(*o.borrow()).field.borrow()).tag_field.borrow_mut()) = 33;
     assert!(((((*(*(*o.borrow()).field.borrow()).tag_field.borrow()) == 33) as i32) != 0));
-    return (*(*w.borrow()).id.borrow());
+    assert!(((((*(*w.borrow()).id.borrow()) == 7) as i32) != 0));
+    return 0;
 }

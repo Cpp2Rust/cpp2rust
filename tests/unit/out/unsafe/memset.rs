@@ -32,5 +32,6 @@ unsafe fn main_0() -> i32 {
         arr,
         libcc2rs::malloc_usable_size(arr as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
     )));
-    return sum;
+    assert!(((sum) == (50529027)));
+    return 0;
 }

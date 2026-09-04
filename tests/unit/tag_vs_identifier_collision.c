@@ -72,5 +72,6 @@ int main(void) {
   o.field.tag_field = 33;
   assert(o.field.tag_field == 33);
 
-  return w.id;
+  assert(w.id == 7);
+  return 0;
 }

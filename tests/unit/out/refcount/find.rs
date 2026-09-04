@@ -62,16 +62,20 @@ fn main_0() -> i32 {
     )));
     let m_result_true: Value<bool> =
         Rc::new(RefCell::new((*m_begin.borrow()) != (*m_end.borrow())));
-    return ((((*v_result_true.borrow()) && (*m_result_true.borrow()))
-        && ((v.as_pointer() as Ptr<i32>).offset(
-            (v.as_pointer() as Ptr<i32>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < (v.as_pointer() as Ptr<i32>).get_offset() as usize
-                        && value_0.read() == 2
-                })
-                .unwrap_or((v.as_pointer() as Ptr<i32>).get_offset() as usize) as isize,
-        ) == (v.as_pointer() as Ptr<i32>))) as i32);
+    assert!(
+        ((*v_result_true.borrow()) && (*m_result_true.borrow()))
+            && ((v.as_pointer() as Ptr<i32>).offset(
+                (v.as_pointer() as Ptr<i32>)
+                    .clone()
+                    .into_iter()
+                    .enumerate()
+                    .position(|(index_0, value_0)| {
+                        index_0 < (v.as_pointer() as Ptr<i32>).get_offset() as usize
+                            && value_0.read() == 2
+                    })
+                    .unwrap_or((v.as_pointer() as Ptr<i32>).get_offset() as usize)
+                    as isize,
+            ) == (v.as_pointer() as Ptr<i32>))
+    );
+    return 0;
 }

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <netinet/in.h>
 
 int main() {
@@ -5,5 +6,6 @@ int main() {
   int udp = IPPROTO_UDP;
   int ip = IPPROTO_IP;
   int ip6 = IPPROTO_IPV6;
-  return tcp + udp + ip + ip6;
+  assert(tcp + udp + ip + ip6 == 64);
+  return 0;
 }

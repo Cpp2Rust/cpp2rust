@@ -32,5 +32,6 @@ fn main_0() -> i32 {
         let i: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(i));
         (*sum.borrow_mut()) += ((*(*i.borrow()).first().borrow()) as f64);
     }
-    return ((*sum.borrow()) as i32);
+    assert!(((*sum.borrow()) == 7475_f64));
+    return 0;
 }

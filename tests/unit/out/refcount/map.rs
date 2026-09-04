@@ -399,10 +399,14 @@ fn main_0() -> i32 {
         .get(&((*k.borrow()) as i16))
         .expect("out of range!")
         .as_pointer();
-    return (((((((((*m.borrow()).len()).wrapping_add(((*x1.borrow()) as usize)))
-        .wrapping_add(((*x2.borrow()) as usize)))
-    .wrapping_add(((*x3.borrow()) as usize)))
-    .wrapping_add(((*x4.borrow()) as usize)))
-    .wrapping_add(((*x5.borrow()) as usize)))
-    .wrapping_add(((value_0.read()) as usize))) as i32);
+    assert!(
+        ((((((((*m.borrow()).len()).wrapping_add(((*x1.borrow()) as usize)))
+            .wrapping_add(((*x2.borrow()) as usize)))
+        .wrapping_add(((*x3.borrow()) as usize)))
+        .wrapping_add(((*x4.borrow()) as usize)))
+        .wrapping_add(((*x5.borrow()) as usize)))
+        .wrapping_add(((value_0.read()) as usize))
+            == 21_usize)
+    );
+    return 0;
 }

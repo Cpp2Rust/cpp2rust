@@ -158,6 +158,9 @@ unsafe fn main_0() -> i32 {
     assert!(((x1) == (6.5E+0)));
     x1 -= 1.5E+0;
     assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (6.5E+0)));
-    return ((((s1).wrapping_add(s2)).wrapping_add(((*&mut (v2)[0_usize as usize]) as usize)))
-        as i32);
+    assert!(
+        ((((s1).wrapping_add(s2)).wrapping_add(((*&mut (v2)[0_usize as usize]) as usize)))
+            == (103_usize))
+    );
+    return 0;
 }

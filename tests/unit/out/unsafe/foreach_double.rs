@@ -59,5 +59,6 @@ unsafe fn main_0() -> i32 {
             square += (*col);
         }
     }
-    return square;
+    assert!(((square) == (144)));
+    return 0;
 }

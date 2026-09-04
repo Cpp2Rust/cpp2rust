@@ -89,7 +89,11 @@ unsafe fn main_0() -> i32 {
         cost: 10_f64,
     };
     let mut old_cost: f64 = (unsafe { route1.SetCost((unsafe { route2.SetCost(15_f64) })) });
-    return (((((unsafe { RandomRoute_0(&mut route1 as *mut Route) })
-        + (unsafe { RandomRoute_0(&mut route2 as *mut Route) })) as f64)
-        + (old_cost)) as i32);
+    assert!(
+        (((((unsafe { RandomRoute_0(&mut route1 as *mut Route,) })
+            + (unsafe { RandomRoute_0(&mut route2 as *mut Route,) })) as f64)
+            + (old_cost))
+            == (9_f64))
+    );
+    return 0;
 }

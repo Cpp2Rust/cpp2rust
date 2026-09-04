@@ -17,5 +17,5 @@ fn main_0() -> i32 {
         _ptr.write(_ptr.read() + 5)
     };
     assert!((((v.as_pointer() as Ptr<i32>).read()) == 15));
-    return ((v.as_pointer() as Ptr<i32>).read());
+    return 0;
 }

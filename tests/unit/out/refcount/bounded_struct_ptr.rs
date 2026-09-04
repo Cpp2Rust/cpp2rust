@@ -54,8 +54,11 @@ fn main_0() -> i32 {
     ));
     let a: Value<i32> = Rc::new(RefCell::new(((*p1.borrow()).read())));
     let p2: Value<Ptr<Foo>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<Foo>).offset(0))));
-    return {
-        let _lhs = (*a.borrow());
-        _lhs + (*(*(*p2.borrow()).upgrade().deref()).x2.borrow())
-    };
+    assert!(
+        ({
+            let _lhs = (*a.borrow());
+            _lhs + (*(*(*p2.borrow()).upgrade().deref()).x2.borrow())
+        } == 5)
+    );
+    return 0;
 }

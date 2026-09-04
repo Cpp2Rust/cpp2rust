@@ -23,5 +23,6 @@ unsafe fn main_0() -> i32 {
     let mut c: bool = false;
     let mut r: i32 = if c { obj.x } else { (*ptr).x };
     let mut p: *mut i32 = (&mut obj.x as *mut i32);
-    return ((*p) + (r));
+    assert!((((*p) + (r)) == (4)));
+    return 0;
 }
