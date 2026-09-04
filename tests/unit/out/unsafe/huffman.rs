@@ -306,10 +306,13 @@ unsafe fn main_0() -> i32 {
             size,
         )
     });
-    return ((((((((out.as_mut().unwrap()[(0_usize)]) == (0))
-        && ((out.as_mut().unwrap()[(1_usize)]) == (100)))
-        && ((out.as_mut().unwrap()[(2_usize)]) == (101)))
-        && ((out.as_mut().unwrap()[(3_usize)]) == (1100)))
-        && ((out.as_mut().unwrap()[(4_usize)]) == (1101)))
-        && ((out.as_mut().unwrap()[(5_usize)]) == (111))) as i32);
+    assert!(
+        ((((((out.as_mut().unwrap()[(0_usize)]) == (0))
+            && ((out.as_mut().unwrap()[(1_usize)]) == (100)))
+            && ((out.as_mut().unwrap()[(2_usize)]) == (101)))
+            && ((out.as_mut().unwrap()[(3_usize)]) == (1100)))
+            && ((out.as_mut().unwrap()[(4_usize)]) == (1101)))
+            && ((out.as_mut().unwrap()[(5_usize)]) == (111))
+    );
+    return 0;
 }

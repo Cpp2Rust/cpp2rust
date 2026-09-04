@@ -15,5 +15,6 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 1;
     let r: *mut i32 = &mut x as *mut i32;
     (*r) = 5;
-    return x;
+    assert!(((x) == (5)));
+    return 0;
 }

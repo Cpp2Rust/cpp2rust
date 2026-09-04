@@ -27,5 +27,6 @@ unsafe fn main_0() -> i32 {
         ('o' as libc::c_char),
         ('\0' as libc::c_char),
     ];
-    return ((unsafe { strlen_0((&mut string[(0) as usize] as *mut libc::c_char)) }) as i32);
+    assert!(((unsafe { strlen_0((&mut string[(0) as usize] as *mut libc::c_char),) }) == (5_u32)));
+    return 0;
 }

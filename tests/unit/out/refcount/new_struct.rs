@@ -48,5 +48,6 @@ fn main_0() -> i32 {
         _lhs + (*(*(*p.borrow()).upgrade().deref()).y.borrow())
     }));
     (*p.borrow()).delete();
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 3));
+    return 0;
 }

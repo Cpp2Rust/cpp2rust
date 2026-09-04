@@ -53,5 +53,5 @@ fn main_0() -> i32 {
     (*ww.borrow_mut()) = (*xx.borrow()).clone();
     let aa: Value<i32> = Rc::new(RefCell::new(({ func_0() })));
     (*aa.borrow_mut()) = ({ func_0() });
-    return 3;
+    return 0;
 }

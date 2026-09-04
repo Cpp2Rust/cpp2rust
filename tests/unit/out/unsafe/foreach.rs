@@ -26,5 +26,6 @@ unsafe fn main_0() -> i32 {
         let mut x = v[x].clone();
         sum += x;
     }
-    return sum;
+    assert!(((sum) == (45)));
+    return 0;
 }

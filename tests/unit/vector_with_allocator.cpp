@@ -178,5 +178,6 @@ int main() {
   assert(v13.size() == 5);
   assert(v13[0] == 10 && v13[4] == 50);
 
-  return s1 + s2 + v2.at(0);
+  assert(s1 + s2 + v2.at(0) == 103);
+  return 0;
 }

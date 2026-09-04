@@ -16,5 +16,6 @@ fn main_0() -> i32 {
     let __rhs = (*y.borrow());
     r.write(__rhs);
     (*y.borrow_mut()) += 1;
-    return (*x.borrow());
+    assert!(((*x.borrow()) == 10));
+    return 0;
 }

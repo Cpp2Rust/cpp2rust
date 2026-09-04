@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <cstring>
 
 int main() {
@@ -11,5 +12,6 @@ int main() {
   for (int i = 0; i < N; ++i)
     sum += arr[i];
   delete[] arr;
-  return sum;
+  assert(sum == 50529027);
+  return 0;
 }

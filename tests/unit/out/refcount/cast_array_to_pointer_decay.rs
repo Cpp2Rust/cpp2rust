@@ -29,6 +29,10 @@ fn main_0() -> i32 {
         ('c' as u8),
         ('\0' as u8),
     ])));
-    return (({ deref_0((a.as_pointer() as Ptr<i32>)) })
-        + ({ strlen_1((s.as_pointer() as Ptr<u8>)) }));
+    assert!(
+        ((({ deref_0((a.as_pointer() as Ptr::<i32>),) })
+            + ({ strlen_1((s.as_pointer() as Ptr::<u8>),) }))
+            == 4)
+    );
+    return 0;
 }

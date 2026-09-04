@@ -59,6 +59,10 @@ fn main_0() -> i32 {
         x3: Rc::new(RefCell::new((*(*p1.borrow()).x3.borrow()))),
     }));
     ({ PODIncrement_0(p2.as_pointer()) });
-    return (((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
-        + (*(*p2.borrow()).x3.borrow()));
+    assert!(
+        ((((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
+            + (*(*p2.borrow()).x3.borrow()))
+            == 39)
+    );
+    return 0;
 }

@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 // Tests deref of unique_ptr field through const raw pointer (read and write).
+#include <cassert>
 #include <memory>
 
 struct Holder {
@@ -16,5 +17,6 @@ int main() {
   Holder h;
   h.val = std::make_unique<int>(10);
   write_val(&h, 42);
-  return read_val(&h);
+  assert(read_val(&h) == 42);
+  return 0;
 }

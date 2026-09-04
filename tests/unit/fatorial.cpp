@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int fatorial(int n) {
   if (n == 0)
     return 1;
@@ -32,5 +34,6 @@ int main() {
   fatorial_by_ptr(&n1);
   int n = n1 + 1;
   fatorial_by_ref(n);
-  return fatorial(n);
+  assert(fatorial(n) == 720);
+  return 0;
 }

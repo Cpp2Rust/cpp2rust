@@ -39,5 +39,6 @@ fn main_0() -> i32 {
     (*p.borrow_mut()) = (a.as_pointer());
     ({ swap_by_ptr_1((*p.borrow()).clone(), (b.as_pointer())) });
     ({ swap_by_ref_2(a.as_pointer(), c.as_pointer()) });
-    return (*c.borrow());
+    assert!(((*c.borrow()) == 2));
+    return 0;
 }

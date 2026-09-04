@@ -16,5 +16,6 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut i32 = v.as_mut_ptr();
     let r: *const i32 = &v[(1_usize)] as *const i32;
     (*p) = (*r);
-    return v[(0_usize)];
+    assert!(((v[(0_usize)]) == (2)));
+    return 0;
 }

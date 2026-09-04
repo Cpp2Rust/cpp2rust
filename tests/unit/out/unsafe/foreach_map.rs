@@ -27,5 +27,6 @@ unsafe fn main_0() -> i32 {
     'loop_: for i in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<f64>>) {
         sum += (*i.first() as f64);
     }
-    return (sum as i32);
+    assert!(((sum) == (7475_f64)));
+    return 0;
 }

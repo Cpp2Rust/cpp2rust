@@ -273,5 +273,6 @@ fn main_0() -> i32 {
             ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
-    return ({ Consume_1((*safe_ptr.borrow_mut()).take()) });
+    assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
+    return 0;
 }

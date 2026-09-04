@@ -22,5 +22,5 @@ int main() {
   ww = xx;
   int aa = func();
   aa = func();
-  return 3;
+  return 0;
 }

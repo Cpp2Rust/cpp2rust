@@ -151,5 +151,6 @@ unsafe fn main_0() -> i32 {
     let mut x: Option<Box<i32>> = Some(Box::new(0));
     let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x }));
     (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr as *mut Option<Box<SafePointer>>) });
-    return (unsafe { Consume_1(safe_ptr) });
+    assert!(((unsafe { Consume_1(safe_ptr,) }) == (60)));
+    return 0;
 }

@@ -141,7 +141,11 @@ fn main_0() -> i32 {
     let old_cost: Value<f64> = Rc::new(RefCell::new(
         ({ (*route1.borrow()).SetCost(({ (*route2.borrow()).SetCost(15_f64) })) }),
     ));
-    return ((((({ RandomRoute_0(route1.as_pointer()) }) + ({ RandomRoute_0(route2.as_pointer()) }))
-        as f64)
-        + (*old_cost.borrow())) as i32);
+    assert!(
+        ((((({ RandomRoute_0(route1.as_pointer(),) }) + ({ RandomRoute_0(route2.as_pointer(),) }))
+            as f64)
+            + (*old_cost.borrow()))
+            == 9_f64)
+    );
+    return 0;
 }

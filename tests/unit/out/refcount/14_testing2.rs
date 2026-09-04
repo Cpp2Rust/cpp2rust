@@ -12,5 +12,6 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<i32> = Rc::new(RefCell::new(1));
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer())));
-    return ((*ptr.borrow()).read());
+    assert!((((*ptr.borrow()).read()) == 1));
+    return 0;
 }

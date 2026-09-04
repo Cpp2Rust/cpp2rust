@@ -20,5 +20,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({ test_1(FnPtr::<fn() -> bool>::new(test1_0)) });
+    assert!((({ test_1(FnPtr::<fn() -> bool>::new(test1_0),) }) == 1));
+    return 0;
 }

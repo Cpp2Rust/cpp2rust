@@ -23,5 +23,6 @@ fn main_0() -> i32 {
     let x2: Value<i32> = Rc::new(RefCell::new((*out.borrow_mut()).prefix_dec()));
     (*out.borrow_mut()).prefix_inc();
     let x3: Value<i32> = Rc::new(RefCell::new((*out.borrow_mut()).postfix_dec()));
-    return (((*out.borrow_mut()).postfix_inc() + (*x2.borrow())) + (*x3.borrow()));
+    assert!(((((*out.borrow_mut()).postfix_inc() + (*x2.borrow())) + (*x3.borrow())) == 19));
+    return 0;
 }

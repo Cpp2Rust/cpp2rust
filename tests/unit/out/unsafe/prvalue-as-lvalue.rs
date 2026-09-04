@@ -18,5 +18,6 @@ unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
     let mut pa: *mut i32 = (&mut a as *mut i32);
     let b: *const i32 = (unsafe { foo_0(&(*pa) as *const i32) });
-    return (*b);
+    assert!(((*b) == (1)));
+    return 0;
 }

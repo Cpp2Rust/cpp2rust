@@ -220,5 +220,6 @@ fn main_0() -> i32 {
     let c: Value<isize> = Rc::new(RefCell::new((-20_i32 as isize)));
     (*a64.borrow_mut()) -= ((*c.borrow()) as i64);
     assert!(((*a64.borrow()) == 120_i64));
-    return (((*n.borrow()).wrapping_rem(7_usize)) as i32);
+    assert!(((((*n.borrow()).wrapping_rem(7_usize)) as i32) == 1));
+    return 0;
 }

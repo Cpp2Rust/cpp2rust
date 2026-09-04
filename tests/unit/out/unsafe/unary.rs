@@ -25,5 +25,6 @@ unsafe fn main_0() -> i32 {
     let mut x2: i32 = out.prefix_dec();
     out.prefix_inc();
     let mut x3: i32 = out.postfix_dec();
-    return (((out.postfix_inc()) + (x2)) + (x3));
+    assert!(((((out.postfix_inc()) + (x2)) + (x3)) == (19)));
+    return 0;
 }

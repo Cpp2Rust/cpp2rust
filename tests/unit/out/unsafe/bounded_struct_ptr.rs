@@ -22,5 +22,6 @@ unsafe fn main_0() -> i32 {
     let mut p1: *mut i32 = (&mut arr[(1) as usize].x1 as *mut i32);
     let mut a: i32 = (*p1);
     let mut p2: *mut Foo = (&mut arr[(0) as usize] as *mut Foo);
-    return ((a) + ((*p2).x2));
+    assert!((((a) + ((*p2).x2)) == (5)));
+    return 0;
 }

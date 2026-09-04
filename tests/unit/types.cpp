@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <inttypes.h>
@@ -17,5 +18,6 @@ int main() {
   int32_t xi3 = 32;
   int64_t xi4 = 64;
   bool b = (xu64 == 64ULL);
-  return xu8 + xu16 + xu32 + xu64 + xsz1 + xsz2 + xi1 + xi2 + xi3 + xi4;
+  assert(xu8 + xu16 + xu32 + xu64 + xsz1 + xsz2 + xi1 + xi2 + xi3 + xi4 == 352);
+  return 0;
 }

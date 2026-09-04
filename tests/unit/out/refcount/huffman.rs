@@ -426,11 +426,13 @@ fn main_0() -> i32 {
     let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), (*size.borrow())) }),
     ));
-    return ((((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
-        && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111))
-        as i32);
+    assert!(
+        ((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
+    );
+    return 0;
 }

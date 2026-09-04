@@ -107,5 +107,6 @@ fn main_0() -> i32 {
     ({ (*foo1.borrow()).method_i32(1) });
     ({ (*foo2.borrow()).foo_const() });
     ({ (*foo2.borrow()).method_i32_const(2) });
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 13));
+    return 0;
 }

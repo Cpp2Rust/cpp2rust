@@ -139,9 +139,13 @@ unsafe fn main_0() -> i32 {
     }
     k = 0;
     let value_0: *const u32 = (m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32);
-    return ((((((((m.len()).wrapping_add((x1 as usize))).wrapping_add((x2 as usize)))
-        .wrapping_add((x3 as usize)))
-    .wrapping_add((x4 as usize)))
-    .wrapping_add((x5 as usize)))
-    .wrapping_add(((*value_0) as usize))) as i32);
+    assert!(
+        ((((((((m.len()).wrapping_add((x1 as usize))).wrapping_add((x2 as usize)))
+            .wrapping_add((x3 as usize)))
+        .wrapping_add((x4 as usize)))
+        .wrapping_add((x5 as usize)))
+        .wrapping_add(((*value_0) as usize)))
+            == (21_usize))
+    );
+    return 0;
 }

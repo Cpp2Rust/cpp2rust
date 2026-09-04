@@ -35,5 +35,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return (unsafe { for_test_0(200) });
+    assert!(((unsafe { for_test_0(200,) }) == (400)));
+    return 0;
 }

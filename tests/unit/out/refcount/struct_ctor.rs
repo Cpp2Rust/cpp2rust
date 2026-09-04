@@ -64,7 +64,10 @@ fn main_0() -> i32 {
     let struct_with_ctor: Value<StructWithCtor> =
         Rc::new(RefCell::new(StructWithCtor::StructWithCtor({ 1 }, { 2 })));
     let x: Value<i32> = Rc::new(RefCell::new(3));
-    return (((((({ foo_0(x.as_pointer()) }).read()) == 3)
-        && ((({ (*struct_with_ctor.borrow()).x1() }).read()) == 2))
-        && ((({ (*struct_with_ctor.borrow()).x2() }).read()) == 1)) as i32);
+    assert!(
+        (((({ foo_0(x.as_pointer(),) }).read()) == 3)
+            && ((({ (*struct_with_ctor.borrow()).x1() }).read()) == 2))
+            && ((({ (*struct_with_ctor.borrow()).x2() }).read()) == 1)
+    );
+    return 0;
 }

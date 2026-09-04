@@ -69,5 +69,6 @@ fn main_0() -> i32 {
             (*square.borrow_mut()) += __rhs;
         }
     }
-    return (*square.borrow());
+    assert!(((*square.borrow()) == 144));
+    return 0;
 }

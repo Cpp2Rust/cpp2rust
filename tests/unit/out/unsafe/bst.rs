@@ -70,10 +70,13 @@ unsafe fn main_0() -> i32 {
     ptr1 = (unsafe { insert_1(ptr1, (&mut (*n2.as_deref_mut().unwrap()) as *mut node_t)) });
     ptr1 = (unsafe { insert_1(ptr1, (&mut (*n3.as_deref_mut().unwrap()) as *mut node_t)) });
     ptr1 = (unsafe { insert_1(ptr1, (&mut (*n4.as_deref_mut().unwrap()) as *mut node_t)) });
-    return (((((((((*(unsafe { find_0(ptr1, 0) })).value) == (0))
-        && (((*(unsafe { find_0(ptr1, 1) })).value) == (1)))
-        && (((*(unsafe { find_0(ptr1, 2) })).value) == (2)))
-        && (((*(unsafe { find_0(ptr1, 3) })).value) == (3)))
-        && (((*(unsafe { find_0(ptr1, 4) })).value) == (4)))
-        && ((unsafe { find_0(ptr1, 5) }).is_null())) as i32);
+    assert!(
+        (((((((*(unsafe { find_0(ptr1, 0,) })).value) == (0))
+            && (((*(unsafe { find_0(ptr1, 1,) })).value) == (1)))
+            && (((*(unsafe { find_0(ptr1, 2,) })).value) == (2)))
+            && (((*(unsafe { find_0(ptr1, 3,) })).value) == (3)))
+            && (((*(unsafe { find_0(ptr1, 4,) })).value) == (4)))
+            && ((unsafe { find_0(ptr1, 5,) }).is_null())
+    );
+    return 0;
 }

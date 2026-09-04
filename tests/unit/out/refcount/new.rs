@@ -13,5 +13,6 @@ fn main_0() -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(5)));
     let out: Value<i32> = Rc::new(RefCell::new(((*x.borrow()).read())));
     (*x.borrow()).delete();
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 5));
+    return 0;
 }

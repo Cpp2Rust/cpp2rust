@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int main() {
   int out = 0;
   int arr[5] = {1, 2, 3, 4, 0};
@@ -17,5 +19,6 @@ int main() {
   int *ptr = &arr[0];
   for (int i = 0; i < 5; ++i)
     out += ptr[i];
-  return out;
+  assert(out == 51);
+  return 0;
 }

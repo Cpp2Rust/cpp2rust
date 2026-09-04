@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 int main() {
@@ -10,5 +11,6 @@ int main() {
   int *g_ptr = g.get();
   g_ptr[0] = 13;
   g_ptr[1] = 14;
-  return g[0] + g[1];
+  assert(g[0] + g[1] == 27);
+  return 0;
 }

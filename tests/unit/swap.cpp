@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int identity(int x) { return x; }
 
 void swap_by_ptr(int *a, int *b) {
@@ -25,5 +27,6 @@ int main() {
   p = &a;
   swap_by_ptr(p, &b);
   swap_by_ref(a, c);
-  return c;
+  assert(c == 2);
+  return 0;
 }

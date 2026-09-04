@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int main() {
   int x = 0;
   int a[3] = {0, 1, 2};
@@ -13,5 +15,6 @@ int main() {
   int x2 = --out;
   ++out;
   int x3 = out--;
-  return out++ + x2 + x3;
+  assert(out++ + x2 + x3 == 19);
+  return 0;
 }

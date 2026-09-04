@@ -146,25 +146,28 @@ fn main_0() -> i32 {
     (*ptr1.borrow_mut()) = __rhs;
     let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
     (*ptr1.borrow_mut()) = __rhs;
-    return ((((((((*(*({ find_0((*ptr1.borrow()).clone(), 0) }).upgrade().deref())
-        .value
-        .borrow())
-        == 0)
-        && ((*(*({ find_0((*ptr1.borrow()).clone(), 1) }).upgrade().deref())
+    assert!(
+        ((((((*(*({ find_0((*ptr1.borrow()).clone(), 0,) }).upgrade().deref())
             .value
             .borrow())
-            == 1))
-        && ((*(*({ find_0((*ptr1.borrow()).clone(), 2) }).upgrade().deref())
-            .value
-            .borrow())
-            == 2))
-        && ((*(*({ find_0((*ptr1.borrow()).clone(), 3) }).upgrade().deref())
-            .value
-            .borrow())
-            == 3))
-        && ((*(*({ find_0((*ptr1.borrow()).clone(), 4) }).upgrade().deref())
-            .value
-            .borrow())
-            == 4))
-        && (({ find_0((*ptr1.borrow()).clone(), 5) }).is_null())) as i32);
+            == 0)
+            && ((*(*({ find_0((*ptr1.borrow()).clone(), 1,) }).upgrade().deref())
+                .value
+                .borrow())
+                == 1))
+            && ((*(*({ find_0((*ptr1.borrow()).clone(), 2,) }).upgrade().deref())
+                .value
+                .borrow())
+                == 2))
+            && ((*(*({ find_0((*ptr1.borrow()).clone(), 3,) }).upgrade().deref())
+                .value
+                .borrow())
+                == 3))
+            && ((*(*({ find_0((*ptr1.borrow()).clone(), 4,) }).upgrade().deref())
+                .value
+                .borrow())
+                == 4))
+            && (({ find_0((*ptr1.borrow()).clone(), 5,) }).is_null())
+    );
+    return 0;
 }

@@ -17,5 +17,6 @@ unsafe fn main_0() -> i32 {
     let mut y: i32 = 10;
     (*r) = y;
     y += 1;
-    return x;
+    assert!(((x) == (10)));
+    return 0;
 }

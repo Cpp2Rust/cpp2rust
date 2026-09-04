@@ -68,5 +68,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { foo1.method_i32(1) });
     (unsafe { foo2.foo_const() });
     (unsafe { foo2.method_i32_const(2) });
-    return out;
+    assert!(((out) == (13)));
+    return 0;
 }

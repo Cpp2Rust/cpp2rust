@@ -24,5 +24,6 @@ fn main_0() -> i32 {
     (*f.borrow_mut()) = Some(Rc::new(RefCell::new(9)));
     let __rhs = ({ fn_0((*f.borrow_mut()).take()) });
     (*f.borrow_mut()) = __rhs;
-    return (*(*f.borrow()).as_ref().unwrap().borrow());
+    assert!(((*(*f.borrow()).as_ref().unwrap().borrow()) == 10));
+    return 0;
 }

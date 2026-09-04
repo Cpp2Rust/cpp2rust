@@ -77,11 +77,14 @@ fn main_0() -> i32 {
         let _ptr = ({ (*(*t3.borrow()).upgrade().deref()).as_ptr() }).clone();
         _ptr.write(_ptr.read() + 10)
     };
-    return {
-        let _lhs = {
-            let _lhs = (*(*(*t3.borrow()).upgrade().deref()).x.borrow());
-            _lhs + (*(*(*t2.borrow()).upgrade().deref()).x.borrow())
-        };
-        _lhs + (*(*t1.borrow()).x.borrow())
-    };
+    assert!(
+        ({
+            let _lhs = {
+                let _lhs = (*(*(*t3.borrow()).upgrade().deref()).x.borrow());
+                _lhs + (*(*(*t2.borrow()).upgrade().deref()).x.borrow())
+            };
+            _lhs + (*(*t1.borrow()).x.borrow())
+        } == 75)
+    );
+    return 0;
 }

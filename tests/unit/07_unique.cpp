@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 std::unique_ptr<int> fn(std::unique_ptr<int> u) {
@@ -21,5 +22,6 @@ int main() {
   f = std::make_unique<int>(9);
   f = fn(std::move(f));
 
-  return *f;
+  assert(*f == 10);
+  return 0;
 }

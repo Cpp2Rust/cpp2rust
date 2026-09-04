@@ -223,5 +223,6 @@ unsafe fn main_0() -> i32 {
         weight: 5_f64,
     };
     let mut total_weight: f64 = (unsafe { MSTKruskal_2(&mut graph as *mut Graph) });
-    return (total_weight as i32);
+    assert!(((total_weight) == (19_f64)));
+    return 0;
 }

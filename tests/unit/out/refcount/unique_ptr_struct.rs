@@ -55,5 +55,6 @@ fn main_0() -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new(
         ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));
-    return (*s.borrow());
+    assert!(((*s.borrow()) == 30));
+    return 0;
 }

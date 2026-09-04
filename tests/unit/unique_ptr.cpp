@@ -87,5 +87,6 @@ int main() {
   std::unique_ptr<SafePointer> safe_ptr =
       std::make_unique<SafePointer>(SafePointer{std::move(x)});
   DoStuffWithSafePointer(safe_ptr);
-  return Consume(std::move(safe_ptr));
+  assert(Consume(std::move(safe_ptr)) == 60);
+  return 0;
 }

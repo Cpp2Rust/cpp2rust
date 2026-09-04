@@ -9,5 +9,5 @@ int main() {
   v.push_back(10);
   v.front() += 5;
   assert(v.front() == 15);
-  return v.front();
+  return 0;
 }

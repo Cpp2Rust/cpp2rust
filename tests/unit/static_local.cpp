@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int foo() {
   static int static_i;
   static float static_f;
@@ -12,4 +14,7 @@ int foo() {
   return kX1 + kX2 + static_i;
 }
 
-int main() { return foo() + foo() + foo(); }
+int main() {
+  assert(foo() + foo() + foo() == 15);
+  return 0;
+}

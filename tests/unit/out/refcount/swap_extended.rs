@@ -79,5 +79,6 @@ fn main_0() -> i32 {
     let l: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(11)))));
     let m: Value<Ptr<i32>> = Rc::new(RefCell::new((*l.borrow()).as_pointer()));
     write!(libcc2rs::cout(), "{:}\n", ((*m.borrow()).read()),);
-    return (*c.borrow());
+    assert!(((*c.borrow()) == 2));
+    return 0;
 }
