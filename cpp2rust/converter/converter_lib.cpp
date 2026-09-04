@@ -528,6 +528,16 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
             (ctor && ctor->isCopyOrMoveConstructor()))
                ? "self"
                : "_";
+  } else if (auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl)) {
+    // Expanded parameter packs share one name across the expansion
+    if (auto *fn = llvm::dyn_cast_or_null<clang::FunctionDecl>(
+            pdecl->getDeclContext());
+        fn && llvm::count_if(fn->parameters(), [&](const auto *p) {
+                return p->getName() == pdecl->getName();
+              }) > 1) {
+      name += '_';
+      name += std::to_string(pdecl->getFunctionScopeIndex());
+    }
   }
 
   return name;
