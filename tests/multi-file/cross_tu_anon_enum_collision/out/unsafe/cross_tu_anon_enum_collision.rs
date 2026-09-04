@@ -6,23 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_0 {
-    #[default]
-    ALPHA = 7,
-}
-impl From<i32> for anon_0 {
-    fn from(n: i32) -> anon_0 {
-        match n {
-            7 => anon_0::ALPHA,
-            _ => panic!("invalid anon_0 value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(anon_0);
+pub type anon_0 = u32;
+pub const anon_0_ALPHA: anon_0 = 7;
 pub unsafe fn a_value_1() -> i32 {
     let mut x: i32 = 0;
-    x |= (anon_0::ALPHA as i32);
+    x |= (anon_0_ALPHA as i32);
     return x;
 }
 pub fn main() {
@@ -35,22 +23,10 @@ unsafe fn main_0() -> i32 {
     assert!(((((unsafe { b_value_2() }) == (9)) as i32) != 0));
     return 0;
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_3 {
-    #[default]
-    BETA = 9,
-}
-impl From<i32> for anon_3 {
-    fn from(n: i32) -> anon_3 {
-        match n {
-            9 => anon_3::BETA,
-            _ => panic!("invalid anon_3 value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(anon_3);
+pub type anon_3 = u32;
+pub const anon_3_BETA: anon_3 = 9;
 pub unsafe fn b_value_2() -> i32 {
     let mut x: i32 = 0;
-    x |= (anon_3::BETA as i32);
+    x |= (anon_3_BETA as i32);
     return x;
 }

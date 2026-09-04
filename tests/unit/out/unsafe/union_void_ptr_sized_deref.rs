@@ -6,24 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Width_enum {
-    #[default]
-    W_64 = 0,
-    W_32 = 1,
-    W_16 = 2,
-}
-impl From<i32> for Width_enum {
-    fn from(n: i32) -> Width_enum {
-        match n {
-            0 => Width_enum::W_64,
-            1 => Width_enum::W_32,
-            2 => Width_enum::W_16,
-            _ => panic!("invalid Width_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Width_enum);
+pub type Width_enum = u32;
+pub const Width_enum_W_64: Width_enum = 0;
+pub const Width_enum_W_32: Width_enum = 1;
+pub const Width_enum_W_16: Width_enum = 2;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub union anon_0 {
@@ -47,15 +33,15 @@ pub unsafe fn write_count_1(mut s: *mut Sink, mut count: i64) {
     'switch: {
         let __match_cond = ((*s).width as u32);
         match __match_cond {
-            __v if __v == ((Width_enum::W_64 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_64 as i32) as u32) => {
                 (*((*s).out.handle as *mut i64)) = count;
                 break 'switch;
             }
-            __v if __v == ((Width_enum::W_32 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_32 as i32) as u32) => {
                 (*((*s).out.handle as *mut i32)) = (count as i32);
                 break 'switch;
             }
-            __v if __v == ((Width_enum::W_16 as i32) as u32) => {
+            __v if __v == ((Width_enum_W_16 as i32) as u32) => {
                 (*((*s).out.handle as *mut i16)) = (count as i16);
                 break 'switch;
             }
@@ -73,15 +59,15 @@ unsafe fn main_0() -> i32 {
     let mut buf32: i32 = 0;
     let mut buf16: i16 = 0_i16;
     let mut s: Sink = <Sink>::default();
-    s.width = Width_enum::W_64;
+    s.width = Width_enum_W_64;
     s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 1234605616436508552_i64) });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
-    s.width = Width_enum::W_32;
+    s.width = Width_enum_W_32;
     s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 305419896_i64) });
     assert!(((((buf32) == (305419896)) as i32) != 0));
-    s.width = Width_enum::W_16;
+    s.width = Width_enum_W_16;
     s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 4660_i64) });
     assert!(((((buf16 as i32) == (4660)) as i32) != 0));
