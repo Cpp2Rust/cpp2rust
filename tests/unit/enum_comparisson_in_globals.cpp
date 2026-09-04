@@ -1,9 +1,6 @@
 #include <cassert>
 
-enum E {
-  A,
-  B
-};
+enum E { A, B };
 
 int global = E::A != E::B;
 
