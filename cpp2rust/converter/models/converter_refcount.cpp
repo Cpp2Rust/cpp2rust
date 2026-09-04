@@ -1330,11 +1330,10 @@ bool ConverterRefCount::VisitFunctionPointerCast(
 
 bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
+    StrCat(token::kRef);
+    PushParen paren(*this);
     PushExprKind push(*this, ExprKind::Void);
     Convert(expr->getSubExpr());
-    if (!TypeIsCopyable(expr->getSubExpr()->getType()) && !isFresh()) {
-      StrCat(".clone()");
-    }
     return false;
   }
   if (expr->getCastKind() == clang::CK_NullToPointer) {

@@ -9,8 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<CFile> {
     let path: Value<Ptr<u8>> = Rc::new(RefCell::new(path));
     let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(mode));
-    (*path.borrow()).clone();
-    (*mode.borrow()).clone();
+    &(*path.borrow());
+    &(*mode.borrow());
     return Ptr::null();
 }
 pub fn main() {

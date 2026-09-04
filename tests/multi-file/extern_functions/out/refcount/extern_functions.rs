@@ -24,8 +24,8 @@ pub fn unrelated3_3() -> i32 {
 }
 pub fn helper_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    ({ unrelated1_1() });
-    ({ unrelated2_2() });
-    ({ unrelated3_3() });
+    &({ unrelated1_1() });
+    &({ unrelated2_2() });
+    &({ unrelated3_3() });
     return ((*x.borrow()) + 1);
 }
