@@ -99,6 +99,7 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 unsigned GetArraySize(clang::QualType array_type);
 
 std::string GetID(const clang::Decl *decl);
+std::string GetMethodID(const clang::CXXMethodDecl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 

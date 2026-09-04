@@ -626,22 +626,6 @@ static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
   return false;
 }
 
-void Converter::materializeTemplateSpecialization(clang::CXXRecordDecl *decl) {
-  for (auto method : decl->methods()) {
-    const clang::FunctionDecl *definition = nullptr;
-    if (method->isDefined(definition)) {
-      continue;
-    }
-
-    if (auto pattern = method->getTemplateInstantiationPattern()) {
-      if (pattern->doesThisDeclarationHaveABody()) {
-        sema_->InstantiateFunctionDefinition(method->getLocation(), method,
-                                             /*Recursive=*/true);
-      }
-    }
-  }
-}
-
 bool IsPointerType(clang::QualType qual_type) {
   return qual_type->isPointerType() ||
          (qual_type->isArrayType() &&
@@ -750,6 +734,23 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
   return false;
 }
 
+static bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  // Virtual methods go into the base trait impl, destructors into Drop
+  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
 void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Enums and static variables. In rust they live outside the record
   for (auto *d : decl->decls()) {
@@ -809,17 +810,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     auto struct_name = GetRecordName(cxx);
 
-    ConvertCXXMethodDecls(
-        cxx, std::format("{} {}", keyword::kImpl, struct_name),
-        [](auto *method) {
-          return !method->isImplicit() &&
-                 !(method->getDefinition() &&
-                   method->getDefinition()->isDefaulted()) &&
-                 (method->isThisDeclarationADefinition() ||
-                  clang::isa<clang::CXXConstructorDecl>(method)) &&
-                 !method->isVirtual() &&
-                 !clang::isa<clang::CXXDestructorDecl>(method);
-        });
+    ConvertCXXMethodDecls(cxx,
+                          std::format("{} {}", keyword::kImpl, struct_name),
+                          IsEmittableMethod);
 
     if (cxx->bases_begin() != cxx->bases_end()) {
       ConvertCXXMethodDecls(
@@ -867,10 +860,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-  if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
-    materializeTemplateSpecialization(decl);
-  }
-
   decl->dump(log());
 
   Mapper::AddRuleForUserDefinedType(decl);
@@ -888,6 +877,15 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
 
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
+      // Other translation units may instantiate members this one did not.
+      if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
+        ConvertCXXMethodDecls(
+            decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
+            [](auto *method) {
+              return IsEmittableMethod(method) && method->hasBody() &&
+                     !decl_ids_.contains(GetMethodID(method));
+            });
+      }
       return false;
     }
 
@@ -925,6 +923,12 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   decl->dump(log());
   if (!IsConvertibleCXXMethodDecl(decl)) {
+    return false;
+  }
+  if (!decl->isPureVirtual() && !decl->hasBody()) {
+    return false;
+  }
+  if (!decl_ids_.insert(GetMethodID(decl)).second) {
     return false;
   }
   curr_function_ = decl;

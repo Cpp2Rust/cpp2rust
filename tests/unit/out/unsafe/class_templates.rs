@@ -18,9 +18,6 @@ impl MyContainer_int_ {
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
-    pub unsafe fn back_const(&self) -> *const i32 {
-        return ((self.vec_).last().unwrap());
-    }
     pub unsafe fn back(&mut self) -> *mut i32 {
         return ((self.vec_).last_mut().unwrap());
     }
@@ -47,9 +44,6 @@ impl MyContainer_char_ {
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
-    pub unsafe fn back_const(&self) -> *const libc::c_char {
-        return ((self.vec_).last().unwrap());
-    }
     pub unsafe fn back(&mut self) -> *mut libc::c_char {
         return ((self.vec_).last_mut().unwrap());
     }
@@ -75,9 +69,6 @@ impl MyContainer_float_ {
     }
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
-    }
-    pub unsafe fn back_const(&self) -> *const f32 {
-        return ((self.vec_).last().unwrap());
     }
     pub unsafe fn back(&mut self) -> *mut f32 {
         return ((self.vec_).last_mut().unwrap());

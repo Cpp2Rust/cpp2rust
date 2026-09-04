@@ -17,9 +17,6 @@ impl MyContainer_int_ {
     pub fn size(&self) -> usize {
         return (*self.vec_.borrow()).len();
     }
-    pub fn back_const(&self) -> Ptr<i32> {
-        return (self.vec_.as_pointer() as Ptr<i32>).to_last();
-    }
     pub fn back(&self) -> Ptr<i32> {
         return (self.vec_.as_pointer() as Ptr<i32>).to_last();
     }
@@ -66,9 +63,6 @@ impl MyContainer_char_ {
     pub fn size(&self) -> usize {
         return (*self.vec_.borrow()).len();
     }
-    pub fn back_const(&self) -> Ptr<u8> {
-        return (self.vec_.as_pointer() as Ptr<u8>).to_last();
-    }
     pub fn back(&self) -> Ptr<u8> {
         return (self.vec_.as_pointer() as Ptr<u8>).to_last();
     }
@@ -114,9 +108,6 @@ impl MyContainer_float_ {
     }
     pub fn size(&self) -> usize {
         return (*self.vec_.borrow()).len();
-    }
-    pub fn back_const(&self) -> Ptr<f32> {
-        return (self.vec_.as_pointer() as Ptr<f32>).to_last();
     }
     pub fn back(&self) -> Ptr<f32> {
         return (self.vec_.as_pointer() as Ptr<f32>).to_last();

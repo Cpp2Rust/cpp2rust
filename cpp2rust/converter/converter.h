@@ -931,8 +931,6 @@ protected:
   bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 
 private:
-  void materializeTemplateSpecialization(clang::CXXRecordDecl *decl);
-
   std::string getIntegerLiteral(clang::IntegerLiteral *expr, bool incl_type,
                                 const clang::QualType *type = nullptr);
   const char *keyword_unsafe_;
