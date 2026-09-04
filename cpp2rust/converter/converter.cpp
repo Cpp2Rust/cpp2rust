@@ -435,25 +435,17 @@ void Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
 }
 
 void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
-  if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
-    if (CompoundHasTopLevelLabel(compound)) {
-      ConvertGotoBlock(compound);
-      if (!decl->getReturnType()->isVoidType()) {
-        StrCat(R"(panic!("ub: non-void function does not return a value"))");
-      }
-      return;
-    }
+  ConvertBodyStmts(decl->getBody());
+  if (decl->getReturnType()->isVoidType()) {
+    return;
   }
-
-  Convert(decl->getBody());
-  if (!decl->getReturnType()->isVoidType()) {
-    if (auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody())) {
-      if (!compound->body_empty()) {
-        if (!clang::isa<clang::ReturnStmt>(compound->body_back())) {
-          StrCat(R"(panic!("ub: non-void function does not return a value"))");
-        }
-      }
-    }
+  auto compound = clang::dyn_cast<clang::CompoundStmt>(decl->getBody());
+  if (!compound || compound->body_empty()) {
+    return;
+  }
+  if (CompoundHasTopLevelLabel(compound) ||
+      !clang::isa<clang::ReturnStmt>(compound->body_back())) {
+    StrCat(R"(panic!("ub: non-void function does not return a value"))");
   }
 }
 
@@ -1057,7 +1049,7 @@ void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   }
 
   StrCat(token::kSemiColon);
-  Convert(decl->getBody());
+  ConvertBodyStmts(decl->getBody());
   StrCat("this");
 }
 
@@ -1127,14 +1119,28 @@ bool Converter::Convert(clang::Stmt *stmt) {
   return exited_visit;
 }
 
-bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
-  if (CompoundHasTopLevelLabel(stmt)) {
-    ConvertGotoBlock(stmt);
-    return false;
+void Converter::ConvertBody(clang::Stmt *body) {
+  PushBrace brace(*this);
+  ConvertBodyStmts(body);
+}
+
+void Converter::ConvertBodyStmts(clang::Stmt *body) {
+  auto *compound = clang::dyn_cast_or_null<clang::CompoundStmt>(body);
+  if (!compound) {
+    Convert(body);
+    return;
   }
-  for (auto *child : stmt->body()) {
+  if (CompoundHasTopLevelLabel(compound)) {
+    ConvertGotoBlock(compound);
+    return;
+  }
+  for (auto *child : compound->body()) {
     Convert(child);
   }
+}
+
+bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
+  ConvertBody(stmt);
   return false;
 }
 
@@ -1172,17 +1178,13 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
-  {
-    PushBrace brace(*this);
-    Convert(stmt->getThen());
-  }
+  ConvertBody(stmt->getThen());
   if (stmt->hasElseStorage()) {
     StrCat(keyword::kElse);
     if (clang::isa<clang::IfStmt>(stmt->getElse())) {
       Convert(stmt->getElse());
     } else {
-      PushBrace brace(*this);
-      Convert(stmt->getElse());
+      ConvertBody(stmt->getElse());
     }
   }
   return false;
@@ -1193,12 +1195,9 @@ bool Converter::VisitWhileStmt(clang::WhileStmt *stmt) {
   StrCat("'loop_:");
   StrCat(keyword::kWhile);
   ConvertCondition(stmt->getCond());
-  {
-    PushBrace brace(*this);
-    curr_for_inc_.emplace_back(nullptr);
-    Convert(stmt->getBody());
-    curr_for_inc_.pop_back();
-  }
+  curr_for_inc_.emplace_back(nullptr);
+  ConvertBody(stmt->getBody());
+  curr_for_inc_.pop_back();
   return false;
 }
 
@@ -1216,7 +1215,7 @@ bool Converter::VisitDoStmt(clang::DoStmt *stmt) {
     PushBrace loop_brace(*this);
     StrCat(control_var, token::kAssign, keyword::kFalse, token::kSemiColon);
     curr_for_inc_.emplace_back(nullptr);
-    Convert(stmt->getBody());
+    ConvertBodyStmts(stmt->getBody());
     curr_for_inc_.pop_back();
   }
   return false;
@@ -1235,7 +1234,7 @@ bool Converter::VisitForStmt(clang::ForStmt *stmt) {
   {
     PushBrace brace(*this);
     curr_for_inc_.emplace_back(stmt->getInc());
-    Convert(stmt->getBody());
+    ConvertBodyStmts(stmt->getBody());
     curr_for_inc_.pop_back();
     Convert(stmt->getInc());
     StrCat(token::kSemiColon);
@@ -1273,7 +1272,7 @@ void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
   if (map_iter_decl)
     skip.emplace(*this, map_iter_decl);
   curr_for_inc_.emplace_back(nullptr);
-  Convert(stmt->getBody());
+  ConvertBodyStmts(stmt->getBody());
   curr_for_inc_.pop_back();
 }
 
