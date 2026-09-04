@@ -6,21 +6,16 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub type Color = u32;
-pub const Color_RED: Color = 0;
-pub const Color_GREEN: Color = 1;
-pub const Color_BLUE: Color = 2;
+pub type E = u32;
+pub const E_A: E = 0;
+pub const E_B: E = 1;
+pub static mut global_0: i32 = unsafe { (((E_A as i32) != (E_B as i32)) as i32) };
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut n: i32 = 3;
-    let mut c: Color = ((n) as Color);
-    return if ((c as i32) == (Color_BLUE as i32)) {
-        0
-    } else {
-        1
-    };
+    assert!(((global_0) == (1)));
+    return 0;
 }

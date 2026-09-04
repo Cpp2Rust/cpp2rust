@@ -6,54 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_0 {
-    #[default]
-    FIRST_A = 0,
-    FIRST_B = 1,
-}
-impl From<i32> for anon_0 {
-    fn from(n: i32) -> anon_0 {
-        match n {
-            0 => anon_0::FIRST_A,
-            1 => anon_0::FIRST_B,
-            _ => panic!("invalid anon_0 value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(anon_0);
-impl ByteRepr for anon_0 {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <anon_0>::from(i32::from_bytes(buf))
-    }
-}
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_1 {
-    #[default]
-    SECOND_A = 0,
-    SECOND_B = 1,
-}
-impl From<i32> for anon_1 {
-    fn from(n: i32) -> anon_1 {
-        match n {
-            0 => anon_1::SECOND_A,
-            1 => anon_1::SECOND_B,
-            _ => panic!("invalid anon_1 value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(anon_1);
-impl ByteRepr for anon_1 {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <anon_1>::from(i32::from_bytes(buf))
-    }
-}
+pub type anon_0 = u32;
+pub const anon_0_FIRST_A: anon_0 = 0;
+pub const anon_0_FIRST_B: anon_0 = 1;
+pub type anon_1 = u32;
+pub const anon_1_SECOND_A: anon_1 = 0;
+pub const anon_1_SECOND_B: anon_1 = 1;
 #[derive(Default)]
 pub struct S {
     pub a: Value<i32>,
@@ -79,54 +37,12 @@ impl ByteRepr for S {
         }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum TdEnum {
-    #[default]
-    TD_A = 0,
-    TD_B = 1,
-}
-impl From<i32> for TdEnum {
-    fn from(n: i32) -> TdEnum {
-        match n {
-            0 => TdEnum::TD_A,
-            1 => TdEnum::TD_B,
-            _ => panic!("invalid TdEnum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(TdEnum);
-impl ByteRepr for TdEnum {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <TdEnum>::from(i32::from_bytes(buf))
-    }
-}
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum anon_2 {
-    #[default]
-    FIELD_A = 0,
-    FIELD_B = 1,
-}
-impl From<i32> for anon_2 {
-    fn from(n: i32) -> anon_2 {
-        match n {
-            0 => anon_2::FIELD_A,
-            1 => anon_2::FIELD_B,
-            _ => panic!("invalid anon_2 value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(anon_2);
-impl ByteRepr for anon_2 {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <anon_2>::from(i32::from_bytes(buf))
-    }
-}
+pub type TdEnum = u32;
+pub const TdEnum_TD_A: TdEnum = 0;
+pub const TdEnum_TD_B: TdEnum = 1;
+pub type anon_2 = u32;
+pub const anon_2_FIELD_A: anon_2 = 0;
+pub const anon_2_FIELD_B: anon_2 = 1;
 #[derive(Default)]
 pub struct WithAnonField {
     pub a: Value<i32>,
@@ -160,41 +76,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    #[derive(Clone, Copy, PartialEq, Debug, Default)]
-    enum anon_3 {
-        #[default]
-        THIRD_A = 0,
-        THIRD_B = 1,
-    }
-    impl From<i32> for anon_3 {
-        fn from(n: i32) -> anon_3 {
-            match n {
-                0 => anon_3::THIRD_A,
-                1 => anon_3::THIRD_B,
-                _ => panic!("invalid anon_3 value: {}", n),
-            }
-        }
-    }
-    libcc2rs::impl_enum_inc_dec!(anon_3);
-    impl ByteRepr for anon_3 {
-        fn to_bytes(&self, buf: &mut [u8]) {
-            (*self as i32).to_bytes(buf);
-        }
-        fn from_bytes(buf: &[u8]) -> Self {
-            <anon_3>::from(i32::from_bytes(buf))
-        }
-    };
-    assert!(((anon_0::FIRST_A as i32) != (anon_0::FIRST_B as i32)));
-    assert!(((anon_1::SECOND_A as i32) != (anon_1::SECOND_B as i32)));
-    assert!(((anon_3::THIRD_A as i32) != (anon_3::THIRD_B as i32)));
-    let td: Value<TdEnum> = Rc::new(RefCell::new(TdEnum::TD_A));
-    assert!((((*td.borrow()) as i32) == (TdEnum::TD_A as i32)));
-    (*td.borrow_mut()) = TdEnum::TD_B;
-    assert!((((*td.borrow()) as i32) == (TdEnum::TD_B as i32)));
+    pub type anon_3 = u32;
+    pub const anon_3_THIRD_A: anon_3 = 0;
+    pub const anon_3_THIRD_B: anon_3 = 1;;
+    assert!(((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)));
+    assert!(((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)));
+    assert!(((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)));
+    let td: Value<TdEnum> = Rc::new(RefCell::new(TdEnum_TD_A));
+    assert!((((*td.borrow()) as i32) == (TdEnum_TD_A as i32)));
+    (*td.borrow_mut()) = TdEnum_TD_B;
+    assert!((((*td.borrow()) as i32) == (TdEnum_TD_B as i32)));
     let w: Value<WithAnonField> = Rc::new(RefCell::new(<WithAnonField>::default()));
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_A;
-    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2::FIELD_A as i32)));
-    (*(*w.borrow()).field.borrow_mut()) = anon_2::FIELD_B;
-    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2::FIELD_B as i32)));
+    (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_A;
+    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2_FIELD_A as i32)));
+    (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_B;
+    assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2_FIELD_B as i32)));
     return 0;
 }

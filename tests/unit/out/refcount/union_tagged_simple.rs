@@ -6,30 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Kind_enum {
-    #[default]
-    KIND_NONE = 0,
-    KIND_DONE = 1,
-}
-impl From<i32> for Kind_enum {
-    fn from(n: i32) -> Kind_enum {
-        match n {
-            0 => Kind_enum::KIND_NONE,
-            1 => Kind_enum::KIND_DONE,
-            _ => panic!("invalid Kind_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Kind_enum);
-impl ByteRepr for Kind_enum {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Kind_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Kind_enum = u32;
+pub const Kind_enum_KIND_NONE: Kind_enum = 0;
+pub const Kind_enum_KIND_DONE: Kind_enum = 1;
 pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
@@ -106,17 +85,17 @@ pub fn main() {
 fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
     let m1: Value<Event> = <Value<Event>>::default();
-    (*(*m1.borrow()).kind.borrow_mut()) = Kind_enum::KIND_DONE;
+    (*(*m1.borrow()).kind.borrow_mut()) = Kind_enum_KIND_DONE;
     (*(*m1.borrow()).handle.borrow_mut()) = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (*(*m1.borrow()).payload.borrow_mut()).code().write(42);
     assert!(
-        (((((*(*m1.borrow()).kind.borrow()) as u32) == ((Kind_enum::KIND_DONE as i32) as u32))
+        (((((*(*m1.borrow()).kind.borrow()) as u32) == ((Kind_enum_KIND_DONE as i32) as u32))
             as i32)
             != 0)
     );
     assert!((((((*(*m1.borrow()).payload.borrow()).code().read()) == 42) as i32) != 0));
     let m2: Value<Event> = <Value<Event>>::default();
-    (*(*m2.borrow()).kind.borrow_mut()) = Kind_enum::KIND_NONE;
+    (*(*m2.borrow()).kind.borrow_mut()) = Kind_enum_KIND_NONE;
     (*(*m2.borrow()).handle.borrow_mut()) = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (*(*m2.borrow()).payload.borrow_mut())
         .obj()

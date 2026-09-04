@@ -45,8 +45,6 @@ public:
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
-  void AddByteReprTrait(const clang::EnumDecl *decl) override;
-
   bool
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
 

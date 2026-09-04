@@ -6,24 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Code {
-    #[default]
-    CODE_OK = 0,
-    CODE_ERR = 1,
-    CODE_FATAL = 2,
-}
-impl From<i32> for Code {
-    fn from(n: i32) -> Code {
-        match n {
-            0 => Code::CODE_OK,
-            1 => Code::CODE_ERR,
-            2 => Code::CODE_FATAL,
-            _ => panic!("invalid Code value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Code);
+pub type Code = u32;
+pub const Code_CODE_OK: Code = 0;
+pub const Code_CODE_ERR: Code = 1;
+pub const Code_CODE_FATAL: Code = 2;
 pub static mut side_effect_0: i32 = unsafe { 0 };
 pub unsafe fn observe_1(mut v: i32) -> i32 {
     side_effect_0.prefix_inc();
@@ -47,7 +33,7 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut i32 = (&mut storage as *mut i32);
     let mut np: *mut i32 = std::ptr::null_mut();
     let mut u: u32 = 4_u32;
-    let mut code: Code = Code::CODE_OK;
+    let mut code: Code = Code_CODE_OK;
     if ((((n != 0) && (!(p).is_null())) as i32) != 0) {
         assert!((1 != 0));
     }
@@ -61,7 +47,7 @@ unsafe fn main_0() -> i32 {
         assert!((0 != 0));
     }
     if ((((((((((n != 0) && (u != 0)) as i32) != 0) && (!(p).is_null())) as i32) != 0)
-        && ((((code as u32) == ((Code::CODE_OK as i32) as u32)) as i32) != 0)) as i32)
+        && ((((code as u32) == ((Code_CODE_OK as i32) as u32)) as i32) != 0)) as i32)
         != 0)
     {
         assert!((1 != 0));

@@ -34,30 +34,9 @@ impl ByteRepr for registry {
         }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum field {
-    #[default]
-    FIELD_SLOT = 0,
-    FIELD_LEVEL = 1,
-}
-impl From<i32> for field {
-    fn from(n: i32) -> field {
-        match n {
-            0 => field::FIELD_SLOT,
-            1 => field::FIELD_LEVEL,
-            _ => panic!("invalid field value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(field);
-impl ByteRepr for field {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <field>::from(i32::from_bytes(buf))
-    }
-}
+pub type field = u32;
+pub const field_FIELD_SLOT: field = 0;
+pub const field_FIELD_LEVEL: field = 1;
 pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i32 {
     let r: Value<Ptr<registry>> = Rc::new(RefCell::new(r));
     let field: Value<field> = Rc::new(RefCell::new(field));
@@ -67,12 +46,12 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
     'switch: {
         let __match_cond = ((*field.borrow()) as u32);
         match __match_cond {
-            __v if __v == ((field::FIELD_SLOT as i32) as u32) => {
+            __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
                 (*(*(*r.borrow()).upgrade().deref()).slot.borrow_mut()) =
                     (*ap.borrow_mut()).arg::<AnyPtr>();
                 break 'switch;
             }
-            __v if __v == ((field::FIELD_LEVEL as i32) as u32) => {
+            __v if __v == ((field_FIELD_LEVEL as i32) as u32) => {
                 (*(*(*r.borrow()).upgrade().deref()).level.borrow_mut()) =
                     (*ap.borrow_mut()).arg::<i64>();
                 break 'switch;
@@ -98,14 +77,14 @@ fn main_0() -> i32 {
         (((({
             registry_update_0(
                 (r.as_pointer()),
-                field::FIELD_SLOT,
+                field_FIELD_SLOT,
                 &[(payload.as_pointer()).into()],
             )
         }) == 0) as i32)
             != 0)
     );
     assert!(
-        (((({ registry_update_0((r.as_pointer()), field::FIELD_LEVEL, &[(5_i64).into(),]) }) == 0)
+        (((({ registry_update_0((r.as_pointer()), field_FIELD_LEVEL, &[(5_i64).into(),]) }) == 0)
             as i32)
             != 0)
     );

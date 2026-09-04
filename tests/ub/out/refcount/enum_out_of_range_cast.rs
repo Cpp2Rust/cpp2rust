@@ -6,39 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(3));
-    let c: Value<Color> = Rc::new(RefCell::new(Color::from((*n.borrow()))));
-    return if (((*c.borrow()) as i32) == (Color::BLUE as i32)) {
+    let c: Value<Color> = Rc::new(RefCell::new(((*n.borrow()) as Color)));
+    return if (((*c.borrow()) as i32) == (Color_BLUE as i32)) {
         0
     } else {
         1

@@ -2070,25 +2070,24 @@ bool Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
 
 void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
                                              clang::Expr *from) {
-  // Short circuit `Enum::from(X as i32)` to `X`
+  // Short circuit `(X as i32) as Enum` to `X`
   if (auto ref =
           clang::dyn_cast<clang::DeclRefExpr>(from->IgnoreParenImpCasts())) {
     if (auto ec = clang::dyn_cast<clang::EnumConstantDecl>(ref->getDecl())) {
       auto src_enum = clang::dyn_cast<clang::EnumDecl>(ec->getDeclContext());
       auto dst_enum = to->getType()->getAs<clang::EnumType>();
       if (src_enum && dst_enum && dst_enum->getDecl() == src_enum) {
-        StrCat(std::format("{}::{}", GetRecordName(src_enum),
-                           std::string_view(ec->getName())));
+        StrCat(EnumeratorName(ec));
         return;
       }
     }
   }
-  StrCat(GetUnsafeTypeAsString(to->getType()), "::from");
   PushParen paren(*this);
-  Convert(from);
-  if (!from->getType()->isSpecificBuiltinType(clang::BuiltinType::Int)) {
-    StrCat(keyword::kAs, "i32");
+  {
+    PushParen inner(*this);
+    Convert(from);
   }
+  StrCat(keyword::kAs, GetUnsafeTypeAsString(to->getType()));
 }
 
 void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
@@ -2107,11 +2106,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   PushParen paren(*this);
   Convert(sub_expr);
   StrCat(token::kDiff);
-  if (sub_expr->getType()->isEnumeralType()) {
-    StrCat(GetUnsafeTypeAsString(sub_expr->getType()), "::from(0)");
-  } else /* sub_expr->getType()->isIntegerType() */ {
-    StrCat(token::kZero);
-  }
+  StrCat(token::kZero);
 }
 
 bool Converter::IsCastRedundantInRust(clang::Expr *expr,
@@ -2657,14 +2652,11 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (auto enum_constant = clang::dyn_cast<clang::EnumConstantDecl>(decl)) {
-    auto qualified = std::format("{}::{}",
-                                 GetRecordName(clang::dyn_cast<clang::EnumDecl>(
-                                     enum_constant->getDeclContext())),
-                                 std::string_view(enum_constant->getName()));
+    auto name = EnumeratorName(enum_constant);
     if (!expr->getType()->isEnumeralType()) {
-      return std::format("({} as i32)", qualified);
+      return std::format("({} as i32)", name);
     }
-    return qualified;
+    return name;
   }
 
   if (IsGlobalVar(expr)) {
@@ -3237,50 +3229,23 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
     return false;
   }
   Mapper::AddRuleForUserDefinedType(decl);
-  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
-                     {"Clone", "Copy", "PartialEq", "Debug", "Default"});
-  StrCat("#[derive(Clone, Copy, PartialEq, Debug, Default)]");
-  StrCat(std::format("enum {}", GetRecordName(decl)));
-  StrCat('{');
-  bool first_enumerator = true;
+  auto name = GetRecordName(decl);
+  StrCat(std::format("pub type {} = {};", name,
+                     GetUnsafeTypeAsString(decl->getIntegerType())));
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    if (first_enumerator) {
-      StrCat("#[default]");
-      first_enumerator = false;
-    }
-    StrCat(std::format("{} = {},", std::string_view(e->getName()),
+    StrCat(std::format("pub const {}: {} = {};", EnumeratorName(e), name,
                        std::string_view(init.data(), init.size())));
   }
-  StrCat('}');
-
-  AddFromImpl(decl);
-  AddIncDecImpls(decl);
-  AddByteReprTrait(decl);
   return false;
 }
 
-void Converter::AddFromImpl(clang::EnumDecl *decl) {
-  auto name = GetRecordName(decl);
-  StrCat(std::format("impl From<i32> for {}", name));
-  PushBrace impl(*this);
-  StrCat(std::format("fn from(n: i32) -> {}", name));
-  PushBrace fn(*this);
-  StrCat("match n");
-  PushBrace match(*this);
-  for (auto e : decl->enumerators()) {
-    llvm::SmallVector<char, 32> init;
-    e->getInitVal().toString(init, 10);
-    StrCat(std::format("{} => {}::{},",
-                       std::string_view(init.data(), init.size()), name,
-                       std::string_view(e->getName())));
-  }
-  StrCat(std::format("_ => panic!(\"invalid {} value: {{}}\", n),", name));
-}
-
-void Converter::AddIncDecImpls(clang::EnumDecl *decl) {
-  StrCat(std::format("libcc2rs::impl_enum_inc_dec!({});", GetRecordName(decl)));
+std::string
+Converter::EnumeratorName(const clang::EnumConstantDecl *decl) const {
+  auto *enum_decl = clang::cast<clang::EnumDecl>(decl->getDeclContext());
+  return std::format("{}_{}", GetRecordName(enum_decl),
+                     std::string_view(decl->getName()));
 }
 
 bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
@@ -3570,9 +3535,10 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
 
   if (qual_type->isEnumeralType()) {
     auto enum_decl = qual_type->castAs<clang::EnumType>()->getDecl();
-    return std::format(
-        "{}::{}", GetRecordName(enum_decl),
-        std::string_view(enum_decl->enumerator_begin()->getName()));
+    if (enum_decl->enumerators().empty()) {
+      return std::string(1, token::kZero);
+    }
+    return EnumeratorName(*enum_decl->enumerator_begin());
   }
 
   return std::format("<{}>::default()", ToString(qual_type));
@@ -4048,8 +4014,6 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
 }
 
 void Converter::AddByteReprTrait(const clang::RecordDecl *decl) {}
-
-void Converter::AddByteReprTrait(const clang::EnumDecl *decl) {}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
                                                    clang::Expr *expr) {
