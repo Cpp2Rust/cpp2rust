@@ -558,7 +558,6 @@ protected:
 
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
 
-
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
                                      clang::Expr *expr);
