@@ -3213,6 +3213,14 @@ bool Converter::VisitTypeTraitExpr(clang::TypeTraitExpr *expr) {
   return false;
 }
 
+bool Converter::VisitSizeOfPackExpr(clang::SizeOfPackExpr *expr) {
+  clang::Expr::EvalResult result;
+  ENSURE(expr->EvaluateAsInt(result, ctx_));
+  StrCat(std::to_string(result.Val.getInt().getExtValue()));
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   std::string member_path;
   for (unsigned i = 0; i < expr->getNumComponents(); ++i) {
