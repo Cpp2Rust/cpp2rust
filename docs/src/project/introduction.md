@@ -20,8 +20,8 @@ command line argument for debugging and performance comparisons.
 
 ## Runtime library (`libcc2rs`)
 
-The generated code relies on a runtime library designed to simplify the
-translation process. C pointers are converted into the `Ptr<T>` type provided by
-`libcc2rs`. `Ptr<T>` models C pointer semantics, including null, arithmetic, and
-aliasing, while satisfying Rust's borrow checker through checked run-time
-operations.
+The generated code relies on a [runtime library](../runtime/overview.md)
+designed to simplify the translation process. C pointers are converted into the
+`Ptr<T>` type provided by `libcc2rs`. `Ptr<T>` models C pointer semantics,
+including null, arithmetic, and aliasing, while satisfying Rust's borrow checker
+through checked run-time operations.
