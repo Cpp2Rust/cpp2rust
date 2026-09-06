@@ -48,6 +48,7 @@ pub struct S {
     pub a: Value<i32>,
     pub b: Value<u8>,
     pub c: Value<Inner>,
+    pub d: Value<Inner>,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
@@ -55,6 +56,7 @@ impl Clone for S {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
             c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
+            d: Rc::new(RefCell::new((*self.d.borrow()).clone())),
         };
         this
     }
@@ -68,23 +70,26 @@ impl Default for S {
                 x: Rc::new(RefCell::new(3)),
                 y: Rc::new(RefCell::new(4)),
             })),
+            d: <Value<Inner>>::default(),
         }
     }
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
-        16
+        24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.a.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..5]);
         (*self.c.borrow()).to_bytes(&mut buf[8..16]);
+        (*self.d.borrow()).to_bytes(&mut buf[16..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
             b: Rc::new(RefCell::new(<u8>::from_bytes(&buf[4..5]))),
             c: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[8..16]))),
+            d: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[16..24]))),
         }
     }
 }
@@ -92,17 +97,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2_u8)),
-        c: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
-        })),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     assert!(((*(*s.borrow()).a.borrow()) == 1));
     assert!((((*(*s.borrow()).b.borrow()) as i32) == 2));
     assert!(((*(*(*s.borrow()).c.borrow()).x.borrow()) == 3));
     assert!(((*(*(*s.borrow()).c.borrow()).y.borrow()) == 4));
+    assert!(((*(*(*s.borrow()).d.borrow()).x.borrow()) == 3));
+    assert!(((*(*(*s.borrow()).d.borrow()).y.borrow()) == 4));
     return 0;
 }

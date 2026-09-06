@@ -23,6 +23,7 @@ pub struct S {
     pub a: i32,
     pub b: libc::c_char,
     pub c: Inner,
+    pub d: Inner,
 }
 impl Default for S {
     fn default() -> Self {
@@ -30,6 +31,7 @@ impl Default for S {
             a: 1,
             b: (2 as libc::c_char),
             c: Inner { x: 3, y: 4 },
+            d: <Inner>::default(),
         }
     }
 }
@@ -39,14 +41,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S {
-        a: 1,
-        b: (2 as libc::c_char),
-        c: Inner { x: 3, y: 4 },
-    };
+    let mut s: S = <S>::default();
     assert!(((s.a) == (1)));
     assert!(((s.b as i32) == (2)));
     assert!(((s.c.x) == (3)));
     assert!(((s.c.y) == (4)));
+    assert!(((s.d.x) == (3)));
+    assert!(((s.d.y) == (4)));
     return 0;
 }
