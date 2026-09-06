@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     ({ decay_cast_0(((a1.as_pointer() as Ptr<u32>).offset(0))) });
     ({ bit_cast_1(((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()) });
     ({ bit_cast_1((((a1.as_pointer() as Ptr<u32>).offset(0)) as Ptr<u32>).to_any()) });
-    ({ bit_cast_1(((a1.as_pointer()) as Ptr<u32>).to_any()) });
+    ({ bit_cast_1(((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()) });
     let ptr: Value<AnyPtr> = Rc::new(RefCell::new(
         ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any(),
     ));
