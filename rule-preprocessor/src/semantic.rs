@@ -64,6 +64,7 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "libc",
         "brotli_sys",
         "rustls_ffi",
+        "rustls",
         "nix",
         "jiff",
         "xattr",

@@ -29,7 +29,7 @@ fn main_0() -> i32 {
         for __i in 0..8_usize {
             let mut __min = __i;
             for __j in (__i + 1)..8_usize {
-                if cmp_int_0(
+                if FnPtr::<fn(AnyPtr, AnyPtr) -> i32>::new(cmp_int_0)(
                     __base.offset(__j * ::std::mem::size_of::<i32>()).to_any(),
                     __base.offset(__min * ::std::mem::size_of::<i32>()).to_any(),
                 ) < 0
@@ -76,7 +76,7 @@ fn main_0() -> i32 {
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0(
+                let __r = FnPtr::<fn(AnyPtr, AnyPtr) -> i32>::new(cmp_int_0)(
                     ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );
@@ -106,7 +106,7 @@ fn main_0() -> i32 {
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0(
+                let __r = FnPtr::<fn(AnyPtr, AnyPtr) -> i32>::new(cmp_int_0)(
                     ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );

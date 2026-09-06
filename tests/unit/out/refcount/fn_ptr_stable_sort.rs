@@ -60,7 +60,7 @@ fn main_0() -> i32 {
     });
     (v.as_pointer() as Ptr<Item>).sort_with_cmp(
         (v.as_pointer() as Ptr<Item>).to_end().get_offset(),
-        Compare_0,
+        *FnPtr::<fn(Ptr<Item>, Ptr<Item>) -> bool>::new(Compare_0),
     );
     assert!(
         ((*(*(v.as_pointer() as Ptr<Item>)
