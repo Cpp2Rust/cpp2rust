@@ -6,19 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive()]
 pub struct NonCopy {
     pub data: Value<Vec<i32>>,
     pub tag: Value<i32>,
 }
 impl Clone for NonCopy {
     fn clone(&self) -> Self {
-        let __this: Value<NonCopy> = Rc::new(RefCell::new(Self {
+        let mut this = Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-        }));
-        let this: Ptr<NonCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        };
+        this
+    }
+}
+impl Default for NonCopy {
+    fn default() -> Self {
+        NonCopy {
+            data: Rc::new(RefCell::new(Default::default())),
+            tag: Rc::new(RefCell::new(0)),
+        }
     }
 }
 impl ByteRepr for NonCopy {
@@ -37,7 +44,6 @@ impl ByteRepr for NonCopy {
     }
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -60,4 +66,3 @@ fn main_0() -> i32 {
     assert!(((*(*arr.borrow())[(2) as usize].data.borrow()).len() == 0_usize));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
