@@ -14,12 +14,13 @@ pub struct Layout {
 }
 impl Clone for Layout {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Layout> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
             c: Rc::new(RefCell::new((*self.c.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Layout> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Layout {
@@ -46,11 +47,12 @@ pub struct Frame {
 }
 impl Clone for Frame {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Frame> = Rc::new(RefCell::new(Self {
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
             body: Rc::new(RefCell::new((*self.body.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Frame> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Frame {

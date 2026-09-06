@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <format>
+#include <ranges>
 #include <utility>
 
 #include "compiler.h"
@@ -25,6 +26,8 @@ std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
+std::map<Converter::DeferredImplHeader, Converter::DeferredImplBody>
+    Converter::deferred_impls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -53,6 +56,17 @@ use std::io::{Read, Write, Seek};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 )");
+}
+
+std::string Converter::EmitDeferredImpls() {
+  std::string out;
+  for (const auto &[header, body] : deferred_impls_) {
+    out += header;
+    out += " {\n";
+    out += body;
+    out += "}\n";
+  }
+  return out;
 }
 
 std::string Converter::EmitOpaqueRecords() {
@@ -436,6 +450,9 @@ void Converter::ConvertGotoBlock(clang::CompoundStmt *body) {
 
 void Converter::ConvertFunctionBody(clang::FunctionDecl *decl) {
   ConvertBodyStmts(decl->getBody());
+  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(decl)) {
+    StrCat(DestroyMembers(dtor->getParent()));
+  }
   if (decl->getReturnType()->isVoidType()) {
     return;
   }
@@ -599,8 +616,26 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   } else {
     ConvertVarDecl(decl);
   }
+  EmitScopedDestructor(decl);
 
   return false;
+}
+
+void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+    return;
+  }
+  auto type = decl->getType();
+  if (type->isReferenceType() || type->isArrayType() ||
+      !TypeNeedsDestruction(type)) {
+    return;
+  }
+  auto name = GetNamedDeclAsString(decl);
+  StrCat(token::kSemiColon,
+         std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
+                     "{0}, {1}::{2})",
+                     name, GetRecordName(type->getAsCXXRecordDecl()),
+                     kDestructorName));
 }
 
 static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
@@ -678,7 +713,7 @@ bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
 
 bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-      cxx && !cxx->hasTrivialDestructor()) {
+      cxx && RecordNeedsDestruction(cxx)) {
     return false;
   }
   for (auto f : decl->fields()) {
@@ -736,23 +771,6 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
   EmitRustStructOrUnion(decl);
 
   return false;
-}
-
-static bool IsEmittableMethod(clang::CXXMethodDecl *method) {
-  // Virtual methods go into the base trait impl, destructors into Drop
-  if (method->isVirtual() || clang::isa<clang::CXXDestructorDecl>(method)) {
-    return false;
-  }
-  // Compiler-generated members are covered by derived traits
-  if (method->isImplicit()) {
-    return false;
-  }
-  if (auto *definition = method->getDefinition();
-      definition && definition->isDefaulted()) {
-    return false;
-  }
-  return method->isThisDeclarationADefinition() ||
-         clang::isa<clang::CXXConstructorDecl>(method);
 }
 
 void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
@@ -814,9 +832,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     auto struct_name = GetRecordName(cxx);
 
-    ConvertCXXMethodDecls(cxx,
-                          std::format("{} {}", keyword::kImpl, struct_name),
-                          IsEmittableMethod);
+    ConvertCXXRecordMethods(cxx);
 
     if (cxx->bases_begin() != cxx->bases_end()) {
       ConvertCXXMethodDecls(
@@ -833,11 +849,53 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   // Traits
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
     AddOrdTrait(cxx);
-    AddDropTrait(cxx);
   }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
+}
+
+void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
+  ConvertCXXMethodDecls(
+      decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
+      IsEmittableMethod);
+
+  if (GetUserDefinedDestructor(decl) || !HasFieldsNeedingDestruction(decl)) {
+    return;
+  }
+  StrCat(keyword::kImpl, GetRecordName(decl));
+  PushBrace impl_brace(*this);
+  StrCat(keyword::kPub, keyword_unsafe_, keyword::kFn, kDestructorName,
+         "(&mut self)");
+  PushBrace fn_brace(*this);
+  StrCat(DestroyMembers(decl));
+}
+
+std::string Converter::DestroyMembers(const clang::CXXRecordDecl *decl) {
+  std::vector<const clang::FieldDecl *> fields;
+  for (auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      fields.push_back(field);
+    }
+  }
+
+  std::string out;
+  for (auto *field : std::ranges::reverse_view(fields)) {
+    auto name = GetNamedDeclAsString(field);
+    auto type = field->getType();
+    if (type->isArrayType()) {
+      auto *elem = type->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+      assert(elem);
+      out +=
+          std::format("for __e in self.{0}.iter_mut() {{ {1}::{2}(__e); }}\n",
+                      name, GetRecordName(elem), kDestructorName);
+    } else {
+      out += std::format("{1}::{2}(&mut self.{0});\n", name,
+                         GetRecordName(type->getAsCXXRecordDecl()),
+                         kDestructorName);
+    }
+  }
+  return out;
 }
 
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
@@ -926,7 +984,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   decl->dump(log());
-  if (!IsConvertibleCXXMethodDecl(decl)) {
+  if (!ShouldConvertMethod(decl)) {
     return false;
   }
   if (!decl->isPureVirtual() && !decl->hasBody()) {
@@ -940,31 +998,46 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (decl->isOutOfLine() && !decl->overridden_methods().empty()) {
     return false;
   }
-  bool out_of_line = decl->isOutOfLine();
-  if (out_of_line) {
-    StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
+  if (decl->isOutOfLine()) {
+    return ConvertOutOfLineMethod(decl);
   }
-  PushBrace impl_brace(*this, out_of_line);
+  return ConvertCXXMethodDecl(decl);
+}
 
+bool Converter::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
+  return IsConvertibleCXXMethodDecl(decl);
+}
+
+bool Converter::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
+  StrCat(keyword::kImpl, GetRecordName(decl->getParent()));
+  PushBrace impl_brace(*this);
+  return ConvertCXXMethodDecl(decl);
+}
+
+std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
+  if (clang::isa<clang::CXXDestructorDecl>(decl)) {
+    return kDestructorName;
+  }
+  if (decl->isOverloadedOperator()) {
+    return GetOverloadedOperator(decl);
+  }
+  if (IsOverloadedMethod(decl)) {
+    return GetOverloadedFunctionName(decl);
+  }
+  return GetNamedDeclAsString(decl);
+}
+
+bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl)) {
     return VisitCXXConstructorDecl(ctor);
   }
 
-  if (decl->isStatic() ||
-      (!decl->isVirtual() && !decl->getParent()->isAbstract())) {
+  if (method_target_ == MethodTarget::ValueImpl &&
+      (decl->isStatic() ||
+       (!decl->isVirtual() && !decl->getParent()->isAbstract()))) {
     ConvertFunctionQualifiers(decl);
   }
-  StrCat(keyword_unsafe_, keyword::kFn);
-
-  std::string function_name;
-  if (decl->isOverloadedOperator()) {
-    function_name = GetOverloadedOperator(decl);
-  } else if (IsOverloadedMethod(decl)) {
-    function_name = GetOverloadedFunctionName(decl);
-  } else {
-    function_name = GetNamedDeclAsString(decl);
-  }
-  StrCat(std::move(function_name));
+  StrCat(keyword_unsafe_, keyword::kFn, GetMethodName(decl));
 
   {
     PushParen paren(*this);
@@ -974,7 +1047,7 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
     ConvertFunctionParameters(decl);
   }
   ConvertFunctionReturnType(decl);
-  if (decl->isPureVirtual()) {
+  if (decl->isPureVirtual() || method_target_ == MethodTarget::TraitDecl) {
     StrCat(token::kSemiColon);
   } else {
     PushBrace body(*this);
@@ -1026,39 +1099,45 @@ void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   StrCat(keyword::kLet, "mut", "this", token::kAssign, "Self");
   {
     PushBrace this_init(*this);
-    const auto *record_decl = decl->getParent();
-    auto *definition_or_null = decl->getDefinition();
-    assert(definition_or_null);
-    auto *definition =
-        clang::cast<clang::CXXConstructorDecl>(definition_or_null);
-
-    bool has_inits = !definition->inits().empty();
-    auto **ctor_initializer_list = definition->inits().begin();
-    int curr_init =
-        has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
-
-    for (const auto *field : record_decl->fields()) {
-      auto field_name = GetNamedDeclAsString(field);
-      auto field_type = field->getType();
-      auto *ctor_initializer =
-          has_inits ? ctor_initializer_list[curr_init] : nullptr;
-
-      if (has_inits &&
-          GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
-        auto *ctor_init_expr = ctor_initializer->getInit();
-        StrCat(field_name, token::kColon);
-        ConvertVarInit(field_type, ctor_init_expr);
-        curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
-      } else {
-        StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
-      }
-      StrCat(token::kComma);
-    }
+    EmitConstructorFieldInits(decl);
   }
 
   StrCat(token::kSemiColon);
   ConvertBodyStmts(decl->getBody());
   StrCat("this");
+}
+
+void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
+  const auto *record_decl = decl->getParent();
+  auto *definition_or_null = decl->getDefinition();
+  assert(definition_or_null);
+  auto *definition = clang::cast<clang::CXXConstructorDecl>(definition_or_null);
+
+  bool has_inits = !definition->inits().empty();
+  auto **ctor_initializer_list = definition->inits().begin();
+  int curr_init =
+      has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
+
+  for (const auto *field : record_decl->fields()) {
+    auto field_name = GetNamedDeclAsString(field);
+    auto field_type = field->getType();
+    auto *ctor_initializer =
+        has_inits ? ctor_initializer_list[curr_init] : nullptr;
+
+    if (has_inits &&
+        GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
+      auto *ctor_init_expr = ctor_initializer->getInit();
+      StrCat(field_name, token::kColon);
+      ConvertVarInit(field_type, ctor_init_expr);
+      curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
+    } else if (field->hasInClassInitializer()) {
+      StrCat(field_name, token::kColon);
+      ConvertVarInit(field_type, field->getInClassInitializer());
+    } else {
+      StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
+    }
+    StrCat(token::kComma);
+  }
 }
 
 bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {
@@ -1817,6 +1896,10 @@ void Converter::EmitHoistedArgs(CallInfo &info) {
 void Converter::EmitArgList(const CallInfo &info) {
   using Kind = CallArg::Kind;
   PushParen call_args(*this);
+
+  if (!method_receiver_.empty()) {
+    StrCat(std::exchange(method_receiver_, std::string()), token::kComma);
+  }
 
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
@@ -2798,6 +2881,13 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
 
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
+      method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
+    ConvertMethodReceiver(expr, method);
+    StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
+           GetMethodName(method));
+    return false;
+  }
   std::string str;
   {
     Buffer buf(*this);
@@ -2834,6 +2924,26 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
   StrCat(str);
   return false;
+}
+
+void Converter::ConvertMethodReceiver(clang::MemberExpr *expr,
+                                      const clang::CXXMethodDecl *method) {
+  auto *base = expr->getBase();
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+    bool in_ctor =
+        curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
+    method_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
+    return;
+  }
+  Buffer buf(*this);
+  PushExprKind push(*this, ExprKind::LValue);
+  StrCat(method->isConst() ? "&" : "&mut");
+  if (expr->isArrow()) {
+    ConvertArrow(base);
+  } else {
+    Convert(base);
+  }
+  method_receiver_ = std::move(buf).str();
 }
 
 // Returns the inner member and the replacement string.
@@ -2893,7 +3003,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts());
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (expr->isArrow() && !base_is_this) {
     ConvertArrow(base);
@@ -3077,7 +3188,30 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 
 bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   auto *argument = expr->getArgument();
-  auto argument_as_string = ToString(argument);
+  auto destroyed_type = expr->getDestroyedType();
+  if (!TypeNeedsDestruction(destroyed_type)) {
+    EmitDeallocation(expr, ToString(argument));
+    return false;
+  }
+  auto record_name = GetRecordName(destroyed_type->getAsCXXRecordDecl());
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__p", token::kAssign, ToString(argument),
+         token::kSemiColon);
+  if (expr->isArrayForm()) {
+    StrCat(std::format("for __i in 0..libcc2rs::malloc_usable_size(__p as *mut "
+                       "::libc::c_void) / ::std::mem::size_of::<{0}>() {{ "
+                       "{0}::{1}(&mut *__p.add(__i)); }}",
+                       record_name, kDestructorName));
+  } else {
+    StrCat(std::format("{}::{}(&mut *__p)", record_name, kDestructorName),
+           token::kSemiColon);
+  }
+  EmitDeallocation(expr, "__p");
+  return false;
+}
+
+void Converter::EmitDeallocation(clang::CXXDeleteExpr *expr,
+                                 const std::string &argument_as_string) {
   if (expr->isArrayForm()) {
     auto destroyed_type = expr->getDestroyedType();
     auto destroyed_type_as_string = ToString(destroyed_type);
@@ -3103,7 +3237,6 @@ bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
     StrCat(
         std::format("::std::mem::drop(Box::from_raw({}))", argument_as_string));
   }
-  return false;
 }
 
 void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
@@ -3970,21 +4103,6 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 }
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
-
-void Converter::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  auto *dtor = GetTranslatableDestructor(decl);
-  if (!dtor) {
-    return;
-  }
-  PushCurrFunction push_fn(*this, dtor);
-  StrCat(keyword::kImpl, "Drop for", GetRecordName(decl));
-  PushBrace impl_brace(*this);
-  StrCat("fn drop(&mut self)");
-  PushBrace fn_brace(*this);
-  StrCat(keyword_unsafe_);
-  PushBrace unsafe_brace(*this);
-  ConvertBodyStmts(dtor->getDefinition()->getBody());
-}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));

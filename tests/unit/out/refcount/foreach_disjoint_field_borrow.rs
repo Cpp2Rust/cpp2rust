@@ -13,11 +13,12 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
             a: Rc::new(RefCell::new((*self.a.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for S {

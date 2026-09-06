@@ -57,12 +57,12 @@ unsafe fn main_0() -> i32 {
         p: (&mut x as *mut X),
     };
     y.x.x = 5;
-    (*(unsafe { y.foo() })).x = 1;
+    (*(unsafe { Y::foo(&mut y) })).x = 1;
     (*y.p).x = 10;
     let mut p3: *mut Y = (&mut y as *mut Y);
     (*(*p3).p).x = 100;
-    (*(unsafe { y.ptr() })).x = 1;
-    (*(unsafe { y.ptr() })).x = 50;
+    (*(unsafe { Y::ptr(&mut y) })).x = 1;
+    (*(unsafe { Y::ptr(&mut y) })).x = 50;
     assert!(((x.x) == (100)));
     return 0;
 }

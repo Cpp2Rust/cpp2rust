@@ -12,10 +12,11 @@ pub struct Chunk {
 }
 impl Clone for Chunk {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Chunk> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Chunk {
@@ -38,11 +39,12 @@ pub struct Writer {
 }
 impl Clone for Writer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Writer> = Rc::new(RefCell::new(Self {
             output: Rc::new(RefCell::new((*self.output.borrow()).clone())),
             chunk: Rc::new(RefCell::new((*self.chunk.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Writer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Writer {
@@ -67,7 +69,7 @@ pub struct JPEGData {
 }
 impl Clone for JPEGData {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<JPEGData> = Rc::new(RefCell::new(Self {
             com_data: Rc::new(RefCell::new(
                 (*self.com_data.borrow())
                     .iter()
@@ -80,8 +82,9 @@ impl Clone for JPEGData {
                     .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
                     .collect(),
             )),
-        };
-        this
+        }));
+        let this: Ptr<JPEGData> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for JPEGData {

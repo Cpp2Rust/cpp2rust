@@ -85,14 +85,14 @@ impl MinHeap {
                     &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
                 Swap_0(_a, _b)
             });
-            (unsafe { self.Heapify(smallest) });
+            (unsafe { MinHeap::Heapify(self, smallest) });
         }
     }
     pub unsafe fn ExtractMin(&mut self) -> *mut MinHeapNode {
         let mut out: *mut MinHeapNode = self.arr.as_mut().unwrap()[(0_usize)];
         self.size.prefix_dec();
         self.arr.as_mut().unwrap()[(0_usize)] = self.arr.as_mut().unwrap()[(self.size as usize)];
-        (unsafe { self.Heapify(0) });
+        (unsafe { MinHeap::Heapify(self, 0) });
         return out;
     }
     pub unsafe fn Insert(&mut self, mut node: *mut MinHeapNode) {
@@ -119,13 +119,13 @@ impl MinHeap {
             self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize)] = (unsafe {
                 let _data: libc::c_char = (*data).as_mut().unwrap()[(i as usize)];
                 let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize)];
-                self.Alloc(_data, _freq)
+                MinHeap::Alloc(self, _data, _freq)
             });
             i.prefix_inc();
         }
         let mut i: i32 = (((self.size) - (2)) / (2));
         'loop_: while ((i) >= (0)) {
-            (unsafe { self.Heapify(i) });
+            (unsafe { MinHeap::Heapify(self, i) });
             i.prefix_dec();
         }
     }
@@ -158,20 +158,23 @@ pub unsafe fn Huffman_2(
         let _data: *mut Option<Box<[libc::c_char]>> = data;
         let _freq: *mut Option<Box<[i32]>> = freq;
         let _n: i32 = size;
-        (*minHeap.as_deref_mut().unwrap()).Build(_data, _freq, _n)
+        MinHeap::Build(&mut (*minHeap.as_deref_mut().unwrap()), _data, _freq, _n)
     });
     'loop_: while (((*minHeap.as_deref_mut().unwrap()).size) != (1)) {
         let mut left: *mut MinHeapNode =
-            (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
+            (unsafe { MinHeap::ExtractMin(&mut (*minHeap.as_deref_mut().unwrap())) });
         let mut right: *mut MinHeapNode =
-            (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
+            (unsafe { MinHeap::ExtractMin(&mut (*minHeap.as_deref_mut().unwrap())) });
         let mut top: *mut MinHeapNode = (unsafe {
-            (*minHeap.as_deref_mut().unwrap())
-                .Alloc(('$' as libc::c_char), (((*left).freq) + ((*right).freq)))
+            MinHeap::Alloc(
+                &mut (*minHeap.as_deref_mut().unwrap()),
+                ('$' as libc::c_char),
+                (((*left).freq) + ((*right).freq)),
+            )
         });
         (*top).left = left;
         (*top).right = right;
-        (unsafe { (*minHeap.as_deref_mut().unwrap()).Insert(top) });
+        (unsafe { MinHeap::Insert(&mut (*minHeap.as_deref_mut().unwrap()), top) });
     }
     return minHeap;
 }
@@ -222,7 +225,7 @@ pub unsafe fn CollectCodes_4(
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
-    if (unsafe { (*(root).cast_const()).IsLeaf() }) {
+    if (unsafe { MinHeapNode::IsLeaf(&(*(root).cast_const())) }) {
         (unsafe {
             let _arr: *mut Option<Box<[i32]>> = arr;
             let _top: i32 = top;
@@ -243,7 +246,8 @@ pub unsafe fn HuffmanCodes_5(
         let _size: i32 = size;
         Huffman_2(_data, _freq, _size)
     });
-    let mut root: *mut MinHeapNode = (unsafe { (*minHeap.as_deref_mut().unwrap()).ExtractMin() });
+    let mut root: *mut MinHeapNode =
+        (unsafe { MinHeap::ExtractMin(&mut (*minHeap.as_deref_mut().unwrap())) });
     let mut arr: Option<Box<[i32]>> = Some(
         (0..100_usize)
             .map(|_| <i32>::default())

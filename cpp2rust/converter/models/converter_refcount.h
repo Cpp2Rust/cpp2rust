@@ -41,8 +41,6 @@ public:
 
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override;
-
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool
@@ -53,6 +51,18 @@ public:
   void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
+
+  bool ShouldConvertMethod(const clang::CXXMethodDecl *decl) override;
+
+  bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
+
+  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) override;
+
+  void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
+
+  bool ThisIsRustPtr() const override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
@@ -204,6 +214,11 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
+  std::string TraitName(const clang::CXXRecordDecl *decl) const;
+  std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+  std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+  void EmitScopedDestructor(const clang::VarDecl *decl) override;
+
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;

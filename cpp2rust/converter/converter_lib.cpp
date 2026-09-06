@@ -269,8 +269,10 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
-  // Destructors go into the Drop trait
-  return !llvm::isa<clang::CXXDestructorDecl>(decl) && !decl->isImplicit();
+  if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
+    return GetUserDefinedDestructor(decl->getParent()) != nullptr;
+  }
+  return !decl->isImplicit();
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -588,16 +590,82 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
 }
 
 clang::CXXDestructorDecl *
-GetTranslatableDestructor(const clang::CXXRecordDecl *decl) {
-  if (!IsUserDefinedDecl(decl)) {
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
+      !decl->hasUserDeclaredDestructor()) {
     return nullptr;
   }
   auto *dtor = decl->getDestructor();
-  if (!dtor || dtor->isImplicit()) {
+  if (!dtor || dtor->isImplicit() || !dtor->getDefinition() ||
+      dtor->getDefinition()->isDefaulted()) {
     return nullptr;
   }
-  auto *definition = dtor->getDefinition();
-  return definition && !definition->isDefaulted() ? dtor : nullptr;
+  return dtor;
+}
+
+bool TypeNeedsDestruction(clang::QualType type) {
+  if (type->isArrayType()) {
+    type = clang::QualType(type->getBaseElementTypeUnsafe(), 0);
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  return record && RecordNeedsDestruction(record);
+}
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
+    return false;
+  }
+  for (const auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
+}
+
+bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) &&
+           method->isThisDeclarationADefinition();
+  }
+  // Virtual methods go into the base trait impl
+  if (method->isVirtual()) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
+      method->isOverloadedOperator() ||
+      clang::isa<clang::CXXConstructorDecl>(method)) {
+    return false;
+  }
+  if (!IsUserDefinedDecl(method->getParent()) ||
+      method->getParent()->isLambda()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) != nullptr;
+  }
+  return true;
 }
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {

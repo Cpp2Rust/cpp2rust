@@ -13,20 +13,22 @@ pub struct S {
 }
 impl S {
     pub fn S() -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new(11)),
             b: Rc::new(RefCell::new(true)),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for S {

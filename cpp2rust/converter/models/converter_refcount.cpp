@@ -6,7 +6,9 @@
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
 
+#include <algorithm>
 #include <format>
+#include <ranges>
 
 #include "compiler.h"
 #include "converter/converter_lib.h"
@@ -561,38 +563,6 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   AddByteReprTrait(decl);
 }
 
-void ConverterRefCount::AddDropTrait(const clang::CXXRecordDecl *decl) {
-  if (!decl->hasUserDeclaredDestructor()) {
-    return;
-  }
-
-  auto dtor = decl->getDestructor();
-  if (!dtor) {
-    return;
-  }
-
-  auto body = dtor->getBody();
-  if (!body) {
-    return;
-  }
-
-  if (auto stmt = llvm::dyn_cast<clang::CompoundStmt>(body)) {
-    if (stmt->body_empty()) {
-      return;
-    }
-  }
-
-  auto record_name = GetRecordName(decl);
-
-  StrCat(keyword::kImpl, "Drop for", record_name, '{');
-  StrCat("fn drop(&mut self)");
-  {
-    PushCurrFunction push_fn(*this, dtor);
-    ConvertBody(body);
-  }
-  StrCat('}');
-}
-
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
@@ -763,6 +733,22 @@ bool ConverterRefCount::VisitVarDecl(clang::VarDecl *decl) {
     Converter::VisitVarDecl(decl);
   }
   return false;
+}
+
+void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
+  if (in_function_formals_ || !decl->isLocalVarDecl() || IsGlobalVar(decl)) {
+    return;
+  }
+  auto type = decl->getType();
+  if (type->isReferenceType() || type->isArrayType() ||
+      !TypeNeedsDestruction(type)) {
+    return;
+  }
+  auto name = GetNamedDeclAsString(decl);
+  StrCat(token::kSemiColon,
+         std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| "
+                     "__p.{1}())",
+                     name, kDestructorName));
 }
 
 bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
@@ -1630,6 +1616,30 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
+    if (IsMethodOnPtr(method)) {
+      auto *base = expr->getBase();
+      bool base_is_pointer =
+          expr->isArrow() &&
+          !clang::isa<clang::CXXOperatorCallExpr>(base->IgnoreParenImpCasts());
+      if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+        bool in_ctor = curr_function_ &&
+                       clang::isa<clang::CXXConstructorDecl>(curr_function_);
+        if (in_ctor) {
+          method_receiver_ = "&this";
+        } else if (ThisIsRustPtr()) {
+          method_receiver_ = keyword::kSelfValue;
+        } else {
+          method_receiver_ = token::kRef + ConvertPointer(base);
+        }
+      } else {
+        method_receiver_ =
+            token::kRef +
+            (base_is_pointer ? ConvertRValue(base) : ConvertPointer(base));
+      }
+      StrCat(TraitName(method->getParent()), token::kDoubleColon,
+             GetMethodName(method));
+      return false;
+    }
     // User-defined types have Value<T> fields; the struct itself is read-only
     // and only needs an immutable borrow. Non-user-defined types (STL)
     // need a mutable borrow for non-const methods
@@ -1719,11 +1729,23 @@ bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 }
 
 bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
-  Convert(expr->getArgument());
+  if (!TypeNeedsDestruction(expr->getDestroyedType())) {
+    Convert(expr->getArgument());
+    StrCat(expr->isArrayForm() ? ".delete_array()" : ".delete()");
+    return false;
+  }
+
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "__p", token::kAssign, ToString(expr->getArgument()),
+         token::kSemiColon);
   if (expr->isArrayForm()) {
-    StrCat(".delete_array()");
+    StrCat(std::format("for __i in 0..__p.len() {{ __p.offset(__i as "
+                       "isize).{}(); }}",
+                       kDestructorName));
+    StrCat("__p.delete_array()", token::kSemiColon);
   } else {
-    StrCat(".delete()");
+    StrCat(std::format("__p.{}()", kDestructorName), token::kSemiColon);
+    StrCat("__p.delete()", token::kSemiColon);
   }
   return false;
 }
@@ -2564,4 +2586,149 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   return str;
 }
 
+bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
+  if (clang::isa<clang::CXXDestructorDecl>(decl)) {
+    return IsMethodOnPtr(decl);
+  }
+  return Converter::ShouldConvertMethod(decl);
+}
+
+bool ConverterRefCount::ThisIsRustPtr() const {
+  auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
+  return method && (IsMethodOnPtr(method) ||
+                    clang::isa<clang::CXXConstructorDecl>(method));
+}
+
+std::string
+ConverterRefCount::TraitName(const clang::CXXRecordDecl *decl) const {
+  return GetRecordName(decl) + "Impl";
+}
+
+std::string
+ConverterRefCount::ImplHeader(const clang::CXXRecordDecl *decl) const {
+  return std::format("impl {} for Ptr<{}>", TraitName(decl),
+                     GetRecordName(decl));
+}
+
+bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
+  if (!IsMethodOnPtr(decl)) {
+    return Converter::ConvertOutOfLineMethod(decl);
+  }
+  Buffer buf(*this);
+  {
+    PushMethodTarget push(*this, MethodTarget::PtrImpl);
+    ConvertCXXMethodDecl(decl);
+  }
+  deferred_impls_[ImplHeader(decl->getParent())] += std::move(buf).str();
+  return false;
+}
+
+void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
+  auto struct_name = GetRecordName(decl);
+
+  ConvertCXXMethodDecls(decl, std::format("{} {}", keyword::kImpl, struct_name),
+                        [](auto *method) {
+                          return IsEmittableMethod(method) &&
+                                 !IsMethodOnPtr(method);
+                        });
+
+  bool synthesize_dtor =
+      !GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl);
+  if (!synthesize_dtor &&
+      !std::ranges::any_of(decl->methods(), [](auto *method) {
+        return IsMethodOnPtr(method) && method->getDefinition();
+      })) {
+    return;
+  }
+
+  auto header = ImplHeader(decl);
+  StrCat(keyword::kPub, keyword::kTrait, TraitName(decl));
+  PushBrace trait_brace(*this);
+
+  for (auto *method : decl->methods()) {
+    if (!IsMethodOnPtr(method) || !method->getDefinition()) {
+      continue;
+    }
+    {
+      PushCurrFunction push_fn(*this, method);
+      PushMethodTarget push(*this, MethodTarget::TraitDecl);
+      ConvertCXXMethodDecl(method);
+    }
+    if (!method->isThisDeclarationADefinition()) {
+      continue;
+    }
+    Buffer buf(*this);
+    {
+      PushMethodTarget push(*this, MethodTarget::PtrImpl);
+      VisitCXXMethodDecl(method);
+    }
+    deferred_impls_[header] += std::move(buf).str();
+  }
+
+  if (synthesize_dtor) {
+    StrCat(std::format("fn {}(&self)", kDestructorName), token::kSemiColon);
+    deferred_impls_[header] += std::format(
+        "fn {}(&self) {{ {} }}\n", kDestructorName, DestroyMembers(decl));
+  }
+}
+
+std::string
+ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
+  std::vector<const clang::FieldDecl *> fields;
+  for (auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      fields.push_back(field);
+    }
+  }
+
+  std::string out;
+  for (auto *field : std::ranges::reverse_view(fields)) {
+    auto name = GetNamedDeclAsString(field);
+    if (field->getType()->isArrayType()) {
+      auto *elem =
+          field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
+      assert(elem);
+      out += std::format(
+          "{{ let __p = (*self.upgrade().deref()).{0}.as_pointer(); for __i in "
+          "0..__p.len() {{ {2}::{1}(&__p.offset(__i as isize)); }} }}\n",
+          name, kDestructorName, TraitName(elem));
+    } else {
+      out += std::format("(*self.upgrade().deref()).{0}.as_pointer().{1}();\n",
+                         name, kDestructorName);
+    }
+  }
+  return out;
+}
+
+void ConverterRefCount::ConvertCXXConstructorBody(
+    clang::CXXConstructorDecl *decl) {
+  EmitFunctionPreamble(decl);
+  auto record_name = GetRecordName(decl->getParent());
+  StrCat(keyword::kLet, "__this", token::kColon,
+         std::format("Value<{}>", record_name), token::kAssign,
+         "Rc::new(RefCell::new(Self");
+  {
+    PushBrace this_init(*this);
+    EmitConstructorFieldInits(decl);
+  }
+  StrCat("))", token::kSemiColon);
+  StrCat(keyword::kLet, "this", token::kColon,
+         std::format("Ptr<{}>", record_name), token::kAssign,
+         "__this.as_pointer()", token::kSemiColon);
+  ConvertBodyStmts(decl->getBody());
+  StrCat("Rc::try_unwrap(__this).ok().unwrap().into_inner()");
+}
+
+bool ConverterRefCount::VisitCXXThisExpr(
+    [[maybe_unused]] clang::CXXThisExpr *expr) {
+  bool in_ctor =
+      curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
+  if (in_ctor) {
+    StrCat("this");
+  } else {
+    StrCat("(*", keyword::kSelfValue, ')');
+  }
+  computed_expr_type_ = ComputedExprType::Pointer;
+  return false;
+}
 } // namespace cpp2rust

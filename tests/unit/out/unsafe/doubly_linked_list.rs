@@ -44,10 +44,10 @@ pub unsafe fn Append_2(head: *mut Node, new_node: *mut Node) {
     'loop_: while !(((*curr).next).is_null()) {
         curr = (*curr).next;
     }
-    (unsafe { (*curr).SetNext((new_node)) });
+    (unsafe { Node::SetNext(&mut (*curr), (new_node)) });
     (unsafe {
         let _p: *mut Node = curr;
-        (*new_node).SetPrev(_p)
+        Node::SetPrev(&mut (*new_node), _p)
     });
 }
 pub unsafe fn Delete_3(mut head: *mut Node, mut val: i32) -> *mut Node {

@@ -12,10 +12,11 @@ pub struct Point {
 }
 impl Clone for Point {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Point> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Point {
@@ -35,17 +36,16 @@ impl ByteRepr for Point {
 pub struct Box_int_ {
     pub val: Value<i32>,
 }
-impl Box_int_ {
-    pub fn twice(&self) -> i32 {
-        return ((*self.val.borrow()) + (*self.val.borrow()));
-    }
+pub trait Box_int_Impl {
+    fn twice(&self) -> i32;
 }
 impl Clone for Box_int_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Box_int_> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new((*self.val.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Box_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Box_int_ {
@@ -65,17 +65,16 @@ impl ByteRepr for Box_int_ {
 pub struct Box_Point_ {
     pub val: Value<Point>,
 }
-impl Box_Point_ {
-    pub fn get(&self) -> Point {
-        return (*self.val.borrow()).clone();
-    }
+pub trait Box_Point_Impl {
+    fn get(&self) -> Point;
 }
 impl Clone for Box_Point_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Box_Point_> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new((*self.val.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Box_Point_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Box_Point_ {
@@ -98,12 +97,23 @@ fn main_0() -> i32 {
     let i: Value<Box_int_> = Rc::new(RefCell::new(Box_int_ {
         val: Rc::new(RefCell::new(3)),
     }));
-    assert!((({ (*i.borrow()).twice() }) == 6));
+    assert!((({ Box_int_Impl::twice(&i.as_pointer(),) }) == 6));
     let p: Value<Box_Point_> = Rc::new(RefCell::new(Box_Point_ {
         val: Rc::new(RefCell::new(Point {
             x: Rc::new(RefCell::new(4)),
         })),
     }));
-    assert!(((*({ (*p.borrow()).get() }).x.borrow()) == 4));
+    assert!(((*({ Box_Point_Impl::get(&p.as_pointer(),) }).x.borrow()) == 4));
     return 0;
+}
+impl Box_Point_Impl for Ptr<Box_Point_> {
+    fn get(&self) -> Point {
+        return (*(*(*self).upgrade().deref()).val.borrow()).clone();
+    }
+}
+impl Box_int_Impl for Ptr<Box_int_> {
+    fn twice(&self) -> i32 {
+        return ((*(*(*self).upgrade().deref()).val.borrow())
+            + (*(*(*self).upgrade().deref()).val.borrow()));
+    }
 }

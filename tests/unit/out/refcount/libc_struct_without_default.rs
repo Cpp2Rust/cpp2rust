@@ -13,11 +13,12 @@ pub struct UserDefined {
 }
 impl Clone for UserDefined {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<UserDefined> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<UserDefined> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for UserDefined {
@@ -51,10 +52,11 @@ pub struct FieldIsLibcType {
 }
 impl Clone for FieldIsLibcType {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<FieldIsLibcType> = Rc::new(RefCell::new(Self {
             addr: Rc::new(RefCell::new((*self.addr.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<FieldIsLibcType> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for FieldIsLibcType {

@@ -36,8 +36,8 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
     let mut raw_ptr1: *mut i32 = (&mut (*x1.as_deref_mut().unwrap()) as *mut i32);
     (*raw_ptr1).prefix_inc();
     (*(*safe_ptr).as_deref_mut().unwrap()).ptr = x1;
-    (unsafe { (*(*safe_ptr).as_deref_mut().unwrap()).inc() });
-    (unsafe { (*(*safe_ptr).as_deref_mut().unwrap()).inc() });
+    (unsafe { SafePointer::inc(&mut (*(*safe_ptr).as_deref_mut().unwrap())) });
+    (unsafe { SafePointer::inc(&mut (*(*safe_ptr).as_deref_mut().unwrap())) });
     let mut x3: Option<Box<i32>> = Some(Box::new(10));
     let mut x4: Option<Box<i32>> = Some(Box::new(20));
     (*x3.as_deref_mut().unwrap()) = ((*x3.as_deref_mut().unwrap()) + (*x4.as_deref_mut().unwrap()));
@@ -48,7 +48,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
         x: (*raw_ptr2),
         y: 5,
     }));
-    (unsafe { (*pair.as_deref_mut().unwrap()).inc(10) });
+    (unsafe { Pair::inc(&mut (*pair.as_deref_mut().unwrap()), 10) });
     (*(*(*safe_ptr).as_deref_mut().unwrap())
         .ptr
         .as_deref_mut()
@@ -110,7 +110,7 @@ pub unsafe fn RndStuff_2() {
     'loop_: while ((i) < (10)) {
         assert!((((*p3_0.offset((i) as isize)).x) == (1)));
         assert!((((*p3_0.offset((i) as isize)).y) == (2)));
-        (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(10) });
+        (unsafe { Pair::inc(&mut x3.as_mut().unwrap()[(i as usize)], 10) });
         assert!((((*p3_0.offset((i) as isize)).x) == (11)));
         assert!((((*p3_0.offset((i) as isize)).y) == (12)));
         i.prefix_inc();
@@ -136,7 +136,7 @@ pub unsafe fn RndStuff_2() {
     'loop_: while ((i) < (50)) {
         assert!((((*p3_1.offset((i) as isize)).x) == (-1_i32)));
         assert!((((*p3_1.offset((i) as isize)).y) == (-2_i32)));
-        (unsafe { x3.as_mut().unwrap()[(i as usize)].inc(-10_i32) });
+        (unsafe { Pair::inc(&mut x3.as_mut().unwrap()[(i as usize)], -10_i32) });
         assert!((((*p3_1.offset((i) as isize)).x) == (-11_i32)));
         assert!((((*p3_1.offset((i) as isize)).y) == (-12_i32)));
         i.prefix_inc();

@@ -8,6 +8,7 @@
 #include <clang/Sema/Sema.h>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -22,6 +23,7 @@
 #include "logging.h"
 
 namespace cpp2rust {
+inline constexpr const char kDestructorName[] = "destructor";
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
@@ -51,6 +53,8 @@ public:
   virtual void EmitFilePreamble();
 
   static std::string EmitOpaqueRecords();
+
+  static std::string EmitDeferredImpls();
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
@@ -123,9 +127,23 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+  virtual bool ShouldConvertMethod(const clang::CXXMethodDecl *decl);
+  virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
+  bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
+  std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+  virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+  virtual void EmitScopedDestructor(const clang::VarDecl *decl);
+  void EmitDeallocation(clang::CXXDeleteExpr *expr,
+                        const std::string &argument_as_string);
+  void ConvertMethodReceiver(clang::MemberExpr *expr,
+                             const clang::CXXMethodDecl *method);
 
-  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  virtual bool ThisIsRustPtr() const { return false; }
+
+  virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
@@ -553,8 +571,6 @@ protected:
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
-  virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
-
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
   virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
@@ -622,6 +638,24 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  enum class MethodTarget : uint8_t {
+    ValueImpl,
+    TraitDecl,
+    PtrImpl,
+  };
+  MethodTarget method_target_ = MethodTarget::ValueImpl;
+
+  struct PushMethodTarget {
+    Converter &c;
+    MethodTarget prev;
+    PushMethodTarget(Converter &c, MethodTarget k)
+        : c(c), prev(c.method_target_) {
+      c.method_target_ = k;
+    }
+    ~PushMethodTarget() { c.method_target_ = prev; }
+  };
+
+  std::string method_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;
@@ -812,6 +846,9 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
+  using DeferredImplHeader = std::string;
+  using DeferredImplBody = std::string;
+  static std::map<DeferredImplHeader, DeferredImplBody> deferred_impls_;
 
   enum class ExprKind : uint8_t {
     Callee,

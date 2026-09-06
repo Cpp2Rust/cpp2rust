@@ -38,10 +38,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut i: Box_int_ = Box_int_ { val: 3 };
-    assert!(((unsafe { i.twice() }) == (6)));
+    assert!(((unsafe { Box_int_::twice(&mut i,) }) == (6)));
     let mut p: Box_Point_ = Box_Point_ {
         val: Point { x: 4 },
     };
-    assert!((((unsafe { p.get() }).x) == (4)));
+    assert!((((unsafe { Box_Point_::get(&mut p,) }).x) == (4)));
     return 0;
 }
