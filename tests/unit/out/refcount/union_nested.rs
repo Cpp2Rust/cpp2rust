@@ -190,8 +190,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let ex: Value<Outer> = <Value<Outer>>::default();
     {
-        (((ex.as_pointer()) as Ptr<Outer>).to_any()).memset((0) as u8, (144usize) as usize);
-        (((ex.as_pointer()) as Ptr<Outer>).to_any()).clone()
+        ((ex.as_pointer()) as Ptr<Outer>)
+            .to_any()
+            .memset((0) as u8, 144usize as usize);
+        ((ex.as_pointer()) as Ptr<Outer>).to_any().clone()
     };
     (*(*ex.borrow()).kind.borrow_mut()) = 2;
     (*(*ex.borrow()).level.borrow_mut()) = 1;

@@ -27,18 +27,16 @@ fn main_0() -> i32 {
     )));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*it.borrow()).second().as_pointer())));
     assert!(
-        (((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
-            && (!(Ptr::from_string_literal(
-                b"iterator does not have correct value before insert"
-            ))
-            .is_null()))
+        ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
+            && (!(Ptr::from_string_literal(b"iterator does not have correct value before insert"))
+                .is_null())
     );
     assert!(
-        (({
+        ({
             let _lhs = ((*p.borrow()).read());
             _lhs == (*sentinel.borrow())
         }) && (!(Ptr::from_string_literal(b"pointer does not have correct value before insert"))
-            .is_null()))
+            .is_null())
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*sentinel.borrow())) {
@@ -65,23 +63,23 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        (((*(*it.borrow()).second().borrow()) != 0)
+        ((*(*it.borrow()).second().borrow()) != 0)
             && (!(Ptr::from_string_literal(
                 b"in refcount, iterator points to index 0 instead of sentinel"
             ))
-            .is_null()))
+            .is_null())
     );
     assert!(
-        (((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
+        ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
             && (!(Ptr::from_string_literal(b"iterator does not have correct value after insert"))
-                .is_null()))
+                .is_null())
     );
     assert!(
-        (({
+        ({
             let _lhs = ((*p.borrow()).read());
             _lhs == (*sentinel.borrow())
         }) && (!(Ptr::from_string_literal(b"pointer does not have correct value after insert"))
-            .is_null()))
+            .is_null())
     );
     (*(*it.borrow()).second().borrow_mut()) = 57005;
     assert!(
@@ -98,13 +96,11 @@ fn main_0() -> i32 {
     assert!(((*m.borrow()).len() == ((((*N.borrow()) + 1) as u32) as usize)));
     let prev: Value<i32> = Rc::new(RefCell::new(-1_i32));
     'loop_: for pair in RefcountMapIter::begin(m.as_pointer()) {
-        assert!(
-            ({
-                let _lhs = (*(pair).first().borrow());
-                _lhs > (*prev.borrow())
-            })
-        );
-        (*prev.borrow_mut()) = (*(pair).first().borrow());
+        assert!({
+            let _lhs = (*pair.first().borrow());
+            _lhs > (*prev.borrow())
+        });
+        (*prev.borrow_mut()) = (*pair.first().borrow());
     }
     return 0;
 }

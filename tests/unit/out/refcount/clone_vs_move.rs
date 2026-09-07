@@ -92,19 +92,15 @@ fn main_0() -> i32 {
     assert!((((*pointer.borrow()).read()) == 1));
     assert!(((*x6.borrow()) == 2));
     let other_pointer: Value<Ptr<i32>> = Rc::new(RefCell::new((*pointer.borrow()).clone()));
-    assert!(
-        ({
-            let _lhs = (*other_pointer.borrow()).clone();
-            _lhs == (*pointer.borrow()).clone()
-        })
-    );
+    assert!({
+        let _lhs = (*other_pointer.borrow()).clone();
+        _lhs == (*pointer.borrow()).clone()
+    });
     (*other_pointer.borrow()).with_mut(|__v| __v.prefix_inc());
-    assert!(
-        ({
-            let _lhs = ((*other_pointer.borrow()).read());
-            _lhs == ((*pointer.borrow()).read())
-        })
-    );
+    assert!({
+        let _lhs = ((*other_pointer.borrow()).read());
+        _lhs == ((*pointer.borrow()).read())
+    });
     let f1: Value<Foo> = Rc::new(RefCell::new(Foo {
         x: Rc::new(RefCell::new(1)),
         y: x1.as_pointer(),
@@ -116,12 +112,10 @@ fn main_0() -> i32 {
     }));
     assert!(((*(*f1.borrow()).x.borrow()) == 1));
     assert!((((*f1.borrow()).y.read()) == 2));
-    assert!(
-        ({
-            let _lhs = (*(*f1.borrow()).z.borrow()).clone();
-            _lhs == (x1.as_pointer())
-        })
-    );
+    assert!({
+        let _lhs = (*(*f1.borrow()).z.borrow()).clone();
+        _lhs == (x1.as_pointer())
+    });
     assert!((((*(*f1.borrow()).z.borrow()).read()) == 2));
     let f2: Value<Foo> = Rc::new(RefCell::new((*f1.borrow()).clone()));
     (*(*f2.borrow()).x.borrow_mut()).prefix_inc();
@@ -132,20 +126,16 @@ fn main_0() -> i32 {
     assert!((((*f1.borrow()).y.read()) == 3));
     (*(*f2.borrow()).z.borrow()).with_mut(|__v| __v.prefix_inc());
     assert!((((*f2.borrow()).y.read()) == 4));
-    assert!(
-        ({
-            let _lhs = (*(*f2.borrow()).z.borrow()).clone();
-            _lhs == (x1.as_pointer())
-        })
-    );
+    assert!({
+        let _lhs = (*(*f2.borrow()).z.borrow()).clone();
+        _lhs == (x1.as_pointer())
+    });
     assert!((((*(*f2.borrow()).z.borrow()).read()) == 4));
     assert!((((*f1.borrow()).y.read()) == 4));
-    assert!(
-        ({
-            let _lhs = (*(*f1.borrow()).z.borrow()).clone();
-            _lhs == (x1.as_pointer())
-        })
-    );
+    assert!({
+        let _lhs = (*(*f1.borrow()).z.borrow()).clone();
+        _lhs == (x1.as_pointer())
+    });
     assert!((((*(*f1.borrow()).z.borrow()).read()) == 4));
     (*(*f2.borrow()).a.borrow_mut())[(0) as usize].prefix_inc();
     (*(*f2.borrow()).a.borrow_mut())[(1) as usize].prefix_inc();
@@ -209,10 +199,10 @@ fn main_0() -> i32 {
         (m1.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(
             |__v: &mut Vec<Value<Vec<i32>>>| {
                 __v.push(Rc::new(RefCell::new(
-                    ((0..(10_usize) as usize)
+                    (0..(10_usize) as usize)
                         .map(|_| <i32>::default())
-                        .collect::<Vec<_>>())
-                    .clone(),
+                        .collect::<Vec<_>>()
+                        .clone(),
                 )))
             },
         );
@@ -404,8 +394,8 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     let pair1: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
-        Rc::new(RefCell::new((1).try_into().expect("failed conversion"))),
-        Rc::new(RefCell::new((2).try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
     )));
     let pair2: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new((*pair1.borrow()).0.borrow().clone())),
@@ -421,19 +411,19 @@ fn main_0() -> i32 {
     assert!(((*(*pair1.borrow()).1.borrow()) == 2));
     let pair3: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new(
-            ((0..(0_usize) as usize)
+            (0..(0_usize) as usize)
                 .map(|_| <i32>::default())
-                .collect::<Vec<_>>())
-            .try_into()
-            .expect("failed conversion"),
+                .collect::<Vec<_>>()
+                .try_into()
+                .expect("failed conversion"),
         )),
-        Rc::new(RefCell::new((0).try_into().expect("failed conversion"))),
+        Rc::new(RefCell::new(0.try_into().expect("failed conversion"))),
     )));
     let pair4: Value<(Value<Vec<i32>>, Value<i32>)> = Rc::new(RefCell::new((
         Rc::new(RefCell::new((*pair3.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*pair3.borrow()).1.borrow().clone())),
     )));
-    (*(*pair4.borrow()).0.borrow_mut()).push((1));
+    (*(*pair4.borrow()).0.borrow_mut()).push(1);
     (*(*pair4.borrow()).1.borrow_mut()) = 1;
     assert!(((*(*pair4.borrow()).0.borrow()).len() == 1_usize));
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));

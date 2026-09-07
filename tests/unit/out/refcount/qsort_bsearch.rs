@@ -23,34 +23,33 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 9, 1, 7, 3, 8, 4])));
     {
-        let __base =
-            (((arr.as_pointer() as Ptr<i32>) as Ptr<i32>).to_any()).reinterpret_cast::<u8>();
-        for __i in 0..(8_usize) {
+        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+            .to_any()
+            .reinterpret_cast::<u8>();
+        for __i in 0..8_usize {
             let mut __min = __i;
-            for __j in (__i + 1)..(8_usize) {
-                if (cmp_int_0)(
-                    __base.offset(__j * (::std::mem::size_of::<i32>())).to_any(),
-                    __base
-                        .offset(__min * (::std::mem::size_of::<i32>()))
-                        .to_any(),
+            for __j in (__i + 1)..8_usize {
+                if cmp_int_0(
+                    __base.offset(__j * ::std::mem::size_of::<i32>()).to_any(),
+                    __base.offset(__min * ::std::mem::size_of::<i32>()).to_any(),
                 ) < 0
                 {
                     __min = __j;
                 }
             }
             if __min != __i {
-                for __b in 0..(::std::mem::size_of::<i32>()) {
+                for __b in 0..::std::mem::size_of::<i32>() {
                     let __x = __base
-                        .offset(__i * (::std::mem::size_of::<i32>()) + __b)
+                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
                         .read();
                     let __y = __base
-                        .offset(__min * (::std::mem::size_of::<i32>()) + __b)
+                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
                         .read();
                     __base
-                        .offset(__i * (::std::mem::size_of::<i32>()) + __b)
+                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
                         .write(__y);
                     __base
-                        .offset(__min * (::std::mem::size_of::<i32>()) + __b)
+                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
                         .write(__x);
                 }
             }
@@ -68,16 +67,17 @@ fn main_0() -> i32 {
     let key: Value<i32> = Rc::new(RefCell::new(7));
     let hit: Value<Ptr<i32>> = Rc::new(RefCell::new(
         {
-            let __base =
-                (((arr.as_pointer() as Ptr<i32>) as Ptr<i32>).to_any()).reinterpret_cast::<u8>();
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+                .to_any()
+                .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
-            let mut __hi: isize = (8_usize) as isize - 1;
+            let mut __hi: isize = 8_usize as isize - 1;
             let mut __found = AnyPtr::default();
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
-                let __elem = __base.offset(__mid as usize * (::std::mem::size_of::<i32>()));
-                let __r = (cmp_int_0)(
-                    (((key.as_pointer()) as Ptr<i32>).to_any()).clone(),
+                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+                let __r = cmp_int_0(
+                    ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );
                 if __r == 0 {
@@ -97,16 +97,17 @@ fn main_0() -> i32 {
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
     let miss: Value<Ptr<i32>> = Rc::new(RefCell::new(
         {
-            let __base =
-                (((arr.as_pointer() as Ptr<i32>) as Ptr<i32>).to_any()).reinterpret_cast::<u8>();
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+                .to_any()
+                .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
-            let mut __hi: isize = (8_usize) as isize - 1;
+            let mut __hi: isize = 8_usize as isize - 1;
             let mut __found = AnyPtr::default();
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
-                let __elem = __base.offset(__mid as usize * (::std::mem::size_of::<i32>()));
-                let __r = (cmp_int_0)(
-                    (((miss_key.as_pointer()) as Ptr<i32>).to_any()).clone(),
+                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+                let __r = cmp_int_0(
+                    ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
                     __elem.to_any(),
                 );
                 if __r == 0 {

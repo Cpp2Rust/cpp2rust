@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     let eat2: Value<bool> = Rc::new(RefCell::new(
         ({ (*(*animal.borrow()).upgrade().deref()).bark() }),
     ));
-    assert!(((*eat1.borrow()) && (!(*eat2.borrow()))));
+    assert!((*eat1.borrow()) && (!(*eat2.borrow())));
     return 0;
 }
 pub trait CatImpl {

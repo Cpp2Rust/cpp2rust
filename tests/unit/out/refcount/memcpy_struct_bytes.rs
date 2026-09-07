@@ -46,19 +46,19 @@ fn main_0() -> i32 {
         (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     {
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).memcpy(
-            &(((src.as_pointer()) as Ptr<point>).to_any()),
-            (::std::mem::size_of::<[u8; 8]>()) as usize,
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
+            &((src.as_pointer()) as Ptr<point>).to_any(),
+            ::std::mem::size_of::<[u8; 8]>() as usize,
         );
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
     };
     let dst: Value<point> = <Value<point>>::default();
     {
-        (((dst.as_pointer()) as Ptr<point>).to_any()).memcpy(
-            &(((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()),
-            (8usize) as usize,
+        ((dst.as_pointer()) as Ptr<point>).to_any().memcpy(
+            &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+            8usize as usize,
         );
-        (((dst.as_pointer()) as Ptr<point>).to_any()).clone()
+        ((dst.as_pointer()) as Ptr<point>).to_any().clone()
     };
     assert!(((((*(*dst.borrow()).x.borrow()) == 3) as i32) != 0));
     assert!(((((*(*dst.borrow()).y.borrow()) == 7) as i32) != 0));

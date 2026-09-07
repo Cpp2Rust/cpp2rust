@@ -110,23 +110,21 @@ impl ByteRepr for MinHeap {
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     let capacity: Value<i32> = Rc::new(RefCell::new(capacity));
     let minHeap: Value<Option<Value<MinHeap>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (MinHeap {
-                size: Rc::new(RefCell::new(0)),
-                capacity: Rc::new(RefCell::new((*capacity.borrow()))),
-                arr: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                    (0..((*capacity.borrow()) as usize))
-                        .map(|_| <Ptr<MinHeapNode>>::default())
-                        .collect::<Box<[_]>>(),
-                ))))),
-                next: Rc::new(RefCell::new(0)),
-                alloc: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                    (0..(10000_usize))
-                        .map(|_| <MinHeapNode>::default())
-                        .collect::<Box<[_]>>(),
-                ))))),
-            }),
-        )))));
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(MinHeap {
+            size: Rc::new(RefCell::new(0)),
+            capacity: Rc::new(RefCell::new((*capacity.borrow()))),
+            arr: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                (0..((*capacity.borrow()) as usize))
+                    .map(|_| <Ptr<MinHeapNode>>::default())
+                    .collect::<Box<[_]>>(),
+            ))))),
+            next: Rc::new(RefCell::new(0)),
+            alloc: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                (0..10000_usize)
+                    .map(|_| <MinHeapNode>::default())
+                    .collect::<Box<[_]>>(),
+            ))))),
+        })))));
     return (*minHeap.borrow_mut()).take();
 }
 pub fn Huffman_2(
@@ -258,12 +256,12 @@ pub fn HuffmanCodes_5(
         ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) }),
     ));
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..(100_usize))
+        (0..100_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     )))));
     let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..(100_usize))
+        (0..100_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     )))));
@@ -317,12 +315,12 @@ fn main_0() -> i32 {
         ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), (*size.borrow())) }),
     ));
     assert!(
-        (((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
+        ((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
             && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
             && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
             && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
             && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111))
+            && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
     );
     return 0;
 }

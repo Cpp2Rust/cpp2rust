@@ -73,7 +73,7 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator_gt(&b, &a as *const S,) }));
     assert!((unsafe { S::operator_le(&a, &c as *const S,) }));
     assert!((unsafe { S::operator_ge(&a, &c as *const S,) }));
-    assert!((!(unsafe { S::operator_lt_pconstS_const(&b, &a as *const S,) })));
+    assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a as *const S,) }));
     assert!((unsafe { S::operator_lt_i32_const(&a, 5,) }));
     return 0;
 }

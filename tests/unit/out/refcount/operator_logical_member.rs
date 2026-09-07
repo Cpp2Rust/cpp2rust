@@ -43,20 +43,20 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(0)),
     }));
     assert!(({ SImpl::operator_not(&f.as_pointer(),) }));
-    assert!((!({ SImpl::operator_not(&t.as_pointer(),) })));
+    assert!(!({ SImpl::operator_not(&t.as_pointer(),) }));
     assert!(
         ({
             let _o: Ptr<S> = t.as_pointer();
             SImpl::operator_and(&t.as_pointer(), _o)
         })
     );
-    assert!((!({ SImpl::operator_and(&t.as_pointer(), f.as_pointer(),) })));
+    assert!(!({ SImpl::operator_and(&t.as_pointer(), f.as_pointer(),) }));
     assert!(({ SImpl::operator_or(&t.as_pointer(), f.as_pointer(),) }));
     assert!(
-        (!({
+        !({
             let _o: Ptr<S> = f.as_pointer();
             SImpl::operator_or(&f.as_pointer(), _o)
-        }))
+        })
     );
     return 0;
 }

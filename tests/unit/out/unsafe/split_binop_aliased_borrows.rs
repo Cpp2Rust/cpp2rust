@@ -12,10 +12,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut v: Vec<i32> = (vec![1, 2]);
-    let mut p: *mut i32 = (v).as_mut_ptr();
+    let mut v: Vec<i32> = vec![1, 2];
+    let mut p: *mut i32 = v.as_mut_ptr();
     let r: *const i32 = &v[(1_usize)] as *const i32;
-    (*(p)) = (*r);
+    (*p) = (*r);
     assert!(((v[(0_usize)]) == (2)));
     return 0;
 }

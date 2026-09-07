@@ -44,12 +44,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Option<Value<Point>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (Point {
+    let p: Value<Option<Value<Point>>> =
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Point {
             x: Rc::new(RefCell::new(3)),
             y: Rc::new(RefCell::new(4)),
-        }),
-    )))));
+        })))));
     (*(*(*p.borrow()).as_ref().unwrap().borrow()).x.borrow_mut()) += 10;
     let __rhs = ((*(*(*p.borrow()).as_ref().unwrap().borrow()).x.borrow())
         + (*(*(*p.borrow()).as_ref().unwrap().borrow()).y.borrow()));

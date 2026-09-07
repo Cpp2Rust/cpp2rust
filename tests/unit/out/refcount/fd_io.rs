@@ -35,9 +35,10 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (Ptr::from_string_literal(b"hello world").to_any())
+            Ptr::from_string_literal(b"hello world")
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice((11_usize), |__buf| nix::unistd::write(__fd, __buf))
+                .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -55,7 +56,7 @@ fn main_0() -> i32 {
         };
         match nix::fcntl::open(
             (*path.borrow()).to_rust_string().as_str(),
-            nix::fcntl::OFlag::from_bits_retain((::libc::O_RDONLY)),
+            nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),
             __mode,
         ) {
             Ok(__ofd) => FdRegistry::register(__ofd),
@@ -70,15 +71,17 @@ fn main_0() -> i32 {
         (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     {
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
-            .memset((0) as u8, (::std::mem::size_of::<[u8; 16]>()) as usize);
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut((::std::mem::size_of::<[u8; 16]>()), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {
@@ -93,7 +96,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = (Ptr::from_string_literal(b"hello world")).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"hello world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -109,9 +112,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut((::std::mem::size_of::<[u8; 16]>()), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {

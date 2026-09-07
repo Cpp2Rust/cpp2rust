@@ -236,22 +236,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(
-        (vec![
-            Lt {
-                v: Rc::new(RefCell::new(3)),
-            },
-            Lt {
-                v: Rc::new(RefCell::new(1)),
-            },
-            Lt {
-                v: Rc::new(RefCell::new(2)),
-            },
-        ]),
-    ));
-    (lts.as_pointer() as Ptr<Lt>).sort(((lts.as_pointer() as Ptr<Lt>).to_end()).get_offset());
+    let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![
+        Lt {
+            v: Rc::new(RefCell::new(3)),
+        },
+        Lt {
+            v: Rc::new(RefCell::new(1)),
+        },
+        Lt {
+            v: Rc::new(RefCell::new(2)),
+        },
+    ]));
+    (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
-        ((((*(*(lts.as_pointer() as Ptr<Lt>)
+        (((*(*(lts.as_pointer() as Ptr<Lt>)
             .offset(0_usize)
             .upgrade()
             .deref())
@@ -271,74 +269,71 @@ fn main_0() -> i32 {
                 .deref())
             .v
             .borrow())
-                == 3))
+                == 3)
     );
-    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(
-        (vec![
-            Eq {
-                v: Rc::new(RefCell::new(1)),
-            },
-            Eq {
-                v: Rc::new(RefCell::new(2)),
-            },
-            Eq {
-                v: Rc::new(RefCell::new(3)),
-            },
-        ]),
-    ));
+    let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![
+        Eq {
+            v: Rc::new(RefCell::new(1)),
+        },
+        Eq {
+            v: Rc::new(RefCell::new(2)),
+        },
+        Eq {
+            v: Rc::new(RefCell::new(3)),
+        },
+    ]));
+    let two: Value<Eq> = Rc::new(RefCell::new(Eq {
+        v: Rc::new(RefCell::new(2)),
+    }));
+    let nine: Value<Eq> = Rc::new(RefCell::new(Eq {
+        v: Rc::new(RefCell::new(9)),
+    }));
     assert!(
-        (((((eqs.as_pointer() as Ptr<Eq>).offset(
-            (eqs.as_pointer() as Ptr<Eq>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < ((eqs.as_pointer() as Ptr<Eq>).to_end()).get_offset() as usize
-                        && value_0.read()
-                            == (Eq {
-                                v: Rc::new(RefCell::new(2)),
-                            })
-                })
-                .unwrap_or(((eqs.as_pointer() as Ptr<Eq>).to_end()).get_offset() as usize)
-                as isize,
-        ))
-        .get_offset() as isize)
+        ((((eqs.as_pointer() as Ptr<Eq>)
+            .offset(
+                (eqs.as_pointer() as Ptr<Eq>)
+                    .clone()
+                    .into_iter()
+                    .enumerate()
+                    .position(|(index_0, value_0)| {
+                        index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
+                            && value_0.read() == (*two.borrow())
+                    })
+                    .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
+                    as isize,
+            )
+            .get_offset() as isize)
             - ((eqs.as_pointer() as Ptr<Eq>).get_offset() as isize))
             == 1_i64)
     );
     assert!(
-        (((eqs.as_pointer() as Ptr<Eq>).offset(
+        (eqs.as_pointer() as Ptr<Eq>).offset(
             (eqs.as_pointer() as Ptr<Eq>)
                 .clone()
                 .into_iter()
                 .enumerate()
                 .position(|(index_0, value_0)| {
-                    index_0 < ((eqs.as_pointer() as Ptr<Eq>).to_end()).get_offset() as usize
-                        && value_0.read()
-                            == (Eq {
-                                v: Rc::new(RefCell::new(9)),
-                            })
+                    index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
+                        && value_0.read() == (*nine.borrow())
                 })
-                .unwrap_or(((eqs.as_pointer() as Ptr<Eq>).to_end()).get_offset() as usize)
+                .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
                 as isize,
-        )) == ((eqs.as_pointer() as Ptr<Eq>).to_end()))
+        ) == (eqs.as_pointer() as Ptr<Eq>).to_end()
     );
-    let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(
-        (vec![
-            Cmp {
-                v: Rc::new(RefCell::new(3)),
-            },
-            Cmp {
-                v: Rc::new(RefCell::new(1)),
-            },
-            Cmp {
-                v: Rc::new(RefCell::new(2)),
-            },
-        ]),
-    ));
-    (cmps.as_pointer() as Ptr<Cmp>).sort(((cmps.as_pointer() as Ptr<Cmp>).to_end()).get_offset());
+    let cmps: Value<Vec<Cmp>> = Rc::new(RefCell::new(vec![
+        Cmp {
+            v: Rc::new(RefCell::new(3)),
+        },
+        Cmp {
+            v: Rc::new(RefCell::new(1)),
+        },
+        Cmp {
+            v: Rc::new(RefCell::new(2)),
+        },
+    ]));
+    (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
     assert!(
-        (((*(*(cmps.as_pointer() as Ptr<Cmp>)
+        ((*(*(cmps.as_pointer() as Ptr<Cmp>)
             .offset(0_usize)
             .upgrade()
             .deref())
@@ -351,40 +346,38 @@ fn main_0() -> i32 {
                 .deref())
             .v
             .borrow())
-                == 3))
+                == 3)
     );
+    let three: Value<Cmp> = Rc::new(RefCell::new(Cmp {
+        v: Rc::new(RefCell::new(3)),
+    }));
     assert!(
-        (((((cmps.as_pointer() as Ptr<Cmp>).offset(
-            (cmps.as_pointer() as Ptr<Cmp>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < ((cmps.as_pointer() as Ptr<Cmp>).to_end()).get_offset() as usize
-                        && value_0.read()
-                            == (Cmp {
-                                v: Rc::new(RefCell::new(3)),
-                            })
-                })
-                .unwrap_or(((cmps.as_pointer() as Ptr<Cmp>).to_end()).get_offset() as usize)
-                as isize,
-        ))
-        .get_offset() as isize)
+        ((((cmps.as_pointer() as Ptr<Cmp>)
+            .offset(
+                (cmps.as_pointer() as Ptr<Cmp>)
+                    .clone()
+                    .into_iter()
+                    .enumerate()
+                    .position(|(index_0, value_0)| {
+                        index_0 < (cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize
+                            && value_0.read() == (*three.borrow())
+                    })
+                    .unwrap_or((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize)
+                    as isize,
+            )
+            .get_offset() as isize)
             - ((cmps.as_pointer() as Ptr<Cmp>).get_offset() as isize))
             == 2_i64)
     );
-    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(
-        (vec![
-            Free {
-                v: Rc::new(RefCell::new(2)),
-            },
-            Free {
-                v: Rc::new(RefCell::new(1)),
-            },
-        ]),
-    ));
-    (frees.as_pointer() as Ptr<Free>)
-        .sort(((frees.as_pointer() as Ptr<Free>).to_end()).get_offset());
+    let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![
+        Free {
+            v: Rc::new(RefCell::new(2)),
+        },
+        Free {
+            v: Rc::new(RefCell::new(1)),
+        },
+    ]));
+    (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
     assert!(
         ((*(*(frees.as_pointer() as Ptr<Free>)
             .offset(0_usize)
@@ -394,23 +387,24 @@ fn main_0() -> i32 {
         .borrow())
             == 1)
     );
+    let ftwo: Value<Free> = Rc::new(RefCell::new(Free {
+        v: Rc::new(RefCell::new(2)),
+    }));
     assert!(
-        (((((frees.as_pointer() as Ptr<Free>).offset(
-            (frees.as_pointer() as Ptr<Free>)
-                .clone()
-                .into_iter()
-                .enumerate()
-                .position(|(index_0, value_0)| {
-                    index_0 < ((frees.as_pointer() as Ptr<Free>).to_end()).get_offset() as usize
-                        && value_0.read()
-                            == (Free {
-                                v: Rc::new(RefCell::new(2)),
-                            })
-                })
-                .unwrap_or(((frees.as_pointer() as Ptr<Free>).to_end()).get_offset() as usize)
-                as isize,
-        ))
-        .get_offset() as isize)
+        ((((frees.as_pointer() as Ptr<Free>)
+            .offset(
+                (frees.as_pointer() as Ptr<Free>)
+                    .clone()
+                    .into_iter()
+                    .enumerate()
+                    .position(|(index_0, value_0)| {
+                        index_0 < (frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize
+                            && value_0.read() == (*ftwo.borrow())
+                    })
+                    .unwrap_or((frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize)
+                    as isize,
+            )
+            .get_offset() as isize)
             - ((frees.as_pointer() as Ptr<Free>).get_offset() as isize))
             == 1_i64)
     );
@@ -418,9 +412,9 @@ fn main_0() -> i32 {
     (m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<Lt, Value<i32>>| {
             __v.entry(
-                (Lt {
+                Lt {
                     v: Rc::new(RefCell::new(2)),
-                })
+                }
                 .clone(),
             )
             .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
@@ -430,9 +424,9 @@ fn main_0() -> i32 {
     (m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<Lt, Value<i32>>| {
             __v.entry(
-                (Lt {
+                Lt {
                     v: Rc::new(RefCell::new(1)),
-                })
+                }
                 .clone(),
             )
             .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
@@ -440,7 +434,7 @@ fn main_0() -> i32 {
         })
         .write(10);
     assert!(
-        ((*(RefcountMapIter::begin((m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>)))
+        ((*RefcountMapIter::begin((m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>))
             .second()
             .borrow())
             == 10)
@@ -449,9 +443,9 @@ fn main_0() -> i32 {
         (((m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<Lt, Value<i32>>| {
                 __v.entry(
-                    (Lt {
+                    Lt {
                         v: Rc::new(RefCell::new(2)),
-                    })
+                    }
                     .clone(),
                 )
                 .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))

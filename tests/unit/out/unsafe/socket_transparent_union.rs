@@ -17,7 +17,7 @@ unsafe fn main_0() -> i32 {
     let mut slen: u32 = (::std::mem::size_of::<libc::sockaddr_storage>() as u32);
     assert!(
         ((((libc::getsockname(
-            (fd),
+            fd,
             ((&mut ssloc as *mut libc::sockaddr_storage) as *mut libc::sockaddr),
             (&mut slen as *mut u32)
         )) == (-1_i32)) as i32)
@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     let mut inlen: u32 = (::std::mem::size_of::<::libc::sockaddr_in>() as u32);
     assert!(
         ((((libc::getsockname(
-            (fd),
+            fd,
             ((&mut sin as *mut ::libc::sockaddr_in) as *mut libc::sockaddr),
             (&mut inlen as *mut u32)
         )) == (-1_i32)) as i32)

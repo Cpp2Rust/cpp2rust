@@ -16,8 +16,8 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (10)) {
         {
-            let a0_clone = (i).clone();
-            (v).push(a0_clone)
+            let a0_clone = i.clone();
+            v.push(a0_clone)
         };
         i.prefix_inc();
     }

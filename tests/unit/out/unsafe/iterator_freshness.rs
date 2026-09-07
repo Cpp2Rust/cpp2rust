@@ -16,7 +16,7 @@ unsafe fn main_0() -> i32 {
     let mut vec_: Vec<i32> = (0..(4_usize) as usize)
         .map(|_| <i32>::default())
         .collect::<Vec<_>>();
-    let mut it: *mut i32 = (vec_).as_mut_ptr();
-    (unsafe { foo_0((it)) });
+    let mut it: *mut i32 = vec_.as_mut_ptr();
+    (unsafe { foo_0(it) });
     return 0;
 }

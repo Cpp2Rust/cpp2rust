@@ -22,8 +22,8 @@ unsafe fn main_0() -> i32 {
         )
     });
     assert!(((((fd) >= (0)) as i32) != 0));
-    assert!(((((libc::isatty((fd))) == (0)) as i32) != 0));
-    assert!(((((libc::close((fd))) == (0)) as i32) != 0));
-    assert!(((((libc::unlink((path))) == (0)) as i32) != 0));
+    assert!(((((libc::isatty(fd)) == (0)) as i32) != 0));
+    assert!(((((libc::close(fd)) == (0)) as i32) != 0));
+    assert!(((((libc::unlink(path)) == (0)) as i32) != 0));
     return 0;
 }

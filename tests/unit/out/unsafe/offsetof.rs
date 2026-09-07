@@ -49,7 +49,7 @@ unsafe fn main_0() -> i32 {
     (*((base.offset((::std::mem::offset_of!(Layout, b)) as isize)) as *mut u32)) = 305419896_u32;
     assert!(((v.b) == (305419896_u32)));
     let mut text: *const libc::c_char = c"example-body".as_ptr();
-    let mut len: usize = (libc::strlen((text))).wrapping_add(1_usize);
+    let mut len: usize = (libc::strlen(text)).wrapping_add(1_usize);
     let mut total: usize =
         ((::std::mem::offset_of!(Frame, body) as u64).wrapping_add((len as u64)) as usize);
     assert!(((total) == ((2_usize).wrapping_add(len))));

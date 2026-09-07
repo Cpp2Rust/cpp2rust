@@ -46,7 +46,7 @@ fn main_0() -> i32 {
             .collect::<Box<[NonCopy]>>(),
     ));
     (*(*arr.borrow())[(0) as usize].tag.borrow_mut()) = 7;
-    (*(*arr.borrow())[(1) as usize].data.borrow_mut()).push((42));
+    (*(*arr.borrow())[(1) as usize].data.borrow_mut()).push(42);
     assert!(((*(*arr.borrow())[(0) as usize].tag.borrow()) == 7));
     assert!(((*(*arr.borrow())[(1) as usize].data.borrow()).len() == 1_usize));
     assert!(

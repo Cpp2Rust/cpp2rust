@@ -60,10 +60,10 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        (!({
+        !({
             let _a: Ptr<S> = t.as_pointer();
             operator_not_0(_a)
-        }))
+        })
     );
     assert!(
         ({
@@ -73,10 +73,10 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        (!({
+        !({
             let _a: Ptr<S> = t.as_pointer();
             operator_and_1(_a, f.as_pointer())
-        }))
+        })
     );
     assert!(
         ({
@@ -85,11 +85,11 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        (!({
+        !({
             let _a: Ptr<S> = f.as_pointer();
             let _b: Ptr<S> = f.as_pointer();
             operator_or_2(_a, _b)
-        }))
+        })
     );
     return 0;
 }

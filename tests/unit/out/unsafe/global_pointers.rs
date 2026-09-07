@@ -43,11 +43,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((single_entry_0.p).is_null()));
+    assert!((single_entry_0.p).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!(((entries_1[(i) as usize].p).is_null()));
-        assert!(((arr_of_pointers_2[(i) as usize]).is_null()));
+        assert!((entries_1[(i) as usize].p).is_null());
+        assert!((arr_of_pointers_2[(i) as usize]).is_null());
         i.prefix_inc();
     }
     return 0;

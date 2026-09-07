@@ -9,69 +9,63 @@ use std::rc::Rc;
 pub unsafe fn test_setenv_getenv_0() {
     assert!(
         ((((libc::setenv(
-            ((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const()),
-            ((c"test_value".as_ptr().cast_mut()).cast_const()),
-            (1)
+            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
+            (c"test_value".as_ptr().cast_mut()).cast_const(),
+            1
         )) == (0)) as i32)
             != 0)
     );
     let mut v: *const libc::c_char =
-        (libc::getenv(((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const()))).cast_const();
+        (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
     assert!((((!((v).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp((v), ((c"test_value".as_ptr().cast_mut()).cast_const()))) == (0)) as i32)
+        ((((libc::strcmp(v, (c"test_value".as_ptr().cast_mut()).cast_const())) == (0)) as i32)
             != 0)
     );
     assert!(
         ((((libc::setenv(
-            ((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const()),
-            ((c"replaced".as_ptr().cast_mut()).cast_const()),
-            (1)
+            (c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const(),
+            (c"replaced".as_ptr().cast_mut()).cast_const(),
+            1
         )) == (0)) as i32)
             != 0)
     );
-    v = (libc::getenv(((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const()))).cast_const();
+    v = (libc::getenv((c"CPP2RUST_TEST_VAR".as_ptr().cast_mut()).cast_const())).cast_const();
     assert!((((!((v).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp((v), ((c"replaced".as_ptr().cast_mut()).cast_const()))) == (0)) as i32)
-            != 0)
+        ((((libc::strcmp(v, (c"replaced".as_ptr().cast_mut()).cast_const())) == (0)) as i32) != 0)
     );
 }
 pub unsafe fn test_realpath_1() {
     let mut buf: [libc::c_char; 4096] = [(0 as libc::c_char); 4096];
     assert!(
-        (((!((libc::realpath(
-            ((c"/".as_ptr().cast_mut()).cast_const()),
-            (buf.as_mut_ptr())
-        ))
-        .is_null())) as i32)
+        (((!((libc::realpath((c"/".as_ptr().cast_mut()).cast_const(), buf.as_mut_ptr())).is_null()))
+            as i32)
             != 0)
     );
     assert!(
         ((((libc::strcmp(
-            ((buf.as_mut_ptr()).cast_const()),
-            ((c"/".as_ptr().cast_mut()).cast_const())
+            (buf.as_mut_ptr()).cast_const(),
+            (c"/".as_ptr().cast_mut()).cast_const()
         )) == (0)) as i32)
             != 0)
     );
     let mut p: *mut libc::c_char = libc::realpath(
-        ((c"/".as_ptr().cast_mut()).cast_const()),
-        (std::ptr::null_mut()),
+        (c"/".as_ptr().cast_mut()).cast_const(),
+        std::ptr::null_mut(),
     );
     assert!((((!((p).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp(
-            ((p).cast_const()),
-            ((c"/".as_ptr().cast_mut()).cast_const())
-        )) == (0)) as i32)
+        ((((libc::strcmp((p).cast_const(), (c"/".as_ptr().cast_mut()).cast_const())) == (0))
+            as i32)
             != 0)
     );
     libcc2rs::free_unsafe((p as *mut libc::c_char as *mut ::libc::c_void));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
     assert!(
         ((((libc::realpath(
-            ((c"/cpp2rust_definitely_missing".as_ptr().cast_mut()).cast_const()),
-            (buf.as_mut_ptr())
+            (c"/cpp2rust_definitely_missing".as_ptr().cast_mut()).cast_const(),
+            buf.as_mut_ptr()
         ))
         .is_null()) as i32)
             != 0)

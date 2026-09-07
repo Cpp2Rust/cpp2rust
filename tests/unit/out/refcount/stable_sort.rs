@@ -20,7 +20,9 @@ fn main_0() -> i32 {
             })((x.read()).clone(), (y.read()).clone())
         };
         (arr1.as_pointer() as Ptr<i32>).sort_with_cmp(
-            ((arr1.as_pointer() as Ptr<i32>).offset((5) as isize)).get_offset(),
+            (arr1.as_pointer() as Ptr<i32>)
+                .offset((5) as isize)
+                .get_offset(),
             fun,
         )
     };

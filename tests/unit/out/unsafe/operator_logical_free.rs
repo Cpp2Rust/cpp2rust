@@ -35,10 +35,10 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        (!(unsafe {
+        !(unsafe {
             let _a: *const S = &t as *const S;
             operator_not_0(_a)
-        }))
+        })
     );
     assert!(
         (unsafe {
@@ -48,10 +48,10 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        (!(unsafe {
+        !(unsafe {
             let _a: *const S = &t as *const S;
             operator_and_1(_a, &f as *const S)
-        }))
+        })
     );
     assert!(
         (unsafe {
@@ -60,11 +60,11 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        (!(unsafe {
+        !(unsafe {
             let _a: *const S = &f as *const S;
             let _b: *const S = &f as *const S;
             operator_or_2(_a, _b)
-        }))
+        })
     );
     return 0;
 }

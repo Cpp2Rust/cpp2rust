@@ -19,7 +19,7 @@ fn main_0() -> i32 {
             Ok(__ss) => {
                 Sockaddr::encode(
                     &__ss,
-                    &((ssloc.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>()),
+                    &(ssloc.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>(),
                     &(slen.as_pointer()),
                 );
                 0
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
             Ok(__ss) => {
                 Sockaddr::encode(
                     &__ss,
-                    &((sin.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>()),
+                    &(sin.as_pointer()).reinterpret_cast::<libcc2rs::Sockaddr>(),
                     &(inlen.as_pointer()),
                 );
                 0

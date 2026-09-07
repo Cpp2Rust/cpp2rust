@@ -10,11 +10,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((10))))));
+    let p: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()) += 5;
     (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()) -= 3;
     (*(*p.borrow_mut()).as_ref().unwrap().borrow_mut()) *= 2;
-    let q: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((1))))));
+    let q: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(1)))));
     let sum: Value<i32> = Rc::new(RefCell::new(
         ((*(*p.borrow()).as_ref().unwrap().borrow()) + (*(*q.borrow()).as_ref().unwrap().borrow())),
     ));

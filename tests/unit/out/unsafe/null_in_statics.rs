@@ -20,21 +20,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((p_mut_0).is_null()));
-    assert!(((p_const_1).is_null()));
-    assert!(((cp_2).is_null()));
+    assert!((p_mut_0).is_null());
+    assert!((p_const_1).is_null());
+    assert!((cp_2).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (4)) {
-        assert!(((arr_of_ptr_3[(i) as usize]).is_null()));
+        assert!((arr_of_ptr_3[(i) as usize]).is_null());
         i.prefix_inc();
     }
-    assert!(((pp_4).is_null()));
+    assert!((pp_4).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (3)) {
-        assert!(((const_arr_of_ptr_5[(i) as usize]).is_null()));
+        assert!((const_arr_of_ptr_5[(i) as usize]).is_null());
         i.prefix_inc();
     }
-    assert!(((cp_explicit_null_6).is_null()));
-    assert!(((p_zero_7).is_null()));
+    assert!((cp_explicit_null_6).is_null());
+    assert!((p_zero_7).is_null());
     return 0;
 }

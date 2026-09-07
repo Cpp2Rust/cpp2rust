@@ -160,7 +160,7 @@ fn main_0() -> i32 {
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });
     let g: Value<NonCopyable> = Rc::new(RefCell::new(NonCopyable {
-        value: Rc::new(RefCell::new(Some(Rc::new(RefCell::new((9)))))),
+        value: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(9))))),
     }));
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());

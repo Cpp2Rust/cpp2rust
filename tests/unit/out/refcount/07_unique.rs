@@ -15,13 +15,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((8))))));
+    let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(8)))));
     (*(*f.borrow_mut()).as_ref().unwrap().borrow_mut()) = 9;
     let f_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new((*f.borrow()).as_pointer()));
     (*f_ptr1.borrow()).write(10);
     let f_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*f.borrow()).as_pointer())));
     (*f_ptr2.borrow()).write(11);
-    (*f.borrow_mut()) = Some(Rc::new(RefCell::new((9))));
+    (*f.borrow_mut()) = Some(Rc::new(RefCell::new(9)));
     let __rhs = ({ fn_0((*f.borrow_mut()).take()) });
     (*f.borrow_mut()) = __rhs;
     assert!(((*(*f.borrow()).as_ref().unwrap().borrow()) == 10));

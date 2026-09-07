@@ -16,8 +16,8 @@ unsafe fn main_0() -> i32 {
     let mut x2: i16 = 2_i16;
     let mut x3: u32 = 4_u32;
     let mut v: Vec<i32> = Vec::new();
-    (v).push((1));
-    (v).push((2));
+    v.push(1);
+    v.push(2);
     let mut sum: i32 = 0;
     'loop_: for elem in 0..(v.len()) {
         let mut elem = v[elem].clone();

@@ -11,6 +11,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-    assert!((!!(*x.borrow()).is_null()));
+    assert!(!!(*x.borrow()).is_null());
     return 0;
 }

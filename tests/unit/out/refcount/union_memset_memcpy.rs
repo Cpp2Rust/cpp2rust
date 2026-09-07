@@ -163,8 +163,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     {
-        (((c.as_pointer()) as Ptr<Container>).to_any()).memset((0) as u8, (256usize) as usize);
-        (((c.as_pointer()) as Ptr<Container>).to_any()).clone()
+        ((c.as_pointer()) as Ptr<Container>)
+            .to_any()
+            .memset((0) as u8, 256usize as usize);
+        ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     assert!(
         (((((*(*(*(*c.borrow()).view.borrow()).a().upgrade().deref())
@@ -226,19 +228,19 @@ fn main_0() -> i32 {
     let len: Value<usize> = Rc::new(RefCell::new(16_usize));
     assert!(((((*len.borrow()) <= ::std::mem::size_of::<[u8; 256]>()) as i32) != 0));
     {
-        ((((*(*c.borrow()).view.borrow())
+        (((*(*c.borrow()).view.borrow())
             .raw_()
             .reinterpret_cast::<u8>()) as Ptr<u8>)
-            .to_any())
-        .memcpy(
-            &(((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()),
-            (*len.borrow()) as usize,
-        );
-        ((((*(*c.borrow()).view.borrow())
+            .to_any()
+            .memcpy(
+                &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                (*len.borrow()) as usize,
+            );
+        (((*(*c.borrow()).view.borrow())
             .raw_()
             .reinterpret_cast::<u8>()) as Ptr<u8>)
-            .to_any())
-        .clone()
+            .to_any()
+            .clone()
     };
     assert!(
         (((((*(*(*(*c.borrow()).view.borrow()).b().upgrade().deref())
@@ -258,8 +260,10 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        (((c.as_pointer()) as Ptr<Container>).to_any()).memset((0) as u8, (256usize) as usize);
-        (((c.as_pointer()) as Ptr<Container>).to_any()).clone()
+        ((c.as_pointer()) as Ptr<Container>)
+            .to_any()
+            .memset((0) as u8, 256usize as usize);
+        ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     assert!(
         (((((*(*(*(*c.borrow()).view.borrow()).b().upgrade().deref())

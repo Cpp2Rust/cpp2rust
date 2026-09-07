@@ -11,19 +11,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new({
-        let __family = match (libc::AF_INET) {
+        let __family = match libc::AF_INET {
             ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
             ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
             ::libc::AF_UNIX => nix::sys::socket::AddressFamily::Unix,
             __d => panic!("socket: unsupported domain {__d}"),
         };
-        let __flags = nix::sys::socket::SockFlag::from_bits_truncate((libc::SOCK_STREAM));
-        let __ty = match (libc::SOCK_STREAM) & !nix::sys::socket::SockFlag::all().bits() {
+        let __flags = nix::sys::socket::SockFlag::from_bits_truncate(libc::SOCK_STREAM);
+        let __ty = match libc::SOCK_STREAM & !nix::sys::socket::SockFlag::all().bits() {
             ::libc::SOCK_STREAM => nix::sys::socket::SockType::Stream,
             ::libc::SOCK_DGRAM => nix::sys::socket::SockType::Datagram,
             __t => panic!("socket: unsupported type {__t}"),
         };
-        let __proto = match (0) {
+        let __proto = match 0 {
             0 => None,
             ::libc::IPPROTO_TCP => Some(nix::sys::socket::SockProtocol::Tcp),
             ::libc::IPPROTO_UDP => Some(nix::sys::socket::SockProtocol::Udp),
@@ -42,9 +42,9 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __a0 = (*s.borrow());
-            let __a1 = (libc::SOL_SOCKET);
-            let __a2 = (libc::SO_KEEPALIVE);
-            let __a3 = (((on.as_pointer()) as Ptr<i32>).to_any());
+            let __a1 = libc::SOL_SOCKET;
+            let __a2 = libc::SO_KEEPALIVE;
+            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
             libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
         } == 0) as i32)
             != 0)
@@ -52,9 +52,9 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __a0 = (*s.borrow());
-            let __a1 = (libc::IPPROTO_TCP);
-            let __a2 = (libc::TCP_NODELAY);
-            let __a3 = (((on.as_pointer()) as Ptr<i32>).to_any());
+            let __a1 = libc::IPPROTO_TCP;
+            let __a2 = libc::TCP_NODELAY;
+            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
             libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
         } == 0) as i32)
             != 0)
@@ -62,13 +62,14 @@ fn main_0() -> i32 {
     let err: Value<i32> = Rc::new(RefCell::new(-1_i32));
     let len: Value<u32> = Rc::new(RefCell::new((::std::mem::size_of::<i32>() as u32)));
     assert!(
-        (((match ((libc::SOL_SOCKET), (libc::SO_ERROR)) {
+        (((match (libc::SOL_SOCKET, libc::SO_ERROR) {
             (::libc::SOL_SOCKET, ::libc::SO_ERROR) => {
                 match FdRegistry::with_fd((*s.borrow()), |__fd| {
                     nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
                 }) {
                     Ok(__err) => {
-                        (((err.as_pointer()) as Ptr<i32>).to_any())
+                        ((err.as_pointer()) as Ptr<i32>)
+                            .to_any()
                             .reinterpret_cast::<i32>()
                             .write(__err);
                         (len.as_pointer()).write(::std::mem::size_of::<i32>() as u32);

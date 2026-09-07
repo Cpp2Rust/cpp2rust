@@ -13,6 +13,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<u32> = Vec::new();
-    let mut bytes: *mut u16 = ((v).as_mut_ptr() as *mut u16);
+    let mut bytes: *mut u16 = (v.as_mut_ptr() as *mut u16);
     return 0;
 }

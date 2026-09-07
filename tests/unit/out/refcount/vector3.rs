@@ -12,13 +12,13 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
     {
-        let _a0 = (2_usize) as usize;
+        let _a0 = 2_usize as usize;
         (v.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
             __v.resize_with(_a0, <Value<Vec<i32>>>::default)
         })
     };
     {
-        let __a0 = (2_usize) as usize;
+        let __a0 = 2_usize as usize;
         (v.as_pointer() as Ptr<Value<Vec<i32>>>)
             .offset(0_usize)
             .with_mut(|__v: &mut Value<Vec<i32>>| {
@@ -26,7 +26,7 @@ fn main_0() -> i32 {
             })
     };
     {
-        let __a0 = (1_usize) as usize;
+        let __a0 = 1_usize as usize;
         (v.as_pointer() as Ptr<Value<Vec<i32>>>)
             .offset(1_usize)
             .with_mut(|__v: &mut Value<Vec<i32>>| {

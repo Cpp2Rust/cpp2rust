@@ -42,6 +42,6 @@ unsafe fn main_0() -> i32 {
     let mut cat: Cat = <Cat>::default();
     animal = (&mut cat as *mut Cat);
     let mut eat2: bool = (unsafe { (*(animal).cast_const()).bark() });
-    assert!(((eat1) && (!eat2)));
+    assert!((eat1) && (!eat2));
     return 0;
 }

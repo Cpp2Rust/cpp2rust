@@ -95,8 +95,8 @@ fn main_0() -> i32 {
         MyContainer_int_Impl::push_back(&imc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        ((({ MyContainer_int_Impl::size(&imc.as_pointer(),) }) == 1_usize)
-            && ((({ MyContainer_int_Impl::back(&imc.as_pointer(),) }).read()) == 1))
+        (({ MyContainer_int_Impl::size(&imc.as_pointer(),) }) == 1_usize)
+            && ((({ MyContainer_int_Impl::back(&imc.as_pointer(),) }).read()) == 1)
     );
     ({ MyContainer_int_Impl::pop_back(&imc.as_pointer()) });
     assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
@@ -107,9 +107,9 @@ fn main_0() -> i32 {
         MyContainer_char_Impl::push_back(&cmc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        ((({ MyContainer_char_Impl::size(&cmc.as_pointer(),) }) == 1_usize)
+        (({ MyContainer_char_Impl::size(&cmc.as_pointer(),) }) == 1_usize)
             && (((({ MyContainer_char_Impl::back(&cmc.as_pointer(),) }).read()) as i32)
-                == (('a' as u8) as i32)))
+                == (('a' as u8) as i32))
     );
     ({ MyContainer_char_Impl::pop_back(&cmc.as_pointer()) });
     assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
@@ -120,9 +120,8 @@ fn main_0() -> i32 {
         MyContainer_float_Impl::push_back(&fmc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        ((({ MyContainer_float_Impl::size(&fmc.as_pointer(),) }) == 1_usize)
-            && (((({ MyContainer_float_Impl::back(&fmc.as_pointer(),) }).read()) as f64)
-                == 1.0E+0))
+        (({ MyContainer_float_Impl::size(&fmc.as_pointer(),) }) == 1_usize)
+            && (((({ MyContainer_float_Impl::back(&fmc.as_pointer(),) }).read()) as f64) == 1.0E+0)
     );
     ({ MyContainer_float_Impl::pop_back(&fmc.as_pointer()) });
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));

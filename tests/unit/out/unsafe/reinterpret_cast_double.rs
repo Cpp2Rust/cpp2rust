@@ -16,6 +16,6 @@ unsafe fn main_0() -> i32 {
     let mut bits: *mut u64 = ((&mut d as *mut f64) as *mut u64);
     assert!(((*bits) == (4607182418800017408_u64)));
     (*bits) = 4614256656552045848_u64;
-    assert!((((d) > (3.14E+0)) && ((d) < (3.15E+0))));
+    assert!(((d) > (3.14E+0)) && ((d) < (3.15E+0)));
     return 0;
 }

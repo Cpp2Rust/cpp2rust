@@ -16,16 +16,16 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     let mut k: i32 = 100;
     'loop_: while ((i) < (100)) {
-        (*(m).entry((i)).or_default().as_mut()) = ((k as f64) / (2.0E+0));
+        (*m.entry(i).or_default().as_mut()) = ((k as f64) / (2.0E+0));
         i.prefix_inc();
         k.prefix_dec();
     }
     let mut sum: f64 = 0_f64;
     'loop_: for i in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<f64>>) {
-        sum += *(i).second();
+        sum += *i.second();
     }
     'loop_: for i in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<f64>>) {
-        sum += (*(i).first() as f64);
+        sum += (*i.first() as f64);
     }
     assert!(((sum) == (7475_f64)));
     return 0;

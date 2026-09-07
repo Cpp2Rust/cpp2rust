@@ -41,7 +41,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    (*(*s.borrow()).v.borrow_mut()).push((1));
+    (*(*s.borrow()).v.borrow_mut()).push(1);
     'loop_: for mut e in (*s.borrow()).v.as_pointer() as Ptr<i32> {
         let e: Value<i32> = Rc::new(RefCell::new(e.read().clone()));
         (*(*s.borrow()).a.borrow_mut()).postfix_inc();

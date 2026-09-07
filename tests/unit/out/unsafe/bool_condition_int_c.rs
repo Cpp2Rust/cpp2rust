@@ -64,6 +64,6 @@ unsafe fn main_0() -> i32 {
     let mut t8: i32 = (!(zero != 0) as i32);
     assert!(((((t8) == (1)) as i32) != 0));
     let mut b1: bool = (n != 0);
-    assert!((b1));
+    assert!(b1);
     return 0;
 }

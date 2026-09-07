@@ -13,5 +13,5 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut file_ptr: *mut ::libc::FILE = std::ptr::null_mut();
-    return libc::fflush((file_ptr));
+    return libc::fflush(file_ptr);
 }

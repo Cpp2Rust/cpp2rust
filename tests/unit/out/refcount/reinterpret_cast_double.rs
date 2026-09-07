@@ -14,6 +14,6 @@ fn main_0() -> i32 {
     let bits: Value<Ptr<u64>> = Rc::new(RefCell::new((d.as_pointer()).reinterpret_cast::<u64>()));
     assert!((((*bits.borrow()).read()) == 4607182418800017408_u64));
     (*bits.borrow()).write(4614256656552045848_u64);
-    assert!((((*d.borrow()) > 3.14E+0) && ((*d.borrow()) < 3.15E+0)));
+    assert!(((*d.borrow()) > 3.14E+0) && ((*d.borrow()) < 3.15E+0));
     return 0;
 }

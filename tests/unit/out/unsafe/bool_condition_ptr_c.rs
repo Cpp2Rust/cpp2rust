@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((t6) == (1)) as i32) != 0));
     let mut b2: bool = !(p).is_null();
     let mut b3: bool = !(np).is_null();
-    assert!((b2));
+    assert!(b2);
     assert!(((!b3 as i32) != 0));
     return 0;
 }

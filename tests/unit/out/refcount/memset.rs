@@ -17,12 +17,11 @@ fn main_0() -> i32 {
             .collect::<Box<[i32]>>(),
     )));
     {
-        (((*arr.borrow()).clone() as Ptr<i32>).to_any()).memset(
+        ((*arr.borrow()).clone() as Ptr<i32>).to_any().memset(
             (1) as u8,
-            ((::std::mem::size_of::<i32>() as usize).wrapping_mul(((*N.borrow()) as usize)))
-                as usize,
+            (::std::mem::size_of::<i32>() as usize).wrapping_mul(((*N.borrow()) as usize)) as usize,
         );
-        (((*arr.borrow()).clone() as Ptr<i32>).to_any()).clone()
+        ((*arr.borrow()).clone() as Ptr<i32>).to_any().clone()
     };
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));

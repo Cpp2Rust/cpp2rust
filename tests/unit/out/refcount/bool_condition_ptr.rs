@@ -14,16 +14,16 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     if !(*p.borrow()).is_null() {
-        assert!((true));
+        assert!(true);
     }
     if !!(*p.borrow()).is_null() {
-        assert!((false));
+        assert!(false);
     }
     if !(*np.borrow()).is_null() {
-        assert!((false));
+        assert!(false);
     }
     if !!(*np.borrow()).is_null() {
-        assert!((true));
+        assert!(true);
     }
     let iter: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     let iters: Value<i32> = Rc::new(RefCell::new(0));
@@ -43,6 +43,6 @@ fn main_0() -> i32 {
     let b2: Value<bool> = Rc::new(RefCell::new(!(*p.borrow()).is_null()));
     let b3: Value<bool> = Rc::new(RefCell::new(!(*np.borrow()).is_null()));
     assert!((*b2.borrow()));
-    assert!((!(*b3.borrow())));
+    assert!(!(*b3.borrow()));
     return 0;
 }

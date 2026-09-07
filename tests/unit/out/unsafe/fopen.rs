@@ -14,6 +14,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut fname: *const libc::c_char = c"testfile.txt".as_ptr();
     let mut mode: *const libc::c_char = c"rb".as_ptr();
-    let mut file_ptr: *mut ::libc::FILE = libc::fopen((fname), (mode));
+    let mut file_ptr: *mut ::libc::FILE = libc::fopen(fname, mode);
     return 0;
 }

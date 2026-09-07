@@ -20,7 +20,7 @@ pub unsafe fn lenf_2(mut fmt: *const libc::c_char, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
     let mut s: *const libc::c_char = ap.arg::<*const libc::c_char>();
-    let mut result: i32 = (libc::strlen((s)) as i32);
+    let mut result: i32 = (libc::strlen(s) as i32);
     return result;
 }
 pub fn main() {
@@ -34,7 +34,7 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             logf_1(
                 (c"hello %d %d".as_ptr().cast_mut()).cast_const(),
-                &[(10).into(), (libc::strlen((dummy))).into()],
+                &[(10).into(), (libc::strlen(dummy)).into()],
             )
         }) == (15)) as i32)
             != 0)

@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
         tag: 2,
         cb: Some(negate_1),
     };
-    assert!((!((h1.cb).is_none())));
+    assert!(!((h1.cb).is_none()));
     assert!(((unsafe { (h1.cb).unwrap()(5,) }) == (10)));
     assert!(((unsafe { (h2.cb).unwrap()(7,) }) == (-7_i32)));
     (h1.cb) = Some(negate_1);

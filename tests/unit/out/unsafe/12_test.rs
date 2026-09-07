@@ -13,10 +13,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Vec<i32>> = Vec::new();
-    (v).push(
-        ((0..(10_usize) as usize)
+    v.push(
+        (0..(10_usize) as usize)
             .map(|_| <i32>::default())
-            .collect::<Vec<_>>()),
+            .collect::<Vec<_>>(),
     );
     return 0;
 }

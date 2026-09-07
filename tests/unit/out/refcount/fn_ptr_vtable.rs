@@ -78,14 +78,14 @@ fn main_0() -> i32 {
         get: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::new(int_get_2))),
         destroy: Rc::new(RefCell::new(FnPtr::<fn(AnyPtr)>::new(int_destroy_3))),
     }));
-    assert!((!((*(*vt.borrow()).create.borrow()).is_null())));
-    assert!((!((*(*vt.borrow()).get.borrow()).is_null())));
-    assert!((!((*(*vt.borrow()).destroy.borrow()).is_null())));
+    assert!(!((*(*vt.borrow()).create.borrow()).is_null()));
+    assert!(!((*(*vt.borrow()).get.borrow()).is_null()));
+    assert!(!((*(*vt.borrow()).destroy.borrow()).is_null()));
     let obj: Value<AnyPtr> = Rc::new(RefCell::new(({ (*(*(*vt.borrow()).create.borrow()))(42) })));
     assert!((({ (*(*(*vt.borrow()).get.borrow()))((*obj.borrow()).clone(),) }) == 42));
     ({ (*(*(*vt.borrow()).destroy.borrow()))((*obj.borrow()).clone()) });
     assert!(((*storage_0.with(Value::clone).borrow()) == 0));
     (*(*vt.borrow()).get.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::null();
-    assert!(((*(*vt.borrow()).get.borrow()).is_null()));
+    assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;
 }

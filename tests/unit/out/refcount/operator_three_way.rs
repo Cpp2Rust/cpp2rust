@@ -69,22 +69,20 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(2)),
     }));
     assert!(
-        (({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less)
+        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less
     );
     assert!(
-        (({ SImpl::operator_cmp(&b.as_pointer(), a.as_pointer(),) })
-            == std::cmp::Ordering::Greater)
+        ({ SImpl::operator_cmp(&b.as_pointer(), a.as_pointer(),) }) == std::cmp::Ordering::Greater
     );
     assert!(
-        (({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) })
-            != std::cmp::Ordering::Greater)
+        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) != std::cmp::Ordering::Greater
     );
     assert!(
-        (({ SImpl::operator_cmp(&b.as_pointer(), a.as_pointer(),) }) != std::cmp::Ordering::Less)
+        ({ SImpl::operator_cmp(&b.as_pointer(), a.as_pointer(),) }) != std::cmp::Ordering::Less
     );
-    assert!((!({ SImpl::operator_eq(&a.as_pointer(), b.as_pointer(),) })));
+    assert!(!({ SImpl::operator_eq(&a.as_pointer(), b.as_pointer(),) }));
     assert!(
-        (({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == (std::cmp::Ordering::Less))
+        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less
     );
     return 0;
 }

@@ -49,11 +49,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: S = S { v: 1 };
     let mut b: S = S { v: 2 };
-    assert!(((unsafe { S::operator_cmp(&a, &b as *const S,) }) == std::cmp::Ordering::Less));
-    assert!(((unsafe { S::operator_cmp(&b, &a as *const S,) }) == std::cmp::Ordering::Greater));
-    assert!(((unsafe { S::operator_cmp(&a, &b as *const S,) }) != std::cmp::Ordering::Greater));
-    assert!(((unsafe { S::operator_cmp(&b, &a as *const S,) }) != std::cmp::Ordering::Less));
-    assert!((!(unsafe { S::operator_eq(&a, &b as *const S,) })));
-    assert!(((unsafe { S::operator_cmp(&a, &b as *const S,) }) == (std::cmp::Ordering::Less)));
+    assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { S::operator_cmp(&b, &a as *const S,) }) == std::cmp::Ordering::Greater);
+    assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) != std::cmp::Ordering::Greater);
+    assert!((unsafe { S::operator_cmp(&b, &a as *const S,) }) != std::cmp::Ordering::Less);
+    assert!(!(unsafe { S::operator_eq(&a, &b as *const S,) }));
+    assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) == std::cmp::Ordering::Less);
     return 0;
 }

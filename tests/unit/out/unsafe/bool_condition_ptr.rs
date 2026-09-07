@@ -16,16 +16,16 @@ unsafe fn main_0() -> i32 {
     let mut p: *mut i32 = (&mut storage as *mut i32);
     let mut np: *mut i32 = std::ptr::null_mut();
     if !(p).is_null() {
-        assert!((true));
+        assert!(true);
     }
     if !!(p).is_null() {
-        assert!((false));
+        assert!(false);
     }
     if !(np).is_null() {
-        assert!((false));
+        assert!(false);
     }
     if !!(np).is_null() {
-        assert!((true));
+        assert!(true);
     }
     let mut iter: *mut i32 = p;
     let mut iters: i32 = 0;
@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
     assert!(((t6) == (1)));
     let mut b2: bool = !(p).is_null();
     let mut b3: bool = !(np).is_null();
-    assert!((b2));
-    assert!((!b3));
+    assert!(b2);
+    assert!(!b3);
     return 0;
 }

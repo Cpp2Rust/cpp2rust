@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let str: Value<Vec<u8>> = Rc::new(RefCell::new(
-        (Ptr::from_string_literal(b"Hello, world!\n"))
+        Ptr::from_string_literal(b"Hello, world!\n")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -25,7 +25,7 @@ fn main_0() -> i32 {
         {
             (*ofs.borrow_mut()).write_all(
                 (str.as_pointer() as Ptr<u8>)
-                    .slice_until(&((str.as_pointer() as Ptr<u8>).to_last()))
+                    .slice_until(&(str.as_pointer() as Ptr<u8>).to_last())
                     .as_slice(),
             );
             (*ofs.borrow_mut()).try_clone().unwrap()

@@ -66,16 +66,14 @@ fn main_0() -> i32 {
         tag: Rc::new(RefCell::new(2)),
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(negate_1))),
     }));
-    assert!((!((*(*h1.borrow()).cb.borrow()).is_null())));
+    assert!(!((*(*h1.borrow()).cb.borrow()).is_null()));
     assert!((({ (*(*(*h1.borrow()).cb.borrow()))(5,) }) == 10));
     assert!((({ (*(*(*h2.borrow()).cb.borrow()))(7,) }) == -7_i32));
     (*(*h1.borrow()).cb.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(negate_1);
     assert!((({ (*(*(*h1.borrow()).cb.borrow()))(3,) }) == -3_i32));
-    assert!(
-        ({
-            let _lhs = (*(*h1.borrow()).cb.borrow()).clone();
-            _lhs == (*(*h2.borrow()).cb.borrow()).clone()
-        })
-    );
+    assert!({
+        let _lhs = (*(*h1.borrow()).cb.borrow()).clone();
+        _lhs == (*(*h2.borrow()).cb.borrow()).clone()
+    });
     return 0;
 }

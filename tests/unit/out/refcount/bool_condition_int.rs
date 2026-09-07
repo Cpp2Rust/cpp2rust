@@ -17,28 +17,28 @@ fn main_0() -> i32 {
     let ll: Value<i64> = Rc::new(RefCell::new(6_i64));
     let ch: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
     if ((*n.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     if !((*n.borrow()) != 0) {
-        assert!((false));
+        assert!(false);
     }
     if ((*zero.borrow()) != 0) {
-        assert!((false));
+        assert!(false);
     }
     if !((*zero.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     if ((*u.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     if ((*ul.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     if ((*ll.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     if ((*ch.borrow()) != 0) {
-        assert!((true));
+        assert!(true);
     }
     let loop_count: Value<i32> = Rc::new(RefCell::new(0));
     let counter: Value<i32> = Rc::new(RefCell::new(3));

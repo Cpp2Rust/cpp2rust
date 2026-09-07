@@ -172,8 +172,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     {
-        (((c.as_pointer()) as Ptr<Container>).to_any()).memset((0) as u8, (68usize) as usize);
-        (((c.as_pointer()) as Ptr<Container>).to_any()).clone()
+        ((c.as_pointer()) as Ptr<Container>)
+            .to_any()
+            .memset((0) as u8, 68usize as usize);
+        ((c.as_pointer()) as Ptr<Container>).to_any().clone()
     };
     (*(*(*(*c.borrow()).u.borrow()).a().upgrade().deref())
         .code

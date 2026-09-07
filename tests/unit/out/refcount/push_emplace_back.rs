@@ -107,7 +107,7 @@ impl ByteRepr for JPEGData {
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));
     ((*dest.borrow()).to_strong().as_pointer() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(
-        |__v: &mut Vec<Value<Vec<u8>>>| __v.push(Rc::new(RefCell::new((Vec::new()).clone()))),
+        |__v: &mut Vec<Value<Vec<u8>>>| __v.push(Rc::new(RefCell::new(Vec::new().clone()))),
     );
 }
 pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
@@ -124,14 +124,15 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
     ((*dest.borrow()).to_strong().as_pointer() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(
         |__v: &mut Vec<Value<Vec<u8>>>| {
             __v.push(Rc::new(RefCell::new(
-                ({
-                    let __count = ((head.as_pointer() as Ptr<u8>).offset((3) as isize))
+                {
+                    let __count = (head.as_pointer() as Ptr<u8>)
+                        .offset((3) as isize)
                         .get_offset()
                         - (head.as_pointer() as Ptr<u8>).get_offset();
                     PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
                         .map(|item| u8::try_from(item).ok().unwrap())
                         .collect::<Vec<_>>()
-                })
+                }
                 .clone(),
             )))
         },
@@ -144,7 +145,9 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*(*(*bw.borrow()).upgrade().deref()).output.borrow()).with_mut(|__v: &mut Vec<Chunk>| {
-        __v.push((std::mem::take(&mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow_mut()))))
+        __v.push(std::mem::take(
+            &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow_mut()),
+        ))
     });
 }
 pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
@@ -163,7 +166,9 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
         .as_pointer()
         .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
             __v.push(Rc::new(RefCell::new({
-                let __count = ((head.as_pointer() as Ptr<u8>).offset((3) as isize)).get_offset()
+                let __count = (head.as_pointer() as Ptr<u8>)
+                    .offset((3) as isize)
+                    .get_offset()
                     - (head.as_pointer() as Ptr<u8>).get_offset();
                 PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
                     .map(|item| u8::try_from(item).ok().unwrap())
@@ -200,14 +205,14 @@ fn main_0() -> i32 {
     ({ push_param_0((vecs.as_pointer())) });
     assert!(((*vecs.borrow()).len() == 1_usize));
     assert!(
-        ((*((vecs.as_pointer() as Ptr<Value<Vec<u8>>>)
+        (*((vecs.as_pointer() as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
             .as_pointer() as Ptr<Vec<u8>>)
             .upgrade()
             .deref())
-        .is_empty())
+        .is_empty()
     );
     let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
@@ -253,10 +258,10 @@ fn main_0() -> i32 {
             .read()) as i32)
             == 3)
     );
-    assert!(((*(*jpg.borrow()).app_data.borrow()).is_empty()));
+    assert!((*(*jpg.borrow()).app_data.borrow()).is_empty());
     let chunks: Value<Vec<Chunk>> = Rc::new(RefCell::new(Vec::new()));
     ({ shrink_through_ptr_2((chunks.as_pointer())) });
-    assert!(((*chunks.borrow()).is_empty()));
+    assert!((*chunks.borrow()).is_empty());
     let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::default()));
     (*(*(*w.borrow()).chunk.borrow()).data.borrow_mut()) = 42;
     (*(*w.borrow()).output.borrow_mut()) = (chunks.as_pointer());

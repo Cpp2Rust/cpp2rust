@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    (v).push((10));
+    v.push(10);
     (*((v).first_mut().unwrap())) += 5;
     assert!(((*((v).first_mut().unwrap())) == (15)));
     return 0;

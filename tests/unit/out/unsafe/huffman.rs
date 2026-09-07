@@ -131,23 +131,21 @@ impl MinHeap {
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
-    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new(
-        (MinHeap {
-            size: 0,
-            capacity: capacity,
-            arr: Some(
-                (0..(capacity as usize))
-                    .map(|_| <*mut MinHeapNode>::default())
-                    .collect::<Box<[_]>>(),
-            ),
-            next: 0,
-            alloc: Some(
-                (0..(10000_usize))
-                    .map(|_| <MinHeapNode>::default())
-                    .collect::<Box<[_]>>(),
-            ),
-        }),
-    ));
+    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new(MinHeap {
+        size: 0,
+        capacity: capacity,
+        arr: Some(
+            (0..(capacity as usize))
+                .map(|_| <*mut MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ),
+        next: 0,
+        alloc: Some(
+            (0..10000_usize)
+                .map(|_| <MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ),
+    }));
     return minHeap;
 }
 pub unsafe fn Huffman_2(
@@ -251,12 +249,12 @@ pub unsafe fn HuffmanCodes_5(
     let mut root: *mut MinHeapNode =
         (unsafe { MinHeap::ExtractMin(&mut (*minHeap.as_deref_mut().unwrap())) });
     let mut arr: Option<Box<[i32]>> = Some(
-        (0..(100_usize))
+        (0..100_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     );
     let mut out: Option<Box<[i32]>> = Some(
-        (0..(100_usize))
+        (0..100_usize)
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     );
@@ -313,12 +311,12 @@ unsafe fn main_0() -> i32 {
         )
     });
     assert!(
-        (((((((out.as_mut().unwrap()[(0_usize)]) == (0))
+        ((((((out.as_mut().unwrap()[(0_usize)]) == (0))
             && ((out.as_mut().unwrap()[(1_usize)]) == (100)))
             && ((out.as_mut().unwrap()[(2_usize)]) == (101)))
             && ((out.as_mut().unwrap()[(3_usize)]) == (1100)))
             && ((out.as_mut().unwrap()[(4_usize)]) == (1101)))
-            && ((out.as_mut().unwrap()[(5_usize)]) == (111)))
+            && ((out.as_mut().unwrap()[(5_usize)]) == (111))
     );
     return 0;
 }

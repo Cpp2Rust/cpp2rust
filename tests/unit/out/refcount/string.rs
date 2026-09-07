@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s1: Value<Vec<u8>> = Rc::new(RefCell::new(
-        (Ptr::from_string_literal(b"hello"))
+        Ptr::from_string_literal(b"hello")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -34,11 +34,11 @@ fn main_0() -> i32 {
         ((((s1.as_pointer() as Ptr<u8>).offset(4_usize).read()) as i32) == (('o' as u8) as i32))
     );
     assert!(
-        ((*s1.borrow())
+        (*s1.borrow())
             .iter()
             .copied()
             .take((*s1.borrow()).len().saturating_sub(1))
-            .eq((Ptr::from_string_literal(b"hello")).to_c_string_iterator()))
+            .eq(Ptr::from_string_literal(b"hello").to_c_string_iterator())
     );
     let p1: Value<Ptr<u8>> = Rc::new(RefCell::new((s1.as_pointer() as Ptr<u8>)));
     assert!(((((*p1.borrow()).offset((0) as isize).read()) as i32) == (('h' as u8) as i32)));
@@ -57,12 +57,12 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            (((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
+            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
                 == (('a' as u8) as i32))
                 && ((((s2.as_pointer() as Ptr<u8>)
                     .offset(((*i.borrow()) as usize))
                     .read()) as i32)
-                    == (('a' as u8) as i32)))
+                    == (('a' as u8) as i32))
         );
         (*i.borrow_mut()).prefix_inc();
     }
@@ -83,19 +83,19 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(2_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s2.borrow()).len() - 1)) {
         assert!(
-            (((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
+            ((((*p2.borrow()).offset((*i.borrow()) as isize).read()) as i32)
                 == (('a' as u8) as i32))
                 && ((((s2.as_pointer() as Ptr<u8>)
                     .offset(((*i.borrow()) as usize))
                     .read()) as i32)
-                    == (('a' as u8) as i32)))
+                    == (('a' as u8) as i32))
         );
         (*i.borrow_mut()).prefix_inc();
     }
     let s3: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*s2.borrow())[(2_usize) as usize
             ..::std::cmp::min(
-                ((2_usize) + (5_usize)) as usize,
+                (2_usize + 5_usize) as usize,
                 (*s2.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -107,30 +107,27 @@ fn main_0() -> i32 {
     let p3: Value<Ptr<u8>> = Rc::new(RefCell::new((s3.as_pointer() as Ptr<u8>)));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s3.borrow()).len() - 1)) {
-        assert!(
-            ({
-                let _lhs = (((*p3.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-                _lhs == (((s3.as_pointer() as Ptr<u8>)
-                    .offset(((*i.borrow()) as usize))
-                    .read()) as i32)
-            })
-        );
+        assert!({
+            let _lhs = (((*p3.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            _lhs == (((s3.as_pointer() as Ptr<u8>)
+                .offset(((*i.borrow()) as usize))
+                .read()) as i32)
+        });
         (*i.borrow_mut()).prefix_inc();
     }
     let s4: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*s1.borrow())[(1_usize) as usize
             ..::std::cmp::min(
-                ((1_usize)
-                    + ({
-                        let __lookup: Vec<u8> = (Ptr::from_string_literal(b"l"))
-                            .to_c_string_iterator()
-                            .collect();
-                        (*s1.borrow())
-                            .iter()
-                            .take((*s1.borrow()).len().saturating_sub(1))
-                            .rposition(|&x| __lookup.contains(&x))
-                            .unwrap_or(usize::MAX)
-                    })) as usize,
+                (1_usize + {
+                    let __lookup: Vec<u8> = Ptr::from_string_literal(b"l")
+                        .to_c_string_iterator()
+                        .collect();
+                    (*s1.borrow())
+                        .iter()
+                        .take((*s1.borrow()).len().saturating_sub(1))
+                        .rposition(|&x| __lookup.contains(&x))
+                        .unwrap_or(usize::MAX)
+                }) as usize,
                 (*s1.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -142,20 +139,18 @@ fn main_0() -> i32 {
     let p4: Value<Ptr<u8>> = Rc::new(RefCell::new((s4.as_pointer() as Ptr<u8>)));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s4.borrow()).len() - 1)) {
-        assert!(
-            ({
-                let _lhs = (((*p4.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-                _lhs == (((s4.as_pointer() as Ptr<u8>)
-                    .offset(((*i.borrow()) as usize))
-                    .read()) as i32)
-            })
-        );
+        assert!({
+            let _lhs = (((*p4.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            _lhs == (((s4.as_pointer() as Ptr<u8>)
+                .offset(((*i.borrow()) as usize))
+                .read()) as i32)
+        });
         (*i.borrow_mut()).prefix_inc();
     }
     let s5: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut r = (*s1.borrow()).clone();
         r.pop();
-        r.extend((Ptr::from_string_literal(b", world")).to_c_string_iterator());
+        r.extend(Ptr::from_string_literal(b", world").to_c_string_iterator());
         r.push(0);
         r
     }));
@@ -164,14 +159,12 @@ fn main_0() -> i32 {
     let p5: Value<Ptr<u8>> = Rc::new(RefCell::new((s5.as_pointer() as Ptr<u8>)));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < ((*s5.borrow()).len() - 1)) {
-        assert!(
-            ({
-                let _lhs = (((*p5.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-                _lhs == (((s5.as_pointer() as Ptr<u8>)
-                    .offset(((*i.borrow()) as usize))
-                    .read()) as i32)
-            })
-        );
+        assert!({
+            let _lhs = (((*p5.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            _lhs == (((s5.as_pointer() as Ptr<u8>)
+                .offset(((*i.borrow()) as usize))
+                .read()) as i32)
+        });
         (*i.borrow_mut()).prefix_inc();
     }
     let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -186,7 +179,7 @@ fn main_0() -> i32 {
     let string: Value<Vec<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>)
             .map(|c| c.read())
-            .take((3_usize) as usize)
+            .take(3_usize as usize)
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
     ));
@@ -204,11 +197,11 @@ fn main_0() -> i32 {
             == (('r' as u8) as i32))
     );
     assert!(
-        ((*string.borrow())
+        (*string.borrow())
             .iter()
             .copied()
             .take((*string.borrow()).len().saturating_sub(1))
-            .eq((Ptr::from_string_literal(b"bar")).to_c_string_iterator()))
+            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
     );
     {
         (*string.borrow_mut()).pop();
@@ -229,11 +222,11 @@ fn main_0() -> i32 {
             == (('r' as u8) as i32))
     );
     assert!(
-        ((*string.borrow())
+        (*string.borrow())
             .iter()
             .copied()
             .take((*string.borrow()).len().saturating_sub(1))
-            .eq((Ptr::from_string_literal(b"bar")).to_c_string_iterator()))
+            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
     );
     {
         (*string.borrow_mut()).pop();
@@ -293,7 +286,7 @@ fn main_0() -> i32 {
     let result: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut r = (*string.borrow()).clone();
         r.pop();
-        r.extend((Ptr::from_string_literal(b" foo")).to_c_string_iterator());
+        r.extend(Ptr::from_string_literal(b" foo").to_c_string_iterator());
         r.push(0);
         r
     }));
@@ -330,7 +323,7 @@ fn main_0() -> i32 {
     let substr_0: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*result.borrow())[(5_usize) as usize
             ..::std::cmp::min(
-                ((5_usize) + (3_usize)) as usize,
+                (5_usize + 3_usize) as usize,
                 (*result.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -353,7 +346,7 @@ fn main_0() -> i32 {
     let substr_1: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*result.borrow())[(0_usize) as usize
             ..::std::cmp::min(
-                ((0_usize) + (5_usize)) as usize,
+                (0_usize + 5_usize) as usize,
                 (*result.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -381,7 +374,7 @@ fn main_0() -> i32 {
     let substr_2: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*result.borrow())[(0_usize) as usize
             ..::std::cmp::min(
-                ((0_usize) + (15_usize)) as usize,
+                (0_usize + 15_usize) as usize,
                 (*result.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -419,7 +412,7 @@ fn main_0() -> i32 {
             == (('o' as u8) as i32))
     );
     let pos: Value<usize> = Rc::new(RefCell::new({
-        let __lookup: Vec<u8> = (Ptr::from_string_literal(b"b"))
+        let __lookup: Vec<u8> = Ptr::from_string_literal(b"b")
             .to_c_string_iterator()
             .collect();
         (*result.borrow())
@@ -430,7 +423,7 @@ fn main_0() -> i32 {
     }));
     assert!(((*pos.borrow()) == 0_usize));
     (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = (Ptr::from_string_literal(b"f"))
+        let __lookup: Vec<u8> = Ptr::from_string_literal(b"f")
             .to_c_string_iterator()
             .collect();
         (*result.borrow())
@@ -441,7 +434,7 @@ fn main_0() -> i32 {
     };
     assert!(((*pos.borrow()) == 5_usize));
     (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = (Ptr::from_string_literal(b"o"))
+        let __lookup: Vec<u8> = Ptr::from_string_literal(b"o")
             .to_c_string_iterator()
             .collect();
         (*result.borrow())
@@ -452,7 +445,7 @@ fn main_0() -> i32 {
     };
     assert!(((*pos.borrow()) == 7_usize));
     (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = (Ptr::from_string_literal(b"x"))
+        let __lookup: Vec<u8> = Ptr::from_string_literal(b"x")
             .to_c_string_iterator()
             .collect();
         (*result.borrow())
@@ -463,7 +456,7 @@ fn main_0() -> i32 {
     };
     assert!(((*pos.borrow()) == ((-1_i64 as u64) as usize)));
     let string_to_cast: Value<Vec<u8>> = Rc::new(RefCell::new(
-        (Ptr::from_string_literal(b"cast"))
+        Ptr::from_string_literal(b"cast")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),

@@ -14,7 +14,7 @@ pub unsafe fn test_roundtrip_1() {
     assert!(((unsafe { (fn_).unwrap()(5,) }) == (10)));
     let mut gfn: Option<unsafe fn()> =
         std::mem::transmute::<Option<unsafe fn(i32) -> i32>, Option<unsafe fn()>>(fn_);
-    assert!((!((gfn).is_none())));
+    assert!(!((gfn).is_none()));
     let mut fn2: Option<unsafe fn(i32) -> i32> =
         std::mem::transmute::<Option<unsafe fn()>, Option<unsafe fn(i32) -> i32>>(gfn);
     assert!(((unsafe { (fn2).unwrap()(5,) }) == (10)));

@@ -29,10 +29,11 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd(((*fds.borrow())[(1) as usize]), |__fd| {
-            (Ptr::from_string_literal(b"x").to_any())
+        (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
+            Ptr::from_string_literal(b"x")
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice((1_usize), |__buf| nix::unistd::write(__fd, __buf))
+                .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -56,9 +57,9 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let __p = (pfd.as_pointer() as Ptr<libcc2rs::Pollfd>).clone();
-            let __timeout = match nix::poll::PollTimeout::try_from((0)) {
+            let __timeout = match nix::poll::PollTimeout::try_from(0) {
                 Ok(__t) => __t,
-                Err(_) => panic!("poll: unsupported timeout {}", (0)),
+                Err(_) => panic!("poll: unsupported timeout {}", 0),
             };
             let mut __idx = Vec::new();
             let mut __wanted = Vec::new();
@@ -110,10 +111,11 @@ fn main_0() -> i32 {
     assert!((((((*(*pfd.borrow())[(1) as usize].revents.borrow()) as i32) == 0) as i32) != 0));
     let ch: Value<u8> = <Value<u8>>::default();
     assert!(
-        (((match FdRegistry::with_fd(((*fds.borrow())[(0) as usize]), |__fd| {
-            (((ch.as_pointer()) as Ptr<u8>).to_any())
+        (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
+            ((ch.as_pointer()) as Ptr<u8>)
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut((1_usize), |__buf| nix::unistd::read(__fd, __buf))
+                .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -123,7 +125,7 @@ fn main_0() -> i32 {
         } == 1_isize) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close(((*fds.borrow())[(0) as usize])) == 0) as i32) != 0));
-    assert!((((FdRegistry::close(((*fds.borrow())[(1) as usize])) == 0) as i32) != 0));
+    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     return 0;
 }

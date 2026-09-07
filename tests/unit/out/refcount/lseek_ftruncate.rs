@@ -35,9 +35,10 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (Ptr::from_string_literal(b"hello world").to_any())
+            Ptr::from_string_literal(b"hello world")
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice((11_usize), |__buf| nix::unistd::write(__fd, __buf))
+                .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -49,14 +50,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match (::libc::SEEK_END) {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
             match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, (0_i64), __whence)
+                nix::unistd::lseek(__fd, 0_i64, __whence)
             }) {
                 Ok(__off) => __off,
                 Err(__e) => {
@@ -69,14 +70,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match (::libc::SEEK_SET) {
+            let __whence = match ::libc::SEEK_SET {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
             match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, (6_i64), __whence)
+                nix::unistd::lseek(__fd, 6_i64, __whence)
             }) {
                 Ok(__off) => __off,
                 Err(__e) => {
@@ -91,15 +92,17 @@ fn main_0() -> i32 {
         (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     {
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
-            .memset((0) as u8, (::std::mem::size_of::<[u8; 16]>()) as usize);
-        (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+                .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut((::std::mem::size_of::<[u8; 16]>()), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {
@@ -114,7 +117,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = (Ptr::from_string_literal(b"world")).to_c_string_iterator();
+            let mut __it2 = Ptr::from_string_literal(b"world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -129,7 +132,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::ftruncate(__fd, (5_i64))) {
+        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -140,14 +143,14 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __whence = match (::libc::SEEK_END) {
+            let __whence = match ::libc::SEEK_END {
                 0 => nix::unistd::Whence::SeekSet,
                 1 => nix::unistd::Whence::SeekCur,
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
             match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, (0_i64), __whence)
+                nix::unistd::lseek(__fd, 0_i64, __whence)
             }) {
                 Ok(__off) => __off,
                 Err(__e) => {

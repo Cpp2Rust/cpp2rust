@@ -105,10 +105,10 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        (!(unsafe {
+        !(unsafe {
             let _a: *const S = &b as *const S;
             operator_lt_0(_a, &a as *const S)
-        }))
+        })
     );
     assert!(
         (unsafe {

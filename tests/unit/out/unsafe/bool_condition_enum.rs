@@ -19,20 +19,20 @@ unsafe fn main_0() -> i32 {
     let mut code: Code = Code_CODE_OK;
     let mut err: Code = Code_CODE_ERR;
     if (code != 0) {
-        assert!((false));
+        assert!(false);
     }
     if !(code != 0) {
-        assert!((true));
+        assert!(true);
     }
     if (err != 0) {
-        assert!((true));
+        assert!(true);
     }
     if !(err != 0) {
-        assert!((false));
+        assert!(false);
     }
     let mut t9: i32 = (!(code != 0) as i32);
     assert!(((t9) == (1)));
     let mut b4: bool = (code != 0);
-    assert!((!b4));
+    assert!(!b4);
     return 0;
 }

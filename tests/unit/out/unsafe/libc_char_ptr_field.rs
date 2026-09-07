@@ -12,13 +12,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut pw: *mut ::libc::passwd = libc::getpwuid((libc::geteuid()));
+    let mut pw: *mut ::libc::passwd = libc::getpwuid(libc::geteuid());
     if !!(pw).is_null() {
         return 0;
     }
     let mut home: *mut libc::c_char = (*pw).pw_dir;
     let mut d: *mut ::libc::dirent =
-        libc::readdir((libc::opendir(((c"/tmp".as_ptr().cast_mut()).cast_const()))));
+        libc::readdir(libc::opendir((c"/tmp".as_ptr().cast_mut()).cast_const()));
     let mut dname: *mut libc::c_char = (*d).d_name.as_mut_ptr();
     return 0;
 }

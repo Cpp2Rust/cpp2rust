@@ -125,10 +125,10 @@ pub unsafe fn check_local_static_5() {
     };;
     static mut local_fn_7: Option<unsafe fn(i32) -> i32> = unsafe { None };;
     static mut local_p_8: *mut i32 = unsafe { std::ptr::null_mut() };;
-    assert!(((local_outer_6.p1).is_null()));
-    assert!(((local_outer_6.fn_).is_none()));
-    assert!(((local_fn_7).is_none()));
-    assert!(((local_p_8).is_null()));
+    assert!((local_outer_6.p1).is_null());
+    assert!((local_outer_6.fn_).is_none());
+    assert!((local_fn_7).is_none());
+    assert!((local_p_8).is_null());
 }
 pub fn main() {
     unsafe {
@@ -136,32 +136,32 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((static_fn_0).is_none()));
-    assert!(((static_outer_1.p1).is_null()));
-    assert!(((static_outer_1.p2).is_null()));
-    assert!(((static_outer_1.cp).is_null()));
-    assert!(((static_outer_1.pp).is_null()));
-    assert!(((static_outer_1.fn_).is_none()));
+    assert!((static_fn_0).is_none());
+    assert!((static_outer_1.p1).is_null());
+    assert!((static_outer_1.p2).is_null());
+    assert!((static_outer_1.cp).is_null());
+    assert!((static_outer_1.pp).is_null());
+    assert!((static_outer_1.fn_).is_none());
     let mut i: i32 = 0;
     'loop_: while ((i) < (3)) {
-        assert!(((static_outer_1.arr[(i) as usize]).is_null()));
+        assert!((static_outer_1.arr[(i) as usize]).is_null());
         i.prefix_inc();
     }
-    assert!(((static_outer_1.inner.name).is_null()));
+    assert!((static_outer_1.inner.name).is_null());
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!(((static_inner_array_2[(i) as usize].name).is_null()));
+        assert!((static_inner_array_2[(i) as usize].name).is_null());
         i.prefix_inc();
     }
-    assert!(((static_foo_3.s2).is_null()));
-    assert!(((static_foo_3.fn1).is_none()));
-    assert!(((static_foo_3.fn2).is_none()));
+    assert!((static_foo_3.s2).is_null());
+    assert!((static_foo_3.fn1).is_none());
+    assert!((static_foo_3.fn2).is_none());
     assert!(((static_foo_3.n) == (42)));
     let mut i: i32 = 0;
     'loop_: while ((i) < (2)) {
-        assert!(((static_foo_array_4[(i) as usize].s2).is_null()));
-        assert!(((static_foo_array_4[(i) as usize].fn1).is_none()));
-        assert!(((static_foo_array_4[(i) as usize].fn2).is_none()));
+        assert!((static_foo_array_4[(i) as usize].s2).is_null());
+        assert!((static_foo_array_4[(i) as usize].fn1).is_none());
+        assert!((static_foo_array_4[(i) as usize].fn2).is_none());
         i.prefix_inc();
     }
     (unsafe { check_local_static_5() });

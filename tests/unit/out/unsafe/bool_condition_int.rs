@@ -19,28 +19,28 @@ unsafe fn main_0() -> i32 {
     let mut ll: i64 = 6_i64;
     let mut ch: libc::c_char = ('a' as libc::c_char);
     if (n != 0) {
-        assert!((true));
+        assert!(true);
     }
     if !(n != 0) {
-        assert!((false));
+        assert!(false);
     }
     if (zero != 0) {
-        assert!((false));
+        assert!(false);
     }
     if !(zero != 0) {
-        assert!((true));
+        assert!(true);
     }
     if (u != 0) {
-        assert!((true));
+        assert!(true);
     }
     if (ul != 0) {
-        assert!((true));
+        assert!(true);
     }
     if (ll != 0) {
-        assert!((true));
+        assert!(true);
     }
     if (ch != 0) {
-        assert!((true));
+        assert!(true);
     }
     let mut loop_count: i32 = 0;
     let mut counter: i32 = 3;
@@ -64,6 +64,6 @@ unsafe fn main_0() -> i32 {
     let mut t8: i32 = (!(zero != 0) as i32);
     assert!(((t8) == (1)));
     let mut b1: bool = (n != 0);
-    assert!((b1));
+    assert!(b1);
     return 0;
 }

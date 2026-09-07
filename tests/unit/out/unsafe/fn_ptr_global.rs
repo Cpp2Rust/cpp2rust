@@ -30,14 +30,14 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { call_op_4(5,) }) == (5)));
     (unsafe { set_op_3(Some(double_it_0)) });
-    assert!((!((g_op_2).is_none())));
+    assert!(!((g_op_2).is_none()));
     assert!(((g_op_2) == (Some(double_it_0))));
     assert!(((unsafe { call_op_4(5,) }) == (10)));
     (unsafe { set_op_3(Some(triple_it_1)) });
     assert!(((g_op_2) == (Some(triple_it_1))));
     assert!(((unsafe { call_op_4(5,) }) == (15)));
     (unsafe { set_op_3(None) });
-    assert!(((g_op_2).is_none()));
+    assert!((g_op_2).is_none());
     assert!(((unsafe { call_op_4(5,) }) == (5)));
     return 0;
 }

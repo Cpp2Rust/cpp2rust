@@ -16,17 +16,15 @@ pub fn test_roundtrip_1() {
     assert!((({ (*(*fn_.borrow()))(5,) }) == 10));
     let gfn: Value<FnPtr<fn()>> =
         Rc::new(RefCell::new(((*fn_.borrow()).cast::<fn()>(None)).clone()));
-    assert!((!((*gfn.borrow()).is_null())));
+    assert!(!((*gfn.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*gfn.borrow()).cast::<fn(i32) -> i32>(None)).clone(),
     ));
     assert!((({ (*(*fn2.borrow()))(5,) }) == 10));
-    assert!(
-        ({
-            let _lhs = (*fn2.borrow()).clone();
-            _lhs == (*fn_.borrow()).clone()
-        })
-    );
+    assert!({
+        let _lhs = (*fn2.borrow()).clone();
+        _lhs == (*fn_.borrow()).clone()
+    });
 }
 pub fn test_double_cast_2() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
@@ -38,12 +36,10 @@ pub fn test_double_cast_2() {
         .clone(),
     ));
     assert!((({ (*(*fn2.borrow()))(5,) }) == 10));
-    assert!(
-        ({
-            let _lhs = (*fn2.borrow()).clone();
-            _lhs == (*fn_.borrow()).clone()
-        })
-    );
+    assert!({
+        let _lhs = (*fn2.borrow()).clone();
+        _lhs == (*fn_.borrow()).clone()
+    });
 }
 #[derive(Default)]
 pub struct Command {

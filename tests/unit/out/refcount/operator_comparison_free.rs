@@ -167,10 +167,10 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        (!({
+        !({
             let _a: Ptr<S> = b.as_pointer();
             operator_lt_0(_a, a.as_pointer())
-        }))
+        })
     );
     assert!(
         ({

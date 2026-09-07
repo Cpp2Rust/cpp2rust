@@ -86,7 +86,7 @@ fn main_0() -> i32 {
     assert!(({ SImpl::operator_gt(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_le(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ge(&a.as_pointer(), c.as_pointer(),) }));
-    assert!((!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) })));
+    assert!(!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_lt_i32_const(&a.as_pointer(), 5,) }));
     return 0;
 }

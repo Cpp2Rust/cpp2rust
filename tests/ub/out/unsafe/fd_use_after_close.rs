@@ -18,12 +18,12 @@ unsafe fn main_0() -> i32 {
             ::libc::O_RDONLY as i32,
         )
     });
-    libc::close((fd));
+    libc::close(fd);
     let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
     let mut n: isize = libc::read(
-        (fd),
+        fd,
         (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
-        (::std::mem::size_of::<[libc::c_char; 4]>()),
+        ::std::mem::size_of::<[libc::c_char; 4]>(),
     );
     return if ((((n) == (-1_i32 as isize)) as i32) != 0) {
         0

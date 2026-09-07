@@ -28,41 +28,31 @@ fn main_0() -> i32 {
     let i5: Ptr<i32> = __tmp_2.as_pointer();
     let i6: Ptr<i32> = (i3).clone();
     let i7: Ptr<i32> = (i4).clone();
-    assert!(
-        ({
-            let _lhs = (i6.read());
-            _lhs == (i3.read())
-        })
-    );
-    assert!(
-        ({
-            let _lhs = (i7.read());
-            _lhs == (i4.read())
-        })
-    );
+    assert!({
+        let _lhs = (i6.read());
+        _lhs == (i3.read())
+    });
+    assert!({
+        let _lhs = (i7.read());
+        _lhs == (i4.read())
+    });
     let i8: Value<i32> = Rc::new(RefCell::new(3));
     let i9: Ptr<i32> = i8.as_pointer();
     assert!(((i9.read()) == 3));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((i1.as_pointer())));
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((i3).clone()));
     let p3: Value<Ptr<i32>> = Rc::new(RefCell::new((i6).clone()));
-    assert!(
-        ({
-            let _lhs = ((*p1.borrow()).read());
-            _lhs == (*i1.borrow())
-        })
-    );
-    assert!(
-        ({
-            let _lhs = ((*p2.borrow()).read());
-            _lhs == (i3.read())
-        })
-    );
-    assert!(
-        ({
-            let _lhs = ((*p3.borrow()).read());
-            _lhs == (i6.read())
-        })
-    );
+    assert!({
+        let _lhs = ((*p1.borrow()).read());
+        _lhs == (*i1.borrow())
+    });
+    assert!({
+        let _lhs = ((*p2.borrow()).read());
+        _lhs == (i3.read())
+    });
+    assert!({
+        let _lhs = ((*p3.borrow()).read());
+        _lhs == (i6.read())
+    });
     return 0;
 }

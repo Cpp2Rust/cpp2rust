@@ -63,12 +63,10 @@ fn main_0() -> i32 {
         < (((::std::mem::size_of::<[u8; 41]>() as usize)
             .wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32))
     {
-        assert!(
-            ({
-                let _lhs = (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-                _lhs == ((*expected_0.with(Value::clone).borrow())[(*i.borrow()) as usize] as i32)
-            })
-        );
+        assert!({
+            let _lhs = (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+            _lhs == ((*expected_0.with(Value::clone).borrow())[(*i.borrow()) as usize] as i32)
+        });
         (*i.borrow_mut()).postfix_inc();
     }
     return 0;

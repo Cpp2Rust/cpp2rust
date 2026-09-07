@@ -4523,7 +4523,7 @@ std::string Converter::ConvertIRFragment(
               Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
           .is_index_base = ph->is_index_base,
       };
-      result += '(' + ConvertPlaceholder(expr, arg, ph_ctx) + ')';
+      result += ConvertPlaceholder(expr, arg, ph_ctx);
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       result += ConvertVariadicTail(expr, all_args);
     } else if (auto *mc =

@@ -11,7 +11,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<Vec<u8>> = Rc::new(RefCell::new(
-        (Ptr::from_string_literal(b"hello"))
+        Ptr::from_string_literal(b"hello")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -27,8 +27,8 @@ fn main_0() -> i32 {
         println!("{}", ((*c.borrow()) as i32) as u8 as char);
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push((Ptr::alloc(2)));
-    (*v.borrow_mut()).push((Ptr::alloc(3)));
+    (*v.borrow_mut()).push(Ptr::alloc(2));
+    (*v.borrow_mut()).push(Ptr::alloc(3));
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
         println!("{}", ((*p.borrow()).read()));

@@ -13,9 +13,9 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    (v).push((1));
-    (v).push((2));
-    (v).push((3));
+    v.push(1);
+    v.push(2);
+    v.push(3);
     let mut square: i32 = 0;
     'loop_: for e1 in 0..(v.len()) {
         let mut e1 = v[e1].clone();
@@ -47,11 +47,11 @@ unsafe fn main_0() -> i32 {
     }
     let mut m: Vec<Vec<i32>> = Vec::new();
     let mut v1: Vec<i32> = Vec::new();
-    (m).push((v1));
+    m.push(v1);
     let mut v2: Vec<i32> = Vec::new();
-    (m).push((v2));
+    m.push(v2);
     let mut v3: Vec<i32> = Vec::new();
-    (m).push((v3));
+    m.push(v3);
     'loop_: for row in 0..(m.len()) {
         let mut row = m.as_mut_ptr().add(row);
         'loop_: for col in 0..((*row).len()) {

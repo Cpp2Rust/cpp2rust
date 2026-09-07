@@ -28,15 +28,13 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<
             fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fread_refcount)));
-    assert!(
-        ({
-            let _lhs = (*fn1.borrow()).clone();
-            _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
-                libcc2rs::fread_refcount,
-            )
-        })
-    );
-    assert!((!((*fn1.borrow()).is_null())));
+    assert!({
+        let _lhs = (*fn1.borrow()).clone();
+        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
+            libcc2rs::fread_refcount,
+        )
+    });
+    assert!(!((*fn1.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fread_refcount)
             .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
@@ -45,13 +43,11 @@ fn main_0() -> i32 {
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
-    assert!(
-        ({
-            let _lhs = (*fn1.borrow()).clone();
-            _lhs == ((*fn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
-                .clone()
-        })
-    );
+    assert!({
+        let _lhs = (*fn1.borrow()).clone();
+        _lhs == ((*fn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
+            .clone()
+    });
     let f3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fread_0)
@@ -69,28 +65,28 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &(Ptr::from_string_literal(b"/dev/zero")).to_rust_string(),
-                &(Ptr::from_string_literal(b"rb")).to_rust_string(),
+                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::from_string_literal(b"rb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
             },
         ));
-        assert!((!((*stream.borrow()).is_null())));
+        assert!(!((*stream.borrow()).is_null()));
         let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
             (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).memset(
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
-                (::std::mem::size_of::<[u8; 16]>()) as usize,
+                ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any());
-            let __a1 = (1_usize);
-            let __a2 = (10_usize);
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a1 = 1_usize;
+            let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
             libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
         }));
@@ -116,23 +112,23 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &(Ptr::from_string_literal(b"/dev/zero")).to_rust_string(),
-                &(Ptr::from_string_literal(b"rb")).to_rust_string(),
+                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::from_string_literal(b"rb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
             },
         ));
-        assert!((!((*stream.borrow()).is_null())));
+        assert!(!((*stream.borrow()).is_null()));
         let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
             (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).memset(
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
-                (::std::mem::size_of::<[u8; 16]>()) as usize,
+                ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
@@ -165,15 +161,13 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<
             fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fwrite_refcount)));
-    assert!(
-        ({
-            let _lhs = (*gn1.borrow()).clone();
-            _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
-                libcc2rs::fwrite_refcount,
-            )
-        })
-    );
-    assert!((!((*gn1.borrow()).is_null())));
+    assert!({
+        let _lhs = (*gn1.borrow()).clone();
+        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
+            libcc2rs::fwrite_refcount,
+        )
+    });
+    assert!(!((*gn1.borrow()).is_null()));
     let gn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fwrite_refcount)
             .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(Some(
@@ -182,13 +176,11 @@ fn main_0() -> i32 {
             }) as fn(Ptr<u8>, usize, usize, AnyPtr) -> usize,
         )),
     ));
-    assert!(
-        ({
-            let _lhs = (*gn1.borrow()).clone();
-            _lhs == ((*gn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
-                .clone()
-        })
-    );
+    assert!({
+        let _lhs = (*gn1.borrow()).clone();
+        _lhs == ((*gn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(None))
+            .clone()
+    });
     let g3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
             .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(Some(
@@ -205,28 +197,28 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &(Ptr::from_string_literal(b"/dev/null")).to_rust_string(),
-                &(Ptr::from_string_literal(b"wb")).to_rust_string(),
+                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::from_string_literal(b"wb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
             },
         ));
-        assert!((!((*stream.borrow()).is_null())));
+        assert!(!((*stream.borrow()).is_null()));
         let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
             (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).memset(
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,
-                (::std::mem::size_of::<[u8; 10]>()) as usize,
+                ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any());
-            let __a1 = (1_usize);
-            let __a2 = (10_usize);
+            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a1 = 1_usize;
+            let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
             libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
         }));
@@ -242,23 +234,23 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &(Ptr::from_string_literal(b"/dev/null")).to_rust_string(),
-                &(Ptr::from_string_literal(b"wb")).to_rust_string(),
+                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::from_string_literal(b"wb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
             },
         ));
-        assert!((!((*stream.borrow()).is_null())));
+        assert!(!((*stream.borrow()).is_null()));
         let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
             (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
         ));
         {
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).memset(
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,
-                (::std::mem::size_of::<[u8; 10]>()) as usize,
+                ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()).clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({

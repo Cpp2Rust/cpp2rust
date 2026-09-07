@@ -57,16 +57,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Option<Value<Outer>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (Outer {
-            inner: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                (Inner {
-                    x: Rc::new(RefCell::new(10)),
-                    y: Rc::new(RefCell::new(20)),
-                }),
-            ))))),
-        }),
-    )))));
+    let o: Value<Option<Value<Outer>>> =
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Outer {
+            inner: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Inner {
+                x: Rc::new(RefCell::new(10)),
+                y: Rc::new(RefCell::new(20)),
+            }))))),
+        })))));
     (*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
         .as_ref()
         .unwrap()
@@ -87,8 +84,8 @@ fn main_0() -> i32 {
             .y
             .borrow())),
     ));
-    let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((100))))));
-    let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((0))))));
+    let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(100)))));
+    let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let __rhs = (*(*a.borrow()).as_ref().unwrap().borrow());
     (*(*b.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
     assert!((((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));

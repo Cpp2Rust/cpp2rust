@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn change_0(p: *mut Option<Box<i32>>) {
-    let mut q: Option<Box<i32>> = Some(Box::new((7)));
+    let mut q: Option<Box<i32>> = Some(Box::new(7));
     (*p) = q;
 }
 pub fn main() {
@@ -16,7 +16,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Option<Box<i32>> = Some(Box::new((5)));
+    let mut a: Option<Box<i32>> = Some(Box::new(5));
     (unsafe { change_0(&mut a as *mut Option<Box<i32>>) });
     assert!(((*a.as_deref_mut().unwrap()) == (7)));
     return 0;

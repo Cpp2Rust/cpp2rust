@@ -11,19 +11,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new({
-        let __family = match (libc::AF_INET) {
+        let __family = match libc::AF_INET {
             ::libc::AF_INET => nix::sys::socket::AddressFamily::Inet,
             ::libc::AF_INET6 => nix::sys::socket::AddressFamily::Inet6,
             ::libc::AF_UNIX => nix::sys::socket::AddressFamily::Unix,
             __d => panic!("socket: unsupported domain {__d}"),
         };
-        let __flags = nix::sys::socket::SockFlag::from_bits_truncate((libc::SOCK_STREAM));
-        let __ty = match (libc::SOCK_STREAM) & !nix::sys::socket::SockFlag::all().bits() {
+        let __flags = nix::sys::socket::SockFlag::from_bits_truncate(libc::SOCK_STREAM);
+        let __ty = match libc::SOCK_STREAM & !nix::sys::socket::SockFlag::all().bits() {
             ::libc::SOCK_STREAM => nix::sys::socket::SockType::Stream,
             ::libc::SOCK_DGRAM => nix::sys::socket::SockType::Datagram,
             __t => panic!("socket: unsupported type {__t}"),
         };
-        let __proto = match (0) {
+        let __proto = match 0 {
             0 => None,
             ::libc::IPPROTO_TCP => Some(nix::sys::socket::SockProtocol::Tcp),
             ::libc::IPPROTO_UDP => Some(nix::sys::socket::SockProtocol::Udp),
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
     }));
     assert!(((((*s.borrow()) >= 0) as i32) != 0));
     assert!(
-        (((match nix::sys::socket::Backlog::new((5)) {
+        (((match nix::sys::socket::Backlog::new(5) {
             Ok(__b) => match FdRegistry::with_fd((*s.borrow()), |__fd| nix::sys::socket::listen(
                 &__fd, __b
             )) {

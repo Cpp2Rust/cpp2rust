@@ -33,7 +33,7 @@ fn main_0() -> i32 {
     assert!((({ (*(*ops.borrow())[(0) as usize])(2, 3,) }) == 5));
     assert!((({ (*(*ops.borrow())[(1) as usize])(7, 4,) }) == 3));
     assert!((({ (*(*ops.borrow())[(2) as usize])(6, 5,) }) == 30));
-    assert!((!(((*ops.borrow())[(0) as usize]).is_null())));
+    assert!(!(((*ops.borrow())[(0) as usize]).is_null()));
     assert!(((*ops.borrow())[(0) as usize] == FnPtr::<fn(i32, i32) -> i32>::new(add_0)));
     assert!(((*ops.borrow())[(0) as usize] != FnPtr::<fn(i32, i32) -> i32>::new(sub_1)));
     return 0;

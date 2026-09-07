@@ -236,7 +236,7 @@ fn main_0() -> i32 {
             .borrow())
             == -1_i32)
     );
-    assert!((({ Find_0((*head.borrow()).clone(), 5,) }).is_null()));
+    assert!(({ Find_0((*head.borrow()).clone(), 5,) }).is_null());
     assert!(
         ((*(*({ FindBack_1((*tail.borrow()).clone(), 0,) })
             .upgrade()
@@ -278,12 +278,12 @@ fn main_0() -> i32 {
             == 4)
     );
     assert!(
-        ((*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
+        (*(*({ FindBack_1((*tail.borrow()).clone(), 4,) })
             .upgrade()
             .deref())
         .prev
         .borrow())
-        .is_null())
+        .is_null()
     );
     assert!(
         ((*(*(*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
@@ -320,10 +320,10 @@ fn main_0() -> i32 {
             == 3)
     );
     assert!(
-        ((*(*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref())
+        (*(*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref())
             .next
             .borrow())
-        .is_null())
+        .is_null()
     );
     assert!(
         ((*(*(*(*(*(*({ FindBack_1((*tail.borrow()).clone(), 1,) })
@@ -403,36 +403,32 @@ fn main_0() -> i32 {
             .borrow())
         } == (4 + -1_i32))
     );
-    assert!(
-        ({
-            let _lhs = (*(*(*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
-                .next
-                .borrow())
+    assert!({
+        let _lhs = (*(*(*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
+            .next
+            .borrow())
+        .upgrade()
+        .deref())
+        .val
+        .borrow());
+        _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 1) })
             .upgrade()
             .deref())
-            .val
-            .borrow());
-            _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 1) })
-                .upgrade()
-                .deref())
-            .val
-            .borrow())
-        })
-    );
-    assert!(
-        ({
-            let _lhs = (*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
-                .prev
-                .borrow())
-            .clone();
-            _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 4) })
-                .upgrade()
-                .deref())
+        .val
+        .borrow())
+    });
+    assert!({
+        let _lhs = (*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
             .prev
             .borrow())
-            .clone()
-        })
-    );
+        .clone();
+        _lhs == (*(*({ FindBack_1((*tail.borrow()).clone(), 4) })
+            .upgrade()
+            .deref())
+        .prev
+        .borrow())
+        .clone()
+    });
     return 0;
 }
 pub trait NodeImpl {

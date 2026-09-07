@@ -13,12 +13,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fp: *mut ::libc::FILE = libc::fopen(
-        ((c"/tmp/cpp2rust_uafc_test.tmp".as_ptr().cast_mut()).cast_const()),
-        ((c"wb".as_ptr().cast_mut()).cast_const()),
+        (c"/tmp/cpp2rust_uafc_test.tmp".as_ptr().cast_mut()).cast_const(),
+        (c"wb".as_ptr().cast_mut()).cast_const(),
     );
-    assert!((!(fp).is_null()));
-    libc::fclose((fp));
-    return if ((((libc::fputc(('x' as i32), (fp))) == ('x' as i32)) as i32) != 0) {
+    assert!(!(fp).is_null());
+    libc::fclose(fp);
+    return if ((((libc::fputc(('x' as i32), fp)) == ('x' as i32)) as i32) != 0) {
         1
     } else {
         0

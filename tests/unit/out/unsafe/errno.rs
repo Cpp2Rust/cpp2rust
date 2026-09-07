@@ -18,7 +18,7 @@ pub unsafe fn test_errno_0() {
 pub unsafe fn test_errno_preserved_across_strdup_1() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 99;
     let mut d: *mut libc::c_char =
-        libcc2rs::strdup_unsafe(((c"hello".as_ptr().cast_mut()).cast_const()));
+        libcc2rs::strdup_unsafe((c"hello".as_ptr().cast_mut()).cast_const());
     assert!((((!((d).is_null())) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (99)) as i32) != 0));
     libcc2rs::free_unsafe((d as *mut libc::c_char as *mut ::libc::c_void));
@@ -27,9 +27,9 @@ pub unsafe fn test_errno_preserved_across_strdup_1() {
 pub unsafe fn test_errno_from_fseek_2() {
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
     let mut r: i32 = libc::fseek(
-        (libcc2rs::stdin_unsafe()),
-        (0_i64) as ::libc::c_long,
-        (::libc::SEEK_SET),
+        libcc2rs::stdin_unsafe(),
+        0_i64 as ::libc::c_long,
+        ::libc::SEEK_SET,
     );
     assert!(((((r) == (-1_i32)) as i32) != 0));
     assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ESPIPE)) as i32) != 0));
