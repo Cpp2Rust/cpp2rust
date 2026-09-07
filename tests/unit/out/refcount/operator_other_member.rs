@@ -7,6 +7,31 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
+pub struct Static {}
+impl Static {
+    pub fn operator_call(a: i32, b: i32) -> i32 {
+        let a: Value<i32> = Rc::new(RefCell::new(a));
+        let b: Value<i32> = Rc::new(RefCell::new(b));
+        return ((*a.borrow()) * (*b.borrow()));
+    }
+}
+impl Clone for Static {
+    fn clone(&self) -> Self {
+        let __this: Value<Static> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Static> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Static {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
+#[derive(Default)]
 pub struct S {
     pub v: Value<i32>,
 }
@@ -63,6 +88,8 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(0)),
     }));
     assert!(!({ SImpl::operator__Bool(&z.as_pointer(),) }));
+    let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
+    assert!((({ operator_call(6, 7,) }) == 42));
     return 0;
 }
 pub trait SImpl {

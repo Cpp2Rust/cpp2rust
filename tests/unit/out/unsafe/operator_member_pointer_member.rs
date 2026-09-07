@@ -12,6 +12,15 @@ pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Table {}
+impl Table {
+    pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
+        return &mut table_0[(i) as usize] as *mut i32;
+    }
+}
+pub static mut table_0: [i32; 3] = unsafe { [7, 8, 9] };
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct S {
     pub data: [i32; 3],
@@ -66,5 +75,17 @@ unsafe fn main_0() -> i32 {
     assert!(((*p) == (1)));
     (*p) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
+    let mut t: Table = <Table>::default();
+    assert!(
+        ((*(unsafe {
+            let _i: i32 = t;
+            operator_index(_i)
+        })) == (8))
+    );
+    (*(unsafe {
+        let _i: i32 = t;
+        operator_index(_i)
+    })) = 80;
+    assert!(((table_0[(1) as usize]) == (80)));
     return 0;
 }

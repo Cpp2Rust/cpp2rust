@@ -32,6 +32,34 @@ impl ByteRepr for Inner {
         }
     }
 }
+thread_local!();
+#[derive(Default)]
+pub struct Table {}
+impl Table {
+    pub fn operator_index(i: i32) -> Ptr<i32> {
+        let i: Value<i32> = Rc::new(RefCell::new(i));
+        return (table_0.with(Value::clone).as_pointer() as Ptr<i32>).offset((*i.borrow()));
+    }
+}
+impl Clone for Table {
+    fn clone(&self) -> Self {
+        let __this: Value<Table> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Table> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Table {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
+thread_local!(
+    pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
+);
 #[derive()]
 pub struct S {
     pub data: Value<Box<[i32]>>,
@@ -118,6 +146,21 @@ fn main_0() -> i32 {
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
     assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
+    let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
+    assert!(
+        ((({
+            let _i: i32 = (*t.borrow()).clone();
+            operator_index(_i)
+        })
+        .read())
+            == 8)
+    );
+    ({
+        let _i: i32 = (*t.borrow()).clone();
+        operator_index(_i)
+    })
+    .write(80);
+    assert!(((*table_0.with(Value::clone).borrow())[(1) as usize] == 80));
     return 0;
 }
 pub trait SImpl {

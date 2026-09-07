@@ -8,6 +8,14 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
+pub struct Static {}
+impl Static {
+    pub unsafe fn operator_call(mut a: i32, mut b: i32) -> i32 {
+        return ((a) * (b));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
 pub struct S {
     pub v: i32,
 }
@@ -55,5 +63,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut z: S = S { v: 0 };
     assert!(!(unsafe { S::operator__Bool(&z,) }));
+    let mut st: Static = <Static>::default();
+    assert!(((unsafe { operator_call(6, 7,) }) == (42)));
     return 0;
 }
