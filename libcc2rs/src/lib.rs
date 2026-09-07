@@ -7,6 +7,14 @@ pub use reinterpret::ByteRepr;
 mod rc;
 pub use rc::*;
 
+mod cstr;
+
+mod void;
+pub use void::*;
+
+mod ptr_dyn;
+pub use ptr_dyn::*;
+
 mod libc_shims;
 pub use libc_shims::*;
 

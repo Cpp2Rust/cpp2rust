@@ -1,19 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use std::io::Cursor;
-
 pub trait PostfixInc {
     fn postfix_inc(&mut self) -> Self;
-}
-
-impl<T> PostfixInc for Cursor<*mut T> {
-    #[inline]
-    fn postfix_inc(&mut self) -> Self {
-        let clone = self.clone();
-        self.set_position(self.position().wrapping_add(1));
-        clone
-    }
 }
 
 macro_rules! postfix_nowrap_inc_impl {
