@@ -4146,13 +4146,13 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
     }
     switch (fn->getOverloadedOperator()) {
     case clang::OO_EqualEqual:
-      eq = eq ? eq : fn;
+      eq = fn;
       break;
     case clang::OO_Less:
-      lt = lt ? lt : fn;
+      lt = fn;
       break;
     case clang::OO_Spaceship:
-      cmp = cmp ? cmp : fn;
+      cmp = fn;
       break;
     default:
       break;
