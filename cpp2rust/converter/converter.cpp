@@ -4095,13 +4095,11 @@ std::string Converter::ComparisonCall(const clang::FunctionDecl *op,
   auto record = GetRecordName(decl);
   auto arg = std::format("{} as *const {}", rhs, record);
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
-    if (method->isConst()) {
-      return std::format("{}::{}({}, {})", GetUFCSName(method),
-                         GetMethodName(method), lhs, arg);
-    }
-    return std::format("{{ let mut __this = {}.clone(); {}::{}(&mut __this, "
-                       "{}) }}",
-                       lhs, GetUFCSName(method), GetMethodName(method), arg);
+    auto recv = method->isConst()
+                    ? std::string(lhs)
+                    : std::format("&mut *(&raw const *{}).cast_mut()", lhs);
+    return std::format("{}::{}({}, {})", GetUFCSName(method),
+                       GetMethodName(method), recv, arg);
   }
   return std::format("{}({} as *const {}, {})",
                      GetNamedDeclAsString(op->getCanonicalDecl()), lhs, record,
@@ -4525,7 +4523,7 @@ std::string Converter::ConvertIRFragment(
               Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
           .is_index_base = ph->is_index_base,
       };
-      result += ConvertPlaceholder(expr, arg, ph_ctx);
+      result += '(' + ConvertPlaceholder(expr, arg, ph_ctx) + ')';
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       result += ConvertVariadicTail(expr, all_args);
     } else if (auto *mc =
