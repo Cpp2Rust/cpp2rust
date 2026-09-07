@@ -236,6 +236,20 @@ name. Enum constants and global variables (e.g. `std::cout`) are matched by
 their qualified name. A global and its address are separate rules:
 `rules/iostream` maps both `std::cout` (`f1`) and `&std::cout` (`f3`).
 
+A variable of class type, such as `std::cout` or `std::strong_ordering::less`,
+must be returned _by reference_. Returned by value, the pattern is a copy
+construction, so the rule keys on the copy constructor instead of the variable
+and matches every copy of that type:
+
+```cpp
+// rules/compare/src.cpp
+const std::strong_ordering &f1() { return std::strong_ordering::less; }
+const std::strong_ordering &f2() { return std::strong_ordering::equal; }
+```
+
+The Rust side still returns the value; the reference only exists to keep the
+C++ pattern free of the copy.
+
 Integer-literal macros are the only macros matchable directly. Macros whose
 expansions are platform internals with no stable callee, such as `errno` or
 `FD_SET`, are first rewritten into calls to synthetic `cpp2rust_*` functions by
