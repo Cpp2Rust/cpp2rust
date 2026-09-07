@@ -15,7 +15,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<usize> = Rc::new(RefCell::new(0_usize));
-    ({ write_ulong_0((x.as_pointer().reinterpret_cast::<u64>())) });
+    ({ write_ulong_0((x.as_pointer()).reinterpret_cast::<u64>()) });
     assert!(((((*x.borrow()) == 42_usize) as i32) != 0));
     return 0;
 }

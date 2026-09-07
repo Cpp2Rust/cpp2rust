@@ -1875,6 +1875,29 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   } else {
     ConvertVarInit(param_type, expr);
   }
+  ConvertParamTyPointerCastIfNeeded(param_type, expr);
+}
+
+void Converter::ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
+                                                  clang::Expr *expr) {
+  if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
+      IsVaListType(param_type) || IsVaListType(expr->getType())) {
+    return;
+  }
+  switch (GetConstCastType(param_type->getPointeeType(),
+                           expr->getType()->getPointeeType())) {
+  case ConstCastType::MutableToConst:
+    StrCat(".cast_const()");
+    return;
+  case ConstCastType::ConstToMutable:
+    StrCat(".cast_mut()");
+    return;
+  default:
+    break;
+  }
+  if (!IsCastRedundantInRust(expr, param_type)) {
+    ConvertCast(param_type);
+  }
 }
 
 void Converter::EmitHoistedArgs(CallInfo &info) {

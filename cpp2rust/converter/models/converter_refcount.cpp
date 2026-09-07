@@ -2596,6 +2596,18 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   return std::string(Trim(str));
 }
 
+void ConverterRefCount::ConvertParamTyPointerCastIfNeeded(
+    clang::QualType param_type, clang::Expr *expr) {
+  if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
+      IsVaListType(param_type) || IsVaListType(expr->getType())) {
+    return;
+  }
+  auto dest_type = ConvertPointeeType(param_type);
+  if (dest_type != ConvertPointeeType(expr->getType())) {
+    StrCat(std::format(".reinterpret_cast::<{}>()", dest_type));
+  }
+}
+
 bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
   if (clang::isa<clang::CXXDestructorDecl>(decl)) {
     return IsMethodOnPtr(decl);
