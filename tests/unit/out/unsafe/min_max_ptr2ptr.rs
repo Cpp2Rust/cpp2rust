@@ -28,5 +28,6 @@ unsafe fn main_0() -> i32 {
     } else {
         (*ppb) as *const _
     });
-    return ((r1) + (r2));
+    assert!((((r1) + (r2)) == (30)));
+    return 0;
 }

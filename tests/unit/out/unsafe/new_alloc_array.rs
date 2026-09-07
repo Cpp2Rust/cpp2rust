@@ -39,5 +39,6 @@ unsafe fn main_0() -> i32 {
         p2,
         libcc2rs::malloc_usable_size(p2 as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
     )));
-    return out;
+    assert!(((out) == (99)));
+    return 0;
 }

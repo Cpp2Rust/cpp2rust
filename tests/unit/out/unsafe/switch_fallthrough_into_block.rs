@@ -13,9 +13,11 @@ pub unsafe fn fallthrough_into_block_0(mut x: i32) -> i32 {
             r += 1;
         }
         __v if __v == 2 => {
-            let mut tmp: i32 = ((r) * (10));
-            r = ((tmp) + (5));
-            break;
+            {
+                let mut tmp: i32 = ((r) * (10));
+                r = ((tmp) + (5));
+                break;
+            }
         }
         _ => {
             r = -1_i32;

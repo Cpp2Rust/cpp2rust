@@ -209,10 +209,10 @@ unsafe fn main_0() -> i32 {
     y1.x.postfix_inc();
     (*y1.pair).pair = (&mut y2 as *mut Pair);
     (*(*y1.pair).pair).x = 10;
-    (unsafe { y1.method() });
+    (unsafe { Pair::method(&mut y1) });
     y1.pair = (&mut y2 as *mut Pair);
     y2.pair = (&mut y3 as *mut Pair);
-    (unsafe { (*(*y1.pair).pair).method() });
+    (unsafe { Pair::method(&mut (*(*y1.pair).pair)) });
     let mut x: X1 = X1 {};
     let mut y: X1 = X1 {};
     x1 = ((unsafe { zero_0() }) + (y1.x));

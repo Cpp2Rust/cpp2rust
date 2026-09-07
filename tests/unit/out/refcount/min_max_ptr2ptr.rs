@@ -32,5 +32,6 @@ fn main_0() -> i32 {
         }
         .read()),
     ));
-    return ((*r1.borrow()) + (*r2.borrow()));
+    assert!((((*r1.borrow()) + (*r2.borrow())) == 30));
+    return 0;
 }

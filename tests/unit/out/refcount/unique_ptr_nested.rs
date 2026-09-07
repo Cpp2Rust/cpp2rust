@@ -13,11 +13,12 @@ pub struct Inner {
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Inner {
@@ -39,7 +40,19 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.inner.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(<Option<Value<Inner>>>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -75,5 +88,6 @@ fn main_0() -> i32 {
     let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let __rhs = (*(*a.borrow()).as_ref().unwrap().borrow());
     (*(*b.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
-    return ((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow()));
+    assert!((((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
+    return 0;
 }

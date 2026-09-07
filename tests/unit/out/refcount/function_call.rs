@@ -17,5 +17,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(({ function_0(10, 1) })));
-    return (*y.borrow());
+    assert!(((*y.borrow()) == 16));
+    return 0;
 }

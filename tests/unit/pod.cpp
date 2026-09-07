@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct POD {
   int x1, x2, x3;
 };
@@ -15,5 +17,6 @@ int main() {
   POD p1 = {10, 11, 12};
   POD p2 = {p1.x1, p1.x2, p1.x3};
   PODIncrement(p2);
-  return p2.x1 + p2.x2 + p2.x3;
+  assert(p2.x1 + p2.x2 + p2.x3 == 39);
+  return 0;
 }

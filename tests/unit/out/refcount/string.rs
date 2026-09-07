@@ -487,5 +487,6 @@ fn main_0() -> i32 {
     let t4: Value<usize> = Rc::new(RefCell::new(
         (*t3.borrow()).wrapping_add(((*s4.borrow()).len() - 1)),
     ));
-    return (((*t4.borrow()).wrapping_add(((*s5.borrow()).len() - 1))) as i32);
+    assert!(((*t4.borrow()).wrapping_add(((*s5.borrow()).len() - 1)) == 139_usize));
+    return 0;
 }

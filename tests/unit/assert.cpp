@@ -5,5 +5,6 @@
 
 int main() {
   assert(!0);
-  return 1;
+  assert(1 == 1);
+  return 0;
 }

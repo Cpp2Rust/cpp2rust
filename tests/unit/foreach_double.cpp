@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <vector>
 
 int main() {
@@ -31,5 +32,6 @@ int main() {
   for (auto &row : m)
     for (auto &col : row)
       square += col;
-  return square;
+  assert(square == 144);
+  return 0;
 }

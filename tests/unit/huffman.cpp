@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 #define MAX_TREE_HT 100
@@ -147,6 +148,7 @@ int main() {
     freq[i] = arr2[i];
   }
   std::unique_ptr<int[]> out = HuffmanCodes(data, freq, size);
-  return out[0] == 0 && out[1] == 100 && out[2] == 101 && out[3] == 1100 &&
-         out[4] == 1101 && out[5] == 111;
+  assert(out[0] == 0 && out[1] == 100 && out[2] == 101 && out[3] == 1100 &&
+         out[4] == 1101 && out[5] == 111);
+  return 0;
 }

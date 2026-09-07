@@ -43,33 +43,11 @@ fn main_0() -> i32 {
     assert!((((({ b_value_1() }) == 2) as i32) != 0));
     return 0;
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum widget_enum {
-    #[default]
-    WIDGET_A = 0,
-    WIDGET_B = 1,
-    WIDGET_C = 2,
-}
-impl From<i32> for widget_enum {
-    fn from(n: i32) -> widget_enum {
-        match n {
-            0 => widget_enum::WIDGET_A,
-            1 => widget_enum::WIDGET_B,
-            2 => widget_enum::WIDGET_C,
-            _ => panic!("invalid widget_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(widget_enum);
-impl ByteRepr for widget_enum {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <widget_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type widget_enum = u32;
+pub const widget_enum_WIDGET_A: widget_enum = 0;
+pub const widget_enum_WIDGET_B: widget_enum = 1;
+pub const widget_enum_WIDGET_C: widget_enum = 2;
 pub fn b_value_1() -> i32 {
-    let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum::WIDGET_C));
+    let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum_WIDGET_C));
     return ((*w.borrow()) as i32);
 }

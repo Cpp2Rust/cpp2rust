@@ -13,5 +13,6 @@ fn main_0() -> i32 {
     let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3, 4, 5])));
     let p0: Value<Ptr<i32>> = Rc::new(RefCell::new(((a.as_pointer() as Ptr<i32>).offset(0))));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(((a.as_pointer() as Ptr<i32>).offset(4))));
-    return ((((*p1.borrow()).clone() - (*p0.borrow()).clone()) as i64) as i32);
+    assert!((((*p1.borrow()).clone() - (*p0.borrow()).clone()) as i64 == 4_i64));
+    return 0;
 }

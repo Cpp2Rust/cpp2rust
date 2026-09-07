@@ -30,32 +30,10 @@ pub fn switch_char_0(c: u8) -> i32 {
     };
     panic!("ub: non-void function does not return a value")
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    kRed = 0,
-    kGreen = 1,
-    kBlue = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::kRed,
-            1 => Color::kGreen,
-            2 => Color::kBlue,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
+pub type Color = u32;
+pub const Color_kRed: Color = 0;
+pub const Color_kGreen: Color = 1;
+pub const Color_kBlue: Color = 2;
 pub fn main() {
     std::process::exit(main_0());
 }

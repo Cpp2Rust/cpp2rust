@@ -21,5 +21,6 @@ fn main_0() -> i32 {
         let elem: Value<i32> = Rc::new(RefCell::new(elem.read().clone()));
         (*sum.borrow_mut()) += (*elem.borrow());
     }
-    return (*sum.borrow());
+    assert!(((*sum.borrow()) == 3));
+    return 0;
 }

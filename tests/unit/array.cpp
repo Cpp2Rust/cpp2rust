@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int main() {
   const int N = 5;
   int arr1[N] = {0, 0, 0, 0, 0};
@@ -12,5 +14,6 @@ int main() {
   for (int i = 0; i < N; ++i) {
     fatorial *= arr1[i];
   }
-  return fatorial;
+  assert(fatorial == 120);
+  return 0;
 }

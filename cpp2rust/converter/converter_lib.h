@@ -5,6 +5,7 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
+#include <clang/AST/DeclCXX.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
@@ -32,9 +33,9 @@ std::optional<IteratorCategory>
 GetStrongestIteratorCategory(clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
-bool IsGlobalVar(clang::VarDecl *decl);
+bool IsGlobalVar(const clang::VarDecl *decl);
 
-bool IsGlobalVar(clang::Expr *expr);
+bool IsGlobalVar(const clang::Expr *expr);
 
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
@@ -65,6 +66,10 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
+
+bool IsEmittableMethod(clang::CXXMethodDecl *method);
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
@@ -99,6 +104,7 @@ unsigned GetColumnNumber(const clang::Decl *decl);
 unsigned GetArraySize(clang::QualType array_type);
 
 std::string GetID(const clang::Decl *decl);
+std::string GetMethodID(const clang::CXXMethodDecl *decl);
 
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
@@ -117,6 +123,15 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
+
+clang::CXXDestructorDecl *
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl);
+
+bool TypeNeedsDestruction(clang::QualType type);
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 

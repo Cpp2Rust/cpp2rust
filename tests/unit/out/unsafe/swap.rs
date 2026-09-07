@@ -34,5 +34,6 @@ unsafe fn main_0() -> i32 {
     p = (&mut a as *mut i32);
     (unsafe { swap_by_ptr_1(p, (&mut b as *mut i32)) });
     (unsafe { swap_by_ref_2(&mut a as *mut i32, &mut c as *mut i32) });
-    return c;
+    assert!(((c) == (2)));
+    return 0;
 }

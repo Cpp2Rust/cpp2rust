@@ -13,11 +13,12 @@ pub struct Outer_RunInfo {
 }
 impl Clone for Outer_RunInfo {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer_RunInfo> = Rc::new(RefCell::new(Self {
             block_idx: Rc::new(RefCell::new((*self.block_idx.borrow()))),
             num_extra_zero_runs: Rc::new(RefCell::new((*self.num_extra_zero_runs.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Outer_RunInfo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Outer_RunInfo {
@@ -41,13 +42,26 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             runs: Rc::new(RefCell::new((*self.runs.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        24
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.runs.borrow()).to_bytes(&mut buf[0..24]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            runs: Rc::new(RefCell::new(<Vec<Outer_RunInfo>>::from_bytes(&buf[0..24]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

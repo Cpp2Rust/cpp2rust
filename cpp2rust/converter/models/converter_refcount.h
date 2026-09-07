@@ -18,7 +18,7 @@ public:
 
   bool VisitIncompleteArrayType(clang::IncompleteArrayType *type) override;
 
-  bool VisitLValueReferenceType(clang::LValueReferenceType *type) override;
+  bool VisitReferenceType(clang::ReferenceType *type) override;
 
   bool VisitPointerType(clang::PointerType *type) override;
 
@@ -41,11 +41,7 @@ public:
 
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override;
-
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
-
-  void AddByteReprTrait(const clang::EnumDecl *decl) override;
 
   bool
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
@@ -55,6 +51,18 @@ public:
   void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
+
+  bool ShouldConvertMethod(const clang::CXXMethodDecl *decl) override;
+
+  bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
+
+  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) override;
+
+  void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
+
+  bool ThisIsRustPtr() const override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
@@ -206,6 +214,11 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
+  std::string TraitName(const clang::CXXRecordDecl *decl) const;
+  std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+  std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+  void EmitScopedDestructor(const clang::VarDecl *decl) override;
+
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;
@@ -249,6 +262,9 @@ private:
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
+
+  bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
+                llvm::StringRef /*name*/) const override;
 
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {

@@ -94,5 +94,6 @@ int main() {
   }
   k = 0;
   const auto &value_0 = m.at(k);
-  return m.size() + x1 + x2 + x3 + x4 + x5 + value_0;
+  assert(m.size() + x1 + x2 + x3 + x4 + x5 + value_0 == 21);
+  return 0;
 }

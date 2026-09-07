@@ -35,9 +35,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut struct_with_ctor: StructWithCtor = StructWithCtor::StructWithCtor(1, 2);
+    let mut struct_with_ctor: StructWithCtor = StructWithCtor::StructWithCtor({ 1 }, { 2 });
     let mut x: i32 = 3;
-    return (((((*(unsafe { foo_0(&mut x as *mut i32) })) == (3))
-        && ((*(unsafe { struct_with_ctor.x1() })) == (2)))
-        && ((*(unsafe { struct_with_ctor.x2() })) == (1))) as i32);
+    assert!(
+        (((*(unsafe { foo_0(&mut x as *mut i32,) })) == (3))
+            && ((*(unsafe { StructWithCtor::x1(&struct_with_ctor,) })) == (2)))
+            && ((*(unsafe { StructWithCtor::x2(&struct_with_ctor,) })) == (1))
+    );
+    return 0;
 }

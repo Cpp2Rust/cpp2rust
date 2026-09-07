@@ -14,12 +14,13 @@ pub struct node_t {
 }
 impl Clone for node_t {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<node_t> = Rc::new(RefCell::new(Self {
             left: Rc::new(RefCell::new((*self.left.borrow()).clone())),
             right: Rc::new(RefCell::new((*self.right.borrow()).clone())),
             value: Rc::new(RefCell::new((*self.value.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<node_t> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for node_t {
@@ -158,5 +159,6 @@ fn main_0() -> i32 {
             && (({ find_0((*root.borrow()).clone(), 5) }).is_null()),
     ));
     ({ del_2((*root.borrow()).clone()) });
-    return ((*out.borrow()) as i32);
+    assert!((*out.borrow()));
+    return 0;
 }

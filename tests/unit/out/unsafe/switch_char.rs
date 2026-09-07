@@ -29,24 +29,10 @@ pub unsafe fn switch_char_0(mut c: libc::c_char) -> i32 {
     };
     panic!("ub: non-void function does not return a value")
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    kRed = 0,
-    kGreen = 1,
-    kBlue = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::kRed,
-            1 => Color::kGreen,
-            2 => Color::kBlue,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
+pub type Color = u32;
+pub const Color_kRed: Color = 0;
+pub const Color_kGreen: Color = 1;
+pub const Color_kBlue: Color = 2;
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

@@ -13,11 +13,12 @@ pub struct Outer_Named {
 }
 impl Clone for Outer_Named {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer_Named> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Outer_Named> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Outer_Named {
@@ -42,11 +43,12 @@ pub struct anon_0 {
 }
 impl Clone for anon_0 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_0> = Rc::new(RefCell::new(Self {
             c: Rc::new(RefCell::new((*self.c.borrow()))),
             d: Rc::new(RefCell::new((*self.d.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<anon_0> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_0 {
@@ -71,11 +73,12 @@ pub struct anon_1 {
 }
 impl Clone for anon_1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_1> = Rc::new(RefCell::new(Self {
             g: Rc::new(RefCell::new((*self.g.borrow()))),
             h: Rc::new(RefCell::new((*self.h.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<anon_1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_1 {
@@ -100,11 +103,12 @@ pub struct anon_2 {
 }
 impl Clone for anon_2 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_2> = Rc::new(RefCell::new(Self {
             e: Rc::new(RefCell::new((*self.e.borrow()))),
             f: Rc::new(RefCell::new((*self.f.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<anon_2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_2 {
@@ -128,10 +132,11 @@ pub struct anon_4 {
 }
 impl Clone for anon_4 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_4> = Rc::new(RefCell::new(Self {
             j: Rc::new(RefCell::new((*self.j.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<anon_4> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_4 {
@@ -153,10 +158,11 @@ pub struct anon_5 {
 }
 impl Clone for anon_5 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_5> = Rc::new(RefCell::new(Self {
             k: Rc::new(RefCell::new((*self.k.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<anon_5> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_5 {
@@ -180,12 +186,13 @@ pub struct anon_3 {
 }
 impl Clone for anon_3 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<anon_3> = Rc::new(RefCell::new(Self {
             i: Rc::new(RefCell::new((*self.i.borrow()))),
             inner_named: Rc::new(RefCell::new((*self.inner_named.borrow()).clone())),
             anon_5: Rc::new(RefCell::new((*self.anon_5.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<anon_3> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for anon_3 {
@@ -215,14 +222,15 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             named: Rc::new(RefCell::new((*self.named.borrow()).clone())),
             anonymous_named_0: Rc::new(RefCell::new((*self.anonymous_named_0.borrow()).clone())),
             anonymous_named_1: Rc::new(RefCell::new((*self.anonymous_named_1.borrow()).clone())),
             anon_2: Rc::new(RefCell::new((*self.anon_2.borrow()).clone())),
             anon_3: Rc::new(RefCell::new((*self.anon_3.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Outer {
@@ -320,11 +328,12 @@ fn main_0() -> i32 {
     }
     impl Clone for anon_6 {
         fn clone(&self) -> Self {
-            let mut this = Self {
+            let __this: Value<anon_6> = Rc::new(RefCell::new(Self {
                 x: Rc::new(RefCell::new((*self.x.borrow()))),
                 z: Rc::new(RefCell::new((*self.z.borrow()))),
-            };
-            this
+            }));
+            let this: Ptr<anon_6> = __this.as_pointer();
+            Rc::try_unwrap(__this).ok().unwrap().into_inner()
         }
     }
     impl ByteRepr for anon_6 {

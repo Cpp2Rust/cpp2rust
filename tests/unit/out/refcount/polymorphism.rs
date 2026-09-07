@@ -18,8 +18,9 @@ impl Animal for Dog {
 }
 impl Clone for Dog {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Dog> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Dog> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Dog {
@@ -33,10 +34,8 @@ impl ByteRepr for Dog {
 }
 #[derive(Default)]
 pub struct Cat {}
-impl Cat {
-    fn meow(&self) -> bool {
-        return true;
-    }
+pub trait CatImpl {
+    fn meow(&self) -> bool;
 }
 impl Animal for Cat {
     fn bark(&self) -> bool {
@@ -45,8 +44,9 @@ impl Animal for Cat {
 }
 impl Clone for Cat {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Cat> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Cat> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Cat {
@@ -74,5 +74,11 @@ fn main_0() -> i32 {
     let eat2: Value<bool> = Rc::new(RefCell::new(
         ({ (*(*animal.borrow()).upgrade().deref()).bark() }),
     ));
-    return (((*eat1.borrow()) && (!(*eat2.borrow()))) as i32);
+    assert!((*eat1.borrow()) && (!(*eat2.borrow())));
+    return 0;
+}
+impl CatImpl for Ptr<Cat> {
+    fn meow(&self) -> bool {
+        return true;
+    }
 }

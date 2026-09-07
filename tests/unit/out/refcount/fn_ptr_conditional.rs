@@ -49,6 +49,6 @@ fn main_0() -> i32 {
     assert!((({ (*({ pick_3(-1_i32,) }))(10,) }) == 9));
     assert!((({ (*({ pick_3(0,) }))(10,) }) == 10));
     assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::new(inc_0), 5,) }) == 6));
-    assert!((({ apply_4(FnPtr::null(), 5,) }) == 5));
+    assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::null(), 5,) }) == 5));
     return 0;
 }

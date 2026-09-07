@@ -35,5 +35,5 @@ unsafe fn main_0() -> i32 {
     ww = xx;
     let mut aa: i32 = (unsafe { func_0() });
     aa = (unsafe { func_0() });
-    return 3;
+    return 0;
 }

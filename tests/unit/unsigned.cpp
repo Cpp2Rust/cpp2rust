@@ -12,5 +12,6 @@ int main() {
   unsigned int *p = &x;
   [[maybe_unused]] bool b = *p & 255;
   int a = *p & 255;
-  return a;
+  assert(a == 255);
+  return 0;
 }

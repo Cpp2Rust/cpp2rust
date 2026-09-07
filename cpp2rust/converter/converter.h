@@ -8,6 +8,7 @@
 #include <clang/Sema/Sema.h>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -22,12 +23,13 @@
 #include "logging.h"
 
 namespace cpp2rust {
+inline constexpr const char kDestructorName[] = "destructor";
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
                      const char *keyword_unsafe = "unsafe",
-                     const char *keyword_mut = "mut",
+                     const char *keyword_mut = keyword::kMut,
                      const char *keyword_const_fn = keyword::kConst)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
         keyword_mut_(keyword_mut), keyword_const_fn_(keyword_const_fn) {}
@@ -52,6 +54,8 @@ public:
 
   static std::string EmitOpaqueRecords();
 
+  static std::string EmitDeferredImpls();
+
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
@@ -60,7 +64,7 @@ public:
 
   virtual bool VisitIncompleteArrayType(clang::IncompleteArrayType *type);
 
-  virtual bool VisitLValueReferenceType(clang::LValueReferenceType *type);
+  virtual bool VisitReferenceType(clang::ReferenceType *type);
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
@@ -85,6 +89,10 @@ public:
   virtual void ConvertFunctionBody(clang::FunctionDecl *decl);
 
   void ConvertGotoBlock(clang::CompoundStmt *body);
+
+  void ConvertBody(clang::Stmt *body);
+
+  void ConvertBodyStmts(clang::Stmt *body);
 
   void EmitHoistedDecls(clang::CompoundStmt *body);
 
@@ -119,9 +127,23 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+  virtual bool ShouldConvertMethod(const clang::CXXMethodDecl *decl);
+  virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
+  bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
+  std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+  virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+  virtual void EmitScopedDestructor(const clang::VarDecl *decl);
+  void EmitDeallocation(clang::CXXDeleteExpr *expr,
+                        const std::string &argument_as_string);
+  void ConvertMethodReceiver(clang::MemberExpr *expr,
+                             const clang::CXXMethodDecl *method);
 
-  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  virtual bool ThisIsRustPtr() const { return false; }
+
+  virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
@@ -369,14 +391,13 @@ public:
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr);
 
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
+  virtual bool VisitSizeOfPackExpr(clang::SizeOfPackExpr *expr);
 
   virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 
   virtual bool VisitEnumDecl(clang::EnumDecl *decl);
 
-  virtual void AddFromImpl(clang::EnumDecl *decl);
-
-  virtual void AddIncDecImpls(clang::EnumDecl *decl);
+  virtual std::string EnumeratorName(const clang::EnumConstantDecl *decl) const;
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
 
@@ -498,6 +519,9 @@ protected:
 
   virtual std::string GetUnsafeTypeAsString(clang::QualType qual_type) const;
 
+  virtual bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
+                        llvm::StringRef name) const;
+
   virtual void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
 
   virtual void ConvertUnsignedArithOperand(clang::Expr *expr,
@@ -547,8 +571,6 @@ protected:
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
-  virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
-
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
   virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
@@ -556,8 +578,6 @@ protected:
   void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
 
   virtual void AddByteReprTrait(const clang::RecordDecl *decl);
-
-  virtual void AddByteReprTrait(const clang::EnumDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,
@@ -618,6 +638,24 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  enum class MethodTarget : uint8_t {
+    ValueImpl,
+    TraitDecl,
+    PtrImpl,
+  };
+  MethodTarget method_target_ = MethodTarget::ValueImpl;
+
+  struct PushMethodTarget {
+    Converter &c;
+    MethodTarget prev;
+    PushMethodTarget(Converter &c, MethodTarget k)
+        : c(c), prev(c.method_target_) {
+      c.method_target_ = k;
+    }
+    ~PushMethodTarget() { c.method_target_ = prev; }
+  };
+
+  std::string method_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;
@@ -741,6 +779,32 @@ protected:
     std::unordered_set<const clang::VarDecl *> saved_;
   };
 
+  unsigned materialized_temp_id_ = 0;
+  std::string *materialized_temp_bindings_ = nullptr;
+  class HoistMaterializedTempBindings {
+    Converter &c;
+    std::string *prev;
+    std::string bindings;
+    std::optional<Buffer> buf;
+
+  public:
+    explicit HoistMaterializedTempBindings(Converter &c)
+        : c(c), prev(c.materialized_temp_bindings_), buf(c) {
+      c.materialized_temp_bindings_ = &bindings;
+    }
+    ~HoistMaterializedTempBindings() {
+      c.materialized_temp_bindings_ = prev;
+      std::string body = std::move(*buf).str();
+      buf.reset();
+
+      c.StrCat(bindings, body);
+    }
+    HoistMaterializedTempBindings(const HoistMaterializedTempBindings &) =
+        delete;
+    HoistMaterializedTempBindings &
+    operator=(const HoistMaterializedTempBindings &) = delete;
+  };
+
   struct ScopedMapIterDecl {
     Converter &c;
     const clang::VarDecl *decl;
@@ -782,6 +846,9 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
+  using DeferredImplHeader = std::string;
+  using DeferredImplBody = std::string;
+  static std::map<DeferredImplHeader, DeferredImplBody> deferred_impls_;
 
   enum class ExprKind : uint8_t {
     Callee,
@@ -823,6 +890,16 @@ protected:
   bool isCallee() const;
 
   void dump_expr_kinds();
+
+  struct PushCurrFunction {
+    Converter &c;
+    clang::FunctionDecl *prev;
+    PushCurrFunction(Converter &c, clang::FunctionDecl *decl)
+        : c(c), prev(c.curr_function_) {
+      c.curr_function_ = decl;
+    }
+    ~PushCurrFunction() { c.curr_function_ = prev; }
+  };
 
   struct PushExprKind {
     Converter &c;
@@ -876,6 +953,11 @@ protected:
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr);
 
+  /// Emits binding_code to materialized_temp_bindings_.
+  /// Returns ref_expression.
+  std::string EmitMaterializedTempBinding(clang::QualType param_type,
+                                          clang::Expr *expr);
+
   // TODO: move this into the Plugin infrastructure. Plugins are used for
   // functions that cannot be translated using the rules/ directory. For
   // example emplace_back, make_unique, printf, etc. Generally variadic
@@ -896,8 +978,6 @@ protected:
   bool IsCastRedundantInRust(clang::Expr *expr, clang::QualType target_type);
 
 private:
-  void materializeTemplateSpecialization(clang::CXXRecordDecl *decl);
-
   std::string getIntegerLiteral(clang::IntegerLiteral *expr, bool incl_type,
                                 const clang::QualType *type = nullptr);
   const char *keyword_unsafe_;

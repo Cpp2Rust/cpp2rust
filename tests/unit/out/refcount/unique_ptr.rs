@@ -10,24 +10,38 @@ use std::rc::{Rc, Weak};
 pub struct SafePointer {
     pub ptr: Value<Option<Value<i32>>>,
 }
-impl SafePointer {
-    pub fn inc(&self) {
-        (*(*self.ptr.borrow_mut()).as_ref().unwrap().borrow_mut()).prefix_inc();
+pub trait SafePointerImpl {
+    fn inc(&self);
+}
+impl ByteRepr for SafePointer {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.ptr.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            ptr: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[0..8]))),
+        }
     }
 }
-impl ByteRepr for SafePointer {}
 #[derive(Default)]
 pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+pub trait PairImpl {
+    fn inc(&self, k: i32);
+}
 impl Clone for Pair {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Pair {
@@ -45,13 +59,6 @@ impl ByteRepr for Pair {
         }
     }
 }
-impl Pair {
-    pub fn inc(&self, k: i32) {
-        let k: Value<i32> = Rc::new(RefCell::new(k));
-        (*self.x.borrow_mut()) += (*k.borrow());
-        (*self.y.borrow_mut()) += (*k.borrow());
-    }
-}
 pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let x1: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let x2: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
@@ -62,8 +69,8 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     (*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
         .ptr
         .borrow_mut()) = (*x1.borrow_mut()).take();
-    ({ (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow()).inc() });
-    ({ (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow()).inc() });
+    ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
+    ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
     let x4: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
     let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
@@ -80,7 +87,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             x: Rc::new(RefCell::new(((*raw_ptr2.borrow()).read()))),
             y: Rc::new(RefCell::new(5)),
         })))));
-    ({ (*(*pair.borrow()).as_ref().unwrap().borrow()).inc(10) });
+    ({ PairImpl::inc(&((*pair.borrow()).as_pointer()), 10) });
     let __rhs = {
         let _lhs = {
             let _lhs = (*(*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
@@ -178,7 +185,16 @@ pub fn RndStuff_2() {
             .borrow())
                 == 2)
         );
-        ({ (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].inc(10) });
+        ({
+            PairImpl::inc(
+                &(*x3.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .as_pointer()
+                    .offset(((*i.borrow()) as usize)),
+                10,
+            )
+        });
         assert!(
             ((*(*(*p3_0.borrow())
                 .offset((*i.borrow()) as isize)
@@ -239,8 +255,14 @@ pub fn RndStuff_2() {
                 == -2_i32)
         );
         ({
-            (*x3.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]
-                .inc(-10_i32)
+            PairImpl::inc(
+                &(*x3.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .as_pointer()
+                    .offset(((*i.borrow()) as usize)),
+                -10_i32,
+            )
         });
         assert!(
             ((*(*(*p3_1.borrow())
@@ -273,5 +295,22 @@ fn main_0() -> i32 {
             ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
-    return ({ Consume_1((*safe_ptr.borrow_mut()).take()) });
+    assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
+    return 0;
+}
+impl PairImpl for Ptr<Pair> {
+    fn inc(&self, k: i32) {
+        let k: Value<i32> = Rc::new(RefCell::new(k));
+        (*(*(*self).upgrade().deref()).x.borrow_mut()) += (*k.borrow());
+        (*(*(*self).upgrade().deref()).y.borrow_mut()) += (*k.borrow());
+    }
+}
+impl SafePointerImpl for Ptr<SafePointer> {
+    fn inc(&self) {
+        (*(*(*(*self).upgrade().deref()).ptr.borrow_mut())
+            .as_ref()
+            .unwrap()
+            .borrow_mut())
+        .prefix_inc();
+    }
 }

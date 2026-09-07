@@ -17,5 +17,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = ((unsafe { foo_0() }) + (1));
     let mut y: i32 = (unsafe { foo_0() });
-    return ((x) + (y));
+    assert!((((x) + (y)) == (1)));
+    return 0;
 }

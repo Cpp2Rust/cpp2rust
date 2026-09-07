@@ -13,14 +13,29 @@ pub struct NonCopy {
 }
 impl Clone for NonCopy {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<NonCopy> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<NonCopy> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for NonCopy {}
+impl ByteRepr for NonCopy {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.tag.borrow()).to_bytes(&mut buf[24..28]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

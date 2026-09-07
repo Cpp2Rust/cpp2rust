@@ -25,5 +25,6 @@ fn main_0() -> i32 {
         (*fatorial.borrow_mut()) *= (*arr1.borrow())[(*i.borrow()) as usize];
         (*i.borrow_mut()).prefix_inc();
     }
-    return (*fatorial.borrow());
+    assert!(((*fatorial.borrow()) == 120));
+    return 0;
 }

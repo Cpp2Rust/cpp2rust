@@ -29,5 +29,8 @@ unsafe fn main_0() -> i32 {
         ('c' as libc::c_char),
         ('\0' as libc::c_char),
     ];
-    return ((unsafe { deref_0(a.as_mut_ptr()) }) + (unsafe { strlen_1(s.as_mut_ptr()) }));
+    assert!(
+        (((unsafe { deref_0(a.as_mut_ptr(),) }) + (unsafe { strlen_1(s.as_mut_ptr(),) })) == (4))
+    );
+    return 0;
 }

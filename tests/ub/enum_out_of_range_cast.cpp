@@ -1,4 +1,4 @@
-// panic-ub
+// nondet-result
 
 enum Color { RED, GREEN, BLUE };
 

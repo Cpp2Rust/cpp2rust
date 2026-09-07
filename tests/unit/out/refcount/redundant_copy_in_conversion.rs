@@ -48,5 +48,6 @@ fn main_0() -> i32 {
     } else {
         1
     };
-    return (*r.borrow());
+    assert!(((*r.borrow()) == 2));
+    return 0;
 }

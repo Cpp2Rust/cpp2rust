@@ -13,8 +13,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: *mut i32 = std::ptr::null_mut();
-    if !(x).is_null() {
-        return 1;
-    }
-    return -1_i32;
+    assert!(!!(x).is_null());
+    return 0;
 }

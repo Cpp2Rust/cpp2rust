@@ -6,32 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Choice_enum {
-    #[default]
-    C_LIST = 1,
-    C_LETTERS = 2,
-    C_INTEGERS = 3,
-}
-impl From<i32> for Choice_enum {
-    fn from(n: i32) -> Choice_enum {
-        match n {
-            1 => Choice_enum::C_LIST,
-            2 => Choice_enum::C_LETTERS,
-            3 => Choice_enum::C_INTEGERS,
-            _ => panic!("invalid Choice_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Choice_enum);
-impl ByteRepr for Choice_enum {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Choice_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Choice_enum = u32;
+pub const Choice_enum_C_LIST: Choice_enum = 1;
+pub const Choice_enum_C_LETTERS: Choice_enum = 2;
+pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 #[derive(Default)]
 pub struct anon_1 {
     pub items: Value<Ptr<Ptr<u8>>>,
@@ -225,7 +203,7 @@ fn main_0() -> i32 {
         ])));
     );
     let p_list: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_list.borrow()).choice.borrow_mut()) = Choice_enum::C_LIST;
+    (*(*p_list.borrow()).choice.borrow_mut()) = Choice_enum_C_LIST;
     (*(*p_list.borrow()).index.borrow_mut()) = 0;
     (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
         .items
@@ -255,7 +233,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let p_letters: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_letters.borrow()).choice.borrow_mut()) = Choice_enum::C_LETTERS;
+    (*(*p_letters.borrow()).choice.borrow_mut()) = Choice_enum_C_LETTERS;
     (*(*p_letters.borrow()).index.borrow_mut()) = 1;
     (*(*(*(*p_letters.borrow()).v.borrow())
         .letters()
@@ -298,7 +276,7 @@ fn main_0() -> i32 {
             != 0)
     );
     let p_integers: Value<Branch> = <Value<Branch>>::default();
-    (*(*p_integers.borrow()).choice.borrow_mut()) = Choice_enum::C_INTEGERS;
+    (*(*p_integers.borrow()).choice.borrow_mut()) = Choice_enum_C_INTEGERS;
     (*(*p_integers.borrow()).index.borrow_mut()) = 2;
     (*(*(*(*p_integers.borrow()).v.borrow())
         .integers()

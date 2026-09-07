@@ -13,11 +13,12 @@ pub struct UserDefined {
 }
 impl Clone for UserDefined {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<UserDefined> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<UserDefined> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for UserDefined {
@@ -30,17 +31,32 @@ impl Default for UserDefined {
         }
     }
 }
-impl ByteRepr for UserDefined {}
+impl ByteRepr for UserDefined {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.v.borrow()).to_bytes(&mut buf[8..32]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..4]))),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[8..32]))),
+        }
+    }
+}
 #[derive()]
 pub struct FieldIsLibcType {
     pub addr: Value<libcc2rs::Sockaddr>,
 }
 impl Clone for FieldIsLibcType {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<FieldIsLibcType> = Rc::new(RefCell::new(Self {
             addr: Rc::new(RefCell::new((*self.addr.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<FieldIsLibcType> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for FieldIsLibcType {
@@ -50,7 +66,19 @@ impl Default for FieldIsLibcType {
         }
     }
 }
-impl ByteRepr for FieldIsLibcType {}
+impl ByteRepr for FieldIsLibcType {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.addr.borrow()).to_bytes(&mut buf[0..16]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            addr: Rc::new(RefCell::new(<libcc2rs::Sockaddr>::from_bytes(&buf[0..16]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

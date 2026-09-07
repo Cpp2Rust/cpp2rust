@@ -13,14 +13,29 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
             a: Rc::new(RefCell::new((*self.a.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.a.borrow()).to_bytes(&mut buf[24..28]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }

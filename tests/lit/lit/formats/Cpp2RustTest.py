@@ -264,6 +264,18 @@ class TestContext:
         self.cpp_result = RunResult(
             *lit.util.executeCommand(str(self.cpp_bin), str(self.tmp_dir))
         )
+
+        if (
+            not self.expectations.should_panic_ub
+            and not self.expectations.is_nondet_result
+            and self.cpp_result.returncode != 0
+        ):
+            return (
+                self.expectations.fail_code,
+                "C++ program returned nonzero exit code "
+                + str(self.cpp_result.returncode)
+                + ", non-ub tests must return 0",
+            )
         return None
 
     def run_rust(self):

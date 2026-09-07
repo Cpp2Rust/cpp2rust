@@ -21,13 +21,17 @@ fn main_0() -> i32 {
     let xi3: Value<i32> = Rc::new(RefCell::new(32));
     let xi4: Value<i64> = Rc::new(RefCell::new(64_i64));
     let b: Value<bool> = Rc::new(RefCell::new(((*xu64.borrow()) == 64_u64)));
-    return ((((((((((((((*xu8.borrow()) as i32) + ((*xu16.borrow()) as i32)) as u32)
-        .wrapping_add((*xu32.borrow()))) as u64)
-        .wrapping_add((*xu64.borrow())))
-    .wrapping_add(((*xsz1.borrow()) as u64)))
-    .wrapping_add(((*xsz2.borrow()) as u64)))
-    .wrapping_add(((*xi1.borrow()) as u64)))
-    .wrapping_add(((*xi2.borrow()) as u64)))
-    .wrapping_add(((*xi3.borrow()) as u64)))
-    .wrapping_add(((*xi4.borrow()) as u64))) as i32);
+    assert!(
+        (((((((((((((*xu8.borrow()) as i32) + ((*xu16.borrow()) as i32)) as u32)
+            .wrapping_add((*xu32.borrow()))) as u64)
+            .wrapping_add((*xu64.borrow())))
+        .wrapping_add(((*xsz1.borrow()) as u64)))
+        .wrapping_add(((*xsz2.borrow()) as u64)))
+        .wrapping_add(((*xi1.borrow()) as u64)))
+        .wrapping_add(((*xi2.borrow()) as u64)))
+        .wrapping_add(((*xi3.borrow()) as u64)))
+        .wrapping_add(((*xi4.borrow()) as u64))
+            == 352_u64)
+    );
+    return 0;
 }

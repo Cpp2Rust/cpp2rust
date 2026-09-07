@@ -32,7 +32,7 @@ fn main_0() -> i32 {
     assert!((({ (*(*fn_.borrow()))(10, 3,) }) == 7));
     (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::new(mul_2);
     assert!((({ (*(*fn_.borrow()))(6, 7,) }) == 42));
-    (*fn_.borrow_mut()) = FnPtr::null();
+    (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::null();
     assert!((*fn_.borrow()).is_null());
     (*fn_.borrow_mut()) = FnPtr::<fn(i32, i32) -> i32>::new(add_0);
     assert!(!((*fn_.borrow()).is_null()));

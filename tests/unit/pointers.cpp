@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct Test {
   int x;
 
@@ -31,5 +33,6 @@ int main() {
   t3 = t2;
   t3->x = 15;
   *t3->as_ptr() += 10;
-  return t3->x + t2->x + t1.x;
+  assert(t3->x + t2->x + t1.x == 75);
+  return 0;
 }

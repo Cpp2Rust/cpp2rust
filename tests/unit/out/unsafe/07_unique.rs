@@ -26,5 +26,6 @@ unsafe fn main_0() -> i32 {
     (*f_ptr2) = 11;
     f = Some(Box::new(9));
     f = (unsafe { fn_0(f) });
-    return (*f.as_deref_mut().unwrap());
+    assert!(((*f.as_deref_mut().unwrap()) == (10)));
+    return 0;
 }

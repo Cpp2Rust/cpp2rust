@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 void change(std::unique_ptr<int> &n) {
@@ -11,5 +12,6 @@ void change(std::unique_ptr<int> &n) {
 int main() {
   std::unique_ptr<int> n = std::make_unique<int>(10);
   change(n);
-  return *n;
+  assert(*n == 20);
+  return 0;
 }

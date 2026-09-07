@@ -10,7 +10,19 @@ use std::rc::{Rc, Weak};
 pub struct Holder {
     pub val: Value<Option<Value<i32>>>,
 }
-impl ByteRepr for Holder {}
+impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.val.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            val: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn read_val_0(h: Ptr<Holder>) -> i32 {
     let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
     return (*(*(*(*h.borrow()).upgrade().deref()).val.borrow())
@@ -33,5 +45,6 @@ fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     (*(*h.borrow()).val.borrow_mut()) = Some(Rc::new(RefCell::new(10)));
     ({ write_val_1((h.as_pointer()), 42) });
-    return ({ read_val_0((h.as_pointer())) });
+    assert!((({ read_val_0((h.as_pointer()),) }) == 42));
+    return 0;
 }

@@ -13,10 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let x: i32 = 0;
-    if (1 != 0) {
-        return ((1) + (2));
-    } else {
-        return -1_i32;
-    }
-    panic!("ub: non-void function does not return a value")
+    assert!((1 != 0));
+    assert!((((1) + (2)) == (3)));
+    return 0;
 }

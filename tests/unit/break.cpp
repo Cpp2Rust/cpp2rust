@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int for_test(const int n) {
   int x = 0;
   for (int i = 0, j = 0; i < n; j = i, i += 1) {
@@ -15,4 +17,7 @@ int for_test(const int n) {
   return x;
 }
 
-int main() { return for_test(200); }
+int main() {
+  assert(for_test(200) == 400);
+  return 0;
+}

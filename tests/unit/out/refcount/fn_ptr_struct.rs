@@ -13,18 +13,19 @@ pub struct Handler {
 }
 impl Clone for Handler {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Handler> = Rc::new(RefCell::new(Self {
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
             cb: Rc::new(RefCell::new((*self.cb.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Handler> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Handler {
     fn default() -> Self {
         Handler {
             tag: <Value<i32>>::default(),
-            cb: Rc::new(RefCell::new(FnPtr::null())),
+            cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
 }

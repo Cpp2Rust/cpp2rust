@@ -18,5 +18,6 @@ fn main_0() -> i32 {
     (*arr2_ptr.borrow()).offset((1) as isize).write(6);
     let arr2_ref1: Ptr<i32> = (arr2.as_pointer() as Ptr<i32>).offset(1);
     arr2_ref1.write(7);
-    return ((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]);
+    assert!((((*arr2.borrow())[(0) as usize] + (*arr2.borrow())[(1) as usize]) == 12));
+    return 0;
 }

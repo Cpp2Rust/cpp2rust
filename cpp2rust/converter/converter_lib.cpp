@@ -7,6 +7,7 @@
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/Support/Path.h>
 
 #include <algorithm>
 #include <array>
@@ -67,13 +68,13 @@ static const char rust_keywords[][12] = {
 
 namespace cpp2rust {
 
-bool IsGlobalVar(clang::VarDecl *decl) {
+bool IsGlobalVar(const clang::VarDecl *decl) {
   return decl->isFileVarDecl() || decl->isStaticLocal();
 }
 
-bool IsGlobalVar(clang::Expr *expr) {
+bool IsGlobalVar(const clang::Expr *expr) {
   expr = expr->IgnoreImplicit();
-  clang::DeclRefExpr *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
+  const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
   if (!decl_ref) {
     return false;
   }
@@ -207,10 +208,6 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
     return TypeImplementsByteRepr(arr->getElementType());
   }
   if (const auto *rd = qt->getAsRecordDecl()) {
-    if (rd->getASTContext().getSourceManager().isInSystemHeader(
-            rd->getLocation())) {
-      return false;
-    }
     if (rd->isUnion()) {
       return true;
     }
@@ -265,13 +262,17 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
-               return method->getDefinition() || method->isPureVirtual();
+               return method->getDefinition() || method->isPureVirtual() ||
+                      method->getTemplateInstantiationPattern() ||
+                      method->getDescribedFunctionTemplate();
              });
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
-  // Destructors go into the Drop trait
-  return !llvm::isa<clang::CXXDestructorDecl>(decl) && !decl->isImplicit();
+  if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
+    return GetUserDefinedDestructor(decl->getParent()) != nullptr;
+  }
+  return !decl->isImplicit();
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -430,6 +431,10 @@ std::string GetID(const clang::Decl *decl) {
   return GetLocationID(decl) + GetParamSignature(decl);
 }
 
+std::string GetMethodID(const clang::CXXMethodDecl *decl) {
+  return decl->getQualifiedNameAsString() + GetID(decl);
+}
+
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
   if (!tag) {
     return "";
@@ -527,6 +532,16 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
             (ctor && ctor->isCopyOrMoveConstructor()))
                ? "self"
                : "_";
+  } else if (auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl)) {
+    // Expanded parameter packs share one name across the expansion
+    if (auto *fn = llvm::dyn_cast_or_null<clang::FunctionDecl>(
+            pdecl->getDeclContext());
+        fn && llvm::count_if(fn->parameters(), [&](const auto *p) {
+                return p->getName() == pdecl->getName();
+              }) > 1) {
+      name += '_';
+      name += std::to_string(pdecl->getFunctionScopeIndex());
+    }
   }
 
   return name;
@@ -572,6 +587,85 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
     log() << "unsupported overloaded operator\n";
     return "";
   }
+}
+
+clang::CXXDestructorDecl *
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
+      !decl->hasUserDeclaredDestructor()) {
+    return nullptr;
+  }
+  auto *dtor = decl->getDestructor();
+  if (!dtor || dtor->isImplicit() || !dtor->getDefinition() ||
+      dtor->getDefinition()->isDefaulted()) {
+    return nullptr;
+  }
+  return dtor;
+}
+
+bool TypeNeedsDestruction(clang::QualType type) {
+  if (type->isArrayType()) {
+    type = clang::QualType(type->getBaseElementTypeUnsafe(), 0);
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  return record && RecordNeedsDestruction(record);
+}
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
+    return false;
+  }
+  for (const auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
+}
+
+bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) &&
+           method->isThisDeclarationADefinition();
+  }
+  // Virtual methods go into the base trait impl
+  if (method->isVirtual()) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
+      method->isOverloadedOperator() ||
+      clang::isa<clang::CXXConstructorDecl>(method)) {
+    return false;
+  }
+  if (!IsUserDefinedDecl(method->getParent()) ||
+      method->getParent()->isLambda()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) != nullptr;
+  }
+  return true;
 }
 
 bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {
@@ -907,7 +1001,7 @@ bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
 }
 
 bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
-  if (!param_type->isLValueReferenceType()) {
+  if (!param_type->isReferenceType()) {
     return false;
   }
   // Materialize a prvalue into a const lvalue reference:

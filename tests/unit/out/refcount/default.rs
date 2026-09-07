@@ -16,14 +16,15 @@ pub struct Pointers {
 }
 impl Clone for Pointers {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Pointers> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()).clone())),
             x2: Rc::new(RefCell::new((*self.x2.borrow()).clone())),
             x3: Rc::new(RefCell::new((*self.x3.borrow()).clone())),
             x4: Rc::new(RefCell::new((*self.x4.borrow()).clone())),
             x5: Rc::new(RefCell::new((*self.x5.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Pointers> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Pointers {

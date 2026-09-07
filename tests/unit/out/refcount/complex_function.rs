@@ -23,10 +23,11 @@ pub struct X1 {
 }
 impl Clone for X1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X1> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<X1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X1 {
@@ -46,17 +47,16 @@ impl ByteRepr for X1 {
 pub struct X2 {
     pub v: Ptr<X1>,
 }
-impl X2 {
-    pub fn get(&self) -> Ptr<X1> {
-        return (self.v).clone();
-    }
+pub trait X2Impl {
+    fn get(&self) -> Ptr<X1>;
 }
 impl Clone for X2 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X2> = Rc::new(RefCell::new(Self {
             v: (self.v).clone(),
-        };
-        this
+        }));
+        let this: Ptr<X2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X2 {}
@@ -64,17 +64,16 @@ impl ByteRepr for X2 {}
 pub struct X3 {
     pub v: Value<Ptr<X2>>,
 }
-impl X3 {
-    pub fn get(&self) -> Ptr<X2> {
-        return (*self.v.borrow()).clone();
-    }
+pub trait X3Impl {
+    fn get(&self) -> Ptr<X2>;
 }
 impl Clone for X3 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X3> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<X3> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X3 {
@@ -94,17 +93,16 @@ impl ByteRepr for X3 {
 pub struct X4 {
     pub v: Value<X3>,
 }
-impl X4 {
-    pub fn get(&self) -> Ptr<X3> {
-        return self.v.as_pointer();
-    }
+pub trait X4Impl {
+    fn get(&self) -> Ptr<X3>;
 }
 impl Clone for X4 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<X4> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<X4> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for X4 {
@@ -170,52 +168,33 @@ fn main_0() -> i32 {
         .deref())
     .v
     .borrow_mut()) = 0;
-    (*(*({
-        (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-            .upgrade()
-            .deref())
-        .get()
-    })
-    .upgrade()
-    .deref())
+    (*(*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+        .upgrade()
+        .deref())
     .v
     .borrow_mut()) = 0;
     (*(*(*d.borrow()).v.borrow()).v.borrow_mut()) = (b.as_pointer());
-    let r4: Ptr<i32> = (*({
-        (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+    let r4: Ptr<i32> =
+        (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
             .upgrade()
             .deref())
-        .get()
-    })
-    .upgrade()
-    .deref())
-    .v
-    .as_pointer();
-    let r5: Ptr<X1> = ({
-        (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-            .upgrade()
-            .deref())
-        .get()
-    });
+        .v
+        .as_pointer();
+    let r5: Ptr<X1> = ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) });
     let p: Value<Ptr<X2>> = Rc::new(RefCell::new(
-        ({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() }),
+        ({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) }),
     ));
-    let r6: Ptr<X3> = ({ (*d.borrow()).get() });
+    let r6: Ptr<X3> = ({ X4Impl::get(&d.as_pointer()) });
     let r7: Ptr<X3> = (*d.borrow()).v.as_pointer();
-    let r8: Ptr<i32> = (*({ (*({ (*(*d.borrow()).v.borrow()).get() }).upgrade().deref()).get() })
+    let r8: Ptr<i32> = (*({ X2Impl::get(&({ X3Impl::get(&(*d.borrow()).v.as_pointer()) })) })
         .upgrade()
         .deref())
     .v
     .as_pointer();
     let x5: Value<i32> = Rc::new(RefCell::new(
-        (*(*({
-            (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                .upgrade()
-                .deref())
-            .get()
-        })
-        .upgrade()
-        .deref())
+        (*(*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+            .upgrade()
+            .deref())
         .v
         .borrow()),
     ));
@@ -227,14 +206,9 @@ fn main_0() -> i32 {
     let bar_out: Value<i32> = Rc::new(RefCell::new(
         (({
             bar_2(
-                (*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer(),
             )
@@ -250,14 +224,9 @@ fn main_0() -> i32 {
     {
         let _ptr = ({
             bar_2(
-                (*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer(),
             )
@@ -267,14 +236,9 @@ fn main_0() -> i32 {
     };
     ({
         bar_2(
-            (*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
+            (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                .upgrade()
+                .deref())
             .v
             .as_pointer(),
         )
@@ -283,14 +247,9 @@ fn main_0() -> i32 {
     let bar_inc2: Value<i32> = Rc::new(RefCell::new(
         ({
             bar_2(
-                (*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer(),
             )
@@ -299,14 +258,9 @@ fn main_0() -> i32 {
     ));
     (*bar_inc2.borrow_mut()) = ({
         bar_2(
-            (*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
+            (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                .upgrade()
+                .deref())
             .v
             .as_pointer(),
         )
@@ -319,14 +273,9 @@ fn main_0() -> i32 {
     };
     ({
         ptr_1(
-            ((*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
+            ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                .upgrade()
+                .deref())
             .v
             .as_pointer()),
         )
@@ -335,14 +284,9 @@ fn main_0() -> i32 {
     {
         let _ptr = ({
             ptr_1(
-                ((*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer()),
             )
@@ -353,14 +297,9 @@ fn main_0() -> i32 {
     {
         let _ptr = ({
             ptr_1(
-                ((*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer()),
             )
@@ -371,14 +310,9 @@ fn main_0() -> i32 {
     let ptr1: Value<i32> = Rc::new(RefCell::new(
         ({
             ptr_1(
-                ((*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer()),
             )
@@ -387,14 +321,9 @@ fn main_0() -> i32 {
     ));
     let ptr2: Ptr<i32> = ({
         ptr_1(
-            ((*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
+            ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                .upgrade()
+                .deref())
             .v
             .as_pointer()),
         )
@@ -402,14 +331,9 @@ fn main_0() -> i32 {
     let ptr3: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
             ptr_1(
-                ((*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer()),
             )
@@ -418,14 +342,9 @@ fn main_0() -> i32 {
     let vptr: Value<i32> = Rc::new(RefCell::new(
         (({
             ptr_1(
-                ((*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer()),
             )
@@ -435,14 +354,9 @@ fn main_0() -> i32 {
     let pref: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
             bar_2(
-                (*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
+                (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                    .upgrade()
+                    .deref())
                 .v
                 .as_pointer(),
             )
@@ -450,61 +364,62 @@ fn main_0() -> i32 {
     ));
     ({
         bar_2(
-            (*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                    .upgrade()
-                    .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
+            (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
+                .upgrade()
+                .deref())
             .v
             .as_pointer(),
         )
     })
     .with_mut(|__v| __v.postfix_inc());
-    return (((({
-        ptr_1(
-            ((*({
-                (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+    assert!(
+        ((((({
+            ptr_1(
+                ((*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
                     .upgrade()
                     .deref())
-                .get()
-            })
-            .upgrade()
-            .deref())
-            .v
-            .as_pointer()),
-        )
-    })
-    .read())
-        + (({
-            bar_2(
-                (*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
-                        .upgrade()
-                        .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
                 .v
-                .as_pointer(),
+                .as_pointer()),
             )
         })
-        .read()))
-        + ({
-            foo_0(
-                (*(*({
-                    (*({ (*({ (*d.borrow()).get() }).upgrade().deref()).get() })
+        .read())
+            + (({
+                bar_2(
+                    (*({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
                         .upgrade()
                         .deref())
-                    .get()
-                })
-                .upgrade()
-                .deref())
-                .v
-                .borrow()),
-            )
-        }));
+                    .v
+                    .as_pointer(),
+                )
+            })
+            .read()))
+            + ({
+                foo_0(
+                    (*(*({
+                        X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) }))
+                    })
+                    .upgrade()
+                    .deref())
+                    .v
+                    .borrow()),
+                )
+            }))
+            == 54)
+    );
+    return 0;
+}
+impl X2Impl for Ptr<X2> {
+    fn get(&self) -> Ptr<X1> {
+        return ((*(*self).upgrade().deref()).v).clone();
+    }
+}
+impl X3Impl for Ptr<X3> {
+    fn get(&self) -> Ptr<X2> {
+        return (*(*(*self).upgrade().deref()).v.borrow()).clone();
+    }
+}
+impl X4Impl for Ptr<X4> {
+    fn get(&self) -> Ptr<X3> {
+        return (*(*self).upgrade().deref()).v.as_pointer();
+    }
 }

@@ -14,12 +14,13 @@ pub struct POD {
 }
 impl Clone for POD {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<POD> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
             x2: Rc::new(RefCell::new((*self.x2.borrow()))),
             x3: Rc::new(RefCell::new((*self.x3.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<POD> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for POD {
@@ -59,6 +60,10 @@ fn main_0() -> i32 {
         x3: Rc::new(RefCell::new((*(*p1.borrow()).x3.borrow()))),
     }));
     ({ PODIncrement_0(p2.as_pointer()) });
-    return (((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
-        + (*(*p2.borrow()).x3.borrow()));
+    assert!(
+        ((((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
+            + (*(*p2.borrow()).x3.borrow()))
+            == 39)
+    );
+    return 0;
 }

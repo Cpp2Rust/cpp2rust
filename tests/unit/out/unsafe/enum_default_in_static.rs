@@ -6,24 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Mode {
-    #[default]
-    MODE_NONE = 0,
-    MODE_ONE = 1,
-    MODE_TWO = 2,
-}
-impl From<i32> for Mode {
-    fn from(n: i32) -> Mode {
-        match n {
-            0 => Mode::MODE_NONE,
-            1 => Mode::MODE_ONE,
-            2 => Mode::MODE_TWO,
-            _ => panic!("invalid Mode value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Mode);
+pub type Mode = u32;
+pub const Mode_MODE_NONE: Mode = 0;
+pub const Mode_MODE_ONE: Mode = 1;
+pub const Mode_MODE_TWO: Mode = 2;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Config {
@@ -33,7 +19,7 @@ pub struct Config {
 pub static mut config_0: Config = unsafe {
     Config {
         count: 0_i32,
-        mode: Mode::MODE_NONE,
+        mode: Mode_MODE_NONE,
     }
 };
 pub fn main() {
@@ -43,6 +29,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((((config_0.count) == (0)) as i32) != 0));
-    assert!(((((config_0.mode as u32) == ((Mode::MODE_NONE as i32) as u32)) as i32) != 0));
+    assert!(((((config_0.mode as u32) == ((Mode_MODE_NONE as i32) as u32)) as i32) != 0));
     return 0;
 }

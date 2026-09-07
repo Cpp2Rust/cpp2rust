@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #include <algorithm>
+#include <cassert>
 #include <map>
 #include <vector>
 
@@ -21,6 +22,7 @@ int main() {
   auto m_begin = m.begin();
   auto m_end = m.end();
   bool m_result_true = m_begin != m_end;
-  return v_result_true && m_result_true &&
-         std::find(v.begin(), v.begin(), 2) == v.begin();
+  assert(v_result_true && m_result_true &&
+         std::find(v.begin(), v.begin(), 2) == v.begin());
+  return 0;
 }

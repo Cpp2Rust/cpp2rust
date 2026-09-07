@@ -23,5 +23,6 @@ unsafe fn main_0() -> i32 {
         let mut elem = v[elem].clone();
         sum += elem;
     }
-    return sum;
+    assert!(((sum) == (3)));
+    return 0;
 }

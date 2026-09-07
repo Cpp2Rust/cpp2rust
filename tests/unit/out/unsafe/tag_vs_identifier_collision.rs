@@ -6,24 +6,10 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum widget_enum {
-    #[default]
-    MODE_IDLE = 0,
-    MODE_ACTIVE = 1,
-    MODE_DONE = 2,
-}
-impl From<i32> for widget_enum {
-    fn from(n: i32) -> widget_enum {
-        match n {
-            0 => widget_enum::MODE_IDLE,
-            1 => widget_enum::MODE_ACTIVE,
-            2 => widget_enum::MODE_DONE,
-            _ => panic!("invalid widget_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(widget_enum);
+pub type widget_enum = u32;
+pub const widget_enum_MODE_IDLE: widget_enum = 0;
+pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
+pub const widget_enum_MODE_DONE: widget_enum = 2;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct widget {
@@ -58,22 +44,9 @@ impl Default for slot_union {
         unsafe { std::mem::zeroed() }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum slot {
-    #[default]
-    SLOT_A = 0,
-    SLOT_B = 1,
-}
-impl From<i32> for slot {
-    fn from(n: i32) -> slot {
-        match n {
-            0 => slot::SLOT_A,
-            1 => slot::SLOT_B,
-            _ => panic!("invalid slot value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(slot);
+pub type slot = u32;
+pub const slot_SLOT_A: slot = 0;
+pub const slot_SLOT_B: slot = 1;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
@@ -90,7 +63,7 @@ pub struct Inner_struct {
     pub typedef_field: i32,
 }
 pub unsafe fn is_active_0(mut w: *mut widget) -> i32 {
-    return ((((*w).mode as u32) == ((widget_enum::MODE_ACTIVE as i32) as u32)) as i32);
+    return ((((*w).mode as u32) == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
     unsafe {
@@ -100,10 +73,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut w: widget = <widget>::default();
     w.id = 7;
-    w.mode = widget_enum::MODE_ACTIVE;
+    w.mode = widget_enum_MODE_ACTIVE;
     assert!(((unsafe { is_active_0((&mut w as *mut widget),) }) != 0));
-    w.mode = widget_enum::MODE_DONE;
-    assert!(((((w.mode as u32) == ((widget_enum::MODE_DONE as i32) as u32)) as i32) != 0));
+    w.mode = widget_enum_MODE_DONE;
+    assert!(((((w.mode as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32) != 0));
     let mut p: point_struct = <point_struct>::default();
     p.x = 3;
     p.y = 4;
@@ -114,8 +87,8 @@ unsafe fn main_0() -> i32 {
     let mut b: slot_union = <slot_union>::default();
     b.i = 9;
     assert!(((((b.i) == (9)) as i32) != 0));
-    let mut e: slot = slot::SLOT_B;
-    assert!(((((e as u32) == ((slot::SLOT_B as i32) as u32)) as i32) != 0));
+    let mut e: slot = slot_SLOT_B;
+    assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
     let mut inner_tag: Inner = <Inner>::default();
     inner_tag.tag_field = 11;
     assert!(((((inner_tag.tag_field) == (11)) as i32) != 0));
@@ -125,5 +98,6 @@ unsafe fn main_0() -> i32 {
     let mut o: Outer = <Outer>::default();
     o.field.tag_field = 33;
     assert!(((((o.field.tag_field) == (33)) as i32) != 0));
-    return w.id;
+    assert!(((((w.id) == (7)) as i32) != 0));
+    return 0;
 }

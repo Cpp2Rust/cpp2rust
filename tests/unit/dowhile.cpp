@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int dowhile(int x) {
   do {
     x += 1;
@@ -13,4 +15,7 @@ int dowhile(int x) {
   return x;
 }
 
-int main() { return dowhile(0); }
+int main() {
+  assert(dowhile(0) == 202);
+  return 0;
+}

@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 void All(std::unique_ptr<int[]> &arr, int N, int element) {
@@ -22,5 +23,6 @@ int main() {
   const int N = 10;
   std::unique_ptr<int[]> arr = std::make_unique<int[]>(N);
   All(arr, N, 1);
-  return Consume(std::move(arr), N);
+  assert(Consume(std::move(arr), N) == 10);
+  return 0;
 }

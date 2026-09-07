@@ -162,12 +162,15 @@ unsafe fn main_0() -> i32 {
             (b.as_mut().unwrap()[(i as usize)].img.round() as i32);
         i.prefix_inc();
     }
-    return (((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
-        && ((imgs.as_mut().unwrap()[(0_usize)]) == (0)))
-        && (((reals.as_mut().unwrap()[(1_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(1_usize)]) == (2))))
-        && (((reals.as_mut().unwrap()[(2_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(2_usize)]) == (0))))
-        && (((reals.as_mut().unwrap()[(3_usize)]) == (-2_i32))
-            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32)))) as i32);
+    assert!(
+        ((((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
+            && ((imgs.as_mut().unwrap()[(0_usize)]) == (0)))
+            && ((reals.as_mut().unwrap()[(1_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(1_usize)]) == (2)))
+            && ((reals.as_mut().unwrap()[(2_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(2_usize)]) == (0)))
+            && ((reals.as_mut().unwrap()[(3_usize)]) == (-2_i32)))
+            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32))
+    );
+    return 0;
 }

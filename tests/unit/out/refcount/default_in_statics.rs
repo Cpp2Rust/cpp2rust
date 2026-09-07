@@ -13,11 +13,12 @@ pub struct Inner {
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()))),
             name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Inner {
@@ -48,7 +49,7 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             p1: Rc::new(RefCell::new((*self.p1.borrow()).clone())),
             p2: Rc::new(RefCell::new((*self.p2.borrow()).clone())),
             arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
@@ -57,8 +58,9 @@ impl Clone for Outer {
             inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             fn_: Rc::new(RefCell::new((*self.fn_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Outer {
@@ -75,7 +77,7 @@ impl Default for Outer {
             pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
             inner: <Value<Inner>>::default(),
             x: <Value<i32>>::default(),
-            fn_: Rc::new(RefCell::new(FnPtr::null())),
+            fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
 }
@@ -118,14 +120,15 @@ pub struct Foo {
 }
 impl Clone for Foo {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {
             s1: Rc::new(RefCell::new((*self.s1.borrow()).clone())),
             s2: Rc::new(RefCell::new((*self.s2.borrow()).clone())),
             fn1: Rc::new(RefCell::new((*self.fn1.borrow()).clone())),
             fn2: Rc::new(RefCell::new((*self.fn2.borrow()).clone())),
             n: Rc::new(RefCell::new((*self.n.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Foo {
@@ -133,8 +136,8 @@ impl Default for Foo {
         Foo {
             s1: Rc::new(RefCell::new(Ptr::<u8>::null())),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: <Value<i32>>::default(),
         }
     }
@@ -165,7 +168,8 @@ impl ByteRepr for Foo {
     }
 }
 thread_local!(
-    pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+    pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
     pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
@@ -179,8 +183,8 @@ thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
         s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"hello"))),
         s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        fn1: Rc::new(RefCell::new(FnPtr::null())),
-        fn2: Rc::new(RefCell::new(FnPtr::null())),
+        fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+        fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         n: Rc::new(RefCell::new(42)),
     }));
 );
@@ -189,15 +193,15 @@ thread_local!(
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: Rc::new(RefCell::new(1)),
         },
         Foo {
             s1: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::null())),
+            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             n: Rc::new(RefCell::new(2)),
         },
     ])));
@@ -207,7 +211,8 @@ pub fn check_local_static_5() {
         static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     );
     thread_local!(
-        static local_fn_7: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::null()));
+        static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =
+            Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
     );
     thread_local!(
         static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));

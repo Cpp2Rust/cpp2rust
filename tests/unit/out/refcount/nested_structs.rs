@@ -12,10 +12,11 @@ pub struct Level0_Level1_1_Level2_1_Level3_1 {
 }
 impl Clone for Level0_Level1_1_Level2_1_Level3_1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Level0_Level1_1_Level2_1_Level3_1> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Level0_Level1_1_Level2_1_Level3_1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {
@@ -38,11 +39,12 @@ pub struct Level0_Level1_1_Level2_1_Level3_2 {
 }
 impl Clone for Level0_Level1_1_Level2_1_Level3_2 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Level0_Level1_1_Level2_1_Level3_2> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
             x2: Rc::new(RefCell::new((*self.x2.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Level0_Level1_1_Level2_1_Level3_2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {
@@ -66,10 +68,11 @@ pub struct Level0_Level1_1_Level2_1 {
 }
 impl Clone for Level0_Level1_1_Level2_1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Level0_Level1_1_Level2_1> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Level0_Level1_1_Level2_1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0_Level1_1_Level2_1 {
@@ -91,10 +94,11 @@ pub struct Level0_Level1_1 {
 }
 impl Clone for Level0_Level1_1 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Level0_Level1_1> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Level0_Level1_1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0_Level1_1 {
@@ -117,11 +121,12 @@ pub struct Level0_Level1_2 {
 }
 impl Clone for Level0_Level1_2 {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Level0_Level1_2> = Rc::new(RefCell::new(Self {
             x1: Rc::new(RefCell::new((*self.x1.borrow()))),
             x2: Rc::new(RefCell::new((*self.x2.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Level0_Level1_2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0_Level1_2 {
@@ -143,8 +148,9 @@ impl ByteRepr for Level0_Level1_2 {
 pub struct Level0 {}
 impl Clone for Level0 {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Level0> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Level0> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Level0 {

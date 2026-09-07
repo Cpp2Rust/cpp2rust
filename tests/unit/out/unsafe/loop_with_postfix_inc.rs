@@ -16,5 +16,6 @@ unsafe fn main_0() -> i32 {
     'loop_: while ((x.postfix_inc()) < (100)) && ((x) != (50)) {
         x.prefix_inc();
     }
-    return x;
+    assert!(((x) == (101)));
+    return 0;
 }
