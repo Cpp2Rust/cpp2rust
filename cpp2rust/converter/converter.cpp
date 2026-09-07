@@ -4140,7 +4140,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   const clang::FunctionDecl *lt = nullptr;
   const clang::FunctionDecl *cmp = nullptr;
   auto consider = [&](const clang::FunctionDecl *fn) {
-    if (!fn || fn->isImplicit() || fn->isDeleted() ||
+    if (!fn || fn->isImplicit() || fn->isDeleted() || !fn->hasBody() ||
         fn->getDescribedFunctionTemplate() || !IsSameTypeComparison(fn, decl)) {
       return;
     }
