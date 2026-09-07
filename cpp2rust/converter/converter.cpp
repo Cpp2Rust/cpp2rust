@@ -833,6 +833,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   }
 
   // Traits
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
+    AddOrdTrait(cxx);
+  }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
@@ -2406,6 +2409,12 @@ bool Converter::VisitCXXRewrittenBinaryOperator(
 }
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
+  if (expr->getOpcode() == clang::BO_Cmp) {
+    StrCat(std::format("({}).cmp(&({}))", ConvertRValue(expr->getLHS()),
+                       ConvertRValue(expr->getRHS())));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   bool needs_cast = (expr->isComparisonOp() || expr->isLogicalOp()) &&
                     expr->getType()->isIntegerType() &&
                     !expr->getType()->isBooleanType();
@@ -4050,6 +4059,139 @@ void Converter::ConvertCXXMethodDecls(
   if (!first) {
     StrCat(token::kCloseCurlyBracket);
   }
+}
+
+void Converter::ConvertOrdAndPartialOrdTraitsBase(
+    std::string_view cmp_body, std::string_view eq_body,
+    std::string_view record_name) {
+  if (!cmp_body.empty()) {
+    StrCat(keyword::kImpl, "std::cmp::Ord for ", record_name, '{');
+    StrCat("fn cmp(&self, other: &Self) -> std::cmp::Ordering {");
+    StrCat(std::format("{} {{", keyword_unsafe_));
+    StrCat(cmp_body);
+    StrCat("}}}");
+
+    StrCat(keyword::kImpl, "std::cmp::PartialOrd for", record_name, '{');
+    StrCat(R"(
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+      Some(self.cmp(other))
+    }
+  })");
+  }
+
+  StrCat(keyword::kImpl, "std::cmp::PartialEq for", record_name, '{');
+  StrCat("fn eq(&self, other: &Self) -> bool {");
+  StrCat(std::format("{} {{", keyword_unsafe_));
+  StrCat(eq_body);
+  StrCat("}}}");
+
+  StrCat(keyword::kImpl, "std::cmp::Eq for", record_name, "{}");
+}
+
+std::string Converter::ComparisonCall(const clang::FunctionDecl *op,
+                                      const clang::CXXRecordDecl *decl,
+                                      std::string_view lhs,
+                                      std::string_view rhs) {
+  auto record = GetRecordName(decl);
+  auto arg = std::format("{} as *const {}", rhs, record);
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
+    if (method->isConst()) {
+      return std::format("{}::{}({}, {})", GetUFCSName(method),
+                         GetMethodName(method), lhs, arg);
+    }
+    return std::format("{{ let mut __this = {}.clone(); {}::{}(&mut __this, "
+                       "{}) }}",
+                       lhs, GetUFCSName(method), GetMethodName(method), arg);
+  }
+  return std::format("{}({} as *const {}, {})",
+                     GetNamedDeclAsString(op->getCanonicalDecl()), lhs, record,
+                     arg);
+}
+
+void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                              const clang::FunctionDecl *eq,
+                                              const clang::FunctionDecl *lt,
+                                              const clang::FunctionDecl *cmp) {
+  std::string cmp_body, eq_body;
+
+  if (cmp) {
+    cmp_body = ComparisonCall(cmp, decl, "self", "other");
+  } else if (lt) {
+    cmp_body = std::format("if {} {{ std::cmp::Ordering::Less }} else if {} {{ "
+                           "std::cmp::Ordering::Greater }} else {{ "
+                           "std::cmp::Ordering::Equal }}",
+                           ComparisonCall(lt, decl, "self", "other"),
+                           ComparisonCall(lt, decl, "other", "self"));
+  }
+
+  if (eq) {
+    eq_body = ComparisonCall(eq, decl, "self", "other");
+  } else if (lt) {
+    eq_body = std::format("!({}) && !({})",
+                          ComparisonCall(lt, decl, "self", "other"),
+                          ComparisonCall(lt, decl, "other", "self"));
+  } else {
+    eq_body = std::format("{} == std::cmp::Ordering::Equal",
+                          ComparisonCall(cmp, decl, "self", "other"));
+  }
+
+  ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));
+}
+
+static bool IsSameTypeComparison(const clang::FunctionDecl *fn,
+                                 const clang::CXXRecordDecl *record) {
+  auto record_type = fn->getASTContext().getCanonicalTagType(record);
+  auto is_record = [&](clang::QualType type) {
+    return type.getNonReferenceType().getUnqualifiedType().getCanonicalType() ==
+           record_type;
+  };
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn)) {
+    return method->isInstance() && method->getNumParams() == 1 &&
+           is_record(method->getParamDecl(0)->getType());
+  }
+  return fn->getNumParams() == 2 && is_record(fn->getParamDecl(0)->getType()) &&
+         is_record(fn->getParamDecl(1)->getType());
+}
+
+void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
+  const clang::FunctionDecl *eq = nullptr;
+  const clang::FunctionDecl *lt = nullptr;
+  const clang::FunctionDecl *cmp = nullptr;
+  auto consider = [&](const clang::FunctionDecl *fn) {
+    if (!fn || fn->isImplicit() || fn->isDeleted() ||
+        fn->getDescribedFunctionTemplate() ||
+        !IsSameTypeComparison(fn, decl)) {
+      return;
+    }
+    switch (fn->getOverloadedOperator()) {
+    case clang::OO_EqualEqual:
+      eq = eq ? eq : fn;
+      break;
+    case clang::OO_Less:
+      lt = lt ? lt : fn;
+      break;
+    case clang::OO_Spaceship:
+      cmp = cmp ? cmp : fn;
+      break;
+    default:
+      break;
+    }
+  };
+  for (const auto *method : decl->methods()) {
+    consider(method);
+  }
+  for (auto op : {clang::OO_EqualEqual, clang::OO_Less, clang::OO_Spaceship}) {
+    auto name = ctx_.DeclarationNames.getCXXOperatorName(op);
+    for (const auto *found : decl->getDeclContext()->lookup(name)) {
+      consider(clang::dyn_cast<clang::FunctionDecl>(found));
+    }
+  }
+
+  if (!eq && !lt && !cmp) {
+    return;
+  }
+
+  ConvertOrdAndPartialOrdTraits(decl, eq, lt, cmp);
 }
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}

@@ -36,6 +36,11 @@ public:
 
   const char *CharRustType() const override { return "u8"; }
 
+  std::string ComparisonCall(const clang::FunctionDecl *op,
+                             const clang::CXXRecordDecl *decl,
+                             std::string_view lhs,
+                             std::string_view rhs) override;
+
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;

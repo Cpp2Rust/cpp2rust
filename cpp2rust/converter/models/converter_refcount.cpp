@@ -434,6 +434,22 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return false;
 }
 
+std::string ConverterRefCount::ComparisonCall(const clang::FunctionDecl *op,
+                                              const clang::CXXRecordDecl *decl,
+                                              std::string_view lhs,
+                                              std::string_view rhs) {
+  auto box = [](std::string_view v) {
+    return std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", v);
+  };
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
+    return std::format("{}::{}(&{}, {})", GetUFCSName(method),
+                       GetMethodName(method), box(lhs), box(rhs));
+  }
+  return std::format("{}({}, {})",
+                     GetNamedDeclAsString(op->getCanonicalDecl()), box(lhs),
+                     box(rhs));
+}
+
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
