@@ -84,39 +84,6 @@ impl Ptr<u8> {
         0
     }
 
-    pub fn slice_until(&self, end: &Self) -> Vec<u8> {
-        assert!(self.kind == end.kind, "ub: invalid slice");
-        let start: usize = self.offset;
-        let end: usize = end.offset;
-        assert!(start <= end);
-        assert!(end <= self.len());
-        match self.kind {
-            PtrKind::Null => panic!("ub: dereference of null pointer"),
-            PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => {
-                if start < end {
-                    vec![self.read()]
-                } else {
-                    Vec::new()
-                }
-            }
-            PtrKind::Vec(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let raw = strong.borrow();
-                raw[start..end].to_vec()
-            }
-            PtrKind::StackArray(ref weak) | PtrKind::HeapArray(ref weak) => {
-                let strong = weak.upgrade().expect("ub: dangling pointer");
-                let raw = strong.borrow();
-                raw[start..end].to_vec()
-            }
-            PtrKind::Reinterpreted(ref data) => {
-                let mut buf = vec![0u8; end.wrapping_sub(start)];
-                data.alloc.read_bytes(start, &mut buf);
-                buf
-            }
-        }
-    }
-
     #[inline]
     pub fn from_string_literal(s: &'static [u8]) -> Self {
         STRING_LITERALS.with(|literals| {

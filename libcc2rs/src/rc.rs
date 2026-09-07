@@ -541,6 +541,13 @@ impl Ptr<u8> {
             }
         }
     }
+
+    pub fn slice_until(&self, end: &Self) -> Vec<u8> {
+        assert!(self.kind == end.kind, "ub: invalid slice");
+        assert!(self.offset <= end.offset);
+        assert!(end.offset <= self.len());
+        self.with_slice(end.offset - self.offset, |s| s.to_vec())
+    }
 }
 
 impl<T: Clone + ByteRepr> Ptr<T> {
