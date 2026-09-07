@@ -656,16 +656,12 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
     return "operator_or";
   case clang::OO_Comma:
     return "operator_comma";
-  case clang::OO_ArrowStar:
-    return "operator_arrow_star";
   case clang::OO_Arrow:
     return "operator_arrow";
   case clang::OO_Call:
     return "operator_call";
   case clang::OO_Subscript:
     return "operator_index";
-  case clang::OO_Coawait:
-    return "operator_await";
   default:
     assert(0 && "unsupported overloaded operator");
     return "";
