@@ -72,7 +72,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*f1.y) == (2)));
     assert!(((f1.z) == (&mut x1 as *mut i32)));
     assert!(((*f1.z) == (2)));
-    let mut f2: Foo = f1.clone();
+    let mut f2: Foo = f1;
     f2.x.prefix_inc();
     (*f2.y).prefix_inc();
     assert!(((f2.x) == (2)));

@@ -80,7 +80,7 @@ unsafe fn main_0() -> i32 {
     let mut c: X3 = X3 {
         v: (&mut b as *mut X2),
     };
-    let mut d: X4 = X4 { v: c.clone() };
+    let mut d: X4 = X4 { v: c };
     (*(*d.v.v).v).v = 0;
     (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) }))) })).v =
         0;

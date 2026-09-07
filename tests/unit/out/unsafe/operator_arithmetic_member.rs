@@ -48,7 +48,7 @@ impl S {
         return &mut (*self) as *mut S;
     }
     pub unsafe fn operator_post_inc_i32(&mut self, _: i32) -> S {
-        let mut old: S = (*self).clone();
+        let mut old: S = (*self);
         self.v.prefix_inc();
         return old;
     }
@@ -57,7 +57,7 @@ impl S {
         return &mut (*self) as *mut S;
     }
     pub unsafe fn operator_post_dec_i32(&mut self, _: i32) -> S {
-        let mut old: S = (*self).clone();
+        let mut old: S = (*self);
         self.v.prefix_dec();
         return old;
     }

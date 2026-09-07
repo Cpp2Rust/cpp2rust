@@ -47,7 +47,7 @@ pub unsafe fn operator_inc_7(a: *mut S) -> *mut S {
     return a;
 }
 pub unsafe fn operator_post_inc_8(a: *mut S, _: i32) -> S {
-    let mut old: S = (*a).clone();
+    let mut old: S = (*a);
     (*a).v.prefix_inc();
     return old;
 }
@@ -56,7 +56,7 @@ pub unsafe fn operator_dec_9(a: *mut S) -> *mut S {
     return a;
 }
 pub unsafe fn operator_post_dec_10(a: *mut S, _: i32) -> S {
-    let mut old: S = (*a).clone();
+    let mut old: S = (*a);
     (*a).v.prefix_dec();
     return old;
 }

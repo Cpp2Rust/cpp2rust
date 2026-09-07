@@ -3312,7 +3312,8 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    if (ctor->isCopyConstructor() && !suppress) {
+    if (ctor->isCopyConstructor() && !suppress &&
+        !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
     return false;

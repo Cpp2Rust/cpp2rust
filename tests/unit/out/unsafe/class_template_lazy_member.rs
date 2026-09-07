@@ -28,7 +28,7 @@ pub struct Box_Point_ {
 }
 impl Box_Point_ {
     pub unsafe fn get(&mut self) -> Point {
-        return self.val.clone();
+        return self.val;
     }
 }
 pub fn main() {
