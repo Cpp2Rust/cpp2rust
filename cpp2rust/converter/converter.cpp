@@ -4123,13 +4123,13 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
 
   if (eq) {
     eq_body = ComparisonCall(eq, decl, "self", "other");
-  } else if (lt) {
+  } else if (cmp) {
+    eq_body = std::format("{} == std::cmp::Ordering::Equal",
+                          ComparisonCall(cmp, decl, "self", "other"));
+  } else {
     eq_body =
         std::format("!({}) && !({})", ComparisonCall(lt, decl, "self", "other"),
                     ComparisonCall(lt, decl, "other", "self"));
-  } else {
-    eq_body = std::format("{} == std::cmp::Ordering::Equal",
-                          ComparisonCall(cmp, decl, "self", "other"));
   }
 
   ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));
