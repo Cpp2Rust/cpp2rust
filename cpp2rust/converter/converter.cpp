@@ -1045,8 +1045,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 }
 
 std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  return decl->isConst() ? "&self"
-                         : std::format("&mut {}", keyword::kSelfValue);
+  return decl->isConst() ? "&self" : "&mut self";
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
