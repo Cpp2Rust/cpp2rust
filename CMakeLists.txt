@@ -153,11 +153,20 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_out ${_out_dir}/ir_src.json)
+  set(_cxxflags)
+  set(_cxxflags_file)
+  if(EXISTS ${_rule_dir}/cxxflags)
+    set(_cxxflags_file ${_rule_dir}/cxxflags)
+    file(STRINGS ${_cxxflags_file} _flags)
+    foreach(_flag IN LISTS _flags)
+      list(APPEND _cxxflags --cxxflags=${_flag})
+    endforeach()
+  endif()
   add_custom_command(
     OUTPUT ${_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out}
-    DEPENDS ${_srcs} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
+    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out} ${_cxxflags}
+    DEPENDS ${_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_out})
