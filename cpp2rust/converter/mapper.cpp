@@ -621,10 +621,11 @@ std::string normalizeTranslationRule(std::string rule) {
   // rules.
   ReplaceAll(rule, "*&&", "* &&");
 
-  const std::array<std::pair<std::regex, std::string>, 1> normalization_rules{{
-      // Ignore constant template parameters, i.e. replace them with _.
-      {std::regex(R"(\b\d+\b)"), "_"},
-  }};
+  static const std::array<std::pair<std::regex, std::string>, 1>
+      normalization_rules{{
+          // Ignore constant template parameters, i.e. replace them with _.
+          {std::regex(R"(\b\d+\b)"), "_"},
+      }};
 
   for (const auto &r : normalization_rules) {
     rule = std::regex_replace(rule, r.first, r.second);
