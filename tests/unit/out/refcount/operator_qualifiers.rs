@@ -52,9 +52,10 @@ fn main_0() -> i32 {
     assert!(
         (({
             SImpl::operator_sub_i32_rref(
-                &S {
+                &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(10)),
-                },
+                }))
+                .as_pointer(),
                 1,
             )
         }) == 8)
@@ -64,9 +65,10 @@ fn main_0() -> i32 {
     assert!(
         (({
             SImpl::operator_mul_i32_const_rref(
-                &S {
+                &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(10)),
-                },
+                }))
+                .as_pointer(),
                 3,
             )
         }) == 60)

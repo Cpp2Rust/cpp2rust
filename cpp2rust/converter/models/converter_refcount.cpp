@@ -2569,6 +2569,12 @@ void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
+  if (!base->isLValue() && base->getType()->isRecordType()) {
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
+    method_receiver_ =
+        token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
+    return;
+  }
   method_receiver_ =
       token::kRef +
       (base_is_pointer ? ConvertRValue(base) : ConvertPointer(base));
