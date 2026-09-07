@@ -76,16 +76,8 @@ unsafe fn main_0() -> i32 {
     (*p) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
     let mut t: Table = <Table>::default();
-    assert!(
-        ((*(unsafe {
-            let _i: i32 = t;
-            operator_index(_i)
-        })) == (8))
-    );
-    (*(unsafe {
-        let _i: i32 = t;
-        operator_index(_i)
-    })) = 80;
+    assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));
+    (*(unsafe { Table::operator_index(1) })) = 80;
     assert!(((table_0[(1) as usize]) == (80)));
     return 0;
 }

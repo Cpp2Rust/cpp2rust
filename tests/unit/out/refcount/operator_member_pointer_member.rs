@@ -147,19 +147,8 @@ fn main_0() -> i32 {
     (*p.borrow()).write(5);
     assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
-    assert!(
-        ((({
-            let _i: i32 = (*t.borrow()).clone();
-            operator_index(_i)
-        })
-        .read())
-            == 8)
-    );
-    ({
-        let _i: i32 = (*t.borrow()).clone();
-        operator_index(_i)
-    })
-    .write(80);
+    assert!(((({ Table::operator_index(1,) }).read()) == 8));
+    ({ Table::operator_index(1) }).write(80);
     assert!(((*table_0.with(Value::clone).borrow())[(1) as usize] == 80));
     return 0;
 }

@@ -64,6 +64,6 @@ unsafe fn main_0() -> i32 {
     let mut z: S = S { v: 0 };
     assert!(!(unsafe { S::operator__Bool(&z,) }));
     let mut st: Static = <Static>::default();
-    assert!(((unsafe { operator_call(6, 7,) }) == (42)));
+    assert!(((unsafe { Static::operator_call(6, 7,) }) == (42)));
     return 0;
 }

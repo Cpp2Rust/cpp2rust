@@ -89,7 +89,7 @@ fn main_0() -> i32 {
     }));
     assert!(!({ SImpl::operator__Bool(&z.as_pointer(),) }));
     let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
-    assert!((({ operator_call(6, 7,) }) == 42));
+    assert!((({ Static::operator_call(6, 7,) }) == 42));
     return 0;
 }
 pub trait SImpl {
