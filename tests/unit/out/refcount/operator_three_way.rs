@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     );
     assert!(!({ SImpl::operator_eq(&a.as_pointer(), b.as_pointer(),) }));
     assert!(
-        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Equal
+        ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less
     );
     return 0;
 }
@@ -70,13 +70,13 @@ impl SImpl for Ptr<S> {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs < (*(*o.upgrade().deref()).v.borrow())
         } {
-            return std::cmp::Ordering::Equal;
+            return std::cmp::Ordering::Less;
         }
         if {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs > (*(*o.upgrade().deref()).v.borrow())
         } {
-            return std::cmp::Ordering::Equal;
+            return std::cmp::Ordering::Greater;
         }
         return std::cmp::Ordering::Equal;
     }

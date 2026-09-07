@@ -14,12 +14,12 @@ pub struct S {
 impl S {
     pub unsafe fn operator_cmp(&self, o: *const S) -> std::cmp::Ordering {
         if ((self.v) < ((*o).v)) {
-            return std::cmp::Ordering::Equal;
+            return std::cmp::Ordering::Less.clone();
         }
         if ((self.v) > ((*o).v)) {
-            return std::cmp::Ordering::Equal;
+            return std::cmp::Ordering::Greater.clone();
         }
-        return std::cmp::Ordering::Equal;
+        return std::cmp::Ordering::Equal.clone();
     }
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
         return ((self.v) == ((*o).v));
@@ -38,6 +38,6 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) != std::cmp::Ordering::Greater);
     assert!((unsafe { S::operator_cmp(&b, &a as *const S,) }) != std::cmp::Ordering::Less);
     assert!(!(unsafe { S::operator_eq(&a, &b as *const S,) }));
-    assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) == std::cmp::Ordering::Equal);
+    assert!((unsafe { S::operator_cmp(&a, &b as *const S,) }) == std::cmp::Ordering::Less.clone());
     return 0;
 }
