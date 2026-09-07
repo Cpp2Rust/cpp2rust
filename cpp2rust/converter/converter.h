@@ -346,6 +346,7 @@ public:
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
 
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
+  bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 

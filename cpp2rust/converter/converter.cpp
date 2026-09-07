@@ -2399,6 +2399,12 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   }
 }
 
+bool Converter::VisitCXXRewrittenBinaryOperator(
+    clang::CXXRewrittenBinaryOperator *expr) {
+  Convert(expr->getSemanticForm());
+  return false;
+}
+
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
   bool needs_cast = (expr->isComparisonOp() || expr->isLogicalOp()) &&
                     expr->getType()->isIntegerType() &&
