@@ -11,6 +11,7 @@ from typing import NamedTuple, Optional
 import difflib
 import os
 import re
+import shlex
 import shutil
 
 
@@ -23,6 +24,9 @@ RE_PANIC = re.compile(r"//\s*panic\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_NOCOMPILE = re.compile(r"//\s*no-compile\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_TRANS_FAIL = re.compile(r"//\s*translation-fail\s*(?::\s*(.*))?$", re.MULTILINE)
 RE_NONDET = re.compile(r"//\s*nondet-result\s*(?::\s*(.*))?$", re.MULTILINE)
+RE_ADDITIONAL_COMPILE_FLAGS = re.compile(
+    r"//\s*ADDITIONAL_COMPILE_FLAGS:\s*(.*)$", re.MULTILINE
+)
 
 
 @dataclass
@@ -74,6 +78,7 @@ class TestContext:
     tmp_dir: Path
     rs_file: Path
     expectations: TestExpectations
+    extra_cxxflags: list = None
     replace_expected: bool = False
     skip_run: bool = False
     build_dir: Optional[Path] = None
@@ -93,6 +98,7 @@ class TestContext:
 
         shutil.rmtree(tmp_dir, ignore_errors=True)
         tmp_dir.mkdir(parents=True)
+        source_text = load_source_text(cc_input)
 
         return cls(
             cc_input=cc_input,
@@ -102,7 +108,8 @@ class TestContext:
             model=model,
             tmp_dir=tmp_dir,
             rs_file=tmp_dir / "main.rs",
-            expectations=TestExpectations.parse(load_source_text(cc_input), model),
+            expectations=TestExpectations.parse(source_text, model),
+            extra_cxxflags=parse_additional_compile_flags(source_text),
             replace_expected=bool(os.environ.get("REPLACE_EXPECTED", False)),
             skip_run=bool(os.environ.get("SKIP_RUN", False)),
         )
@@ -115,7 +122,13 @@ class TestContext:
                 return (exp.fail_code, err)
             self.build_dir = build_dir
 
-        cmd = cpp2rust_command(self.cc_input, self.build_dir, self.model, self.rs_file)
+        cmd = cpp2rust_command(
+            self.cc_input,
+            self.build_dir,
+            self.model,
+            self.rs_file,
+            self.extra_cxxflags,
+        )
         out, err, returncode = lit.util.executeCommand(cmd)
 
         if not self.rs_file.exists():
@@ -192,6 +205,7 @@ class TestContext:
             "-Wno-builtin-macro-redefined",
             '-D__FILE__="' + os.path.basename(self.cc_input) + '"',
         ]
+        cmd.extend(self.extra_cxxflags)
         _, _, rc = lit.util.executeCommand(cmd)
         if rc != 0:
             return (exp.fail_code, cc + " failed")
@@ -426,7 +440,14 @@ def setup_build_dir(tmp_dir, cc_input):
     return build_dir, None
 
 
-def cpp2rust_command(cc_input, build_dir, model, rs_file):
+def parse_additional_compile_flags(text):
+    flags = []
+    for m in RE_ADDITIONAL_COMPILE_FLAGS.finditer(text):
+        flags.extend(shlex.split(m.group(1)))
+    return flags
+
+
+def cpp2rust_command(cc_input, build_dir, model, rs_file, extra_cxxflags):
     if build_dir is not None:
         return [
             "./cpp2rust/cpp2rust",
@@ -437,7 +458,7 @@ def cpp2rust_command(cc_input, build_dir, model, rs_file):
             "-o",
             str(rs_file),
         ]
-    return [
+    cmd = [
         "./cpp2rust/cpp2rust",
         "-file",
         str(cc_input),
@@ -446,6 +467,9 @@ def cpp2rust_command(cc_input, build_dir, model, rs_file):
         "-o",
         str(rs_file),
     ]
+    for flag in extra_cxxflags:
+        cmd.append(f"-cxxflags={flag}")
+    return cmd
 
 
 def get_expected_file(filepath, model, fname):

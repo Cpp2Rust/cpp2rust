@@ -1,3 +1,4 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++20
 #include <cassert>
 #include <compare>
 

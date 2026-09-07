@@ -100,8 +100,19 @@ fn main_0() -> i32 {
         .deref())
     .x
     .borrow_mut()) = 10;
-    assert!(((*({ SImpl::operator_arrow(&s.as_pointer(),) }).x.borrow()) == 10));
-    (*({ SImpl::operator_arrow(&s.as_pointer()) }).x.borrow_mut()) = 11;
+    assert!(
+        ((*(*({ SImpl::operator_arrow(&s.as_pointer(),) })
+            .upgrade()
+            .deref())
+        .x
+        .borrow())
+            == 10)
+    );
+    (*(*({ SImpl::operator_arrow(&s.as_pointer()) })
+        .upgrade()
+        .deref())
+    .x
+    .borrow_mut()) = 11;
     assert!(((*(*(*s.borrow()).inner.borrow()).x.borrow()) == 11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ SImpl::operator_addr(&s.as_pointer()) })));
     assert!((((*p.borrow()).read()) == 1));
