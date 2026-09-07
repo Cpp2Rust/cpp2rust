@@ -13,5 +13,6 @@ fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
     (*arr1.borrow_mut())[(0) as usize] = 3;
     (*arr1.borrow_mut())[(1) as usize] = 4;
-    return ((*arr1.borrow())[(0) as usize] + (*arr1.borrow())[(1) as usize]);
+    assert!((((*arr1.borrow())[(0) as usize] + (*arr1.borrow())[(1) as usize]) == 7));
+    return 0;
 }

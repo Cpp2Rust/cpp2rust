@@ -56,5 +56,6 @@ fn main_0() -> i32 {
         (*out.borrow_mut()).prefix_inc();
         (*k1.borrow_mut()).postfix_inc();
     }
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 81));
+    return 0;
 }

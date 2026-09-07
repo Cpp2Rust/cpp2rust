@@ -13,11 +13,12 @@ pub struct Point {
 }
 impl Clone for Point {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Point> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Point {
@@ -55,5 +56,6 @@ fn main_0() -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new(
         ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
     ));
-    return (*s.borrow());
+    assert!(((*s.borrow()) == 30));
+    return 0;
 }

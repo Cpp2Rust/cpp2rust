@@ -14,12 +14,13 @@ pub struct Vtable {
 }
 impl Clone for Vtable {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Vtable> = Rc::new(RefCell::new(Self {
             create: Rc::new(RefCell::new((*self.create.borrow()).clone())),
             get: Rc::new(RefCell::new((*self.get.borrow()).clone())),
             destroy: Rc::new(RefCell::new((*self.destroy.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Vtable> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Vtable {

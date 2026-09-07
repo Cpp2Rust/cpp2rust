@@ -90,32 +90,10 @@ impl ByteRepr for Node {
         }
     }
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
 #[derive(Default)]
 pub struct Inner {
     pub a: Value<i32>,
@@ -223,18 +201,17 @@ fn main_0() -> i32 {
             a: Rc::new(RefCell::new(5)),
             b: Rc::new(RefCell::new(6)),
         })),
-        color: Rc::new(RefCell::new(Color::GREEN)),
+        color: Rc::new(RefCell::new(Color_GREEN)),
         count: Rc::new(RefCell::new(42)),
     }));
     assert!(((((*(*(*c.borrow()).inner.borrow()).a.borrow()) == 5) as i32) != 0));
     assert!(((((*(*(*c.borrow()).inner.borrow()).b.borrow()) == 6) as i32) != 0));
     assert!(
-        (((((*(*c.borrow()).color.borrow()) as u32) == ((Color::GREEN as i32) as u32)) as i32)
-            != 0)
+        (((((*(*c.borrow()).color.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0)
     );
     assert!(((((*(*c.borrow()).count.borrow()) == 42) as i32) != 0));
     let c2: Value<Container> = <Value<Container>>::default();
-    (*(*c2.borrow()).color.borrow_mut()) = Color::BLUE;
+    (*(*c2.borrow()).color.borrow_mut()) = Color_BLUE;
     assert!((((((*(*c2.borrow()).color.borrow()) as u32) == 2_u32) as i32) != 0));
     return 0;
 }

@@ -104,8 +104,12 @@ fn main_0() -> i32 {
             matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
         }),
     ));
-    return (*m3.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize]
-        .as_ref()
-        .unwrap()
-        .borrow()[(0_usize) as usize];
+    assert!(
+        ((*m3.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize]
+            .as_ref()
+            .unwrap()
+            .borrow()[(0_usize) as usize]
+            == 20)
+    );
+    return 0;
 }

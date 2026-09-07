@@ -6,86 +6,19 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-impl ByteRepr for Color {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Color>::from(i32::from_bytes(buf))
-    }
-}
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Option {
-    #[default]
-    OPT_NONE = 0,
-    OPT_A = 10,
-    OPT_B = 20,
-    OPT_C = 30,
-}
-impl From<i32> for Option {
-    fn from(n: i32) -> Option {
-        match n {
-            0 => Option::OPT_NONE,
-            10 => Option::OPT_A,
-            20 => Option::OPT_B,
-            30 => Option::OPT_C,
-            _ => panic!("invalid Option value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Option);
-impl ByteRepr for Option {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Option>::from(i32::from_bytes(buf))
-    }
-}
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Tag_enum {
-    #[default]
-    TAG_ZERO = 0,
-    TAG_ONE = 1,
-    TAG_TWO = 2,
-}
-impl From<i32> for Tag_enum {
-    fn from(n: i32) -> Tag_enum {
-        match n {
-            0 => Tag_enum::TAG_ZERO,
-            1 => Tag_enum::TAG_ONE,
-            2 => Tag_enum::TAG_TWO,
-            _ => panic!("invalid Tag_enum value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Tag_enum);
-impl ByteRepr for Tag_enum {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Tag_enum>::from(i32::from_bytes(buf))
-    }
-}
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
+pub type Option = u32;
+pub const Option_OPT_NONE: Option = 0;
+pub const Option_OPT_A: Option = 10;
+pub const Option_OPT_B: Option = 20;
+pub const Option_OPT_C: Option = 30;
+pub type Tag_enum = u32;
+pub const Tag_enum_TAG_ZERO: Tag_enum = 0;
+pub const Tag_enum_TAG_ONE: Tag_enum = 1;
+pub const Tag_enum_TAG_TWO: Tag_enum = 2;
 #[derive(Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,
@@ -119,30 +52,30 @@ impl ByteRepr for Entry {
     }
 }
 thread_local!(
-    pub static global_color_0: Value<Color> = Rc::new(RefCell::new(Color::GREEN));
+    pub static global_color_0: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
 );
 thread_local!(
-    pub static global_opt_1: Value<Option> = Rc::new(RefCell::new(Option::OPT_B));
+    pub static global_opt_1: Value<Option> = Rc::new(RefCell::new(Option_OPT_B));
 );
 thread_local!(
-    pub static global_tag_2: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum::TAG_TWO));
+    pub static global_tag_2: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum_TAG_TWO));
 );
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
-            color: Rc::new(RefCell::new(Color::RED)),
-            opt: Rc::new(RefCell::new(Option::OPT_NONE)),
+            color: Rc::new(RefCell::new(Color_RED)),
+            opt: Rc::new(RefCell::new(Option_OPT_NONE)),
         },
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
-            color: Rc::new(RefCell::new(Color::GREEN)),
-            opt: Rc::new(RefCell::new(Option::OPT_A)),
+            color: Rc::new(RefCell::new(Color_GREEN)),
+            opt: Rc::new(RefCell::new(Option_OPT_A)),
         },
         Entry {
             name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
-            color: Rc::new(RefCell::new(Color::BLUE)),
-            opt: Rc::new(RefCell::new(Option::OPT_C)),
+            color: Rc::new(RefCell::new(Color_BLUE)),
+            opt: Rc::new(RefCell::new(Option_OPT_C)),
         },
     ])));
 );
@@ -155,16 +88,16 @@ pub fn classify_option_5(option: i32) -> i32 {
     'switch: {
         let __match_cond = (*option.borrow());
         match __match_cond {
-            __v if __v == (Option::OPT_NONE as i32) => {
+            __v if __v == (Option_OPT_NONE as i32) => {
                 return -1_i32;
             }
-            __v if __v == (Option::OPT_A as i32) => {
+            __v if __v == (Option_OPT_A as i32) => {
                 return 1;
             }
-            __v if __v == (Option::OPT_B as i32) => {
+            __v if __v == (Option_OPT_B as i32) => {
                 return 2;
             }
-            __v if __v == (Option::OPT_C as i32) => {
+            __v if __v == (Option_OPT_C as i32) => {
                 return 3;
             }
             _ => {
@@ -176,17 +109,17 @@ pub fn classify_option_5(option: i32) -> i32 {
 }
 pub fn make_color_6(n: i32) -> Color {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    return Color::from((*n.borrow()));
+    return ((*n.borrow()) as Color);
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Color> = Rc::new(RefCell::new(Color::RED));
-    assert!((((((*c.borrow()) as u32) == ((Color::RED as i32) as u32)) as i32) != 0));
+    let c: Value<Color> = Rc::new(RefCell::new(Color_RED));
+    assert!((((((*c.borrow()) as u32) == ((Color_RED as i32) as u32)) as i32) != 0));
     assert!((((((*c.borrow()) as u32) == 0_u32) as i32) != 0));
     assert!((((((*c.borrow()) as u32) != 1_u32) as i32) != 0));
-    if (((((*c.borrow()) as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0) {
+    if (((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0) {
         return 1;
     }
     'switch: {
@@ -212,41 +145,41 @@ fn main_0() -> i32 {
         ((((*c.borrow()) as u32).wrapping_add(1_u32)) as i32),
     ));
     assert!(((((*y.borrow()) == 1) as i32) != 0));
-    (*c.borrow_mut()) = Color::from(2);
-    assert!((((((*c.borrow()) as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
+    (*c.borrow_mut()) = ((2) as Color);
+    assert!((((((*c.borrow()) as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
     assert!((((((*c.borrow()) as u32) == 2_u32) as i32) != 0));
     (*c.borrow_mut()) = ({ make_color_6(1) });
-    assert!((((((*c.borrow()) as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
-    let cmp: Value<Color> = Rc::new(RefCell::new(Color::from(
-        (((*c.borrow()) as u32).wrapping_add(1_u32)) as i32,
-    )));
-    assert!((((((*cmp.borrow()) as u32) == ((Color::BLUE as i32) as u32)) as i32) != 0));
-    let o: Value<Option> = Rc::new(RefCell::new(Option::OPT_A));
-    assert!((((((*o.borrow()) as u32) == ((Option::OPT_A as i32) as u32)) as i32) != 0));
+    assert!((((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
+    let cmp: Value<Color> = Rc::new(RefCell::new(
+        ((((*c.borrow()) as u32).wrapping_add(1_u32)) as Color),
+    ));
+    assert!((((((*cmp.borrow()) as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
+    let o: Value<Option> = Rc::new(RefCell::new(Option_OPT_A));
+    assert!((((((*o.borrow()) as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     assert!((((((*o.borrow()) as u32) == 10_u32) as i32) != 0));
     let oi: Value<i32> = Rc::new(RefCell::new(((*o.borrow()) as i32)));
     assert!(((((*oi.borrow()) == 10) as i32) != 0));
-    (*o.borrow_mut()) = Option::from(20);
-    assert!((((((*o.borrow()) as u32) == ((Option::OPT_B as i32) as u32)) as i32) != 0));
+    (*o.borrow_mut()) = ((20) as Option);
+    assert!((((((*o.borrow()) as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
     let rc: Value<i32> = Rc::new(RefCell::new(
         ({ classify_option_5(((*o.borrow()) as i32)) }),
     ));
     assert!(((((*rc.borrow()) == 2) as i32) != 0));
     (*rc.borrow_mut()) = ({ classify_option_5(20) });
     assert!(((((*rc.borrow()) == 2) as i32) != 0));
-    (*rc.borrow_mut()) = ({ classify_option_5((Option::OPT_C as i32)) });
+    (*rc.borrow_mut()) = ({ classify_option_5((Option_OPT_C as i32)) });
     assert!(((((*rc.borrow()) == 3) as i32) != 0));
-    let t: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum::TAG_ONE));
+    let t: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum_TAG_ONE));
     assert!((((((*t.borrow()) as u32) == 1_u32) as i32) != 0));
-    assert!((((((*t.borrow()) as u32) == ((Tag_enum::TAG_ONE as i32) as u32)) as i32) != 0));
+    assert!((((((*t.borrow()) as u32) == ((Tag_enum_TAG_ONE as i32) as u32)) as i32) != 0));
     let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32)));
     assert!(((((*ti.borrow()) == 1) as i32) != 0));
-    (*t.borrow_mut()) = Tag_enum::from(2);
-    assert!((((((*t.borrow()) as u32) == ((Tag_enum::TAG_TWO as i32) as u32)) as i32) != 0));
+    (*t.borrow_mut()) = ((2) as Tag_enum);
+    assert!((((((*t.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
     'switch: {
         let __match_cond = ((*t.borrow()) as u32);
         match __match_cond {
-            __v if __v == ((Tag_enum::TAG_ZERO as i32) as u32) => {
+            __v if __v == ((Tag_enum_TAG_ZERO as i32) as u32) => {
                 return 90;
             }
             __v if __v == (1 as u32) => {
@@ -259,64 +192,64 @@ fn main_0() -> i32 {
         }
     };
     let extra: Value<i32> = Rc::new(RefCell::new(
-        (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32)),
+        (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32)),
     ));
     assert!(((((*extra.borrow()) == ((0 + 1) + 2)) as i32) != 0));
     assert!(
-        (((((*global_color_0.with(Value::clone).borrow()) as u32) == ((Color::GREEN as i32) as u32))
+        (((((*global_color_0.with(Value::clone).borrow()) as u32) == ((Color_GREEN as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
-        (((((*global_opt_1.with(Value::clone).borrow()) as u32) == ((Option::OPT_B as i32) as u32))
+        (((((*global_opt_1.with(Value::clone).borrow()) as u32) == ((Option_OPT_B as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
         (((((*global_tag_2.with(Value::clone).borrow()) as u32)
-            == ((Tag_enum::TAG_TWO as i32) as u32)) as i32)
+            == ((Tag_enum_TAG_TWO as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
             .color
             .borrow()) as u32)
-            == ((Color::RED as i32) as u32)) as i32)
+            == ((Color_RED as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
             .opt
             .borrow()) as u32)
-            == ((Option::OPT_NONE as i32) as u32)) as i32)
+            == ((Option_OPT_NONE as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
             .color
             .borrow()) as u32)
-            == ((Color::GREEN as i32) as u32)) as i32)
+            == ((Color_GREEN as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
             .opt
             .borrow()) as u32)
-            == ((Option::OPT_A as i32) as u32)) as i32)
+            == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
             .color
             .borrow()) as u32)
-            == ((Color::BLUE as i32) as u32)) as i32)
+            == ((Color_BLUE as i32) as u32)) as i32)
             != 0)
     );
     assert!(
         (((((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
             .opt
             .borrow()) as u32)
-            == ((Option::OPT_C as i32) as u32)) as i32)
+            == ((Option_OPT_C as i32) as u32)) as i32)
             != 0)
     );
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
@@ -324,7 +257,7 @@ fn main_0() -> i32 {
         Ptr::from_string_literal(b"green"),
         Ptr::from_string_literal(b"blue"),
     ])));
-    let idx: Value<Color> = Rc::new(RefCell::new(Color::GREEN));
+    let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
     assert!(
         ((((((*names.borrow())[(*idx.borrow()) as usize]
             .offset((0) as isize)
@@ -336,7 +269,7 @@ fn main_0() -> i32 {
         (((((*(*entries_3.with(Value::clone).borrow())[(*idx.borrow()) as usize]
             .opt
             .borrow()) as u32)
-            == ((Option::OPT_A as i32) as u32)) as i32)
+            == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     assert!(
@@ -359,7 +292,7 @@ fn main_0() -> i32 {
     ));
     assert!(
         (((((*(*(*pe.borrow()).upgrade().deref()).opt.borrow()) as u32)
-            == ((Option::OPT_A as i32) as u32)) as i32)
+            == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     return 0;

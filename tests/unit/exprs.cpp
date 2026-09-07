@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct X {
   int x;
 };
@@ -42,5 +44,6 @@ int main() {
   p3->p->x = 100;
   y.ptr()->x = 1;
   (*y.ptr()).x = 50;
-  return x.x;
+  assert(x.x == 100);
+  return 0;
 }

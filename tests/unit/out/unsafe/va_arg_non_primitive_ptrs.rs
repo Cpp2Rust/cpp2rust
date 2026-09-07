@@ -12,26 +12,11 @@ pub struct node {
     pub data: i32,
     pub next: *mut node,
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum opt {
-    #[default]
-    OPT_STRING_OUT = 0,
-    OPT_FILE = 1,
-    OPT_NODE = 2,
-    OPT_NODE_OUT = 3,
-}
-impl From<i32> for opt {
-    fn from(n: i32) -> opt {
-        match n {
-            0 => opt::OPT_STRING_OUT,
-            1 => opt::OPT_FILE,
-            2 => opt::OPT_NODE,
-            3 => opt::OPT_NODE_OUT,
-            _ => panic!("invalid opt value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(opt);
+pub type opt = u32;
+pub const opt_OPT_STRING_OUT: opt = 0;
+pub const opt_OPT_FILE: opt = 1;
+pub const opt_OPT_NODE: opt = 2;
+pub const opt_OPT_NODE_OUT: opt = 3;
 pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
@@ -39,23 +24,23 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     'switch: {
         let __match_cond = option;
         match __match_cond {
-            __v if __v == (opt::OPT_STRING_OUT as i32) => {
+            __v if __v == (opt_OPT_STRING_OUT as i32) => {
                 let mut out: *mut *const libc::c_char = ap.arg::<*mut *const libc::c_char>();
                 (*out) = (c"hello".as_ptr().cast_mut()).cast_const();
                 result = 1;
                 break 'switch;
             }
-            __v if __v == (opt::OPT_FILE as i32) => {
+            __v if __v == (opt_OPT_FILE as i32) => {
                 let mut f: *mut ::libc::FILE = ap.arg::<*mut ::libc::FILE>();
                 result = ((!((f).is_null())) as i32);
                 break 'switch;
             }
-            __v if __v == (opt::OPT_NODE as i32) => {
+            __v if __v == (opt_OPT_NODE as i32) => {
                 let mut n: *mut node = ap.arg::<*mut node>();
                 result = (*n).data;
                 break 'switch;
             }
-            __v if __v == (opt::OPT_NODE_OUT as i32) => {
+            __v if __v == (opt_OPT_NODE_OUT as i32) => {
                 let mut out: *mut *mut node = ap.arg::<*mut *mut node>();
                 (*out) = std::ptr::null_mut();
                 result = 2;
@@ -76,7 +61,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             dispatch_0(
-                (opt::OPT_STRING_OUT as i32),
+                (opt_OPT_STRING_OUT as i32),
                 &[(&mut s as *mut *const libc::c_char).into()],
             )
         }) == (1)) as i32)
@@ -85,17 +70,14 @@ unsafe fn main_0() -> i32 {
     assert!((((!((s).is_null())) as i32) != 0));
     assert!(
         ((((unsafe {
-            dispatch_0(
-                (opt::OPT_FILE as i32),
-                &[(libcc2rs::stdout_unsafe()).into()],
-            )
+            dispatch_0((opt_OPT_FILE as i32), &[(libcc2rs::stdout_unsafe()).into()])
         }) == (1)) as i32)
             != 0)
     );
     assert!(
         ((((unsafe {
             dispatch_0(
-                (opt::OPT_FILE as i32),
+                (opt_OPT_FILE as i32),
                 &[((0 as *mut ::libc::c_void) as *mut ::libc::FILE).into()],
             )
         }) == (0)) as i32)
@@ -106,7 +88,7 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     assert!(
-        ((((unsafe { dispatch_0((opt::OPT_NODE as i32), &[(&mut head as *mut node).into(),]) })
+        ((((unsafe { dispatch_0((opt_OPT_NODE as i32), &[(&mut head as *mut node).into(),]) })
             == (42)) as i32)
             != 0)
     );
@@ -114,7 +96,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((unsafe {
             dispatch_0(
-                (opt::OPT_NODE_OUT as i32),
+                (opt_OPT_NODE_OUT as i32),
                 &[(&mut outp as *mut *mut node).into()],
             )
         }) == (2)) as i32)

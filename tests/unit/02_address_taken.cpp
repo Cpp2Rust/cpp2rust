@@ -18,5 +18,6 @@ int main() {
 
   [[maybe_unused]] size_t offset = b_ptr - b_ptr;
 
-  return b;
+  assert(b == 4);
+  return 0;
 }

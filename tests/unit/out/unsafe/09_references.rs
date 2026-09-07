@@ -18,5 +18,6 @@ unsafe fn main_0() -> i32 {
     let mut h_ptr: *mut i32 = (h_ref1);
     let h_ref2: *mut i32 = &mut (*h_ptr) as *mut i32;
     (*h_ref2) = 17;
-    return ((*h_ref1) + (*h_ref2));
+    assert!((((*h_ref1) + (*h_ref2)) == (34)));
+    return 0;
 }

@@ -58,6 +58,10 @@ fn main_0() -> i32 {
         }
         .read())
     }));
-    return (((((*r1.borrow()) + (*r2.borrow())) + (*r3.borrow())) + (*r4.borrow()))
-        + (*r5.borrow()));
+    assert!(
+        ((((((*r1.borrow()) + (*r2.borrow())) + (*r3.borrow())) + (*r4.borrow()))
+            + (*r5.borrow()))
+            == 56)
+    );
+    return 0;
 }

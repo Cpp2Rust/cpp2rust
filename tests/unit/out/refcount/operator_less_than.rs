@@ -14,13 +14,13 @@ pub struct Pair {
 impl Pair {
     pub fn lt(&self, other: Ptr<Pair>) -> bool {
         return ({
-            let _lhs = (*self.x.borrow());
+            let _lhs = (*(*self).x.borrow());
             _lhs < (*(*other.upgrade().deref()).x.borrow())
         }) || (({
-            let _lhs = (*self.x.borrow());
+            let _lhs = (*(*self).x.borrow());
             _lhs == (*(*other.upgrade().deref()).x.borrow())
         }) && ({
-            let _lhs = (*self.y.borrow());
+            let _lhs = (*(*self).y.borrow());
             _lhs < (*(*other.upgrade().deref()).y.borrow())
         }));
     }
@@ -54,11 +54,12 @@ impl PartialEq for Pair {
 impl Eq for Pair {}
 impl Clone for Pair {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Pair {
@@ -88,5 +89,6 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(1)),
         y: Rc::new(RefCell::new(3)),
     }));
-    return ((*pair1.borrow()).lt(pair2.as_pointer()) as i32);
+    assert!((*pair1.borrow()).lt(pair2.as_pointer()));
+    return 0;
 }

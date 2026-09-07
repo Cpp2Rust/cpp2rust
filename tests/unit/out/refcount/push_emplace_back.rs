@@ -12,10 +12,11 @@ pub struct Chunk {
 }
 impl Clone for Chunk {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Chunk> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Chunk {
@@ -38,11 +39,12 @@ pub struct Writer {
 }
 impl Clone for Writer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Writer> = Rc::new(RefCell::new(Self {
             output: Rc::new(RefCell::new((*self.output.borrow()).clone())),
             chunk: Rc::new(RefCell::new((*self.chunk.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Writer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Writer {
@@ -67,7 +69,7 @@ pub struct JPEGData {
 }
 impl Clone for JPEGData {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<JPEGData> = Rc::new(RefCell::new(Self {
             com_data: Rc::new(RefCell::new(
                 (*self.com_data.borrow())
                     .iter()
@@ -80,11 +82,28 @@ impl Clone for JPEGData {
                     .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
                     .collect(),
             )),
-        };
-        this
+        }));
+        let this: Ptr<JPEGData> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for JPEGData {}
+impl ByteRepr for JPEGData {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.com_data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.app_data.borrow()).to_bytes(&mut buf[24..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            com_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(&buf[0..24]))),
+            app_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(
+                &buf[24..48],
+            ))),
+        }
+    }
+}
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));
     ((*dest.borrow()).to_strong().as_pointer() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(

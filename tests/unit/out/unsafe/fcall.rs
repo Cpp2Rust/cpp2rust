@@ -39,5 +39,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return ((unsafe { f1_2(1.0E+0, 2.0E+0) }) as i32);
+    assert!(((unsafe { f1_2(1.0E+0, 2.0E+0,) }) == (-6_i32 as f64)));
+    return 0;
 }

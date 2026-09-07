@@ -791,6 +791,43 @@ pub trait AsPointer<T> {
     fn as_pointer(&self) -> Ptr<T>;
 }
 
+pub struct ScopedDestructor<T> {
+    owner: Rc<RefCell<T>>,
+    destroy: fn(Ptr<T>),
+}
+
+impl<T> ScopedDestructor<T> {
+    pub fn new(owner: &Value<T>, destroy: fn(Ptr<T>)) -> Self {
+        Self {
+            owner: owner.clone(),
+            destroy,
+        }
+    }
+}
+
+impl<T> Drop for ScopedDestructor<T> {
+    fn drop(&mut self) {
+        (self.destroy)(self.owner.as_pointer());
+    }
+}
+
+pub struct ScopedDestructorUnsafe<T> {
+    owner: *mut T,
+    destroy: unsafe fn(&mut T),
+}
+
+impl<T> ScopedDestructorUnsafe<T> {
+    pub fn new(owner: *mut T, destroy: unsafe fn(&mut T)) -> Self {
+        Self { owner, destroy }
+    }
+}
+
+impl<T> Drop for ScopedDestructorUnsafe<T> {
+    fn drop(&mut self) {
+        unsafe { (self.destroy)(&mut *self.owner) }
+    }
+}
+
 impl<T> AsPointer<T> for Rc<RefCell<T>> {
     #[inline]
     fn as_pointer(&self) -> Ptr<T> {

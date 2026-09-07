@@ -3,6 +3,7 @@
 
 // Tests compound assignment through deref and multiple derefs in one
 // expression.
+#include <cassert>
 #include <memory>
 
 int main() {
@@ -12,5 +13,6 @@ int main() {
   *p *= 2;
   auto q = std::make_unique<int>(1);
   int sum = *p + *q;
-  return sum;
+  assert(sum == 25);
+  return 0;
 }

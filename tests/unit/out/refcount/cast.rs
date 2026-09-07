@@ -11,8 +11,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let size: Value<usize> = Rc::new(RefCell::new(1_usize));
-    if ((*size.borrow()) == 1_usize) {
-        return 1;
-    }
+    assert!(((*size.borrow()) == 1_usize));
     return 0;
 }

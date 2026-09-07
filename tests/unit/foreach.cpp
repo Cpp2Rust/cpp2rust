@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <vector>
 
 int main() {
@@ -10,5 +11,6 @@ int main() {
   int sum = 0;
   for (int x : v)
     sum += x;
-  return sum;
+  assert(sum == 45);
+  return 0;
 }

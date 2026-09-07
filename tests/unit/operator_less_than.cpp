@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct Pair {
   int x, y;
   bool operator<(const Pair &other) {
@@ -11,5 +13,6 @@ struct Pair {
 int main() {
   Pair pair1 = {1, 2};
   Pair pair2 = {1, 3};
-  return pair1 < pair2;
+  assert(pair1 < pair2);
+  return 0;
 }

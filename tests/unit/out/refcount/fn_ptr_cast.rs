@@ -47,10 +47,11 @@ pub struct Command {
 }
 impl Clone for Command {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Command> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Command> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Command {

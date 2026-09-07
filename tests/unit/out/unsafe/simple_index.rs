@@ -13,5 +13,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<bool> = vec![true];
-    return ((v[(0_usize)] as bool) as i32);
+    assert!((v[(0_usize)] as bool));
+    return 0;
 }

@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 struct Edge {
@@ -117,5 +118,6 @@ int main() {
   graph.edges[3] = {2, 0, 6};
   graph.edges[4] = {0, 3, 5};
   double total_weight = MSTKruskal(graph);
-  return total_weight;
+  assert(total_weight == 19);
+  return 0;
 }

@@ -30,6 +30,14 @@ pub unsafe fn bump_and_return_4() -> i32 {
 pub struct Holder {
     pub field: i32,
 }
+#[repr(C)]
+#[derive(Default)]
+pub struct NonCopyable {
+    pub value: Option<Box<i32>>,
+}
+pub unsafe fn unused_noncopyable_param_5(x: *const NonCopyable) {
+    &(*x);
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -95,5 +103,12 @@ unsafe fn main_0() -> i32 {
     let mut nt: NonTrivial = <NonTrivial>::default();
     (unsafe { unused_ref_param_1(&nt as *const NonTrivial) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
+    let mut g: NonCopyable = NonCopyable {
+        value: Some(Box::new(9)),
+    };
+    (&(g));
+    &(g);
+    (unsafe { unused_noncopyable_param_5(&g as *const NonCopyable) });
+    assert!(((*g.value.as_deref_mut().unwrap()) == (9)));
     return 0;
 }

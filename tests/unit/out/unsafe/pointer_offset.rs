@@ -45,5 +45,6 @@ unsafe fn main_0() -> i32 {
         out += (*ptr.offset((i) as isize));
         i.prefix_inc();
     }
-    return out;
+    assert!(((out) == (51)));
+    return 0;
 }

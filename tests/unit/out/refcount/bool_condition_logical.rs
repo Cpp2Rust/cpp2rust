@@ -6,32 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Code {
-    #[default]
-    CODE_OK = 0,
-    CODE_ERR = 1,
-    CODE_FATAL = 2,
-}
-impl From<i32> for Code {
-    fn from(n: i32) -> Code {
-        match n {
-            0 => Code::CODE_OK,
-            1 => Code::CODE_ERR,
-            2 => Code::CODE_FATAL,
-            _ => panic!("invalid Code value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Code);
-impl ByteRepr for Code {
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self as i32).to_bytes(buf);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        <Code>::from(i32::from_bytes(buf))
-    }
-}
+pub type Code = u32;
+pub const Code_CODE_OK: Code = 0;
+pub const Code_CODE_ERR: Code = 1;
+pub const Code_CODE_FATAL: Code = 2;
 thread_local!(
     pub static side_effect_0: Value<i32> = Rc::new(RefCell::new(0));
 );
@@ -56,7 +34,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     let np: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
-    let code: Value<Code> = Rc::new(RefCell::new(Code::CODE_OK));
+    let code: Value<Code> = Rc::new(RefCell::new(Code_CODE_OK));
     if ((*n.borrow()) != 0) && (!(*p.borrow()).is_null()) {
         assert!(true);
     }
@@ -70,7 +48,7 @@ fn main_0() -> i32 {
         assert!(false);
     }
     if ((((*n.borrow()) != 0) && ((*u.borrow()) != 0)) && (!(*p.borrow()).is_null()))
-        && (((*code.borrow()) as i32) == (Code::CODE_OK as i32))
+        && (((*code.borrow()) as i32) == (Code_CODE_OK as i32))
     {
         assert!(true);
     }

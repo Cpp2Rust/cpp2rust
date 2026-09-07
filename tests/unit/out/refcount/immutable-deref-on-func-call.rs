@@ -10,18 +10,16 @@ use std::rc::{Rc, Weak};
 pub struct Item {
     pub value: Value<i32>,
 }
-impl Item {
-    pub fn foo(&self, other: Ptr<Item>) {
-        let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
-        (*(*(*other.borrow()).upgrade().deref()).value.borrow_mut()) = 10;
-    }
+pub trait ItemImpl {
+    fn foo(&self, other: Ptr<Item>);
 }
 impl Clone for Item {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Item> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new((*self.value.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Item> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Item {
@@ -54,7 +52,7 @@ fn main_0() -> i32 {
         .borrow_mut()) = 2;
     ({
         let _other: Ptr<Item> = ((*arr.borrow()).offset((1) as isize));
-        (*(*arr.borrow()).offset((0) as isize).upgrade().deref()).foo(_other)
+        ItemImpl::foo(&(*arr.borrow()).offset((0) as isize), _other)
     });
     let result: Value<i32> = Rc::new(RefCell::new(
         ((*(*(*arr.borrow()).offset((0) as isize).upgrade().deref())
@@ -65,5 +63,12 @@ fn main_0() -> i32 {
                 .borrow())),
     ));
     (*arr.borrow()).delete_array();
-    return (*result.borrow());
+    assert!(((*result.borrow()) == 11));
+    return 0;
+}
+impl ItemImpl for Ptr<Item> {
+    fn foo(&self, other: Ptr<Item>) {
+        let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
+        (*(*(*other.borrow()).upgrade().deref()).value.borrow_mut()) = 10;
+    }
 }

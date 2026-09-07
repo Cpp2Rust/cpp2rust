@@ -37,5 +37,6 @@ fn main_0() -> i32 {
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
     (*p2.borrow()).delete_array();
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 99));
+    return 0;
 }

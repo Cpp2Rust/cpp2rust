@@ -26,7 +26,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: C = <C>::default();
-    assert!(((unsafe { c.get() }) == (1)));
+    assert!(((unsafe { C::get(&mut c,) }) == (1)));
     assert!(((inner_const_1) == (2)));
     return 0;
 }

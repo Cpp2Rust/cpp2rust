@@ -74,5 +74,6 @@ unsafe fn main_0() -> i32 {
         let _p2: i32 = n;
         matmul_1(_m1, _n1, _p1, _m2, _n2, _p2)
     });
-    return m3.as_mut().unwrap()[(0_usize)].as_mut().unwrap()[(0_usize)];
+    assert!(((m3.as_mut().unwrap()[(0_usize)].as_mut().unwrap()[(0_usize)]) == (20)));
+    return 0;
 }

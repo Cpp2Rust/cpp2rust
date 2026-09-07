@@ -14,9 +14,11 @@ pub fn fallthrough_into_block_0(x: i32) -> i32 {
             (*r.borrow_mut()) += 1;
         }
         __v if __v == 2 => {
-            let tmp: Value<i32> = Rc::new(RefCell::new(((*r.borrow()) * 10)));
-            (*r.borrow_mut()) = ((*tmp.borrow()) + 5);
-            break;
+            {
+                let tmp: Value<i32> = Rc::new(RefCell::new(((*r.borrow()) * 10)));
+                (*r.borrow_mut()) = ((*tmp.borrow()) + 5);
+                break;
+            }
         }
         _ => {
             (*r.borrow_mut()) = -1_i32;

@@ -50,5 +50,6 @@ fn main_0() -> i32 {
         (*out.borrow_mut()) += __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
-    return (*out.borrow());
+    assert!(((*out.borrow()) == 51));
+    return 0;
 }

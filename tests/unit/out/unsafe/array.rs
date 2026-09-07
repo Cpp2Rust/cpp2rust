@@ -26,5 +26,6 @@ unsafe fn main_0() -> i32 {
         fatorial *= arr1[(i) as usize];
         i.prefix_inc();
     }
-    return fatorial;
+    assert!(((fatorial) == (120)));
+    return 0;
 }

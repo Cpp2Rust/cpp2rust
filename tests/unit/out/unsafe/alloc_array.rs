@@ -40,5 +40,6 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[_]>>(),
     );
     (unsafe { All_0(&mut arr as *mut Option<Box<[i32]>>, N, 1) });
-    return (unsafe { Consume_1(arr, N) });
+    assert!(((unsafe { Consume_1(arr, N,) }) == (10)));
+    return 0;
 }

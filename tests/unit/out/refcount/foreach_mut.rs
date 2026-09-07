@@ -61,5 +61,6 @@ fn main_0() -> i32 {
         let __rhs = ((*p.borrow()).read());
         (*sum.borrow_mut()) += __rhs;
     }
-    return (*sum.borrow());
+    assert!(((*sum.borrow()) == 168));
+    return 0;
 }

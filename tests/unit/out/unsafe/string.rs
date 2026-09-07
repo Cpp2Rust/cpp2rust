@@ -310,5 +310,6 @@ unsafe fn main_0() -> i32 {
     let mut t2: usize = (t1).wrapping_add((s2.len() - 1));
     let mut t3: usize = (t2).wrapping_add((s3.len() - 1));
     let mut t4: usize = (t3).wrapping_add((s4.len() - 1));
-    return (((t4).wrapping_add((s5.len() - 1))) as i32);
+    assert!((((t4).wrapping_add((s5.len() - 1))) == (139_usize)));
+    return 0;
 }

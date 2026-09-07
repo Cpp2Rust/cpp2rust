@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 struct node_t {
   node_t *left;
   node_t *right;
@@ -50,5 +52,6 @@ int main() {
              find(root, 2)->value == 2 && find(root, 3)->value == 3 &&
              find(root, 4)->value == 4 && find(root, 5) == nullptr;
   del(root);
-  return out;
+  assert(out);
+  return 0;
 }

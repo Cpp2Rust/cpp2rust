@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 std::unique_ptr<std::unique_ptr<int[]>[]> matalloc(int n, int p, int e) {
@@ -36,5 +37,6 @@ int main() {
   std::unique_ptr<std::unique_ptr<int[]>[]> m2 = matalloc(p, n, 2);
   std::unique_ptr<std::unique_ptr<int[]>[]> m3 =
       matmul(std::move(m1), n, p, std::move(m2), p, n);
-  return m3[0][0];
+  assert(m3[0][0] == 20);
+  return 0;
 }

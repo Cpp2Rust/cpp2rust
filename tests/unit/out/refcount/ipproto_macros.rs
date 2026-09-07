@@ -14,5 +14,6 @@ fn main_0() -> i32 {
     let udp: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_UDP));
     let ip: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_IP));
     let ip6: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_IPV6));
-    return ((((*tcp.borrow()) + (*udp.borrow())) + (*ip.borrow())) + (*ip6.borrow()));
+    assert!((((((*tcp.borrow()) + (*udp.borrow())) + (*ip.borrow())) + (*ip6.borrow())) == 64));
+    return 0;
 }

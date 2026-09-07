@@ -11,5 +11,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let in_: Value<i32> = Rc::new(RefCell::new(123));
-    return (*in_.borrow());
+    assert!(((*in_.borrow()) == 123));
+    return 0;
 }

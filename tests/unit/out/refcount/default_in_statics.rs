@@ -13,11 +13,12 @@ pub struct Inner {
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()))),
             name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Inner {
@@ -48,7 +49,7 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             p1: Rc::new(RefCell::new((*self.p1.borrow()).clone())),
             p2: Rc::new(RefCell::new((*self.p2.borrow()).clone())),
             arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
@@ -57,8 +58,9 @@ impl Clone for Outer {
             inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             fn_: Rc::new(RefCell::new((*self.fn_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Outer {
@@ -118,14 +120,15 @@ pub struct Foo {
 }
 impl Clone for Foo {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {
             s1: Rc::new(RefCell::new((*self.s1.borrow()).clone())),
             s2: Rc::new(RefCell::new((*self.s2.borrow()).clone())),
             fn1: Rc::new(RefCell::new((*self.fn1.borrow()).clone())),
             fn2: Rc::new(RefCell::new((*self.fn2.borrow()).clone())),
             n: Rc::new(RefCell::new((*self.n.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Foo {

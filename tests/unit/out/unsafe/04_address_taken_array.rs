@@ -20,5 +20,6 @@ unsafe fn main_0() -> i32 {
     (*arr2_ptr.offset((1) as isize)) = 6;
     let arr2_ref1: *mut i32 = &mut arr2[(1) as usize] as *mut i32;
     (*arr2_ref1) = 7;
-    return ((arr2[(0) as usize]) + (arr2[(1) as usize]));
+    assert!((((arr2[(0) as usize]) + (arr2[(1) as usize])) == (12)));
+    return 0;
 }

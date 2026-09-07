@@ -13,5 +13,6 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut in_: i32 = 123;
-    return in_;
+    assert!(((in_) == (123)));
+    return 0;
 }

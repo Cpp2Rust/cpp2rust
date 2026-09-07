@@ -11,5 +11,6 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(!(0 != 0));
-    return 1;
+    assert!((1 == 1));
+    return 0;
 }

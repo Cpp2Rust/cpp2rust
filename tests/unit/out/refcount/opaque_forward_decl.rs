@@ -42,7 +42,7 @@ fn main_0() -> i32 {
         p: Rc::new(RefCell::new(Ptr::<opaque>::null())),
         x: Rc::new(RefCell::new(42)),
     }));
-    (*(*c.borrow()).p.borrow()).clone();
+    &(*(*c.borrow()).p.borrow());
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
 pub struct opaque;

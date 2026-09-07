@@ -17,5 +17,6 @@ fn main_0() -> i32 {
     let p: Value<Ptr<u32>> = Rc::new(RefCell::new((x.as_pointer())));
     let b: Value<bool> = Rc::new(RefCell::new(((((*p.borrow()).read()) & 255_u32) != 0)));
     let a: Value<i32> = Rc::new(RefCell::new(((((*p.borrow()).read()) & 255_u32) as i32)));
-    return (*a.borrow());
+    assert!(((*a.borrow()) == 255));
+    return 0;
 }

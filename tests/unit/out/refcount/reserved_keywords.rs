@@ -49,7 +49,7 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             as_: Rc::new(RefCell::new((*self.as_.borrow()))),
             async_: Rc::new(RefCell::new((*self.async_.borrow()))),
             await_: Rc::new(RefCell::new((*self.await_.borrow()))),
@@ -88,8 +88,9 @@ impl Clone for S {
             raw_: Rc::new(RefCell::new((*self.raw_.borrow()))),
             safe_: Rc::new(RefCell::new((*self.safe_.borrow()))),
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for S {

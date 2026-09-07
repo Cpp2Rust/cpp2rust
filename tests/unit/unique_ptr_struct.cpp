@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 // Tests arrow compound assignment, arrow read+write, and passing *ptr by value.
+#include <cassert>
 #include <memory>
 
 struct Point {
@@ -16,5 +17,6 @@ int main() {
   p->x += 10;
   p->y = p->x + p->y;
   int s = sum(*p);
-  return s;
+  assert(s == 30);
+  return 0;
 }

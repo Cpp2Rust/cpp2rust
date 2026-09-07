@@ -17,18 +17,20 @@ fn main_0() -> i32 {
             .collect::<Vec<u8>>(),
     ));
     let file: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"test_stdcopy_ostream.txt\0")));
-    let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
-        ::std::fs::File::create((file.as_pointer() as Ptr<u8>).to_string())
-            .expect("Failed to open file"),
-    ));
     {
-        (*ofs.borrow_mut()).write_all(
-            (str.as_pointer() as Ptr<u8>)
-                .slice_until(&(str.as_pointer() as Ptr<u8>).to_last())
-                .as_slice(),
-        );
-        (*ofs.borrow_mut()).try_clone().unwrap()
-    };
+        let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(
+            ::std::fs::File::create((file.as_pointer() as Ptr<u8>).to_string())
+                .expect("Failed to open file"),
+        ));
+        {
+            (*ofs.borrow_mut()).write_all(
+                (str.as_pointer() as Ptr<u8>)
+                    .slice_until(&(str.as_pointer() as Ptr<u8>).to_last())
+                    .as_slice(),
+            );
+            (*ofs.borrow_mut()).try_clone().unwrap()
+        };
+    }
     match nix::unistd::unlink((file.as_pointer() as Ptr<u8>).to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {

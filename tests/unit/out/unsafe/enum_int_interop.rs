@@ -6,62 +6,19 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Option {
-    #[default]
-    OPT_NONE = 0,
-    OPT_A = 10,
-    OPT_B = 20,
-    OPT_C = 30,
-}
-impl From<i32> for Option {
-    fn from(n: i32) -> Option {
-        match n {
-            0 => Option::OPT_NONE,
-            10 => Option::OPT_A,
-            20 => Option::OPT_B,
-            30 => Option::OPT_C,
-            _ => panic!("invalid Option value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Option);
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Tag {
-    #[default]
-    TAG_ZERO = 0,
-    TAG_ONE = 1,
-    TAG_TWO = 2,
-}
-impl From<i32> for Tag {
-    fn from(n: i32) -> Tag {
-        match n {
-            0 => Tag::TAG_ZERO,
-            1 => Tag::TAG_ONE,
-            2 => Tag::TAG_TWO,
-            _ => panic!("invalid Tag value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Tag);
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
+pub type Option = u32;
+pub const Option_OPT_NONE: Option = 0;
+pub const Option_OPT_A: Option = 10;
+pub const Option_OPT_B: Option = 20;
+pub const Option_OPT_C: Option = 30;
+pub type Tag = u32;
+pub const Tag_TAG_ZERO: Tag = 0;
+pub const Tag_TAG_ONE: Tag = 1;
+pub const Tag_TAG_TWO: Tag = 2;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Entry {
@@ -69,25 +26,25 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color_0: Color = unsafe { Color::GREEN };
-pub static mut global_opt_1: Option = unsafe { Option::OPT_B };
-pub static mut global_tag_2: Tag = unsafe { Tag::TAG_TWO };
+pub static mut global_color_0: Color = unsafe { Color_GREEN };
+pub static mut global_opt_1: Option = unsafe { Option_OPT_B };
+pub static mut global_tag_2: Tag = unsafe { Tag_TAG_TWO };
 pub static mut entries_3: [Entry; 3] = unsafe {
     [
         Entry {
             name: c"first".as_ptr(),
-            color: Color::RED,
-            opt: Option::OPT_NONE,
+            color: Color_RED,
+            opt: Option_OPT_NONE,
         },
         Entry {
             name: c"second".as_ptr(),
-            color: Color::GREEN,
-            opt: Option::OPT_A,
+            color: Color_GREEN,
+            opt: Option_OPT_A,
         },
         Entry {
             name: c"third".as_ptr(),
-            color: Color::BLUE,
-            opt: Option::OPT_C,
+            color: Color_BLUE,
+            opt: Option_OPT_C,
         },
     ]
 };
@@ -98,16 +55,16 @@ pub unsafe fn classify_option_5(mut option: i32) -> i32 {
     'switch: {
         let __match_cond = option;
         match __match_cond {
-            __v if __v == (Option::OPT_NONE as i32) => {
+            __v if __v == (Option_OPT_NONE as i32) => {
                 return -1_i32;
             }
-            __v if __v == (Option::OPT_A as i32) => {
+            __v if __v == (Option_OPT_A as i32) => {
                 return 1;
             }
-            __v if __v == (Option::OPT_B as i32) => {
+            __v if __v == (Option_OPT_B as i32) => {
                 return 2;
             }
-            __v if __v == (Option::OPT_C as i32) => {
+            __v if __v == (Option_OPT_C as i32) => {
                 return 3;
             }
             _ => {
@@ -118,7 +75,7 @@ pub unsafe fn classify_option_5(mut option: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub unsafe fn make_color_6(mut n: i32) -> Color {
-    return Color::from(n);
+    return ((n) as Color);
 }
 pub fn main() {
     unsafe {
@@ -126,11 +83,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: Color = Color::RED;
-    assert!(((c as i32) == (Color::RED as i32)));
+    let mut c: Color = Color_RED;
+    assert!(((c as i32) == (Color_RED as i32)));
     assert!(((c as i32) == (0)));
     assert!(((c as i32) != (1)));
-    if ((c as i32) == (Color::GREEN as i32)) {
+    if ((c as i32) == (Color_GREEN as i32)) {
         return 1;
     }
     'switch: {
@@ -154,37 +111,37 @@ unsafe fn main_0() -> i32 {
     assert!(((x) == (0)));
     let mut y: i32 = ((c as i32) + (1));
     assert!(((y) == (1)));
-    c = Color::from(2);
-    assert!(((c as i32) == (Color::BLUE as i32)));
+    c = ((2) as Color);
+    assert!(((c as i32) == (Color_BLUE as i32)));
     assert!(((c as i32) == (2)));
     c = (unsafe { make_color_6(1) });
-    assert!(((c as i32) == (Color::GREEN as i32)));
-    let mut cmp: Color = Color::from(((c as i32) + (1)));
-    assert!(((cmp as i32) == (Color::BLUE as i32)));
-    let mut o: Option = Option::OPT_A;
-    assert!(((o as i32) == (Option::OPT_A as i32)));
+    assert!(((c as i32) == (Color_GREEN as i32)));
+    let mut cmp: Color = (((c as i32) + (1)) as Color);
+    assert!(((cmp as i32) == (Color_BLUE as i32)));
+    let mut o: Option = Option_OPT_A;
+    assert!(((o as i32) == (Option_OPT_A as i32)));
     assert!(((o as i32) == (10)));
     let mut oi: i32 = (o as i32);
     assert!(((oi) == (10)));
-    o = Option::from(20);
-    assert!(((o as i32) == (Option::OPT_B as i32)));
+    o = ((20) as Option);
+    assert!(((o as i32) == (Option_OPT_B as i32)));
     let mut rc: i32 = (unsafe { classify_option_5((o as i32)) });
     assert!(((rc) == (2)));
     rc = (unsafe { classify_option_5(20) });
     assert!(((rc) == (2)));
-    rc = (unsafe { classify_option_5((Option::OPT_C as i32)) });
+    rc = (unsafe { classify_option_5((Option_OPT_C as i32)) });
     assert!(((rc) == (3)));
-    let mut t: Tag = Tag::TAG_ONE;
+    let mut t: Tag = Tag_TAG_ONE;
     assert!(((t as i32) == (1)));
-    assert!(((t as i32) == (Tag::TAG_ONE as i32)));
+    assert!(((t as i32) == (Tag_TAG_ONE as i32)));
     let mut ti: i32 = (t as i32);
     assert!(((ti) == (1)));
-    t = Tag::from(2);
-    assert!(((t as i32) == (Tag::TAG_TWO as i32)));
+    t = ((2) as Tag);
+    assert!(((t as i32) == (Tag_TAG_TWO as i32)));
     'switch: {
         let __match_cond = (t as i32);
         match __match_cond {
-            __v if __v == (Tag::TAG_ZERO as i32) => {
+            __v if __v == (Tag_TAG_ZERO as i32) => {
                 return 90;
             }
             __v if __v == 1 => {
@@ -196,16 +153,16 @@ unsafe fn main_0() -> i32 {
             _ => {}
         }
     };
-    let mut extra: i32 = (((Color::RED as i32) + (Color::GREEN as i32)) + (Color::BLUE as i32));
+    let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
-    assert!(((global_color_0 as i32) == (Color::GREEN as i32)));
-    assert!(((global_opt_1 as i32) == (Option::OPT_B as i32)));
-    assert!(((global_tag_2 as i32) == (Tag::TAG_TWO as i32)));
-    assert!(((entries_3[(0) as usize].color as i32) == (Color::RED as i32)));
-    assert!(((entries_3[(0) as usize].opt as i32) == (Option::OPT_NONE as i32)));
-    assert!(((entries_3[(1) as usize].color as i32) == (Color::GREEN as i32)));
-    assert!(((entries_3[(1) as usize].opt as i32) == (Option::OPT_A as i32)));
-    assert!(((entries_3[(2) as usize].color as i32) == (Color::BLUE as i32)));
-    assert!(((entries_3[(2) as usize].opt as i32) == (Option::OPT_C as i32)));
+    assert!(((global_color_0 as i32) == (Color_GREEN as i32)));
+    assert!(((global_opt_1 as i32) == (Option_OPT_B as i32)));
+    assert!(((global_tag_2 as i32) == (Tag_TAG_TWO as i32)));
+    assert!(((entries_3[(0) as usize].color as i32) == (Color_RED as i32)));
+    assert!(((entries_3[(0) as usize].opt as i32) == (Option_OPT_NONE as i32)));
+    assert!(((entries_3[(1) as usize].color as i32) == (Color_GREEN as i32)));
+    assert!(((entries_3[(1) as usize].opt as i32) == (Option_OPT_A as i32)));
+    assert!(((entries_3[(2) as usize].color as i32) == (Color_BLUE as i32)));
+    assert!(((entries_3[(2) as usize].opt as i32) == (Option_OPT_C as i32)));
     return 0;
 }

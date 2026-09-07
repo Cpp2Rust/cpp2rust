@@ -27,5 +27,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    return (unsafe { dowhile_0(0) });
+    assert!(((unsafe { dowhile_0(0,) }) == (202)));
+    return 0;
 }

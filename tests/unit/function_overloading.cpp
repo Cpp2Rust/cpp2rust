@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
+
 int foo(int x) { return x; }
 int foo(int *x) { return *x; }
 int foo(int *x, int *y) { return *x + *y; }
@@ -38,5 +40,6 @@ int main() {
   foo1.method(1);
   foo2.foo();
   foo2.method(2);
-  return out;
+  assert(out == 13);
+  return 0;
 }

@@ -35,5 +35,6 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    return ({ for_test_0(200) });
+    assert!((({ for_test_0(200,) }) == 400));
+    return 0;
 }

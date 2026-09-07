@@ -26,5 +26,6 @@ unsafe fn main_0() -> i32 {
     let mut r: i32 = if const_it == end.clone() { 0 } else { 1 };
     r += (unsafe { sink_0(it0.clone()) });
     r += if end == end { 0 } else { 1 };
-    return r;
+    assert!(((r) == (2)));
+    return 0;
 }

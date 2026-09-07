@@ -16,35 +16,31 @@ fn main_0() -> i32 {
         let _ptr = (*p.borrow()).clone();
         _ptr.write(_ptr.read() + 1)
     };
-    if ((*x.borrow()) == 2) {
-        let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-        (*p.borrow_mut()) = ((a.as_pointer() as Ptr<i32>).offset(1));
-        {
-            let _ptr = (*p.borrow()).clone();
-            _ptr.write(_ptr.read() + 1)
-        };
-        if ((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3) {
-            (*p.borrow_mut()).prefix_dec();
-            {
-                let _ptr = (*p.borrow()).clone();
-                _ptr.write(_ptr.read() + 1)
-            };
-            if ((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3) {
-                (*p.borrow_mut()) = (x.as_pointer());
-                {
-                    let _ptr = (*p.borrow()).clone();
-                    _ptr.write(_ptr.read() + 1)
-                };
-                if ((*x.borrow()) == 3) {
-                    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
-                    {
-                        let _ptr = (*p2.borrow()).clone();
-                        _ptr.write(_ptr.read() + 1)
-                    };
-                    return (((*x.borrow()) == 4) as i32);
-                }
-            }
-        }
-    }
-    return -1_i32;
+    assert!(((*x.borrow()) == 2));
+    let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
+    (*p.borrow_mut()) = ((a.as_pointer() as Ptr<i32>).offset(1));
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + 1)
+    };
+    assert!(((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3));
+    (*p.borrow_mut()).prefix_dec();
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + 1)
+    };
+    assert!(((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3));
+    (*p.borrow_mut()) = (x.as_pointer());
+    {
+        let _ptr = (*p.borrow()).clone();
+        _ptr.write(_ptr.read() + 1)
+    };
+    assert!(((*x.borrow()) == 3));
+    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
+    {
+        let _ptr = (*p2.borrow()).clone();
+        _ptr.write(_ptr.read() + 1)
+    };
+    assert!(((*x.borrow()) == 4));
+    return 0;
 }

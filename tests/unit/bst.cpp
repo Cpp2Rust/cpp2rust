@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <cassert>
 #include <memory>
 
 // bst.h: BST node definition
@@ -53,7 +54,8 @@ int main() {
   ptr1 = insert(ptr1, &*n2);
   ptr1 = insert(ptr1, &*n3);
   ptr1 = insert(ptr1, &*n4);
-  return find(ptr1, 0)->value == 0 && find(ptr1, 1)->value == 1 &&
+  assert(find(ptr1, 0)->value == 0 && find(ptr1, 1)->value == 1 &&
          find(ptr1, 2)->value == 2 && find(ptr1, 3)->value == 3 &&
-         find(ptr1, 4)->value == 4 && find(ptr1, 5) == nullptr;
+         find(ptr1, 4)->value == 4 && find(ptr1, 5) == nullptr);
+  return 0;
 }

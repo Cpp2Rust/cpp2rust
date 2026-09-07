@@ -11,19 +11,17 @@ pub struct Node {
     pub val: Value<i32>,
     pub next: Value<Ptr<Node>>,
 }
-impl Node {
-    pub fn SetNext(&self, next: Ptr<Node>) {
-        let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
-        (*self.next.borrow_mut()) = (*next.borrow()).clone();
-    }
+pub trait NodeImpl {
+    fn SetNext(&self, next: Ptr<Node>);
 }
 impl Clone for Node {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Node> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new((*self.val.borrow()))),
             next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Node> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Node {
@@ -59,7 +57,7 @@ pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
         let __rhs = (*(*(*curr.borrow()).upgrade().deref()).next.borrow()).clone();
         (*curr.borrow_mut()) = __rhs;
     }
-    ({ (*(*curr.borrow()).upgrade().deref()).SetNext((new_node).clone()) });
+    ({ NodeImpl::SetNext(&(*curr.borrow()), (new_node).clone()) });
 }
 pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
@@ -163,25 +161,34 @@ fn main_0() -> i32 {
     (*head.borrow_mut()) = __rhs;
     let __rhs = ({ Delete_2((*head.borrow()).clone(), -2_i32) });
     (*head.borrow_mut()) = __rhs;
-    return (((((((*(*({ Find_0((*head.borrow()).clone(), 0) }).upgrade().deref())
-        .val
-        .borrow())
-        == 4)
-        && ((*(*({ Find_0((*head.borrow()).clone(), 1) }).upgrade().deref())
+    assert!(
+        ((((((*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
             .val
             .borrow())
-            == 3))
-        && ((*(*({ Find_0((*head.borrow()).clone(), 2) }).upgrade().deref())
-            .val
-            .borrow())
-            == 2))
-        && ((*(*({ Find_0((*head.borrow()).clone(), 3) }).upgrade().deref())
-            .val
-            .borrow())
-            == 1))
-        && (((*(*({ Find_0((*head.borrow()).clone(), 4) }).upgrade().deref())
-            .val
-            .borrow())
-            == -1_i32)
-            && (({ Find_0((*head.borrow()).clone(), 5) }).is_null()))) as i32);
+            == 4)
+            && ((*(*({ Find_0((*head.borrow()).clone(), 1,) }).upgrade().deref())
+                .val
+                .borrow())
+                == 3))
+            && ((*(*({ Find_0((*head.borrow()).clone(), 2,) }).upgrade().deref())
+                .val
+                .borrow())
+                == 2))
+            && ((*(*({ Find_0((*head.borrow()).clone(), 3,) }).upgrade().deref())
+                .val
+                .borrow())
+                == 1))
+            && ((*(*({ Find_0((*head.borrow()).clone(), 4,) }).upgrade().deref())
+                .val
+                .borrow())
+                == -1_i32))
+            && (({ Find_0((*head.borrow()).clone(), 5,) }).is_null())
+    );
+    return 0;
+}
+impl NodeImpl for Ptr<Node> {
+    fn SetNext(&self, next: Ptr<Node>) {
+        let next: Value<Ptr<Node>> = Rc::new(RefCell::new(next));
+        (*(*(*self).upgrade().deref()).next.borrow_mut()) = (*next.borrow()).clone();
+    }
 }

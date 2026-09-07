@@ -24,24 +24,10 @@ pub struct Node {
     pub value: i32,
     pub next: *mut Node,
 }
-#[derive(Clone, Copy, PartialEq, Debug, Default)]
-enum Color {
-    #[default]
-    RED = 0,
-    GREEN = 1,
-    BLUE = 2,
-}
-impl From<i32> for Color {
-    fn from(n: i32) -> Color {
-        match n {
-            0 => Color::RED,
-            1 => Color::GREEN,
-            2 => Color::BLUE,
-            _ => panic!("invalid Color value: {}", n),
-        }
-    }
-}
-libcc2rs::impl_enum_inc_dec!(Color);
+pub type Color = u32;
+pub const Color_RED: Color = 0;
+pub const Color_GREEN: Color = 1;
+pub const Color_BLUE: Color = 2;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Inner {
@@ -86,15 +72,15 @@ unsafe fn main_0() -> i32 {
     assert!((((((*b.next).value) == (1)) as i32) != 0));
     let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
-        color: Color::GREEN,
+        color: Color_GREEN,
         count: 42,
     };
     assert!(((((c.inner.a) == (5)) as i32) != 0));
     assert!(((((c.inner.b) == (6)) as i32) != 0));
-    assert!(((((c.color as u32) == ((Color::GREEN as i32) as u32)) as i32) != 0));
+    assert!(((((c.color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
     assert!(((((c.count) == (42)) as i32) != 0));
     let mut c2: Container = <Container>::default();
-    c2.color = Color::BLUE;
+    c2.color = Color_BLUE;
     assert!(((((c2.color as u32) == (2_u32)) as i32) != 0));
     return 0;
 }

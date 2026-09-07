@@ -2,6 +2,7 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 // Tests chained arrow through nested unique_ptrs and cross-deref assignment.
+#include <cassert>
 #include <memory>
 
 struct Inner {
@@ -23,5 +24,6 @@ int main() {
   auto b = std::make_unique<int>(0);
   *b = *a;
 
-  return sum + *b;
+  assert(sum + *b == 135);
+  return 0;
 }

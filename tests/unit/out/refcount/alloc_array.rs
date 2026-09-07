@@ -45,5 +45,6 @@ fn main_0() -> i32 {
             .collect::<Box<[_]>>(),
     )))));
     ({ All_0(arr.as_pointer(), (*N.borrow()), 1) });
-    return ({ Consume_1((*arr.borrow_mut()).take(), (*N.borrow())) });
+    assert!((({ Consume_1((*arr.borrow_mut()).take(), (*N.borrow()),) }) == 10));
+    return 0;
 }

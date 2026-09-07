@@ -32,5 +32,6 @@ unsafe fn main_0() -> i32 {
     let mut a: Option<Box<i32>> = Some(Box::new(100));
     let mut b: Option<Box<i32>> = Some(Box::new(0));
     (*b.as_deref_mut().unwrap()) = (*a.as_deref_mut().unwrap());
-    return ((sum) + (*b.as_deref_mut().unwrap()));
+    assert!((((sum) + (*b.as_deref_mut().unwrap())) == (135)));
+    return 0;
 }

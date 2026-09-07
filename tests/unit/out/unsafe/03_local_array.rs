@@ -15,5 +15,6 @@ unsafe fn main_0() -> i32 {
     let mut arr1: [i32; 2] = [1, 2];
     arr1[(0) as usize] = 3;
     arr1[(1) as usize] = 4;
-    return ((arr1[(0) as usize]) + (arr1[(1) as usize]));
+    assert!((((arr1[(0) as usize]) + (arr1[(1) as usize])) == (7)));
+    return 0;
 }

@@ -13,11 +13,12 @@ pub struct Complex {
 }
 impl Clone for Complex {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Complex> = Rc::new(RefCell::new(Self {
             re: Rc::new(RefCell::new((*self.re.borrow()))),
             img: Rc::new(RefCell::new((*self.img.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Complex> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Complex {
@@ -271,13 +272,15 @@ fn main_0() -> i32 {
         (*imgs.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
-    return (((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
-        && ((*imgs.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0))
-        && (((*reals.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 2)))
-        && (((*reals.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 0)))
-        && (((*reals.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)))
-        as i32);
+    assert!(
+        ((((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0))
+            && ((*reals.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == -2_i32))
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 2))
+            && ((*reals.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == -2_i32))
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 0))
+            && ((*reals.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32))
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)
+    );
+    return 0;
 }
