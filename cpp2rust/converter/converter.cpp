@@ -855,6 +855,15 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   AddByteReprTrait(decl);
 }
 
+void Converter::ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) {
+  ConvertCXXMethodDecls(
+      decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
+      [](auto *method) {
+        return IsEmittableMethod(method) && method->hasBody() &&
+               !decl_ids_.contains(GetMethodID(method));
+      });
+}
+
 void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   ConvertCXXMethodDecls(
       decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
@@ -941,12 +950,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
       // Other translation units may instantiate members this one did not.
       if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
-        ConvertCXXMethodDecls(
-            decl, std::format("{} {}", keyword::kImpl, GetRecordName(decl)),
-            [](auto *method) {
-              return IsEmittableMethod(method) && method->hasBody() &&
-                     !decl_ids_.contains(GetMethodID(method));
-            });
+        ConvertLateInstantiatedMethods(decl);
       }
       return false;
     }

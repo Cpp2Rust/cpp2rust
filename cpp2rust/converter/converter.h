@@ -133,6 +133,7 @@ public:
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl);
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
