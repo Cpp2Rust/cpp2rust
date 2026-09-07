@@ -247,8 +247,8 @@ const std::strong_ordering &f1() { return std::strong_ordering::less; }
 const std::strong_ordering &f2() { return std::strong_ordering::equal; }
 ```
 
-The Rust side still returns the value; the reference only exists to keep the
-C++ pattern free of the copy.
+The Rust side still returns the value; the reference only exists to keep the C++
+pattern free of the copy.
 
 Integer-literal macros are the only macros matchable directly. Macros whose
 expansions are platform internals with no stable callee, such as `errno` or
