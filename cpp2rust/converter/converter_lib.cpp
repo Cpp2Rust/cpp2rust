@@ -1193,14 +1193,12 @@ void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
   }
 }
 
-std::string ReplaceAll(std::string str, std::string_view from,
-                       std::string_view to) {
+void ReplaceAll(std::string &str, std::string_view from, std::string_view to) {
   size_t pos = 0;
   while ((pos = str.find(from, pos)) != std::string::npos) {
     str.replace(pos, from.size(), to);
     pos += to.size();
   }
-  return str;
 }
 
 ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {

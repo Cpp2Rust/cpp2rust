@@ -619,7 +619,7 @@ std::string mapTypeStringRecursive(const std::string &cpp_type) {
 std::string normalizeTranslationRule(std::string rule) {
   // Detach pointer from double reference. Useful for matching translation
   // rules.
-  rule = ReplaceAll(rule, "*&&", "* &&");
+  ReplaceAll(rule, "*&&", "* &&");
 
   const std::array<std::pair<std::regex, std::string>, 1> normalization_rules{{
       // Ignore constant template parameters, i.e. replace them with _.
@@ -832,7 +832,8 @@ std::string ToRustName(std::string name) {
     name[pos] = '_';
     ++pos;
   }
-  return ReplaceAll(name, "::", "_");
+  ReplaceAll(name, "::", "_");
+  return name;
 }
 
 std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {

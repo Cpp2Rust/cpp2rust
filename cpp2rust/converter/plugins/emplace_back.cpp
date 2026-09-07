@@ -137,7 +137,9 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
   {
     PushExprKind push(*this, ExprKind::LValue);
-    StrCat(ReplaceAll(ToString(call->getCallee()), "emplace_back", "push"));
+    auto callee = ToString(call->getCallee());
+    ReplaceAll(callee, "emplace_back", "push");
+    StrCat(callee);
   }
   StrCat('(');
 }
