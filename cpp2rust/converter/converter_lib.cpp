@@ -687,8 +687,7 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
     auto name = "operator_" + conversion->getConversionType().getAsString();
     std::replace_if(
-        name.begin(), name.end(), [](char c) { return !std::isalnum(c); },
-        '_');
+        name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
     return name;
   }
   if (decl->isOverloadedOperator()) {

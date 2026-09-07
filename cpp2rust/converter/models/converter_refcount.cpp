@@ -2554,9 +2554,8 @@ void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
     Converter::ConvertReceiver(base, is_arrow, method);
     return;
   }
-  bool base_is_pointer =
-      is_arrow &&
-      !clang::isa<clang::CXXOperatorCallExpr>(base->IgnoreParenImpCasts());
+  bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
+                                         base->IgnoreParenImpCasts());
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
@@ -2575,9 +2574,8 @@ void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
     return;
   }
-  method_receiver_ =
-      token::kRef +
-      (base_is_pointer ? ConvertRValue(base) : ConvertPointer(base));
+  method_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
+                                                    : ConvertPointer(base));
 }
 
 std::string
