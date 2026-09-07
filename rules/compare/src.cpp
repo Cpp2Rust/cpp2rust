@@ -5,13 +5,13 @@
 
 typedef std::strong_ordering t1;
 
-std::strong_ordering f1() { return std::strong_ordering::less; }
+const std::strong_ordering &f1() { return std::strong_ordering::less; }
 
-std::strong_ordering f2() { return std::strong_ordering::equal; }
+const std::strong_ordering &f2() { return std::strong_ordering::equal; }
 
-std::strong_ordering f3() { return std::strong_ordering::equivalent; }
+const std::strong_ordering &f3() { return std::strong_ordering::equivalent; }
 
-std::strong_ordering f4() { return std::strong_ordering::greater; }
+const std::strong_ordering &f4() { return std::strong_ordering::greater; }
 
 bool f5(std::strong_ordering a0, std::strong_ordering a1) {
   return operator==(a0, a1);
