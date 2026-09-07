@@ -4125,9 +4125,9 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
   if (eq) {
     eq_body = ComparisonCall(eq, decl, "self", "other");
   } else if (lt) {
-    eq_body = std::format("!({}) && !({})",
-                          ComparisonCall(lt, decl, "self", "other"),
-                          ComparisonCall(lt, decl, "other", "self"));
+    eq_body =
+        std::format("!({}) && !({})", ComparisonCall(lt, decl, "self", "other"),
+                    ComparisonCall(lt, decl, "other", "self"));
   } else {
     eq_body = std::format("{} == std::cmp::Ordering::Equal",
                           ComparisonCall(cmp, decl, "self", "other"));
@@ -4157,8 +4157,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   const clang::FunctionDecl *cmp = nullptr;
   auto consider = [&](const clang::FunctionDecl *fn) {
     if (!fn || fn->isImplicit() || fn->isDeleted() ||
-        fn->getDescribedFunctionTemplate() ||
-        !IsSameTypeComparison(fn, decl)) {
+        fn->getDescribedFunctionTemplate() || !IsSameTypeComparison(fn, decl)) {
       return;
     }
     switch (fn->getOverloadedOperator()) {

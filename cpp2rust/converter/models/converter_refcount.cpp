@@ -445,9 +445,8 @@ std::string ConverterRefCount::ComparisonCall(const clang::FunctionDecl *op,
     return std::format("{}::{}(&{}, {})", GetUFCSName(method),
                        GetMethodName(method), box(lhs), box(rhs));
   }
-  return std::format("{}({}, {})",
-                     GetNamedDeclAsString(op->getCanonicalDecl()), box(lhs),
-                     box(rhs));
+  return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
+                     box(lhs), box(rhs));
 }
 
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
