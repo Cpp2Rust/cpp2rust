@@ -4135,21 +4135,6 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
   ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));
 }
 
-static bool IsSameTypeComparison(const clang::FunctionDecl *fn,
-                                 const clang::CXXRecordDecl *record) {
-  auto record_type = fn->getASTContext().getCanonicalTagType(record);
-  auto is_record = [&](clang::QualType type) {
-    return type.getNonReferenceType().getUnqualifiedType().getCanonicalType() ==
-           record_type;
-  };
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn)) {
-    return method->isInstance() && method->getNumParams() == 1 &&
-           is_record(method->getParamDecl(0)->getType());
-  }
-  return fn->getNumParams() == 2 && is_record(fn->getParamDecl(0)->getType()) &&
-         is_record(fn->getParamDecl(1)->getType());
-}
-
 void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   const clang::FunctionDecl *eq = nullptr;
   const clang::FunctionDecl *lt = nullptr;

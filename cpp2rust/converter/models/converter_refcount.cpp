@@ -438,15 +438,16 @@ std::string ConverterRefCount::ComparisonCall(const clang::FunctionDecl *op,
                                               const clang::CXXRecordDecl *decl,
                                               std::string_view lhs,
                                               std::string_view rhs) {
-  auto box = [](std::string_view v) {
-    return std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", v);
-  };
+  auto lhs_ptr =
+      std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", lhs);
+  auto rhs_ptr =
+      std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", rhs);
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
     return std::format("{}::{}(&{}, {})", GetUFCSName(method),
-                       GetMethodName(method), box(lhs), box(rhs));
+                       GetMethodName(method), lhs_ptr, rhs_ptr);
   }
   return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
-                     box(lhs), box(rhs));
+                     lhs_ptr, rhs_ptr);
 }
 
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
@@ -2590,7 +2591,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     return;
   }
   ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
-                                                    : ConvertPointer(base));
+                                                  : ConvertPointer(base));
 }
 
 std::string
