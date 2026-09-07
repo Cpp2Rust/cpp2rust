@@ -158,6 +158,9 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
     fn is_null(&self) -> bool {
         FnPtr::is_null(self)
     }
+    fn is_dangling(&self) -> bool {
+        false
+    }
 }
 
 impl<T: 'static> FnPtr<T> {

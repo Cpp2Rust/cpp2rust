@@ -1,4 +1,3 @@
-// panic: refcount
 #include <assert.h>
 
 typedef enum {

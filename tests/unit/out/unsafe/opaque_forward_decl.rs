@@ -26,3 +26,4 @@ unsafe fn main_0() -> i32 {
     return ((c.x) - (42));
 }
 pub struct opaque;
+impl ByteRepr for opaque {}

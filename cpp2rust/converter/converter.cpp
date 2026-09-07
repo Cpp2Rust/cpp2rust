@@ -72,9 +72,8 @@ std::string Converter::EmitDeferredImpls() {
 std::string Converter::EmitOpaqueRecords() {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "pub struct ";
-    out += name;
-    out += ";\n";
+    out += std::format("pub struct {};\n", name);
+    out += std::format("impl ByteRepr for {} {{}}\n", name);
   });
   return out;
 }
