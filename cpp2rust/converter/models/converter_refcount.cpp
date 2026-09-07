@@ -1599,7 +1599,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
     if (IsMethodOnPtr(method)) {
-      ConvertReceiver(expr->getBase(), expr->isArrow(), method);
+      SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
       StrCat(TraitName(method->getParent()), token::kDoubleColon,
              GetMethodName(method));
       return false;
@@ -2563,10 +2563,10 @@ bool ConverterRefCount::ThisIsRustPtr() const {
                     clang::isa<clang::CXXConstructorDecl>(method));
 }
 
-void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
+void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                         const clang::CXXMethodDecl *method) {
   if (!IsMethodOnPtr(method)) {
-    Converter::ConvertReceiver(base, is_arrow, method);
+    Converter::SetUFCSReceiver(base, is_arrow, method);
     return;
   }
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
@@ -2575,21 +2575,21 @@ void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     if (in_ctor) {
-      method_receiver_ = "&this";
+      ufcs_receiver_ = "&this";
     } else if (ThisIsRustPtr()) {
-      method_receiver_ = keyword::kSelfValue;
+      ufcs_receiver_ = keyword::kSelfValue;
     } else {
-      method_receiver_ = token::kRef + ConvertPointer(base);
+      ufcs_receiver_ = token::kRef + ConvertPointer(base);
     }
     return;
   }
   if (!base->isLValue() && base->getType()->isRecordType()) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
-    method_receiver_ =
+    ufcs_receiver_ =
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
     return;
   }
-  method_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
+  ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
                                                     : ConvertPointer(base));
 }
 

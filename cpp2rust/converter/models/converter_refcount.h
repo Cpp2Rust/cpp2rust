@@ -220,7 +220,7 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
-  void ConvertReceiver(clang::Expr *base, bool is_arrow,
+  void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                        const clang::CXXMethodDecl *method) override;
   std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
   std::string TraitName(const clang::CXXRecordDecl *decl) const;

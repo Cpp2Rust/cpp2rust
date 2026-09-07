@@ -138,7 +138,7 @@ public:
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
                         const std::string &argument_as_string);
-  virtual void ConvertReceiver(clang::Expr *base, bool is_arrow,
+  virtual void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                const clang::CXXMethodDecl *method);
   void ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr);
   virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
@@ -664,7 +664,7 @@ protected:
     ~PushMethodTarget() { c.method_target_ = prev; }
   };
 
-  std::string method_receiver_;
+  std::string ufcs_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;

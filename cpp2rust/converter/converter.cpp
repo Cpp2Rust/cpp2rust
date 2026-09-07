@@ -1883,8 +1883,8 @@ void Converter::EmitArgList(const CallInfo &info) {
   using Kind = CallArg::Kind;
   PushParen call_args(*this);
 
-  if (!method_receiver_.empty()) {
-    StrCat(std::exchange(method_receiver_, std::string()), token::kComma);
+  if (!ufcs_receiver_.empty()) {
+    StrCat(std::exchange(ufcs_receiver_, std::string()), token::kComma);
   }
 
   for (unsigned i = 0; i < info.args.size(); i++) {
@@ -1971,7 +1971,7 @@ void Converter::ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr) {
   EmitHoistedArgs(info);
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
     if (method->isInstance()) {
-      ConvertReceiver(expr->getArg(0), false, method);
+      SetUFCSReceiver(expr->getArg(0), false, method);
     }
     StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
   } else {
@@ -2906,7 +2906,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
-    ConvertReceiver(expr->getBase(), expr->isArrow(), method);
+    SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
     StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
            GetMethodName(method));
     return false;
@@ -2949,12 +2949,12 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   return false;
 }
 
-void Converter::ConvertReceiver(clang::Expr *base, bool is_arrow,
+void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-    method_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
+    ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
     return;
   }
   Buffer buf(*this);
@@ -2965,7 +2965,7 @@ void Converter::ConvertReceiver(clang::Expr *base, bool is_arrow,
   } else {
     Convert(base);
   }
-  method_receiver_ = std::move(buf).str();
+  ufcs_receiver_ = std::move(buf).str();
 }
 
 // Returns the inner member and the replacement string.
