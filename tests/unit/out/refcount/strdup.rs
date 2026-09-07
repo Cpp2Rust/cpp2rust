@@ -35,13 +35,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello").clone(),
+        (Ptr::from_string_literal(b"hello")).clone(),
     )));
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (*d.borrow()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"hello").to_c_string_iterator();
+            let mut __it2 = (Ptr::from_string_literal(b"hello")).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -55,7 +55,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((((*d.borrow()).clone() as Ptr<u8>).to_any()));
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         (('a' as i32) as u8),
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((((*d2.borrow()).clone() as Ptr<u8>).to_any()));
     let d3: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
         (buf.as_pointer() as Ptr<u8>).clone(),
     )));
@@ -106,7 +106,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*d3.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((((*d3.borrow()).clone() as Ptr<u8>).to_any()));
     let d4: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     (*d4.borrow_mut()) = libcc2rs::strdup_refcount((*p.borrow()).clone());
     assert!((((!((*d4.borrow()).is_null())) as i32) != 0));
@@ -127,7 +127,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(((*d4.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((((*d4.borrow()).clone() as Ptr<u8>).to_any()));
     let rec: Value<record> = Rc::new(RefCell::new(record {
         name: Rc::new(RefCell::new(Ptr::<u8>::null())),
     }));
@@ -154,7 +154,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(
-        ((*(*(*r.borrow()).upgrade().deref()).name.borrow()).clone() as Ptr<u8>).to_any(),
+        (((*(*(*r.borrow()).upgrade().deref()).name.borrow()).clone() as Ptr<u8>).to_any()),
     );
     return 0;
 }

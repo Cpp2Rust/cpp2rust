@@ -12,11 +12,11 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: Option<Box<i32>> = Some(Box::new(10));
+    let mut p: Option<Box<i32>> = Some(Box::new((10)));
     (*p.as_deref_mut().unwrap()) += 5;
     (*p.as_deref_mut().unwrap()) -= 3;
     (*p.as_deref_mut().unwrap()) *= 2;
-    let mut q: Option<Box<i32>> = Some(Box::new(1));
+    let mut q: Option<Box<i32>> = Some(Box::new((1)));
     let mut sum: i32 = ((*p.as_deref_mut().unwrap()) + (*q.as_deref_mut().unwrap()));
     assert!(((sum) == (25)));
     return 0;

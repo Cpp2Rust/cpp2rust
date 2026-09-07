@@ -67,14 +67,13 @@ fn main_0() -> i32 {
                 .reinterpret_cast::<libcc2rs::SockaddrIn>(),
         ));
         let lo_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
-        if ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer())
+        if (((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer())
             as Ptr<libcc2rs::InAddr>)
-            .to_any()
-            .memcmp(
-                &((lo_be.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                4_usize,
-            )
-            == 0) as i32)
+            .to_any())
+        .memcmp(
+            &(((lo_be.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()),
+            (4_usize),
+        ) == 0) as i32)
             != 0)
         {
             (*found_loopback.borrow_mut()) = 1;
@@ -94,14 +93,13 @@ fn main_0() -> i32 {
             let mask_be: Value<Box<[u8]>> =
                 Rc::new(RefCell::new(Box::new([255_u8, 0_u8, 0_u8, 0_u8])));
             assert!(
-                ((((((*(*mask.borrow()).upgrade().deref()).sin_addr.as_pointer())
+                (((((((*(*mask.borrow()).upgrade().deref()).sin_addr.as_pointer())
                     as Ptr<libcc2rs::InAddr>)
-                    .to_any()
-                    .memcmp(
-                        &((mask_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                        4_usize
-                    )
-                    == 0) as i32)
+                    .to_any())
+                .memcmp(
+                    &(((mask_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any()),
+                    (4_usize)
+                ) == 0) as i32)
                     != 0)
             );
             assert!(
@@ -147,7 +145,7 @@ fn main_0() -> i32 {
     };
     assert!(
         (((match nix::net::if_::if_nametoindex(
-            Ptr::from_string_literal(b"cpp2rust_no_such_if")
+            (Ptr::from_string_literal(b"cpp2rust_no_such_if"))
                 .to_rust_string()
                 .as_str()
         ) {

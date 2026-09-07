@@ -10,7 +10,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(!(0 != 0));
+    assert!((!(0 != 0)));
     assert!((1 == 1));
     return 0;
 }

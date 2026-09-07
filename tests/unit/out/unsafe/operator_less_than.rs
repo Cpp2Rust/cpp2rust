@@ -18,6 +18,33 @@ impl Pair {
             || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));
     }
 }
+impl std::cmp::Ord for Pair {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        unsafe {
+            if Pair::operator_lt(&mut *(&raw const *self).cast_mut(), other as *const Pair) {
+                std::cmp::Ordering::Less
+            } else if Pair::operator_lt(&mut *(&raw const *other).cast_mut(), self as *const Pair) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for Pair {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for Pair {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            !(Pair::operator_lt(&mut *(&raw const *self).cast_mut(), other as *const Pair))
+                && !(Pair::operator_lt(&mut *(&raw const *other).cast_mut(), self as *const Pair))
+        }
+    }
+}
+impl std::cmp::Eq for Pair {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

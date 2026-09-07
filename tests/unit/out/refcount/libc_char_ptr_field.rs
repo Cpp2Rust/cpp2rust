@@ -12,7 +12,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
+            (nix::unistd::geteuid().as_raw()),
         )) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
@@ -29,8 +29,10 @@ fn main_0() -> i32 {
         (*(*(*pw.borrow()).upgrade().deref()).pw_dir.borrow()).clone(),
     ));
     let d: Value<Ptr<libcc2rs::Dirent>> = Rc::new(RefCell::new(
-        match nix::dir::Dir::open(
-            Ptr::from_string_literal(b"/tmp").to_rust_string().as_str(),
+        (match nix::dir::Dir::open(
+            (Ptr::from_string_literal(b"/tmp"))
+                .to_rust_string()
+                .as_str(),
             nix::fcntl::OFlag::O_RDONLY,
             nix::sys::stat::Mode::empty(),
         ) {
@@ -39,7 +41,7 @@ fn main_0() -> i32 {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 Ptr::null()
             }
-        }
+        })
         .with(|__d| {
             let __i = __d.pos.get();
             if __i >= __d.entries.len() {

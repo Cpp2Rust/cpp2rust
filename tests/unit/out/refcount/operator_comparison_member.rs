@@ -10,6 +10,41 @@ use std::rc::{Rc, Weak};
 pub struct S {
     pub v: Value<i32>,
 }
+impl std::cmp::Ord for S {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        {
+            if SImpl::operator_lt_pconstS_const(
+                &Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Less
+            } else if SImpl::operator_lt_pconstS_const(
+                &Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for S {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for S {
+    fn eq(&self, other: &Self) -> bool {
+        {
+            SImpl::operator_eq(
+                &Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            )
+        }
+    }
+}
+impl std::cmp::Eq for S {}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -51,7 +86,7 @@ fn main_0() -> i32 {
     assert!(({ SImpl::operator_gt(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_le(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ge(&a.as_pointer(), c.as_pointer(),) }));
-    assert!(!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) }));
+    assert!((!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) })));
     assert!(({ SImpl::operator_lt_i32_const(&a.as_pointer(), 5,) }));
     return 0;
 }

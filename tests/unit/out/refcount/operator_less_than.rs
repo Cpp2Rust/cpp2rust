@@ -11,6 +11,44 @@ pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl std::cmp::Ord for Pair {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        {
+            if PairImpl::operator_lt(
+                &Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Less
+            } else if PairImpl::operator_lt(
+                &Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for Pair {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for Pair {
+    fn eq(&self, other: &Self) -> bool {
+        {
+            !(PairImpl::operator_lt(
+                &Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            )) && !(PairImpl::operator_lt(
+                &Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+            ))
+        }
+    }
+}
+impl std::cmp::Eq for Pair {}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {

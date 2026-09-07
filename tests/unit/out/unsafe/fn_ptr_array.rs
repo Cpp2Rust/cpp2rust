@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { (ops[(0) as usize]).unwrap()(2, 3,) }) == (5)));
     assert!(((unsafe { (ops[(1) as usize]).unwrap()(7, 4,) }) == (3)));
     assert!(((unsafe { (ops[(2) as usize]).unwrap()(6, 5,) }) == (30)));
-    assert!(!((ops[(0) as usize]).is_none()));
+    assert!((!((ops[(0) as usize]).is_none())));
     assert!(((ops[(0) as usize]) == (Some(add_0))));
     assert!(((ops[(0) as usize]) != (Some(sub_1))));
     return 0;

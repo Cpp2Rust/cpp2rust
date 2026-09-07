@@ -79,10 +79,10 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        !(unsafe {
+        (!(unsafe {
             let _a: *mut S = &mut s as *mut S;
             operator_lt_6(_a, 6)
-        })
+        }))
     );
     return 0;
 }

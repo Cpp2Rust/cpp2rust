@@ -11,13 +11,37 @@ use std::rc::Rc;
 pub struct S {
     pub v: i32,
 }
-pub unsafe fn operator_eq_0(a: *const S, b: *const S) -> bool {
+impl std::cmp::Ord for S {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        unsafe {
+            if operator_lt_0(self as *const S, other as *const S) {
+                std::cmp::Ordering::Less
+            } else if operator_lt_0(other as *const S, self as *const S) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for S {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for S {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { operator_eq_1(self as *const S, other as *const S) }
+    }
+}
+impl std::cmp::Eq for S {}
+pub unsafe fn operator_eq_1(a: *const S, b: *const S) -> bool {
     return (((*a).v) == ((*b).v));
 }
-pub unsafe fn operator_ne_1(a: *const S, b: *const S) -> bool {
+pub unsafe fn operator_ne_2(a: *const S, b: *const S) -> bool {
     return (((*a).v) != ((*b).v));
 }
-pub unsafe fn operator_lt_2(a: *const S, b: *const S) -> bool {
+pub unsafe fn operator_lt_0(a: *const S, b: *const S) -> bool {
     return (((*a).v) < ((*b).v));
 }
 pub unsafe fn operator_gt_3(a: *const S, b: *const S) -> bool {
@@ -47,19 +71,19 @@ unsafe fn main_0() -> i32 {
     assert!(
         (unsafe {
             let _a: *const S = &a as *const S;
-            operator_eq_0(_a, &c as *const S)
+            operator_eq_1(_a, &c as *const S)
         })
     );
     assert!(
         (unsafe {
             let _a: *const S = &a as *const S;
-            operator_ne_1(_a, &b as *const S)
+            operator_ne_2(_a, &b as *const S)
         })
     );
     assert!(
         (unsafe {
             let _a: *const S = &a as *const S;
-            operator_lt_2(_a, &b as *const S)
+            operator_lt_0(_a, &b as *const S)
         })
     );
     assert!(
@@ -81,10 +105,10 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(
-        !(unsafe {
+        (!(unsafe {
             let _a: *const S = &b as *const S;
-            operator_lt_2(_a, &a as *const S)
-        })
+            operator_lt_0(_a, &a as *const S)
+        }))
     );
     assert!(
         (unsafe {

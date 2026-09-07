@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     assert!(((*a.borrow()) == 0));
     let fn_: Value<FnPtr<fn(Ptr<i32>)>> =
         Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::new(negate_0)));
-    assert!(!((*fn_.borrow()).is_null()));
+    assert!((!((*fn_.borrow()).is_null())));
     let b: Value<i32> = Rc::new(RefCell::new(10));
     ({ (*(*fn_.borrow()))((b.as_pointer())) });
     assert!(((*b.borrow()) == -10_i32));

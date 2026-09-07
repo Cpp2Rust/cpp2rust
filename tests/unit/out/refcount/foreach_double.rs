@@ -11,9 +11,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(1);
-    (*v.borrow_mut()).push(2);
-    (*v.borrow_mut()).push(3);
+    (*v.borrow_mut()).push((1));
+    (*v.borrow_mut()).push((2));
+    (*v.borrow_mut()).push((3));
     let square: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
         let e1: Value<i32> = Rc::new(RefCell::new(e1.read().clone()));

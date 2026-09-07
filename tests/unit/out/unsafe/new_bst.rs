@@ -69,6 +69,6 @@ unsafe fn main_0() -> i32 {
         && (((*(unsafe { find_0(root, 4) })).value) == (4)))
         && ((unsafe { find_0(root, 5) }).is_null());
     (unsafe { del_2(root) });
-    assert!(out);
+    assert!((out));
     return 0;
 }

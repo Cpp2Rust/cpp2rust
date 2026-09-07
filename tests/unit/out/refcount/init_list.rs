@@ -22,7 +22,7 @@ fn main_0() -> i32 {
         <i32>::default(),
     ])));
     let arr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
-    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let vec_: Value<Vec<i32>> = Rc::new(RefCell::new((vec![1, 2, 3])));
     ({ f_0(vec![1, 2, 3, 4]) });
     return 0;
 }

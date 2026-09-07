@@ -108,7 +108,7 @@ unsafe fn main_0() -> i32 {
             S::is(&s, _o)
         })
     );
-    assert!(!(unsafe { S::is(&s, (&mut t as *mut S).cast_const(),) }));
+    assert!((!(unsafe { S::is(&s, (&mut t as *mut S).cast_const(),) })));
     let mut p: *mut S = (Box::leak(Box::new(S::S({ 1 }))) as *mut S);
     let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*p)) });
     (*q).a_.postfix_inc();
@@ -118,6 +118,6 @@ unsafe fn main_0() -> i32 {
     (unsafe { S::destroy(&mut (*h)) });
     (unsafe { S::reset(&mut s) });
     assert!(((s.a_) == (0)));
-    assert!((s.self__).is_null());
+    assert!(((s.self__).is_null()));
     return 0;
 }

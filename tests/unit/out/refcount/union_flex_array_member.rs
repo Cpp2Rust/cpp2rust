@@ -140,6 +140,6 @@ fn main_0() -> i32 {
     assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
     (*q.borrow()).write(187_u8);
     assert!(((((((*q.borrow()).read()) as i32) == 187) as i32) != 0));
-    libcc2rs::free_refcount(((*n.borrow()).clone() as Ptr<node>).to_any());
+    libcc2rs::free_refcount((((*n.borrow()).clone() as Ptr<node>).to_any()));
     return 0;
 }

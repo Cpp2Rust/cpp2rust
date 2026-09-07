@@ -18,8 +18,8 @@ unsafe fn main_0() -> i32 {
             ::libc::O_RDONLY as i32,
         )
     });
-    libc::close(fd);
-    return if ((((libc::close(fd)) == (-1_i32)) as i32) != 0) {
+    libc::close((fd));
+    return if ((((libc::close((fd))) == (-1_i32)) as i32) != 0) {
         0
     } else {
         1

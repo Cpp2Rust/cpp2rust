@@ -15,10 +15,10 @@ unsafe fn main_0() -> i32 {
     let mut a: u32 = 12_u32;
     let mut b: u32 = 10_u32;
     let mut z: u32 = 0_u32;
-    assert!(!(z != 0));
-    assert!((a != 0) && (b != 0));
-    assert!(!((a != 0) && (z != 0)));
-    assert!((a != 0) || (z != 0));
+    assert!((!(z != 0)));
+    assert!(((a != 0) && (b != 0)));
+    assert!((!((a != 0) && (z != 0))));
+    assert!(((a != 0) || (z != 0)));
     assert!(((a) != (b)));
     assert!(((!a) == (!12_u32)));
     assert!((((a) & (b)) == (8_u32)));

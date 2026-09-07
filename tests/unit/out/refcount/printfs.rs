@@ -11,7 +11,7 @@ pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
     return {
         let mut r = (*v.borrow()).clone();
         r.pop();
-        r.extend(Ptr::from_string_literal(b" str").to_c_string_iterator());
+        r.extend((Ptr::from_string_literal(b" str")).to_c_string_iterator());
         r.push(0);
         r
     };
@@ -27,11 +27,11 @@ fn main_0() -> i32 {
     println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
     let in_: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdin()).clone()));
-    assert!(!((*in_.borrow()).is_null()));
+    assert!((!((*in_.borrow()).is_null())));
     println!("{}", Ptr::from_string_literal(b"printf"));
     print!("hello world");
     let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"a string")
+        (Ptr::from_string_literal(b"a string"))
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -42,7 +42,7 @@ fn main_0() -> i32 {
         (Rc::new(RefCell::new(
             ({
                 fn_0(
-                    Ptr::from_string_literal(b"foo")
+                    (Ptr::from_string_literal(b"foo"))
                         .to_c_string_iterator()
                         .chain(std::iter::once(0))
                         .collect::<Vec<u8>>(),

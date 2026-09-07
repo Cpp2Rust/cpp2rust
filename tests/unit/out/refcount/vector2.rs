@@ -8,13 +8,13 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    v.with_mut(|__v: &mut Vec<i32>| __v.push((20)));
     let x: Value<i32> = <Value<i32>>::default();
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let v4: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v3.as_pointer())));
-    (*v2.borrow_mut()).push(0);
-    (*v2.borrow_mut()).push(1);
-    (*v2.borrow_mut()).push(3);
+    (*v2.borrow_mut()).push((0));
+    (*v2.borrow_mut()).push((1));
+    (*v2.borrow_mut()).push((3));
     (*x.borrow_mut()) = ((v.to_strong().as_pointer() as Ptr<i32>)
         .offset(2_usize)
         .read());
@@ -50,7 +50,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!((((v2.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 6));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 7));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 13));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    v.with_mut(|__v: &mut Vec<i32>| __v.push((20)));
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -58,11 +58,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(4);
-    (*v.borrow_mut()).push(5);
-    (*v.borrow_mut()).push(6);
-    (*v2.borrow_mut()).push(8);
-    (*v2.borrow_mut()).push(9);
+    (*v.borrow_mut()).push((4));
+    (*v.borrow_mut()).push((5));
+    (*v.borrow_mut()).push((6));
+    (*v2.borrow_mut()).push((8));
+    (*v2.borrow_mut()).push((9));
     ({ fn_0(v.as_pointer(), (*v2.borrow()).clone()) });
     return 0;
 }

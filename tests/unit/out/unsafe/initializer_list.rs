@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn f_0(mut bytes: Vec<i32>) -> usize {
-    let mut buf: *mut Vec<i32> = (Box::leak(Box::new(bytes.clone())) as *mut Vec<i32>);
-    let mut n: usize = bytes.len();
+    let mut buf: *mut Vec<i32> = (Box::leak(Box::new((bytes.clone()))) as *mut Vec<i32>);
+    let mut n: usize = (bytes).len();
     ::std::mem::drop(Box::from_raw(buf));
     return n;
 }

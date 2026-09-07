@@ -14,28 +14,26 @@ fn main_0() -> i32 {
         (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
     ));
     assert!(
-        (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"1.2.3.4")
+        (((if (libc::AF_INET) == libc::AF_INET {
+            match (Ptr::from_string_literal(b"1.2.3.4"))
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
             }
-        } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"1.2.3.4")
+        } else if (libc::AF_INET) == libc::AF_INET6 {
+            match (Ptr::from_string_literal(b"1.2.3.4"))
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
@@ -59,28 +57,26 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"999.1.1.1")
+        (((if (libc::AF_INET) == libc::AF_INET {
+            match (Ptr::from_string_literal(b"999.1.1.1"))
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
             }
-        } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"999.1.1.1")
+        } else if (libc::AF_INET) == libc::AF_INET6 {
+            match (Ptr::from_string_literal(b"999.1.1.1"))
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
@@ -94,28 +90,26 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"not an ip")
+        (((if (libc::AF_INET) == libc::AF_INET {
+            match (Ptr::from_string_literal(b"not an ip"))
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
             }
-        } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"not an ip")
+        } else if (libc::AF_INET) == libc::AF_INET6 {
+            match (Ptr::from_string_literal(b"not an ip"))
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
@@ -129,28 +123,26 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::from_string_literal(b"::1")
+        (((if (libc::AF_INET6) == libc::AF_INET {
+            match (Ptr::from_string_literal(b"::1"))
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
             }
-        } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"::1")
+        } else if (libc::AF_INET6) == libc::AF_INET6 {
+            match (Ptr::from_string_literal(b"::1"))
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
@@ -169,28 +161,26 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::from_string_literal(b"2001:db8::5")
+        (((if (libc::AF_INET6) == libc::AF_INET {
+            match (Ptr::from_string_literal(b"2001:db8::5"))
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
                 }
                 Err(_) => 0,
             }
-        } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"2001:db8::5")
+        } else if (libc::AF_INET6) == libc::AF_INET6 {
+            match (Ptr::from_string_literal(b"2001:db8::5"))
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                    (((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
                     1
@@ -216,16 +206,14 @@ fn main_0() -> i32 {
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
         ((({
-            let mut __it1 = {
-                let __text = if libc::AF_INET == libc::AF_INET {
-                    let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+            let mut __it1 = ({
+                let __text = if (libc::AF_INET) == libc::AF_INET {
+                    let __b: [u8; 4] = (((four.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
-                } else if libc::AF_INET == libc::AF_INET6 {
-                    let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                } else if (libc::AF_INET) == libc::AF_INET6 {
+                    let __b: [u8; 16] = (((four.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice(16, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv6Addr::from(__b).to_string())
@@ -252,9 +240,9 @@ fn main_0() -> i32 {
                         Ptr::null()
                     }
                 }
-            }
+            })
             .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"10.0.0.1").to_c_string_iterator();
+            let mut __it2 = (Ptr::from_string_literal(b"10.0.0.1")).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -289,16 +277,14 @@ fn main_0() -> i32 {
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(
         ((({
-            let mut __it1 = {
-                let __text = if libc::AF_INET6 == libc::AF_INET {
-                    let __b: [u8; 4] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+            let mut __it1 = ({
+                let __text = if (libc::AF_INET6) == libc::AF_INET {
+                    let __b: [u8; 4] = (((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
-                } else if libc::AF_INET6 == libc::AF_INET6 {
-                    let __b: [u8; 16] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                        .to_any()
+                } else if (libc::AF_INET6) == libc::AF_INET6 {
+                    let __b: [u8; 16] = (((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                         .reinterpret_cast::<u8>()
                         .with_slice(16, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv6Addr::from(__b).to_string())
@@ -325,9 +311,9 @@ fn main_0() -> i32 {
                         Ptr::null()
                     }
                 }
-            }
+            })
             .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"::1").to_c_string_iterator();
+            let mut __it2 = (Ptr::from_string_literal(b"::1")).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -343,15 +329,13 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            let __text = if libc::AF_INET == libc::AF_INET {
-                let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                    .to_any()
+            let __text = if (libc::AF_INET) == libc::AF_INET {
+                let __b: [u8; 4] = (((four.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                     .reinterpret_cast::<u8>()
                     .with_slice(4, |__s| __s.try_into().unwrap());
                 Some(std::net::Ipv4Addr::from(__b).to_string())
-            } else if libc::AF_INET == libc::AF_INET6 {
-                let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
-                    .to_any()
+            } else if (libc::AF_INET) == libc::AF_INET6 {
+                let __b: [u8; 16] = (((four.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any())
                     .reinterpret_cast::<u8>()
                     .with_slice(16, |__s| __s.try_into().unwrap());
                 Some(std::net::Ipv6Addr::from(__b).to_string())
@@ -359,7 +343,7 @@ fn main_0() -> i32 {
                 None
             };
             match __text {
-                Some(__s) if (__s.len() as u32) < 4_u32 => {
+                Some(__s) if (__s.len() as u32) < (4_u32) => {
                     let __n = __s.len();
                     (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
                         __sl[..__n].copy_from_slice(__s.as_bytes());

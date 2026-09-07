@@ -12,11 +12,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut g: Option<Box<[i32]>> =
-        Some((0..2_usize).map(|_| <i32>::default()).collect::<Box<[_]>>());
+    let mut g: Option<Box<[i32]>> = Some(
+        (0..(2_usize))
+            .map(|_| <i32>::default())
+            .collect::<Box<[_]>>(),
+    );
     g.as_mut().unwrap()[(0_usize)] = 11;
     g.as_mut().unwrap()[(1_usize)] = 12;
-    let mut g_ptr: *mut i32 = g
+    let mut g_ptr: *mut i32 = (g)
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr());
     (*g_ptr.offset((0) as isize)) = 13;

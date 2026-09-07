@@ -159,7 +159,7 @@ fn main_0() -> i32 {
     let __rhs = ({ Delete_2((*head.borrow()).clone(), -2_i32) });
     (*head.borrow_mut()) = __rhs;
     assert!(
-        ((((((*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
+        (((((((*(*({ Find_0((*head.borrow()).clone(), 0,) }).upgrade().deref())
             .val
             .borrow())
             == 4)
@@ -179,7 +179,7 @@ fn main_0() -> i32 {
                 .val
                 .borrow())
                 == -1_i32))
-            && (({ Find_0((*head.borrow()).clone(), 5,) }).is_null())
+            && (({ Find_0((*head.borrow()).clone(), 5,) }).is_null()))
     );
     return 0;
 }

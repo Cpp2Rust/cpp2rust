@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn test_getpwuid_0() {
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
+            (nix::unistd::geteuid().as_raw()),
         )) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
@@ -43,7 +43,7 @@ pub fn test_getpwuid_0() {
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
     let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
+        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw((2147483646_u32))) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
             Err(__e) => {
@@ -66,10 +66,10 @@ pub fn test_getpwuid_r_2() {
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
             let __buf = (buf.as_pointer() as Ptr<u8>).clone();
-            let __buflen = ::std::mem::size_of::<[u8; 4096]>();
+            let __buflen = (::std::mem::size_of::<[u8; 4096]>());
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-                nix::unistd::geteuid().as_raw(),
+                (nix::unistd::geteuid().as_raw()),
             )) {
                 Ok(Some(__u)) => {
                     let __strs: [Vec<u8>; 5] = [
@@ -129,7 +129,7 @@ pub fn test_getpwuid_r_2() {
     );
     let pw2: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
+            (nix::unistd::geteuid().as_raw()),
         )) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
@@ -171,10 +171,10 @@ pub fn test_getpwuid_r_erange_3() {
         ((({
             let __pwbuf = (pw.as_pointer()).clone();
             let __buf = (tiny.as_pointer() as Ptr<u8>).clone();
-            let __buflen = ::std::mem::size_of::<[u8; 1]>();
+            let __buflen = (::std::mem::size_of::<[u8; 1]>());
             let __out = (result.as_pointer()).clone();
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-                nix::unistd::geteuid().as_raw(),
+                (nix::unistd::geteuid().as_raw()),
             )) {
                 Ok(Some(__u)) => {
                     let __strs: [Vec<u8>; 5] = [

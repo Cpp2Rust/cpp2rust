@@ -19,9 +19,9 @@ pub unsafe fn test_ipv4_literal_0() {
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
         ((((libc::getaddrinfo(
-            (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
-            (c"8080".as_ptr().cast_mut()).cast_const(),
-            (&mut hints as *mut ::libc::addrinfo).cast_const(),
+            ((c"127.0.0.1".as_ptr().cast_mut()).cast_const()),
+            ((c"8080".as_ptr().cast_mut()).cast_const()),
+            ((&mut hints as *mut ::libc::addrinfo).cast_const()),
             (&mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
@@ -42,11 +42,11 @@ pub unsafe fn test_ipv4_literal_0() {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_port as *mut u16) as *const u16 as *const ::libc::c_void)
                     as *const u8,
-                2_usize as usize,
+                (2_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (port_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                2_usize as usize,
+                (2_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -65,11 +65,11 @@ pub unsafe fn test_ipv4_literal_0() {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
                     as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -82,7 +82,7 @@ pub unsafe fn test_ipv4_literal_0() {
         }) == (0)) as i32)
             != 0)
     );
-    libc::freeaddrinfo(res);
+    libc::freeaddrinfo((res));
 }
 pub unsafe fn test_ipv6_literal_1() {
     let mut hints: ::libc::addrinfo = unsafe { std::mem::zeroed() };
@@ -97,9 +97,9 @@ pub unsafe fn test_ipv6_literal_1() {
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
         ((((libc::getaddrinfo(
-            (c"::1".as_ptr().cast_mut()).cast_const(),
-            (c"443".as_ptr().cast_mut()).cast_const(),
-            (&mut hints as *mut ::libc::addrinfo).cast_const(),
+            ((c"::1".as_ptr().cast_mut()).cast_const()),
+            ((c"443".as_ptr().cast_mut()).cast_const()),
+            ((&mut hints as *mut ::libc::addrinfo).cast_const()),
             (&mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
@@ -120,11 +120,11 @@ pub unsafe fn test_ipv6_literal_1() {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin6).sin6_port as *mut u16) as *const u16 as *const ::libc::c_void)
                     as *const u8,
-                2_usize as usize,
+                (2_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (port_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                2_usize as usize,
+                (2_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -146,11 +146,11 @@ pub unsafe fn test_ipv6_literal_1() {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::in6_addr
                     as *const ::libc::c_void) as *const u8,
-                16_usize as usize,
+                (16_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                16_usize as usize,
+                (16_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -163,15 +163,15 @@ pub unsafe fn test_ipv6_literal_1() {
         }) == (0)) as i32)
             != 0)
     );
-    libc::freeaddrinfo(res);
+    libc::freeaddrinfo((res));
 }
 pub unsafe fn test_null_hints_2() {
     let mut res: *mut ::libc::addrinfo = std::ptr::null_mut();
     assert!(
         ((((libc::getaddrinfo(
-            (c"127.0.0.1".as_ptr().cast_mut()).cast_const(),
-            (c"80".as_ptr().cast_mut()).cast_const(),
-            std::ptr::null(),
+            ((c"127.0.0.1".as_ptr().cast_mut()).cast_const()),
+            ((c"80".as_ptr().cast_mut()).cast_const()),
+            (std::ptr::null()),
             (&mut res as *mut *mut ::libc::addrinfo)
         )) == (0)) as i32)
             != 0)
@@ -185,11 +185,11 @@ pub unsafe fn test_null_hints_2() {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
                     as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -202,7 +202,7 @@ pub unsafe fn test_null_hints_2() {
         }) == (0)) as i32)
             != 0)
     );
-    libc::freeaddrinfo(res);
+    libc::freeaddrinfo((res));
 }
 pub fn main() {
     unsafe {

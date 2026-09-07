@@ -19,7 +19,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut s: S = <S>::default();
-    s.v.push(1);
+    (s.v).push((1));
     'loop_: for e in 0..(s.v.len()) {
         let mut e = s.v[e].clone();
         s.a.postfix_inc();

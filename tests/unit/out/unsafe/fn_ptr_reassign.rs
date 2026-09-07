@@ -28,9 +28,9 @@ unsafe fn main_0() -> i32 {
     fn_ = Some(mul_2);
     assert!(((unsafe { (fn_).unwrap()(6, 7,) }) == (42)));
     fn_ = None;
-    assert!((fn_).is_none());
+    assert!(((fn_).is_none()));
     fn_ = Some(add_0);
-    assert!(!((fn_).is_none()));
+    assert!((!((fn_).is_none())));
     assert!(((unsafe { (fn_).unwrap()(1, 1,) }) == (2)));
     return 0;
 }

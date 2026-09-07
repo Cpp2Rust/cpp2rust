@@ -10,6 +10,41 @@ use std::rc::{Rc, Weak};
 pub struct S {
     pub v: Value<i32>,
 }
+impl std::cmp::Ord for S {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        {
+            if operator_lt_0(
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Less
+            } else if operator_lt_0(
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+            ) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for S {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for S {
+    fn eq(&self, other: &Self) -> bool {
+        {
+            operator_eq_1(
+                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(other.clone())).as_pointer(),
+            )
+        }
+    }
+}
+impl std::cmp::Eq for S {}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -32,19 +67,19 @@ impl ByteRepr for S {
         }
     }
 }
-pub fn operator_eq_0(a: Ptr<S>, b: Ptr<S>) -> bool {
+pub fn operator_eq_1(a: Ptr<S>, b: Ptr<S>) -> bool {
     return {
         let _lhs = (*(*a.upgrade().deref()).v.borrow());
         _lhs == (*(*b.upgrade().deref()).v.borrow())
     };
 }
-pub fn operator_ne_1(a: Ptr<S>, b: Ptr<S>) -> bool {
+pub fn operator_ne_2(a: Ptr<S>, b: Ptr<S>) -> bool {
     return {
         let _lhs = (*(*a.upgrade().deref()).v.borrow());
         _lhs != (*(*b.upgrade().deref()).v.borrow())
     };
 }
-pub fn operator_lt_2(a: Ptr<S>, b: Ptr<S>) -> bool {
+pub fn operator_lt_0(a: Ptr<S>, b: Ptr<S>) -> bool {
     return {
         let _lhs = (*(*a.upgrade().deref()).v.borrow());
         _lhs < (*(*b.upgrade().deref()).v.borrow())
@@ -98,19 +133,19 @@ fn main_0() -> i32 {
     assert!(
         ({
             let _a: Ptr<S> = a.as_pointer();
-            operator_eq_0(_a, c.as_pointer())
+            operator_eq_1(_a, c.as_pointer())
         })
     );
     assert!(
         ({
             let _a: Ptr<S> = a.as_pointer();
-            operator_ne_1(_a, b.as_pointer())
+            operator_ne_2(_a, b.as_pointer())
         })
     );
     assert!(
         ({
             let _a: Ptr<S> = a.as_pointer();
-            operator_lt_2(_a, b.as_pointer())
+            operator_lt_0(_a, b.as_pointer())
         })
     );
     assert!(
@@ -132,10 +167,10 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        !({
+        (!({
             let _a: Ptr<S> = b.as_pointer();
-            operator_lt_2(_a, a.as_pointer())
-        })
+            operator_lt_0(_a, a.as_pointer())
+        }))
     );
     assert!(
         ({

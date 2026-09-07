@@ -22,10 +22,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fn_: Option<unsafe fn(*mut ::libc::c_void) -> i32> = None;
-    assert!((fn_).is_none());
+    assert!(((fn_).is_none()));
     assert!(((fn_) != (Some(my_foo_0))));
     fn_ = Some(my_foo_0);
-    assert!(!((fn_).is_none()));
+    assert!((!((fn_).is_none())));
     assert!(((fn_) == (Some(my_foo_0))));
     let mut a: i32 = 10;
     assert!(((unsafe { foo_1(fn_, (&mut a as *mut i32),) }) == (a)));

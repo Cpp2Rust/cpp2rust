@@ -34,11 +34,11 @@ unsafe fn main_0() -> i32 {
             let sa = core::slice::from_raw_parts(
                 ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
                     as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let sb = core::slice::from_raw_parts(
                 (lo_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                4_usize as usize,
+                (4_usize) as usize,
             );
             let mut diff = 0_i32;
             for (x, y) in sa.iter().zip(sb.iter()) {
@@ -62,11 +62,11 @@ unsafe fn main_0() -> i32 {
                     let sa = core::slice::from_raw_parts(
                         ((&mut (*mask).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
                             as *const ::libc::c_void) as *const u8,
-                        4_usize as usize,
+                        (4_usize) as usize,
                     );
                     let sb = core::slice::from_raw_parts(
                         (mask_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
-                        4_usize as usize,
+                        (4_usize) as usize,
                     );
                     let mut diff = 0_i32;
                     for (x, y) in sa.iter().zip(sb.iter()) {
@@ -80,15 +80,16 @@ unsafe fn main_0() -> i32 {
                     != 0)
             );
             assert!(
-                ((((libc::if_nametoindex(((*ifa).ifa_name).cast_const())) > (0_u32)) as i32) != 0)
+                ((((libc::if_nametoindex((((*ifa).ifa_name).cast_const()))) > (0_u32)) as i32)
+                    != 0)
             );
         }
         ifa = (*ifa).ifa_next;
     }
     assert!((found_loopback != 0));
-    libc::freeifaddrs(list);
+    libc::freeifaddrs((list));
     assert!(
-        ((((libc::if_nametoindex((c"cpp2rust_no_such_if".as_ptr().cast_mut()).cast_const()))
+        ((((libc::if_nametoindex(((c"cpp2rust_no_such_if".as_ptr().cast_mut()).cast_const())))
             == (0_u32)) as i32)
             != 0)
     );

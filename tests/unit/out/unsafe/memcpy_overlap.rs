@@ -21,11 +21,11 @@ unsafe fn main_0() -> i32 {
         (6 as libc::c_char),
     ];
     {
-        if 4_usize != 0 {
+        if (4_usize) != 0 {
             ::std::ptr::copy_nonoverlapping(
                 (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void),
                 (buf.as_mut_ptr().offset((2) as isize) as *mut libc::c_char as *mut ::libc::c_void),
-                4_usize as usize,
+                (4_usize) as usize,
             )
         }
         (buf.as_mut_ptr().offset((2) as isize) as *mut libc::c_char as *mut ::libc::c_void)

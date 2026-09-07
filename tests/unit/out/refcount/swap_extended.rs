@@ -73,10 +73,10 @@ fn main_0() -> i32 {
             (Ptr::alloc(10)).offset((0) as isize),
         )
     });
-    let j: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Ptr::alloc(11).to_owned_opt()));
+    let j: Value<Option<Value<i32>>> = Rc::new(RefCell::new((Ptr::alloc(11)).to_owned_opt()));
     let k: Value<Ptr<i32>> = Rc::new(RefCell::new((*j.borrow()).as_pointer()));
     write!(libcc2rs::cout(), "{:}\n", ((*k.borrow()).read()),);
-    let l: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(11)))));
+    let l: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new((11))))));
     let m: Value<Ptr<i32>> = Rc::new(RefCell::new((*l.borrow()).as_pointer()));
     write!(libcc2rs::cout(), "{:}\n", ((*m.borrow()).read()),);
     assert!(((*c.borrow()) == 2));

@@ -35,10 +35,9 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            Ptr::from_string_literal(b"hello")
-                .to_any()
+            (Ptr::from_string_literal(b"hello").to_any())
                 .reinterpret_cast::<u8>()
-                .with_slice(5_usize, |__buf| nix::unistd::write(__fd, __buf))
+                .with_slice((5_usize), |__buf| nix::unistd::write(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {

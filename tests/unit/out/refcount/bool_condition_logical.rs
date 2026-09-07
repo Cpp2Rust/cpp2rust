@@ -36,98 +36,98 @@ fn main_0() -> i32 {
     let u: Value<u32> = Rc::new(RefCell::new(4_u32));
     let code: Value<Code> = Rc::new(RefCell::new(Code_CODE_OK));
     if ((*n.borrow()) != 0) && (!(*p.borrow()).is_null()) {
-        assert!(true);
+        assert!((true));
     }
     if ((*n.borrow()) != 0) && (!(*np.borrow()).is_null()) {
-        assert!(false);
+        assert!((false));
     }
     if ((*zero.borrow()) != 0) || (!(*p.borrow()).is_null()) {
-        assert!(true);
+        assert!((true));
     }
     if ((*zero.borrow()) != 0) || (!(*np.borrow()).is_null()) {
-        assert!(false);
+        assert!((false));
     }
     if ((((*n.borrow()) != 0) && ((*u.borrow()) != 0)) && (!(*p.borrow()).is_null()))
         && (((*code.borrow()) as i32) == (Code_CODE_OK as i32))
     {
-        assert!(true);
+        assert!((true));
     }
     (*side_effect_0.with(Value::clone).borrow_mut()) = 0;
     if ((*zero.borrow()) != 0) && (({ observe_1(1) }) != 0) {
-        assert!(false);
+        assert!((false));
     }
     assert!(((*side_effect_0.with(Value::clone).borrow()) == 0));
     if ((*n.borrow()) != 0) || (({ observe_1(1) }) != 0) {
-        assert!(true);
+        assert!((true));
     }
     assert!(((*side_effect_0.with(Value::clone).borrow()) == 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
     let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
     if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) < (*y.borrow())) || (((*flags.borrow()) & 1_u32) != 0) {
-        assert!(false);
+        assert!((false));
     }
     let a: Value<u32> = Rc::new(RefCell::new(1_u32));
     let b: Value<u32> = Rc::new(RefCell::new(2_u32));
     let c: Value<u32> = Rc::new(RefCell::new(3_u32));
     if ((*a.borrow()) != (*c.borrow())) && ((*b.borrow()) != (*c.borrow())) {
-        assert!(true);
+        assert!((true));
     }
     let s: Value<i32> = Rc::new(RefCell::new(-1_i32));
     if (!((*p.borrow()).is_null())) && ((*s.borrow()) < 0) {
-        assert!(true);
+        assert!((true));
     }
     let k: Value<u32> = Rc::new(RefCell::new(2_u32));
     let done: Value<bool> = Rc::new(RefCell::new(false));
     if ((*k.borrow()) > 1_u32) || (!(*done.borrow())) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) > (*y.borrow())) || (((*flags.borrow()) & 4_u32) != 0) {
-        assert!(true);
+        assert!((true));
     }
     let ull: Value<u64> = Rc::new(RefCell::new(7_u64));
     if (!((*p.borrow()).is_null())) && ((*ull.borrow()) != 0) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) > (*y.borrow())) && ((*ull.borrow()) != 0) {
-        assert!(true);
+        assert!((true));
     }
     let mask: Value<i64> = Rc::new(RefCell::new(((1_i64 << 4) | (1_i64 << 5))));
     let bits: Value<i64> = Rc::new(RefCell::new((1_i64 << 4)));
     if ((*n.borrow()) != 0) && (((*bits.borrow()) & (*mask.borrow())) != 0) {
-        assert!(true);
+        assert!((true));
     }
     if ((*n.borrow()) != 0) || (((*bits.borrow()) & 256_i64) != 0) {
-        assert!(true);
+        assert!((true));
     }
     let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
     let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     if ((*x.borrow()) > (*y.borrow())) && (!(*cp.borrow()).is_null()) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) < (*y.borrow())) || (!(*cnp.borrow()).is_null()) {
-        assert!(false);
+        assert!((false));
     }
     if ((*x.borrow()) > (*y.borrow())) && (((*n.borrow()) != 0) && (!(*cp.borrow()).is_null())) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) > (*y.borrow())) && (({ returns_one_2() }) != 0) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) > (*y.borrow())) && (!(({ returns_zero_3() }) != 0)) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) < (*y.borrow())) || (({ returns_one_2() }) != 0) {
-        assert!(true);
+        assert!((true));
     }
     if ((*x.borrow()) < (*y.borrow())) || (!(({ returns_one_2() }) != 0)) {
-        assert!(false);
+        assert!((false));
     }
     if ((!((*p.borrow()).is_null())) && (({ returns_one_2() }) != 0)) && ((*n.borrow()) != 0) {
-        assert!(true);
+        assert!((true));
     }
     return 0;
 }

@@ -14,6 +14,6 @@ fn main_0() -> i32 {
     let b1: Value<bool> = Rc::new(RefCell::new(((*flag.borrow()) != 0)));
     let b2: Value<bool> = Rc::new(RefCell::new((0_u32 != 0)));
     assert!((*b1.borrow()));
-    assert!(!(*b2.borrow()));
+    assert!((!(*b2.borrow())));
     return 0;
 }

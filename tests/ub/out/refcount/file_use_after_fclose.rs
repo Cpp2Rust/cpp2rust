@@ -12,14 +12,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
-            &Ptr::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &(Ptr::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp")).to_rust_string(),
+            &(Ptr::from_string_literal(b"wb")).to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
         },
     ));
-    assert!(!(*fp.borrow()).is_null());
+    assert!((!(*fp.borrow()).is_null()));
     {
         let __r = (*fp.borrow()).with(|__f| __f.close());
         (*fp.borrow()).delete();

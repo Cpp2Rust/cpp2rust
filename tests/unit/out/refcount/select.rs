@@ -30,22 +30,19 @@ fn main_0() -> i32 {
     );
     let rset: Value<CFdSet> = Rc::new(RefCell::new(Default::default()));
     (rset.as_pointer()).with_mut(|__s| __s.zero());
-    (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
+    (rset.as_pointer()).with_mut(|__s| __s.set(((*fds.borrow())[(0) as usize])));
     let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
     {
-        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
-            .to_any()
-            .memset((0) as u8, 16usize as usize);
-        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
-            .to_any()
-            .clone()
+        (((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any())
+            .memset((0) as u8, (16usize) as usize);
+        (((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any()).clone()
     };
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 0_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer()).clone();
-            let __wp = Ptr::<CFdSet>::null().clone();
-            let __ep = Ptr::<CFdSet>::null().clone();
+            let __wp = (Ptr::<CFdSet>::null()).clone();
+            let __ep = (Ptr::<CFdSet>::null()).clone();
             let __tp = (tv.as_pointer()).clone();
             let __r_fds: Vec<i32> = match __rp.is_null() {
                 true => Vec::new(),
@@ -165,7 +162,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((!(if (rset.as_pointer()).with(|__s| __s.isset((*fds.borrow())[(0) as usize])) {
+        ((!(if (rset.as_pointer()).with(|__s| __s.isset(((*fds.borrow())[(0) as usize]))) {
             1
         } else {
             0
@@ -173,11 +170,10 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::from_string_literal(b"x")
-                .to_any()
+        (((match FdRegistry::with_fd(((*fds.borrow())[(1) as usize]), |__fd| {
+            (Ptr::from_string_literal(b"x").to_any())
                 .reinterpret_cast::<u8>()
-                .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))
+                .with_slice((1_usize), |__buf| nix::unistd::write(__fd, __buf))
         }) {
             Ok(__n) => __n as isize,
             Err(__e) => {
@@ -188,13 +184,13 @@ fn main_0() -> i32 {
             != 0)
     );
     (rset.as_pointer()).with_mut(|__s| __s.zero());
-    (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
+    (rset.as_pointer()).with_mut(|__s| __s.set(((*fds.borrow())[(0) as usize])));
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 1_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer()).clone();
-            let __wp = Ptr::<CFdSet>::null().clone();
-            let __ep = Ptr::<CFdSet>::null().clone();
+            let __wp = (Ptr::<CFdSet>::null()).clone();
+            let __ep = (Ptr::<CFdSet>::null()).clone();
             let __tp = (tv.as_pointer()).clone();
             let __r_fds: Vec<i32> = match __rp.is_null() {
                 true => Vec::new(),
@@ -314,13 +310,13 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (if (rset.as_pointer()).with(|__s| __s.isset((*fds.borrow())[(0) as usize])) {
+        (if (rset.as_pointer()).with(|__s| __s.isset(((*fds.borrow())[(0) as usize]))) {
             1
         } else {
             0
         } != 0)
     );
-    assert!((((FdRegistry::close((*fds.borrow())[(0) as usize]) == 0) as i32) != 0));
-    assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(((*fds.borrow())[(0) as usize])) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(((*fds.borrow())[(1) as usize])) == 0) as i32) != 0));
     return 0;
 }

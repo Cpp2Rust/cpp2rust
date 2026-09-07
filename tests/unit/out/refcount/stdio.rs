@@ -9,21 +9,21 @@ use std::rc::{Rc, Weak};
 pub fn test_fputc_0() {
     {
         let __c = ('H' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
     };
     {
         let __c = ('i' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
     };
     {
         let __c = ('\n' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
@@ -31,17 +31,17 @@ pub fn test_fputc_0() {
 }
 pub fn test_fputs_1() {
     {
-        let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello")
+        let __bytes: Vec<u8> = (Ptr::from_string_literal(b"hello"))
             .to_c_string_iterator()
             .collect();
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
         }
     };
     {
         let __c = ('\n' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
@@ -49,14 +49,14 @@ pub fn test_fputs_1() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"from variable")));
     {
         let __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
         }
     };
     {
         let __c = ('\n' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
@@ -71,14 +71,14 @@ pub fn test_fputs_1() {
         let __bytes: Vec<u8> = (buf.as_pointer() as Ptr<u8>)
             .to_c_string_iterator()
             .collect();
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
         }
     };
     {
         let __c = ('\n' as i32) as u8;
-        match libcc2rs::c_stdout().with_mut(|__f| __f.write(&[__c])) {
+        match (libcc2rs::c_stdout()).with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }
@@ -86,7 +86,7 @@ pub fn test_fputs_1() {
 }
 pub fn test_puts_2() {
     {
-        let mut __bytes: Vec<u8> = Ptr::from_string_literal(b"puts hello")
+        let mut __bytes: Vec<u8> = (Ptr::from_string_literal(b"puts hello"))
             .to_c_string_iterator()
             .collect();
         __bytes.push(b'\n');
@@ -106,16 +106,16 @@ pub fn test_puts_2() {
     };
 }
 pub fn test_fileno_3() {
-    assert!((((libcc2rs::c_stdin().with(|__f| __f.fd) == 0) as i32) != 0));
-    assert!((((libcc2rs::c_stdout().with(|__f| __f.fd) == 1) as i32) != 0));
-    assert!((((libcc2rs::c_stderr().with(|__f| __f.fd) == 2) as i32) != 0));
+    assert!(((((libcc2rs::c_stdin()).with(|__f| __f.fd) == 0) as i32) != 0));
+    assert!(((((libcc2rs::c_stdout()).with(|__f| __f.fd) == 1) as i32) != 0));
+    assert!(((((libcc2rs::c_stderr()).with(|__f| __f.fd) == 2) as i32) != 0));
     let file: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
         b"cpp2rust_fileno_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*file.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &(Ptr::from_string_literal(b"wb")).to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),

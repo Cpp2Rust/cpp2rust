@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let __action = match 0 {
+            let __action = match (0) {
                 0 => nix::sys::termios::SetArg::TCSANOW,
                 1 => nix::sys::termios::SetArg::TCSADRAIN,
                 2 => nix::sys::termios::SetArg::TCSAFLUSH,

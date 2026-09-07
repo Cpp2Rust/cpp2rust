@@ -61,9 +61,9 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(StructWithCtor::StructWithCtor({ 1 }, { 2 })));
     let x: Value<i32> = Rc::new(RefCell::new(3));
     assert!(
-        (((({ foo_0(x.as_pointer(),) }).read()) == 3)
+        ((((({ foo_0(x.as_pointer(),) }).read()) == 3)
             && ((({ StructWithCtorImpl::x1(&struct_with_ctor.as_pointer(),) }).read()) == 2))
-            && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1)
+            && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1))
     );
     return 0;
 }

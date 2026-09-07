@@ -66,20 +66,20 @@ unsafe fn main_0() -> i32 {
         ((&mut table[(table_size)] as *mut Entry) as *mut Entry as *mut ::libc::c_void)
     };
     assert!(
-        ((table[(4) as usize].bits as i32) == (1))
-            && ((table[(4) as usize].value as i32) == (4369))
+        (((table[(4) as usize].bits as i32) == (1))
+            && ((table[(4) as usize].value as i32) == (4369)))
     );
     assert!(
-        ((table[(5) as usize].bits as i32) == (2))
-            && ((table[(5) as usize].value as i32) == (8738))
+        (((table[(5) as usize].bits as i32) == (2))
+            && ((table[(5) as usize].value as i32) == (8738)))
     );
     assert!(
-        ((table[(6) as usize].bits as i32) == (3))
-            && ((table[(6) as usize].value as i32) == (13107))
+        (((table[(6) as usize].bits as i32) == (3))
+            && ((table[(6) as usize].value as i32) == (13107)))
     );
     assert!(
-        ((table[(7) as usize].bits as i32) == (4))
-            && ((table[(7) as usize].value as i32) == (17476))
+        (((table[(7) as usize].bits as i32) == (4))
+            && ((table[(7) as usize].value as i32) == (17476)))
     );
     return 0;
 }

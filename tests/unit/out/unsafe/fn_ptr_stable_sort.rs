@@ -22,12 +22,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<Item> = Vec::new();
-    v.push(Item { key: 3, value: 30 });
-    v.push(Item { key: 1, value: 10 });
-    v.push(Item { key: 2, value: 20 });
+    (v).push((Item { key: 3, value: 30 }));
+    (v).push((Item { key: 1, value: 10 }));
+    (v).push((Item { key: 2, value: 20 }));
     {
-        let len = v.as_mut_ptr().add(v.len()).offset_from(v.as_mut_ptr()) as usize;
-        ::std::slice::from_raw_parts_mut(v.as_mut_ptr(), len).sort_by(|x, y| {
+        let len = ((v).as_mut_ptr().add((v).len())).offset_from(((v).as_mut_ptr())) as usize;
+        ::std::slice::from_raw_parts_mut(((v).as_mut_ptr()), len).sort_by(|x, y| {
             if (Compare_0)(x, y) {
                 std::cmp::Ordering::Less
             } else if (Compare_0)(y, x) {

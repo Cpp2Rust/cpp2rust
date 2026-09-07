@@ -273,14 +273,14 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        ((((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
+        (((((((((*reals.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 10)
             && ((*imgs.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0))
             && ((*reals.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == -2_i32))
             && ((*imgs.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 2))
             && ((*reals.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == -2_i32))
             && ((*imgs.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 0))
             && ((*reals.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32))
-            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32)
+            && ((*imgs.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == -2_i32))
     );
     return 0;
 }

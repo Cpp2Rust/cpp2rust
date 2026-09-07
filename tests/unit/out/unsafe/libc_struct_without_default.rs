@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
     assert!(((st.st_size) == (1024_i64)));
     let mut ud: UserDefined = <UserDefined>::default();
     assert!(((ud.a[(0_usize)]) == (0)));
-    assert!(((ud.v.len()) == (0_usize)));
+    assert!((((ud.v).len()) == (0_usize)));
     let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
     assert!(((filt.addr.sa_family as i32) == (0)));
     return 0;

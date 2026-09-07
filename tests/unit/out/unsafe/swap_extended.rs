@@ -125,7 +125,7 @@ unsafe fn main_0() -> i32 {
         )
     });
     let mut j: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(11)) as *mut i32)));
-    let mut k: *mut i32 = j
+    let mut k: *mut i32 = (j)
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     write!(
@@ -139,8 +139,8 @@ unsafe fn main_0() -> i32 {
         "{:}\n",
         (*k),
     );
-    let mut l: Option<Box<i32>> = Some(Box::new(11));
-    let mut m: *mut i32 = l
+    let mut l: Option<Box<i32>> = Some(Box::new((11)));
+    let mut m: *mut i32 = (l)
         .as_deref_mut()
         .map_or(::std::ptr::null_mut(), |v| v as *mut i32);
     write!(

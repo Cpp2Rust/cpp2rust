@@ -43,7 +43,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    (*(*h.borrow()).val.borrow_mut()) = Some(Rc::new(RefCell::new(10)));
+    (*(*h.borrow()).val.borrow_mut()) = Some(Rc::new(RefCell::new((10))));
     ({ write_val_1((h.as_pointer()), 42) });
     assert!((({ read_val_0((h.as_pointer()),) }) == 42));
     return 0;

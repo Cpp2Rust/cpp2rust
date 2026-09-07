@@ -23,13 +23,13 @@ fn main_0() -> i32 {
         let _ptr = (*p.borrow()).clone();
         _ptr.write(_ptr.read() + 1)
     };
-    assert!(((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3));
+    assert!((((*a.borrow())[(0) as usize] == 1) && ((*a.borrow())[(1) as usize] == 3)));
     (*p.borrow_mut()).prefix_dec();
     {
         let _ptr = (*p.borrow()).clone();
         _ptr.write(_ptr.read() + 1)
     };
-    assert!(((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3));
+    assert!((((*a.borrow())[(0) as usize] == 2) && ((*a.borrow())[(1) as usize] == 3)));
     (*p.borrow_mut()) = (x.as_pointer());
     {
         let _ptr = (*p.borrow()).clone();

@@ -38,10 +38,10 @@ unsafe fn main_0() -> i32 {
     if ((a) < (b)) {}
     assert!(((a) == (b)));
     assert!(
-        !(({
+        (!(({
             a = b;
             a
-        }) != 0)
+        }) != 0))
     );
     let mut c: bool = false;
     c = ({

@@ -17,44 +17,44 @@ fn main_0() -> i32 {
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x1.as_pointer())));
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((x2.as_pointer())));
     let r1: Value<i32> = Rc::new(RefCell::new(
-        (if x1.as_pointer().read() >= x2.as_pointer().read() {
-            x1.as_pointer()
+        (if (x1.as_pointer()).read() >= (x2.as_pointer()).read() {
+            (x1.as_pointer())
         } else {
-            x2.as_pointer()
+            (x2.as_pointer())
         }
         .read()),
     ));
     let r2: Value<i32> = Rc::new(RefCell::new(
-        (if x3.as_pointer().read() <= x4.as_pointer().read() {
-            x3.as_pointer()
+        (if (x3.as_pointer()).read() <= (x4.as_pointer()).read() {
+            (x3.as_pointer())
         } else {
-            x4.as_pointer()
+            (x4.as_pointer())
         }
         .read()),
     ));
     let r3: Value<i32> = Rc::new(RefCell::new(
-        (if (*p1.borrow()).clone().read() >= x2.as_pointer().read() {
-            (*p1.borrow()).clone()
+        (if ((*p1.borrow()).clone()).read() >= (x2.as_pointer()).read() {
+            ((*p1.borrow()).clone())
         } else {
-            x2.as_pointer()
+            (x2.as_pointer())
         }
         .read()),
     ));
     let r4: Value<i32> = Rc::new(RefCell::new(
-        (if (*p2.borrow()).clone().read() <= x3.as_pointer().read() {
-            (*p2.borrow()).clone()
+        (if ((*p2.borrow()).clone()).read() <= (x3.as_pointer()).read() {
+            ((*p2.borrow()).clone())
         } else {
-            x3.as_pointer()
+            (x3.as_pointer())
         }
         .read()),
     ));
     let r5: Value<i32> = Rc::new(RefCell::new({
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(30));
         let __tmp_1: Value<i32> = Rc::new(RefCell::new(40));
-        (if __tmp_0.as_pointer().read() >= __tmp_1.as_pointer().read() {
-            __tmp_0.as_pointer()
+        (if (__tmp_0.as_pointer()).read() >= (__tmp_1.as_pointer()).read() {
+            (__tmp_0.as_pointer())
         } else {
-            __tmp_1.as_pointer()
+            (__tmp_1.as_pointer())
         }
         .read())
     }));

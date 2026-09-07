@@ -16,9 +16,11 @@ fn main_0() -> i32 {
         (<AnyPtr>::from_int(((*p.borrow()).clone() as Ptr<i32>).to_any().to_int()))
             .reinterpret_cast::<i32>(),
     ));
-    assert!({
-        let _lhs = (*p.borrow()).clone();
-        _lhs == (*q.borrow()).clone()
-    });
+    assert!(
+        ({
+            let _lhs = (*p.borrow()).clone();
+            _lhs == (*q.borrow()).clone()
+        })
+    );
     return 0;
 }

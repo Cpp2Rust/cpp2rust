@@ -108,36 +108,41 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let tree: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
+    let tree: Value<Option<Value<node_t>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (node_t {
             left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             value: Rc::new(RefCell::new(0)),
-        })))));
-    let n1: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
+        }),
+    )))));
+    let n1: Value<Option<Value<node_t>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (node_t {
             left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             value: Rc::new(RefCell::new(1)),
-        })))));
-    let n2: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
+        }),
+    )))));
+    let n2: Value<Option<Value<node_t>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (node_t {
             left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             value: Rc::new(RefCell::new(2)),
-        })))));
-    let n3: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
+        }),
+    )))));
+    let n3: Value<Option<Value<node_t>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (node_t {
             left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             value: Rc::new(RefCell::new(3)),
-        })))));
-    let n4: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
+        }),
+    )))));
+    let n4: Value<Option<Value<node_t>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+        (node_t {
             left: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             right: Rc::new(RefCell::new(Ptr::<node_t>::null())),
             value: Rc::new(RefCell::new(4)),
-        })))));
+        }),
+    )))));
     let ptr1: Value<Ptr<node_t>> = Rc::new(RefCell::new(((*tree.borrow()).as_pointer())));
     let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n1.borrow()).as_pointer())) });
     (*ptr1.borrow_mut()) = __rhs;
@@ -148,7 +153,7 @@ fn main_0() -> i32 {
     let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
     (*ptr1.borrow_mut()) = __rhs;
     assert!(
-        ((((((*(*({ find_0((*ptr1.borrow()).clone(), 0,) }).upgrade().deref())
+        (((((((*(*({ find_0((*ptr1.borrow()).clone(), 0,) }).upgrade().deref())
             .value
             .borrow())
             == 0)
@@ -168,7 +173,7 @@ fn main_0() -> i32 {
                 .value
                 .borrow())
                 == 4))
-            && (({ find_0((*ptr1.borrow()).clone(), 5,) }).is_null())
+            && (({ find_0((*ptr1.borrow()).clone(), 5,) }).is_null()))
     );
     return 0;
 }

@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     }
     let sum: Value<f64> = Rc::new(RefCell::new(0_f64));
     'loop_: for i in RefcountMapIter::begin(m.as_pointer()) {
-        (*sum.borrow_mut()) += (*i.second().borrow());
+        (*sum.borrow_mut()) += (*(i).second().borrow());
     }
     'loop_: for i in RefcountMapIter::begin(m.as_pointer()) {
         let i: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(i));

@@ -65,17 +65,17 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*(*single_entry_0.with(Value::clone).borrow()).p.borrow()).is_null());
+    assert!(((*(*single_entry_0.with(Value::clone).borrow()).p.borrow()).is_null()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize]
+            ((*(*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize]
                 .p
                 .borrow())
-            .is_null()
+            .is_null())
         );
         assert!(
-            ((*arr_of_pointers_2.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null()
+            (((*arr_of_pointers_2.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null())
         );
         (*i.borrow_mut()).prefix_inc();
     }

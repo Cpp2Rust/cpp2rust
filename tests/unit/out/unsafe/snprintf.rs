@@ -27,8 +27,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"x=-3 y=7".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"x=-3 y=7".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -45,8 +45,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"hel".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"hel".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -65,8 +65,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"00042|ff|FF".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"00042|ff|FF".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -83,8 +83,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"3.14".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"3.14".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -101,8 +101,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"ab    |".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"ab    |".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -119,8 +119,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"A%".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"A%".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -138,8 +138,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"+5  5".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"+5  5".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -158,8 +158,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"-1 1 9".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"-1 1 9".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -176,8 +176,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"1.234568e+03".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"1.234568e+03".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -194,8 +194,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"1.23457e+06".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"1.23457e+06".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );
@@ -232,8 +232,8 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((((libc::strcmp(
-            (buf.as_mut_ptr()).cast_const(),
-            (c"  3.3".as_ptr().cast_mut()).cast_const()
+            ((buf.as_mut_ptr()).cast_const()),
+            ((c"  3.3".as_ptr().cast_mut()).cast_const())
         )) == (0)) as i32)
             != 0)
     );

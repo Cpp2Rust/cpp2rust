@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_time_0() {
     let t1: Value<i64> = Rc::new(RefCell::new({
-        let __out = Ptr::<i64>::null();
+        let __out = (Ptr::<i64>::null());
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
                 let __s = __ts.tv_sec();
@@ -171,7 +171,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%Y-%m-%d %H:%M:%S")
+                    (Ptr::from_string_literal(b"%Y-%m-%d %H:%M:%S"))
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -179,7 +179,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > (::std::mem::size_of::<[u8; 64]>()) {
                 0
             } else {
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
@@ -197,7 +197,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%a, %d %b %Y %T")
+                    (Ptr::from_string_literal(b"%a, %d %b %Y %T"))
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -205,7 +205,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > (::std::mem::size_of::<[u8; 64]>()) {
                 0
             } else {
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
@@ -223,7 +223,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"day %j 100%%")
+                    (Ptr::from_string_literal(b"day %j 100%%"))
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -231,7 +231,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > (::std::mem::size_of::<[u8; 64]>()) {
                 0
             } else {
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
@@ -249,13 +249,13 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%e").to_rust_string().as_str(),
+                    (Ptr::from_string_literal(b"%e")).to_rust_string().as_str(),
                     __d,
                 )
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > (::std::mem::size_of::<[u8; 64]>()) {
                 0
             } else {
                 (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
@@ -276,7 +276,7 @@ pub fn test_strftime_5() {
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::from_string_literal(b"%Y-%m-%d")
+                    (Ptr::from_string_literal(b"%Y-%m-%d"))
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -284,7 +284,7 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 4]>() {
+            if __text.is_empty() || __text.len() + 1 > (::std::mem::size_of::<[u8; 4]>()) {
                 0
             } else {
                 (small.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {

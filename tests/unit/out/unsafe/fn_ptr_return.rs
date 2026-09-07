@@ -25,7 +25,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut f: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(1) });
-    assert!(!((f).is_none()));
+    assert!((!((f).is_none())));
     assert!(((f) == (Some(inc_0))));
     assert!(((unsafe { (f).unwrap()(10,) }) == (11)));
     let mut g: Option<unsafe fn(i32) -> i32> = (unsafe { pick_2(0) });

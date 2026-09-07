@@ -104,7 +104,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { unused_ref_param_1(&nt as *const NonTrivial) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
     let mut g: NonCopyable = NonCopyable {
-        value: Some(Box::new(9)),
+        value: Some(Box::new((9))),
     };
     (&(g));
     &(g);

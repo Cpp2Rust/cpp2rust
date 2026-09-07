@@ -55,8 +55,8 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     'loop_: while ((i) < (N)) {
         let mut alpha: f64 = ((((-2_i32 as f64) * (3.141592654E+0)) * (i as f64)) / (N as f64));
         w.as_mut().unwrap()[(i as usize)] = Complex {
-            re: alpha.cos(),
-            img: alpha.sin(),
+            re: (alpha).cos(),
+            img: (alpha).sin(),
         };
         i.postfix_inc();
     }
@@ -157,20 +157,20 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
         reals.as_mut().unwrap()[(i as usize)] =
-            (b.as_mut().unwrap()[(i as usize)].re.round() as i32);
+            ((b.as_mut().unwrap()[(i as usize)].re).round() as i32);
         imgs.as_mut().unwrap()[(i as usize)] =
-            (b.as_mut().unwrap()[(i as usize)].img.round() as i32);
+            ((b.as_mut().unwrap()[(i as usize)].img).round() as i32);
         i.prefix_inc();
     }
     assert!(
-        ((((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
+        (((((((((reals.as_mut().unwrap()[(0_usize)]) == (10))
             && ((imgs.as_mut().unwrap()[(0_usize)]) == (0)))
             && ((reals.as_mut().unwrap()[(1_usize)]) == (-2_i32)))
             && ((imgs.as_mut().unwrap()[(1_usize)]) == (2)))
             && ((reals.as_mut().unwrap()[(2_usize)]) == (-2_i32)))
             && ((imgs.as_mut().unwrap()[(2_usize)]) == (0)))
             && ((reals.as_mut().unwrap()[(3_usize)]) == (-2_i32)))
-            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32))
+            && ((imgs.as_mut().unwrap()[(3_usize)]) == (-2_i32)))
     );
     return 0;
 }

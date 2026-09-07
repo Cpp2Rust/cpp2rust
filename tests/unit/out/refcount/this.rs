@@ -107,10 +107,12 @@ fn main_0() -> i32 {
     assert!(((*(*s.borrow()).a_.borrow()) == 7));
     assert!((({ SImpl::twice(&s.as_pointer(),) }) == 14));
     ({ SImpl::link(&s.as_pointer()) });
-    assert!({
-        let _lhs = (*(*s.borrow()).self__.borrow()).clone();
-        _lhs == (s.as_pointer())
-    });
+    assert!(
+        ({
+            let _lhs = (*(*s.borrow()).self__.borrow()).clone();
+            _lhs == (s.as_pointer())
+        })
+    );
     (*(*(*(*s.borrow()).self__.borrow()).upgrade().deref())
         .a_
         .borrow_mut())
@@ -129,7 +131,7 @@ fn main_0() -> i32 {
             SImpl::is(&s.as_pointer(), _o)
         })
     );
-    assert!(!({ SImpl::is(&s.as_pointer(), (t.as_pointer()),) }));
+    assert!((!({ SImpl::is(&s.as_pointer(), (t.as_pointer()),) })));
     let p: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::alloc(S::S({ 1 }))));
     let q: Value<Ptr<S>> = Rc::new(RefCell::new(
         ({ SImpl::returns_this_pointer(&(*p.borrow())) }),
@@ -141,7 +143,7 @@ fn main_0() -> i32 {
     ({ SImpl::destroy(&(*h.borrow())) });
     ({ SImpl::reset(&s.as_pointer()) });
     assert!(((*(*s.borrow()).a_.borrow()) == 0));
-    assert!((*(*s.borrow()).self__.borrow()).is_null());
+    assert!(((*(*s.borrow()).self__.borrow()).is_null()));
     return 0;
 }
 pub trait SImpl {

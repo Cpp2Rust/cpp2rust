@@ -14,11 +14,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut arr1: [i32; 5] = [5, 2, 8, 1, 3];
     {
-        let len = arr1
-            .as_mut_ptr()
-            .offset((5) as isize)
-            .offset_from(arr1.as_mut_ptr()) as usize;
-        ::std::slice::from_raw_parts_mut(arr1.as_mut_ptr(), len).sort_by(|x, y| {
+        let len =
+            (arr1.as_mut_ptr().offset((5) as isize)).offset_from((arr1.as_mut_ptr())) as usize;
+        ::std::slice::from_raw_parts_mut((arr1.as_mut_ptr()), len).sort_by(|x, y| {
             if (|x: i32, y: i32| {
                 return ((x) < (y));
             })(*x, *y)
