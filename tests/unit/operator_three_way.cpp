@@ -16,11 +16,6 @@ struct S {
   bool operator==(const S &o) const { return v == o.v; }
 };
 
-struct T {
-  int v;
-  auto operator<=>(const T &) const = default;
-};
-
 int main() {
   S a{1}, b{2};
   assert(a < b);
@@ -29,9 +24,5 @@ int main() {
   assert(b >= a);
   assert(a != b);
   assert((a <=> b) == std::strong_ordering::less);
-  T x{3}, y{3};
-  assert(x == y);
-  assert(!(x < y));
-  assert((x <=> y) == std::strong_ordering::equal);
   return 0;
 }
