@@ -36,9 +36,6 @@ public:
 
   const char *CharRustType() const override { return "u8"; }
 
-  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                     const clang::FunctionDecl *op) override;
-
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
@@ -218,6 +215,9 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
+  void ConvertReceiver(clang::Expr *base, bool is_arrow,
+                       const clang::CXXMethodDecl *method) override;
+  std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
   MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;

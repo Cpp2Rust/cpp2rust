@@ -370,8 +370,6 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   if (decl->isMain()) {
     function_name = "main_0";
     ConvertFunctionMain(decl, function_name);
-  } else if (decl->isOverloadedOperator()) {
-    function_name = GetOverloadedOperator(decl);
   } else {
     function_name = GetNamedDeclAsString(decl->getCanonicalDecl());
   }
@@ -389,21 +387,6 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
     PushBrace brace(*this);
     EmitFunctionPreamble(decl);
     ConvertFunctionBody(decl);
-  }
-
-  if (decl->isOverloadedOperator()) {
-    switch (decl->getOverloadedOperator()) {
-    case clang::OverloadedOperatorKind::OO_Less: {
-      auto type = decl->getParamDecl(0)->getType().getNonReferenceType();
-      if (auto cxx_record_decl = type->getAsCXXRecordDecl()) {
-        ConvertOrdAndPartialOrdTraits(cxx_record_decl, decl);
-        return false;
-      }
-      break;
-    }
-    default:
-      assert(0 && "Unsupported out-of-line operator");
-    }
   }
   return false;
 }
@@ -850,9 +833,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   }
 
   // Traits
-  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    AddOrdTrait(cxx);
-  }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
   AddByteReprTrait(decl);
@@ -1025,9 +1005,6 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
   if (clang::isa<clang::CXXDestructorDecl>(decl)) {
     return kDestructorName;
   }
-  if (decl->isOverloadedOperator()) {
-    return GetOverloadedOperator(decl);
-  }
   if (IsOverloadedMethod(decl)) {
     return GetOverloadedFunctionName(decl);
   }
@@ -1065,10 +1042,8 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 }
 
 std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  // This assumes that all overloaded comparison operators are declared const
-  return (decl->isConst() || IsOverloadedComparisonOperator(decl))
-             ? "&self"
-             : std::format("&mut {}", keyword::kSelfValue);
+  return decl->isConst() ? "&self"
+                         : std::format("&mut {}", keyword::kSelfValue);
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
@@ -1747,7 +1722,8 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !Mapper::Contains(expr->getCallee())) {
+      opcall && !IsUserOperatorCall(opcall) &&
+      !Mapper::Contains(expr->getCallee())) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -1795,7 +1771,10 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   auto callee = GetCallee(expr);
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    if (op_call->getOperator() == clang::OO_Call) {
+    auto *method =
+        llvm::dyn_cast_or_null<clang::CXXMethodDecl>(op_call->getDirectCallee());
+    if (op_call->getOperator() == clang::OO_Call ||
+        (method && method->isInstance())) {
       arg_begin = 1;
     }
   }
@@ -1979,6 +1958,27 @@ void Converter::ConvertGenericCallExpr(clang::CallExpr *expr) {
   EmitCall(CollectCallInfo(expr));
 }
 
+std::string Converter::GetUFCSName(const clang::CXXMethodDecl *method) const {
+  return GetRecordName(method->getParent());
+}
+
+void Converter::ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr) {
+  auto *callee = expr->getDirectCallee();
+  PushParen outer(*this);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
+  auto info = CollectCallInfo(expr);
+  EmitHoistedArgs(info);
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
+      method && method->isInstance()) {
+    ConvertReceiver(expr->getArg(0), false, method);
+    StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
+  } else {
+    StrCat(GetNamedDeclAsString(callee->getCanonicalDecl()));
+  }
+  EmitArgList(info);
+}
+
 std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
@@ -1997,6 +1997,9 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
     auto ctx = CollectRefBindingTempArgs(expr);
     StrCat(GetMappedAsString(expr, args, num_args, &ctx));
     return ctx;
+  } else if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
+             opcall && IsUserOperatorCall(opcall)) {
+    ConvertUserOperatorCall(opcall);
   } else if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
     ConvertCXXOperatorCallExpr(opcall);
   } else {
@@ -2890,7 +2893,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
-    ConvertMethodReceiver(expr, method);
+    ConvertReceiver(expr->getBase(), expr->isArrow(), method);
     StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
            GetMethodName(method));
     return false;
@@ -2933,9 +2936,8 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   return false;
 }
 
-void Converter::ConvertMethodReceiver(clang::MemberExpr *expr,
-                                      const clang::CXXMethodDecl *method) {
-  auto *base = expr->getBase();
+void Converter::ConvertReceiver(clang::Expr *base, bool is_arrow,
+                                const clang::CXXMethodDecl *method) {
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
@@ -2945,7 +2947,7 @@ void Converter::ConvertMethodReceiver(clang::MemberExpr *expr,
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::LValue);
   StrCat(method->isConst() ? "&" : "&mut");
-  if (expr->isArrow()) {
+  if (is_arrow) {
     ConvertArrow(base);
   } else {
     Convert(base);
@@ -3703,7 +3705,7 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
-  auto name = decl->getNameAsString();
+  auto name = GetFunctionBaseName(decl);
 
   if (decl->getNumParams() != 0U) {
     name += '_';
@@ -4028,85 +4030,6 @@ void Converter::ConvertCXXMethodDecls(
   if (!first) {
     StrCat(token::kCloseCurlyBracket);
   }
-}
-
-void Converter::ConvertOrdAndPartialOrdTraitsBase(
-    std::string_view first_branch, std::string_view second_branch,
-    std::string_view first_return, std::string_view second_return,
-    std::string_view record_name) {
-  StrCat(keyword::kImpl, "Ord for ", record_name, '{');
-  StrCat("fn cmp(&self, other: &Self) -> std::cmp::Ordering {");
-  StrCat(std::format("{} {{", keyword_unsafe_));
-  StrCat("if", first_branch, '{', first_return, "} else if", second_branch, '{',
-         second_return, "} else { std::cmp::Ordering::Equal }");
-  StrCat("}}}");
-
-  StrCat(keyword::kImpl, "PartialOrd for", record_name, '{');
-  StrCat(R"(
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-      Some(self.cmp(other))
-    }
-  })");
-
-  StrCat(keyword::kImpl, "PartialEq for", record_name, '{');
-  StrCat("fn eq(&self, other: &Self) -> bool {");
-  StrCat(std::format("{} {{", keyword_unsafe_));
-  StrCat("!(", first_branch, ") && !(", second_branch, ')');
-  StrCat("}}}");
-
-  StrCat(keyword::kImpl, "Eq for", record_name, "{}");
-}
-
-void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                              const clang::FunctionDecl *op) {
-  std::string first_branch, second_branch, first_return, second_return;
-
-  switch (op->getOverloadedOperator()) {
-  case clang::OO_Less:
-    if (clang::isa<clang::CXXMethodDecl>(op)) {
-      first_branch = std::format("self.{}(other)", GetOverloadedOperator(op));
-      second_branch = std::format("other.{}(self)", GetOverloadedOperator(op));
-    } else {
-      first_branch = std::format("{}(self, other)", GetOverloadedOperator(op));
-      second_branch = std::format("{}(other, self)", GetOverloadedOperator(op));
-    }
-
-    first_return = "std::cmp::Ordering::Less";
-    second_return = "std::cmp::Ordering::Greater";
-    break;
-  default:
-    assert(0 && "Currently only supporting operator<");
-  }
-
-  ConvertOrdAndPartialOrdTraitsBase(first_branch, second_branch, first_return,
-                                    second_return, GetRecordName(decl));
-}
-
-void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
-  std::vector<clang::CXXMethodDecl *> methods;
-  std::copy_if(decl->method_begin(), decl->method_end(),
-               std::back_inserter(methods), [](const auto *method) {
-                 if (method->isOverloadedOperator()) {
-                   auto opKind = method->getOverloadedOperator();
-                   if (opKind == clang::OO_Less ||
-                       opKind == clang::OO_Spaceship) {
-                     return true;
-                   }
-                 }
-                 return false;
-               });
-
-  if (methods.empty()) {
-    return;
-  }
-
-  if (methods.size() > 1) {
-    llvm::errs()
-        << "Currently supporting only one overloaded comparison operator\n";
-    abort();
-  }
-
-  ConvertOrdAndPartialOrdTraits(decl, methods[0]);
 }
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}

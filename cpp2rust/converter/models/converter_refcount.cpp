@@ -434,40 +434,6 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return false;
 }
 
-void ConverterRefCount::ConvertOrdAndPartialOrdTraits(
-    const clang::CXXRecordDecl *decl, const clang::FunctionDecl *op) {
-  std::string first_branch, second_branch, first_return, second_return;
-
-  switch (op->getOverloadedOperator()) {
-  case clang::OO_Less:
-    if (clang::isa<clang::CXXMethodDecl>(op)) {
-      first_branch = std::format(
-          "self.{}(Rc::new(RefCell::new(other.clone())).as_pointer())",
-          GetOverloadedOperator(op));
-      second_branch = std::format(
-          "other.{}(Rc::new(RefCell::new(self.clone())).as_pointer())",
-          GetOverloadedOperator(op));
-    } else {
-      first_branch =
-          std::format("{}(Rc::new(RefCell::new(self.clone())).as_pointer(), "
-                      "Rc::new(RefCell::new(other.clone())).as_pointer())",
-                      GetOverloadedOperator(op));
-      second_branch =
-          std::format("{}(Rc::new(RefCell::new(other.clone())).as_pointer(), "
-                      "Rc::new(RefCell::new(self.clone())).as_pointer())",
-                      GetOverloadedOperator(op));
-    }
-    first_return = "std::cmp::Ordering::Less";
-    second_return = "std::cmp::Ordering::Greater";
-    break;
-  default:
-    assert(0 && "Currently only supporting operator<");
-  }
-
-  ConvertOrdAndPartialOrdTraitsBase(first_branch, second_branch, first_return,
-                                    second_return, GetRecordName(decl));
-}
-
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
@@ -1059,7 +1025,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      opcall && !Mapper::Contains(expr->getCallee())) {
+      opcall && !IsUserOperatorCall(opcall) &&
+      !Mapper::Contains(expr->getCallee())) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -1617,25 +1584,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
     if (IsMethodOnPtr(method)) {
-      auto *base = expr->getBase();
-      bool base_is_pointer =
-          expr->isArrow() &&
-          !clang::isa<clang::CXXOperatorCallExpr>(base->IgnoreParenImpCasts());
-      if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
-        bool in_ctor = curr_function_ &&
-                       clang::isa<clang::CXXConstructorDecl>(curr_function_);
-        if (in_ctor) {
-          method_receiver_ = "&this";
-        } else if (ThisIsRustPtr()) {
-          method_receiver_ = keyword::kSelfValue;
-        } else {
-          method_receiver_ = token::kRef + ConvertPointer(base);
-        }
-      } else {
-        method_receiver_ =
-            token::kRef +
-            (base_is_pointer ? ConvertRValue(base) : ConvertPointer(base));
-      }
+      ConvertReceiver(expr->getBase(), expr->isArrow(), method);
       StrCat(TraitName(method->getParent()), token::kDoubleColon,
              GetMethodName(method));
       return false;
@@ -2440,7 +2389,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
   bool is_overloaded_arrow =
       op && op->getOperator() == clang::OverloadedOperatorKind::OO_Arrow;
 
-  if (!is_overloaded_arrow) {
+  if (!is_overloaded_arrow || IsUserOperatorCall(op)) {
     auto ptr = ToString(expr);
     StrCat(DerefPtrExpr(ptr, expr->getType()->getPointeeType()));
     SetValueFreshness(expr->getType()->getPointeeType());
@@ -2597,6 +2546,38 @@ bool ConverterRefCount::ThisIsRustPtr() const {
   auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
   return method && (IsMethodOnPtr(method) ||
                     clang::isa<clang::CXXConstructorDecl>(method));
+}
+
+void ConverterRefCount::ConvertReceiver(clang::Expr *base, bool is_arrow,
+                                        const clang::CXXMethodDecl *method) {
+  if (!IsMethodOnPtr(method)) {
+    Converter::ConvertReceiver(base, is_arrow, method);
+    return;
+  }
+  bool base_is_pointer =
+      is_arrow &&
+      !clang::isa<clang::CXXOperatorCallExpr>(base->IgnoreParenImpCasts());
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+    bool in_ctor =
+        curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
+    if (in_ctor) {
+      method_receiver_ = "&this";
+    } else if (ThisIsRustPtr()) {
+      method_receiver_ = keyword::kSelfValue;
+    } else {
+      method_receiver_ = token::kRef + ConvertPointer(base);
+    }
+    return;
+  }
+  method_receiver_ =
+      token::kRef +
+      (base_is_pointer ? ConvertRValue(base) : ConvertPointer(base));
+}
+
+std::string
+ConverterRefCount::GetUFCSName(const clang::CXXMethodDecl *method) const {
+  return IsMethodOnPtr(method) ? TraitName(method->getParent())
+                               : GetRecordName(method->getParent());
 }
 
 std::string

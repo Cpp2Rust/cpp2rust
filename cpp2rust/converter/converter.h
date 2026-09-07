@@ -138,8 +138,10 @@ public:
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
                         const std::string &argument_as_string);
-  void ConvertMethodReceiver(clang::MemberExpr *expr,
-                             const clang::CXXMethodDecl *method);
+  virtual void ConvertReceiver(clang::Expr *base, bool is_arrow,
+                               const clang::CXXMethodDecl *method);
+  void ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr);
+  virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
 
   virtual bool ThisIsRustPtr() const { return false; }
 
@@ -558,17 +560,6 @@ protected:
   void ConvertCXXMethodDecls(const clang::CXXRecordDecl *decl,
                              const std::string_view signature,
                              bool (*predicate)(clang::CXXMethodDecl *));
-
-  virtual void AddOrdTrait(const clang::CXXRecordDecl *decl);
-
-  virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                             const clang::FunctionDecl *op);
-
-  void ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
-                                         std::string_view second_branch,
-                                         std::string_view first_return,
-                                         std::string_view second_return,
-                                         std::string_view record_name);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 

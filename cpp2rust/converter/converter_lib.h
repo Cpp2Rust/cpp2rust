@@ -122,7 +122,9 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
-bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
+std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
+
+bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
 
 clang::CXXDestructorDecl *
 GetUserDefinedDestructor(const clang::CXXRecordDecl *decl);
