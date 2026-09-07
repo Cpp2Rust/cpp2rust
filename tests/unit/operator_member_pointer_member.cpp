@@ -1,8 +1,15 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <cassert>
 
 struct Inner {
   int x;
 };
+
+struct Table {
+  static int table[3];
+  static int &operator[](int i) { return table[i]; }
+};
+int Table::table[3] = {7, 8, 9};
 
 struct S {
   int data[3];
@@ -30,5 +37,9 @@ int main() {
   assert(*p == 1);
   *p = 5;
   assert(s.data[0] == 5);
+  Table t;
+  assert(t[1] == 8);
+  t[1] = 80;
+  assert(Table::table[1] == 80);
   return 0;
 }

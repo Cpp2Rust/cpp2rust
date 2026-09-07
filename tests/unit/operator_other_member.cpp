@@ -1,4 +1,9 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 #include <cassert>
+
+struct Static {
+  static int operator()(int a, int b) { return a * b; }
+};
 
 struct S {
   int v;
@@ -26,5 +31,7 @@ int main() {
   }
   S z{0};
   assert(!z);
+  Static st;
+  assert(st(6, 7) == 42);
   return 0;
 }
