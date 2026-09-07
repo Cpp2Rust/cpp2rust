@@ -3718,9 +3718,23 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
 
   auto pred = [](char ch) { return ch != ' ' && ch != '_'; };
   name.erase(std::find_if(name.rbegin(), name.rend(), pred).base(), name.end());
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
-      method && method->isConst()) {
-    name += "_const";
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
+    if (method->isConst()) {
+      name += "_const";
+    }
+    if (method->isVolatile()) {
+      name += "_volatile";
+    }
+    switch (method->getRefQualifier()) {
+    case clang::RQ_LValue:
+      name += "_lref";
+      break;
+    case clang::RQ_RValue:
+      name += "_rref";
+      break;
+    case clang::RQ_None:
+      break;
+    }
   }
 
   name.erase(std::remove_if(name.begin(), name.end(),
