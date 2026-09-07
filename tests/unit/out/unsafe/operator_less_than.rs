@@ -13,35 +13,11 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
-    pub unsafe fn lt(&self, other: *const Pair) -> bool {
+    pub unsafe fn operator_lt(&mut self, other: *const Pair) -> bool {
         return ((self.x) < ((*other).x))
             || (((self.x) == ((*other).x)) && ((self.y) < ((*other).y)));
     }
 }
-impl Ord for Pair {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        unsafe {
-            if self.lt(other) {
-                std::cmp::Ordering::Less
-            } else if other.lt(self) {
-                std::cmp::Ordering::Greater
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        }
-    }
-}
-impl PartialOrd for Pair {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-impl PartialEq for Pair {
-    fn eq(&self, other: &Self) -> bool {
-        unsafe { !(self.lt(other)) && !(other.lt(self)) }
-    }
-}
-impl Eq for Pair {}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -50,6 +26,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut pair1: Pair = Pair { x: 1, y: 2 };
     let mut pair2: Pair = Pair { x: 1, y: 3 };
-    assert!(pair1.lt(&mut pair2));
+    assert!((unsafe { Pair::operator_lt(&mut pair1, &pair2 as *const Pair,) }));
     return 0;
 }
