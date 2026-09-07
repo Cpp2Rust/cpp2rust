@@ -37,10 +37,6 @@ pub struct Y {
     pub x: Value<X>,
     pub p: Value<Ptr<X>>,
 }
-pub trait YImpl {
-    fn foo(&self) -> Ptr<X>;
-    fn ptr(&self) -> Ptr<X>;
-}
 impl Clone for Y {
     fn clone(&self) -> Self {
         let __this: Value<Y> = Rc::new(RefCell::new(Self {
@@ -133,6 +129,10 @@ fn main_0() -> i32 {
         .borrow_mut()) = 50;
     assert!(((*(*x.borrow()).x.borrow()) == 100));
     return 0;
+}
+pub trait YImpl {
+    fn foo(&self) -> Ptr<X>;
+    fn ptr(&self) -> Ptr<X>;
 }
 impl YImpl for Ptr<Y> {
     fn foo(&self) -> Ptr<X> {

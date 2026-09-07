@@ -13,9 +13,6 @@ pub struct MinHeapNode {
     pub left: Value<Ptr<MinHeapNode>>,
     pub right: Value<Ptr<MinHeapNode>>,
 }
-pub trait MinHeapNodeImpl {
-    fn IsLeaf(&self) -> bool;
-}
 impl Clone for MinHeapNode {
     fn clone(&self) -> Self {
         let __this: Value<MinHeapNode> = Rc::new(RefCell::new(Self {
@@ -84,18 +81,6 @@ pub struct MinHeap {
     pub arr: Value<Option<Value<Box<[Ptr<MinHeapNode>]>>>>,
     pub next: Value<i32>,
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
-}
-pub trait MinHeapImpl {
-    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode>;
-    fn Heapify(&self, idx: i32);
-    fn ExtractMin(&self) -> Ptr<MinHeapNode>;
-    fn Insert(&self, node: Ptr<MinHeapNode>);
-    fn Build(
-        &self,
-        data: Ptr<Option<Value<Box<[u8]>>>>,
-        freq: Ptr<Option<Value<Box<[i32]>>>>,
-        n: i32,
-    );
 }
 impl ByteRepr for MinHeap {
     fn byte_size() -> usize {
@@ -339,6 +324,18 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub trait MinHeapImpl {
+    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode>;
+    fn Heapify(&self, idx: i32);
+    fn ExtractMin(&self) -> Ptr<MinHeapNode>;
+    fn Insert(&self, node: Ptr<MinHeapNode>);
+    fn Build(
+        &self,
+        data: Ptr<Option<Value<Box<[u8]>>>>,
+        freq: Ptr<Option<Value<Box<[i32]>>>>,
+        n: i32,
+    );
+}
 impl MinHeapImpl for Ptr<MinHeap> {
     fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
         let data: Value<u8> = Rc::new(RefCell::new(data));
@@ -509,6 +506,9 @@ impl MinHeapImpl for Ptr<MinHeap> {
             (*i.borrow_mut()).prefix_dec();
         }
     }
+}
+pub trait MinHeapNodeImpl {
+    fn IsLeaf(&self) -> bool;
 }
 impl MinHeapNodeImpl for Ptr<MinHeapNode> {
     fn IsLeaf(&self) -> bool {

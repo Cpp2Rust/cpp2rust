@@ -41,9 +41,6 @@ pub struct Graph {
     pub V: Value<u32>,
     pub adj: Value<Ptr<Ptr<GraphNode>>>,
 }
-pub trait GraphImpl {
-    fn push(&self, src: u32, dst: u32);
-}
 impl Clone for Graph {
     fn clone(&self) -> Self {
         let __this: Value<Graph> = Rc::new(RefCell::new(Self {
@@ -78,6 +75,9 @@ fn main_0() -> i32 {
         adj: Rc::new(RefCell::new(Ptr::<Ptr<GraphNode>>::null())),
     }));
     return 0;
+}
+pub trait GraphImpl {
+    fn push(&self, src: u32, dst: u32);
 }
 impl GraphImpl for Ptr<Graph> {
     fn push(&self, src: u32, dst: u32) {

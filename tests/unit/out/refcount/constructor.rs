@@ -25,11 +25,6 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub trait SImpl {
-    fn const_method(&self) -> i32;
-    fn mut_method(&self);
-    fn destructor(&self);
-}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -64,6 +59,11 @@ fn main_0() -> i32 {
     }
     assert!(((*total_0.with(Value::clone).borrow()) == 18));
     return 0;
+}
+pub trait SImpl {
+    fn const_method(&self) -> i32;
+    fn mut_method(&self);
+    fn destructor(&self);
 }
 impl SImpl for Ptr<S> {
     fn const_method(&self) -> i32 {

@@ -54,7 +54,7 @@ public:
 
   static std::string EmitOpaqueRecords();
 
-  static std::string EmitDeferredImpls();
+  static std::string EmitMethodsOnPtr();
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
@@ -133,6 +133,7 @@ public:
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl);
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
@@ -846,9 +847,15 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
-  using DeferredImplHeader = std::string;
-  using DeferredImplBody = std::string;
-  static std::map<DeferredImplHeader, DeferredImplBody> deferred_impls_;
+  struct MethodsOnPtr {
+    std::string trait_header;
+    std::string trait_body;
+    std::string impl_header;
+    std::string impl_body;
+  };
+  // record name -> trait and impl for Ptr<record>, emitted after all
+  // translation units.
+  static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
 
   enum class ExprKind : uint8_t {
     Callee,

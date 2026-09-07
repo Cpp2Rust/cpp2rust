@@ -22,20 +22,6 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub trait SImpl {
-    fn returns_this_reference(&self) -> Ptr<S>;
-    fn returns_this_pointer(&self) -> Ptr<S>;
-    fn inc(&self) -> Ptr<S>;
-    fn set_from_this(&self);
-    fn get(&self) -> i32;
-    fn twice(&self) -> i32;
-    fn link(&self);
-    fn bump_me(&self);
-    fn cref(&self) -> Ptr<S>;
-    fn is(&self, o: Ptr<S>) -> bool;
-    fn destroy(&self);
-    fn reset(&self);
-}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -157,6 +143,20 @@ fn main_0() -> i32 {
     assert!(((*(*s.borrow()).a_.borrow()) == 0));
     assert!((*(*s.borrow()).self__.borrow()).is_null());
     return 0;
+}
+pub trait SImpl {
+    fn returns_this_reference(&self) -> Ptr<S>;
+    fn returns_this_pointer(&self) -> Ptr<S>;
+    fn inc(&self) -> Ptr<S>;
+    fn set_from_this(&self);
+    fn get(&self) -> i32;
+    fn twice(&self) -> i32;
+    fn link(&self);
+    fn bump_me(&self);
+    fn cref(&self) -> Ptr<S>;
+    fn is(&self, o: Ptr<S>) -> bool;
+    fn destroy(&self);
+    fn reset(&self);
 }
 impl SImpl for Ptr<S> {
     fn returns_this_reference(&self) -> Ptr<S> {

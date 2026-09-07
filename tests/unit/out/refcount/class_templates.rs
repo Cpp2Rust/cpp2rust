@@ -10,13 +10,6 @@ use std::rc::{Rc, Weak};
 pub struct MyContainer_int_ {
     vec_: Value<Vec<i32>>,
 }
-pub trait MyContainer_int_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<i32>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<i32>);
-}
 impl Clone for MyContainer_int_ {
     fn clone(&self) -> Self {
         let __this: Value<MyContainer_int_> = Rc::new(RefCell::new(Self {
@@ -43,13 +36,6 @@ impl ByteRepr for MyContainer_int_ {
 pub struct MyContainer_char_ {
     vec_: Value<Vec<u8>>,
 }
-pub trait MyContainer_char_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<u8>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<u8>);
-}
 impl Clone for MyContainer_char_ {
     fn clone(&self) -> Self {
         let __this: Value<MyContainer_char_> = Rc::new(RefCell::new(Self {
@@ -75,13 +61,6 @@ impl ByteRepr for MyContainer_char_ {
 #[derive(Default)]
 pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
-}
-pub trait MyContainer_float_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<f32>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<f32>);
 }
 impl Clone for MyContainer_float_ {
     fn clone(&self) -> Self {
@@ -148,6 +127,13 @@ fn main_0() -> i32 {
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     return 0;
 }
+pub trait MyContainer_char_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<u8>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<u8>);
+}
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
@@ -169,6 +155,13 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
         };
     }
 }
+pub trait MyContainer_float_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<f32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<f32>);
+}
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
@@ -189,6 +182,13 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
             (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
+}
+pub trait MyContainer_int_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<i32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<i32>);
 }
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {

@@ -34,9 +34,6 @@ impl ByteRepr for Dog {
 }
 #[derive(Default)]
 pub struct Cat {}
-pub trait CatImpl {
-    fn meow(&self) -> bool;
-}
 impl Animal for Cat {
     fn bark(&self) -> bool {
         return false;
@@ -76,6 +73,9 @@ fn main_0() -> i32 {
     ));
     assert!((*eat1.borrow()) && (!(*eat2.borrow())));
     return 0;
+}
+pub trait CatImpl {
+    fn meow(&self) -> bool;
 }
 impl CatImpl for Ptr<Cat> {
     fn meow(&self) -> bool {

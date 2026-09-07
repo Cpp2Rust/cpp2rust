@@ -10,12 +10,6 @@ use std::rc::{Rc, Weak};
 pub struct Test {
     pub x: Value<i32>,
 }
-pub trait TestImpl {
-    fn inc(&self);
-    fn dec(&self);
-    fn as_ptr(&self) -> Ptr<i32>;
-    fn update(&self, x: i32, y: i32);
-}
 impl Clone for Test {
     fn clone(&self) -> Self {
         let __this: Value<Test> = Rc::new(RefCell::new(Self {
@@ -78,6 +72,12 @@ fn main_0() -> i32 {
         } == 75)
     );
     return 0;
+}
+pub trait TestImpl {
+    fn inc(&self);
+    fn dec(&self);
+    fn as_ptr(&self) -> Ptr<i32>;
+    fn update(&self, x: i32, y: i32);
 }
 impl TestImpl for Ptr<Test> {
     fn inc(&self) {

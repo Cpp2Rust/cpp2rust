@@ -60,6 +60,10 @@ public:
 
   void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
 
+  void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) override;
+
+  void ConvertMethodOnPtr(clang::CXXMethodDecl *method);
+
   bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
 
   bool ThisIsRustPtr() const override;
@@ -215,7 +219,7 @@ public:
 
 private:
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
-  std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+  MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 

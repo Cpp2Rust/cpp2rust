@@ -38,14 +38,6 @@ pub fn bar_4(x: Ptr<i32>) -> i32 {
 }
 #[derive(Default)]
 pub struct Foo {}
-pub trait FooImpl {
-    fn foo_const(&self);
-    fn foo(&self);
-    fn method_i32(&self, x: i32);
-    fn method_i32_const(&self, x: i32);
-    fn method2_i32_i32_const(&self, x: i32, y: i32);
-    fn method2_f64_f64_const(&self, x: f64, y: f64);
-}
 impl Clone for Foo {
     fn clone(&self) -> Self {
         let __this: Value<Foo> = Rc::new(RefCell::new(Self {}));
@@ -100,6 +92,14 @@ fn main_0() -> i32 {
     ({ FooImpl::method_i32_const(&foo2.as_pointer(), 2) });
     assert!(((*out.borrow()) == 13));
     return 0;
+}
+pub trait FooImpl {
+    fn foo_const(&self);
+    fn foo(&self);
+    fn method_i32(&self, x: i32);
+    fn method_i32_const(&self, x: i32);
+    fn method2_i32_i32_const(&self, x: i32, y: i32);
+    fn method2_f64_f64_const(&self, x: f64, y: f64);
 }
 impl FooImpl for Ptr<Foo> {
     fn foo_const(&self) {}
