@@ -34,20 +34,20 @@ int main() {
 
   std::vector<Eq> eqs{{1}, {2}, {3}};
   Eq two{2}, nine{9};
-  assert(std::find(eqs.begin(), eqs.end(), two) - eqs.begin() == 1);
+  assert(std::find(eqs.begin(), eqs.end(), two)->v == 2);
   assert(std::find(eqs.begin(), eqs.end(), nine) == eqs.end());
 
   std::vector<Cmp> cmps{{3}, {1}, {2}};
   std::sort(cmps.begin(), cmps.end());
   assert(cmps[0].v == 1 && cmps[2].v == 3);
   Cmp three{3};
-  assert(std::find(cmps.begin(), cmps.end(), three) - cmps.begin() == 2);
+  assert(std::find(cmps.begin(), cmps.end(), three)->v == 3);
 
   std::vector<Free> frees{{2}, {1}};
   std::sort(frees.begin(), frees.end());
   assert(frees[0].v == 1);
   Free ftwo{2};
-  assert(std::find(frees.begin(), frees.end(), ftwo) - frees.begin() == 1);
+  assert(std::find(frees.begin(), frees.end(), ftwo)->v == 2);
 
   std::map<Lt, int> m;
   m[Lt{2}] = 20;

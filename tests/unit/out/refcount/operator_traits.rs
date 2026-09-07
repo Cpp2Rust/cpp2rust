@@ -289,7 +289,7 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(9)),
     }));
     assert!(
-        ((((eqs.as_pointer() as Ptr<Eq>)
+        ((*((eqs.as_pointer() as Ptr<Eq>)
             .offset(
                 (eqs.as_pointer() as Ptr<Eq>)
                     .clone()
@@ -302,9 +302,10 @@ fn main_0() -> i32 {
                     .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
                     as isize,
             )
-            .get_offset() as isize)
-            - ((eqs.as_pointer() as Ptr<Eq>).get_offset() as isize))
-            == 1_i64)
+            .read())
+        .v
+        .borrow())
+            == 2)
     );
     assert!(
         (eqs.as_pointer() as Ptr<Eq>).offset(
@@ -352,7 +353,7 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(3)),
     }));
     assert!(
-        ((((cmps.as_pointer() as Ptr<Cmp>)
+        ((*((cmps.as_pointer() as Ptr<Cmp>)
             .offset(
                 (cmps.as_pointer() as Ptr<Cmp>)
                     .clone()
@@ -365,9 +366,10 @@ fn main_0() -> i32 {
                     .unwrap_or((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize)
                     as isize,
             )
-            .get_offset() as isize)
-            - ((cmps.as_pointer() as Ptr<Cmp>).get_offset() as isize))
-            == 2_i64)
+            .read())
+        .v
+        .borrow())
+            == 3)
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![
         Free {
@@ -391,7 +393,7 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(2)),
     }));
     assert!(
-        ((((frees.as_pointer() as Ptr<Free>)
+        ((*((frees.as_pointer() as Ptr<Free>)
             .offset(
                 (frees.as_pointer() as Ptr<Free>)
                     .clone()
@@ -404,9 +406,10 @@ fn main_0() -> i32 {
                     .unwrap_or((frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize)
                     as isize,
             )
-            .get_offset() as isize)
-            - ((frees.as_pointer() as Ptr<Free>).get_offset() as isize))
-            == 1_i64)
+            .read())
+        .v
+        .borrow())
+            == 2)
     );
     let m: Value<BTreeMap<Lt, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<Lt, Value<i32>>>)

@@ -144,15 +144,14 @@ unsafe fn main_0() -> i32 {
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
-        (({
+        (((*{
             let mut it = eqs.as_mut_ptr();
             while it != eqs.as_mut_ptr().add(eqs.len()) && *it != two {
                 it = it.add(1);
             }
             it
-        }
-        .offset_from(eqs.as_mut_ptr()))
-            == (1_i64))
+        })
+        .v) == (2))
     );
     assert!(
         {
@@ -174,15 +173,14 @@ unsafe fn main_0() -> i32 {
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
-        (({
+        (((*{
             let mut it = cmps.as_mut_ptr();
             while it != cmps.as_mut_ptr().add(cmps.len()) && *it != three {
                 it = it.add(1);
             }
             it
-        }
-        .offset_from(cmps.as_mut_ptr()))
-            == (2_i64))
+        })
+        .v) == (3))
     );
     let mut frees: Vec<Free> = vec![Free { v: 2 }, Free { v: 1 }];
     {
@@ -195,15 +193,14 @@ unsafe fn main_0() -> i32 {
     assert!(((frees[(0_usize)].v) == (1)));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
-        (({
+        (((*{
             let mut it = frees.as_mut_ptr();
             while it != frees.as_mut_ptr().add(frees.len()) && *it != ftwo {
                 it = it.add(1);
             }
             it
-        }
-        .offset_from(frees.as_mut_ptr()))
-            == (1_i64))
+        })
+        .v) == (2))
     );
     let mut m: BTreeMap<Lt, Box<i32>> = BTreeMap::new();
     (*m.entry(Lt { v: 2 }).or_default().as_mut()) = 20;
