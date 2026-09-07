@@ -123,12 +123,19 @@ pub unsafe fn operator_lt_0(a: *const Free, b: *const Free) -> bool {
 pub unsafe fn operator_eq_1(a: *const Free, b: *const Free) -> bool {
     return (((*a).v) == ((*b).v));
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Wrapped_int_ {
+    pub v: i32,
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
+    assert!(((w.v) == (2)));
     let mut lts: Vec<Lt> = vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }];
     {
         let len = lts

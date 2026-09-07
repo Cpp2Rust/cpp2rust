@@ -232,10 +232,40 @@ pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
         _lhs == (*(*b.upgrade().deref()).v.borrow())
     };
 }
+#[derive(Default)]
+pub struct Wrapped_int_ {
+    pub v: Value<i32>,
+}
+impl Clone for Wrapped_int_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Wrapped_int_> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+        }));
+        let this: Ptr<Wrapped_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Wrapped_int_ {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let w: Value<Wrapped_int_> = Rc::new(RefCell::new(Wrapped_int_ {
+        v: Rc::new(RefCell::new(2)),
+    }));
+    assert!(((*(*w.borrow()).v.borrow()) == 2));
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![
         Lt {
             v: Rc::new(RefCell::new(3)),

@@ -27,7 +27,20 @@ struct Free {
 bool operator<(const Free &a, const Free &b) { return a.v < b.v; }
 bool operator==(const Free &a, const Free &b) { return a.v == b.v; }
 
+template <class T> struct Wrapped {
+  T v;
+  friend bool operator==(const Wrapped &a, const Wrapped &b) {
+    return a.v == b.v;
+  }
+  friend bool operator<(const Wrapped &a, const Wrapped &b) {
+    return a.v < b.v;
+  }
+};
+
 int main() {
+  Wrapped<int> w{2};
+  assert(w.v == 2);
+
   std::vector<Lt> lts{{3}, {1}, {2}};
   std::sort(lts.begin(), lts.end());
   assert(lts[0].v == 1 && lts[1].v == 2 && lts[2].v == 3);
