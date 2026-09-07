@@ -36,9 +36,6 @@ impl ByteRepr for Point {
 pub struct Box_int_ {
     pub val: Value<i32>,
 }
-pub trait Box_int_Impl {
-    fn twice(&self) -> i32;
-}
 impl Clone for Box_int_ {
     fn clone(&self) -> Self {
         let __this: Value<Box_int_> = Rc::new(RefCell::new(Self {
@@ -64,9 +61,6 @@ impl ByteRepr for Box_int_ {
 #[derive(Default)]
 pub struct Box_Point_ {
     pub val: Value<Point>,
-}
-pub trait Box_Point_Impl {
-    fn get(&self) -> Point;
 }
 impl Clone for Box_Point_ {
     fn clone(&self) -> Self {
@@ -116,4 +110,10 @@ impl Box_int_Impl for Ptr<Box_int_> {
         return ((*(*(*self).upgrade().deref()).val.borrow())
             + (*(*(*self).upgrade().deref()).val.borrow()));
     }
+}
+pub trait Box_Point_Impl {
+    fn get(&self) -> Point;
+}
+pub trait Box_int_Impl {
+    fn twice(&self) -> i32;
 }

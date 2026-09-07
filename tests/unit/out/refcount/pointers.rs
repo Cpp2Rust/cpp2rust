@@ -10,12 +10,6 @@ use std::rc::{Rc, Weak};
 pub struct Test {
     pub x: Value<i32>,
 }
-pub trait TestImpl {
-    fn inc(&self);
-    fn dec(&self);
-    fn as_ptr(&self) -> Ptr<i32>;
-    fn update(&self, x: i32, y: i32);
-}
 impl Clone for Test {
     fn clone(&self) -> Self {
         let __this: Value<Test> = Rc::new(RefCell::new(Self {
@@ -94,4 +88,10 @@ impl TestImpl for Ptr<Test> {
         let y: Value<i32> = Rc::new(RefCell::new(y));
         (*(*(*self).upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
     }
+}
+pub trait TestImpl {
+    fn inc(&self);
+    fn dec(&self);
+    fn as_ptr(&self) -> Ptr<i32>;
+    fn update(&self, x: i32, y: i32);
 }

@@ -47,9 +47,6 @@ impl ByteRepr for X1 {
 pub struct X2 {
     pub v: Ptr<X1>,
 }
-pub trait X2Impl {
-    fn get(&self) -> Ptr<X1>;
-}
 impl Clone for X2 {
     fn clone(&self) -> Self {
         let __this: Value<X2> = Rc::new(RefCell::new(Self {
@@ -63,9 +60,6 @@ impl ByteRepr for X2 {}
 #[derive(Default)]
 pub struct X3 {
     pub v: Value<Ptr<X2>>,
-}
-pub trait X3Impl {
-    fn get(&self) -> Ptr<X2>;
 }
 impl Clone for X3 {
     fn clone(&self) -> Self {
@@ -92,9 +86,6 @@ impl ByteRepr for X3 {
 #[derive(Default)]
 pub struct X4 {
     pub v: Value<X3>,
-}
-pub trait X4Impl {
-    fn get(&self) -> Ptr<X3>;
 }
 impl Clone for X4 {
     fn clone(&self) -> Self {
@@ -422,4 +413,13 @@ impl X4Impl for Ptr<X4> {
     fn get(&self) -> Ptr<X3> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
+}
+pub trait X2Impl {
+    fn get(&self) -> Ptr<X1>;
+}
+pub trait X3Impl {
+    fn get(&self) -> Ptr<X2>;
+}
+pub trait X4Impl {
+    fn get(&self) -> Ptr<X3>;
 }

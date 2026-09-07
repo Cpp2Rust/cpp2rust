@@ -12,10 +12,6 @@ pub struct Node {
     pub next: Value<Ptr<Node>>,
     pub prev: Value<Ptr<Node>>,
 }
-pub trait NodeImpl {
-    fn SetNext(&self, n: Ptr<Node>);
-    fn SetPrev(&self, p: Ptr<Node>);
-}
 impl Clone for Node {
     fn clone(&self) -> Self {
         let __this: Value<Node> = Rc::new(RefCell::new(Self {
@@ -444,4 +440,8 @@ impl NodeImpl for Ptr<Node> {
         let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
         (*(*(*self).upgrade().deref()).prev.borrow_mut()) = (*p.borrow()).clone();
     }
+}
+pub trait NodeImpl {
+    fn SetNext(&self, n: Ptr<Node>);
+    fn SetPrev(&self, p: Ptr<Node>);
 }

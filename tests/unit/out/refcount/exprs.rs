@@ -37,10 +37,6 @@ pub struct Y {
     pub x: Value<X>,
     pub p: Value<Ptr<X>>,
 }
-pub trait YImpl {
-    fn foo(&self) -> Ptr<X>;
-    fn ptr(&self) -> Ptr<X>;
-}
 impl Clone for Y {
     fn clone(&self) -> Self {
         let __this: Value<Y> = Rc::new(RefCell::new(Self {
@@ -141,4 +137,8 @@ impl YImpl for Ptr<Y> {
     fn ptr(&self) -> Ptr<X> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
+}
+pub trait YImpl {
+    fn foo(&self) -> Ptr<X>;
+    fn ptr(&self) -> Ptr<X>;
 }

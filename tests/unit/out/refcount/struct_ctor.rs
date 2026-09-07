@@ -25,10 +25,6 @@ impl StructWithCtor {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub trait StructWithCtorImpl {
-    fn x1(&self) -> Ptr<i32>;
-    fn x2(&self) -> Ptr<i32>;
-}
 impl Clone for StructWithCtor {
     fn clone(&self) -> Self {
         let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self {
@@ -78,4 +74,8 @@ impl StructWithCtorImpl for Ptr<StructWithCtor> {
     fn x2(&self) -> Ptr<i32> {
         return (*(*self).upgrade().deref()).x2_.as_pointer();
     }
+}
+pub trait StructWithCtorImpl {
+    fn x1(&self) -> Ptr<i32>;
+    fn x2(&self) -> Ptr<i32>;
 }

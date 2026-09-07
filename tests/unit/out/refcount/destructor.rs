@@ -11,9 +11,6 @@ thread_local!(
 );
 #[derive(Default)]
 pub struct S {}
-pub trait SImpl {
-    fn destructor(&self);
-}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {}));
@@ -33,9 +30,6 @@ impl ByteRepr for S {
 #[derive(Default)]
 pub struct Defaulted {
     pub s: Value<S>,
-}
-pub trait DefaultedImpl {
-    fn destructor(&self);
 }
 impl Clone for Defaulted {
     fn clone(&self) -> Self {
@@ -63,9 +57,6 @@ impl ByteRepr for Defaulted {
 pub struct Middle {
     pub s: Value<S>,
 }
-pub trait MiddleImpl {
-    fn destructor(&self);
-}
 impl Clone for Middle {
     fn clone(&self) -> Self {
         let __this: Value<Middle> = Rc::new(RefCell::new(Self {
@@ -92,9 +83,6 @@ impl ByteRepr for Middle {
 pub struct Outer {
     pub m: Value<Middle>,
 }
-pub trait OuterImpl {
-    fn destructor(&self);
-}
 impl Clone for Outer {
     fn clone(&self) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
@@ -120,9 +108,6 @@ impl ByteRepr for Outer {
 #[derive()]
 pub struct ArrayMember {
     pub items: Value<Box<[S]>>,
-}
-pub trait ArrayMemberImpl {
-    fn destructor(&self);
 }
 impl Clone for ArrayMember {
     fn clone(&self) -> Self {
@@ -159,9 +144,6 @@ impl ByteRepr for ArrayMember {
 pub struct EmptyBody {
     pub s: Value<S>,
 }
-pub trait EmptyBodyImpl {
-    fn destructor(&self);
-}
 impl Clone for EmptyBody {
     fn clone(&self) -> Self {
         let __this: Value<EmptyBody> = Rc::new(RefCell::new(Self {
@@ -187,9 +169,6 @@ impl ByteRepr for EmptyBody {
 #[derive(Default)]
 pub struct Templated_char_ {
     pub v: Value<u8>,
-}
-pub trait Templated_char_Impl {
-    fn destructor(&self);
 }
 impl Clone for Templated_char_ {
     fn clone(&self) -> Self {
@@ -217,9 +196,6 @@ impl ByteRepr for Templated_char_ {
 pub struct Templated_int_ {
     pub v: Value<i32>,
 }
-pub trait Templated_int_Impl {
-    fn destructor(&self);
-}
 impl Clone for Templated_int_ {
     fn clone(&self) -> Self {
         let __this: Value<Templated_int_> = Rc::new(RefCell::new(Self {
@@ -245,9 +221,6 @@ impl ByteRepr for Templated_int_ {
 #[derive(Default)]
 pub struct Copied {
     pub v: Value<i32>,
-}
-pub trait CopiedImpl {
-    fn destructor(&self);
 }
 impl Clone for Copied {
     fn clone(&self) -> Self {
@@ -283,9 +256,6 @@ thread_local!(
 pub struct Tagged {
     pub tag: Value<i32>,
 }
-pub trait TaggedImpl {
-    fn destructor(&self);
-}
 impl Clone for Tagged {
     fn clone(&self) -> Self {
         let __this: Value<Tagged> = Rc::new(RefCell::new(Self {
@@ -315,9 +285,6 @@ pub struct Ordered {
     pub second: Value<Tagged>,
     pub dummy2: Value<i32>,
     pub third: Value<Tagged>,
-}
-pub trait OrderedImpl {
-    fn destructor(&self);
 }
 impl Clone for Ordered {
     fn clone(&self) -> Self {
@@ -513,4 +480,37 @@ impl Templated_int_Impl for Ptr<Templated_int_> {
             (*global_0.with(Value::clone).borrow_mut()) = rhs_0
         };
     }
+}
+pub trait ArrayMemberImpl {
+    fn destructor(&self);
+}
+pub trait CopiedImpl {
+    fn destructor(&self);
+}
+pub trait DefaultedImpl {
+    fn destructor(&self);
+}
+pub trait EmptyBodyImpl {
+    fn destructor(&self);
+}
+pub trait MiddleImpl {
+    fn destructor(&self);
+}
+pub trait OrderedImpl {
+    fn destructor(&self);
+}
+pub trait OuterImpl {
+    fn destructor(&self);
+}
+pub trait SImpl {
+    fn destructor(&self);
+}
+pub trait TaggedImpl {
+    fn destructor(&self);
+}
+pub trait Templated_char_Impl {
+    fn destructor(&self);
+}
+pub trait Templated_int_Impl {
+    fn destructor(&self);
 }

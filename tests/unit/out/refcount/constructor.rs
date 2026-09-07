@@ -25,11 +25,6 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub trait SImpl {
-    fn const_method(&self) -> i32;
-    fn mut_method(&self);
-    fn destructor(&self);
-}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -76,4 +71,9 @@ impl SImpl for Ptr<S> {
         ({ SImpl::mut_method(self) });
         (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(self) });
     }
+}
+pub trait SImpl {
+    fn const_method(&self) -> i32;
+    fn mut_method(&self);
+    fn destructor(&self);
 }

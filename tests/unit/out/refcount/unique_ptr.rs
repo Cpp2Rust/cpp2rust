@@ -10,9 +10,6 @@ use std::rc::{Rc, Weak};
 pub struct SafePointer {
     pub ptr: Value<Option<Value<i32>>>,
 }
-pub trait SafePointerImpl {
-    fn inc(&self);
-}
 impl ByteRepr for SafePointer {
     fn byte_size() -> usize {
         8
@@ -30,9 +27,6 @@ impl ByteRepr for SafePointer {
 pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
-}
-pub trait PairImpl {
-    fn inc(&self, k: i32);
 }
 impl Clone for Pair {
     fn clone(&self) -> Self {
@@ -313,4 +307,10 @@ impl SafePointerImpl for Ptr<SafePointer> {
             .borrow_mut())
         .prefix_inc();
     }
+}
+pub trait PairImpl {
+    fn inc(&self, k: i32);
+}
+pub trait SafePointerImpl {
+    fn inc(&self);
 }

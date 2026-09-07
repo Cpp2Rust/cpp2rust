@@ -34,9 +34,6 @@ impl ByteRepr for Dog {
 }
 #[derive(Default)]
 pub struct Cat {}
-pub trait CatImpl {
-    fn meow(&self) -> bool;
-}
 impl Animal for Cat {
     fn bark(&self) -> bool {
         return false;
@@ -81,4 +78,7 @@ impl CatImpl for Ptr<Cat> {
     fn meow(&self) -> bool {
         return true;
     }
+}
+pub trait CatImpl {
+    fn meow(&self) -> bool;
 }

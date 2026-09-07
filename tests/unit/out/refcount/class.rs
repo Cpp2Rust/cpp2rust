@@ -11,14 +11,6 @@ pub struct Pair {
     pub first: Value<i32>,
     pub second: Value<i32>,
 }
-pub trait PairImpl {
-    fn NOP(&self);
-    fn GetFirst(&self) -> i32;
-    fn GetSecond(&self) -> i32;
-    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
-    fn SetFirst(&self, new_first: i32) -> i32;
-    fn SetSecond(&self, new_second: i32) -> i32;
-}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
@@ -48,9 +40,6 @@ impl ByteRepr for Pair {
 pub struct Route {
     pub path: Value<Pair>,
     pub cost: Value<f64>,
-}
-pub trait RouteImpl {
-    fn SetCost(&self, new_cost: f64) -> f64;
 }
 impl Clone for Route {
     fn clone(&self) -> Self {
@@ -168,4 +157,15 @@ impl RouteImpl for Ptr<Route> {
         (*(*(*self).upgrade().deref()).cost.borrow_mut()) = (*new_cost.borrow());
         return (*old_cost.borrow());
     }
+}
+pub trait PairImpl {
+    fn NOP(&self);
+    fn GetFirst(&self) -> i32;
+    fn GetSecond(&self) -> i32;
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
+    fn SetFirst(&self, new_first: i32) -> i32;
+    fn SetSecond(&self, new_second: i32) -> i32;
+}
+pub trait RouteImpl {
+    fn SetCost(&self, new_cost: f64) -> f64;
 }

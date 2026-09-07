@@ -8,10 +8,6 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Default)]
 pub struct TestAllocator_int_ {}
-pub trait TestAllocator_int_Impl {
-    fn allocate(&self, n: usize) -> Ptr<i32>;
-    fn deallocate(&self, p: Ptr<i32>, _: usize);
-}
 impl Clone for TestAllocator_int_ {
     fn clone(&self) -> Self {
         let __this: Value<TestAllocator_int_> = Rc::new(RefCell::new(Self {}));
@@ -30,10 +26,6 @@ impl ByteRepr for TestAllocator_int_ {
 }
 #[derive(Default)]
 pub struct TestAllocator_double_ {}
-pub trait TestAllocator_double_Impl {
-    fn allocate(&self, n: usize) -> Ptr<f64>;
-    fn deallocate(&self, p: Ptr<f64>, _: usize);
-}
 impl Clone for TestAllocator_double_ {
     fn clone(&self) -> Self {
         let __this: Value<TestAllocator_double_> = Rc::new(RefCell::new(Self {}));
@@ -374,4 +366,12 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
         (*p.borrow()).delete_array();
     }
+}
+pub trait TestAllocator_double_Impl {
+    fn allocate(&self, n: usize) -> Ptr<f64>;
+    fn deallocate(&self, p: Ptr<f64>, _: usize);
+}
+pub trait TestAllocator_int_Impl {
+    fn allocate(&self, n: usize) -> Ptr<i32>;
+    fn deallocate(&self, p: Ptr<i32>, _: usize);
 }

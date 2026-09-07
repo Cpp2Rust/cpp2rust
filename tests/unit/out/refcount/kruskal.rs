@@ -221,11 +221,6 @@ pub struct DisjointSet {
     pub parent: Value<Option<Value<Box<[i32]>>>>,
     pub n: Value<i32>,
 }
-pub trait DisjointSetImpl {
-    fn makeSet(&self);
-    fn find(&self, x: i32) -> i32;
-    fn merge(&self, x: i32, y: i32);
-}
 impl ByteRepr for DisjointSet {
     fn byte_size() -> usize {
         24
@@ -486,4 +481,9 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
     }
+}
+pub trait DisjointSetImpl {
+    fn makeSet(&self);
+    fn find(&self, x: i32) -> i32;
+    fn merge(&self, x: i32, y: i32);
 }

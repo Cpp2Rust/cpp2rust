@@ -11,9 +11,6 @@ thread_local!(
 );
 #[derive(Default)]
 pub struct C {}
-pub trait CImpl {
-    fn get(&self) -> i32;
-}
 impl Clone for C {
     fn clone(&self) -> Self {
         let __this: Value<C> = Rc::new(RefCell::new(Self {}));
@@ -64,4 +61,7 @@ impl CImpl for Ptr<C> {
     fn get(&self) -> i32 {
         return (*inner_const_0.with(Value::clone).borrow());
     }
+}
+pub trait CImpl {
+    fn get(&self) -> i32;
 }
