@@ -119,13 +119,13 @@ std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
   assert(!ptr_type.isNull() && ptr_type->isPointerType());
   auto pointee = ptr_type->getPointeeType();
   if (!pointee->isRecordType()) {
-    return ToString(pointee);
+    return std::string(Trim(ToString(pointee)));
   }
 
   auto str = ToString(ptr_type);
   Unwrap(str, "*mut ", "");
   Unwrap(str, "*const ", "");
-  return str;
+  return std::string(Trim(str));
 }
 
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {

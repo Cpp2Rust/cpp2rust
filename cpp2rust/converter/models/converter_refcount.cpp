@@ -2584,7 +2584,7 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto pointee = ptr_type->getPointeeType();
   if (!pointee->isRecordType()) {
-    return ToString(pointee);
+    return std::string(Trim(ToString(pointee)));
   }
 
   // Pointee of a pointer to incomplete type is an incomplete type that does
@@ -2593,7 +2593,7 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   auto str = ToString(ptr_type);
   Unwrap(str, "PtrDyn<", ">");
   Unwrap(str, "Ptr<", ">");
-  return str;
+  return std::string(Trim(str));
 }
 
 bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
