@@ -4087,10 +4087,10 @@ void Converter::ConvertOrdAndPartialOrdTraitsBase(
   StrCat(keyword::kImpl, "std::cmp::Eq for", record_name, "{}");
 }
 
-std::string Converter::ComparisonCall(const clang::FunctionDecl *op,
-                                      const clang::CXXRecordDecl *decl,
-                                      std::string_view lhs,
-                                      std::string_view rhs) {
+std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
+                                         const clang::CXXRecordDecl *decl,
+                                         std::string_view lhs,
+                                         std::string_view rhs) {
   auto record = GetRecordName(decl);
   auto arg = std::format("{} as *const {}", rhs, record);
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
@@ -4112,24 +4112,24 @@ void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
   std::string cmp_body, eq_body;
 
   if (cmp) {
-    cmp_body = ComparisonCall(cmp, decl, "self", "other");
+    cmp_body = GetComparisonCall(cmp, decl, "self", "other");
   } else if (lt) {
     cmp_body = std::format("if {} {{ std::cmp::Ordering::Less }} else if {} {{ "
                            "std::cmp::Ordering::Greater }} else {{ "
                            "std::cmp::Ordering::Equal }}",
-                           ComparisonCall(lt, decl, "self", "other"),
-                           ComparisonCall(lt, decl, "other", "self"));
+                           GetComparisonCall(lt, decl, "self", "other"),
+                           GetComparisonCall(lt, decl, "other", "self"));
   }
 
   if (eq) {
-    eq_body = ComparisonCall(eq, decl, "self", "other");
+    eq_body = GetComparisonCall(eq, decl, "self", "other");
   } else if (cmp) {
     eq_body = std::format("{} == std::cmp::Ordering::Equal",
-                          ComparisonCall(cmp, decl, "self", "other"));
+                          GetComparisonCall(cmp, decl, "self", "other"));
   } else {
-    eq_body =
-        std::format("!({}) && !({})", ComparisonCall(lt, decl, "self", "other"),
-                    ComparisonCall(lt, decl, "other", "self"));
+    eq_body = std::format("!({}) && !({})",
+                          GetComparisonCall(lt, decl, "self", "other"),
+                          GetComparisonCall(lt, decl, "other", "self"));
   }
 
   ConvertOrdAndPartialOrdTraitsBase(cmp_body, eq_body, GetRecordName(decl));

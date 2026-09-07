@@ -434,10 +434,9 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return false;
 }
 
-std::string ConverterRefCount::ComparisonCall(const clang::FunctionDecl *op,
-                                              const clang::CXXRecordDecl *decl,
-                                              std::string_view lhs,
-                                              std::string_view rhs) {
+std::string ConverterRefCount::GetComparisonCall(
+    const clang::FunctionDecl *op, const clang::CXXRecordDecl *decl,
+    std::string_view lhs, std::string_view rhs) {
   auto lhs_ptr =
       std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", lhs);
   auto rhs_ptr =
