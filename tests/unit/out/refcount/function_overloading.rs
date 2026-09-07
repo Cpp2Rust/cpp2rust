@@ -93,6 +93,14 @@ fn main_0() -> i32 {
     assert!(((*out.borrow()) == 13));
     return 0;
 }
+pub trait FooImpl {
+    fn foo_const(&self);
+    fn foo(&self);
+    fn method_i32(&self, x: i32);
+    fn method_i32_const(&self, x: i32);
+    fn method2_i32_i32_const(&self, x: i32, y: i32);
+    fn method2_f64_f64_const(&self, x: f64, y: f64);
+}
 impl FooImpl for Ptr<Foo> {
     fn foo_const(&self) {}
     fn foo(&self) {}
@@ -110,12 +118,4 @@ impl FooImpl for Ptr<Foo> {
         let x: Value<f64> = Rc::new(RefCell::new(x));
         let y: Value<f64> = Rc::new(RefCell::new(y));
     }
-}
-pub trait FooImpl {
-    fn foo_const(&self);
-    fn foo(&self);
-    fn method_i32(&self, x: i32);
-    fn method_i32_const(&self, x: i32);
-    fn method2_i32_i32_const(&self, x: i32, y: i32);
-    fn method2_f64_f64_const(&self, x: f64, y: f64);
 }

@@ -63,12 +63,12 @@ fn main_0() -> i32 {
     assert!(((*result.borrow()) == 11));
     return 0;
 }
+pub trait ItemImpl {
+    fn foo(&self, other: Ptr<Item>);
+}
 impl ItemImpl for Ptr<Item> {
     fn foo(&self, other: Ptr<Item>) {
         let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
         (*(*(*other.borrow()).upgrade().deref()).value.borrow_mut()) = 10;
     }
-}
-pub trait ItemImpl {
-    fn foo(&self, other: Ptr<Item>);
 }

@@ -60,6 +60,11 @@ fn main_0() -> i32 {
     assert!(((*total_0.with(Value::clone).borrow()) == 18));
     return 0;
 }
+pub trait SImpl {
+    fn const_method(&self) -> i32;
+    fn mut_method(&self);
+    fn destructor(&self);
+}
 impl SImpl for Ptr<S> {
     fn const_method(&self) -> i32 {
         return ((*(*(*self).upgrade().deref()).v.borrow()) * 2);
@@ -71,9 +76,4 @@ impl SImpl for Ptr<S> {
         ({ SImpl::mut_method(self) });
         (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(self) });
     }
-}
-pub trait SImpl {
-    fn const_method(&self) -> i32;
-    fn mut_method(&self);
-    fn destructor(&self);
 }

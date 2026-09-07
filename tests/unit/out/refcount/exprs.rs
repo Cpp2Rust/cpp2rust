@@ -130,6 +130,10 @@ fn main_0() -> i32 {
     assert!(((*(*x.borrow()).x.borrow()) == 100));
     return 0;
 }
+pub trait YImpl {
+    fn foo(&self) -> Ptr<X>;
+    fn ptr(&self) -> Ptr<X>;
+}
 impl YImpl for Ptr<Y> {
     fn foo(&self) -> Ptr<X> {
         return (*(*self).upgrade().deref()).x.as_pointer();
@@ -137,8 +141,4 @@ impl YImpl for Ptr<Y> {
     fn ptr(&self) -> Ptr<X> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
-}
-pub trait YImpl {
-    fn foo(&self) -> Ptr<X>;
-    fn ptr(&self) -> Ptr<X>;
 }

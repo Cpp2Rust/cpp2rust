@@ -45,6 +45,10 @@ pub fn f_0(p: Ptr<S_int_>) -> i32 {
     let p: Value<Ptr<S_int_>> = Rc::new(RefCell::new(p));
     return ({ S_int_Impl::get(&(*p.borrow())) });
 }
+pub trait S_int_Impl {
+    fn set(&self, v: i32);
+    fn get(&self) -> i32;
+}
 impl S_int_Impl for Ptr<S_int_> {
     fn set(&self, v: i32) {
         let v: Value<i32> = Rc::new(RefCell::new(v));
@@ -53,8 +57,4 @@ impl S_int_Impl for Ptr<S_int_> {
     fn get(&self) -> i32 {
         return (*(*(*self).upgrade().deref()).x.borrow());
     }
-}
-pub trait S_int_Impl {
-    fn set(&self, v: i32);
-    fn get(&self) -> i32;
 }

@@ -2604,15 +2604,16 @@ ConverterRefCount::TraitName(const clang::CXXRecordDecl *decl) const {
   return GetRecordName(decl) + "Impl";
 }
 
-std::string
-ConverterRefCount::TraitHeader(const clang::CXXRecordDecl *decl) const {
-  return std::format("pub trait {}", TraitName(decl));
-}
-
-std::string
-ConverterRefCount::ImplHeader(const clang::CXXRecordDecl *decl) const {
-  return std::format("impl {} for Ptr<{}>", TraitName(decl),
-                     GetRecordName(decl));
+Converter::MethodsOnPtr &
+ConverterRefCount::MethodsOnPtrFor(const clang::CXXRecordDecl *decl) {
+  auto name = GetRecordName(decl);
+  auto [it, inserted] = methods_on_ptr_.try_emplace(name);
+  if (inserted) {
+    it->second.trait_header = std::format("pub trait {}", TraitName(decl));
+    it->second.impl_header =
+        std::format("impl {} for Ptr<{}>", TraitName(decl), name);
+  }
+  return it->second;
 }
 
 bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
@@ -2624,7 +2625,7 @@ bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
     PushMethodTarget push(*this, MethodTarget::PtrImpl);
     ConvertCXXMethodDecl(decl);
   }
-  deferred_impls_[ImplHeader(decl->getParent())] += std::move(buf).str();
+  MethodsOnPtrFor(decl->getParent()).impl_body += std::move(buf).str();
   return false;
 }
 
@@ -2637,7 +2638,7 @@ void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
       PushMethodTarget push(*this, MethodTarget::TraitDecl);
       ConvertCXXMethodDecl(method);
     }
-    deferred_impls_[TraitHeader(record)] += std::move(buf).str();
+    MethodsOnPtrFor(record).trait_body += std::move(buf).str();
   }
   if (!method->isThisDeclarationADefinition()) {
     return;
@@ -2647,7 +2648,7 @@ void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
     PushMethodTarget push(*this, MethodTarget::PtrImpl);
     VisitCXXMethodDecl(method);
   }
-  deferred_impls_[ImplHeader(record)] += std::move(buf).str();
+  MethodsOnPtrFor(record).impl_body += std::move(buf).str();
 }
 
 void ConverterRefCount::ConvertLateInstantiatedMethods(
@@ -2683,9 +2684,9 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   }
 
   if (!GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl)) {
-    deferred_impls_[TraitHeader(decl)] +=
+    MethodsOnPtrFor(decl).trait_body +=
         std::format("fn {}(&self);\n", kDestructorName);
-    deferred_impls_[ImplHeader(decl)] += std::format(
+    MethodsOnPtrFor(decl).impl_body += std::format(
         "fn {}(&self) {{ {} }}\n", kDestructorName, DestroyMembers(decl));
   }
 }

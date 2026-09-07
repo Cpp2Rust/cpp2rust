@@ -127,6 +127,13 @@ fn main_0() -> i32 {
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     return 0;
 }
+pub trait MyContainer_char_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<u8>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<u8>);
+}
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
@@ -147,6 +154,13 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
             (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
+}
+pub trait MyContainer_float_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<f32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<f32>);
 }
 impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn empty(&self) -> bool {
@@ -169,6 +183,13 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
         };
     }
 }
+pub trait MyContainer_int_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<i32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<i32>);
+}
 impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn empty(&self) -> bool {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
@@ -189,25 +210,4 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
             (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
     }
-}
-pub trait MyContainer_char_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<u8>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<u8>);
-}
-pub trait MyContainer_float_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<f32>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<f32>);
-}
-pub trait MyContainer_int_Impl {
-    fn empty(&self) -> bool;
-    fn size(&self) -> usize;
-    fn back(&self) -> Ptr<i32>;
-    fn pop_back(&self);
-    fn push_back(&self, item: Ptr<i32>);
 }

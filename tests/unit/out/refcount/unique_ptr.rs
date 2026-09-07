@@ -292,12 +292,18 @@ fn main_0() -> i32 {
     assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
     return 0;
 }
+pub trait PairImpl {
+    fn inc(&self, k: i32);
+}
 impl PairImpl for Ptr<Pair> {
     fn inc(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
         (*(*(*self).upgrade().deref()).x.borrow_mut()) += (*k.borrow());
         (*(*(*self).upgrade().deref()).y.borrow_mut()) += (*k.borrow());
     }
+}
+pub trait SafePointerImpl {
+    fn inc(&self);
 }
 impl SafePointerImpl for Ptr<SafePointer> {
     fn inc(&self) {
@@ -307,10 +313,4 @@ impl SafePointerImpl for Ptr<SafePointer> {
             .borrow_mut())
         .prefix_inc();
     }
-}
-pub trait PairImpl {
-    fn inc(&self, k: i32);
-}
-pub trait SafePointerImpl {
-    fn inc(&self);
 }

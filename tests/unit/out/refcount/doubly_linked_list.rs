@@ -431,6 +431,10 @@ fn main_0() -> i32 {
     });
     return 0;
 }
+pub trait NodeImpl {
+    fn SetNext(&self, n: Ptr<Node>);
+    fn SetPrev(&self, p: Ptr<Node>);
+}
 impl NodeImpl for Ptr<Node> {
     fn SetNext(&self, n: Ptr<Node>) {
         let n: Value<Ptr<Node>> = Rc::new(RefCell::new(n));
@@ -440,8 +444,4 @@ impl NodeImpl for Ptr<Node> {
         let p: Value<Ptr<Node>> = Rc::new(RefCell::new(p));
         (*(*(*self).upgrade().deref()).prev.borrow_mut()) = (*p.borrow()).clone();
     }
-}
-pub trait NodeImpl {
-    fn SetNext(&self, n: Ptr<Node>);
-    fn SetPrev(&self, p: Ptr<Node>);
 }

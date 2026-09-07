@@ -296,6 +296,12 @@ fn main_0() -> i32 {
     let ptr2ptr_2: Value<Ptr<Ptr<Pair>>> = Rc::new(RefCell::new((py1.as_pointer())));
     return 0;
 }
+pub trait PairImpl {
+    fn method(&self);
+    fn as_val(&self) -> i32;
+    fn as_ref(&self) -> Ptr<i32>;
+    fn as_ptr(&self) -> Ptr<i32>;
+}
 impl PairImpl for Ptr<Pair> {
     fn method(&self) {
         (*(*(*self).upgrade().deref()).x.borrow_mut()).postfix_inc();
@@ -315,10 +321,4 @@ impl PairImpl for Ptr<Pair> {
     fn as_ptr(&self) -> Ptr<i32> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
-}
-pub trait PairImpl {
-    fn method(&self);
-    fn as_val(&self) -> i32;
-    fn as_ref(&self) -> Ptr<i32>;
-    fn as_ptr(&self) -> Ptr<i32>;
 }

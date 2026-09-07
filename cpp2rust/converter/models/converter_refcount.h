@@ -219,8 +219,7 @@ public:
 
 private:
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
-  std::string TraitHeader(const clang::CXXRecordDecl *decl) const;
-  std::string ImplHeader(const clang::CXXRecordDecl *decl) const;
+  MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 

@@ -399,27 +399,27 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub trait X2Impl {
+    fn get(&self) -> Ptr<X1>;
+}
 impl X2Impl for Ptr<X2> {
     fn get(&self) -> Ptr<X1> {
         return ((*(*self).upgrade().deref()).v).clone();
     }
+}
+pub trait X3Impl {
+    fn get(&self) -> Ptr<X2>;
 }
 impl X3Impl for Ptr<X3> {
     fn get(&self) -> Ptr<X2> {
         return (*(*(*self).upgrade().deref()).v.borrow()).clone();
     }
 }
+pub trait X4Impl {
+    fn get(&self) -> Ptr<X3>;
+}
 impl X4Impl for Ptr<X4> {
     fn get(&self) -> Ptr<X3> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
-}
-pub trait X2Impl {
-    fn get(&self) -> Ptr<X1>;
-}
-pub trait X3Impl {
-    fn get(&self) -> Ptr<X2>;
-}
-pub trait X4Impl {
-    fn get(&self) -> Ptr<X3>;
 }

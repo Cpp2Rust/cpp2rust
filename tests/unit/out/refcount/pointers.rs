@@ -73,6 +73,12 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub trait TestImpl {
+    fn inc(&self);
+    fn dec(&self);
+    fn as_ptr(&self) -> Ptr<i32>;
+    fn update(&self, x: i32, y: i32);
+}
 impl TestImpl for Ptr<Test> {
     fn inc(&self) {
         (*(*(*self).upgrade().deref()).x.borrow_mut()).postfix_inc();
@@ -88,10 +94,4 @@ impl TestImpl for Ptr<Test> {
         let y: Value<i32> = Rc::new(RefCell::new(y));
         (*(*(*self).upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
     }
-}
-pub trait TestImpl {
-    fn inc(&self);
-    fn dec(&self);
-    fn as_ptr(&self) -> Ptr<i32>;
-    fn update(&self, x: i32, y: i32);
 }

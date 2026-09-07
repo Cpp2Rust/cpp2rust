@@ -76,6 +76,9 @@ fn main_0() -> i32 {
     }));
     return 0;
 }
+pub trait GraphImpl {
+    fn push(&self, src: u32, dst: u32);
+}
 impl GraphImpl for Ptr<Graph> {
     fn push(&self, src: u32, dst: u32) {
         let src: Value<u32> = Rc::new(RefCell::new(src));
@@ -105,7 +108,4 @@ impl GraphImpl for Ptr<Graph> {
             .offset((*dst.borrow()) as isize)
             .write(__rhs);
     }
-}
-pub trait GraphImpl {
-    fn push(&self, src: u32, dst: u32);
 }

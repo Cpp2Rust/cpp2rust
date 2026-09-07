@@ -386,6 +386,11 @@ fn main_0() -> i32 {
     assert!(((*total_weight.borrow()) == 19_f64));
     return 0;
 }
+pub trait DisjointSetImpl {
+    fn makeSet(&self);
+    fn find(&self, x: i32) -> i32;
+    fn merge(&self, x: i32, y: i32);
+}
 impl DisjointSetImpl for Ptr<DisjointSet> {
     fn makeSet(&self) {
         let i: Value<i32> = Rc::new(RefCell::new(0));
@@ -481,9 +486,4 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
     }
-}
-pub trait DisjointSetImpl {
-    fn makeSet(&self);
-    fn find(&self, x: i32) -> i32;
-    fn merge(&self, x: i32, y: i32);
 }

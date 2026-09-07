@@ -116,6 +116,14 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub trait PairImpl {
+    fn NOP(&self);
+    fn GetFirst(&self) -> i32;
+    fn GetSecond(&self) -> i32;
+    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
+    fn SetFirst(&self, new_first: i32) -> i32;
+    fn SetSecond(&self, new_second: i32) -> i32;
+}
 impl PairImpl for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
@@ -149,6 +157,9 @@ impl PairImpl for Ptr<Pair> {
             }));
     }
 }
+pub trait RouteImpl {
+    fn SetCost(&self, new_cost: f64) -> f64;
+}
 impl RouteImpl for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
@@ -157,15 +168,4 @@ impl RouteImpl for Ptr<Route> {
         (*(*(*self).upgrade().deref()).cost.borrow_mut()) = (*new_cost.borrow());
         return (*old_cost.borrow());
     }
-}
-pub trait PairImpl {
-    fn NOP(&self);
-    fn GetFirst(&self) -> i32;
-    fn GetSecond(&self) -> i32;
-    fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32;
-    fn SetFirst(&self, new_first: i32) -> i32;
-    fn SetSecond(&self, new_second: i32) -> i32;
-}
-pub trait RouteImpl {
-    fn SetCost(&self, new_cost: f64) -> f64;
 }

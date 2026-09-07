@@ -407,6 +407,9 @@ fn main_0() -> i32 {
     assert!(((*order_1.with(Value::clone).borrow())[(2) as usize] == 1));
     return 0;
 }
+pub trait ArrayMemberImpl {
+    fn destructor(&self);
+}
 impl ArrayMemberImpl for Ptr<ArrayMember> {
     fn destructor(&self) {
         {
@@ -417,25 +420,40 @@ impl ArrayMemberImpl for Ptr<ArrayMember> {
         }
     }
 }
+pub trait CopiedImpl {
+    fn destructor(&self);
+}
 impl CopiedImpl for Ptr<Copied> {
     fn destructor(&self) {
         (*global_0.with(Value::clone).borrow_mut()).postfix_inc();
     }
+}
+pub trait DefaultedImpl {
+    fn destructor(&self);
 }
 impl DefaultedImpl for Ptr<Defaulted> {
     fn destructor(&self) {
         (*self.upgrade().deref()).s.as_pointer().destructor();
     }
 }
+pub trait EmptyBodyImpl {
+    fn destructor(&self);
+}
 impl EmptyBodyImpl for Ptr<EmptyBody> {
     fn destructor(&self) {
         (*self.upgrade().deref()).s.as_pointer().destructor();
     }
 }
+pub trait MiddleImpl {
+    fn destructor(&self);
+}
 impl MiddleImpl for Ptr<Middle> {
     fn destructor(&self) {
         (*self.upgrade().deref()).s.as_pointer().destructor();
     }
+}
+pub trait OrderedImpl {
+    fn destructor(&self);
 }
 impl OrderedImpl for Ptr<Ordered> {
     fn destructor(&self) {
@@ -444,15 +462,24 @@ impl OrderedImpl for Ptr<Ordered> {
         (*self.upgrade().deref()).first.as_pointer().destructor();
     }
 }
+pub trait OuterImpl {
+    fn destructor(&self);
+}
 impl OuterImpl for Ptr<Outer> {
     fn destructor(&self) {
         (*self.upgrade().deref()).m.as_pointer().destructor();
     }
 }
+pub trait SImpl {
+    fn destructor(&self);
+}
 impl SImpl for Ptr<S> {
     fn destructor(&self) {
         (*global_0.with(Value::clone).borrow_mut()).postfix_inc();
     }
+}
+pub trait TaggedImpl {
+    fn destructor(&self);
 }
 impl TaggedImpl for Ptr<Tagged> {
     fn destructor(&self) {
@@ -460,6 +487,9 @@ impl TaggedImpl for Ptr<Tagged> {
             [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
             (*(*(*self).upgrade().deref()).tag.borrow());
     }
+}
+pub trait Templated_char_Impl {
+    fn destructor(&self);
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
@@ -471,6 +501,9 @@ impl Templated_char_Impl for Ptr<Templated_char_> {
         };
     }
 }
+pub trait Templated_int_Impl {
+    fn destructor(&self);
+}
 impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
         {
@@ -480,37 +513,4 @@ impl Templated_int_Impl for Ptr<Templated_int_> {
             (*global_0.with(Value::clone).borrow_mut()) = rhs_0
         };
     }
-}
-pub trait ArrayMemberImpl {
-    fn destructor(&self);
-}
-pub trait CopiedImpl {
-    fn destructor(&self);
-}
-pub trait DefaultedImpl {
-    fn destructor(&self);
-}
-pub trait EmptyBodyImpl {
-    fn destructor(&self);
-}
-pub trait MiddleImpl {
-    fn destructor(&self);
-}
-pub trait OrderedImpl {
-    fn destructor(&self);
-}
-pub trait OuterImpl {
-    fn destructor(&self);
-}
-pub trait SImpl {
-    fn destructor(&self);
-}
-pub trait TaggedImpl {
-    fn destructor(&self);
-}
-pub trait Templated_char_Impl {
-    fn destructor(&self);
-}
-pub trait Templated_int_Impl {
-    fn destructor(&self);
 }

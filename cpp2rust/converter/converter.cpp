@@ -26,8 +26,7 @@ std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
-std::map<Converter::DeferredImplHeader, Converter::DeferredImplBody>
-    Converter::deferred_impls_;
+std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -58,12 +57,16 @@ use std::rc::Rc;
 )");
 }
 
-std::string Converter::EmitDeferredImpls() {
+std::string Converter::EmitMethodsOnPtr() {
   std::string out;
-  for (const auto &[header, body] : deferred_impls_) {
-    out += header;
+  for (const auto &[name, methods] : methods_on_ptr_) {
+    out += methods.trait_header;
     out += " {\n";
-    out += body;
+    out += methods.trait_body;
+    out += "}\n";
+    out += methods.impl_header;
+    out += " {\n";
+    out += methods.impl_body;
     out += "}\n";
   }
   return out;

@@ -100,20 +100,20 @@ fn main_0() -> i32 {
     assert!(((*({ Box_Point_Impl::get(&p.as_pointer(),) }).x.borrow()) == 4));
     return 0;
 }
+pub trait Box_Point_Impl {
+    fn get(&self) -> Point;
+}
 impl Box_Point_Impl for Ptr<Box_Point_> {
     fn get(&self) -> Point {
         return (*(*(*self).upgrade().deref()).val.borrow()).clone();
     }
+}
+pub trait Box_int_Impl {
+    fn twice(&self) -> i32;
 }
 impl Box_int_Impl for Ptr<Box_int_> {
     fn twice(&self) -> i32 {
         return ((*(*(*self).upgrade().deref()).val.borrow())
             + (*(*(*self).upgrade().deref()).val.borrow()));
     }
-}
-pub trait Box_Point_Impl {
-    fn get(&self) -> Point;
-}
-pub trait Box_int_Impl {
-    fn twice(&self) -> i32;
 }

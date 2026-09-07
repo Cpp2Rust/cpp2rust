@@ -67,6 +67,10 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub trait StructWithCtorImpl {
+    fn x1(&self) -> Ptr<i32>;
+    fn x2(&self) -> Ptr<i32>;
+}
 impl StructWithCtorImpl for Ptr<StructWithCtor> {
     fn x1(&self) -> Ptr<i32> {
         return (*(*self).upgrade().deref()).x1_.as_pointer();
@@ -74,8 +78,4 @@ impl StructWithCtorImpl for Ptr<StructWithCtor> {
     fn x2(&self) -> Ptr<i32> {
         return (*(*self).upgrade().deref()).x2_.as_pointer();
     }
-}
-pub trait StructWithCtorImpl {
-    fn x1(&self) -> Ptr<i32>;
-    fn x2(&self) -> Ptr<i32>;
 }

@@ -57,11 +57,11 @@ fn main_0() -> i32 {
     assert!(((*inner_const_1.with(Value::clone).borrow()) == 2));
     return 0;
 }
+pub trait CImpl {
+    fn get(&self) -> i32;
+}
 impl CImpl for Ptr<C> {
     fn get(&self) -> i32 {
         return (*inner_const_0.with(Value::clone).borrow());
     }
-}
-pub trait CImpl {
-    fn get(&self) -> i32;
 }
