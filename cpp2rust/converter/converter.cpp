@@ -1771,10 +1771,8 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   auto callee = GetCallee(expr);
   unsigned arg_begin = 0;
   if (auto op_call = llvm::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    auto *method =
-        llvm::dyn_cast_or_null<clang::CXXMethodDecl>(op_call->getDirectCallee());
-    if (op_call->getOperator() == clang::OO_Call ||
-        (method && method->isInstance())) {
+    if (clang::isa_and_nonnull<clang::CXXMethodDecl>(
+            op_call->getDirectCallee())) {
       arg_begin = 1;
     }
   }
@@ -1969,9 +1967,10 @@ void Converter::ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr) {
   PushBrace unsafe_brace(*this);
   auto info = CollectCallInfo(expr);
   EmitHoistedArgs(info);
-  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
-      method && method->isInstance()) {
-    ConvertReceiver(expr->getArg(0), false, method);
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
+    if (method->isInstance()) {
+      ConvertReceiver(expr->getArg(0), false, method);
+    }
     StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
   } else {
     StrCat(GetNamedDeclAsString(callee->getCanonicalDecl()));
