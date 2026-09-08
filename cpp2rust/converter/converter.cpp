@@ -3102,11 +3102,11 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
   } else if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
-      StrCat("vec!");
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
+        StrCat("vec!");
         VisitInitListExpr(init);
       } else {
-        StrCat("[]");
+        StrCat(GetArrayDefaultAsString(qual_type));
       }
       return false;
     }
