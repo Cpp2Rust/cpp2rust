@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     q = (&mut xx.x as *mut i32);
     q = (&mut (*zz).x as *mut i32);
     (*zz).x = 2;
-    let mut ww: X = xx.clone();
+    let mut ww: X = xx;
     ww = xx;
     let mut aa: i32 = (unsafe { func_0() });
     aa = (unsafe { func_0() });

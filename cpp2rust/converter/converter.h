@@ -138,8 +138,10 @@ public:
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
                         const std::string &argument_as_string);
-  void ConvertMethodReceiver(clang::MemberExpr *expr,
-                             const clang::CXXMethodDecl *method);
+  virtual void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
+                               const clang::CXXMethodDecl *method);
+  void ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr);
+  virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
 
   virtual bool ThisIsRustPtr() const { return false; }
 
@@ -353,6 +355,7 @@ public:
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
 
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
+  bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
@@ -568,16 +571,21 @@ protected:
                              const std::string_view signature,
                              bool (*predicate)(clang::CXXMethodDecl *));
 
-  virtual void AddOrdTrait(const clang::CXXRecordDecl *decl);
+  void AddOrdTrait(const clang::CXXRecordDecl *decl);
 
-  virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                             const clang::FunctionDecl *op);
+  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                     const clang::FunctionDecl *eq,
+                                     const clang::FunctionDecl *lt,
+                                     const clang::FunctionDecl *cmp);
 
-  void ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
-                                         std::string_view second_branch,
-                                         std::string_view first_return,
-                                         std::string_view second_return,
+  void ConvertOrdAndPartialOrdTraitsBase(std::string_view cmp_body,
+                                         std::string_view eq_body,
                                          std::string_view record_name);
+
+  virtual std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                        const clang::CXXRecordDecl *decl,
+                                        std::string_view lhs,
+                                        std::string_view rhs);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
@@ -665,7 +673,7 @@ protected:
     ~PushMethodTarget() { c.method_target_ = prev; }
   };
 
-  std::string method_receiver_;
+  std::string ufcs_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;
