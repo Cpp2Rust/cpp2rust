@@ -13,30 +13,37 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
-    pub unsafe fn NOP(&mut self) {}
+    pub unsafe fn NOP(&mut self) {
+        let this = self as *mut Pair;
+    }
     pub unsafe fn GetFirst(&self) -> i32 {
-        return self.first;
+        let this = self as *const Pair;
+        return (*this).first;
     }
     pub unsafe fn GetSecond(&self) -> i32 {
-        return self.second;
+        let this = self as *const Pair;
+        return (*this).second;
     }
     pub unsafe fn Set(&mut self, field: *mut i32, mut new_val: i32) -> i32 {
+        let this = self as *mut Pair;
         (unsafe { Pair::NOP(self) });
         let mut old_val: i32 = (*field);
         (*field) = new_val;
         return old_val;
     }
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
+        let this = self as *mut Pair;
         return ((unsafe { Pair::GetFirst(self) })
             + (unsafe {
-                let _field: *mut i32 = &mut self.first as *mut i32;
+                let _field: *mut i32 = &mut (*this).first as *mut i32;
                 Pair::Set(self, _field, new_first)
             }));
     }
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
+        let this = self as *mut Pair;
         return ((unsafe { Pair::GetSecond(self) })
             + (unsafe {
-                let _field: *mut i32 = &mut self.second as *mut i32;
+                let _field: *mut i32 = &mut (*this).second as *mut i32;
                 Pair::Set(self, _field, new_second)
             }));
     }
@@ -49,8 +56,9 @@ pub struct Route {
 }
 impl Route {
     pub unsafe fn SetCost(&mut self, mut new_cost: f64) -> f64 {
-        let mut old_cost: f64 = self.cost;
-        self.cost = new_cost;
+        let this = self as *mut Route;
+        let mut old_cost: f64 = (*this).cost;
+        (*this).cost = new_cost;
         return old_cost;
     }
 }

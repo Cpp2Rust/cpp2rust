@@ -12,6 +12,7 @@ pub static mut global_0: i32 = unsafe { 0 };
 pub struct S {}
 impl S {
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut S;
         global_0.postfix_inc();
     }
 }
@@ -71,6 +72,7 @@ pub struct EmptyBody {
 }
 impl EmptyBody {
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut EmptyBody;
         S::destructor(&mut self.s);
     }
 }
@@ -81,6 +83,7 @@ pub struct Templated_char_ {
 }
 impl Templated_char_ {
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut Templated_char_;
         global_0 = ((global_0 as usize)
             .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize)))
             as i32;
@@ -93,6 +96,7 @@ pub struct Templated_int_ {
 }
 impl Templated_int_ {
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut Templated_int_;
         global_0 =
             ((global_0 as usize).wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32;
     }
@@ -104,6 +108,7 @@ pub struct Copied {
 }
 impl Copied {
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut Copied;
         global_0.postfix_inc();
     }
 }
@@ -116,7 +121,8 @@ pub struct Tagged {
 }
 impl Tagged {
     pub unsafe fn destructor(&mut self) {
-        order_1[(order_count_2.postfix_inc()) as usize] = self.tag;
+        let this = self as *mut Tagged;
+        order_1[(order_count_2.postfix_inc()) as usize] = (*this).tag;
     }
 }
 #[repr(C)]

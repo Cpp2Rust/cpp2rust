@@ -1080,15 +1080,16 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
 
 void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   EmitFunctionPreamble(decl);
-  StrCat(keyword::kLet, "mut", "this", token::kAssign, "Self");
+  StrCat(keyword::kLet, "mut", "__this", token::kAssign, "Self");
   {
     PushBrace this_init(*this);
     EmitConstructorFieldInits(decl);
   }
-
   StrCat(token::kSemiColon);
+  StrCat(keyword::kLet, "this", token::kAssign, "&raw mut __this",
+         token::kSemiColon);
   ConvertBodyStmts(decl->getBody());
-  StrCat("this");
+  StrCat("__this");
 }
 
 void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
@@ -1149,6 +1150,12 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
       StrCat(std::format("let mut {} : {} = {}", name, type, init),
              token::kSemiColon);
     }
+  }
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
+      method && method->isInstance() && !method->getParent()->isLambda() &&
+      !clang::isa<clang::CXXConstructorDecl>(method)) {
+    StrCat(std::format("let this = self as {}", ToString(method->getThisType())),
+           token::kSemiColon);
   }
 }
 
@@ -2985,7 +2992,7 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
-    ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
+    ufcs_receiver_ = in_ctor ? "&mut *this" : keyword::kSelfValue;
     return;
   }
   Buffer buf(*this);
@@ -3055,15 +3062,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     expr = inner;
   }
 
-  auto *base = expr->getBase();
-  bool base_is_this =
-      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
-  PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (expr->isArrow() && !base_is_this) {
-    ConvertArrow(base);
-  } else {
-    Convert(base);
-  }
+  ConvertMemberBase(expr);
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsOverloadedMethod(method)) {
@@ -3077,12 +3076,17 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 }
 
-bool Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
-  if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
-    StrCat("this");
+void Converter::ConvertMemberBase(clang::MemberExpr *expr) {
+  PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+  if (expr->isArrow()) {
+    ConvertArrow(expr->getBase());
   } else {
-    StrCat(keyword::kSelfValue);
+    Convert(expr->getBase());
   }
+}
+
+bool Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
+  StrCat("this");
   return false;
 }
 

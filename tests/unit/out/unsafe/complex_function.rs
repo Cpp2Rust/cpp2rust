@@ -27,7 +27,8 @@ pub struct X2 {
 }
 impl X2 {
     pub unsafe fn get(&mut self) -> *mut X1 {
-        return self.v;
+        let this = self as *mut X2;
+        return (*this).v;
     }
 }
 #[repr(C)]
@@ -37,7 +38,8 @@ pub struct X3 {
 }
 impl X3 {
     pub unsafe fn get(&mut self) -> *mut X2 {
-        return self.v;
+        let this = self as *mut X3;
+        return (*this).v;
     }
 }
 #[repr(C)]
@@ -47,7 +49,8 @@ pub struct X4 {
 }
 impl X4 {
     pub unsafe fn get(&mut self) -> *mut X3 {
-        return &mut self.v as *mut X3;
+        let this = self as *mut X4;
+        return &mut (*this).v as *mut X3;
     }
 }
 pub fn main() {

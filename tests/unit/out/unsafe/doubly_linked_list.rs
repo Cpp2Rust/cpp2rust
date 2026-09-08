@@ -15,10 +15,12 @@ pub struct Node {
 }
 impl Node {
     pub unsafe fn SetNext(&mut self, mut n: *mut Node) {
-        self.next = n;
+        let this = self as *mut Node;
+        (*this).next = n;
     }
     pub unsafe fn SetPrev(&mut self, mut p: *mut Node) {
-        self.prev = p;
+        let this = self as *mut Node;
+        (*this).prev = p;
     }
 }
 pub unsafe fn Find_0(mut head: *mut Node, mut idx: i32) -> *mut Node {

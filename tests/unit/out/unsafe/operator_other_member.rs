@@ -21,24 +21,30 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_call_const(&self) -> i32 {
-        return self.v;
+        let this = self as *const S;
+        return (*this).v;
     }
     pub unsafe fn operator_call_i32_const(&self, mut a: i32) -> i32 {
-        return ((self.v) + (a));
+        let this = self as *const S;
+        return (((*this).v) + (a));
     }
     pub unsafe fn operator_call_i32_i32_const(&self, mut a: i32, mut b: i32) -> i32 {
-        return (((self.v) + (a)) + (b));
+        let this = self as *const S;
+        return ((((*this).v) + (a)) + (b));
     }
     pub unsafe fn operator_comma(&self, o: *const S) -> S {
+        let this = self as *const S;
         return S {
-            v: (((self.v) * (10)) + ((*o).v)),
+            v: ((((*this).v) * (10)) + ((*o).v)),
         };
     }
     pub unsafe fn operator_int(&self) -> i32 {
-        return self.v;
+        let this = self as *const S;
+        return (*this).v;
     }
     pub unsafe fn operator__Bool(&self) -> bool {
-        return ((self.v) != (0));
+        let this = self as *const S;
+        return (((*this).v) != (0));
     }
 }
 pub fn main() {

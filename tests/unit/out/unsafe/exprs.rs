@@ -19,10 +19,12 @@ pub struct Y {
 }
 impl Y {
     pub unsafe fn foo(&mut self) -> *mut X {
-        return &mut self.x as *mut X;
+        let this = self as *mut Y;
+        return &mut (*this).x as *mut X;
     }
     pub unsafe fn ptr(&mut self) -> *mut X {
-        return (&mut self.x as *mut X);
+        let this = self as *mut Y;
+        return (&mut (*this).x as *mut X);
     }
 }
 pub fn main() {

@@ -12,6 +12,7 @@ static mut inner_const_0: i32 = unsafe { 1 };
 pub struct C {}
 impl C {
     pub unsafe fn get(&mut self) -> i32 {
+        let this = self as *mut C;
         return inner_const_0;
     }
 }

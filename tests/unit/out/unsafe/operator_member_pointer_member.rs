@@ -28,19 +28,24 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_index_i32(&mut self, mut i: i32) -> *mut i32 {
-        return &mut self.data[(i) as usize] as *mut i32;
+        let this = self as *mut S;
+        return &mut (*this).data[(i) as usize] as *mut i32;
     }
     pub unsafe fn operator_index_i32_const(&self, mut i: i32) -> *const i32 {
-        return &self.data[(i) as usize] as *const i32;
+        let this = self as *const S;
+        return &(*this).data[(i) as usize] as *const i32;
     }
     pub unsafe fn operator_deref(&mut self) -> *mut Inner {
-        return &mut self.inner as *mut Inner;
+        let this = self as *mut S;
+        return &mut (*this).inner as *mut Inner;
     }
     pub unsafe fn operator_arrow(&mut self) -> *mut Inner {
-        return (&mut self.inner as *mut Inner);
+        let this = self as *mut S;
+        return (&mut (*this).inner as *mut Inner);
     }
     pub unsafe fn operator_addr(&mut self) -> *mut i32 {
-        return (&mut self.data[(0) as usize] as *mut i32);
+        let this = self as *mut S;
+        return (&mut (*this).data[(0) as usize] as *mut i32);
     }
 }
 impl Default for S {

@@ -13,31 +13,37 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_bitnot(&self) -> S {
-        return S { v: !self.v };
+        let this = self as *const S;
+        return S { v: !(*this).v };
     }
     pub unsafe fn operator_bitand(&self, o: *const S) -> S {
+        let this = self as *const S;
         return S {
-            v: ((self.v) & ((*o).v)),
+            v: (((*this).v) & ((*o).v)),
         };
     }
     pub unsafe fn operator_bitor(&self, o: *const S) -> S {
+        let this = self as *const S;
         return S {
-            v: ((self.v) | ((*o).v)),
+            v: (((*this).v) | ((*o).v)),
         };
     }
     pub unsafe fn operator_bitxor(&self, o: *const S) -> S {
+        let this = self as *const S;
         return S {
-            v: ((self.v) ^ ((*o).v)),
+            v: (((*this).v) ^ ((*o).v)),
         };
     }
     pub unsafe fn operator_shl(&self, mut n: i32) -> S {
+        let this = self as *const S;
         return S {
-            v: ((self.v) << (n)),
+            v: (((*this).v) << (n)),
         };
     }
     pub unsafe fn operator_shr(&self, mut n: i32) -> S {
+        let this = self as *const S;
         return S {
-            v: ((self.v) >> (n)),
+            v: (((*this).v) >> (n)),
         };
     }
 }

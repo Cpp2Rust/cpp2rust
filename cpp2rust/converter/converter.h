@@ -144,6 +144,7 @@ public:
   virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
 
   virtual bool ThisIsRustPtr() const { return false; }
+  virtual void ConvertMemberBase(clang::MemberExpr *expr);
 
   virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
   void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);

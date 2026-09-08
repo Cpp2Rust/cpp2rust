@@ -2579,6 +2579,20 @@ bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {
   return Converter::ShouldConvertMethod(decl);
 }
 
+void ConverterRefCount::ConvertMemberBase(clang::MemberExpr *expr) {
+  PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+  auto *base = expr->getBase();
+  // ThisIsRustPtr should disappear after virtual methods are implemented on
+  // Ptr<Self> instead of Self.
+  bool base_is_this =
+      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
+  if (expr->isArrow() && !base_is_this) {
+    ConvertArrow(base);
+  } else {
+    Convert(base);
+  }
+}
+
 bool ConverterRefCount::ThisIsRustPtr() const {
   auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(curr_function_);
   return method && (IsMethodOnPtr(method) ||

@@ -13,13 +13,16 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_not(&self) -> bool {
-        return ((self.v) == (0));
+        let this = self as *const S;
+        return (((*this).v) == (0));
     }
     pub unsafe fn operator_and(&self, o: *const S) -> bool {
-        return ((self.v) != (0)) && (((*o).v) != (0));
+        let this = self as *const S;
+        return (((*this).v) != (0)) && (((*o).v) != (0));
     }
     pub unsafe fn operator_or(&self, o: *const S) -> bool {
-        return ((self.v) != (0)) || (((*o).v) != (0));
+        let this = self as *const S;
+        return (((*this).v) != (0)) || (((*o).v) != (0));
     }
 }
 pub fn main() {

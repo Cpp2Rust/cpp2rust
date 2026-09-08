@@ -18,7 +18,8 @@ pub struct Box_int_ {
 }
 impl Box_int_ {
     pub unsafe fn twice(&mut self) -> i32 {
-        return ((self.val) + (self.val));
+        let this = self as *mut Box_int_;
+        return (((*this).val) + ((*this).val));
     }
 }
 #[repr(C)]
@@ -28,7 +29,8 @@ pub struct Box_Point_ {
 }
 impl Box_Point_ {
     pub unsafe fn get(&mut self) -> Point {
-        return self.val;
+        let this = self as *mut Box_Point_;
+        return (*this).val;
     }
 }
 pub fn main() {

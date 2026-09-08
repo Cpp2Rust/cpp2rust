@@ -14,6 +14,7 @@ pub unsafe trait Animal {
 pub struct Dog {}
 unsafe impl Animal for Dog {
     unsafe fn bark(&self) -> bool {
+        let this = self as *const Dog;
         return true;
     }
 }
@@ -22,11 +23,13 @@ unsafe impl Animal for Dog {
 pub struct Cat {}
 impl Cat {
     unsafe fn meow(&self) -> bool {
+        let this = self as *const Cat;
         return true;
     }
 }
 unsafe impl Animal for Cat {
     unsafe fn bark(&self) -> bool {
+        let this = self as *const Cat;
         return false;
     }
 }

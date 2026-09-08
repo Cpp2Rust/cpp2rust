@@ -14,16 +14,19 @@ pub struct StructWithCtor {
 }
 impl StructWithCtor {
     pub unsafe fn StructWithCtor(mut x1: i32, mut x2: i32) -> Self {
-        let mut this = Self { x1_: x1, x2_: x2 };
-        this.x1_.prefix_inc();
-        this.x2_.prefix_dec();
-        this
+        let mut __this = Self { x1_: x1, x2_: x2 };
+        let this = &raw mut __this;
+        (*this).x1_.prefix_inc();
+        (*this).x2_.prefix_dec();
+        __this
     }
     pub unsafe fn x1(&self) -> *const i32 {
-        return &self.x1_ as *const i32;
+        let this = self as *const StructWithCtor;
+        return &(*this).x1_ as *const i32;
     }
     pub unsafe fn x2(&self) -> *const i32 {
-        return &self.x2_ as *const i32;
+        let this = self as *const StructWithCtor;
+        return &(*this).x2_ as *const i32;
     }
 }
 pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {

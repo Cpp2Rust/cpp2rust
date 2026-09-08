@@ -13,31 +13,40 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_add_i32(&mut self, mut a: i32) -> i32 {
-        return ((self.v) + (a));
+        let this = self as *mut S;
+        return (((*this).v) + (a));
     }
     pub unsafe fn operator_add_i32_const(&self, mut a: i32) -> i32 {
-        return (((self.v) + (a)) + (1));
+        let this = self as *const S;
+        return ((((*this).v) + (a)) + (1));
     }
     pub unsafe fn operator_add_i32_volatile(&mut self, mut a: i32) -> i32 {
-        return (((self.v) + (a)) + (2));
+        let this = self as *mut S;
+        return ((((*this).v) + (a)) + (2));
     }
     pub unsafe fn operator_sub_i32_lref(&mut self, mut a: i32) -> i32 {
-        return ((self.v) - (a));
+        let this = self as *mut S;
+        return (((*this).v) - (a));
     }
     pub unsafe fn operator_sub_i32_rref(&mut self, mut a: i32) -> i32 {
-        return (((self.v) - (a)) - (1));
+        let this = self as *mut S;
+        return ((((*this).v) - (a)) - (1));
     }
     pub unsafe fn operator_mul_i32_const_lref(&self, mut a: i32) -> i32 {
-        return ((self.v) * (a));
+        let this = self as *const S;
+        return (((*this).v) * (a));
     }
     pub unsafe fn operator_mul_i32_const_rref(&self, mut a: i32) -> i32 {
-        return (((self.v) * (a)) * (2));
+        let this = self as *const S;
+        return ((((*this).v) * (a)) * (2));
     }
     pub unsafe fn operator_index_i32_lref(&mut self, mut i: i32) -> i32 {
-        return ((self.v) + (i));
+        let this = self as *mut S;
+        return (((*this).v) + (i));
     }
     pub unsafe fn operator_index_i32_const_lref(&self, mut i: i32) -> i32 {
-        return (((self.v) + (i)) + (100));
+        let this = self as *const S;
+        return ((((*this).v) + (i)) + (100));
     }
 }
 pub fn main() {

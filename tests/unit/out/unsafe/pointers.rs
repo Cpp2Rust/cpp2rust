@@ -13,16 +13,20 @@ pub struct Test {
 }
 impl Test {
     pub unsafe fn inc(&mut self) {
-        self.x.postfix_inc();
+        let this = self as *mut Test;
+        (*this).x.postfix_inc();
     }
     pub unsafe fn dec(&mut self) {
-        self.x.postfix_dec();
+        let this = self as *mut Test;
+        (*this).x.postfix_dec();
     }
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
-        return (&mut self.x as *mut i32);
+        let this = self as *mut Test;
+        return (&mut (*this).x as *mut i32);
     }
     pub unsafe fn update(&mut self, mut x: i32, mut y: i32) {
-        self.x = ((x) + (y));
+        let this = self as *mut Test;
+        (*this).x = ((x) + (y));
     }
 }
 pub unsafe fn Update_0(mut t: *mut Test) -> *mut Test {

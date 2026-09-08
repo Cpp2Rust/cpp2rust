@@ -14,18 +14,22 @@ pub struct S {
 }
 impl S {
     pub unsafe fn const_method(&self) -> i32 {
-        return ((self.v) * (2));
+        let this = self as *const S;
+        return (((*this).v) * (2));
     }
     pub unsafe fn mut_method(&mut self) {
-        self.v += 1;
+        let this = self as *mut S;
+        (*this).v += 1;
     }
     pub unsafe fn S(mut init: i32) -> Self {
-        let mut this = Self { v: init };
-        (unsafe { S::mut_method(&mut this) });
-        total_0 += (unsafe { S::const_method(&mut this) });
-        this
+        let mut __this = Self { v: init };
+        let this = &raw mut __this;
+        (unsafe { S::mut_method(&mut *this) });
+        total_0 += (unsafe { S::const_method(&mut *this) });
+        __this
     }
     pub unsafe fn destructor(&mut self) {
+        let this = self as *mut S;
         (unsafe { S::mut_method(self) });
         total_0 += (unsafe { S::const_method(self) });
     }

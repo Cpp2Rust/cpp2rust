@@ -13,7 +13,8 @@ pub struct Lt {
 }
 impl Lt {
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
-        return ((self.v) < ((*o).v));
+        let this = self as *const Lt;
+        return (((*this).v) < ((*o).v));
     }
 }
 impl std::cmp::Ord for Lt {
@@ -50,7 +51,8 @@ pub struct Eq {
 }
 impl Eq {
     pub unsafe fn operator_eq(&self, o: *const Eq) -> bool {
-        return ((self.v) == ((*o).v));
+        let this = self as *const Eq;
+        return (((*this).v) == ((*o).v));
     }
 }
 impl std::cmp::PartialEq for Eq {
@@ -66,10 +68,12 @@ pub struct Cmp {
 }
 impl Cmp {
     pub unsafe fn operator_cmp(&self, o: *const Cmp) -> std::cmp::Ordering {
-        return (self.v).cmp(&((*o).v));
+        let this = self as *const Cmp;
+        return ((*this).v).cmp(&((*o).v));
     }
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
-        return ((self.v) == ((*o).v));
+        let this = self as *const Cmp;
+        return (((*this).v) == ((*o).v));
     }
 }
 impl std::cmp::Ord for Cmp {

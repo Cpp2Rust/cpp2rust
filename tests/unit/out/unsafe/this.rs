@@ -14,48 +14,61 @@ pub struct S {
 }
 impl S {
     pub unsafe fn S(mut a: i32) -> Self {
-        let mut this = Self {
+        let mut __this = Self {
             a_: a,
             self__: std::ptr::null_mut(),
         };
-        this
+        let this = &raw mut __this;
+        __this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn returns_this_pointer(&mut self) -> *mut S {
-        return self;
+        let this = self as *mut S;
+        return this;
     }
     pub unsafe fn inc(&mut self) -> *mut S {
-        self.a_.postfix_inc();
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).a_.postfix_inc();
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn set_from_this(&mut self) {
-        self.a_ = ((self.a_) + (1));
+        let this = self as *mut S;
+        (*this).a_ = (((*this).a_) + (1));
     }
     pub unsafe fn get(&mut self) -> i32 {
-        return self.a_;
+        let this = self as *mut S;
+        return (*this).a_;
     }
     pub unsafe fn twice(&mut self) -> i32 {
+        let this = self as *mut S;
         return ((unsafe { S::get(self) }) * (2));
     }
     pub unsafe fn link(&mut self) {
-        self.self__ = self;
+        let this = self as *mut S;
+        (*this).self__ = this;
     }
     pub unsafe fn bump_me(&mut self) {
-        (unsafe { bump_0(self) });
+        let this = self as *mut S;
+        (unsafe { bump_0(this) });
     }
     pub unsafe fn cref(&self) -> *const S {
-        return &(*self) as *const S;
+        let this = self as *const S;
+        return &(*this) as *const S;
     }
     pub unsafe fn is(&self, mut o: *const S) -> bool {
-        return ((o) == (self));
+        let this = self as *const S;
+        return ((o) == (this));
     }
     pub unsafe fn destroy(&mut self) {
-        ::std::mem::drop(Box::from_raw(self));
+        let this = self as *mut S;
+        ::std::mem::drop(Box::from_raw(this));
     }
     pub unsafe fn reset(&mut self) {
-        (*self) = S::S({ 0 });
+        let this = self as *mut S;
+        (*this) = S::S({ 0 });
     }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
@@ -68,9 +81,10 @@ pub struct D {
 }
 impl D {
     pub unsafe fn D(mut a: i32) -> Self {
-        let mut this = Self { a_: a };
-        this.a_ *= 2;
-        this
+        let mut __this = Self { a_: a };
+        let this = &raw mut __this;
+        (*this).a_ *= 2;
+        __this
     }
 }
 pub fn main() {

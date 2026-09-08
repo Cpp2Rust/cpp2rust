@@ -19,22 +19,26 @@ pub struct Pair {
 }
 impl Pair {
     pub unsafe fn method(&mut self) {
-        self.x.postfix_inc();
-        self.y.prefix_inc();
-        self.a[(4) as usize] = 1;
-        (*self.r) = 1;
-        self.p = std::ptr::null_mut();
-        self.pair = std::ptr::null_mut();
-        self.ap[(0) as usize] = std::ptr::null_mut();
+        let this = self as *mut Pair;
+        (*this).x.postfix_inc();
+        (*this).y.prefix_inc();
+        (*this).a[(4) as usize] = 1;
+        (*(*this).r) = 1;
+        (*this).p = std::ptr::null_mut();
+        (*this).pair = std::ptr::null_mut();
+        (*this).ap[(0) as usize] = std::ptr::null_mut();
     }
     pub unsafe fn as_val(&mut self) -> i32 {
-        return self.x;
+        let this = self as *mut Pair;
+        return (*this).x;
     }
     pub unsafe fn as_ref(&mut self) -> *mut i32 {
-        return &mut self.x as *mut i32;
+        let this = self as *mut Pair;
+        return &mut (*this).x as *mut i32;
     }
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
-        return (&mut self.x as *mut i32);
+        let this = self as *mut Pair;
+        return (&mut (*this).x as *mut i32);
     }
 }
 impl Default for Pair {

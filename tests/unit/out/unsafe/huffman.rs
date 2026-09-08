@@ -16,7 +16,8 @@ pub struct MinHeapNode {
 }
 impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
-        return ((self.left).is_null()) && ((self.right).is_null());
+        let this = self as *const MinHeapNode;
+        return (((*this).left).is_null()) && (((*this).right).is_null());
     }
 }
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
@@ -52,61 +53,66 @@ pub struct MinHeap {
 }
 impl MinHeap {
     pub unsafe fn Alloc(&mut self, mut data: libc::c_char, mut freq: i32) -> *mut MinHeapNode {
-        self.alloc.as_mut().unwrap()[(self.next as usize)] = MinHeapNode {
+        let this = self as *mut MinHeap;
+        (*this).alloc.as_mut().unwrap()[((*this).next as usize)] = MinHeapNode {
             data: data,
             freq: freq,
             left: std::ptr::null_mut(),
             right: std::ptr::null_mut(),
         };
-        return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize)]
+        return (&mut (*this).alloc.as_mut().unwrap()[((*this).next.postfix_inc() as usize)]
             as *mut MinHeapNode);
     }
     pub unsafe fn Heapify(&mut self, mut idx: i32) {
+        let this = self as *mut MinHeap;
         let mut smallest: i32 = idx;
         let mut left: i32 = (((2) * (idx)) + (1));
         let mut right: i32 = (((2) * (idx)) + (2));
-        if ((left) < (self.size))
-            && (((*self.arr.as_mut().unwrap()[(left as usize)]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as usize)]).freq))
+        if ((left) < ((*this).size))
+            && (((*(*this).arr.as_mut().unwrap()[(left as usize)]).freq)
+                < ((*(*this).arr.as_mut().unwrap()[(smallest as usize)]).freq))
         {
             smallest = left;
         }
-        if ((right) < (self.size))
-            && (((*self.arr.as_mut().unwrap()[(right as usize)]).freq)
-                < ((*self.arr.as_mut().unwrap()[(smallest as usize)]).freq))
+        if ((right) < ((*this).size))
+            && (((*(*this).arr.as_mut().unwrap()[(right as usize)]).freq)
+                < ((*(*this).arr.as_mut().unwrap()[(smallest as usize)]).freq))
         {
             smallest = right;
         }
         if ((smallest) != (idx)) {
             (unsafe {
                 let _a: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode;
+                    &mut (*(*this).arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode;
                 let _b: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
+                    &mut (*(*this).arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
                 Swap_0(_a, _b)
             });
             (unsafe { MinHeap::Heapify(self, smallest) });
         }
     }
     pub unsafe fn ExtractMin(&mut self) -> *mut MinHeapNode {
-        let mut out: *mut MinHeapNode = self.arr.as_mut().unwrap()[(0_usize)];
-        self.size.prefix_dec();
-        self.arr.as_mut().unwrap()[(0_usize)] = self.arr.as_mut().unwrap()[(self.size as usize)];
+        let this = self as *mut MinHeap;
+        let mut out: *mut MinHeapNode = (*this).arr.as_mut().unwrap()[(0_usize)];
+        (*this).size.prefix_dec();
+        (*this).arr.as_mut().unwrap()[(0_usize)] =
+            (*this).arr.as_mut().unwrap()[((*this).size as usize)];
         (unsafe { MinHeap::Heapify(self, 0) });
         return out;
     }
     pub unsafe fn Insert(&mut self, mut node: *mut MinHeapNode) {
-        self.size.prefix_inc();
-        let mut i: i32 = ((self.size) - (1));
+        let this = self as *mut MinHeap;
+        (*this).size.prefix_inc();
+        let mut i: i32 = (((*this).size) - (1));
         'loop_: while ((i) != (0))
             && (((*node).freq)
-                < ((*self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)]).freq))
+                < ((*(*this).arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)]).freq))
         {
-            self.arr.as_mut().unwrap()[(i as usize)] =
-                self.arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)];
+            (*this).arr.as_mut().unwrap()[(i as usize)] =
+                (*this).arr.as_mut().unwrap()[((((i) - (1)) / (2)) as usize)];
             i = (((i) - (1)) / (2));
         }
-        self.arr.as_mut().unwrap()[(i as usize)] = node;
+        (*this).arr.as_mut().unwrap()[(i as usize)] = node;
     }
     pub unsafe fn Build(
         &mut self,
@@ -114,16 +120,17 @@ impl MinHeap {
         freq: *mut Option<Box<[i32]>>,
         mut n: i32,
     ) {
+        let this = self as *mut MinHeap;
         let mut i: i32 = 0;
         'loop_: while ((i) < (n)) {
-            self.arr.as_mut().unwrap()[(self.size.postfix_inc() as usize)] = (unsafe {
+            (*this).arr.as_mut().unwrap()[((*this).size.postfix_inc() as usize)] = (unsafe {
                 let _data: libc::c_char = (*data).as_mut().unwrap()[(i as usize)];
                 let _freq: i32 = (*freq).as_mut().unwrap()[(i as usize)];
                 MinHeap::Alloc(self, _data, _freq)
             });
             i.prefix_inc();
         }
-        let mut i: i32 = (((self.size) - (2)) / (2));
+        let mut i: i32 = ((((*this).size) - (2)) / (2));
         'loop_: while ((i) >= (0)) {
             (unsafe { MinHeap::Heapify(self, i) });
             i.prefix_dec();

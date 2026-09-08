@@ -13,48 +13,59 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_assign_u32(&mut self, mut n: u32) -> *mut S {
-        self.v = n;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = n;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_add_assign(&mut self, o: *const S) -> *mut S {
-        self.v = (self.v).wrapping_add((*o).v);
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = ((*this).v).wrapping_add((*o).v);
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_sub_assign(&mut self, o: *const S) -> *mut S {
-        self.v = (self.v).wrapping_sub((*o).v);
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = ((*this).v).wrapping_sub((*o).v);
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_mul_assign(&mut self, o: *const S) -> *mut S {
-        self.v = (self.v).wrapping_mul((*o).v);
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = ((*this).v).wrapping_mul((*o).v);
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_div_assign(&mut self, o: *const S) -> *mut S {
-        self.v = (self.v).wrapping_div((*o).v);
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = ((*this).v).wrapping_div((*o).v);
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_rem_assign(&mut self, o: *const S) -> *mut S {
-        self.v = (self.v).wrapping_rem((*o).v);
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v = ((*this).v).wrapping_rem((*o).v);
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_bitand_assign(&mut self, o: *const S) -> *mut S {
-        self.v &= (*o).v;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v &= (*o).v;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_bitor_assign(&mut self, o: *const S) -> *mut S {
-        self.v |= (*o).v;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v |= (*o).v;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_bitxor_assign(&mut self, o: *const S) -> *mut S {
-        self.v ^= (*o).v;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v ^= (*o).v;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_shl_assign(&mut self, mut n: i32) -> *mut S {
-        self.v <<= n;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v <<= n;
+        return &mut (*this) as *mut S;
     }
     pub unsafe fn operator_shr_assign(&mut self, mut n: i32) -> *mut S {
-        self.v >>= n;
-        return &mut (*self) as *mut S;
+        let this = self as *mut S;
+        (*this).v >>= n;
+        return &mut (*this) as *mut S;
     }
 }
 pub fn main() {

@@ -25,12 +25,24 @@ pub unsafe fn bar_4(x: *mut i32) -> i32 {
 #[derive(Copy, Clone, Default)]
 pub struct Foo {}
 impl Foo {
-    pub unsafe fn foo_const(&self) {}
-    pub unsafe fn foo(&mut self) {}
-    pub unsafe fn method_i32(&mut self, mut x: i32) {}
-    pub unsafe fn method_i32_const(&self, mut x: i32) {}
-    pub unsafe fn method2_i32_i32_const(&self, mut x: i32, mut y: i32) {}
-    pub unsafe fn method2_f64_f64_const(&self, mut x: f64, mut y: f64) {}
+    pub unsafe fn foo_const(&self) {
+        let this = self as *const Foo;
+    }
+    pub unsafe fn foo(&mut self) {
+        let this = self as *mut Foo;
+    }
+    pub unsafe fn method_i32(&mut self, mut x: i32) {
+        let this = self as *mut Foo;
+    }
+    pub unsafe fn method_i32_const(&self, mut x: i32) {
+        let this = self as *const Foo;
+    }
+    pub unsafe fn method2_i32_i32_const(&self, mut x: i32, mut y: i32) {
+        let this = self as *const Foo;
+    }
+    pub unsafe fn method2_f64_f64_const(&self, mut x: f64, mut y: f64) {
+        let this = self as *const Foo;
+    }
 }
 pub unsafe fn func_5(mut x: i32) -> i32 {
     return 1;

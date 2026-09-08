@@ -14,8 +14,9 @@ pub struct S {
 }
 impl S {
     pub unsafe fn S(mut a: i32, mut b: i32) -> Self {
-        let mut this = Self { a: a, b: b };
-        this
+        let mut __this = Self { a: a, b: b };
+        let this = &raw mut __this;
+        __this
     }
 }
 pub fn main() {

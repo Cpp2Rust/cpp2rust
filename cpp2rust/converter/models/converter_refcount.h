@@ -69,6 +69,7 @@ public:
   bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
 
   bool ThisIsRustPtr() const override;
+  void ConvertMemberBase(clang::MemberExpr *expr) override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 

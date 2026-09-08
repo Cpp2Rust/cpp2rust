@@ -13,25 +13,32 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_eq_i32_const(&self, mut o: i32) -> i32 {
-        return if ((self.v) == (o)) { 1 } else { 0 };
+        let this = self as *const S;
+        return if (((*this).v) == (o)) { 1 } else { 0 };
     }
     pub unsafe fn operator_eq_i64_const(&self, mut o: i64) -> i32 {
-        return if ((self.v as i64) == (o)) { 2 } else { 0 };
+        let this = self as *const S;
+        return if (((*this).v as i64) == (o)) { 2 } else { 0 };
     }
     pub unsafe fn operator_eq_f64_const(&self, mut o: f64) -> i32 {
-        return if ((self.v as f64) == (o)) { 3 } else { 0 };
+        let this = self as *const S;
+        return if (((*this).v as f64) == (o)) { 3 } else { 0 };
     }
     pub unsafe fn operator_add(&self, o: *const S) -> i32 {
-        return ((self.v) + ((*o).v));
+        let this = self as *const S;
+        return (((*this).v) + ((*o).v));
     }
     pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
-        return ((self.v) - (o.v));
+        let this = self as *const S;
+        return (((*this).v) - (o.v));
     }
     pub unsafe fn operator_mul_pconstS_const(&self, o: *const S) -> i32 {
-        return ((self.v) * ((*o).v));
+        let this = self as *const S;
+        return (((*this).v) * ((*o).v));
     }
     pub unsafe fn operator_mul_i32_const(&self, mut o: i32) -> i32 {
-        return (((self.v) * (o)) + (1));
+        let this = self as *const S;
+        return ((((*this).v) * (o)) + (1));
     }
 }
 pub unsafe fn operator_div_0(a: *const S, b: *const S) -> i32 {

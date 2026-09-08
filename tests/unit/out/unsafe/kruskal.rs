@@ -102,40 +102,43 @@ pub struct DisjointSet {
 }
 impl DisjointSet {
     pub unsafe fn makeSet(&mut self) {
+        let this = self as *mut DisjointSet;
         let mut i: i32 = 0;
-        'loop_: while ((i) < (self.n)) {
-            self.parent.as_mut().unwrap()[(i as usize)] = i;
-            self.rank.as_mut().unwrap()[(i as usize)] = 1;
+        'loop_: while ((i) < ((*this).n)) {
+            (*this).parent.as_mut().unwrap()[(i as usize)] = i;
+            (*this).rank.as_mut().unwrap()[(i as usize)] = 1;
             i.postfix_inc();
         }
     }
     pub unsafe fn find(&mut self, mut x: i32) -> i32 {
-        if ((self.parent.as_mut().unwrap()[(x as usize)]) != (x)) {
-            self.parent.as_mut().unwrap()[(x as usize)] = (unsafe {
-                let _x: i32 = self.parent.as_mut().unwrap()[(x as usize)];
+        let this = self as *mut DisjointSet;
+        if (((*this).parent.as_mut().unwrap()[(x as usize)]) != (x)) {
+            (*this).parent.as_mut().unwrap()[(x as usize)] = (unsafe {
+                let _x: i32 = (*this).parent.as_mut().unwrap()[(x as usize)];
                 DisjointSet::find(self, _x)
             });
         }
-        return self.parent.as_mut().unwrap()[(x as usize)];
+        return (*this).parent.as_mut().unwrap()[(x as usize)];
     }
     pub unsafe fn merge(&mut self, mut x: i32, mut y: i32) {
+        let this = self as *mut DisjointSet;
         let mut xset: i32 = (unsafe { DisjointSet::find(self, x) });
         let mut yset: i32 = (unsafe { DisjointSet::find(self, y) });
         if ((xset) == (yset)) {
             return;
         }
-        if ((self.rank.as_mut().unwrap()[(xset as usize)])
-            < (self.rank.as_mut().unwrap()[(yset as usize)]))
+        if (((*this).rank.as_mut().unwrap()[(xset as usize)])
+            < ((*this).rank.as_mut().unwrap()[(yset as usize)]))
         {
-            self.parent.as_mut().unwrap()[(xset as usize)] = yset;
-        } else if ((self.rank.as_mut().unwrap()[(xset as usize)])
-            > (self.rank.as_mut().unwrap()[(yset as usize)]))
+            (*this).parent.as_mut().unwrap()[(xset as usize)] = yset;
+        } else if (((*this).rank.as_mut().unwrap()[(xset as usize)])
+            > ((*this).rank.as_mut().unwrap()[(yset as usize)]))
         {
-            self.parent.as_mut().unwrap()[(yset as usize)] = xset;
+            (*this).parent.as_mut().unwrap()[(yset as usize)] = xset;
         } else {
-            self.parent.as_mut().unwrap()[(yset as usize)] = xset;
-            self.rank.as_mut().unwrap()[(xset as usize)] =
-                ((self.rank.as_mut().unwrap()[(xset as usize)]) + (1));
+            (*this).parent.as_mut().unwrap()[(yset as usize)] = xset;
+            (*this).rank.as_mut().unwrap()[(xset as usize)] =
+                (((*this).rank.as_mut().unwrap()[(xset as usize)]) + (1));
         }
     }
 }
