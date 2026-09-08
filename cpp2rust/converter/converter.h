@@ -282,6 +282,15 @@ public:
 
   void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
+  // Emits a pointer-type adjustment (const/mut fixup or reinterpret cast)
+  // after `expr` has been converted, for cases where the argument's Rust
+  // pointee type differs from the parameter's Rust pointee type even though
+  // Clang did not insert an implicit cast node for the call argument (e.g.
+  // when two C types are canonically identical, such as `size_t` and
+  // `unsigned long`, but map to different Rust types).
+  virtual void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
+                                                 clang::Expr *expr);
+
   void EmitHoistedArgs(CallInfo &info);
 
   void EmitArgList(const CallInfo &info);

@@ -119,13 +119,13 @@ std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
   assert(!ptr_type.isNull() && ptr_type->isPointerType());
   auto pointee = ptr_type->getPointeeType();
   if (!pointee->isRecordType()) {
-    return ToString(pointee);
+    return std::string(Trim(ToString(pointee)));
   }
 
   auto str = ToString(ptr_type);
   Unwrap(str, "*mut ", "");
   Unwrap(str, "*const ", "");
-  return str;
+  return std::string(Trim(str));
 }
 
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
@@ -1875,6 +1875,29 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   } else {
     ConvertVarInit(param_type, expr);
   }
+  ConvertParamTyPointerCastIfNeeded(param_type, expr);
+}
+
+void Converter::ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
+                                                  clang::Expr *expr) {
+  if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
+      IsVaListType(param_type) || IsVaListType(expr->getType())) {
+    return;
+  }
+  switch (GetConstCastType(param_type->getPointeeType(),
+                           expr->getType()->getPointeeType())) {
+  case ConstCastType::MutableToConst:
+    StrCat(".cast_const()");
+    return;
+  case ConstCastType::ConstToMutable:
+    StrCat(".cast_mut()");
+    return;
+  default:
+    break;
+  }
+  if (!IsCastRedundantInRust(expr, param_type)) {
+    ConvertCast(param_type);
+  }
 }
 
 void Converter::EmitHoistedArgs(CallInfo &info) {
@@ -2257,6 +2280,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   }
   case clang::CastKind::CK_NoOp: {
     const char *suffix = nullptr;
+    bool type_changed = false;
     if (expr->getType()->isPointerType() &&
         sub_expr->getType()->isPointerType() &&
         !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
@@ -2269,15 +2293,22 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         suffix = ".cast_mut()";
         break;
       default:
+        type_changed = !IsCastRedundantInRust(sub_expr, type);
         break;
       }
     }
-    {
-      PushParen paren(*this, suffix);
+    if (type_changed) {
+      PushParen paren(*this);
       Convert(sub_expr);
-    }
-    if (suffix) {
-      StrCat(suffix);
+      ConvertCast(type);
+    } else {
+      {
+        PushParen paren(*this, suffix);
+        Convert(sub_expr);
+      }
+      if (suffix) {
+        StrCat(suffix);
+      }
     }
     break;
   }
