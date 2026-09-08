@@ -2293,8 +2293,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     const char *suffix = nullptr;
     bool type_changed = false;
     if (expr->getType()->isPointerType() &&
-        sub_expr->getType()->isPointerType() &&
-        !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
+        sub_expr->getType()->isPointerType()) {
       switch (GetConstCastType(expr->getType()->getPointeeType(),
                                sub_expr->getType()->getPointeeType())) {
       case ConstCastType::MutableToConst:
