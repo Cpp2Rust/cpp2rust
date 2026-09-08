@@ -1533,12 +1533,12 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   if (qual_type->isRecordType()) {
     const auto *record = qual_type->getAsRecordDecl();
     if (record->getQualifiedNameAsString() == "std::array") {
-      StrCat("vec!");
       if (auto init = clang::dyn_cast<clang::InitListExpr>(expr->getInit(0))) {
+        StrCat("vec!");
         PushConversionKind push(*this, ConversionKind::Unboxed);
         ConverterRefCount::VisitInitListExpr(init);
       } else {
-        StrCat("[]");
+        StrCat(GetArrayDefaultAsString(qual_type));
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
