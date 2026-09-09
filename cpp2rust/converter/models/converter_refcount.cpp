@@ -1321,6 +1321,9 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   case clang::Stmt::CStyleCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
+    if (GetDerivedToBaseCast(expr->getSubExpr())) {
+      return Convert(expr->getSubExpr());
+    }
     if (expr->getCastKind() == clang::CastKind::CK_PointerToIntegral ||
         expr->getCastKind() == clang::CastKind::CK_IntegralToPointer) {
       std::string dst_type;
@@ -2578,6 +2581,10 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   if (!IsMethodOnPtr(method)) {
     Converter::SetUFCSReceiver(base, is_arrow, method);
     return;
+  }
+  if (auto *cast = GetDerivedToBaseCast(base)) {
+    base = ToBaseSubobject(ctx_, cast);
+    is_arrow = false;
   }
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
                                          base->IgnoreParenImpCasts());

@@ -2345,10 +2345,11 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   case clang::CastKind::CK_DerivedToBase:
   case clang::CastKind::CK_UncheckedDerivedToBase:
-    if (type->getPointeeCXXRecordDecl()
-            ? type->getPointeeCXXRecordDecl()->isAbstract()
-            : type->getAsCXXRecordDecl()->isAbstract()) {
+    if (!GetDerivedToBaseCast(expr)) {
       Convert(sub_expr);
+    } else if (type->isPointerType()) {
+      PushParen paren(*this);
+      ConvertAddrOf(ToBaseSubobject(ctx_, expr), type);
     } else {
       Convert(ToBaseSubobject(ctx_, expr));
     }
@@ -3005,6 +3006,10 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
 void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
+  if (auto *cast = GetDerivedToBaseCast(base)) {
+    base = ToBaseSubobject(ctx_, cast);
+    is_arrow = false;
+  }
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
@@ -3079,10 +3084,15 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
+  bool is_arrow = expr->isArrow();
+  if (auto *cast = GetDerivedToBaseCast(base)) {
+    base = ToBaseSubobject(ctx_, cast);
+    is_arrow = false;
+  }
   bool base_is_this =
       clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (expr->isArrow() && !base_is_this) {
+  if (is_arrow && !base_is_this) {
     ConvertArrow(base);
   } else {
     Convert(base);

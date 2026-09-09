@@ -813,6 +813,18 @@ clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
   llvm::report_fatal_error("base class without a synthesized field");
 }
 
+clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
+  auto *cast = clang::dyn_cast<clang::CastExpr>(expr->IgnoreParens());
+  if (!cast || (cast->getCastKind() != clang::CK_DerivedToBase &&
+                cast->getCastKind() != clang::CK_UncheckedDerivedToBase)) {
+    return nullptr;
+  }
+  auto type = cast->getType();
+  auto *record = type->isPointerType() ? type->getPointeeCXXRecordDecl()
+                                       : type->getAsCXXRecordDecl();
+  return record->isAbstract() ? nullptr : cast;
+}
+
 clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
   clang::Expr *object = cast->getSubExpr();
   for (const auto *step : cast->path()) {
@@ -828,11 +840,6 @@ clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
     object = clang::MemberExpr::CreateImplicit(
         ctx, object, arrow, GetFieldOfBase(derived, base), member_type,
         clang::VK_LValue, clang::OK_Ordinary);
-  }
-  if (cast->getType()->isPointerType()) {
-    object = clang::UnaryOperator::Create(
-        ctx, object, clang::UO_AddrOf, ctx.getPointerType(object->getType()),
-        clang::VK_PRValue, clang::OK_Ordinary, cast->getExprLoc(), false, {});
   }
   return object;
 }
