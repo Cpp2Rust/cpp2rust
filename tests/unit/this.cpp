@@ -6,6 +6,14 @@ void bump(S *p);
 struct S {
   S(int a) : a_(a), self_(nullptr) {}
 
+  S(int a, S *other) : a_(a) {
+    if (this == other) {
+      self_ = nullptr;
+    } else {
+      self_ = other;
+    }
+  }
+
   S &returns_this_reference() { return *this; }
 
   S *returns_this_pointer() { return this; }
@@ -119,6 +127,9 @@ int main() {
   assert(s.copy_if_different(&other) == true);
   assert(s.a_ == other.a_);
   assert(s.self_ == other.self_);
+
+  S u(1, &s);
+  assert(u.self_ == &s);
 
   return 0;
 }
