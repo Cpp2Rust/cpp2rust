@@ -70,6 +70,15 @@ impl S {
         let this = self as *mut S;
         (*this) = S::S({ 0 });
     }
+    pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
+        let this = self as *mut S;
+        if ((this) == (other)) {
+            return false;
+        }
+        (*this).a_ = (*other).a_;
+        (*this).self__ = (*other).self__;
+        return true;
+    }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
     (*p).a_.postfix_inc();
@@ -133,5 +142,19 @@ unsafe fn main_0() -> i32 {
     (unsafe { S::reset(&mut s) });
     assert!(((s.a_) == (0)));
     assert!((s.self__).is_null());
+    assert!(
+        (((unsafe {
+            let _other: *mut S = (&mut s as *mut S);
+            S::copy_if_different(&mut s, _other)
+        }) as i32)
+            == (false as i32))
+    );
+    let mut other: S = S::S({ 22 });
+    assert!(
+        (((unsafe { S::copy_if_different(&mut s, (&mut other as *mut S),) }) as i32)
+            == (true as i32))
+    );
+    assert!(((s.a_) == (other.a_)));
+    assert!(((s.self__) == (other.self__)));
     return 0;
 }
