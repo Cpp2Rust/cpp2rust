@@ -449,6 +449,19 @@ std::string ConverterRefCount::GetComparisonCall(
                      lhs_ptr, rhs_ptr);
 }
 
+void ConverterRefCount::EmitShallowCopy(const clang::RecordDecl *decl) {
+  StrCat("Rc::new");
+  PushParen rc_paren(*this);
+  StrCat("RefCell::new");
+  PushParen cell_paren(*this);
+  StrCat(GetRecordName(decl));
+  PushBrace init_brace(*this);
+  for (auto *field : decl->fields()) {
+    auto name = GetNamedDeclAsString(field);
+    StrCat(std::format("{0}: self.{0}.clone(),", name));
+  }
+}
+
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
@@ -486,16 +499,9 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat("fn clone(&self) -> Self {");
 
   if (auto *ctor = GetUserDefinedCopyConstructor(cxx)) {
-    StrCat(std::format("let __src: Value<{}> = Rc::new(RefCell::new({}",
-                       record_name, record_name));
-    {
-      PushBrace init_brace(*this);
-      for (auto *field : decl->fields()) {
-        auto name = GetNamedDeclAsString(field);
-        StrCat(std::format("{0}: self.{0}.clone(),", name));
-      }
-    }
-    StrCat("));");
+    StrCat(std::format("let __src: Value<{}> =", record_name));
+    EmitShallowCopy(decl);
+    StrCat(token::kSemiColon);
     StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
                        GetCtorName(ctor)));
   } else {
