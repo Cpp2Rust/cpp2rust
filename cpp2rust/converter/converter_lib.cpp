@@ -269,12 +269,11 @@ bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isMoveConstructor() &&
-         !IsUserDefinedCopyOrMoveConstructor(ctor) &&
+  return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor->getParent());
 }
 
-bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method) {
+bool IsCopyOrMoveAssignmentOrCtor(const clang::CXXMethodDecl *method) {
   if (const auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
     return ctor->isCopyOrMoveConstructor();
   }
@@ -349,7 +348,7 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
                       method->getDescribedFunctionTemplate() ||
-                      IsCopyOrMoveSpecialMember(method);
+                      IsCopyOrMoveAssignmentOrCtor(method);
              });
 }
 

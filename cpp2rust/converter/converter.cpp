@@ -1703,8 +1703,8 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
-    computed_expr_type_ = ComputedExprType::FreshValue;
     StrCat(std::format("{}", ToString(expr->getArg(0))));
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
 
@@ -3350,9 +3350,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    bool clone =
-        ctor->isCopyConstructor() ||
-        (ctor->isMoveConstructor() && IsUserDefinedDecl(ctor->getParent()));
+    bool clone = ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor);
     if (clone && !suppress && !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
