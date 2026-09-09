@@ -3421,6 +3421,13 @@ bool Converter::VisitConceptSpecializationExpr(
   return false;
 }
 
+bool Converter::VisitRequiresExpr(clang::RequiresExpr *expr) {
+  assert(!expr->isValueDependent());
+  StrCat(expr->isSatisfied() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::VisitTypeTraitExpr(clang::TypeTraitExpr *expr) {
   clang::Expr::EvalResult result;
   ENSURE(expr->EvaluateAsInt(result, ctx_));

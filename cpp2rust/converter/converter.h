@@ -413,6 +413,7 @@ public:
 
   virtual bool
   VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *expr);
+  virtual bool VisitRequiresExpr(clang::RequiresExpr *expr);
 
   virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 
