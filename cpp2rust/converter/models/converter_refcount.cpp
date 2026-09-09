@@ -1866,12 +1866,19 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() || IsRValueConvertingConstructor(ctor)) {
+  if (IsRValueConvertingConstructor(ctor) ||
+      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
+  assert(!(IsDefaultedMoveConstructor(ctor) &&
+           (HasUserDefinedCopyConstructor(ctor->getParent()) ||
+            !IsCopyConstructible(ctor->getParent()))) &&
+         "defaulted move constructor without a fieldwise copy constructor is "
+         "not supported");
+  if (ctor->isCopyOrMoveConstructor() &&
+      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));

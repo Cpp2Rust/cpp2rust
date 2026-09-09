@@ -624,28 +624,6 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
                      kDestructorName));
 }
 
-static bool hasUserDefinedNonDefaultMoveCtor(clang::CXXRecordDecl *decl) {
-  for (const auto *ctor : decl->ctors()) {
-    if (ctor->isMoveConstructor()) {
-      auto source = ctor->getDefinition() ? ctor->getDefinition() : ctor;
-      if (source->isUserProvided() && !source->isDefaulted()) {
-        return true;
-      }
-    }
-  }
-
-  for (const auto *method : decl->methods()) {
-    if (method->isMoveAssignmentOperator()) {
-      auto source = method->getDefinition() ? method->getDefinition() : method;
-      if (source->isUserProvided() && !source->isDefaulted()) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 bool IsPointerType(clang::QualType qual_type) {
   return qual_type->isPointerType() ||
          (qual_type->isArrayType() &&
@@ -945,10 +923,6 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       return false;
     }
 
-    if (hasUserDefinedNonDefaultMoveCtor(decl)) {
-      assert(0 && "unsupported user-defined move ctor");
-    }
-
     sema_->ForceDeclarationOfImplicitMembers(decl);
     for (auto ctor : decl->ctors()) {
       if (ctor->isCopyConstructor() && ctor->isImplicit() &&
@@ -1048,7 +1022,7 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
 }
 
 std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
-  if (decl->isCopyConstructor()) {
+  if (decl->isCopyOrMoveConstructor()) {
     return GetOverloadedFunctionName(decl);
   }
   return GetRecordName(decl->getParent()) +
@@ -1063,10 +1037,8 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   }
   PushCurrFunction push_fn(*this, decl);
 
-  if (decl->isMoveConstructor()) {
-    assert(0 && "user-defined move constructor are not supported");
-  }
-  if (decl->isCopyConstructor() && !decl->doesThisDeclarationHaveABody()) {
+  if (decl->isCopyOrMoveConstructor() &&
+      !decl->doesThisDeclarationHaveABody()) {
     return false;
   }
 
@@ -1731,7 +1703,6 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       return false;
     }
     StrCat(std::format("{}", ToString(expr->getArg(0))));
-    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
 
@@ -2864,6 +2835,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   StrCat(str);
+  SetValueFreshness(expr->getType());
   return false;
 }
 
@@ -3363,12 +3335,19 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  assert(!(IsDefaultedMoveConstructor(ctor) &&
+           (HasUserDefinedCopyConstructor(ctor->getParent()) ||
+            !IsCopyConstructible(ctor->getParent()))) &&
+         "defaulted move constructor without a fieldwise copy constructor is "
+         "not supported");
   if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    if (ctor->isCopyConstructor() && !suppress &&
-        !TypeIsCopyable(expr->getType())) {
+    bool clone =
+        ctor->isCopyConstructor() ||
+        (ctor->isMoveConstructor() && IsUserDefinedDecl(ctor->getParent()));
+    if (clone && !suppress && !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
     return false;
@@ -4022,7 +4001,8 @@ void Converter::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   StrCat(lhs_as_string, assign_operator, rhs_as_string);
   if (!isVoid()) {
-    StrCat(token::kSemiColon, ConvertRValue(lhs));
+    StrCat(token::kSemiColon,
+           isAddrOf() ? ConvertRValue(lhs) : ConvertFreshRValue(lhs));
   }
 }
 

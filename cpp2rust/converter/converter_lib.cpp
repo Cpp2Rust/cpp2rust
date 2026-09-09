@@ -263,6 +263,25 @@ bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedDecl(ctor);
 }
 
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isCopyOrMoveConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() &&
+         !IsUserDefinedCopyOrMoveConstructor(ctor) &&
+         IsUserDefinedDecl(ctor->getParent());
+}
+
+bool IsCopyOrMoveSpecialMember(const clang::CXXMethodDecl *method) {
+  if (const auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
+    return ctor->isCopyOrMoveConstructor();
+  }
+  return method->isCopyAssignmentOperator() ||
+         method->isMoveAssignmentOperator();
+}
+
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
@@ -299,12 +318,13 @@ bool IsCopyConstructible(const clang::RecordDecl *decl) {
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+  return !ctor->isCopyOrMoveConstructor() &&
+         ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
-  return !IsUserDefinedCopyConstructor(ctor) &&
+  return !IsUserDefinedCopyOrMoveConstructor(ctor) &&
          (ctor->isCopyOrMoveConstructor() ||
           IsRValueConvertingConstructor(ctor));
 }
@@ -315,7 +335,8 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
              decl->method_begin(), decl->method_end(), [](auto *method) {
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
-                      method->getDescribedFunctionTemplate();
+                      method->getDescribedFunctionTemplate() ||
+                      IsCopyOrMoveSpecialMember(method);
              });
 }
 
