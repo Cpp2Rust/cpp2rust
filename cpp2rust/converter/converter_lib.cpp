@@ -542,6 +542,8 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     name = (pdecl->isExplicitObjectParameter() ||
             (ctor && ctor->isCopyOrMoveConstructor()))
                ? "self"
+           : (ctor && ctor->isInheritingConstructor())
+               ? "_a" + std::to_string(pdecl->getFunctionScopeIndex())
                : "_";
   } else if (auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl)) {
     // Expanded parameter packs share one name across the expansion
