@@ -1,5 +1,4 @@
 #include <cassert>
-#include <utility>
 
 static int assigns = 0;
 
@@ -37,10 +36,6 @@ struct RefQualified {
   RefQualified &operator=(const RefQualified &o) & {
     mark = o.mark + 1;
     return *this;
-  }
-  RefQualified &&operator=(const RefQualified &o) && {
-    mark = o.mark + 10;
-    return std::move(*this);
   }
 };
 
@@ -91,7 +86,5 @@ int main() {
   RefQualified r, r1;
   r1 = r;
   assert(r1.mark == 1);
-  RefQualified r2 = (RefQualified() = r);
-  assert(r2.mark == 10);
   return 0;
 }

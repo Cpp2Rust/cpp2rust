@@ -1066,6 +1066,9 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   if (decl->isMoveConstructor()) {
     assert(0 && "user-defined move constructor are not supported");
   }
+  if (decl->isCopyConstructor() && !decl->doesThisDeclarationHaveABody()) {
+    return false;
+  }
 
   ConvertFunctionQualifiers(decl);
   StrCat(keyword_unsafe_, keyword::kFn, GetCtorName(decl));
@@ -3320,7 +3323,6 @@ void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
 void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
   auto ctor = expr->getConstructor();
-  auto ctor_name = GetRecordName(ctor->getParent());
   StrCat(GetRecordName(ctor->getParent()), token::kDoubleColon,
          GetCtorName(ctor));
   PushParen paren(*this);
@@ -3361,9 +3363,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isCopyOrMoveConstructor() ||
-      (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
-       ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+  if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
@@ -3825,15 +3825,12 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  if (RecordHasCopyableFields(decl)) {
+  bool derive_clone =
+      IsCopyConstructible(decl) && !HasUserProvidedLocalCopyConstructor(decl);
+  if (derive_clone && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
-
-  if (auto cxx_decl = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    if (!cxx_decl->defaultedCopyConstructorIsDeleted()) {
-      struct_attrs.emplace_back("Clone");
-    }
-  } else /* RecordDecl */ {
+  if (derive_clone) {
     struct_attrs.emplace_back("Clone");
   }
 
@@ -4222,7 +4219,22 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
   ConvertOrdAndPartialOrdTraits(decl, eq, lt, cmp);
 }
 
-void Converter::AddCloneTrait(const clang::RecordDecl *decl) {}
+void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
+  auto *ctor = GetUserProvidedLocalCopyConstructor(decl);
+  if (!ctor) {
+    return;
+  }
+  auto record_name = GetRecordName(decl);
+  StrCat(keyword::kImpl, "Clone for", record_name);
+  PushBrace impl_brace(*this);
+  StrCat("fn clone(&self) -> Self");
+  PushBrace fn_brace(*this);
+  auto source = ctor->getParamDecl(0)->getType().getNonReferenceType();
+  StrCat(std::format(
+      "unsafe {{ {}::{}(self as *const {}{}) }}", record_name,
+      GetCtorName(ctor), record_name,
+      source.isConstQualified() ? "" : std::format(" as *mut {}", record_name)));
+}
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
   StrCat(std::format("impl Default for {}", GetRecordName(decl)));

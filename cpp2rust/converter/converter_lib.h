@@ -63,6 +63,19 @@ bool IsOverloadedFunction(const clang::FunctionDecl *decl);
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+bool IsUserProvidedLocalCopyConstructor(const clang::CXXConstructorDecl *ctor);
+
+clang::CXXConstructorDecl *
+GetUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl);
+
+bool IsCopyConstructible(const clang::RecordDecl *decl);
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);

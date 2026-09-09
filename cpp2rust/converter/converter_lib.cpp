@@ -258,6 +258,57 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
+bool IsUserProvidedLocalCopyConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isCopyConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+clang::CXXConstructorDecl *
+GetUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return nullptr;
+  }
+  for (auto *ctor : cxx->ctors()) {
+    if (IsUserProvidedLocalCopyConstructor(ctor) && ctor->getDefinition()) {
+      return ctor;
+    }
+  }
+  return nullptr;
+}
+
+bool HasUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl) {
+  return GetUserProvidedLocalCopyConstructor(decl) != nullptr;
+}
+
+bool IsCopyConstructible(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  if (!cxx->hasUserDeclaredCopyConstructor()) {
+    return !cxx->defaultedCopyConstructorIsDeleted();
+  }
+  for (const auto *ctor : cxx->ctors()) {
+    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
+        ctor->getDefinition()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+         ctor->getParamDecl(0)->getType()->isRValueReferenceType();
+}
+
+bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
+  return !IsUserProvidedLocalCopyConstructor(ctor) &&
+         (ctor->isCopyOrMoveConstructor() ||
+          IsRValueConvertingConstructor(ctor));
+}
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
@@ -746,6 +797,9 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
 }
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  if (method->isDeleted()) {
+    return false;
+  }
   if (clang::isa<clang::CXXDestructorDecl>(method)) {
     return GetUserDefinedDestructor(method->getParent()) &&
            method->isThisDeclarationADefinition();
@@ -767,8 +821,8 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (method->isImplicit() || method->isStatic() || method->isVirtual() ||
-      clang::isa<clang::CXXConstructorDecl>(method)) {
+  if (method->isImplicit() || method->isDeleted() || method->isStatic() ||
+      method->isVirtual() || clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
   }
   if (!IsUserDefinedDecl(method->getParent()) ||

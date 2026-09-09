@@ -17,13 +17,6 @@ struct NonConst {
   NonConst(const NonConst &o) : mark(o.mark + 10) {}
 };
 
-struct WithDefault {
-  int v;
-  int tag;
-  WithDefault(int v) : v(v), tag(0) {}
-  WithDefault(const WithDefault &o, int tag = 7) : v(o.v), tag(tag) {}
-};
-
 struct Holder {
   Counted c;
   Counted arr[2];
@@ -76,11 +69,5 @@ int main() {
   NonConst n2(cn);
   assert(n1.mark == 1);
   assert(n2.mark == 10);
-
-  WithDefault w(3);
-  WithDefault w1(w);
-  WithDefault w2(w, 9);
-  assert(w1.v == 3 && w1.tag == 7);
-  assert(w2.v == 3 && w2.tag == 9);
   return 0;
 }

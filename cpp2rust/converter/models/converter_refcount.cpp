@@ -478,18 +478,33 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (!IsCopyConstructible(cxx)) {
     return;
   }
 
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  for (auto ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      ConvertCXXConstructorBody(ctor);
-      break;
+  if (auto *ctor = GetUserProvidedLocalCopyConstructor(cxx)) {
+    StrCat(std::format("let __src: Value<{}> = Rc::new(RefCell::new({}",
+                       record_name, record_name));
+    {
+      PushBrace init_brace(*this);
+      for (auto *field : decl->fields()) {
+        auto name = GetNamedDeclAsString(field);
+        StrCat(std::format("{0}: self.{0}.clone(),", name));
+      }
+    }
+    StrCat("));");
+    StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
+                       GetCtorName(ctor)));
+  } else {
+    for (auto ctor : cxx->ctors()) {
+      if (ctor->isCopyConstructor()) {
+        PushConversionKind push(*this, ConversionKind::FullRefCount);
+        ConvertCXXConstructorBody(ctor);
+        break;
+      }
     }
   }
 
@@ -1845,14 +1860,12 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() ||
-      (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
-       ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+  if (ctor->isMoveConstructor() || IsRValueConvertingConstructor(ctor)) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor()) {
+  if (ctor->isCopyConstructor() && !IsUserProvidedLocalCopyConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
