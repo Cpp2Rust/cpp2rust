@@ -1913,6 +1913,11 @@ void Converter::EmitArgList(const CallInfo &info) {
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
 
+    if (ca.has_default && clang::isa<clang::CXXDefaultArgExpr>(ca.expr)) {
+      StrCat("None", token::kComma);
+      continue;
+    }
+
     if (ca.has_default) {
       StrCat("Some");
     }

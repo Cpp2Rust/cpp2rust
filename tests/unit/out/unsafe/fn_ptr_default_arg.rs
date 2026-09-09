@@ -22,7 +22,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((unsafe { apply_1(5, Some(Default::default()),) }) == (5)));
+    assert!(((unsafe { apply_1(5, None,) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(None),) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(Some(identity_0)),) }) == (5)));
     let mut negate: Option<unsafe fn(i32) -> i32> = Some(|x: i32| {
