@@ -34,9 +34,8 @@ pub struct Derived {
 }
 impl Derived {
     pub unsafe fn run(&mut self) -> bool {
-        (unsafe { Base::fill(self, ('x' as libc::c_char), 3) });
-        return (((&mut self.base_Base as *mut Base).buf[(2) as usize] as i32)
-            == (('x' as libc::c_char) as i32));
+        (unsafe { Base::fill(&mut self.base_Base, ('x' as libc::c_char), 3) });
+        return ((self.base_Base.buf[(2) as usize] as i32) == (('x' as libc::c_char) as i32));
     }
 }
 pub fn main() {

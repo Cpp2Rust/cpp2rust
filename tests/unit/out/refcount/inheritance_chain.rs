@@ -45,11 +45,7 @@ impl B {
             b: Rc::new(RefCell::new(((*x.borrow()) + 1))),
         }));
         let this: Ptr<B> = __this.as_pointer();
-        (*(*((*this.upgrade().deref()).base_A.as_pointer())
-            .upgrade()
-            .deref())
-        .a
-        .borrow_mut()) = (*x.borrow());
+        (*(*(*this.upgrade().deref()).base_A.borrow()).a.borrow_mut()) = (*x.borrow());
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -82,6 +78,15 @@ impl ByteRepr for B {
 pub struct C {
     pub base_B: Value<B>,
 }
+impl C {
+    pub fn C(_: i32) -> Self {
+        let __this: Value<C> = Rc::new(RefCell::new(Self {
+            base_B: Rc::new(RefCell::new()),
+        }));
+        let this: Ptr<C> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for C {
     fn clone(&self) -> Self {
         let __this: Value<C> = Rc::new(RefCell::new(Self {
@@ -111,7 +116,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<C> = Rc::new(RefCell::new(C::C1({ 1 })));
+    let c: Value<C> = Rc::new(RefCell::new(C::C({ 1 })));
     assert!((({ CImpl::sum(&c.as_pointer(),) }) == 3));
     assert!((({ geta_0((*(*c.borrow()).base_B.borrow()).base_A.as_pointer(),) }) == 1));
     return 0;
@@ -121,17 +126,11 @@ pub trait CImpl {
 }
 impl CImpl for Ptr<C> {
     fn sum(&self) -> i32 {
-        return ((*(*((*(*(*self).upgrade().deref()).base_B.borrow())
+        return ((*(*(*(*(*self).upgrade().deref()).base_B.borrow())
             .base_A
-            .as_pointer())
-        .upgrade()
-        .deref())
+            .borrow())
         .a
         .borrow())
-            + (*(*((*(*self).upgrade().deref()).base_B.as_pointer())
-                .upgrade()
-                .deref())
-            .b
-            .borrow()));
+            + (*(*(*(*self).upgrade().deref()).base_B.borrow()).b.borrow()));
     }
 }

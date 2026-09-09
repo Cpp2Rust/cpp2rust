@@ -148,6 +148,8 @@ clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast);
 
 uint64_t GetFieldByteOffset(const clang::FieldDecl *field);
 
+bool IsInheritingCtor(const clang::CXXMethodDecl *decl);
+
 bool InitializesField(const clang::CXXCtorInitializer *init,
                       const clang::FieldDecl *field);
 

@@ -52,10 +52,19 @@ impl ByteRepr for Base {
 pub struct Derived {
     pub base_Base: Value<Base>,
 }
+impl Derived {
+    pub fn Derived(_: Ptr<i32>, _: usize) -> Self {
+        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
+            base_Base: Rc::new(RefCell::new()),
+        }));
+        let this: Ptr<Derived> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -88,13 +97,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
-    let d: Value<Derived> = Rc::new(RefCell::new(Derived::Derived1(
+    let d: Value<Derived> = Rc::new(RefCell::new(Derived::Derived(
         { (arr.as_pointer() as Ptr<i32>) },
         { 3_usize },
     )));
-    assert!((({ count_0(d.as_pointer(),) }) == 3_usize));
-    assert!((({ first_1((d.as_pointer()),) }) == 7));
-    let copy: Value<Base> = Rc::new(RefCell::new((*d.borrow()).clone()));
+    assert!((({ count_0((*d.borrow()).base_Base.as_pointer(),) }) == 3_usize));
+    assert!((({ first_1(((*(d.as_pointer()).upgrade().deref()).base_Base.as_pointer()),) }) == 7));
+    let copy: Value<Base> = Rc::new(RefCell::new((*(*d.borrow()).base_Base.borrow()).clone()));
     assert!(((*(*copy.borrow()).n.borrow()) == 3_usize));
     assert!({
         let _lhs = (*(*copy.borrow()).buf.borrow()).clone();

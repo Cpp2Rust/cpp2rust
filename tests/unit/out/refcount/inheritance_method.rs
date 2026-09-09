@@ -104,12 +104,16 @@ pub trait DerivedImpl {
 }
 impl DerivedImpl for Ptr<Derived> {
     fn run(&self) -> bool {
-        ({ BaseImpl::fill(self, ('x' as u8), 3) });
-        return (((*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
-            .upgrade()
-            .deref())
-        .buf
-        .borrow())[(2) as usize] as i32)
+        ({
+            BaseImpl::fill(
+                &(*(*self).upgrade().deref()).base_Base.as_pointer(),
+                ('x' as u8),
+                3,
+            )
+        });
+        return (((*(*(*(*self).upgrade().deref()).base_Base.borrow())
+            .buf
+            .borrow())[(2) as usize] as i32)
             == (('x' as u8) as i32));
     }
 }

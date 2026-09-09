@@ -71,7 +71,7 @@ impl Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
             c_: Rc::new(RefCell::new((*self.c_.borrow()))),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
@@ -103,12 +103,22 @@ fn main_0() -> i32 {
     let dst: Value<Derived> = Rc::new(RefCell::new(Derived::Derived({ 4_i16 }, { 5_i8 }, {
         6_i8
     })));
-    let s: Value<Ptr<Base>> = Rc::new(RefCell::new((src.as_pointer()).reinterpret_cast::<Base>()));
-    let t: Value<Ptr<Base>> = Rc::new(RefCell::new((dst.as_pointer()).reinterpret_cast::<Base>()));
+    let s: Value<Ptr<Base>> = Rc::new(RefCell::new(
+        ((*(src.as_pointer()).upgrade().deref())
+            .base_Base
+            .as_pointer())
+        .reinterpret_cast::<Base>(),
+    ));
+    let t: Value<Ptr<Base>> = Rc::new(RefCell::new(
+        ((*(dst.as_pointer()).upgrade().deref())
+            .base_Base
+            .as_pointer())
+        .reinterpret_cast::<Base>(),
+    ));
     let __rhs = (*(*s.borrow()).upgrade().deref()).clone();
     (*t.borrow()).write(__rhs);
-    assert!((((*((*dst.borrow()) as Base).a_.borrow()) as i32) == 1));
-    assert!((((*((*dst.borrow()) as Base).b_.borrow()) as i32) == 2));
+    assert!((((*(*(*dst.borrow()).base_Base.borrow()).a_.borrow()) as i32) == 1));
+    assert!((((*(*(*dst.borrow()).base_Base.borrow()).b_.borrow()) as i32) == 2));
     assert!((((*(*dst.borrow()).c_.borrow()) as i32) == 6));
     return 0;
 }

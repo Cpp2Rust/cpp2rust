@@ -40,7 +40,7 @@ pub struct Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
             w: Rc::new(RefCell::new((*self.w.borrow()))),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
@@ -68,7 +68,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let b: Value<Base> = Rc::new(RefCell::new(<Base>::default()));
     let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
-    let p: Value<Ptr<Base>> = Rc::new(RefCell::new((d.as_pointer())));
+    let p: Value<Ptr<Base>> = Rc::new(RefCell::new(
+        ((*(d.as_pointer()).upgrade().deref()).base_Base.as_pointer()),
+    ));
     assert!((({ (*b.borrow()).get() }) == 1));
     assert!((({ (*(*p.borrow()).upgrade().deref()).get() }) == 3));
     assert!(((*(*(*p.borrow()).upgrade().deref()).v.borrow()) == 1));

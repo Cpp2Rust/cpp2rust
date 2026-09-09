@@ -32,7 +32,7 @@ pub struct View {
 impl Clone for View {
     fn clone(&self) -> Self {
         let __this: Value<View> = Rc::new(RefCell::new(Self {
-            base_Tag: Rc::new(RefCell::new((self as Tag).clone())),
+            base_Tag: Rc::new(RefCell::new((*self.base_Tag.borrow()).clone())),
             i: Rc::new(RefCell::new((*self.i.borrow()))),
         }));
         let this: Ptr<View> = __this.as_pointer();
@@ -79,7 +79,7 @@ pub struct Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -100,7 +100,7 @@ impl ByteRepr for Derived {
 }
 pub fn as_base_0(d: Ptr<Derived>) -> Ptr<Base> {
     let d: Value<Ptr<Derived>> = Rc::new(RefCell::new(d));
-    return (*d.borrow()).clone();
+    return ((*(*d.borrow()).upgrade().deref()).base_Base.as_pointer());
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -113,7 +113,7 @@ fn main_0() -> i32 {
     let b: Value<Ptr<Base>> = Rc::new(RefCell::new(({ as_base_0((d.as_pointer())) })));
     assert!({
         let _lhs = (*b.borrow()).clone();
-        _lhs == (d.as_pointer())
+        _lhs == ((*(d.as_pointer()).upgrade().deref()).base_Base.as_pointer())
     });
     return 0;
 }

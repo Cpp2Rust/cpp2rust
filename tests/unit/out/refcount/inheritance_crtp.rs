@@ -96,11 +96,9 @@ pub trait ImplImpl {
 }
 impl ImplImpl for Ptr<Impl> {
     fn twice(&self) -> i32 {
-        return ((*(*((*(*self).upgrade().deref()).base_Counter_Impl_.as_pointer())
-            .upgrade()
-            .deref())
-        .n
-        .borrow())
+        return ((*(*(*(*self).upgrade().deref()).base_Counter_Impl_.borrow())
+            .n
+            .borrow())
             * 2);
     }
 }

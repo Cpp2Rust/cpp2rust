@@ -41,11 +41,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut src: Derived = Derived::Derived({ 1_i16 }, { 2_i8 }, { 3_i8 });
     let mut dst: Derived = Derived::Derived({ 4_i16 }, { 5_i8 }, { 6_i8 });
-    let mut s: *mut Base = (&mut src as *mut Derived);
-    let mut t: *mut Base = (&mut dst as *mut Derived);
+    let mut s: *mut Base = (&mut (*(&mut src as *mut Derived)).base_Base as *mut Base);
+    let mut t: *mut Base = (&mut (*(&mut dst as *mut Derived)).base_Base as *mut Base);
     (*t) = (*s).clone();
-    assert!((((dst as Base).a_ as i32) == (1)));
-    assert!((((dst as Base).b_ as i32) == (2)));
+    assert!(((dst.base_Base.a_ as i32) == (1)));
+    assert!(((dst.base_Base.b_ as i32) == (2)));
     assert!(((dst.c_ as i32) == (6)));
     return 0;
 }

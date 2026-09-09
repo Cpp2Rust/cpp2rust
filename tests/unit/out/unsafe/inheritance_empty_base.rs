@@ -24,7 +24,7 @@ pub struct Derived {
     pub base_Base: Base,
 }
 pub unsafe fn as_base_0(mut d: *mut Derived) -> *mut Base {
-    return d;
+    return (&mut (*d).base_Base as *mut Base);
 }
 pub fn main() {
     unsafe {
@@ -37,6 +37,6 @@ unsafe fn main_0() -> i32 {
     assert!(((v.i) == (5)));
     let mut d: Derived = <Derived>::default();
     let mut b: *mut Base = (unsafe { as_base_0((&mut d as *mut Derived)) });
-    assert!(((b) == (&mut d as *mut Derived)));
+    assert!(((b) == (&mut (*(&mut d as *mut Derived)).base_Base as *mut Base)));
     return 0;
 }

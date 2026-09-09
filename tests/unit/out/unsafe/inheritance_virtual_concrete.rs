@@ -25,7 +25,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut b: Base = <Base>::default();
     let mut d: Derived = <Derived>::default();
-    let mut p: *mut Base = (&mut d as *mut Derived);
+    let mut p: *mut Base = (&mut (*(&mut d as *mut Derived)).base_Base as *mut Base);
     assert!(((unsafe { b.get() }) == (1)));
     assert!(((unsafe { (*p).get() }) == (3)));
     assert!((((*p).v) == (1)));

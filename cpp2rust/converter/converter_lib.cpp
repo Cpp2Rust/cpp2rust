@@ -271,11 +271,16 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
              });
 }
 
+bool IsInheritingCtor(const clang::CXXMethodDecl *decl) {
+  auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
+  return ctor && ctor->isInheritingConstructor();
+}
+
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
   if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
     return GetUserDefinedDestructor(decl->getParent()) != nullptr;
   }
-  return !decl->isImplicit();
+  return !decl->isImplicit() || IsInheritingCtor(decl);
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -344,7 +349,7 @@ unsigned GetNumberOfConvertingCtors(clang::CXXRecordDecl *decl) {
   return llvm::count_if(decl->ctors(),
                         [](const clang::CXXConstructorDecl *c) {
                           return !c->isCopyOrMoveConstructor() &&
-                                 !c->isImplicit();
+                                 (!c->isImplicit() || IsInheritingCtor(c));
                         }) +
          GetTemplateInstantiatedCtors(decl).size();
 }
@@ -864,7 +869,7 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
     return false;
   }
   // Compiler-generated members are covered by derived traits
-  if (method->isImplicit()) {
+  if (method->isImplicit() && !IsInheritingCtor(method)) {
     return false;
   }
   if (auto *definition = method->getDefinition();

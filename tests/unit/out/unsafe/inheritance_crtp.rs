@@ -24,7 +24,7 @@ pub struct Impl {
 }
 impl Impl {
     pub unsafe fn twice(&mut self) -> i32 {
-        return (((&mut self.base_Counter_Impl_ as *mut Counter_Impl_).n) * (2));
+        return ((self.base_Counter_Impl_.n) * (2));
     }
 }
 pub fn main() {

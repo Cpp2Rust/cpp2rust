@@ -957,6 +957,10 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
           !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
         sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
       }
+      if (ctor->isInheritingConstructor() &&
+          !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
+        sema_->DefineInheritingConstructor(decl->getLocation(), ctor);
+      }
     }
 
     EmitRustStructOrUnion(decl);
@@ -1050,7 +1054,8 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
-  if (decl->isOutOfLine() || decl->isImplicit()) {
+  if (decl->isOutOfLine() ||
+      (decl->isImplicit() && !decl->isInheritingConstructor())) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
