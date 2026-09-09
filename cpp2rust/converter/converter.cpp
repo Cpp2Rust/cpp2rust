@@ -3349,8 +3349,8 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    bool clone = ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor);
-    if (clone && !suppress && !TypeIsCopyable(expr->getType())) {
+    if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
+        !suppress && !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
     return false;
@@ -3807,11 +3807,11 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  bool derive_clone = HasDefaultedCopyConstructor(decl);
-  if (derive_clone && RecordHasCopyableFields(decl)) {
+  if (HasDefaultedCopyConstructor(decl) && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
-  if (derive_clone) {
+
+  if (HasDefaultedCopyConstructor(decl)) {
     struct_attrs.emplace_back("Clone");
   }
 
