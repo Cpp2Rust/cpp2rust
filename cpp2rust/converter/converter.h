@@ -157,6 +157,9 @@ public:
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
 
+  bool VisitStaticAssertDecl(clang::StaticAssertDecl *decl);
+  bool VisitConceptDecl(clang::ConceptDecl *decl);
+
   virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
 
   virtual bool VisitDeclStmt(clang::DeclStmt *stmt);
@@ -405,7 +408,12 @@ public:
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr);
 
   virtual bool VisitTypeTraitExpr(clang::TypeTraitExpr *expr);
+
   virtual bool VisitSizeOfPackExpr(clang::SizeOfPackExpr *expr);
+
+  virtual bool
+  VisitConceptSpecializationExpr(clang::ConceptSpecializationExpr *expr);
+  virtual bool VisitRequiresExpr(clang::RequiresExpr *expr);
 
   virtual bool VisitOffsetOfExpr(clang::OffsetOfExpr *expr);
 

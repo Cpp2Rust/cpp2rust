@@ -1172,6 +1172,12 @@ bool Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
   return false;
 }
 
+bool Converter::VisitStaticAssertDecl(clang::StaticAssertDecl *) {
+  return false;
+}
+
+bool Converter::VisitConceptDecl(clang::ConceptDecl *) { return false; }
+
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
   switch (stmt->getStmtClass()) {
   case clang::Stmt::IfStmtClass:
@@ -3404,6 +3410,21 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
     // FIXME: improve error handling
     log() << "unsupported unary expr or type trait expr\n";
   }
+  return false;
+}
+
+bool Converter::VisitConceptSpecializationExpr(
+    clang::ConceptSpecializationExpr *expr) {
+  assert(!expr->isValueDependent());
+  StrCat(expr->isSatisfied() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
+bool Converter::VisitRequiresExpr(clang::RequiresExpr *expr) {
+  assert(!expr->isValueDependent());
+  StrCat(expr->isSatisfied() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 
