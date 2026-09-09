@@ -141,6 +141,11 @@ GetFieldsAndBases(const clang::RecordDecl *decl);
 
 const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field);
 
+clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
+                                 const clang::CXXRecordDecl *base);
+
+clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast);
+
 uint64_t GetFieldByteOffset(const clang::FieldDecl *field);
 
 bool InitializesField(const clang::CXXCtorInitializer *init,

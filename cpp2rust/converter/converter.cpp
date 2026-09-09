@@ -2336,8 +2336,17 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   }
   case clang::CastKind::CK_ConstructorConversion:
-  case clang::CastKind::CK_DerivedToBase:
     Convert(sub_expr);
+    break;
+  case clang::CastKind::CK_DerivedToBase:
+  case clang::CastKind::CK_UncheckedDerivedToBase:
+    if (type->getPointeeCXXRecordDecl()
+            ? type->getPointeeCXXRecordDecl()->isAbstract()
+            : type->getAsCXXRecordDecl()->isAbstract()) {
+      Convert(sub_expr);
+    } else {
+      Convert(ToBaseSubobject(ctx_, expr));
+    }
     break;
   case clang::CastKind::CK_IntegralToBoolean:
     ConvertIntegralToBooleanCast(expr);

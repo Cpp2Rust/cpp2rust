@@ -8,6 +8,7 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Path.h>
 
 #include <algorithm>
@@ -795,6 +796,40 @@ GetFieldsAndBases(const clang::RecordDecl *decl) {
 const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field) {
   auto it = field_to_base.find(field);
   return it == field_to_base.end() ? nullptr : it->second;
+}
+
+clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
+                                 const clang::CXXRecordDecl *base) {
+  for (auto *field : GetFieldsAndBases(derived)) {
+    if (GetBaseOfField(field) == base->getDefinition()) {
+      return field;
+    }
+  }
+  llvm::report_fatal_error("base class without a synthesized field");
+}
+
+clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
+  clang::Expr *object = cast->getSubExpr();
+  for (const auto *step : cast->path()) {
+    auto object_type = object->getType();
+    bool arrow = object_type->isPointerType();
+    if (arrow) {
+      object_type = object_type->getPointeeType();
+    }
+    auto *derived = object_type->getAsCXXRecordDecl();
+    auto *base = step->getType()->getAsCXXRecordDecl();
+    auto member_type = ctx.getQualifiedType(
+        step->getType().getUnqualifiedType(), object_type.getQualifiers());
+    object = clang::MemberExpr::CreateImplicit(
+        ctx, object, arrow, GetFieldOfBase(derived, base), member_type,
+        clang::VK_LValue, clang::OK_Ordinary);
+  }
+  if (cast->getType()->isPointerType()) {
+    object = clang::UnaryOperator::Create(
+        ctx, object, clang::UO_AddrOf, ctx.getPointerType(object->getType()),
+        clang::VK_PRValue, clang::OK_Ordinary, cast->getExprLoc(), false, {});
+  }
+  return object;
 }
 
 uint64_t GetFieldByteOffset(const clang::FieldDecl *field) {
