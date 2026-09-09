@@ -4230,10 +4230,11 @@ void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat("fn clone(&self) -> Self");
   PushBrace fn_brace(*this);
   auto source = ctor->getParamDecl(0)->getType().getNonReferenceType();
-  StrCat(std::format(
-      "unsafe {{ {}::{}(self as *const {}{}) }}", record_name,
-      GetCtorName(ctor), record_name,
-      source.isConstQualified() ? "" : std::format(" as *mut {}", record_name)));
+  StrCat(std::format("unsafe {{ {}::{}(self as *const {}{}) }}", record_name,
+                     GetCtorName(ctor), record_name,
+                     source.isConstQualified()
+                         ? ""
+                         : std::format(" as *mut {}", record_name)));
 }
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {
