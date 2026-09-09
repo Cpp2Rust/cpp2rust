@@ -624,9 +624,9 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
                      kDestructorName));
 }
 
-static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
+static bool hasUserDefinedNonDefaultMoveCtor(clang::CXXRecordDecl *decl) {
   for (const auto *ctor : decl->ctors()) {
-    if (ctor->isCopyConstructor() || ctor->isMoveConstructor()) {
+    if (ctor->isMoveConstructor()) {
       auto source = ctor->getDefinition() ? ctor->getDefinition() : ctor;
       if (source->isUserProvided() && !source->isDefaulted()) {
         return true;
@@ -635,8 +635,7 @@ static bool hasUserDefinedNonDefaultCopyOrMoveCtor(clang::CXXRecordDecl *decl) {
   }
 
   for (const auto *method : decl->methods()) {
-    if (method->isCopyAssignmentOperator() ||
-        method->isMoveAssignmentOperator()) {
+    if (method->isMoveAssignmentOperator()) {
       auto source = method->getDefinition() ? method->getDefinition() : method;
       if (source->isUserProvided() && !source->isDefaulted()) {
         return true;
@@ -946,8 +945,8 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       return false;
     }
 
-    if (hasUserDefinedNonDefaultCopyOrMoveCtor(decl)) {
-      assert(0 && "unsupported user-defined copy ctor, move ctor");
+    if (hasUserDefinedNonDefaultMoveCtor(decl)) {
+      assert(0 && "unsupported user-defined move ctor");
     }
 
     sema_->ForceDeclarationOfImplicitMembers(decl);
@@ -1054,9 +1053,8 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
   }
   PushCurrFunction push_fn(*this, decl);
 
-  if (decl->isCopyOrMoveConstructor()) {
-    // FIXME: improve error handling
-    assert(0 && "user-defined copy or move constructor are not supported");
+  if (decl->isMoveConstructor()) {
+    assert(0 && "user-defined move constructor are not supported");
   }
 
   ConvertFunctionQualifiers(decl);
