@@ -8,7 +8,12 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn change_0(n: *mut Option<Box<i32>>) {
     let mut m: Option<Box<i32>> = Some(Box::new(20));
-    (*(n)) = m;
+    (*n) = m.take();
+    assert!(
+        (m.as_deref_mut()
+            .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
+        .is_null()
+    );
 }
 pub fn main() {
     unsafe {

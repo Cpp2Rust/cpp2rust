@@ -7,6 +7,7 @@
 void change(std::unique_ptr<int> &n) {
   std::unique_ptr<int> m = std::make_unique<int>(20);
   n = std::move(m);
+  assert(m.get() == nullptr);
 }
 
 int main() {

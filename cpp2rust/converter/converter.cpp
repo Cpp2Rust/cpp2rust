@@ -1718,6 +1718,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (expr->isCallToStdMove()) {
+    if (IsUniquePtr(expr->getArg(0)->getType())) {
+      StrCat(std::format("{}.take()", ConvertLValue(expr->getArg(0))));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
     StrCat(std::format("{}", ToString(expr->getArg(0))));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
@@ -1912,6 +1917,11 @@ void Converter::EmitArgList(const CallInfo &info) {
 
   for (unsigned i = 0; i < info.args.size(); i++) {
     const auto &ca = info.args[i];
+
+    if (ca.has_default && clang::isa<clang::CXXDefaultArgExpr>(ca.expr)) {
+      StrCat("None", token::kComma);
+      continue;
+    }
 
     if (ca.has_default) {
       StrCat("Some");
