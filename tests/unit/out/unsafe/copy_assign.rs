@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut assigns_0: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct Partial {
     pub v: i32,
     pub keep: i32,
@@ -32,6 +32,11 @@ impl Partial {
         self.v = (*o).v;
         assigns_0.prefix_inc();
         return &mut (*(self as *mut Partial)) as *mut Partial;
+    }
+}
+impl Clone for Partial {
+    fn clone(&self) -> Self {
+        unsafe { Partial::Partial_pconstPartial(self as *const Partial) }
     }
 }
 #[repr(C)]
@@ -74,19 +79,9 @@ impl RefQualified {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn operator_assign_pconstRefQualified_lref(
-        &mut self,
-        o: *const RefQualified,
-    ) -> *mut RefQualified {
+    pub unsafe fn operator_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut RefQualified)) as *mut RefQualified;
-    }
-    pub unsafe fn operator_assign_pconstRefQualified_rref(
-        &mut self,
-        o: *const RefQualified,
-    ) -> *mut RefQualified {
-        self.mark = (((*o).mark) + (10));
-        return (self as *mut RefQualified);
     }
 }
 impl Default for RefQualified {
@@ -95,7 +90,7 @@ impl Default for RefQualified {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Holder {
     pub p: Partial,
     pub arr: [Partial; 2],
@@ -104,7 +99,7 @@ impl Default for Holder {
     fn default() -> Self {
         Holder {
             p: <Partial>::default(),
-            arr: [<Partial>::default(); 2],
+            arr: std::array::from_fn::<_, 2, _>(|_| <Partial>::default()),
         }
     }
 }
@@ -179,16 +174,7 @@ unsafe fn main_0() -> i32 {
     assert!(((n2.mark) == (10)));
     let mut r: RefQualified = RefQualified::RefQualified();
     let mut r1: RefQualified = RefQualified::RefQualified();
-    (unsafe {
-        RefQualified::operator_assign_pconstRefQualified_lref(&mut r1, &r as *const RefQualified)
-    });
+    (unsafe { RefQualified::operator_assign(&mut r1, &r as *const RefQualified) });
     assert!(((r1.mark) == (1)));
-    let mut r2: RefQualified = (*(unsafe {
-        RefQualified::operator_assign_pconstRefQualified_rref(
-            &mut RefQualified::RefQualified(),
-            &r as *const RefQualified,
-        )
-    }));
-    assert!(((r2.mark) == (10)));
     return 0;
 }

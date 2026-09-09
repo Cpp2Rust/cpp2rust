@@ -33,12 +33,8 @@ impl Counted {
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        let __src: Value<Counted> = Rc::new(RefCell::new(Counted { v: self.v.clone() }));
+        Counted::Counted_pconstCounted(__src.as_pointer())
     }
 }
 impl ByteRepr for Counted {
@@ -83,11 +79,10 @@ impl NonConst {
 }
 impl Clone for NonConst {
     fn clone(&self) -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
+        let __src: Value<NonConst> = Rc::new(RefCell::new(NonConst {
+            mark: self.mark.clone(),
         }));
-        let this: Ptr<NonConst> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        NonConst::NonConst_pmutNonConst(__src.as_pointer())
     }
 }
 impl Default for NonConst {
@@ -108,57 +103,6 @@ impl ByteRepr for NonConst {
         }
     }
 }
-#[derive(Default)]
-pub struct WithDefault {
-    pub v: Value<i32>,
-    pub tag: Value<i32>,
-}
-impl WithDefault {
-    pub fn WithDefault(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<WithDefault> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-            tag: Rc::new(RefCell::new(0)),
-        }));
-        let this: Ptr<WithDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-    pub fn WithDefault_pconstWithDefault_i32(o: Ptr<WithDefault>, tag: Option<i32>) -> Self {
-        let tag: Value<i32> = Rc::new(RefCell::new(tag.unwrap_or(7)));
-        let __this: Value<WithDefault> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            tag: Rc::new(RefCell::new((*tag.borrow()))),
-        }));
-        let this: Ptr<WithDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for WithDefault {
-    fn clone(&self) -> Self {
-        let tag: Value<i32> = Rc::new(RefCell::new(tag.unwrap_or(7)));
-        let __this: Value<WithDefault> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            tag: Rc::new(RefCell::new((*tag.borrow()))),
-        }));
-        let this: Ptr<WithDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for WithDefault {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.tag.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
 #[derive()]
 pub struct Holder {
     pub c: Value<Counted>,
@@ -167,7 +111,9 @@ pub struct Holder {
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
+            c: Rc::new(RefCell::new(Counted::Counted_pconstCounted({
+                self.c.as_pointer()
+            }))),
             arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
@@ -208,22 +154,28 @@ pub fn by_value_1(c: Counted) -> i32 {
 pub fn make_2(v: i32) -> Counted {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let c: Value<Counted> = Rc::new(RefCell::new(Counted::Counted({ (*v.borrow()) })));
-    return (*c.borrow());
+    return Counted::Counted_pconstCounted({ c.as_pointer() });
 }
 pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let a: Value<Counted> = Rc::new(RefCell::new(Counted::Counted({ 1 })));
-    let b: Value<Counted> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    let c: Value<Counted> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    let d: Value<Counted> = Rc::new(RefCell::new((*a.borrow()).clone()));
+    let b: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
+        a.as_pointer()
+    })));
+    let c: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
+        a.as_pointer()
+    })));
+    let d: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
+        a.as_pointer()
+    })));
     assert!(((*copies_0.with(Value::clone).borrow()) == 3));
     assert!(
         (((*(*b.borrow()).v.borrow()) == 1) && ((*(*c.borrow()).v.borrow()) == 1))
             && ((*(*d.borrow()).v.borrow()) == 1)
     );
-    assert!((({ by_value_1((*a.borrow()).clone(),) }) == 1));
+    assert!((({ by_value_1(Counted::Counted_pconstCounted({ a.as_pointer() },),) }) == 1));
     assert!(((*copies_0.with(Value::clone).borrow()) == 4));
     let e: Value<Counted> = Rc::new(RefCell::new(({ make_2(5) })));
     assert!(((*(*e.borrow()).v.borrow()) == 5));
@@ -232,7 +184,9 @@ fn main_0() -> i32 {
     assert!(((*(*f.borrow()).v.borrow()) == 6));
     assert!(((*copies_0.with(Value::clone).borrow()) == 5));
     let g: Value<Counted> = Rc::new(RefCell::new(Counted::Counted({ 7 })));
-    let h: Value<Counted> = Rc::new(RefCell::new((*g.borrow()).clone()));
+    let h: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
+        g.as_pointer()
+    })));
     assert!(((*(*h.borrow()).v.borrow()) == 7));
     assert!(((*copies_0.with(Value::clone).borrow()) == 6));
     let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
@@ -265,15 +219,14 @@ fn main_0() -> i32 {
     );
     assert!(((*copies_0.with(Value::clone).borrow()) == 10));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst()));
-    let n1: Value<NonConst> = Rc::new(RefCell::new((*n.borrow()).clone()));
+    let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_pmutNonConst({
+        n.as_pointer()
+    })));
     let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst()));
-    let n2: Value<NonConst> = Rc::new(RefCell::new((*cn.borrow()).clone()));
+    let n2: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_pconstNonConst({
+        cn.as_pointer()
+    })));
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
-    let w: Value<WithDefault> = Rc::new(RefCell::new(WithDefault::WithDefault({ 3 })));
-    let w1: Value<WithDefault> = Rc::new(RefCell::new((*w.borrow()).clone()));
-    let w2: Value<WithDefault> = Rc::new(RefCell::new((*w.borrow()).clone()));
-    assert!(((*(*w1.borrow()).v.borrow()) == 3) && ((*(*w1.borrow()).tag.borrow()) == 7));
-    assert!(((*(*w2.borrow()).v.borrow()) == 3) && ((*(*w2.borrow()).tag.borrow()) == 9));
     return 0;
 }

@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: i32 = unsafe { 0 };
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Default)]
 pub struct Counted {
     pub v: i32,
 }
@@ -23,8 +23,13 @@ impl Counted {
         this
     }
 }
+impl Clone for Counted {
+    fn clone(&self) -> Self {
+        unsafe { Counted::Counted_pconstCounted(self as *const Counted) }
+    }
+}
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive()]
 pub struct NonConst {
     pub mark: i32,
 }
@@ -46,36 +51,18 @@ impl NonConst {
         this
     }
 }
+impl Clone for NonConst {
+    fn clone(&self) -> Self {
+        unsafe { NonConst::NonConst_pmutNonConst(self as *const NonConst as *mut NonConst) }
+    }
+}
 impl Default for NonConst {
     fn default() -> Self {
         unsafe { NonConst::NonConst() }
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
-pub struct WithDefault {
-    pub v: i32,
-    pub tag: i32,
-}
-impl WithDefault {
-    pub unsafe fn WithDefault(mut v: i32) -> Self {
-        let mut this = Self { v: v, tag: 0 };
-        this
-    }
-    pub unsafe fn WithDefault_pconstWithDefault_i32(
-        o: *const WithDefault,
-        mut tag: Option<i32>,
-    ) -> Self {
-        let mut tag: i32 = tag.unwrap_or(7);
-        let mut this = Self {
-            v: (*o).v,
-            tag: tag,
-        };
-        this
-    }
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Holder {
     pub c: Counted,
     pub arr: [Counted; 2],
@@ -84,7 +71,7 @@ impl Default for Holder {
     fn default() -> Self {
         Holder {
             c: <Counted>::default(),
-            arr: [<Counted>::default(); 2],
+            arr: std::array::from_fn::<_, 2, _>(|_| <Counted>::default()),
         }
     }
 }
@@ -93,7 +80,7 @@ pub unsafe fn by_value_1(mut c: Counted) -> i32 {
 }
 pub unsafe fn make_2(mut v: i32) -> Counted {
     let mut c: Counted = Counted::Counted({ v });
-    return c;
+    return Counted::Counted_pconstCounted({ &mut c });
 }
 pub fn main() {
     unsafe {
@@ -102,12 +89,15 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Counted = Counted::Counted({ 1 });
-    let mut b: Counted = a;
-    let mut c: Counted = a;
-    let mut d: Counted = a;
+    let mut b: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
+    let mut c: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
+    let mut d: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
     assert!(((copies_0) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
-    assert!(((unsafe { by_value_1(a,) }) == (1)));
+    assert!(
+        ((unsafe { by_value_1(Counted::Counted_pconstCounted({ &a as *const Counted },),) })
+            == (1))
+    );
     assert!(((copies_0) == (4)));
     let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
@@ -116,14 +106,14 @@ unsafe fn main_0() -> i32 {
     assert!(((f.v) == (6)));
     assert!(((copies_0) == (5)));
     let g: Counted = Counted::Counted({ 7 });
-    let mut h: Counted = g;
+    let mut h: Counted = Counted::Counted_pconstCounted({ &g as *const Counted });
     assert!(((h.v) == (7)));
     assert!(((copies_0) == (6)));
     let mut hold: Holder = Holder {
         c: Counted::Counted({ 8 }),
         arr: [Counted::Counted({ 9 }), Counted::Counted({ 10 })],
     };
-    let mut hold2: Holder = hold;
+    let mut hold2: Holder = hold.clone();
     assert!(
         (((hold2.c.v) == (8)) && ((hold2.arr[(0) as usize].v) == (9)))
             && ((hold2.arr[(1) as usize].v) == (10))
@@ -137,15 +127,10 @@ unsafe fn main_0() -> i32 {
     assert!(((vec_[(0_usize)].v) == (1)));
     assert!(((copies_0) == (10)));
     let mut n: NonConst = NonConst::NonConst();
-    let mut n1: NonConst = n;
+    let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n as *mut NonConst });
     let cn: NonConst = NonConst::NonConst();
-    let mut n2: NonConst = cn;
+    let mut n2: NonConst = NonConst::NonConst_pconstNonConst({ &cn as *const NonConst });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
-    let mut w: WithDefault = WithDefault::WithDefault({ 3 });
-    let mut w1: WithDefault = w;
-    let mut w2: WithDefault = w;
-    assert!(((w1.v) == (3)) && ((w1.tag) == (7)));
-    assert!(((w2.v) == (3)) && ((w2.tag) == (9)));
     return 0;
 }
