@@ -45,19 +45,19 @@ impl S {
     }
     pub unsafe fn operator_inc(&mut self) -> *mut S {
         self.v.prefix_inc();
-        return &mut (*self) as *mut S;
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn operator_post_inc_i32(&mut self, _: i32) -> S {
-        let mut old: S = (*self);
+        let mut old: S = (*(self as *mut S));
         self.v.prefix_inc();
         return old;
     }
     pub unsafe fn operator_dec(&mut self) -> *mut S {
         self.v.prefix_dec();
-        return &mut (*self) as *mut S;
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn operator_post_dec_i32(&mut self, _: i32) -> S {
-        let mut old: S = (*self);
+        let mut old: S = (*(self as *mut S));
         self.v.prefix_dec();
         return old;
     }

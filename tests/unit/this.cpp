@@ -6,6 +6,20 @@ void bump(S *p);
 struct S {
   S(int a) : a_(a), self_(nullptr) {}
 
+  S(int a, S *other) : a_(a) {
+    if (this == other) {
+      self_ = nullptr;
+    } else {
+      self_ = other;
+    }
+  }
+
+  S(int a, const S *other) : a_(a) {
+    if (this == other) {
+      self_ = nullptr;
+    }
+  }
+
   S &returns_this_reference() { return *this; }
 
   S *returns_this_pointer() { return this; }
@@ -32,6 +46,24 @@ struct S {
   void destroy() { delete this; }
 
   void reset() { *this = S(0); }
+
+  bool copy_if_different_const(const S *other) {
+    if (this == other) {
+      return false;
+    }
+    a_ = other->a_;
+    self_ = other->self_;
+    return true;
+  }
+
+  bool copy_if_different(S *other) {
+    if (this == other) {
+      return false;
+    }
+    a_ = other->a_;
+    self_ = other->self_;
+    return true;
+  }
 
   int a_;
   S *self_;
@@ -94,6 +126,20 @@ int main() {
   s.reset();
   assert(s.a_ == 0);
   assert(s.self_ == nullptr);
+
+  assert(s.copy_if_different(&s) == false);
+  assert(s.copy_if_different_const(&s) == false);
+  auto other = S(22);
+  assert(s.copy_if_different(&other) == true);
+  assert(s.a_ == other.a_);
+  assert(s.self_ == other.self_);
+
+  S u(1, &s);
+  assert(u.self_ == &s);
+
+  const S s_const = S(100);
+  S u1(1, &s_const);
+  assert(u1.self_ == nullptr);
 
   return 0;
 }
