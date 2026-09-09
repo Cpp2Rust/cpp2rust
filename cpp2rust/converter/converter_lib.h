@@ -74,8 +74,6 @@ bool IsCopyOrMoveAssignmentOrCtor(const clang::CXXMethodDecl *method);
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
-bool HasUserDefinedCopyConstructor(const clang::RecordDecl *decl);
-
 bool IsCopyConstructible(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
