@@ -13,11 +13,23 @@ pub struct S {
     pub self__: *mut S,
 }
 impl S {
-    pub unsafe fn S(mut a: i32) -> Self {
+    pub unsafe fn S1(mut a: i32) -> Self {
         let mut this = Self {
             a_: a,
             self__: std::ptr::null_mut(),
         };
+        this
+    }
+    pub unsafe fn S2(mut a: i32, mut other: *mut S) -> Self {
+        let mut this = Self {
+            a_: a,
+            self__: std::ptr::null_mut(),
+        };
+        if ((this) == (other)) {
+            this.self__ = std::ptr::null_mut();
+        } else {
+            this.self__ = other;
+        }
         this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
@@ -55,7 +67,23 @@ impl S {
         ::std::mem::drop(Box::from_raw(self));
     }
     pub unsafe fn reset(&mut self) {
-        (*self) = S::S({ 0 });
+        (*self) = S::S1({ 0 });
+    }
+    pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
+        if ((self) == (other)) {
+            return false;
+        }
+        self.a_ = (*other).a_;
+        self.self__ = (*other).self__;
+        return true;
+    }
+    pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
+        if ((self) == (other)) {
+            return false;
+        }
+        self.a_ = (*other).a_;
+        self.self__ = (*other).self__;
+        return true;
     }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
@@ -79,7 +107,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::S({ 1 });
+    let mut s: S = S::S1({ 1 });
     let ref_: *mut S = (unsafe { S::returns_this_reference(&mut s) });
     (*ref_).a_.postfix_inc();
     assert!(((s.a_) == (2)));
@@ -101,7 +129,7 @@ unsafe fn main_0() -> i32 {
     assert!(((d.a_) == (6)));
     let cr: *const S = (unsafe { S::cref(&s) });
     assert!((((*cr).a_) == (9)));
-    let mut t: S = S::S({ 0 });
+    let mut t: S = S::S1({ 0 });
     assert!(
         (unsafe {
             let _o: *const S = (&mut s as *mut S).cast_const();
@@ -109,15 +137,38 @@ unsafe fn main_0() -> i32 {
         })
     );
     assert!(!(unsafe { S::is(&s, (&mut t as *mut S).cast_const(),) }));
-    let mut p: *mut S = (Box::leak(Box::new(S::S({ 1 }))) as *mut S);
+    let mut p: *mut S = (Box::leak(Box::new(S::S1({ 1 }))) as *mut S);
     let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*p)) });
     (*q).a_.postfix_inc();
     assert!((((*p).a_) == (2)));
     ::std::mem::drop(Box::from_raw(p));
-    let mut h: *mut S = (Box::leak(Box::new(S::S({ 5 }))) as *mut S);
+    let mut h: *mut S = (Box::leak(Box::new(S::S1({ 5 }))) as *mut S);
     (unsafe { S::destroy(&mut (*h)) });
     (unsafe { S::reset(&mut s) });
     assert!(((s.a_) == (0)));
     assert!((s.self__).is_null());
+    assert!(
+        (((unsafe {
+            let _other: *mut S = (&mut s as *mut S);
+            S::copy_if_different(&mut s, _other)
+        }) as i32)
+            == (false as i32))
+    );
+    assert!(
+        (((unsafe {
+            let _other: *const S = (&mut s as *mut S).cast_const();
+            S::copy_if_different_const(&mut s, _other)
+        }) as i32)
+            == (false as i32))
+    );
+    let mut other: S = S::S1({ 22 });
+    assert!(
+        (((unsafe { S::copy_if_different(&mut s, (&mut other as *mut S),) }) as i32)
+            == (true as i32))
+    );
+    assert!(((s.a_) == (other.a_)));
+    assert!(((s.self__) == (other.self__)));
+    let mut u: S = S::S2({ 1 }, { (&mut s as *mut S) });
+    assert!(((u.self__) == (&mut s as *mut S)));
     return 0;
 }
