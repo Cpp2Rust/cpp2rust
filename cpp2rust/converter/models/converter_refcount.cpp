@@ -485,7 +485,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  if (auto *ctor = GetUserProvidedLocalCopyConstructor(cxx)) {
+  if (auto *ctor = GetUserDefinedCopyConstructor(cxx)) {
     StrCat(std::format("let __src: Value<{}> = Rc::new(RefCell::new({}",
                        record_name, record_name));
     {
@@ -1865,7 +1865,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (ctor->isCopyConstructor() && !IsUserProvidedLocalCopyConstructor(ctor)) {
+  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));

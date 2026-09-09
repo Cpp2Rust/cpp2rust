@@ -258,27 +258,27 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
-bool IsUserProvidedLocalCopyConstructor(const clang::CXXConstructorDecl *ctor) {
+bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isCopyConstructor() && ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor);
 }
 
 clang::CXXConstructorDecl *
-GetUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl) {
+GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
     return nullptr;
   }
   for (auto *ctor : cxx->ctors()) {
-    if (IsUserProvidedLocalCopyConstructor(ctor) && ctor->getDefinition()) {
+    if (IsUserDefinedCopyConstructor(ctor) && ctor->getDefinition()) {
       return ctor;
     }
   }
   return nullptr;
 }
 
-bool HasUserProvidedLocalCopyConstructor(const clang::RecordDecl *decl) {
-  return GetUserProvidedLocalCopyConstructor(decl) != nullptr;
+bool HasUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
+  return GetUserDefinedCopyConstructor(decl) != nullptr;
 }
 
 bool IsCopyConstructible(const clang::RecordDecl *decl) {
@@ -304,7 +304,7 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
-  return !IsUserProvidedLocalCopyConstructor(ctor) &&
+  return !IsUserDefinedCopyConstructor(ctor) &&
          (ctor->isCopyOrMoveConstructor() ||
           IsRValueConvertingConstructor(ctor));
 }

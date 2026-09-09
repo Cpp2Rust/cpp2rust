@@ -3826,7 +3826,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> struct_attrs;
 
   bool derive_clone =
-      IsCopyConstructible(decl) && !HasUserProvidedLocalCopyConstructor(decl);
+      IsCopyConstructible(decl) && !HasUserDefinedCopyConstructor(decl);
   if (derive_clone && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
@@ -4220,7 +4220,7 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
 }
 
 void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
-  auto *ctor = GetUserProvidedLocalCopyConstructor(decl);
+  auto *ctor = GetUserDefinedCopyConstructor(decl);
   if (!ctor) {
     return;
   }
