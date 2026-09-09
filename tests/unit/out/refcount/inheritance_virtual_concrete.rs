@@ -34,13 +34,13 @@ impl ByteRepr for Base {
 }
 #[derive(Default)]
 pub struct Derived {
-    pub __base: Value<Base>,
+    pub base_Base: Value<Base>,
     pub w: Value<i32>,
 }
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((self as Base).clone())),
             w: Rc::new(RefCell::new((*self.w.borrow()))),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
@@ -52,12 +52,12 @@ impl ByteRepr for Derived {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..16]);
+        (*self.base_Base.borrow()).to_bytes(&mut buf[0..16]);
         (*self.w.borrow()).to_bytes(&mut buf[12..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..16]))),
+            base_Base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..16]))),
             w: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
         }
     }

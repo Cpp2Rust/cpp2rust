@@ -20,7 +20,7 @@ impl Counter_Impl_ {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Impl {
-    pub __base: Counter_Impl_,
+    pub base_Counter_Impl_: Counter_Impl_,
 }
 impl Impl {
     pub unsafe fn twice(&mut self) -> i32 {

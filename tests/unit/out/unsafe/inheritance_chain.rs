@@ -14,13 +14,13 @@ pub struct A {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct B {
-    pub __base: A,
+    pub base_A: A,
     pub b: i32,
 }
 impl B {
     pub unsafe fn B(mut x: i32) -> Self {
         let mut this = Self {
-            __base: <A>::default(),
+            base_A: <A>::default(),
             b: ((x) + (1)),
         };
         (this as *mut A).a = x;
@@ -30,7 +30,7 @@ impl B {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct C {
-    pub __base: B,
+    pub base_B: B,
 }
 impl C {
     pub unsafe fn sum(&mut self) -> i32 {

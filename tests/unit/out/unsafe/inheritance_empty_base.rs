@@ -12,7 +12,7 @@ pub struct Tag {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct View {
-    pub __base: Tag,
+    pub base_Tag: Tag,
     pub i: i32,
 }
 #[repr(C)]
@@ -21,7 +21,7 @@ pub struct Base {}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Derived {
-    pub __base: Base,
+    pub base_Base: Base,
 }
 pub unsafe fn as_base_0(mut d: *mut Derived) -> *mut Base {
     return d;

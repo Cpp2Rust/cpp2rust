@@ -21,7 +21,7 @@ impl Base {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Derived {
-    pub __base: Base,
+    pub base_Base: Base,
 }
 pub unsafe fn count_0(b: *const Base) -> usize {
     return (*b).n;

@@ -772,9 +772,8 @@ GetFieldsAndBases(const clang::RecordDecl *decl) {
         }
       }
       for (size_t i = 0; i < bases.size(); ++i) {
-        auto name = bases.size() == 1 ? std::string("__base")
-                                      : "__base" + std::to_string(i);
         auto type = bases[i]->getType();
+        auto name = "base_" + Mapper::ToRustName(Mapper::ToString(type));
         auto *field = clang::FieldDecl::Create(
             ctx, const_cast<clang::CXXRecordDecl *>(cxx),
             clang::SourceLocation(), clang::SourceLocation(),

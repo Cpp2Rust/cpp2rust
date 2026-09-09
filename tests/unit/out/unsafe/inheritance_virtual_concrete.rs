@@ -14,7 +14,7 @@ pub struct Base {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Derived {
-    pub __base: Base,
+    pub base_Base: Base,
     pub w: i32,
 }
 pub fn main() {

@@ -34,12 +34,12 @@ impl ByteRepr for Counter_Impl_ {
 }
 #[derive(Default)]
 pub struct Impl {
-    pub __base: Value<Counter_Impl_>,
+    pub base_Counter_Impl_: Value<Counter_Impl_>,
 }
 impl Clone for Impl {
     fn clone(&self) -> Self {
         let __this: Value<Impl> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as Counter_Impl_).clone())),
+            base_Counter_Impl_: Rc::new(RefCell::new((self as Counter_Impl_).clone())),
         }));
         let this: Ptr<Impl> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -50,11 +50,11 @@ impl ByteRepr for Impl {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.base_Counter_Impl_.borrow()).to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<Counter_Impl_>::from_bytes(&buf[0..4]))),
+            base_Counter_Impl_: Rc::new(RefCell::new(<Counter_Impl_>::from_bytes(&buf[0..4]))),
         }
     }
 }

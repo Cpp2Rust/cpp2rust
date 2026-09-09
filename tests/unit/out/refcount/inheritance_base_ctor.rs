@@ -50,7 +50,7 @@ impl ByteRepr for Base {
 }
 #[derive(Default)]
 pub struct Derived {
-    pub __base: Value<Base>,
+    pub base_Base: Value<Base>,
     pub c_: Value<i8>,
 }
 impl Derived {
@@ -59,7 +59,7 @@ impl Derived {
         let b: Value<i8> = Rc::new(RefCell::new(b));
         let c: Value<i8> = Rc::new(RefCell::new(c));
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new(Base::Base({ (*a.borrow()) }, {
+            base_Base: Rc::new(RefCell::new(Base::Base({ (*a.borrow()) }, {
                 (*b.borrow())
             }))),
             c_: Rc::new(RefCell::new((*c.borrow()))),
@@ -71,7 +71,7 @@ impl Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((self as Base).clone())),
             c_: Rc::new(RefCell::new((*self.c_.borrow()))),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
@@ -83,12 +83,12 @@ impl ByteRepr for Derived {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.base_Base.borrow()).to_bytes(&mut buf[0..4]);
         (*self.c_.borrow()).to_bytes(&mut buf[3..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..4]))),
+            base_Base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..4]))),
             c_: Rc::new(RefCell::new(<i8>::from_bytes(&buf[3..4]))),
         }
     }

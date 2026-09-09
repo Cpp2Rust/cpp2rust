@@ -43,12 +43,12 @@ impl ByteRepr for Base {
 }
 #[derive(Default)]
 pub struct Derived {
-    pub __base: Value<Base>,
+    pub base_Base: Value<Base>,
 }
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((self as Base).clone())),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -59,11 +59,11 @@ impl ByteRepr for Derived {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.base_Base.borrow()).to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..8]))),
+            base_Base: Rc::new(RefCell::new(<Base>::from_bytes(&buf[0..8]))),
         }
     }
 }

@@ -21,7 +21,7 @@ impl Base {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Derived {
-    pub __base: Base,
+    pub base_Base: Base,
 }
 impl Derived {
     pub unsafe fn begin(&mut self) -> *mut i32 {

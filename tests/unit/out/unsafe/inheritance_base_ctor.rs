@@ -21,13 +21,13 @@ impl Base {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Derived {
-    pub __base: Base,
+    pub base_Base: Base,
     pub c_: i8,
 }
 impl Derived {
     pub unsafe fn Derived(mut a: i16, mut b: i8, mut c: i8) -> Self {
         let mut this = Self {
-            __base: Base::Base({ a }, { b }),
+            base_Base: Base::Base({ a }, { b }),
             c_: c,
         };
         this

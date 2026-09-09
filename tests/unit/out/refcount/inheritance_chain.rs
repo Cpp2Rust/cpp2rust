@@ -34,14 +34,14 @@ impl ByteRepr for A {
 }
 #[derive(Default)]
 pub struct B {
-    pub __base: Value<A>,
+    pub base_A: Value<A>,
     pub b: Value<i32>,
 }
 impl B {
     pub fn B(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<B> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new(<A>::default())),
+            base_A: Rc::new(RefCell::new(<A>::default())),
             b: Rc::new(RefCell::new(((*x.borrow()) + 1))),
         }));
         let this: Ptr<B> = __this.as_pointer();
@@ -52,7 +52,7 @@ impl B {
 impl Clone for B {
     fn clone(&self) -> Self {
         let __this: Value<B> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as A).clone())),
+            base_A: Rc::new(RefCell::new((self as A).clone())),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
         }));
         let this: Ptr<B> = __this.as_pointer();
@@ -64,24 +64,24 @@ impl ByteRepr for B {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.base_A.borrow()).to_bytes(&mut buf[0..4]);
         (*self.b.borrow()).to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<A>::from_bytes(&buf[0..4]))),
+            base_A: Rc::new(RefCell::new(<A>::from_bytes(&buf[0..4]))),
             b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
         }
     }
 }
 #[derive(Default)]
 pub struct C {
-    pub __base: Value<B>,
+    pub base_B: Value<B>,
 }
 impl Clone for C {
     fn clone(&self) -> Self {
         let __this: Value<C> = Rc::new(RefCell::new(Self {
-            __base: Rc::new(RefCell::new((self as B).clone())),
+            base_B: Rc::new(RefCell::new((self as B).clone())),
         }));
         let this: Ptr<C> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -92,11 +92,11 @@ impl ByteRepr for C {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.__base.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.base_B.borrow()).to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            __base: Rc::new(RefCell::new(<B>::from_bytes(&buf[0..8]))),
+            base_B: Rc::new(RefCell::new(<B>::from_bytes(&buf[0..8]))),
         }
     }
 }
