@@ -106,14 +106,12 @@ fn main_0() -> i32 {
     let s: Value<Ptr<Base>> = Rc::new(RefCell::new(
         ((*(src.as_pointer()).upgrade().deref())
             .base_Base
-            .as_pointer())
-        .reinterpret_cast::<Base>(),
+            .as_pointer()),
     ));
     let t: Value<Ptr<Base>> = Rc::new(RefCell::new(
         ((*(dst.as_pointer()).upgrade().deref())
             .base_Base
-            .as_pointer())
-        .reinterpret_cast::<Base>(),
+            .as_pointer()),
     ));
     let __rhs = (*(*s.borrow()).upgrade().deref()).clone();
     (*t.borrow()).write(__rhs);
