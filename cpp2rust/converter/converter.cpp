@@ -3336,6 +3336,10 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  // Default move is translated using a bitwise .clone() implementation.
+  // Bitwise clone is only satisfied by default copy constructor. If the copy
+  // constructor is user defined, then default move calls copy constructor,
+  // which is wrong.
   if (IsDefaultedMoveConstructor(ctor) &&
       !HasDefaultedCopyConstructor(ctor->getParent())) {
     llvm::report_fatal_error("defaulted move constructor without a fieldwise "
