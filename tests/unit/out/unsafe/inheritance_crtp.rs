@@ -24,7 +24,7 @@ pub struct Impl {
 }
 impl Impl {
     pub unsafe fn twice(&mut self) -> i32 {
-        return (((self as *mut Counter_Impl_).n) * (2));
+        return (((&mut self.base_Counter_Impl_ as *mut Counter_Impl_).n) * (2));
     }
 }
 pub fn main() {
@@ -36,13 +36,13 @@ unsafe fn main_0() -> i32 {
     let mut i: Impl = <Impl>::default();
     (unsafe {
         Counter_Impl_::inc(
-            &mut ((*(unsafe { Counter_Impl_::inc(&mut (i as Counter_Impl_)) })) as Counter_Impl_),
+            &mut (*(unsafe { Counter_Impl_::inc(&mut i.base_Counter_Impl_) })).base_Counter_Impl_,
         )
     });
     assert!(((unsafe { Impl::twice(&mut i,) }) == (4)));
     assert!(
         ((unsafe {
-            Impl::twice(&mut (*(unsafe { Counter_Impl_::inc(&mut (i as Counter_Impl_)) })))
+            Impl::twice(&mut (*(unsafe { Counter_Impl_::inc(&mut i.base_Counter_Impl_) })))
         }) == (6))
     );
     return 0;

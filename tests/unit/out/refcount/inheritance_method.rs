@@ -48,7 +48,7 @@ pub struct Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -73,12 +73,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
     assert!(({ DerivedImpl::run(&d.as_pointer(),) }));
-    ({ BaseImpl::fill(&(d.as_pointer() as Base), ('y' as u8), 1) });
+    ({ BaseImpl::fill(&(*d.borrow()).base_Base.as_pointer(), ('y' as u8), 1) });
     assert!(
-        (((*((*d.borrow()) as Base).buf.borrow())[(0) as usize] as i32) == (('y' as u8) as i32))
+        (((*(*(*d.borrow()).base_Base.borrow()).buf.borrow())[(0) as usize] as i32)
+            == (('y' as u8) as i32))
     );
     assert!(
-        (((*((*d.borrow()) as Base).buf.borrow())[(1) as usize] as i32) == (('x' as u8) as i32))
+        (((*(*(*d.borrow()).base_Base.borrow()).buf.borrow())[(1) as usize] as i32)
+            == (('x' as u8) as i32))
     );
     return 0;
 }
@@ -103,8 +105,11 @@ pub trait DerivedImpl {
 impl DerivedImpl for Ptr<Derived> {
     fn run(&self) -> bool {
         ({ BaseImpl::fill(self, ('x' as u8), 3) });
-        return (((*(*((*self) as Ptr<Base>).upgrade().deref()).buf.borrow())[(2) as usize]
-            as i32)
+        return (((*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+            .upgrade()
+            .deref())
+        .buf
+        .borrow())[(2) as usize] as i32)
             == (('x' as u8) as i32));
     }
 }

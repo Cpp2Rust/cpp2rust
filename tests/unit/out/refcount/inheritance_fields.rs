@@ -55,7 +55,7 @@ pub struct Derived {
 impl Clone for Derived {
     fn clone(&self) -> Self {
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new((self as Base).clone())),
+            base_Base: Rc::new(RefCell::new((*self.base_Base.borrow()).clone())),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -83,9 +83,9 @@ fn main_0() -> i32 {
         { (arr.as_pointer() as Ptr<i32>) },
         { 3_usize },
     )));
-    assert!(((*((*d.borrow()) as Base).n.borrow()) == 3_usize));
+    assert!(((*(*(*d.borrow()).base_Base.borrow()).n.borrow()) == 3_usize));
     assert!(
-        (((*((*d.borrow()) as Base).buf.borrow())
+        (((*(*(*d.borrow()).base_Base.borrow()).buf.borrow())
             .offset((1) as isize)
             .read())
             == 2)
@@ -104,10 +104,25 @@ pub trait DerivedImpl {
 }
 impl DerivedImpl for Ptr<Derived> {
     fn begin(&self) -> Ptr<i32> {
-        return (*(*((*self) as Ptr<Base>).upgrade().deref()).buf.borrow()).clone();
+        return (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+            .upgrade()
+            .deref())
+        .buf
+        .borrow())
+        .clone();
     }
     fn end(&self) -> Ptr<i32> {
-        return (*(*((*self) as Ptr<Base>).upgrade().deref()).buf.borrow())
-            .offset((*(*((*self) as Ptr<Base>).upgrade().deref()).n.borrow()) as isize);
+        return (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+            .upgrade()
+            .deref())
+        .buf
+        .borrow())
+        .offset(
+            (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+                .upgrade()
+                .deref())
+            .n
+            .borrow()) as isize,
+        );
     }
 }

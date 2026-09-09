@@ -39,7 +39,7 @@ pub struct Impl {
 impl Clone for Impl {
     fn clone(&self) -> Self {
         let __this: Value<Impl> = Rc::new(RefCell::new(Self {
-            base_Counter_Impl_: Rc::new(RefCell::new((self as Counter_Impl_).clone())),
+            base_Counter_Impl_: Rc::new(RefCell::new((*self.base_Counter_Impl_.borrow()).clone())),
         }));
         let this: Ptr<Impl> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -65,13 +65,19 @@ fn main_0() -> i32 {
     let i: Value<Impl> = Rc::new(RefCell::new(<Impl>::default()));
     ({
         Counter_Impl_Impl::inc(
-            &(({ Counter_Impl_Impl::inc(&(i.as_pointer() as Counter_Impl_)) }) as Counter_Impl_),
+            &(*({ Counter_Impl_Impl::inc(&(*i.borrow()).base_Counter_Impl_.as_pointer()) })
+                .upgrade()
+                .deref())
+            .base_Counter_Impl_
+            .as_pointer(),
         )
     });
     assert!((({ ImplImpl::twice(&i.as_pointer(),) }) == 4));
     assert!(
         (({
-            ImplImpl::twice(&({ Counter_Impl_Impl::inc(&(i.as_pointer() as Counter_Impl_)) }))
+            ImplImpl::twice(
+                &({ Counter_Impl_Impl::inc(&(*i.borrow()).base_Counter_Impl_.as_pointer()) }),
+            )
         }) == 6)
     );
     return 0;
@@ -90,9 +96,11 @@ pub trait ImplImpl {
 }
 impl ImplImpl for Ptr<Impl> {
     fn twice(&self) -> i32 {
-        return ((*(*((*self) as Ptr<Counter_Impl_>).upgrade().deref())
-            .n
-            .borrow())
+        return ((*(*((*(*self).upgrade().deref()).base_Counter_Impl_.as_pointer())
+            .upgrade()
+            .deref())
+        .n
+        .borrow())
             * 2);
     }
 }

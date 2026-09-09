@@ -35,7 +35,8 @@ pub struct Derived {
 impl Derived {
     pub unsafe fn run(&mut self) -> bool {
         (unsafe { Base::fill(self, ('x' as libc::c_char), 3) });
-        return (((self as *mut Base).buf[(2) as usize] as i32) == (('x' as libc::c_char) as i32));
+        return (((&mut self.base_Base as *mut Base).buf[(2) as usize] as i32)
+            == (('x' as libc::c_char) as i32));
     }
 }
 pub fn main() {
@@ -46,8 +47,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut d: Derived = <Derived>::default();
     assert!((unsafe { Derived::run(&mut d,) }));
-    (unsafe { Base::fill(&mut (d as Base), ('y' as libc::c_char), 1) });
-    assert!((((d as Base).buf[(0) as usize] as i32) == (('y' as libc::c_char) as i32)));
-    assert!((((d as Base).buf[(1) as usize] as i32) == (('x' as libc::c_char) as i32)));
+    (unsafe { Base::fill(&mut d.base_Base, ('y' as libc::c_char), 1) });
+    assert!(((d.base_Base.buf[(0) as usize] as i32) == (('y' as libc::c_char) as i32)));
+    assert!(((d.base_Base.buf[(1) as usize] as i32) == (('x' as libc::c_char) as i32)));
     return 0;
 }
