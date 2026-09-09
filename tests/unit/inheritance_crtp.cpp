@@ -1,7 +1,6 @@
 #include <cassert>
 
-template <class D>
-struct Counter {
+template <class D> struct Counter {
   int n = 0;
   D &inc() {
     ++n;

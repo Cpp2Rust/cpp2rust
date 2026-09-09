@@ -6,6 +6,7 @@
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
+#include <clang/AST/RecordLayout.h>
 #include <clang/Basic/SourceManager.h>
 #include <llvm/Support/Path.h>
 
@@ -15,6 +16,7 @@
 #include <filesystem>
 #include <format>
 #include <ranges>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "converter/lex.h"
@@ -211,7 +213,7 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
     if (rd->isUnion()) {
       return true;
     }
-    for (const auto *field : rd->fields()) {
+    for (const auto *field : GetFieldsAndBases(rd)) {
       if (!TypeImplementsByteRepr(field->getType())) {
         return false;
       }
@@ -733,12 +735,85 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
   if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
     return false;
   }
-  for (const auto *field : decl->fields()) {
+  for (const auto *field : GetFieldsAndBases(decl)) {
     if (TypeNeedsDestruction(field->getType())) {
       return true;
     }
   }
   return false;
+}
+
+namespace {
+std::unordered_map<const clang::CXXRecordDecl *,
+                   std::vector<clang::FieldDecl *>>
+    base_fields;
+std::unordered_map<const clang::FieldDecl *, const clang::CXXRecordDecl *>
+    field_to_base;
+} // namespace
+
+std::vector<clang::FieldDecl *>
+GetFieldsAndBases(const clang::RecordDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  std::vector<clang::FieldDecl *> out;
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && cxx->hasDefinition()) {
+    cxx = cxx->getDefinition();
+    auto [it, inserted] = base_fields.try_emplace(cxx);
+    if (inserted) {
+      std::vector<const clang::CXXBaseSpecifier *> bases;
+      for (const auto &base : cxx->bases()) {
+        if (base.getType()->isDependentType()) {
+          continue;
+        }
+        auto *record = base.getType()->getAsCXXRecordDecl();
+        assert(record && "base class without a record");
+        if (!record->isAbstract()) {
+          bases.push_back(&base);
+        }
+      }
+      for (size_t i = 0; i < bases.size(); ++i) {
+        auto name = bases.size() == 1 ? std::string("__base")
+                                      : "__base" + std::to_string(i);
+        auto type = bases[i]->getType();
+        auto *field = clang::FieldDecl::Create(
+            ctx, const_cast<clang::CXXRecordDecl *>(cxx),
+            clang::SourceLocation(), clang::SourceLocation(),
+            &ctx.Idents.get(name), type, ctx.getTrivialTypeSourceInfo(type),
+            /*BW=*/nullptr, /*Mutable=*/false, clang::ICIS_NoInit);
+        field->setAccess(clang::AS_public);
+        it->second.push_back(field);
+        field_to_base.emplace(field, type->getAsCXXRecordDecl());
+      }
+    }
+    out = it->second;
+  }
+  for (auto *field : decl->fields()) {
+    out.push_back(field);
+  }
+  return out;
+}
+
+const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field) {
+  auto it = field_to_base.find(field);
+  return it == field_to_base.end() ? nullptr : it->second;
+}
+
+uint64_t GetFieldByteOffset(const clang::FieldDecl *field) {
+  const auto &layout =
+      field->getASTContext().getASTRecordLayout(field->getParent());
+  if (auto *base = GetBaseOfField(field)) {
+    return layout.getBaseClassOffset(base).getQuantity();
+  }
+  return layout.getFieldOffset(field->getFieldIndex()) / 8;
+}
+
+bool InitializesField(const clang::CXXCtorInitializer *init,
+                      const clang::FieldDecl *field) {
+  if (auto *base = GetBaseOfField(field)) {
+    return init->isBaseInitializer() &&
+           init->getBaseClass()->getAsCXXRecordDecl() == base;
+  }
+  return init->isMemberInitializer() && init->getMember() == field;
 }
 
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {

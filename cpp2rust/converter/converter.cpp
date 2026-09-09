@@ -661,7 +661,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
     }
   }
 
-  for (auto f : decl->fields()) {
+  for (auto f : GetFieldsAndBases(decl)) {
     // Records that contain function pointer do not derive Default
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
@@ -702,7 +702,7 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
       cxx && RecordNeedsDestruction(cxx)) {
     return false;
   }
-  for (auto f : decl->fields()) {
+  for (auto f : GetFieldsAndBases(decl)) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
     auto mapped = Mapper::Map(f->getType());
@@ -809,7 +809,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   StrCat(access, keyword::kStruct, GetRecordName(decl));
   {
     PushBrace brace(*this);
-    for (auto *field : decl->fields()) {
+    for (auto *field : GetFieldsAndBases(decl)) {
       VisitFieldDecl(field);
     }
   }
@@ -820,7 +820,8 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
     ConvertCXXRecordMethods(cxx);
 
-    if (cxx->bases_begin() != cxx->bases_end()) {
+    if (cxx->bases_begin() != cxx->bases_end() &&
+        cxx->bases_begin()->getType()->getAsCXXRecordDecl()->isAbstract()) {
       ConvertCXXMethodDecls(
           cxx,
           std::format("{} impl {} for {}", keyword_unsafe_,
@@ -868,7 +869,7 @@ void Converter::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
 
 std::string Converter::DestroyMembers(const clang::CXXRecordDecl *decl) {
   std::vector<const clang::FieldDecl *> fields;
-  for (auto *field : decl->fields()) {
+  for (auto *field : GetFieldsAndBases(decl)) {
     if (TypeNeedsDestruction(field->getType())) {
       fields.push_back(field);
     }
@@ -1099,17 +1100,15 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
 
   bool has_inits = !definition->inits().empty();
   auto **ctor_initializer_list = definition->inits().begin();
-  int curr_init =
-      has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
+  int curr_init = 0;
 
-  for (const auto *field : record_decl->fields()) {
+  for (const auto *field : GetFieldsAndBases(record_decl)) {
     auto field_name = GetNamedDeclAsString(field);
     auto field_type = field->getType();
     auto *ctor_initializer =
         has_inits ? ctor_initializer_list[curr_init] : nullptr;
 
-    if (has_inits &&
-        GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
+    if (has_inits && InitializesField(ctor_initializer, field)) {
       auto *ctor_init_expr = ctor_initializer->getInit();
       StrCat(field_name, token::kColon);
       ConvertVarInit(field_type, ctor_init_expr);
@@ -3124,7 +3123,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     StrCat(GetUnsafeTypeAsString(qual_type));
     PushBrace brace(*this);
     int i = 0;
-    for (const auto *field : record->fields()) {
+    for (const auto *field : GetFieldsAndBases(record)) {
       StrCat(GetNamedDeclAsString(field), token::kColon);
       ConvertVarInit(field->getType(), expr->getInit(i++));
       StrCat(token::kComma);
@@ -4265,7 +4264,7 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
 void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   StrCat(GetRecordName(decl));
   PushBrace brace(*this);
-  for (auto *field : decl->fields()) {
+  for (auto *field : GetFieldsAndBases(decl)) {
     StrCat(GetNamedDeclAsString(field), token::kColon,
            GetDefaultAsString(field->getType()), token::kComma);
   }

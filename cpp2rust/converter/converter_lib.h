@@ -136,6 +136,16 @@ bool TypeNeedsDestruction(clang::QualType type);
 
 bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 
+std::vector<clang::FieldDecl *>
+GetFieldsAndBases(const clang::RecordDecl *decl);
+
+const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field);
+
+uint64_t GetFieldByteOffset(const clang::FieldDecl *field);
+
+bool InitializesField(const clang::CXXCtorInitializer *init,
+                      const clang::FieldDecl *field);
+
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);

@@ -567,22 +567,18 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  const auto &layout = ctx_.getASTRecordLayout(decl);
-
   StrCat(std::format("fn byte_size() -> usize {{ {} }}",
                      ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
 
   StrCat("fn to_bytes(&self, buf: &mut [u8])");
   {
     PushBrace fn_brace(*this);
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
+    for (auto *field : GetFieldsAndBases(decl)) {
+      auto byte_off = GetFieldByteOffset(field);
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
       StrCat(std::format("(*self.{}.borrow()).to_bytes(&mut buf[{}..{}]);",
                          GetNamedDeclAsString(field), byte_off,
                          byte_off + byte_size));
-      ++idx;
     }
   }
 
@@ -591,9 +587,8 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     PushBrace fn_brace(*this);
     StrCat("Self");
     PushBrace lit_brace(*this);
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
+    for (auto *field : GetFieldsAndBases(decl)) {
+      auto byte_off = GetFieldByteOffset(field);
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       std::string storage_ty = ToString(field->getType());
@@ -602,7 +597,6 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
           "{}: Rc::new(RefCell::new(<{}>::from_bytes(&buf[{}..{}]))),",
           GetNamedDeclAsString(field), storage_ty, byte_off,
           byte_off + byte_size));
-      ++idx;
     }
   }
 }
@@ -1525,7 +1519,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       PushBrace brace(*this);
       int i = 0;
       PushConversionKind push(*this, ConversionKind::FullRefCount);
-      for (const auto *field : record->fields()) {
+      for (const auto *field : GetFieldsAndBases(record)) {
         StrCat(GetNamedDeclAsString(field), token::kColon);
         ConvertVarInit(field->getType(), expr->getInit(i++));
         StrCat(token::kComma);
@@ -2710,7 +2704,7 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
 std::string
 ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
   std::vector<const clang::FieldDecl *> fields;
-  for (auto *field : decl->fields()) {
+  for (auto *field : GetFieldsAndBases(decl)) {
     if (TypeNeedsDestruction(field->getType())) {
       fields.push_back(field);
     }

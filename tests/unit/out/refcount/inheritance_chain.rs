@@ -1,0 +1,123 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::{Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+#[derive(Default)]
+pub struct A {
+    pub a: Value<i32>,
+}
+impl Clone for A {
+    fn clone(&self) -> Self {
+        let __this: Value<A> = Rc::new(RefCell::new(Self {
+            a: Rc::new(RefCell::new((*self.a.borrow()))),
+        }));
+        let this: Ptr<A> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for A {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct B {
+    pub __base: Value<A>,
+    pub b: Value<i32>,
+}
+impl B {
+    pub fn B(x: i32) -> Self {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let __this: Value<B> = Rc::new(RefCell::new(Self {
+            __base: Rc::new(RefCell::new(<A>::default())),
+            b: Rc::new(RefCell::new(((*x.borrow()) + 1))),
+        }));
+        let this: Ptr<B> = __this.as_pointer();
+        (*(*(this as Ptr<A>).upgrade().deref()).a.borrow_mut()) = (*x.borrow());
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Clone for B {
+    fn clone(&self) -> Self {
+        let __this: Value<B> = Rc::new(RefCell::new(Self {
+            __base: Rc::new(RefCell::new((self as A).clone())),
+            b: Rc::new(RefCell::new((*self.b.borrow()))),
+        }));
+        let this: Ptr<B> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for B {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.__base.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            __base: Rc::new(RefCell::new(<A>::from_bytes(&buf[0..4]))),
+            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct C {
+    pub __base: Value<B>,
+}
+impl Clone for C {
+    fn clone(&self) -> Self {
+        let __this: Value<C> = Rc::new(RefCell::new(Self {
+            __base: Rc::new(RefCell::new((self as B).clone())),
+        }));
+        let this: Ptr<C> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for C {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.__base.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            __base: Rc::new(RefCell::new(<B>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
+pub fn geta_0(x: Ptr<A>) -> i32 {
+    return (*(*x.upgrade().deref()).a.borrow());
+}
+pub fn main() {
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let c: Value<C> = Rc::new(RefCell::new(C::C1({ 1 })));
+    assert!((({ CImpl::sum(&c.as_pointer(),) }) == 3));
+    assert!((({ geta_0(c.as_pointer(),) }) == 1));
+    return 0;
+}
+pub trait CImpl {
+    fn sum(&self) -> i32;
+}
+impl CImpl for Ptr<C> {
+    fn sum(&self) -> i32 {
+        return ((*(*((*self) as Ptr<A>).upgrade().deref()).a.borrow())
+            + (*(*((*self) as Ptr<B>).upgrade().deref()).b.borrow()));
+    }
+}
