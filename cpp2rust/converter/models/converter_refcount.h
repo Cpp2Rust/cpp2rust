@@ -145,6 +145,8 @@ public:
   std::string ConvertStream(clang::Expr *expr) override;
 
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
+  void ConvertCtorCall(clang::CXXConstructorDecl *ctor,
+                       llvm::ArrayRef<clang::Expr *> args) override;
 
   bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
 

@@ -1824,6 +1824,12 @@ std::string ConverterRefCount::ConvertStream(clang::Expr *expr) {
   return ConvertPointer(expr);
 }
 
+void ConverterRefCount::ConvertCtorCall(clang::CXXConstructorDecl *ctor,
+                                        llvm::ArrayRef<clang::Expr *> args) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  Converter::ConvertCtorCall(ctor, args);
+}
+
 bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   PushSuppressIteratorClone push_suppress(*this, expr);

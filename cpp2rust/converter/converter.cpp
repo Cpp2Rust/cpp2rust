@@ -3334,7 +3334,12 @@ void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
 }
 
 void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
-  auto ctor = expr->getConstructor();
+  ConvertCtorCall(expr->getConstructor(),
+                  llvm::ArrayRef(expr->getArgs(), expr->getNumArgs()));
+}
+
+void Converter::ConvertCtorCall(clang::CXXConstructorDecl *ctor,
+                                llvm::ArrayRef<clang::Expr *> args) {
   auto ctor_name = GetRecordName(ctor->getParent());
   StrCat(ctor_name, token::kDoubleColon,
          ctor_name + (GetNumberOfConvertingCtors(ctor->getParent()) != 1
@@ -3348,8 +3353,8 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     auto param_type = param->getType();
     bool has_default = param->hasDefaultArg();
 
-    if (arg_idx < expr->getNumArgs()) {
-      clang::Expr *arg = expr->getArg(arg_idx++);
+    if (arg_idx < args.size()) {
+      clang::Expr *arg = args[arg_idx++];
       PushBrace brace(*this);
       HoistMaterializedTempBindings hoist_temps(*this);
 
@@ -3403,6 +3408,21 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   } else {
     ConvertCXXConstructExprArgs(expr);
   }
+  return false;
+}
+
+bool Converter::VisitCXXInheritedCtorInitExpr(
+    clang::CXXInheritedCtorInitExpr *expr) {
+  auto *ctor = clang::cast<clang::CXXConstructorDecl>(curr_function_);
+  llvm::SmallVector<clang::Expr *> args;
+  for (auto *param : ctor->parameters()) {
+    args.push_back(clang::DeclRefExpr::Create(
+        ctx_, clang::NestedNameSpecifierLoc(), clang::SourceLocation(), param,
+        false, clang::SourceLocation(), param->getType().getNonReferenceType(),
+        clang::VK_LValue));
+  }
+  ConvertCtorCall(expr->getConstructor(), args);
+  SetFreshType(expr->getType());
   return false;
 }
 

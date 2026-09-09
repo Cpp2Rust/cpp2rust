@@ -395,8 +395,11 @@ public:
   virtual bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr);
 
   virtual bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr);
+  bool VisitCXXInheritedCtorInitExpr(clang::CXXInheritedCtorInitExpr *expr);
 
   void ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr);
+  virtual void ConvertCtorCall(clang::CXXConstructorDecl *ctor,
+                               llvm::ArrayRef<clang::Expr *> args);
 
   virtual void ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr);
 
