@@ -1268,6 +1268,12 @@ bool Converter::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *) {
   return false;
 }
 
+bool Converter::VisitStaticAssertDecl(clang::StaticAssertDecl *) {
+  return false;
+}
+
+bool Converter::VisitConceptDecl(clang::ConceptDecl *) { return false; }
+
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
   switch (stmt->getStmtClass()) {
   case clang::Stmt::IfStmtClass:

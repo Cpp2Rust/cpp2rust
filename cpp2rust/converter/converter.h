@@ -164,6 +164,9 @@ public:
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
 
+  bool VisitStaticAssertDecl(clang::StaticAssertDecl *decl);
+  bool VisitConceptDecl(clang::ConceptDecl *decl);
+
   virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
 
   virtual bool VisitDeclStmt(clang::DeclStmt *stmt);
