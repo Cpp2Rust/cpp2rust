@@ -773,7 +773,7 @@ GetFieldsAndBases(const clang::RecordDecl *decl) {
         }
         auto *record = base.getType()->getAsCXXRecordDecl();
         assert(record && "base class without a record");
-        if (!record->isAbstract()) {
+        if (!record->isAbstract() && IsUserDefinedDecl(record)) {
           bases.push_back(&base);
         }
       }
@@ -822,7 +822,7 @@ clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
   auto type = cast->getType();
   auto *record = type->isPointerType() ? type->getPointeeCXXRecordDecl()
                                        : type->getAsCXXRecordDecl();
-  return record->isAbstract() ? nullptr : cast;
+  return record->isAbstract() || !IsUserDefinedDecl(record) ? nullptr : cast;
 }
 
 clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
