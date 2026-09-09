@@ -79,9 +79,10 @@ pub struct C {
     pub base_B: Value<B>,
 }
 impl C {
-    pub fn C(_: i32) -> Self {
+    pub fn C(_a0: i32) -> Self {
+        let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
         let __this: Value<C> = Rc::new(RefCell::new(Self {
-            base_B: Rc::new(RefCell::new()),
+            base_B: Rc::new(RefCell::new(B::B({ (*_a0.borrow()) }))),
         }));
         let this: Ptr<C> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

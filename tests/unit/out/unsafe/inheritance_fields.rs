@@ -25,12 +25,16 @@ pub struct Derived {
 }
 impl Derived {
     pub unsafe fn begin(&mut self) -> *mut i32 {
-        return (&mut self.base_Base as *mut Base).buf;
+        return self.base_Base.buf;
     }
     pub unsafe fn end(&mut self) -> *mut i32 {
-        return (&mut self.base_Base as *mut Base)
-            .buf
-            .offset(((&mut self.base_Base as *mut Base).n) as isize);
+        return self.base_Base.buf.offset((self.base_Base.n) as isize);
+    }
+    pub unsafe fn Derived(mut _a0: *mut i32, mut _a1: usize) -> Self {
+        let mut this = Self {
+            base_Base: Base::Base({ _a0 }, { _a1 }),
+        };
+        this
     }
 }
 pub fn main() {
@@ -40,7 +44,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: [i32; 3] = [1, 2, 3];
-    let mut d: Derived = Derived::Derived1({ arr.as_mut_ptr() }, { 3_usize });
+    let mut d: Derived = Derived::Derived({ arr.as_mut_ptr() }, { 3_usize });
     assert!(((d.base_Base.n) == (3_usize)));
     assert!(((*d.base_Base.buf.offset((1) as isize)) == (2)));
     assert!(((*(unsafe { Derived::begin(&mut d,) })) == (1)));

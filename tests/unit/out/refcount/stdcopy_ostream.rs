@@ -23,14 +23,12 @@ fn main_0() -> i32 {
                 .expect("Failed to open file"),
         ));
         {
-            (*(*ofs.borrow()).base_std_basic_ostream_char_.borrow_mut()).write_all(
+            (*ofs.borrow_mut()).write_all(
                 (str.as_pointer() as Ptr<u8>)
                     .slice_until(&(str.as_pointer() as Ptr<u8>).to_last())
                     .as_slice(),
             );
-            (*(*ofs.borrow()).base_std_basic_ostream_char_.borrow_mut())
-                .try_clone()
-                .unwrap()
+            (*ofs.borrow_mut()).try_clone().unwrap()
         };
     }
     match nix::unistd::unlink((file.as_pointer() as Ptr<u8>).to_rust_string().as_str()) {

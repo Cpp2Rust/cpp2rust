@@ -23,6 +23,14 @@ impl Base {
 pub struct Derived {
     pub base_Base: Base,
 }
+impl Derived {
+    pub unsafe fn Derived(mut _a0: *mut i32, mut _a1: usize) -> Self {
+        let mut this = Self {
+            base_Base: Base::Base({ _a0 }, { _a1 }),
+        };
+        this
+    }
+}
 pub unsafe fn count_0(b: *const Base) -> usize {
     return (*b).n;
 }
@@ -36,10 +44,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut arr: [i32; 3] = [7, 8, 9];
-    let mut d: Derived = Derived::Derived1({ arr.as_mut_ptr() }, { 3_usize });
-    assert!(((unsafe { count_0(&d as *const Base,) }) == (3_usize)));
-    assert!(((unsafe { first_1((&mut d as *mut Derived),) }) == (7)));
-    let mut copy: Base = d;
+    let mut d: Derived = Derived::Derived({ arr.as_mut_ptr() }, { 3_usize });
+    assert!(((unsafe { count_0(&d.base_Base as *const Base,) }) == (3_usize)));
+    assert!(
+        ((unsafe { first_1((&mut (*(&mut d as *mut Derived)).base_Base as *mut Base),) }) == (7))
+    );
+    let mut copy: Base = d.base_Base;
     assert!(((copy.n) == (3_usize)));
     assert!(((copy.buf) == (arr.as_mut_ptr())));
     return 0;

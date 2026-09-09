@@ -23,7 +23,7 @@ impl B {
             base_A: <A>::default(),
             b: ((x) + (1)),
         };
-        (&mut this.base_A as *mut A).a = x;
+        this.base_A.a = x;
         this
     }
 }
@@ -34,7 +34,13 @@ pub struct C {
 }
 impl C {
     pub unsafe fn sum(&mut self) -> i32 {
-        return (((&mut self.base_B.base_A as *mut A).a) + ((&mut self.base_B as *mut B).b));
+        return ((self.base_B.base_A.a) + (self.base_B.b));
+    }
+    pub unsafe fn C(mut _a0: i32) -> Self {
+        let mut this = Self {
+            base_B: B::B({ _a0 }),
+        };
+        this
     }
 }
 pub unsafe fn geta_0(x: *const A) -> i32 {
@@ -46,7 +52,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: C = C::C1({ 1 });
+    let mut c: C = C::C({ 1 });
     assert!(((unsafe { C::sum(&mut c,) }) == (3)));
     assert!(((unsafe { geta_0(&c.base_B.base_A as *const A,) }) == (1)));
     return 0;

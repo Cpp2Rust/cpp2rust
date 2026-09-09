@@ -25,9 +25,8 @@ unsafe fn main_0() -> i32 {
             let __start = str.as_mut_ptr() as *const u8;
             let __end = str.as_mut_ptr().add(str.len() - 1) as *const u8;
             let __len = __end.offset_from(__start) as usize;
-            ofs.base_std_basic_ostream_char_
-                .write_all(::std::slice::from_raw_parts(__start, __len));
-            ofs.base_std_basic_ostream_char_.try_clone().unwrap()
+            ofs.write_all(::std::slice::from_raw_parts(__start, __len));
+            ofs.try_clone().unwrap()
         };
     }
     libc::unlink(file.as_ptr());

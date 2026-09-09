@@ -53,9 +53,13 @@ pub struct Derived {
     pub base_Base: Value<Base>,
 }
 impl Derived {
-    pub fn Derived(_: Ptr<i32>, _: usize) -> Self {
+    pub fn Derived(_a0: Ptr<i32>, _a1: usize) -> Self {
+        let _a0: Value<Ptr<i32>> = Rc::new(RefCell::new(_a0));
+        let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            base_Base: Rc::new(RefCell::new()),
+            base_Base: Rc::new(RefCell::new(Base::Base({ (*_a0.borrow()).clone() }, {
+                (*_a1.borrow())
+            }))),
         }));
         let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
