@@ -1703,6 +1703,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
+    computed_expr_type_ = ComputedExprType::FreshValue;
     StrCat(std::format("{}", ToString(expr->getArg(0))));
     return false;
   }
