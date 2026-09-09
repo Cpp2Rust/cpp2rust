@@ -1718,6 +1718,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (expr->isCallToStdMove()) {
+    if (IsUniquePtr(expr->getArg(0)->getType())) {
+      StrCat(std::format("{}.take()", ConvertLValue(expr->getArg(0))));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
     StrCat(std::format("{}", ToString(expr->getArg(0))));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;

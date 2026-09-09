@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
     let mut f_ptr2: *mut i32 = (&mut (*f.as_deref_mut().unwrap()) as *mut i32);
     (*f_ptr2) = 11;
     f = Some(Box::new(9));
-    f = (unsafe { fn_0(f) });
+    f = (unsafe { fn_0(f.take()) });
     assert!(((*f.as_deref_mut().unwrap()) == (10)));
     return 0;
 }
