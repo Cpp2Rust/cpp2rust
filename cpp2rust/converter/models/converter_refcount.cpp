@@ -5,6 +5,7 @@
 
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <format>
@@ -1872,11 +1873,12 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  assert(!(IsDefaultedMoveConstructor(ctor) &&
-           (HasUserDefinedCopyConstructor(ctor->getParent()) ||
-            !IsCopyConstructible(ctor->getParent()))) &&
-         "defaulted move constructor without a fieldwise copy constructor is "
-         "not supported");
+  if (IsDefaultedMoveConstructor(ctor) &&
+      (HasUserDefinedCopyConstructor(ctor->getParent()) ||
+       !IsCopyConstructible(ctor->getParent()))) {
+    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
+                             "copy constructor is not supported");
+  }
   if (ctor->isCopyOrMoveConstructor() &&
       !IsUserDefinedCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)

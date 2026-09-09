@@ -9,6 +9,7 @@
 #include <clang/Basic/SourceManager.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <format>
@@ -3335,11 +3336,12 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  assert(!(IsDefaultedMoveConstructor(ctor) &&
-           (HasUserDefinedCopyConstructor(ctor->getParent()) ||
-            !IsCopyConstructible(ctor->getParent()))) &&
-         "defaulted move constructor without a fieldwise copy constructor is "
-         "not supported");
+  if (IsDefaultedMoveConstructor(ctor) &&
+      (HasUserDefinedCopyConstructor(ctor->getParent()) ||
+       !IsCopyConstructible(ctor->getParent()))) {
+    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
+                             "copy constructor is not supported");
+  }
   if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
