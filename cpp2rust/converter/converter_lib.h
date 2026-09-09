@@ -78,6 +78,8 @@ bool HasUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
 bool IsCopyConstructible(const clang::RecordDecl *decl);
 
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
+
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);

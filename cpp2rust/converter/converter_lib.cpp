@@ -300,6 +300,19 @@ bool HasUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   return GetUserDefinedCopyConstructor(decl) != nullptr;
 }
 
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  for (const auto *ctor : cxx->ctors()) {
+    if (ctor->isCopyConstructor()) {
+      return !ctor->isUserProvided() && !ctor->isDeleted();
+    }
+  }
+  return !cxx->defaultedCopyConstructorIsDeleted();
+}
+
 bool IsCopyConstructible(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {

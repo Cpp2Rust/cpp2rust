@@ -3337,11 +3337,11 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
 
   auto *ctor = expr->getConstructor();
   if (IsDefaultedMoveConstructor(ctor) &&
-      (HasUserDefinedCopyConstructor(ctor->getParent()) ||
-       !IsCopyConstructible(ctor->getParent()))) {
+      !HasDefaultedCopyConstructor(ctor->getParent())) {
     llvm::report_fatal_error("defaulted move constructor without a fieldwise "
                              "copy constructor is not supported");
   }
+
   if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
@@ -3806,8 +3806,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  bool derive_clone =
-      IsCopyConstructible(decl) && !HasUserDefinedCopyConstructor(decl);
+  bool derive_clone = HasDefaultedCopyConstructor(decl);
   if (derive_clone && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }

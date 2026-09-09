@@ -1874,8 +1874,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   if (IsDefaultedMoveConstructor(ctor) &&
-      (HasUserDefinedCopyConstructor(ctor->getParent()) ||
-       !IsCopyConstructible(ctor->getParent()))) {
+      !HasDefaultedCopyConstructor(ctor->getParent())) {
     llvm::report_fatal_error("defaulted move constructor without a fieldwise "
                              "copy constructor is not supported");
   }
