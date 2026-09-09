@@ -14,7 +14,7 @@ pub unsafe fn first_nonnull_0(mut count: i32, __args: &[VaArg]) -> i32 {
     'loop_: while ((((i) < (count)) as i32) != 0) {
         let mut p: *mut i32 = ap.arg::<*mut i32>();
         if (((!((p).is_null())) as i32) != 0) {
-            result = (*p);
+            result = (*(p));
             break;
         }
         i.postfix_inc();

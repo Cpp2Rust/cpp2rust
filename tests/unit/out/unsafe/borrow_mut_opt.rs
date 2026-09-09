@@ -28,12 +28,12 @@ pub unsafe fn convert_without_rhs_0() {
         ('c' as libc::c_char),
     ];
     let mut p1: *const i32 = (&mut x as *mut i32).cast_const();
-    let mut c: libc::c_char = arr2[(*p1) as usize];
-    c = arr2[(*p1) as usize];
+    let mut c: libc::c_char = arr2[(*(p1)) as usize];
+    c = arr2[(*(p1)) as usize];
     let mut p2: *mut i32 = (&mut x as *mut i32);
-    (*p2) = 1;
+    (*(p2)) = 1;
     let r: *mut i32 = &mut x as *mut i32;
-    (*r) = 1;
+    (*(r)) = 1;
 }
 pub unsafe fn convert_with_rhs_1() {
     let mut x: i32 = 0;
@@ -45,19 +45,19 @@ pub unsafe fn convert_with_rhs_1() {
     arr[(x) as usize] = ((x) + (1));
     arr[(x) as usize] = ((arr[(y) as usize]) + (1));
     let z: *mut i32 = &mut x as *mut i32;
-    x += (*z);
-    y += (*z);
+    x += (*(z));
+    y += (*(z));
     let mut p: *mut i32 = (&mut x as *mut i32);
-    x += (*p);
-    y += (*p);
+    x += (*(p));
+    y += (*(p));
     p = (&mut arr[(0) as usize] as *mut i32);
-    arr[(0) as usize] = (*p);
-    (*z) += x;
-    (*z) += y;
-    (*z) += (*p);
-    (*p) += ((y) + (x));
-    (*p) += ((x) + (*z));
-    (*p) += ((y) + (*z));
+    arr[(0) as usize] = (*(p));
+    (*(z)) += x;
+    (*(z)) += y;
+    (*(z)) += (*(p));
+    (*(p)) += ((y) + (x));
+    (*(p)) += ((x) + (*(z)));
+    (*(p)) += ((y) + (*(z)));
 }
 pub fn main() {
     unsafe {

@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
     assert!((((*bytes.offset((2) as isize)) as i32) == (3)));
     assert!((((*bytes.offset((3) as isize)) as i32) == (4)));
     (*bytes.offset((0) as isize)) = 16_u8;
-    assert!(((*p) == (67306000_u32)));
+    assert!(((*(p)) == (67306000_u32)));
     ::std::mem::drop(Box::from_raw(p));
     return 0;
 }

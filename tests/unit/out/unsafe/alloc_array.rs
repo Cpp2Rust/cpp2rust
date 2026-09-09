@@ -17,7 +17,7 @@ pub unsafe fn All_0(arr: *mut Option<Box<[i32]>>, mut N: i32, mut element: i32) 
         all.as_mut().unwrap()[(i as usize)] = element;
         i.prefix_inc();
     }
-    (*arr) = all;
+    (*(arr)) = all;
 }
 pub unsafe fn Consume_1(mut arr: Option<Box<[i32]>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;

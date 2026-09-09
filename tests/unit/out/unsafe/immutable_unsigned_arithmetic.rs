@@ -14,6 +14,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: u32 = 0_u32;
     let mut p: *mut u32 = (&mut a as *mut u32);
-    (*p) = (*p).wrapping_add((*p));
-    return ((*p) as i32);
+    (*(p)) = (*(p)).wrapping_add((*(p)));
+    return ((*(p)) as i32);
 }

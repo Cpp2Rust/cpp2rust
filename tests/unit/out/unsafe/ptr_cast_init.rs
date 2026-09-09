@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
     let mut h: header = header { tag: 7, size: 32 };
     let mut hp: *mut header = (&mut h as *mut header);
     let mut v: *mut view = (hp as *mut view);
-    assert!((((((*v).tag) == (7)) as i32) != 0));
+    assert!((((((*(v)).tag) == (7)) as i32) != 0));
     let mut data: [libc::c_char; 3] = std::mem::transmute(*b"hi\0");
     let mut vp: *mut ::libc::c_void =
         (data.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void);

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn write_ulong_0(mut p: *mut u64) {
-    (*p) = 42_u64;
+    (*(p)) = 42_u64;
 }
 pub fn main() {
     unsafe {

@@ -13,10 +13,10 @@ pub struct context {
     pub last_error: i32,
 }
 pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const libc::c_char, __args: &[VaArg]) {
-    if ((*ctx).verbose != 0) {
+    if ((*(ctx)).verbose != 0) {
         let mut ap: VaList = VaList::default();
         ap = VaList::new(__args);
-        (*ctx).last_error = ap.arg::<i32>();
+        (*(ctx)).last_error = ap.arg::<i32>();
     }
 }
 pub fn main() {

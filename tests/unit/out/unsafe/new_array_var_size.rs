@@ -21,8 +21,12 @@ unsafe fn main_0() -> i32 {
         libcc2rs::malloc_usable_size(A as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
     )));
     let N2: *mut i32 = &mut N as *mut i32;
-    let mut A2: *mut i32 =
-        Box::leak((0..((*N2) as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
+    let mut A2: *mut i32 = Box::leak(
+        (0..((*(N2)) as usize))
+            .map(|_| 0_i32)
+            .collect::<Box<[i32]>>(),
+    )
+    .as_mut_ptr();
 
     ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
         A2,

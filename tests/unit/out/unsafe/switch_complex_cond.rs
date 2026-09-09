@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn switch_complex_cond_0(mut p: *mut i32, mut bias: i32) -> i32 {
     'switch: {
-        let __match_cond = ((*p) + (bias));
+        let __match_cond = ((*(p)) + (bias));
         match __match_cond {
             __v if __v == 0 => {
                 return 1;

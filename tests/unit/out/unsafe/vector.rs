@@ -97,17 +97,17 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     let mut p1: *const f64 = (v6.as_mut_ptr()).cast_const();
-    assert!(((*p1) == (2.0E+0)));
+    assert!(((*(p1)) == (2.0E+0)));
     let mut p2: *mut i32 = v3.as_mut_ptr();
-    assert!(((*p2) == (1)));
+    assert!(((*(p2)) == (1)));
     assert!(((v3[(0_usize)]) == (1)));
     assert!(((v3[(1_usize)]) == (1)));
-    (*p2) = (9.9E+1 as i32);
-    assert!(((*p2) == (99)));
+    (*(p2)) = (9.9E+1 as i32);
+    assert!(((*(p2)) == (99)));
     assert!(((v3[(0_usize)]) == (99)));
     assert!(((v3[(1_usize)]) == (1)));
     p2.prefix_inc();
-    (*p2) = 98;
+    (*(p2)) = 98;
     assert!(((v3[(0_usize)]) == (99)));
     assert!(((v3[(1_usize)]) == (98)));
     assert!(((v3.capacity()) == (100_usize)));
@@ -142,7 +142,7 @@ unsafe fn main_0() -> i32 {
     assert!((*((v5).last_mut().unwrap())).is_null());
     assert!(((*((v6).last_mut().unwrap())) == (2.0E+0)));
     let ref0: *mut f64 = ((v6).last_mut().unwrap());
-    (*ref0) = 5.0E+0;
+    (*(ref0)) = 5.0E+0;
     assert!(((*((v6).last_mut().unwrap())) == (5.0E+0)));
     let mut x0: f64 = (*((v6).last_mut().unwrap()));
     assert!(((x0) == (5.0E+0)));
@@ -152,7 +152,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*&mut (v6)[(idx as usize) as usize]) == (2.0E+0)));
     assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (5.0E+0)));
     let ref1: *mut f64 = &mut (v6)[(s2).wrapping_sub(1_usize) as usize];
-    (*ref1) += 1.5E+0;
+    (*(ref1)) += 1.5E+0;
     assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (6.5E+0)));
     let mut x1: f64 = (*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]);
     assert!(((x1) == (6.5E+0)));

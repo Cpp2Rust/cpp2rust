@@ -27,11 +27,11 @@ unsafe fn main_0() -> i32 {
     }
     'loop_: for x in 0..(v1.len()) {
         let mut x = v1.as_mut_ptr().add(x);
-        (*x) += 10;
+        (*(x)) += 10;
     }
     'loop_: for x in 0..(v1.len()) {
         let mut x = v1.as_ptr().add(x);
-        sum += (*x);
+        sum += (*(x));
     }
     let mut v2: Vec<*mut i32> = Vec::new();
     v2.push((&mut v1[(0_usize)] as *mut i32));
@@ -39,19 +39,19 @@ unsafe fn main_0() -> i32 {
     v2.push((&mut v1[(2_usize)] as *mut i32));
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();
-        (*p) += 5;
+        (*(p)) += 5;
     }
     'loop_: for p in 0..(v2.len()) {
         let p = v2[p].clone();
-        sum += (*p);
+        sum += (*(p));
     }
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();
-        (*p) += 5;
+        (*(p)) += 5;
     }
     'loop_: for p in 0..(v2.len()) {
         let mut p = v2[p].clone();
-        sum += (*p);
+        sum += (*(p));
     }
     assert!(((sum) == (168)));
     return 0;

@@ -26,7 +26,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s1: S = S::S({ 1 }, { 2 });
     let s2: *mut S = &mut s1;
-    assert!((((*s2).a) == (1)));
-    assert!((((*s2).b) == (2)));
+    assert!((((*(s2)).a) == (1)));
+    assert!((((*(s2)).b) == (2)));
     return 0;
 }

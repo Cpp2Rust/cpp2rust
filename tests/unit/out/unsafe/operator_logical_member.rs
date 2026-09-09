@@ -16,10 +16,10 @@ impl S {
         return ((self.v) == (0));
     }
     pub unsafe fn operator_and(&self, o: *const S) -> bool {
-        return ((self.v) != (0)) && (((*o).v) != (0));
+        return ((self.v) != (0)) && (((*(o)).v) != (0));
     }
     pub unsafe fn operator_or(&self, o: *const S) -> bool {
-        return ((self.v) != (0)) || (((*o).v) != (0));
+        return ((self.v) != (0)) || (((*(o)).v) != (0));
     }
 }
 pub fn main() {

@@ -12,13 +12,13 @@ pub struct S {
     pub v: i32,
 }
 pub unsafe fn operator_not_0(a: *const S) -> bool {
-    return (((*a).v) == (0));
+    return (((*(a)).v) == (0));
 }
 pub unsafe fn operator_and_1(a: *const S, b: *const S) -> bool {
-    return (((*a).v) != (0)) && (((*b).v) != (0));
+    return (((*(a)).v) != (0)) && (((*(b)).v) != (0));
 }
 pub unsafe fn operator_or_2(a: *const S, b: *const S) -> bool {
-    return (((*a).v) != (0)) || (((*b).v) != (0));
+    return (((*(a)).v) != (0)) || (((*(b)).v) != (0));
 }
 pub fn main() {
     unsafe {

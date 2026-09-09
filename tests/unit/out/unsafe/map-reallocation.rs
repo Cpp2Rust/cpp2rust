@@ -24,7 +24,7 @@ unsafe fn main_0() -> i32 {
             && (!(c"iterator does not have correct value before insert".as_ptr()).is_null())
     );
     assert!(
-        ((*p) == (sentinel))
+        ((*(p)) == (sentinel))
             && (!(c"pointer does not have correct value before insert".as_ptr()).is_null())
     );
     let mut i: i32 = 0;
@@ -47,12 +47,12 @@ unsafe fn main_0() -> i32 {
             && (!(c"iterator does not have correct value after insert".as_ptr()).is_null())
     );
     assert!(
-        ((*p) == (sentinel))
+        ((*(p)) == (sentinel))
             && (!(c"pointer does not have correct value after insert".as_ptr()).is_null())
     );
     *it.second() = 57005;
     assert!(((*m.entry(sentinel).or_default().as_mut()) == (57005)));
-    assert!(((*p) == (57005)));
+    assert!(((*(p)) == (57005)));
     assert!(((m.len()) == ((((N) + (1)) as u32) as usize)));
     let mut prev: i32 = -1_i32;
     'loop_: for pair in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<i32>>) {

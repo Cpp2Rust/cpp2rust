@@ -13,7 +13,7 @@ pub struct Inner {
     pub b: i32,
 }
 pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
-    return (((*i).a) + ((*i).b));
+    return (((*(i)).a) + ((*(i)).b));
 }
 #[repr(C)]
 #[derive(Copy, Clone)]

@@ -26,10 +26,10 @@ impl Default for S {
     }
 }
 pub unsafe fn operator_deref_0(s: *mut S) -> *mut Inner {
-    return &mut (*s).inner as *mut Inner;
+    return &mut (*(s)).inner as *mut Inner;
 }
 pub unsafe fn operator_addr_1(s: *mut S) -> *mut i32 {
-    return (&mut (*s).data[(0) as usize] as *mut i32);
+    return (&mut (*(s)).data[(0) as usize] as *mut i32);
 }
 pub fn main() {
     unsafe {
@@ -58,8 +58,8 @@ unsafe fn main_0() -> i32 {
         let _s: *mut S = &mut s as *mut S;
         operator_addr_1(_s)
     });
-    assert!(((*p) == (1)));
-    (*p) = 5;
+    assert!(((*(p)) == (1)));
+    (*(p)) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
     return 0;
 }

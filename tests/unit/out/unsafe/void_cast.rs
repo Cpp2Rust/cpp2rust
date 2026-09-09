@@ -15,10 +15,10 @@ pub struct NonTrivial {
     pub data: Vec<i32>,
 }
 pub unsafe fn unused_ref_param_1(x: *const NonTrivial) {
-    &(*x);
+    &(*(x));
 }
 pub unsafe fn unused_ptr_param_2(mut p: *const NonTrivial) {
-    &(*p);
+    &(*(p));
 }
 pub static mut side_effect_counter_3: i32 = unsafe { 0 };
 pub unsafe fn bump_and_return_4() -> i32 {
@@ -36,7 +36,7 @@ pub struct NonCopyable {
     pub value: Option<Box<i32>>,
 }
 pub unsafe fn unused_noncopyable_param_5(x: *const NonCopyable) {
-    &(*x);
+    &(*(x));
 }
 pub fn main() {
     unsafe {
@@ -92,14 +92,14 @@ unsafe fn main_0() -> i32 {
     assert!(((side_effect_counter_3) == (2)));
     let mut storage: i32 = 11;
     let mut p: *mut i32 = (&mut storage as *mut i32);
-    &(*p);
+    &(*(p));
     &(p);
     let mut arr: [i32; 3] = [1, 2, 3];
     &(arr[(1) as usize]);
     let mut h: Holder = Holder { field: 17 };
     &(h.field);
     let mut hp: *mut Holder = (&mut h as *mut Holder);
-    &((*hp).field);
+    &((*(hp)).field);
     let mut nt: NonTrivial = <NonTrivial>::default();
     (unsafe { unused_ref_param_1(&nt as *const NonTrivial) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });

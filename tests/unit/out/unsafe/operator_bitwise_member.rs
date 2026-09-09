@@ -17,17 +17,17 @@ impl S {
     }
     pub unsafe fn operator_bitand(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) & ((*o).v)),
+            v: ((self.v) & ((*(o)).v)),
         };
     }
     pub unsafe fn operator_bitor(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) | ((*o).v)),
+            v: ((self.v) | ((*(o)).v)),
         };
     }
     pub unsafe fn operator_bitxor(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) ^ ((*o).v)),
+            v: ((self.v) ^ ((*(o)).v)),
         };
     }
     pub unsafe fn operator_shl(&self, mut n: i32) -> S {

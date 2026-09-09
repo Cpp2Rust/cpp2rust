@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn strlen_0(mut s: *const libc::c_char) -> usize {
     let mut begin: *const libc::c_char = s;
-    'loop_: while ((*s) != 0) {
+    'loop_: while ((*(s)) != 0) {
         s.prefix_inc();
     }
     return ((((s as usize - begin as usize) / ::std::mem::size_of::<libc::c_char>()) as i64)

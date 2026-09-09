@@ -25,7 +25,7 @@ impl S {
             a_: a,
             self__: std::ptr::null_mut(),
         };
-        if ((this) == (other)) {
+        if ((&raw mut this) == (other)) {
             this.self__ = std::ptr::null_mut();
         } else {
             this.self__ = other;
@@ -33,14 +33,14 @@ impl S {
         this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
-        return &mut (*self) as *mut S;
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn returns_this_pointer(&mut self) -> *mut S {
-        return self;
+        return self as *mut S;
     }
     pub unsafe fn inc(&mut self) -> *mut S {
         self.a_.postfix_inc();
-        return &mut (*self) as *mut S;
+        return &mut (*(self as *mut S)) as *mut S;
     }
     pub unsafe fn set_from_this(&mut self) {
         self.a_ = ((self.a_) + (1));
@@ -52,42 +52,42 @@ impl S {
         return ((unsafe { S::get(self) }) * (2));
     }
     pub unsafe fn link(&mut self) {
-        self.self__ = self;
+        self.self__ = self as *mut S;
     }
     pub unsafe fn bump_me(&mut self) {
-        (unsafe { bump_0(self) });
+        (unsafe { bump_0(self as *mut S) });
     }
     pub unsafe fn cref(&self) -> *const S {
-        return &(*self) as *const S;
+        return &(*(self as *const S)) as *const S;
     }
     pub unsafe fn is(&self, mut o: *const S) -> bool {
-        return ((o) == (self));
+        return ((o) == (self as *const S));
     }
     pub unsafe fn destroy(&mut self) {
-        ::std::mem::drop(Box::from_raw(self));
+        ::std::mem::drop(Box::from_raw(self as *mut S));
     }
     pub unsafe fn reset(&mut self) {
-        (*self) = S::S1({ 0 });
+        (*(self as *mut S)) = S::S1({ 0 });
     }
     pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
-        if ((self) == (other)) {
+        if (((self as *mut S).cast_const()) == (other)) {
             return false;
         }
-        self.a_ = (*other).a_;
-        self.self__ = (*other).self__;
+        self.a_ = (*(other)).a_;
+        self.self__ = (*(other)).self__;
         return true;
     }
     pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
-        if ((self) == (other)) {
+        if ((self as *mut S) == (other)) {
             return false;
         }
-        self.a_ = (*other).a_;
-        self.self__ = (*other).self__;
+        self.a_ = (*(other)).a_;
+        self.self__ = (*(other)).self__;
         return true;
     }
 }
 pub unsafe fn bump_0(mut p: *mut S) {
-    (*p).a_.postfix_inc();
+    (*(p)).a_.postfix_inc();
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
@@ -109,10 +109,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: S = S::S1({ 1 });
     let ref_: *mut S = (unsafe { S::returns_this_reference(&mut s) });
-    (*ref_).a_.postfix_inc();
+    (*(ref_)).a_.postfix_inc();
     assert!(((s.a_) == (2)));
     let mut ptr: *mut S = (unsafe { S::returns_this_pointer(&mut s) });
-    (*ptr).a_.postfix_inc();
+    (*(ptr)).a_.postfix_inc();
     assert!(((s.a_) == (3)));
     (unsafe { S::inc(&mut (*(unsafe { S::inc(&mut (*(unsafe { S::inc(&mut s) }))) }))) });
     assert!(((s.a_) == (6)));
@@ -121,14 +121,14 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::twice(&mut s,) }) == (14)));
     (unsafe { S::link(&mut s) });
     assert!(((s.self__) == (&mut s as *mut S)));
-    (*s.self__).a_.postfix_inc();
+    (*(s.self__)).a_.postfix_inc();
     assert!(((s.a_) == (8)));
     (unsafe { S::bump_me(&mut s) });
     assert!(((s.a_) == (9)));
     let mut d: D = D::D({ 3 });
     assert!(((d.a_) == (6)));
     let cr: *const S = (unsafe { S::cref(&s) });
-    assert!((((*cr).a_) == (9)));
+    assert!((((*(cr)).a_) == (9)));
     let mut t: S = S::S1({ 0 });
     assert!(
         (unsafe {
@@ -138,12 +138,12 @@ unsafe fn main_0() -> i32 {
     );
     assert!(!(unsafe { S::is(&s, (&mut t as *mut S).cast_const(),) }));
     let mut p: *mut S = (Box::leak(Box::new(S::S1({ 1 }))) as *mut S);
-    let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*p)) });
-    (*q).a_.postfix_inc();
-    assert!((((*p).a_) == (2)));
+    let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*(p))) });
+    (*(q)).a_.postfix_inc();
+    assert!((((*(p)).a_) == (2)));
     ::std::mem::drop(Box::from_raw(p));
     let mut h: *mut S = (Box::leak(Box::new(S::S1({ 5 }))) as *mut S);
-    (unsafe { S::destroy(&mut (*h)) });
+    (unsafe { S::destroy(&mut (*(h))) });
     (unsafe { S::reset(&mut s) });
     assert!(((s.a_) == (0)));
     assert!((s.self__).is_null());

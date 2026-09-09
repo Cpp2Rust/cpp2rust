@@ -13,7 +13,7 @@ pub struct Item {
     pub value: i32,
 }
 pub unsafe fn Compare_0(a: *const Item, b: *const Item) -> bool {
-    return (((*a).key) < ((*b).key));
+    return (((*(a)).key) < ((*(b)).key));
 }
 pub fn main() {
     unsafe {

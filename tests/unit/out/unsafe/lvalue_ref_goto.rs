@@ -20,7 +20,7 @@ unsafe fn main_0() -> i32 {
             goto!('body);
         }
         'body: {
-            assert!(((*r) == (5)));
+            assert!(((*(r)) == (5)));
             return 0;
         }
     });

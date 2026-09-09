@@ -41,15 +41,15 @@ unsafe fn main_0() -> i32 {
     x4 = ((x3) + (x2));
     let mut p1: *mut i32 = (&mut x1 as *mut i32);
     p1 = (&mut x2 as *mut i32);
-    (*p1) = x1;
-    (*p1) = (((x1) + (x4)) + (1));
-    let mut x5: i32 = (*p1);
-    let mut x6: i32 = (((*p1) + (x3)) + (5));
+    (*(p1)) = x1;
+    (*(p1)) = (((x1) + (x4)) + (1));
+    let mut x5: i32 = (*(p1));
+    let mut x6: i32 = (((*(p1)) + (x3)) + (5));
     let r: *mut i32 = &mut x1 as *mut i32;
-    (*r) = 5;
-    (*r) = ((*p1) + (5));
-    let mut x7: i32 = (*r);
-    let mut x8: i32 = (((*r) + (x1)) + (5));
+    (*(r)) = 5;
+    (*(r)) = ((*(p1)) + (5));
+    let mut x7: i32 = (*(r));
+    let mut x8: i32 = (((*(r)) + (x1)) + (5));
     let mut p2: *mut i32 = (r);
     let mut x: X = X { x: 1 };
     let mut y: Y = Y {
@@ -58,9 +58,9 @@ unsafe fn main_0() -> i32 {
     };
     y.x.x = 5;
     (*(unsafe { Y::foo(&mut y) })).x = 1;
-    (*y.p).x = 10;
+    (*(y.p)).x = 10;
     let mut p3: *mut Y = (&mut y as *mut Y);
-    (*(*p3).p).x = 100;
+    (*((*(p3)).p)).x = 100;
     (*(unsafe { Y::ptr(&mut y) })).x = 1;
     (*(unsafe { Y::ptr(&mut y) })).x = 50;
     assert!(((x.x) == (100)));

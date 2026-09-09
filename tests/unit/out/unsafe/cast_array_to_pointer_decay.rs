@@ -7,11 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn deref_0(mut p: *mut i32) -> i32 {
-    return (*p);
+    return (*(p));
 }
 pub unsafe fn strlen_1(mut s: *mut libc::c_char) -> i32 {
     let mut c: i32 = 0;
-    'loop_: while ((*s.postfix_inc()) != 0) {
+    'loop_: while ((*(s.postfix_inc())) != 0) {
         c.prefix_inc();
     }
     return c;

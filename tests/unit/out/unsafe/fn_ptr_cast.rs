@@ -44,7 +44,7 @@ pub unsafe fn test_void_ptr_to_fn_3() {
     assert!(((unsafe { (fn_).unwrap()(5,) }) == (10)));
 }
 pub unsafe fn add_offset_4(mut base: *mut i32, mut offset: i32) -> i32 {
-    return ((*base) + (offset));
+    return ((*(base)) + (offset));
 }
 pub unsafe fn test_call_through_cast_5() {
     let mut gfn: Option<unsafe fn(*mut ::libc::c_void, i32) -> i32> = std::mem::transmute::<

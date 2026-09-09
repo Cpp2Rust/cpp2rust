@@ -15,28 +15,28 @@ unsafe fn main_0() -> i32 {
     let mut out: i32 = 0;
     let mut arr: [i32; 5] = [1, 2, 3, 4, 0];
     let mut ptr: *const i32 = (&mut arr[(0) as usize] as *mut i32).cast_const();
-    'loop_: while ((*ptr) != (0)) {
-        out += (*ptr);
+    'loop_: while ((*(ptr)) != (0)) {
+        out += (*(ptr));
         ptr.prefix_inc();
     }
     let mut ptr: *mut i32 = (&mut arr[(1) as usize] as *mut i32);
-    'loop_: while ((*ptr) != (4)) {
-        out += (*ptr);
+    'loop_: while ((*(ptr)) != (4)) {
+        out += (*(ptr));
         ptr.postfix_inc();
     }
     let mut ptr: *mut i32 = (&mut arr[(4) as usize] as *mut i32);
-    'loop_: while ((*ptr) != (1)) {
-        out += (*ptr);
+    'loop_: while ((*(ptr)) != (1)) {
+        out += (*(ptr));
         ptr.postfix_dec();
     }
     let mut ptr: *const i32 = (&mut arr[(3) as usize] as *mut i32).cast_const();
-    'loop_: while ((*ptr) != (2)) {
-        out += (*ptr);
+    'loop_: while ((*(ptr)) != (2)) {
+        out += (*(ptr));
         ptr.prefix_dec();
     }
     let mut ptr: *mut i32 = (&mut arr[(0) as usize] as *mut i32);
-    'loop_: while ((*ptr) != (0)) {
-        out += (*ptr);
+    'loop_: while ((*(ptr)) != (0)) {
+        out += (*(ptr));
         ptr = ptr.offset((1) as isize);
     }
     let mut ptr: *mut i32 = (&mut arr[(0) as usize] as *mut i32);

@@ -20,6 +20,6 @@ unsafe fn main_0() -> i32 {
     assert!(((original) == (67309584)));
     let mut arr: [i16; 2] = [513_i16, 1027_i16];
     let mut as_int: *mut i32 = (arr.as_mut_ptr() as *mut i32);
-    assert!(((*as_int) == (67305985)));
+    assert!(((*(as_int)) == (67305985)));
     return 0;
 }

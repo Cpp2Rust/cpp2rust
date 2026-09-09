@@ -36,16 +36,16 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!((((*items_3[(0) as usize]).value) == (1)));
-    assert!((((*items_3[(1) as usize]).value) == (2)));
-    assert!((((*obj_4.p).value) == (42)));
+    assert!((((*(items_3[(0) as usize])).value) == (1)));
+    assert!((((*(items_3[(1) as usize])).value) == (2)));
+    assert!((((*(obj_4.p)).value) == (42)));
     static mut cache_5: [*mut Inner; 2] = unsafe {
         [
             (&raw mut alpha_0 as *mut Inner),
             (&raw mut beta_1 as *mut Inner),
         ]
     };;
-    assert!((((*cache_5[(0) as usize]).value) == (1)));
-    assert!((((*cache_5[(1) as usize]).value) == (2)));
+    assert!((((*(cache_5[(0) as usize])).value) == (1)));
+    assert!((((*(cache_5[(1) as usize])).value) == (2)));
     return 0;
 }

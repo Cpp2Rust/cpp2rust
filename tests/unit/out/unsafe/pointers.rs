@@ -29,13 +29,13 @@ pub unsafe fn Update_0(mut t: *mut Test) -> *mut Test {
     let mut x: i32 = 1;
     let mut y: i32 = 2;
     x.prefix_inc();
-    (unsafe { Test::update(&mut (*t), x, y) });
-    x = (*t).x;
-    y = (*t).x;
+    (unsafe { Test::update(&mut (*(t)), x, y) });
+    x = (*(t)).x;
+    y = (*(t)).x;
     (unsafe {
         let _x: i32 = x;
         let _y: i32 = y;
-        Test::update(&mut (*t), _x, _y)
+        Test::update(&mut (*(t)), _x, _y)
     });
     return t;
 }
@@ -49,8 +49,8 @@ unsafe fn main_0() -> i32 {
     let mut t2: *mut Test = (unsafe { Update_0((&mut t1 as *mut Test)) });
     let mut t3: *mut Test = std::ptr::null_mut();
     t3 = t2;
-    (*t3).x = 15;
-    (*(unsafe { Test::as_ptr(&mut (*t3)) })) += 10;
-    assert!((((((*t3).x) + ((*t2).x)) + (t1.x)) == (75)));
+    (*(t3)).x = 15;
+    (*(unsafe { Test::as_ptr(&mut (*(t3))) })) += 10;
+    assert!((((((*(t3)).x) + ((*(t2)).x)) + (t1.x)) == (75)));
     return 0;
 }

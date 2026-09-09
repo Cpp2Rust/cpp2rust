@@ -12,12 +12,12 @@ pub struct Holder {
     pub val: Option<Box<i32>>,
 }
 pub unsafe fn read_val_0(mut h: *const Holder) -> i32 {
-    return (*(*(std::ptr::addr_of!((*h).val).cast_mut()))
+    return (*(*(std::ptr::addr_of!((*(h)).val).cast_mut()))
         .as_deref_mut()
         .unwrap());
 }
 pub unsafe fn write_val_1(mut h: *const Holder, mut v: i32) {
-    (*(*(std::ptr::addr_of!((*h).val).cast_mut()))
+    (*(*(std::ptr::addr_of!((*(h)).val).cast_mut()))
         .as_deref_mut()
         .unwrap()) = v;
 }

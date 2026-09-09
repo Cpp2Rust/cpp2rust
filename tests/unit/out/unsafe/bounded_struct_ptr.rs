@@ -20,8 +20,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut arr: [Foo; 2] = [Foo { x1: 1, x2: 2 }, Foo { x1: 3, x2: 4 }];
     let mut p1: *mut i32 = (&mut arr[(1) as usize].x1 as *mut i32);
-    let mut a: i32 = (*p1);
+    let mut a: i32 = (*(p1));
     let mut p2: *mut Foo = (&mut arr[(0) as usize] as *mut Foo);
-    assert!((((a) + ((*p2).x2)) == (5)));
+    assert!((((a) + ((*(p2)).x2)) == (5)));
     return 0;
 }

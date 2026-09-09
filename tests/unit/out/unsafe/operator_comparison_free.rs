@@ -36,28 +36,28 @@ impl std::cmp::PartialEq for S {
 }
 impl std::cmp::Eq for S {}
 pub unsafe fn operator_eq_1(a: *const S, b: *const S) -> bool {
-    return (((*a).v) == ((*b).v));
+    return (((*(a)).v) == ((*(b)).v));
 }
 pub unsafe fn operator_ne_2(a: *const S, b: *const S) -> bool {
-    return (((*a).v) != ((*b).v));
+    return (((*(a)).v) != ((*(b)).v));
 }
 pub unsafe fn operator_lt_0(a: *const S, b: *const S) -> bool {
-    return (((*a).v) < ((*b).v));
+    return (((*(a)).v) < ((*(b)).v));
 }
 pub unsafe fn operator_gt_3(a: *const S, b: *const S) -> bool {
-    return (((*a).v) > ((*b).v));
+    return (((*(a)).v) > ((*(b)).v));
 }
 pub unsafe fn operator_le_4(a: *const S, b: *const S) -> bool {
-    return (((*a).v) <= ((*b).v));
+    return (((*(a)).v) <= ((*(b)).v));
 }
 pub unsafe fn operator_ge_5(a: *const S, b: *const S) -> bool {
-    return (((*a).v) >= ((*b).v));
+    return (((*(a)).v) >= ((*(b)).v));
 }
 pub unsafe fn operator_lt_6(a: *const S, mut b: i32) -> bool {
-    return (((*a).v) < (b));
+    return (((*(a)).v) < (b));
 }
 pub unsafe fn operator_lt_7(mut a: i32, b: *const S) -> bool {
-    return ((a) < ((*b).v));
+    return ((a) < ((*(b)).v));
 }
 pub fn main() {
     unsafe {

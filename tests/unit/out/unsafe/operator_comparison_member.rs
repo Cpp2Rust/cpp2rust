@@ -13,22 +13,22 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_eq(&self, o: *const S) -> bool {
-        return ((self.v) == ((*o).v));
+        return ((self.v) == ((*(o)).v));
     }
     pub unsafe fn operator_ne(&self, o: *const S) -> bool {
-        return ((self.v) != ((*o).v));
+        return ((self.v) != ((*(o)).v));
     }
     pub unsafe fn operator_lt_pconstS_const(&self, o: *const S) -> bool {
-        return ((self.v) < ((*o).v));
+        return ((self.v) < ((*(o)).v));
     }
     pub unsafe fn operator_gt(&self, o: *const S) -> bool {
-        return ((self.v) > ((*o).v));
+        return ((self.v) > ((*(o)).v));
     }
     pub unsafe fn operator_le(&self, o: *const S) -> bool {
-        return ((self.v) <= ((*o).v));
+        return ((self.v) <= ((*(o)).v));
     }
     pub unsafe fn operator_ge(&self, o: *const S) -> bool {
-        return ((self.v) >= ((*o).v));
+        return ((self.v) >= ((*(o)).v));
     }
     pub unsafe fn operator_lt_i32_const(&self, mut o: i32) -> bool {
         return ((self.v) < (o));

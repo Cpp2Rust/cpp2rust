@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn negate_0(mut x: *mut i32) {
-    (*x) = -(*x);
+    (*(x)) = -(*(x));
 }
 pub unsafe fn zero_out_1(mut x: *mut i32) {
-    (*x) = 0;
+    (*(x)) = 0;
 }
 pub unsafe fn run_2(mut fn_: Option<unsafe fn(*mut i32)>, mut x: *mut i32) {
     (unsafe { (fn_).unwrap()(x) });

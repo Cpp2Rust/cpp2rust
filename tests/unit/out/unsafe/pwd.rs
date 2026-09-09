@@ -9,19 +9,19 @@ use std::rc::Rc;
 pub unsafe fn test_getpwuid_0() {
     let mut pw: *mut ::libc::passwd = libc::getpwuid(libc::geteuid());
     assert!((((!((pw).is_null())) as i32) != 0));
-    assert!((((((*pw).pw_uid) == (libc::geteuid())) as i32) != 0));
-    assert!(((((libc::strlen(((*pw).pw_name).cast_const())) > (0_usize)) as i32) != 0));
-    assert!((((!(((*pw).pw_dir).is_null())) as i32) != 0));
+    assert!((((((*(pw)).pw_uid) == (libc::geteuid())) as i32) != 0));
+    assert!(((((libc::strlen(((*(pw)).pw_name).cast_const())) > (0_usize)) as i32) != 0));
+    assert!((((!(((*(pw)).pw_dir).is_null())) as i32) != 0));
     printf(
         (c"%s\n".as_ptr().cast_mut()).cast_const() as *const i8,
-        (*pw).pw_name,
+        (*(pw)).pw_name,
     );
 }
 pub unsafe fn test_getpwuid_missing_1() {
-    (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
+    (*(libcc2rs::cpp2rust_errno_unsafe())) = 0;
     let mut pw: *mut ::libc::passwd = libc::getpwuid(2147483646_u32);
     assert!(((((pw).is_null()) as i32) != 0));
-    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (0)) as i32) != 0));
+    assert!(((((*(libcc2rs::cpp2rust_errno_unsafe())) == (0)) as i32) != 0));
 }
 pub unsafe fn test_getpwuid_r_2() {
     let mut pw: ::libc::passwd = unsafe { std::mem::zeroed() };
@@ -43,7 +43,7 @@ pub unsafe fn test_getpwuid_r_2() {
     let mut pw2: *mut ::libc::passwd = libc::getpwuid(libc::geteuid());
     assert!((((!((pw2).is_null())) as i32) != 0));
     assert!(
-        ((((libc::strcmp((pw.pw_name).cast_const(), ((*pw2).pw_name).cast_const())) == (0))
+        ((((libc::strcmp((pw.pw_name).cast_const(), ((*(pw2)).pw_name).cast_const())) == (0))
             as i32)
             != 0)
     );

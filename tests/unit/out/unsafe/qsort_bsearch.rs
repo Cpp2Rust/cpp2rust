@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
         >(cmp_int_0 as *const ())),
     ) as *mut i32);
     assert!((((!((hit).is_null())) as i32) != 0));
-    assert!(((((*hit) == (7)) as i32) != 0));
+    assert!(((((*(hit)) == (7)) as i32) != 0));
     let mut miss_key: i32 = 42;
     let mut miss: *mut i32 = (libc::bsearch(
         ((&mut miss_key as *mut i32) as *const i32 as *const ::libc::c_void),
