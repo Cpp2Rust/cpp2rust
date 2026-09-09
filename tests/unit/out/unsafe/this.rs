@@ -32,6 +32,16 @@ impl S {
         }
         this
     }
+    pub unsafe fn S3(mut a: i32, mut other: *const S) -> Self {
+        let mut this = Self {
+            a_: a,
+            self__: std::ptr::null_mut(),
+        };
+        if (((&raw mut this).cast_const()) == (other)) {
+            this.self__ = std::ptr::null_mut();
+        }
+        this
+    }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
         return &mut (*(self as *mut S)) as *mut S;
     }
@@ -170,5 +180,8 @@ unsafe fn main_0() -> i32 {
     assert!(((s.self__) == (other.self__)));
     let mut u: S = S::S2({ 1 }, { (&mut s as *mut S) });
     assert!(((u.self__) == (&mut s as *mut S)));
+    let s_const: S = S::S1({ 100 });
+    let mut u1: S = S::S3({ 1 }, { (&s_const as *const S) });
+    assert!((u1.self__).is_null());
     return 0;
 }

@@ -36,6 +36,19 @@ impl S {
         }
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
+    pub fn S3(a: i32, other: Ptr<S>) -> Self {
+        let a: Value<i32> = Rc::new(RefCell::new(a));
+        let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
+            a_: Rc::new(RefCell::new((*a.borrow()))),
+            self__: Rc::new(RefCell::new(Ptr::<S>::null())),
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        if (this == (*other.borrow())) {
+            (*(*this.upgrade().deref()).self__.borrow_mut()) = Ptr::<S>::null();
+        }
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Clone for S {
     fn clone(&self) -> Self {
@@ -186,6 +199,9 @@ fn main_0() -> i32 {
         let _lhs = (*(*u.borrow()).self__.borrow()).clone();
         _lhs == (s.as_pointer())
     });
+    let s_const: Value<S> = Rc::new(RefCell::new(S::S1({ 100 })));
+    let u1: Value<S> = Rc::new(RefCell::new(S::S3({ 1 }, { (s_const.as_pointer()) })));
+    assert!((*(*u1.borrow()).self__.borrow()).is_null());
     return 0;
 }
 pub trait SImpl {
