@@ -149,6 +149,13 @@ fn main_0() -> i32 {
         }) as i32)
             == (false as i32))
     );
+    assert!(
+        ((({
+            let _other: Ptr<S> = (s.as_pointer());
+            SImpl::copy_if_different_const(&s.as_pointer(), _other)
+        }) as i32)
+            == (false as i32))
+    );
     let other: Value<S> = Rc::new(RefCell::new(S::S({ 22 })));
     assert!(
         ((({ SImpl::copy_if_different(&s.as_pointer(), (other.as_pointer()),) }) as i32)
@@ -174,6 +181,7 @@ pub trait SImpl {
     fn is(&self, o: Ptr<S>) -> bool;
     fn destroy(&self);
     fn reset(&self);
+    fn copy_if_different_const(&self, other: Ptr<S>) -> bool;
     fn copy_if_different(&self, other: Ptr<S>) -> bool;
 }
 impl SImpl for Ptr<S> {
@@ -215,6 +223,17 @@ impl SImpl for Ptr<S> {
     }
     fn reset(&self) {
         (*self).write(S::S({ 0 }));
+    }
+    fn copy_if_different_const(&self, other: Ptr<S>) -> bool {
+        let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));
+        if ((*self) == (*other.borrow())) {
+            return false;
+        }
+        let __rhs = (*(*(*other.borrow()).upgrade().deref()).a_.borrow());
+        (*(*(*self).upgrade().deref()).a_.borrow_mut()) = __rhs;
+        let __rhs = (*(*(*other.borrow()).upgrade().deref()).self__.borrow()).clone();
+        (*(*(*self).upgrade().deref()).self__.borrow_mut()) = __rhs;
+        return true;
     }
     fn copy_if_different(&self, other: Ptr<S>) -> bool {
         let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));

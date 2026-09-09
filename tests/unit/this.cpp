@@ -33,6 +33,15 @@ struct S {
 
   void reset() { *this = S(0); }
 
+  bool copy_if_different_const(const S *other) {
+    if (this == other) {
+      return false;
+    }
+    a_ = other->a_;
+    self_ = other->self_;
+    return true;
+  }
+
   bool copy_if_different(S *other) {
     if (this == other) {
       return false;
@@ -105,6 +114,7 @@ int main() {
   assert(s.self_ == nullptr);
 
   assert(s.copy_if_different(&s) == false);
+  assert(s.copy_if_different_const(&s) == false);
   auto other = S(22);
   assert(s.copy_if_different(&other) == true);
   assert(s.a_ == other.a_);

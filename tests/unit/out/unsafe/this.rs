@@ -70,6 +70,15 @@ impl S {
         let this = self as *mut S;
         (*this) = S::S({ 0 });
     }
+    pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
+        let this = self as *mut S;
+        if (((this).cast_const()) == (other)) {
+            return false;
+        }
+        (*this).a_ = (*other).a_;
+        (*this).self__ = (*other).self__;
+        return true;
+    }
     pub unsafe fn copy_if_different(&mut self, mut other: *mut S) -> bool {
         let this = self as *mut S;
         if ((this) == (other)) {
@@ -146,6 +155,13 @@ unsafe fn main_0() -> i32 {
         (((unsafe {
             let _other: *mut S = (&mut s as *mut S);
             S::copy_if_different(&mut s, _other)
+        }) as i32)
+            == (false as i32))
+    );
+    assert!(
+        (((unsafe {
+            let _other: *const S = (&mut s as *mut S).cast_const();
+            S::copy_if_different_const(&mut s, _other)
         }) as i32)
             == (false as i32))
     );
