@@ -1030,13 +1030,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (expr->isCallToStdMove()) {
-    if (IsUniquePtr(expr->getArg(0)->getType())) {
-      StrCat(std::format("{}.take()", ConvertLValue(expr->getArg(0))));
-    } else {
-      Convert(expr->getArg(0));
-    }
-    computed_expr_type_ = ComputedExprType::FreshValue;
-    return false;
+    return Converter::VisitCallExpr(expr);
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
