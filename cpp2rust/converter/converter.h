@@ -156,6 +156,8 @@ public:
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
+  virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
+  virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
 
   virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
 

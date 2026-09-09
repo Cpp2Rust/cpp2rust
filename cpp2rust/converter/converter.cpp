@@ -1172,6 +1172,12 @@ bool Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
   return false;
 }
 
+bool Converter::VisitTypeAliasDecl(clang::TypeAliasDecl *) { return false; }
+
+bool Converter::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *) {
+  return false;
+}
+
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
   switch (stmt->getStmtClass()) {
   case clang::Stmt::IfStmtClass:
