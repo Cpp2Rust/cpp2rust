@@ -1154,8 +1154,9 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
       method && method->isInstance() && !method->getParent()->isLambda() &&
       !clang::isa<clang::CXXConstructorDecl>(method)) {
-    StrCat(std::format("let this = self as {}", ToString(method->getThisType())),
-           token::kSemiColon);
+    StrCat(
+        std::format("let this = self as {}", ToString(method->getThisType())),
+        token::kSemiColon);
   }
 }
 
