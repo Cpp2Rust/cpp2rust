@@ -1,12 +1,8 @@
 #include <cassert>
 
-int foo(int a, int b = 10) {
-  return a + b;
-}
+int foo(int a, int b = 10) { return a + b; }
 
-bool baz(int *a, int *b = nullptr) {
-  return a == b;
-}
+bool baz(int *a, int *b = nullptr) { return a == b; }
 
 int main() {
   assert(foo(1) == 11);
