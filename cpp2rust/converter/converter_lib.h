@@ -65,16 +65,16 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
 bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
-bool IsCopyOrMoveAssignmentOrCtor(const clang::CXXMethodDecl *method);
-
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
-bool IsCopyConstructible(const clang::RecordDecl *decl);
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 

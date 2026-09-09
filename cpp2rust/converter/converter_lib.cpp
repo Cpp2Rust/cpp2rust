@@ -263,22 +263,19 @@ bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedDecl(ctor);
 }
 
-bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isCopyOrMoveConstructor() && ctor->isUserProvided() &&
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor);
+}
+
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return IsUserDefinedCopyConstructor(ctor) ||
+         IsUserDefinedMoveConstructor(ctor);
 }
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor->getParent());
-}
-
-bool IsCopyOrMoveAssignmentOrCtor(const clang::CXXMethodDecl *method) {
-  if (const auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
-    return ctor->isCopyOrMoveConstructor();
-  }
-  return method->isCopyAssignmentOperator() ||
-         method->isMoveAssignmentOperator();
 }
 
 clang::CXXConstructorDecl *
@@ -308,7 +305,7 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
-bool IsCopyConstructible(const clang::RecordDecl *decl) {
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
     return true;
@@ -341,10 +338,13 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
+               auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method);
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
                       method->getDescribedFunctionTemplate() ||
-                      IsCopyOrMoveAssignmentOrCtor(method);
+                      (ctor ? ctor->isCopyOrMoveConstructor()
+                            : method->isCopyAssignmentOperator() ||
+                                  method->isMoveAssignmentOperator());
              });
 }
 
