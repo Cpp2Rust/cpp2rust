@@ -131,6 +131,9 @@ class TestContext:
         )
         out, err, returncode = lit.util.executeCommand(cmd)
 
+        if returncode != 0 and exp.should_not_translate:
+            return (lit.Test.XFAIL, "")
+
         if not self.rs_file.exists():
             return (
                 exp.fail_code,
