@@ -418,6 +418,7 @@ public:
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
+  virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 

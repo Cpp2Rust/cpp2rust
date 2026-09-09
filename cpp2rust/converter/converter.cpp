@@ -3521,6 +3521,15 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   return false;
 }
 
+bool Converter::VisitCXXScalarValueInitExpr(
+    clang::CXXScalarValueInitExpr *expr) {
+  StrCat(GetDefaultAsString(expr->getType()));
+  computed_expr_type_ = expr->getType()->isPointerType()
+                            ? ComputedExprType::FreshPointer
+                            : ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::ConvertSwitchCaseCondition(clang::SwitchCase *stmt) {
   clang::Stmt *cur = stmt;
   clang::SwitchCase *last = nullptr;

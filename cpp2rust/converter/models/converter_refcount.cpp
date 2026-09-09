@@ -1919,6 +1919,12 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
   return Converter::VisitImplicitValueInitExpr(expr);
 }
 
+bool ConverterRefCount::VisitCXXScalarValueInitExpr(
+    clang::CXXScalarValueInitExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXScalarValueInitExpr(expr);
+}
+
 void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
   if (arg->getType()->isPointerType()) {
     StrCat(ConvertFreshPointer(arg));
