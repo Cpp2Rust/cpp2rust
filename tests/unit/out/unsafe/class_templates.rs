@@ -27,7 +27,7 @@ impl MyContainer_int_ {
     }
     pub unsafe fn push_back(&mut self, item: *const i32) {
         {
-            let a0_clone = (*(item)).clone();
+            let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }
@@ -53,7 +53,7 @@ impl MyContainer_char_ {
     }
     pub unsafe fn push_back(&mut self, item: *const libc::c_char) {
         {
-            let a0_clone = (*(item)).clone();
+            let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }
@@ -79,7 +79,7 @@ impl MyContainer_float_ {
     }
     pub unsafe fn push_back(&mut self, item: *const f32) {
         {
-            let a0_clone = (*(item)).clone();
+            let a0_clone = (*item).clone();
             self.vec_.push(a0_clone)
         };
     }

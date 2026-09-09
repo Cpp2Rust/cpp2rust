@@ -13,7 +13,7 @@ pub struct S {
 }
 pub unsafe fn operator_comma_0(a: *const S, b: *const S) -> S {
     return S {
-        v: ((((*(a)).v) * (10)) + ((*(b)).v)),
+        v: ((((*a).v) * (10)) + ((*b).v)),
     };
 }
 pub fn main() {

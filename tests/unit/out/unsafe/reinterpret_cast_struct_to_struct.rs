@@ -29,9 +29,9 @@ unsafe fn main_0() -> i32 {
         y: 20_u32,
     };
     let mut pair: *mut Pair = ((&mut pt as *mut Point) as *mut Pair);
-    assert!((((*(pair)).first) == (10_u32)));
-    assert!((((*(pair)).second) == (20_u32)));
-    (*(pair)).first = 42_u32;
+    assert!((((*pair).first) == (10_u32)));
+    assert!((((*pair).second) == (20_u32)));
+    (*pair).first = 42_u32;
     assert!(((pt.x) == (42_u32)));
     return 0;
 }

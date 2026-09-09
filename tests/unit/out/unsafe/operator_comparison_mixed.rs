@@ -28,29 +28,29 @@ impl S {
         return ((self.v as i64) <= (o));
     }
     pub unsafe fn operator_ge(&self, mut o: *const libc::c_char) -> bool {
-        return ((self.v) >= (((*(o)) as i32) - (('0' as libc::c_char) as i32)));
+        return ((self.v) >= (((*o) as i32) - (('0' as libc::c_char) as i32)));
     }
 }
 pub unsafe fn operator_eq_0(mut a: i32, b: *const S) -> bool {
-    return ((a) == ((*(b)).v));
+    return ((a) == ((*b).v));
 }
 pub unsafe fn operator_ne_1(mut a: i32, b: *const S) -> bool {
-    return ((a) != ((*(b)).v));
+    return ((a) != ((*b).v));
 }
 pub unsafe fn operator_lt_2(mut a: i32, b: *const S) -> bool {
-    return ((a) < ((*(b)).v));
+    return ((a) < ((*b).v));
 }
 pub unsafe fn operator_gt_3(mut a: f64, b: *const S) -> bool {
-    return ((a) > ((*(b)).v as f64));
+    return ((a) > ((*b).v as f64));
 }
 pub unsafe fn operator_le_4(mut a: i64, b: *const S) -> bool {
-    return ((a) <= ((*(b)).v as i64));
+    return ((a) <= ((*b).v as i64));
 }
 pub unsafe fn operator_ge_5(mut a: *const libc::c_char, b: *const S) -> bool {
-    return ((((*(a)) as i32) - (('0' as libc::c_char) as i32)) >= ((*(b)).v));
+    return ((((*a) as i32) - (('0' as libc::c_char) as i32)) >= ((*b).v));
 }
 pub unsafe fn operator_lt_6(a: *mut S, mut b: i32) -> bool {
-    return ((((*(a)).v) + (1)) < (b));
+    return ((((*a).v) + (1)) < (b));
 }
 pub fn main() {
     unsafe {
@@ -60,12 +60,12 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: S = S { v: 5 };
     let cs: *const S = &s as *const S;
-    assert!((unsafe { S::operator_eq(&(*(cs)), 5,) }));
-    assert!((unsafe { S::operator_ne(&(*(cs)), 4,) }));
-    assert!((unsafe { S::operator_lt(&(*(cs)), 6,) }));
-    assert!((unsafe { S::operator_gt(&(*(cs)), 4.5E+0,) }));
-    assert!((unsafe { S::operator_le(&(*(cs)), 5_i64,) }));
-    assert!((unsafe { S::operator_ge(&(*(cs)), c"3".as_ptr(),) }));
+    assert!((unsafe { S::operator_eq(&(*cs), 5,) }));
+    assert!((unsafe { S::operator_ne(&(*cs), 4,) }));
+    assert!((unsafe { S::operator_lt(&(*cs), 6,) }));
+    assert!((unsafe { S::operator_gt(&(*cs), 4.5E+0,) }));
+    assert!((unsafe { S::operator_le(&(*cs), 5_i64,) }));
+    assert!((unsafe { S::operator_ge(&(*cs), c"3".as_ptr(),) }));
     assert!((unsafe { operator_eq_0(5, &s as *const S,) }));
     assert!((unsafe { operator_ne_1(4, &s as *const S,) }));
     assert!((unsafe { operator_lt_2(4, &s as *const S,) }));

@@ -69,8 +69,8 @@ unsafe fn main_0() -> i32 {
     let r1: *mut i32 = &mut x1 as *mut i32;
     let r2: *mut i32 = (unsafe { bar_2(&mut x1 as *mut i32) });
     let r3: *mut i32 = (unsafe { bar_2(r1) });
-    (*(r2)) += x1;
-    (*(r3)) += (*(r1));
+    (*r2) += x1;
+    (*r3) += (*r1);
     let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&mut x3 as *mut i32)) })))
         + (*(unsafe { bar_2(&mut x2 as *mut i32) })));
     let mut a: X1 = X1 { v: 0 };
@@ -81,7 +81,7 @@ unsafe fn main_0() -> i32 {
         v: (&mut b as *mut X2),
     };
     let mut d: X4 = X4 { v: c };
-    (*((*(d.v.v)).v)).v = 0;
+    (*(*d.v.v).v).v = 0;
     (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) }))) })).v =
         0;
     d.v.v = (&mut b as *mut X2);

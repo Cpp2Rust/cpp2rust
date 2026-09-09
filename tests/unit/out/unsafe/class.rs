@@ -22,8 +22,8 @@ impl Pair {
     }
     pub unsafe fn Set(&mut self, field: *mut i32, mut new_val: i32) -> i32 {
         (unsafe { Pair::NOP(self) });
-        let mut old_val: i32 = (*(field));
-        (*(field)) = new_val;
+        let mut old_val: i32 = (*field);
+        (*field) = new_val;
         return old_val;
     }
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
@@ -55,15 +55,15 @@ impl Route {
     }
 }
 pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
-    if ((((*(route)).path.first) % (2)) != 0) {
+    if ((((*route).path.first) % (2)) != 0) {
         return (unsafe {
-            let _new_first: i32 = (unsafe { Pair::SetSecond(&mut (*(route)).path, 10) });
-            Pair::SetFirst(&mut (*(route)).path, _new_first)
+            let _new_first: i32 = (unsafe { Pair::SetSecond(&mut (*route).path, 10) });
+            Pair::SetFirst(&mut (*route).path, _new_first)
         });
     } else {
         return (unsafe {
-            let _new_second: i32 = (unsafe { Pair::SetFirst(&mut (*(route)).path, -10_i32) });
-            Pair::SetSecond(&mut (*(route)).path, _new_second)
+            let _new_second: i32 = (unsafe { Pair::SetFirst(&mut (*route).path, -10_i32) });
+            Pair::SetSecond(&mut (*route).path, _new_second)
         });
     }
     panic!("ub: non-void function does not return a value")

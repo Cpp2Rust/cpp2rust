@@ -17,7 +17,7 @@ pub unsafe fn set_0(mut ref_: *mut i32, mut val: i32) {
 }
 pub unsafe fn read_1(mut ref_: *mut i32) -> i32 {
     let r: *mut i32 = ref_;
-    return (*(r));
+    return (*r);
 }
 pub fn main() {
     unsafe {
@@ -29,7 +29,7 @@ unsafe fn main_0() -> i32 {
     let mut ref_1: *mut i32 = &mut i1;
     (*ref_1) = 20;
     let i2: *mut i32 = ref_1;
-    (*(i2)) += 5;
+    (*i2) += 5;
     write!(
         std::fs::File::from_raw_fd(
             std::io::stdout()

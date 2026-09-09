@@ -13,7 +13,7 @@ pub struct Lt {
 }
 impl Lt {
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
-        return ((self.v) < ((*(o)).v));
+        return ((self.v) < ((*o).v));
     }
 }
 impl std::cmp::Ord for Lt {
@@ -50,7 +50,7 @@ pub struct Eq {
 }
 impl Eq {
     pub unsafe fn operator_eq(&self, o: *const Eq) -> bool {
-        return ((self.v) == ((*(o)).v));
+        return ((self.v) == ((*o).v));
     }
 }
 impl std::cmp::PartialEq for Eq {
@@ -66,10 +66,10 @@ pub struct Cmp {
 }
 impl Cmp {
     pub unsafe fn operator_cmp(&self, o: *const Cmp) -> std::cmp::Ordering {
-        return (self.v).cmp(&((*(o)).v));
+        return (self.v).cmp(&((*o).v));
     }
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
-        return ((self.v) == ((*(o)).v));
+        return ((self.v) == ((*o).v));
     }
 }
 impl std::cmp::Ord for Cmp {
@@ -118,10 +118,10 @@ impl std::cmp::PartialEq for Free {
 }
 impl std::cmp::Eq for Free {}
 pub unsafe fn operator_lt_0(a: *const Free, b: *const Free) -> bool {
-    return (((*(a)).v) < ((*(b)).v));
+    return (((*a).v) < ((*b).v));
 }
 pub unsafe fn operator_eq_1(a: *const Free, b: *const Free) -> bool {
-    return (((*(a)).v) == ((*(b)).v));
+    return (((*a).v) == ((*b).v));
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
@@ -151,13 +151,13 @@ unsafe fn main_0() -> i32 {
     let mut two: Eq = Eq { v: 2 };
     let mut nine: Eq = Eq { v: 9 };
     assert!(
-        (((*({
+        (((*{
             let mut it = eqs.as_mut_ptr();
             while it != eqs.as_mut_ptr().add(eqs.len()) && *it != two {
                 it = it.add(1);
             }
             it
-        }))
+        })
         .v) == (2))
     );
     assert!(
@@ -180,13 +180,13 @@ unsafe fn main_0() -> i32 {
     assert!(((cmps[(0_usize)].v) == (1)) && ((cmps[(2_usize)].v) == (3)));
     let mut three: Cmp = Cmp { v: 3 };
     assert!(
-        (((*({
+        (((*{
             let mut it = cmps.as_mut_ptr();
             while it != cmps.as_mut_ptr().add(cmps.len()) && *it != three {
                 it = it.add(1);
             }
             it
-        }))
+        })
         .v) == (3))
     );
     let mut frees: Vec<Free> = vec![Free { v: 2 }, Free { v: 1 }];
@@ -200,13 +200,13 @@ unsafe fn main_0() -> i32 {
     assert!(((frees[(0_usize)].v) == (1)));
     let mut ftwo: Free = Free { v: 2 };
     assert!(
-        (((*({
+        (((*{
             let mut it = frees.as_mut_ptr();
             while it != frees.as_mut_ptr().add(frees.len()) && *it != ftwo {
                 it = it.add(1);
             }
             it
-        }))
+        })
         .v) == (2))
     );
     let mut m: BTreeMap<Lt, Box<i32>> = BTreeMap::new();

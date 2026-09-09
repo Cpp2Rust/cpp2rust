@@ -27,6 +27,6 @@ unsafe fn main_0() -> i32 {
         let mut __tmp_0: i32 = 5;
         &mut __tmp_0
     });
-    assert!(((*(s.r)) == (5)));
+    assert!(((*s.r) == (5)));
     return 0;
 }

@@ -61,7 +61,7 @@ pub unsafe fn test_realpath_1() {
             != 0)
     );
     libcc2rs::free_unsafe((p as *mut libc::c_char as *mut ::libc::c_void));
-    (*(libcc2rs::cpp2rust_errno_unsafe())) = 0;
+    (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
     assert!(
         ((((libc::realpath(
             (c"/cpp2rust_definitely_missing".as_ptr().cast_mut()).cast_const(),
@@ -70,7 +70,7 @@ pub unsafe fn test_realpath_1() {
         .is_null()) as i32)
             != 0)
     );
-    assert!(((((*(libcc2rs::cpp2rust_errno_unsafe())) == (libc::ENOENT)) as i32) != 0));
+    assert!(((((*libcc2rs::cpp2rust_errno_unsafe()) == (libc::ENOENT)) as i32) != 0));
 }
 pub fn main() {
     unsafe {

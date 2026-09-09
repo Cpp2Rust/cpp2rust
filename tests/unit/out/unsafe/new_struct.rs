@@ -19,7 +19,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut p: *mut Pair = (Box::leak(Box::new(Pair { x: 1, y: 2 })) as *mut Pair);
-    let mut out: i32 = (((*(p)).x) + ((*(p)).y));
+    let mut out: i32 = (((*p).x) + ((*p).y));
     ::std::mem::drop(Box::from_raw(p));
     assert!(((out) == (3)));
     return 0;

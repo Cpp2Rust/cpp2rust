@@ -21,9 +21,9 @@ unsafe fn main_0() -> i32 {
     let mut ptr: *mut Item = (&mut item as *mut Item);
     ((*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (0))) as u8);
     ((*(ptr)).flags = (((*(ptr)).flags as i32) | ((1) << (1))) as u8);
-    assert!((((*(ptr)).flags as i32) == (3)));
+    assert!((((*ptr).flags as i32) == (3)));
     ((*(ptr)).flags = (((*(ptr)).flags as i32) & ((!((1) << (0)) as u8) as i32)) as u8);
-    assert!((((*(ptr)).flags as i32) == (2)));
+    assert!((((*ptr).flags as i32) == (2)));
     let mut bits: [u8; 4] = [0_u8, 0_u8, 0_u8, 0_u8];
     ((bits)[((5) / (8)) as usize] =
         (((bits)[((5) / (8)) as usize] as i32) | ((((1) << ((5) & (7))) as u8) as i32)) as u8);
@@ -32,9 +32,9 @@ unsafe fn main_0() -> i32 {
     assert!(((bits[(0) as usize] as i32) == (32)));
     assert!(((bits[(1) as usize] as i32) == (32)));
     assert!(((bits[(2) as usize] as i32) == (0)));
-    if (((*(ptr)).flags as i32) != (0)) {
+    if (((*ptr).flags as i32) != (0)) {
         ((*(ptr)).flags = (((*(ptr)).flags as i32) & ((!((1) << (1)) as u8) as i32)) as u8);
     }
-    assert!((((*(ptr)).flags as i32) == (0)));
+    assert!((((*ptr).flags as i32) == (0)));
     return 0;
 }

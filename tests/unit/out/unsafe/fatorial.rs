@@ -13,22 +13,22 @@ pub unsafe fn fatorial_0(mut n: i32) -> i32 {
     return ((n) * (unsafe { fatorial_0(((n) - (1))) }));
 }
 pub unsafe fn fatorial_by_ref_1(n: *mut i32) {
-    if ((*(n)) == (1)) {
-        (*(n)) *= 1;
+    if ((*n) == (1)) {
+        (*n) *= 1;
         return;
     }
-    let mut n_1: i32 = ((*(n)) - (1));
+    let mut n_1: i32 = ((*n) - (1));
     (unsafe { fatorial_by_ref_1(&mut n_1 as *mut i32) });
-    (*(n)) *= n_1;
+    (*n) *= n_1;
 }
 pub unsafe fn fatorial_by_ptr_2(mut n: *mut i32) {
-    if ((*(n)) == (1)) {
-        (*(n)) *= 1;
+    if ((*n) == (1)) {
+        (*n) *= 1;
         return;
     }
-    let mut n_1: i32 = ((*(n)) - (1));
+    let mut n_1: i32 = ((*n) - (1));
     (unsafe { fatorial_by_ptr_2((&mut n_1 as *mut i32)) });
-    (*(n)) *= n_1;
+    (*n) *= n_1;
 }
 pub fn main() {
     unsafe {

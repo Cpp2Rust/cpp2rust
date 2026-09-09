@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut d: *mut i32 = (Box::leak(Box::new(0)) as *mut i32);
-    (*(d)) = 5;
+    (*d) = 5;
     ::std::mem::drop(Box::from_raw(d));
     return 0;
 }

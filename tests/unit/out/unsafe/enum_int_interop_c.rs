@@ -194,8 +194,8 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut pp: *mut *const libc::c_char = (&mut names[(idx) as usize] as *mut *const libc::c_char);
-    assert!((((((*(*(pp)).offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0));
+    assert!((((((*(*pp).offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0));
     let mut pe: *mut Entry = (&mut entries_3[(idx) as usize] as *mut Entry);
-    assert!((((((*(pe)).opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
+    assert!((((((*pe).opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     return 0;
 }

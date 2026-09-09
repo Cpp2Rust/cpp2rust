@@ -10,16 +10,16 @@ pub unsafe fn foo_0(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn foo_1(mut x: *mut i32) -> i32 {
-    return (*(x));
+    return (*x);
 }
 pub unsafe fn foo_2(mut x: *mut i32, mut y: *mut i32) -> i32 {
-    return ((*(x)) + (*(y)));
+    return ((*x) + (*y));
 }
 pub unsafe fn foo_3(mut x: *mut i32, mut y: *mut i32, z: *mut i32) -> i32 {
-    return (((*(x)) + (*(y))) + (*(z)));
+    return (((*x) + (*y)) + (*z));
 }
 pub unsafe fn bar_4(x: *mut i32) -> i32 {
-    return (*(x));
+    return (*x);
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]

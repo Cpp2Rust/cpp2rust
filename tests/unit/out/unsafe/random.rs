@@ -22,7 +22,7 @@ impl Pair {
         self.x.postfix_inc();
         self.y.prefix_inc();
         self.a[(4) as usize] = 1;
-        (*(self.r)) = 1;
+        (*self.r) = 1;
         self.p = std::ptr::null_mut();
         self.pair = std::ptr::null_mut();
         self.ap[(0) as usize] = std::ptr::null_mut();
@@ -68,11 +68,11 @@ unsafe fn main_0() -> i32 {
     let mut c1: i32 = x1;
     let rx1: *mut i32 = &mut x1 as *mut i32;
     let mut px1: *mut i32 = (&mut x1 as *mut i32);
-    let mut x2: i32 = (*(rx1));
+    let mut x2: i32 = (*rx1);
     let rx2: *mut i32 = rx1;
     let mut px2: *mut i32 = (rx1);
-    let mut x3: i32 = (*(px1));
-    let rx3: *mut i32 = &mut (*(px1)) as *mut i32;
+    let mut x3: i32 = (*px1);
+    let rx3: *mut i32 = &mut (*px1) as *mut i32;
     let mut px3: *mut i32 = px1;
     let mut res: i32 = ((x1) + (x2));
     res = ((x1) + (x2));
@@ -103,38 +103,38 @@ unsafe fn main_0() -> i32 {
     let ry1: *mut Pair = &mut y1 as *mut Pair;
     let mut py1: *mut Pair = (&mut y1 as *mut Pair);
     let mut y2: Pair = Pair {
-        x: (*(ry1)).x,
-        y: (*(ry1)).y,
+        x: (*ry1).x,
+        y: (*ry1).y,
         a: [
-            (*(ry1)).a[(0) as usize],
-            (*(ry1)).a[(1) as usize],
-            (*(ry1)).a[(2) as usize],
-            (*(ry1)).a[(3) as usize],
-            (*(ry1)).a[(4) as usize],
+            (*ry1).a[(0) as usize],
+            (*ry1).a[(1) as usize],
+            (*ry1).a[(2) as usize],
+            (*ry1).a[(3) as usize],
+            (*ry1).a[(4) as usize],
         ],
-        r: (*(ry1)).r,
-        p: (*(ry1)).p,
-        pair: (*(ry1)).pair,
-        ap: [(*(ry1)).ap[(0) as usize], (*(ry1)).ap[(1) as usize]],
+        r: (*ry1).r,
+        p: (*ry1).p,
+        pair: (*ry1).pair,
+        ap: [(*ry1).ap[(0) as usize], (*ry1).ap[(1) as usize]],
     };
     let ry2: *mut Pair = ry1;
     let mut py2: *mut Pair = (ry1);
     let mut y3: Pair = Pair {
-        x: (*(py1)).x,
-        y: (*(py1)).y,
+        x: (*py1).x,
+        y: (*py1).y,
         a: [
-            (*(py1)).a[(0) as usize],
-            (*(py1)).a[(1) as usize],
-            (*(py1)).a[(2) as usize],
-            (*(py1)).a[(3) as usize],
-            (*(py1)).a[(4) as usize],
+            (*py1).a[(0) as usize],
+            (*py1).a[(1) as usize],
+            (*py1).a[(2) as usize],
+            (*py1).a[(3) as usize],
+            (*py1).a[(4) as usize],
         ],
-        r: (*(py1)).r,
-        p: (*(py1)).p,
-        pair: (*(py1)).pair,
-        ap: [(*(py1)).ap[(0) as usize], (*(py1)).ap[(1) as usize]],
+        r: (*py1).r,
+        p: (*py1).p,
+        pair: (*py1).pair,
+        ap: [(*py1).ap[(0) as usize], (*py1).ap[(1) as usize]],
     };
-    let ry3: *mut Pair = &mut (*(py1)) as *mut Pair;
+    let ry3: *mut Pair = &mut (*py1) as *mut Pair;
     let mut py3: *mut Pair = py1;
     py3 = std::ptr::null_mut();
     let mut ptr2pair: *mut Pair = py3;
@@ -147,7 +147,7 @@ unsafe fn main_0() -> i32 {
         foo_1(_x1, _x2, _x3, _p2, _p3)
     });
     (unsafe {
-        let _x1: i32 = (*(rx1));
+        let _x1: i32 = (*rx1);
         let _x2: *mut i32 = rx1;
         let _x3: *mut i32 = (rx1);
         let _p2: *mut Pair = ry1;
@@ -155,10 +155,10 @@ unsafe fn main_0() -> i32 {
         foo_1(_x1, _x2, _x3, _p2, _p3)
     });
     (unsafe {
-        let _x1: i32 = (*(px1));
-        let _x2: *mut i32 = &mut (*(px1)) as *mut i32;
+        let _x1: i32 = (*px1);
+        let _x2: *mut i32 = &mut (*px1) as *mut i32;
         let _x3: *mut i32 = px1;
-        let _p2: *mut Pair = &mut (*(py1)) as *mut Pair;
+        let _p2: *mut Pair = &mut (*py1) as *mut Pair;
         let _p3: *mut Pair = py1;
         foo_1(_x1, _x2, _x3, _p2, _p3)
     });
@@ -166,30 +166,30 @@ unsafe fn main_0() -> i32 {
     let mut cp1: *mut i32 = (&mut c1 as *mut i32);
     x1 = c1;
     x1 = 1;
-    x1 = (*(cr1));
-    x1 = (*(cp1));
-    (*(rx1)) = c1;
-    (*(rx2)) = (*(cr1));
-    (*(rx3)) = (*(cp1));
-    (*(px1)) = c1;
-    (*(px2)) = (*(cr1));
-    (*(px3)) = (*(cp1));
+    x1 = (*cr1);
+    x1 = (*cp1);
+    (*rx1) = c1;
+    (*rx2) = (*cr1);
+    (*rx3) = (*cp1);
+    (*px1) = c1;
+    (*px2) = (*cr1);
+    (*px3) = (*cp1);
     px1 = (&mut c1 as *mut i32);
     px2 = (cr1);
     px3 = cp1;
     y1.x = 2;
     y1.y = 3;
     y1.a[(0) as usize] = 100;
-    (*(y1.r)) = 10;
+    (*y1.r) = 10;
     y1.p = px3;
     px3 = px2;
     y1.pair = (&mut y3 as *mut Pair);
-    (*(y1.pair)).x = 100;
-    (*(y1.pair)).pair = (&mut y2 as *mut Pair);
-    (*((*(y1.pair)).pair)).x = 100;
+    (*y1.pair).x = 100;
+    (*y1.pair).pair = (&mut y2 as *mut Pair);
+    (*(*y1.pair).pair).x = 100;
     y1.ap[(0) as usize] = (&mut x1 as *mut i32);
     y1.ap[(1) as usize] = (&mut x2 as *mut i32);
-    (*(y1.ap[(0) as usize])) = 0;
+    (*y1.ap[(0) as usize]) = 0;
     c1 = ((x1) + (1));
     let mut j: i32 = 0;
     let mut new_y: Pair = Pair {
@@ -207,12 +207,12 @@ unsafe fn main_0() -> i32 {
     x1.postfix_inc();
     x1.prefix_inc();
     y1.x.postfix_inc();
-    (*(y1.pair)).pair = (&mut y2 as *mut Pair);
-    (*((*(y1.pair)).pair)).x = 10;
+    (*y1.pair).pair = (&mut y2 as *mut Pair);
+    (*(*y1.pair).pair).x = 10;
     (unsafe { Pair::method(&mut y1) });
     y1.pair = (&mut y2 as *mut Pair);
     y2.pair = (&mut y3 as *mut Pair);
-    (unsafe { Pair::method(&mut (*((*(y1.pair)).pair))) });
+    (unsafe { Pair::method(&mut (*(*y1.pair).pair)) });
     let mut x: X1 = X1 {};
     let mut y: X1 = X1 {};
     x1 = ((unsafe { zero_0() }) + (y1.x));

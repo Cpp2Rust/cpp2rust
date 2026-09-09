@@ -12,43 +12,43 @@ pub struct S {
     pub v: u32,
 }
 pub unsafe fn operator_add_assign_0(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v = ((*(a)).v).wrapping_add((*(b)).v);
+    (*a).v = ((*a).v).wrapping_add((*b).v);
     return a;
 }
 pub unsafe fn operator_sub_assign_1(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v = ((*(a)).v).wrapping_sub((*(b)).v);
+    (*a).v = ((*a).v).wrapping_sub((*b).v);
     return a;
 }
 pub unsafe fn operator_mul_assign_2(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v = ((*(a)).v).wrapping_mul((*(b)).v);
+    (*a).v = ((*a).v).wrapping_mul((*b).v);
     return a;
 }
 pub unsafe fn operator_div_assign_3(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v = ((*(a)).v).wrapping_div((*(b)).v);
+    (*a).v = ((*a).v).wrapping_div((*b).v);
     return a;
 }
 pub unsafe fn operator_rem_assign_4(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v = ((*(a)).v).wrapping_rem((*(b)).v);
+    (*a).v = ((*a).v).wrapping_rem((*b).v);
     return a;
 }
 pub unsafe fn operator_bitand_assign_5(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v &= (*(b)).v;
+    (*a).v &= (*b).v;
     return a;
 }
 pub unsafe fn operator_bitor_assign_6(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v |= (*(b)).v;
+    (*a).v |= (*b).v;
     return a;
 }
 pub unsafe fn operator_bitxor_assign_7(a: *mut S, b: *const S) -> *mut S {
-    (*(a)).v ^= (*(b)).v;
+    (*a).v ^= (*b).v;
     return a;
 }
 pub unsafe fn operator_shl_assign_8(a: *mut S, mut n: i32) -> *mut S {
-    (*(a)).v <<= n;
+    (*a).v <<= n;
     return a;
 }
 pub unsafe fn operator_shr_assign_9(a: *mut S, mut n: i32) -> *mut S {
-    (*(a)).v >>= n;
+    (*a).v >>= n;
     return a;
 }
 pub fn main() {

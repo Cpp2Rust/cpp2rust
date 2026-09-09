@@ -41,8 +41,8 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     );
     if ((N) == (1)) {
         y.as_mut().unwrap()[(0_usize)] = Complex {
-            re: (*(a)).as_mut().unwrap()[(0_usize)].re,
-            img: (*(a)).as_mut().unwrap()[(0_usize)].img,
+            re: (*a).as_mut().unwrap()[(0_usize)].re,
+            img: (*a).as_mut().unwrap()[(0_usize)].img,
         };
         return y;
     }
@@ -73,12 +73,12 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     let mut i: i32 = 0;
     'loop_: while ((i) < ((N) / (2))) {
         A0.as_mut().unwrap()[(i as usize)] = Complex {
-            re: (*(a)).as_mut().unwrap()[(((i) * (2)) as usize)].re,
-            img: (*(a)).as_mut().unwrap()[(((i) * (2)) as usize)].img,
+            re: (*a).as_mut().unwrap()[(((i) * (2)) as usize)].re,
+            img: (*a).as_mut().unwrap()[(((i) * (2)) as usize)].img,
         };
         A1.as_mut().unwrap()[(i as usize)] = Complex {
-            re: (*(a)).as_mut().unwrap()[((((i) * (2)) + (1)) as usize)].re,
-            img: (*(a)).as_mut().unwrap()[((((i) * (2)) + (1)) as usize)].img,
+            re: (*a).as_mut().unwrap()[((((i) * (2)) + (1)) as usize)].re,
+            img: (*a).as_mut().unwrap()[((((i) * (2)) + (1)) as usize)].img,
         };
         i.postfix_inc();
     }

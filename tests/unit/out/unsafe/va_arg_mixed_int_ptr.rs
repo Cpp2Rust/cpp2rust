@@ -17,7 +17,7 @@ pub unsafe fn mixed_args_0(mut count: i32, __args: &[VaArg]) -> i32 {
             total += ap.arg::<i32>();
         } else {
             let mut ptr: *mut i32 = ap.arg::<*mut i32>();
-            total += (*(ptr));
+            total += (*ptr);
         }
         i.postfix_inc();
     }

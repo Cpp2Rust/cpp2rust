@@ -18,11 +18,11 @@ unsafe fn main_0() -> i32 {
     };
     'loop_: for c in 0..(x.len() - 1) {
         let mut c = x.as_mut_ptr().add(c);
-        (*(c)).prefix_inc();
+        (*c).prefix_inc();
     }
     'loop_: for c in 0..(x.len() - 1) {
         let mut c = x.as_mut_ptr().add(c);
-        printf(c"%c\n".as_ptr() as *const i8, ((*(c)) as i32));
+        printf(c"%c\n".as_ptr() as *const i8, ((*c) as i32));
     }
     'loop_: for c in 0..(x.len() - 1) {
         let mut c = x[c].clone();
@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
     v.push((Box::leak(Box::new(3)) as *mut i32));
     'loop_: for p in 0..(v.len()) {
         let mut p = v[p].clone();
-        printf(c"%d\n".as_ptr() as *const i8, (*(p)));
+        printf(c"%d\n".as_ptr() as *const i8, (*p));
     }
     return 0;
 }

@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
         value: 2,
         next: (&mut a as *mut Node),
     };
-    assert!((((((*(b.next)).value) == (1)) as i32) != 0));
+    assert!((((((*b.next).value) == (1)) as i32) != 0));
     let mut c: Container = Container {
         inner: Inner { a: 5, b: 6 },
         color: Color_GREEN,

@@ -28,21 +28,21 @@ unsafe fn main_0() -> i32 {
         let mut e1 = v.as_mut_ptr().add(e1);
         'loop_: for e2 in 0..(v.len()) {
             let mut e2 = v.as_ptr().add(e2);
-            square += ((*(e1)) * (*(e2)));
+            square += ((*e1) * (*e2));
         }
     }
     'loop_: for e1 in 0..(v.len()) {
         let mut e1 = v.as_ptr().add(e1);
         'loop_: for e2 in 0..(v.len()) {
             let mut e2 = v.as_mut_ptr().add(e2);
-            square += ((*(e1)) * (*(e2)));
+            square += ((*e1) * (*e2));
         }
     }
     'loop_: for e1 in 0..(v.len()) {
         let mut e1 = v.as_mut_ptr().add(e1);
         'loop_: for e2 in 0..(v.len()) {
             let mut e2 = v.as_mut_ptr().add(e2);
-            square += ((*(e1)) * (*(e2)));
+            square += ((*e1) * (*e2));
         }
     }
     let mut m: Vec<Vec<i32>> = Vec::new();
@@ -54,9 +54,9 @@ unsafe fn main_0() -> i32 {
     m.push(v3);
     'loop_: for row in 0..(m.len()) {
         let mut row = m.as_mut_ptr().add(row);
-        'loop_: for col in 0..((*(row)).len()) {
-            let mut col = (*(row)).as_mut_ptr().add(col);
-            square += (*(col));
+        'loop_: for col in 0..((*row).len()) {
+            let mut col = (*row).as_mut_ptr().add(col);
+            square += (*col);
         }
     }
     assert!(((square) == (144)));

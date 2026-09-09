@@ -14,27 +14,27 @@ pub struct S {
 impl S {
     pub unsafe fn operator_add_pconstS_const(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) + ((*(o)).v)),
+            v: ((self.v) + ((*o).v)),
         };
     }
     pub unsafe fn operator_sub_pconstS_const(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) - ((*(o)).v)),
+            v: ((self.v) - ((*o).v)),
         };
     }
     pub unsafe fn operator_mul(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) * ((*(o)).v)),
+            v: ((self.v) * ((*o).v)),
         };
     }
     pub unsafe fn operator_div(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) / ((*(o)).v)),
+            v: ((self.v) / ((*o).v)),
         };
     }
     pub unsafe fn operator_rem(&self, o: *const S) -> S {
         return S {
-            v: ((self.v) % ((*(o)).v)),
+            v: ((self.v) % ((*o).v)),
         };
     }
     pub unsafe fn operator_pos_const(&self) -> S {

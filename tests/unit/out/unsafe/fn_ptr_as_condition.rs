@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn double_it_0(mut x: *mut i32) {
-    (*(x)) *= 2;
+    (*x) *= 2;
 }
 pub unsafe fn maybe_call_1(mut cb: Option<unsafe fn(*mut i32)>, mut x: *mut i32) {
     if !(cb).is_none() {

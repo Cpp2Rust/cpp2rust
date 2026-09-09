@@ -31,7 +31,7 @@ impl S {
     }
     pub unsafe fn operator_comma(&self, o: *const S) -> S {
         return S {
-            v: (((self.v) * (10)) + ((*(o)).v)),
+            v: (((self.v) * (10)) + ((*o).v)),
         };
     }
     pub unsafe fn operator_int(&self) -> i32 {

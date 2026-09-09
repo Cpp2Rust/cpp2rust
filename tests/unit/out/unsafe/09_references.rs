@@ -14,10 +14,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut h: i32 = 15;
     let h_ref1: *mut i32 = &mut h as *mut i32;
-    (*(h_ref1)) = 16;
+    (*h_ref1) = 16;
     let mut h_ptr: *mut i32 = (h_ref1);
-    let h_ref2: *mut i32 = &mut (*(h_ptr)) as *mut i32;
-    (*(h_ref2)) = 17;
-    assert!((((*(h_ref1)) + (*(h_ref2))) == (34)));
+    let h_ref2: *mut i32 = &mut (*h_ptr) as *mut i32;
+    (*h_ref2) = 17;
+    assert!((((*h_ref1) + (*h_ref2)) == (34)));
     return 0;
 }

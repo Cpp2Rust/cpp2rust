@@ -17,8 +17,8 @@ unsafe fn main_0() -> i32 {
     let mut v1: i32 = (((x) & (1_u32)) as i32);
     let mut v2: u32 = ((x) & (1_u32));
     let mut p: *mut u32 = (&mut x as *mut u32);
-    let mut b: bool = (((*(p)) & (255_u32)) != 0);
-    let mut a: i32 = (((*(p)) & (255_u32)) as i32);
+    let mut b: bool = (((*p) & (255_u32)) != 0);
+    let mut a: i32 = (((*p) & (255_u32)) as i32);
     assert!(((a) == (255)));
     return 0;
 }

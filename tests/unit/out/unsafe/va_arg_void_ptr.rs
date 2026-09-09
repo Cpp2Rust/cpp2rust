@@ -23,11 +23,11 @@ pub unsafe fn registry_update_0(mut r: *mut registry, mut field: field, __args: 
         let __match_cond = (field as u32);
         match __match_cond {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
-                (*(r)).slot = ap.arg::<*mut ::libc::c_void>();
+                (*r).slot = ap.arg::<*mut ::libc::c_void>();
                 break 'switch;
             }
             __v if __v == ((field_FIELD_LEVEL as i32) as u32) => {
-                (*(r)).level = ap.arg::<i64>();
+                (*r).level = ap.arg::<i64>();
                 break 'switch;
             }
             _ => {

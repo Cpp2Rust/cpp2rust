@@ -30,5 +30,5 @@ unsafe fn main_0() -> i32 {
             (&mut __tmp_1) as *const _
         }
     };
-    return (((*(a)) == (*(b))) as i32);
+    return (((*a) == (*b)) as i32);
 }

@@ -33,5 +33,5 @@ impl S_int_ {
     }
 }
 pub unsafe fn f_0(mut p: *mut S_int_) -> i32 {
-    return (unsafe { S_int_::get(&mut (*(p))) });
+    return (unsafe { S_int_::get(&mut (*p)) });
 }

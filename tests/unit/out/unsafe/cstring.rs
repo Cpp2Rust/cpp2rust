@@ -174,7 +174,7 @@ pub unsafe fn test_strchr_4() {
     let mut r: *const libc::c_char =
         (libc::strchr(s, (('w' as libc::c_char) as i32)) as *const libc::c_char);
     assert!(!((r).is_null()));
-    assert!((((*(r)) as i32) == (('w' as libc::c_char) as i32)));
+    assert!((((*r) as i32) == (('w' as libc::c_char) as i32)));
     assert!((libc::strchr(s, (('z' as libc::c_char) as i32)) as *const libc::c_char).is_null());
 }
 pub unsafe fn test_strlen_5() {
@@ -256,7 +256,7 @@ pub unsafe fn test_strrchr_9() {
     let mut r: *const libc::c_char =
         (libc::strrchr(s, (('l' as libc::c_char) as i32)) as *const libc::c_char);
     assert!(!((r).is_null()));
-    assert!((((*(r)) as i32) == (('l' as libc::c_char) as i32)));
+    assert!((((*r) as i32) == (('l' as libc::c_char) as i32)));
     assert!(((r) == (s.offset((9) as isize))));
     assert!((libc::strrchr(s, (('z' as libc::c_char) as i32)) as *const libc::c_char).is_null());
     let mut buf: [libc::c_char; 4] = [

@@ -14,11 +14,11 @@ pub struct node_t {
     pub value: i32,
 }
 pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
-    if ((value) < ((*(node)).value)) && (!(((*(node)).left).is_null())) {
-        return (unsafe { find_0((*(node)).left, value) });
-    } else if ((value) > ((*(node)).value)) && (!(((*(node)).right).is_null())) {
-        return (unsafe { find_0((*(node)).right, value) });
-    } else if ((value) == ((*(node)).value)) {
+    if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
+        return (unsafe { find_0((*node).left, value) });
+    } else if ((value) > ((*node).value)) && (!(((*node).right).is_null())) {
+        return (unsafe { find_0((*node).right, value) });
+    } else if ((value) == ((*node).value)) {
         return node;
     }
     return std::ptr::null_mut();
@@ -31,19 +31,19 @@ pub unsafe fn insert_1(mut node: *mut node_t, mut value: i32) -> *mut node_t {
             value: value,
         })) as *mut node_t);
     }
-    if ((value) < ((*(node)).value)) {
-        (*(node)).left = (unsafe { insert_1((*(node)).left, value) });
-    } else if ((value) > ((*(node)).value)) {
-        (*(node)).right = (unsafe { insert_1((*(node)).right, value) });
+    if ((value) < ((*node).value)) {
+        (*node).left = (unsafe { insert_1((*node).left, value) });
+    } else if ((value) > ((*node).value)) {
+        (*node).right = (unsafe { insert_1((*node).right, value) });
     }
     return node;
 }
 pub unsafe fn del_2(mut node: *mut node_t) {
-    if !(((*(node)).left).is_null()) {
-        (unsafe { del_2((*(node)).left) });
+    if !(((*node).left).is_null()) {
+        (unsafe { del_2((*node).left) });
     }
-    if !(((*(node)).right).is_null()) {
-        (unsafe { del_2((*(node)).right) });
+    if !(((*node).right).is_null()) {
+        (unsafe { del_2((*node).right) });
     }
     ::std::mem::drop(Box::from_raw(node));
 }

@@ -27,15 +27,15 @@ unsafe fn main_0() -> i32 {
     v[(1_usize)][(0_usize)] = 6;
     'loop_: for v2 in 0..(v.len()) {
         let mut v2 = v.as_mut_ptr().add(v2);
-        'loop_: for i in 0..((*(v2)).len()) {
-            let mut i = (*(v2)).as_mut_ptr().add(i);
-            (*(i)).prefix_inc();
+        'loop_: for i in 0..((*v2).len()) {
+            let mut i = (*v2).as_mut_ptr().add(i);
+            (*i).prefix_inc();
         }
     }
     'loop_: for v2 in 0..(v.len()) {
         let mut v2 = v.as_mut_ptr().add(v2);
-        'loop_: for i in 0..((*(v2)).len()) {
-            let mut i = (&(*(v2)))[i].clone();
+        'loop_: for i in 0..((*v2).len()) {
+            let mut i = (&(*v2))[i].clone();
             printf(c"%d\n".as_ptr() as *const i8, ((i) + (3)));
         }
     }

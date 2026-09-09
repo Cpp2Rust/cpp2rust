@@ -14,6 +14,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((*(g_0)) == (5)));
+    assert!(((*g_0) == (5)));
     return 0;
 }

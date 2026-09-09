@@ -10,14 +10,14 @@ pub unsafe fn identity_0(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn swap_by_ptr_1(mut a: *mut i32, mut b: *mut i32) {
-    let mut tmp: i32 = (*(a));
-    (*(a)) = (*(b));
-    (*(b)) = tmp;
+    let mut tmp: i32 = (*a);
+    (*a) = (*b);
+    (*b) = tmp;
 }
 pub unsafe fn swap_by_ref_2(a: *mut i32, b: *mut i32) {
-    let mut tmp: i32 = (*(a));
-    (*(a)) = (*(b));
-    (*(b)) = tmp;
+    let mut tmp: i32 = (*a);
+    (*a) = (*b);
+    (*b) = tmp;
 }
 pub fn main() {
     unsafe {
@@ -61,7 +61,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        (*(p)),
+        (*p),
     );
     let mut d: i32 = 3;
     let mut e: i32 = 4;
@@ -79,7 +79,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        (*(h)),
+        (*h),
     );
     ::std::mem::drop(Box::from_raw(h));
     let mut i: *mut i32 = Box::leak(Box::new([7, 8, 0_i32])).as_mut_ptr();
@@ -137,7 +137,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        (*(k)),
+        (*k),
     );
     let mut l: Option<Box<i32>> = Some(Box::new(11));
     let mut m: *mut i32 = l
@@ -152,7 +152,7 @@ unsafe fn main_0() -> i32 {
                 .into_raw_fd(),
         ),
         "{:}\n",
-        (*(m)),
+        (*m),
     );
     assert!(((c) == (2)));
     return 0;

@@ -26,7 +26,7 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
         match __match_cond {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
                 let mut out: *mut *const libc::c_char = ap.arg::<*mut *const libc::c_char>();
-                (*(out)) = (c"hello".as_ptr().cast_mut()).cast_const();
+                (*out) = (c"hello".as_ptr().cast_mut()).cast_const();
                 result = 1;
                 break 'switch;
             }
@@ -37,12 +37,12 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
             }
             __v if __v == (opt_OPT_NODE as i32) => {
                 let mut n: *mut node = ap.arg::<*mut node>();
-                result = (*(n)).data;
+                result = (*n).data;
                 break 'switch;
             }
             __v if __v == (opt_OPT_NODE_OUT as i32) => {
                 let mut out: *mut *mut node = ap.arg::<*mut *mut node>();
-                (*(out)) = std::ptr::null_mut();
+                (*out) = std::ptr::null_mut();
                 result = 2;
                 break 'switch;
             }

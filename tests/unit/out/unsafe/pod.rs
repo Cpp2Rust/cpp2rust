@@ -14,9 +14,9 @@ pub struct POD {
     pub x3: i32,
 }
 pub unsafe fn PODIncrement_0(pod: *mut POD) {
-    (*(pod)).x1 += 1;
-    (*(pod)).x2 += 2;
-    (*(pod)).x3 += 3;
+    (*pod).x1 += 1;
+    (*pod).x2 += 2;
+    (*pod).x3 += 3;
 }
 pub fn main() {
     unsafe {

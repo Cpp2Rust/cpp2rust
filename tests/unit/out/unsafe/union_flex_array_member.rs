@@ -34,30 +34,30 @@ unsafe fn main_0() -> i32 {
     let mut n: *mut node = (libcc2rs::malloc_unsafe(
         ((::std::mem::size_of::<node>() as u64).wrapping_add((tail_size as u64)) as usize),
     ) as *mut node);
-    (*(n)).len = tail_size;
+    (*n).len = tail_size;
     let mut i: usize = 0_usize;
     'loop_: while ((((i) < (tail_size)) as i32) != 0) {
-        (*(*(n)).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
+        (*(*n).x.bytes.as_mut_ptr().add((i) as usize)) = (((i) & (255_usize)) as u8);
         i.postfix_inc();
     }
     let mut i: usize = 0_usize;
     'loop_: while ((((i) < (tail_size)) as i32) != 0) {
         assert!(
-            (((((*(*(n)).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
+            (((((*(*n).x.bytes.as_mut_ptr().add((i) as usize)) as i32)
                 == ((((i) & (255_usize)) as u8) as i32)) as i32)
                 != 0)
         );
         i.postfix_inc();
     }
-    let mut p: *mut u8 = ((*(n)).x.bytes.as_mut_ptr().add((10) as usize));
-    assert!((((((*(p)) as i32) == (10)) as i32) != 0));
-    (*(p)) = 170_u8;
-    assert!((((((*(*(n)).x.bytes.as_mut_ptr().add((10) as usize)) as i32) == (170)) as i32) != 0));
-    (*(n)).pos = 20_usize;
-    let mut q: *mut u8 = ((*(n)).x.bytes.as_mut_ptr().add(((*(n)).pos) as usize));
-    assert!((((((*(q)) as i32) == (20)) as i32) != 0));
-    (*(q)) = 187_u8;
-    assert!((((((*(q)) as i32) == (187)) as i32) != 0));
+    let mut p: *mut u8 = ((*n).x.bytes.as_mut_ptr().add((10) as usize));
+    assert!((((((*p) as i32) == (10)) as i32) != 0));
+    (*p) = 170_u8;
+    assert!((((((*(*n).x.bytes.as_mut_ptr().add((10) as usize)) as i32) == (170)) as i32) != 0));
+    (*n).pos = 20_usize;
+    let mut q: *mut u8 = ((*n).x.bytes.as_mut_ptr().add(((*n).pos) as usize));
+    assert!((((((*q) as i32) == (20)) as i32) != 0));
+    (*q) = 187_u8;
+    assert!((((((*q) as i32) == (187)) as i32) != 0));
     libcc2rs::free_unsafe((n as *mut node as *mut ::libc::c_void));
     return 0;
 }

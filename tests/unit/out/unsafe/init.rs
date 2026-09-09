@@ -29,8 +29,8 @@ unsafe fn main_0() -> i32 {
     let mut zz: *mut X = (&mut xx as *mut X);
     xx.x = 1;
     q = (&mut xx.x as *mut i32);
-    q = (&mut (*(zz)).x as *mut i32);
-    (*(zz)).x = 2;
+    q = (&mut (*zz).x as *mut i32);
+    (*zz).x = 2;
     let mut ww: X = xx;
     ww = xx;
     let mut aa: i32 = (unsafe { func_0() });

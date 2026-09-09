@@ -16,8 +16,8 @@ unsafe fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let mut p: *mut i32 = (libcc2rs::malloc_unsafe(::std::mem::size_of::<i32>()) as *mut i32);
-        (*(p)) = 42;
-        assert!(((((*(p)) == (42)) as i32) != 0));
+        (*p) = 42;
+        assert!(((((*p) == (42)) as i32) != 0));
         libcc2rs::free_unsafe((p as *mut i32 as *mut ::libc::c_void));
         let mut arr: *mut i32 = (libcc2rs::malloc_unsafe(
             (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
@@ -67,8 +67,8 @@ unsafe fn main_0() -> i32 {
         __do_while = false;
         let mut p: *mut i32 =
             ((unsafe { (pmalloc).unwrap()(::std::mem::size_of::<i32>()) }) as *mut i32);
-        (*(p)) = 42;
-        assert!(((((*(p)) == (42)) as i32) != 0));
+        (*p) = 42;
+        assert!(((((*p) == (42)) as i32) != 0));
         (unsafe { (pfree).unwrap()((p as *mut i32 as *mut ::libc::c_void)) });
         let mut arr: *mut i32 = ((unsafe {
             (pmalloc).unwrap()((4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)))

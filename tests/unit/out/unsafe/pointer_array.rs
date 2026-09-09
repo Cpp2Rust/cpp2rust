@@ -21,7 +21,7 @@ impl Default for StackArray {
 pub unsafe fn IncrementAll_0(s: *mut StackArray) {
     let mut i: i32 = 0;
     'loop_: while ((i) < (3)) {
-        (*((*(s)).arr[(i) as usize])) += 1;
+        (*(*s).arr[(i) as usize]) += 1;
         i.prefix_inc();
     }
 }

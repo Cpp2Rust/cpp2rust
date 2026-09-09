@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
     };
     arr[(1_usize)] = ('b' as libc::c_char);
     let mut p: *const libc::c_char = arr.as_ptr().offset((1) as isize);
-    assert!((((*(p)) as i32) == (('b' as libc::c_char) as i32)));
+    assert!((((*p) as i32) == (('b' as libc::c_char) as i32)));
     assert!(
         arr == {
             let s = c"fbo".as_ptr();

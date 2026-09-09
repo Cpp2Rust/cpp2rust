@@ -84,12 +84,12 @@ pub unsafe fn via_pointer_3(mut w: *mut wrapper, mut fail: i32) -> i32 {
     goto_block!({
         '__entry: {
             ret = 0;
-            item = (*(w)).item;
+            item = (*w).item;
             if (fail != 0) {
                 ret = -1_i32;
                 goto!('out);
             }
-            ret = (*(item));
+            ret = (*item);
         }
         'out: {
             return ret;

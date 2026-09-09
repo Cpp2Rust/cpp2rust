@@ -10,14 +10,14 @@ pub unsafe fn identity_0(mut x: i32) -> i32 {
     return x;
 }
 pub unsafe fn swap_by_ptr_1(mut a: *mut i32, mut b: *mut i32) {
-    let mut tmp: i32 = (*(a));
-    (*(a)) = (*(b));
-    (*(b)) = tmp;
+    let mut tmp: i32 = (*a);
+    (*a) = (*b);
+    (*b) = tmp;
 }
 pub unsafe fn swap_by_ref_2(a: *mut i32, b: *mut i32) {
-    let mut tmp: i32 = (*(a));
-    (*(a)) = (*(b));
-    (*(b)) = tmp;
+    let mut tmp: i32 = (*a);
+    (*a) = (*b);
+    (*b) = tmp;
 }
 pub fn main() {
     unsafe {

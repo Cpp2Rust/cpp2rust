@@ -14,5 +14,5 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 5;
     let mut p: *mut i32 = (&mut x as *mut i32);
-    return (*(p.prefix_inc()));
+    return (*p.prefix_inc());
 }

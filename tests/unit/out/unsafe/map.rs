@@ -10,7 +10,7 @@ pub unsafe fn foo_0(mut x: u32) {
     x = (x).wrapping_add(1_u32);
 }
 pub unsafe fn bar_1(x: *mut u32) {
-    (*(x)) = (*(x)).wrapping_add(1_u32);
+    (*x) = (*x).wrapping_add(1_u32);
 }
 pub fn main() {
     unsafe {
@@ -70,24 +70,24 @@ unsafe fn main_0() -> i32 {
     let mut it4: UnsafeMapIterator<i16, u32> =
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16);
     let mut p: *mut u32 = (&mut *it4.second() as *mut u32);
-    let mut x5: u32 = (*(p));
+    let mut x5: u32 = (*p);
     assert!(((*m.entry(4_i16).or_default().as_mut()) == (5_u32)));
     assert!(((*it4.second()) == (5_u32)));
-    assert!(((*(p)) == (5_u32)));
+    assert!(((*p) == (5_u32)));
     assert!(((x5) == (5_u32)));
-    (*(p)).prefix_inc();
+    (*p).prefix_inc();
     assert!(((*m.entry(4_i16).or_default().as_mut()) == (6_u32)));
     assert!(((*it4.second()) == (6_u32)));
-    assert!(((*(p)) == (6_u32)));
+    assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
     let r: *mut BTreeMap<i16, Box<u32>> = &mut m as *mut BTreeMap<i16, Box<u32>>;
-    assert!((((*(r)).len()) == (4_usize)));
+    assert!((((*r).len()) == (4_usize)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
             != UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>)
     );
-    UnsafeMapIterator::erase(&(*(r)) as *const BTreeMap<i16, Box<u32>>, &it4.clone());
-    assert!((((*(r)).len()) == (3_usize)));
+    UnsafeMapIterator::erase(&(*r) as *const BTreeMap<i16, Box<u32>>, &it4.clone());
+    assert!((((*r).len()) == (3_usize)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
             == UnsafeMapIterator::end(&m as *const BTreeMap<i16, Box<u32>>)
@@ -144,7 +144,7 @@ unsafe fn main_0() -> i32 {
             .wrapping_add((x3 as usize)))
         .wrapping_add((x4 as usize)))
         .wrapping_add((x5 as usize)))
-        .wrapping_add(((*(value_0)) as usize)))
+        .wrapping_add(((*value_0) as usize)))
             == (21_usize))
     );
     return 0;

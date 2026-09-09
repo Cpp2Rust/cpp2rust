@@ -38,10 +38,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut dog: Dog = <Dog>::default();
     let mut animal: *mut dyn Animal = (&mut dog as *mut Dog);
-    let mut eat1: bool = (unsafe { (*((animal).cast_const())).bark() });
+    let mut eat1: bool = (unsafe { (*(animal).cast_const()).bark() });
     let mut cat: Cat = <Cat>::default();
     animal = (&mut cat as *mut Cat);
-    let mut eat2: bool = (unsafe { (*((animal).cast_const())).bark() });
+    let mut eat2: bool = (unsafe { (*(animal).cast_const()).bark() });
     assert!((eat1) && (!eat2));
     return 0;
 }

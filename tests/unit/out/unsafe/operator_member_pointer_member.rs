@@ -65,15 +65,15 @@ unsafe fn main_0() -> i32 {
     (*(unsafe { S::operator_index_i32(&mut s, 1) })) = 20;
     assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (20)));
     let cs: *const S = &s as *const S;
-    assert!(((*(unsafe { S::operator_index_i32_const(&(*(cs)), 2,) })) == (3)));
+    assert!(((*(unsafe { S::operator_index_i32_const(&(*cs), 2,) })) == (3)));
     assert!((((*(unsafe { S::operator_deref(&mut s,) })).x) == (9)));
     (*(unsafe { S::operator_deref(&mut s) })).x = 10;
     assert!((((*(unsafe { S::operator_arrow(&mut s,) })).x) == (10)));
     (*(unsafe { S::operator_arrow(&mut s) })).x = 11;
     assert!(((s.inner.x) == (11)));
     let mut p: *mut i32 = (unsafe { S::operator_addr(&mut s) });
-    assert!(((*(p)) == (1)));
-    (*(p)) = 5;
+    assert!(((*p) == (1)));
+    (*p) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
     let mut t: Table = <Table>::default();
     assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));

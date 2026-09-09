@@ -63,7 +63,7 @@ pub struct Inner_struct {
     pub typedef_field: i32,
 }
 pub unsafe fn is_active_0(mut w: *mut widget) -> i32 {
-    return ((((*(w)).mode as u32) == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
+    return ((((*w).mode as u32) == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
     unsafe {

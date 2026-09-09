@@ -22,20 +22,20 @@ impl S {
         return if ((self.v as f64) == (o)) { 3 } else { 0 };
     }
     pub unsafe fn operator_add(&self, o: *const S) -> i32 {
-        return ((self.v) + ((*(o)).v));
+        return ((self.v) + ((*o).v));
     }
     pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
         return ((self.v) - (o.v));
     }
     pub unsafe fn operator_mul_pconstS_const(&self, o: *const S) -> i32 {
-        return ((self.v) * ((*(o)).v));
+        return ((self.v) * ((*o).v));
     }
     pub unsafe fn operator_mul_i32_const(&self, mut o: i32) -> i32 {
         return (((self.v) * (o)) + (1));
     }
 }
 pub unsafe fn operator_div_0(a: *const S, b: *const S) -> i32 {
-    return (((*(a)).v) / ((*(b)).v));
+    return (((*a).v) / ((*b).v));
 }
 pub unsafe fn operator_div_1(mut a: S, mut b: i32) -> i32 {
     return (((a.v) / (b)) + (1));
@@ -44,13 +44,13 @@ pub unsafe fn operator_rem_2(mut a: S, mut b: S) -> i32 {
     return ((a.v) % (b.v));
 }
 pub unsafe fn operator_rem_3(a: *const S, mut b: i32) -> i32 {
-    return ((((*(a)).v) % (b)) + (1));
+    return ((((*a).v) % (b)) + (1));
 }
 pub unsafe fn operator_eq_4(mut a: i32, mut b: S) -> i32 {
     return if ((a) == (b.v)) { 4 } else { 0 };
 }
 pub unsafe fn operator_eq_5(mut a: i64, b: *const S) -> i32 {
-    return if ((a) == ((*(b)).v as i64)) { 5 } else { 0 };
+    return if ((a) == ((*b).v as i64)) { 5 } else { 0 };
 }
 pub fn main() {
     unsafe {

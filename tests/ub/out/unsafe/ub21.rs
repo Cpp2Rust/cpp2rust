@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn strlen_0(mut s: *const libc::c_char) -> usize {
     let mut count: usize = 0_usize;
-    'loop_: while ((*(s.postfix_inc())) != 0) {
+    'loop_: while ((*s.postfix_inc()) != 0) {
         count.prefix_inc();
     }
     return count;

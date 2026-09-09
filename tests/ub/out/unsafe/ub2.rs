@@ -17,5 +17,5 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: *mut i32 = (unsafe { null_0() });
-    return (*(x));
+    return (*x);
 }
