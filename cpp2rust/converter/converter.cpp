@@ -3094,6 +3094,7 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
     StrCat("&raw mut this");
   } else {
+    PushParen paren(*this);
     StrCat(keyword::kSelfValue, keyword::kAs, ToString(expr->getType()));
   }
   return false;
@@ -4368,9 +4369,7 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
     StrCat(*wrap ? "&mut" : "&");
   }
   PushParen paren(*this);
-  StrCat(GetPointerDerefPrefix(pointee_type));
-  PushParen inner_paren(*this);
-  StrCat(std::move(inner));
+  StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
