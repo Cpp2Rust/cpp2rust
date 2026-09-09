@@ -132,6 +132,7 @@ public:
   bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+  std::string GetCtorName(clang::CXXConstructorDecl *decl);
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
   virtual void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl);
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);

@@ -449,6 +449,19 @@ std::string ConverterRefCount::GetComparisonCall(
                      lhs_ptr, rhs_ptr);
 }
 
+void ConverterRefCount::EmitShallowCopy(const clang::RecordDecl *decl) {
+  StrCat("Rc::new");
+  PushParen rc_paren(*this);
+  StrCat("RefCell::new");
+  PushParen cell_paren(*this);
+  StrCat(GetRecordName(decl));
+  PushBrace init_brace(*this);
+  for (auto *field : decl->fields()) {
+    auto name = GetNamedDeclAsString(field);
+    StrCat(std::format("{0}: self.{0}.clone(),", name));
+  }
+}
+
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
@@ -478,18 +491,26 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (cxx->defaultedCopyConstructorIsDeleted()) {
+  if (!IsCopyConstructible(cxx)) {
     return;
   }
 
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
-  for (auto ctor : cxx->ctors()) {
-    if (ctor->isCopyConstructor()) {
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      ConvertCXXConstructorBody(ctor);
-      break;
+  if (auto *ctor = GetUserDefinedCopyConstructor(cxx)) {
+    StrCat(std::format("let __src: Value<{}> =", record_name));
+    EmitShallowCopy(decl);
+    StrCat(token::kSemiColon);
+    StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
+                       GetCtorName(ctor)));
+  } else {
+    for (auto ctor : cxx->ctors()) {
+      if (ctor->isCopyConstructor()) {
+        PushConversionKind push(*this, ConversionKind::FullRefCount);
+        ConvertCXXConstructorBody(ctor);
+        break;
+      }
     }
   }
 
@@ -1848,14 +1869,12 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() ||
-      (ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
-       ctor->getParamDecl(0)->getType()->isRValueReferenceType())) {
+  if (ctor->isMoveConstructor() || IsRValueConvertingConstructor(ctor)) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor()) {
+  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
