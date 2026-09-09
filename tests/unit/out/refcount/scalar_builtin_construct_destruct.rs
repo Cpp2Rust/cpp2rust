@@ -28,7 +28,6 @@ fn main_0() -> i32 {
     assert!((({ zero_1() }) == 0_i64));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     ({ destroy_2((x.as_pointer())) });
-    i32;
     assert!(((*x.borrow()) == 5));
     return 0;
 }

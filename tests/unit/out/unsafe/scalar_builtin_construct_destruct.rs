@@ -28,7 +28,6 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { zero_1() }) == (0_i64)));
     let mut x: i32 = 5;
     (unsafe { destroy_2((&mut x as *mut i32)) });
-    i32;
     assert!(((x) == (5)));
     return 0;
 }
