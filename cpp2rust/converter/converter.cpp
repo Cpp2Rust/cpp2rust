@@ -2286,8 +2286,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     const char *suffix = nullptr;
     bool type_changed = false;
     if (expr->getType()->isPointerType() &&
-        sub_expr->getType()->isPointerType() &&
-        !clang::isa<clang::CXXThisExpr>(expr->IgnoreImplicit())) {
+        sub_expr->getType()->isPointerType()) {
       switch (GetConstCastType(expr->getType()->getPointeeType(),
                                sub_expr->getType()->getPointeeType())) {
       case ConstCastType::MutableToConst:
@@ -3059,7 +3058,11 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   bool base_is_this =
       clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (expr->isArrow() && !base_is_this) {
+  if (base_is_this) {
+    StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
+               ? "this"
+               : keyword::kSelfValue);
+  } else if (expr->isArrow()) {
     ConvertArrow(base);
   } else {
     Convert(base);
@@ -3077,11 +3080,11 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 }
 
-bool Converter::VisitCXXThisExpr([[maybe_unused]] clang::CXXThisExpr *expr) {
+bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
-    StrCat("this");
+    StrCat("&raw mut this");
   } else {
-    StrCat(keyword::kSelfValue);
+    StrCat(keyword::kSelfValue, keyword::kAs, ToString(expr->getType()));
   }
   return false;
 }
@@ -4355,7 +4358,9 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
     StrCat(*wrap ? "&mut" : "&");
   }
   PushParen paren(*this);
-  StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
+  StrCat(GetPointerDerefPrefix(pointee_type));
+  PushParen inner_paren(*this);
+  StrCat(std::move(inner));
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
