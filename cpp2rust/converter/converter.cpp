@@ -790,7 +790,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
   // Derived traits
   if (EmitsReprCForRecords()) {
-    StrCat("#[repr(C)]");
+    EmitReprC(decl);
   }
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
@@ -892,8 +892,17 @@ std::string Converter::DestroyMembers(const clang::CXXRecordDecl *decl) {
   return out;
 }
 
-void Converter::EmitRustUnion(clang::RecordDecl *decl) {
+void Converter::EmitReprC(clang::RecordDecl *decl) {
+  if (decl->hasAttr<clang::AlignedAttr>()) {
+    StrCat(std::format("#[repr(C, align({}))]",
+                       ctx_.getTypeAlign(ctx_.getCanonicalTagType(decl)) / 8));
+    return;
+  }
   StrCat("#[repr(C)]");
+}
+
+void Converter::EmitRustUnion(clang::RecordDecl *decl) {
+  EmitReprC(decl);
   auto attrs = GetStructAttributes(decl);
   Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
                      std::vector<std::string>(attrs.begin(), attrs.end()));
