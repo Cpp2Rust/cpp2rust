@@ -22,7 +22,7 @@ impl Counted {
         let this: Ptr<Counted> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Counted(o: Ptr<Counted>) -> Self {
+    pub fn Counted_pconstCounted(o: Ptr<Counted>) -> Self {
         let __this: Value<Counted> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
         }));
@@ -66,14 +66,14 @@ impl NonConst {
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn NonConst(o: Ptr<NonConst>) -> Self {
+    pub fn NonConst_pmutNonConst(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn NonConst(o: Ptr<NonConst>) -> Self {
+    pub fn NonConst_pconstNonConst(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 10))),
         }));
@@ -123,7 +123,7 @@ impl WithDefault {
         let this: Ptr<WithDefault> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn WithDefault(o: Ptr<WithDefault>, tag: Option<i32>) -> Self {
+    pub fn WithDefault_pconstWithDefault_i32(o: Ptr<WithDefault>, tag: Option<i32>) -> Self {
         let tag: Value<i32> = Rc::new(RefCell::new(tag.unwrap_or(7)));
         let __this: Value<WithDefault> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),

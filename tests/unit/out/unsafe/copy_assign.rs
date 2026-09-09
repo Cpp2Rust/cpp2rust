@@ -18,7 +18,7 @@ impl Partial {
         let mut this = Self { v: v, keep: keep };
         this
     }
-    pub unsafe fn Partial(o: *const Partial) -> Self {
+    pub unsafe fn Partial_pconstPartial(o: *const Partial) -> Self {
         let mut this = Self {
             v: (*o).v,
             keep: (*o).keep,

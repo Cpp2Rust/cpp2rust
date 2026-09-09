@@ -25,7 +25,7 @@ impl Partial {
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Partial(o: Ptr<Partial>) -> Self {
+    pub fn Partial_pconstPartial(o: Ptr<Partial>) -> Self {
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
             keep: Rc::new(RefCell::new((*(*o.upgrade().deref()).keep.borrow()))),

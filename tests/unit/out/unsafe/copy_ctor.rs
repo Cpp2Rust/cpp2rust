@@ -17,7 +17,7 @@ impl Counted {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn Counted(o: *const Counted) -> Self {
+    pub unsafe fn Counted_pconstCounted(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
         copies_0.prefix_inc();
         this
@@ -33,13 +33,13 @@ impl NonConst {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn NonConst(o: *mut NonConst) -> Self {
+    pub unsafe fn NonConst_pmutNonConst(o: *mut NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
         this
     }
-    pub unsafe fn NonConst(o: *const NonConst) -> Self {
+    pub unsafe fn NonConst_pconstNonConst(o: *const NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
@@ -62,7 +62,10 @@ impl WithDefault {
         let mut this = Self { v: v, tag: 0 };
         this
     }
-    pub unsafe fn WithDefault(o: *const WithDefault, mut tag: Option<i32>) -> Self {
+    pub unsafe fn WithDefault_pconstWithDefault_i32(
+        o: *const WithDefault,
+        mut tag: Option<i32>,
+    ) -> Self {
         let mut tag: i32 = tag.unwrap_or(7);
         let mut this = Self {
             v: (*o).v,
