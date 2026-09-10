@@ -506,9 +506,20 @@ static std::string GetParamSignature(const clang::Decl *decl) {
   return args;
 }
 
+static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
+  if (const auto *spec =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+              decl->getLexicalDeclContext());
+      spec && decl->getLexicalDeclContext() != decl->getDeclContext()) {
+    return Mapper::ToString(Mapper::GetTypeForDecl(spec));
+  }
+  return {};
+}
+
 std::string GetID(const clang::Decl *decl) {
   assert(decl);
-  return GetLocationID(decl) + GetParamSignature(decl);
+  return GetLexicalSpecializationID(decl) + GetLocationID(decl) +
+         GetParamSignature(decl);
 }
 
 std::string GetMethodID(const clang::CXXMethodDecl *decl) {
