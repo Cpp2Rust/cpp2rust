@@ -1242,6 +1242,14 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  if (stmt->isConstexpr()) {
+    if (auto taken = stmt->getNondiscardedCase(ctx_)) {
+      if (*taken) {
+        Convert(*taken);
+      }
+      return false;
+    }
+  }
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
   ConvertBody(stmt->getThen());
