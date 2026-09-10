@@ -1096,11 +1096,13 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
   for (const auto *field : RecordFields::Get(record_decl)) {
     auto field_name = GetNamedDeclAsString(field);
     auto field_type = field->getType();
+    auto ctor_initializer = curr_init < definition->getNumCtorInitializers()
+                                ? ctor_initializer_list[curr_init]
+                                : nullptr;
 
-    if (RecordFields::Initializes(ctor_initializer_list[curr_init], field)) {
-      auto *ctor_init_expr = ctor_initializer_list[curr_init]->getInit();
+    if (RecordFields::Initializes(ctor_initializer, field)) {
       StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, ctor_init_expr);
+      ConvertVarInit(field_type, ctor_initializer->getInit());
       curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
     } else if (field->hasInClassInitializer()) {
       StrCat(field_name, token::kColon);
