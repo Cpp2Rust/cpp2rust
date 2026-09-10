@@ -341,7 +341,7 @@ fn main_0() -> i32 {
 }
 pub trait TestAllocator_double_Impl {
     fn allocate(&self, n: usize) -> Ptr<f64>;
-    fn deallocate(&self, p: Ptr<f64>, _: usize);
+    fn deallocate(&self, p: Ptr<f64>, _a1: usize);
 }
 impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn allocate(&self, n: usize) -> Ptr<f64> {
@@ -352,14 +352,15 @@ impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
                 .collect::<Box<[f64]>>(),
         );
     }
-    fn deallocate(&self, p: Ptr<f64>, _: usize) {
+    fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));
+        let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
         (*p.borrow()).delete_array();
     }
 }
 pub trait TestAllocator_int_Impl {
     fn allocate(&self, n: usize) -> Ptr<i32>;
-    fn deallocate(&self, p: Ptr<i32>, _: usize);
+    fn deallocate(&self, p: Ptr<i32>, _a1: usize);
 }
 impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
     fn allocate(&self, n: usize) -> Ptr<i32> {
@@ -370,8 +371,9 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
                 .collect::<Box<[i32]>>(),
         );
     }
-    fn deallocate(&self, p: Ptr<i32>, _: usize) {
+    fn deallocate(&self, p: Ptr<i32>, _a1: usize) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
+        let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
         (*p.borrow()).delete_array();
     }
 }
