@@ -387,8 +387,7 @@ bool Converter::VisitFunctionDecl(clang::FunctionDecl *decl) {
   // main_0 should be static
   if (!decl->isMain())
     ConvertFunctionQualifiers(decl);
-  StrCat(decl->isConstexpr() ? keyword_const_fn_ : "", keyword_unsafe_,
-         keyword::kFn, std::move(function_name));
+  StrCat(keyword_unsafe_, keyword::kFn, std::move(function_name));
   {
     PushParen paren(*this);
     ConvertFunctionParameters(decl);

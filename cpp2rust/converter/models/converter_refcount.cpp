@@ -19,7 +19,7 @@
 namespace cpp2rust {
 ConverterRefCount::ConverterRefCount(std::string &rs_code,
                                      clang::ASTContext &ctx)
-    : Converter(rs_code, ctx, "", "", ""),
+    : Converter(rs_code, ctx, "", ""),
       conversion_kind_({ConversionKind::Unboxed}) {}
 
 void ConverterRefCount::EmitFilePreamble() {
