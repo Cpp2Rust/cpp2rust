@@ -903,18 +903,6 @@ clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
   llvm::report_fatal_error("base class without a synthesized field");
 }
 
-clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
-  auto *cast = clang::dyn_cast<clang::CastExpr>(expr->IgnoreParens());
-  if (!cast || (cast->getCastKind() != clang::CK_DerivedToBase &&
-                cast->getCastKind() != clang::CK_UncheckedDerivedToBase)) {
-    return nullptr;
-  }
-  auto type = cast->getType();
-  auto *record = type->isPointerType() ? type->getPointeeCXXRecordDecl()
-                                       : type->getAsCXXRecordDecl();
-  return record->isAbstract() || !IsUserDefinedDecl(record) ? nullptr : cast;
-}
-
 bool IsThisExpr(const clang::Expr *expr) {
   return clang::isa<clang::CXXThisExpr>(expr->IgnoreParenImpCasts());
 }
@@ -927,7 +915,8 @@ bool IsUpcastedThis(const clang::Expr *expr) {
          IsThisExpr(cast->getSubExpr());
 }
 
-clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
+clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
+                                       clang::CastExpr *cast) {
   clang::Expr *object = cast->getSubExpr();
   for (const auto *step : cast->path()) {
     auto object_type = object->getType();
