@@ -29,10 +29,9 @@ class Converter : public clang::RecursiveASTVisitor<Converter> {
 public:
   explicit Converter(std::string &rs_code, clang::ASTContext &ctx,
                      const char *keyword_unsafe = "unsafe",
-                     const char *keyword_mut = keyword::kMut,
-                     const char *keyword_const_fn = keyword::kConst)
+                     const char *keyword_mut = keyword::kMut)
       : rs_code_(&rs_code), ctx_(ctx), keyword_unsafe_(keyword_unsafe),
-        keyword_mut_(keyword_mut), keyword_const_fn_(keyword_const_fn) {}
+        keyword_mut_(keyword_mut) {}
 
   virtual ~Converter() = default;
 
@@ -1011,7 +1010,6 @@ private:
                                 const clang::QualType *type = nullptr);
   const char *keyword_unsafe_;
   const char *keyword_mut_;
-  const char *keyword_const_fn_;
   std::vector<ExprKind> curr_expr_kind_;
   static std::unordered_map<std::string, std::string> inner_structs_;
   static std::unordered_set<std::string> globals_;
