@@ -23,7 +23,7 @@ impl B {
             base_A: <A>::default(),
             b: ((x) + (1)),
         };
-        this.base_A.a = x;
+        (*(&mut this.base_A as *mut A)).a = x;
         this
     }
 }
@@ -34,7 +34,7 @@ pub struct C {
 }
 impl C {
     pub unsafe fn sum(&mut self) -> i32 {
-        return ((self.base_B.base_A.a) + (self.base_B.b));
+        return (((*(&mut self.base_B.base_A as *mut A)).a) + ((*(&mut self.base_B as *mut B)).b));
     }
     pub unsafe fn C(mut _a0: i32) -> Self {
         let mut this = Self {

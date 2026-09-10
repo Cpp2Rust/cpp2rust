@@ -3000,11 +3000,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
 void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
-  if (auto *cast = GetDerivedToBaseCast(base)) {
-    base = ToBaseSubobject(ctx_, cast);
-    is_arrow = false;
-  }
-  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+  if (IsThisExpr(base)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
@@ -3078,19 +3074,13 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool is_arrow = expr->isArrow();
-  if (auto *cast = GetDerivedToBaseCast(base)) {
-    base = ToBaseSubobject(ctx_, cast);
-    is_arrow = false;
-  }
-  bool base_is_this =
-      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
+  bool base_is_this = IsThisExpr(base) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (base_is_this) {
     StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
                ? "this"
                : keyword::kSelfValue);
-  } else if (is_arrow) {
+  } else if (expr->isArrow()) {
     ConvertArrow(base);
   } else {
     Convert(base);

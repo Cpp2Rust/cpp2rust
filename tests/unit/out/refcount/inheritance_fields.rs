@@ -117,19 +117,25 @@ pub trait DerivedImpl {
 }
 impl DerivedImpl for Ptr<Derived> {
     fn begin(&self) -> Ptr<i32> {
-        return (*(*(*(*self).upgrade().deref()).base_Base.borrow())
-            .buf
-            .borrow())
+        return (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+            .upgrade()
+            .deref())
+        .buf
+        .borrow())
         .clone();
     }
     fn end(&self) -> Ptr<i32> {
-        return (*(*(*(*self).upgrade().deref()).base_Base.borrow())
-            .buf
-            .borrow())
+        return (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+            .upgrade()
+            .deref())
+        .buf
+        .borrow())
         .offset(
-            (*(*(*(*self).upgrade().deref()).base_Base.borrow())
-                .n
-                .borrow()) as isize,
+            (*(*((*(*self).upgrade().deref()).base_Base.as_pointer())
+                .upgrade()
+                .deref())
+            .n
+            .borrow()) as isize,
         );
     }
 }

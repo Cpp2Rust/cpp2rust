@@ -45,7 +45,11 @@ impl B {
             b: Rc::new(RefCell::new(((*x.borrow()) + 1))),
         }));
         let this: Ptr<B> = __this.as_pointer();
-        (*(*(*this.upgrade().deref()).base_A.borrow()).a.borrow_mut()) = (*x.borrow());
+        (*(*((*this.upgrade().deref()).base_A.as_pointer())
+            .upgrade()
+            .deref())
+        .a
+        .borrow_mut()) = (*x.borrow());
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -127,11 +131,17 @@ pub trait CImpl {
 }
 impl CImpl for Ptr<C> {
     fn sum(&self) -> i32 {
-        return ((*(*(*(*(*self).upgrade().deref()).base_B.borrow())
+        return ((*(*((*(*(*self).upgrade().deref()).base_B.borrow())
             .base_A
-            .borrow())
+            .as_pointer())
+        .upgrade()
+        .deref())
         .a
         .borrow())
-            + (*(*(*(*self).upgrade().deref()).base_B.borrow()).b.borrow()));
+            + (*(*((*(*self).upgrade().deref()).base_B.as_pointer())
+                .upgrade()
+                .deref())
+            .b
+            .borrow()));
     }
 }

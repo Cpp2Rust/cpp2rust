@@ -163,7 +163,7 @@ pub fn test_memmove_3() {
 pub fn test_strchr_4() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+        let __s = (*s.borrow()).clone();
         let __t = ('w' as i32) as u8;
         match __s.to_c_string_iterator().position(|__c| __c == __t) {
             Some(__i) => __s.offset(__i),
@@ -180,7 +180,7 @@ pub fn test_strchr_4() {
     assert!(((((((*r.borrow()).read()) as i32) == ('w' as i32)) as i32) != 0));
     assert!(
         (((({
-            let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+            let __s = (*s.borrow()).clone();
             let __t = ('z' as i32) as u8;
             match __s.to_c_string_iterator().position(|__c| __c == __t) {
                 Some(__i) => __s.offset(__i),
@@ -577,7 +577,7 @@ pub fn test_memchr_8() {
 pub fn test_strrchr_9() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+        let __s = (*s.borrow()).clone();
         let __t = ('l' as i32) as u8;
         match __s
             .to_c_string_iterator()
@@ -606,7 +606,7 @@ pub fn test_strrchr_9() {
     );
     assert!(
         (((({
-            let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+            let __s = (*s.borrow()).clone();
             let __t = ('z' as i32) as u8;
             match __s
                 .to_c_string_iterator()
@@ -748,7 +748,7 @@ pub fn test_strstr_12() {
     let h: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
         let __needle = Ptr::from_string_literal(b"world").clone();
-        let mut __p = (*h.borrow()).reinterpret_cast::<u8>().clone();
+        let mut __p = (*h.borrow()).clone();
         loop {
             let mut __h = __p.to_c_string_iterator();
             if __needle
@@ -774,7 +774,7 @@ pub fn test_strstr_12() {
     assert!(
         (((({
             let __needle = Ptr::from_string_literal(b"xyz").clone();
-            let mut __p = (*h.borrow()).reinterpret_cast::<u8>().clone();
+            let mut __p = (*h.borrow()).clone();
             loop {
                 let mut __h = __p.to_c_string_iterator();
                 if __needle
@@ -824,7 +824,7 @@ pub fn test_strstr_12() {
 pub fn test_strpbrk_13() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+        let __s = (*s.borrow()).clone();
         let __set = Ptr::from_string_literal(b"wo").clone();
         match __s
             .to_c_string_iterator()
@@ -844,7 +844,7 @@ pub fn test_strpbrk_13() {
     );
     assert!(
         (((({
-            let __s = (*s.borrow()).reinterpret_cast::<u8>().clone();
+            let __s = (*s.borrow()).clone();
             let __set = Ptr::from_string_literal(b"xyz").clone();
             match __s
                 .to_c_string_iterator()

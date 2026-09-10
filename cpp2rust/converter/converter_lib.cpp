@@ -915,6 +915,16 @@ clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
   return record->isAbstract() || !IsUserDefinedDecl(record) ? nullptr : cast;
 }
 
+bool IsThisExpr(const clang::Expr *expr) {
+  expr = expr->IgnoreParens();
+  for (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr);
+       cast && cast->getCastKind() == clang::CK_NoOp;
+       cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+    expr = cast->getSubExpr()->IgnoreParens();
+  }
+  return clang::isa<clang::CXXThisExpr>(expr);
+}
+
 clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {
   clang::Expr *object = cast->getSubExpr();
   for (const auto *step : cast->path()) {

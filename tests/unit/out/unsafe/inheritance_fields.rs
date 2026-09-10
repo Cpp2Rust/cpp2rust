@@ -25,10 +25,12 @@ pub struct Derived {
 }
 impl Derived {
     pub unsafe fn begin(&mut self) -> *mut i32 {
-        return self.base_Base.buf;
+        return (*(&mut self.base_Base as *mut Base)).buf;
     }
     pub unsafe fn end(&mut self) -> *mut i32 {
-        return self.base_Base.buf.offset((self.base_Base.n) as isize);
+        return (*(&mut self.base_Base as *mut Base))
+            .buf
+            .offset(((*(&mut self.base_Base as *mut Base)).n) as isize);
     }
     pub unsafe fn Derived(mut _a0: *mut i32, mut _a1: usize) -> Self {
         let mut this = Self {
