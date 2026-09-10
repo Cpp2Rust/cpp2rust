@@ -1402,14 +1402,28 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
 
 bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
     clang::UnaryExprOrTypeTraitExpr *expr) {
-  if (expr->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf) {
-    auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
-                                           : expr->getArgumentExpr()->getType();
+  auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
+                                         : expr->getArgumentExpr()->getType();
+  switch (expr->getKind()) {
+  case clang::UnaryExprOrTypeTrait::UETT_SizeOf:
+    // TODO: Once Values are dropped from fields, precomputation should be gone
     if (RustSizeDivergesFromC(arg_type)) {
       StrCat(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
+    break;
+  case clang::UnaryExprOrTypeTrait::UETT_AlignOf:
+  case clang::UnaryExprOrTypeTrait::UETT_PreferredAlignOf:
+    // TODO: Once Values are dropped from fields, precomputation should be gone
+    if (RustSizeDivergesFromC(arg_type)) {
+      StrCat(std::format("{}usize", ctx_.getTypeAlign(arg_type) / 8));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+    break;
+  default:
+    break;
   }
   return Converter::VisitUnaryExprOrTypeTraitExpr(expr);
 }

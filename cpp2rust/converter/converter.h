@@ -120,6 +120,7 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  void EmitReprC(clang::RecordDecl *decl);
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }
