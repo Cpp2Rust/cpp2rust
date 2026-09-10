@@ -4024,8 +4024,8 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
     StrCat(GetNamedDeclAsString(field), token::kColon);
-    if (field->hasInClassInitializer()) {
-      ConvertVarInit(field->getType(), field->getInClassInitializer());
+    if (auto *init = field->getInClassInitializer()) {
+      ConvertVarInit(field->getType(), init);
     } else {
       StrCat(GetDefaultAsString(field->getType()));
     }
