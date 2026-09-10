@@ -89,10 +89,10 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     let mut k: i32 = 0;
     'loop_: while ((k) < ((N) / (2))) {
         let mut yk: Complex = (unsafe {
-            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
+            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)];
             let _z2: Complex = (unsafe {
-                let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
-                let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
+                let _z1: Complex = w.as_mut().unwrap()[(k as usize)];
+                let _z2: Complex = y1.as_mut().unwrap()[(k as usize)];
                 Product_0(_z1, _z2)
             });
             Sum_1(_z1, _z2)
@@ -102,12 +102,12 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             img: yk.img,
         };
         let mut yk_n2: Complex = (unsafe {
-            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)].clone();
+            let _z1: Complex = y0.as_mut().unwrap()[(k as usize)];
             let _z2: Complex = (unsafe {
                 Neg_2(
                     (unsafe {
-                        let _z1: Complex = w.as_mut().unwrap()[(k as usize)].clone();
-                        let _z2: Complex = y1.as_mut().unwrap()[(k as usize)].clone();
+                        let _z1: Complex = w.as_mut().unwrap()[(k as usize)];
+                        let _z2: Complex = y1.as_mut().unwrap()[(k as usize)];
                         Product_0(_z1, _z2)
                     }),
                 )

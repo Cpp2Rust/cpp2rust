@@ -8,6 +8,7 @@
 #include <clang/Sema/Sema.h>
 
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -22,6 +23,7 @@
 #include "logging.h"
 
 namespace cpp2rust {
+inline constexpr const char kDestructorName[] = "destructor";
 class Converter : public clang::RecursiveASTVisitor<Converter> {
 
 public:
@@ -51,6 +53,8 @@ public:
   virtual void EmitFilePreamble();
 
   static std::string EmitOpaqueRecords();
+
+  static std::string EmitMethodsOnPtr();
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
@@ -116,6 +120,7 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  void EmitReprC(clang::RecordDecl *decl);
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }
@@ -123,9 +128,27 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+  virtual bool ShouldConvertMethod(const clang::CXXMethodDecl *decl);
+  virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
+  bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
+  std::string GetMethodName(const clang::CXXMethodDecl *decl);
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+  std::string GetCtorName(clang::CXXConstructorDecl *decl);
+  virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+  virtual void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl);
+  virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+  virtual void EmitScopedDestructor(const clang::VarDecl *decl);
+  void EmitDeallocation(clang::CXXDeleteExpr *expr,
+                        const std::string &argument_as_string);
+  virtual void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
+                               const clang::CXXMethodDecl *method);
+  void ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr);
+  virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
 
-  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  virtual bool ThisIsRustPtr() const { return false; }
+
+  virtual void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl);
+  void EmitConstructorFieldInits(clang::CXXConstructorDecl *decl);
 
   virtual bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl);
 
@@ -134,6 +157,8 @@ public:
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
+  virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
+  virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
 
   virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
 
@@ -263,6 +288,15 @@ public:
 
   void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
+  // Emits a pointer-type adjustment (const/mut fixup or reinterpret cast)
+  // after `expr` has been converted, for cases where the argument's Rust
+  // pointee type differs from the parameter's Rust pointee type even though
+  // Clang did not insert an implicit cast node for the call argument (e.g.
+  // when two C types are canonically identical, such as `size_t` and
+  // `unsigned long`, but map to different Rust types).
+  virtual void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
+                                                 clang::Expr *expr);
+
   void EmitHoistedArgs(CallInfo &info);
 
   void EmitArgList(const CallInfo &info);
@@ -325,6 +359,7 @@ public:
   virtual bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr);
 
   virtual bool VisitBinaryOperator(clang::BinaryOperator *expr);
+  bool VisitCXXRewrittenBinaryOperator(clang::CXXRewrittenBinaryOperator *expr);
 
   virtual void ConvertBinaryOperator(clang::BinaryOperator *expr);
 
@@ -386,6 +421,7 @@ public:
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
+  virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 
@@ -540,20 +576,23 @@ protected:
                              const std::string_view signature,
                              bool (*predicate)(clang::CXXMethodDecl *));
 
-  virtual void AddOrdTrait(const clang::CXXRecordDecl *decl);
+  void AddOrdTrait(const clang::CXXRecordDecl *decl);
 
-  virtual void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                             const clang::FunctionDecl *op);
+  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
+                                     const clang::FunctionDecl *eq,
+                                     const clang::FunctionDecl *lt,
+                                     const clang::FunctionDecl *cmp);
 
-  void ConvertOrdAndPartialOrdTraitsBase(std::string_view first_branch,
-                                         std::string_view second_branch,
-                                         std::string_view first_return,
-                                         std::string_view second_return,
+  void ConvertOrdAndPartialOrdTraitsBase(std::string_view cmp_body,
+                                         std::string_view eq_body,
                                          std::string_view record_name);
 
-  virtual void AddCloneTrait(const clang::RecordDecl *decl);
+  virtual std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                        const clang::CXXRecordDecl *decl,
+                                        std::string_view lhs,
+                                        std::string_view rhs);
 
-  virtual void AddDropTrait(const clang::CXXRecordDecl *decl);
+  virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
@@ -622,6 +661,24 @@ protected:
   clang::ASTContext &ctx_;
   clang::FunctionDecl *curr_function_ = nullptr;
   bool in_function_formals_ = false;
+  enum class MethodTarget : uint8_t {
+    ValueImpl,
+    TraitDecl,
+    PtrImpl,
+  };
+  MethodTarget method_target_ = MethodTarget::ValueImpl;
+
+  struct PushMethodTarget {
+    Converter &c;
+    MethodTarget prev;
+    PushMethodTarget(Converter &c, MethodTarget k)
+        : c(c), prev(c.method_target_) {
+      c.method_target_ = k;
+    }
+    ~PushMethodTarget() { c.method_target_ = prev; }
+  };
+
+  std::string ufcs_receiver_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;
@@ -812,6 +869,15 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
+  struct MethodsOnPtr {
+    std::string trait_header;
+    std::string trait_body;
+    std::string impl_header;
+    std::string impl_body;
+  };
+  // record name -> trait and impl for Ptr<record>, emitted after all
+  // translation units.
+  static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
 
   enum class ExprKind : uint8_t {
     Callee,
@@ -853,6 +919,16 @@ protected:
   bool isCallee() const;
 
   void dump_expr_kinds();
+
+  struct PushCurrFunction {
+    Converter &c;
+    clang::FunctionDecl *prev;
+    PushCurrFunction(Converter &c, clang::FunctionDecl *decl)
+        : c(c), prev(c.curr_function_) {
+      c.curr_function_ = decl;
+    }
+    ~PushCurrFunction() { c.curr_function_ = prev; }
+  };
 
   struct PushExprKind {
     Converter &c;

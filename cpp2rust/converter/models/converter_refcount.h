@@ -36,12 +36,13 @@ public:
 
   const char *CharRustType() const override { return "u8"; }
 
-  void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
-                                     const clang::FunctionDecl *op) override;
+  std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs,
+                                std::string_view rhs) override;
 
+  void EmitShallowCopy(const clang::RecordDecl *decl);
   void AddCloneTrait(const clang::RecordDecl *decl) override;
-
-  void AddDropTrait(const clang::CXXRecordDecl *decl) override;
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
@@ -53,6 +54,22 @@ public:
   void AddDefaultTraitForUnion(const clang::RecordDecl *decl) override;
 
   std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) override;
+
+  bool ShouldConvertMethod(const clang::CXXMethodDecl *decl) override;
+
+  bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) override;
+
+  void ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) override;
+
+  void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) override;
+
+  void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) override;
+
+  void ConvertMethodOnPtr(clang::CXXMethodDecl *method);
+
+  bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
+
+  bool ThisIsRustPtr() const override;
 
   bool VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) override;
 
@@ -131,6 +148,8 @@ public:
   bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) override;
 
   bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
+  bool
+  VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr) override;
 
   bool VisitVAArgExpr(clang::VAArgExpr *expr) override;
 
@@ -204,6 +223,14 @@ public:
                           TempMaterializationCtx *ctx) override;
 
 private:
+  void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
+                       const clang::CXXMethodDecl *method) override;
+  std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
+  std::string TraitName(const clang::CXXRecordDecl *decl) const;
+  MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
+  std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+  void EmitScopedDestructor(const clang::VarDecl *decl) override;
+
   std::pair<std::string, std::string>
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;
@@ -243,6 +270,9 @@ private:
 
   std::string ConvertPtrType(clang::QualType type);
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
+
+  void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
+                                         clang::Expr *expr) override;
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 

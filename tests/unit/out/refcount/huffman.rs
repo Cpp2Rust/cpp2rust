@@ -13,20 +13,16 @@ pub struct MinHeapNode {
     pub left: Value<Ptr<MinHeapNode>>,
     pub right: Value<Ptr<MinHeapNode>>,
 }
-impl MinHeapNode {
-    pub fn IsLeaf(&self) -> bool {
-        return ((*self.left.borrow()).is_null()) && ((*self.right.borrow()).is_null());
-    }
-}
 impl Clone for MinHeapNode {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MinHeapNode> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()))),
             freq: Rc::new(RefCell::new((*self.freq.borrow()))),
             left: Rc::new(RefCell::new((*self.left.borrow()).clone())),
             right: Rc::new(RefCell::new((*self.right.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MinHeapNode> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MinHeapNode {
@@ -86,138 +82,6 @@ pub struct MinHeap {
     pub next: Value<i32>,
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
 }
-impl MinHeap {
-    pub fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
-        let data: Value<u8> = Rc::new(RefCell::new(data));
-        let freq: Value<i32> = Rc::new(RefCell::new(freq));
-        (*self.alloc.borrow()).as_ref().unwrap().borrow_mut()
-            [((*self.next.borrow()) as usize) as usize] = MinHeapNode {
-            data: Rc::new(RefCell::new((*data.borrow()))),
-            freq: Rc::new(RefCell::new((*freq.borrow()))),
-            left: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
-            right: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
-        };
-        return ((*self.alloc.borrow())
-            .as_ref()
-            .unwrap()
-            .as_pointer()
-            .offset(((*self.next.borrow_mut()).postfix_inc() as usize)))
-        .clone();
-    }
-    pub fn Heapify(&self, idx: i32) {
-        let idx: Value<i32> = Rc::new(RefCell::new(idx));
-        let smallest: Value<i32> = Rc::new(RefCell::new((*idx.borrow())));
-        let left: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 1)));
-        let right: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 2)));
-        if ((*left.borrow()) < (*self.size.borrow()))
-            && ((*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                [((*left.borrow()) as usize) as usize]
-                .upgrade()
-                .deref())
-            .freq
-            .borrow())
-                < (*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [((*smallest.borrow()) as usize) as usize]
-                    .upgrade()
-                    .deref())
-                .freq
-                .borrow()))
-        {
-            (*smallest.borrow_mut()) = (*left.borrow());
-        }
-        if ((*right.borrow()) < (*self.size.borrow()))
-            && ((*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                [((*right.borrow()) as usize) as usize]
-                .upgrade()
-                .deref())
-            .freq
-            .borrow())
-                < (*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [((*smallest.borrow()) as usize) as usize]
-                    .upgrade()
-                    .deref())
-                .freq
-                .borrow()))
-        {
-            (*smallest.borrow_mut()) = (*right.borrow());
-        }
-        if ((*smallest.borrow()) != (*idx.borrow())) {
-            ({
-                let _a: Ptr<MinHeapNode> = ((*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [((*smallest.borrow()) as usize) as usize])
-                    .clone();
-                let _b: Ptr<MinHeapNode> = ((*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [((*idx.borrow()) as usize) as usize])
-                    .clone();
-                Swap_0(_a, _b)
-            });
-            ({ self.Heapify((*smallest.borrow())) });
-        }
-    }
-    pub fn ExtractMin(&self) -> Ptr<MinHeapNode> {
-        let out: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
-            ((*self.arr.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize]).clone(),
-        ));
-        (*self.size.borrow_mut()).prefix_dec();
-        let __rhs = ((*self.arr.borrow()).as_ref().unwrap().borrow()
-            [((*self.size.borrow()) as usize) as usize])
-            .clone();
-        (*self.arr.borrow()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
-        ({ self.Heapify(0) });
-        return (*out.borrow()).clone();
-    }
-    pub fn Insert(&self, node: Ptr<MinHeapNode>) {
-        let node: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(node));
-        (*self.size.borrow_mut()).prefix_inc();
-        let i: Value<i32> = Rc::new(RefCell::new(((*self.size.borrow()) - 1)));
-        'loop_: while ((*i.borrow()) != 0)
-            && ({
-                let _lhs = (*(*(*node.borrow()).upgrade().deref()).freq.borrow());
-                _lhs < (*(*(*self.arr.borrow()).as_ref().unwrap().borrow()
-                    [((((*i.borrow()) - 1) / 2) as usize) as usize]
-                    .upgrade()
-                    .deref())
-                .freq
-                .borrow())
-            })
-        {
-            let __rhs = ((*self.arr.borrow()).as_ref().unwrap().borrow()
-                [((((*i.borrow()) - 1) / 2) as usize) as usize])
-                .clone();
-            (*self.arr.borrow()).as_ref().unwrap().borrow_mut()
-                [((*i.borrow()) as usize) as usize] = __rhs;
-            let __rhs = (((*i.borrow()) - 1) / 2);
-            (*i.borrow_mut()) = __rhs;
-        }
-        (*self.arr.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
-            (*node.borrow()).clone();
-    }
-    pub fn Build(
-        &self,
-        data: Ptr<Option<Value<Box<[u8]>>>>,
-        freq: Ptr<Option<Value<Box<[i32]>>>>,
-        n: i32,
-    ) {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*n.borrow())) {
-            (*self.arr.borrow()).as_ref().unwrap().borrow_mut()
-                [((*self.size.borrow_mut()).postfix_inc() as usize) as usize] = ({
-                let _data: u8 = (*data.upgrade().deref()).as_ref().unwrap().borrow()
-                    [((*i.borrow()) as usize) as usize];
-                let _freq: i32 = (*freq.upgrade().deref()).as_ref().unwrap().borrow()
-                    [((*i.borrow()) as usize) as usize];
-                self.Alloc(_data, _freq)
-            });
-            (*i.borrow_mut()).prefix_inc();
-        }
-        let i: Value<i32> = Rc::new(RefCell::new((((*self.size.borrow()) - 2) / 2)));
-        'loop_: while ((*i.borrow()) >= 0) {
-            ({ self.Heapify((*i.borrow())) });
-            (*i.borrow_mut()).prefix_dec();
-        }
-    }
-}
 impl ByteRepr for MinHeap {
     fn byte_size() -> usize {
         32
@@ -275,7 +139,7 @@ pub fn Huffman_2(
         let _data: Ptr<Option<Value<Box<[u8]>>>> = (data).clone();
         let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
         let _n: i32 = (*size.borrow());
-        (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Build(_data, _freq, _n)
+        MinHeapImpl::Build(&((*minHeap.borrow()).as_pointer()), _data, _freq, _n)
     });
     'loop_: while ((*(*(*minHeap.borrow()).as_ref().unwrap().borrow())
         .size
@@ -283,14 +147,14 @@ pub fn Huffman_2(
         != 1)
     {
         let left: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
-            ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).ExtractMin() }),
+            ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) }),
         ));
         let right: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
-            ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).ExtractMin() }),
+            ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) }),
         ));
         let top: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
             ({
-                (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Alloc(('$' as u8), {
+                MinHeapImpl::Alloc(&((*minHeap.borrow()).as_pointer()), ('$' as u8), {
                     let _lhs = (*(*(*left.borrow()).upgrade().deref()).freq.borrow());
                     _lhs + (*(*(*right.borrow()).upgrade().deref()).freq.borrow())
                 })
@@ -298,7 +162,7 @@ pub fn Huffman_2(
         ));
         (*(*(*top.borrow()).upgrade().deref()).left.borrow_mut()) = (*left.borrow()).clone();
         (*(*(*top.borrow()).upgrade().deref()).right.borrow_mut()) = (*right.borrow()).clone();
-        ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).Insert((*top.borrow()).clone()) });
+        ({ MinHeapImpl::Insert(&((*minHeap.borrow()).as_pointer()), (*top.borrow()).clone()) });
     }
     return (*minHeap.borrow_mut()).take();
 }
@@ -364,7 +228,7 @@ pub fn CollectCodes_4(
             CollectCodes_4(_root, _arr, _top, _out, _next)
         });
     }
-    if ({ (*(*root.borrow()).upgrade().deref()).IsLeaf() }) {
+    if ({ MinHeapNodeImpl::IsLeaf(&(*root.borrow())) }) {
         ({
             let _arr: Ptr<Option<Value<Box<[i32]>>>> = (arr).clone();
             let _top: i32 = (*top.borrow());
@@ -389,7 +253,7 @@ pub fn HuffmanCodes_5(
         }),
     ));
     let root: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
-        ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).ExtractMin() }),
+        ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) }),
     ));
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
         (0..100_usize)
@@ -459,4 +323,196 @@ fn main_0() -> i32 {
             && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
     );
     return 0;
+}
+pub trait MinHeapImpl {
+    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode>;
+    fn Heapify(&self, idx: i32);
+    fn ExtractMin(&self) -> Ptr<MinHeapNode>;
+    fn Insert(&self, node: Ptr<MinHeapNode>);
+    fn Build(
+        &self,
+        data: Ptr<Option<Value<Box<[u8]>>>>,
+        freq: Ptr<Option<Value<Box<[i32]>>>>,
+        n: i32,
+    );
+}
+impl MinHeapImpl for Ptr<MinHeap> {
+    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
+        let data: Value<u8> = Rc::new(RefCell::new(data));
+        let freq: Value<i32> = Rc::new(RefCell::new(freq));
+        (*(*(*self).upgrade().deref()).alloc.borrow())
+            .as_ref()
+            .unwrap()
+            .borrow_mut()[((*(*(*self).upgrade().deref()).next.borrow()) as usize) as usize] =
+            MinHeapNode {
+                data: Rc::new(RefCell::new((*data.borrow()))),
+                freq: Rc::new(RefCell::new((*freq.borrow()))),
+                left: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
+                right: Rc::new(RefCell::new(Ptr::<MinHeapNode>::null())),
+            };
+        return ((*(*(*self).upgrade().deref()).alloc.borrow())
+            .as_ref()
+            .unwrap()
+            .as_pointer()
+            .offset(((*(*(*self).upgrade().deref()).next.borrow_mut()).postfix_inc() as usize)))
+        .clone();
+    }
+    fn Heapify(&self, idx: i32) {
+        let idx: Value<i32> = Rc::new(RefCell::new(idx));
+        let smallest: Value<i32> = Rc::new(RefCell::new((*idx.borrow())));
+        let left: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 1)));
+        let right: Value<i32> = Rc::new(RefCell::new(((2 * (*idx.borrow())) + 2)));
+        if ((*left.borrow()) < (*(*(*self).upgrade().deref()).size.borrow()))
+            && ((*(*(*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*left.borrow()) as usize) as usize]
+                .upgrade()
+                .deref())
+            .freq
+            .borrow())
+                < (*(*(*(*(*self).upgrade().deref()).arr.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((*smallest.borrow()) as usize) as usize]
+                    .upgrade()
+                    .deref())
+                .freq
+                .borrow()))
+        {
+            (*smallest.borrow_mut()) = (*left.borrow());
+        }
+        if ((*right.borrow()) < (*(*(*self).upgrade().deref()).size.borrow()))
+            && ((*(*(*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*right.borrow()) as usize) as usize]
+                .upgrade()
+                .deref())
+            .freq
+            .borrow())
+                < (*(*(*(*(*self).upgrade().deref()).arr.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((*smallest.borrow()) as usize) as usize]
+                    .upgrade()
+                    .deref())
+                .freq
+                .borrow()))
+        {
+            (*smallest.borrow_mut()) = (*right.borrow());
+        }
+        if ((*smallest.borrow()) != (*idx.borrow())) {
+            ({
+                let _a: Ptr<MinHeapNode> = ((*(*(*self).upgrade().deref()).arr.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((*smallest.borrow()) as usize) as usize])
+                    .clone();
+                let _b: Ptr<MinHeapNode> = ((*(*(*self).upgrade().deref()).arr.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((*idx.borrow()) as usize) as usize])
+                    .clone();
+                Swap_0(_a, _b)
+            });
+            ({ MinHeapImpl::Heapify(self, (*smallest.borrow())) });
+        }
+    }
+    fn ExtractMin(&self) -> Ptr<MinHeapNode> {
+        let out: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(
+            ((*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow()[(0_usize) as usize])
+                .clone(),
+        ));
+        (*(*(*self).upgrade().deref()).size.borrow_mut()).prefix_dec();
+        let __rhs = ((*(*(*self).upgrade().deref()).arr.borrow())
+            .as_ref()
+            .unwrap()
+            .borrow()[((*(*(*self).upgrade().deref()).size.borrow()) as usize) as usize])
+            .clone();
+        (*(*(*self).upgrade().deref()).arr.borrow())
+            .as_ref()
+            .unwrap()
+            .borrow_mut()[(0_usize) as usize] = __rhs;
+        ({ MinHeapImpl::Heapify(self, 0) });
+        return (*out.borrow()).clone();
+    }
+    fn Insert(&self, node: Ptr<MinHeapNode>) {
+        let node: Value<Ptr<MinHeapNode>> = Rc::new(RefCell::new(node));
+        (*(*(*self).upgrade().deref()).size.borrow_mut()).prefix_inc();
+        let i: Value<i32> = Rc::new(RefCell::new(
+            ((*(*(*self).upgrade().deref()).size.borrow()) - 1),
+        ));
+        'loop_: while ((*i.borrow()) != 0)
+            && ({
+                let _lhs = (*(*(*node.borrow()).upgrade().deref()).freq.borrow());
+                _lhs < (*(*(*(*(*self).upgrade().deref()).arr.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((((*i.borrow()) - 1) / 2) as usize) as usize]
+                    .upgrade()
+                    .deref())
+                .freq
+                .borrow())
+            })
+        {
+            let __rhs = ((*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow()[((((*i.borrow()) - 1) / 2) as usize) as usize])
+                .clone();
+            (*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
+            let __rhs = (((*i.borrow()) - 1) / 2);
+            (*i.borrow_mut()) = __rhs;
+        }
+        (*(*(*self).upgrade().deref()).arr.borrow())
+            .as_ref()
+            .unwrap()
+            .borrow_mut()[((*i.borrow()) as usize) as usize] = (*node.borrow()).clone();
+    }
+    fn Build(
+        &self,
+        data: Ptr<Option<Value<Box<[u8]>>>>,
+        freq: Ptr<Option<Value<Box<[i32]>>>>,
+        n: i32,
+    ) {
+        let n: Value<i32> = Rc::new(RefCell::new(n));
+        let i: Value<i32> = Rc::new(RefCell::new(0));
+        'loop_: while ((*i.borrow()) < (*n.borrow())) {
+            (*(*(*self).upgrade().deref()).arr.borrow())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*(*(*self).upgrade().deref()).size.borrow_mut())
+                .postfix_inc() as usize) as usize] = ({
+                let _data: u8 = (*data.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*i.borrow()) as usize) as usize];
+                let _freq: i32 = (*freq.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*i.borrow()) as usize) as usize];
+                MinHeapImpl::Alloc(self, _data, _freq)
+            });
+            (*i.borrow_mut()).prefix_inc();
+        }
+        let i: Value<i32> = Rc::new(RefCell::new(
+            (((*(*(*self).upgrade().deref()).size.borrow()) - 2) / 2),
+        ));
+        'loop_: while ((*i.borrow()) >= 0) {
+            ({ MinHeapImpl::Heapify(self, (*i.borrow())) });
+            (*i.borrow_mut()).prefix_dec();
+        }
+    }
+}
+pub trait MinHeapNodeImpl {
+    fn IsLeaf(&self) -> bool;
+}
+impl MinHeapNodeImpl for Ptr<MinHeapNode> {
+    fn IsLeaf(&self) -> bool {
+        return ((*(*(*self).upgrade().deref()).left.borrow()).is_null())
+            && ((*(*(*self).upgrade().deref()).right.borrow()).is_null());
+    }
 }

@@ -13,11 +13,12 @@ pub struct Inner {
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Inner {
@@ -52,13 +53,14 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new((*self.a.borrow()))),
             b: Rc::new(RefCell::new((*self.b.borrow()))),
             c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
             d: Rc::new(RefCell::new((*self.d.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for S {
@@ -102,20 +104,22 @@ impl Boxed_int_ {
     pub fn Boxed_int_(x: i32, t: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let t: Value<i32> = Rc::new(RefCell::new(t));
-        let mut this = Self {
+        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*x.borrow()))),
             tag: Rc::new(RefCell::new((*t.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Boxed_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Clone for Boxed_int_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*self.v.borrow()))),
             tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Boxed_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Boxed_int_ {

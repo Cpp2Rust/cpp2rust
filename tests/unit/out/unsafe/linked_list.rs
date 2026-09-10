@@ -31,7 +31,7 @@ pub unsafe fn Append_1(head: *mut Node, new_node: *mut Node) {
     'loop_: while !(((*curr).next).is_null()) {
         curr = (*curr).next;
     }
-    (unsafe { (*curr).SetNext((new_node)) });
+    (unsafe { Node::SetNext(&mut (*curr), (new_node)) });
 }
 pub unsafe fn Delete_2(mut head: *mut Node, mut val: i32) -> *mut Node {
     let mut curr: *mut Node = head;

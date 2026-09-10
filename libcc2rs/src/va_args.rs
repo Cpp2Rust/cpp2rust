@@ -3,7 +3,7 @@
 
 use std::ffi::c_void;
 
-use crate::rc::AnyPtr;
+use crate::void::AnyPtr;
 
 #[derive(Clone)]
 pub enum VaArg {
@@ -128,7 +128,7 @@ impl<T: 'static + crate::ByteRepr> VaArgGet for crate::rc::Ptr<T> {
     }
 }
 
-impl VaArgGet for crate::rc::AnyPtr {
+impl VaArgGet for AnyPtr {
     fn get(v: &VaArg) -> Self {
         match v {
             VaArg::Ptr(any) => any.clone(),

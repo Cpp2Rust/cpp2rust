@@ -93,9 +93,12 @@ fn f1() -> Ptr<i32> {
 In the unsafe model `libcc2rs::cpp2rust_errno_unsafe` wraps the real platform
 errno location (`__errno_location` on Linux, `__error` on macOS). The refcount
 model instead _virtualizes_ errno as a thread-local `Value<i32>` inside
-`libcc2rs`; this is the same cell that other refcount rules write when they
-translate a failing libc call into
-`libcc2rs::cpp2rust_errno().write(__e as i32)`.
+`libcc2rs`. Nothing else writes that cell, so it is a discipline of the rules:
+every refcount rule that translates a call that can fail must write the error
+code into it on the failure path, as
+`libcc2rs::cpp2rust_errno().write(__e as i32)` in the
+[`stat` rule](./writing-rules.md); a rule that skips the write breaks programs
+that check `errno`.
 
 A rule pattern may spell either the macro or the shim directly; the two are
 identical after expansion. `rules/errno` and `rules/assert` call the shim by

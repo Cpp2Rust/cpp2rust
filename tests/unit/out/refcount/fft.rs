@@ -13,11 +13,12 @@ pub struct Complex {
 }
 impl Clone for Complex {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Complex> = Rc::new(RefCell::new(Self {
             re: Rc::new(RefCell::new((*self.re.borrow()))),
             img: Rc::new(RefCell::new((*self.img.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Complex> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Complex {

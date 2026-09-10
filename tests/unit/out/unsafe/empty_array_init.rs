@@ -12,6 +12,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut vec_: Vec<i32> = vec![];
+    let mut vec_: Vec<i32> = std::array::from_fn::<_, 3, _>(|_| Default::default()).to_vec();
     return 0;
 }

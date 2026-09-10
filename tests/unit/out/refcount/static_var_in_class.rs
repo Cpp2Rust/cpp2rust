@@ -11,15 +11,11 @@ thread_local!(
 );
 #[derive(Default)]
 pub struct C {}
-impl C {
-    pub fn get(&self) -> i32 {
-        return (*inner_const_0.with(Value::clone).borrow());
-    }
-}
 impl Clone for C {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<C> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<C> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for C {
@@ -38,8 +34,9 @@ thread_local!(
 pub struct S {}
 impl Clone for S {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<S> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for S {
@@ -56,7 +53,15 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(<C>::default()));
-    assert!((({ (*c.borrow()).get() }) == 1));
+    assert!((({ CImpl::get(&c.as_pointer(),) }) == 1));
     assert!(((*inner_const_1.with(Value::clone).borrow()) == 2));
     return 0;
+}
+pub trait CImpl {
+    fn get(&self) -> i32;
+}
+impl CImpl for Ptr<C> {
+    fn get(&self) -> i32 {
+        return (*inner_const_0.with(Value::clone).borrow());
+    }
 }

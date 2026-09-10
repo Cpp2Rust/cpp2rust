@@ -73,7 +73,9 @@ The environment is load-bearing:
   crate list is hardcoded, so a new dependency in `rules/Cargo.toml` also needs
   an entry in `rule-preprocessor/src/semantic.rs`.
 
-  > [!WARNING] Stale rlibs from an earlier build can be picked up silently. Run
+  > [!WARNING]
+  >
+  > Stale rlibs from an earlier build can be picked up silently. Run
   > `ninja clean` to fix this.
 
 - The sysroot comes from running `rustc --print=sysroot`, so the `rustc` on

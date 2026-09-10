@@ -12,10 +12,11 @@ pub struct StackArray {
 }
 impl Clone for StackArray {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<StackArray> = Rc::new(RefCell::new(Self {
             arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<StackArray> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for StackArray {

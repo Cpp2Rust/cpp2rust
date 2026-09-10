@@ -5,6 +5,7 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
+#include <clang/AST/DeclCXX.h>
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
@@ -62,9 +63,32 @@ bool IsOverloadedFunction(const clang::FunctionDecl *decl);
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+clang::CXXConstructorDecl *
+GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
+
+bool IsEmittableMethod(clang::CXXMethodDecl *method);
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
 
@@ -117,7 +141,21 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
-bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl);
+std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
+
+bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
+
+bool IsSameTypeComparison(const clang::FunctionDecl *fn,
+                          const clang::CXXRecordDecl *record);
+
+clang::CXXDestructorDecl *
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl);
+
+bool TypeNeedsDestruction(clang::QualType type);
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
@@ -216,8 +254,7 @@ std::string_view Trim(std::string_view s);
 
 void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix);
 
-std::string ReplaceAll(std::string str, std::string_view from,
-                       std::string_view to);
+void ReplaceAll(std::string &str, std::string_view from, std::string_view to);
 
 enum class ConstCastType {
   ConstToConst,

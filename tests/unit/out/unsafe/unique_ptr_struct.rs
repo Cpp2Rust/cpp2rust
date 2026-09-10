@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
     (*p.as_deref_mut().unwrap()).x += 10;
     (*p.as_deref_mut().unwrap()).y =
         (((*p.as_deref_mut().unwrap()).x) + ((*p.as_deref_mut().unwrap()).y));
-    let mut s: i32 = (unsafe { sum_0((*p.as_deref_mut().unwrap()).clone()) });
+    let mut s: i32 = (unsafe { sum_0((*p.as_deref_mut().unwrap())) });
     assert!(((s) == (30)));
     return 0;
 }

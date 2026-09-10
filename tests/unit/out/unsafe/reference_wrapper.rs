@@ -58,7 +58,7 @@ unsafe fn main_0() -> i32 {
         i3,
         i4,
     );
-    (unsafe { set_0(ref_1.clone(), 99) });
+    (unsafe { set_0(ref_1, 99) });
     write!(
         std::fs::File::from_raw_fd(
             std::io::stdout()
@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
         ),
         "{:} {:}\n",
         i1,
-        (unsafe { read_1(ref_1.clone(),) }),
+        (unsafe { read_1(ref_1,) }),
     );
     let mut point: Point = Point { x: 3, y: 4 };
     let mut point_ref: *mut Point = &mut point;

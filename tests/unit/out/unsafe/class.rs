@@ -21,23 +21,23 @@ impl Pair {
         return self.second;
     }
     pub unsafe fn Set(&mut self, field: *mut i32, mut new_val: i32) -> i32 {
-        (unsafe { self.NOP() });
+        (unsafe { Pair::NOP(self) });
         let mut old_val: i32 = (*field);
         (*field) = new_val;
         return old_val;
     }
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
-        return ((unsafe { self.GetFirst() })
+        return ((unsafe { Pair::GetFirst(self) })
             + (unsafe {
                 let _field: *mut i32 = &mut self.first as *mut i32;
-                self.Set(_field, new_first)
+                Pair::Set(self, _field, new_first)
             }));
     }
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
-        return ((unsafe { self.GetSecond() })
+        return ((unsafe { Pair::GetSecond(self) })
             + (unsafe {
                 let _field: *mut i32 = &mut self.second as *mut i32;
-                self.Set(_field, new_second)
+                Pair::Set(self, _field, new_second)
             }));
     }
 }
@@ -57,13 +57,13 @@ impl Route {
 pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
     if ((((*route).path.first) % (2)) != 0) {
         return (unsafe {
-            let _new_first: i32 = (unsafe { (*route).path.SetSecond(10) });
-            (*route).path.SetFirst(_new_first)
+            let _new_first: i32 = (unsafe { Pair::SetSecond(&mut (*route).path, 10) });
+            Pair::SetFirst(&mut (*route).path, _new_first)
         });
     } else {
         return (unsafe {
-            let _new_second: i32 = (unsafe { (*route).path.SetFirst(-10_i32) });
-            (*route).path.SetSecond(_new_second)
+            let _new_second: i32 = (unsafe { Pair::SetFirst(&mut (*route).path, -10_i32) });
+            Pair::SetSecond(&mut (*route).path, _new_second)
         });
     }
     panic!("ub: non-void function does not return a value")
@@ -88,7 +88,12 @@ unsafe fn main_0() -> i32 {
         },
         cost: 10_f64,
     };
-    let mut old_cost: f64 = (unsafe { route1.SetCost((unsafe { route2.SetCost(15_f64) })) });
+    let mut old_cost: f64 = (unsafe {
+        Route::SetCost(
+            &mut route1,
+            (unsafe { Route::SetCost(&mut route2, 15_f64) }),
+        )
+    });
     assert!(
         (((((unsafe { RandomRoute_0(&mut route1 as *mut Route,) })
             + (unsafe { RandomRoute_0(&mut route2 as *mut Route,) })) as f64)

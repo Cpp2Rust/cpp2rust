@@ -64,10 +64,10 @@ unsafe fn main_0() -> i32 {
     out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
     let mut foo1: Foo = Foo {};
     let foo2: Foo = Foo {};
-    (unsafe { foo1.foo() });
-    (unsafe { foo1.method_i32(1) });
-    (unsafe { foo2.foo_const() });
-    (unsafe { foo2.method_i32_const(2) });
+    (unsafe { Foo::foo(&mut foo1) });
+    (unsafe { Foo::method_i32(&mut foo1, 1) });
+    (unsafe { Foo::foo_const(&foo2) });
+    (unsafe { Foo::method_i32_const(&foo2, 2) });
     assert!(((out) == (13)));
     return 0;
 }

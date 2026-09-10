@@ -258,19 +258,101 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
+bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isCopyConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return IsUserDefinedCopyConstructor(ctor) ||
+         IsUserDefinedMoveConstructor(ctor);
+}
+
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor->getParent());
+}
+
+clang::CXXConstructorDecl *
+GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return nullptr;
+  }
+  for (auto *ctor : cxx->ctors()) {
+    if (IsUserDefinedCopyConstructor(ctor) && ctor->getDefinition()) {
+      return ctor;
+    }
+  }
+  return nullptr;
+}
+
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  for (const auto *ctor : cxx->ctors()) {
+    if (ctor->isCopyConstructor()) {
+      return !ctor->isUserProvided() && !ctor->isDeleted();
+    }
+  }
+  return !cxx->defaultedCopyConstructorIsDeleted();
+}
+
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  if (!cxx->hasUserDeclaredCopyConstructor()) {
+    return !cxx->defaultedCopyConstructorIsDeleted();
+  }
+  for (const auto *ctor : cxx->ctors()) {
+    if (ctor->isCopyConstructor() && !ctor->isDeleted() &&
+        ctor->getDefinition()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
+  return !ctor->isCopyOrMoveConstructor() &&
+         ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+         ctor->getParamDecl(0)->getType()->isRValueReferenceType();
+}
+
+bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
+  return !IsUserDefinedCopyOrMoveConstructor(ctor) &&
+         (ctor->isCopyOrMoveConstructor() ||
+          IsRValueConvertingConstructor(ctor));
+}
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
+               auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method);
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
-                      method->getDescribedFunctionTemplate();
+                      method->getDescribedFunctionTemplate() ||
+                      (ctor ? ctor->isCopyOrMoveConstructor()
+                            : method->isCopyAssignmentOperator() ||
+                                  method->isMoveAssignmentOperator());
              });
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
-  // Destructors go into the Drop trait
-  return !llvm::isa<clang::CXXDestructorDecl>(decl) && !decl->isImplicit();
+  if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
+    return GetUserDefinedDestructor(decl->getParent()) != nullptr;
+  }
+  return !decl->isImplicit();
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -473,6 +555,9 @@ static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
+  if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
+    name = GetFunctionBaseName(fn);
+  }
 
   // Anonymous record or enum
   if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
@@ -577,32 +662,210 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr) {
 }
 
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl) {
+  auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl);
+  unsigned operands =
+      decl->getNumParams() + (method && !method->isStatic() ? 1 : 0);
   switch (decl->getOverloadedOperator()) {
+  case clang::OO_PlusPlus:
+    return operands == 2 ? "operator_post_inc" : "operator_inc";
+  case clang::OO_MinusMinus:
+    return operands == 2 ? "operator_post_dec" : "operator_dec";
+  case clang::OO_Minus:
+    return operands == 1 ? "operator_neg" : "operator_sub";
+  case clang::OO_Plus:
+    return operands == 1 ? "operator_pos" : "operator_add";
+  case clang::OO_Star:
+    return operands == 1 ? "operator_deref" : "operator_mul";
+  case clang::OO_Amp:
+    return operands == 1 ? "operator_addr" : "operator_bitand";
   case clang::OO_Less:
-    return "lt";
+    return "operator_lt";
+  case clang::OO_Greater:
+    return "operator_gt";
+  case clang::OO_LessEqual:
+    return "operator_le";
+  case clang::OO_GreaterEqual:
+    return "operator_ge";
+  case clang::OO_EqualEqual:
+    return "operator_eq";
+  case clang::OO_ExclaimEqual:
+    return "operator_ne";
+  case clang::OO_Spaceship:
+    return "operator_cmp";
+  case clang::OO_Slash:
+    return "operator_div";
+  case clang::OO_Percent:
+    return "operator_rem";
+  case clang::OO_Caret:
+    return "operator_bitxor";
+  case clang::OO_Pipe:
+    return "operator_bitor";
+  case clang::OO_Tilde:
+    return "operator_bitnot";
+  case clang::OO_Exclaim:
+    return "operator_not";
+  case clang::OO_Equal:
+    return "operator_assign";
+  case clang::OO_PlusEqual:
+    return "operator_add_assign";
+  case clang::OO_MinusEqual:
+    return "operator_sub_assign";
+  case clang::OO_StarEqual:
+    return "operator_mul_assign";
+  case clang::OO_SlashEqual:
+    return "operator_div_assign";
+  case clang::OO_PercentEqual:
+    return "operator_rem_assign";
+  case clang::OO_CaretEqual:
+    return "operator_bitxor_assign";
+  case clang::OO_AmpEqual:
+    return "operator_bitand_assign";
+  case clang::OO_PipeEqual:
+    return "operator_bitor_assign";
+  case clang::OO_LessLess:
+    return "operator_shl";
+  case clang::OO_GreaterGreater:
+    return "operator_shr";
+  case clang::OO_LessLessEqual:
+    return "operator_shl_assign";
+  case clang::OO_GreaterGreaterEqual:
+    return "operator_shr_assign";
+  case clang::OO_AmpAmp:
+    return "operator_and";
+  case clang::OO_PipePipe:
+    return "operator_or";
+  case clang::OO_Comma:
+    return "operator_comma";
+  case clang::OO_Arrow:
+    return "operator_arrow";
+  case clang::OO_Call:
+    return "operator_call";
+  case clang::OO_Subscript:
+    return "operator_index";
   default:
-    // FIXME: improve error handling
-    log() << "unsupported overloaded operator\n";
+    assert(0 && "unsupported overloaded operator");
     return "";
   }
 }
 
-bool IsOverloadedComparisonOperator(const clang::CXXMethodDecl *decl) {
+bool IsSameTypeComparison(const clang::FunctionDecl *fn,
+                          const clang::CXXRecordDecl *record) {
+  auto record_type = fn->getASTContext().getCanonicalTagType(record);
+  auto is_record = [&](clang::QualType type) {
+    return type.getNonReferenceType().getUnqualifiedType().getCanonicalType() ==
+           record_type;
+  };
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn)) {
+    return method->isInstance() && method->getNumParams() == 1 &&
+           is_record(method->getParamDecl(0)->getType());
+  }
+  return fn->getNumParams() == 2 && is_record(fn->getParamDecl(0)->getType()) &&
+         is_record(fn->getParamDecl(1)->getType());
+}
+
+bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
+  const auto *callee = expr->getDirectCallee();
+  if (!callee || !callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
+    return false;
+  }
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
+    return !method->getParent()->isLambda();
+  }
+  return true;
+}
+
+std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
+  if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    auto name = "operator_" + conversion->getConversionType().getAsString();
+    std::replace_if(
+        name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
+    return name;
+  }
   if (decl->isOverloadedOperator()) {
-    switch (decl->getOverloadedOperator()) {
-    case clang::OO_EqualEqual:
-    case clang::OO_ExclaimEqual:
-    case clang::OO_Less:
-    case clang::OO_Greater:
-    case clang::OO_LessEqual:
-    case clang::OO_GreaterEqual:
-    case clang::OO_Spaceship:
+    return GetOverloadedOperator(decl);
+  }
+  return decl->getNameAsString();
+}
+
+clang::CXXDestructorDecl *
+GetUserDefinedDestructor(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
+      !decl->hasUserDeclaredDestructor()) {
+    return nullptr;
+  }
+  auto *dtor = decl->getDestructor();
+  if (!dtor || dtor->isImplicit() || !dtor->getDefinition() ||
+      dtor->getDefinition()->isDefaulted()) {
+    return nullptr;
+  }
+  return dtor;
+}
+
+bool TypeNeedsDestruction(clang::QualType type) {
+  if (type->isArrayType()) {
+    type = clang::QualType(type->getBaseElementTypeUnsafe(), 0);
+  }
+  auto *record = type->getAsCXXRecordDecl();
+  return record && RecordNeedsDestruction(record);
+}
+
+bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
+  if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
+    return false;
+  }
+  for (const auto *field : decl->fields()) {
+    if (TypeNeedsDestruction(field->getType())) {
       return true;
-    default:
-      return false;
     }
   }
   return false;
+}
+
+bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
+}
+
+bool IsEmittableMethod(clang::CXXMethodDecl *method) {
+  if (method->isDeleted()) {
+    return false;
+  }
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) &&
+           method->isThisDeclarationADefinition();
+  }
+  // Virtual methods go into the base trait impl
+  if (method->isVirtual()) {
+    return false;
+  }
+  // Compiler-generated members are covered by derived traits
+  if (method->isImplicit()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  return method->isThisDeclarationADefinition() ||
+         clang::isa<clang::CXXConstructorDecl>(method);
+}
+
+bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (method->isImplicit() || method->isDeleted() || method->isStatic() ||
+      method->isVirtual() || clang::isa<clang::CXXConstructorDecl>(method)) {
+    return false;
+  }
+  if (!IsUserDefinedDecl(method->getParent()) ||
+      method->getParent()->isLambda()) {
+    return false;
+  }
+  if (auto *definition = method->getDefinition();
+      definition && definition->isDefaulted()) {
+    return false;
+  }
+  if (clang::isa<clang::CXXDestructorDecl>(method)) {
+    return GetUserDefinedDestructor(method->getParent()) != nullptr;
+  }
+  return true;
 }
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr) {
@@ -1112,14 +1375,12 @@ void Unwrap(std::string &s, std::string_view prefix, std::string_view suffix) {
   }
 }
 
-std::string ReplaceAll(std::string str, std::string_view from,
-                       std::string_view to) {
+void ReplaceAll(std::string &str, std::string_view from, std::string_view to) {
   size_t pos = 0;
   while ((pos = str.find(from, pos)) != std::string::npos) {
     str.replace(pos, from.size(), to);
     pos += to.size();
   }
-  return str;
 }
 
 ConstCastType GetConstCastType(clang::QualType to, clang::QualType from) {

@@ -91,36 +91,41 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut imc: MyContainer_int_ = <MyContainer_int_>::default();
-    assert!((unsafe { imc.empty() }));
+    assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     (unsafe {
         let mut _item: i32 = 1;
-        imc.push_back(&mut _item)
+        MyContainer_int_::push_back(&mut imc, &mut _item)
     });
-    assert!(((unsafe { imc.size() }) == (1_usize)) && ((*(unsafe { imc.back() })) == (1)));
-    (unsafe { imc.pop_back() });
-    assert!((unsafe { imc.empty() }));
+    assert!(
+        ((unsafe { MyContainer_int_::size(&imc,) }) == (1_usize))
+            && ((*(unsafe { MyContainer_int_::back(&mut imc,) })) == (1))
+    );
+    (unsafe { MyContainer_int_::pop_back(&mut imc) });
+    assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     let mut cmc: MyContainer_char_ = <MyContainer_char_>::default();
-    assert!((unsafe { cmc.empty() }));
+    assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
     (unsafe {
         let mut _item: libc::c_char = ('a' as libc::c_char);
-        cmc.push_back(&mut _item)
+        MyContainer_char_::push_back(&mut cmc, &mut _item)
     });
     assert!(
-        ((unsafe { cmc.size() }) == (1_usize))
-            && (((*(unsafe { cmc.back() })) as i32) == (('a' as libc::c_char) as i32))
+        ((unsafe { MyContainer_char_::size(&cmc,) }) == (1_usize))
+            && (((*(unsafe { MyContainer_char_::back(&mut cmc,) })) as i32)
+                == (('a' as libc::c_char) as i32))
     );
-    (unsafe { cmc.pop_back() });
-    assert!((unsafe { cmc.empty() }));
+    (unsafe { MyContainer_char_::pop_back(&mut cmc) });
+    assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
     let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
-    assert!((unsafe { fmc.empty() }));
+    assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     (unsafe {
         let mut _item: f32 = (1.0E+0 as f32);
-        fmc.push_back(&mut _item)
+        MyContainer_float_::push_back(&mut fmc, &mut _item)
     });
     assert!(
-        ((unsafe { fmc.size() }) == (1_usize)) && (((*(unsafe { fmc.back() })) as f64) == (1.0E+0))
+        ((unsafe { MyContainer_float_::size(&fmc,) }) == (1_usize))
+            && (((*(unsafe { MyContainer_float_::back(&mut fmc,) })) as f64) == (1.0E+0))
     );
-    (unsafe { fmc.pop_back() });
-    assert!((unsafe { fmc.empty() }));
+    (unsafe { MyContainer_float_::pop_back(&mut fmc) });
+    assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     return 0;
 }

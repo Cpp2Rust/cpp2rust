@@ -10,33 +10,13 @@ use std::rc::{Rc, Weak};
 pub struct MyContainer_int_ {
     vec_: Value<Vec<i32>>,
 }
-impl MyContainer_int_ {
-    pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
-    }
-    pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
-    }
-    pub fn back(&self) -> Ptr<i32> {
-        return (self.vec_.as_pointer() as Ptr<i32>).to_last();
-    }
-    pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
-        return;
-    }
-    pub fn push_back(&self, item: Ptr<i32>) {
-        {
-            let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
-        };
-    }
-}
 impl Clone for MyContainer_int_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_int_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_int_ {
@@ -56,33 +36,13 @@ impl ByteRepr for MyContainer_int_ {
 pub struct MyContainer_char_ {
     vec_: Value<Vec<u8>>,
 }
-impl MyContainer_char_ {
-    pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
-    }
-    pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
-    }
-    pub fn back(&self) -> Ptr<u8> {
-        return (self.vec_.as_pointer() as Ptr<u8>).to_last();
-    }
-    pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
-        return;
-    }
-    pub fn push_back(&self, item: Ptr<u8>) {
-        {
-            let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
-        };
-    }
-}
 impl Clone for MyContainer_char_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_char_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_char_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_char_ {
@@ -102,33 +62,13 @@ impl ByteRepr for MyContainer_char_ {
 pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
 }
-impl MyContainer_float_ {
-    pub fn empty(&self) -> bool {
-        return (*self.vec_.borrow()).is_empty();
-    }
-    pub fn size(&self) -> usize {
-        return (*self.vec_.borrow()).len();
-    }
-    pub fn back(&self) -> Ptr<f32> {
-        return (self.vec_.as_pointer() as Ptr<f32>).to_last();
-    }
-    pub fn pop_back(&self) {
-        (*self.vec_.borrow_mut()).pop();
-        return;
-    }
-    pub fn push_back(&self, item: Ptr<f32>) {
-        {
-            let a0_clone = (item.read()).clone();
-            (*self.vec_.borrow_mut()).push(a0_clone)
-        };
-    }
-}
 impl Clone for MyContainer_float_ {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<MyContainer_float_> = Rc::new(RefCell::new(Self {
             vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<MyContainer_float_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for MyContainer_float_ {
@@ -149,39 +89,125 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let imc: Value<MyContainer_int_> = Rc::new(RefCell::new(<MyContainer_int_>::default()));
-    assert!(({ (*imc.borrow()).empty() }));
+    assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
     ({
         let _item: Value<i32> = Rc::new(RefCell::new(1));
-        (*imc.borrow()).push_back(_item.as_pointer())
+        MyContainer_int_Impl::push_back(&imc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        (({ (*imc.borrow()).size() }) == 1_usize) && ((({ (*imc.borrow()).back() }).read()) == 1)
+        (({ MyContainer_int_Impl::size(&imc.as_pointer(),) }) == 1_usize)
+            && ((({ MyContainer_int_Impl::back(&imc.as_pointer(),) }).read()) == 1)
     );
-    ({ (*imc.borrow()).pop_back() });
-    assert!(({ (*imc.borrow()).empty() }));
+    ({ MyContainer_int_Impl::pop_back(&imc.as_pointer()) });
+    assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
     let cmc: Value<MyContainer_char_> = Rc::new(RefCell::new(<MyContainer_char_>::default()));
-    assert!(({ (*cmc.borrow()).empty() }));
+    assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
     ({
         let _item: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
-        (*cmc.borrow()).push_back(_item.as_pointer())
+        MyContainer_char_Impl::push_back(&cmc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        (({ (*cmc.borrow()).size() }) == 1_usize)
-            && (((({ (*cmc.borrow()).back() }).read()) as i32) == (('a' as u8) as i32))
+        (({ MyContainer_char_Impl::size(&cmc.as_pointer(),) }) == 1_usize)
+            && (((({ MyContainer_char_Impl::back(&cmc.as_pointer(),) }).read()) as i32)
+                == (('a' as u8) as i32))
     );
-    ({ (*cmc.borrow()).pop_back() });
-    assert!(({ (*cmc.borrow()).empty() }));
+    ({ MyContainer_char_Impl::pop_back(&cmc.as_pointer()) });
+    assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
     let fmc: Value<MyContainer_float_> = Rc::new(RefCell::new(<MyContainer_float_>::default()));
-    assert!(({ (*fmc.borrow()).empty() }));
+    assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     ({
         let _item: Value<f32> = Rc::new(RefCell::new((1.0E+0 as f32)));
-        (*fmc.borrow()).push_back(_item.as_pointer())
+        MyContainer_float_Impl::push_back(&fmc.as_pointer(), _item.as_pointer())
     });
     assert!(
-        (({ (*fmc.borrow()).size() }) == 1_usize)
-            && (((({ (*fmc.borrow()).back() }).read()) as f64) == 1.0E+0)
+        (({ MyContainer_float_Impl::size(&fmc.as_pointer(),) }) == 1_usize)
+            && (((({ MyContainer_float_Impl::back(&fmc.as_pointer(),) }).read()) as f64) == 1.0E+0)
     );
-    ({ (*fmc.borrow()).pop_back() });
-    assert!(({ (*fmc.borrow()).empty() }));
+    ({ MyContainer_float_Impl::pop_back(&fmc.as_pointer()) });
+    assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     return 0;
+}
+pub trait MyContainer_char_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<u8>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<u8>);
+}
+impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
+    fn empty(&self) -> bool {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
+    }
+    fn back(&self) -> Ptr<u8> {
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<u8>).to_last();
+    }
+    fn pop_back(&self) {
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
+        return;
+    }
+    fn push_back(&self, item: Ptr<u8>) {
+        {
+            let a0_clone = (item.read()).clone();
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+        };
+    }
+}
+pub trait MyContainer_float_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<f32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<f32>);
+}
+impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
+    fn empty(&self) -> bool {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
+    }
+    fn back(&self) -> Ptr<f32> {
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<f32>).to_last();
+    }
+    fn pop_back(&self) {
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
+        return;
+    }
+    fn push_back(&self, item: Ptr<f32>) {
+        {
+            let a0_clone = (item.read()).clone();
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+        };
+    }
+}
+pub trait MyContainer_int_Impl {
+    fn empty(&self) -> bool;
+    fn size(&self) -> usize;
+    fn back(&self) -> Ptr<i32>;
+    fn pop_back(&self);
+    fn push_back(&self, item: Ptr<i32>);
+}
+impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
+    fn empty(&self) -> bool {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).is_empty();
+    }
+    fn size(&self) -> usize {
+        return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
+    }
+    fn back(&self) -> Ptr<i32> {
+        return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<i32>).to_last();
+    }
+    fn pop_back(&self) {
+        (*(*(*self).upgrade().deref()).vec_.borrow_mut()).pop();
+        return;
+    }
+    fn push_back(&self, item: Ptr<i32>) {
+        {
+            let a0_clone = (item.read()).clone();
+            (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
+        };
+    }
 }

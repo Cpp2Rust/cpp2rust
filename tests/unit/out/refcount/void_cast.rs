@@ -16,10 +16,11 @@ pub struct NonTrivial {
 }
 impl Clone for NonTrivial {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<NonTrivial> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<NonTrivial> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for NonTrivial {
@@ -55,10 +56,11 @@ pub struct Holder {
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
             field: Rc::new(RefCell::new((*self.field.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Holder {

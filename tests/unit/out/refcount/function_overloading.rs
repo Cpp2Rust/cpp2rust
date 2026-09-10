@@ -38,28 +38,11 @@ pub fn bar_4(x: Ptr<i32>) -> i32 {
 }
 #[derive(Default)]
 pub struct Foo {}
-impl Foo {
-    pub fn foo_const(&self) {}
-    pub fn foo(&self) {}
-    pub fn method_i32(&self, x: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-    }
-    pub fn method_i32_const(&self, x: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-    }
-    pub fn method2_i32_i32_const(&self, x: i32, y: i32) {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-    }
-    pub fn method2_f64_f64_const(&self, x: f64, y: f64) {
-        let x: Value<f64> = Rc::new(RefCell::new(x));
-        let y: Value<f64> = Rc::new(RefCell::new(y));
-    }
-}
 impl Clone for Foo {
     fn clone(&self) -> Self {
-        let mut this = Self {};
-        this
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Foo {
@@ -103,10 +86,36 @@ fn main_0() -> i32 {
     (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) })) + ({ foo_1((x.as_pointer())) }));
     let foo1: Value<Foo> = Rc::new(RefCell::new(Foo {}));
     let foo2: Value<Foo> = Rc::new(RefCell::new(Foo {}));
-    ({ (*foo1.borrow()).foo() });
-    ({ (*foo1.borrow()).method_i32(1) });
-    ({ (*foo2.borrow()).foo_const() });
-    ({ (*foo2.borrow()).method_i32_const(2) });
+    ({ FooImpl::foo(&foo1.as_pointer()) });
+    ({ FooImpl::method_i32(&foo1.as_pointer(), 1) });
+    ({ FooImpl::foo_const(&foo2.as_pointer()) });
+    ({ FooImpl::method_i32_const(&foo2.as_pointer(), 2) });
     assert!(((*out.borrow()) == 13));
     return 0;
+}
+pub trait FooImpl {
+    fn foo_const(&self);
+    fn foo(&self);
+    fn method_i32(&self, x: i32);
+    fn method_i32_const(&self, x: i32);
+    fn method2_i32_i32_const(&self, x: i32, y: i32);
+    fn method2_f64_f64_const(&self, x: f64, y: f64);
+}
+impl FooImpl for Ptr<Foo> {
+    fn foo_const(&self) {}
+    fn foo(&self) {}
+    fn method_i32(&self, x: i32) {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+    }
+    fn method_i32_const(&self, x: i32) {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+    }
+    fn method2_i32_i32_const(&self, x: i32, y: i32) {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+    }
+    fn method2_f64_f64_const(&self, x: f64, y: f64) {
+        let x: Value<f64> = Rc::new(RefCell::new(x));
+        let y: Value<f64> = Rc::new(RefCell::new(y));
+    }
 }

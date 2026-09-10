@@ -12,10 +12,11 @@ pub struct Inner {
 }
 impl Clone for Inner {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new((*self.value.borrow()))),
-        };
-        this
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Inner {
@@ -37,10 +38,11 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let mut this = Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-        };
-        this
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Outer {
