@@ -35,6 +35,26 @@ impl Default for S {
         }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Boxed_int_ {
+    pub v: i32,
+    pub tag: i32,
+}
+impl Boxed_int_ {
+    pub unsafe fn Boxed_int_(mut x: i32, mut t: i32) -> Self {
+        let mut this = Self { v: x, tag: t };
+        this
+    }
+}
+impl Default for Boxed_int_ {
+    fn default() -> Self {
+        Boxed_int_ {
+            v: 0_i32,
+            tag: 0_i32,
+        }
+    }
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -48,5 +68,8 @@ unsafe fn main_0() -> i32 {
     assert!(((s.c.y) == (4)));
     assert!(((s.d.x) == (3)));
     assert!(((s.d.y) == (4)));
+    let mut boxed: Boxed_int_ = Boxed_int_::Boxed_int_({ 5 }, { 9 });
+    assert!(((boxed.v) == (5)));
+    assert!(((boxed.tag) == (9)));
     return 0;
 }
