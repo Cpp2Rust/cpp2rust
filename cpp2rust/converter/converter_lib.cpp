@@ -214,7 +214,7 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
     if (rd->isUnion()) {
       return true;
     }
-    for (const auto *field : GetFieldsAndBases(rd)) {
+    for (const auto *field : RecordFields::Get(rd)) {
       if (!TypeImplementsByteRepr(field->getType())) {
         return false;
       }
@@ -831,7 +831,7 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
   if (!decl->hasDefinition() || !IsUserDefinedDecl(decl)) {
     return false;
   }
-  for (const auto *field : GetFieldsAndBases(decl)) {
+  for (const auto *field : RecordFields::Get(decl)) {
     if (TypeNeedsDestruction(field->getType())) {
       return true;
     }
@@ -839,22 +839,18 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl) {
   return false;
 }
 
-namespace {
 std::unordered_map<const clang::CXXRecordDecl *,
                    std::vector<clang::FieldDecl *>>
-    base_fields;
-std::unordered_map<const clang::FieldDecl *, const clang::CXXRecordDecl *>
-    field_to_base;
-} // namespace
+    RecordFields::base_fields_;
 
 std::vector<clang::FieldDecl *>
-GetFieldsAndBases(const clang::RecordDecl *decl) {
+RecordFields::Get(const clang::RecordDecl *decl) {
   auto &ctx = decl->getASTContext();
   std::vector<clang::FieldDecl *> out;
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
       cxx && cxx->hasDefinition()) {
     cxx = cxx->getDefinition();
-    auto [it, inserted] = base_fields.try_emplace(cxx);
+    auto [it, inserted] = base_fields_.try_emplace(cxx);
     if (inserted) {
       std::vector<const clang::CXXBaseSpecifier *> bases;
       for (const auto &base : cxx->bases()) {
@@ -877,7 +873,6 @@ GetFieldsAndBases(const clang::RecordDecl *decl) {
             /*BW=*/nullptr, /*Mutable=*/false, clang::ICIS_NoInit);
         field->setAccess(clang::AS_public);
         it->second.push_back(field);
-        field_to_base.emplace(field, type->getAsCXXRecordDecl());
       }
     }
     out = it->second;
@@ -888,15 +883,23 @@ GetFieldsAndBases(const clang::RecordDecl *decl) {
   return out;
 }
 
-const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field) {
-  auto it = field_to_base.find(field);
-  return it == field_to_base.end() ? nullptr : it->second;
+const clang::CXXRecordDecl *
+RecordFields::GetBase(const clang::FieldDecl *field) {
+  auto *parent = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
+  if (!parent) {
+    return nullptr;
+  }
+  auto it = base_fields_.find(parent->getDefinition());
+  if (it == base_fields_.end() || !llvm::is_contained(it->second, field)) {
+    return nullptr;
+  }
+  return field->getType()->getAsCXXRecordDecl();
 }
 
-clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
-                                 const clang::CXXRecordDecl *base) {
-  for (auto *field : GetFieldsAndBases(derived)) {
-    if (GetBaseOfField(field) == base->getDefinition()) {
+clang::FieldDecl *RecordFields::GetForBase(const clang::CXXRecordDecl *derived,
+                                           const clang::CXXRecordDecl *base) {
+  for (auto *field : Get(derived)) {
+    if (GetBase(field) == base->getDefinition()) {
       return field;
     }
   }
@@ -929,8 +932,8 @@ clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
     auto member_type = ctx.getQualifiedType(
         step->getType().getUnqualifiedType(), object_type.getQualifiers());
     object = clang::MemberExpr::CreateImplicit(
-        ctx, object, arrow, GetFieldOfBase(derived, base), member_type,
-        clang::VK_LValue, clang::OK_Ordinary);
+        ctx, object, arrow, RecordFields::GetForBase(derived, base),
+        member_type, clang::VK_LValue, clang::OK_Ordinary);
   }
   return object;
 }
@@ -938,7 +941,7 @@ clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
 uint64_t GetFieldByteOffset(const clang::FieldDecl *field) {
   const auto &layout =
       field->getASTContext().getASTRecordLayout(field->getParent());
-  if (auto *base = GetBaseOfField(field)) {
+  if (auto *base = RecordFields::GetBase(field)) {
     return layout.getBaseClassOffset(base).getQuantity();
   }
   return layout.getFieldOffset(field->getFieldIndex()) / 8;
@@ -949,7 +952,7 @@ bool InitializesField(const clang::CXXCtorInitializer *init,
   if (!init) {
     return false;
   }
-  if (auto *base = GetBaseOfField(field)) {
+  if (auto *base = RecordFields::GetBase(field)) {
     return init->isBaseInitializer() &&
            init->getBaseClass()->getAsCXXRecordDecl() == base;
   }

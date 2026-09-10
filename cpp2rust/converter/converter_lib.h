@@ -13,6 +13,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -159,13 +160,20 @@ bool TypeNeedsDestruction(clang::QualType type);
 
 bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 
-std::vector<clang::FieldDecl *>
-GetFieldsAndBases(const clang::RecordDecl *decl);
+class RecordFields {
+public:
+  static std::vector<clang::FieldDecl *> Get(const clang::RecordDecl *decl);
 
-const clang::CXXRecordDecl *GetBaseOfField(const clang::FieldDecl *field);
+  static const clang::CXXRecordDecl *GetBase(const clang::FieldDecl *field);
 
-clang::FieldDecl *GetFieldOfBase(const clang::CXXRecordDecl *derived,
-                                 const clang::CXXRecordDecl *base);
+  static clang::FieldDecl *GetForBase(const clang::CXXRecordDecl *derived,
+                                      const clang::CXXRecordDecl *base);
+
+private:
+  static std::unordered_map<const clang::CXXRecordDecl *,
+                            std::vector<clang::FieldDecl *>>
+      base_fields_;
+};
 
 bool IsThisExpr(const clang::Expr *expr);
 
