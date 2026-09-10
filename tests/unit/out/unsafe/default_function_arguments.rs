@@ -14,6 +14,23 @@ pub unsafe fn baz_1(mut a: *mut i32, mut b: Option<*mut i32>) -> bool {
     let mut b: *mut i32 = b.unwrap_or(std::ptr::null_mut());
     return ((a) == (b));
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Bar {
+    pub v: i32,
+}
+impl Bar {
+    pub unsafe fn Bar(mut v: Option<i32>) -> Self {
+        let mut v: i32 = v.unwrap_or(1);
+        let mut this = Self { v: v };
+        this
+    }
+}
+impl Default for Bar {
+    fn default() -> Self {
+        unsafe { Bar::Bar(None) }
+    }
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -32,5 +49,15 @@ unsafe fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
+    let mut b: Bar = Bar::Bar({ Some() });
+    assert!(((b.v) == (1)));
+    assert!(((Bar::Bar({ Some(2) },).v) == (2)));
+    let mut arr: [Bar; 3] = [
+        Bar::Bar({ Some() }),
+        Bar::Bar({ Some() }),
+        Bar::Bar({ Some() }),
+    ];
+    assert!(((arr[(0) as usize].v) == (1)));
+    assert!(((arr[(2) as usize].v) == (1)));
     return 0;
 }
