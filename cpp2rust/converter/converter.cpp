@@ -1091,7 +1091,7 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
   auto *definition = clang::cast<clang::CXXConstructorDecl>(definition_or_null);
 
   auto **ctor_initializer_list = definition->inits().begin();
-  int curr_init = 0;
+  unsigned curr_init = 0;
 
   for (const auto *field : RecordFields::Get(record_decl)) {
     auto field_name = GetNamedDeclAsString(field);
