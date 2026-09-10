@@ -93,6 +93,54 @@ impl ByteRepr for S {
         }
     }
 }
+#[derive()]
+pub struct Boxed_int_ {
+    pub v: Value<i32>,
+    pub tag: Value<i32>,
+}
+impl Boxed_int_ {
+    pub fn Boxed_int_(x: i32, t: i32) -> Self {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let t: Value<i32> = Rc::new(RefCell::new(t));
+        let mut this = Self {
+            v: Rc::new(RefCell::new((*x.borrow()))),
+            tag: Rc::new(RefCell::new((*t.borrow()))),
+        };
+        this
+    }
+}
+impl Clone for Boxed_int_ {
+    fn clone(&self) -> Self {
+        let mut this = Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+            tag: Rc::new(RefCell::new((*self.tag.borrow()))),
+        };
+        this
+    }
+}
+impl Default for Boxed_int_ {
+    fn default() -> Self {
+        Boxed_int_ {
+            v: <Value<i32>>::default(),
+            tag: <Value<i32>>::default(),
+        }
+    }
+}
+impl ByteRepr for Boxed_int_ {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.tag.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -104,5 +152,8 @@ fn main_0() -> i32 {
     assert!(((*(*(*s.borrow()).c.borrow()).y.borrow()) == 4));
     assert!(((*(*(*s.borrow()).d.borrow()).x.borrow()) == 3));
     assert!(((*(*(*s.borrow()).d.borrow()).y.borrow()) == 4));
+    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::Boxed_int_({ 5 }, { 9 })));
+    assert!(((*(*boxed.borrow()).v.borrow()) == 5));
+    assert!(((*(*boxed.borrow()).tag.borrow()) == 9));
     return 0;
 }
