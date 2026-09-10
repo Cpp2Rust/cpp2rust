@@ -3798,8 +3798,39 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
     name += '_';
   }
 
+  if (const auto *targs = decl->getTemplateSpecializationArgs()) {
+    std::vector<clang::TemplateArgument> args;
+    for (const auto &arg : targs->asArray()) {
+      if (arg.getKind() == clang::TemplateArgument::Pack) {
+        args.insert(args.end(), arg.pack_begin(), arg.pack_end());
+      } else {
+        args.push_back(arg);
+      }
+    }
+    for (const auto &arg : args) {
+      name += '_';
+      switch (arg.getKind()) {
+      case clang::TemplateArgument::Type:
+        name += Mapper::ToRustName(
+            arg.getAsType().getCanonicalType().getAsString());
+        break;
+      case clang::TemplateArgument::Integral:
+        name += Mapper::ToRustName(
+            std::string(GetNumAsString(arg.getAsIntegral())));
+        break;
+      default:
+        name += "targ";
+        break;
+      }
+    }
+  }
+
   auto pred = [](char ch) { return ch != ' ' && ch != '_'; };
   name.erase(std::find_if(name.rbegin(), name.rend(), pred).base(), name.end());
+
+  if (decl->isVariadic()) {
+    name += "_va";
+  }
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
     if (method->isConst()) {
       name += "_const";
@@ -3819,6 +3850,9 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
     }
   }
 
+  ReplaceAll(name, "[", "arr");
+  ReplaceAll(name, "]", "arr");
+  ReplaceAll(name, ";", "_");
   name.erase(std::remove_if(name.begin(), name.end(),
                             [](char c) {
                               return c == '<' || c == '>' || c == ' ' ||
@@ -4111,7 +4145,7 @@ void Converter::ConvertCXXMethodDecls(
     const clang::CXXRecordDecl *decl, const std::string_view signature,
     bool (*predicate)(clang::CXXMethodDecl *)) {
   bool first = true;
-  for (auto *method : decl->methods()) {
+  auto convert_method = [&](clang::CXXMethodDecl *method) {
     if (predicate(method)) {
       if (first) {
         StrCat(signature, token::kOpenCurlyBracket);
@@ -4119,7 +4153,11 @@ void Converter::ConvertCXXMethodDecls(
       }
       VisitCXXMethodDecl(method);
     }
+  };
+  for (auto *method : decl->methods()) {
+    convert_method(method);
   }
+  ForEachTemplateInstantiatedMethod(decl, convert_method);
   if (!first) {
     StrCat(token::kCloseCurlyBracket);
   }

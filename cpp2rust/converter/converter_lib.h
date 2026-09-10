@@ -9,6 +9,7 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
+#include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <optional>
 #include <string>
@@ -60,6 +61,10 @@ bool RustSizeDivergesFromC(clang::QualType qt);
 bool IsMutatingCall(const clang::CallExpr *expr);
 
 bool IsOverloadedFunction(const clang::FunctionDecl *decl);
+
+void ForEachTemplateInstantiatedMethod(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
