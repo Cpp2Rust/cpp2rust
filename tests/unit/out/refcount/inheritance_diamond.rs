@@ -164,10 +164,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let d: Value<D> = Rc::new(RefCell::new(D::D({ 1 })));
     assert!((({ DImpl::sum(&d.as_pointer(),) }) == 3));
-    let b: Ptr<B> = (*d.borrow()).base_B.as_pointer();
-    let c: Ptr<C> = (*d.borrow()).base_C.as_pointer();
-    assert!((({ geta_0((*b.upgrade().deref()).base_A.as_pointer(),) }) == 1));
-    assert!((({ geta_0((*c.upgrade().deref()).base_A.as_pointer(),) }) == 2));
+    let b: Ptr<B> = ((*d.borrow()).base_B.as_pointer());
+    let c: Ptr<C> = ((*d.borrow()).base_C.as_pointer());
+    assert!((({ geta_0(((*b.upgrade().deref()).base_A.as_pointer()),) }) == 1));
+    assert!((({ geta_0(((*c.upgrade().deref()).base_A.as_pointer()),) }) == 2));
     (*(*(*c.upgrade().deref()).base_A.borrow()).a.borrow_mut()) = 5;
     assert!((({ DImpl::sum(&d.as_pointer(),) }) == 6));
     assert!({

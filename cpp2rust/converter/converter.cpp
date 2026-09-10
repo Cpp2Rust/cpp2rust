@@ -2339,15 +2339,18 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     break;
   case clang::CastKind::CK_DerivedToBase:
   case clang::CastKind::CK_UncheckedDerivedToBase:
-    if (auto *base = type->isPointerType() ? type->getPointeeCXXRecordDecl()
-                                           : type->getAsCXXRecordDecl();
-        base->isAbstract() || !IsUserDefinedDecl(base)) {
+    if (!IsUpcastToBaseField(expr)) {
       Convert(sub_expr);
       break;
     }
     if (type->isPointerType()) {
       PushParen paren(*this);
       ConvertAddrOf(RecordFields::SynthesizeBaseAccess(ctx_, expr), type);
+    } else if (isAddrOf()) {
+      PushParen paren(*this);
+      PushExprKind push(*this, ExprKind::LValue);
+      ConvertAddrOf(RecordFields::SynthesizeBaseAccess(ctx_, expr),
+                    ctx_.getPointerType(type));
     } else {
       Convert(RecordFields::SynthesizeBaseAccess(ctx_, expr));
     }

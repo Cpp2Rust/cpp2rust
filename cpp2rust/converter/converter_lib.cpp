@@ -908,11 +908,9 @@ bool IsThisExpr(const clang::Expr *expr) {
 }
 
 bool IsUpcastedThis(const clang::Expr *expr) {
-  auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr->IgnoreParens());
-  return cast &&
-         (cast->getCastKind() == clang::CK_DerivedToBase ||
-          cast->getCastKind() == clang::CK_UncheckedDerivedToBase) &&
-         IsThisExpr(cast->getSubExpr());
+  return IsUpcastToBaseField(expr) &&
+         IsThisExpr(
+             clang::cast<clang::CastExpr>(expr->IgnoreParens())->getSubExpr());
 }
 
 clang::Expr *RecordFields::SynthesizeBaseAccess(clang::ASTContext &ctx,
@@ -933,6 +931,18 @@ clang::Expr *RecordFields::SynthesizeBaseAccess(clang::ASTContext &ctx,
         clang::VK_LValue, clang::OK_Ordinary);
   }
   return object;
+}
+
+bool IsUpcastToBaseField(const clang::Expr *expr) {
+  auto *cast = clang::dyn_cast<clang::CastExpr>(expr->IgnoreParens());
+  if (!cast || (cast->getCastKind() != clang::CK_DerivedToBase &&
+                cast->getCastKind() != clang::CK_UncheckedDerivedToBase)) {
+    return false;
+  }
+  auto type = cast->getType();
+  auto *base = type->isPointerType() ? type->getPointeeCXXRecordDecl()
+                                     : type->getAsCXXRecordDecl();
+  return !base->isAbstract() && IsUserDefinedDecl(base);
 }
 
 uint64_t RecordFields::GetByteOffset(const clang::FieldDecl *field) {

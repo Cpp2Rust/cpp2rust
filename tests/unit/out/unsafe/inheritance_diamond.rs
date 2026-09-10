@@ -75,10 +75,10 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { D::sum(&mut d,) }) == (3)));
     let b: *mut B = &mut d.base_B as *mut B;
     let c: *mut C = &mut d.base_C as *mut C;
-    assert!(((unsafe { geta_0(&(*b).base_A,) }) == (1)));
-    assert!(((unsafe { geta_0(&(*c).base_A,) }) == (2)));
+    assert!(((unsafe { geta_0((&(*b).base_A as *const A),) }) == (1)));
+    assert!(((unsafe { geta_0((&(*c).base_A as *const A),) }) == (2)));
     (*c).base_A.a = 5;
     assert!(((unsafe { D::sum(&mut d,) }) == (6)));
-    assert!(((&(*b).base_A) != (&(*c).base_A)));
+    assert!(((&mut (*b).base_A as *mut A) != (&mut (*c).base_A as *mut A)));
     return 0;
 }

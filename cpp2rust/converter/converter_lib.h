@@ -187,6 +187,8 @@ bool IsThisExpr(const clang::Expr *expr);
 
 bool IsUpcastedThis(const clang::Expr *expr);
 
+bool IsUpcastToBaseField(const clang::Expr *expr);
+
 bool IsInheritingCtor(const clang::CXXMethodDecl *decl);
 
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);

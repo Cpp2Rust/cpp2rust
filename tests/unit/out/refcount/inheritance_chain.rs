@@ -123,7 +123,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(C::C({ 1 })));
     assert!((({ CImpl::sum(&c.as_pointer(),) }) == 3));
-    assert!((({ geta_0((*(*c.borrow()).base_B.borrow()).base_A.as_pointer(),) }) == 1));
+    assert!((({ geta_0(((*(*c.borrow()).base_B.borrow()).base_A.as_pointer()),) }) == 1));
     return 0;
 }
 pub trait CImpl {

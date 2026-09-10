@@ -137,7 +137,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(C::C({ 1 })));
     assert!((({ CImpl::sum(&c.as_pointer(),) }) == 6));
-    assert!((({ geta_0((*c.borrow()).base_A.as_pointer(),) }) == 1));
+    assert!((({ geta_0(((*c.borrow()).base_A.as_pointer()),) }) == 1));
     assert!((({ getb_1(((*(c.as_pointer()).upgrade().deref()).base_B.as_pointer()),) }) == 2));
     let pb: Value<Ptr<B>> = Rc::new(RefCell::new(
         ((*(c.as_pointer()).upgrade().deref()).base_B.as_pointer()),

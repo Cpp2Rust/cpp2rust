@@ -105,7 +105,7 @@ fn main_0() -> i32 {
         { (arr.as_pointer() as Ptr<i32>) },
         { 3_usize },
     )));
-    assert!((({ count_0((*d.borrow()).base_Base.as_pointer(),) }) == 3_usize));
+    assert!((({ count_0(((*d.borrow()).base_Base.as_pointer()),) }) == 3_usize));
     assert!((({ first_1(((*(d.as_pointer()).upgrade().deref()).base_Base.as_pointer()),) }) == 7));
     let copy: Value<Base> = Rc::new(RefCell::new((*(*d.borrow()).base_Base.borrow()).clone()));
     assert!(((*(*copy.borrow()).n.borrow()) == 3_usize));

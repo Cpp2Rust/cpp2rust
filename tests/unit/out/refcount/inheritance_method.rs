@@ -73,7 +73,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
     assert!(({ DerivedImpl::run(&d.as_pointer(),) }));
-    ({ BaseImpl::fill(&(*d.borrow()).base_Base.as_pointer(), ('y' as u8), 1) });
+    ({ BaseImpl::fill(&((*d.borrow()).base_Base.as_pointer()), ('y' as u8), 1) });
     assert!(
         (((*(*(*d.borrow()).base_Base.borrow()).buf.borrow())[(0) as usize] as i32)
             == (('y' as u8) as i32))
