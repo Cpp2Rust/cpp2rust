@@ -169,6 +169,14 @@ public:
   static clang::FieldDecl *GetForBase(const clang::CXXRecordDecl *derived,
                                       const clang::CXXRecordDecl *base);
 
+  static uint64_t GetByteOffset(const clang::FieldDecl *field);
+
+  static bool Initializes(const clang::CXXCtorInitializer *init,
+                          const clang::FieldDecl *field);
+
+  static clang::Expr *SynthesizeBaseAccess(clang::ASTContext &ctx,
+                                           clang::CastExpr *cast);
+
 private:
   static std::unordered_map<const clang::CXXRecordDecl *,
                             std::vector<clang::FieldDecl *>>
@@ -179,15 +187,7 @@ bool IsThisExpr(const clang::Expr *expr);
 
 bool IsUpcastedThis(const clang::Expr *expr);
 
-clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
-                                       clang::CastExpr *cast);
-
-uint64_t GetFieldByteOffset(const clang::FieldDecl *field);
-
 bool IsInheritingCtor(const clang::CXXMethodDecl *decl);
-
-bool InitializesField(const clang::CXXCtorInitializer *init,
-                      const clang::FieldDecl *field);
 
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 

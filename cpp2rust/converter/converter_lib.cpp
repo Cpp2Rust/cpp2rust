@@ -852,19 +852,16 @@ RecordFields::Get(const clang::RecordDecl *decl) {
     cxx = cxx->getDefinition();
     auto [it, inserted] = base_fields_.try_emplace(cxx);
     if (inserted) {
-      std::vector<const clang::CXXBaseSpecifier *> bases;
       for (const auto &base : cxx->bases()) {
-        if (base.getType()->isDependentType()) {
+        auto type = base.getType();
+        if (type->isDependentType()) {
           continue;
         }
-        auto *record = base.getType()->getAsCXXRecordDecl();
+        auto *record = type->getAsCXXRecordDecl();
         assert(record && "base class without a record");
-        if (!record->isAbstract() && IsUserDefinedDecl(record)) {
-          bases.push_back(&base);
+        if (record->isAbstract() || !IsUserDefinedDecl(record)) {
+          continue;
         }
-      }
-      for (size_t i = 0; i < bases.size(); ++i) {
-        auto type = bases[i]->getType();
         auto name = "base_" + Mapper::ToRustName(Mapper::ToString(type));
         auto *field = clang::FieldDecl::Create(
             ctx, const_cast<clang::CXXRecordDecl *>(cxx),
@@ -918,8 +915,8 @@ bool IsUpcastedThis(const clang::Expr *expr) {
          IsThisExpr(cast->getSubExpr());
 }
 
-clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
-                                       clang::CastExpr *cast) {
+clang::Expr *RecordFields::SynthesizeBaseAccess(clang::ASTContext &ctx,
+                                                clang::CastExpr *cast) {
   clang::Expr *object = cast->getSubExpr();
   for (const auto *step : cast->path()) {
     auto object_type = object->getType();
@@ -932,27 +929,27 @@ clang::Expr *SynthesizeBaseFieldAccess(clang::ASTContext &ctx,
     auto member_type = ctx.getQualifiedType(
         step->getType().getUnqualifiedType(), object_type.getQualifiers());
     object = clang::MemberExpr::CreateImplicit(
-        ctx, object, arrow, RecordFields::GetForBase(derived, base),
-        member_type, clang::VK_LValue, clang::OK_Ordinary);
+        ctx, object, arrow, GetForBase(derived, base), member_type,
+        clang::VK_LValue, clang::OK_Ordinary);
   }
   return object;
 }
 
-uint64_t GetFieldByteOffset(const clang::FieldDecl *field) {
+uint64_t RecordFields::GetByteOffset(const clang::FieldDecl *field) {
   const auto &layout =
       field->getASTContext().getASTRecordLayout(field->getParent());
-  if (auto *base = RecordFields::GetBase(field)) {
+  if (auto *base = GetBase(field)) {
     return layout.getBaseClassOffset(base).getQuantity();
   }
   return layout.getFieldOffset(field->getFieldIndex()) / 8;
 }
 
-bool InitializesField(const clang::CXXCtorInitializer *init,
-                      const clang::FieldDecl *field) {
+bool RecordFields::Initializes(const clang::CXXCtorInitializer *init,
+                               const clang::FieldDecl *field) {
   if (!init) {
     return false;
   }
-  if (auto *base = RecordFields::GetBase(field)) {
+  if (auto *base = GetBase(field)) {
     return init->isBaseInitializer() &&
            init->getBaseClass()->getAsCXXRecordDecl() == base;
   }

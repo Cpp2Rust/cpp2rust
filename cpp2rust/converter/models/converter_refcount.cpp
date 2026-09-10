@@ -596,7 +596,7 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   {
     PushBrace fn_brace(*this);
     for (auto *field : RecordFields::Get(decl)) {
-      auto byte_off = GetFieldByteOffset(field);
+      auto byte_off = RecordFields::GetByteOffset(field);
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
       StrCat(std::format("(*self.{}.borrow()).to_bytes(&mut buf[{}..{}]);",
                          GetNamedDeclAsString(field), byte_off,
@@ -610,7 +610,7 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     StrCat("Self");
     PushBrace lit_brace(*this);
     for (auto *field : RecordFields::Get(decl)) {
-      auto byte_off = GetFieldByteOffset(field);
+      auto byte_off = RecordFields::GetByteOffset(field);
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       std::string storage_ty = ToString(field->getType());

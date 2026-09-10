@@ -1097,7 +1097,7 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
     auto field_name = GetNamedDeclAsString(field);
     auto field_type = field->getType();
 
-    if (InitializesField(ctor_initializer_list[curr_init], field)) {
+    if (RecordFields::Initializes(ctor_initializer_list[curr_init], field)) {
       auto *ctor_init_expr = ctor_initializer_list[curr_init]->getInit();
       StrCat(field_name, token::kColon);
       ConvertVarInit(field_type, ctor_init_expr);
@@ -2347,9 +2347,9 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     if (type->isPointerType()) {
       PushParen paren(*this);
-      ConvertAddrOf(SynthesizeBaseFieldAccess(ctx_, expr), type);
+      ConvertAddrOf(RecordFields::SynthesizeBaseAccess(ctx_, expr), type);
     } else {
-      Convert(SynthesizeBaseFieldAccess(ctx_, expr));
+      Convert(RecordFields::SynthesizeBaseAccess(ctx_, expr));
     }
     break;
   case clang::CastKind::CK_IntegralToBoolean:
