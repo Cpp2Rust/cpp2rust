@@ -120,6 +120,7 @@ public:
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
+  void EmitReprC(clang::RecordDecl *decl);
   virtual void EmitRustUnion(clang::RecordDecl *decl);
 
   virtual bool EmitsReprCForRecords() const { return true; }
@@ -156,6 +157,8 @@ public:
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
+  virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
+  virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
 
   virtual bool VisitCompoundStmt(clang::CompoundStmt *stmt);
 
@@ -421,6 +424,7 @@ public:
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
+  virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
   virtual bool VisitSwitchStmt(clang::SwitchStmt *stmt);
 

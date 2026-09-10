@@ -5,6 +5,7 @@
 
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <format>
@@ -491,7 +492,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (!IsCopyConstructible(cxx)) {
+  if (!HasCallableCopyConstructor(cxx)) {
     return;
   }
 
@@ -1044,6 +1045,12 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  // p->~T() on a scalar is a no-op
+  if (clang::isa<clang::CXXPseudoDestructorExpr>(
+          expr->getCallee()->IgnoreParenImpCasts())) {
+    return false;
+  }
+
   if (expr->isCallToStdMove()) {
     return Converter::VisitCallExpr(expr);
   }
@@ -1399,14 +1406,28 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
 
 bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
     clang::UnaryExprOrTypeTraitExpr *expr) {
-  if (expr->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf) {
-    auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
-                                           : expr->getArgumentExpr()->getType();
+  auto arg_type = expr->isArgumentType() ? expr->getArgumentType()
+                                         : expr->getArgumentExpr()->getType();
+  switch (expr->getKind()) {
+  case clang::UnaryExprOrTypeTrait::UETT_SizeOf:
+    // TODO: Once Values are dropped from fields, precomputation should be gone
     if (RustSizeDivergesFromC(arg_type)) {
       StrCat(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
+    break;
+  case clang::UnaryExprOrTypeTrait::UETT_AlignOf:
+  case clang::UnaryExprOrTypeTrait::UETT_PreferredAlignOf:
+    // TODO: Once Values are dropped from fields, precomputation should be gone
+    if (RustSizeDivergesFromC(arg_type)) {
+      StrCat(std::format("{}usize", ctx_.getTypeAlign(arg_type) / 8));
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+    break;
+  default:
+    break;
   }
   return Converter::VisitUnaryExprOrTypeTraitExpr(expr);
 }
@@ -1869,12 +1890,23 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() || IsRValueConvertingConstructor(ctor)) {
+  if (IsRValueConvertingConstructor(ctor) ||
+      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
+  // Default move is translated using a bitwise .clone() implementation.
+  // Bitwise clone is only satisfied by default copy constructor. If the copy
+  // constructor is user defined, then default move calls copy constructor,
+  // which is wrong.
+  if (IsDefaultedMoveConstructor(ctor) &&
+      !HasDefaultedCopyConstructor(ctor->getParent())) {
+    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
+                             "copy constructor is not supported");
+  }
+  if (ctor->isCopyOrMoveConstructor() &&
+      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
@@ -1914,6 +1946,12 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
   }
 
   return Converter::VisitImplicitValueInitExpr(expr);
+}
+
+bool ConverterRefCount::VisitCXXScalarValueInitExpr(
+    clang::CXXScalarValueInitExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXScalarValueInitExpr(expr);
 }
 
 void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
@@ -2625,7 +2663,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType()) {
+  if (!base->isLValue() && base->getType()->isRecordType() &&
+      !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";

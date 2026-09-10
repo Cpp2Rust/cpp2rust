@@ -150,6 +150,8 @@ public:
                        llvm::ArrayRef<clang::Expr *> args) override;
 
   bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) override;
+  bool
+  VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr) override;
 
   bool VisitVAArgExpr(clang::VAArgExpr *expr) override;
 

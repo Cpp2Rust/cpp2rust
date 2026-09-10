@@ -185,7 +185,7 @@ impl SImpl for Ptr<S> {
     fn operator_post_inc_i32(&self, _: i32) -> S {
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_inc();
-        return (*old.borrow_mut()).clone();
+        return (*old.borrow()).clone();
     }
     fn operator_dec(&self) -> Ptr<S> {
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
@@ -194,6 +194,6 @@ impl SImpl for Ptr<S> {
     fn operator_post_dec_i32(&self, _: i32) -> S {
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
-        return (*old.borrow_mut()).clone();
+        return (*old.borrow()).clone();
     }
 }
