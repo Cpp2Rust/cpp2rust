@@ -13,6 +13,13 @@ struct S {
   Inner d;
 };
 
+// Boxed::tag is in-class initialized. However the default constructor is never
+// instantiated, only the explicit one is used.
+//
+// Because no default constructor is instantiated, the specialization does not
+// contain the in-class initializer. In Rust, the Default trait initializes
+// Boxed::tag with 0. This is correct because the C++ program never reads the
+// in-class initializer of Boxed::tag, hence Rust also does not read it.
 template <typename T> struct Boxed {
   T v = T();
   int tag = 7;
