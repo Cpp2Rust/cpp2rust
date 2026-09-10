@@ -62,6 +62,8 @@ impl_byte_repr!(u32);
 impl_byte_repr!(i32);
 impl_byte_repr!(u64);
 impl_byte_repr!(i64);
+impl_byte_repr!(u128);
+impl_byte_repr!(i128);
 impl_byte_repr!(usize);
 impl_byte_repr!(isize);
 impl_byte_repr!(f32);

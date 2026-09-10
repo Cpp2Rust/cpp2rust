@@ -1,5 +1,4 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 
 #include <cassert>
 #include <cstddef>
@@ -18,6 +17,15 @@ int main() {
   int32_t xi3 = 32;
   int64_t xi4 = 64;
   bool b = (xu64 == 64ULL);
+  long double xld = 1.5;
+  wchar_t xwc = 65;
+  char8_t xc8 = 66;
+  char16_t xc16 = 67;
+  char32_t xc32 = 68;
+  std::nullptr_t xnp = nullptr;
   assert(xu8 + xu16 + xu32 + xu64 + xsz1 + xsz2 + xi1 + xi2 + xi3 + xi4 == 352);
+  assert(xld * 2 == 3);
+  assert(xwc + xc8 + xc16 + xc32 == 266);
+  assert(xnp == nullptr);
   return 0;
 }

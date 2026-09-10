@@ -138,6 +138,7 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
     StrCat("f32");
     break;
   case clang::BuiltinType::Double:
+  case clang::BuiltinType::LongDouble:
     StrCat("f64");
     break;
   case clang::BuiltinType::Char_S:
@@ -158,6 +159,11 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
   case clang::BuiltinType::Int:
   case clang::BuiltinType::Long:
   case clang::BuiltinType::LongLong:
+  case clang::BuiltinType::WChar_S:
+  case clang::BuiltinType::WChar_U:
+  case clang::BuiltinType::Char8:
+  case clang::BuiltinType::Char16:
+  case clang::BuiltinType::Char32:
     StrCat(std::format("{}{}", type->isSignedInteger() ? 'i' : 'u',
                        ctx_.getTypeSize(type)));
     break;
@@ -170,9 +176,13 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
   case clang::BuiltinType::Int128:
     StrCat("i128");
     break;
+  case clang::BuiltinType::NullPtr:
+    Convert(ctx_.VoidPtrTy);
+    break;
   default:
-    // FIXME: improve error handling
-    log() << "unsupported builtin type\n";
+    llvm::errs() << "unsupported builtin type: "
+                 << type->getName(ctx_.getPrintingPolicy()) << '\n';
+    assert(0 && "unsupported builtin type\n");
     break;
   }
   return false;
