@@ -916,12 +916,15 @@ clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
 }
 
 bool IsThisExpr(const clang::Expr *expr) {
-  expr = expr->IgnoreParens();
-  if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr);
-      cast && cast->getCastKind() == clang::CK_NoOp) {
-    expr = cast->getSubExpr()->IgnoreParens();
-  }
-  return clang::isa<clang::CXXThisExpr>(expr);
+  return clang::isa<clang::CXXThisExpr>(expr->IgnoreParenImpCasts());
+}
+
+bool IsUpcastedThis(const clang::Expr *expr) {
+  auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr->IgnoreParens());
+  return cast &&
+         (cast->getCastKind() == clang::CK_DerivedToBase ||
+          cast->getCastKind() == clang::CK_UncheckedDerivedToBase) &&
+         IsThisExpr(cast->getSubExpr());
 }
 
 clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast) {

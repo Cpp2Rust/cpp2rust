@@ -2647,7 +2647,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
                                          base->IgnoreParenImpCasts());
-  if (IsThisExpr(base)) {
+  if (IsThisExpr(base) && !IsUpcastedThis(base)) {
     if (curr_function_ &&
         clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
       ufcs_receiver_ = "&this";

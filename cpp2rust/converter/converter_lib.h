@@ -171,6 +171,8 @@ clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr);
 
 bool IsThisExpr(const clang::Expr *expr);
 
+bool IsUpcastedThis(const clang::Expr *expr);
+
 clang::Expr *ToBaseSubobject(clang::ASTContext &ctx, clang::CastExpr *cast);
 
 uint64_t GetFieldByteOffset(const clang::FieldDecl *field);

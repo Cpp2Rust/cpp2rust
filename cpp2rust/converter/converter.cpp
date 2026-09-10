@@ -3000,7 +3000,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
 void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
-  if (IsThisExpr(base)) {
+  if (IsThisExpr(base) && !IsUpcastedThis(base)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
@@ -3075,7 +3075,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 
   auto *base = expr->getBase();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (IsThisExpr(base) && !ThisIsRustPtr()) {
+  if (IsThisExpr(base) && !IsUpcastedThis(base) && !ThisIsRustPtr()) {
     StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
                ? "this"
                : keyword::kSelfValue);
