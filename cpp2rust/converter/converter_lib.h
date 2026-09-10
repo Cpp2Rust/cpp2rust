@@ -82,7 +82,11 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool IsConvertibleConstructor(const clang::CXXConstructorDecl *ctor);
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
+
+bool HasAbstractBase(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 

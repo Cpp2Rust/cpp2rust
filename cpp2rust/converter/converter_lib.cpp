@@ -337,6 +337,16 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
           IsRValueConvertingConstructor(ctor));
 }
 
+bool HasAbstractBase(const clang::CXXRecordDecl *decl) {
+  return decl->getNumBases() != 0 &&
+         decl->bases_begin()->getType()->getAsCXXRecordDecl()->isAbstract();
+}
+
+bool IsConvertibleConstructor(const clang::CXXConstructorDecl *ctor) {
+  return !ctor->isOutOfLine() &&
+         (!ctor->isImplicit() || ctor->isInheritingConstructor());
+}
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
@@ -937,6 +947,9 @@ uint64_t GetFieldByteOffset(const clang::FieldDecl *field) {
 
 bool InitializesField(const clang::CXXCtorInitializer *init,
                       const clang::FieldDecl *field) {
+  if (!init) {
+    return false;
+  }
   if (auto *base = GetBaseOfField(field)) {
     return init->isBaseInitializer() &&
            init->getBaseClass()->getAsCXXRecordDecl() == base;

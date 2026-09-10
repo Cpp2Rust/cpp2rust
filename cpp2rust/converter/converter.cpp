@@ -798,8 +798,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
     ConvertCXXRecordMethods(cxx);
 
-    if (cxx->bases_begin() != cxx->bases_end() &&
-        cxx->bases_begin()->getType()->getAsCXXRecordDecl()->isAbstract()) {
+    if (HasAbstractBase(cxx)) {
       ConvertCXXMethodDecls(
           cxx,
           std::format("{} impl {} for {}", keyword_unsafe_,
@@ -1047,8 +1046,7 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
-  if (decl->isOutOfLine() ||
-      (decl->isImplicit() && !decl->isInheritingConstructor())) {
+  if (!IsConvertibleConstructor(decl)) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
@@ -1092,18 +1090,15 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
   assert(definition_or_null);
   auto *definition = clang::cast<clang::CXXConstructorDecl>(definition_or_null);
 
-  bool has_inits = !definition->inits().empty();
   auto **ctor_initializer_list = definition->inits().begin();
   int curr_init = 0;
 
   for (const auto *field : GetFieldsAndBases(record_decl)) {
     auto field_name = GetNamedDeclAsString(field);
     auto field_type = field->getType();
-    auto *ctor_initializer =
-        has_inits ? ctor_initializer_list[curr_init] : nullptr;
 
-    if (has_inits && InitializesField(ctor_initializer, field)) {
-      auto *ctor_init_expr = ctor_initializer->getInit();
+    if (InitializesField(ctor_initializer_list[curr_init], field)) {
+      auto *ctor_init_expr = ctor_initializer_list[curr_init]->getInit();
       StrCat(field_name, token::kColon);
       ConvertVarInit(field_type, ctor_init_expr);
       curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
