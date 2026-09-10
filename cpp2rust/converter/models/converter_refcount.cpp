@@ -5,6 +5,7 @@
 
 #include <clang/AST/RecordLayout.h>
 #include <clang/Basic/OperatorKinds.h>
+#include <llvm/Support/ErrorHandling.h>
 
 #include <algorithm>
 #include <format>
@@ -491,7 +492,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (!IsCopyConstructible(cxx)) {
+  if (!HasCallableCopyConstructor(cxx)) {
     return;
   }
 
@@ -1880,12 +1881,23 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isMoveConstructor() || IsRValueConvertingConstructor(ctor)) {
+  if (IsRValueConvertingConstructor(ctor) ||
+      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
-  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
+  // Default move is translated using a bitwise .clone() implementation.
+  // Bitwise clone is only satisfied by default copy constructor. If the copy
+  // constructor is user defined, then default move calls copy constructor,
+  // which is wrong.
+  if (IsDefaultedMoveConstructor(ctor) &&
+      !HasDefaultedCopyConstructor(ctor->getParent())) {
+    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
+                             "copy constructor is not supported");
+  }
+  if (ctor->isCopyOrMoveConstructor() &&
+      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
@@ -2632,7 +2644,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType()) {
+  if (!base->isLValue() && base->getType()->isRecordType() &&
+      !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";

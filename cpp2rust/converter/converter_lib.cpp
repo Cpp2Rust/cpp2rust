@@ -263,6 +263,21 @@ bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedDecl(ctor);
 }
 
+bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor);
+}
+
+bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return IsUserDefinedCopyConstructor(ctor) ||
+         IsUserDefinedMoveConstructor(ctor);
+}
+
+bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+         IsUserDefinedDecl(ctor->getParent());
+}
+
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
@@ -277,11 +292,20 @@ GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   return nullptr;
 }
 
-bool HasUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
-  return GetUserDefinedCopyConstructor(decl) != nullptr;
+bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  for (const auto *ctor : cxx->ctors()) {
+    if (ctor->isCopyConstructor()) {
+      return !ctor->isUserProvided() && !ctor->isDeleted();
+    }
+  }
+  return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
-bool IsCopyConstructible(const clang::RecordDecl *decl) {
+bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
     return true;
@@ -299,12 +323,13 @@ bool IsCopyConstructible(const clang::RecordDecl *decl) {
 }
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
+  return !ctor->isCopyOrMoveConstructor() &&
+         ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
-  return !IsUserDefinedCopyConstructor(ctor) &&
+  return !IsUserDefinedCopyOrMoveConstructor(ctor) &&
          (ctor->isCopyOrMoveConstructor() ||
           IsRValueConvertingConstructor(ctor));
 }
@@ -313,9 +338,13 @@ bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
+               auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method);
                return method->getDefinition() || method->isPureVirtual() ||
                       method->getTemplateInstantiationPattern() ||
-                      method->getDescribedFunctionTemplate();
+                      method->getDescribedFunctionTemplate() ||
+                      (ctor ? ctor->isCopyOrMoveConstructor()
+                            : method->isCopyAssignmentOperator() ||
+                                  method->isMoveAssignmentOperator());
              });
 }
 

@@ -183,7 +183,7 @@ pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
         .as_pointer()
         .with_mut(|__v: &mut Vec<Chunk>| {
             __v.push(std::mem::take(
-                &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow_mut()),
+                &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone(),
             ))
         });
 }
