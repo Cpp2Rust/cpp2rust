@@ -1154,6 +1154,12 @@ bool Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
   return false;
 }
 
+bool Converter::VisitTypeAliasDecl(clang::TypeAliasDecl *) { return false; }
+
+bool Converter::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *) {
+  return false;
+}
+
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
   switch (stmt->getStmtClass()) {
   case clang::Stmt::IfStmtClass:
@@ -1669,6 +1675,12 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
+    return false;
+  }
+
+  // p->~T() on a scalar is a no-op
+  if (clang::isa<clang::CXXPseudoDestructorExpr>(
+          expr->getCallee()->IgnoreParenImpCasts())) {
     return false;
   }
 
@@ -3512,6 +3524,15 @@ bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
   }
 
   StrCat(GetDefaultAsString(expr->getType()));
+  return false;
+}
+
+bool Converter::VisitCXXScalarValueInitExpr(
+    clang::CXXScalarValueInitExpr *expr) {
+  StrCat(GetDefaultAsString(expr->getType()));
+  computed_expr_type_ = expr->getType()->isPointerType()
+                            ? ComputedExprType::FreshPointer
+                            : ComputedExprType::FreshValue;
   return false;
 }
 

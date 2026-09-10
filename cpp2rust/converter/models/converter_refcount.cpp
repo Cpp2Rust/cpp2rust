@@ -1051,6 +1051,12 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  // p->~T() on a scalar is a no-op
+  if (clang::isa<clang::CXXPseudoDestructorExpr>(
+          expr->getCallee()->IgnoreParenImpCasts())) {
+    return false;
+  }
+
   if (expr->isCallToStdMove()) {
     return Converter::VisitCallExpr(expr);
   }
@@ -1937,6 +1943,12 @@ bool ConverterRefCount::VisitImplicitValueInitExpr(
   }
 
   return Converter::VisitImplicitValueInitExpr(expr);
+}
+
+bool ConverterRefCount::VisitCXXScalarValueInitExpr(
+    clang::CXXScalarValueInitExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXScalarValueInitExpr(expr);
 }
 
 void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
