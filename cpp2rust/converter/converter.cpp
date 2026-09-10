@@ -746,6 +746,21 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     if (auto *var_decl = clang::dyn_cast<clang::VarDecl>(d)) {
       VisitVarDecl(var_decl);
     }
+    if (auto *friend_decl = clang::dyn_cast<clang::FriendDecl>(d)) {
+      if (auto *fn = clang::dyn_cast_or_null<clang::FunctionDecl>(
+              friend_decl->getFriendDecl());
+          fn && fn->isThisDeclarationADefinition()) {
+        VisitFunctionDecl(fn);
+      }
+      if (auto *tmpl = clang::dyn_cast_or_null<clang::FunctionTemplateDecl>(
+              friend_decl->getFriendDecl())) {
+        for (auto *spec : tmpl->specializations()) {
+          if (spec->isThisDeclarationADefinition()) {
+            VisitFunctionDecl(spec);
+          }
+        }
+      }
+    }
   }
 
   // Inner records. In rust they live outside the record
