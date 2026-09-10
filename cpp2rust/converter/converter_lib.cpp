@@ -917,9 +917,8 @@ clang::CastExpr *GetDerivedToBaseCast(clang::Expr *expr) {
 
 bool IsThisExpr(const clang::Expr *expr) {
   expr = expr->IgnoreParens();
-  for (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr);
-       cast && cast->getCastKind() == clang::CK_NoOp;
-       cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+  if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr);
+      cast && cast->getCastKind() == clang::CK_NoOp) {
     expr = cast->getSubExpr()->IgnoreParens();
   }
   return clang::isa<clang::CXXThisExpr>(expr);

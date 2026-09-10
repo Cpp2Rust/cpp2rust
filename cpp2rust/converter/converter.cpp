@@ -3074,9 +3074,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this = IsThisExpr(base) && !ThisIsRustPtr();
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-  if (base_is_this) {
+  if (IsThisExpr(base) && !ThisIsRustPtr()) {
     StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
                ? "this"
                : keyword::kSelfValue);
