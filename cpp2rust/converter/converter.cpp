@@ -3326,6 +3326,14 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     auto param_type = param->getType();
     bool has_default = param->hasDefaultArg();
 
+    if (arg_idx < expr->getNumArgs() &&
+        clang::isa<clang::CXXDefaultArgExpr>(expr->getArg(arg_idx))) {
+      assert(has_default);
+      ++arg_idx;
+      StrCat("None", token::kComma);
+      continue;
+    }
+
     if (arg_idx < expr->getNumArgs()) {
       clang::Expr *arg = expr->getArg(arg_idx++);
       PushBrace brace(*this);

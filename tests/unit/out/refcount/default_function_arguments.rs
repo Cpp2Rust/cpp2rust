@@ -76,13 +76,13 @@ fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
-    let b: Value<Bar> = Rc::new(RefCell::new(Bar::Bar({ Some() })));
+    let b: Value<Bar> = Rc::new(RefCell::new(Bar::Bar(None)));
     assert!(((*(*b.borrow()).v.borrow()) == 1));
     assert!(((*Bar::Bar({ Some(2) },).v.borrow()) == 2));
     let arr: Value<Box<[Bar]>> = Rc::new(RefCell::new(Box::new([
-        Bar::Bar({ Some() }),
-        Bar::Bar({ Some() }),
-        Bar::Bar({ Some() }),
+        Bar::Bar(None),
+        Bar::Bar(None),
+        Bar::Bar(None),
     ])));
     assert!(((*(*arr.borrow())[(0) as usize].v.borrow()) == 1));
     assert!(((*(*arr.borrow())[(2) as usize].v.borrow()) == 1));
