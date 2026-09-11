@@ -3,11 +3,13 @@
 
 #include "converter/converter_lib.h"
 
+#include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
 #include <llvm/Support/Path.h>
+#include <llvm/Support/raw_ostream.h>
 
 #include <algorithm>
 #include <array>
@@ -249,7 +251,28 @@ bool IsOverloadedFunction(const clang::FunctionDecl *decl) {
   return !lookup_result.isSingleResult();
 }
 
+void ForEachTemplateInstantiatedMethod(
+    const clang::CXXRecordDecl *decl,
+    llvm::function_ref<void(clang::CXXMethodDecl *)> fn) {
+  for (auto d : decl->decls()) {
+    if (auto function_template_decl =
+            llvm::dyn_cast<clang::FunctionTemplateDecl>(d)) {
+      for (auto s : function_template_decl->specializations()) {
+        if (auto m = clang::dyn_cast<clang::CXXMethodDecl>(s);
+            m && !clang::isa<clang::CXXConstructorDecl>(m) &&
+            m->getDefinition()) {
+          fn(m);
+        }
+      }
+    }
+  }
+}
+
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
+  if (decl->getTemplateSpecializationArgs() != nullptr &&
+      IsUserDefinedDecl(decl)) {
+    return true;
+  }
   const auto method_name = decl->getNameAsString();
   const auto *record = decl->getParent();
   return std::count_if(record->method_begin(), record->method_end(),
@@ -501,6 +524,11 @@ static std::string GetParamSignature(const clang::Decl *decl) {
   if (auto fdecl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     for (unsigned i = 0; i < fdecl->getNumParams(); ++i) {
       args += fdecl->getParamDecl(i)->getType().getAsString();
+    }
+    if (const auto *targs = fdecl->getTemplateSpecializationArgs()) {
+      llvm::raw_string_ostream os(args);
+      clang::printTemplateArgumentList(
+          os, targs->asArray(), fdecl->getASTContext().getPrintingPolicy());
     }
   }
   return args;

@@ -9,6 +9,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <cctype>
 #include <cstdlib>
 #include <format>
 #include <optional>
@@ -828,12 +829,17 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
 }
 
 std::string ToRustName(std::string name) {
-  size_t pos = 0;
-  while ((pos = name.find_first_of("<>, ", pos)) != std::string::npos) {
-    name[pos] = '_';
-    ++pos;
-  }
   ReplaceAll(name, "::", "_");
+  ReplaceAll(name, "*", "ptr");
+  ReplaceAll(name, "&", "ref");
+  ReplaceAll(name, "[", "arr");
+  ReplaceAll(name, "]", "arr");
+  ReplaceAll(name, "-", "neg");
+  for (auto &c : name) {
+    if (!std::isalnum(c) && c != '_') {
+      c = '_';
+    }
+  }
   return name;
 }
 

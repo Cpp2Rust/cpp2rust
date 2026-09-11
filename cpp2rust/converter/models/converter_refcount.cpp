@@ -2734,12 +2734,16 @@ void ConverterRefCount::ConvertLateInstantiatedMethods(
                !IsMethodOnPtr(method) &&
                !decl_ids_.contains(GetMethodID(method));
       });
-  for (auto *method : decl->methods()) {
+  auto convert_method = [&](clang::CXXMethodDecl *method) {
     if (IsEmittableMethod(method) && method->hasBody() &&
         IsMethodOnPtr(method) && !decl_ids_.contains(GetMethodID(method))) {
       ConvertMethodOnPtr(method);
     }
+  };
+  for (auto *method : decl->methods()) {
+    convert_method(method);
   }
+  ForEachTemplateInstantiatedMethod(decl, convert_method);
 }
 
 void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
@@ -2751,11 +2755,15 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
                                  !IsMethodOnPtr(method);
                         });
 
-  for (auto *method : decl->methods()) {
+  auto convert_method = [&](clang::CXXMethodDecl *method) {
     if (IsMethodOnPtr(method) && method->getDefinition()) {
       ConvertMethodOnPtr(method);
     }
+  };
+  for (auto *method : decl->methods()) {
+    convert_method(method);
   }
+  ForEachTemplateInstantiatedMethod(decl, convert_method);
 
   if (!GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl)) {
     MethodsOnPtrFor(decl).trait_body +=
