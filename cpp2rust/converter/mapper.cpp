@@ -829,11 +829,6 @@ void AddRuleForUserDefinedType(clang::NamedDecl *decl) {
 }
 
 std::string ToRustName(std::string name) {
-  size_t pos = 0;
-  while ((pos = name.find_first_of("<>, ", pos)) != std::string::npos) {
-    name[pos] = '_';
-    ++pos;
-  }
   ReplaceAll(name, "::", "_");
   ReplaceAll(name, "*", "ptr");
   ReplaceAll(name, "&", "ref");
@@ -841,7 +836,7 @@ std::string ToRustName(std::string name) {
   ReplaceAll(name, "]", "arr");
   ReplaceAll(name, "-", "neg");
   for (auto &c : name) {
-    if (!std::isalnum(static_cast<unsigned char>(c)) && c != '_') {
+    if (!std::isalnum(c) && c != '_') {
       c = '_';
     }
   }
