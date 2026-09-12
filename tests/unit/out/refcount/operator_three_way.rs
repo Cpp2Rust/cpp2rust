@@ -14,8 +14,8 @@ impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             SImpl::operator_cmp(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
             )
         }
     }
@@ -29,8 +29,8 @@ impl std::cmp::PartialEq for S {
     fn eq(&self, other: &Self) -> bool {
         {
             SImpl::operator_eq(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
             )
         }
     }

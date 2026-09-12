@@ -14,13 +14,13 @@ impl std::cmp::Ord for Lt {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             if LtImpl::operator_lt(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Less
             } else if LtImpl::operator_lt(
-                &Rc::new(RefCell::new(other.clone())).as_pointer(),
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Greater
             } else {
@@ -38,11 +38,11 @@ impl std::cmp::PartialEq for Lt {
     fn eq(&self, other: &Self) -> bool {
         {
             !(LtImpl::operator_lt(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
             )) && !(LtImpl::operator_lt(
-                &Rc::new(RefCell::new(other.clone())).as_pointer(),
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Lt { v: other.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Lt { v: self.v.clone() })).as_pointer(),
             ))
         }
     }
@@ -78,8 +78,8 @@ impl std::cmp::PartialEq for Eq {
     fn eq(&self, other: &Self) -> bool {
         {
             EqImpl::operator_eq(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Eq { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Eq { v: other.v.clone() })).as_pointer(),
             )
         }
     }
@@ -115,8 +115,8 @@ impl std::cmp::Ord for Cmp {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             CmpImpl::operator_cmp(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Cmp { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Cmp { v: other.v.clone() })).as_pointer(),
             )
         }
     }
@@ -130,8 +130,8 @@ impl std::cmp::PartialEq for Cmp {
     fn eq(&self, other: &Self) -> bool {
         {
             CmpImpl::operator_eq(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Cmp { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Cmp { v: other.v.clone() })).as_pointer(),
             )
         }
     }
@@ -167,13 +167,13 @@ impl std::cmp::Ord for Free {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             if operator_lt_0(
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Less
             } else if operator_lt_0(
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Greater
             } else {
@@ -191,8 +191,8 @@ impl std::cmp::PartialEq for Free {
     fn eq(&self, other: &Self) -> bool {
         {
             operator_eq_1(
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(Free { v: self.v.clone() })).as_pointer(),
+                Rc::new(RefCell::new(Free { v: other.v.clone() })).as_pointer(),
             )
         }
     }

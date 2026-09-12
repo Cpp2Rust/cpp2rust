@@ -41,7 +41,8 @@ public:
                                 std::string_view lhs,
                                 std::string_view rhs) override;
 
-  void EmitShallowCopy(const clang::RecordDecl *decl);
+  std::string GetShallowCopy(const clang::RecordDecl *decl,
+                             std::string_view src);
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
