@@ -649,6 +649,10 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   }
 
   for (auto f : decl->fields()) {
+    if (f->hasInClassInitializer()) {
+      return false;
+    }
+
     // Records that contain function pointer do not derive Default
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
@@ -4376,8 +4380,13 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   StrCat(GetRecordName(decl));
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
-    StrCat(GetNamedDeclAsString(field), token::kColon,
-           GetDefaultAsString(field->getType()), token::kComma);
+    StrCat(GetNamedDeclAsString(field), token::kColon);
+    if (auto *init = field->getInClassInitializer()) {
+      ConvertVarInit(field->getType(), init);
+    } else {
+      StrCat(GetDefaultAsString(field->getType()));
+    }
+    StrCat(token::kComma);
   }
 }
 

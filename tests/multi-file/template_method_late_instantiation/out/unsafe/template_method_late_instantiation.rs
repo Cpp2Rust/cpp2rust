@@ -7,13 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone)]
 pub struct S_int_ {
     pub x: i32,
 }
 impl S_int_ {
     pub unsafe fn set(&mut self, mut v: i32) {
         self.x = v;
+    }
+}
+impl Default for S_int_ {
+    fn default() -> Self {
+        S_int_ { x: 0 }
     }
 }
 pub fn main() {
