@@ -9,12 +9,8 @@ public:
   S &operator=(const S &) = delete;
   S(S &&) = default;
 
-  friend bool operator==(const S &x, const S &y) {
-    return x.data_ == y.data_;
-  }
-  friend bool operator<(const S &x, const S &y) {
-    return x.data_ < y.data_;
-  }
+  friend bool operator==(const S &x, const S &y) { return x.data_ == y.data_; }
+  friend bool operator<(const S &x, const S &y) { return x.data_ < y.data_; }
 };
 
 int main() {
