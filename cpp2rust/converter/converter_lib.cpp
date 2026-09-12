@@ -375,7 +375,7 @@ bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
   if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
     return GetUserDefinedDestructor(decl->getParent()) != nullptr;
   }
-  return !decl->isImplicit();
+  return !decl->isImplicit() || IsComparisonOperator(decl);
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -804,7 +804,14 @@ bool IsSameTypeComparison(const clang::FunctionDecl *fn,
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
-  if (!callee || !callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
+  if (!callee) {
+    return false;
+  }
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
+      method && method->isDefaulted() && IsComparisonOperator(method)) {
+    return IsUserDefinedDecl(method->getParent());
+  }
+  if (!callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
     return false;
   }
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
@@ -864,6 +871,21 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl) {
   return GetUserDefinedDestructor(decl) || HasFieldsNeedingDestruction(decl);
 }
 
+bool IsComparisonOperator(const clang::FunctionDecl *fn) {
+  switch (fn->getOverloadedOperator()) {
+  case clang::OO_EqualEqual:
+  case clang::OO_ExclaimEqual:
+  case clang::OO_Less:
+  case clang::OO_LessEqual:
+  case clang::OO_Greater:
+  case clang::OO_GreaterEqual:
+  case clang::OO_Spaceship:
+    return true;
+  default:
+    return false;
+  }
+}
+
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
   if (method->isDeleted()) {
     return false;
@@ -875,6 +897,9 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
   // Virtual methods go into the base trait impl
   if (method->isVirtual()) {
     return false;
+  }
+  if (IsComparisonOperator(method)) {
+    return method->hasBody();
   }
   // Compiler-generated members are covered by derived traits
   if (method->isImplicit()) {
@@ -889,8 +914,9 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (method->isImplicit() || method->isDeleted() || method->isStatic() ||
-      method->isVirtual() || clang::isa<clang::CXXConstructorDecl>(method)) {
+  if ((method->isImplicit() && !IsComparisonOperator(method)) ||
+      method->isDeleted() || method->isStatic() || method->isVirtual() ||
+      clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
   }
   if (!IsUserDefinedDecl(method->getParent()) ||
@@ -898,7 +924,8 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
     return false;
   }
   if (auto *definition = method->getDefinition();
-      definition && definition->isDefaulted()) {
+      definition && definition->isDefaulted() &&
+      !IsComparisonOperator(method)) {
     return false;
   }
   if (clang::isa<clang::CXXDestructorDecl>(method)) {

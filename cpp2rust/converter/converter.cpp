@@ -966,6 +966,14 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
         sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
       }
     }
+    for (auto *method : decl->methods()) {
+      if (IsComparisonOperator(method) && method->isDefaulted() &&
+          !method->doesThisDeclarationHaveABody()) {
+        sema_->DefineDefaultedComparison(
+            decl->getLocation(), method,
+            sema_->getDefaultedComparisonKind(method));
+      }
+    }
 
     EmitRustStructOrUnion(decl);
   } else if (decl->isUnion()) {
