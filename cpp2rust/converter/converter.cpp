@@ -1848,7 +1848,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
     CallArg ca{
-        .param_name = function
+        .param_name = function && !function->getParamDecl(i)->getName().empty()
                           ? ("_" + function->getParamDecl(i)->getNameAsString())
                           : ("_arg" + std::to_string(i)),
         .param_type = function ? function->getParamDecl(i)->getType()
