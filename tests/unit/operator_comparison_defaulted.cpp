@@ -26,6 +26,28 @@ struct OrdOnly {
   bool operator==(const OrdOnly &) const = delete;
 };
 
+struct Inner {
+  int x;
+  auto operator<=>(const Inner &) const = default;
+};
+
+struct Outer {
+  Inner i;
+  int y;
+  auto operator<=>(const Outer &) const = default;
+};
+
+// Secondary comparison operators can be defaulted too; they are defined as
+// rewrites of the primary ones: != as !(a == b), < and >= via (a <=> b).
+struct Secondary {
+  int a;
+  bool operator==(const Secondary &) const = default;
+  bool operator!=(const Secondary &) const = default;
+  auto operator<=>(const Secondary &) const = default;
+  bool operator<(const Secondary &) const = default;
+  bool operator>=(const Secondary &) const = default;
+};
+
 int main() {
   Eq e1{1, 2}, e2{1, 2}, e3{1, 3};
   assert(e1 == e2);
@@ -41,5 +63,14 @@ int main() {
   OrdOnly o1{1}, o2{2};
   assert(o1 < o2);
   assert((o2 <=> o1) == std::strong_ordering::greater);
+  Outer x1{{1}, 9}, x2{{2}, 0}, x3{{1}, 9};
+  assert(x1 < x2);
+  assert(x1 == x3);
+  assert((x2 <=> x1) == std::strong_ordering::greater);
+  Secondary s1{1}, s2{2};
+  assert(s1 != s2);
+  assert(s1 < s2);
+  assert(s2 >= s1);
+  assert(!(s2 < s1));
   return 0;
 }
