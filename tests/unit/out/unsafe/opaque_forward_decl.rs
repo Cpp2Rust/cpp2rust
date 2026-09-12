@@ -25,4 +25,5 @@ unsafe fn main_0() -> i32 {
     &(c.p);
     return ((c.x) - (42));
 }
+#[derive(Clone, Copy, Default, ByteRepr)]
 pub struct opaque;

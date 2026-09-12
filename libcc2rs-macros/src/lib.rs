@@ -3,6 +3,7 @@
 
 use proc_macro::TokenStream;
 
+mod byte_repr;
 mod goto;
 mod state_machine;
 mod switch;
@@ -78,4 +79,15 @@ pub fn goto(_input: TokenStream) -> TokenStream {
         compile_error!("goto!() can only be used inside goto_block!")
     }
     .into()
+}
+
+//     #[derive(ByteRepr)]
+//     pub struct S;
+//
+// Adds ByteRepr implementation for S. Currently only empty structs are handled. Non-empty structs
+// panic.
+
+#[proc_macro_derive(ByteRepr)]
+pub fn derive_byte_repr(input: TokenStream) -> TokenStream {
+    byte_repr::expand(input)
 }

@@ -76,6 +76,7 @@ std::string Converter::EmitMethodsOnPtr() {
 std::string Converter::EmitOpaqueRecords() {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
+    out += "#[derive(Clone, Copy, Default, ByteRepr)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
