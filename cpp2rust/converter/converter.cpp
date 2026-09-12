@@ -76,6 +76,7 @@ std::string Converter::EmitMethodsOnPtr() {
 std::string Converter::EmitOpaqueRecords() {
   std::string out;
   record_decls_.ForEachUndefined([&](const std::string &name) {
+    out += "#[derive(Clone, Copy, Default, ByteRepr)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -95,6 +96,11 @@ bool Converter::Convert(clang::QualType qual_type) {
   if (IsVaListType(qual_type)) {
     StrCat("VaList");
     return false;
+  }
+
+  if (auto decl = qual_type->getAsRecordDecl();
+      decl && IsUserDefinedDecl(decl)) {
+    record_decls_.MarkReferenced(GetRecordName(decl));
   }
 
   auto mapped = Mapper::Map(qual_type);
@@ -205,11 +211,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
     }
   }
 
-  auto name = GetRecordName(decl);
-  StrCat(name);
-  if (!ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
-    record_decls_.MarkReferenced(std::move(name));
-  }
+  StrCat(GetRecordName(decl));
   Mapper::AddRuleForUserDefinedType(decl);
   return false;
 }

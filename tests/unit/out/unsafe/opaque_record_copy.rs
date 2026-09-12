@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
-pub struct container {
-    pub p: *mut opaque,
-    pub x: i32,
+#[derive(Clone, Default)]
+pub struct Wrapper_Probe_ {
+    pub base_: Probe,
+    pub tag: i32,
 }
 pub fn main() {
     unsafe {
@@ -18,12 +18,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: container = container {
-        p: std::ptr::null_mut(),
-        x: 42,
+    let mut a: Wrapper_Probe_ = Wrapper_Probe_ {
+        base_: Probe {},
+        tag: 0_i32,
     };
-    &(c.p);
-    return ((c.x) - (42));
+    a.tag = 3;
+    let mut b: Wrapper_Probe_ = a.clone();
+    assert!(((b.tag) == (3)));
+    return 0;
 }
 #[derive(Clone, Copy, Default, ByteRepr)]
-pub struct opaque;
+pub struct Probe;

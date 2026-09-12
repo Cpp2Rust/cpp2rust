@@ -45,4 +45,5 @@ fn main_0() -> i32 {
     &(*(*c.borrow()).p.borrow());
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
+#[derive(Clone, Copy, Default, ByteRepr)]
 pub struct opaque;

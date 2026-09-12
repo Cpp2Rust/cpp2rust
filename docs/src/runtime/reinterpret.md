@@ -62,6 +62,18 @@ trait by hand with the byte layout of their C structs. Types with no meaningful
 C layout, such as `std::fs::File` or `Vec<T>`, implement the trait with defaults
 that panic, so reinterpreting one is caught at run time.
 
+### derive(ByteRepr)
+
+`libcc2rs-macros` provides a `#[derive(ByteRepr)]` proc macro. It is implemented
+only for unit structs, and expanding it on a struct with fields, an enum, or a
+union is a compile-time error. The expansion sets `byte_size` to 1 and leaves
+`to_bytes` and `from_bytes` on the trait's panicking defaults:
+
+```rust
+#[derive(Default, Clone, Copy, ByteRepr)]
+pub struct UnitStruct;
+```
+
 ## Views over the original allocation
 
 `reinterpret_cast` copies nothing. It produces a `Ptr` in the `Reinterpreted`
