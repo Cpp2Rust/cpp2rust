@@ -69,7 +69,8 @@ The OS and libc surface:
 
 The crate has five dependencies:
 
-- `libcc2rs-macros` provides the control-flow proc macros.
+- `libcc2rs-macros` provides the [control-flow](./control-flow.md) and
+  [`derive(ByteRepr)`](./reinterpret.md#derivebyterepr) proc macros.
 - `libc` and `nix` provide the raw and safe OS interfaces the shims wrap.
 - `jiff` backs the time shims.
 - `sprintf` backs `printf`-style formatting.
