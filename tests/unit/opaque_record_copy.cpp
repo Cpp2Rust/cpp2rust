@@ -5,8 +5,7 @@ public:
   Probe &operator++();
 };
 
-template <class T>
-struct Wrapper {
+template <class T> struct Wrapper {
   T base_;
   int tag;
 };
