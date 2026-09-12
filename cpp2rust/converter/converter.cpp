@@ -1268,6 +1268,14 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  if (auto *init = stmt->getInit()) {
+    PushBrace scope(*this);
+    Convert(init);
+    stmt->setInit(nullptr);
+    Convert(stmt);
+    stmt->setInit(init);
+    return false;
+  }
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
   ConvertBody(stmt->getThen());
