@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{Ptr, PtrKind};
+use crate::rc::{AsPointer, Ptr, PtrKind};
 
 impl fmt::Display for Ptr<u8> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -27,10 +27,30 @@ impl fmt::Display for Ptr<u8> {
     }
 }
 
-type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Vec<u8>>>>;
+type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Box<[u8]>>>>;
 
 thread_local! {
     static STRING_LITERALS: RefCell<StringLiteralMap> = RefCell::new(HashMap::new());
+}
+
+impl Ptr<Box<[u8]>> {
+    #[inline]
+    pub fn from_string_literal_array(s: &'static [u8]) -> Self {
+        STRING_LITERALS.with(|literals| {
+            let mut literals = literals.borrow_mut();
+            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
+                Rc::new(RefCell::new({
+                    let mut v = s.to_vec();
+                    v.push(0);
+                    v.into_boxed_slice()
+                }))
+            }));
+            Ptr {
+                offset: 0,
+                kind: PtrKind::StackSingle(weak),
+            }
+        })
+    }
 }
 
 impl Ptr<u8> {
@@ -86,20 +106,9 @@ impl Ptr<u8> {
 
     #[inline]
     pub fn from_string_literal(s: &'static [u8]) -> Self {
-        STRING_LITERALS.with(|literals| {
-            let mut literals = literals.borrow_mut();
-            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
-                Rc::new(RefCell::new({
-                    let mut v = s.to_vec();
-                    v.push(0);
-                    v
-                }))
-            }));
-            Ptr {
-                offset: 0,
-                kind: PtrKind::Vec(weak),
-            }
-        })
+        Ptr::<Box<[u8]>>::from_string_literal_array(s)
+            .to_strong()
+            .as_pointer()
     }
 
     pub fn to_c_string_iterator(&self) -> CStringIterator {
