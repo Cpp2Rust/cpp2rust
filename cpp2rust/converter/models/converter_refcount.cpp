@@ -438,10 +438,9 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
 std::string ConverterRefCount::GetComparisonCall(
     const clang::FunctionDecl *op, const clang::CXXRecordDecl *decl,
     std::string_view lhs, std::string_view rhs) {
-  auto lhs_ptr =
-      std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", lhs);
-  auto rhs_ptr =
-      std::format("Rc::new(RefCell::new({}.clone())).as_pointer()", rhs);
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  auto lhs_ptr = BoxValue(GetShallowCopy(decl, lhs)) + ".as_pointer()";
+  auto rhs_ptr = BoxValue(GetShallowCopy(decl, rhs)) + ".as_pointer()";
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
     return std::format("{}::{}(&{}, {})", GetUFCSName(method),
                        GetMethodName(method), lhs_ptr, rhs_ptr);
@@ -450,17 +449,14 @@ std::string ConverterRefCount::GetComparisonCall(
                      lhs_ptr, rhs_ptr);
 }
 
-void ConverterRefCount::EmitShallowCopy(const clang::RecordDecl *decl) {
-  StrCat("Rc::new");
-  PushParen rc_paren(*this);
-  StrCat("RefCell::new");
-  PushParen cell_paren(*this);
-  StrCat(GetRecordName(decl));
-  PushBrace init_brace(*this);
+std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
+                                              std::string_view src) {
+  std::string fields;
   for (auto *field : decl->fields()) {
     auto name = GetNamedDeclAsString(field);
-    StrCat(std::format("{0}: self.{0}.clone(),", name));
+    fields += std::format("{0}: {1}.{0}.clone(),", name, src);
   }
+  return std::format("{} {{ {} }}", GetRecordName(decl), fields);
 }
 
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
@@ -500,9 +496,9 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   StrCat("fn clone(&self) -> Self {");
 
   if (auto *ctor = GetUserDefinedCopyConstructor(cxx)) {
-    StrCat(std::format("let __src: Value<{}> =", record_name));
-    EmitShallowCopy(decl);
-    StrCat(token::kSemiColon);
+    PushConversionKind push(*this, ConversionKind::FullRefCount);
+    StrCat(std::format("let __src: Value<{}> = {};", record_name,
+                       BoxValue(GetShallowCopy(decl, "self"))));
     StrCat(std::format("{}::{}(__src.as_pointer())", record_name,
                        GetCtorName(ctor)));
   } else {

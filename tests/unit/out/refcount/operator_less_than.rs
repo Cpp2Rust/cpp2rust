@@ -15,13 +15,29 @@ impl std::cmp::Ord for Pair {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             if PairImpl::operator_lt(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Pair {
+                    x: self.x.clone(),
+                    y: self.y.clone(),
+                }))
+                .as_pointer(),
+                Rc::new(RefCell::new(Pair {
+                    x: other.x.clone(),
+                    y: other.y.clone(),
+                }))
+                .as_pointer(),
             ) {
                 std::cmp::Ordering::Less
             } else if PairImpl::operator_lt(
-                &Rc::new(RefCell::new(other.clone())).as_pointer(),
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Pair {
+                    x: other.x.clone(),
+                    y: other.y.clone(),
+                }))
+                .as_pointer(),
+                Rc::new(RefCell::new(Pair {
+                    x: self.x.clone(),
+                    y: self.y.clone(),
+                }))
+                .as_pointer(),
             ) {
                 std::cmp::Ordering::Greater
             } else {
@@ -39,11 +55,27 @@ impl std::cmp::PartialEq for Pair {
     fn eq(&self, other: &Self) -> bool {
         {
             !(PairImpl::operator_lt(
-                &Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Pair {
+                    x: self.x.clone(),
+                    y: self.y.clone(),
+                }))
+                .as_pointer(),
+                Rc::new(RefCell::new(Pair {
+                    x: other.x.clone(),
+                    y: other.y.clone(),
+                }))
+                .as_pointer(),
             )) && !(PairImpl::operator_lt(
-                &Rc::new(RefCell::new(other.clone())).as_pointer(),
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
+                &Rc::new(RefCell::new(Pair {
+                    x: other.x.clone(),
+                    y: other.y.clone(),
+                }))
+                .as_pointer(),
+                Rc::new(RefCell::new(Pair {
+                    x: self.x.clone(),
+                    y: self.y.clone(),
+                }))
+                .as_pointer(),
             ))
         }
     }

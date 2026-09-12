@@ -37,8 +37,8 @@ impl std::cmp::PartialEq for V {
     fn eq(&self, other: &Self) -> bool {
         {
             operator_eq_1(
-                Rc::new(RefCell::new(self.clone())).as_pointer(),
-                Rc::new(RefCell::new(other.clone())).as_pointer(),
+                Rc::new(RefCell::new(V { x: self.x.clone() })).as_pointer(),
+                Rc::new(RefCell::new(V { x: other.x.clone() })).as_pointer(),
             )
         }
     }
