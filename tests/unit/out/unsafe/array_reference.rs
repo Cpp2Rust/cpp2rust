@@ -54,5 +54,8 @@ unsafe fn main_0() -> i32 {
     (unsafe { fill_and_sum_4(&mut arr as *mut [i32; 3], 2, &mut out as *mut i32) });
     assert!(((out) == (12)));
     assert!(((arr[(0) as usize]) == (2)));
+    let lit: *const [libc::c_char; 5] =
+        &std::mem::transmute(*b"beta\0") as *const [libc::c_char; 5];
+    assert!(((unsafe { len_0(lit,) }) == (4)));
     return 0;
 }

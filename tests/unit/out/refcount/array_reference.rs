@@ -68,5 +68,7 @@ fn main_0() -> i32 {
     ({ fill_and_sum_4((arr.as_pointer() as Ptr<Box<[i32]>>), 2, out.as_pointer()) });
     assert!(((*out.borrow()) == 12));
     assert!(((*arr.borrow())[(0) as usize] == 2));
+    let lit: Ptr<Box<[u8]>> = Ptr::from_string_literal_array(b"beta");
+    assert!((({ len_0(((lit).clone() as Ptr<Box<[u8]>>),) }) == 4));
     return 0;
 }
