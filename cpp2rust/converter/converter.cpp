@@ -98,6 +98,11 @@ bool Converter::Convert(clang::QualType qual_type) {
     return false;
   }
 
+  if (auto decl = qual_type->getAsRecordDecl();
+      decl && IsUserDefinedDecl(decl)) {
+    record_decls_.MarkReferenced(GetRecordName(decl));
+  }
+
   auto mapped = Mapper::Map(qual_type);
   if (!mapped.empty() && mapped != token::kIgnoreRule) {
     StrCat(mapped);
@@ -206,11 +211,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
     }
   }
 
-  auto name = GetRecordName(decl);
-  StrCat(name);
-  if (!ctx_.getSourceManager().isInSystemHeader(decl->getLocation())) {
-    record_decls_.MarkReferenced(std::move(name));
-  }
+  StrCat(GetRecordName(decl));
   Mapper::AddRuleForUserDefinedType(decl);
   return false;
 }
