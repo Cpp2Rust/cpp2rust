@@ -20,6 +20,12 @@ struct Both {
   std::strong_ordering operator<=>(const Both &) const = default;
 };
 
+struct OrdOnly {
+  int a;
+  auto operator<=>(const OrdOnly &) const = default;
+  bool operator==(const OrdOnly &) const = delete;
+};
+
 int main() {
   Eq e1{1, 2}, e2{1, 2}, e3{1, 3};
   assert(e1 == e2);
@@ -32,5 +38,8 @@ int main() {
   Both b1{1}, b2{2};
   assert(b1 < b2);
   assert(b2 == b2);
+  OrdOnly o1{1}, o2{2};
+  assert(o1 < o2);
+  assert((o2 <=> o1) == std::strong_ordering::greater);
   return 0;
 }

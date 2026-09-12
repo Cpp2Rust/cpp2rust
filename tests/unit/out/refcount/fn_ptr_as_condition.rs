@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     ({ maybe_call_1(FnPtr::<fn(Ptr<i32>)>::null(), (b.as_pointer())) });
     assert!(((*b.borrow()) == 5));
     let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::null()));
-    if !!(*fn_.borrow()).is_null() {
+    if !(!(*fn_.borrow()).is_null()) {
         (*fn_.borrow_mut()) = FnPtr::<fn(Ptr<i32>)>::new(double_it_0);
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));

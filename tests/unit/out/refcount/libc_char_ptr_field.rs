@@ -22,7 +22,7 @@ fn main_0() -> i32 {
             }
         },
     ));
-    if !!(*pw.borrow()).is_null() {
+    if !(!(*pw.borrow()).is_null()) {
         return 0;
     }
     let home: Value<Ptr<u8>> = Rc::new(RefCell::new(
