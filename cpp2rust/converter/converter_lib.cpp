@@ -919,9 +919,11 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if ((method->isImplicit() && !IsComparisonOperator(method)) ||
-      method->isDeleted() || method->isStatic() || method->isVirtual() ||
+  if (method->isDeleted() || method->isStatic() || method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
+    return false;
+  }
+  if (method->isImplicit() && !IsComparisonOperator(method)) {
     return false;
   }
   if (!IsUserDefinedDecl(method->getParent()) ||
