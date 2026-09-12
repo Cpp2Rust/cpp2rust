@@ -38,14 +38,18 @@ struct Point {
   int y;
 };
 
-int sum_points(const Point (&p)[2]) { return p[0].x + p[0].y + p[1].x + p[1].y; }
+int sum_points(const Point (&p)[2]) {
+  return p[0].x + p[0].y + p[1].x + p[1].y;
+}
 
 void shift_points(Point (&p)[2], int d) {
   p[0].x += d;
   p[1].y += d;
 }
 
-int total_len(const char *(&names)[2]) { return len5(names[0]) + len5(names[1]); }
+int total_len(const char *(&names)[2]) {
+  return len5(names[0]) + len5(names[1]);
+}
 
 int main() {
   assert(len("beta") == 4);
