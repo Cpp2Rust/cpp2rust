@@ -11,6 +11,7 @@ target_link_libraries(cpp2rust_core PUBLIC
     clangAST
     clangASTMatchers
     clangBasic
+    clangDriver
     clangFrontend
     clangLex
     clangSema
