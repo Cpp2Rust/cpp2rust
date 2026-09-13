@@ -66,7 +66,7 @@ unsafe fn main_0() -> i32 {
     assert!(((v1.len()) == (0_usize)));
     assert!(v1.is_empty());
     v1.push(1);
-    assert!(!v1.is_empty());
+    assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
     let mut s1: usize = v1.len();

@@ -966,6 +966,14 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
         sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
       }
     }
+    for (auto *method : decl->methods()) {
+      if (IsComparisonOperator(method) && method->isDefaulted() &&
+          !method->doesThisDeclarationHaveABody()) {
+        sema_->DefineDefaultedComparison(
+            decl->getLocation(), method,
+            sema_->getDefaultedComparisonKind(method));
+      }
+    }
 
     EmitRustStructOrUnion(decl);
   } else if (decl->isUnion()) {
@@ -1268,6 +1276,14 @@ void Converter::ConvertCondition(clang::Expr *cond) {
 }
 
 bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
+  if (auto *init = stmt->getInit()) {
+    PushBrace scope(*this);
+    Convert(init);
+    stmt->setInit(nullptr);
+    Convert(stmt);
+    stmt->setInit(init);
+    return false;
+  }
   StrCat(keyword::kIf);
   ConvertCondition(stmt->getCond());
   ConvertBody(stmt->getThen());
@@ -1832,7 +1848,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
     CallArg ca{
-        .param_name = function
+        .param_name = function && !function->getParamDecl(i)->getName().empty()
                           ? ("_" + function->getParamDecl(i)->getNameAsString())
                           : ("_arg" + std::to_string(i)),
         .param_type = function ? function->getParamDecl(i)->getType()
@@ -2729,7 +2745,10 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
         expr->getType()->isIntegerType() && !expr->getType()->isBooleanType();
     PushParen paren_cast(*this, needs_int_cast);
     StrCat(token::kNot);
-    ConvertCondition(sub_expr);
+    {
+      PushParen paren_operand(*this);
+      ConvertCondition(sub_expr);
+    }
     if (needs_int_cast) {
       ConvertCast(expr->getType());
     }

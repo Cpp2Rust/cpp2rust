@@ -79,7 +79,7 @@ unsafe fn main_0() -> i32 {
     }
     let mut k: u32 = 2_u32;
     let mut done: bool = false;
-    if ((k) > (1_u32)) || (!done) {
+    if ((k) > (1_u32)) || (!(done)) {
         assert!(true);
     }
     if ((x) > (y)) || (((flags) & (4_u32)) != 0) {

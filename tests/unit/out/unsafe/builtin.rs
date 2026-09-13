@@ -38,11 +38,11 @@ pub unsafe fn test_popcountl_7() {
 pub unsafe fn test_mul_overflow_long_8() {
     let mut r: i64 = 0_i64;
     assert!(
-        ((!{
+        ((!({
             let (val, ovf) = 3_i64.overflowing_mul(7_i64);
             *(&mut r as *mut i64) = val;
             ovf
-        } as i32)
+        }) as i32)
             != 0)
     );
     assert!(((((r) == (21_i64)) as i32) != 0));
@@ -55,11 +55,11 @@ pub unsafe fn test_mul_overflow_long_8() {
 pub unsafe fn test_mul_overflow_long_long_9() {
     let mut r: i64 = 0_i64;
     assert!(
-        ((!{
+        ((!({
             let (val, ovf) = 1000_i64.overflowing_mul(1000_i64);
             *(&mut r as *mut i64) = val;
             ovf
-        } as i32)
+        }) as i32)
             != 0)
     );
     assert!(((((r) == (1000000_i64)) as i32) != 0));
