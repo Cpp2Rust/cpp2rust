@@ -970,7 +970,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     for (auto *method : decl->methods()) {
       if (IsComparisonOperator(method) && method->isDefaulted() &&
           !method->doesThisDeclarationHaveABody()) {
-#if CLANG_VERSION_MAJOR >= 23
+#if CLANG_VERSION_MAJOR >= 24
         auto kind = method->getDefaultedComparisonKind();
 #else
         auto kind = sema_->getDefaultedComparisonKind(method);
