@@ -285,6 +285,7 @@ private:
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {
     Unboxed,
+    Pointee,
     Ptr,
     FullRefCount,
   };
@@ -293,6 +294,8 @@ private:
     switch (k) {
     case ConversionKind::Unboxed:
       return "Unboxed";
+    case ConversionKind::Pointee:
+      return "Pointee";
     case ConversionKind::Ptr:
       return "Ptr";
     case ConversionKind::FullRefCount:

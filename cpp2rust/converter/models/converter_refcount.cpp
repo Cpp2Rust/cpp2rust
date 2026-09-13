@@ -129,6 +129,7 @@ bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
 std::string ConverterRefCount::BoxType(std::string &&str) const {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
+  case ConversionKind::Pointee:
   case ConversionKind::Ptr:
     return std::move(str);
   case ConversionKind::FullRefCount:
@@ -140,6 +141,7 @@ std::string ConverterRefCount::BoxType(std::string &&str) const {
 std::string ConverterRefCount::BoxValue(std::string &&str) const {
   switch (getConversionKind()) {
   case ConversionKind::Unboxed:
+  case ConversionKind::Pointee:
   case ConversionKind::Ptr:
     return std::move(str);
   case ConversionKind::FullRefCount:
@@ -178,7 +180,7 @@ bool ConverterRefCount::VisitIncompleteArrayType(
 }
 
 bool ConverterRefCount::VisitReferenceType(clang::ReferenceType *type) {
-  PushConversionKind push(*this, ConversionKind::Unboxed);
+  PushConversionKind push(*this, ConversionKind::Pointee);
   StrCat("Ptr<");
   Convert(type->getPointeeType());
   StrCat(token::kGt);
@@ -297,6 +299,7 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
   case ConversionKind::Ptr:
     Convert(type->getElementType());
     break;
+  case ConversionKind::Pointee:
   case ConversionKind::FullRefCount:
     StrCat("Box<[");
     Convert(type->getElementType());
@@ -396,7 +399,9 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
   if (base->IgnoreCasts()->getType()->isPointerType() ||
-      IsUnionArrayMember(base)) {
+      IsUnionArrayMember(base) ||
+      (IsReferenceType(base) &&
+       base->IgnoreCasts()->getType()->isArrayType())) {
     ConvertPointerSubscript(expr);
   } else {
     if (!base->IgnoreCasts()->getType()->isArrayType()) {
@@ -846,7 +851,8 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     // std::vector<T>& gets converted to Ptr<vec<T>>
     // So we need to make a pointer to the vector itself
     if (isObject()) {
-      if (IsBoxedType(ref->getPointeeType())) {
+      if (IsBoxedType(ref->getPointeeType()) ||
+          ref->getPointeeType()->isArrayType()) {
         StrCat(str, ".to_strong().as_pointer()");
         computed_expr_type_ = ComputedExprType::FreshPointer;
         return false;
@@ -1227,7 +1233,9 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       // smart enough to pick the right specialization
       PushConversionKind push(*this, ConversionKind::Unboxed);
       PushParen paren(*this);
-      StrCat(ConvertPointer(sub_expr), keyword::kAs, ToString(expr->getType()));
+      StrCat(IsReferenceType(sub_expr) ? ConvertObject(sub_expr)
+                                       : ConvertPointer(sub_expr),
+             keyword::kAs, ToString(expr->getType()));
       return false;
     }
   }
@@ -1590,6 +1598,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   case ConversionKind::Ptr:
     Converter::VisitInitListExpr(expr);
     break;
+  case ConversionKind::Pointee:
   case ConversionKind::FullRefCount:
     StrCat("Box::new(");
     Converter::VisitInitListExpr(expr);
@@ -2078,6 +2087,14 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
       return EmitMaterializedTempBinding(qual_type, expr);
     }
+    if (qual_type.getNonReferenceType()->isArrayType()) {
+      if (IsStringLiteralExpr(expr)) {
+        return std::format("Ptr::from_string_literal_array({})",
+                           ToString(expr->IgnoreParens()->IgnoreImplicit()));
+      }
+      return std::format("({} as {})", ConvertFreshPointer(expr),
+                         ToString(qual_type));
+    }
     return ConvertFreshPointer(expr);
   }
   return ConvertFreshRValue(expr, qual_type);
@@ -2449,7 +2466,7 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   }
 
   if (isObject()) {
-    if (IsBoxedType(pointee_type)) {
+    if (IsBoxedType(pointee_type) || pointee_type->isArrayType()) {
       StrCat(".to_strong().as_pointer()");
       computed_expr_type_ = ComputedExprType::FreshPointer;
     }

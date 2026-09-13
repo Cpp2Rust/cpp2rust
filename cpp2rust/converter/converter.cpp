@@ -2186,8 +2186,11 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
-  if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
-    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
+  auto init_type = curr_init_type_.empty()
+                       ? clang::QualType()
+                       : curr_init_type_.back().getNonReferenceType();
+  if (!init_type.isNull() && init_type->isArrayType()) {
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(init_type)) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
         StrCat(std::format("[0 as libc::c_char; {}]", arr_size));
