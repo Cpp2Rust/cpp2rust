@@ -36,7 +36,7 @@ while satisfying Rust's borrow checker through checked run-time operations.
 On Ubuntu, install the required dependencies with:
 
 ```bash
-sudo apt install libclang-22-dev clang++-22 ninja-build cmake
+sudo apt install libclang-23-dev clang++-23 ninja-build cmake
 pip install ruff==0.15.22
 ```
 
