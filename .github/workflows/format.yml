@@ -23,7 +23,7 @@ jobs:
       - name: Setup LLVM
         uses: ZhongRuoyu/setup-llvm@v0
         with:
-          llvm-version: 22
+          llvm-version: 23
 
       - name: Setup Python
         run: pip install ruff==0.15.22
