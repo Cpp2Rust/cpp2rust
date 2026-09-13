@@ -28,7 +28,7 @@ jobs:
       if: matrix.language == 'cpp'
       uses: ZhongRuoyu/setup-llvm@v0
       with:
-        llvm-version: 22
+        llvm-version: 23
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4

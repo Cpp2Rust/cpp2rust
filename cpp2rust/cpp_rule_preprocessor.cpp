@@ -24,6 +24,7 @@
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/FormatVariadic.h>
 #include <llvm/Support/JSON.h>
+#include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include <cstdlib>
@@ -988,10 +989,15 @@ void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
   flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
   auto end_flags = getPlatformClangEndFlags();
   flags.insert(flags.end(), end_flags.begin(), end_flags.end());
-  clang::tooling::FixedCompilationDatabase compilations(".", flags);
+  auto code = llvm::MemoryBuffer::getFile(src_path.string());
+  if (!code) {
+    llvm::errs() << "ERROR: cannot read " << src_path.string() << '\n';
+    std::exit(EXIT_FAILURE);
+  }
   ActionFactory factory(out);
-  clang::tooling::ClangTool tool(compilations, {src_path.string()});
-  tool.run(&factory);
+  clang::tooling::runToolOnCodeWithArgs(
+      factory.create(), (*code)->getBuffer(), flags, src_path.string(),
+      src_path.extension() == ".c" ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
 }
 
 } // namespace cpp2rust

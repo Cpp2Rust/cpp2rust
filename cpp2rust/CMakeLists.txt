@@ -8,14 +8,7 @@ add_library(cpp2rust_core STATIC ${CORE_SOURCES})
 llvm_update_compile_flags(cpp2rust_core)
 
 target_link_libraries(cpp2rust_core PUBLIC
-    clangAST
-    clangASTMatchers
-    clangBasic
-    clangFrontend
-    clangLex
-    clangSema
-    clangSerialization
-    clangTooling
+    clang-cpp
 )
 target_include_directories(cpp2rust_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(cpp2rust_core SYSTEM PUBLIC ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
