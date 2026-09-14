@@ -532,7 +532,10 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   if (is_parm_with_default_value) {
     StrCat("Option<");
   }
-  Convert(qual_type);
+  {
+    PushLazyType lazy(*this, IsGlobalVar(decl) && LazyStaticInit());
+    Convert(qual_type);
+  }
   if (is_parm_with_default_value) {
     StrCat('>');
   }
@@ -597,8 +600,9 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
                                               decl->isStaticLocal());
   StrCat(token::kAssign);
-  StrCat(keyword_unsafe_);
   {
+    PushLazyInit lazy(*this, LazyStaticInit());
+    StrCat(keyword_unsafe_);
     PushBrace push(*this);
     ConvertVarDeclInitializer(decl);
   }
@@ -2860,7 +2864,11 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (IsGlobalVar(expr)) {
-    return GetNamedDeclAsString(expr->getDecl());
+    if (LazyStaticInit()) {
+      return std::format("(*std::cell::LazyCell::force_mut(&mut *&raw mut {}))",
+                         GetNamedDeclAsString(decl));
+    }
+    return GetNamedDeclAsString(decl);
   }
 
   return GetNamedDeclAsString(decl);
