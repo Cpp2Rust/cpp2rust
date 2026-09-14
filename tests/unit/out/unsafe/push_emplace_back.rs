@@ -11,6 +11,12 @@ use std::rc::Rc;
 pub struct Chunk {
     pub data: i32,
 }
+impl Chunk {
+    pub unsafe fn Chunk_pmutChunk(_a0: *mut Chunk) -> Self {
+        let mut this = Self { data: (*_a0).data };
+        this
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Writer {
@@ -48,7 +54,7 @@ pub unsafe fn shrink_through_ptr_2(mut comps: *mut Vec<Chunk>) {
     (*comps).shrink_to_fit();
 }
 pub unsafe fn nested_push_move_3(mut bw: *mut Writer) {
-    (*(*bw).output).push((*bw).chunk);
+    (*(*bw).output).push(std::mem::take(&mut (*bw).chunk));
 }
 pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
@@ -58,18 +64,22 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    (*dest).push(
-        core::slice::from_raw_parts(
+    {
+        let __arg = core::slice::from_raw_parts(
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())
-        .collect(),
-    );
+        .collect();
+        (*dest).push(__arg)
+    };
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
-    (*(*bw).output).push(std::mem::take(&mut (*bw).chunk));
+    {
+        let __arg = Chunk::Chunk_pmutChunk({ &mut (*bw).chunk as *mut Chunk });
+        (*(*bw).output).push(__arg)
+    };
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {

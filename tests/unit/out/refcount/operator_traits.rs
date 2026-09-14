@@ -10,6 +10,15 @@ use std::rc::{Rc, Weak};
 pub struct Lt {
     pub v: Value<i32>,
 }
+impl Lt {
+    pub fn Lt_pmutLt(_a0: Ptr<Lt>) -> Self {
+        let __this: Value<Lt> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+        }));
+        let this: Ptr<Lt> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl std::cmp::Ord for Lt {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
@@ -111,6 +120,15 @@ impl ByteRepr for Eq {
 pub struct Cmp {
     pub v: Value<i32>,
 }
+impl Cmp {
+    pub fn Cmp_pmutCmp(_a0: Ptr<Cmp>) -> Self {
+        let __this: Value<Cmp> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+        }));
+        let this: Ptr<Cmp> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl std::cmp::Ord for Cmp {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
@@ -162,6 +180,15 @@ impl ByteRepr for Cmp {
 #[derive(Default)]
 pub struct Free {
     pub v: Value<i32>,
+}
+impl Free {
+    pub fn Free_pmutFree(_a0: Ptr<Free>) -> Self {
+        let __this: Value<Free> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+        }));
+        let this: Ptr<Free> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl std::cmp::Ord for Free {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -492,6 +519,7 @@ fn main_0() -> i32 {
 pub trait CmpImpl {
     fn operator_cmp(&self, o: Ptr<Cmp>) -> std::cmp::Ordering;
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool;
+    fn operator_assign_pmutCmp(&self, _a0: Ptr<Cmp>) -> Ptr<Cmp>;
 }
 impl CmpImpl for Ptr<Cmp> {
     fn operator_cmp(&self, o: Ptr<Cmp>) -> std::cmp::Ordering {
@@ -503,6 +531,11 @@ impl CmpImpl for Ptr<Cmp> {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs == (*(*o.upgrade().deref()).v.borrow())
         };
+    }
+    fn operator_assign_pmutCmp(&self, _a0: Ptr<Cmp>) -> Ptr<Cmp> {
+        let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        return (*self).clone();
     }
 }
 pub trait EqImpl {
@@ -516,8 +549,19 @@ impl EqImpl for Ptr<Eq> {
         };
     }
 }
+pub trait FreeImpl {
+    fn operator_assign_pmutFree(&self, _a0: Ptr<Free>) -> Ptr<Free>;
+}
+impl FreeImpl for Ptr<Free> {
+    fn operator_assign_pmutFree(&self, _a0: Ptr<Free>) -> Ptr<Free> {
+        let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        return (*self).clone();
+    }
+}
 pub trait LtImpl {
     fn operator_lt(&self, o: Ptr<Lt>) -> bool;
+    fn operator_assign_pmutLt(&self, _a0: Ptr<Lt>) -> Ptr<Lt>;
 }
 impl LtImpl for Ptr<Lt> {
     fn operator_lt(&self, o: Ptr<Lt>) -> bool {
@@ -525,5 +569,10 @@ impl LtImpl for Ptr<Lt> {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs < (*(*o.upgrade().deref()).v.borrow())
         };
+    }
+    fn operator_assign_pmutLt(&self, _a0: Ptr<Lt>) -> Ptr<Lt> {
+        let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        return (*self).clone();
     }
 }

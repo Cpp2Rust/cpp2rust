@@ -12,6 +12,20 @@ pub struct Item {
     pub key: i32,
     pub value: i32,
 }
+impl Item {
+    pub unsafe fn Item_pmutItem(_a0: *mut Item) -> Self {
+        let mut this = Self {
+            key: (*_a0).key,
+            value: (*_a0).value,
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutItem(&mut self, _a0: *mut Item) -> *mut Item {
+        self.key = (*_a0).key;
+        self.value = (*_a0).value;
+        return &mut (*(self as *mut Item)) as *mut Item;
+    }
+}
 pub unsafe fn Compare_0(a: *const Item, b: *const Item) -> bool {
     return (((*a).key) < ((*b).key));
 }

@@ -77,7 +77,10 @@ impl S {
         ::std::mem::drop(Box::from_raw((self as *mut S)));
     }
     pub unsafe fn reset(&mut self) {
-        (*(self as *mut S)) = S::S1({ 0 });
+        (unsafe {
+            let mut _arg0: S = S::S1({ 0 });
+            S::operator_assign_pmutS(&mut (*(self as *mut S)), &mut _arg0)
+        });
     }
     pub unsafe fn copy_if_different_const(&mut self, mut other: *const S) -> bool {
         if (((self as *mut S).cast_const()) == (other)) {
@@ -94,6 +97,11 @@ impl S {
         self.a_ = (*other).a_;
         self.self__ = (*other).self__;
         return true;
+    }
+    pub unsafe fn operator_assign_pmutS(&mut self, _a0: *mut S) -> *mut S {
+        self.a_ = (*_a0).a_;
+        self.self__ = (*_a0).self__;
+        return &mut (*(self as *mut S)) as *mut S;
     }
 }
 pub unsafe fn bump_0(mut p: *mut S) {

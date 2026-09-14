@@ -174,3 +174,19 @@ fn f24(a0: &mut Vec<u8>) {
 fn f25(a0: &mut Vec<u8>) {
     a0.shrink_to_fit()
 }
+
+fn f27(a0: Vec<u8>) -> Vec<u8> {
+    a0.clone()
+}
+
+fn f28(a0: &mut Vec<u8>) -> Vec<u8> {
+    std::mem::take(&mut *a0)
+}
+
+fn f29(a0: Ptr<Vec<u8>>, a1: Vec<u8>) {
+    a0.write(a1.clone())
+}
+
+fn f30(a0: Ptr<Vec<u8>>, a1: &mut Vec<u8>) {
+    a0.write(std::mem::take(&mut *a1))
+}

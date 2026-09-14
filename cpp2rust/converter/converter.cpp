@@ -253,6 +253,10 @@ Converter::ConvertRValue(clang::Expr *expr,
 std::string Converter::ConvertFreshRValue(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
   auto str = ConvertRValue(expr, implicit_convert_to);
+  // TODO: set freshness correctly to avoid stale computed_expr_type_
+  if (expr->isGLValue()) {
+    SetValueFreshness(expr->getType());
+  }
   if (!isFresh() && !expr->getType()->isVoidType() &&
       !expr->getType()->isPointerType()) {
     SetFresh();
@@ -948,8 +952,9 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
 
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-      // Other translation units may instantiate members this one did not.
-      if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
+      // Other translation units may instantiate or synthesize members this
+      // one did not.
+      if (!decl->isAbstract()) {
         ConvertLateInstantiatedMethods(decl);
       }
       return false;
@@ -960,25 +965,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       return false;
     }
 
-    sema_->ForceDeclarationOfImplicitMembers(decl);
-    for (auto ctor : decl->ctors()) {
-      if (ctor->isCopyConstructor() && ctor->isImplicit() &&
-          !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
-        sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
-      }
-    }
-    for (auto *method : decl->methods()) {
-      if (IsComparisonOperator(method) && method->isDefaulted() &&
-          !method->doesThisDeclarationHaveABody()) {
-#if CLANG_VERSION_MAJOR >= 24
-        auto kind = method->getDefaultedComparisonKind();
-#else
-        auto kind = sema_->getDefaultedComparisonKind(method);
-#endif
-        sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
-      }
-    }
-
+    DefineImplicitMembers(decl);
     EmitRustStructOrUnion(decl);
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
@@ -991,6 +978,27 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   }
 
   return false;
+}
+
+void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
+  sema_->ForceDeclarationOfImplicitMembers(decl);
+  for (auto ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
+      sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+    }
+  }
+  for (auto *method : decl->methods()) {
+    if (IsComparisonOperator(method) && method->isDefaulted() &&
+        !method->doesThisDeclarationHaveABody()) {
+#if CLANG_VERSION_MAJOR >= 24
+      auto kind = method->getDefaultedComparisonKind();
+#else
+      auto kind = sema_->getDefaultedComparisonKind(method);
+#endif
+      sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
+    }
+  }
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
@@ -1080,7 +1088,8 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
-  if (decl->isOutOfLine() || decl->isImplicit()) {
+  if (decl->isOutOfLine() ||
+      (decl->isImplicit() && !IsUserDefinedMoveConstructorOrAssignment(decl))) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
@@ -2660,7 +2669,7 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
-  const auto *e = expr->IgnoreCasts();
+  const auto *e = IgnoreStdMove(expr->IgnoreCasts())->IgnoreCasts();
   if (const auto *call = clang::dyn_cast<clang::CallExpr>(e)) {
     return !clang::isa<clang::CXXOperatorCallExpr>(call) &&
            GetReturnTypeOfFunction(call)->isReferenceType();
@@ -3411,22 +3420,12 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  // Default move is translated using a bitwise .clone() implementation.
-  // Bitwise clone is only satisfied by default copy constructor. If the copy
-  // constructor is user defined, then default move calls copy constructor,
-  // which is wrong.
-  if (IsDefaultedMoveConstructor(ctor) &&
-      !HasDefaultedCopyConstructor(ctor->getParent())) {
-    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
-                             "copy constructor is not supported");
-  }
-
   if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
     Convert(expr->getArg(0));
-    if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
-        !suppress && !TypeIsCopyable(expr->getType())) {
+    if (ctor->isCopyConstructor() && !suppress &&
+        !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
     }
     return false;
@@ -3438,7 +3437,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  assert(ctor->isUserProvided());
+  assert(ctor->isUserProvided() || IsUserDefinedMoveConstructor(ctor));
   if (expr->getType()->isArrayType()) {
     ConvertArrayCXXConstructExpr(expr);
   } else {
@@ -3843,6 +3842,10 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   auto name = GetFunctionBaseName(decl);
+  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
+      ctor && !ctor->getParent()->getIdentifier()) {
+    name = GetRecordName(ctor->getParent());
+  }
 
   if (decl->getNumParams() != 0U) {
     name += '_';

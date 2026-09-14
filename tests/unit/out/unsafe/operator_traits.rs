@@ -15,6 +15,14 @@ impl Lt {
     pub unsafe fn operator_lt(&self, o: *const Lt) -> bool {
         return ((self.v) < ((*o).v));
     }
+    pub unsafe fn Lt_pmutLt(_a0: *mut Lt) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
+    }
+    pub unsafe fn operator_assign_pmutLt(&mut self, _a0: *mut Lt) -> *mut Lt {
+        self.v = (*_a0).v;
+        return &mut (*(self as *mut Lt)) as *mut Lt;
+    }
 }
 impl std::cmp::Ord for Lt {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -71,6 +79,14 @@ impl Cmp {
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
         return ((self.v) == ((*o).v));
     }
+    pub unsafe fn Cmp_pmutCmp(_a0: *mut Cmp) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
+    }
+    pub unsafe fn operator_assign_pmutCmp(&mut self, _a0: *mut Cmp) -> *mut Cmp {
+        self.v = (*_a0).v;
+        return &mut (*(self as *mut Cmp)) as *mut Cmp;
+    }
 }
 impl std::cmp::Ord for Cmp {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -92,6 +108,16 @@ impl std::cmp::Eq for Cmp {}
 #[derive(Copy, Clone, Default)]
 pub struct Free {
     pub v: i32,
+}
+impl Free {
+    pub unsafe fn Free_pmutFree(_a0: *mut Free) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
+    }
+    pub unsafe fn operator_assign_pmutFree(&mut self, _a0: *mut Free) -> *mut Free {
+        self.v = (*_a0).v;
+        return &mut (*(self as *mut Free)) as *mut Free;
+    }
 }
 impl std::cmp::Ord for Free {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {

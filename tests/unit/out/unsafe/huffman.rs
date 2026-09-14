@@ -18,6 +18,16 @@ impl MinHeapNode {
     pub unsafe fn IsLeaf(&self) -> bool {
         return ((self.left).is_null()) && ((self.right).is_null());
     }
+    pub unsafe fn operator_assign_pmutMinHeapNode(
+        &mut self,
+        _a0: *mut MinHeapNode,
+    ) -> *mut MinHeapNode {
+        self.data = (*_a0).data;
+        self.freq = (*_a0).freq;
+        self.left = (*_a0).left;
+        self.right = (*_a0).right;
+        return &mut (*(self as *mut MinHeapNode)) as *mut MinHeapNode;
+    }
 }
 pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
     let mut t: MinHeapNode = MinHeapNode {
@@ -26,20 +36,24 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
         left: (*a).left,
         right: (*a).right,
     };
-    (*a) = (MinHeapNode {
-        data: (*b).data,
-        freq: (*b).freq,
-        left: (*b).left,
-        right: (*b).right,
-    })
-    .clone();
-    (*b) = (MinHeapNode {
-        data: t.data,
-        freq: t.freq,
-        left: t.left,
-        right: t.right,
-    })
-    .clone();
+    (unsafe {
+        let mut _arg0: MinHeapNode = MinHeapNode {
+            data: (*b).data,
+            freq: (*b).freq,
+            left: (*b).left,
+            right: (*b).right,
+        };
+        MinHeapNode::operator_assign_pmutMinHeapNode(&mut (*a), &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: MinHeapNode = MinHeapNode {
+            data: t.data,
+            freq: t.freq,
+            left: t.left,
+            right: t.right,
+        };
+        MinHeapNode::operator_assign_pmutMinHeapNode(&mut (*b), &mut _arg0)
+    });
 }
 #[repr(C)]
 #[derive(Default)]
@@ -52,12 +66,18 @@ pub struct MinHeap {
 }
 impl MinHeap {
     pub unsafe fn Alloc(&mut self, mut data: libc::c_char, mut freq: i32) -> *mut MinHeapNode {
-        self.alloc.as_mut().unwrap()[(self.next as usize)] = MinHeapNode {
-            data: data,
-            freq: freq,
-            left: std::ptr::null_mut(),
-            right: std::ptr::null_mut(),
-        };
+        (unsafe {
+            let mut _arg0: MinHeapNode = MinHeapNode {
+                data: data,
+                freq: freq,
+                left: std::ptr::null_mut(),
+                right: std::ptr::null_mut(),
+            };
+            MinHeapNode::operator_assign_pmutMinHeapNode(
+                &mut self.alloc.as_mut().unwrap()[(self.next as usize)],
+                &mut _arg0,
+            )
+        });
         return (&mut self.alloc.as_mut().unwrap()[(self.next.postfix_inc() as usize)]
             as *mut MinHeapNode);
     }
@@ -128,6 +148,16 @@ impl MinHeap {
             (unsafe { MinHeap::Heapify(self, i) });
             i.prefix_dec();
         }
+    }
+    pub unsafe fn MinHeap_pmutMinHeap(_a0: *mut MinHeap) -> Self {
+        let mut this = Self {
+            size: (*_a0).size,
+            capacity: (*_a0).capacity,
+            arr: (*_a0).arr.take(),
+            next: (*_a0).next,
+            alloc: (*_a0).alloc.take(),
+        };
+        this
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {

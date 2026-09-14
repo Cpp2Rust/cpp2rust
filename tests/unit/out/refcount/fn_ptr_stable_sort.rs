@@ -11,6 +11,16 @@ pub struct Item {
     pub key: Value<i32>,
     pub value: Value<i32>,
 }
+impl Item {
+    pub fn Item_pmutItem(_a0: Ptr<Item>) -> Self {
+        let __this: Value<Item> = Rc::new(RefCell::new(Self {
+            key: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).key.borrow()))),
+            value: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).value.borrow()))),
+        }));
+        let this: Ptr<Item> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Item {
     fn clone(&self) -> Self {
         let __this: Value<Item> = Rc::new(RefCell::new(Self {
@@ -91,4 +101,16 @@ fn main_0() -> i32 {
             == 3)
     );
     return 0;
+}
+pub trait ItemImpl {
+    fn operator_assign_pmutItem(&self, _a0: Ptr<Item>) -> Ptr<Item>;
+}
+impl ItemImpl for Ptr<Item> {
+    fn operator_assign_pmutItem(&self, _a0: Ptr<Item>) -> Ptr<Item> {
+        let __rhs = (*(*_a0.upgrade().deref()).key.borrow());
+        (*(*(*self).upgrade().deref()).key.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).value.borrow());
+        (*(*(*self).upgrade().deref()).value.borrow_mut()) = __rhs;
+        return (*self).clone();
+    }
 }

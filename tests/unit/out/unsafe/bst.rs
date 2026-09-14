@@ -13,6 +13,16 @@ pub struct node_t {
     pub right: *mut node_t,
     pub value: i32,
 }
+impl node_t {
+    pub unsafe fn node_t_pmutnode_t(_a0: *mut node_t) -> Self {
+        let mut this = Self {
+            left: (*_a0).left,
+            right: (*_a0).right,
+            value: (*_a0).value,
+        };
+        this
+    }
+}
 pub unsafe fn find_0(mut node: *mut node_t, mut value: i32) -> *mut node_t {
     if ((value) < ((*node).value)) && (!(((*node).left).is_null())) {
         return (unsafe { find_0((*node).left, value) });

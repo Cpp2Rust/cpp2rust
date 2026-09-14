@@ -11,6 +11,16 @@ pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Point {
+    pub fn Point_pmutPoint(_a0: Ptr<Point>) -> Self {
+        let __this: Value<Point> = Rc::new(RefCell::new(Self {
+            x: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).x.borrow()))),
+            y: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).y.borrow()))),
+        }));
+        let this: Ptr<Point> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Point {
     fn clone(&self) -> Self {
         let __this: Value<Point> = Rc::new(RefCell::new(Self {

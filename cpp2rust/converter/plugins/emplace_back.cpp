@@ -134,18 +134,16 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 
 } // namespace
 
-void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+void Converter::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                       std::string_view arg) {
   {
     PushExprKind push(*this, ExprKind::LValue);
     auto callee = ToString(call->getCallee());
     ReplaceAll(callee, "emplace_back", "push");
     StrCat(callee);
   }
-  StrCat('(');
-}
-
-void Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
-  StrCat(')');
+  PushParen paren(*this);
+  StrCat(arg);
 }
 
 bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
@@ -155,41 +153,43 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
   auto [elem_ty, ctor] = analyzeEmplaceCall(member_call, GetSema());
   assert(!elem_ty.isNull() && "Could not analyze emplace_back type");
 
-  emplace_back_emit_push_open(member_call);
+  std::string arg;
+  {
+    Buffer buf(*this);
+    if (ctor) {
+      auto *construct = buildConstructExpr(member_call, GetSema());
+      auto is_argument_moved =
+          construct && construct->getConstructor()->isMoveConstructor() &&
+          !IsUserDefinedMoveConstructor(construct->getConstructor());
 
-  if (ctor) {
-    auto is_argument_moved = false;
-    if (call->getNumArgs() > 0) {
-      if (auto arg_call = clang::dyn_cast<clang::CallExpr>(call->getArg(0))) {
-        is_argument_moved = arg_call->isCallToStdMove();
+      if (is_argument_moved) {
+        StrCat("std::mem::take(&mut");
       }
-    }
-
-    if (is_argument_moved) {
-      StrCat("std::mem::take(&mut");
-    }
-    emplace_back_plugin_construct_arg(
-        elem_ty, buildConstructExpr(member_call, GetSema()));
-    if (is_argument_moved) {
-      StrCat(')');
-    }
-  } else if (elem_ty.isPODType(ctx_)) {
-    if (call->getNumArgs() == 0) {
-      StrCat(GetDefaultAsString(elem_ty));
+      emplace_back_plugin_construct_arg(elem_ty, construct);
+      if (is_argument_moved) {
+        StrCat(')');
+      }
+    } else if (elem_ty.isPODType(ctx_)) {
+      if (call->getNumArgs() == 0) {
+        StrCat(GetDefaultAsString(elem_ty));
+      } else {
+        assert(call->getNumArgs() == 1 &&
+               "multiple arguments passed for building POD type");
+        Convert(call->getArg(0));
+        StrCat("as");
+        StrCat(GetUnsafeTypeAsString(elem_ty));
+      }
     } else {
-      assert(call->getNumArgs() == 1 &&
-             "multiple arguments passed for building POD type");
-      Convert(call->getArg(0));
-      StrCat("as");
-      StrCat(GetUnsafeTypeAsString(elem_ty));
+      call->dump();
+      assert(0 && "no ctor and no pod type");
+      return false;
     }
-  } else {
-    call->dump();
-    assert(0 && "no ctor and no pod type");
-    return false;
+    arg = std::move(buf).str();
   }
 
-  emplace_back_emit_push_close(member_call);
+  PushBrace brace(*this);
+  StrCat("let __arg = ", arg, ";");
+  emplace_back_emit_push(member_call, "__arg");
   return true;
 }
 

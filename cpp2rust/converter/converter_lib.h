@@ -74,7 +74,10 @@ bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
-bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+bool IsUserDefinedMoveAssignment(const clang::CXXMethodDecl *method);
+
+bool IsUserDefinedMoveConstructorOrAssignment(
+    const clang::CXXMethodDecl *method);
 
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
@@ -239,6 +242,10 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr);
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
+
+const clang::Expr *IgnoreStdMove(const clang::Expr *expr);
+
+bool IsTemporaryObject(const clang::Expr *expr);
 
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 

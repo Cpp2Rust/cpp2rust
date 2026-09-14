@@ -10,6 +10,15 @@ use std::rc::{Rc, Weak};
 pub struct Chunk {
     pub data: Value<i32>,
 }
+impl Chunk {
+    pub fn Chunk_pmutChunk(_a0: Ptr<Chunk>) -> Self {
+        let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
+            data: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).data.borrow()))),
+        }));
+        let this: Ptr<Chunk> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Chunk {
     fn clone(&self) -> Self {
         let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
@@ -145,7 +154,9 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*(*(*bw.borrow()).upgrade().deref()).output.borrow()).with_mut(|__v: &mut Vec<Chunk>| {
-        __v.push((*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone())
+        __v.push(std::mem::take(
+            &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow_mut()),
+        ))
     });
 }
 pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
@@ -159,31 +170,32 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
     } else {
         (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).app_data.as_pointer());
     }
-    (*dest.borrow())
-        .to_strong()
-        .as_pointer()
-        .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| {
-            __v.push(Rc::new(RefCell::new({
-                let __count = (head.as_pointer() as Ptr<u8>)
-                    .offset((3) as isize)
-                    .get_offset()
-                    - (head.as_pointer() as Ptr<u8>).get_offset();
-                PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
-                    .map(|item| u8::try_from(item).ok().unwrap())
-                    .collect::<Vec<_>>()
-            })))
-        });
+    {
+        let __arg = Rc::new(RefCell::new({
+            let __count = (head.as_pointer() as Ptr<u8>)
+                .offset((3) as isize)
+                .get_offset()
+                - (head.as_pointer() as Ptr<u8>).get_offset();
+            PtrValueIter::new(&(head.as_pointer() as Ptr<u8>), __count)
+                .map(|item| u8::try_from(item).ok().unwrap())
+                .collect::<Vec<_>>()
+        }));
+        (*dest.borrow())
+            .to_strong()
+            .as_pointer()
+            .with_mut(|__v: &mut Vec<Value<Vec<u8>>>| __v.push(__arg))
+    };
 }
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
-    (*(*(*bw.borrow()).upgrade().deref()).output.borrow())
-        .to_strong()
-        .as_pointer()
-        .with_mut(|__v: &mut Vec<Chunk>| {
-            __v.push(std::mem::take(
-                &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone(),
-            ))
-        });
+    {
+        let __arg =
+            Chunk::Chunk_pmutChunk({ (*(*bw.borrow()).upgrade().deref()).chunk.as_pointer() });
+        (*(*(*bw.borrow()).upgrade().deref()).output.borrow())
+            .to_strong()
+            .as_pointer()
+            .with_mut(|__v: &mut Vec<Chunk>| __v.push(__arg))
+    };
 }
 pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
     let comps: Value<Ptr<Vec<Chunk>>> = Rc::new(RefCell::new(comps));

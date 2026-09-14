@@ -22,3 +22,21 @@ template <typename T1>
 void f7(std::deque<std::vector<T1>> &o, const std::vector<T1> &value) {
   return o.push_back(value);
 }
+
+template <typename T1> std::deque<T1> f8(const std::deque<T1> &o) {
+  return std::deque<T1>(o);
+}
+
+template <typename T1> std::deque<T1> f9(std::deque<T1> &&o) {
+  return std::deque<T1>(std::move(o));
+}
+
+template <typename T1>
+std::deque<T1> &f10(std::deque<T1> &dst, const std::deque<T1> &src) {
+  return dst.operator=(src);
+}
+
+template <typename T1>
+std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
+  return dst.operator=(std::move(src));
+}

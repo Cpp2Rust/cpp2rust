@@ -13,6 +13,14 @@ pub struct Edge {
     pub v: i32,
     pub weight: f64,
 }
+impl Edge {
+    pub unsafe fn operator_assign_pmutEdge(&mut self, _a0: *mut Edge) -> *mut Edge {
+        self.u = (*_a0).u;
+        self.v = (*_a0).v;
+        self.weight = (*_a0).weight;
+        return &mut (*(self as *mut Edge)) as *mut Edge;
+    }
+}
 pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) -> i32 {
     let pivot: *mut Edge = &mut (*arr).as_mut().unwrap()[(start as usize)] as *mut Edge;
     let mut count: i32 = 0;
@@ -29,16 +37,22 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
         v: (*arr).as_mut().unwrap()[(pidx as usize)].v,
         weight: (*arr).as_mut().unwrap()[(pidx as usize)].weight,
     };
-    (*arr).as_mut().unwrap()[(pidx as usize)] = Edge {
-        u: (*arr).as_mut().unwrap()[(start as usize)].u,
-        v: (*arr).as_mut().unwrap()[(start as usize)].v,
-        weight: (*arr).as_mut().unwrap()[(start as usize)].weight,
-    };
-    (*arr).as_mut().unwrap()[(start as usize)] = Edge {
-        u: tmp.u,
-        v: tmp.v,
-        weight: tmp.weight,
-    };
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: (*arr).as_mut().unwrap()[(start as usize)].u,
+            v: (*arr).as_mut().unwrap()[(start as usize)].v,
+            weight: (*arr).as_mut().unwrap()[(start as usize)].weight,
+        };
+        Edge::operator_assign_pmutEdge(&mut (*arr).as_mut().unwrap()[(pidx as usize)], &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: tmp.u,
+            v: tmp.v,
+            weight: tmp.weight,
+        };
+        Edge::operator_assign_pmutEdge(&mut (*arr).as_mut().unwrap()[(start as usize)], &mut _arg0)
+    });
     let mut i: i32 = start;
     let mut j: i32 = end;
     'loop_: while ((i) < (pidx)) && ((j) > (pidx)) {
@@ -49,21 +63,36 @@ pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end
             j.prefix_dec();
         }
         if ((i) < (pidx)) && ((j) > (pidx)) {
-            tmp = Edge {
-                u: (*arr).as_mut().unwrap()[(i as usize)].u,
-                v: (*arr).as_mut().unwrap()[(i as usize)].v,
-                weight: (*arr).as_mut().unwrap()[(i as usize)].weight,
-            };
-            (*arr).as_mut().unwrap()[(i as usize)] = Edge {
-                u: (*arr).as_mut().unwrap()[(j as usize)].u,
-                v: (*arr).as_mut().unwrap()[(j as usize)].v,
-                weight: (*arr).as_mut().unwrap()[(j as usize)].weight,
-            };
-            (*arr).as_mut().unwrap()[(j as usize)] = Edge {
-                u: tmp.u,
-                v: tmp.v,
-                weight: tmp.weight,
-            };
+            (unsafe {
+                let mut _arg0: Edge = Edge {
+                    u: (*arr).as_mut().unwrap()[(i as usize)].u,
+                    v: (*arr).as_mut().unwrap()[(i as usize)].v,
+                    weight: (*arr).as_mut().unwrap()[(i as usize)].weight,
+                };
+                Edge::operator_assign_pmutEdge(&mut tmp, &mut _arg0)
+            });
+            (unsafe {
+                let mut _arg0: Edge = Edge {
+                    u: (*arr).as_mut().unwrap()[(j as usize)].u,
+                    v: (*arr).as_mut().unwrap()[(j as usize)].v,
+                    weight: (*arr).as_mut().unwrap()[(j as usize)].weight,
+                };
+                Edge::operator_assign_pmutEdge(
+                    &mut (*arr).as_mut().unwrap()[(i as usize)],
+                    &mut _arg0,
+                )
+            });
+            (unsafe {
+                let mut _arg0: Edge = Edge {
+                    u: tmp.u,
+                    v: tmp.v,
+                    weight: tmp.weight,
+                };
+                Edge::operator_assign_pmutEdge(
+                    &mut (*arr).as_mut().unwrap()[(j as usize)],
+                    &mut _arg0,
+                )
+            });
             i.postfix_inc();
             j.postfix_dec();
         }
@@ -199,31 +228,46 @@ unsafe fn main_0() -> i32 {
         V: V,
         E: E,
     };
-    graph.edges.as_mut().unwrap()[(0_usize)] = Edge {
-        u: 0,
-        v: 1,
-        weight: 10_f64,
-    };
-    graph.edges.as_mut().unwrap()[(1_usize)] = Edge {
-        u: 1,
-        v: 3,
-        weight: 15_f64,
-    };
-    graph.edges.as_mut().unwrap()[(2_usize)] = Edge {
-        u: 2,
-        v: 3,
-        weight: 4_f64,
-    };
-    graph.edges.as_mut().unwrap()[(3_usize)] = Edge {
-        u: 2,
-        v: 0,
-        weight: 6_f64,
-    };
-    graph.edges.as_mut().unwrap()[(4_usize)] = Edge {
-        u: 0,
-        v: 3,
-        weight: 5_f64,
-    };
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: 0,
+            v: 1,
+            weight: 10_f64,
+        };
+        Edge::operator_assign_pmutEdge(&mut graph.edges.as_mut().unwrap()[(0_usize)], &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: 1,
+            v: 3,
+            weight: 15_f64,
+        };
+        Edge::operator_assign_pmutEdge(&mut graph.edges.as_mut().unwrap()[(1_usize)], &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: 2,
+            v: 3,
+            weight: 4_f64,
+        };
+        Edge::operator_assign_pmutEdge(&mut graph.edges.as_mut().unwrap()[(2_usize)], &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: 2,
+            v: 0,
+            weight: 6_f64,
+        };
+        Edge::operator_assign_pmutEdge(&mut graph.edges.as_mut().unwrap()[(3_usize)], &mut _arg0)
+    });
+    (unsafe {
+        let mut _arg0: Edge = Edge {
+            u: 0,
+            v: 3,
+            weight: 5_f64,
+        };
+        Edge::operator_assign_pmutEdge(&mut graph.edges.as_mut().unwrap()[(4_usize)], &mut _arg0)
+    });
     let mut total_weight: f64 = (unsafe { MSTKruskal_2(&mut graph as *mut Graph) });
     assert!(((total_weight) == (19_f64)));
     return 0;

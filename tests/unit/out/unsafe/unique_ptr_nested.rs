@@ -12,10 +12,27 @@ pub struct Inner {
     pub x: i32,
     pub y: i32,
 }
+impl Inner {
+    pub unsafe fn Inner_pmutInner(_a0: *mut Inner) -> Self {
+        let mut this = Self {
+            x: (*_a0).x,
+            y: (*_a0).y,
+        };
+        this
+    }
+}
 #[repr(C)]
 #[derive(Default)]
 pub struct Outer {
     pub inner: Option<Box<Inner>>,
+}
+impl Outer {
+    pub unsafe fn Outer_pmutOuter(_a0: *mut Outer) -> Self {
+        let mut this = Self {
+            inner: (*_a0).inner.take(),
+        };
+        this
+    }
 }
 pub fn main() {
     unsafe {

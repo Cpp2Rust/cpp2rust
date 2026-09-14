@@ -151,3 +151,14 @@ fn f25<T1: 'static, T2: 'static>(
     let __src = a1.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| std::mem::take(__v));
     a0.write(__src)
 }
+
+fn f26<T1: Ord + Clone + 'static, T2: Clone + 'static>(
+    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a1: BTreeMap<T1, Value<T2>>,
+) {
+    a0.write(
+        a1.iter()
+            .map(|(k, v)| (k.clone(), Rc::new(RefCell::new(v.borrow().clone()))))
+            .collect(),
+    )
+}

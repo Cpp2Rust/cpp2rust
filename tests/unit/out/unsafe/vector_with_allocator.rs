@@ -13,7 +13,7 @@ impl TestAllocator_int_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut i32 {
         return Box::leak((0..n).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     }
-    pub unsafe fn deallocate(&mut self, mut p: *mut i32, _: usize) {
+    pub unsafe fn deallocate(&mut self, mut p: *mut i32, mut _a1: usize) {
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
             p,
             libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
@@ -27,7 +27,7 @@ impl TestAllocator_double_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut f64 {
         return Box::leak((0..n).map(|_| 0.0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
-    pub unsafe fn deallocate(&mut self, mut p: *mut f64, _: usize) {
+    pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
             p,
             libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<f64>(),

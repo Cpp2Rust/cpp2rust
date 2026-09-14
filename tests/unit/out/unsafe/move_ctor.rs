@@ -55,7 +55,7 @@ pub unsafe fn by_value_0(mut m: MoveOnly) -> i32 {
 }
 pub unsafe fn make_1(mut v: i32) -> MoveOnly {
     let mut m: MoveOnly = MoveOnly::MoveOnly({ v });
-    return MoveOnly::MoveOnly_pmutMoveOnly({ &mut m });
+    return MoveOnly::MoveOnly_pmutMoveOnly({ &mut m as *mut MoveOnly });
 }
 pub fn main() {
     unsafe {
@@ -64,30 +64,33 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: MoveOnly = MoveOnly::MoveOnly({ 1 });
-    let mut b: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut a });
+    let mut b: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut a as *mut MoveOnly });
     assert!(((b.v) == (1)));
     assert!(((a.v) == (0)));
-    let mut c: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut b });
+    let mut c: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut b as *mut MoveOnly });
     assert!(((c.v) == (1)));
     assert!(((b.v) == (0)));
-    let mut d: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut c });
+    let mut d: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly({ &mut c as *mut MoveOnly });
     assert!(((d.v) == (1)));
     assert!(((c.v) == (0)));
     let mut e: MoveOnly = (unsafe { make_1(5) });
     assert!(((e.v) == (5)));
     assert!(((unsafe { by_value_0(MoveOnly::MoveOnly({ 6 },),) }) == (6)));
-    assert!(((unsafe { by_value_0(MoveOnly::MoveOnly_pmutMoveOnly({ &mut e },),) }) == (5)));
+    assert!(
+        ((unsafe { by_value_0(MoveOnly::MoveOnly_pmutMoveOnly({ &mut e as *mut MoveOnly },),) })
+            == (5))
+    );
     assert!(((e.v) == (0)));
     let mut vec_: Vec<MoveOnly> = Vec::new();
     vec_.push(MoveOnly::MoveOnly({ 7 }));
     let mut f: MoveOnly = MoveOnly::MoveOnly({ 8 });
-    vec_.push(MoveOnly::MoveOnly_pmutMoveOnly({ &mut f }));
+    vec_.push(std::mem::take(&mut f));
     assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
     assert!(((f.v) == (0)));
     let mut m: ConstMove = ConstMove::ConstMove();
-    let mut m1: ConstMove = ConstMove::ConstMove_pmutConstMove({ &mut m });
+    let mut m1: ConstMove = ConstMove::ConstMove_pmutConstMove({ &mut m as *mut ConstMove });
     let cm: ConstMove = ConstMove::ConstMove();
-    let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove({ &cm });
+    let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove({ &cm as *const ConstMove });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
     return 0;
