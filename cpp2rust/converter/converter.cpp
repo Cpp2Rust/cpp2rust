@@ -22,18 +22,6 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 
-// `static mut` globals cannot have a `&`/`&mut` reference formed directly to
-// them in Rust 2024 edition. Wrapping the variable in a `&raw mut` pointer
-// followed by a deref sidesteps the restriction.
-// Doesn't apply when a rule replaced the expression with custom Rust code.
-static std::string WrapMutableStaticPlace(const clang::Decl *decl, std::string str) {
-  if (IsGlobalVar(decl) && !decl->getType()->isReferenceType() &&
-      str == GetNamedDeclAsString(decl)) {
-    return std::format("(*&raw mut {})", str);
-  }
-  return str;
-}
-
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
 std::unordered_set<std::string> Converter::decl_ids_;
@@ -41,6 +29,19 @@ std::unordered_set<std::string> Converter::globals_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
+
+// `static mut` globals cannot have a `&`/`&mut` reference formed directly to
+// them in Rust 2024 edition. Wrapping the variable in a `&raw mut` pointer
+// followed by a deref sidesteps the restriction.
+// Doesn't apply when a rule replaced the expression with custom Rust code.
+static std::string WrapMutableStaticPlace(const clang::Decl *decl, std::string str) {
+  auto decl = clang::dyn_cast<clang::VarDecl>(decl);
+  if (decl && IsGlobalVar(decl) && !decl->getType()->isReferenceType() &&
+      str == GetNamedDeclAsString(decl)) {
+    return std::format("(*&raw mut {})", str);
+  }
+  return str;
+}
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
