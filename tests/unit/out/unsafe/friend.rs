@@ -62,26 +62,26 @@ unsafe fn main_0() -> i32 {
     let mut a: V = V { x: 3 };
     let mut b: V = V { x: 3 };
     let mut c: V = V { x: 4 };
-    assert!(((unsafe { get_0(&a as *const V,) }) == (3)));
+    assert!(((unsafe { get_0(&a,) }) == (3)));
     assert!(
         (unsafe {
-            let _a: *const V = &a as *const V;
-            operator_eq_1(_a, &b as *const V)
+            let _a: *const V = &a;
+            operator_eq_1(_a, &b)
         })
     );
     assert!(
         !(unsafe {
-            let _a: *const V = &a as *const V;
-            operator_eq_1(_a, &c as *const V)
+            let _a: *const V = &a;
+            operator_eq_1(_a, &c)
         })
     );
-    assert!(((unsafe { scaled_2(&c as *const V, 2,) }) == (8)));
-    assert!(((unsafe { scaled_3(&c as *const V, 1.5E+0,) }) == (6.0E+0)));
+    assert!(((unsafe { scaled_2(&c, 2,) }) == (8)));
+    assert!(((unsafe { scaled_3(&c, 1.5E+0,) }) == (6.0E+0)));
     let mut wi: W_int_ = W_int_ { x: 5 };
     let mut wl: W_long_ = W_long_ { x: 6_i64 };
-    assert!(((unsafe { get_4(&wi as *const W_int_,) }) == (5)));
-    assert!(((unsafe { get_5(&wl as *const W_long_,) }) == (6_i64)));
+    assert!(((unsafe { get_4(&wi,) }) == (5)));
+    assert!(((unsafe { get_5(&wl,) }) == (6_i64)));
     let mut d: D = D { x: 7 };
-    assert!(((unsafe { declared_then_defined_6(&d as *const D,) }) == (8)));
+    assert!(((unsafe { declared_then_defined_6(&d,) }) == (8)));
     return 0;
 }

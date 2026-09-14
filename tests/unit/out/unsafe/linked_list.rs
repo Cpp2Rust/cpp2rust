@@ -90,38 +90,38 @@ unsafe fn main_0() -> i32 {
         next: std::ptr::null_mut(),
     };
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n1 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n1;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n2 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n2;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n3 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n3;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n4 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n4;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n5 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n5;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n6 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n6;
         Append_1(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n7 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n7;
         Append_1(_head, _new_node)
     });
     head = (unsafe { Delete_2(head, 5) });

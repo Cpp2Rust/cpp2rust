@@ -68,7 +68,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { swap_by_ptr_1((&mut d as *mut i32), (&mut e as *mut i32)) });
     let mut f: i32 = 4;
     let mut g: i32 = 5;
-    (unsafe { swap_by_ref_2(&mut f as *mut i32, &mut g as *mut i32) });
+    (unsafe { swap_by_ref_2(&mut f, &mut g) });
     let mut h: *mut i32 = (Box::leak(Box::new(6)) as *mut i32);
     write!(
         std::fs::File::from_raw_fd(
@@ -114,14 +114,14 @@ unsafe fn main_0() -> i32 {
     });
     (unsafe {
         swap_by_ref_2(
-            &mut (*(Box::leak(Box::new(9)) as *mut i32)) as *mut i32,
-            &mut (*(Box::leak(Box::new(10)) as *mut i32)) as *mut i32,
+            &mut (*(Box::leak(Box::new(9)) as *mut i32)),
+            &mut (*(Box::leak(Box::new(10)) as *mut i32)),
         )
     });
     (unsafe {
         swap_by_ref_2(
-            &mut (*(Box::leak(Box::new(9)) as *mut i32).offset((0) as isize)) as *mut i32,
-            &mut (*(Box::leak(Box::new(10)) as *mut i32).offset((0) as isize)) as *mut i32,
+            &mut (*(Box::leak(Box::new(9)) as *mut i32).offset((0) as isize)),
+            &mut (*(Box::leak(Box::new(10)) as *mut i32).offset((0) as isize)),
         )
     });
     let mut j: Option<Box<i32>> = Some(Box::from_raw((Box::leak(Box::new(11)) as *mut i32)));

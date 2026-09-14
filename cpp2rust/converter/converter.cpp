@@ -4003,10 +4003,6 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     PushInitType init_type(*this, qual_type);
     Convert(expr, qual_type);
   }
-  if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
-    StrCat(keyword::kAs);
-    Convert(qual_type);
-  }
 }
 
 void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,

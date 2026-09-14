@@ -23,11 +23,11 @@ impl MoveOnly {
     }
     pub unsafe fn operator_assign_pmutMoveOnly(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
         if ((self as *mut MoveOnly) == (o)) {
-            return &mut (*(self as *mut MoveOnly)) as *mut MoveOnly;
+            return &mut (*(self as *mut MoveOnly));
         }
         self.v = (*o).v;
         (*o).v = 0;
-        return &mut (*(self as *mut MoveOnly)) as *mut MoveOnly;
+        return &mut (*(self as *mut MoveOnly));
     }
 }
 #[repr(C)]
@@ -45,14 +45,14 @@ impl ConstMoveAssign {
         o: *mut ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (1));
-        return &mut (*(self as *mut ConstMoveAssign)) as *mut ConstMoveAssign;
+        return &mut (*(self as *mut ConstMoveAssign));
     }
     pub unsafe fn operator_assign_pconstConstMoveAssign(
         &mut self,
         o: *const ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (10));
-        return &mut (*(self as *mut ConstMoveAssign)) as *mut ConstMoveAssign;
+        return &mut (*(self as *mut ConstMoveAssign));
     }
 }
 impl Default for ConstMoveAssign {

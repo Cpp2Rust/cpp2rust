@@ -45,7 +45,7 @@ impl S {
     }
     pub unsafe fn operator_inc(&mut self) -> *mut S {
         self.v.prefix_inc();
-        return &mut (*(self as *mut S)) as *mut S;
+        return &mut (*(self as *mut S));
     }
     pub unsafe fn operator_post_inc_i32(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
@@ -54,7 +54,7 @@ impl S {
     }
     pub unsafe fn operator_dec(&mut self) -> *mut S {
         self.v.prefix_dec();
-        return &mut (*(self as *mut S)) as *mut S;
+        return &mut (*(self as *mut S));
     }
     pub unsafe fn operator_post_dec_i32(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
@@ -70,11 +70,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: S = S { v: 7 };
     let mut b: S = S { v: 2 };
-    assert!((((unsafe { S::operator_add_pconstS_const(&a, &b as *const S,) }).v) == (9)));
-    assert!((((unsafe { S::operator_sub_pconstS_const(&a, &b as *const S,) }).v) == (5)));
-    assert!((((unsafe { S::operator_mul(&a, &b as *const S,) }).v) == (14)));
-    assert!((((unsafe { S::operator_div(&a, &b as *const S,) }).v) == (3)));
-    assert!((((unsafe { S::operator_rem(&a, &b as *const S,) }).v) == (1)));
+    assert!((((unsafe { S::operator_add_pconstS_const(&a, &b,) }).v) == (9)));
+    assert!((((unsafe { S::operator_sub_pconstS_const(&a, &b,) }).v) == (5)));
+    assert!((((unsafe { S::operator_mul(&a, &b,) }).v) == (14)));
+    assert!((((unsafe { S::operator_div(&a, &b,) }).v) == (3)));
+    assert!((((unsafe { S::operator_rem(&a, &b,) }).v) == (1)));
     assert!((((unsafe { S::operator_pos_const(&a,) }).v) == (7)));
     assert!((((unsafe { S::operator_neg_const(&a,) }).v) == (-7_i32)));
     assert!((((*(unsafe { S::operator_inc(&mut a,) })).v) == (8)));

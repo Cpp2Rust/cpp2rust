@@ -53,7 +53,7 @@ unsafe fn main_0() -> i32 {
     );
     printf(
         c"%s\n".as_ptr() as *const i8,
-        (*(unsafe { fn2_1(&s as *const Vec<libc::c_char>) })).as_ptr(),
+        (*(unsafe { fn2_1(&s) })).as_ptr(),
     );
     return 0;
 }

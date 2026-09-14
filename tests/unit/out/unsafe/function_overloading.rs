@@ -48,11 +48,11 @@ unsafe fn main_0() -> i32 {
     let mut out: i32 = 0;
     out += (unsafe { foo_0(0) });
     out += (unsafe { foo_1((&mut x as *mut i32)) });
-    out += (unsafe { bar_4(&mut x as *mut i32) });
+    out += (unsafe { bar_4(&mut x) });
     out += (unsafe {
         let _x: *mut i32 = (&mut x as *mut i32);
         let _y: *mut i32 = (&mut x as *mut i32);
-        let _z: *mut i32 = &mut x as *mut i32;
+        let _z: *mut i32 = &mut x;
         foo_3(_x, _y, _z)
     });
     out += (unsafe {

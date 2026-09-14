@@ -13,7 +13,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
-    let r: *mut i32 = &mut a as *mut i32;
+    let r: *mut i32 = &mut a;
     let mut p: *mut i32 = (&mut a as *mut i32);
     (*r) = 2;
     (*p) = 3;
