@@ -145,9 +145,7 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     (*(*(*bw.borrow()).upgrade().deref()).output.borrow()).with_mut(|__v: &mut Vec<Chunk>| {
-        __v.push(std::mem::take(
-            &mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow_mut()),
-        ))
+        __v.push((*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone())
     });
 }
 pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {

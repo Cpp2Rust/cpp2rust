@@ -4619,6 +4619,28 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
     }
+    if (auto *record = arg->getType()->getAsCXXRecordDecl();
+        record && IsUserDefinedDecl(record)) {
+      if (TypeIsCopyable(arg->getType())) {
+        return ConvertRValue(arg);
+      }
+      for (auto *ctor : record->ctors()) {
+        if (!IsUserDefinedMoveConstructor(ctor)) {
+          continue;
+        }
+        Buffer buf(*this);
+        Convert(clang::CXXConstructExpr::Create(
+            ctx_, arg->getType(), clang::SourceLocation(), ctor,
+            /*Elidable=*/false, llvm::ArrayRef<clang::Expr *>(arg),
+            /*HadMultipleCandidates=*/false,
+            /*ListInitialization=*/false,
+            /*StdInitListInitialization=*/false,
+            /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
+            clang::SourceRange()));
+        return std::move(buf).str();
+      }
+      return ConvertFreshRValue(arg);
+    }
     return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
   }
 
