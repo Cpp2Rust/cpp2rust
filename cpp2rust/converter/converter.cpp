@@ -1732,16 +1732,6 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsMemberMemcpy(expr)) {
-    ConvertAssignment(
-        clang::cast<clang::UnaryOperator>(expr->getArg(0)->IgnoreImpCasts())
-            ->getSubExpr(),
-        clang::cast<clang::UnaryOperator>(expr->getArg(1)->IgnoreImpCasts())
-            ->getSubExpr(),
-        "=");
-    return false;
-  }
-
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {

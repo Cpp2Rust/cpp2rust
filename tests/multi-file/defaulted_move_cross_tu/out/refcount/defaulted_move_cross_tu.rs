@@ -98,8 +98,17 @@ impl SImpl for Ptr<S> {
         ((*(*self).upgrade().deref()).v.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
         ));
-        let __rhs = (*(*_a0.upgrade().deref()).n.borrow()).clone();
-        (*(*(*self).upgrade().deref()).n.borrow_mut()) = __rhs;
+        {
+            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &(((*_a0.upgrade().deref()).n.as_pointer()) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .clone()
+        };
         return (*self).clone();
     }
 }

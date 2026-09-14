@@ -53,7 +53,16 @@ impl S {
     }
     pub unsafe fn operator_assign_pmutS(&mut self, _a0: *mut S) -> *mut S {
         self.v = std::mem::take(&mut (*_a0).v);
-        self.n = ((*_a0).n).clone();
+        {
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).n as *mut [i32; 2]) as *const [i32; 2] as *const ::libc::c_void),
+                    ((&mut self.n as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    8_usize as usize,
+                )
+            }
+            ((&mut self.n as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+        };
         return &mut (*(self as *mut S)) as *mut S;
     }
 }

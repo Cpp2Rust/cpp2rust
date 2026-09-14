@@ -354,25 +354,6 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
-bool IsMemberMemcpy(const clang::CallExpr *expr) {
-  const auto *fn = expr->getDirectCallee();
-  if (!fn || fn->getBuiltinID() != clang::Builtin::BI__builtin_memcpy) {
-    return false;
-  }
-  auto member = [](const clang::Expr *arg) -> const clang::MemberExpr * {
-    const auto *unary =
-        clang::dyn_cast<clang::UnaryOperator>(arg->IgnoreImpCasts());
-    if (!unary || unary->getOpcode() != clang::UO_AddrOf) {
-      return nullptr;
-    }
-    return clang::dyn_cast<clang::MemberExpr>(
-        unary->getSubExpr()->IgnoreImpCasts());
-  };
-  const auto *dst = member(expr->getArg(0));
-  const auto *src = member(expr->getArg(1));
-  return dst && src && dst->getType() == src->getType();
-}
-
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
