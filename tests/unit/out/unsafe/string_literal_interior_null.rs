@@ -15,14 +15,15 @@ pub unsafe fn sum_bytes_0(mut buf: *const libc::c_char, mut len: u32) -> i32 {
     }
     return sum;
 }
-pub static mut g_packet_1: *const libc::c_char = unsafe {
-    (&[
-        (1 as libc::c_char),
-        (0 as libc::c_char),
-        (0 as libc::c_char),
-    ])
-        .as_ptr()
-};
+pub static mut g_packet_1: std::cell::LazyCell<*const libc::c_char> =
+    std::cell::LazyCell::new(|| unsafe {
+        (&[
+            (1 as libc::c_char),
+            (0 as libc::c_char),
+            (0 as libc::c_char),
+        ])
+            .as_ptr()
+    });
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -40,7 +41,12 @@ unsafe fn main_0() -> i32 {
             2_u32,
         )
     });
-    let mut b: i32 = (unsafe { sum_bytes_0(g_packet_1, 2_u32) });
+    let mut b: i32 = (unsafe {
+        sum_bytes_0(
+            (*std::cell::LazyCell::force_mut(&mut *&raw mut g_packet_1)),
+            2_u32,
+        )
+    });
     assert!(((a) == (b)));
     assert!(((a) == (1)));
     let mut c: i32 = (((*c"\r\n.\r\n".as_ptr().offset((0) as isize)) as i32)

@@ -10,9 +10,9 @@ pub type Code = u32;
 pub const Code_CODE_OK: Code = 0;
 pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
-pub static mut side_effect_0: i32 = unsafe { 0 };
+pub static mut side_effect_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub unsafe fn observe_1(mut v: i32) -> i32 {
-    side_effect_0.prefix_inc();
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)).prefix_inc();
     return v;
 }
 pub unsafe fn returns_one_2() -> i32 {
@@ -52,15 +52,19 @@ unsafe fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    side_effect_0 = 0;
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) = 0;
     if ((((zero != 0) && ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
         assert!((0 != 0));
     }
-    assert!(((((side_effect_0) == (0)) as i32) != 0));
+    assert!(
+        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)) as i32) != 0)
+    );
     if ((((n != 0) || ((unsafe { observe_1(1) }) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    assert!(((((side_effect_0) == (0)) as i32) != 0));
+    assert!(
+        ((((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_0)) == (0)) as i32) != 0)
+    );
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;

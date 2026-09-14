@@ -22,28 +22,36 @@ impl Default for S {
         }
     }
 }
-pub static mut s_0: S = unsafe {
+pub static mut s_0: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe {
     S {
         head: 5,
         tail: [0; 3],
         buf: [0; 4],
     }
-};
+});
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((s_0.head) == (5)) as i32) != 0));
+    assert!((((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).head) == (5)) as i32) != 0));
     let mut i: i32 = 0;
     'loop_: while ((((i) < (3)) as i32) != 0) {
-        assert!(((((s_0.tail[(i) as usize]) == (0)) as i32) != 0));
+        assert!(
+            (((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).tail[(i) as usize]) == (0))
+                as i32)
+                != 0)
+        );
         i.postfix_inc();
     }
     let mut i: i32 = 0;
     'loop_: while ((((i) < (4)) as i32) != 0) {
-        assert!(((((s_0.buf[(i) as usize] as i32) == (0)) as i32) != 0));
+        assert!(
+            (((((*std::cell::LazyCell::force_mut(&mut *&raw mut s_0)).buf[(i) as usize] as i32)
+                == (0)) as i32)
+                != 0)
+        );
         i.postfix_inc();
     }
     return 0;
