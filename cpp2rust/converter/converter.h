@@ -331,6 +331,8 @@ public:
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
 
+  void DefineImplicitMembers(clang::CXXRecordDecl *decl);
+
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
@@ -384,6 +386,9 @@ public:
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
 
   virtual bool VisitInitListExpr(clang::InitListExpr *expr);
+  bool VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr);
+  bool VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr);
+  virtual bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr);
 
   virtual bool VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
 

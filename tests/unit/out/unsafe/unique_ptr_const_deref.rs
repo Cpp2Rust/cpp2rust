@@ -11,6 +11,18 @@ use std::rc::Rc;
 pub struct Holder {
     pub val: Option<Box<i32>>,
 }
+impl Holder {
+    pub unsafe fn Holder_pmutHolder(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            val: (*_a0).val.take(),
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutHolder(&mut self, _a0: *mut Holder) -> *mut Holder {
+        self.val = (*_a0).val.take();
+        return &mut (*(self as *mut Holder)) as *mut Holder;
+    }
+}
 pub unsafe fn read_val_0(mut h: *const Holder) -> i32 {
     return (*(*(std::ptr::addr_of!((*h).val).cast_mut()))
         .as_deref_mut()

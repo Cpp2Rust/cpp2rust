@@ -949,7 +949,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
       // Other translation units may instantiate members this one did not.
-      if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
+      if (!decl->isAbstract()) {
         ConvertLateInstantiatedMethods(decl);
       }
       return false;
@@ -960,25 +960,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       return false;
     }
 
-    sema_->ForceDeclarationOfImplicitMembers(decl);
-    for (auto ctor : decl->ctors()) {
-      if (ctor->isCopyConstructor() && ctor->isImplicit() &&
-          !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
-        sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
-      }
-    }
-    for (auto *method : decl->methods()) {
-      if (IsComparisonOperator(method) && method->isDefaulted() &&
-          !method->doesThisDeclarationHaveABody()) {
-#if CLANG_VERSION_MAJOR >= 24
-        auto kind = method->getDefaultedComparisonKind();
-#else
-        auto kind = sema_->getDefaultedComparisonKind(method);
-#endif
-        sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
-      }
-    }
-
+    DefineImplicitMembers(decl);
     EmitRustStructOrUnion(decl);
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
@@ -991,6 +973,44 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   }
 
   return false;
+}
+
+void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
+  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
+                        sema_->getDiagnostics());
+  tu_scope.setEntity(ctx_.getTranslationUnitDecl());
+  auto *saved_tu_scope = std::exchange(sema_->TUScope, &tu_scope);
+  sema_->ForceDeclarationOfImplicitMembers(decl);
+  for (auto ctor : decl->ctors()) {
+    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
+      sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
+    }
+    if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
+        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
+        !HasDefaultedCopyConstructor(decl)) {
+      sema_->DefineImplicitMoveConstructor(decl->getLocation(), ctor);
+    }
+  }
+  for (auto *method : decl->methods()) {
+    if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
+        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
+        !HasDefaultedCopyAssignment(decl)) {
+      sema_->DefineImplicitMoveAssignment(decl->getLocation(), method);
+    }
+  }
+  for (auto *method : decl->methods()) {
+    if (IsComparisonOperator(method) && method->isDefaulted() &&
+        !method->doesThisDeclarationHaveABody()) {
+#if CLANG_VERSION_MAJOR >= 24
+      auto kind = method->getDefaultedComparisonKind();
+#else
+      auto kind = sema_->getDefaultedComparisonKind(method);
+#endif
+      sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
+    }
+  }
+  sema_->TUScope = saved_tu_scope;
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
@@ -1080,7 +1100,8 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
-  if (decl->isOutOfLine() || decl->isImplicit()) {
+  if (decl->isOutOfLine() ||
+      (decl->isImplicit() && !IsConvertibleImplicitMember(decl))) {
     return false;
   }
   PushCurrFunction push_fn(*this, decl);
@@ -3147,6 +3168,26 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   return false;
 }
 
+bool Converter::VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr) {
+  Convert(expr->getSourceExpr());
+  return false;
+}
+
+bool Converter::VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr) {
+  StrCat("__i");
+  return false;
+}
+
+bool Converter::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
+  StrCat(std::format("std::array::from_fn::<_, {}, _>",
+                     GetArraySize(expr->getType())));
+  PushParen paren(*this);
+  StrCat("|__i: usize|");
+  ConvertVarInit(expr->getSubExpr()->getType(), expr->getSubExpr());
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
   if (auto form = expr->getSemanticForm())
     expr = form;
@@ -3843,6 +3884,10 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   auto name = GetFunctionBaseName(decl);
+  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
+      ctor && !ctor->getParent()->getIdentifier()) {
+    name = GetRecordName(ctor->getParent());
+  }
 
   if (decl->getNumParams() != 0U) {
     name += '_';

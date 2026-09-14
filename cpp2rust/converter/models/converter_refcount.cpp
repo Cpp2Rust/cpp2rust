@@ -1853,6 +1853,13 @@ bool ConverterRefCount::VisitCXXForRangeStmtString(
   return false;
 }
 
+bool ConverterRefCount::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
+  StrCat("Box::new");
+  PushParen outer(*this);
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitArrayInitLoopExpr(expr);
+}
+
 void ConverterRefCount::ConvertArrayCXXConstructExpr(
     clang::CXXConstructExpr *expr) {
   StrCat("Box::new");

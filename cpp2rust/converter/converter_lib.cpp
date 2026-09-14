@@ -296,6 +296,35 @@ bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedMoveConstructor(ctor);
 }
 
+static bool
+IsConvertibleImplicitMemberParent(const clang::CXXRecordDecl *decl) {
+  return IsUserDefinedDecl(decl) && !decl->isAbstract() &&
+         decl->getNumBases() == 0;
+}
+
+bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  return ctor->isMoveConstructor() && !ctor->isDeleted() &&
+         IsConvertibleImplicitMemberParent(ctor->getParent()) &&
+         (ctor->isUserProvided() ||
+          !HasDefaultedCopyConstructor(ctor->getParent())) &&
+         ctor->hasBody();
+}
+
+bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method) {
+  return method->isMoveAssignmentOperator() && !method->isDeleted() &&
+         IsConvertibleImplicitMemberParent(method->getParent()) &&
+         (method->isUserProvided() ||
+          !HasDefaultedCopyAssignment(method->getParent())) &&
+         method->hasBody();
+}
+
+bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method) {
+  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
+    return IsConvertibleMoveConstructor(ctor);
+  }
+  return IsConvertibleMoveAssignment(method);
+}
+
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isMoveConstructor() && !ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor->getParent());
@@ -326,6 +355,19 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     }
   }
   return !cxx->defaultedCopyConstructorIsDeleted();
+}
+
+bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (!cxx) {
+    return true;
+  }
+  for (const auto *method : cxx->methods()) {
+    if (method->isCopyAssignmentOperator()) {
+      return !method->isUserProvided() && !method->isDeleted();
+    }
+  }
+  return true;
 }
 
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
@@ -375,7 +417,8 @@ bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {
   if (llvm::isa<clang::CXXDestructorDecl>(decl)) {
     return GetUserDefinedDestructor(decl->getParent()) != nullptr;
   }
-  return !decl->isImplicit() || IsComparisonOperator(decl);
+  return !decl->isImplicit() || IsComparisonOperator(decl) ||
+         IsConvertibleImplicitMember(decl);
 }
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl) {
@@ -904,6 +947,9 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
   if (IsComparisonOperator(method)) {
     return method->hasBody();
   }
+  if (IsConvertibleImplicitMember(method)) {
+    return method->hasBody();
+  }
   // Compiler-generated members are covered by derived traits
   if (method->isImplicit()) {
     return false;
@@ -920,6 +966,9 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
   if (method->isDeleted() || method->isStatic() || method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
+  }
+  if (IsConvertibleImplicitMember(method)) {
+    return method->hasBody();
   }
   if (method->isImplicit() && !IsComparisonOperator(method)) {
     return false;

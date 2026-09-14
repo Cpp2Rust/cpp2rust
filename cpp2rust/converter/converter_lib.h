@@ -76,12 +76,20 @@ bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
+
+bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method);
+
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
