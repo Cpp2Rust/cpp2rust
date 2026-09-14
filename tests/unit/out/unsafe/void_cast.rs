@@ -47,7 +47,7 @@ impl NonCopyable {
         _a0: *mut NonCopyable,
     ) -> *mut NonCopyable {
         self.value = (*_a0).value.take();
-        return &mut (*(self as *mut NonCopyable)) as *mut NonCopyable;
+        return &mut (*(self as *mut NonCopyable));
     }
 }
 pub unsafe fn unused_noncopyable_param_5(x: *const NonCopyable) {
@@ -116,14 +116,14 @@ unsafe fn main_0() -> i32 {
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     &((*hp).field);
     let mut nt: NonTrivial = <NonTrivial>::default();
-    (unsafe { unused_ref_param_1(&nt as *const NonTrivial) });
+    (unsafe { unused_ref_param_1(&nt) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
     let mut g: NonCopyable = NonCopyable {
         value: Some(Box::new(9)),
     };
     (&(g));
     &(g);
-    (unsafe { unused_noncopyable_param_5(&g as *const NonCopyable) });
+    (unsafe { unused_noncopyable_param_5(&g) });
     assert!(((*g.value.as_deref_mut().unwrap()) == (9)));
     return 0;
 }

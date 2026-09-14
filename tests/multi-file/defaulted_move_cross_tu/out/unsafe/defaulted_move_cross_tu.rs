@@ -39,7 +39,7 @@ impl S {
             }
             ((&mut self.n as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
         };
-        return &mut (*(self as *mut S)) as *mut S;
+        return &mut (*(self as *mut S));
     }
 }
 impl Default for S {
@@ -60,16 +60,16 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut s: S = S::S({ 2 });
-    assert!(((unsafe { sum_0(&s as *const S,) }) == (7)));
+    assert!(((unsafe { sum_0(&s,) }) == (7)));
     assert!(((unsafe { shuffle_1(3,) }) == (10)));
     return 0;
 }
 pub unsafe fn shuffle_1(mut x: i32) -> i32 {
     let mut a: S = S::S({ x });
-    let mut b: S = S::S_pmutS({ &mut a as *mut S });
+    let mut b: S = S::S_pmutS({ &mut a });
     assert!(a.v.is_empty());
     let mut c: S = S::S({ 1 });
-    (unsafe { S::operator_assign_pmutS(&mut c, &mut b as *mut S) });
+    (unsafe { S::operator_assign_pmutS(&mut c, &mut b) });
     assert!(b.v.is_empty());
-    return (unsafe { sum_0(&c as *const S) });
+    return (unsafe { sum_0(&c) });
 }

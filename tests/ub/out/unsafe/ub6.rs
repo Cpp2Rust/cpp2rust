@@ -19,7 +19,7 @@ pub unsafe fn fill_1(arr: *mut Option<Box<[*mut i32]>>, n1: *mut i32) {
     let mut n2: i32 = (*n1);
     let mut pair: Pair = (unsafe {
         let _x1: *mut i32 = n1;
-        let _x2: *mut i32 = &mut n2 as *mut i32;
+        let _x2: *mut i32 = &mut n2;
         mkPair_0(_x1, _x2)
     });
     (*arr).as_mut().unwrap()[(0_usize)] = (pair.x1);
@@ -46,7 +46,6 @@ unsafe fn main_0() -> i32 {
             .map(|_| <*mut i32>::default())
             .collect::<Box<[_]>>(),
     );
-    (unsafe { fill_1(&mut arr as *mut Option<Box<[*mut i32]>>, &mut n as *mut i32) });
-    return ((unsafe { any_2(&mut arr as *mut Option<Box<[*mut i32]>>, &mut n as *mut i32) })
-        as i32);
+    (unsafe { fill_1(&mut arr, &mut n) });
+    return ((unsafe { any_2(&mut arr, &mut n) }) as i32);
 }

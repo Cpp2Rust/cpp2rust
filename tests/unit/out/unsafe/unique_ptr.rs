@@ -26,7 +26,7 @@ impl SafePointer {
         _a0: *mut SafePointer,
     ) -> *mut SafePointer {
         self.ptr = (*_a0).ptr.take();
-        return &mut (*(self as *mut SafePointer)) as *mut SafePointer;
+        return &mut (*(self as *mut SafePointer));
     }
 }
 #[repr(C)]
@@ -163,7 +163,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut x: Option<Box<i32>> = Some(Box::new(0));
     let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x.take() }));
-    (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr as *mut Option<Box<SafePointer>>) });
+    (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr) });
     assert!(((unsafe { Consume_1(safe_ptr.take(),) }) == (60)));
     return 0;
 }

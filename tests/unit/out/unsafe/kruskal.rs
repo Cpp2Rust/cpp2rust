@@ -14,7 +14,7 @@ pub struct Edge {
     pub weight: f64,
 }
 pub unsafe fn partition_0(arr: *mut Option<Box<[Edge]>>, mut start: i32, mut end: i32) -> i32 {
-    let pivot: *mut Edge = &mut (*arr).as_mut().unwrap()[(start as usize)] as *mut Edge;
+    let pivot: *mut Edge = &mut (*arr).as_mut().unwrap()[(start as usize)];
     let mut count: i32 = 0;
     let mut i: i32 = ((start) + (1));
     'loop_: while ((i) <= (end)) {
@@ -153,7 +153,7 @@ impl DisjointSet {
         self.rank = (*_a0).rank.take();
         self.parent = (*_a0).parent.take();
         self.n = (*_a0).n;
-        return &mut (*(self as *mut DisjointSet)) as *mut DisjointSet;
+        return &mut (*(self as *mut DisjointSet));
     }
 }
 #[repr(C)]
@@ -176,12 +176,12 @@ impl Graph {
         self.edges = (*_a0).edges.take();
         self.V = (*_a0).V;
         self.E = (*_a0).E;
-        return &mut (*(self as *mut Graph)) as *mut Graph;
+        return &mut (*(self as *mut Graph));
     }
 }
 pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
     (unsafe {
-        let _arr: *mut Option<Box<[Edge]>> = &mut (*graph).edges as *mut Option<Box<[Edge]>>;
+        let _arr: *mut Option<Box<[Edge]>> = &mut (*graph).edges;
         let _end: i32 = (((*graph).E) - (1));
         quicksort_1(_arr, 0, _end)
     });
@@ -257,7 +257,7 @@ unsafe fn main_0() -> i32 {
         v: 3,
         weight: 5_f64,
     };
-    let mut total_weight: f64 = (unsafe { MSTKruskal_2(&mut graph as *mut Graph) });
+    let mut total_weight: f64 = (unsafe { MSTKruskal_2(&mut graph) });
     assert!(((total_weight) == (19_f64)));
     return 0;
 }

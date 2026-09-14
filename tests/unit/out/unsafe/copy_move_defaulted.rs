@@ -75,7 +75,7 @@ impl DefaultCopyUserMove {
     ) -> *mut DefaultCopyUserMove {
         self.v = (*o).v;
         (*o).v = 0;
-        return &mut (*(self as *mut DefaultCopyUserMove)) as *mut DefaultCopyUserMove;
+        return &mut (*(self as *mut DefaultCopyUserMove));
     }
 }
 #[repr(C)]
@@ -107,14 +107,14 @@ impl UserCopyDefaultMove {
         o: *const UserCopyDefaultMove,
     ) -> *mut UserCopyDefaultMove {
         self.v = (((*o).v) + (100));
-        return &mut (*(self as *mut UserCopyDefaultMove)) as *mut UserCopyDefaultMove;
+        return &mut (*(self as *mut UserCopyDefaultMove));
     }
     pub unsafe fn operator_assign_pmutUserCopyDefaultMove(
         &mut self,
         _a0: *mut UserCopyDefaultMove,
     ) -> *mut UserCopyDefaultMove {
         self.v = (*_a0).v;
-        return &mut (*(self as *mut UserCopyDefaultMove)) as *mut UserCopyDefaultMove;
+        return &mut (*(self as *mut UserCopyDefaultMove));
     }
 }
 impl Clone for UserCopyDefaultMove {
@@ -164,7 +164,7 @@ impl Buffer {
             }
             ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
         };
-        return &mut (*(self as *mut Buffer)) as *mut Buffer;
+        return &mut (*(self as *mut Buffer));
     }
 }
 impl Default for Buffer {
@@ -196,9 +196,8 @@ unsafe fn main_0() -> i32 {
     let mut d: Explicit = a.clone();
     let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Explicit::destructor);
     assert!(
-        ((unsafe { same_0(&b as *const Explicit, &a as *const Explicit,) })
-            && (unsafe { same_0(&c as *const Explicit, &a as *const Explicit,) }))
-            && (unsafe { same_0(&d as *const Explicit, &a as *const Explicit,) })
+        ((unsafe { same_0(&b, &a,) }) && (unsafe { same_0(&c, &a,) }))
+            && (unsafe { same_0(&d, &a,) })
     );
     let mut e: Explicit = Explicit::Explicit({ 2 });
     let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, Explicit::destructor);
@@ -206,20 +205,14 @@ unsafe fn main_0() -> i32 {
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, Explicit::destructor);
     e = (b).clone();
     f = (c).clone();
-    assert!(
-        (unsafe { same_0(&e as *const Explicit, &b as *const Explicit,) })
-            && (unsafe { same_0(&f as *const Explicit, &c as *const Explicit,) })
-    );
+    assert!((unsafe { same_0(&e, &b,) }) && (unsafe { same_0(&f, &c,) }));
     let mut g: Explicit = Explicit::Explicit({ 4 });
     let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, Explicit::destructor);
     g = {
         e = (f).clone();
         (e).clone()
     };
-    assert!(
-        (unsafe { same_0(&g as *const Explicit, &f as *const Explicit,) })
-            && (unsafe { same_0(&e as *const Explicit, &f as *const Explicit,) })
-    );
+    assert!((unsafe { same_0(&g, &f,) }) && (unsafe { same_0(&e, &f,) }));
     let mut i: Implicit = Implicit {
         v: 5,
         inner: Inner { x: 50 },
@@ -246,53 +239,32 @@ unsafe fn main_0() -> i32 {
     let mut m: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 7 });
     let mut m1: DefaultCopyUserMove = m;
     let mut m2: DefaultCopyUserMove =
-        DefaultCopyUserMove::DefaultCopyUserMove_pmutDefaultCopyUserMove({
-            &mut m as *mut DefaultCopyUserMove
-        });
+        DefaultCopyUserMove::DefaultCopyUserMove_pmutDefaultCopyUserMove({ &mut m });
     assert!((((m1.v) == (7)) && ((m2.v) == (7))) && ((m.v) == (0)));
     let mut m3: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 1 });
     let mut m4: DefaultCopyUserMove = DefaultCopyUserMove::DefaultCopyUserMove({ 1 });
     m3 = m1;
-    (unsafe {
-        DefaultCopyUserMove::operator_assign_pmutDefaultCopyUserMove(
-            &mut m4,
-            &mut m1 as *mut DefaultCopyUserMove,
-        )
-    });
+    (unsafe { DefaultCopyUserMove::operator_assign_pmutDefaultCopyUserMove(&mut m4, &mut m1) });
     assert!((((m3.v) == (7)) && ((m4.v) == (7))) && ((m1.v) == (0)));
     let mut u: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 8 });
     let mut u1: UserCopyDefaultMove =
-        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({
-            &u as *const UserCopyDefaultMove
-        });
+        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({ &u });
     let mut u2: UserCopyDefaultMove =
-        UserCopyDefaultMove::UserCopyDefaultMove_pmutUserCopyDefaultMove({
-            &mut u as *mut UserCopyDefaultMove
-        });
+        UserCopyDefaultMove::UserCopyDefaultMove_pmutUserCopyDefaultMove({ &mut u });
     assert!((((u1.v) == (108)) && ((u2.v) == (8))) && ((u.v) == (8)));
     let mut u3: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 1 });
     let mut u4: UserCopyDefaultMove = UserCopyDefaultMove::UserCopyDefaultMove({ 1 });
-    (unsafe {
-        UserCopyDefaultMove::operator_assign_pconstUserCopyDefaultMove(
-            &mut u3,
-            &u2 as *const UserCopyDefaultMove,
-        )
-    });
-    (unsafe {
-        UserCopyDefaultMove::operator_assign_pmutUserCopyDefaultMove(
-            &mut u4,
-            &mut u2 as *mut UserCopyDefaultMove,
-        )
-    });
+    (unsafe { UserCopyDefaultMove::operator_assign_pconstUserCopyDefaultMove(&mut u3, &u2) });
+    (unsafe { UserCopyDefaultMove::operator_assign_pmutUserCopyDefaultMove(&mut u4, &mut u2) });
     assert!(((u3.v) == (108)) && ((u4.v) == (8)));
     let mut p: Buffer = Buffer::Buffer({ 3 });
-    let mut q: Buffer = Buffer::Buffer_pmutBuffer({ &mut p as *mut Buffer });
+    let mut q: Buffer = Buffer::Buffer_pmutBuffer({ &mut p });
     assert!(
         ((((q.n) == (3)) && ((q.data.len()) == (3_usize))) && ((q.data[(2_usize)]) == (3)))
             && (p.data.is_empty())
     );
     let mut r: Buffer = Buffer::Buffer({ 1 });
-    (unsafe { Buffer::operator_assign_pmutBuffer(&mut r, &mut q as *mut Buffer) });
+    (unsafe { Buffer::operator_assign_pmutBuffer(&mut r, &mut q) });
     assert!(
         ((((r.n) == (3)) && ((r.data.len()) == (3_usize))) && ((r.arr[(1) as usize]) == (4)))
             && (q.data.is_empty())
@@ -300,7 +272,7 @@ unsafe fn main_0() -> i32 {
     let mut bufs: Vec<Buffer> = Vec::new();
     bufs.push(std::mem::take(&mut r));
     {
-        let __arg = Buffer::Buffer_pmutBuffer({ &mut bufs[(0_usize)] as *mut Buffer });
+        let __arg = Buffer::Buffer_pmutBuffer({ &mut bufs[(0_usize)] });
         bufs.push(__arg)
     };
     assert!(

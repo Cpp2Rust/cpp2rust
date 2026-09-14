@@ -64,20 +64,20 @@ unsafe fn main_0() -> i32 {
     let mut c: S = S::S({ 1 });
     assert!(
         (unsafe {
-            let _x: *const S = &a as *const S;
-            operator_eq_0(_x, &c as *const S)
+            let _x: *const S = &a;
+            operator_eq_0(_x, &c)
         })
     );
     assert!(
         (unsafe {
-            let _x: *const S = &a as *const S;
-            operator_lt_1(_x, &b as *const S)
+            let _x: *const S = &a;
+            operator_lt_1(_x, &b)
         })
     );
     assert!(
         !(unsafe {
-            let _x: *const S = &b as *const S;
-            operator_lt_1(_x, &a as *const S)
+            let _x: *const S = &b;
+            operator_lt_1(_x, &a)
         })
     );
     return 0;

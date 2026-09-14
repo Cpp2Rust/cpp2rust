@@ -20,10 +20,10 @@ impl StructWithCtor {
         this
     }
     pub unsafe fn x1(&self) -> *const i32 {
-        return &self.x1_ as *const i32;
+        return &self.x1_;
     }
     pub unsafe fn x2(&self) -> *const i32 {
-        return &self.x2_ as *const i32;
+        return &self.x2_;
     }
 }
 pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
     let mut struct_with_ctor: StructWithCtor = StructWithCtor::StructWithCtor({ 1 }, { 2 });
     let mut x: i32 = 3;
     assert!(
-        (((*(unsafe { foo_0(&mut x as *mut i32,) })) == (3))
+        (((*(unsafe { foo_0(&mut x,) })) == (3))
             && ((*(unsafe { StructWithCtor::x1(&struct_with_ctor,) })) == (2)))
             && ((*(unsafe { StructWithCtor::x2(&struct_with_ctor,) })) == (1))
     );

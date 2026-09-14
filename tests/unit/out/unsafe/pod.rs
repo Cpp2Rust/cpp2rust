@@ -34,7 +34,7 @@ unsafe fn main_0() -> i32 {
         x2: p1.x2,
         x3: p1.x3,
     };
-    (unsafe { PODIncrement_0(&mut p2 as *mut POD) });
+    (unsafe { PODIncrement_0(&mut p2) });
     assert!(((((p2.x1) + (p2.x2)) + (p2.x3)) == (39)));
     return 0;
 }
