@@ -54,7 +54,7 @@ pub unsafe fn shrink_through_ptr_2(mut comps: *mut Vec<Chunk>) {
     (*comps).shrink_to_fit();
 }
 pub unsafe fn nested_push_move_3(mut bw: *mut Writer) {
-    (*(*bw).output).push((*bw).chunk);
+    (*(*bw).output).push(Chunk::Chunk_pmutChunk({ &mut (*bw).chunk as *mut Chunk }));
 }
 pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool) {
     let mut head: [u8; 3] = [1_u8, 2_u8, 3_u8];
