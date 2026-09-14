@@ -652,12 +652,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
         llvm::dyn_cast<clang::FunctionDecl>(pdecl->getDeclContext());
     const auto *ctor = llvm::dyn_cast_or_null<clang::CXXConstructorDecl>(fn);
     if (pdecl->isExplicitObjectParameter() ||
-        (ctor && ctor->isCopyOrMoveConstructor())) {
+        (ctor && ctor->isCopyConstructor())) {
       name = "self";
-    } else if (fn && fn->isDefaulted() && IsComparisonOperator(fn)) {
-      name = std::format("_arg{}", pdecl->getFunctionScopeIndex());
     } else {
-      name = "_";
+      name = std::format("_a{}", pdecl->getFunctionScopeIndex());
     }
   } else if (auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl)) {
     // Expanded parameter packs share one name across the expansion
