@@ -1,6 +1,8 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <stddef.h>
+
 #if defined(__linux__)
 #include <byteswap.h>
 #elif !defined(__APPLE__)
@@ -26,3 +28,7 @@ bool f10(long long a, long long b, long long *r) { return __builtin_mul_overflow
 #if defined(__x86_64__) || defined(__i386__)
 void f11(void) { return __builtin_ia32_pause(); }
 #endif
+
+void *f14(void *dst, const void *src, size_t n) {
+  return __builtin_memcpy(dst, src, n);
+}
