@@ -66,10 +66,10 @@ unsafe fn main_0() -> i32 {
 }
 pub unsafe fn shuffle_1(mut x: i32) -> i32 {
     let mut a: S = S::S({ x });
-    let mut b: S = S::S_pmutS({ &mut a });
+    let mut b: S = S::S_pmutS({ &mut a as *mut S });
     assert!(a.v.is_empty());
     let mut c: S = S::S({ 1 });
-    (unsafe { S::operator_assign_pmutS(&mut c, &mut b) });
+    (unsafe { S::operator_assign_pmutS(&mut c, &mut b as *mut S) });
     assert!(b.v.is_empty());
     return (unsafe { sum_0(&c as *const S) });
 }

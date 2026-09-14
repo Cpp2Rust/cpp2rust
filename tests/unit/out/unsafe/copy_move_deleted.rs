@@ -108,17 +108,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: NoCopy = NoCopy::NoCopy({ 1 });
-    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy({ &mut a });
+    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy({ &mut a as *mut NoCopy });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
-    (unsafe { NoCopy::operator_assign_pmutNoCopy(&mut a, &mut b) });
+    (unsafe { NoCopy::operator_assign_pmutNoCopy(&mut a, &mut b as *mut NoCopy) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
     (unsafe { bump_0((&mut a as *mut NoCopy)) });
     assert!(((a.v) == (2)));
     let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
     p.v = 3;
-    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy({ &mut p });
+    let mut q: PrivateCopy =
+        PrivateCopy::PrivateCopy_pmutPrivateCopy({ &mut p as *mut PrivateCopy });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
-    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy(&mut p, &mut q) });
+    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy(&mut p, &mut q as *mut PrivateCopy) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
     let mut im: Immovable = Immovable::Immovable();
     im.v = 4;
@@ -129,7 +130,7 @@ unsafe fn main_0() -> i32 {
         inner: NoCopy::NoCopy({ 6 }),
         tag: 7,
     };
-    let mut d: Container = Container::Container_pmutContainer({ &mut c });
+    let mut d: Container = Container::Container_pmutContainer({ &mut c as *mut Container });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }

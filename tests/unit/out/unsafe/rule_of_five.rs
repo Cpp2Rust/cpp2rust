@@ -107,7 +107,7 @@ impl Default for Buffer {
 pub unsafe fn make_3(mut size: i32) -> Buffer {
     let mut b: Buffer = Buffer::Buffer({ size });
     let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
-    return Buffer::Buffer_pmutBuffer({ &mut b });
+    return Buffer::Buffer_pmutBuffer({ &mut b as *mut Buffer });
 }
 pub fn main() {
     unsafe {
@@ -123,7 +123,7 @@ unsafe fn main_0() -> i32 {
         assert!((((alive_0) == (2)) && ((copies_1) == (1))) && ((moves_2) == (0)));
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
-        let mut c: Buffer = Buffer::Buffer_pmutBuffer({ &mut a });
+        let mut c: Buffer = Buffer::Buffer_pmutBuffer({ &mut a as *mut Buffer });
         let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
         assert!(((alive_0) == (3)) && ((moves_2) == (1)));
         assert!(((a.size) == (0)) && ((a.data[(0) as usize]) == (-1_i32)));
@@ -133,10 +133,10 @@ unsafe fn main_0() -> i32 {
         assert!(((d.size) == (2)) && ((moves_2) == (2)));
         (unsafe { Buffer::operator_assign_pconstBuffer(&mut d, &b as *const Buffer) });
         assert!((((d.size) == (4)) && ((d.data[(0) as usize]) == (100))) && ((copies_1) == (2)));
-        (unsafe { Buffer::operator_assign_pmutBuffer(&mut d, &mut c) });
+        (unsafe { Buffer::operator_assign_pmutBuffer(&mut d, &mut c as *mut Buffer) });
         assert!((((d.data[(0) as usize]) == (0)) && ((c.size) == (0))) && ((moves_2) == (3)));
         (unsafe {
-            let _o: *mut Buffer = &mut d;
+            let _o: *mut Buffer = &mut d as *mut Buffer;
             Buffer::operator_assign_pmutBuffer(&mut d, _o)
         });
         assert!(((d.size) == (4)) && ((moves_2) == (3)));

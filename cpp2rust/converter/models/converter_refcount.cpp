@@ -2662,7 +2662,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType() &&
+  if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =

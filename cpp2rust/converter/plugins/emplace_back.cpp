@@ -159,18 +159,8 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
   {
     Buffer buf(*this);
     if (ctor) {
-      auto *construct = buildConstructExpr(member_call, GetSema());
-      auto is_argument_moved =
-          construct && construct->getConstructor()->isMoveConstructor() &&
-          !IsConvertibleMoveConstructor(construct->getConstructor());
-
-      if (is_argument_moved) {
-        StrCat("std::mem::take(&mut");
-      }
-      emplace_back_plugin_construct_arg(elem_ty, construct);
-      if (is_argument_moved) {
-        StrCat(')');
-      }
+      emplace_back_plugin_construct_arg(
+          elem_ty, buildConstructExpr(member_call, GetSema()));
     } else if (elem_ty.isPODType(ctx_)) {
       if (call->getNumArgs() == 0) {
         StrCat(GetDefaultAsString(elem_ty));

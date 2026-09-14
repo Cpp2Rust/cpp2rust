@@ -2681,7 +2681,7 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 bool Converter::IsReferenceType(const clang::Expr *expr) const {
-  const auto *e = expr->IgnoreCasts();
+  const auto *e = IgnoreStdMove(expr->IgnoreCasts())->IgnoreCasts();
   if (const auto *call = clang::dyn_cast<clang::CallExpr>(e)) {
     return !clang::isa<clang::CXXOperatorCallExpr>(call) &&
            GetReturnTypeOfFunction(call)->isReferenceType();
