@@ -286,14 +286,9 @@ bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedDecl(ctor);
 }
 
-bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
-  return ctor->isMoveConstructor() && ctor->isUserProvided() &&
-         IsUserDefinedDecl(ctor);
-}
-
-bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
   return IsUserDefinedCopyConstructor(ctor) ||
-         IsUserDefinedMoveConstructor(ctor);
+         IsConvertibleMoveConstructor(ctor);
 }
 
 static bool
@@ -394,7 +389,7 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
-  return !IsUserDefinedCopyOrMoveConstructor(ctor) &&
+  return !IsConvertibleCopyOrMoveConstructor(ctor) &&
          (ctor->isCopyOrMoveConstructor() ||
           IsRValueConvertingConstructor(ctor));
 }
@@ -856,6 +851,10 @@ bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
       method && method->isDefaulted() && IsComparisonOperator(method)) {
     return IsUserDefinedDecl(method->getParent());
+  }
+  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
+      method && IsConvertibleMoveAssignment(method)) {
+    return true;
   }
   if (!callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
     return false;

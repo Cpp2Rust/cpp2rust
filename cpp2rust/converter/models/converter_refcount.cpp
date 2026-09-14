@@ -1899,17 +1899,8 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  // Default move is translated using a bitwise .clone() implementation.
-  // Bitwise clone is only satisfied by default copy constructor. If the copy
-  // constructor is user defined, then default move calls copy constructor,
-  // which is wrong.
-  if (IsDefaultedMoveConstructor(ctor) &&
-      !HasDefaultedCopyConstructor(ctor->getParent())) {
-    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
-                             "copy constructor is not supported");
-  }
   if (ctor->isCopyOrMoveConstructor() &&
-      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
+      !IsConvertibleCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
@@ -1923,7 +1914,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  assert(ctor->isUserProvided());
   if (expr->getType()->isArrayType()) {
     ConvertArrayCXXConstructExpr(expr);
   } else {

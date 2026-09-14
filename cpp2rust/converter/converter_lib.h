@@ -70,9 +70,7 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
 
-bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
-
-bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
