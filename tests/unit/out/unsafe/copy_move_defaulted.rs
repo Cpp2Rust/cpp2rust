@@ -130,6 +130,7 @@ impl Clone for UserCopyDefaultMove {
 #[derive()]
 pub struct Buffer {
     pub data: Vec<i32>,
+    pub rows: Vec<Vec<i32>>,
     pub n: i32,
     pub arr: [i32; 2],
 }
@@ -137,14 +138,17 @@ impl Buffer {
     pub unsafe fn Buffer(mut n: i32) -> Self {
         let mut this = Self {
             data: vec![n; (n as usize) as usize],
+            rows: Vec::new(),
             n: n,
             arr: [n, ((n) + (1))],
         };
+        this.rows.push(this.data.clone());
         this
     }
     pub unsafe fn Buffer_pmutBuffer(_a0: *mut Buffer) -> Self {
         let mut this = Self {
             data: std::mem::take(&mut (*_a0).data),
+            rows: std::mem::take(&mut (*_a0).rows),
             n: (*_a0).n,
             arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
         };
@@ -152,6 +156,7 @@ impl Buffer {
     }
     pub unsafe fn operator_assign_pmutBuffer(&mut self, _a0: *mut Buffer) -> *mut Buffer {
         self.data = std::mem::take(&mut (*_a0).data);
+        self.rows = std::mem::take(&mut (*_a0).rows);
         self.n = (*_a0).n;
         {
             if 8_usize != 0 {
@@ -171,6 +176,7 @@ impl Default for Buffer {
     fn default() -> Self {
         Buffer {
             data: Default::default(),
+            rows: Vec::new(),
             n: 0_i32,
             arr: [0_i32; 2],
         }
@@ -268,6 +274,10 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((r.n) == (3)) && ((r.data.len()) == (3_usize))) && ((r.arr[(1) as usize]) == (4)))
             && (q.data.is_empty())
+    );
+    assert!(
+        (((r.rows.len()) == (1_usize)) && ((r.rows[(0_usize)].len()) == (3_usize)))
+            && (q.rows.is_empty())
     );
     let mut bufs: Vec<Buffer> = Vec::new();
     bufs.push(Buffer::Buffer_pmutBuffer({ &mut r }));

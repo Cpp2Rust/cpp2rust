@@ -51,9 +51,10 @@ struct UserCopyDefaultMove {
 
 struct Buffer {
   std::vector<int> data;
+  std::vector<std::vector<int>> rows;
   int n;
   int arr[2];
-  Buffer(int n) : data(n, n), n(n), arr{n, n + 1} {}
+  Buffer(int n) : data(n, n), n(n), arr{n, n + 1} { rows.push_back(data); }
   Buffer(const Buffer &) = delete;
   Buffer(Buffer &&) = default;
   Buffer &operator=(const Buffer &) = delete;
@@ -118,6 +119,7 @@ int main() {
   Buffer r(1);
   r = std::move(q);
   assert(r.n == 3 && r.data.size() == 3 && r.arr[1] == 4 && q.data.empty());
+  assert(r.rows.size() == 1 && r.rows[0].size() == 3 && q.rows.empty());
   std::vector<Buffer> bufs;
   bufs.push_back(std::move(r));
   bufs.emplace_back(std::move(bufs[0]));

@@ -235,6 +235,7 @@ impl ByteRepr for UserCopyDefaultMove {
 #[derive()]
 pub struct Buffer {
     pub data: Value<Vec<i32>>,
+    pub rows: Value<Vec<Value<Vec<i32>>>>,
     pub n: Value<i32>,
     pub arr: Value<Box<[i32]>>,
 }
@@ -246,16 +247,27 @@ impl Buffer {
                 (*n.borrow());
                 ((*n.borrow()) as usize) as usize
             ])),
+            rows: Rc::new(RefCell::new(Vec::new())),
             n: Rc::new(RefCell::new((*n.borrow()))),
             arr: Rc::new(RefCell::new(Box::new([(*n.borrow()), ((*n.borrow()) + 1)]))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
+        ((*this.upgrade().deref()).rows.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(
+            |__v: &mut Vec<Value<Vec<i32>>>| {
+                __v.push(Rc::new(RefCell::new(
+                    (*(*this.upgrade().deref()).data.borrow()).clone(),
+                )))
+            },
+        );
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn Buffer_pmutBuffer(_a0: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(std::mem::take(
                 &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
+            ))),
+            rows: Rc::new(RefCell::new(std::mem::take(
+                &mut (*(*_a0.upgrade().deref()).rows.borrow_mut()),
             ))),
             n: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).n.borrow()))),
             arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
@@ -270,6 +282,7 @@ impl Default for Buffer {
     fn default() -> Self {
         Buffer {
             data: Rc::new(RefCell::new(Default::default())),
+            rows: Rc::new(RefCell::new(Vec::new())),
             n: <Value<i32>>::default(),
             arr: Rc::new(RefCell::new(
                 (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
@@ -279,18 +292,22 @@ impl Default for Buffer {
 }
 impl ByteRepr for Buffer {
     fn byte_size() -> usize {
-        40
+        64
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.n.borrow()).to_bytes(&mut buf[24..28]);
-        (*self.arr.borrow()).to_bytes(&mut buf[28..36]);
+        (*self.rows.borrow()).to_bytes(&mut buf[24..48]);
+        (*self.n.borrow()).to_bytes(&mut buf[48..52]);
+        (*self.arr.borrow()).to_bytes(&mut buf[52..60]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[28..36]))),
+            rows: Rc::new(RefCell::new(<Vec<Value<Vec<i32>>>>::from_bytes(
+                &buf[24..48],
+            ))),
+            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[48..52]))),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[52..60]))),
         }
     }
 }
@@ -479,6 +496,19 @@ fn main_0() -> i32 {
             && ((*(*r.borrow()).arr.borrow())[(1) as usize] == 4))
             && ((*(*q.borrow()).data.borrow()).is_empty())
     );
+    assert!(
+        (((*(*r.borrow()).rows.borrow()).len() == 1_usize)
+            && ((*(((*r.borrow()).rows.as_pointer() as Ptr<Value<Vec<i32>>>)
+                .offset(0_usize)
+                .upgrade()
+                .deref()
+                .as_pointer() as Ptr<Vec<i32>>)
+                .upgrade()
+                .deref())
+            .len()
+                == 3_usize))
+            && ((*(*q.borrow()).rows.borrow()).is_empty())
+    );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
     (*bufs.borrow_mut()).push(Buffer::Buffer_pmutBuffer({ r.as_pointer() }));
     {
@@ -521,6 +551,9 @@ impl BufferImpl for Ptr<Buffer> {
         ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
         ));
+        ((*(*self).upgrade().deref()).rows.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).write(
+            std::mem::take(&mut (*(*_a0.upgrade().deref()).rows.borrow_mut())),
+        );
         let __rhs = (*(*_a0.upgrade().deref()).n.borrow());
         (*(*(*self).upgrade().deref()).n.borrow_mut()) = __rhs;
         {
