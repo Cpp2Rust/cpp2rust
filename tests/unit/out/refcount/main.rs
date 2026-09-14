@@ -20,6 +20,7 @@ pub fn main() {
             .collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());
+    __cpp2rust_init_globals();
     ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
 fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
@@ -36,3 +37,4 @@ fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     assert!((((*argc.borrow()) + ((((*s.borrow()).len() - 1) > 0_usize) as i32)) == 2));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -23,6 +23,7 @@ pub unsafe fn write_val_1(mut h: *const Holder, mut v: i32) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -33,3 +34,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { read_val_0((&mut h as *mut Holder).cast_const(),) }) == (42)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

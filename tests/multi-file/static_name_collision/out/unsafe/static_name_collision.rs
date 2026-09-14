@@ -18,6 +18,7 @@ pub unsafe fn a_bar_3() -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -37,4 +38,10 @@ pub unsafe fn b_foo_4() -> f32 {
 }
 pub unsafe fn b_bar_5() -> i32 {
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut same_name_same_type_7));
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const same_name_different_type_0);
+    std::cell::LazyCell::force(&*&raw const same_name_same_type_1);
+    std::cell::LazyCell::force(&*&raw const same_name_different_type_6);
+    std::cell::LazyCell::force(&*&raw const same_name_same_type_7);
 }

@@ -321,6 +321,7 @@ impl ByteRepr for Ordered {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -513,4 +514,9 @@ impl Templated_int_Impl for Ptr<Templated_int_> {
             (*global_0.with(Value::clone).borrow_mut()) = rhs_0
         };
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = global_0.with(Value::clone);
+    let _ = order_1.with(Value::clone);
+    let _ = order_count_2.with(Value::clone);
 }

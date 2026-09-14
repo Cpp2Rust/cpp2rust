@@ -43,6 +43,7 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     r1.write(__rhs);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -52,3 +53,4 @@ fn main_0() -> i32 {
     assert!((((*x1.borrow()) + (*x2.borrow())) == 21));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -12,6 +12,7 @@ pub const E_B: E = 4;
 pub const E_C: E = 2;
 pub const E_D: E = 4;
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -21,3 +22,4 @@ fn main_0() -> i32 {
     assert!(((E_D as i32) == (1 << 2)));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

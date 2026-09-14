@@ -34,6 +34,7 @@ pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, N: i32) -> i32 {
     return (*sum.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -47,3 +48,4 @@ fn main_0() -> i32 {
     assert!((({ Consume_1((*arr.borrow_mut()).take(), (*N.borrow()),) }) == 10));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

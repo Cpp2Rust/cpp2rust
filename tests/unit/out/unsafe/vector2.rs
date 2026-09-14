@@ -33,6 +33,7 @@ pub unsafe fn fn_0(v: *mut Vec<i32>, mut v3: Vec<i32>) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -47,3 +48,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { fn_0(&mut v as *mut Vec<i32>, v2.clone()) });
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

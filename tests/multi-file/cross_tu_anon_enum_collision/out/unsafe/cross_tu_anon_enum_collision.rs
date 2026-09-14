@@ -15,6 +15,7 @@ pub unsafe fn a_value_1() -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -30,3 +31,4 @@ pub unsafe fn b_value_2() -> i32 {
     x |= (anon_3_BETA as i32);
     return x;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

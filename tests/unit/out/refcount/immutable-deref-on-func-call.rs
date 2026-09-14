@@ -33,6 +33,7 @@ impl ByteRepr for Item {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -72,3 +73,4 @@ impl ItemImpl for Ptr<Item> {
         (*(*(*other.borrow()).upgrade().deref()).value.borrow_mut()) = 10;
     }
 }
+pub fn __cpp2rust_init_globals() {}

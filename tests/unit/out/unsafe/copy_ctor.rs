@@ -84,6 +84,7 @@ pub unsafe fn make_2(mut v: i32) -> Counted {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -133,4 +134,7 @@ unsafe fn main_0() -> i32 {
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const copies_0);
 }

@@ -12,6 +12,7 @@ pub unsafe fn fill_row_0(mut row: *mut libc::c_char, mut c: libc::c_char) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -34,3 +35,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((grid[(2) as usize][(5) as usize] as i32) == ('z' as i32)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

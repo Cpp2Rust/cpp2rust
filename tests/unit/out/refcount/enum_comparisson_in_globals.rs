@@ -14,9 +14,13 @@ thread_local!(
         Rc::new(RefCell::new((((E_A as i32) != (E_B as i32)) as i32)));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(((*global_0.with(Value::clone).borrow()) == 1));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = global_0.with(Value::clone);
 }

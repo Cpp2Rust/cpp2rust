@@ -178,6 +178,7 @@ impl ByteRepr for Singleton {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -215,4 +216,15 @@ fn main_0() -> i32 {
     );
     assert!((({ Singleton::instance() }) == ({ Singleton::instance() })));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = signature_3.with(Value::clone);
+    let _ = single_4.with(Value::clone);
+    let _ = from_call_5.with(Value::clone);
+    let _ = depends_on_call_6.with(Value::clone);
+    let _ = default_ctor_7.with(Value::clone);
+    let _ = arg_ctor_8.with(Value::clone);
+    let _ = str_9.with(Value::clone);
+    let _ = inline_member_11.with(Value::clone);
+    let _ = member_10.with(Value::clone);
 }

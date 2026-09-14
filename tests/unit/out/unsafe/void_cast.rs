@@ -41,6 +41,7 @@ pub unsafe fn unused_noncopyable_param_5(x: *const NonCopyable) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -112,4 +113,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { unused_noncopyable_param_5(&g as *const NonCopyable) });
     assert!(((*g.value.as_deref_mut().unwrap()) == (9)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const side_effect_counter_3);
 }

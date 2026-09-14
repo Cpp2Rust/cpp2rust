@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -23,3 +24,4 @@ unsafe fn main_0() -> i32 {
     )));
     return out;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

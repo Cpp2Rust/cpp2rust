@@ -60,6 +60,7 @@ pub unsafe fn foo_1(mut x1: i32, x2: *mut i32, mut x3: *mut i32, p2: *mut Pair, 
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -221,3 +222,4 @@ unsafe fn main_0() -> i32 {
     let mut ptr2ptr_2: *mut *mut Pair = (&mut py1 as *mut *mut Pair);
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

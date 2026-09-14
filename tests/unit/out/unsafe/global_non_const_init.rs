@@ -99,6 +99,7 @@ impl Default for Singleton {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -132,4 +133,15 @@ unsafe fn main_0() -> i32 {
     assert!((((*(unsafe { Singleton::instance() })).hits) == (2)));
     assert!(((unsafe { Singleton::instance() }) == (unsafe { Singleton::instance() })));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const signature_3);
+    std::cell::LazyCell::force(&*&raw const single_4);
+    std::cell::LazyCell::force(&*&raw const from_call_5);
+    std::cell::LazyCell::force(&*&raw const depends_on_call_6);
+    std::cell::LazyCell::force(&*&raw const default_ctor_7);
+    std::cell::LazyCell::force(&*&raw const arg_ctor_8);
+    std::cell::LazyCell::force(&*&raw const str_9);
+    std::cell::LazyCell::force(&*&raw const inline_member_11);
+    std::cell::LazyCell::force(&*&raw const member_10);
 }

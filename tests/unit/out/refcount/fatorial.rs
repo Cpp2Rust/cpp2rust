@@ -47,6 +47,7 @@ pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
     };
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -57,3 +58,4 @@ fn main_0() -> i32 {
     assert!((({ fatorial_0((*n.borrow()),) }) == 720));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

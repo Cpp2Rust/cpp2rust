@@ -36,6 +36,7 @@ pub static mut obj_4: std::cell::LazyCell<Outer> = std::cell::LazyCell::new(|| u
 });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -61,4 +62,11 @@ unsafe fn main_0() -> i32 {
         (((*(*std::cell::LazyCell::force_mut(&mut *&raw mut cache_5))[(1) as usize]).value) == (2))
     );
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const alpha_0);
+    std::cell::LazyCell::force(&*&raw const beta_1);
+    std::cell::LazyCell::force(&*&raw const shared_2);
+    std::cell::LazyCell::force(&*&raw const items_3);
+    std::cell::LazyCell::force(&*&raw const obj_4);
 }

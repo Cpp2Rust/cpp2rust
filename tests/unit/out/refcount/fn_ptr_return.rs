@@ -22,6 +22,7 @@ pub fn pick_2(choose_inc: i32) -> FnPtr<fn(i32) -> i32> {
     return FnPtr::<fn(i32) -> i32>::new(dec_1);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -44,3 +45,4 @@ fn main_0() -> i32 {
     });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

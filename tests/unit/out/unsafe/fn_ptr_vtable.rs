@@ -36,6 +36,7 @@ pub unsafe fn int_destroy_3(mut p: *mut ::libc::c_void) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -55,4 +56,7 @@ unsafe fn main_0() -> i32 {
     (vt.get) = None;
     assert!((vt.get).is_none());
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const storage_0);
 }

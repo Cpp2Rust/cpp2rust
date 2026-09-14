@@ -137,6 +137,7 @@ pub unsafe fn check_local_static_5() {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -194,4 +195,11 @@ unsafe fn main_0() -> i32 {
     }
     (unsafe { check_local_static_5() });
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const static_fn_0);
+    std::cell::LazyCell::force(&*&raw const static_outer_1);
+    std::cell::LazyCell::force(&*&raw const static_inner_array_2);
+    std::cell::LazyCell::force(&*&raw const static_foo_3);
+    std::cell::LazyCell::force(&*&raw const static_foo_array_4);
 }

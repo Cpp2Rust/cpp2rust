@@ -114,6 +114,7 @@ pub fn make_color_6(n: i32) -> Color {
     return ((*n.borrow()) as Color);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -233,4 +234,10 @@ fn main_0() -> i32 {
             == (Option_OPT_C as i32))
     );
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = global_color_0.with(Value::clone);
+    let _ = global_opt_1.with(Value::clone);
+    let _ = global_tag_2.with(Value::clone);
+    let _ = entries_3.with(Value::clone);
 }

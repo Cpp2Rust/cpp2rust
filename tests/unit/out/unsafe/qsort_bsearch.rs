@@ -13,6 +13,7 @@ pub unsafe fn cmp_int_0(mut a: *const ::libc::c_void, mut b: *const ::libc::c_vo
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -59,3 +60,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((miss).is_null()) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

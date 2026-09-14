@@ -36,6 +36,7 @@ pub fn a_value_0() -> i32 {
     return (*(*w.borrow()).id.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -51,3 +52,4 @@ pub fn b_value_1() -> i32 {
     let w: Value<widget_enum> = Rc::new(RefCell::new(widget_enum_WIDGET_C));
     return ((*w.borrow()) as i32);
 }
+pub fn __cpp2rust_init_globals() {}

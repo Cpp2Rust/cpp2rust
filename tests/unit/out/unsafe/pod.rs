@@ -20,6 +20,7 @@ pub unsafe fn PODIncrement_0(pod: *mut POD) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -38,3 +39,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((p2.x1) + (p2.x2)) + (p2.x3)) == (39)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

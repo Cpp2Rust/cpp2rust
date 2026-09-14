@@ -11,6 +11,7 @@ pub fn escape_0(p: Ptr<i32>) {
     (*p.borrow()).delete();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -18,3 +19,4 @@ fn main_0() -> i32 {
     ({ escape_0((*p1.borrow()).clone()) });
     return ((*p1.borrow()).read());
 }
+pub fn __cpp2rust_init_globals() {}

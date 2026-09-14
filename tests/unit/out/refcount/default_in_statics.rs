@@ -223,6 +223,7 @@ pub fn check_local_static_5() {
     assert!((*local_p_8.with(Value::clone).borrow()).is_null());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -284,4 +285,11 @@ fn main_0() -> i32 {
     }
     ({ check_local_static_5() });
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = static_fn_0.with(Value::clone);
+    let _ = static_outer_1.with(Value::clone);
+    let _ = static_inner_array_2.with(Value::clone);
+    let _ = static_foo_3.with(Value::clone);
+    let _ = static_foo_array_4.with(Value::clone);
 }

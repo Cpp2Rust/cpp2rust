@@ -45,6 +45,7 @@ pub fn pack_size_1(args_0: i32, args_1: f64) -> u64 {
     return ((2 as usize).wrapping_add((2 as usize)) as u64);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -69,3 +70,4 @@ fn main_0() -> i32 {
     assert!((({ pack_size_1(1, 2.0E+0,) }) == 4_u64));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

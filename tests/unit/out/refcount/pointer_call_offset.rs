@@ -11,6 +11,7 @@ pub fn foo_0(p: Ptr<i32>) -> Ptr<i32> {
     return ((*p.borrow()).offset((5) as isize));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -34,3 +35,4 @@ fn main_0() -> i32 {
     assert!(((*out.borrow()) == 9));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

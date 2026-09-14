@@ -328,6 +328,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     return (*total_weight.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -487,3 +488,4 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         }
     }
 }
+pub fn __cpp2rust_init_globals() {}

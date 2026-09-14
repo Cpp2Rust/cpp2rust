@@ -83,6 +83,7 @@ pub unsafe fn sum_2(b: *const Buffer) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -126,4 +127,8 @@ unsafe fn main_0() -> i32 {
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (0)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const alive_0);
+    std::cell::LazyCell::force(&*&raw const copies_1);
 }

@@ -105,6 +105,7 @@ impl Default for Holder {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -177,4 +178,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { RefQualified::operator_assign(&mut r1, &r as *const RefQualified) });
     assert!(((r1.mark) == (1)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const assigns_0);
 }

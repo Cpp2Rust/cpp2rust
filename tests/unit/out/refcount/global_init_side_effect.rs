@@ -43,9 +43,15 @@ thread_local!(
     pub static b_2: Value<S> = Rc::new(RefCell::new(S::S({ 10 })));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(((*total_0.with(Value::clone).borrow()) == 11));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = total_0.with(Value::clone);
+    let _ = a_1.with(Value::clone);
+    let _ = b_2.with(Value::clone);
 }

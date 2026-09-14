@@ -79,6 +79,7 @@ pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
     return (((*s.upgrade().deref()).data.as_pointer() as Ptr<i32>).offset(0));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -119,3 +120,4 @@ fn main_0() -> i32 {
     assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

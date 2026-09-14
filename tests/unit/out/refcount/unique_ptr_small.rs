@@ -11,6 +11,7 @@ pub fn change_0(n: Ptr<Option<Value<i32>>>) {
     ((n).clone() as Ptr<Option<Value<i32>>>).write((*m.borrow_mut()).take());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -19,3 +20,4 @@ fn main_0() -> i32 {
     assert!(((*(*n.borrow()).as_ref().unwrap().borrow()) == 20));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

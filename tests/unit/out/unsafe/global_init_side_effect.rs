@@ -21,10 +21,16 @@ pub static mut a_1: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe 
 pub static mut b_2: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::S({ 10 }) });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) == (11)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const total_0);
+    std::cell::LazyCell::force(&*&raw const a_1);
+    std::cell::LazyCell::force(&*&raw const b_2);
 }

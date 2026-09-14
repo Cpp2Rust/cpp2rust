@@ -41,6 +41,7 @@ pub static mut table_1: std::cell::LazyCell<[label; 2]> = std::cell::LazyCell::n
 });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -117,4 +118,7 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const table_1);
 }

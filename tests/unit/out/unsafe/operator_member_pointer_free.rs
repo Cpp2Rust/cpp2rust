@@ -33,6 +33,7 @@ pub unsafe fn operator_addr_1(s: *mut S) -> *mut i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -63,3 +64,4 @@ unsafe fn main_0() -> i32 {
     assert!(((s.data[(0) as usize]) == (5)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

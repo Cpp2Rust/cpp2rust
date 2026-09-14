@@ -21,6 +21,7 @@ pub fn my_alternative_fwrite_1(p: Ptr<u8>, n: usize, m: usize, f: AnyPtr) -> usi
     return 33_usize;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -271,3 +272,4 @@ fn main_0() -> i32 {
     }
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

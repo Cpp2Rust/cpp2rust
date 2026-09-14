@@ -26,6 +26,7 @@ pub unsafe fn func_5(mut x1: f64, mut x2: i32, mut x3: f64) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -42,3 +43,4 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

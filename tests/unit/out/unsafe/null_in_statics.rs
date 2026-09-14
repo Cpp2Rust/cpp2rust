@@ -24,6 +24,7 @@ pub static mut p_zero_7: std::cell::LazyCell<*mut i32> =
     std::cell::LazyCell::new(|| unsafe { std::ptr::null_mut() });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -51,4 +52,14 @@ unsafe fn main_0() -> i32 {
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut cp_explicit_null_6)).is_null());
     assert!((*std::cell::LazyCell::force_mut(&mut *&raw mut p_zero_7)).is_null());
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const p_mut_0);
+    std::cell::LazyCell::force(&*&raw const p_const_1);
+    std::cell::LazyCell::force(&*&raw const cp_2);
+    std::cell::LazyCell::force(&*&raw const arr_of_ptr_3);
+    std::cell::LazyCell::force(&*&raw const pp_4);
+    std::cell::LazyCell::force(&*&raw const const_arr_of_ptr_5);
+    std::cell::LazyCell::force(&*&raw const cp_explicit_null_6);
+    std::cell::LazyCell::force(&*&raw const p_zero_7);
 }

@@ -40,6 +40,7 @@ pub static mut arr_of_pointers_2: std::cell::LazyCell<[*mut libc::c_char; 3]> =
     });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -57,4 +58,9 @@ unsafe fn main_0() -> i32 {
         i.prefix_inc();
     }
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const single_entry_0);
+    std::cell::LazyCell::force(&*&raw const entries_1);
+    std::cell::LazyCell::force(&*&raw const arr_of_pointers_2);
 }

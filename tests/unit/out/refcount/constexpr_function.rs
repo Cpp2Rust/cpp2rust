@@ -52,6 +52,7 @@ impl ByteRepr for P {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -77,3 +78,4 @@ impl PImpl for Ptr<P> {
         return (*(*(*self).upgrade().deref()).v.borrow());
     }
 }
+pub fn __cpp2rust_init_globals() {}

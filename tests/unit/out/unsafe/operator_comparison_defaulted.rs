@@ -272,6 +272,7 @@ impl std::cmp::PartialEq for Secondary {
 impl std::cmp::Eq for Secondary {}
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -339,3 +340,4 @@ unsafe fn main_0() -> i32 {
     assert!(!(unsafe { Secondary::operator_lt(&s2, &s1 as *const Secondary,) }));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

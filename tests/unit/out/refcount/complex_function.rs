@@ -110,6 +110,7 @@ impl ByteRepr for X4 {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -423,3 +424,4 @@ impl X4Impl for Ptr<X4> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
 }
+pub fn __cpp2rust_init_globals() {}

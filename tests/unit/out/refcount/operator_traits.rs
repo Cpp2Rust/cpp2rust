@@ -259,6 +259,7 @@ impl ByteRepr for Wrapped_int_ {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -527,3 +528,4 @@ impl LtImpl for Ptr<Lt> {
         };
     }
 }
+pub fn __cpp2rust_init_globals() {}

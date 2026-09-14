@@ -79,6 +79,7 @@ pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -120,3 +121,4 @@ unsafe fn main_0() -> i32 {
     assert!(((chunks[(2_usize)].data) == (42)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -11,6 +11,7 @@ pub unsafe fn escape_0(mut ptr: *mut i32) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -20,3 +21,4 @@ unsafe fn main_0() -> i32 {
     ::std::mem::drop(Box::from_raw(alloc));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

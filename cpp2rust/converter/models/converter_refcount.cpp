@@ -2410,6 +2410,12 @@ void ConverterRefCount::ConvertPointerSubscript(
   }
 }
 
+std::string ConverterRefCount::ForceGlobalInit(const clang::VarDecl *decl) {
+  const auto *clone =
+      decl->getType()->isReferenceType() ? "Ptr::clone" : "Value::clone";
+  return std::format("let _ = {}.with({});", GetNamedDeclAsString(decl), clone);
+}
+
 void ConverterRefCount::ConvertFunctionMain(
     const clang::FunctionDecl *decl,
     const std::string_view main_function_name) {
@@ -2423,12 +2429,14 @@ pub fn main() {{
         argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());
+    __cpp2rust_init_globals();
     ::std::process::exit({}(::std::env::args().len() as i32,
                                 argv.as_pointer()));
 }})",
                        main_function_name));
   } else {
-    StrCat(std::format("pub fn main() {{ std::process::exit({}()); }}",
+    StrCat(std::format("pub fn main() {{ __cpp2rust_init_globals(); "
+                       "std::process::exit({}()); }}",
                        main_function_name));
   }
 }

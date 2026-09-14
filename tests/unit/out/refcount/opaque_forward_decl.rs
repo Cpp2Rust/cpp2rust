@@ -35,6 +35,7 @@ impl ByteRepr for container {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -47,3 +48,4 @@ fn main_0() -> i32 {
 }
 #[derive(Clone, Copy, Default, ByteRepr)]
 pub struct opaque;
+pub fn __cpp2rust_init_globals() {}

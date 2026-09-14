@@ -34,6 +34,7 @@ pub unsafe fn switch_in_loop_0(mut n: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -41,3 +42,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { switch_in_loop_0(6,) }) == (72)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -97,6 +97,7 @@ pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
     &(*x.upgrade().deref());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -167,4 +168,7 @@ fn main_0() -> i32 {
     ({ unused_noncopyable_param_5(g.as_pointer()) });
     assert!(((*(*(*g.borrow()).value.borrow()).as_ref().unwrap().borrow()) == 9));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = side_effect_counter_3.with(Value::clone);
 }

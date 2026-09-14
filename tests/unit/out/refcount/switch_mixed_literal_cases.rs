@@ -31,6 +31,7 @@ pub fn mixed_literal_cases_0(x: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -41,3 +42,4 @@ fn main_0() -> i32 {
     assert!((({ mixed_literal_cases_0(7,) }) == 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

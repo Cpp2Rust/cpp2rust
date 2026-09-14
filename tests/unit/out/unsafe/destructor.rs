@@ -141,6 +141,7 @@ impl Ordered {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -211,4 +212,9 @@ unsafe fn main_0() -> i32 {
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(1) as usize]) == (2)));
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut order_1))[(2) as usize]) == (1)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const global_0);
+    std::cell::LazyCell::force(&*&raw const order_1);
+    std::cell::LazyCell::force(&*&raw const order_count_2);
 }

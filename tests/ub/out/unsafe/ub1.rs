@@ -13,6 +13,7 @@ pub unsafe fn dangling_0() -> *mut i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -20,3 +21,4 @@ unsafe fn main_0() -> i32 {
     let x: *mut i32 = (unsafe { dangling_0() });
     return (*x);
 }
+pub unsafe fn __cpp2rust_init_globals() {}

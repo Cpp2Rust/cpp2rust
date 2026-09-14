@@ -83,6 +83,7 @@ pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -169,3 +170,4 @@ impl RouteImpl for Ptr<Route> {
         return (*old_cost.borrow());
     }
 }
+pub fn __cpp2rust_init_globals() {}

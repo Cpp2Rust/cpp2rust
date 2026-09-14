@@ -64,6 +64,7 @@ pub unsafe fn total_len_9(names: *mut [*const libc::c_char; 2]) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -101,3 +102,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { total_len_9(&mut names as *mut [*const libc::c_char; 2],) }) == (5)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

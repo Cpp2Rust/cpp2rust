@@ -21,6 +21,7 @@ pub static mut inner_const_1: std::cell::LazyCell<i32> = std::cell::LazyCell::ne
 pub struct S {}
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -29,4 +30,8 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { C::get(&mut c,) }) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut inner_const_1)) == (2)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const inner_const_0);
+    std::cell::LazyCell::force(&*&raw const inner_const_1);
 }

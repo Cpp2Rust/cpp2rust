@@ -71,6 +71,7 @@ pub unsafe fn test_mul_overflow_long_long_9() {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -87,3 +88,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_mul_overflow_long_long_9() });
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

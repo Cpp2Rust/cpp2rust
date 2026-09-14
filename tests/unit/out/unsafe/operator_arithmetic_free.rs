@@ -72,6 +72,7 @@ pub unsafe fn operator_add_12(mut a: i32, b: *const S) -> S {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -167,3 +168,4 @@ unsafe fn main_0() -> i32 {
     assert!((((unsafe { operator_add_12(1, &a as *const S,) }).v) == (8)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -26,6 +26,7 @@ pub static mut g_packet_1: std::cell::LazyCell<*const libc::c_char> =
     });
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -56,4 +57,7 @@ unsafe fn main_0() -> i32 {
     let mut d: i32 = ((*c"abcd".as_ptr().offset((idx) as isize)) as i32);
     assert!(((d) == (('b' as libc::c_char) as i32)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const g_packet_1);
 }

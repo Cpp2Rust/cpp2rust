@@ -46,6 +46,7 @@ pub unsafe fn nested_0(mut a: i32, mut b: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -56,3 +57,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { nested_0(3, 3,) }) == (-1_i32)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

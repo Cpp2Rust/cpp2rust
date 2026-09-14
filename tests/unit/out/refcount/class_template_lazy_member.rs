@@ -85,6 +85,7 @@ impl ByteRepr for Box_Point_ {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -117,3 +118,4 @@ impl Box_int_Impl for Ptr<Box_int_> {
             + (*(*(*self).upgrade().deref()).val.borrow()));
     }
 }
+pub fn __cpp2rust_init_globals() {}

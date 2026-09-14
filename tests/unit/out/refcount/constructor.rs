@@ -48,6 +48,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -76,4 +77,7 @@ impl SImpl for Ptr<S> {
         ({ SImpl::mut_method(self) });
         (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(self) });
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = total_0.with(Value::clone);
 }

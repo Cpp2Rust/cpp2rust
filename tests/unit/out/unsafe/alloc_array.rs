@@ -29,6 +29,7 @@ pub unsafe fn Consume_1(mut arr: Option<Box<[i32]>>, mut N: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -43,3 +44,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { Consume_1(arr.take(), N,) }) == (10)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

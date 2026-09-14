@@ -39,6 +39,7 @@ pub fn write_val_1(h: Ptr<Holder>, v: i32) {
         .borrow_mut()) = (*v.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -49,3 +50,4 @@ fn main_0() -> i32 {
     assert!((({ read_val_0((h.as_pointer()),) }) == 42));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}
