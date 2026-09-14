@@ -1,4 +1,3 @@
-// translation-fail
 #include <cassert>
 #include <utility>
 

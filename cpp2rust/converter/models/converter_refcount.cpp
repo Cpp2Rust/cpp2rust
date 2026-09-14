@@ -1053,6 +1053,16 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  if (IsMemberMemcpy(expr)) {
+    ConvertAssignment(
+        clang::cast<clang::UnaryOperator>(expr->getArg(0)->IgnoreImpCasts())
+            ->getSubExpr(),
+        clang::cast<clang::UnaryOperator>(expr->getArg(1)->IgnoreImpCasts())
+            ->getSubExpr(),
+        "=");
+    return false;
+  }
+
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {
@@ -1061,6 +1071,10 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   if (expr->isCallToStdMove()) {
     return Converter::VisitCallExpr(expr);
+  }
+
+  if (ConvertMemberAssignmentCall(expr)) {
+    return false;
   }
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
@@ -1892,15 +1906,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  // Default move is translated using a bitwise .clone() implementation.
-  // Bitwise clone is only satisfied by default copy constructor. If the copy
-  // constructor is user defined, then default move calls copy constructor,
-  // which is wrong.
-  if (IsDefaultedMoveConstructor(ctor) &&
-      !HasDefaultedCopyConstructor(ctor->getParent())) {
-    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
-                             "copy constructor is not supported");
-  }
   if (ctor->isCopyOrMoveConstructor() &&
       !IsUserDefinedCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
@@ -1916,7 +1921,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  assert(ctor->isUserProvided());
+  assert(ctor->isUserProvided() || IsUserDefinedMoveConstructor(ctor));
   if (expr->getType()->isArrayType()) {
     ConvertArrayCXXConstructExpr(expr);
   } else {
@@ -2667,7 +2672,11 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType() &&
+  auto *moved = clang::dyn_cast<clang::CallExpr>(base->IgnoreParenImpCasts());
+  bool is_moved_object =
+      moved && moved->isCallToStdMove() && moved->getArg(0)->isGLValue();
+  if (!base->isLValue() && !is_moved_object &&
+      base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =

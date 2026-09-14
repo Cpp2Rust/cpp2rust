@@ -22,6 +22,8 @@ pub fn main() {
     (*argv.borrow_mut()).push(Ptr::null());
     ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
-fn main_0(_: i32, _: Ptr<Ptr<u8>>) -> i32 {
+fn main_0(_a0: i32, _a1: Ptr<Ptr<u8>>) -> i32 {
+    let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
+    let _a1: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(_a1));
     return 0;
 }

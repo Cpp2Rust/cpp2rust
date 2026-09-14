@@ -17,6 +17,14 @@ pub struct Inner {
 pub struct Outer {
     pub inner: Option<Box<Inner>>,
 }
+impl Outer {
+    pub unsafe fn Outer_pmutOuter(_a0: *mut Outer) -> Self {
+        let mut this = Self {
+            inner: (*_a0).inner.take(),
+        };
+        this
+    }
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);

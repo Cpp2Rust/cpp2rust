@@ -82,6 +82,23 @@ pub struct MinHeap {
     pub next: Value<i32>,
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
 }
+impl MinHeap {
+    pub fn MinHeap_pmutMinHeap(_a0: Ptr<MinHeap>) -> Self {
+        let __this: Value<MinHeap> = Rc::new(RefCell::new(Self {
+            size: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).size.borrow()))),
+            capacity: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).capacity.borrow()))),
+            arr: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).arr.borrow_mut()).take(),
+            )),
+            next: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).next.borrow()))),
+            alloc: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).alloc.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<MinHeap> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for MinHeap {
     fn byte_size() -> usize {
         32

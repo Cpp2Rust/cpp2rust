@@ -527,21 +527,21 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait BothImpl {
-    fn operator_eq(&self, _arg0: Ptr<Both>) -> bool;
-    fn operator_cmp(&self, _arg0: Ptr<Both>) -> std::cmp::Ordering;
+    fn operator_eq(&self, _a0: Ptr<Both>) -> bool;
+    fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering;
 }
 impl BothImpl for Ptr<Both> {
-    fn operator_eq(&self, _arg0: Ptr<Both>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Both>) -> bool {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).a.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
         };
     }
-    fn operator_cmp(&self, _arg0: Ptr<Both>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).a.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).a.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).a.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -551,15 +551,15 @@ impl BothImpl for Ptr<Both> {
     }
 }
 pub trait CmpImpl {
-    fn operator_cmp(&self, _arg0: Ptr<Cmp>) -> std::cmp::Ordering;
-    fn operator_eq(&self, _arg0: Ptr<Cmp>) -> bool;
+    fn operator_cmp(&self, _a0: Ptr<Cmp>) -> std::cmp::Ordering;
+    fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool;
 }
 impl CmpImpl for Ptr<Cmp> {
-    fn operator_cmp(&self, _arg0: Ptr<Cmp>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<Cmp>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).a.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).a.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).a.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -568,7 +568,7 @@ impl CmpImpl for Ptr<Cmp> {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).b.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).b.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).b.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -576,40 +576,40 @@ impl CmpImpl for Ptr<Cmp> {
         }
         return std::cmp::Ordering::Equal;
     }
-    fn operator_eq(&self, _arg0: Ptr<Cmp>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool {
         return ({
             let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).a.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
         }) && ({
             let _lhs = (*(*(*self).upgrade().deref()).b.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).b.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).b.borrow())
         });
     }
 }
 pub trait EqImpl {
-    fn operator_eq(&self, _arg0: Ptr<Eq>) -> bool;
+    fn operator_eq(&self, _a0: Ptr<Eq>) -> bool;
 }
 impl EqImpl for Ptr<Eq> {
-    fn operator_eq(&self, _arg0: Ptr<Eq>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Eq>) -> bool {
         return ({
             let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).a.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
         }) && ({
             let _lhs = (*(*(*self).upgrade().deref()).b.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).b.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).b.borrow())
         });
     }
 }
 pub trait InnerImpl {
-    fn operator_cmp(&self, _arg0: Ptr<Inner>) -> std::cmp::Ordering;
-    fn operator_eq(&self, _arg0: Ptr<Inner>) -> bool;
+    fn operator_cmp(&self, _a0: Ptr<Inner>) -> std::cmp::Ordering;
+    fn operator_eq(&self, _a0: Ptr<Inner>) -> bool;
 }
 impl InnerImpl for Ptr<Inner> {
-    fn operator_cmp(&self, _arg0: Ptr<Inner>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<Inner>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).x.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).x.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).x.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -617,22 +617,22 @@ impl InnerImpl for Ptr<Inner> {
         }
         return std::cmp::Ordering::Equal;
     }
-    fn operator_eq(&self, _arg0: Ptr<Inner>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Inner>) -> bool {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).x.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).x.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).x.borrow())
         };
     }
 }
 pub trait OrdOnlyImpl {
-    fn operator_cmp(&self, _arg0: Ptr<OrdOnly>) -> std::cmp::Ordering;
+    fn operator_cmp(&self, _a0: Ptr<OrdOnly>) -> std::cmp::Ordering;
 }
 impl OrdOnlyImpl for Ptr<OrdOnly> {
-    fn operator_cmp(&self, _arg0: Ptr<OrdOnly>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<OrdOnly>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).a.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).a.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).a.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -642,15 +642,15 @@ impl OrdOnlyImpl for Ptr<OrdOnly> {
     }
 }
 pub trait OuterImpl {
-    fn operator_cmp(&self, _arg0: Ptr<Outer>) -> std::cmp::Ordering;
-    fn operator_eq(&self, _arg0: Ptr<Outer>) -> bool;
+    fn operator_cmp(&self, _a0: Ptr<Outer>) -> std::cmp::Ordering;
+    fn operator_eq(&self, _a0: Ptr<Outer>) -> bool;
 }
 impl OuterImpl for Ptr<Outer> {
-    fn operator_cmp(&self, _arg0: Ptr<Outer>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<Outer>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 ({
-                    let _arg0: Ptr<Inner> = (*_arg0.upgrade().deref()).i.as_pointer();
+                    let _arg0: Ptr<Inner> = (*_a0.upgrade().deref()).i.as_pointer();
                     InnerImpl::operator_cmp(&(*(*self).upgrade().deref()).i.as_pointer(), _arg0)
                 }),
             ));
@@ -661,7 +661,7 @@ impl OuterImpl for Ptr<Outer> {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).y.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).y.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).y.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -669,41 +669,41 @@ impl OuterImpl for Ptr<Outer> {
         }
         return std::cmp::Ordering::Equal;
     }
-    fn operator_eq(&self, _arg0: Ptr<Outer>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Outer>) -> bool {
         return ({
-            let _arg0: Ptr<Inner> = (*_arg0.upgrade().deref()).i.as_pointer();
+            let _arg0: Ptr<Inner> = (*_a0.upgrade().deref()).i.as_pointer();
             InnerImpl::operator_eq(&(*(*self).upgrade().deref()).i.as_pointer(), _arg0)
         }) && ({
             let _lhs = (*(*(*self).upgrade().deref()).y.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).y.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).y.borrow())
         });
     }
 }
 pub trait SecondaryImpl {
-    fn operator_eq(&self, _arg0: Ptr<Secondary>) -> bool;
-    fn operator_ne(&self, _arg0: Ptr<Secondary>) -> bool;
-    fn operator_cmp(&self, _arg0: Ptr<Secondary>) -> std::cmp::Ordering;
-    fn operator_lt(&self, _arg0: Ptr<Secondary>) -> bool;
-    fn operator_ge(&self, _arg0: Ptr<Secondary>) -> bool;
+    fn operator_eq(&self, _a0: Ptr<Secondary>) -> bool;
+    fn operator_ne(&self, _a0: Ptr<Secondary>) -> bool;
+    fn operator_cmp(&self, _a0: Ptr<Secondary>) -> std::cmp::Ordering;
+    fn operator_lt(&self, _a0: Ptr<Secondary>) -> bool;
+    fn operator_ge(&self, _a0: Ptr<Secondary>) -> bool;
 }
 impl SecondaryImpl for Ptr<Secondary> {
-    fn operator_eq(&self, _arg0: Ptr<Secondary>) -> bool {
+    fn operator_eq(&self, _a0: Ptr<Secondary>) -> bool {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_arg0.upgrade().deref()).a.borrow())
+            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
         };
     }
-    fn operator_ne(&self, _arg0: Ptr<Secondary>) -> bool {
+    fn operator_ne(&self, _a0: Ptr<Secondary>) -> bool {
         return !({
-            let _arg0: Ptr<Secondary> = (_arg0).clone();
+            let _arg0: Ptr<Secondary> = (_a0).clone();
             SecondaryImpl::operator_eq(&(*self), _arg0)
         });
     }
-    fn operator_cmp(&self, _arg0: Ptr<Secondary>) -> std::cmp::Ordering {
+    fn operator_cmp(&self, _a0: Ptr<Secondary>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 (*(*(*self).upgrade().deref()).a.borrow())
-                    .cmp(&(*(*_arg0.upgrade().deref()).a.borrow())),
+                    .cmp(&(*(*_a0.upgrade().deref()).a.borrow())),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -711,15 +711,15 @@ impl SecondaryImpl for Ptr<Secondary> {
         }
         return std::cmp::Ordering::Equal;
     }
-    fn operator_lt(&self, _arg0: Ptr<Secondary>) -> bool {
+    fn operator_lt(&self, _a0: Ptr<Secondary>) -> bool {
         return ({
-            let _arg0: Ptr<Secondary> = (_arg0).clone();
+            let _arg0: Ptr<Secondary> = (_a0).clone();
             SecondaryImpl::operator_cmp(&(*self), _arg0)
         }) == std::cmp::Ordering::Less;
     }
-    fn operator_ge(&self, _arg0: Ptr<Secondary>) -> bool {
+    fn operator_ge(&self, _a0: Ptr<Secondary>) -> bool {
         return ({
-            let _arg0: Ptr<Secondary> = (_arg0).clone();
+            let _arg0: Ptr<Secondary> = (_a0).clone();
             SecondaryImpl::operator_cmp(&(*self), _arg0)
         }) != std::cmp::Ordering::Less;
     }

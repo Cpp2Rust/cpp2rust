@@ -86,7 +86,8 @@ pub fn operator_inc_7(a: Ptr<S>) -> Ptr<S> {
     (*(*a.upgrade().deref()).v.borrow_mut()).prefix_inc();
     return (a).clone();
 }
-pub fn operator_post_inc_8(a: Ptr<S>, _: i32) -> S {
+pub fn operator_post_inc_8(a: Ptr<S>, _a1: i32) -> S {
+    let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
     let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
     (*(*a.upgrade().deref()).v.borrow_mut()).prefix_inc();
     return (*old.borrow()).clone();
@@ -95,7 +96,8 @@ pub fn operator_dec_9(a: Ptr<S>) -> Ptr<S> {
     (*(*a.upgrade().deref()).v.borrow_mut()).prefix_dec();
     return (a).clone();
 }
-pub fn operator_post_dec_10(a: Ptr<S>, _: i32) -> S {
+pub fn operator_post_dec_10(a: Ptr<S>, _a1: i32) -> S {
+    let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
     let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
     (*(*a.upgrade().deref()).v.borrow_mut()).prefix_dec();
     return (*old.borrow()).clone();

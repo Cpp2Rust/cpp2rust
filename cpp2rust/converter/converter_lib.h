@@ -74,7 +74,12 @@ bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
-bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+bool IsUserDefinedMoveAssignment(const clang::CXXMethodDecl *method);
+
+bool IsMemberMemcpy(const clang::CallExpr *expr);
+
+bool IsUserDefinedMoveConstructorOrAssignment(
+    const clang::CXXMethodDecl *method);
 
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);

@@ -58,18 +58,22 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    (*dest).push(
-        core::slice::from_raw_parts(
+    {
+        let __arg = core::slice::from_raw_parts(
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())
-        .collect(),
-    );
+        .collect();
+        (*dest).push(__arg)
+    };
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
-    (*(*bw).output).push(std::mem::take(&mut (*bw).chunk));
+    {
+        let __arg = std::mem::take(&mut (*bw).chunk);
+        (*(*bw).output).push(__arg)
+    };
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {

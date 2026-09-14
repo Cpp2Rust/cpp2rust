@@ -40,6 +40,17 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
+impl Outer {
+    pub fn Outer_pmutOuter(_a0: Ptr<Outer>) -> Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
+            inner: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for Outer {
     fn byte_size() -> usize {
         8
