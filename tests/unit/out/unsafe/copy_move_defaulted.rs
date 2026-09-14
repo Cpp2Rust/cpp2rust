@@ -270,7 +270,7 @@ unsafe fn main_0() -> i32 {
             && (q.data.is_empty())
     );
     let mut bufs: Vec<Buffer> = Vec::new();
-    bufs.push(std::mem::take(&mut r));
+    bufs.push(Buffer::Buffer_pmutBuffer({ &mut r }));
     {
         let __arg = Buffer::Buffer_pmutBuffer({ &mut bufs[(0_usize)] });
         bufs.push(__arg)

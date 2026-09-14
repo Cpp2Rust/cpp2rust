@@ -480,7 +480,7 @@ fn main_0() -> i32 {
             && ((*(*q.borrow()).data.borrow()).is_empty())
     );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
-    (*bufs.borrow_mut()).push(std::mem::take(&mut (*r.borrow_mut())));
+    (*bufs.borrow_mut()).push(Buffer::Buffer_pmutBuffer({ r.as_pointer() }));
     {
         let __arg =
             Buffer::Buffer_pmutBuffer({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });

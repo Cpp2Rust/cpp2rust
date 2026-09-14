@@ -994,6 +994,20 @@ clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr) {
       {});
 }
 
+clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
+                                           clang::QualType type,
+                                           clang::CXXConstructorDecl *ctor,
+                                           llvm::ArrayRef<clang::Expr *> args) {
+  return clang::CXXConstructExpr::Create(
+      ctx, type, clang::SourceLocation(), ctor,
+      /*Elidable=*/false, args,
+      /*HadMultipleCandidates=*/false,
+      /*ListInitialization=*/false,
+      /*StdInitListInitialization=*/false,
+      /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
+      clang::SourceRange());
+}
+
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl) {
   std::vector<clang::CXXRecordDecl *> nested_record_decls;

@@ -4411,15 +4411,8 @@ void Converter::AddDefaultTrait(const clang::RecordDecl *decl) {
     if (auto *default_ctor = GetUserDefinedDefaultConstructor(cxx)) {
       StrCat(keyword_unsafe_);
       PushBrace unsafe_brace(*this);
-      Convert(clang::CXXConstructExpr::Create(
-          ctx_, ctx_.getCanonicalTagType(decl), clang::SourceLocation(),
-          default_ctor,
-          /*Elidable=*/false, llvm::ArrayRef<clang::Expr *>(),
-          /*HadMultipleCandidates=*/false,
-          /*ListInitialization=*/false,
-          /*StdInitListInitialization=*/false,
-          /*ZeroInitialization=*/false, clang::CXXConstructionKind::Complete,
-          clang::SourceRange()));
+      Convert(MakeConstructExpr(ctx_, ctx_.getCanonicalTagType(decl),
+                                default_ctor, {}));
       return;
     }
   }
@@ -4650,6 +4643,21 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (ph_ctx.access == TranslationRule::Access::kMove) {
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
+    }
+    if (auto *record = arg->getType()->getAsCXXRecordDecl();
+        record && IsUserDefinedDecl(record)) {
+      for (auto *ctor : record->ctors()) {
+        if (!IsConvertibleMoveConstructor(ctor)) {
+          continue;
+        }
+        Buffer buf(*this);
+        Convert(MakeConstructExpr(ctx_, arg->getType(), ctor, arg));
+        return std::move(buf).str();
+      }
+      if (TypeIsCopyable(arg->getType())) {
+        return ConvertRValue(arg);
+      }
+      return ConvertFreshRValue(arg);
     }
     return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
   }
