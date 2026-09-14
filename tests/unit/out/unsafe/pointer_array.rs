@@ -39,7 +39,7 @@ unsafe fn main_0() -> i32 {
             (&mut x as *mut i32),
         ],
     };
-    (unsafe { IncrementAll_0(&mut s as *mut StackArray) });
+    (unsafe { IncrementAll_0(&mut s) });
     assert!(((x) == (3)));
     return 0;
 }

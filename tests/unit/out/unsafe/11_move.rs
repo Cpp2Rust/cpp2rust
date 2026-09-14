@@ -22,7 +22,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut n: Option<Box<i32>> = Some(Box::new(10));
-    (unsafe { change_0(&mut n as *mut Option<Box<i32>>) });
+    (unsafe { change_0(&mut n) });
     assert!(((*n.as_deref_mut().unwrap()) == (20)));
     return 0;
 }

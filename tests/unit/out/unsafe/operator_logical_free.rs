@@ -30,39 +30,39 @@ unsafe fn main_0() -> i32 {
     let mut f: S = S { v: 0 };
     assert!(
         (unsafe {
-            let _a: *const S = &f as *const S;
+            let _a: *const S = &f;
             operator_not_0(_a)
         })
     );
     assert!(
         !(unsafe {
-            let _a: *const S = &t as *const S;
+            let _a: *const S = &t;
             operator_not_0(_a)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &t as *const S;
-            let _b: *const S = &t as *const S;
+            let _a: *const S = &t;
+            let _b: *const S = &t;
             operator_and_1(_a, _b)
         })
     );
     assert!(
         !(unsafe {
-            let _a: *const S = &t as *const S;
-            operator_and_1(_a, &f as *const S)
+            let _a: *const S = &t;
+            operator_and_1(_a, &f)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &t as *const S;
-            operator_or_2(_a, &f as *const S)
+            let _a: *const S = &t;
+            operator_or_2(_a, &f)
         })
     );
     assert!(
         !(unsafe {
-            let _a: *const S = &f as *const S;
-            let _b: *const S = &f as *const S;
+            let _a: *const S = &f;
+            let _b: *const S = &f;
             operator_or_2(_a, _b)
         })
     );

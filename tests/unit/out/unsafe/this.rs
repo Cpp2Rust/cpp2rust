@@ -43,14 +43,14 @@ impl S {
         this
     }
     pub unsafe fn returns_this_reference(&mut self) -> *mut S {
-        return &mut (*(self as *mut S)) as *mut S;
+        return &mut (*(self as *mut S));
     }
     pub unsafe fn returns_this_pointer(&mut self) -> *mut S {
         return (self as *mut S);
     }
     pub unsafe fn inc(&mut self) -> *mut S {
         self.a_.postfix_inc();
-        return &mut (*(self as *mut S)) as *mut S;
+        return &mut (*(self as *mut S));
     }
     pub unsafe fn set_from_this(&mut self) {
         self.a_ = ((self.a_) + (1));
@@ -68,7 +68,7 @@ impl S {
         (unsafe { bump_0((self as *mut S)) });
     }
     pub unsafe fn cref(&self) -> *const S {
-        return &(*(self as *const S)) as *const S;
+        return &(*(self as *const S));
     }
     pub unsafe fn is(&self, mut o: *const S) -> bool {
         return ((o) == (self as *const S));

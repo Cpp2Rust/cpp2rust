@@ -64,7 +64,7 @@ impl Buffer {
     }
     pub unsafe fn operator_assign_pconstBuffer(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
-            return &mut (*(self as *mut Buffer)) as *mut Buffer;
+            return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
         let mut i: i32 = 0;
@@ -73,11 +73,11 @@ impl Buffer {
             i.prefix_inc();
         }
         copies_1.prefix_inc();
-        return &mut (*(self as *mut Buffer)) as *mut Buffer;
+        return &mut (*(self as *mut Buffer));
     }
     pub unsafe fn operator_assign_pmutBuffer(&mut self, o: *mut Buffer) -> *mut Buffer {
         if ((self as *mut Buffer) == (o)) {
-            return &mut (*(self as *mut Buffer)) as *mut Buffer;
+            return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
         let mut i: i32 = 0;
@@ -88,7 +88,7 @@ impl Buffer {
         }
         (*o).size = 0;
         moves_2.prefix_inc();
-        return &mut (*(self as *mut Buffer)) as *mut Buffer;
+        return &mut (*(self as *mut Buffer));
     }
 }
 impl Clone for Buffer {
@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::Buffer({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
-        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a as *const Buffer });
+        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
         assert!((((alive_0) == (2)) && ((copies_1) == (1))) && ((moves_2) == (0)));
         b.data[(0) as usize] = 100;
@@ -131,7 +131,7 @@ unsafe fn main_0() -> i32 {
         let mut d: Buffer = (unsafe { make_3(2) });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
         assert!(((d.size) == (2)) && ((moves_2) == (2)));
-        (unsafe { Buffer::operator_assign_pconstBuffer(&mut d, &b as *const Buffer) });
+        (unsafe { Buffer::operator_assign_pconstBuffer(&mut d, &b) });
         assert!((((d.size) == (4)) && ((d.data[(0) as usize]) == (100))) && ((copies_1) == (2)));
         (unsafe { Buffer::operator_assign_pmutBuffer(&mut d, &mut c) });
         assert!((((d.data[(0) as usize]) == (0)) && ((c.size) == (0))) && ((moves_2) == (3)));

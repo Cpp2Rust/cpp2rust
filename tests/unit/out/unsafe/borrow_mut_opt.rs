@@ -32,7 +32,7 @@ pub unsafe fn convert_without_rhs_0() {
     c = arr2[(*p1) as usize];
     let mut p2: *mut i32 = (&mut x as *mut i32);
     (*p2) = 1;
-    let r: *mut i32 = &mut x as *mut i32;
+    let r: *mut i32 = &mut x;
     (*r) = 1;
 }
 pub unsafe fn convert_with_rhs_1() {
@@ -44,7 +44,7 @@ pub unsafe fn convert_with_rhs_1() {
     arr[(y) as usize] = ((y) + (1));
     arr[(x) as usize] = ((x) + (1));
     arr[(x) as usize] = ((arr[(y) as usize]) + (1));
-    let z: *mut i32 = &mut x as *mut i32;
+    let z: *mut i32 = &mut x;
     x += (*z);
     y += (*z);
     let mut p: *mut i32 = (&mut x as *mut i32);

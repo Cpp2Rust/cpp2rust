@@ -35,7 +35,7 @@ unsafe fn main_0() -> i32 {
                 .unwrap()
                 .into_raw_fd(),
         )
-    } as *mut std::fs::File;
+    };
     write!((*os2), "hello\n",);
     return 0;
 }
