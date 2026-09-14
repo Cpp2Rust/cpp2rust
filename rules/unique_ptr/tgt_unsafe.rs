@@ -53,3 +53,19 @@ unsafe fn f10<T1: Default>() -> Option<Box<T1>> {
 unsafe fn f11<T1>() -> Option<Box<[T1]>> {
     None
 }
+
+unsafe fn f12<T1>(a0: &mut Option<Box<T1>>) -> Option<Box<T1>> {
+    a0.take()
+}
+
+unsafe fn f13<T1>(a0: &mut Option<Box<[T1]>>) -> Option<Box<[T1]>> {
+    a0.take()
+}
+
+unsafe fn f14<T1>(a0: &mut Option<Box<T1>>, a1: &mut Option<Box<T1>>) {
+    *a0 = a1.take()
+}
+
+unsafe fn f15<T1>(a0: &mut Option<Box<[T1]>>, a1: &mut Option<Box<[T1]>>) {
+    *a0 = a1.take()
+}

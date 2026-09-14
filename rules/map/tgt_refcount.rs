@@ -139,3 +139,15 @@ fn f22<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> V
 fn f23<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T2> {
     a0.second()
 }
+
+fn f24<T1: 'static, T2: 'static>(a0: Ptr<BTreeMap<T1, Value<T2>>>) -> BTreeMap<T1, Value<T2>> {
+    a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| std::mem::take(__v))
+}
+
+fn f25<T1: 'static, T2: 'static>(
+    a0: Ptr<BTreeMap<T1, Value<T2>>>,
+    a1: Ptr<BTreeMap<T1, Value<T2>>>,
+) {
+    let __src = a1.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| std::mem::take(__v));
+    a0.write(__src)
+}
