@@ -45,3 +45,18 @@ template <class T1, class T2> auto f10(T1 &&a0, T2 &&a1) {
 template <typename T1, typename T2> T1 &f11(std::pair<T1, T2> &a0) {
   return a0.first;
 }
+
+template <typename T1, typename T2>
+std::pair<T1, T2> f12(std::pair<T1, T2> &&a0) {
+  return std::pair<T1, T2>(std::move(a0));
+}
+
+template <typename T1, typename T2>
+std::pair<T1, T2> &f13(std::pair<T1, T2> &dst, const std::pair<T1, T2> &src) {
+  return dst.operator=(src);
+}
+
+template <typename T1, typename T2>
+std::pair<T1, T2> &f14(std::pair<T1, T2> &dst, std::pair<T1, T2> &&src) {
+  return dst.operator=(std::move(src));
+}

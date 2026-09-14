@@ -1726,28 +1726,6 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
   }
 }
 
-bool Converter::ConvertMemberAssignmentCall(clang::CallExpr *expr) {
-  auto *member_call = clang::dyn_cast<clang::CXXMemberCallExpr>(expr);
-  if (!member_call) {
-    return false;
-  }
-  auto *callee = member_call->getMethodDecl();
-  if (!callee || (!callee->isCopyAssignmentOperator() &&
-                  !callee->isMoveAssignmentOperator())) {
-    return false;
-  }
-  auto *object = member_call->getImplicitObjectArgument();
-  if (clang::isa<clang::CXXThisExpr>(object->IgnoreParenImpCasts())) {
-    return true;
-  }
-  if (IsUserDefinedDecl(callee->getParent()) ||
-      Mapper::Contains(member_call->getCallee())) {
-    return false;
-  }
-  ConvertAssignment(object, member_call->getArg(0), "=");
-  return true;
-}
-
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
@@ -1767,10 +1745,6 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {
-    return false;
-  }
-
-  if (ConvertMemberAssignmentCall(expr)) {
     return false;
   }
 

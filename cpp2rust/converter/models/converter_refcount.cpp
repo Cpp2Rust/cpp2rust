@@ -1073,10 +1073,6 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return Converter::VisitCallExpr(expr);
   }
 
-  if (ConvertMemberAssignmentCall(expr)) {
-    return false;
-  }
-
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
       opcall && !IsUserOperatorCall(opcall) &&
       !Mapper::Contains(expr->getCallee())) {

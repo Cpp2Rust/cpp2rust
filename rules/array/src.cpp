@@ -29,3 +29,13 @@ template <typename T1, std::size_t T2>
 std::array<T1, T2> &f5(std::array<T1, T2> &dst, std::array<T1, T2> &&src) {
   return dst.operator=(std::move(src));
 }
+
+template <typename T1, std::size_t T2>
+std::array<T1, T2> f6(const std::array<T1, T2> &o) {
+  return std::array<T1, T2>(o);
+}
+
+template <typename T1, std::size_t T2>
+std::array<T1, T2> &f7(std::array<T1, T2> &dst, const std::array<T1, T2> &src) {
+  return dst.operator=(src);
+}

@@ -26,20 +26,18 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
         left: (*a).left,
         right: (*a).right,
     };
-    (*a) = (MinHeapNode {
+    (*a) = MinHeapNode {
         data: (*b).data,
         freq: (*b).freq,
         left: (*b).left,
         right: (*b).right,
-    })
-    .clone();
-    (*b) = (MinHeapNode {
+    };
+    (*b) = MinHeapNode {
         data: t.data,
         freq: t.freq,
         left: t.left,
         right: t.right,
-    })
-    .clone();
+    };
 }
 #[repr(C)]
 #[derive(Default)]
@@ -128,6 +126,16 @@ impl MinHeap {
             (unsafe { MinHeap::Heapify(self, i) });
             i.prefix_dec();
         }
+    }
+    pub unsafe fn MinHeap_pmutMinHeap(_a0: *mut MinHeap) -> Self {
+        let mut this = Self {
+            size: (*_a0).size,
+            capacity: (*_a0).capacity,
+            arr: (*_a0).arr.take(),
+            next: (*_a0).next,
+            alloc: (*_a0).alloc.take(),
+        };
+        this
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {

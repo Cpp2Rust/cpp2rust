@@ -126,3 +126,8 @@ template <typename T1, typename T2>
 std::map<T1, T2> &f25(std::map<T1, T2> &dst, std::map<T1, T2> &&src) {
   return dst.operator=(std::move(src));
 }
+
+template <typename T1, typename T2>
+std::map<T1, T2> &f26(std::map<T1, T2> &dst, const std::map<T1, T2> &src) {
+  return dst.operator=(src);
+}

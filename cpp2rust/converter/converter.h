@@ -333,7 +333,6 @@ public:
 
   void DefineImplicitMembers(clang::CXXRecordDecl *decl);
 
-  bool ConvertMemberAssignmentCall(clang::CallExpr *expr);
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
