@@ -4617,9 +4617,6 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     }
     if (auto *record = arg->getType()->getAsCXXRecordDecl();
         record && IsUserDefinedDecl(record)) {
-      if (TypeIsCopyable(arg->getType())) {
-        return ConvertRValue(arg);
-      }
       for (auto *ctor : record->ctors()) {
         if (!IsUserDefinedMoveConstructor(ctor)) {
           continue;
@@ -4627,6 +4624,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
         Buffer buf(*this);
         Convert(MakeConstructExpr(ctx_, arg->getType(), ctor, arg));
         return std::move(buf).str();
+      }
+      if (TypeIsCopyable(arg->getType())) {
+        return ConvertRValue(arg);
       }
       return ConvertFreshRValue(arg);
     }
