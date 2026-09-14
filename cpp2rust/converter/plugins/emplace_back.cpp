@@ -190,9 +190,10 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
   }
 
   auto *obj = GetCallObject(member_call);
-  bool hoist = std::any_of(
-      call->arg_begin(), call->arg_end(),
-      [obj](auto *call_arg) { return MayCauseBorrowMutError(obj, call_arg); });
+  bool hoist =
+      std::any_of(call->arg_begin(), call->arg_end(), [obj](auto *call_arg) {
+        return MayCauseBorrowMutError(obj, call_arg);
+      });
   PushBrace brace(*this, hoist);
   if (hoist) {
     StrCat("let __arg = ", arg, ";");

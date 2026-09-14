@@ -204,8 +204,8 @@ unsafe fn main_0() -> i32 {
     let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, Explicit::destructor);
     let mut f: Explicit = Explicit::Explicit({ 3 });
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, Explicit::destructor);
-    e = b;
-    f = c;
+    e = (b).clone();
+    f = (c).clone();
     assert!(
         (unsafe { same_0(&e as *const Explicit, &b as *const Explicit,) })
             && (unsafe { same_0(&f as *const Explicit, &c as *const Explicit,) })
@@ -213,8 +213,8 @@ unsafe fn main_0() -> i32 {
     let mut g: Explicit = Explicit::Explicit({ 4 });
     let _dtor_g = ScopedDestructorUnsafe::new(&raw mut g, Explicit::destructor);
     g = {
-        e = f;
-        e
+        e = (f).clone();
+        (e).clone()
     };
     assert!(
         (unsafe { same_0(&g as *const Explicit, &f as *const Explicit,) })
@@ -285,9 +285,10 @@ unsafe fn main_0() -> i32 {
     );
     let mut bufs: Vec<Buffer> = Vec::new();
     bufs.push(std::mem::take(&mut r));
-    bufs.push(std::mem::take(&mut Buffer::Buffer_pmutBuffer({
-        &mut bufs[(0_usize)]
-    })));
+    {
+        let __arg = Buffer::Buffer_pmutBuffer({ &mut bufs[(0_usize)] });
+        bufs.push(__arg)
+    };
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))
             && (bufs[(0_usize)].data.is_empty())

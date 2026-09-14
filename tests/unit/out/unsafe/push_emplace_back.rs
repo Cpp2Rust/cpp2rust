@@ -69,7 +69,10 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     );
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
-    (*(*bw).output).push(std::mem::take(&mut (*bw).chunk));
+    {
+        let __arg = std::mem::take(&mut (*bw).chunk);
+        (*(*bw).output).push(__arg)
+    };
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {

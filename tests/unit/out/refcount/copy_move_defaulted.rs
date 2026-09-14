@@ -481,11 +481,12 @@ fn main_0() -> i32 {
     );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
     (*bufs.borrow_mut()).push(std::mem::take(&mut (*r.borrow_mut())));
-    bufs.as_pointer().with_mut(|__v: &mut Vec<Buffer>| {
-        __v.push(std::mem::take(&mut Buffer::Buffer_pmutBuffer({
-            (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize)
-        })))
-    });
+    {
+        let __arg =
+            Buffer::Buffer_pmutBuffer({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
+        bufs.as_pointer()
+            .with_mut(|__v: &mut Vec<Buffer>| __v.push(__arg))
+    };
     assert!(
         (((*(*(bufs.as_pointer() as Ptr<Buffer>)
             .offset(1_usize)
