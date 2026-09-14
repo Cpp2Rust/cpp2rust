@@ -155,26 +155,40 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
     assert!(((((extra) == (((0) + (1)) + (2))) as i32) != 0));
-    assert!(((((global_color_0 as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
-    assert!(((((global_opt_1 as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
-    assert!(((((global_tag_2 as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
+    assert!((((((*&raw mut global_color_0) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
+    assert!((((((*&raw mut global_opt_1) as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
     assert!(
-        ((((entries_3[(0) as usize].color as u32) == ((Color_RED as i32) as u32)) as i32) != 0)
+        (((((*&raw mut global_tag_2) as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0)
     );
     assert!(
-        ((((entries_3[(0) as usize].opt as u32) == ((Option_OPT_NONE as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(0) as usize].color as u32) == ((Color_RED as i32) as u32))
+            as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(1) as usize].color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(0) as usize].opt as u32) == ((Option_OPT_NONE as i32) as u32))
+            as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(1) as usize].opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(1) as usize].color as u32) == ((Color_GREEN as i32) as u32))
+            as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(2) as usize].color as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(1) as usize].opt as u32) == ((Option_OPT_A as i32) as u32))
+            as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(2) as usize].opt as u32) == ((Option_OPT_C as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(2) as usize].color as u32) == ((Color_BLUE as i32) as u32))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((*&raw mut entries_3)[(2) as usize].opt as u32) == ((Option_OPT_C as i32) as u32))
+            as i32)
+            != 0)
     );
     let mut names: [*const libc::c_char; 3] = [
         (c"red".as_ptr().cast_mut()).cast_const(),
@@ -186,16 +200,18 @@ unsafe fn main_0() -> i32 {
         (((((*names[(idx) as usize].offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0)
     );
     assert!(
-        ((((entries_3[(idx) as usize].opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0)
+        (((((*&raw mut entries_3)[(idx) as usize].opt as u32) == ((Option_OPT_A as i32) as u32))
+            as i32)
+            != 0)
     );
     assert!(
-        (((((*names[(global_tag_2) as usize].offset((0) as isize)) as i32) == ('b' as i32))
-            as i32)
+        (((((*names[(*&raw mut global_tag_2) as usize].offset((0) as isize)) as i32)
+            == ('b' as i32)) as i32)
             != 0)
     );
     let mut pp: *mut *const libc::c_char = (&mut names[(idx) as usize] as *mut *const libc::c_char);
     assert!((((((*(*pp).offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0));
-    let mut pe: *mut Entry = (&mut entries_3[(idx) as usize] as *mut Entry);
+    let mut pe: *mut Entry = (&mut (*&raw mut entries_3)[(idx) as usize] as *mut Entry);
     assert!((((((*pe).opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     return 0;
 }

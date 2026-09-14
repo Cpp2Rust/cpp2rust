@@ -40,7 +40,7 @@ unsafe fn main_0() -> i32 {
             2_u32,
         )
     });
-    let mut b: i32 = (unsafe { sum_bytes_0(g_packet_1, 2_u32) });
+    let mut b: i32 = (unsafe { sum_bytes_0((*&raw mut g_packet_1), 2_u32) });
     assert!(((a) == (b)));
     assert!(((a) == (1)));
     let mut c: i32 = (((*c"\r\n.\r\n".as_ptr().offset((0) as isize)) as i32)

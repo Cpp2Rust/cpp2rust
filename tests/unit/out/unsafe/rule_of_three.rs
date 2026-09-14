@@ -25,11 +25,11 @@ impl Buffer {
             this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
             i.prefix_inc();
         }
-        alive_0.prefix_inc();
+        (*&raw mut alive_0).prefix_inc();
         this
     }
     pub unsafe fn destructor(&mut self) {
-        alive_0.prefix_dec();
+        (*&raw mut alive_0).prefix_dec();
     }
     pub unsafe fn Buffer_pconstBuffer(o: *const Buffer) -> Self {
         let mut this = Self {
@@ -41,8 +41,8 @@ impl Buffer {
             this.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
-        alive_0.prefix_inc();
-        copies_1.prefix_inc();
+        (*&raw mut alive_0).prefix_inc();
+        (*&raw mut copies_1).prefix_inc();
         this
     }
     pub unsafe fn operator_assign(&mut self, o: *const Buffer) -> *mut Buffer {
@@ -55,7 +55,7 @@ impl Buffer {
             self.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
-        copies_1.prefix_inc();
+        (*&raw mut copies_1).prefix_inc();
         return &mut (*(self as *mut Buffer)) as *mut Buffer;
     }
 }
@@ -92,29 +92,29 @@ unsafe fn main_0() -> i32 {
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
         let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a as *const Buffer });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
-        assert!(((alive_0) == (2)) && ((copies_1) == (1)));
+        assert!(((*&raw mut alive_0) == (2)) && ((*&raw mut copies_1) == (1)));
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = Buffer::Buffer({ 2 });
         let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
         (unsafe { Buffer::operator_assign(&mut c, &a as *const Buffer) });
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
-        assert!(((alive_0) == (3)) && ((copies_1) == (2)));
+        assert!(((*&raw mut alive_0) == (3)) && ((*&raw mut copies_1) == (2)));
         (unsafe {
             let _o: *const Buffer = &c as *const Buffer;
             Buffer::operator_assign(&mut c, _o)
         });
-        assert!(((copies_1) == (2)));
+        assert!(((*&raw mut copies_1) == (2)));
         assert!(((unsafe { sum_2(&a as *const Buffer,) }) == (6)));
         assert!(((unsafe { sum_2(&b as *const Buffer,) }) == (106)));
         let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &mut a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
-        assert!(((alive_0) == (4)) && ((copies_1) == (3)));
+        assert!(((*&raw mut alive_0) == (4)) && ((*&raw mut copies_1) == (3)));
         assert!(((a.size) == (4)) && ((a.data[(3) as usize]) == (3)));
         (unsafe { Buffer::operator_assign(&mut d, &mut b) });
-        assert!(((copies_1) == (4)));
+        assert!(((*&raw mut copies_1) == (4)));
         assert!(((b.data[(0) as usize]) == (100)) && ((d.data[(0) as usize]) == (100)));
     }
-    assert!(((alive_0) == (0)));
+    assert!(((*&raw mut alive_0) == (0)));
     return 0;
 }

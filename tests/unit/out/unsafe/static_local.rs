@@ -12,8 +12,8 @@ pub unsafe fn foo_0() -> i32 {
     static mut static_b_3: bool = unsafe { false };;
     static mut kX1_4: i32 = unsafe { 1 };;
     static mut kX2_5: i32 = unsafe { 2 };;
-    kX1_4 += 1;
-    return (((kX1_4) + (kX2_5)) + (static_i_1));
+    (*&raw mut kX1_4) += 1;
+    return (((*&raw mut kX1_4) + (*&raw mut kX2_5)) + (*&raw mut static_i_1));
 }
 pub fn main() {
     unsafe {

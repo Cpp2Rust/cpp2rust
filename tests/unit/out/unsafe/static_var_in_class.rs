@@ -12,7 +12,7 @@ static mut inner_const_0: i32 = unsafe { 1 };
 pub struct C {}
 impl C {
     pub unsafe fn get(&mut self) -> i32 {
-        return inner_const_0;
+        return (*&raw mut inner_const_0);
     }
 }
 pub static mut inner_const_1: i32 = unsafe { 2 };
@@ -27,6 +27,6 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: C = <C>::default();
     assert!(((unsafe { C::get(&mut c,) }) == (1)));
-    assert!(((inner_const_1) == (2)));
+    assert!(((*&raw mut inner_const_1) == (2)));
     return 0;
 }

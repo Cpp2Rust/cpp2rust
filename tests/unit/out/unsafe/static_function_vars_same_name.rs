@@ -8,11 +8,11 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn a_0() -> i32 {
     static mut i_1: i32 = unsafe { 1 };;
-    return i_1;
+    return (*&raw mut i_1);
 }
 pub unsafe fn b_2() -> i32 {
     static mut i_3: i32 = unsafe { 2 };;
-    return i_3;
+    return (*&raw mut i_3);
 }
 pub fn main() {
     unsafe {

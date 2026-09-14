@@ -12,7 +12,7 @@ pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
 pub static mut side_effect_0: i32 = unsafe { 0 };
 pub unsafe fn observe_1(mut v: i32) -> i32 {
-    side_effect_0.prefix_inc();
+    (*&raw mut side_effect_0).prefix_inc();
     return v;
 }
 pub unsafe fn returns_one_2() -> i32 {
@@ -49,15 +49,15 @@ unsafe fn main_0() -> i32 {
     if (((n != 0) && (u != 0)) && (!(p).is_null())) && ((code as i32) == (Code_CODE_OK as i32)) {
         assert!(true);
     }
-    side_effect_0 = 0;
+    (*&raw mut side_effect_0) = 0;
     if (zero != 0) && ((unsafe { observe_1(1) }) != 0) {
         assert!(false);
     }
-    assert!(((side_effect_0) == (0)));
+    assert!(((*&raw mut side_effect_0) == (0)));
     if (n != 0) || ((unsafe { observe_1(1) }) != 0) {
         assert!(true);
     }
-    assert!(((side_effect_0) == (0)));
+    assert!(((*&raw mut side_effect_0) == (0)));
     let mut x: i32 = 5;
     let mut y: i32 = 3;
     let mut flags: u32 = 2_u32;

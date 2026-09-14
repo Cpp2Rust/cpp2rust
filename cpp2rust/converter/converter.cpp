@@ -30,6 +30,20 @@ std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
 
+// `static mut` globals cannot have a `&`/`&mut` reference formed directly to
+// them in Rust 2024 edition. Wrapping the variable in a `&raw mut` pointer
+// followed by a deref sidesteps the restriction.
+// Doesn't apply when a rule replaced the expression with custom Rust code.
+static std::string WrapMutableStaticPlace(const clang::Decl *decl0,
+                                          std::string str) {
+  auto decl = clang::dyn_cast<clang::VarDecl>(decl0);
+  if (decl && IsGlobalVar(decl) && !decl->getType()->isReferenceType() &&
+      str == GetNamedDeclAsString(decl)) {
+    return std::format("(*&raw mut {})", str);
+  }
+  return str;
+}
+
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
   PushParen paren(*this, is_star);
@@ -272,7 +286,8 @@ Converter::MaterializeTemp(const std::string &binding_name,
 
   auto binding =
       std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
-  auto ref = std::format("& mut {}", binding_name);
+  auto ref = in_const_initializer_ ? std::format("&raw mut {}", binding_name)
+                                   : std::format("& mut {}", binding_name);
   return {binding, ref};
 }
 
@@ -2869,6 +2884,8 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   auto str = ConvertDeclRefExpr(expr);
   auto decl = expr->getDecl();
+
+  str = WrapMutableStaticPlace(decl, std::move(str));
 
   if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {

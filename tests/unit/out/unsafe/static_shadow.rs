@@ -15,7 +15,7 @@ pub unsafe fn local_shadow_2() -> i32 {
     return value;
 }
 pub unsafe fn read_global_3() -> i32 {
-    return value_0;
+    return (*&raw mut value_0);
 }
 pub fn main() {
     unsafe {
