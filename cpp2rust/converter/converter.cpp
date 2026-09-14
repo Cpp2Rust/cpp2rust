@@ -1513,24 +1513,6 @@ const clang::Expr *Converter::GetParentExpr(const clang::Expr *expr) {
   return nullptr;
 }
 
-bool Converter::IsSubExprOf(const clang::Expr *sub_expr,
-                            const clang::Expr *parent_expr) {
-  if (sub_expr == nullptr || parent_expr == nullptr)
-    return false;
-
-  if (parent_expr == sub_expr)
-    return true;
-
-  for (auto *child : parent_expr->children()) {
-    if (auto *child_expr = llvm::dyn_cast<clang::Expr>(child)) {
-      if (IsSubExprOf(sub_expr, child_expr))
-        return true;
-    }
-  }
-
-  return false;
-}
-
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
