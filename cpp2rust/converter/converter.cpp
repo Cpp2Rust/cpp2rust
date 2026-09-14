@@ -253,6 +253,7 @@ Converter::ConvertRValue(clang::Expr *expr,
 std::string Converter::ConvertFreshRValue(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
   auto str = ConvertRValue(expr, implicit_convert_to);
+  // TODO: set freshness correctly to avoid stale computed_expr_type_
   if (expr->isGLValue()) {
     SetValueFreshness(expr->getType());
   }
