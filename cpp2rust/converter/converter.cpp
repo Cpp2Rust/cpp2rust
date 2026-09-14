@@ -34,8 +34,9 @@ std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
 // them in Rust 2024 edition. Wrapping the variable in a `&raw mut` pointer
 // followed by a deref sidesteps the restriction.
 // Doesn't apply when a rule replaced the expression with custom Rust code.
-static std::string WrapMutableStaticPlace(const clang::Decl *decl, std::string str) {
-  auto decl = clang::dyn_cast<clang::VarDecl>(decl);
+static std::string WrapMutableStaticPlace(const clang::Decl *decl0,
+                                          std::string str) {
+  auto decl = clang::dyn_cast<clang::VarDecl>(decl0);
   if (decl && IsGlobalVar(decl) && !decl->getType()->isReferenceType() &&
       str == GetNamedDeclAsString(decl)) {
     return std::format("(*&raw mut {})", str);
