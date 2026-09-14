@@ -527,3 +527,12 @@ template <typename T1, typename T2 = std::allocator<T1>>
 void f106(std::vector<T1, T2> &o) {
   return o.shrink_to_fit();
 }
+
+template <typename T1> std::vector<T1> f107(std::vector<T1> &&o) {
+  return std::vector<T1>(std::move(o));
+}
+
+template <typename T1, typename T2 = std::allocator<T1>>
+std::vector<T1, T2> f108(std::vector<T1, T2> &&o) {
+  return std::vector<T1, T2>(std::move(o));
+}

@@ -18,3 +18,11 @@ unsafe fn f2<T1>(a0: Vec<T1>) -> usize {
 unsafe fn f3<T1>(a0: &mut Vec<T1>) -> *mut T1 {
     a0.as_mut_ptr()
 }
+
+unsafe fn f4<T1>(a0: &mut Vec<T1>) -> Vec<T1> {
+    std::mem::take(&mut *a0)
+}
+
+unsafe fn f5<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
+    *a0 = std::mem::take(&mut *a1)
+}

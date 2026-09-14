@@ -21,9 +21,8 @@ fn main_0() -> i32 {
     (*f_ptr1.borrow()).write(10);
     let f_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*f.borrow()).as_pointer())));
     (*f_ptr2.borrow()).write(11);
-    (*f.borrow_mut()) = Some(Rc::new(RefCell::new(9)));
-    let __rhs = ({ fn_0((*f.borrow_mut()).take()) });
-    (*f.borrow_mut()) = __rhs;
+    (f.as_pointer() as Ptr<Option<Value<i32>>>).write(Some(Rc::new(RefCell::new(9))).take());
+    (f.as_pointer() as Ptr<Option<Value<i32>>>).write(({ fn_0((*f.borrow_mut()).take()) }).take());
     assert!(((*(*f.borrow()).as_ref().unwrap().borrow()) == 10));
     return 0;
 }

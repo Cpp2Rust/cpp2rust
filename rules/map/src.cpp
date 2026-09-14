@@ -117,3 +117,12 @@ template <typename T1, typename T2>
 T2 &f23(typename std::map<T1, T2>::iterator it) {
   return it->second;
 }
+
+template <typename T1, typename T2> std::map<T1, T2> f24(std::map<T1, T2> &&o) {
+  return std::map<T1, T2>(std::move(o));
+}
+
+template <typename T1, typename T2>
+std::map<T1, T2> &f25(std::map<T1, T2> &dst, std::map<T1, T2> &&src) {
+  return dst.operator=(std::move(src));
+}

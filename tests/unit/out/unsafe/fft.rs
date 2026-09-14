@@ -44,7 +44,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
             re: (*a).as_mut().unwrap()[(0_usize)].re,
             img: (*a).as_mut().unwrap()[(0_usize)].img,
         };
-        return y;
+        return y.take();
     }
     let mut w: Option<Box<[Complex]>> = Some(
         (0..(N as usize))
@@ -120,7 +120,7 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
         };
         k.postfix_inc();
     }
-    return y;
+    return y.take();
 }
 pub fn main() {
     unsafe {
