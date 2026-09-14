@@ -168,6 +168,11 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
+clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
+                                           clang::QualType type,
+                                           clang::CXXConstructorDecl *ctor,
+                                           llvm::ArrayRef<clang::Expr *> args);
+
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl);
 
