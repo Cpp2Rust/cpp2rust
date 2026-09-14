@@ -1151,15 +1151,9 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
 bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   auto *sub_expr = expr->getSubExpr();
 
-  // return unique_ptr (implicit xvalue cast)
   if (expr->isXValue() && sub_expr->isLValue()) {
     Convert(sub_expr);
-    if (IsUniquePtr(sub_expr->getType())) {
-      StrCat(".take()");
-      computed_expr_type_ = ComputedExprType::FreshValue;
-    } else {
-      computed_expr_type_ = ComputedExprType::Value;
-    }
+    computed_expr_type_ = ComputedExprType::Value;
     return false;
   }
 
@@ -2578,6 +2572,10 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
 
   auto arg_idx = receiver_ph->n;
   auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
+  if (auto *call = clang::dyn_cast<clang::CallExpr>(arg->IgnoreCasts());
+      call && call->isCallToStdMove()) {
+    arg = call->getArg(0);
+  }
 
   if (!arg->getType()->isPointerType() && !IsReferenceType(arg)) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);

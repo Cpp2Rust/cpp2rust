@@ -8,8 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn change_0(n: Ptr<Option<Value<i32>>>) {
     let m: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(20)))));
-    let __rhs = (*m.borrow_mut()).take();
-    n.write(__rhs);
+    ((n).clone() as Ptr<Option<Value<i32>>>).write((*m.borrow_mut()).take());
 }
 pub fn main() {
     std::process::exit(main_0());

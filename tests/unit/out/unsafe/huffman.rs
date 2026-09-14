@@ -146,7 +146,7 @@ pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
                 .collect::<Box<[_]>>(),
         ),
     }));
-    return minHeap;
+    return minHeap.take();
 }
 pub unsafe fn Huffman_2(
     data: *mut Option<Box<[libc::c_char]>>,
@@ -176,7 +176,7 @@ pub unsafe fn Huffman_2(
         (*top).right = right;
         (unsafe { MinHeap::Insert(&mut (*minHeap.as_deref_mut().unwrap()), top) });
     }
-    return minHeap;
+    return minHeap.take();
 }
 pub unsafe fn CollectCode_3(
     arr: *mut Option<Box<[i32]>>,
@@ -269,7 +269,7 @@ pub unsafe fn HuffmanCodes_5(
             &mut next as *mut i32,
         )
     });
-    return out;
+    return out.take();
 }
 pub fn main() {
     unsafe {

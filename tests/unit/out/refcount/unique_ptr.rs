@@ -57,12 +57,13 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let x1: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let x2: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     (*(*x2.borrow_mut()).as_ref().unwrap().borrow_mut()) = 1;
-    (*x1.borrow_mut()) = (*x2.borrow_mut()).take();
+    (x1.as_pointer() as Ptr<Option<Value<i32>>>).write((*x2.borrow_mut()).take());
     let raw_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x1.borrow()).as_pointer())));
     (*raw_ptr1.borrow()).with_mut(|__v| __v.prefix_inc());
-    (*(*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
+    ((*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
         .ptr
-        .borrow_mut()) = (*x1.borrow_mut()).take();
+        .as_pointer() as Ptr<Option<Value<i32>>>)
+        .write((*x1.borrow_mut()).take());
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     let x3: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
@@ -70,7 +71,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let __rhs = ((*(*x3.borrow()).as_ref().unwrap().borrow())
         + (*(*x4.borrow()).as_ref().unwrap().borrow()));
     (*(*x3.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
-    (*x4.borrow_mut()) = (*x3.borrow_mut()).take();
+    (x4.as_pointer() as Ptr<Option<Value<i32>>>).write((*x3.borrow_mut()).take());
     let raw_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x4.borrow()).as_pointer())));
     {
         let _ptr = (*raw_ptr2.borrow()).clone();

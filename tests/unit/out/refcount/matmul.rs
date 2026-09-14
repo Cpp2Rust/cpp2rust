@@ -18,12 +18,20 @@ pub fn matalloc_0(n: i32, p: i32, e: i32) -> Option<Value<Box<[Option<Value<Box<
         )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        (*m.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
-            Some(Rc::new(RefCell::new(
-                (0..((*p.borrow()) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[_]>>(),
-            )));
+        (((*m.borrow())
+            .as_ref()
+            .unwrap()
+            .as_pointer()
+            .offset(((*i.borrow()) as usize)))
+        .clone() as Ptr<Option<Value<Box<[i32]>>>>)
+            .write(
+                Some(Rc::new(RefCell::new(
+                    (0..((*p.borrow()) as usize))
+                        .map(|_| <i32>::default())
+                        .collect::<Box<[_]>>(),
+                )))
+                .take(),
+            );
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*j.borrow()) < (*p.borrow())) {
             (*m.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize]

@@ -18,7 +18,8 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
             (0..(p as usize))
                 .map(|_| <i32>::default())
                 .collect::<Box<[_]>>(),
-        );
+        )
+        .take();
         let mut j: i32 = 0;
         'loop_: while ((j) < (p)) {
             m.as_mut().unwrap()[(i as usize)].as_mut().unwrap()[(j as usize)] = e;
@@ -26,7 +27,7 @@ pub unsafe fn matalloc_0(mut n: i32, mut p: i32, mut e: i32) -> Option<Box<[Opti
         }
         i.prefix_inc();
     }
-    return m;
+    return m.take();
 }
 pub unsafe fn matmul_1(
     mut m1: Option<Box<[Option<Box<[i32]>>]>>,
@@ -53,7 +54,7 @@ pub unsafe fn matmul_1(
         }
         i.prefix_inc();
     }
-    return m3;
+    return m3.take();
 }
 pub fn main() {
     unsafe {
