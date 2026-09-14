@@ -219,6 +219,7 @@ pub trait SImpl {
     fn reset(&self);
     fn copy_if_different_const(&self, other: Ptr<S>) -> bool;
     fn copy_if_different(&self, other: Ptr<S>) -> bool;
+    fn operator_assign_pmutS(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
     fn returns_this_reference(&self) -> Ptr<S> {
@@ -258,7 +259,10 @@ impl SImpl for Ptr<S> {
         (*self).delete();
     }
     fn reset(&self) {
-        (*self).write(S::S1({ 0 }));
+        ({
+            let _arg0: Value<S> = Rc::new(RefCell::new(S::S1({ 0 })));
+            SImpl::operator_assign_pmutS(&(*self), _arg0.as_pointer())
+        });
     }
     fn copy_if_different_const(&self, other: Ptr<S>) -> bool {
         let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));
@@ -281,5 +285,12 @@ impl SImpl for Ptr<S> {
         let __rhs = (*(*(*other.borrow()).upgrade().deref()).self__.borrow()).clone();
         (*(*(*self).upgrade().deref()).self__.borrow_mut()) = __rhs;
         return true;
+    }
+    fn operator_assign_pmutS(&self, _a0: Ptr<S>) -> Ptr<S> {
+        let __rhs = (*(*_a0.upgrade().deref()).a_.borrow());
+        (*(*(*self).upgrade().deref()).a_.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).self__.borrow()).clone();
+        (*(*(*self).upgrade().deref()).self__.borrow_mut()) = __rhs;
+        return (*self).clone();
     }
 }

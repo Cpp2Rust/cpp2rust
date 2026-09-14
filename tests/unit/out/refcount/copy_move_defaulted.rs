@@ -10,6 +10,15 @@ use std::rc::{Rc, Weak};
 pub struct Inner {
     pub x: Value<i32>,
 }
+impl Inner {
+    pub fn Inner_pmutInner(_a0: Ptr<Inner>) -> Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
+            x: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).x.borrow()))),
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Inner {
     fn clone(&self) -> Self {
         let __this: Value<Inner> = Rc::new(RefCell::new(Self {
@@ -47,6 +56,19 @@ impl Explicit {
                 x: Rc::new(RefCell::new(((*v.borrow()) * 10))),
             })),
             arr: Rc::new(RefCell::new(Box::new([(*v.borrow()), ((*v.borrow()) + 1)]))),
+        }));
+        let this: Ptr<Explicit> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+    pub fn Explicit_pmutExplicit(_a0: Ptr<Explicit>) -> Self {
+        let __this: Value<Explicit> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+            inner: Rc::new(RefCell::new(Inner::Inner_pmutInner({
+                (*_a0.upgrade().deref()).inner.as_pointer()
+            }))),
+            arr: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).arr.borrow()).clone(),
+            )),
         }));
         let this: Ptr<Explicit> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -96,6 +118,21 @@ pub struct Implicit {
     pub v: Value<i32>,
     pub inner: Value<Inner>,
     pub arr: Value<Box<[i32]>>,
+}
+impl Implicit {
+    pub fn Implicit_pmutImplicit(_a0: Ptr<Implicit>) -> Self {
+        let __this: Value<Implicit> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+            inner: Rc::new(RefCell::new(Inner::Inner_pmutInner({
+                (*_a0.upgrade().deref()).inner.as_pointer()
+            }))),
+            arr: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).arr.borrow()).clone(),
+            )),
+        }));
+        let this: Ptr<Implicit> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Clone for Implicit {
     fn clone(&self) -> Self {
@@ -315,7 +352,9 @@ fn main_0() -> i32 {
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
     let c: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
     let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
-    let d: Value<Explicit> = Rc::new(RefCell::new((*a.borrow()).clone()));
+    let d: Value<Explicit> = Rc::new(RefCell::new(Explicit::Explicit_pmutExplicit({
+        a.as_pointer()
+    })));
     let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
     assert!(
         (({ same_0(b.as_pointer(), a.as_pointer(),) })
@@ -327,7 +366,7 @@ fn main_0() -> i32 {
     let f: Value<Explicit> = Rc::new(RefCell::new(Explicit::Explicit({ 3 })));
     let _dtor_f = ScopedDestructor::new(&f, |__p| __p.destructor());
     (*e.borrow_mut()) = (*b.borrow()).clone();
-    (*f.borrow_mut()) = (*c.borrow()).clone();
+    ({ ExplicitImpl::operator_assign_pmutExplicit(&f.as_pointer(), c.as_pointer()) });
     assert!(
         ({ same_0(e.as_pointer(), b.as_pointer(),) })
             && ({ same_0(f.as_pointer(), c.as_pointer(),) })
@@ -350,7 +389,9 @@ fn main_0() -> i32 {
         arr: Rc::new(RefCell::new(Box::new([5, 6]))),
     }));
     let j: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
-    let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
+    let k: Value<Implicit> = Rc::new(RefCell::new(Implicit::Implicit_pmutImplicit({
+        i.as_pointer()
+    })));
     assert!(
         (((*(*j.borrow()).v.borrow()) == 5)
             && ((*(*(*j.borrow()).inner.borrow()).x.borrow()) == 50))
@@ -551,10 +592,44 @@ impl DefaultCopyUserMoveImpl for Ptr<DefaultCopyUserMove> {
     }
 }
 pub trait ExplicitImpl {
+    fn operator_assign_pmutExplicit(&self, _a0: Ptr<Explicit>) -> Ptr<Explicit>;
     fn destructor(&self);
 }
 impl ExplicitImpl for Ptr<Explicit> {
+    fn operator_assign_pmutExplicit(&self, _a0: Ptr<Explicit>) -> Ptr<Explicit> {
+        let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        ({
+            let _arg0: Ptr<Inner> = (*_a0.upgrade().deref()).inner.as_pointer();
+            InnerImpl::operator_assign_pmutInner(
+                &(*(*self).upgrade().deref()).inner.as_pointer(),
+                _arg0,
+            )
+        });
+        {
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &(((*_a0.upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .clone()
+        };
+        return (*self).clone();
+    }
     fn destructor(&self) {}
+}
+pub trait InnerImpl {
+    fn operator_assign_pmutInner(&self, _a0: Ptr<Inner>) -> Ptr<Inner>;
+}
+impl InnerImpl for Ptr<Inner> {
+    fn operator_assign_pmutInner(&self, _a0: Ptr<Inner>) -> Ptr<Inner> {
+        let __rhs = (*(*_a0.upgrade().deref()).x.borrow());
+        (*(*(*self).upgrade().deref()).x.borrow_mut()) = __rhs;
+        return (*self).clone();
+    }
 }
 pub trait UserCopyDefaultMoveImpl {
     fn operator_assign_pconstUserCopyDefaultMove(

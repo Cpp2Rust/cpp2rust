@@ -12,6 +12,15 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
+impl Point {
+    pub unsafe fn Point_pmutPoint(_a0: *mut Point) -> Self {
+        let mut this = Self {
+            x: (*_a0).x,
+            y: (*_a0).y,
+        };
+        this
+    }
+}
 pub unsafe fn sum_0(mut p: Point) -> i32 {
     return ((p.x) + (p.y));
 }

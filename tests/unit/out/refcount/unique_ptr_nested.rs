@@ -11,6 +11,16 @@ pub struct Inner {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Inner {
+    pub fn Inner_pmutInner(_a0: Ptr<Inner>) -> Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
+            x: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).x.borrow()))),
+            y: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).y.borrow()))),
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Inner {
     fn clone(&self) -> Self {
         let __this: Value<Inner> = Rc::new(RefCell::new(Self {

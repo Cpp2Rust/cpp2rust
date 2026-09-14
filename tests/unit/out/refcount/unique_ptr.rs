@@ -39,6 +39,16 @@ pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
 }
+impl Pair {
+    pub fn Pair_pmutPair(_a0: Ptr<Pair>) -> Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
+            x: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).x.borrow()))),
+            y: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).y.borrow()))),
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Pair {
     fn clone(&self) -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
@@ -164,10 +174,20 @@ pub fn RndStuff_2() {
     )))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 10) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
-            x: Rc::new(RefCell::new(1)),
-            y: Rc::new(RefCell::new(2)),
-        };
+        ({
+            let _arg0: Value<Pair> = Rc::new(RefCell::new(Pair {
+                x: Rc::new(RefCell::new(1)),
+                y: Rc::new(RefCell::new(2)),
+            }));
+            PairImpl::operator_assign_pmutPair(
+                &(*x3.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .as_pointer()
+                    .offset(((*i.borrow()) as usize)),
+                _arg0.as_pointer(),
+            )
+        });
         (*i.borrow_mut()).prefix_inc();
     }
     let p3_0: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
@@ -229,10 +249,20 @@ pub fn RndStuff_2() {
     .to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
-            x: Rc::new(RefCell::new(-1_i32)),
-            y: Rc::new(RefCell::new(-2_i32)),
-        };
+        ({
+            let _arg0: Value<Pair> = Rc::new(RefCell::new(Pair {
+                x: Rc::new(RefCell::new(-1_i32)),
+                y: Rc::new(RefCell::new(-2_i32)),
+            }));
+            PairImpl::operator_assign_pmutPair(
+                &(*x3.borrow())
+                    .as_ref()
+                    .unwrap()
+                    .as_pointer()
+                    .offset(((*i.borrow()) as usize)),
+                _arg0.as_pointer(),
+            )
+        });
         (*i.borrow_mut()).prefix_inc();
     }
     let p3_1: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
@@ -306,8 +336,16 @@ fn main_0() -> i32 {
 }
 pub trait PairImpl {
     fn inc(&self, k: i32);
+    fn operator_assign_pmutPair(&self, _a0: Ptr<Pair>) -> Ptr<Pair>;
 }
 impl PairImpl for Ptr<Pair> {
+    fn operator_assign_pmutPair(&self, _a0: Ptr<Pair>) -> Ptr<Pair> {
+        let __rhs = (*(*_a0.upgrade().deref()).x.borrow());
+        (*(*(*self).upgrade().deref()).x.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).y.borrow());
+        (*(*(*self).upgrade().deref()).y.borrow_mut()) = __rhs;
+        return (*self).clone();
+    }
     fn inc(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
         (*(*(*self).upgrade().deref()).x.borrow_mut()) += (*k.borrow());

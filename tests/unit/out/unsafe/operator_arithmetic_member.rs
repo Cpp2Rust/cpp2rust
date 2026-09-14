@@ -50,7 +50,7 @@ impl S {
     pub unsafe fn operator_post_inc_i32(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_inc();
-        return old;
+        return S::S_pmutS({ &mut old as *mut S });
     }
     pub unsafe fn operator_dec(&mut self) -> *mut S {
         self.v.prefix_dec();
@@ -59,7 +59,11 @@ impl S {
     pub unsafe fn operator_post_dec_i32(&mut self, mut _a0: i32) -> S {
         let mut old: S = (*(self as *mut S));
         self.v.prefix_dec();
-        return old;
+        return S::S_pmutS({ &mut old as *mut S });
+    }
+    pub unsafe fn S_pmutS(_a0: *mut S) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
     }
 }
 pub fn main() {

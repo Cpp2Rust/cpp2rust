@@ -1892,8 +1892,7 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  if (ctor->isCopyOrMoveConstructor() &&
-      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
+  if (ctor->isCopyConstructor() && !IsUserDefinedCopyConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));

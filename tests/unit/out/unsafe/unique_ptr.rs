@@ -29,6 +29,20 @@ pub struct Pair {
     pub y: i32,
 }
 impl Pair {
+    pub unsafe fn Pair_pmutPair(_a0: *mut Pair) -> Self {
+        let mut this = Self {
+            x: (*_a0).x,
+            y: (*_a0).y,
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutPair(&mut self, _a0: *mut Pair) -> *mut Pair {
+        self.x = (*_a0).x;
+        self.y = (*_a0).y;
+        return &mut (*(self as *mut Pair)) as *mut Pair;
+    }
+}
+impl Pair {
     pub unsafe fn inc(&mut self, mut k: i32) {
         self.x += k;
         self.y += k;
@@ -106,7 +120,10 @@ pub unsafe fn RndStuff_2() {
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (10)) {
-        x3.as_mut().unwrap()[(i as usize)] = Pair { x: 1, y: 2 };
+        (unsafe {
+            let mut _arg0: Pair = Pair { x: 1, y: 2 };
+            Pair::operator_assign_pmutPair(&mut x3.as_mut().unwrap()[(i as usize)], &mut _arg0)
+        });
         i.prefix_inc();
     }
     let mut p3_0: *mut Pair = x3
@@ -128,10 +145,13 @@ pub unsafe fn RndStuff_2() {
     )));
     let mut i: i32 = 0;
     'loop_: while ((i) < (50)) {
-        x3.as_mut().unwrap()[(i as usize)] = Pair {
-            x: -1_i32,
-            y: -2_i32,
-        };
+        (unsafe {
+            let mut _arg0: Pair = Pair {
+                x: -1_i32,
+                y: -2_i32,
+            };
+            Pair::operator_assign_pmutPair(&mut x3.as_mut().unwrap()[(i as usize)], &mut _arg0)
+        });
         i.prefix_inc();
     }
     let mut p3_1: *mut Pair = x3

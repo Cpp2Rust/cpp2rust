@@ -11,6 +11,12 @@ use std::rc::Rc;
 pub struct Chunk {
     pub data: i32,
 }
+impl Chunk {
+    pub unsafe fn Chunk_pmutChunk(_a0: *mut Chunk) -> Self {
+        let mut this = Self { data: (*_a0).data };
+        this
+    }
+}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Writer {
@@ -71,7 +77,7 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
     {
-        let __arg = std::mem::take(&mut (*bw).chunk);
+        let __arg = Chunk::Chunk_pmutChunk({ &mut (*bw).chunk as *mut Chunk });
         (*(*bw).output).push(__arg)
     };
 }

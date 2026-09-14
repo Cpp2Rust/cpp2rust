@@ -84,34 +84,51 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
                 .borrow()),
         )),
     }));
-    let __rhs = Edge {
-        u: Rc::new(RefCell::new(
-            (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                [((*start.borrow()) as usize) as usize]
-                .u
-                .borrow()),
-        )),
-        v: Rc::new(RefCell::new(
-            (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                [((*start.borrow()) as usize) as usize]
-                .v
-                .borrow()),
-        )),
-        weight: Rc::new(RefCell::new(
-            (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                [((*start.borrow()) as usize) as usize]
-                .weight
-                .borrow()),
-        )),
-    };
-    (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[((*pidx.borrow()) as usize) as usize] =
-        __rhs;
-    (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
-        [((*start.borrow()) as usize) as usize] = Edge {
-        u: Rc::new(RefCell::new((*(*tmp.borrow()).u.borrow()))),
-        v: Rc::new(RefCell::new((*(*tmp.borrow()).v.borrow()))),
-        weight: Rc::new(RefCell::new((*(*tmp.borrow()).weight.borrow()))),
-    };
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(
+                (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*start.borrow()) as usize) as usize]
+                    .u
+                    .borrow()),
+            )),
+            v: Rc::new(RefCell::new(
+                (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*start.borrow()) as usize) as usize]
+                    .v
+                    .borrow()),
+            )),
+            weight: Rc::new(RefCell::new(
+                (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*start.borrow()) as usize) as usize]
+                    .weight
+                    .borrow()),
+            )),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*arr.upgrade().deref())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset(((*pidx.borrow()) as usize)),
+            _arg0.as_pointer(),
+        )
+    });
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new((*(*tmp.borrow()).u.borrow()))),
+            v: Rc::new(RefCell::new((*(*tmp.borrow()).v.borrow()))),
+            weight: Rc::new(RefCell::new((*(*tmp.borrow()).weight.borrow()))),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*arr.upgrade().deref())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset(((*start.borrow()) as usize)),
+            _arg0.as_pointer(),
+        )
+    });
     let i: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
     let j: Value<i32> = Rc::new(RefCell::new((*end.borrow())));
     'loop_: while ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
@@ -134,54 +151,74 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
             (*j.borrow_mut()).prefix_dec();
         }
         if ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
-            (*tmp.borrow_mut()) = Edge {
-                u: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize]
-                        .u
-                        .borrow()),
-                )),
-                v: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize]
-                        .v
-                        .borrow()),
-                )),
-                weight: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*i.borrow()) as usize) as usize]
-                        .weight
-                        .borrow()),
-                )),
-            };
-            let __rhs = Edge {
-                u: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*j.borrow()) as usize) as usize]
-                        .u
-                        .borrow()),
-                )),
-                v: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*j.borrow()) as usize) as usize]
-                        .v
-                        .borrow()),
-                )),
-                weight: Rc::new(RefCell::new(
-                    (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
-                        [((*j.borrow()) as usize) as usize]
-                        .weight
-                        .borrow()),
-                )),
-            };
-            (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
-                [((*i.borrow()) as usize) as usize] = __rhs;
-            (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
-                [((*j.borrow()) as usize) as usize] = Edge {
-                u: Rc::new(RefCell::new((*(*tmp.borrow()).u.borrow()))),
-                v: Rc::new(RefCell::new((*(*tmp.borrow()).v.borrow()))),
-                weight: Rc::new(RefCell::new((*(*tmp.borrow()).weight.borrow()))),
-            };
+            ({
+                let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+                    u: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*i.borrow()) as usize) as usize]
+                            .u
+                            .borrow()),
+                    )),
+                    v: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*i.borrow()) as usize) as usize]
+                            .v
+                            .borrow()),
+                    )),
+                    weight: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*i.borrow()) as usize) as usize]
+                            .weight
+                            .borrow()),
+                    )),
+                }));
+                EdgeImpl::operator_assign_pmutEdge(&tmp.as_pointer(), _arg0.as_pointer())
+            });
+            ({
+                let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+                    u: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*j.borrow()) as usize) as usize]
+                            .u
+                            .borrow()),
+                    )),
+                    v: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*j.borrow()) as usize) as usize]
+                            .v
+                            .borrow()),
+                    )),
+                    weight: Rc::new(RefCell::new(
+                        (*(*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                            [((*j.borrow()) as usize) as usize]
+                            .weight
+                            .borrow()),
+                    )),
+                }));
+                EdgeImpl::operator_assign_pmutEdge(
+                    &(*arr.upgrade().deref())
+                        .as_ref()
+                        .unwrap()
+                        .as_pointer()
+                        .offset(((*i.borrow()) as usize)),
+                    _arg0.as_pointer(),
+                )
+            });
+            ({
+                let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+                    u: Rc::new(RefCell::new((*(*tmp.borrow()).u.borrow()))),
+                    v: Rc::new(RefCell::new((*(*tmp.borrow()).v.borrow()))),
+                    weight: Rc::new(RefCell::new((*(*tmp.borrow()).weight.borrow()))),
+                }));
+                EdgeImpl::operator_assign_pmutEdge(
+                    &(*arr.upgrade().deref())
+                        .as_ref()
+                        .unwrap()
+                        .as_pointer()
+                        .offset(((*j.borrow()) as usize)),
+                    _arg0.as_pointer(),
+                )
+            });
             (*i.borrow_mut()).postfix_inc();
             (*j.borrow_mut()).postfix_dec();
         }
@@ -342,46 +379,81 @@ fn main_0() -> i32 {
         V: Rc::new(RefCell::new((*V.borrow()))),
         E: Rc::new(RefCell::new((*E.borrow()))),
     }));
-    (*(*graph.borrow()).edges.borrow())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()[(0_usize) as usize] = Edge {
-        u: Rc::new(RefCell::new(0)),
-        v: Rc::new(RefCell::new(1)),
-        weight: Rc::new(RefCell::new(10_f64)),
-    };
-    (*(*graph.borrow()).edges.borrow())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()[(1_usize) as usize] = Edge {
-        u: Rc::new(RefCell::new(1)),
-        v: Rc::new(RefCell::new(3)),
-        weight: Rc::new(RefCell::new(15_f64)),
-    };
-    (*(*graph.borrow()).edges.borrow())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()[(2_usize) as usize] = Edge {
-        u: Rc::new(RefCell::new(2)),
-        v: Rc::new(RefCell::new(3)),
-        weight: Rc::new(RefCell::new(4_f64)),
-    };
-    (*(*graph.borrow()).edges.borrow())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()[(3_usize) as usize] = Edge {
-        u: Rc::new(RefCell::new(2)),
-        v: Rc::new(RefCell::new(0)),
-        weight: Rc::new(RefCell::new(6_f64)),
-    };
-    (*(*graph.borrow()).edges.borrow())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()[(4_usize) as usize] = Edge {
-        u: Rc::new(RefCell::new(0)),
-        v: Rc::new(RefCell::new(3)),
-        weight: Rc::new(RefCell::new(5_f64)),
-    };
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(0)),
+            v: Rc::new(RefCell::new(1)),
+            weight: Rc::new(RefCell::new(10_f64)),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*(*graph.borrow()).edges.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset((0_usize)),
+            _arg0.as_pointer(),
+        )
+    });
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(1)),
+            v: Rc::new(RefCell::new(3)),
+            weight: Rc::new(RefCell::new(15_f64)),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*(*graph.borrow()).edges.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset((1_usize)),
+            _arg0.as_pointer(),
+        )
+    });
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(2)),
+            v: Rc::new(RefCell::new(3)),
+            weight: Rc::new(RefCell::new(4_f64)),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*(*graph.borrow()).edges.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset((2_usize)),
+            _arg0.as_pointer(),
+        )
+    });
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(2)),
+            v: Rc::new(RefCell::new(0)),
+            weight: Rc::new(RefCell::new(6_f64)),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*(*graph.borrow()).edges.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset((3_usize)),
+            _arg0.as_pointer(),
+        )
+    });
+    ({
+        let _arg0: Value<Edge> = Rc::new(RefCell::new(Edge {
+            u: Rc::new(RefCell::new(0)),
+            v: Rc::new(RefCell::new(3)),
+            weight: Rc::new(RefCell::new(5_f64)),
+        }));
+        EdgeImpl::operator_assign_pmutEdge(
+            &(*(*graph.borrow()).edges.borrow())
+                .as_ref()
+                .unwrap()
+                .as_pointer()
+                .offset((4_usize)),
+            _arg0.as_pointer(),
+        )
+    });
     let total_weight: Value<f64> = Rc::new(RefCell::new(({ MSTKruskal_2(graph.as_pointer()) })));
     assert!(((*total_weight.borrow()) == 19_f64));
     return 0;
@@ -485,5 +557,19 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .unwrap()
                 .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
+    }
+}
+pub trait EdgeImpl {
+    fn operator_assign_pmutEdge(&self, _a0: Ptr<Edge>) -> Ptr<Edge>;
+}
+impl EdgeImpl for Ptr<Edge> {
+    fn operator_assign_pmutEdge(&self, _a0: Ptr<Edge>) -> Ptr<Edge> {
+        let __rhs = (*(*_a0.upgrade().deref()).u.borrow());
+        (*(*(*self).upgrade().deref()).u.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
+        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).weight.borrow());
+        (*(*(*self).upgrade().deref()).weight.borrow_mut()) = __rhs;
+        return (*self).clone();
     }
 }

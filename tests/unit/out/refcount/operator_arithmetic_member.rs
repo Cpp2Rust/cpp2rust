@@ -10,6 +10,15 @@ use std::rc::{Rc, Weak};
 pub struct S {
     pub v: Value<i32>,
 }
+impl S {
+    pub fn S_pmutS(_a0: Ptr<S>) -> Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
@@ -186,7 +195,7 @@ impl SImpl for Ptr<S> {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_inc();
-        return (*old.borrow()).clone();
+        return S::S_pmutS({ (old.as_pointer()).clone() });
     }
     fn operator_dec(&self) -> Ptr<S> {
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
@@ -196,6 +205,6 @@ impl SImpl for Ptr<S> {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
         (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
-        return (*old.borrow()).clone();
+        return S::S_pmutS({ (old.as_pointer()).clone() });
     }
 }

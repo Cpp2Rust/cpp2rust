@@ -11,6 +11,12 @@ use std::rc::Rc;
 pub struct S {
     pub v: i32,
 }
+impl S {
+    pub unsafe fn S_pmutS(_a0: *mut S) -> Self {
+        let mut this = Self { v: (*_a0).v };
+        this
+    }
+}
 pub unsafe fn operator_add_0(a: *const S, b: *const S) -> S {
     return S {
         v: (((*a).v) + ((*b).v)),
@@ -49,7 +55,7 @@ pub unsafe fn operator_inc_7(a: *mut S) -> *mut S {
 pub unsafe fn operator_post_inc_8(a: *mut S, mut _a1: i32) -> S {
     let mut old: S = (*a);
     (*a).v.prefix_inc();
-    return old;
+    return S::S_pmutS({ &mut old as *mut S });
 }
 pub unsafe fn operator_dec_9(a: *mut S) -> *mut S {
     (*a).v.prefix_dec();
@@ -58,7 +64,7 @@ pub unsafe fn operator_dec_9(a: *mut S) -> *mut S {
 pub unsafe fn operator_post_dec_10(a: *mut S, mut _a1: i32) -> S {
     let mut old: S = (*a);
     (*a).v.prefix_dec();
-    return old;
+    return S::S_pmutS({ &mut old as *mut S });
 }
 pub unsafe fn operator_add_11(a: *const S, mut b: i32) -> S {
     return S {

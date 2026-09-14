@@ -10,6 +10,15 @@ use std::rc::{Rc, Weak};
 pub struct Chunk {
     pub data: Value<i32>,
 }
+impl Chunk {
+    pub fn Chunk_pmutChunk(_a0: Ptr<Chunk>) -> Self {
+        let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
+            data: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).data.borrow()))),
+        }));
+        let this: Ptr<Chunk> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for Chunk {
     fn clone(&self) -> Self {
         let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
@@ -181,7 +190,7 @@ pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     {
         let __arg =
-            std::mem::take(&mut (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone());
+            Chunk::Chunk_pmutChunk({ (*(*bw.borrow()).upgrade().deref()).chunk.as_pointer() });
         (*(*(*bw.borrow()).upgrade().deref()).output.borrow())
             .to_strong()
             .as_pointer()

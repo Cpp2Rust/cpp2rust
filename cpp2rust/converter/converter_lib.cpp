@@ -286,24 +286,9 @@ bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
          IsUserDefinedDecl(ctor);
 }
 
-static bool HasUserProvidedCopyMember(const clang::CXXRecordDecl *decl) {
-  return std::any_of(decl->method_begin(), decl->method_end(), [](auto *m) {
-    auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(m);
-    return m->isUserProvided() &&
-           (ctor ? ctor->isCopyConstructor() : m->isCopyAssignmentOperator());
-  });
-}
-
 static bool IsTranslatedMoveMember(const clang::CXXMethodDecl *method) {
-  if (method->isDeleted() || !IsUserDefinedDecl(method->getParent())) {
-    return false;
-  }
-  if (method->isUserProvided()) {
-    return true;
-  }
-  return method->isDefaulted() && method->hasBody() &&
-         (!method->isTrivial() ||
-          HasUserProvidedCopyMember(method->getParent()));
+  return !method->isDeleted() && IsUserDefinedDecl(method->getParent()) &&
+         method->hasBody();
 }
 
 bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor) {
@@ -1348,14 +1333,12 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
 }
 
 const clang::Expr *IgnoreStdMove(const clang::Expr *expr) {
-  while (true) {
-    const auto *call =
-        clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
-    if (!call || !call->isCallToStdMove()) {
-      return expr;
-    }
-    expr = call->getArg(0);
+  if (const auto *call =
+          clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
+      call && call->isCallToStdMove()) {
+    return call->getArg(0);
   }
+  return expr;
 }
 
 bool IsTemporaryObject(const clang::Expr *expr) {

@@ -12,6 +12,21 @@ pub struct node_t {
     pub right: Value<Ptr<node_t>>,
     pub value: Value<i32>,
 }
+impl node_t {
+    pub fn node_t_pmutnode_t(_a0: Ptr<node_t>) -> Self {
+        let __this: Value<node_t> = Rc::new(RefCell::new(Self {
+            left: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).left.borrow()).clone(),
+            )),
+            right: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).right.borrow()).clone(),
+            )),
+            value: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).value.borrow()))),
+        }));
+        let this: Ptr<node_t> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Clone for node_t {
     fn clone(&self) -> Self {
         let __this: Value<node_t> = Rc::new(RefCell::new(Self {

@@ -11,6 +11,16 @@ use std::rc::Rc;
 pub struct Inner {
     pub x: i32,
 }
+impl Inner {
+    pub unsafe fn Inner_pmutInner(_a0: *mut Inner) -> Self {
+        let mut this = Self { x: (*_a0).x };
+        this
+    }
+    pub unsafe fn operator_assign_pmutInner(&mut self, _a0: *mut Inner) -> *mut Inner {
+        self.x = (*_a0).x;
+        return &mut (*(self as *mut Inner)) as *mut Inner;
+    }
+}
 #[repr(C)]
 #[derive(Clone)]
 pub struct Explicit {
@@ -26,6 +36,33 @@ impl Explicit {
             arr: [v, ((v) + (1))],
         };
         this
+    }
+    pub unsafe fn Explicit_pmutExplicit(_a0: *mut Explicit) -> Self {
+        let mut this = Self {
+            v: (*_a0).v,
+            inner: Inner::Inner_pmutInner({ &mut (*_a0).inner as *mut Inner }),
+            arr: (*_a0).arr,
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutExplicit(&mut self, _a0: *mut Explicit) -> *mut Explicit {
+        self.v = (*_a0).v;
+        (unsafe {
+            let _arg0: *mut Inner = &mut (*_a0).inner as *mut Inner;
+            Inner::operator_assign_pmutInner(&mut self.inner, _arg0)
+        });
+        {
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
+                        as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    8_usize as usize,
+                )
+            }
+            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+        };
+        return &mut (*(self as *mut Explicit)) as *mut Explicit;
     }
     pub unsafe fn destructor(&mut self) {}
 }
@@ -44,6 +81,16 @@ pub struct Implicit {
     pub v: i32,
     pub inner: Inner,
     pub arr: [i32; 2],
+}
+impl Implicit {
+    pub unsafe fn Implicit_pmutImplicit(_a0: *mut Implicit) -> Self {
+        let mut this = Self {
+            v: (*_a0).v,
+            inner: Inner::Inner_pmutInner({ &mut (*_a0).inner as *mut Inner }),
+            arr: (*_a0).arr,
+        };
+        this
+    }
 }
 impl Default for Implicit {
     fn default() -> Self {
@@ -193,7 +240,7 @@ unsafe fn main_0() -> i32 {
     let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Explicit::destructor);
     let mut c: Explicit = a.clone();
     let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Explicit::destructor);
-    let mut d: Explicit = a.clone();
+    let mut d: Explicit = Explicit::Explicit_pmutExplicit({ &mut a as *mut Explicit });
     let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Explicit::destructor);
     assert!(
         ((unsafe { same_0(&b as *const Explicit, &a as *const Explicit,) })
@@ -205,7 +252,7 @@ unsafe fn main_0() -> i32 {
     let mut f: Explicit = Explicit::Explicit({ 3 });
     let _dtor_f = ScopedDestructorUnsafe::new(&raw mut f, Explicit::destructor);
     e = (b).clone();
-    f = (c).clone();
+    (unsafe { Explicit::operator_assign_pmutExplicit(&mut f, &mut c as *mut Explicit) });
     assert!(
         (unsafe { same_0(&e as *const Explicit, &b as *const Explicit,) })
             && (unsafe { same_0(&f as *const Explicit, &c as *const Explicit,) })
@@ -227,7 +274,7 @@ unsafe fn main_0() -> i32 {
         arr: [5, 6],
     };
     let mut j: Implicit = i;
-    let mut k: Implicit = i;
+    let mut k: Implicit = Implicit::Implicit_pmutImplicit({ &mut i as *mut Implicit });
     assert!((((j.v) == (5)) && ((j.inner.x) == (50))) && ((j.arr[(1) as usize]) == (6)));
     assert!(((i.v) == (5)) && ((k.v) == (5)));
     let mut l: Implicit = Implicit {
