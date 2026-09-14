@@ -9,10 +9,10 @@ use std::rc::Rc;
 pub static mut same_name_different_type_0: i32 = unsafe { 1 };
 pub static mut same_name_same_type_1: i32 = unsafe { 5 };
 pub unsafe fn a_foo_2() -> i32 {
-    return same_name_different_type_0;
+    return (*&raw mut same_name_different_type_0);
 }
 pub unsafe fn a_bar_3() -> i32 {
-    return same_name_same_type_1;
+    return (*&raw mut same_name_same_type_1);
 }
 pub fn main() {
     unsafe {
@@ -29,8 +29,8 @@ unsafe fn main_0() -> i32 {
 pub static mut same_name_different_type_6: f32 = unsafe { 1.0E+0 };
 pub static mut same_name_same_type_7: i32 = unsafe { 6 };
 pub unsafe fn b_foo_4() -> f32 {
-    return same_name_different_type_6;
+    return (*&raw mut same_name_different_type_6);
 }
 pub unsafe fn b_bar_5() -> i32 {
-    return same_name_same_type_7;
+    return (*&raw mut same_name_same_type_7);
 }

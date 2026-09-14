@@ -12,7 +12,7 @@ pub static mut global_0: i32 = unsafe { 0 };
 pub struct S {}
 impl S {
     pub unsafe fn destructor(&mut self) {
-        global_0.postfix_inc();
+        (*&raw mut global_0).postfix_inc();
     }
 }
 #[repr(C)]
@@ -81,7 +81,7 @@ pub struct Templated_char_ {
 }
 impl Templated_char_ {
     pub unsafe fn destructor(&mut self) {
-        global_0 = ((global_0 as usize)
+        (*&raw mut global_0) = (((*&raw mut global_0) as usize)
             .wrapping_add((::std::mem::size_of::<libc::c_char>() as usize)))
             as i32;
     }
@@ -93,8 +93,9 @@ pub struct Templated_int_ {
 }
 impl Templated_int_ {
     pub unsafe fn destructor(&mut self) {
-        global_0 =
-            ((global_0 as usize).wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32;
+        (*&raw mut global_0) = (((*&raw mut global_0) as usize)
+            .wrapping_add((::std::mem::size_of::<i32>() as usize)))
+            as i32;
     }
 }
 #[repr(C)]
@@ -104,7 +105,7 @@ pub struct Copied {
 }
 impl Copied {
     pub unsafe fn destructor(&mut self) {
-        global_0.postfix_inc();
+        (*&raw mut global_0).postfix_inc();
     }
 }
 pub static mut order_1: [i32; 3] = unsafe { [0_i32; 3] };
@@ -116,7 +117,7 @@ pub struct Tagged {
 }
 impl Tagged {
     pub unsafe fn destructor(&mut self) {
-        order_1[(order_count_2.postfix_inc()) as usize] = self.tag;
+        (*&raw mut order_1)[((*&raw mut order_count_2).postfix_inc()) as usize] = self.tag;
     }
 }
 #[repr(C)]
@@ -145,36 +146,36 @@ unsafe fn main_0() -> i32 {
         let mut s: S = S {};
         let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
     }
-    assert!(((global_0) == (1)));
+    assert!(((*&raw mut global_0) == (1)));
     {
         let mut s: S = S {};
         let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
     }
-    assert!(((global_0) == (2)));
+    assert!(((*&raw mut global_0) == (2)));
     {
         let mut d: Defaulted = Defaulted { s: S {} };
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Defaulted::destructor);
     }
-    assert!(((global_0) == (3)));
+    assert!(((*&raw mut global_0) == (3)));
     {
         let mut o: Outer = Outer {
             m: Middle { s: S {} },
         };
         let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Outer::destructor);
     }
-    assert!(((global_0) == (4)));
+    assert!(((*&raw mut global_0) == (4)));
     {
         let mut am: ArrayMember = ArrayMember {
             items: [S {}, S {}, S {}],
         };
         let _dtor_am = ScopedDestructorUnsafe::new(&raw mut am, ArrayMember::destructor);
     }
-    assert!(((global_0) == (7)));
+    assert!(((*&raw mut global_0) == (7)));
     {
         let mut e: EmptyBody = EmptyBody { s: S {} };
         let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, EmptyBody::destructor);
     }
-    assert!(((global_0) == (8)));
+    assert!(((*&raw mut global_0) == (8)));
     {
         let mut tc: Templated_char_ = Templated_char_ {
             v: (0 as libc::c_char),
@@ -183,7 +184,7 @@ unsafe fn main_0() -> i32 {
         let mut ti: Templated_int_ = Templated_int_ { v: 0_i32 };
         let _dtor_ti = ScopedDestructorUnsafe::new(&raw mut ti, Templated_int_::destructor);
     }
-    assert!(((global_0) == (13)));
+    assert!(((*&raw mut global_0) == (13)));
     {
         let mut a: Copied = Copied { v: 5 };
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Copied::destructor);
@@ -191,7 +192,7 @@ unsafe fn main_0() -> i32 {
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Copied::destructor);
         assert!(((b.v) == (5)));
     }
-    assert!(((global_0) == (15)));
+    assert!(((*&raw mut global_0) == (15)));
     {
         let mut o: Ordered = Ordered {
             first: Tagged { tag: 1 },
@@ -202,9 +203,9 @@ unsafe fn main_0() -> i32 {
         };
         let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Ordered::destructor);
     }
-    assert!(((order_count_2) == (3)));
-    assert!(((order_1[(0) as usize]) == (3)));
-    assert!(((order_1[(1) as usize]) == (2)));
-    assert!(((order_1[(2) as usize]) == (1)));
+    assert!(((*&raw mut order_count_2) == (3)));
+    assert!((((*&raw mut order_1)[(0) as usize]) == (3)));
+    assert!((((*&raw mut order_1)[(1) as usize]) == (2)));
+    assert!((((*&raw mut order_1)[(2) as usize]) == (1)));
     return 0;
 }

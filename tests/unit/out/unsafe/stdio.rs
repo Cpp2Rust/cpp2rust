@@ -11,7 +11,7 @@ pub unsafe fn test_fputc_0() {
     libc::fputc(('i' as i32), libcc2rs::stdout_unsafe());
     libc::fputc(('\n' as i32), libcc2rs::stdout_unsafe());
 }
-pub unsafe fn test_fputs_1() {
+pub unsafe fn test_fputs_2() {
     libc::fputs(
         (c"hello".as_ptr().cast_mut()).cast_const(),
         libcc2rs::stdout_unsafe(),
@@ -29,12 +29,12 @@ pub unsafe fn test_fputs_1() {
     libc::fputs((buf.as_mut_ptr()).cast_const(), libcc2rs::stdout_unsafe());
     libc::fputc(('\n' as i32), libcc2rs::stdout_unsafe());
 }
-pub unsafe fn test_puts_2() {
+pub unsafe fn test_puts_3() {
     libc::puts((c"puts hello".as_ptr().cast_mut()).cast_const());
     let mut s: *const libc::c_char = (c"puts variable".as_ptr().cast_mut()).cast_const();
     libc::puts(s);
 }
-pub unsafe fn test_fileno_3() {
+pub unsafe fn test_fileno_4() {
     assert!(((((libc::fileno(libcc2rs::stdin_unsafe())) == (0)) as i32) != 0));
     assert!(((((libc::fileno(libcc2rs::stdout_unsafe())) == (1)) as i32) != 0));
     assert!(((((libc::fileno(libcc2rs::stderr_unsafe())) == (2)) as i32) != 0));
@@ -53,8 +53,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     (unsafe { test_fputc_0() });
-    (unsafe { test_fputs_1() });
-    (unsafe { test_puts_2() });
-    (unsafe { test_fileno_3() });
+    (unsafe { test_fputs_2() });
+    (unsafe { test_puts_3() });
+    (unsafe { test_fileno_4() });
     return 0;
 }

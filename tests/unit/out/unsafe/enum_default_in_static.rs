@@ -28,7 +28,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((((config_0.count) == (0)) as i32) != 0));
-    assert!(((((config_0.mode as u32) == ((Mode_MODE_NONE as i32) as u32)) as i32) != 0));
+    assert!((((((*&raw mut config_0).count) == (0)) as i32) != 0));
+    assert!(
+        (((((*&raw mut config_0).mode as u32) == ((Mode_MODE_NONE as i32) as u32)) as i32) != 0)
+    );
     return 0;
 }

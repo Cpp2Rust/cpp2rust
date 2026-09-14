@@ -19,7 +19,7 @@ impl Counted {
     }
     pub unsafe fn Counted_pconstCounted(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
-        copies_0.prefix_inc();
+        (*&raw mut copies_0).prefix_inc();
         this
     }
 }
@@ -92,23 +92,23 @@ unsafe fn main_0() -> i32 {
     let mut b: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
     let mut c: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
     let mut d: Counted = Counted::Counted_pconstCounted({ &a as *const Counted });
-    assert!(((copies_0) == (3)));
+    assert!(((*&raw mut copies_0) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
     assert!(
         ((unsafe { by_value_1(Counted::Counted_pconstCounted({ &a as *const Counted },),) })
             == (1))
     );
-    assert!(((copies_0) == (4)));
+    assert!(((*&raw mut copies_0) == (4)));
     let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
-    assert!(((copies_0) == (5)));
+    assert!(((*&raw mut copies_0) == (5)));
     let mut f: Counted = Counted::Counted({ 6 });
     assert!(((f.v) == (6)));
-    assert!(((copies_0) == (5)));
+    assert!(((*&raw mut copies_0) == (5)));
     let g: Counted = Counted::Counted({ 7 });
     let mut h: Counted = Counted::Counted_pconstCounted({ &g as *const Counted });
     assert!(((h.v) == (7)));
-    assert!(((copies_0) == (6)));
+    assert!(((*&raw mut copies_0) == (6)));
     let mut hold: Holder = Holder {
         c: Counted::Counted({ 8 }),
         arr: [Counted::Counted({ 9 }), Counted::Counted({ 10 })],
@@ -118,14 +118,14 @@ unsafe fn main_0() -> i32 {
         (((hold2.c.v) == (8)) && ((hold2.arr[(0) as usize].v) == (9)))
             && ((hold2.arr[(1) as usize].v) == (10))
     );
-    assert!(((copies_0) == (9)));
+    assert!(((*&raw mut copies_0) == (9)));
     let mut vec_: Vec<Counted> = Vec::new();
     {
         let a0_clone = a.clone();
         vec_.push(a0_clone)
     };
     assert!(((vec_[(0_usize)].v) == (1)));
-    assert!(((copies_0) == (10)));
+    assert!(((*&raw mut copies_0) == (10)));
     let mut n: NonConst = NonConst::NonConst();
     let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n as *mut NonConst });
     let cn: NonConst = NonConst::NonConst();

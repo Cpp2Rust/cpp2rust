@@ -16,6 +16,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(((global_0) == (1)));
+    assert!(((*&raw mut global_0) == (1)));
     return 0;
 }

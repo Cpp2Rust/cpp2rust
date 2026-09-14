@@ -16,7 +16,7 @@ pub struct Inner {
 pub struct Table {}
 impl Table {
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
-        return &mut table_0[(i) as usize] as *mut i32;
+        return &mut (*&raw mut table_0)[(i) as usize] as *mut i32;
     }
 }
 pub static mut table_0: [i32; 3] = unsafe { [7, 8, 9] };
@@ -78,6 +78,6 @@ unsafe fn main_0() -> i32 {
     let mut t: Table = <Table>::default();
     assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));
     (*(unsafe { Table::operator_index(1) })) = 80;
-    assert!(((table_0[(1) as usize]) == (80)));
+    assert!((((*&raw mut table_0)[(1) as usize]) == (80)));
     return 0;
 }

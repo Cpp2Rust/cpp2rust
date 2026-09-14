@@ -64,7 +64,10 @@ unsafe fn main_0() -> i32 {
         < (((::std::mem::size_of::<[libc::c_char; 41]>() as usize)
             .wrapping_div((::std::mem::size_of::<libc::c_char>() as usize))) as i32))
     {
-        assert!((((*special.offset((i) as isize)) as i32) == (expected_0[(i) as usize] as i32)));
+        assert!(
+            (((*special.offset((i) as isize)) as i32)
+                == ((*&raw mut expected_0)[(i) as usize] as i32))
+        );
         i.postfix_inc();
     }
     return 0;

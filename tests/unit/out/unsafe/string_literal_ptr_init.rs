@@ -46,21 +46,26 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(
-        (((((*table_1[(0) as usize].name.offset((0) as isize)) as i32) == ('f' as i32)) as i32)
+        (((((*(*&raw mut table_1)[(0) as usize].name.offset((0) as isize)) as i32) == ('f' as i32))
+            as i32)
             != 0)
     );
     assert!(
-        (((((*table_1[(0) as usize].name.offset((4) as isize)) as i32) == ('t' as i32)) as i32)
+        (((((*(*&raw mut table_1)[(0) as usize].name.offset((4) as isize)) as i32) == ('t' as i32))
+            as i32)
             != 0)
     );
-    assert!(((((table_1[(0) as usize].probe).is_none()) as i32) != 0));
-    assert!(((((table_1[(0) as usize].mask) == (16)) as i32) != 0));
+    assert!((((((*&raw mut table_1)[(0) as usize].probe).is_none()) as i32) != 0));
+    assert!((((((*&raw mut table_1)[(0) as usize].mask) == (16)) as i32) != 0));
     assert!(
-        (((((*table_1[(1) as usize].name.offset((0) as isize)) as i32) == ('s' as i32)) as i32)
+        (((((*(*&raw mut table_1)[(1) as usize].name.offset((0) as isize)) as i32) == ('s' as i32))
+            as i32)
             != 0)
     );
-    assert!(((((unsafe { (table_1[(1) as usize].probe).unwrap()() }) == (1)) as i32) != 0));
-    assert!(((((table_1[(1) as usize].mask) == (32)) as i32) != 0));
+    assert!(
+        ((((unsafe { ((*&raw mut table_1)[(1) as usize].probe).unwrap()() }) == (1)) as i32) != 0)
+    );
+    assert!((((((*&raw mut table_1)[(1) as usize].mask) == (32)) as i32) != 0));
     let mut tail: *const libc::c_char = (&mut (*c"ab.cd".as_ptr().cast_mut().offset((2) as isize))
         as *mut libc::c_char)
         .cast_const();
@@ -69,7 +74,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*tail.offset((2) as isize)) as i32) == ('d' as i32)) as i32) != 0));
     let mut have: i32 = 0;
     let mut p: *mut ::libc::c_void = if (have != 0) {
-        (table_1[(0) as usize].name as *mut ::libc::c_void)
+        ((*&raw mut table_1)[(0) as usize].name as *mut ::libc::c_void)
     } else {
         (c"".as_ptr().cast_mut() as *mut libc::c_char as *mut ::libc::c_void)
     };
@@ -79,7 +84,7 @@ unsafe fn main_0() -> i32 {
     );
     have = 1;
     p = if (have != 0) {
-        (table_1[(0) as usize].name as *mut ::libc::c_void)
+        ((*&raw mut table_1)[(0) as usize].name as *mut ::libc::c_void)
     } else {
         (c"".as_ptr().cast_mut() as *mut libc::c_char as *mut ::libc::c_void)
     };

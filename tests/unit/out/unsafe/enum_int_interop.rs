@@ -155,14 +155,14 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
     assert!(((extra) == (((0) + (1)) + (2))));
-    assert!(((global_color_0 as i32) == (Color_GREEN as i32)));
-    assert!(((global_opt_1 as i32) == (Option_OPT_B as i32)));
-    assert!(((global_tag_2 as i32) == (Tag_TAG_TWO as i32)));
-    assert!(((entries_3[(0) as usize].color as i32) == (Color_RED as i32)));
-    assert!(((entries_3[(0) as usize].opt as i32) == (Option_OPT_NONE as i32)));
-    assert!(((entries_3[(1) as usize].color as i32) == (Color_GREEN as i32)));
-    assert!(((entries_3[(1) as usize].opt as i32) == (Option_OPT_A as i32)));
-    assert!(((entries_3[(2) as usize].color as i32) == (Color_BLUE as i32)));
-    assert!(((entries_3[(2) as usize].opt as i32) == (Option_OPT_C as i32)));
+    assert!((((*&raw mut global_color_0) as i32) == (Color_GREEN as i32)));
+    assert!((((*&raw mut global_opt_1) as i32) == (Option_OPT_B as i32)));
+    assert!((((*&raw mut global_tag_2) as i32) == (Tag_TAG_TWO as i32)));
+    assert!((((*&raw mut entries_3)[(0) as usize].color as i32) == (Color_RED as i32)));
+    assert!((((*&raw mut entries_3)[(0) as usize].opt as i32) == (Option_OPT_NONE as i32)));
+    assert!((((*&raw mut entries_3)[(1) as usize].color as i32) == (Color_GREEN as i32)));
+    assert!((((*&raw mut entries_3)[(1) as usize].opt as i32) == (Option_OPT_A as i32)));
+    assert!((((*&raw mut entries_3)[(2) as usize].color as i32) == (Color_BLUE as i32)));
+    assert!((((*&raw mut entries_3)[(2) as usize].opt as i32) == (Option_OPT_C as i32)));
     return 0;
 }
