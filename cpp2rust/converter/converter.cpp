@@ -1751,6 +1751,12 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
+    auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
+    ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
+    return false;
+  }
+
   if (auto plugin_str = TryPluginConvert(expr)) {
     StrCat(*plugin_str);
     return false;

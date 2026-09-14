@@ -843,6 +843,22 @@ bool IsSameTypeComparison(const clang::FunctionDecl *fn,
          is_record(fn->getParamDecl(1)->getType());
 }
 
+bool IsImplicitAssignmentCall(const clang::CallExpr *expr) {
+  const auto *call = clang::dyn_cast<clang::CXXMemberCallExpr>(expr);
+  if (!call) {
+    return false;
+  }
+  const auto *method = call->getMethodDecl();
+  if (!method || !(method->isCopyAssignmentOperator() ||
+                   method->isMoveAssignmentOperator())) {
+    return false;
+  }
+  if (method->isUserProvided() && IsUserDefinedDecl(method)) {
+    return false;
+  }
+  return !IsConvertibleMoveAssignment(method);
+}
+
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
   if (!callee) {
