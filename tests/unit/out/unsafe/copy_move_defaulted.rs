@@ -182,6 +182,88 @@ impl Default for Buffer {
         }
     }
 }
+#[repr(C)]
+#[derive()]
+pub struct Owner {
+    pub data: Vec<i32>,
+    pub n: i32,
+    pub arr: [i32; 2],
+    pub p: Option<Box<i32>>,
+}
+impl Owner {
+    pub unsafe fn Owner_pmutOwner(_a0: *mut Owner) -> Self {
+        let mut this = Self {
+            data: std::mem::take(&mut (*_a0).data),
+            n: (*_a0).n,
+            arr: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).arr[(__i)]),
+            p: (*_a0).p.take(),
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutOwner(&mut self, _a0: *mut Owner) -> *mut Owner {
+        self.data = std::mem::take(&mut (*_a0).data);
+        self.n = (*_a0).n;
+        {
+            if 8_usize != 0 {
+                ::std::ptr::copy_nonoverlapping(
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
+                        as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    8_usize as usize,
+                )
+            }
+            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+        };
+        self.p = (*_a0).p.take();
+        return &mut (*(self as *mut Owner));
+    }
+}
+impl Default for Owner {
+    fn default() -> Self {
+        Owner {
+            data: Default::default(),
+            n: 0_i32,
+            arr: [0_i32; 2],
+            p: None,
+        }
+    }
+}
+#[repr(C)]
+#[derive(Default)]
+pub struct Holder {
+    pub inner: Inner,
+    pub e: Explicit,
+    pub p: Option<Box<i32>>,
+}
+impl Holder {
+    pub unsafe fn Holder(mut v: i32) -> Self {
+        let mut this = Self {
+            inner: Inner { x: v },
+            e: Explicit::Explicit({ v }),
+            p: None,
+        };
+        this
+    }
+    pub unsafe fn Holder_pmutHolder(_a0: *mut Holder) -> Self {
+        let mut this = Self {
+            inner: (*_a0).inner,
+            e: (*_a0).e.clone(),
+            p: (*_a0).p.take(),
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutHolder(&mut self, _a0: *mut Holder) -> *mut Holder {
+        self.inner = (*_a0).inner;
+        self.e = ((*_a0).e).clone();
+        self.p = (*_a0).p.take();
+        return &mut (*(self as *mut Holder));
+    }
+}
+impl Holder {
+    pub unsafe fn destructor(&mut self) {
+        Explicit::destructor(&mut self.e);
+    }
+}
 pub unsafe fn same_0(a: *const Explicit, b: *const Explicit) -> bool {
     return (((((*a).v) == ((*b).v)) && (((*a).inner.x) == ((*b).inner.x)))
         && (((*a).arr[(0) as usize]) == ((*b).arr[(0) as usize])))
@@ -288,6 +370,78 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))
             && (bufs[(0_usize)].data.is_empty())
+    );
+    let mut o1: Owner = <Owner>::default();
+    o1.data.push(5);
+    o1.n = 5;
+    o1.arr[(0) as usize] = 5;
+    o1.arr[(1) as usize] = 6;
+    {
+        let _a0: *mut i32 = (Box::leak(Box::new(7)) as *mut i32);
+        o1.p = if _a0.is_null() {
+            None
+        } else {
+            Some(Box::from_raw(_a0))
+        }
+    };
+    let mut o2: Owner = Owner::Owner_pmutOwner({ &mut o1 });
+    assert!(
+        ((((o2.n) == (5)) && ((o2.data.len()) == (1_usize))) && ((o2.arr[(1) as usize]) == (6)))
+            && ((*o2.p.as_deref_mut().unwrap()) == (7))
+    );
+    assert!(
+        (o1.data.is_empty())
+            && ((o1
+                .p
+                .as_deref_mut()
+                .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
+            .is_null())
+    );
+    let mut o3: Owner = <Owner>::default();
+    (unsafe { Owner::operator_assign_pmutOwner(&mut o3, &mut o2) });
+    assert!(
+        ((((o3.n) == (5)) && ((o3.data[(0_usize)]) == (5))) && ((o3.arr[(0) as usize]) == (5)))
+            && ((*o3.p.as_deref_mut().unwrap()) == (7))
+    );
+    assert!(
+        (o2.data.is_empty())
+            && ((o2
+                .p
+                .as_deref_mut()
+                .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
+            .is_null())
+    );
+    let mut h1: Holder = Holder::Holder({ 4 });
+    let _dtor_h1 = ScopedDestructorUnsafe::new(&raw mut h1, Holder::destructor);
+    {
+        let _a0: *mut i32 = (Box::leak(Box::new(9)) as *mut i32);
+        h1.p = if _a0.is_null() {
+            None
+        } else {
+            Some(Box::from_raw(_a0))
+        }
+    };
+    let mut h2: Holder = Holder::Holder_pmutHolder({ &mut h1 });
+    let _dtor_h2 = ScopedDestructorUnsafe::new(&raw mut h2, Holder::destructor);
+    assert!(
+        ((((h2.inner.x) == (4)) && ((h2.e.v) == (4))) && ((*h2.p.as_deref_mut().unwrap()) == (9)))
+            && ((h1
+                .p
+                .as_deref_mut()
+                .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
+            .is_null())
+    );
+    let mut h3: Holder = Holder::Holder({ 1 });
+    let _dtor_h3 = ScopedDestructorUnsafe::new(&raw mut h3, Holder::destructor);
+    (unsafe { Holder::operator_assign_pmutHolder(&mut h3, &mut h2) });
+    assert!(
+        ((((h3.inner.x) == (4)) && ((h3.e.arr[(1) as usize]) == (5)))
+            && ((*h3.p.as_deref_mut().unwrap()) == (9)))
+            && ((h2
+                .p
+                .as_deref_mut()
+                .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
+            .is_null())
     );
     return 0;
 }

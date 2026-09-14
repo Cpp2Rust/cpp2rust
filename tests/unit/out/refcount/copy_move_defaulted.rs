@@ -311,6 +311,112 @@ impl ByteRepr for Buffer {
         }
     }
 }
+#[derive()]
+pub struct Owner {
+    pub data: Value<Vec<i32>>,
+    pub n: Value<i32>,
+    pub arr: Value<Box<[i32]>>,
+    pub p: Value<Option<Value<i32>>>,
+}
+impl Owner {
+    pub fn Owner_pmutOwner(_a0: Ptr<Owner>) -> Self {
+        let __this: Value<Owner> = Rc::new(RefCell::new(Self {
+            data: Rc::new(RefCell::new(std::mem::take(
+                &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
+            ))),
+            n: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).n.borrow()))),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*(*_a0.upgrade().deref()).arr.borrow())[(__i) as usize],
+            )))),
+            p: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).p.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<Owner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for Owner {
+    fn default() -> Self {
+        Owner {
+            data: Rc::new(RefCell::new(Default::default())),
+            n: <Value<i32>>::default(),
+            arr: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
+            p: Rc::new(RefCell::new(None)),
+        }
+    }
+}
+impl ByteRepr for Owner {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.n.borrow()).to_bytes(&mut buf[24..28]);
+        (*self.arr.borrow()).to_bytes(&mut buf[28..36]);
+        (*self.p.borrow()).to_bytes(&mut buf[40..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[28..36]))),
+            p: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[40..48]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Holder {
+    pub inner: Value<Inner>,
+    pub e: Value<Explicit>,
+    pub p: Value<Option<Value<i32>>>,
+}
+impl Holder {
+    pub fn Holder(v: i32) -> Self {
+        let v: Value<i32> = Rc::new(RefCell::new(v));
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            inner: Rc::new(RefCell::new(Inner {
+                x: Rc::new(RefCell::new((*v.borrow()))),
+            })),
+            e: Rc::new(RefCell::new(Explicit::Explicit({ (*v.borrow()) }))),
+            p: Rc::new(RefCell::new(None)),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+    pub fn Holder_pmutHolder(_a0: Ptr<Holder>) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            inner: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).inner.borrow()).clone(),
+            )),
+            e: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).e.borrow()).clone())),
+            p: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).p.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        32
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.inner.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.e.borrow()).to_bytes(&mut buf[4..20]);
+        (*self.p.borrow()).to_bytes(&mut buf[24..32]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
+            e: Rc::new(RefCell::new(<Explicit>::from_bytes(&buf[4..20]))),
+            p: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[24..32]))),
+        }
+    }
+}
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
     return ((({
         let _lhs = (*(*a.upgrade().deref()).v.borrow());
@@ -541,6 +647,64 @@ fn main_0() -> i32 {
             .borrow())
             .is_empty())
     );
+    let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
+    (*(*o1.borrow()).data.borrow_mut()).push(5);
+    (*(*o1.borrow()).n.borrow_mut()) = 5;
+    (*(*o1.borrow()).arr.borrow_mut())[(0) as usize] = 5;
+    (*(*o1.borrow()).arr.borrow_mut())[(1) as usize] = 6;
+    {
+        let _p: Ptr<_> = Ptr::alloc(7);
+        (*(*o1.borrow()).p.borrow_mut()) = _p.to_owned_opt()
+    };
+    let o2: Value<Owner> = Rc::new(RefCell::new(Owner::Owner_pmutOwner({ o1.as_pointer() })));
+    assert!(
+        ((((*(*o2.borrow()).n.borrow()) == 5)
+            && ((*(*o2.borrow()).data.borrow()).len() == 1_usize))
+            && ((*(*o2.borrow()).arr.borrow())[(1) as usize] == 6))
+            && ((*(*(*o2.borrow()).p.borrow()).as_ref().unwrap().borrow()) == 7)
+    );
+    assert!(
+        ((*(*o1.borrow()).data.borrow()).is_empty())
+            && (((*(*o1.borrow()).p.borrow()).as_pointer()).is_null())
+    );
+    let o3: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
+    ({ OwnerImpl::operator_assign_pmutOwner(&o3.as_pointer(), o2.as_pointer()) });
+    assert!(
+        ((((*(*o3.borrow()).n.borrow()) == 5)
+            && ((((*o3.borrow()).data.as_pointer() as Ptr<i32>)
+                .offset(0_usize)
+                .read())
+                == 5))
+            && ((*(*o3.borrow()).arr.borrow())[(0) as usize] == 5))
+            && ((*(*(*o3.borrow()).p.borrow()).as_ref().unwrap().borrow()) == 7)
+    );
+    assert!(
+        ((*(*o2.borrow()).data.borrow()).is_empty())
+            && (((*(*o2.borrow()).p.borrow()).as_pointer()).is_null())
+    );
+    let h1: Value<Holder> = Rc::new(RefCell::new(Holder::Holder({ 4 })));
+    let _dtor_h1 = ScopedDestructor::new(&h1, |__p| __p.destructor());
+    {
+        let _p: Ptr<_> = Ptr::alloc(9);
+        (*(*h1.borrow()).p.borrow_mut()) = _p.to_owned_opt()
+    };
+    let h2: Value<Holder> = Rc::new(RefCell::new(Holder::Holder_pmutHolder({ h1.as_pointer() })));
+    let _dtor_h2 = ScopedDestructor::new(&h2, |__p| __p.destructor());
+    assert!(
+        ((((*(*(*h2.borrow()).inner.borrow()).x.borrow()) == 4)
+            && ((*(*(*h2.borrow()).e.borrow()).v.borrow()) == 4))
+            && ((*(*(*h2.borrow()).p.borrow()).as_ref().unwrap().borrow()) == 9))
+            && (((*(*h1.borrow()).p.borrow()).as_pointer()).is_null())
+    );
+    let h3: Value<Holder> = Rc::new(RefCell::new(Holder::Holder({ 1 })));
+    let _dtor_h3 = ScopedDestructor::new(&h3, |__p| __p.destructor());
+    ({ HolderImpl::operator_assign_pmutHolder(&h3.as_pointer(), h2.as_pointer()) });
+    assert!(
+        ((((*(*(*h3.borrow()).inner.borrow()).x.borrow()) == 4)
+            && ((*(*(*h3.borrow()).e.borrow()).arr.borrow())[(1) as usize] == 5))
+            && ((*(*(*h3.borrow()).p.borrow()).as_ref().unwrap().borrow()) == 9))
+            && (((*(*h2.borrow()).p.borrow()).as_pointer()).is_null())
+    );
     return 0;
 }
 pub trait BufferImpl {
@@ -592,6 +756,50 @@ pub trait ExplicitImpl {
 }
 impl ExplicitImpl for Ptr<Explicit> {
     fn destructor(&self) {}
+}
+pub trait HolderImpl {
+    fn operator_assign_pmutHolder(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+    fn destructor(&self);
+}
+impl HolderImpl for Ptr<Holder> {
+    fn operator_assign_pmutHolder(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+        let __rhs = (*(*_a0.upgrade().deref()).inner.borrow()).clone();
+        (*(*(*self).upgrade().deref()).inner.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).e.borrow()).clone();
+        (*(*(*self).upgrade().deref()).e.borrow_mut()) = __rhs;
+        ((*(*self).upgrade().deref()).p.as_pointer() as Ptr<Option<Value<i32>>>)
+            .write((*(*_a0.upgrade().deref()).p.borrow_mut()).take());
+        return (*self).clone();
+    }
+    fn destructor(&self) {
+        (*self.upgrade().deref()).e.as_pointer().destructor();
+    }
+}
+pub trait OwnerImpl {
+    fn operator_assign_pmutOwner(&self, _a0: Ptr<Owner>) -> Ptr<Owner>;
+}
+impl OwnerImpl for Ptr<Owner> {
+    fn operator_assign_pmutOwner(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
+        ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
+            &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
+        ));
+        let __rhs = (*(*_a0.upgrade().deref()).n.borrow());
+        (*(*(*self).upgrade().deref()).n.borrow_mut()) = __rhs;
+        {
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &(((*_a0.upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
+                .to_any()
+                .clone()
+        };
+        ((*(*self).upgrade().deref()).p.as_pointer() as Ptr<Option<Value<i32>>>)
+            .write((*(*_a0.upgrade().deref()).p.borrow_mut()).take());
+        return (*self).clone();
+    }
 }
 pub trait UserCopyDefaultMoveImpl {
     fn operator_assign_pconstUserCopyDefaultMove(
