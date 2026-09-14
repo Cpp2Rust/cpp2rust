@@ -68,3 +68,24 @@ fn f10<T1, T2>(a0: T1, a1: T2) -> (Value<T1>, Value<T2>) {
 fn f11<T1, T2>(a0: (Value<T1>, Value<T2>)) -> Value<T1> {
     a0.0
 }
+
+fn f12<T1: Default, T2: Default>(a0: &mut (Value<T1>, Value<T2>)) -> (Value<T1>, Value<T2>) {
+    std::mem::take(&mut *a0)
+}
+
+fn f13<T1: Clone + ByteRepr, T2: Clone + ByteRepr>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: (Value<T1>, Value<T2>),
+) {
+    a0.write((
+        Rc::new(RefCell::new(a1.0.borrow().clone())),
+        Rc::new(RefCell::new(a1.1.borrow().clone())),
+    ))
+}
+
+fn f14<T1: Default + ByteRepr, T2: Default + ByteRepr>(
+    a0: Ptr<(Value<T1>, Value<T2>)>,
+    a1: &mut (Value<T1>, Value<T2>),
+) {
+    a0.write(std::mem::take(&mut *a1))
+}

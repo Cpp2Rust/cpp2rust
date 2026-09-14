@@ -110,3 +110,7 @@ unsafe fn f24<T1, T2>(a0: &mut BTreeMap<T1, Box<T2>>) -> BTreeMap<T1, Box<T2>> {
 unsafe fn f25<T1, T2>(a0: &mut BTreeMap<T1, Box<T2>>, a1: &mut BTreeMap<T1, Box<T2>>) {
     *a0 = std::mem::take(&mut *a1)
 }
+
+unsafe fn f26<T1: Clone, T2: Clone>(a0: &mut BTreeMap<T1, Box<T2>>, a1: BTreeMap<T1, Box<T2>>) {
+    *a0 = a1.clone()
+}
