@@ -134,18 +134,16 @@ clang::CXXConstructExpr *buildConstructExpr(clang::CXXMemberCallExpr *call,
 
 } // namespace
 
-void Converter::emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) {
+void Converter::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                       std::string_view arg) {
   {
     PushExprKind push(*this, ExprKind::LValue);
     auto callee = ToString(call->getCallee());
     ReplaceAll(callee, "emplace_back", "push");
     StrCat(callee);
   }
-  StrCat('(');
-}
-
-void Converter::emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) {
-  StrCat(')');
+  PushParen paren(*this);
+  StrCat(arg);
 }
 
 bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
@@ -189,11 +187,9 @@ bool Converter::emplace_back_plugin_convert(clang::CallExpr *call) {
     arg = std::move(buf).str();
   }
 
-  StrCat("{ let __arg = ", arg, ";");
-  emplace_back_emit_push_open(member_call);
-  StrCat("__arg");
-  emplace_back_emit_push_close(member_call);
-  StrCat('}');
+  PushBrace brace(*this);
+  StrCat("let __arg = ", arg, ";");
+  emplace_back_emit_push(member_call, "__arg");
   return true;
 }
 

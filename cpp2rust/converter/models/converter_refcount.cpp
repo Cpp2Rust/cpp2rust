@@ -2504,20 +2504,18 @@ void ConverterRefCount::emplace_back_plugin_construct_arg(
   ConvertVarInit(elem_type, ctor);
 }
 
-void ConverterRefCount::emplace_back_emit_push_open(
-    clang::CXXMemberCallExpr *call) {
+void ConverterRefCount::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                               std::string_view arg) {
   auto *obj = GetCallObject(call);
   auto obj_type = obj->getType().getNonReferenceType();
   if (obj_type->isPointerType()) {
     obj_type = obj_type->getPointeeType();
   }
-  StrCat(ConvertObject(obj), ".with_mut(|__v: &mut ",
-         ToString(obj_type.getNonReferenceType()), "| __v.push(");
-}
-
-void ConverterRefCount::emplace_back_emit_push_close(
-    clang::CXXMemberCallExpr *call) {
-  StrCat("))");
+  StrCat(ConvertObject(obj), ".with_mut");
+  PushParen outer(*this);
+  StrCat("|__v: &mut ", ToString(obj_type.getNonReferenceType()), "| __v.push");
+  PushParen inner(*this);
+  StrCat(arg);
 }
 
 const char *
