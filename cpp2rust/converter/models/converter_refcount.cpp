@@ -2658,11 +2658,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  auto *moved = clang::dyn_cast<clang::CallExpr>(base->IgnoreParenImpCasts());
-  bool is_moved_object =
-      moved && moved->isCallToStdMove() && moved->getArg(0)->isGLValue();
-  if (!base->isLValue() && !is_moved_object &&
-      base->getType()->isRecordType() &&
+  if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =

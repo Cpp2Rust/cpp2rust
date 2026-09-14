@@ -1347,6 +1347,25 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
   return false;
 }
 
+const clang::Expr *IgnoreStdMove(const clang::Expr *expr) {
+  while (true) {
+    const auto *call =
+        clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
+    if (!call || !call->isCallToStdMove()) {
+      return expr;
+    }
+    expr = call->getArg(0);
+  }
+}
+
+bool IsTemporaryObject(const clang::Expr *expr) {
+  const auto *operand = IgnoreStdMove(expr);
+  if (operand != expr) {
+    return !operand->isGLValue();
+  }
+  return !expr->isLValue();
+}
+
 bool ContainsVAArgExpr(const clang::Stmt *stmt) {
   if (clang::isa<clang::VAArgExpr>(stmt)) {
     return true;

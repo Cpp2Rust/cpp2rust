@@ -243,6 +243,10 @@ bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
+const clang::Expr *IgnoreStdMove(const clang::Expr *expr);
+
+bool IsTemporaryObject(const clang::Expr *expr);
+
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
 clang::Expr *NormalizeToBool(clang::Expr *expr, clang::ASTContext &ctx);
