@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -14,3 +15,4 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
     return ((*p.borrow_mut()).prefix_inc().read());
 }
+pub fn __cpp2rust_init_globals() {}

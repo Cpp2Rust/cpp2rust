@@ -49,6 +49,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -64,4 +65,8 @@ impl CImpl for Ptr<C> {
     fn get(&self) -> i32 {
         return (*inner_const_0.with(Value::clone).borrow());
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = inner_const_0.with(Value::clone);
+    let _ = inner_const_1.with(Value::clone);
 }

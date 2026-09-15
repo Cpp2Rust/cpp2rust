@@ -19,6 +19,7 @@ pub fn a_bar_3() -> i32 {
     return (*same_name_same_type_1.with(Value::clone).borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -39,4 +40,10 @@ pub fn b_foo_4() -> f32 {
 }
 pub fn b_bar_5() -> i32 {
     return (*same_name_same_type_7.with(Value::clone).borrow());
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = same_name_different_type_0.with(Value::clone);
+    let _ = same_name_same_type_1.with(Value::clone);
+    let _ = same_name_different_type_6.with(Value::clone);
+    let _ = same_name_same_type_7.with(Value::clone);
 }

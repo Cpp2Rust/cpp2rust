@@ -17,6 +17,7 @@ pub unsafe fn borrow_in_condition_and_in_body_0(mut x: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -25,3 +26,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { borrow_in_condition_and_in_body_0(1,) }) == (2)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

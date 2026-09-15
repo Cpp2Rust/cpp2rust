@@ -13,6 +13,7 @@ pub struct record {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -60,3 +61,4 @@ unsafe fn main_0() -> i32 {
     libcc2rs::free_unsafe(((*r).name as *mut libc::c_char as *mut ::libc::c_void));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

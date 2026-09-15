@@ -42,6 +42,7 @@ pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
     return ({ (*(*actual.borrow()))((*x.borrow())) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -52,3 +53,4 @@ fn main_0() -> i32 {
     assert!((({ apply_4(FnPtr::<fn(i32) -> i32>::null(), 5,) }) == 5));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

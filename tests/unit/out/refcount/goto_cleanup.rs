@@ -155,6 +155,7 @@ pub fn via_arrays_4(fail: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -174,3 +175,4 @@ fn main_0() -> i32 {
     assert!((((({ via_arrays_4(1,) }) == -1_i32) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

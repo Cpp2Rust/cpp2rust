@@ -32,6 +32,7 @@ unsafe impl Animal for Cat {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -45,3 +46,4 @@ unsafe fn main_0() -> i32 {
     assert!((eat1) && (!(eat2)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

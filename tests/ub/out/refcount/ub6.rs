@@ -60,6 +60,7 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     return (*out.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -73,3 +74,4 @@ fn main_0() -> i32 {
     ({ fill_1(arr.as_pointer(), n.as_pointer()) });
     return (({ any_2(arr.as_pointer(), n.as_pointer()) }) as i32);
 }
+pub fn __cpp2rust_init_globals() {}

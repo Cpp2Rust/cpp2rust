@@ -10,6 +10,7 @@ pub fn foo_0(a0: Ptr<i32>) {
     let a0: Value<Ptr<i32>> = Rc::new(RefCell::new(a0));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -22,3 +23,4 @@ fn main_0() -> i32 {
     ({ foo_0((*it.borrow()).clone()) });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

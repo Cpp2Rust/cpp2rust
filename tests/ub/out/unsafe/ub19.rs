@@ -14,6 +14,7 @@ pub unsafe fn foo_0(mut array: *mut i32) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -22,3 +23,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { foo_0(x) });
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

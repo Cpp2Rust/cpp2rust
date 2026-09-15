@@ -63,6 +63,7 @@ impl ByteRepr for Y {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -142,3 +143,4 @@ impl YImpl for Ptr<Y> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
 }
+pub fn __cpp2rust_init_globals() {}

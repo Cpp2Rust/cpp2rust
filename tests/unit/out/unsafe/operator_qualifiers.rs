@@ -42,6 +42,7 @@ impl S {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -61,3 +62,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::operator_index_i32_const_lref(&cs, 2,) }) == (112)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -10,6 +10,7 @@ pub fn f_0(list: Vec<i32>) {
     let list: Value<Vec<i32>> = Rc::new(RefCell::new(list));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -26,3 +27,4 @@ fn main_0() -> i32 {
     ({ f_0(vec![1, 2, 3, 4]) });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

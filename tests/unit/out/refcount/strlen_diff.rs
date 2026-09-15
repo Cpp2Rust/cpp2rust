@@ -15,6 +15,7 @@ pub fn strlen_0(s: Ptr<u8>) -> usize {
     return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as usize);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -30,3 +31,4 @@ fn main_0() -> i32 {
     assert!((({ strlen_0(((s.as_pointer() as Ptr<u8>).offset(0)),) }) == 6_usize));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

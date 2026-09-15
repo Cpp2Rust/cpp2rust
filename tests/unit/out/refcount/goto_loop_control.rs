@@ -30,9 +30,11 @@ pub fn loopctl_0() -> i32 {
     return (*sum.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ loopctl_0() }) == 3) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

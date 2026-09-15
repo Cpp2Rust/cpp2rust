@@ -220,6 +220,7 @@ pub fn test_getpwuid_r_erange_3() {
     assert!(((((*result.borrow()).is_null()) as i32) != 0));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -229,3 +230,4 @@ fn main_0() -> i32 {
     ({ test_getpwuid_r_erange_3() });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

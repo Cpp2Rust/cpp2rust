@@ -11,9 +11,13 @@ thread_local!(
     pub static g_0: Ptr<i32> = __tmp_0.with(Value::as_pointer);
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(((g_0.with(Ptr::clone).read()) == 5));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = g_0.with(Ptr::clone);
 }

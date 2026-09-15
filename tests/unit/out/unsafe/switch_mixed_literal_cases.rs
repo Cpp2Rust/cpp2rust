@@ -31,6 +31,7 @@ pub unsafe fn mixed_literal_cases_0(mut x: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -42,3 +43,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { mixed_literal_cases_0(7,) }) == (0)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

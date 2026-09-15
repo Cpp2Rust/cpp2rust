@@ -39,6 +39,7 @@ thread_local!(
     pub static p_zero_7: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -61,4 +62,14 @@ fn main_0() -> i32 {
     assert!((*cp_explicit_null_6.with(Value::clone).borrow()).is_null());
     assert!((*p_zero_7.with(Value::clone).borrow()).is_null());
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = p_mut_0.with(Value::clone);
+    let _ = p_const_1.with(Value::clone);
+    let _ = cp_2.with(Value::clone);
+    let _ = arr_of_ptr_3.with(Value::clone);
+    let _ = pp_4.with(Value::clone);
+    let _ = const_arr_of_ptr_5.with(Value::clone);
+    let _ = cp_explicit_null_6.with(Value::clone);
+    let _ = p_zero_7.with(Value::clone);
 }

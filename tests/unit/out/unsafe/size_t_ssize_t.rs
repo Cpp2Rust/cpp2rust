@@ -17,6 +17,7 @@ pub unsafe fn sub_signed_2(mut a: isize, mut b: isize) -> isize {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -162,3 +163,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((n).wrapping_rem(7_usize)) as i32) == (1)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -21,6 +21,7 @@ pub fn run_2(fn_: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     ({ (*(*fn_.borrow()))((*x.borrow()).clone()) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -37,3 +38,4 @@ fn main_0() -> i32 {
     assert!(((*b.borrow()) == -10_i32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

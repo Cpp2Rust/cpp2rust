@@ -78,6 +78,7 @@ pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) 
     let p3: Value<Ptr<Pair>> = Rc::new(RefCell::new(p3));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -322,3 +323,4 @@ impl PairImpl for Ptr<Pair> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
 }
+pub fn __cpp2rust_init_globals() {}

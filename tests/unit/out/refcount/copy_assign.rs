@@ -183,6 +183,7 @@ impl ByteRepr for Holder {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -302,4 +303,7 @@ impl RefQualifiedImpl for Ptr<RefQualified> {
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = assigns_0.with(Value::clone);
 }

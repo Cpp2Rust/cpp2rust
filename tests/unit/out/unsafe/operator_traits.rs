@@ -130,6 +130,7 @@ pub struct Wrapped_int_ {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -216,3 +217,4 @@ unsafe fn main_0() -> i32 {
     assert!(((*m.entry(Lt { v: 2 }).or_default().as_mut()) == (20)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -117,6 +117,7 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     };
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -144,3 +145,4 @@ fn main_0() -> i32 {
     assert!((((((*buf16.borrow()) as i32) == 4660) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

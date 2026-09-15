@@ -17,8 +17,12 @@ pub fn main() {
         .map(|arg| arg.as_ptr() as *mut libc::c_char)
         .collect();
     argv.push(::std::ptr::null_mut());
-    unsafe { ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32) }
+    unsafe {
+        __cpp2rust_init_globals();
+        ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
+    }
 }
 unsafe fn main_0(mut _a0: i32, mut _a1: *mut *mut libc::c_char) -> i32 {
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

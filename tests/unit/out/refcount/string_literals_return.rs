@@ -20,6 +20,7 @@ pub fn get_branch_2(x: i32) -> Ptr<u8> {
     return Ptr::from_string_literal(b"non-positive");
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -39,3 +40,4 @@ fn main_0() -> i32 {
     assert!(((((*d.borrow()).offset((12) as isize).read()) as i32) == (('\0' as u8) as i32)));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -11,6 +11,7 @@ pub fn write_ulong_0(p: Ptr<u64>) {
     (*p.borrow()).write(42_u64);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -19,3 +20,4 @@ fn main_0() -> i32 {
     assert!(((((*x.borrow()) == 42_usize) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

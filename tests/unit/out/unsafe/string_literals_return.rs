@@ -20,6 +20,7 @@ pub unsafe fn get_branch_2(mut x: i32) -> *const libc::c_char {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -40,3 +41,4 @@ unsafe fn main_0() -> i32 {
     assert!((((*d.offset((12) as isize)) as i32) == (('\0' as libc::c_char) as i32)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

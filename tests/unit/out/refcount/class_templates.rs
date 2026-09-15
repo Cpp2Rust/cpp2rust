@@ -85,6 +85,7 @@ impl ByteRepr for MyContainer_float_ {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -211,3 +212,4 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
         };
     }
 }
+pub fn __cpp2rust_init_globals() {}

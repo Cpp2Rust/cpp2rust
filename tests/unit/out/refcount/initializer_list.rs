@@ -14,9 +14,11 @@ pub fn f_0(bytes: Vec<i32>) -> usize {
     return (*n.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ f_0(vec![1, 2, 3,],) }) == 3_usize));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -45,6 +45,7 @@ pub fn func_5(x1: f64, x2: i32, x3: f64) -> i32 {
     return ((((*x1.borrow()) + ((*x2.borrow()) as f64)) + (*x3.borrow())) as i32);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -60,3 +61,4 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

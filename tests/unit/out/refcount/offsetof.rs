@@ -81,6 +81,7 @@ impl ByteRepr for Frame {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -112,3 +113,4 @@ fn main_0() -> i32 {
     assert!(((*total.borrow()) == (2_usize).wrapping_add((*len.borrow()))));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

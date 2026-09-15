@@ -21,6 +21,7 @@ pub fn read_global_3() -> i32 {
     return (*value_0.with(Value::clone).borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -28,4 +29,7 @@ fn main_0() -> i32 {
     assert!((((({ local_shadow_2() }) == 99) as i32) != 0));
     assert!((((({ read_global_3() }) == 5) as i32) != 0));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = value_0.with(Value::clone);
 }

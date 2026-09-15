@@ -37,6 +37,7 @@ impl ByteRepr for Point {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -50,3 +51,4 @@ fn main_0() -> i32 {
     assert!(((((*bytes.borrow()).offset((7) as isize).read()) as i32) == 8));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

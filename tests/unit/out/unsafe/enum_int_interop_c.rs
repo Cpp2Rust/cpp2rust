@@ -26,10 +26,13 @@ pub struct Entry {
     pub color: Color,
     pub opt: Option,
 }
-pub static mut global_color_0: Color = unsafe { Color_GREEN };
-pub static mut global_opt_1: Option = unsafe { Option_OPT_B };
-pub static mut global_tag_2: Tag_enum = unsafe { Tag_enum_TAG_TWO };
-pub static mut entries_3: [Entry; 3] = unsafe {
+pub static mut global_color_0: std::cell::LazyCell<Color> =
+    std::cell::LazyCell::new(|| unsafe { Color_GREEN });
+pub static mut global_opt_1: std::cell::LazyCell<Option> =
+    std::cell::LazyCell::new(|| unsafe { Option_OPT_B });
+pub static mut global_tag_2: std::cell::LazyCell<Tag_enum> =
+    std::cell::LazyCell::new(|| unsafe { Tag_enum_TAG_TWO });
+pub static mut entries_3: std::cell::LazyCell<[Entry; 3]> = std::cell::LazyCell::new(|| unsafe {
     [
         Entry {
             name: (c"first".as_ptr().cast_mut()).cast_const(),
@@ -47,7 +50,7 @@ pub static mut entries_3: [Entry; 3] = unsafe {
             opt: Option_OPT_C,
         },
     ]
-};
+});
 pub unsafe fn as_int_4(mut c: Color) -> i32 {
     return (c as i32);
 }
@@ -79,6 +82,7 @@ pub unsafe fn make_color_6(mut n: i32) -> Color {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -155,26 +159,50 @@ unsafe fn main_0() -> i32 {
     };
     let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
     assert!(((((extra) == (((0) + (1)) + (2))) as i32) != 0));
-    assert!(((((global_color_0 as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
-    assert!(((((global_opt_1 as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
-    assert!(((((global_tag_2 as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
     assert!(
-        ((((entries_3[(0) as usize].color as u32) == ((Color_RED as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut global_color_0)) as u32)
+            == ((Color_GREEN as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(0) as usize].opt as u32) == ((Option_OPT_NONE as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut global_opt_1)) as u32)
+            == ((Option_OPT_B as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(1) as usize].color as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut global_tag_2)) as u32)
+            == ((Tag_enum_TAG_TWO as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(1) as usize].opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(0) as usize].color as u32)
+            == ((Color_RED as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(2) as usize].color as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(0) as usize].opt as u32)
+            == ((Option_OPT_NONE as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        ((((entries_3[(2) as usize].opt as u32) == ((Option_OPT_C as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(1) as usize].color as u32)
+            == ((Color_GREEN as i32) as u32)) as i32)
+            != 0)
+    );
+    assert!(
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(1) as usize].opt as u32)
+            == ((Option_OPT_A as i32) as u32)) as i32)
+            != 0)
+    );
+    assert!(
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(2) as usize].color as u32)
+            == ((Color_BLUE as i32) as u32)) as i32)
+            != 0)
+    );
+    assert!(
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(2) as usize].opt as u32)
+            == ((Option_OPT_C as i32) as u32)) as i32)
+            != 0)
     );
     let mut names: [*const libc::c_char; 3] = [
         (c"red".as_ptr().cast_mut()).cast_const(),
@@ -186,16 +214,26 @@ unsafe fn main_0() -> i32 {
         (((((*names[(idx) as usize].offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0)
     );
     assert!(
-        ((((entries_3[(idx) as usize].opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0)
+        (((((*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))[(idx) as usize].opt as u32)
+            == ((Option_OPT_A as i32) as u32)) as i32)
+            != 0)
     );
     assert!(
-        (((((*names[(global_tag_2) as usize].offset((0) as isize)) as i32) == ('b' as i32))
-            as i32)
+        (((((*names[(*std::cell::LazyCell::force_mut(&mut *&raw mut global_tag_2)) as usize]
+            .offset((0) as isize)) as i32)
+            == ('b' as i32)) as i32)
             != 0)
     );
     let mut pp: *mut *const libc::c_char = (&mut names[(idx) as usize] as *mut *const libc::c_char);
     assert!((((((*(*pp).offset((0) as isize)) as i32) == ('g' as i32)) as i32) != 0));
-    let mut pe: *mut Entry = (&mut entries_3[(idx) as usize] as *mut Entry);
+    let mut pe: *mut Entry = (&mut (*std::cell::LazyCell::force_mut(&mut *&raw mut entries_3))
+        [(idx) as usize] as *mut Entry);
     assert!((((((*pe).opt as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const global_color_0);
+    std::cell::LazyCell::force(&*&raw const global_opt_1);
+    std::cell::LazyCell::force(&*&raw const global_tag_2);
+    std::cell::LazyCell::force(&*&raw const entries_3);
 }

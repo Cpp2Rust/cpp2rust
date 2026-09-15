@@ -12,9 +12,11 @@ pub fn dangling_0() -> Ptr<i32> {
     return (*p.borrow()).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let x: Ptr<i32> = ({ dangling_0() });
     return (x.read());
 }
+pub fn __cpp2rust_init_globals() {}

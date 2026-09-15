@@ -79,6 +79,8 @@ public:
   void EmitFunctionPreamble(clang::FunctionDecl *decl) override;
 
   bool VisitVarDecl(clang::VarDecl *decl) override;
+  bool LazyStaticInit() const override { return false; }
+  std::string ForceGlobalInit(const clang::VarDecl *decl) override;
 
   void ConvertGlobalVarDecl(clang::VarDecl *decl) override;
 

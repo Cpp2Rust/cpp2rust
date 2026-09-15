@@ -11,6 +11,7 @@ pub fn null_0(p: Ptr<Ptr<i32>>) {
     (*p.borrow()).write(Ptr::<i32>::null());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -20,3 +21,4 @@ fn main_0() -> i32 {
     let r: Ptr<i32> = (*p.borrow()).clone();
     return (r.read());
 }
+pub fn __cpp2rust_init_globals() {}

@@ -18,6 +18,7 @@ pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) 
     return (*n.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -50,3 +51,4 @@ fn main_0() -> i32 {
     assert!((((((*buf.borrow())[(0) as usize] as i32) == ('A' as i32)) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

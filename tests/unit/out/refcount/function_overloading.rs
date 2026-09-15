@@ -63,6 +63,7 @@ pub fn func_6(x: Ptr<i32>) -> i32 {
     return 1;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -119,3 +120,4 @@ impl FooImpl for Ptr<Foo> {
         let y: Value<f64> = Rc::new(RefCell::new(y));
     }
 }
+pub fn __cpp2rust_init_globals() {}

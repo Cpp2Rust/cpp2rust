@@ -27,6 +27,7 @@ pub fn swap_by_ref_2(a: Ptr<i32>, b: Ptr<i32>) {
     b.write(__rhs);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -82,3 +83,4 @@ fn main_0() -> i32 {
     assert!(((*c.borrow()) == 2));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

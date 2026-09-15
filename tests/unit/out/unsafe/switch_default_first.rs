@@ -29,6 +29,7 @@ pub unsafe fn default_first_0(mut x: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -37,3 +38,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { default_first_0(99,) }) == (7)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

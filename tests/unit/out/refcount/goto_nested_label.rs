@@ -33,9 +33,11 @@ pub fn scan_0(n: i32) -> i32 {
     return (*total.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ scan_0(2,) }) == 2010) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

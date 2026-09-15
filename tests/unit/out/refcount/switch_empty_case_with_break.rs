@@ -28,6 +28,7 @@ pub fn empty_case_with_break_0(x: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -36,3 +37,4 @@ fn main_0() -> i32 {
     assert!((({ empty_case_with_break_0(9,) }) == 9));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -65,6 +65,7 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
     return (*result.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -105,3 +106,4 @@ fn main_0() -> i32 {
     assert!(((((*(*r.borrow()).level.borrow()) == 5_i64) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

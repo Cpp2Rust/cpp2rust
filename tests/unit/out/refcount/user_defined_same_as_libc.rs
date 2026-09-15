@@ -14,6 +14,7 @@ pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<CFile> {
     return Ptr::null();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -28,3 +29,4 @@ fn main_0() -> i32 {
     assert!(((((*fp.borrow()).is_null()) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

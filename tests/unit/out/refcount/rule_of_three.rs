@@ -106,6 +106,7 @@ pub fn sum_2(b: Ptr<Buffer>) -> i32 {
     return (*s.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -185,4 +186,8 @@ impl BufferImpl for Ptr<Buffer> {
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = alive_0.with(Value::clone);
+    let _ = copies_1.with(Value::clone);
 }

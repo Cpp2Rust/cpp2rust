@@ -49,6 +49,7 @@ pub unsafe fn del_2(mut node: *mut node_t) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -72,3 +73,4 @@ unsafe fn main_0() -> i32 {
     assert!(out);
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

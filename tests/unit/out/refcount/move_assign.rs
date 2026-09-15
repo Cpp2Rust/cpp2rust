@@ -78,6 +78,7 @@ pub fn make_0(v: i32) -> MoveOnly {
     return MoveOnly::MoveOnly_pmutMoveOnly({ m.as_pointer() });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -188,3 +189,4 @@ impl MoveOnlyImpl for Ptr<MoveOnly> {
         return (*self).clone();
     }
 }
+pub fn __cpp2rust_init_globals() {}

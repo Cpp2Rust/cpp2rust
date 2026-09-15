@@ -71,6 +71,7 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -104,3 +105,4 @@ unsafe fn main_0() -> i32 {
     assert!((((((c.view.raw_[(3) as usize] as u8) as i32) == (80)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}
