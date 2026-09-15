@@ -1726,17 +1726,20 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
+    SetFreshType(expr->getType());
     return false;
   }
 
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {
+    SetFreshType(expr->getType());
     return false;
   }
 
   if (auto plugin_str = TryPluginConvert(expr)) {
     StrCat(*plugin_str);
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -1755,9 +1758,10 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       str = GetMappedAsString(expr, args, num_args, &ctx);
     };
 
-    if ((IsReferenceType(expr) ||
-         GetReturnTypeOfFunction(expr)->isReferenceType()) &&
-        !isAddrOf() && !isVoid()) {
+    bool deref_ref = (IsReferenceType(expr) ||
+                      GetReturnTypeOfFunction(expr)->isReferenceType()) &&
+                     !isAddrOf() && !isVoid();
+    if (deref_ref) {
       str = "( * " + std::move(str) + " )";
     }
 
@@ -1766,6 +1770,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     }
 
     StrCat(str);
+    if (deref_ref) {
+      SetValueFreshness(expr->getType());
+    } else {
+      SetFreshType(expr->getType());
+    }
     return false;
   }
 
@@ -1800,6 +1809,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   StrCat(str);
+  SetFreshType(expr->getType());
   return false;
 }
 
