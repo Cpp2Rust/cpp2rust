@@ -3591,6 +3591,12 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
   return false;
 }
 
+bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
+  Convert(expr->getSubExpr());
+  SetFreshType(expr->getType());
+  return false;
+}
+
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   if (isAddrOf() && expr->capture_size() == 0) {
     StrCat("Some");

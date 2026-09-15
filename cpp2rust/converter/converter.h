@@ -416,6 +416,7 @@ public:
   virtual std::string EnumeratorName(const clang::EnumConstantDecl *decl) const;
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
+  virtual bool VisitConstantExpr(clang::ConstantExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
