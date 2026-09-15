@@ -1491,7 +1491,12 @@ bool Converter::Convert(clang::Expr *expr,
       NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(),
                               *implicit_convert_to);
   PushParen paren(*this, needs_conversion);
+  computed_expr_type_ = ComputedExprType::Unknown;
   bool result = TraverseStmt(expr);
+  if (expr && computed_expr_type_ == ComputedExprType::Unknown) {
+    expr->dump();
+    assert(false && "computed_expr_type_ not set");
+  }
   if (needs_conversion) {
     ConvertCast(*implicit_convert_to);
     computed_expr_type_ = ComputedExprType::FreshValue;

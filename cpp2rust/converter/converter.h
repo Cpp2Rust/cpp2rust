@@ -947,14 +947,16 @@ protected:
   };
 
   enum class ComputedExprType : uint8_t {
+    Unknown,
     Value,
     FreshValue,
     Pointer,
     FreshPointer,
   };
-  ComputedExprType computed_expr_type_ = ComputedExprType::FreshValue;
+  ComputedExprType computed_expr_type_ = ComputedExprType::Unknown;
 
   bool isFresh() const {
+    assert(computed_expr_type_ != ComputedExprType::Unknown);
     return computed_expr_type_ == ComputedExprType::FreshValue ||
            computed_expr_type_ == ComputedExprType::FreshPointer;
   }
