@@ -26,9 +26,9 @@ impl S {
     }
     pub fn S_pmutS(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
-            ))),
+            v: Rc::new(RefCell::new(
+                (std::mem::take(&mut (*(*_a0.upgrade().deref()).v.borrow_mut()))).clone(),
+            )),
             n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| (*(*_a0.upgrade().deref()).n.borrow())[(__i) as usize],
             )))),
@@ -105,9 +105,7 @@ impl SImpl for Ptr<S> {
                     &(((*_a0.upgrade().deref()).n.as_pointer()) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>)
-                .to_any()
-                .clone()
+            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }

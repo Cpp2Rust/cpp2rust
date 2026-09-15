@@ -3232,6 +3232,7 @@ bool Converter::VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr) {
 
 bool Converter::VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr) {
   StrCat("__i");
+  computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 

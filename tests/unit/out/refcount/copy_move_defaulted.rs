@@ -263,12 +263,12 @@ impl Buffer {
     }
     pub fn Buffer_pmutBuffer(_a0: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
-            ))),
-            rows: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*_a0.upgrade().deref()).rows.borrow_mut()),
-            ))),
+            data: Rc::new(RefCell::new(
+                (std::mem::take(&mut (*(*_a0.upgrade().deref()).data.borrow_mut()))).clone(),
+            )),
+            rows: Rc::new(RefCell::new(
+                (std::mem::take(&mut (*(*_a0.upgrade().deref()).rows.borrow_mut()))).clone(),
+            )),
             n: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).n.borrow()))),
             arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| (*(*_a0.upgrade().deref()).arr.borrow())[(__i) as usize],
@@ -321,9 +321,9 @@ pub struct Owner {
 impl Owner {
     pub fn Owner_pmutOwner(_a0: Ptr<Owner>) -> Self {
         let __this: Value<Owner> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
-            ))),
+            data: Rc::new(RefCell::new(
+                (std::mem::take(&mut (*(*_a0.upgrade().deref()).data.borrow_mut()))).clone(),
+            )),
             n: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).n.borrow()))),
             arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| (*(*_a0.upgrade().deref()).arr.borrow())[(__i) as usize],
@@ -727,9 +727,7 @@ impl BufferImpl for Ptr<Buffer> {
                     &(((*_a0.upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
-                .to_any()
-                .clone()
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }
@@ -792,9 +790,7 @@ impl OwnerImpl for Ptr<Owner> {
                     &(((*_a0.upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>)
-                .to_any()
-                .clone()
+            (((*(*self).upgrade().deref()).arr.as_pointer()) as Ptr<i32>).to_any()
         };
         ((*(*self).upgrade().deref()).p.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).p.borrow_mut()).take());
