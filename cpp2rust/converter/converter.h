@@ -442,7 +442,6 @@ public:
 
 protected:
   const clang::Expr *GetParentExpr(const clang::Expr *expr);
-  bool IsSubExprOf(const clang::Expr *sub_expr, const clang::Expr *parent_expr);
 
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
 
