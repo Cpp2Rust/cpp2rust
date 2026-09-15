@@ -125,6 +125,24 @@ impl MinHeap {
             i.prefix_dec();
         }
     }
+    pub unsafe fn MinHeap_pmutMinHeap(_a0: *mut MinHeap) -> Self {
+        let mut this = Self {
+            size: (*_a0).size,
+            capacity: (*_a0).capacity,
+            arr: (*_a0).arr.take(),
+            next: (*_a0).next,
+            alloc: (*_a0).alloc.take(),
+        };
+        this
+    }
+    pub unsafe fn operator_assign_pmutMinHeap(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
+        self.size = (*_a0).size;
+        self.capacity = (*_a0).capacity;
+        self.arr = (*_a0).arr.take();
+        self.next = (*_a0).next;
+        self.alloc = (*_a0).alloc.take();
+        return &mut (*(self as *mut MinHeap));
+    }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
     let mut minHeap: Option<Box<MinHeap>> = Some(Box::new(MinHeap {
