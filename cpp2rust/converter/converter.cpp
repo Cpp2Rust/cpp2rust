@@ -4732,7 +4732,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
       }
       return ConvertFreshRValue(arg);
     }
-    return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
+    auto lvalue = ConvertLValue(arg);
+    SetFresh();
+    return std::format("std::mem::take(&mut {})", std::move(lvalue));
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {
