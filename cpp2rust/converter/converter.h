@@ -953,11 +953,13 @@ protected:
     Pointer,
     FreshPointer,
     Unknown,
+    Pending,
   };
   ComputedExprType computed_expr_type_ = ComputedExprType::Unknown;
 
   bool isFresh() const {
     assert(computed_expr_type_ != ComputedExprType::Unknown);
+    assert(computed_expr_type_ != ComputedExprType::Pending);
     return computed_expr_type_ == ComputedExprType::FreshValue ||
            computed_expr_type_ == ComputedExprType::FreshPointer;
   }

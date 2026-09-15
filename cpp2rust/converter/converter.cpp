@@ -4836,6 +4836,9 @@ void Converter::SetFresh() {
   case ComputedExprType::Unknown:
     assert(0 && "Unreachable ComputedExprType::Unknown");
     break;
+  case ComputedExprType::Pending:
+    assert(0 && "Unreachable ComputedExprType::Pending");
+    break;
   }
 }
 

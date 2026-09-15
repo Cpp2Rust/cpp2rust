@@ -177,7 +177,11 @@ public:
   bool
   Convert(clang::Expr *expr,
           std::optional<clang::QualType> implicit_convert_to = {}) override {
-    return Converter::Convert(expr, implicit_convert_to);
+    auto result = Converter::Convert(expr, implicit_convert_to);
+    if (computed_expr_type_ == ComputedExprType::Pending) {
+      assert(!pending_deref_.empty() && "pending_deref_ taken without type");
+    }
+    return result;
   }
   bool Convert(clang::Stmt *stmt) override {
     auto result = Converter::Convert(stmt);
@@ -353,6 +357,7 @@ private:
   // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
   // ptr.with_mut(...).
   struct PendingDeref {
+    explicit PendingDeref(ComputedExprType &type) : type(type) {}
     void set(std::string str, clang::Expr *expr = nullptr);
     void set_unchecked(std::string str, clang::Expr *expr = nullptr);
     std::string take() {
@@ -369,8 +374,9 @@ private:
 
   private:
     static bool compute_inner_boxed(clang::Expr *expr);
+    ComputedExprType &type;
     std::string value;
     bool pointee_is_boxed = false;
-  } pending_deref_;
+  } pending_deref_{computed_expr_type_};
 };
 } // namespace cpp2rust

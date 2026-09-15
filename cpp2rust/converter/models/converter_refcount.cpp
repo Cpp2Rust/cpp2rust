@@ -81,6 +81,7 @@ void ConverterRefCount::PendingDeref::set_unchecked(std::string str,
                                                     clang::Expr *expr) {
   value = std::move(str);
   pointee_is_boxed = compute_inner_boxed(expr);
+  type = ComputedExprType::Pending;
 }
 
 std::string ConverterRefCount::GetInnerType(clang::QualType type) {
@@ -2119,6 +2120,7 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
   } else {
     StrCat(lhs_str, token::kAssign, rhs);
   }
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
@@ -2149,6 +2151,7 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
     } else {
       StrCat(lhs_str, assign_operator, rhs_as_string);
     }
+    computed_expr_type_ = ComputedExprType::FreshValue;
   }
 
   if (isRValue()) {
@@ -2604,6 +2607,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   bool is_boxed = pending_deref_.is_boxed();
   auto ptr = pending_deref_.take();
   auto body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+  SetFreshType(expr->getType());
 
   if (is_boxed) {
     return std::format(
