@@ -358,16 +358,19 @@ private:
   // ptr.with_mut(...).
   struct PendingDeref {
     explicit PendingDeref(ComputedExprType &type) : type(type) {}
-    void set(std::string str, clang::Expr *expr = nullptr);
-    void set_unchecked(std::string str, clang::Expr *expr = nullptr);
+    void set(std::string str, bool fresh, clang::Expr *expr = nullptr);
+    void set_unchecked(std::string str, bool fresh,
+                       clang::Expr *expr = nullptr);
     std::string take() {
       auto result = std::move(value);
       value.clear();
       pointee_is_boxed = false;
+      ptr_is_fresh = false;
       return result;
     }
     bool empty() const { return value.empty(); }
     bool is_boxed() const { return pointee_is_boxed; }
+    bool is_fresh() const { return ptr_is_fresh; }
     void assert_consumed() const {
       assert(value.empty() && "pending_deref_ not consumed");
     }
@@ -377,6 +380,7 @@ private:
     ComputedExprType &type;
     std::string value;
     bool pointee_is_boxed = false;
+    bool ptr_is_fresh = false;
   } pending_deref_{computed_expr_type_};
 };
 } // namespace cpp2rust

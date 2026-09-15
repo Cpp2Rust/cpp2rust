@@ -72,15 +72,17 @@ bool ConverterRefCount::PendingDeref::compute_inner_boxed(clang::Expr *expr) {
   return false;
 }
 
-void ConverterRefCount::PendingDeref::set(std::string str, clang::Expr *expr) {
+void ConverterRefCount::PendingDeref::set(std::string str, bool fresh,
+                                          clang::Expr *expr) {
   assert_consumed();
-  set_unchecked(std::move(str), expr);
+  set_unchecked(std::move(str), fresh, expr);
 }
 
-void ConverterRefCount::PendingDeref::set_unchecked(std::string str,
+void ConverterRefCount::PendingDeref::set_unchecked(std::string str, bool fresh,
                                                     clang::Expr *expr) {
   value = std::move(str);
   pointee_is_boxed = compute_inner_boxed(expr);
+  ptr_is_fresh = fresh;
   type = ComputedExprType::Pending;
 }
 
@@ -410,7 +412,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
         pending_deref_.assert_consumed();
         Buffer buf(*this);
         ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-        pending_deref_.set_unchecked(std::move(buf).str(), expr);
+        pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
         return false;
       }
       PushParen paren(*this);
@@ -874,7 +876,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
         StrCat(str);
       } else {
         if (isLValue()) {
-          pending_deref_.set(str);
+          pending_deref_.set(str, /*fresh=*/false);
           return false;
         }
         StrCat(DerefPtrExpr(str, ref->getPointeeType()));
@@ -1095,7 +1097,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
       if (ctx && !ctx->temporary_bindings.empty()) {
         str = std::format("{{ {} {} }}", ctx->temporary_bindings, str);
       }
-      pending_deref_.set(str);
+      pending_deref_.set(str, /*fresh=*/true);
       return false;
     }
     // Apply deref before block wrapping so temporaries are still alive.
@@ -1638,7 +1640,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   }
 
   if (isLValue()) {
-    pending_deref_.set(str);
+    pending_deref_.set(str, /*fresh=*/true);
     return;
   }
   StrCat(DerefPtrExpr(str, member->getType()));
@@ -1702,7 +1704,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (member->getType()->isReferenceType()) {
     if (isLValue()) {
-      pending_deref_.set(str);
+      pending_deref_.set(str, /*fresh=*/false);
       return false;
     }
     StrCat(DerefPtrExpr(str, member->getType().getNonReferenceType()));
@@ -2140,12 +2142,13 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   } else {
     auto lhs_str = ConvertLValue(lhs);
     if (!pending_deref_.empty()) {
+      bool fresh = pending_deref_.is_fresh();
       auto ptr = pending_deref_.take();
       auto op = assign_operator;
       op.remove_suffix(1); // remove '='
       {
         PushBrace brace(*this);
-        StrCat(std::format("let _ptr = {}.clone();", ptr));
+        StrCat(std::format("let _ptr = {}{};", ptr, fresh ? "" : ".clone()"));
         StrCat(std::format("_ptr.write(_ptr.read() {} {})", op, rhs_as_string));
       }
     } else {
@@ -2232,7 +2235,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     }
 
     if (isLValue()) {
-      pending_deref_.set(ToString(expr->getArg(0)));
+      auto ptr = ToString(expr->getArg(0));
+      pending_deref_.set(std::move(ptr), isFresh());
       break;
     }
 
@@ -2285,7 +2289,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                                      ConvertObject(expr->getArg(0)),
                                      ConvertPtrType(expr->getArg(0)->getType()),
                                      ConvertSubscriptIndex(expr->getArg(1))),
-                         expr);
+                         /*fresh=*/true, expr);
       break;
     }
 
@@ -2406,7 +2410,7 @@ void ConverterRefCount::ConvertPointerSubscript(
     pending_deref_.assert_consumed();
     Buffer buf(*this);
     ConvertPointerOffset(base, idx);
-    pending_deref_.set_unchecked(std::move(buf).str(), expr);
+    pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
     return;
   }
 
@@ -2454,7 +2458,8 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   auto pointee_type = expr->getType()->getPointeeType();
 
   if (isLValue()) {
-    pending_deref_.set(ToString(expr));
+    auto ptr = ToString(expr);
+    pending_deref_.set(std::move(ptr), isFresh());
     return;
   }
 
