@@ -138,8 +138,8 @@ unsafe fn f30<T1: Default + Clone>(a0: usize) -> Vec<Vec<T1>> {
         .map(|_| <Vec<T1>>::default())
         .collect::<Vec<_>>()
 }
-unsafe fn f31<T1>(a0: &mut Vec<Vec<T1>>, a1: Vec<T1>) {
-    a0.push(a1)
+unsafe fn f31<T1>(a0: &mut Vec<Vec<T1>>, a1: &mut Vec<T1>) {
+    a0.push(std::mem::take(&mut *a1))
 }
 unsafe fn f32<T1: Default>(a0: &mut Vec<Vec<T1>>, a1: usize) {
     a0.resize_with(a1 as usize, || <Vec<T1>>::default())

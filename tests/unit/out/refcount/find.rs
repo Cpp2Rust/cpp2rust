@@ -17,16 +17,15 @@ fn main_0() -> i32 {
     let v_begin: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>)));
     let v_end: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).to_end()));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (*v_begin.borrow()).clone().offset(
+        (*v_begin.borrow()).offset(
             (*v_begin.borrow())
-                .clone()
                 .clone()
                 .into_iter()
                 .enumerate()
                 .position(|(index_0, value_0)| {
-                    index_0 < (*v_end.borrow()).clone().get_offset() as usize && value_0.read() == 2
+                    index_0 < (*v_end.borrow()).get_offset() as usize && value_0.read() == 2
                 })
-                .unwrap_or((*v_end.borrow()).clone().get_offset() as usize) as isize,
+                .unwrap_or((*v_end.borrow()).get_offset() as usize) as isize,
         ),
     ));
     let v_result_true: Value<bool> = Rc::new(RefCell::new(
@@ -35,21 +34,21 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(1.clone())
+            __v.entry(1)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })
         .write(1_f64);
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(2.clone())
+            __v.entry(2)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })
         .write(2_f64);
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(3.clone())
+            __v.entry(3)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })

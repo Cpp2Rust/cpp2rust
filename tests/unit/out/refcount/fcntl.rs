@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     assert!(
         (((match nix::unistd::pipe() {
             Ok((__r, __w)) => {
-                let __fds = (fds.as_pointer() as Ptr<i32>).clone();
+                let __fds = (fds.as_pointer() as Ptr<i32>);
                 __fds.write(FdRegistry::register(__r));
                 __fds.offset(1).write(FdRegistry::register(__w));
                 0

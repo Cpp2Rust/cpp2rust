@@ -12,9 +12,9 @@ fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f2<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }
 
 fn f3<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }

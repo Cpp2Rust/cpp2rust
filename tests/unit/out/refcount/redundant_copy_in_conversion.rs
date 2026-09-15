@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn sink_0(it: RefcountMapIter<i32, i32>) -> i32 {
     let it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new(it));
     let cit: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new((*it.borrow()).clone()));
-    return if (*cit.borrow()) == (*it.borrow()).clone() {
+    return if (*cit.borrow()) == (*it.borrow()) {
         (*(*it.borrow()).second().borrow())
     } else {
         0
@@ -22,7 +22,7 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-            __v.entry(0.clone())
+            __v.entry(0)
                 .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                 .as_pointer()
         })
@@ -35,13 +35,11 @@ fn main_0() -> i32 {
         &0,
     )));
     let const_it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new((*it0.borrow()).clone()));
-    let r: Value<i32> = Rc::new(RefCell::new(
-        if (*const_it.borrow()) == (*end.borrow()).clone() {
-            0
-        } else {
-            1
-        },
-    ));
+    let r: Value<i32> = Rc::new(RefCell::new(if (*const_it.borrow()) == (*end.borrow()) {
+        0
+    } else {
+        1
+    }));
     (*r.borrow_mut()) += ({ sink_0((*it0.borrow()).clone()) });
     (*r.borrow_mut()) += if (*end.borrow()) == (*end.borrow()) {
         0

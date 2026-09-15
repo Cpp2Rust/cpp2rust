@@ -72,15 +72,18 @@ bool ConverterRefCount::PendingDeref::compute_inner_boxed(clang::Expr *expr) {
   return false;
 }
 
-void ConverterRefCount::PendingDeref::set(std::string str, clang::Expr *expr) {
+void ConverterRefCount::PendingDeref::set(std::string str, bool fresh,
+                                          clang::Expr *expr) {
   assert_consumed();
-  set_unchecked(std::move(str), expr);
+  set_unchecked(std::move(str), fresh, expr);
 }
 
-void ConverterRefCount::PendingDeref::set_unchecked(std::string str,
+void ConverterRefCount::PendingDeref::set_unchecked(std::string str, bool fresh,
                                                     clang::Expr *expr) {
   value = std::move(str);
   pointee_is_boxed = compute_inner_boxed(expr);
+  ptr_is_fresh = fresh;
+  type = ComputedExprType::Pending;
 }
 
 std::string ConverterRefCount::GetInnerType(clang::QualType type) {
@@ -409,7 +412,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
         pending_deref_.assert_consumed();
         Buffer buf(*this);
         ConvertArraySubscript(base, expr->getIdx(), expr->getType());
-        pending_deref_.set_unchecked(std::move(buf).str(), expr);
+        pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
         return false;
       }
       PushParen paren(*this);
@@ -808,6 +811,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
       StrCat(str);
+      SetFreshType(expr->getType());
       return false;
     }
   }
@@ -815,6 +819,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (ShouldReplaceWithMappedBody(expr)) {
     if (auto str = GetMappedAsString(expr); !str.empty()) {
       StrCat(str);
+      SetFreshType(expr->getType());
       return false;
     }
   }
@@ -827,12 +832,14 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       ConvertFunctionToFunctionPointer(fn_decl);
     } else {
       StrCat(str);
+      SetFreshType(expr->getType());
     }
     return false;
   }
 
   if (clang::isa<clang::EnumConstantDecl>(decl)) {
     StrCat(str);
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
 
@@ -845,6 +852,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
     if (map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
       StrCat(str);
+      SetValueFreshness(expr->getType());
       return false;
     }
 
@@ -868,7 +876,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
         StrCat(str);
       } else {
         if (isLValue()) {
-          pending_deref_.set(str);
+          pending_deref_.set(str, /*fresh=*/false);
           return false;
         }
         StrCat(DerefPtrExpr(str, ref->getPointeeType()));
@@ -1095,7 +1103,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
       if (ctx && !ctx->temporary_bindings.empty()) {
         str = std::format("{{ {} {} }}", ctx->temporary_bindings, str);
       }
-      pending_deref_.set(str);
+      pending_deref_.set(str, /*fresh=*/true);
       return false;
     }
     // Apply deref before block wrapping so temporaries are still alive.
@@ -1123,6 +1131,9 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     str = std::format("({{ {} {} }})", ctx->temporary_bindings, str);
   }
   StrCat(str);
+  if (IsPassThroughRule(expr)) {
+    return false;
+  }
   if (IsPointerType(ty) || ty->isReferenceType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
   } else {
@@ -1227,6 +1238,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     if (IsStringLiteralExpr(sub_expr)) {
       StrCat(std::format("Ptr::from_string_literal({})",
                          ToString(sub_expr->IgnoreParens())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     } else {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
@@ -1236,6 +1248,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       StrCat(IsReferenceType(sub_expr) ? ConvertObject(sub_expr)
                                        : ConvertPointer(sub_expr),
              keyword::kAs, ToString(expr->getType()));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }
   }
@@ -1636,7 +1649,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   }
 
   if (isLValue()) {
-    pending_deref_.set(str);
+    pending_deref_.set(str, /*fresh=*/true);
     return;
   }
   StrCat(DerefPtrExpr(str, member->getType()));
@@ -1653,6 +1666,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
       StrCat(TraitName(method->getParent()), token::kDoubleColon,
              GetMethodName(method));
+      SetFreshType(expr->getType());
       return false;
     }
     // User-defined types have Value<T> fields; the struct itself is read-only
@@ -1665,6 +1679,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -1698,7 +1713,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (member->getType()->isReferenceType()) {
     if (isLValue()) {
-      pending_deref_.set(str);
+      pending_deref_.set(str, /*fresh=*/false);
       return false;
     }
     StrCat(DerefPtrExpr(str, member->getType().getNonReferenceType()));
@@ -1826,10 +1841,11 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
     }
     StrCat(token::kSemiColon);
   } else {
-    EmitByValueShadow(loop_var_name, loop_var->getType(),
-                      loop_var_name +
-                          GetPointerDerefSuffix(loop_var->getType()) +
-                          ".clone()");
+    auto type = loop_var->getType();
+    bool copy = type.isPODType(ctx_) && !type->isRecordType();
+    EmitByValueShadow(loop_var_name, type,
+                      loop_var_name + GetPointerDerefSuffix(type) +
+                          (copy ? "" : ".clone()"));
   }
 
   ConvertForRangeBody(stmt);
@@ -1893,7 +1909,9 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
     } else {
       StrCat(str);
-      computed_expr_type_ = ComputedExprType::FreshValue;
+      if (!IsPassThroughRule(expr)) {
+        computed_expr_type_ = ComputedExprType::FreshValue;
+      }
     }
     return false;
   }
@@ -2113,6 +2131,7 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
   } else {
     StrCat(lhs_str, token::kAssign, rhs);
   }
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
@@ -2132,17 +2151,19 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   } else {
     auto lhs_str = ConvertLValue(lhs);
     if (!pending_deref_.empty()) {
+      bool fresh = pending_deref_.is_fresh();
       auto ptr = pending_deref_.take();
       auto op = assign_operator;
       op.remove_suffix(1); // remove '='
       {
         PushBrace brace(*this);
-        StrCat(std::format("let _ptr = {}.clone();", ptr));
+        StrCat(std::format("let _ptr = {}{};", ptr, fresh ? "" : ".clone()"));
         StrCat(std::format("_ptr.write(_ptr.read() {} {})", op, rhs_as_string));
       }
     } else {
       StrCat(lhs_str, assign_operator, rhs_as_string);
     }
+    computed_expr_type_ = ComputedExprType::FreshValue;
   }
 
   if (isRValue()) {
@@ -2223,7 +2244,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     }
 
     if (isLValue()) {
-      pending_deref_.set(ToString(expr->getArg(0)));
+      auto ptr = ToString(expr->getArg(0));
+      pending_deref_.set(std::move(ptr), isFresh());
       break;
     }
 
@@ -2276,7 +2298,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
                                      ConvertObject(expr->getArg(0)),
                                      ConvertPtrType(expr->getArg(0)->getType()),
                                      ConvertSubscriptIndex(expr->getArg(1))),
-                         expr);
+                         /*fresh=*/true, expr);
       break;
     }
 
@@ -2397,7 +2419,7 @@ void ConverterRefCount::ConvertPointerSubscript(
     pending_deref_.assert_consumed();
     Buffer buf(*this);
     ConvertPointerOffset(base, idx);
-    pending_deref_.set_unchecked(std::move(buf).str(), expr);
+    pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
     return;
   }
 
@@ -2445,7 +2467,8 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   auto pointee_type = expr->getType()->getPointeeType();
 
   if (isLValue()) {
-    pending_deref_.set(ToString(expr));
+    auto ptr = ToString(expr);
+    pending_deref_.set(std::move(ptr), isFresh());
     return;
   }
 
@@ -2567,7 +2590,8 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
-  if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kRead) {
+  if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
+      receiver_ph->access == TranslationRule::Access::kMove) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 
@@ -2596,6 +2620,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   bool is_boxed = pending_deref_.is_boxed();
   auto ptr = pending_deref_.take();
   auto body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+  SetFreshType(expr->getType());
 
   if (is_boxed) {
     return std::format(

@@ -681,6 +681,13 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   return true;
 }
 
+bool Converter::IsPassThroughRule(clang::Expr *expr) const {
+  const auto *rule = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  return rule && rule->body.size() == 1 &&
+         std::holds_alternative<TranslationRule::PlaceholderFragment>(
+             rule->body[0]);
+}
+
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
   auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
   return derives &&
@@ -1512,7 +1519,12 @@ bool Converter::Convert(clang::Expr *expr,
       NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(),
                               *implicit_convert_to);
   PushParen paren(*this, needs_conversion);
+  computed_expr_type_ = ComputedExprType::Unknown;
   bool result = TraverseStmt(expr);
+  if (expr && computed_expr_type_ == ComputedExprType::Unknown) {
+    expr->dump();
+    assert(false && "computed_expr_type_ not set");
+  }
   if (needs_conversion) {
     ConvertCast(*implicit_convert_to);
     computed_expr_type_ = ComputedExprType::FreshValue;
@@ -1742,12 +1754,14 @@ void Converter::ConvertVAArgCall(clang::CallExpr *expr) {
 bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (IsBuiltinVaStart(expr) || IsBuiltinVaEnd(expr) || IsBuiltinVaCopy(expr)) {
     ConvertVAArgCall(expr);
+    SetFreshType(expr->getType());
     return false;
   }
 
   // p->~T() on a scalar is a no-op
   if (clang::isa<clang::CXXPseudoDestructorExpr>(
           expr->getCallee()->IgnoreParenImpCasts())) {
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -1759,6 +1773,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
 
   if (auto plugin_str = TryPluginConvert(expr)) {
     StrCat(*plugin_str);
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -1777,9 +1792,10 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
       str = GetMappedAsString(expr, args, num_args, &ctx);
     };
 
-    if ((IsReferenceType(expr) ||
-         GetReturnTypeOfFunction(expr)->isReferenceType()) &&
-        !isAddrOf() && !isVoid()) {
+    bool deref_ref = (IsReferenceType(expr) ||
+                      GetReturnTypeOfFunction(expr)->isReferenceType()) &&
+                     !isAddrOf() && !isVoid();
+    if (deref_ref) {
       str = "( * " + std::move(str) + " )";
     }
 
@@ -1788,6 +1804,11 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     }
 
     StrCat(str);
+    if (deref_ref) {
+      SetValueFreshness(expr->getType());
+    } else if (!IsPassThroughRule(expr)) {
+      SetFreshType(expr->getType());
+    }
     return false;
   }
 
@@ -1822,6 +1843,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   StrCat(str);
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -1836,6 +1858,7 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
   StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
+  computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
@@ -2283,6 +2306,7 @@ void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
       auto dst_enum = to->getType()->getAs<clang::EnumType>();
       if (src_enum && dst_enum && dst_enum->getDecl() == src_enum) {
         StrCat(EnumeratorName(ec));
+        computed_expr_type_ = ComputedExprType::FreshValue;
         return;
       }
     }
@@ -2293,6 +2317,7 @@ void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
     Convert(from);
   }
   StrCat(keyword::kAs, GetUnsafeTypeAsString(to->getType()));
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
@@ -2312,6 +2337,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   Convert(sub_expr);
   StrCat(token::kDiff);
   StrCat(token::kZero);
+  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 bool Converter::IsCastRedundantInRust(clang::Expr *expr,
@@ -2350,6 +2376,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     } else {
       StrCat(dest_pointee_const ? ".as_ptr()" : ".as_mut_ptr()");
     }
+    computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
   }
   case clang::CastKind::CK_BitCast: {
@@ -2361,6 +2388,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       StrCat(ConvertPointeeType(sub_expr->getType()));
     }
     ConvertCast(type);
+    SetFreshType(type);
     break;
   }
   case clang::CastKind::CK_NoOp: {
@@ -2385,6 +2413,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       PushParen paren(*this);
       Convert(sub_expr);
       ConvertCast(type);
+      SetFreshType(type);
     } else {
       {
         PushParen paren(*this, suffix);
@@ -2392,6 +2421,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       }
       if (suffix) {
         StrCat(suffix);
+        SetFreshType(type);
       }
     }
     break;
@@ -2451,6 +2481,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         ConvertCast(type);
       }
     }
+    SetFreshType(type);
   }
   return false;
 }
@@ -2741,6 +2772,7 @@ bool Converter::ConvertIncAndDec(clang::UnaryOperator *expr) {
 bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
   if (auto str = GetMappedAsString(expr); !str.empty()) {
     StrCat(str);
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -2797,6 +2829,7 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
   default:
     StrCat(expr->getOpcodeStr(opcode));
     Convert(sub_expr);
+    SetFreshType(expr->getType());
   }
   return false;
 }
@@ -2909,6 +2942,9 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       ConvertFunctionToFunctionPointer(fn_decl);
       return false;
     }
+    StrCat(str);
+    SetFreshType(expr->getType());
+    return false;
   }
 
   if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
@@ -2918,6 +2954,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
                 init->IgnoreUnlessSpelledInSource())) {
           PushParen paren(*this);
           VisitLambdaExpr(lambda);
+          computed_expr_type_ = ComputedExprType::FreshValue;
           return false;
         }
       }
@@ -2927,10 +2964,15 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
     StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
            str);
+    computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
 
   StrCat(str);
+  if (clang::isa<clang::EnumConstantDecl>(decl)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   SetValueFreshness(expr->getType());
   return false;
 }
@@ -3024,6 +3066,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
     StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
            GetMethodName(method));
+    SetFreshType(expr->getType());
     return false;
   }
   std::string str;
@@ -3057,11 +3100,16 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   if (!isAddrOf() && member->getType()->isFunctionPointerType()) {
     PushParen paren(*this);
     StrCat(str);
+    SetValueFreshness(expr->getType());
     return false;
   }
 
   StrCat(str);
-  SetValueFreshness(expr->getType());
+  if (clang::isa<clang::CXXMethodDecl>(member)) {
+    SetFreshType(expr->getType());
+  } else {
+    SetValueFreshness(expr->getType());
+  }
   return false;
 }
 
@@ -3173,6 +3221,7 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
     PushParen paren(*this);
     StrCat(keyword::kSelfValue, keyword::kAs, ToString(expr->getType()));
   }
+  computed_expr_type_ = ComputedExprType::FreshPointer;
   return false;
 }
 
@@ -3218,6 +3267,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
       }
+      SetFreshType(qual_type);
       return false;
     }
 
@@ -3253,6 +3303,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       }
     }
   }
+  SetFreshType(qual_type);
   return false;
 }
 
@@ -3456,6 +3507,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
+    if (!IsPassThroughRule(expr)) {
+      SetFreshType(expr->getType());
+    }
     return false;
   }
 
@@ -3467,6 +3521,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     if ((ctor->isCopyConstructor() || IsDefaultedMoveConstructor(ctor)) &&
         !suppress && !TypeIsCopyable(expr->getType())) {
       StrCat(".clone()");
+      SetFreshType(expr->getType());
     }
     return false;
   }
@@ -3474,6 +3529,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (ctor->isDefaultConstructor() && !ctor->isUserProvided()) {
     auto ty = expr->getType();
     StrCat(GetDefaultAsString(ty));
+    SetFreshType(expr->getType());
     return false;
   }
 
@@ -3482,6 +3538,7 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   } else {
     ConvertCXXConstructExprArgs(expr);
   }
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -3576,6 +3633,12 @@ bool Converter::VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr) {
     StrCat(token::kDefault);
     computed_expr_type_ = ComputedExprType::FreshPointer;
   }
+  return false;
+}
+
+bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
+  Convert(expr->getSubExpr());
+  SetFreshType(expr->getType());
   return false;
 }
 
@@ -4512,6 +4575,7 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
                        : keyword_mut_);
     Convert(expr);
     ConvertCast(pointer_type);
+    computed_expr_type_ = ComputedExprType::FreshPointer;
   } else {
     StrCat(token::kRef);
     if (!pointer_type->getPointeeType().isConstQualified()) {
@@ -4519,6 +4583,7 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
     }
     Convert(expr);
     ConvertCast(pointer_type);
+    computed_expr_type_ = ComputedExprType::FreshPointer;
   }
 }
 
@@ -4530,6 +4595,7 @@ void Converter::EmitDeref(std::string inner, clang::QualType pointee_type) {
   }
   PushParen paren(*this);
   StrCat(GetPointerDerefPrefix(pointee_type), std::move(inner));
+  SetValueFreshness(pointee_type);
 }
 
 void Converter::ConvertDeref(clang::Expr *expr) {
@@ -4590,8 +4656,8 @@ void Converter::PlaceholderCtx::dump() const {
                << ", is_cpp_ptr: " << is_cpp_ptr
                << ", maps_to_rust_ptr: " << maps_to_rust_ptr
                << ", declared_in_rule_as_rust_ptr: "
-               << declared_in_rule_as_rust_ptr << ", access: "
-               << (access == TranslationRule::Access::kRead ? "read" : "write")
+               << declared_in_rule_as_rust_ptr
+               << ", access: " << static_cast<int>(access)
                << ", param_type: " << param_type
                << ", materialize_idx: " << materialize_idx << '\n';
 }
@@ -4629,10 +4695,10 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (ph_ctx.needs_object_receiver()) {
     Buffer buf(*this);
     PushExplicitAutoref autoref(
-        *this,
-        ph_ctx.is_index_base
-            ? std::optional(ph_ctx.access == TranslationRule::Access::kWrite)
-            : std::nullopt);
+        *this, ph_ctx.is_index_base
+                   ? std::optional(ph_ctx.access ==
+                                   TranslationRule::Access::kBorrowMut)
+                   : std::nullopt);
     PushExprKind push(*this, ExprKind::RValue);
     ConvertDeref(arg);
     return std::move(buf).str();
@@ -4646,7 +4712,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return ConvertLValue(arg);
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kMove) {
+  if (ph_ctx.access == TranslationRule::Access::kTake) {
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
     }
@@ -4666,6 +4732,10 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
       return ConvertFreshRValue(arg);
     }
     return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
+  }
+
+  if (ph_ctx.access == TranslationRule::Access::kMove) {
+    return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
   return ConvertRValue(arg, ph_ctx.implicit_convert_to);
@@ -4823,6 +4893,12 @@ void Converter::SetFresh() {
     break;
   case ComputedExprType::FreshValue:
   case ComputedExprType::FreshPointer:
+    break;
+  case ComputedExprType::Unknown:
+    assert(0 && "Unreachable ComputedExprType::Unknown");
+    break;
+  case ComputedExprType::Pending:
+    assert(0 && "Unreachable ComputedExprType::Pending");
     break;
   }
 }

@@ -16,9 +16,9 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(3);
     let square: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        let e1: Value<i32> = Rc::new(RefCell::new(e1.read().clone()));
+        let e1: Value<i32> = Rc::new(RefCell::new(e1.read()));
         'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
-            let e2: Value<i32> = Rc::new(RefCell::new(e2.read().clone()));
+            let e2: Value<i32> = Rc::new(RefCell::new(e2.read()));
             (*square.borrow_mut()) += ((*e1.borrow()) * (*e2.borrow()));
         }
     }
@@ -52,15 +52,21 @@ fn main_0() -> i32 {
     let m: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (m.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
-        __v.push(Rc::new(RefCell::new((*v1.borrow()).clone())))
+        __v.push(Rc::new(RefCell::new(std::mem::take(
+            &mut (*v1.borrow_mut()),
+        ))))
     });
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (m.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
-        __v.push(Rc::new(RefCell::new((*v2.borrow()).clone())))
+        __v.push(Rc::new(RefCell::new(std::mem::take(
+            &mut (*v2.borrow_mut()),
+        ))))
     });
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (m.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
-        __v.push(Rc::new(RefCell::new((*v3.borrow()).clone())))
+        __v.push(Rc::new(RefCell::new(std::mem::take(
+            &mut (*v3.borrow_mut()),
+        ))))
     });
     'loop_: for mut row in m.as_pointer() as Ptr<Value<Vec<i32>>> {
         let row: Ptr<Vec<i32>> = row.upgrade().deref().as_pointer();

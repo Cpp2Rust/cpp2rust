@@ -21,7 +21,7 @@ pub fn test_memcpy_0() {
             &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
             6_usize as usize,
         );
-        ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
@@ -46,7 +46,7 @@ pub fn test_memset_1() {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memset((('x' as u8) as i32) as u8, 4_usize as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
@@ -107,9 +107,7 @@ pub fn test_memmove_3() {
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 4_usize as usize,
             );
-        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
-            .to_any()
-            .clone()
+        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
@@ -533,7 +531,7 @@ pub fn test_strrchr_9() {
     ])));
     assert!(
         ({
-            let __s = (buf.as_pointer() as Ptr<u8>).clone();
+            let __s = (buf.as_pointer() as Ptr<u8>);
             let __t = (('a' as u8) as i32) as u8;
             match __s
                 .to_c_string_iterator()
@@ -555,7 +553,7 @@ pub fn test_strrchr_9() {
 }
 pub fn test_strdup_10() {
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello").clone(),
+        Ptr::from_string_literal(b"hello"),
     )));
     assert!(!((*d.borrow()).is_null()));
     assert!(
@@ -604,7 +602,7 @@ pub fn test_strdup_10() {
     );
     libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any());
     let d3: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        (buf.as_pointer() as Ptr<u8>).clone(),
+        (buf.as_pointer() as Ptr<u8>),
     )));
     assert!(!((*d3.borrow()).is_null()));
     assert!(
@@ -628,7 +626,7 @@ pub fn test_strdup_10() {
 pub fn test_strcspn_11() {
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"el").clone();
+            let __set = Ptr::from_string_literal(b"el");
             Ptr::from_string_literal(b"hello")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -637,7 +635,7 @@ pub fn test_strcspn_11() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"xyz").clone();
+            let __set = Ptr::from_string_literal(b"xyz");
             Ptr::from_string_literal(b"abc")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -646,7 +644,7 @@ pub fn test_strcspn_11() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"abc").clone();
+            let __set = Ptr::from_string_literal(b"abc");
             Ptr::from_string_literal(b"")
                 .to_c_string_iterator()
                 .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -668,7 +666,7 @@ pub fn test_strcspn_11() {
 pub fn test_strspn_12() {
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"hel").clone();
+            let __set = Ptr::from_string_literal(b"hel");
             Ptr::from_string_literal(b"hello")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -677,7 +675,7 @@ pub fn test_strspn_12() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"xyz").clone();
+            let __set = Ptr::from_string_literal(b"xyz");
             Ptr::from_string_literal(b"abc")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -686,7 +684,7 @@ pub fn test_strspn_12() {
     );
     assert!(
         ({
-            let __set = Ptr::from_string_literal(b"a").clone();
+            let __set = Ptr::from_string_literal(b"a");
             Ptr::from_string_literal(b"aaa")
                 .to_c_string_iterator()
                 .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
@@ -708,7 +706,7 @@ pub fn test_strspn_12() {
 pub fn test_strstr_13() {
     let h: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
-        let __needle = Ptr::from_string_literal(b"world").clone();
+        let __needle = Ptr::from_string_literal(b"world");
         let mut __p = (*h.borrow()).clone();
         loop {
             let mut __h = __p.to_c_string_iterator();
@@ -731,7 +729,7 @@ pub fn test_strstr_13() {
     });
     assert!(
         ({
-            let __needle = Ptr::from_string_literal(b"xyz").clone();
+            let __needle = Ptr::from_string_literal(b"xyz");
             let mut __p = (*h.borrow()).clone();
             loop {
                 let mut __h = __p.to_c_string_iterator();
@@ -759,8 +757,8 @@ pub fn test_strstr_13() {
     ])));
     assert!(
         ({
-            let __needle = Ptr::from_string_literal(b"ll").clone();
-            let mut __p = (buf.as_pointer() as Ptr<u8>).clone();
+            let __needle = Ptr::from_string_literal(b"ll");
+            let mut __p = (buf.as_pointer() as Ptr<u8>);
             loop {
                 let mut __h = __p.to_c_string_iterator();
                 if __needle
@@ -781,7 +779,7 @@ pub fn test_strpbrk_14() {
     let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hello world")));
     let r: Value<Ptr<u8>> = Rc::new(RefCell::new({
         let __s = (*s.borrow()).clone();
-        let __set = Ptr::from_string_literal(b"wo").clone();
+        let __set = Ptr::from_string_literal(b"wo");
         match __s
             .to_c_string_iterator()
             .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -798,7 +796,7 @@ pub fn test_strpbrk_14() {
     assert!(
         ({
             let __s = (*s.borrow()).clone();
-            let __set = Ptr::from_string_literal(b"xyz").clone();
+            let __set = Ptr::from_string_literal(b"xyz");
             match __s
                 .to_c_string_iterator()
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -817,8 +815,8 @@ pub fn test_strpbrk_14() {
     ])));
     assert!(
         ({
-            let __s = (buf.as_pointer() as Ptr<u8>).clone();
-            let __set = Ptr::from_string_literal(b"b").clone();
+            let __s = (buf.as_pointer() as Ptr<u8>);
+            let __set = Ptr::from_string_literal(b"b");
             match __s
                 .to_c_string_iterator()
                 .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))

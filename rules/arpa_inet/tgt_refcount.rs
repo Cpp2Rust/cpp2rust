@@ -49,7 +49,7 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<u8>, a3: u32) -> Ptr<u8> {
                 __sl[..__n].copy_from_slice(__s.as_bytes());
                 __sl[__n] = 0;
             });
-            a2.clone()
+            a2
         }
         Some(_) => {
             libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);

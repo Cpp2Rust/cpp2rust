@@ -14,7 +14,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Ifaddrs>::null()));
     assert!(
         ((({
-            let __out = (list.as_pointer()).clone();
+            let __out = (list.as_pointer());
             match nix::ifaddrs::getifaddrs() {
                 Ok(__ifas) => {
                     let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();

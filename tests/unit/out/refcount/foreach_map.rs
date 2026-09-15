@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     'loop_: while ((*i.borrow()) < 100) {
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-                __v.entry((*i.borrow()).clone())
+                __v.entry((*i.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                     .as_pointer()
             })

@@ -50,7 +50,7 @@ fn main_0() -> i32 {
             &((src.as_pointer()) as Ptr<point>).to_any(),
             ::std::mem::size_of::<[u8; 8]>() as usize,
         );
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     let dst: Value<point> = <Value<point>>::default();
     {
@@ -58,7 +58,7 @@ fn main_0() -> i32 {
             &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
             8usize as usize,
         );
-        ((dst.as_pointer()) as Ptr<point>).to_any().clone()
+        ((dst.as_pointer()) as Ptr<point>).to_any()
     };
     assert!(((((*(*dst.borrow()).x.borrow()) == 3) as i32) != 0));
     assert!(((((*(*dst.borrow()).y.borrow()) == 7) as i32) != 0));

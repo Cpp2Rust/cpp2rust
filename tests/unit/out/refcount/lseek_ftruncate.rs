@@ -95,7 +95,7 @@ fn main_0() -> i32 {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {

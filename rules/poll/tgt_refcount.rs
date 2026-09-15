@@ -8,7 +8,7 @@ fn t1() -> libcc2rs::Pollfd {
 }
 
 fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
-    let __p = a0.clone();
+    let __p = a0;
     let __timeout = match nix::poll::PollTimeout::try_from(a2) {
         Ok(__t) => __t,
         Err(_) => panic!("poll: unsupported timeout {}", a2),

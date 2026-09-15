@@ -241,7 +241,7 @@ fn main_0() -> i32 {
                             __sl[..__n].copy_from_slice(__s.as_bytes());
                             __sl[__n] = 0;
                         });
-                        (text.as_pointer() as Ptr<u8>).clone()
+                        (text.as_pointer() as Ptr<u8>)
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
@@ -314,7 +314,7 @@ fn main_0() -> i32 {
                             __sl[..__n].copy_from_slice(__s.as_bytes());
                             __sl[__n] = 0;
                         });
-                        (text.as_pointer() as Ptr<u8>).clone()
+                        (text.as_pointer() as Ptr<u8>)
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
@@ -365,7 +365,7 @@ fn main_0() -> i32 {
                         __sl[..__n].copy_from_slice(__s.as_bytes());
                         __sl[__n] = 0;
                     });
-                    (text.as_pointer() as Ptr<u8>).clone()
+                    (text.as_pointer() as Ptr<u8>)
                 }
                 Some(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);

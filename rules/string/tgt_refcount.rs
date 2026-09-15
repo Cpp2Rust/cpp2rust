@@ -21,7 +21,7 @@ fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {
 }
 
 fn f3(a0: Vec<u8>, a1: Ptr<u8>) -> Vec<u8> {
-    let mut r = a0.clone();
+    let mut r = a0;
     r.pop();
     r.extend(a1.to_c_string_iterator());
     r.push(0);
@@ -92,7 +92,7 @@ fn f16(a0: Vec<u8>, a1: Ptr<u8>) -> usize {
 
 // TODO: This should modify a0 in place
 fn f17(a0: Vec<u8>, a1: Ptr<u8>) -> Vec<u8> {
-    let mut __tmp2 = a0.clone();
+    let mut __tmp2 = a0;
     __tmp2.pop();
     __tmp2.extend(a1.to_c_string_iterator());
     __tmp2.push(0);
@@ -176,7 +176,7 @@ fn f25(a0: &mut Vec<u8>) {
 }
 
 fn f27(a0: Vec<u8>) -> Vec<u8> {
-    a0.clone()
+    a0
 }
 
 fn f28(a0: &mut Vec<u8>) -> Vec<u8> {
@@ -184,7 +184,7 @@ fn f28(a0: &mut Vec<u8>) -> Vec<u8> {
 }
 
 fn f29(a0: Ptr<Vec<u8>>, a1: Vec<u8>) {
-    a0.write(a1.clone())
+    a0.write(a1)
 }
 
 fn f30(a0: Ptr<Vec<u8>>, a1: &mut Vec<u8>) {
