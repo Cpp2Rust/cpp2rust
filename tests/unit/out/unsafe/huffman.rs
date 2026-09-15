@@ -26,20 +26,18 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
         left: (*a).left,
         right: (*a).right,
     };
-    (*a) = (MinHeapNode {
+    (*a) = MinHeapNode {
         data: (*b).data,
         freq: (*b).freq,
         left: (*b).left,
         right: (*b).right,
-    })
-    .clone();
-    (*b) = (MinHeapNode {
+    };
+    (*b) = MinHeapNode {
         data: t.data,
         freq: t.freq,
         left: t.left,
         right: t.right,
-    })
-    .clone();
+    };
 }
 #[repr(C)]
 #[derive(Default)]

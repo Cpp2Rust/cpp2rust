@@ -1226,6 +1226,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     if (IsStringLiteralExpr(sub_expr)) {
       StrCat(std::format("Ptr::from_string_literal({})",
                          ToString(sub_expr->IgnoreParens())));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     } else {
       // we need to write (var.as_pointer as Ptr<T>) because Rust isn't
@@ -1235,6 +1236,7 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       StrCat(IsReferenceType(sub_expr) ? ConvertObject(sub_expr)
                                        : ConvertPointer(sub_expr),
              keyword::kAs, ToString(expr->getType()));
+      computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }
   }
@@ -1652,6 +1654,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
       StrCat(TraitName(method->getParent()), token::kDoubleColon,
              GetMethodName(method));
+      SetFreshType(expr->getType());
       return false;
     }
     // User-defined types have Value<T> fields; the struct itself is read-only
@@ -1664,6 +1667,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     bool needs_mut = NeedsMutAccess(method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
+    SetFreshType(expr->getType());
     return false;
   }
 
