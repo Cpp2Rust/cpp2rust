@@ -1814,6 +1814,7 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
   StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
+  computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
@@ -2887,6 +2888,9 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       ConvertFunctionToFunctionPointer(fn_decl);
       return false;
     }
+    StrCat(str);
+    SetFreshType(expr->getType());
+    return false;
   }
 
   if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
@@ -2896,6 +2900,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
                 init->IgnoreUnlessSpelledInSource())) {
           PushParen paren(*this);
           VisitLambdaExpr(lambda);
+          computed_expr_type_ = ComputedExprType::FreshValue;
           return false;
         }
       }
@@ -2905,10 +2910,16 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
     StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
            str);
+    computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
 
   StrCat(str);
+  if (clang::isa<clang::EnumConstantDecl>(decl)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
+  SetValueFreshness(expr->getType());
   return false;
 }
 

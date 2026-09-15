@@ -808,6 +808,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
       StrCat(str);
+      SetFreshType(expr->getType());
       return false;
     }
   }
@@ -815,6 +816,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (ShouldReplaceWithMappedBody(expr)) {
     if (auto str = GetMappedAsString(expr); !str.empty()) {
       StrCat(str);
+      SetFreshType(expr->getType());
       return false;
     }
   }
@@ -827,12 +829,14 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       ConvertFunctionToFunctionPointer(fn_decl);
     } else {
       StrCat(str);
+      SetFreshType(expr->getType());
     }
     return false;
   }
 
   if (clang::isa<clang::EnumConstantDecl>(decl)) {
     StrCat(str);
+    computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
 
@@ -845,6 +849,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
     if (map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
       StrCat(str);
+      SetValueFreshness(expr->getType());
       return false;
     }
 
