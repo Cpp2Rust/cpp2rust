@@ -383,7 +383,7 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
         // Reached an argument used inside the rule body
         if let Some(param) = self.expr_as_decl_ref(expr) {
             let access = if context == Access::Borrow && self.is_moved(expr) {
-                Access::Read
+                Access::Move
             } else {
                 context
             };

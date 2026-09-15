@@ -39,8 +39,8 @@ Access ParseAccessJSON(llvm::StringRef value) {
     return Access::kBorrow;
   } else if (value == "borrow_mut") {
     return Access::kBorrowMut;
-  } else if (value == "read") {
-    return Access::kRead;
+  } else if (value == "move") {
+    return Access::kMove;
   } else if (value == "take") {
     return Access::kTake;
   } else {
@@ -255,8 +255,8 @@ void PlaceholderFragment::dump() const {
   case Access::kBorrowMut:
     log() << " (borrow_mut)\n";
     break;
-  case Access::kRead:
-    log() << " (read)\n";
+  case Access::kMove:
+    log() << " (move)\n";
     break;
   case Access::kTake:
     log() << " (take)\n";

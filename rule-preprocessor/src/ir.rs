@@ -147,7 +147,7 @@ pub enum BodyFragment {
 pub enum Access {
     Borrow,
     BorrowMut,
-    Read,
+    Move,
     Take,
     Unknown,
 }

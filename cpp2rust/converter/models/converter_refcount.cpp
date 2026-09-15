@@ -2590,7 +2590,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
   if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
-      receiver_ph->access == TranslationRule::Access::kRead) {
+      receiver_ph->access == TranslationRule::Access::kMove) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 

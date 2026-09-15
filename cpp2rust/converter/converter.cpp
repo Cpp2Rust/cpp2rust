@@ -4686,7 +4686,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kRead) {
+  if (ph_ctx.access == TranslationRule::Access::kMove) {
     return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
