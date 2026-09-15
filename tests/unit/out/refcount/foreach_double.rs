@@ -16,9 +16,9 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(3);
     let square: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut e1 in v.as_pointer() as Ptr<i32> {
-        let e1: Value<i32> = Rc::new(RefCell::new(e1.read().clone()));
+        let e1: Value<i32> = Rc::new(RefCell::new(e1.read()));
         'loop_: for mut e2 in v.as_pointer() as Ptr<i32> {
-            let e2: Value<i32> = Rc::new(RefCell::new(e2.read().clone()));
+            let e2: Value<i32> = Rc::new(RefCell::new(e2.read()));
             (*square.borrow_mut()) += ((*e1.borrow()) * (*e2.borrow()));
         }
     }
