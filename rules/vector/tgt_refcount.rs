@@ -109,8 +109,10 @@ fn f30<T1: Default + Clone>(a0: usize) -> Vec<Value<Vec<T1>>> {
         .collect::<Vec<_>>()
 }
 
-fn f31<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: Vec<T1>) {
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1))))
+fn f31<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: &mut Vec<T1>) {
+    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| {
+        __v.push(Rc::new(RefCell::new(std::mem::take(&mut *a1))))
+    })
 }
 
 fn f32<T1: Default + ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: usize) {
