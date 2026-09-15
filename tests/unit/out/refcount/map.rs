@@ -22,21 +22,21 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i16, Value<u32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(0_i16.clone())
+            __v.entry(0_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
         .write(1_u32);
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(1_i16.clone())
+            __v.entry(1_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
         .write(2_u32);
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(2_i16.clone())
+            __v.entry(2_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(0_i16.clone())
+                __v.entry(0_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -55,7 +55,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(1_i16.clone())
+                __v.entry(1_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -65,7 +65,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(2_i16.clone())
+                __v.entry(2_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -75,7 +75,7 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(4));
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(1_i16.clone())
+            __v.entry(1_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(0_i16.clone())
+                __v.entry(0_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(1_i16.clone())
+                __v.entry(1_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -104,7 +104,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(2_i16.clone())
+                __v.entry(2_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -115,7 +115,7 @@ fn main_0() -> i32 {
         foo_0(
             ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
                 .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                    __v.entry(0_i16.clone())
+                    __v.entry(0_i16)
                         .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                         .as_pointer()
                 })
@@ -125,7 +125,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(0_i16.clone())
+                __v.entry(0_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -135,7 +135,7 @@ fn main_0() -> i32 {
     ({
         bar_1((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>).with_mut(
             |__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(2_i16.clone())
+                __v.entry(2_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             },
@@ -144,7 +144,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(2_i16.clone())
+                __v.entry(2_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -153,7 +153,7 @@ fn main_0() -> i32 {
     );
     let __rhs = ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(0_i16.clone())
+            __v.entry(0_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
@@ -161,7 +161,7 @@ fn main_0() -> i32 {
     .wrapping_add(
         ((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(2_i16.clone())
+                __v.entry(2_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -169,7 +169,7 @@ fn main_0() -> i32 {
     );
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(0_i16.clone())
+            __v.entry(0_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
@@ -177,7 +177,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(0_i16.clone())
+                __v.entry(0_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -192,8 +192,7 @@ fn main_0() -> i32 {
         &1_i16,
     )));
     let const_it: Value<RefcountMapIter<i16, u32>> = Rc::new(RefCell::new(
-        RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &10_i16)
-            .clone(),
+        RefcountMapIter::find_key((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>), &10_i16),
     ));
     let x1: Value<u32> = Rc::new(RefCell::new(if (*it.borrow()) == (*end.borrow()) {
         0_u32
@@ -221,7 +220,7 @@ fn main_0() -> i32 {
     assert!(((*x3.borrow()) == 4_u32));
     let x4: Value<u32> = Rc::new(RefCell::new(
         if (*const_it.borrow())
-            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)).clone()
+            == RefcountMapIter::end((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>))
         {
             0_u32
         } else {
@@ -231,7 +230,7 @@ fn main_0() -> i32 {
     assert!(((*x4.borrow()) == 0_u32));
     (m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
         .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-            __v.entry(4_i16.clone())
+            __v.entry(4_i16)
                 .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                 .as_pointer()
         })
@@ -245,7 +244,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(4_i16.clone())
+                __v.entry(4_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -259,7 +258,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i16, Value<u32>>>)
             .with_mut(|__v: &mut BTreeMap<i16, Value<u32>>| {
-                __v.entry(4_i16.clone())
+                __v.entry(4_i16)
                     .or_insert_with(|| Rc::new(RefCell::new(<u32>::default())))
                     .as_pointer()
             })
@@ -372,8 +371,7 @@ fn main_0() -> i32 {
                 __v.entry(
                     ((indexes.as_pointer() as Ptr<i32>)
                         .offset(((*i.borrow()) as usize))
-                        .read())
-                    .clone(),
+                        .read()),
                 )
                 .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
                 .as_pointer()

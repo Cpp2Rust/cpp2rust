@@ -22,7 +22,7 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<i32>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-            __v.entry(0.clone())
+            __v.entry(0)
                 .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                 .as_pointer()
         })

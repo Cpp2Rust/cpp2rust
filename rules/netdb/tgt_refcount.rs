@@ -8,10 +8,10 @@ fn t1() -> libcc2rs::Addrinfo {
 }
 
 fn f1(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i32 {
-    let __node = a0.clone();
-    let __service = a1.clone();
-    let __hints = a2.clone();
-    let __out = a3.clone();
+    let __node = a0;
+    let __service = a1;
+    let __hints = a2;
+    let __out = a3;
     let __family = if __hints.is_null() {
         ::libc::AF_UNSPEC
     } else {
@@ -98,7 +98,7 @@ fn f1(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
 }
 
 fn f2(a0: Ptr<Addrinfo>) {
-    let mut __cur = a0.clone();
+    let mut __cur = a0;
     while !__cur.is_null() {
         let __next = __cur.with(|__ai| {
             let __addr = __ai.ai_addr.borrow();

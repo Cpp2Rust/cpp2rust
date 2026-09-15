@@ -96,10 +96,10 @@ unsafe fn main_0() -> i32 {
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());
     let mut value: f64 = 2_f64;
-    (*other_map.entry(key0).or_default().as_mut()) = value;
-    value = (*other_map.entry(key0).or_default().as_mut());
+    (*other_map.entry((key0).clone()).or_default().as_mut()) = value;
+    value = (*other_map.entry((key0).clone()).or_default().as_mut());
     assert!(((other_map.len()) == (1_usize)));
-    assert!(((*other_map.entry(key0).or_default().as_mut()) == (value)));
+    assert!(((*other_map.entry((key0).clone()).or_default().as_mut()) == (value)));
     assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
     assert!(((*(m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32)) == (5_u32)));

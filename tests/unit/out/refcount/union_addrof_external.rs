@@ -169,7 +169,7 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>)
             .to_any()
             .memset((0) as u8, 128usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any().clone()
+        ((c.as_pointer()) as Ptr<Container>).to_any()
     };
     ({
         let _out: AnyPtr = ((*c.borrow()).view.as_pointer()).to_any();

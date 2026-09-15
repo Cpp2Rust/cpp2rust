@@ -74,11 +74,11 @@ fn f22<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f23<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }
 
 fn f24<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }
 
 fn f25<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
@@ -110,7 +110,7 @@ fn f30<T1: Default + Clone>(a0: usize) -> Vec<Value<Vec<T1>>> {
 }
 
 fn f31<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: Vec<T1>) {
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1.clone()))))
+    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1))))
 }
 
 fn f32<T1: Default + ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: usize) {
@@ -178,7 +178,7 @@ fn f51<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f52<T1: Clone + ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: Vec<T1>) {
-    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1.clone()))))
+    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(a1))))
 }
 
 fn f53<T1: Clone + ByteRepr>(
@@ -209,7 +209,7 @@ fn f57<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f58<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
-    a0.write(a1.clone())
+    a0.write(a1)
 }
 
 fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<T1>) -> Ptr<T1> {
@@ -259,11 +259,11 @@ fn f81<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f82<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }
 
 fn f83<T1>(a0: Ptr<T1>) -> Ptr<T1> {
-    a0.clone()
+    a0
 }
 
 fn f84<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
@@ -357,5 +357,5 @@ fn f104<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
-    a0.write(a1.clone())
+    a0.write(a1)
 }

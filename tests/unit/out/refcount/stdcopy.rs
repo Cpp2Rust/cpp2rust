@@ -19,7 +19,7 @@ fn main_0() -> i32 {
             .offset((3) as isize)
             .get_offset()
             - (input.as_pointer() as Ptr<i32>).get_offset();
-        let mut outptr = (output.as_pointer() as Ptr<i32>).clone();
+        let mut outptr = (output.as_pointer() as Ptr<i32>);
         for value in PtrValueIter::new(&(input.as_pointer() as Ptr<i32>), count) {
             outptr.write(value.into());
             outptr += 1;

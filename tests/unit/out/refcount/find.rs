@@ -35,21 +35,21 @@ fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(1.clone())
+            __v.entry(1)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })
         .write(1_f64);
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(2.clone())
+            __v.entry(2)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })
         .write(2_f64);
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-            __v.entry(3.clone())
+            __v.entry(3)
                 .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                 .as_pointer()
         })

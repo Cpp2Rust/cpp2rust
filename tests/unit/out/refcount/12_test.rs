@@ -15,8 +15,7 @@ fn main_0() -> i32 {
         __v.push(Rc::new(RefCell::new(
             (0..(10_usize) as usize)
                 .map(|_| <i32>::default())
-                .collect::<Vec<_>>()
-                .clone(),
+                .collect::<Vec<_>>(),
         )))
     });
     return 0;
