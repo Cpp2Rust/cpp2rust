@@ -22,6 +22,12 @@ impl S {
         let mut this = Self { data_: data };
         this
     }
+    pub unsafe fn S_pmutS(_a0: *mut S) -> Self {
+        let mut this = Self {
+            data_: (*_a0).data_,
+        };
+        this
+    }
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {

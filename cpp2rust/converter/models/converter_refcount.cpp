@@ -1067,6 +1067,12 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
+    auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
+    ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
+    return false;
+  }
+
   if (expr->isCallToStdMove()) {
     return Converter::VisitCallExpr(expr);
   }
@@ -1869,6 +1875,13 @@ bool ConverterRefCount::VisitCXXForRangeStmtString(
   return false;
 }
 
+bool ConverterRefCount::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
+  StrCat("Box::new");
+  PushParen outer(*this);
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitArrayInitLoopExpr(expr);
+}
+
 void ConverterRefCount::ConvertArrayCXXConstructExpr(
     clang::CXXConstructExpr *expr) {
   StrCat("Box::new");
@@ -1910,17 +1923,8 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  // Default move is translated using a bitwise .clone() implementation.
-  // Bitwise clone is only satisfied by default copy constructor. If the copy
-  // constructor is user defined, then default move calls copy constructor,
-  // which is wrong.
-  if (IsDefaultedMoveConstructor(ctor) &&
-      !HasDefaultedCopyConstructor(ctor->getParent())) {
-    llvm::report_fatal_error("defaulted move constructor without a fieldwise "
-                             "copy constructor is not supported");
-  }
   if (ctor->isCopyOrMoveConstructor() &&
-      !IsUserDefinedCopyOrMoveConstructor(ctor)) {
+      !IsConvertibleCopyOrMoveConstructor(ctor)) {
     StrCat(PushSuppressIteratorClone::take(*this)
                ? ConvertRValue(expr->getArg(0))
                : ConvertFreshRValue(expr->getArg(0)));
@@ -1934,7 +1938,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
     return false;
   }
 
-  assert(ctor->isUserProvided());
   if (expr->getType()->isArrayType()) {
     ConvertArrayCXXConstructExpr(expr);
   } else {
@@ -2536,20 +2539,18 @@ void ConverterRefCount::emplace_back_plugin_construct_arg(
   ConvertVarInit(elem_type, ctor);
 }
 
-void ConverterRefCount::emplace_back_emit_push_open(
-    clang::CXXMemberCallExpr *call) {
+void ConverterRefCount::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                               std::string_view arg) {
   auto *obj = GetCallObject(call);
   auto obj_type = obj->getType().getNonReferenceType();
   if (obj_type->isPointerType()) {
     obj_type = obj_type->getPointeeType();
   }
-  StrCat(ConvertObject(obj), ".with_mut(|__v: &mut ",
-         ToString(obj_type.getNonReferenceType()), "| __v.push(");
-}
-
-void ConverterRefCount::emplace_back_emit_push_close(
-    clang::CXXMemberCallExpr *call) {
-  StrCat("))");
+  StrCat(ConvertObject(obj), ".with_mut");
+  PushParen outer(*this);
+  StrCat("|__v: &mut ", ToString(obj_type.getNonReferenceType()), "| __v.push");
+  PushParen inner(*this);
+  StrCat(arg);
 }
 
 const char *
@@ -2692,7 +2693,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     }
     return;
   }
-  if (!base->isLValue() && base->getType()->isRecordType() &&
+  if (IsTemporaryObject(base) && base->getType()->isRecordType() &&
       !IsReferenceType(base->IgnoreImplicit())) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     ufcs_receiver_ =
