@@ -681,6 +681,13 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   return true;
 }
 
+bool Converter::IsPassThroughRule(clang::Expr *expr) const {
+  const auto *rule = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  return rule && rule->body.size() == 1 &&
+         std::holds_alternative<TranslationRule::PlaceholderFragment>(
+             rule->body[0]);
+}
+
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
   auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
   return derives &&
@@ -1772,7 +1779,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     StrCat(str);
     if (deref_ref) {
       SetValueFreshness(expr->getType());
-    } else {
+    } else if (!IsPassThroughRule(expr)) {
       SetFreshType(expr->getType());
     }
     return false;
@@ -3453,7 +3460,9 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (auto str = GetMappedAsString(expr, expr->getArgs(), expr->getNumArgs());
       !str.empty()) {
     StrCat(str);
-    SetFreshType(expr->getType());
+    if (!IsPassThroughRule(expr)) {
+      SetFreshType(expr->getType());
+    }
     return false;
   }
 

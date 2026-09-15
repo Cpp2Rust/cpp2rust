@@ -15,8 +15,7 @@ fn main_0() -> i32 {
         ((*(v.as_pointer() as Ptr<bool>)
             .offset(0_usize)
             .upgrade()
-            .deref())
-        .clone() as bool)
+            .deref()) as bool)
     );
     return 0;
 }

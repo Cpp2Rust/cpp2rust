@@ -1125,6 +1125,9 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     str = std::format("({{ {} {} }})", ctx->temporary_bindings, str);
   }
   StrCat(str);
+  if (IsPassThroughRule(expr)) {
+    return false;
+  }
   if (IsPointerType(ty) || ty->isReferenceType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
   } else {
@@ -1893,7 +1896,9 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
     } else {
       StrCat(str);
-      computed_expr_type_ = ComputedExprType::FreshValue;
+      if (!IsPassThroughRule(expr)) {
+        computed_expr_type_ = ComputedExprType::FreshValue;
+      }
     }
     return false;
   }

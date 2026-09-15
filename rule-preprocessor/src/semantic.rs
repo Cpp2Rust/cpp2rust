@@ -193,6 +193,20 @@ impl<'tcx> FnDecl<'tcx> {
             fn_ir,
             visited: HashMap::new(),
         };
+        if let rustc_hir::ExprKind::Block(block, _) = &self.body.value.kind
+            && block.stmts.is_empty()
+            && let Some(e) = block.expr
+            && let Some(param) = visitor.expr_as_decl_ref(e)
+        {
+            visitor
+                .fn_ir
+                .resolve_next_param(&param, &mut visitor.visited, |p| {
+                    if p.access == Access::Unknown {
+                        p.access = Access::Borrow;
+                    }
+                });
+            return;
+        }
         visitor.visit_expr(self.body.value, Access::Borrow);
     }
 }

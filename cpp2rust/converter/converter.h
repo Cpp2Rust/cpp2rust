@@ -653,6 +653,8 @@ protected:
 
   bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
 
+  bool IsPassThroughRule(clang::Expr *expr) const;
+
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
   bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;

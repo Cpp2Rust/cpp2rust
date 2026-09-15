@@ -200,13 +200,11 @@ fn main_0() -> i32 {
         (*(*it.borrow()).second().borrow())
     }));
     assert!(((*x1.borrow()) == 4_u32));
-    let x2: Value<u32> = Rc::new(RefCell::new(
-        if (*const_it.borrow()) == (*end.borrow()).clone() {
-            0_u32
-        } else {
-            (*(*const_it.borrow()).second().borrow())
-        },
-    ));
+    let x2: Value<u32> = Rc::new(RefCell::new(if (*const_it.borrow()) == (*end.borrow()) {
+        0_u32
+    } else {
+        (*(*const_it.borrow()).second().borrow())
+    }));
     assert!(((*x2.borrow()) == 0_u32));
     let x3: Value<u32> = Rc::new(RefCell::new(
         if (*it.borrow())

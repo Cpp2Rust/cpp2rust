@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>)));
     let r: Ptr<i32> = (v.as_pointer() as Ptr<i32>).offset(1_usize);
     let __rhs = (r.read());
-    (*p.borrow()).clone().write(__rhs);
+    (*p.borrow()).write(__rhs);
     assert!((((v.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 2));
     return 0;
 }

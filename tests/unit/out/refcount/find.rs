@@ -17,16 +17,15 @@ fn main_0() -> i32 {
     let v_begin: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>)));
     let v_end: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).to_end()));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (*v_begin.borrow()).clone().offset(
+        (*v_begin.borrow()).offset(
             (*v_begin.borrow())
-                .clone()
                 .clone()
                 .into_iter()
                 .enumerate()
                 .position(|(index_0, value_0)| {
-                    index_0 < (*v_end.borrow()).clone().get_offset() as usize && value_0.read() == 2
+                    index_0 < (*v_end.borrow()).get_offset() as usize && value_0.read() == 2
                 })
-                .unwrap_or((*v_end.borrow()).clone().get_offset() as usize) as isize,
+                .unwrap_or((*v_end.borrow()).get_offset() as usize) as isize,
         ),
     ));
     let v_result_true: Value<bool> = Rc::new(RefCell::new(
