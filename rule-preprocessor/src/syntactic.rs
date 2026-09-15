@@ -405,15 +405,15 @@ impl<'a> FnIrBuilder<'a> {
                                 && lhs.syntax().text_range().end()
                                     == name_ref.syntax().text_range().end()
                             {
-                                return Some(Access::Write);
+                                return Some(Access::BorrowMut);
                             }
-                            Some(Access::Read)
+                            Some(Access::Unknown)
                         },
                         ast::RefExpr(ref_expr) => {
                             if ref_expr.mut_token().is_some() {
-                                Some(Access::Write)
+                                Some(Access::BorrowMut)
                             } else {
-                                Some(Access::Read)
+                                Some(Access::Borrow)
                             }
                         },
                         ast::MethodCallExpr(call) => {
@@ -435,16 +435,16 @@ impl<'a> FnIrBuilder<'a> {
                                 && sl.tail_expr().is_some_and(|tail|
                                     tail.syntax().text_range() == name_ref.syntax().text_range())
                             {
-                                Some(Access::Write)
+                                Some(Access::BorrowMut)
                             } else {
-                                Some(Access::Read)
+                                Some(Access::Unknown)
                             }
                         },
                         _ => None,
                     }
                 }
             })
-            .unwrap_or(Access::Read)
+            .unwrap_or(Access::Unknown)
     }
 
     fn is_extern(&self) -> bool {

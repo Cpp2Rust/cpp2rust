@@ -4614,8 +4614,8 @@ void Converter::PlaceholderCtx::dump() const {
                << ", is_cpp_ptr: " << is_cpp_ptr
                << ", maps_to_rust_ptr: " << maps_to_rust_ptr
                << ", declared_in_rule_as_rust_ptr: "
-               << declared_in_rule_as_rust_ptr << ", access: "
-               << (access == TranslationRule::Access::kRead ? "read" : "write")
+               << declared_in_rule_as_rust_ptr
+               << ", access: " << static_cast<int>(access)
                << ", param_type: " << param_type
                << ", materialize_idx: " << materialize_idx << '\n';
 }
@@ -4653,10 +4653,10 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (ph_ctx.needs_object_receiver()) {
     Buffer buf(*this);
     PushExplicitAutoref autoref(
-        *this,
-        ph_ctx.is_index_base
-            ? std::optional(ph_ctx.access == TranslationRule::Access::kWrite)
-            : std::nullopt);
+        *this, ph_ctx.is_index_base
+                   ? std::optional(ph_ctx.access ==
+                                   TranslationRule::Access::kBorrowMut)
+                   : std::nullopt);
     PushExprKind push(*this, ExprKind::RValue);
     ConvertDeref(arg);
     return std::move(buf).str();
@@ -4670,11 +4670,15 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
     return ConvertLValue(arg);
   }
 
-  if (ph_ctx.access == TranslationRule::Access::kMove) {
+  if (ph_ctx.access == TranslationRule::Access::kTake) {
     if (clang::isa<clang::MaterializeTemporaryExpr>(arg)) {
       return ConvertRValue(arg);
     }
     return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
+  }
+
+  if (ph_ctx.access == TranslationRule::Access::kRead) {
+    return ConvertFreshRValue(arg, ph_ctx.implicit_convert_to);
   }
 
   return ConvertRValue(arg, ph_ctx.implicit_convert_to);

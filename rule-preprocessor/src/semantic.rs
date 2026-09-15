@@ -193,7 +193,7 @@ impl<'tcx> FnDecl<'tcx> {
             fn_ir,
             visited: HashMap::new(),
         };
-        visitor.visit_expr(self.body.value, Access::Read);
+        visitor.visit_expr(self.body.value, Access::Borrow);
     }
 }
 
@@ -290,6 +290,21 @@ fn decl_source_file(
     )
 }
 
+fn is_copy<'tcx>(tcx: rustc_middle::ty::TyCtxt<'tcx>, ty: rustc_middle::ty::Ty<'tcx>) -> bool {
+    use rustc_infer::infer::TyCtxtInferExt;
+    use rustc_trait_selection::infer::InferCtxtExt;
+
+    let Some(copy_trait) = tcx.lang_items().copy_trait() else {
+        return false;
+    };
+    let infcx = tcx
+        .infer_ctxt()
+        .build(rustc_middle::ty::TypingMode::non_body_analysis());
+    infcx
+        .type_implements_trait(copy_trait, [ty], rustc_middle::ty::ParamEnv::empty())
+        .must_apply_modulo_regions()
+}
+
 fn type_derives<'tcx>(
     tcx: rustc_middle::ty::TyCtxt<'tcx>,
     ty: rustc_middle::ty::Ty<'tcx>,
@@ -353,10 +368,15 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
     fn visit_expr(&mut self, expr: &'tcx rustc_hir::Expr<'tcx>, context: Access) {
         // Reached an argument used inside the rule body
         if let Some(param) = self.expr_as_decl_ref(expr) {
+            let access = if context == Access::Borrow && self.is_moved(expr) {
+                Access::Read
+            } else {
+                context
+            };
             self.fn_ir
                 .resolve_next_param(&param, &mut self.visited, |p| {
                     if p.access == Access::Unknown {
-                        p.access = context;
+                        p.access = access;
                     }
                 });
             return;
@@ -370,18 +390,18 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
                     param_access.first().copied().unwrap_or(Access::Unknown),
                 );
                 for (i, arg) in args.iter().enumerate() {
-                    let access = param_access.get(i + 1).copied().unwrap_or(Access::Read);
+                    let access = param_access.get(i + 1).copied().unwrap_or(Access::Borrow);
                     self.visit_expr(arg, access);
                 }
             }
             rustc_hir::ExprKind::Call(callee, args) => {
                 if self.is_std_mem_take(expr) && args.len() == 1 {
-                    self.visit_expr(&args[0], Access::Move);
+                    self.visit_expr(&args[0], Access::Take);
                 } else {
                     self.visit_expr(callee, context);
                     let param_access = self.resolve_callee_param_access(expr);
                     for (i, arg) in args.iter().enumerate() {
-                        let access = param_access.get(i).copied().unwrap_or(Access::Read);
+                        let access = param_access.get(i).copied().unwrap_or(Access::Borrow);
                         self.visit_expr(arg, access);
                     }
                 }
@@ -389,22 +409,31 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
 
             rustc_hir::ExprKind::Assign(lhs, rhs, _)
             | rustc_hir::ExprKind::AssignOp(_, lhs, rhs) => {
-                self.visit_expr(lhs, Access::Write);
-                self.visit_expr(rhs, Access::Read);
+                self.visit_expr(lhs, Access::BorrowMut);
+                self.visit_expr(rhs, Access::Borrow);
             }
 
             rustc_hir::ExprKind::AddrOf(_, rustc_hir::Mutability::Mut, inner) => {
                 self.visit_expr(
                     inner,
-                    if context == Access::Move {
-                        Access::Move
+                    if context == Access::Take {
+                        Access::Take
                     } else {
-                        Access::Write
+                        Access::BorrowMut
                     },
                 );
             }
             rustc_hir::ExprKind::AddrOf(_, rustc_hir::Mutability::Not, inner) => {
-                self.visit_expr(inner, Access::Read);
+                if let Some(param) = self.expr_as_decl_ref(inner) {
+                    self.fn_ir
+                        .resolve_next_param(&param, &mut self.visited, |p| {
+                            if p.access == Access::Unknown {
+                                p.access = Access::Borrow;
+                            }
+                        });
+                    return;
+                }
+                self.visit_expr(inner, Access::Borrow);
             }
 
             rustc_hir::ExprKind::Block(block, _) | rustc_hir::ExprKind::Loop(block, _, _, _) => {
@@ -412,11 +441,11 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
                     match &stmt.kind {
                         rustc_hir::StmtKind::Let(local) => {
                             if let Some(init) = local.init {
-                                self.visit_expr(init, Access::Read);
+                                self.visit_expr(init, Access::Borrow);
                             }
                         }
                         rustc_hir::StmtKind::Expr(e) | rustc_hir::StmtKind::Semi(e) => {
-                            self.visit_expr(e, Access::Read);
+                            self.visit_expr(e, Access::Borrow);
                         }
                         _ => {}
                     }
@@ -427,22 +456,36 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             }
 
             rustc_hir::ExprKind::If(cond, then_branch, else_branch) => {
-                self.visit_expr(cond, Access::Read);
+                self.visit_expr(cond, Access::Borrow);
                 self.visit_expr(then_branch, context);
                 if let Some(e) = else_branch {
                     self.visit_expr(e, context);
                 }
             }
             rustc_hir::ExprKind::Match(scrutinee, arms, _) => {
-                self.visit_expr(scrutinee, Access::Read);
+                self.visit_expr(scrutinee, Access::Borrow);
                 for arm in arms.iter() {
+                    if let Some(guard) = arm.guard {
+                        self.visit_expr(guard, Access::Borrow);
+                    }
                     self.visit_expr(arm.body, context);
                 }
             }
 
+            rustc_hir::ExprKind::Field(base, _) => {
+                if let Some(param) = self.expr_as_decl_ref(base) {
+                    self.fn_ir
+                        .resolve_next_param(&param, &mut self.visited, |p| {
+                            if p.access == Access::Unknown {
+                                p.access = context;
+                            }
+                        });
+                    return;
+                }
+                self.visit_expr(base, context);
+            }
             rustc_hir::ExprKind::Unary(_, e)
             | rustc_hir::ExprKind::Cast(e, _)
-            | rustc_hir::ExprKind::Field(e, _)
             | rustc_hir::ExprKind::DropTemps(e)
             | rustc_hir::ExprKind::Repeat(e, _) => {
                 self.visit_expr(e, context);
@@ -480,7 +523,7 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
             | rustc_hir::ExprKind::Continue(_) => {}
 
             rustc_hir::ExprKind::Ret(Some(e)) | rustc_hir::ExprKind::Break(_, Some(e)) => {
-                self.visit_expr(e, Access::Read);
+                self.visit_expr(e, Access::Borrow);
             }
 
             other => {
@@ -492,6 +535,15 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
                 panic!("visit_expr: unhandled {other:?} at {span_str}");
             }
         }
+    }
+
+    fn is_moved(&self, expr: &rustc_hir::Expr<'tcx>) -> bool {
+        let results = self.tcx.typeck(expr.hir_id.owner);
+        let borrowed = results
+            .expr_adjustments(expr)
+            .iter()
+            .any(|adj| matches!(adj.kind, rustc_middle::ty::adjustment::Adjust::Borrow(_)));
+        !borrowed && !is_copy(self.tcx, results.expr_ty(expr))
     }
 
     fn expr_as_decl_ref(&self, expr: &rustc_hir::Expr<'_>) -> Option<String> {
@@ -548,11 +600,19 @@ impl<'a, 'tcx> AstVisitor<'a, 'tcx> {
 
     fn access_for_type(ty: &rustc_middle::ty::Ty<'_>) -> Access {
         match ty.kind() {
-            rustc_middle::ty::TyKind::Ref(_, _, rustc_middle::ty::Mutability::Mut) => Access::Write,
-            rustc_middle::ty::TyKind::Ref(_, _, rustc_middle::ty::Mutability::Not) => Access::Read,
-            rustc_middle::ty::TyKind::RawPtr(_, rustc_middle::ty::Mutability::Mut) => Access::Write,
-            rustc_middle::ty::TyKind::RawPtr(_, rustc_middle::ty::Mutability::Not) => Access::Read,
-            _ => Access::Read,
+            rustc_middle::ty::TyKind::Ref(_, _, rustc_middle::ty::Mutability::Mut) => {
+                Access::BorrowMut
+            }
+            rustc_middle::ty::TyKind::Ref(_, _, rustc_middle::ty::Mutability::Not) => {
+                Access::Borrow
+            }
+            rustc_middle::ty::TyKind::RawPtr(_, rustc_middle::ty::Mutability::Mut) => {
+                Access::BorrowMut
+            }
+            rustc_middle::ty::TyKind::RawPtr(_, rustc_middle::ty::Mutability::Not) => {
+                Access::Borrow
+            }
+            _ => Access::Borrow,
         }
     }
 }

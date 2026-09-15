@@ -35,16 +35,18 @@ TypeInfo ParseTypeInfoJSON(const llvm::json::Object &obj) {
 }
 
 Access ParseAccessJSON(llvm::StringRef value) {
-  if (value == "read") {
+  if (value == "borrow") {
+    return Access::kBorrow;
+  } else if (value == "borrow_mut") {
+    return Access::kBorrowMut;
+  } else if (value == "read") {
     return Access::kRead;
-  } else if (value == "write") {
-    return Access::kWrite;
-  } else if (value == "move") {
-    return Access::kMove;
+  } else if (value == "take") {
+    return Access::kTake;
   } else {
     llvm::errs() << "Invalid access value: " << value << '\n';
     assert(0);
-    return Access::kRead;
+    return Access::kBorrow;
   }
 }
 
@@ -247,14 +249,17 @@ void VaArgsFragment::dump() const { log() << "  va_args\n"; }
 void PlaceholderFragment::dump() const {
   log() << "  placeholder: " << n;
   switch (access) {
+  case Access::kBorrow:
+    log() << " (borrow)\n";
+    break;
+  case Access::kBorrowMut:
+    log() << " (borrow_mut)\n";
+    break;
   case Access::kRead:
     log() << " (read)\n";
     break;
-  case Access::kWrite:
-    log() << " (write)\n";
-    break;
-  case Access::kMove:
-    log() << " (move)\n";
+  case Access::kTake:
+    log() << " (take)\n";
     break;
   }
 }

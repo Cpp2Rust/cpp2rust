@@ -251,7 +251,7 @@ public:
     }
 
     bool needs_lvalue() const {
-      return access == TranslationRule::Access::kWrite;
+      return access == TranslationRule::Access::kBorrowMut;
     }
 
     void dump() const;

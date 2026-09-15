@@ -23,7 +23,7 @@ struct TextFragment {
   void dump() const;
 };
 
-enum class Access : int8_t { kRead, kWrite, kMove };
+enum class Access : int8_t { kBorrow, kBorrowMut, kRead, kTake };
 
 struct PlaceholderFragment {
   unsigned n; // "a0", "a1", ...
