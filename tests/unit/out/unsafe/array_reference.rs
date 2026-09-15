@@ -39,7 +39,7 @@ pub unsafe fn fill_and_sum_5(a: *mut [i32; 3], mut v: i32, out: *mut i32) {
         let _v: i32 = v;
         fill_3(_a, _v)
     });
-    (*out) = (unsafe { sum_twice_4(a) });
+    (*out) = (unsafe { sum_twice_4(a) }).clone();
 }
 pub unsafe fn pick_6(s: *const [libc::c_char; 5]) -> *const [libc::c_char; 5] {
     return s;
