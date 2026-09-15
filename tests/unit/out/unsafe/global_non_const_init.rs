@@ -89,7 +89,7 @@ impl Singleton {
     pub unsafe fn instance() -> *mut Singleton {
         static mut s_15: std::cell::LazyCell<Singleton> =
             std::cell::LazyCell::new(|| unsafe { Singleton::Singleton() });;
-        return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15)) as *mut Singleton;
+        return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15));
     }
 }
 impl Default for Singleton {

@@ -66,6 +66,7 @@ pub unsafe fn make_0(mut v: i32) -> MoveOnly {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -118,3 +119,4 @@ unsafe fn main_0() -> i32 {
     assert!(((m2.mark) == (10)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}
