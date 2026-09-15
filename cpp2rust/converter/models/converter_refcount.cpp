@@ -1832,10 +1832,11 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
     }
     StrCat(token::kSemiColon);
   } else {
-    EmitByValueShadow(loop_var_name, loop_var->getType(),
-                      loop_var_name +
-                          GetPointerDerefSuffix(loop_var->getType()) +
-                          ".clone()");
+    auto type = loop_var->getType();
+    bool copy = type.isPODType(ctx_) && !type->isRecordType();
+    EmitByValueShadow(loop_var_name, type,
+                      loop_var_name + GetPointerDerefSuffix(type) +
+                          (copy ? "" : ".clone()"));
   }
 
   ConvertForRangeBody(stmt);
