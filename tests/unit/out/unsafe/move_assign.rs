@@ -83,7 +83,7 @@ unsafe fn main_0() -> i32 {
     (unsafe {
         MoveOnly::operator_assign_pmutMoveOnly(
             &mut c,
-            &mut (*(unsafe { MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut b) })),
+            (unsafe { MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut b) }),
         )
     });
     assert!((((b.v) == (0)) && ((a.v) == (0))) && ((c.v) == (3)));

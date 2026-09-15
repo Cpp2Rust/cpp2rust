@@ -107,11 +107,11 @@ unsafe fn main_0() -> i32 {
         assert!(((copies_1) == (2)));
         assert!(((unsafe { sum_2(&a,) }) == (6)));
         assert!(((unsafe { sum_2(&b,) }) == (106)));
-        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &a });
+        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &mut a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
         assert!(((alive_0) == (4)) && ((copies_1) == (3)));
         assert!(((a.size) == (4)) && ((a.data[(3) as usize]) == (3)));
-        (unsafe { Buffer::operator_assign(&mut d, &b) });
+        (unsafe { Buffer::operator_assign(&mut d, &mut b) });
         assert!(((copies_1) == (4)));
         assert!(((b.data[(0) as usize]) == (100)) && ((d.data[(0) as usize]) == (100)));
     }

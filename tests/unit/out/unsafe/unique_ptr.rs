@@ -15,19 +15,6 @@ impl SafePointer {
     pub unsafe fn inc(&mut self) {
         (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
     }
-    pub unsafe fn SafePointer_pmutSafePointer(_a0: *mut SafePointer) -> Self {
-        let mut this = Self {
-            ptr: (*_a0).ptr.take(),
-        };
-        this
-    }
-    pub unsafe fn operator_assign_pmutSafePointer(
-        &mut self,
-        _a0: *mut SafePointer,
-    ) -> *mut SafePointer {
-        self.ptr = (*_a0).ptr.take();
-        return &mut (*(self as *mut SafePointer));
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]

@@ -35,16 +35,16 @@ impl Chain {
     }
     pub unsafe fn add_i32_rref(&mut self, mut n: i32) -> *mut Chain {
         self.v += n;
-        return &mut (*(self as *mut Chain));
+        return (self as *mut Chain);
     }
     pub unsafe fn take(&mut self) -> Chain {
-        return Chain::Chain_pmutChain({ &mut (*(self as *mut Chain)) });
+        return Chain::Chain_pmutChain({ (self as *mut Chain) });
     }
     pub unsafe fn copy(&self) -> Chain {
         return Chain::Chain_pconstChain({ &(*(self as *const Chain)) });
     }
     pub unsafe fn self_(&mut self) -> *mut Chain {
-        return &mut (*(self as *mut Chain));
+        return (self as *mut Chain);
     }
 }
 impl Clone for Chain {

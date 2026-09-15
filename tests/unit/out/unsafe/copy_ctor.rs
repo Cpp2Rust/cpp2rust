@@ -80,7 +80,7 @@ pub unsafe fn by_value_1(mut c: Counted) -> i32 {
 }
 pub unsafe fn make_2(mut v: i32) -> Counted {
     let mut c: Counted = Counted::Counted({ v });
-    return Counted::Counted_pconstCounted({ &c });
+    return Counted::Counted_pconstCounted({ &mut c });
 }
 pub fn main() {
     unsafe {
