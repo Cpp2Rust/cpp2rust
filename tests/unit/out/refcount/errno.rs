@@ -18,7 +18,7 @@ pub fn test_errno_0() {
 pub fn test_errno_preserved_across_strdup_1() {
     libcc2rs::cpp2rust_errno().write(99);
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello").clone(),
+        Ptr::from_string_literal(b"hello"),
     )));
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 99) as i32) != 0));
@@ -38,7 +38,6 @@ pub fn test_errno_from_fseek_2() {
     libcc2rs::cpp2rust_errno().write(0);
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -47,4 +46,3 @@ fn main_0() -> i32 {
     ({ test_errno_from_fseek_2() });
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

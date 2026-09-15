@@ -37,16 +37,14 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     (*(*s.borrow()).v.borrow_mut()).push(1);
     'loop_: for mut e in (*s.borrow()).v.as_pointer() as Ptr<i32> {
-        let e: Value<i32> = Rc::new(RefCell::new(e.read().clone()));
+        let e: Value<i32> = Rc::new(RefCell::new(e.read()));
         (*(*s.borrow()).a.borrow_mut()).postfix_inc();
     }
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

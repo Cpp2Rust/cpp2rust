@@ -61,7 +61,6 @@ pub unsafe fn operator_lt_7(mut a: i32, b: *const S) -> bool {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -71,53 +70,52 @@ unsafe fn main_0() -> i32 {
     let mut c: S = S { v: 1 };
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
-            operator_eq_1(_a, &c as *const S)
+            let _a: *const S = &a;
+            operator_eq_1(_a, &c)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
-            operator_ne_2(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_ne_2(_a, &b)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
-            operator_lt_0(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_lt_0(_a, &b)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &b as *const S;
-            operator_gt_3(_a, &a as *const S)
+            let _a: *const S = &b;
+            operator_gt_3(_a, &a)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
-            operator_le_4(_a, &c as *const S)
+            let _a: *const S = &a;
+            operator_le_4(_a, &c)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
-            operator_ge_5(_a, &c as *const S)
+            let _a: *const S = &a;
+            operator_ge_5(_a, &c)
         })
     );
     assert!(
         !(unsafe {
-            let _a: *const S = &b as *const S;
-            operator_lt_0(_a, &a as *const S)
+            let _a: *const S = &b;
+            operator_lt_0(_a, &a)
         })
     );
     assert!(
         (unsafe {
-            let _a: *const S = &a as *const S;
+            let _a: *const S = &a;
             operator_lt_6(_a, 5)
         })
     );
-    assert!((unsafe { operator_lt_7(0, &a as *const S,) }));
+    assert!((unsafe { operator_lt_7(0, &a,) }));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

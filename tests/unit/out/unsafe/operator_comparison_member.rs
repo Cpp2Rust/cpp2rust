@@ -60,7 +60,6 @@ impl std::cmp::PartialEq for S {
 impl std::cmp::Eq for S {}
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -68,14 +67,13 @@ unsafe fn main_0() -> i32 {
     let mut a: S = S { v: 1 };
     let mut b: S = S { v: 2 };
     let mut c: S = S { v: 1 };
-    assert!((unsafe { S::operator_eq(&a, &c as *const S,) }));
-    assert!((unsafe { S::operator_ne(&a, &b as *const S,) }));
-    assert!((unsafe { S::operator_lt_pconstS_const(&a, &b as *const S,) }));
-    assert!((unsafe { S::operator_gt(&b, &a as *const S,) }));
-    assert!((unsafe { S::operator_le(&a, &c as *const S,) }));
-    assert!((unsafe { S::operator_ge(&a, &c as *const S,) }));
-    assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a as *const S,) }));
+    assert!((unsafe { S::operator_eq(&a, &c,) }));
+    assert!((unsafe { S::operator_ne(&a, &b,) }));
+    assert!((unsafe { S::operator_lt_pconstS_const(&a, &b,) }));
+    assert!((unsafe { S::operator_gt(&b, &a,) }));
+    assert!((unsafe { S::operator_le(&a, &c,) }));
+    assert!((unsafe { S::operator_ge(&a, &c,) }));
+    assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a,) }));
     assert!((unsafe { S::operator_lt_i32_const(&a, 5,) }));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

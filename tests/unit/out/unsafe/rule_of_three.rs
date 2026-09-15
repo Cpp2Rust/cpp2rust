@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
-pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut alive_0: i32 = unsafe { 0 };
+pub static mut copies_1: i32 = unsafe { 0 };
 #[repr(C)]
 #[derive()]
 pub struct Buffer {
@@ -25,11 +25,11 @@ impl Buffer {
             this.data[(i) as usize] = if ((i) < (size)) { i } else { -1_i32 };
             i.prefix_inc();
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
+        alive_0.prefix_inc();
         this
     }
     pub unsafe fn destructor(&mut self) {
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_dec();
+        alive_0.prefix_dec();
     }
     pub unsafe fn Buffer_pconstBuffer(o: *const Buffer) -> Self {
         let mut this = Self {
@@ -41,13 +41,13 @@ impl Buffer {
             this.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_inc();
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
+        alive_0.prefix_inc();
+        copies_1.prefix_inc();
         this
     }
     pub unsafe fn operator_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
-            return &mut (*(self as *mut Buffer)) as *mut Buffer;
+            return &mut (*(self as *mut Buffer));
         }
         self.size = (*o).size;
         let mut i: i32 = 0;
@@ -55,8 +55,8 @@ impl Buffer {
             self.data[(i) as usize] = (*o).data[(i) as usize];
             i.prefix_inc();
         }
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
-        return &mut (*(self as *mut Buffer)) as *mut Buffer;
+        copies_1.prefix_inc();
+        return &mut (*(self as *mut Buffer));
     }
 }
 impl Clone for Buffer {
@@ -83,7 +83,6 @@ pub unsafe fn sum_2(b: *const Buffer) -> i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -91,44 +90,31 @@ unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::Buffer({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
-        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a as *const Buffer });
+        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (1))
-        );
+        assert!(((alive_0) == (2)) && ((copies_1) == (1)));
         b.data[(0) as usize] = 100;
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = Buffer::Buffer({ 2 });
         let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
-        (unsafe { Buffer::operator_assign(&mut c, &a as *const Buffer) });
+        (unsafe { Buffer::operator_assign(&mut c, &a) });
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (3))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2))
-        );
+        assert!(((alive_0) == (3)) && ((copies_1) == (2)));
         (unsafe {
-            let _o: *const Buffer = &c as *const Buffer;
+            let _o: *const Buffer = &c;
             Buffer::operator_assign(&mut c, _o)
         });
-        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2)));
-        assert!(((unsafe { sum_2(&a as *const Buffer,) }) == (6)));
-        assert!(((unsafe { sum_2(&b as *const Buffer,) }) == (106)));
+        assert!(((copies_1) == (2)));
+        assert!(((unsafe { sum_2(&a,) }) == (6)));
+        assert!(((unsafe { sum_2(&b,) }) == (106)));
         let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &mut a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
-        assert!(
-            ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (4))
-                && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (3))
-        );
+        assert!(((alive_0) == (4)) && ((copies_1) == (3)));
         assert!(((a.size) == (4)) && ((a.data[(3) as usize]) == (3)));
         (unsafe { Buffer::operator_assign(&mut d, &mut b) });
-        assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (4)));
+        assert!(((copies_1) == (4)));
         assert!(((b.data[(0) as usize]) == (100)) && ((d.data[(0) as usize]) == (100)));
     }
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (0)));
+    assert!(((alive_0) == (0)));
     return 0;
-}
-pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const alive_0);
-    std::cell::LazyCell::force(&*&raw const copies_1);
 }

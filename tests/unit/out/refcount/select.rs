@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -17,7 +16,7 @@ fn main_0() -> i32 {
     assert!(
         (((match nix::unistd::pipe() {
             Ok((__r, __w)) => {
-                let __fds = (fds.as_pointer() as Ptr<i32>).clone();
+                let __fds = (fds.as_pointer() as Ptr<i32>);
                 __fds.write(FdRegistry::register(__r));
                 __fds.offset(1).write(FdRegistry::register(__w));
                 0
@@ -37,17 +36,15 @@ fn main_0() -> i32 {
         ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
             .to_any()
             .memset((0) as u8, 16usize as usize);
-        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
-            .to_any()
-            .clone()
+        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any()
     };
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 0_i64;
     assert!(
         ((({
-            let __rp = (rset.as_pointer()).clone();
-            let __wp = Ptr::<CFdSet>::null().clone();
-            let __ep = Ptr::<CFdSet>::null().clone();
-            let __tp = (tv.as_pointer()).clone();
+            let __rp = (rset.as_pointer());
+            let __wp = Ptr::<CFdSet>::null();
+            let __ep = Ptr::<CFdSet>::null();
+            let __tp = (tv.as_pointer());
             let __r_fds: Vec<i32> = match __rp.is_null() {
                 true => Vec::new(),
                 false => __rp.with(|__s| {
@@ -193,10 +190,10 @@ fn main_0() -> i32 {
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 1_i64;
     assert!(
         ((({
-            let __rp = (rset.as_pointer()).clone();
-            let __wp = Ptr::<CFdSet>::null().clone();
-            let __ep = Ptr::<CFdSet>::null().clone();
-            let __tp = (tv.as_pointer()).clone();
+            let __rp = (rset.as_pointer());
+            let __wp = Ptr::<CFdSet>::null();
+            let __ep = Ptr::<CFdSet>::null();
+            let __tp = (tv.as_pointer());
             let __r_fds: Vec<i32> = match __rp.is_null() {
                 true => Vec::new(),
                 false => __rp.with(|__s| {
@@ -325,4 +322,3 @@ fn main_0() -> i32 {
     assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

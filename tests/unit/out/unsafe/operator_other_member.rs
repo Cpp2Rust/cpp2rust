@@ -43,7 +43,6 @@ impl S {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -53,7 +52,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::operator_call_const(&s,) }) == (3)));
     assert!(((unsafe { S::operator_call_i32_const(&s, 1,) }) == (4)));
     assert!(((unsafe { S::operator_call_i32_i32_const(&s, 1, 2,) }) == (6)));
-    assert!((((unsafe { S::operator_comma(&s, &t as *const S,) }).v) == (34)));
+    assert!((((unsafe { S::operator_comma(&s, &t,) }).v) == (34)));
     let mut i: i32 = (unsafe { S::operator_int(&s) });
     assert!(((i) == (3)));
     assert!((((unsafe { S::operator_int(&s,) }) + (1)) == (4)));
@@ -68,4 +67,3 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { Static::operator_call(6, 7,) }) == (42)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

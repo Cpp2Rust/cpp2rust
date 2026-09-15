@@ -18,7 +18,6 @@ pub unsafe fn operator_comma_0(a: *const S, b: *const S) -> S {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -27,22 +26,21 @@ unsafe fn main_0() -> i32 {
     let mut t: S = S { v: 4 };
     assert!(
         (((unsafe {
-            let _a: *const S = &s as *const S;
-            operator_comma_0(_a, &t as *const S)
+            let _a: *const S = &s;
+            operator_comma_0(_a, &t)
         })
         .v) == (34))
     );
     assert!(
         (((unsafe {
             let mut _a: S = (unsafe {
-                let _a: *const S = &s as *const S;
-                operator_comma_0(_a, &t as *const S)
+                let _a: *const S = &s;
+                operator_comma_0(_a, &t)
             });
-            let _b: *const S = &s as *const S;
+            let _b: *const S = &s;
             operator_comma_0(&mut _a, _b)
         })
         .v) == (343))
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

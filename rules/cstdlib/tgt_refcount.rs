@@ -31,7 +31,7 @@ fn f6(a0: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f10(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __resolved = a1.clone();
+    let __resolved = a1;
     match ::std::fs::canonicalize(a0.to_rust_string()) {
         Ok(__p) => {
             let mut __bytes = __p.into_os_string().into_encoded_bytes();

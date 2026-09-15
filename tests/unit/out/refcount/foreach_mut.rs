@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -17,11 +16,11 @@ fn main_0() -> i32 {
     (*v1.borrow_mut()).push(3);
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
-        let x: Value<i32> = Rc::new(RefCell::new(x.read().clone()));
+        let x: Value<i32> = Rc::new(RefCell::new(x.read()));
         (*sum.borrow_mut()) += (*x.borrow_mut()).prefix_inc();
     }
     'loop_: for x in v1.as_pointer() as Ptr<i32> {
-        let x: Value<i32> = Rc::new(RefCell::new(x.read().clone()));
+        let x: Value<i32> = Rc::new(RefCell::new(x.read()));
         (*sum.borrow_mut()) += (*x.borrow());
     }
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
@@ -39,30 +38,29 @@ fn main_0() -> i32 {
     (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(1_usize)));
     (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(2_usize)));
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         {
             let _ptr = (*p.borrow()).clone();
             _ptr.write(_ptr.read() + 5)
         };
     }
     'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         let __rhs = ((*p.borrow()).read());
         (*sum.borrow_mut()) += __rhs;
     }
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         {
             let _ptr = (*p.borrow()).clone();
             _ptr.write(_ptr.read() + 5)
         };
     }
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         let __rhs = ((*p.borrow()).read());
         (*sum.borrow_mut()) += __rhs;
     }
     assert!(((*sum.borrow()) == 168));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

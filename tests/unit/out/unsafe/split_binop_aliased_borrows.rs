@@ -8,16 +8,14 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = vec![1, 2];
     let mut p: *mut i32 = v.as_mut_ptr();
-    let r: *const i32 = &v[(1_usize)] as *const i32;
+    let r: *const i32 = &v[(1_usize)];
     (*p) = (*r);
     assert!(((v[(0_usize)]) == (2)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

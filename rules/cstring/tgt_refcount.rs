@@ -5,12 +5,12 @@ use libcc2rs::*;
 
 fn f1(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0.memcpy(&a1, a2 as usize);
-    a0.clone()
+    a0
 }
 
 fn f2(a0: AnyPtr, a1: u8, a2: usize) -> AnyPtr {
     a0.memset((a1) as u8, a2 as usize);
-    a0.clone()
+    a0
 }
 
 fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
@@ -19,11 +19,11 @@ fn f3(a0: AnyPtr, a1: AnyPtr, a2: usize) -> i32 {
 
 fn f4(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
     a0.memcpy(&a1, a2 as usize);
-    a0.clone()
+    a0
 }
 
 fn f5(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let __s = a0.clone();
+    let __s = a0;
     let __t = a1 as u8;
     match __s.to_c_string_iterator().position(|__c| __c == __t) {
         Some(__i) => __s.offset(__i),
@@ -88,7 +88,7 @@ fn f10(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let __s = a0.clone();
+    let __s = a0;
     let __t = a1 as u8;
     match __s
         .to_c_string_iterator()
@@ -108,26 +108,26 @@ fn f11(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
 }
 
 fn f15(a0: Ptr<u8>) -> Ptr<u8> {
-    libcc2rs::strdup_refcount(a0.clone())
+    libcc2rs::strdup_refcount(a0)
 }
 
 fn f16(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
-    let __set = a1.clone();
+    let __set = a1;
     a0.to_c_string_iterator()
         .take_while(|__c| !__set.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
 fn f17(a0: Ptr<u8>, a1: Ptr<u8>) -> usize {
-    let __set = a1.clone();
+    let __set = a1;
     a0.to_c_string_iterator()
         .take_while(|__c| __set.to_c_string_iterator().any(|__r| __r == *__c))
         .count()
 }
 
 fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __needle = a1.clone();
-    let mut __p = a0.clone();
+    let __needle = a1;
+    let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
         if __needle
@@ -144,8 +144,8 @@ fn f18(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f21(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __s = a0.clone();
-    let __set = a1.clone();
+    let __s = a0;
+    let __set = a1;
     match __s
         .to_c_string_iterator()
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -221,7 +221,7 @@ fn f28(a0: i32, a1: Ptr<u8>, a2: usize) -> i32 {
 }
 
 fn f6(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let __s = a0.clone();
+    let __s = a0;
     let __t = a1 as u8;
     match __s.to_c_string_iterator().position(|__c| __c == __t) {
         Some(__i) => __s.offset(__i),
@@ -251,7 +251,7 @@ fn f12(a0: AnyPtr, a1: i32, a2: usize) -> AnyPtr {
 }
 
 fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let __s = a0.clone();
+    let __s = a0;
     let __t = a1 as u8;
     match __s
         .to_c_string_iterator()
@@ -271,7 +271,7 @@ fn f13(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
 }
 
 fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
-    let __s = a0.clone();
+    let __s = a0;
     let __t = a1 as u8;
     match __s
         .to_c_string_iterator()
@@ -291,8 +291,8 @@ fn f14(a0: Ptr<u8>, a1: i32) -> Ptr<u8> {
 }
 
 fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __needle = a1.clone();
-    let mut __p = a0.clone();
+    let __needle = a1;
+    let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
         if __needle
@@ -309,8 +309,8 @@ fn f19(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __needle = a1.clone();
-    let mut __p = a0.clone();
+    let __needle = a1;
+    let mut __p = a0;
     loop {
         let mut __h = __p.to_c_string_iterator();
         if __needle
@@ -327,8 +327,8 @@ fn f20(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __s = a0.clone();
-    let __set = a1.clone();
+    let __s = a0;
+    let __set = a1;
     match __s
         .to_c_string_iterator()
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))
@@ -339,8 +339,8 @@ fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f23(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
-    let __s = a0.clone();
-    let __set = a1.clone();
+    let __s = a0;
+    let __set = a1;
     match __s
         .to_c_string_iterator()
         .position(|__c| __set.to_c_string_iterator().any(|__r| __r == __c))

@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -20,9 +19,7 @@ fn main_0() -> i32 {
                 &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
                 4_usize as usize,
             );
-        ((buf.as_pointer() as Ptr<u8>).offset((2) as isize) as Ptr<u8>)
-            .to_any()
-            .clone()
+        ((buf.as_pointer() as Ptr<u8>).offset((2) as isize) as Ptr<u8>).to_any()
     };
     assert!((((*buf.borrow())[(0) as usize] as i32) == 1));
     assert!((((*buf.borrow())[(1) as usize] as i32) == 2));
@@ -32,4 +29,3 @@ fn main_0() -> i32 {
     assert!((((*buf.borrow())[(5) as usize] as i32) == 4));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

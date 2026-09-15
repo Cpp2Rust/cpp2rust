@@ -185,7 +185,6 @@ impl ByteRepr for Outer {
     }
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -194,7 +193,7 @@ fn main_0() -> i32 {
         ((ex.as_pointer()) as Ptr<Outer>)
             .to_any()
             .memset((0) as u8, 144usize as usize);
-        ((ex.as_pointer()) as Ptr<Outer>).to_any().clone()
+        ((ex.as_pointer()) as Ptr<Outer>).to_any()
     };
     (*(*ex.borrow()).kind.borrow_mut()) = 2;
     (*(*ex.borrow()).level.borrow_mut()) = 1;
@@ -234,4 +233,3 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

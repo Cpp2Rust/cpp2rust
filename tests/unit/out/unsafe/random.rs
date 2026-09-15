@@ -31,7 +31,7 @@ impl Pair {
         return self.x;
     }
     pub unsafe fn as_ref(&mut self) -> *mut i32 {
-        return &mut self.x as *mut i32;
+        return &mut self.x;
     }
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
         return (&mut self.x as *mut i32);
@@ -60,20 +60,19 @@ pub unsafe fn foo_1(mut x1: i32, x2: *mut i32, mut x3: *mut i32, p2: *mut Pair, 
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut x1: i32 = 1;
     let mut c1: i32 = x1;
-    let rx1: *mut i32 = &mut x1 as *mut i32;
+    let rx1: *mut i32 = &mut x1;
     let mut px1: *mut i32 = (&mut x1 as *mut i32);
     let mut x2: i32 = (*rx1);
     let rx2: *mut i32 = rx1;
     let mut px2: *mut i32 = (rx1);
     let mut x3: i32 = (*px1);
-    let rx3: *mut i32 = &mut (*px1) as *mut i32;
+    let rx3: *mut i32 = &mut (*px1);
     let mut px3: *mut i32 = px1;
     let mut res: i32 = ((x1) + (x2));
     res = ((x1) + (x2));
@@ -81,7 +80,7 @@ unsafe fn main_0() -> i32 {
         x: 1,
         y: 2,
         a: [1, 2, 3, 4, 5],
-        r: &mut x1 as *mut i32,
+        r: &mut x1,
         p: std::ptr::null_mut(),
         pair: std::ptr::null_mut(),
         ap: [std::ptr::null_mut(), std::ptr::null_mut()],
@@ -101,7 +100,7 @@ unsafe fn main_0() -> i32 {
         pair: y1.pair,
         ap: [y1.ap[(0) as usize], y1.ap[(1) as usize]],
     };
-    let ry1: *mut Pair = &mut y1 as *mut Pair;
+    let ry1: *mut Pair = &mut y1;
     let mut py1: *mut Pair = (&mut y1 as *mut Pair);
     let mut y2: Pair = Pair {
         x: (*ry1).x,
@@ -135,15 +134,15 @@ unsafe fn main_0() -> i32 {
         pair: (*py1).pair,
         ap: [(*py1).ap[(0) as usize], (*py1).ap[(1) as usize]],
     };
-    let ry3: *mut Pair = &mut (*py1) as *mut Pair;
+    let ry3: *mut Pair = &mut (*py1);
     let mut py3: *mut Pair = py1;
     py3 = std::ptr::null_mut();
     let mut ptr2pair: *mut Pair = py3;
     (unsafe {
         let _x1: i32 = x1;
-        let _x2: *mut i32 = &mut x1 as *mut i32;
+        let _x2: *mut i32 = &mut x1;
         let _x3: *mut i32 = (&mut x1 as *mut i32);
-        let _p2: *mut Pair = &mut y1 as *mut Pair;
+        let _p2: *mut Pair = &mut y1;
         let _p3: *mut Pair = (&mut y1 as *mut Pair);
         foo_1(_x1, _x2, _x3, _p2, _p3)
     });
@@ -157,13 +156,13 @@ unsafe fn main_0() -> i32 {
     });
     (unsafe {
         let _x1: i32 = (*px1);
-        let _x2: *mut i32 = &mut (*px1) as *mut i32;
+        let _x2: *mut i32 = &mut (*px1);
         let _x3: *mut i32 = px1;
-        let _p2: *mut Pair = &mut (*py1) as *mut Pair;
+        let _p2: *mut Pair = &mut (*py1);
         let _p3: *mut Pair = py1;
         foo_1(_x1, _x2, _x3, _p2, _p3)
     });
-    let cr1: *mut i32 = &mut c1 as *mut i32;
+    let cr1: *mut i32 = &mut c1;
     let mut cp1: *mut i32 = (&mut c1 as *mut i32);
     x1 = c1;
     x1 = 1;
@@ -197,7 +196,7 @@ unsafe fn main_0() -> i32 {
         x: 1,
         y: 2,
         a: [1, 2, 3, 4, 5],
-        r: &mut j as *mut i32,
+        r: &mut j,
         p: std::ptr::null_mut(),
         pair: std::ptr::null_mut(),
         ap: [std::ptr::null_mut(), std::ptr::null_mut()],
@@ -222,4 +221,3 @@ unsafe fn main_0() -> i32 {
     let mut ptr2ptr_2: *mut *mut Pair = (&mut py1 as *mut *mut Pair);
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -33,7 +33,6 @@ impl Default for Foo {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -48,7 +47,7 @@ unsafe fn main_0() -> i32 {
     x4.prefix_inc();
     assert!(((x3) == (3.0E+0)));
     assert!(((x4) == (4.0E+0)));
-    let reference: *mut i32 = &mut x1 as *mut i32;
+    let reference: *mut i32 = &mut x1;
     let mut x5: i32 = (*reference);
     x5.prefix_inc();
     assert!(((*reference) == (1)));
@@ -64,7 +63,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*other_pointer) == (*pointer)));
     let mut f1: Foo = Foo {
         x: 1,
-        y: &mut x1 as *mut i32,
+        y: &mut x1,
         z: (&mut x1 as *mut i32),
         a: [0, 1, 2],
         bar: Bar { w: 10 },
@@ -248,4 +247,3 @@ unsafe fn main_0() -> i32 {
     }
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

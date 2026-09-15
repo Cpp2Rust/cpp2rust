@@ -39,7 +39,7 @@ impl ByteRepr for Point {
 pub fn set_0(ref_: Ptr<i32>, val: i32) {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));
     let val: Value<i32> = Rc::new(RefCell::new(val));
-    (*ref_.borrow()).clone().write((*val.borrow()));
+    (*ref_.borrow()).write((*val.borrow()));
 }
 pub fn read_1(ref_: Ptr<i32>) -> i32 {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));
@@ -47,13 +47,12 @@ pub fn read_1(ref_: Ptr<i32>) -> i32 {
     return (r.read());
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(10));
     let ref_1: Value<Ptr<i32>> = Rc::new(RefCell::new(i1.as_pointer()));
-    (*ref_1.borrow()).clone().write(20);
+    (*ref_1.borrow()).write(20);
     let i2: Ptr<i32> = (*ref_1.borrow()).clone();
     {
         let _ptr = i2.clone();
@@ -64,8 +63,8 @@ fn main_0() -> i32 {
     let i4: Value<i32> = Rc::new(RefCell::new(2));
     let ref_3: Value<Ptr<i32>> = Rc::new(RefCell::new(i3.as_pointer()));
     let ref_4: Value<Ptr<i32>> = Rc::new(RefCell::new(i4.as_pointer()));
-    let __rhs = ((*ref_4.borrow()).clone().read());
-    (*ref_3.borrow()).clone().write(__rhs);
+    let __rhs = ((*ref_4.borrow()).read());
+    (*ref_3.borrow()).write(__rhs);
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",
@@ -84,12 +83,8 @@ fn main_0() -> i32 {
         y: Rc::new(RefCell::new(4)),
     }));
     let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));
-    (*(*(*point_ref.borrow()).clone().upgrade().deref())
-        .x
-        .borrow_mut()) = 30;
-    (*(*(*point_ref.borrow()).clone().upgrade().deref())
-        .y
-        .borrow_mut()) = 40;
+    (*(*(*point_ref.borrow()).upgrade().deref()).x.borrow_mut()) = 30;
+    (*(*(*point_ref.borrow()).upgrade().deref()).y.borrow_mut()) = 40;
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",
@@ -98,4 +93,3 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

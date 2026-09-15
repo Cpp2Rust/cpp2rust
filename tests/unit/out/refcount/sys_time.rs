@@ -49,7 +49,7 @@ pub fn print_tm_1(t: i64) {
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
-            let __res = (tm.as_pointer()).clone();
+            let __res = (tm.as_pointer());
             match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
@@ -97,7 +97,7 @@ pub fn print_local_tm_3(t: i64) {
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
-            let __res = (tm.as_pointer()).clone();
+            let __res = (tm.as_pointer());
             match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
@@ -147,7 +147,7 @@ pub fn test_strftime_5() {
     let tm: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((!(({
-            let __res = (tm.as_pointer()).clone();
+            let __res = (tm.as_pointer());
             match jiff::Timestamp::from_second((t.as_pointer()).read()) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
@@ -298,7 +298,6 @@ pub fn test_strftime_5() {
     );
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -308,4 +307,3 @@ fn main_0() -> i32 {
     ({ test_strftime_5() });
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

@@ -81,7 +81,6 @@ pub unsafe fn Tail_4(mut head: *mut Node) -> *mut Node {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -128,38 +127,38 @@ unsafe fn main_0() -> i32 {
         prev: std::ptr::null_mut(),
     };
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n1 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n1;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n2 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n2;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n3 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n3;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n4 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n4;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n5 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n5;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n6 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n6;
         Append_2(_head, _new_node)
     });
     (unsafe {
-        let _head: *mut Node = &mut (*head) as *mut Node;
-        let _new_node: *mut Node = &mut n7 as *mut Node;
+        let _head: *mut Node = &mut (*head);
+        let _new_node: *mut Node = &mut n7;
         Append_2(_head, _new_node)
     });
     head = (unsafe { Delete_3(head, 5) });
@@ -207,4 +206,3 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

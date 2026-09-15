@@ -14,21 +14,18 @@ pub unsafe fn foo_1(x: *mut i32) -> *mut i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 5;
-    let mut y: i32 = (*(unsafe { foo_1(&mut x as *mut i32) }));
-    let z: *mut i32 = (unsafe { foo_1(&mut x as *mut i32) });
+    let mut y: i32 = (*(unsafe { foo_1(&mut x) }));
+    let z: *mut i32 = (unsafe { foo_1(&mut x) });
     assert!(
-        (((((*(unsafe { foo_1(&mut x as *mut i32,) }))
-            + (*(unsafe { foo_1(&mut y as *mut i32,) })))
+        (((((*(unsafe { foo_1(&mut x,) })) + (*(unsafe { foo_1(&mut y,) })))
             + (*(unsafe { foo_1(z,) })))
             + (unsafe { bar_0() }))
             == (16))
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

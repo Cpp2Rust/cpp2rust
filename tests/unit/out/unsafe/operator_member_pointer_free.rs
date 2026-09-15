@@ -26,14 +26,13 @@ impl Default for S {
     }
 }
 pub unsafe fn operator_deref_0(s: *mut S) -> *mut Inner {
-    return &mut (*s).inner as *mut Inner;
+    return &mut (*s).inner;
 }
 pub unsafe fn operator_addr_1(s: *mut S) -> *mut i32 {
     return (&mut (*s).data[(0) as usize] as *mut i32);
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -44,19 +43,19 @@ unsafe fn main_0() -> i32 {
     };
     assert!(
         (((*(unsafe {
-            let _s: *mut S = &mut s as *mut S;
+            let _s: *mut S = &mut s;
             operator_deref_0(_s)
         }))
         .x) == (9))
     );
     (*(unsafe {
-        let _s: *mut S = &mut s as *mut S;
+        let _s: *mut S = &mut s;
         operator_deref_0(_s)
     }))
     .x = 10;
     assert!(((s.inner.x) == (10)));
     let mut p: *mut i32 = (unsafe {
-        let _s: *mut S = &mut s as *mut S;
+        let _s: *mut S = &mut s;
         operator_addr_1(_s)
     });
     assert!(((*p) == (1)));
@@ -64,4 +63,3 @@ unsafe fn main_0() -> i32 {
     assert!(((s.data[(0) as usize]) == (5)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -8,7 +8,7 @@ fn t1() -> libcc2rs::Ifaddrs {
 }
 
 fn f1(a0: Ptr<Ptr<Ifaddrs>>) -> i32 {
-    let __out = a0.clone();
+    let __out = a0;
     match nix::ifaddrs::getifaddrs() {
         Ok(__ifas) => {
             let __list: Vec<nix::ifaddrs::InterfaceAddress> = __ifas.collect();
@@ -29,7 +29,7 @@ fn f1(a0: Ptr<Ptr<Ifaddrs>>) -> i32 {
 }
 
 fn f2(a0: Ptr<Ifaddrs>) {
-    let mut __cur = a0.clone();
+    let mut __cur = a0;
     while !__cur.is_null() {
         let __next = __cur.with(|__i| {
             let __name = __i.ifa_name.borrow();

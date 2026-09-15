@@ -64,42 +64,36 @@ pub unsafe fn total_len_9(names: *mut [*const libc::c_char; 2]) -> i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe { len_0(&std::mem::transmute(*b"beta\0") as *const [libc::c_char; 5],) }) == (4))
-    );
+    assert!(((unsafe { len_0(&std::mem::transmute(*b"beta\0"),) }) == (4)));
     let mut buf: [libc::c_char; 5] = std::mem::transmute(*b"abcd\0");
-    assert!(((unsafe { len_0(&buf as *const [libc::c_char; 5],) }) == (4)));
+    assert!(((unsafe { len_0(&buf,) }) == (4)));
     let mut arr: [i32; 3] = [1, 2, 3];
-    assert!(((unsafe { sum_2(&arr as *const [i32; 3],) }) == (6)));
-    (unsafe { fill_3(&mut arr as *mut [i32; 3], 7) });
-    assert!(((unsafe { sum_2(&arr as *const [i32; 3],) }) == (21)));
-    assert!(((unsafe { sum_twice_4(&arr as *const [i32; 3],) }) == (42)));
+    assert!(((unsafe { sum_2(&arr,) }) == (6)));
+    (unsafe { fill_3(&mut arr, 7) });
+    assert!(((unsafe { sum_2(&arr,) }) == (21)));
+    assert!(((unsafe { sum_twice_4(&arr,) }) == (42)));
     let mut out: i32 = 0;
-    (unsafe { fill_and_sum_5(&mut arr as *mut [i32; 3], 2, &mut out as *mut i32) });
+    (unsafe { fill_and_sum_5(&mut arr, 2, &mut out) });
     assert!(((out) == (12)));
     assert!(((arr[(0) as usize]) == (2)));
-    let lit: *const [libc::c_char; 5] =
-        &std::mem::transmute(*b"beta\0") as *const [libc::c_char; 5];
+    let lit: *const [libc::c_char; 5] = &std::mem::transmute(*b"beta\0");
     assert!(((unsafe { len_0(lit,) }) == (4)));
     assert!(
-        (((*(unsafe { pick_6(&std::mem::transmute(*b"beta\0") as *const [libc::c_char; 5],) }))
-            [(0) as usize] as i32)
+        (((*(unsafe { pick_6(&std::mem::transmute(*b"beta\0"),) }))[(0) as usize] as i32)
             == (('b' as libc::c_char) as i32))
     );
-    assert!(((unsafe { len_0((unsafe { pick_6(&buf as *const [libc::c_char; 5],) }),) }) == (4)));
+    assert!(((unsafe { len_0((unsafe { pick_6(&buf,) }),) }) == (4)));
     let mut pts: [Point; 2] = [Point { x: 1, y: 2 }, Point { x: 3, y: 4 }];
-    assert!(((unsafe { sum_points_7(&pts as *const [Point; 2],) }) == (10)));
-    (unsafe { shift_points_8(&mut pts as *mut [Point; 2], 10) });
+    assert!(((unsafe { sum_points_7(&pts,) }) == (10)));
+    (unsafe { shift_points_8(&mut pts, 10) });
     assert!(((pts[(0) as usize].x) == (11)));
     assert!(((pts[(1) as usize].y) == (14)));
-    assert!(((unsafe { sum_points_7(&pts as *const [Point; 2],) }) == (30)));
+    assert!(((unsafe { sum_points_7(&pts,) }) == (30)));
     let mut names: [*const libc::c_char; 2] = [c"ab".as_ptr(), c"cde".as_ptr()];
-    assert!(((unsafe { total_len_9(&mut names as *mut [*const libc::c_char; 2],) }) == (5)));
+    assert!(((unsafe { total_len_9(&mut names,) }) == (5)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -47,12 +47,11 @@ pub struct X4 {
 }
 impl X4 {
     pub unsafe fn get(&mut self) -> *mut X3 {
-        return &mut self.v as *mut X3;
+        return &mut self.v;
     }
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -67,17 +66,15 @@ unsafe fn main_0() -> i32 {
     let mut p2: *mut i32 = (unsafe { ptr_1(p1) });
     p1 = p2;
     p2 = (unsafe { ptr_1(p1) });
-    let r1: *mut i32 = &mut x1 as *mut i32;
-    let r2: *mut i32 = (unsafe { bar_2(&mut x1 as *mut i32) });
+    let r1: *mut i32 = &mut x1;
+    let r2: *mut i32 = (unsafe { bar_2(&mut x1) });
     let r3: *mut i32 = (unsafe { bar_2(r1) });
     (*r2) += x1;
     (*r3) += (*r1);
     let mut x4: i32 = (((unsafe { foo_0(x3) }) + (*(unsafe { ptr_1((&mut x3 as *mut i32)) })))
-        + (*(unsafe { bar_2(&mut x2 as *mut i32) })));
+        + (*(unsafe { bar_2(&mut x2) })));
     let mut a: X1 = X1 { v: 0 };
-    let mut b: X2 = X2 {
-        v: &mut a as *mut X1,
-    };
+    let mut b: X2 = X2 { v: &mut a };
     let mut c: X3 = X3 {
         v: (&mut b as *mut X2),
     };
@@ -89,36 +86,35 @@ unsafe fn main_0() -> i32 {
     let r4: *const i32 = &(*(unsafe {
         X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
     }))
-    .v as *const i32;
+    .v;
     let r5: *mut X1 =
         (unsafe { X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) }))) });
     let mut p: *mut X2 = (unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) });
     let r6: *mut X3 = (unsafe { X4::get(&mut d) });
-    let r7: *mut X3 = &mut d.v as *mut X3;
-    let r8: *mut i32 =
-        &mut (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut d.v) }))) })).v as *mut i32;
+    let r7: *mut X3 = &mut d.v;
+    let r8: *mut i32 = &mut (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut d.v) }))) })).v;
     let mut x5: i32 =
         (*(unsafe { X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) }))) }))
             .v;
-    (*(unsafe { bar_2(&mut x1 as *mut i32) })) += 10;
-    (*(unsafe { bar_2(&mut x1 as *mut i32) })).postfix_inc();
+    (*(unsafe { bar_2(&mut x1) })) += 10;
+    (*(unsafe { bar_2(&mut x1) })).postfix_inc();
     let mut bar_out: i32 = (*(unsafe {
         bar_2(
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     }));
-    let mut bar_inc: i32 = (*(unsafe { bar_2(&mut x1 as *mut i32) })).prefix_inc();
-    bar_inc = (*(unsafe { bar_2(&mut x1 as *mut i32) })).postfix_inc();
-    bar_inc = (((*(unsafe { bar_2(&mut x1 as *mut i32) })) + (unsafe { foo_0(x4) })) + (1));
+    let mut bar_inc: i32 = (*(unsafe { bar_2(&mut x1) })).prefix_inc();
+    bar_inc = (*(unsafe { bar_2(&mut x1) })).postfix_inc();
+    bar_inc = (((*(unsafe { bar_2(&mut x1) })) + (unsafe { foo_0(x4) })) + (1));
     (*(unsafe {
         bar_2(
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     })) += 10;
     (*(unsafe {
@@ -126,7 +122,7 @@ unsafe fn main_0() -> i32 {
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     }))
     .postfix_inc();
@@ -135,7 +131,7 @@ unsafe fn main_0() -> i32 {
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     }))
     .prefix_inc();
@@ -144,7 +140,7 @@ unsafe fn main_0() -> i32 {
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     }))
     .postfix_inc();
@@ -191,7 +187,7 @@ unsafe fn main_0() -> i32 {
             }))
             .v as *mut i32),
         )
-    })) as *mut i32;
+    }));
     let mut ptr3: *mut i32 = (&mut (*(unsafe {
         ptr_1(
             (&mut (*(unsafe {
@@ -213,7 +209,7 @@ unsafe fn main_0() -> i32 {
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     });
     (*(unsafe {
@@ -221,7 +217,7 @@ unsafe fn main_0() -> i32 {
             &mut (*(unsafe {
                 X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
             }))
-            .v as *mut i32,
+            .v,
         )
     }))
     .postfix_inc();
@@ -238,7 +234,7 @@ unsafe fn main_0() -> i32 {
                 &mut (*(unsafe {
                     X2::get(&mut (*(unsafe { X3::get(&mut (*(unsafe { X4::get(&mut d) }))) })))
                 }))
-                .v as *mut i32,
+                .v,
             )
         }))) + (unsafe {
             foo_0(
@@ -251,4 +247,3 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -179,7 +179,7 @@ impl Outer {
     pub unsafe fn operator_cmp(&self, _a0: *const Outer) -> std::cmp::Ordering {
         {
             let mut cmp: std::cmp::Ordering = (unsafe {
-                let _arg0: *const Inner = &(*_a0).i as *const Inner;
+                let _arg0: *const Inner = &(*_a0).i;
                 Inner::operator_cmp(&(*(self as *const Outer)).i, _arg0)
             });
             if !(cmp == std::cmp::Ordering::Equal) {
@@ -196,7 +196,7 @@ impl Outer {
     }
     pub unsafe fn operator_eq(&self, _a0: *const Outer) -> bool {
         return (unsafe {
-            let _arg0: *const Inner = &(*_a0).i as *const Inner;
+            let _arg0: *const Inner = &(*_a0).i;
             Inner::operator_eq(&(*(self as *const Outer)).i, _arg0)
         }) && (((*(self as *const Outer)).y) == ((*_a0).y));
     }
@@ -272,7 +272,6 @@ impl std::cmp::PartialEq for Secondary {
 impl std::cmp::Eq for Secondary {}
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -280,39 +279,34 @@ unsafe fn main_0() -> i32 {
     let mut e1: Eq = Eq { a: 1, b: 2 };
     let mut e2: Eq = Eq { a: 1, b: 2 };
     let mut e3: Eq = Eq { a: 1, b: 3 };
-    assert!((unsafe { Eq::operator_eq(&e1, &e2 as *const Eq,) }));
-    assert!(!(unsafe { Eq::operator_eq(&e1, &e3 as *const Eq,) }));
+    assert!((unsafe { Eq::operator_eq(&e1, &e2,) }));
+    assert!(!(unsafe { Eq::operator_eq(&e1, &e3,) }));
     let mut c1: Cmp = Cmp { a: 1, b: 2 };
     let mut c2: Cmp = Cmp { a: 1, b: 3 };
     let mut c3: Cmp = Cmp { a: 2, b: 0 };
     let mut c4: Cmp = Cmp { a: 1, b: 9 };
-    assert!((unsafe { Cmp::operator_cmp(&c1, &c2 as *const Cmp,) }) == std::cmp::Ordering::Less);
-    assert!((unsafe { Cmp::operator_cmp(&c3, &c4 as *const Cmp,) }) == std::cmp::Ordering::Greater);
+    assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { Cmp::operator_cmp(&c3, &c4,) }) == std::cmp::Ordering::Greater);
     assert!(
         (unsafe {
-            let _arg0: *const Cmp = &c1 as *const Cmp;
+            let _arg0: *const Cmp = &c1;
             Cmp::operator_eq(&c1, _arg0)
         })
     );
-    assert!((unsafe { Cmp::operator_cmp(&c1, &c2 as *const Cmp,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { Cmp::operator_cmp(&c1, &c2,) }) == std::cmp::Ordering::Less);
     let mut b1: Both = Both { a: 1 };
     let mut b2: Both = Both { a: 2 };
-    assert!((unsafe { Both::operator_cmp(&b1, &b2 as *const Both,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { Both::operator_cmp(&b1, &b2,) }) == std::cmp::Ordering::Less);
     assert!(
         (unsafe {
-            let _arg0: *const Both = &b2 as *const Both;
+            let _arg0: *const Both = &b2;
             Both::operator_eq(&b2, _arg0)
         })
     );
     let mut o1: OrdOnly = OrdOnly { a: 1 };
     let mut o2: OrdOnly = OrdOnly { a: 2 };
-    assert!(
-        (unsafe { OrdOnly::operator_cmp(&o1, &o2 as *const OrdOnly,) }) == std::cmp::Ordering::Less
-    );
-    assert!(
-        (unsafe { OrdOnly::operator_cmp(&o2, &o1 as *const OrdOnly,) })
-            == std::cmp::Ordering::Greater
-    );
+    assert!((unsafe { OrdOnly::operator_cmp(&o1, &o2,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { OrdOnly::operator_cmp(&o2, &o1,) }) == std::cmp::Ordering::Greater);
     let mut x1: Outer = Outer {
         i: Inner { x: 1 },
         y: 9,
@@ -325,19 +319,14 @@ unsafe fn main_0() -> i32 {
         i: Inner { x: 1 },
         y: 9,
     };
-    assert!(
-        (unsafe { Outer::operator_cmp(&x1, &x2 as *const Outer,) }) == std::cmp::Ordering::Less
-    );
-    assert!((unsafe { Outer::operator_eq(&x1, &x3 as *const Outer,) }));
-    assert!(
-        (unsafe { Outer::operator_cmp(&x2, &x1 as *const Outer,) }) == std::cmp::Ordering::Greater
-    );
+    assert!((unsafe { Outer::operator_cmp(&x1, &x2,) }) == std::cmp::Ordering::Less);
+    assert!((unsafe { Outer::operator_eq(&x1, &x3,) }));
+    assert!((unsafe { Outer::operator_cmp(&x2, &x1,) }) == std::cmp::Ordering::Greater);
     let mut s1: Secondary = Secondary { a: 1 };
     let mut s2: Secondary = Secondary { a: 2 };
-    assert!((unsafe { Secondary::operator_ne(&s1, &s2 as *const Secondary,) }));
-    assert!((unsafe { Secondary::operator_lt(&s1, &s2 as *const Secondary,) }));
-    assert!((unsafe { Secondary::operator_ge(&s2, &s1 as *const Secondary,) }));
-    assert!(!(unsafe { Secondary::operator_lt(&s2, &s1 as *const Secondary,) }));
+    assert!((unsafe { Secondary::operator_ne(&s1, &s2,) }));
+    assert!((unsafe { Secondary::operator_lt(&s1, &s2,) }));
+    assert!((unsafe { Secondary::operator_ge(&s2, &s1,) }));
+    assert!(!(unsafe { Secondary::operator_lt(&s2, &s1,) }));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

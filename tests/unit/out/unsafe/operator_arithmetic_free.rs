@@ -72,7 +72,6 @@ pub unsafe fn operator_add_12(mut a: i32, b: *const S) -> S {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -81,63 +80,63 @@ unsafe fn main_0() -> i32 {
     let mut b: S = S { v: 2 };
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
-            operator_add_0(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_add_0(_a, &b)
         })
         .v) == (9))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
-            operator_sub_1(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_sub_1(_a, &b)
         })
         .v) == (5))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
-            operator_mul_2(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_mul_2(_a, &b)
         })
         .v) == (14))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
-            operator_div_3(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_div_3(_a, &b)
         })
         .v) == (3))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
-            operator_rem_4(_a, &b as *const S)
+            let _a: *const S = &a;
+            operator_rem_4(_a, &b)
         })
         .v) == (1))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
+            let _a: *const S = &a;
             operator_pos_5(_a)
         })
         .v) == (7))
     );
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
+            let _a: *const S = &a;
             operator_neg_6(_a)
         })
         .v) == (-7_i32))
     );
     assert!(
         (((*(unsafe {
-            let _a: *mut S = &mut a as *mut S;
+            let _a: *mut S = &mut a;
             operator_inc_7(_a)
         }))
         .v) == (8))
     );
     assert!(
         (((unsafe {
-            let _a: *mut S = &mut a as *mut S;
+            let _a: *mut S = &mut a;
             operator_post_inc_8(_a, 0)
         })
         .v) == (8))
@@ -145,14 +144,14 @@ unsafe fn main_0() -> i32 {
     assert!(((a.v) == (9)));
     assert!(
         (((*(unsafe {
-            let _a: *mut S = &mut a as *mut S;
+            let _a: *mut S = &mut a;
             operator_dec_9(_a)
         }))
         .v) == (8))
     );
     assert!(
         (((unsafe {
-            let _a: *mut S = &mut a as *mut S;
+            let _a: *mut S = &mut a;
             operator_post_dec_10(_a, 0)
         })
         .v) == (8))
@@ -160,12 +159,11 @@ unsafe fn main_0() -> i32 {
     assert!(((a.v) == (7)));
     assert!(
         (((unsafe {
-            let _a: *const S = &a as *const S;
+            let _a: *const S = &a;
             operator_add_11(_a, 1)
         })
         .v) == (8))
     );
-    assert!((((unsafe { operator_add_12(1, &a as *const S,) }).v) == (8)));
+    assert!((((unsafe { operator_add_12(1, &a,) }).v) == (8)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

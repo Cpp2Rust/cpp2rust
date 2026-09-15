@@ -75,3 +75,15 @@ void f24(std::string &o) { return o.clear(); }
 void f25(std::string &o) { return o.shrink_to_fit(); }
 
 char &f26(std::string &o, std::size_t idx) { return o.at(idx); }
+
+std::string f27(const std::string &o) { return std::string(o); }
+
+std::string f28(std::string &&o) { return std::string(std::move(o)); }
+
+std::string &f29(std::string &dst, const std::string &src) {
+  return dst.operator=(src);
+}
+
+std::string &f30(std::string &dst, std::string &&src) {
+  return dst.operator=(std::move(src));
+}

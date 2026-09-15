@@ -31,12 +31,11 @@ impl ByteRepr for record {
     }
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello").clone(),
+        Ptr::from_string_literal(b"hello"),
     )));
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
     assert!(
@@ -87,7 +86,7 @@ fn main_0() -> i32 {
     );
     libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any());
     let d3: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        (buf.as_pointer() as Ptr<u8>).clone(),
+        (buf.as_pointer() as Ptr<u8>),
     )));
     assert!((((!((*d3.borrow()).is_null())) as i32) != 0));
     assert!(
@@ -159,4 +158,3 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

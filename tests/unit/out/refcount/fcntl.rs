@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -17,7 +16,7 @@ fn main_0() -> i32 {
     assert!(
         (((match nix::unistd::pipe() {
             Ok((__r, __w)) => {
-                let __fds = (fds.as_pointer() as Ptr<i32>).clone();
+                let __fds = (fds.as_pointer() as Ptr<i32>);
                 __fds.write(FdRegistry::register(__r));
                 __fds.offset(1).write(FdRegistry::register(__w));
                 0
@@ -250,4 +249,3 @@ fn main_0() -> i32 {
     assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

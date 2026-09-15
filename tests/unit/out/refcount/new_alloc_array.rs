@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -21,7 +20,7 @@ fn main_0() -> i32 {
             (0) as u8,
             (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
         );
-        ((*array.borrow()).clone() as Ptr<i32>).to_any().clone()
+        ((*array.borrow()).clone() as Ptr<i32>).to_any()
     };
     (*array.borrow()).offset((99) as isize).write(-1_i32);
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
@@ -41,4 +40,3 @@ fn main_0() -> i32 {
     assert!(((*out.borrow()) == 99));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -75,7 +74,7 @@ fn main_0() -> i32 {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
@@ -141,4 +140,3 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

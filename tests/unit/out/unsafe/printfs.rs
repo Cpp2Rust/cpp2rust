@@ -24,7 +24,6 @@ pub unsafe fn fn2_1(v: *const Vec<libc::c_char>) -> *const Vec<libc::c_char> {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -54,8 +53,7 @@ unsafe fn main_0() -> i32 {
     );
     printf(
         c"%s\n".as_ptr() as *const i8,
-        (*(unsafe { fn2_1(&s as *const Vec<libc::c_char>) })).as_ptr(),
+        (*(unsafe { fn2_1(&s) })).as_ptr(),
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

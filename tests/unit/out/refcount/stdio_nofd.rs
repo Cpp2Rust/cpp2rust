@@ -174,7 +174,7 @@ pub fn test_fgets_getc_2() {
     ));
     assert!(
         (((!(({
-            let __buf = (buf.as_pointer() as Ptr<u8>).clone();
+            let __buf = (buf.as_pointer() as Ptr<u8>);
             let __n = 8;
             if __n <= 0 {
                 Ptr::null()
@@ -218,7 +218,7 @@ pub fn test_fgets_getc_2() {
     assert!(((((*fp.borrow()).with_mut(|__f| __f.getc()) == ('l' as i32)) as i32) != 0));
     assert!(
         (((!(({
-            let __buf = (buf.as_pointer() as Ptr<u8>).clone();
+            let __buf = (buf.as_pointer() as Ptr<u8>);
             let __n = 4;
             if __n <= 0 {
                 Ptr::null()
@@ -261,7 +261,7 @@ pub fn test_fgets_getc_2() {
     );
     assert!(
         (((!(({
-            let __buf = (buf.as_pointer() as Ptr<u8>).clone();
+            let __buf = (buf.as_pointer() as Ptr<u8>);
             let __n = 8;
             if __n <= 0 {
                 Ptr::null()
@@ -304,7 +304,7 @@ pub fn test_fgets_getc_2() {
     );
     assert!(
         (((({
-            let __buf = (buf.as_pointer() as Ptr<u8>).clone();
+            let __buf = (buf.as_pointer() as Ptr<u8>);
             let __n = 8;
             if __n <= 0 {
                 Ptr::null()
@@ -710,7 +710,6 @@ pub fn test_setvbuf_6() {
     );
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -723,4 +722,3 @@ fn main_0() -> i32 {
     ({ test_setvbuf_6() });
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

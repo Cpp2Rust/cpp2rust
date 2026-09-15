@@ -8,7 +8,6 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -48,11 +47,11 @@ unsafe fn main_0() -> i32 {
     }
     let mut m: Vec<Vec<i32>> = Vec::new();
     let mut v1: Vec<i32> = Vec::new();
-    m.push(v1);
+    m.push(std::mem::take(&mut v1));
     let mut v2: Vec<i32> = Vec::new();
-    m.push(v2);
+    m.push(std::mem::take(&mut v2));
     let mut v3: Vec<i32> = Vec::new();
-    m.push(v3);
+    m.push(std::mem::take(&mut v3));
     'loop_: for row in 0..(m.len()) {
         let mut row = m.as_mut_ptr().add(row);
         'loop_: for col in 0..((*row).len()) {
@@ -63,4 +62,3 @@ unsafe fn main_0() -> i32 {
     assert!(((square) == (144)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -21,7 +21,6 @@ pub unsafe fn swap_by_ref_2(a: *mut i32, b: *mut i32) {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -34,8 +33,7 @@ unsafe fn main_0() -> i32 {
     p = (&mut (b) as *mut i32);
     p = (&mut a as *mut i32);
     (unsafe { swap_by_ptr_1(p, (&mut b as *mut i32)) });
-    (unsafe { swap_by_ref_2(&mut a as *mut i32, &mut c as *mut i32) });
+    (unsafe { swap_by_ref_2(&mut a, &mut c) });
     assert!(((c) == (2)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

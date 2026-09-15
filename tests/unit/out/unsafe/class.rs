@@ -29,14 +29,14 @@ impl Pair {
     pub unsafe fn SetFirst(&mut self, mut new_first: i32) -> i32 {
         return ((unsafe { Pair::GetFirst(self) })
             + (unsafe {
-                let _field: *mut i32 = &mut self.first as *mut i32;
+                let _field: *mut i32 = &mut self.first;
                 Pair::Set(self, _field, new_first)
             }));
     }
     pub unsafe fn SetSecond(&mut self, mut new_second: i32) -> i32 {
         return ((unsafe { Pair::GetSecond(self) })
             + (unsafe {
-                let _field: *mut i32 = &mut self.second as *mut i32;
+                let _field: *mut i32 = &mut self.second;
                 Pair::Set(self, _field, new_second)
             }));
     }
@@ -70,7 +70,6 @@ pub unsafe fn RandomRoute_0(route: *mut Route) -> i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -96,11 +95,10 @@ unsafe fn main_0() -> i32 {
         )
     });
     assert!(
-        (((((unsafe { RandomRoute_0(&mut route1 as *mut Route,) })
-            + (unsafe { RandomRoute_0(&mut route2 as *mut Route,) })) as f64)
+        (((((unsafe { RandomRoute_0(&mut route1,) }) + (unsafe { RandomRoute_0(&mut route2,) }))
+            as f64)
             + (old_cost))
             == (9_f64))
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

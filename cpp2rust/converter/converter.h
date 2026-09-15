@@ -255,7 +255,7 @@ public:
     }
 
     bool needs_lvalue() const {
-      return access == TranslationRule::Access::kWrite;
+      return access == TranslationRule::Access::kBorrowMut;
     }
 
     void dump() const;
@@ -420,6 +420,7 @@ public:
   virtual std::string EnumeratorName(const clang::EnumConstantDecl *decl) const;
 
   virtual bool VisitCXXDefaultArgExpr(clang::CXXDefaultArgExpr *expr);
+  virtual bool VisitConstantExpr(clang::ConstantExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
@@ -657,6 +658,8 @@ protected:
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
   bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
+
+  bool IsPassThroughRule(clang::Expr *expr) const;
 
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
@@ -957,10 +960,14 @@ protected:
     FreshValue,
     Pointer,
     FreshPointer,
+    Unknown,
+    Pending,
   };
-  ComputedExprType computed_expr_type_ = ComputedExprType::FreshValue;
+  ComputedExprType computed_expr_type_ = ComputedExprType::Unknown;
 
   bool isFresh() const {
+    assert(computed_expr_type_ != ComputedExprType::Unknown);
+    assert(computed_expr_type_ != ComputedExprType::Pending);
     return computed_expr_type_ == ComputedExprType::FreshValue ||
            computed_expr_type_ == ComputedExprType::FreshPointer;
   }

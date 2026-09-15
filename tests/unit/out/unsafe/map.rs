@@ -14,7 +14,6 @@ pub unsafe fn bar_1(x: *mut u32) {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -35,7 +34,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (3_u32)));
     (unsafe { foo_0((*m.entry(0_i16).or_default().as_mut())) });
     assert!(((*m.entry(0_i16).or_default().as_mut()) == (1_u32)));
-    (unsafe { bar_1(&mut (*m.entry(2_i16).or_default().as_mut()) as *mut u32) });
+    (unsafe { bar_1(&mut (*m.entry(2_i16).or_default().as_mut())) });
     assert!(((*m.entry(2_i16).or_default().as_mut()) == (4_u32)));
     (*m.entry(0_i16).or_default().as_mut()) = (*m.entry(0_i16).or_default().as_mut())
         .wrapping_add((*m.entry(2_i16).or_default().as_mut()));
@@ -81,7 +80,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*it4.second()) == (6_u32)));
     assert!(((*p) == (6_u32)));
     assert!(((x5) == (5_u32)));
-    let r: *mut BTreeMap<i16, Box<u32>> = &mut m as *mut BTreeMap<i16, Box<u32>>;
+    let r: *mut BTreeMap<i16, Box<u32>> = &mut m;
     assert!((((*r).len()) == (4_usize)));
     assert!(
         UnsafeMapIterator::find_key(&m as *const BTreeMap<i16, Box<u32>>, &4_i16)
@@ -97,10 +96,10 @@ unsafe fn main_0() -> i32 {
     assert!(((other_map.len()) == (0_usize)));
     let mut key0: (i32, i64) = (1.into(), 1.into());
     let mut value: f64 = 2_f64;
-    (*other_map.entry(key0).or_default().as_mut()) = value;
-    value = (*other_map.entry(key0).or_default().as_mut());
+    (*other_map.entry((key0).clone()).or_default().as_mut()) = value;
+    value = (*other_map.entry((key0).clone()).or_default().as_mut());
     assert!(((other_map.len()) == (1_usize)));
-    assert!(((*other_map.entry(key0).or_default().as_mut()) == (value)));
+    assert!(((*other_map.entry((key0).clone()).or_default().as_mut()) == (value)));
     assert!(((m.len()) == (3_usize)));
     let mut k: i32 = 0;
     assert!(((*(m.get(&(k as i16)).expect("out of range!").as_ref() as *const u32)) == (5_u32)));
@@ -150,4 +149,3 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

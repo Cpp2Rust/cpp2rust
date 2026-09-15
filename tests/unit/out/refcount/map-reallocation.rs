@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -17,7 +16,7 @@ fn main_0() -> i32 {
     let __rhs = (*sentinel.borrow());
     (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
         .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-            __v.entry((*sentinel.borrow()).clone())
+            __v.entry((*sentinel.borrow()))
                 .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                 .as_pointer()
         })
@@ -44,7 +43,7 @@ fn main_0() -> i32 {
         let __rhs = (*i.borrow());
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()).clone())
+                __v.entry((*i.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
@@ -56,7 +55,7 @@ fn main_0() -> i32 {
         let __rhs = (*i.borrow());
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()).clone())
+                __v.entry((*i.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
@@ -86,7 +85,7 @@ fn main_0() -> i32 {
     assert!(
         (((m.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*sentinel.borrow()).clone())
+                __v.entry((*sentinel.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
@@ -105,4 +104,3 @@ fn main_0() -> i32 {
     }
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

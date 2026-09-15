@@ -7,17 +7,15 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (*v.borrow_mut()).push(10);
     {
-        let _ptr = (v.as_pointer() as Ptr<i32>).clone();
+        let _ptr = (v.as_pointer() as Ptr<i32>);
         _ptr.write(_ptr.read() + 5)
     };
     assert!((((v.as_pointer() as Ptr<i32>).read()) == 15));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

@@ -11,15 +11,13 @@ pub unsafe fn foo_0(a: *const i32) -> *const i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
     let mut pa: *mut i32 = (&mut a as *mut i32);
-    let b: *const i32 = (unsafe { foo_0(&(*pa) as *const i32) });
+    let b: *const i32 = (unsafe { foo_0(&(*pa)) });
     assert!(((*b) == (1)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

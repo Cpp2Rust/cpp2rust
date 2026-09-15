@@ -23,11 +23,11 @@ impl MoveOnly {
     }
     pub unsafe fn operator_assign_pmutMoveOnly(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
         if ((self as *mut MoveOnly) == (o)) {
-            return &mut (*(self as *mut MoveOnly)) as *mut MoveOnly;
+            return &mut (*(self as *mut MoveOnly));
         }
         self.v = (*o).v;
         (*o).v = 0;
-        return &mut (*(self as *mut MoveOnly)) as *mut MoveOnly;
+        return &mut (*(self as *mut MoveOnly));
     }
 }
 #[repr(C)]
@@ -45,14 +45,14 @@ impl ConstMoveAssign {
         o: *mut ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (1));
-        return &mut (*(self as *mut ConstMoveAssign)) as *mut ConstMoveAssign;
+        return &mut (*(self as *mut ConstMoveAssign));
     }
     pub unsafe fn operator_assign_pconstConstMoveAssign(
         &mut self,
         o: *const ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (10));
-        return &mut (*(self as *mut ConstMoveAssign)) as *mut ConstMoveAssign;
+        return &mut (*(self as *mut ConstMoveAssign));
     }
 }
 impl Default for ConstMoveAssign {
@@ -66,7 +66,6 @@ pub unsafe fn make_0(mut v: i32) -> MoveOnly {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -119,4 +118,3 @@ unsafe fn main_0() -> i32 {
     assert!(((m2.mark) == (10)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

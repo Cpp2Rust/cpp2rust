@@ -167,7 +167,6 @@ impl ByteRepr for Container {
     }
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -176,7 +175,7 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>)
             .to_any()
             .memset((0) as u8, 68usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any().clone()
+        ((c.as_pointer()) as Ptr<Container>).to_any()
     };
     (*(*(*(*c.borrow()).u.borrow()).a().upgrade().deref())
         .code
@@ -225,4 +224,3 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

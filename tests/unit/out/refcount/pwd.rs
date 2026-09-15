@@ -64,10 +64,10 @@ pub fn test_getpwuid_r_2() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
-            let __pwbuf = (pw.as_pointer()).clone();
-            let __buf = (buf.as_pointer() as Ptr<u8>).clone();
+            let __pwbuf = (pw.as_pointer());
+            let __buf = (buf.as_pointer() as Ptr<u8>);
             let __buflen = ::std::mem::size_of::<[u8; 4096]>();
-            let __out = (result.as_pointer()).clone();
+            let __out = (result.as_pointer());
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),
             )) {
@@ -169,10 +169,10 @@ pub fn test_getpwuid_r_erange_3() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
         ((({
-            let __pwbuf = (pw.as_pointer()).clone();
-            let __buf = (tiny.as_pointer() as Ptr<u8>).clone();
+            let __pwbuf = (pw.as_pointer());
+            let __buf = (tiny.as_pointer() as Ptr<u8>);
             let __buflen = ::std::mem::size_of::<[u8; 1]>();
-            let __out = (result.as_pointer()).clone();
+            let __out = (result.as_pointer());
             match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
                 nix::unistd::geteuid().as_raw(),
             )) {
@@ -220,7 +220,6 @@ pub fn test_getpwuid_r_erange_3() {
     assert!(((((*result.borrow()).is_null()) as i32) != 0));
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -230,4 +229,3 @@ fn main_0() -> i32 {
     ({ test_getpwuid_r_erange_3() });
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

@@ -23,3 +23,8 @@ fn f13(a0: i64, a1: i64, a2: Ptr<i64>) -> bool {
     a2.write(val);
     ovf
 }
+
+fn f14(a0: AnyPtr, a1: AnyPtr, a2: usize) -> AnyPtr {
+    a0.memcpy(&a1, a2 as usize);
+    a0
+}

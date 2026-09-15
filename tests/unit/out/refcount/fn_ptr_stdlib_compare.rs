@@ -21,7 +21,6 @@ pub fn my_alternative_fwrite_1(p: Ptr<u8>, n: usize, m: usize, f: AnyPtr) -> usi
     return 33_usize;
 }
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -82,7 +81,7 @@ fn main_0() -> i32 {
                 (('X' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
             let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
@@ -129,7 +128,7 @@ fn main_0() -> i32 {
                 (('X' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
@@ -214,7 +213,7 @@ fn main_0() -> i32 {
                 (('Y' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
             let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
@@ -251,7 +250,7 @@ fn main_0() -> i32 {
                 (('Y' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().clone()
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
@@ -272,4 +271,3 @@ fn main_0() -> i32 {
     }
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

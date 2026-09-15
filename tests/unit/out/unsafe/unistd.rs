@@ -220,7 +220,7 @@ pub unsafe fn test_ftruncate_5() {
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     fp = libc::fopen(path, (c"rb".as_ptr().cast_mut()).cast_const());
     assert!((((!((fp).is_null())) as i32) != 0));
-    fd = (libc::fileno(fp)).clone();
+    fd = libc::fileno(fp);
     assert!(((((libc::lseek(fd, 0_i64, ::libc::SEEK_END)) == (5_i64)) as i32) != 0));
     assert!(((((libc::fclose(fp)) == (0)) as i32) != 0));
     libc::unlink(path);
@@ -292,7 +292,6 @@ pub unsafe fn test_gethostname_11() {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -311,4 +310,3 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_gethostname_11() });
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

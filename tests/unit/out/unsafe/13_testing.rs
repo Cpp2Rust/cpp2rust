@@ -8,13 +8,12 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
     let mut a: i32 = 1;
-    let r: *mut i32 = &mut a as *mut i32;
+    let r: *mut i32 = &mut a;
     let mut p: *mut i32 = (&mut a as *mut i32);
     (*r) = 2;
     (*p) = 3;
@@ -22,4 +21,3 @@ unsafe fn main_0() -> i32 {
     (*(*p2)) = 3;
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

@@ -54,7 +54,6 @@ pub unsafe fn operator_eq_5(mut a: i64, b: *const S) -> i32 {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -65,14 +64,14 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::operator_eq_i64_const(&s, 6_i64,) }) == (2)));
     assert!(((unsafe { S::operator_eq_f64_const(&s, 6.0E+0,) }) == (3)));
     assert!(((unsafe { S::operator_eq_i32_const(&s, 7,) }) == (0)));
-    assert!(((unsafe { S::operator_add(&s, &t as *const S,) }) == (10)));
+    assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
     assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));
-    assert!(((unsafe { S::operator_mul_pconstS_const(&s, &t as *const S,) }) == (24)));
+    assert!(((unsafe { S::operator_mul_pconstS_const(&s, &t,) }) == (24)));
     assert!(((unsafe { S::operator_mul_i32_const(&s, 2,) }) == (13)));
     assert!(
         ((unsafe {
-            let _a: *const S = &s as *const S;
-            operator_div_0(_a, &t as *const S)
+            let _a: *const S = &s;
+            operator_div_0(_a, &t)
         }) == (1))
     );
     assert!(
@@ -89,12 +88,11 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe {
-            let _a: *const S = &s as *const S;
+            let _a: *const S = &s;
             operator_rem_3(_a, 4)
         }) == (3))
     );
     assert!(((unsafe { operator_eq_4(6, s,) }) == (4)));
-    assert!(((unsafe { operator_eq_5(6_i64, &s as *const S,) }) == (5)));
+    assert!(((unsafe { operator_eq_5(6_i64, &s,) }) == (5)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

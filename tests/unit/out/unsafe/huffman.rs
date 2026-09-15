@@ -26,20 +26,18 @@ pub unsafe fn Swap_0(a: *mut MinHeapNode, b: *mut MinHeapNode) {
         left: (*a).left,
         right: (*a).right,
     };
-    (*a) = (MinHeapNode {
+    (*a) = MinHeapNode {
         data: (*b).data,
         freq: (*b).freq,
         left: (*b).left,
         right: (*b).right,
-    })
-    .clone();
-    (*b) = (MinHeapNode {
+    };
+    (*b) = MinHeapNode {
         data: t.data,
         freq: t.freq,
         left: t.left,
         right: t.right,
-    })
-    .clone();
+    };
 }
 #[repr(C)]
 #[derive(Default)]
@@ -79,10 +77,8 @@ impl MinHeap {
         }
         if ((smallest) != (idx)) {
             (unsafe {
-                let _a: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(smallest as usize)]) as *mut MinHeapNode;
-                let _b: *mut MinHeapNode =
-                    &mut (*self.arr.as_mut().unwrap()[(idx as usize)]) as *mut MinHeapNode;
+                let _a: *mut MinHeapNode = &mut (*self.arr.as_mut().unwrap()[(smallest as usize)]);
+                let _b: *mut MinHeapNode = &mut (*self.arr.as_mut().unwrap()[(idx as usize)]);
                 Swap_0(_a, _b)
             });
             (unsafe { MinHeap::Heapify(self, smallest) });
@@ -260,20 +256,11 @@ pub unsafe fn HuffmanCodes_5(
     );
     let mut top: i32 = 0;
     let mut next: i32 = 0;
-    (unsafe {
-        CollectCodes_4(
-            root,
-            &mut arr as *mut Option<Box<[i32]>>,
-            top,
-            &mut out as *mut Option<Box<[i32]>>,
-            &mut next as *mut i32,
-        )
-    });
+    (unsafe { CollectCodes_4(root, &mut arr, top, &mut out, &mut next) });
     return out.take();
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -304,13 +291,7 @@ unsafe fn main_0() -> i32 {
         freq.as_mut().unwrap()[(i as usize)] = arr2[(i) as usize];
         i.prefix_inc();
     }
-    let mut out: Option<Box<[i32]>> = (unsafe {
-        HuffmanCodes_5(
-            &mut data as *mut Option<Box<[libc::c_char]>>,
-            &mut freq as *mut Option<Box<[i32]>>,
-            size,
-        )
-    });
+    let mut out: Option<Box<[i32]>> = (unsafe { HuffmanCodes_5(&mut data, &mut freq, size) });
     assert!(
         ((((((out.as_mut().unwrap()[(0_usize)]) == (0))
             && ((out.as_mut().unwrap()[(1_usize)]) == (100)))
@@ -321,4 +302,3 @@ unsafe fn main_0() -> i32 {
     );
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

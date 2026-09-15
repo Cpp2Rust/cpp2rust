@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -20,7 +19,7 @@ fn main_0() -> i32 {
             .offset((3) as isize)
             .get_offset()
             - (input.as_pointer() as Ptr<i32>).get_offset();
-        let mut outptr = (output.as_pointer() as Ptr<i32>).clone();
+        let mut outptr = (output.as_pointer() as Ptr<i32>);
         for value in PtrValueIter::new(&(input.as_pointer() as Ptr<i32>), count) {
             outptr.write(value.into());
             outptr += 1;
@@ -29,4 +28,3 @@ fn main_0() -> i32 {
     };
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

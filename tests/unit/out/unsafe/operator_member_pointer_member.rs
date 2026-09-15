@@ -16,12 +16,10 @@ pub struct Inner {
 pub struct Table {}
 impl Table {
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
-        return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(i) as usize]
-            as *mut i32;
+        return &mut table_0[(i) as usize];
     }
 }
-pub static mut table_0: std::cell::LazyCell<[i32; 3]> =
-    std::cell::LazyCell::new(|| unsafe { [7, 8, 9] });
+pub static mut table_0: [i32; 3] = unsafe { [7, 8, 9] };
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct S {
@@ -30,13 +28,13 @@ pub struct S {
 }
 impl S {
     pub unsafe fn operator_index_i32(&mut self, mut i: i32) -> *mut i32 {
-        return &mut self.data[(i) as usize] as *mut i32;
+        return &mut self.data[(i) as usize];
     }
     pub unsafe fn operator_index_i32_const(&self, mut i: i32) -> *const i32 {
-        return &self.data[(i) as usize] as *const i32;
+        return &self.data[(i) as usize];
     }
     pub unsafe fn operator_deref(&mut self) -> *mut Inner {
-        return &mut self.inner as *mut Inner;
+        return &mut self.inner;
     }
     pub unsafe fn operator_arrow(&mut self) -> *mut Inner {
         return (&mut self.inner as *mut Inner);
@@ -55,7 +53,6 @@ impl Default for S {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -67,7 +64,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (2)));
     (*(unsafe { S::operator_index_i32(&mut s, 1) })) = 20;
     assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (20)));
-    let cs: *const S = &s as *const S;
+    let cs: *const S = &s;
     assert!(((*(unsafe { S::operator_index_i32_const(&(*cs), 2,) })) == (3)));
     assert!((((*(unsafe { S::operator_deref(&mut s,) })).x) == (9)));
     (*(unsafe { S::operator_deref(&mut s) })).x = 10;
@@ -81,9 +78,6 @@ unsafe fn main_0() -> i32 {
     let mut t: Table = <Table>::default();
     assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));
     (*(unsafe { Table::operator_index(1) })) = 80;
-    assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(1) as usize]) == (80)));
+    assert!(((table_0[(1) as usize]) == (80)));
     return 0;
-}
-pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const table_0);
 }

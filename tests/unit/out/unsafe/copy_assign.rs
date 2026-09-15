@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut assigns_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+pub static mut assigns_0: i32 = unsafe { 0 };
 #[repr(C)]
 #[derive(Default)]
 pub struct Partial {
@@ -27,11 +27,11 @@ impl Partial {
     }
     pub unsafe fn operator_assign(&mut self, o: *const Partial) -> *mut Partial {
         if (((self as *mut Partial).cast_const()) == (o)) {
-            return &mut (*(self as *mut Partial)) as *mut Partial;
+            return &mut (*(self as *mut Partial));
         }
         self.v = (*o).v;
-        (*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)).prefix_inc();
-        return &mut (*(self as *mut Partial)) as *mut Partial;
+        assigns_0.prefix_inc();
+        return &mut (*(self as *mut Partial));
     }
 }
 impl Clone for Partial {
@@ -54,14 +54,14 @@ impl NonConstAssign {
         o: *mut NonConstAssign,
     ) -> *mut NonConstAssign {
         self.mark = (((*o).mark) + (1));
-        return &mut (*(self as *mut NonConstAssign)) as *mut NonConstAssign;
+        return &mut (*(self as *mut NonConstAssign));
     }
     pub unsafe fn operator_assign_pconstNonConstAssign(
         &mut self,
         o: *const NonConstAssign,
     ) -> *mut NonConstAssign {
         self.mark = (((*o).mark) + (10));
-        return &mut (*(self as *mut NonConstAssign)) as *mut NonConstAssign;
+        return &mut (*(self as *mut NonConstAssign));
     }
 }
 impl Default for NonConstAssign {
@@ -81,7 +81,7 @@ impl RefQualified {
     }
     pub unsafe fn operator_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
         self.mark = (((*o).mark) + (1));
-        return &mut (*(self as *mut RefQualified)) as *mut RefQualified;
+        return &mut (*(self as *mut RefQualified));
     }
 }
 impl Default for RefQualified {
@@ -105,7 +105,6 @@ impl Default for Holder {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -113,42 +112,41 @@ unsafe fn main_0() -> i32 {
     let mut a: Partial = Partial::Partial({ 1 }, { 100 });
     let mut b: Partial = Partial::Partial({ 2 }, { 200 });
     let mut c: Partial = Partial::Partial({ 3 }, { 300 });
-    (unsafe { Partial::operator_assign(&mut a, &b as *const Partial) });
+    (unsafe { Partial::operator_assign(&mut a, &b) });
     assert!(((a.v) == (2)) && ((a.keep) == (100)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (1)));
+    assert!(((assigns_0) == (1)));
     (unsafe {
         Partial::operator_assign(
             &mut c,
-            &(*(unsafe { Partial::operator_assign(&mut a, &b as *const Partial) }))
-                as *const Partial,
+            &(*(unsafe { Partial::operator_assign(&mut a, &b) })),
         )
     });
     assert!(((c.v) == (2)) && ((c.keep) == (300)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
+    assert!(((assigns_0) == (3)));
     (unsafe {
-        let _o: *const Partial = &a as *const Partial;
+        let _o: *const Partial = &a;
         Partial::operator_assign(&mut a, _o)
     });
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
+    assert!(((assigns_0) == (3)));
     (unsafe {
         let mut _o: Partial = Partial::Partial({ 9 }, { 900 });
         Partial::operator_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (9)) && ((a.keep) == (100)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (4)));
-    let ra: *mut Partial = &mut a as *mut Partial;
+    assert!(((assigns_0) == (4)));
+    let ra: *mut Partial = &mut a;
     (unsafe {
-        let _o: *const Partial = &c as *const Partial;
+        let _o: *const Partial = &c;
         Partial::operator_assign(&mut (*ra), _o)
     });
     assert!(((a.v) == (2)));
     let mut pa: *mut Partial = (&mut a as *mut Partial);
     (unsafe {
-        let _o: *const Partial = &b as *const Partial;
+        let _o: *const Partial = &b;
         Partial::operator_assign(&mut (*pa), _o)
     });
     assert!(((a.v) == (2)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (6)));
+    assert!(((assigns_0) == (6)));
     let mut h: Holder = Holder {
         p: Partial::Partial({ 4 }, { 40 }),
         arr: [
@@ -156,29 +154,22 @@ unsafe fn main_0() -> i32 {
             Partial::Partial({ 6 }, { 60 }),
         ],
     };
-    (unsafe { Partial::operator_assign(&mut h.p, &b as *const Partial) });
-    (unsafe { Partial::operator_assign(&mut h.arr[(1) as usize], &c as *const Partial) });
+    (unsafe { Partial::operator_assign(&mut h.p, &b) });
+    (unsafe { Partial::operator_assign(&mut h.arr[(1) as usize], &c) });
     assert!(((h.p.v) == (2)) && ((h.p.keep) == (40)));
     assert!(((h.arr[(1) as usize].v) == (2)) && ((h.arr[(1) as usize].keep) == (60)));
-    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (8)));
+    assert!(((assigns_0) == (8)));
     let mut n: NonConstAssign = NonConstAssign::NonConstAssign();
     let mut n1: NonConstAssign = NonConstAssign::NonConstAssign();
     let mut n2: NonConstAssign = NonConstAssign::NonConstAssign();
     let cn: NonConstAssign = NonConstAssign::NonConstAssign();
-    (unsafe {
-        NonConstAssign::operator_assign_pmutNonConstAssign(&mut n1, &mut n as *mut NonConstAssign)
-    });
-    (unsafe {
-        NonConstAssign::operator_assign_pconstNonConstAssign(&mut n2, &cn as *const NonConstAssign)
-    });
+    (unsafe { NonConstAssign::operator_assign_pmutNonConstAssign(&mut n1, &mut n) });
+    (unsafe { NonConstAssign::operator_assign_pconstNonConstAssign(&mut n2, &cn) });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     let mut r: RefQualified = RefQualified::RefQualified();
     let mut r1: RefQualified = RefQualified::RefQualified();
-    (unsafe { RefQualified::operator_assign(&mut r1, &r as *const RefQualified) });
+    (unsafe { RefQualified::operator_assign(&mut r1, &r) });
     assert!(((r1.mark) == (1)));
     return 0;
-}
-pub unsafe fn __cpp2rust_init_globals() {
-    std::cell::LazyCell::force(&*&raw const assigns_0);
 }

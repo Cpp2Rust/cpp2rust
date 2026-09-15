@@ -19,7 +19,7 @@ pub struct Y {
 }
 impl Y {
     pub unsafe fn foo(&mut self) -> *mut X {
-        return &mut self.x as *mut X;
+        return &mut self.x;
     }
     pub unsafe fn ptr(&mut self) -> *mut X {
         return (&mut self.x as *mut X);
@@ -27,7 +27,6 @@ impl Y {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -46,7 +45,7 @@ unsafe fn main_0() -> i32 {
     (*p1) = (((x1) + (x4)) + (1));
     let mut x5: i32 = (*p1);
     let mut x6: i32 = (((*p1) + (x3)) + (5));
-    let r: *mut i32 = &mut x1 as *mut i32;
+    let r: *mut i32 = &mut x1;
     (*r) = 5;
     (*r) = ((*p1) + (5));
     let mut x7: i32 = (*r);
@@ -67,4 +66,3 @@ unsafe fn main_0() -> i32 {
     assert!(((x.x) == (100)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}

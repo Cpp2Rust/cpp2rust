@@ -7,7 +7,6 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
-    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -31,9 +30,8 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(Ptr::alloc(2));
     (*v.borrow_mut()).push(Ptr::alloc(3));
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         println!("{}", ((*p.borrow()).read()));
     }
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}

@@ -43,7 +43,6 @@ impl S {
 }
 pub fn main() {
     unsafe {
-        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -51,11 +50,10 @@ unsafe fn main_0() -> i32 {
     let mut a: S = S { v: 12_u32 };
     let mut b: S = S { v: 10_u32 };
     assert!((((unsafe { S::operator_bitnot(&a,) }).v) == (!12_u32)));
-    assert!((((unsafe { S::operator_bitand(&a, &b as *const S,) }).v) == (8_u32)));
-    assert!((((unsafe { S::operator_bitor(&a, &b as *const S,) }).v) == (14_u32)));
-    assert!((((unsafe { S::operator_bitxor(&a, &b as *const S,) }).v) == (6_u32)));
+    assert!((((unsafe { S::operator_bitand(&a, &b,) }).v) == (8_u32)));
+    assert!((((unsafe { S::operator_bitor(&a, &b,) }).v) == (14_u32)));
+    assert!((((unsafe { S::operator_bitxor(&a, &b,) }).v) == (6_u32)));
     assert!((((unsafe { S::operator_shl(&a, 2,) }).v) == (48_u32)));
     assert!((((unsafe { S::operator_shr(&a, 2,) }).v) == (3_u32)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
