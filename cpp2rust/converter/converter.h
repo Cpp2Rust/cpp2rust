@@ -947,11 +947,11 @@ protected:
   };
 
   enum class ComputedExprType : uint8_t {
-    Unknown,
     Value,
     FreshValue,
     Pointer,
     FreshPointer,
+    Unknown,
   };
   ComputedExprType computed_expr_type_ = ComputedExprType::Unknown;
 

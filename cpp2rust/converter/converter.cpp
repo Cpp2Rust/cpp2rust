@@ -4779,6 +4779,9 @@ void Converter::SetFresh() {
   case ComputedExprType::FreshValue:
   case ComputedExprType::FreshPointer:
     break;
+  case ComputedExprType::Unknown:
+    assert(0 && "Unreachable ComputedExprType::Unknown");
+    break;
   }
 }
 
