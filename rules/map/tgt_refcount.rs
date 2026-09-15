@@ -23,7 +23,7 @@ fn f1<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
     a1: T1,
 ) -> Ptr<T2> {
     a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| {
-        __v.entry(a1.clone())
+        __v.entry(a1)
             .or_insert_with(|| Rc::new(RefCell::new(<T2>::default())))
             .as_pointer()
     })
@@ -59,7 +59,7 @@ fn f8<T1: Ord + Clone + ByteRepr + 'static, T2: Default + ByteRepr + 'static>(
     a1: T1,
 ) -> Ptr<T2> {
     a0.with_mut(|__v: &mut BTreeMap<T1, Value<T2>>| {
-        __v.entry(a1.clone())
+        __v.entry(a1)
             .or_insert_with(|| Rc::new(RefCell::new(<T2>::default())))
             .as_pointer()
     })
@@ -123,7 +123,7 @@ fn f17<T1: Ord + Clone + 'static, T2: 'static>(
 }
 
 fn f19<T1: Clone, T2>(a0: RefcountMapIter<T1, T2>) -> RefcountMapIter<T1, T2> {
-    a0.clone()
+    a0
 }
 
 fn f20<T1: Ord + Clone + 'static, T2: 'static>(a0: RefcountMapIter<T1, T2>) -> Value<T1> {

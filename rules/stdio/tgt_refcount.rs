@@ -35,7 +35,7 @@ fn f5(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
     let __a0 = a0;
     let __a1 = a1;
     let __a2 = a2;
-    let __a3 = a3.clone();
+    let __a3 = a3;
     libcc2rs::fread_refcount(__a0, __a1, __a2, __a3)
 }
 
@@ -43,7 +43,7 @@ fn f6(a0: AnyPtr, a1: usize, a2: usize, a3: Ptr<CFile>) -> usize {
     let __a0 = a0;
     let __a1 = a1;
     let __a2 = a2;
-    let __a3 = a3.clone();
+    let __a3 = a3;
     libcc2rs::fwrite_refcount(__a0, __a1, __a2, __a3)
 }
 
@@ -101,7 +101,7 @@ fn f16(a0: Ptr<CFile>) -> i32 {
 }
 
 fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
-    let __buf = a0.clone();
+    let __buf = a0;
     let __n = a1;
     if __n <= 0 {
         Ptr::null()
@@ -134,7 +134,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
 }
 
 fn f18(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<CFile>) -> Ptr<CFile> {
-    let __stream = a2.clone();
+    let __stream = a2;
     let __old = __stream.with(|__f| __f.fd);
     match __old {
         0..=2 => {}

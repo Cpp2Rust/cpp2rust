@@ -201,8 +201,7 @@ fn main_0() -> i32 {
                 __v.push(Rc::new(RefCell::new(
                     (0..(10_usize) as usize)
                         .map(|_| <i32>::default())
-                        .collect::<Vec<_>>()
-                        .clone(),
+                        .collect::<Vec<_>>(),
                 )))
             },
         );
@@ -335,7 +334,7 @@ fn main_0() -> i32 {
         let __rhs = (*i.borrow());
         (map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()).clone())
+                __v.entry((*i.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
@@ -353,7 +352,7 @@ fn main_0() -> i32 {
         assert!(
             (((map2.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
                 .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                    __v.entry((*i.borrow()).clone())
+                    __v.entry((*i.borrow()))
                         .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                         .as_pointer()
                 })
@@ -362,7 +361,7 @@ fn main_0() -> i32 {
         );
         (map2.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                __v.entry((*i.borrow()).clone())
+                __v.entry((*i.borrow()))
                     .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                     .as_pointer()
             })
@@ -374,7 +373,7 @@ fn main_0() -> i32 {
         assert!(
             (((map1.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
                 .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                    __v.entry((*i.borrow()).clone())
+                    __v.entry((*i.borrow()))
                         .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                         .as_pointer()
                 })
@@ -384,7 +383,7 @@ fn main_0() -> i32 {
         assert!(
             (((map2.as_pointer() as Ptr<BTreeMap<i32, Value<i32>>>)
                 .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
-                    __v.entry((*i.borrow()).clone())
+                    __v.entry((*i.borrow()))
                         .or_insert_with(|| Rc::new(RefCell::new(<i32>::default())))
                         .as_pointer()
                 })

@@ -30,7 +30,7 @@ fn main_0() -> i32 {
     (*v.borrow_mut()).push(Ptr::alloc(2));
     (*v.borrow_mut()).push(Ptr::alloc(3));
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read().clone()));
+        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         println!("{}", ((*p.borrow()).read()));
     }
     return 0;

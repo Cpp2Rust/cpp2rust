@@ -116,7 +116,7 @@ fn main_0() -> i32 {
         ((outer.as_pointer()) as Ptr<Outer>)
             .to_any()
             .memset((0) as u8, 16usize as usize);
-        ((outer.as_pointer()) as Ptr<Outer>).to_any().clone()
+        ((outer.as_pointer()) as Ptr<Outer>).to_any()
     };
     (*(*(*(*outer.borrow()).u.borrow()).inner().upgrade().deref())
         .a

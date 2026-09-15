@@ -16,7 +16,7 @@ fn f2<T1: Clone + PartialOrd + ByteRepr, T2: Clone + From<T1> + ByteRepr>(
     a2: Ptr<T2>,
 ) -> Ptr<T2> {
     let count = a1.get_offset() - a0.get_offset();
-    let mut outptr = a2.clone();
+    let mut outptr = a2;
     for value in PtrValueIter::new(&a0, count) {
         outptr.write(value.into());
         outptr += 1;
@@ -75,8 +75,8 @@ fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
     if count <= 1 {
         a1
     } else {
-        let mut write_ptr = a0.clone();
         let mut iter = PtrValueIter::new(&a0, count);
+        let mut write_ptr = a0;
         let mut last_unique = iter.next().unwrap();
 
         // the first unique value is already in place
@@ -94,7 +94,7 @@ fn f10<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>) -> Ptr<T1> {
 }
 
 fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
-    let mut __a0 = a0.clone();
+    let mut __a0 = a0;
     while __a0 != a1 {
         let v = a2.clone();
         __a0.write(v);

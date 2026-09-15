@@ -24,10 +24,10 @@ fn f5(a0: Ptr<CFdSet>) {
 }
 
 fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeval>) -> i32 {
-    let __rp = a1.clone();
-    let __wp = a2.clone();
-    let __ep = a3.clone();
-    let __tp = a4.clone();
+    let __rp = a1;
+    let __wp = a2;
+    let __ep = a3;
+    let __tp = a4;
     let __r_fds: Vec<i32> = match __rp.is_null() {
         true => Vec::new(),
         false => __rp.with(|__s| (0..a0).filter(|&__fd| __s.isset(__fd)).collect()),

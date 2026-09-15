@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
     (*(*(*t3.borrow()).upgrade().deref()).x.borrow_mut()) = 15;
     {
-        let _ptr = ({ TestImpl::as_ptr(&(*t3.borrow())) }).clone();
+        let _ptr = ({ TestImpl::as_ptr(&(*t3.borrow())) });
         _ptr.write(_ptr.read() + 10)
     };
     assert!(

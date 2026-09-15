@@ -49,7 +49,7 @@ fn f2(a0: nix::time::ClockId, a1: Ptr<Timespec>) -> i32 {
 }
 
 fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
-    let __res = a1.clone();
+    let __res = a1;
     match jiff::Timestamp::from_second(a0.read()) {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::UTC);
@@ -64,7 +64,7 @@ fn f4(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
 }
 
 fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
-    let __res = a1.clone();
+    let __res = a1;
     match jiff::Timestamp::from_second(a0.read()) {
         Ok(__ts) => {
             let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());

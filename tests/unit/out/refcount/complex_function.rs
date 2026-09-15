@@ -190,7 +190,7 @@ fn main_0() -> i32 {
         .borrow()),
     ));
     {
-        let _ptr = ({ bar_2(x1.as_pointer()) }).clone();
+        let _ptr = ({ bar_2(x1.as_pointer()) });
         _ptr.write(_ptr.read() + 10)
     };
     ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
@@ -221,8 +221,7 @@ fn main_0() -> i32 {
                 .v
                 .as_pointer(),
             )
-        })
-        .clone();
+        });
         _ptr.write(_ptr.read() + 10)
     };
     ({
@@ -259,7 +258,7 @@ fn main_0() -> i32 {
     .with_mut(|__v| __v.postfix_inc());
     ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| __v.prefix_inc());
     {
-        let _ptr = ({ ptr_1((x1.as_pointer())) }).clone();
+        let _ptr = ({ ptr_1((x1.as_pointer())) });
         _ptr.write(_ptr.read() + 1)
     };
     ({
@@ -281,8 +280,7 @@ fn main_0() -> i32 {
                 .v
                 .as_pointer()),
             )
-        })
-        .clone();
+        });
         _ptr.write(_ptr.read() + 1)
     };
     {
@@ -294,8 +292,7 @@ fn main_0() -> i32 {
                 .v
                 .as_pointer()),
             )
-        })
-        .clone();
+        });
         _ptr.write(_ptr.read() + 1)
     };
     let ptr1: Value<i32> = Rc::new(RefCell::new(

@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     }
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut x in v.as_pointer() as Ptr<i32> {
-        let x: Value<i32> = Rc::new(RefCell::new(x.read().clone()));
+        let x: Value<i32> = Rc::new(RefCell::new(x.read()));
         (*sum.borrow_mut()) += (*x.borrow());
     }
     assert!(((*sum.borrow()) == 45));

@@ -38,7 +38,7 @@ fn main_0() -> i32 {
     (*v2.borrow_mut()).push(3);
     assert!(((*v2.borrow()).len() == 3_usize));
     {
-        let idx = (v2.as_pointer() as Ptr<i32>).clone().get_offset();
+        let idx = (v2.as_pointer() as Ptr<i32>).get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
         (v2.as_pointer() as Ptr<Vec<i32>>).to_strong().as_pointer() as Ptr<i32>
     };
@@ -46,9 +46,9 @@ fn main_0() -> i32 {
     assert!((((v2.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 2));
     assert!((((v2.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 3));
     {
-        let __off = (v2.as_pointer() as Ptr<i32>).clone().get_offset();
+        let __off = (v2.as_pointer() as Ptr<i32>).get_offset();
         (*v2.borrow_mut()).insert(__off, 100);
-        (v2.as_pointer() as Ptr<i32>).clone()
+        (v2.as_pointer() as Ptr<i32>)
     };
     ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));

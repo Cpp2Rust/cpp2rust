@@ -82,9 +82,7 @@ fn main_0() -> i32 {
                 &(((table.as_pointer() as Ptr<Entry>).offset(0)) as Ptr<Entry>).to_any(),
                 (((*table_size.borrow()) as u64).wrapping_mul((4usize as u64)) as usize) as usize,
             );
-        (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()))) as Ptr<Entry>)
-            .to_any()
-            .clone()
+        (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()))) as Ptr<Entry>).to_any()
     };
     assert!(
         (((*(*table.borrow())[(4) as usize].bits.borrow()) as i32) == 1)
