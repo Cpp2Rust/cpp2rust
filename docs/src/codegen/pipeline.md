@@ -1,5 +1,7 @@
 # The Translation Pipeline
 
+<style>pre.mermaid { text-align: center; }</style>
+
 ```mermaid
 flowchart TD
     driver["<b>cpp2rust</b><br/><code>cpp2rust/cpp2rust.cpp</code>"]

@@ -11,7 +11,6 @@ create-missing = false
 git-repository-url = "https://github.com/cpp2rust/cpp2rust"
 edit-url-template = "https://github.com/cpp2rust/cpp2rust/edit/master/docs/{path}"
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
-additional-css = ["mermaid.css"]
 
 [output.html.fold]
 enable = true
