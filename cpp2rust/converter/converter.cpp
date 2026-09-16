@@ -3630,13 +3630,22 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   auto params = LambdaCallParams(op, args);
   auto ret = op->getReturnType()->isVoidType() ? std::string("()")
                                                : ToString(op->getReturnType());
-  StrCat(keyword::kImpl, std::format("Callable{}<", op->getNumParams()));
-  for (auto *p : op->parameters()) {
-    StrCat(ToString(p->getType()), token::kComma);
+  StrCat(keyword::kImpl, std::format("Callable{}", op->getNumParams()));
+  {
+    PushAngle angle(*this);
+    for (auto *p : op->parameters()) {
+      StrCat(ToString(p->getType()), token::kComma);
+    }
+    StrCat(ret);
   }
-  StrCat(ret, "> for", GetRecordName(decl));
+  StrCat("for", GetRecordName(decl));
   PushBrace impl_brace(*this);
-  StrCat(keyword::kFn, "call(&self,", params, ")", token::kArrow, ret);
+  StrCat(keyword::kFn, "call");
+  {
+    PushParen paren(*this);
+    StrCat("&self,", params);
+  }
+  StrCat(token::kArrow, ret);
   PushBrace fn_brace(*this);
   StrCat(LambdaCallBody(decl, "self.clone()", args));
 }

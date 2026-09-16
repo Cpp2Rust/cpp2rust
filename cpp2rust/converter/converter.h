@@ -498,6 +498,7 @@ protected:
       PushDelim<token::kOpenCurlyBracket, token::kCloseCurlyBracket>;
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
+  using PushAngle = PushDelim<token::kLt, token::kGt>;
 
   template <typename T>
   inline std::string
