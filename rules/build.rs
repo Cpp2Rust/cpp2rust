@@ -9,7 +9,7 @@ use std::{
 
 fn main() {
     let crate_root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    let modules_rs = crate_root.join("src").join("modules.rs");
+    let modules_rs = PathBuf::from(env::var("OUT_DIR").unwrap()).join("modules.rs");
 
     // Collect all tgt_*.rs files
     let mut files = Vec::new();
@@ -64,10 +64,10 @@ fn main() {
             module_name = format!("m_{}", module_name);
         }
 
-        let rel = f.strip_prefix(&crate_root).unwrap_or(&f);
+        // Generate to OUT_DIR
         buf.push_str(&format!(
-            "#[path = r#\"../{}\"#]\npub mod {};\n",
-            rel.display(),
+            "#[path = r#\"{}\"#]\npub mod {};\n",
+            abs.display(),
             module_name
         ));
     }

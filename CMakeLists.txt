@@ -141,18 +141,46 @@ set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 
 set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
 
+set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/target_preprocessor/release/rule-preprocessor")
+set(PREPROCESSOR_STAMP "${CMAKE_BINARY_DIR}/.rule-preprocessor.stamp")
+
+file(GLOB_RECURSE rule_preprocessor_sources
+     ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
+
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E env RUSTUP_TOOLCHAIN=${RUST_NIGHTLY_VERSION}
+          rustc --print sysroot
+  OUTPUT_VARIABLE NIGHTLY_SYSROOT
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+add_custom_command(
+  OUTPUT ${PREPROCESSOR_BIN} ${RUSTLS_HEADER} ${PREPROCESSOR_STAMP}
+  COMMAND cargo +${RUST_STABLE_VERSION} build --release
+          --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
+  COMMAND ${CMAKE_COMMAND} -E env
+          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+          cargo +${RUST_NIGHTLY_VERSION} build --release
+          --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+  COMMAND ${CMAKE_COMMAND} -E touch "${PREPROCESSOR_STAMP}"
+  DEPENDS ${rule_preprocessor_sources}
+          "${PROJECT_SOURCE_DIR}/rules/build.rs"
+          "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
+          "${RUST_STAMP_FILE}"
+  VERBATIM
+)
+
 file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
-set(rust_rules_inputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
-  file(GLOB _srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
-  if(NOT _srcs)
+  file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
+  if(NOT _cpp_srcs)
     continue()
   endif()
   get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
-  set(_out ${_out_dir}/ir_src.json)
+  set(_cpp_out ${_out_dir}/ir_src.json)
   set(_cxxflags)
   set(_cxxflags_file)
   if(EXISTS ${_rule_dir}/cxxflags)
@@ -163,38 +191,43 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     endforeach()
   endif()
   add_custom_command(
-    OUTPUT ${_out}
+    OUTPUT ${_cpp_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_out} ${_cxxflags}
-    DEPENDS ${_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
+    COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
+    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
     VERBATIM
   )
-  list(APPEND cpp_rules_ir_outputs ${_out})
+  list(APPEND cpp_rules_ir_outputs ${_cpp_out})
+
+  set(_rust_srcs)
+  set(_rust_out)
   if(EXISTS ${_rule_dir}/tgt_unsafe.rs)
-    list(APPEND rust_rules_ir_outputs ${_out_dir}/ir_unsafe.json)
-    list(APPEND rust_rules_inputs ${_rule_dir}/tgt_unsafe.rs)
+    list(APPEND _rust_out ${_out_dir}/ir_unsafe.json)
+    list(APPEND _rust_srcs ${_rule_dir}/tgt_unsafe.rs)
   endif()
   if(EXISTS ${_rule_dir}/tgt_refcount.rs)
-    list(APPEND rust_rules_ir_outputs ${_out_dir}/ir_refcount.json)
-    list(APPEND rust_rules_inputs ${_rule_dir}/tgt_refcount.rs)
+    list(APPEND _rust_out ${_out_dir}/ir_refcount.json)
+    list(APPEND _rust_srcs ${_rule_dir}/tgt_refcount.rs)
   endif()
+  if(NOT _rust_srcs)
+    continue()
+  endif()
+  add_custom_command(
+    OUTPUT ${_rust_out}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
+    COMMAND ${CMAKE_COMMAND} -E env
+            CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+            RUSTUP_TOOLCHAIN=${RUST_NIGHTLY_VERSION}
+            LD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
+            DYLD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
+            ${PREPROCESSOR_BIN} ${_out_dir} ${_rule_dir}
+    DEPENDS ${_rust_srcs} ${PREPROCESSOR_BIN} ${PREPROCESSOR_STAMP}
+    VERBATIM
+  )
+  list(APPEND rust_rules_ir_outputs ${_rust_out})
 endforeach()
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
-
-file(GLOB_RECURSE rule_preprocessor_sources
-     ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
-
-add_custom_command(
-  OUTPUT ${rust_rules_ir_outputs} ${RUSTLS_HEADER}
-  COMMAND cargo +${RUST_STABLE_VERSION} build --release --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
-  COMMAND ${CMAKE_COMMAND} -E env
-          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
-          cargo +${RUST_NIGHTLY_VERSION} run --release --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
-          -- "${RULES_IR_DIR}"
-  DEPENDS ${rust_rules_inputs} ${rule_preprocessor_sources} "${RUST_STAMP_FILE}"
-  VERBATIM
-)
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
