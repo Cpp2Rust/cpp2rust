@@ -880,6 +880,8 @@ protected:
   // translation units.
   static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
 
+  std::string hoisted_records_;
+
   enum class ExprKind : uint8_t {
     Callee,
     LValue,

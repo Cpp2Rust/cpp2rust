@@ -363,6 +363,10 @@ bool Converter::VisitTranslationUnitDecl(clang::TranslationUnitDecl *decl) {
     if (IsUserDefinedDecl(child) &&
         (IsInMainFile(child) || !decl_ids_.contains(GetID(child)))) {
       Convert(child);
+      if (!hoisted_records_.empty()) {
+        StrCat(hoisted_records_);
+        hoisted_records_.clear();
+      }
     }
   }
   return false;
@@ -1257,6 +1261,12 @@ bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
 
 bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
   for (auto *decl : stmt->decls()) {
+    if (clang::isa<clang::TagDecl>(decl)) {
+      Buffer buf(*this);
+      Convert(decl);
+      hoisted_records_ += std::move(buf).str();
+      continue;
+    }
     Convert(decl);
     StrCat(token::kSemiColon);
   }
