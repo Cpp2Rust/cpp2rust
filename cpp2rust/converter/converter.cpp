@@ -2849,6 +2849,9 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
 }
 
 std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto capture = LambdaCaptureName(expr->getDecl()); !capture.empty()) {
+    return capture;
+  }
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
@@ -2889,10 +2892,6 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
-  if (auto *capture = LambdaCaptureAccess(expr->getDecl())) {
-    Convert(capture);
-    return false;
-  }
   auto str = ConvertDeclRefExpr(expr);
   auto decl = expr->getDecl();
 
@@ -3169,7 +3168,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 
 bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (IsCapturedThis(expr)) {
-    Convert(LambdaCaptureAccess(nullptr));
+    StrCat(LambdaCaptureName(nullptr));
+    computed_expr_type_ = ComputedExprType::Pointer;
     return false;
   }
   if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
@@ -3681,20 +3681,16 @@ void Converter::ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call) {
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
-clang::MemberExpr *Converter::LambdaCaptureAccess(const clang::ValueDecl *var) {
+std::string Converter::LambdaCaptureName(const clang::ValueDecl *var) const {
   auto *lambda = GetLambdaOf(curr_function_);
   if (!lambda) {
-    return nullptr;
+    return {};
   }
   auto *field = GetLambdaCaptureField(lambda, var);
   if (!field) {
-    return nullptr;
+    return {};
   }
-  auto *this_expr = clang::CXXThisExpr::Create(
-      ctx_, {}, lambda->getLambdaCallOperator()->getThisType(), true);
-  return clang::MemberExpr::CreateImplicit(
-      ctx_, this_expr, true, field, field->getType().getNonReferenceType(),
-      clang::VK_LValue, clang::OK_Ordinary);
+  return std::format("{}.{}", keyword::kSelfValue, GetNamedDeclAsString(field));
 }
 
 bool Converter::IsCapturedThis(const clang::Expr *expr) const {
@@ -3704,8 +3700,7 @@ bool Converter::IsCapturedThis(const clang::Expr *expr) const {
     return false;
   }
   auto *lambda = GetLambdaOf(curr_function_);
-  return lambda && this_expr->getType()->getPointeeCXXRecordDecl() != lambda &&
-         GetLambdaCaptureField(lambda, nullptr);
+  return lambda && this_expr->getType()->getPointeeCXXRecordDecl() != lambda;
 }
 
 bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {

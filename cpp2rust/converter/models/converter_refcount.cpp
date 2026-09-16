@@ -816,10 +816,6 @@ bool ConverterRefCount::VisitConditionalOperator(
 }
 
 bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
-  if (auto *capture = LambdaCaptureAccess(expr->getDecl())) {
-    Convert(capture);
-    return false;
-  }
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
@@ -2866,7 +2862,8 @@ void ConverterRefCount::ConvertCXXConstructorBody(
 
 bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (IsCapturedThis(expr)) {
-    Convert(LambdaCaptureAccess(nullptr));
+    StrCat(LambdaCaptureName(nullptr));
+    computed_expr_type_ = ComputedExprType::Pointer;
     return false;
   }
   bool in_ctor =
