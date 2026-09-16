@@ -2399,7 +2399,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         VisitCXXRecordDecl(decl);
         hoisted_records_ += std::move(buf).str();
       }
-      StrCat(LambdaFnPtr(decl->getLambdaCallOperator()));
+      StrCat(ConvertLambdaToFunctionPointer(decl->getLambdaCallOperator()));
       computed_expr_type_ = ComputedExprType::FreshValue;
       break;
     }
@@ -3658,7 +3658,8 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   }
 }
 
-std::string Converter::LambdaFnPtr(const clang::CXXMethodDecl *op) {
+std::string
+Converter::ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op) {
   return std::format("Some({}::{})", GetUFCSName(op), GetMethodName(op));
 }
 

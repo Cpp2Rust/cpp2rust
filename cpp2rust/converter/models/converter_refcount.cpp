@@ -2883,7 +2883,8 @@ void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
   Converter::AddCallableTrait(decl);
 }
 
-std::string ConverterRefCount::LambdaFnPtr(const clang::CXXMethodDecl *op) {
+std::string ConverterRefCount::ConvertLambdaToFunctionPointer(
+    const clang::CXXMethodDecl *op) {
   return std::format("FnPtr::new({}::{})", GetUFCSName(op), GetMethodName(op));
 }
 

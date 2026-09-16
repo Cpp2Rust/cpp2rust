@@ -418,10 +418,16 @@ public:
   virtual bool VisitConstantExpr(clang::ConstantExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
+
   virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
-  virtual std::string LambdaFnPtr(const clang::CXXMethodDecl *op);
+
+  virtual std::string
+  ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op);
+
   clang::FieldDecl *LambdaCaptureField(const clang::ValueDecl *var) const;
+
   std::string LambdaCaptureName(const clang::ValueDecl *var) const;
+
   bool IsCapturedThis(const clang::Expr *expr) const;
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
