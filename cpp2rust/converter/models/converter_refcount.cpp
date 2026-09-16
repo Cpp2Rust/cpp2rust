@@ -2876,9 +2876,9 @@ bool ConverterRefCount::VisitLambdaExpr(clang::LambdaExpr *expr) {
   return Converter::VisitLambdaExpr(expr);
 }
 
-void ConverterRefCount::ConvertLambdaCallable(clang::CXXRecordDecl *decl) {
+void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  Converter::ConvertLambdaCallable(decl);
+  Converter::AddCallableTrait(decl);
 }
 
 void ConverterRefCount::ConvertLambdaClass(clang::CXXRecordDecl *decl) {

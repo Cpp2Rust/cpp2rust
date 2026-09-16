@@ -418,7 +418,7 @@ public:
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
   virtual void ConvertLambdaClass(clang::CXXRecordDecl *decl);
-  virtual void ConvertLambdaCallable(clang::CXXRecordDecl *decl);
+  virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
   virtual void ConvertLambdaAsFnPtr(clang::LambdaExpr *expr);
   virtual std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
                                      std::string_view value,

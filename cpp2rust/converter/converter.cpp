@@ -957,7 +957,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 
     EmitRustStructOrUnion(decl);
     if (decl->isLambda()) {
-      ConvertLambdaCallable(decl);
+      AddCallableTrait(decl);
     }
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
@@ -3616,7 +3616,7 @@ std::string Converter::LambdaCallParams(const clang::CXXMethodDecl *op,
 
 static constexpr unsigned kMaxCallableArity = 3;
 
-void Converter::ConvertLambdaCallable(clang::CXXRecordDecl *decl) {
+void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   auto *op = decl->getLambdaCallOperator();
   if (!op->isConst() || op->getNumParams() > kMaxCallableArity) {
     return;
