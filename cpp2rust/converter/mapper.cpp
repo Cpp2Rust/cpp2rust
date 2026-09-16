@@ -882,6 +882,12 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
     return ToString(clang::cast<clang::NamedDecl>(tag));
   }
 
+  if (auto *tag = qual_type->getAsTagDecl();
+      tag && tag->getIdentifier() &&
+      tag->getDeclContext()->isFunctionOrMethod()) {
+    return GetNamedDeclAsString(tag);
+  }
+
   if (auto renamed = DisambiguateAnonymousTag(qual_type->getAsTagDecl());
       !renamed.empty()) {
     return renamed;
