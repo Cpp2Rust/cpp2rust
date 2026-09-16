@@ -17,30 +17,10 @@ macro_rules! callable {
             }
         }
 
-        impl<F, $($A,)* R> $name<$($A,)* R> for Option<F>
-        where
-            F: Fn($($A),*) -> R,
-        {
+        impl<$($A,)* R> $name<$($A,)* R> for unsafe fn($($A),*) -> R {
             #[inline]
             fn call(&self, $($a: $A),*) -> R {
-                self.as_ref().unwrap()($($a),*)
-            }
-        }
-
-        impl<$($A,)* R> $name<$($A,)* R> for Option<unsafe fn($($A),*) -> R> {
-            #[inline]
-            fn call(&self, $($a: $A),*) -> R {
-                unsafe { self.unwrap()($($a),*) }
-            }
-        }
-
-        impl<F, $($A,)* R> $name<$($A,)* R> for crate::fn_ptr::FnPtr<F>
-        where
-            F: Fn($($A),*) -> R + 'static,
-        {
-            #[inline]
-            fn call(&self, $($a: $A),*) -> R {
-                (**self)($($a),*)
+                unsafe { self($($a),*) }
             }
         }
     };
