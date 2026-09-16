@@ -852,7 +852,8 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  const auto decl_t = decl->getType();
+  auto *field = LambdaCaptureField(decl);
+  const auto decl_t = field ? field->getType() : decl->getType();
   if (IsGlobalVar(expr)) {
     auto tp = decl_t->isReferenceType() ? "Ptr" : "Value";
     str = std::format("{}.with({}::clone)", str, std::move(tp));
@@ -2886,17 +2887,4 @@ std::string ConverterRefCount::LambdaFnPtr(const clang::CXXMethodDecl *op) {
   return std::format("FnPtr::new({}::{})", GetUFCSName(op), GetMethodName(op));
 }
 
-std::string ConverterRefCount::LambdaCallBody(const clang::CXXRecordDecl *decl,
-                                              std::string_view value,
-                                              std::string_view args) {
-  auto *op = decl->getLambdaCallOperator();
-  if (IsStaticMethod(op)) {
-    return std::format("{0}::{1}({2})", GetUFCSName(op), GetMethodName(op),
-                       args);
-  }
-  return std::format("let __this: Value<{0}> = Rc::new(RefCell::new({1})); "
-                     "{2}::{3}(&__this.as_pointer(), {4})",
-                     GetRecordName(decl), value, GetUFCSName(op),
-                     GetMethodName(op), args);
-}
 } // namespace cpp2rust

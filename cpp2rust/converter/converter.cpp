@@ -2894,10 +2894,12 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   auto str = ConvertDeclRefExpr(expr);
   auto decl = expr->getDecl();
+  auto *field = LambdaCaptureField(decl);
+  auto decl_t = field ? field->getType() : decl->getType();
 
-  if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
+  if (decl_t->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
-    EmitDeref(std::move(str), decl->getType().getNonReferenceType());
+    EmitDeref(std::move(str), decl_t.getNonReferenceType());
     SetValueFreshness(expr->getType());
     return false;
   }
@@ -2912,9 +2914,8 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
-    StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
-           str);
+  if (!decl_t->getAs<clang::ReferenceType>() && isAddrOf()) {
+    StrCat(token::kRef, decl_t.isConstQualified() ? "" : keyword_mut_, str);
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -3648,20 +3649,15 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   }
   StrCat(token::kArrow, ret);
   PushBrace fn_brace(*this);
-  StrCat(LambdaCallBody(decl, "self.clone()", args));
+  StrCat(LambdaCallBody(decl, args));
 }
 
 std::string Converter::LambdaCallBody(const clang::CXXRecordDecl *decl,
-                                      std::string_view value,
                                       std::string_view args) {
   auto *op = decl->getLambdaCallOperator();
-  if (IsStaticMethod(op)) {
-    return std::format("unsafe {{ {0}::{1}({2}) }}", GetUFCSName(op),
-                       GetMethodName(op), args);
-  }
-  return std::format(
-      "let __this: {0} = {1}; unsafe {{ {2}::{3}(&__this, {4}) }}",
-      GetRecordName(decl), value, GetUFCSName(op), GetMethodName(op), args);
+  auto receiver = IsStaticMethod(op) ? "" : "self,";
+  return std::format("{} {{ {}::{}({}{}) }}", keyword_unsafe_, GetUFCSName(op),
+                     GetMethodName(op), receiver, args);
 }
 
 std::string Converter::LambdaFnPtr(const clang::CXXMethodDecl *op) {
@@ -3681,12 +3677,14 @@ void Converter::ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call) {
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
-std::string Converter::LambdaCaptureName(const clang::ValueDecl *var) const {
+clang::FieldDecl *
+Converter::LambdaCaptureField(const clang::ValueDecl *var) const {
   auto *lambda = GetLambdaOf(curr_function_);
-  if (!lambda) {
-    return {};
-  }
-  auto *field = GetLambdaCaptureField(lambda, var);
+  return lambda ? GetLambdaCaptureField(lambda, var) : nullptr;
+}
+
+std::string Converter::LambdaCaptureName(const clang::ValueDecl *var) const {
+  auto *field = LambdaCaptureField(var);
   if (!field) {
     return {};
   }

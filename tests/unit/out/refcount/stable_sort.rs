@@ -43,6 +43,6 @@ impl ByteRepr for lambda_0 {
 }
 impl Callable2<i32, i32, bool> for lambda_0 {
     fn call(&self, a1: i32, a2: i32) -> bool {
-        lambda_0::operator_call(a1, a2)
+        { lambda_0::operator_call(a1, a2) }
     }
 }

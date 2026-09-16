@@ -1001,6 +1001,10 @@ bool IsStaticMethod(const clang::CXXMethodDecl *method) {
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
+  if (GetLambdaOf(method) &&
+      method->getParent()->getLambdaCallOperator() == method) {
+    return false;
+  }
   if (method->isDeleted() || IsStaticMethod(method) || method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;

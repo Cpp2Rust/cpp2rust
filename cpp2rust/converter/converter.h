@@ -421,11 +421,11 @@ public:
   virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
   void ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call);
   virtual std::string LambdaFnPtr(const clang::CXXMethodDecl *op);
-  virtual std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
-                                     std::string_view value,
-                                     std::string_view args);
+  std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
+                             std::string_view args);
   std::string LambdaCallParams(const clang::CXXMethodDecl *op,
                                std::string &args);
+  clang::FieldDecl *LambdaCaptureField(const clang::ValueDecl *var) const;
   std::string LambdaCaptureName(const clang::ValueDecl *var) const;
   bool IsCapturedThis(const clang::Expr *expr) const;
 

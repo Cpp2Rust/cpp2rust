@@ -9,12 +9,12 @@ use std::rc::{Rc, Weak};
 pub fn apply_0(fn_: lambda_1, x: i32) -> i32 {
     let fn_: Value<lambda_1> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ({ lambda_1Impl::operator_call(&fn_.as_pointer(), (*x.borrow())) });
+    return ({ lambda_1::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
 }
 pub fn apply_2(fn_: lambda_3, x: i32) -> i32 {
     let fn_: Value<lambda_3> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ({ lambda_3Impl::operator_call(&fn_.as_pointer(), (*x.borrow())) });
+    return ({ lambda_3::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
 }
 pub fn main() {
     std::process::exit(main_0());
@@ -42,16 +42,27 @@ fn main_0() -> i32 {
 pub struct lambda_1 {
     base: Ptr<i32>,
 }
+impl lambda_1 {
+    pub fn operator_call(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) + (self.base.read()));
+    }
+}
 impl ByteRepr for lambda_1 {}
 impl Callable1<i32, i32> for lambda_1 {
     fn call(&self, a1: i32) -> i32 {
-        let __this: Value<lambda_1> = Rc::new(RefCell::new(self.clone()));
-        lambda_1Impl::operator_call(&__this.as_pointer(), a1)
+        { lambda_1::operator_call(self, a1) }
     }
 }
 #[derive(Default)]
 pub struct lambda_3 {
     factor: Value<i32>,
+}
+impl lambda_3 {
+    pub fn operator_call(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) * (*self.factor.borrow()));
+    }
 }
 impl Clone for lambda_3 {
     fn clone(&self) -> Self {
@@ -75,25 +86,6 @@ impl ByteRepr for lambda_3 {
 }
 impl Callable1<i32, i32> for lambda_3 {
     fn call(&self, a1: i32) -> i32 {
-        let __this: Value<lambda_3> = Rc::new(RefCell::new(self.clone()));
-        lambda_3Impl::operator_call(&__this.as_pointer(), a1)
-    }
-}
-pub trait lambda_1Impl {
-    fn operator_call(&self, x: i32) -> i32;
-}
-impl lambda_1Impl for Ptr<lambda_1> {
-    fn operator_call(&self, x: i32) -> i32 {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*x.borrow()) + ((*(*self).upgrade().deref()).base.read()));
-    }
-}
-pub trait lambda_3Impl {
-    fn operator_call(&self, x: i32) -> i32;
-}
-impl lambda_3Impl for Ptr<lambda_3> {
-    fn operator_call(&self, x: i32) -> i32 {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*x.borrow()) * (*(*(*self).upgrade().deref()).factor.borrow()));
+        { lambda_3::operator_call(self, a1) }
     }
 }

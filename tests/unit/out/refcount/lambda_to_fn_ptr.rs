@@ -46,7 +46,7 @@ impl ByteRepr for lambda_1 {
 }
 impl Callable1<i32, i32> for lambda_1 {
     fn call(&self, a1: i32) -> i32 {
-        lambda_1::operator_call(a1)
+        { lambda_1::operator_call(a1) }
     }
 }
 #[derive(Clone, Default)]
@@ -68,6 +68,6 @@ impl ByteRepr for lambda_2 {
 }
 impl Callable1<i32, i32> for lambda_2 {
     fn call(&self, a1: i32) -> i32 {
-        lambda_2::operator_call(a1)
+        { lambda_2::operator_call(a1) }
     }
 }

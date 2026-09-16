@@ -32,8 +32,7 @@ impl lambda_1 {
 }
 impl Callable1<i32, i32> for lambda_1 {
     fn call(&self, a1: i32) -> i32 {
-        let __this: lambda_1 = self.clone();
-        unsafe { lambda_1::operator_call(&__this, a1) }
+        unsafe { lambda_1::operator_call(self, a1) }
     }
 }
 #[repr(C)]
@@ -52,7 +51,6 @@ impl lambda_0 {
 }
 impl Callable1<i32, i32> for lambda_0 {
     fn call(&self, a1: i32) -> i32 {
-        let __this: lambda_0 = self.clone();
-        unsafe { lambda_0::operator_call(&__this, a1) }
+        unsafe { lambda_0::operator_call(self, a1) }
     }
 }

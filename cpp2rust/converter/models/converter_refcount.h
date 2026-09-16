@@ -89,9 +89,6 @@ public:
 
   void AddCallableTrait(clang::CXXRecordDecl *decl) override;
   std::string LambdaFnPtr(const clang::CXXMethodDecl *op) override;
-  std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
-                             std::string_view value,
-                             std::string_view args) override;
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
 
