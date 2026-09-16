@@ -165,6 +165,13 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
+const clang::LambdaCapture *GetLambdaCapture(const clang::FieldDecl *field);
+
+clang::FieldDecl *GetLambdaCaptureField(const clang::CXXRecordDecl *lambda,
+                                        const clang::ValueDecl *var);
+
+const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn);
+
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl);
 

@@ -11,20 +11,77 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(10));
-    let outer: Value<_> = Rc::new(RefCell::new(
-        (|y: i32| {
-            let y: Value<i32> = Rc::new(RefCell::new(y));
-            let inner: Value<_> = Rc::new(RefCell::new(
-                (|z: i32| {
-                    let z: Value<i32> = Rc::new(RefCell::new(z));
-                    return (((*x.borrow()) + (*y.borrow())) + (*z.borrow()));
-                }),
-            ));
-            return ({ (*inner.borrow_mut())(1) });
-        }),
-    ));
-    assert!((({ (*outer.borrow_mut())(20,) }) == 31));
+    let outer: Value<lambda_0> = Rc::new(RefCell::new((lambda_0 { x: x.as_pointer() })));
+    assert!((({ lambda_0Impl::operator_call(&outer.as_pointer(), 20,) }) == 31));
     (*x.borrow_mut()) = 100;
-    assert!((({ (*outer.borrow_mut())(20,) }) == 121));
+    assert!((({ lambda_0Impl::operator_call(&outer.as_pointer(), 20,) }) == 121));
     return 0;
+}
+#[derive(Default)]
+pub struct lambda_1 {
+    x: Ptr<i32>,
+    y: Value<i32>,
+}
+impl Clone for lambda_1 {
+    fn clone(&self) -> Self {
+        let __this: Value<lambda_1> = Rc::new(RefCell::new(Self {
+            x: (self.x).clone(),
+            y: Rc::new(RefCell::new((*self.y.borrow()))),
+        }));
+        let this: Ptr<lambda_1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for lambda_1 {}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        let __this: Value<lambda_1> = Rc::new(RefCell::new(self.clone()));
+        lambda_1Impl::operator_call(&__this.as_pointer(), a1)
+    }
+}
+#[derive(Default)]
+pub struct lambda_0 {
+    x: Ptr<i32>,
+}
+impl Clone for lambda_0 {
+    fn clone(&self) -> Self {
+        let __this: Value<lambda_0> = Rc::new(RefCell::new(Self {
+            x: (self.x).clone(),
+        }));
+        let this: Ptr<lambda_0> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for lambda_0 {}
+impl Callable1<i32, i32> for lambda_0 {
+    fn call(&self, a1: i32) -> i32 {
+        let __this: Value<lambda_0> = Rc::new(RefCell::new(self.clone()));
+        lambda_0Impl::operator_call(&__this.as_pointer(), a1)
+    }
+}
+pub trait lambda_0Impl {
+    fn operator_call(&self, y: i32) -> i32;
+}
+impl lambda_0Impl for Ptr<lambda_0> {
+    fn operator_call(&self, y: i32) -> i32 {
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+        let inner: Value<lambda_1> = Rc::new(RefCell::new(
+            (lambda_1 {
+                x: ((*(*self).upgrade().deref()).x).clone(),
+                y: Rc::new(RefCell::new((*y.borrow()))),
+            }),
+        ));
+        return ({ lambda_1Impl::operator_call(&inner.as_pointer(), 1) });
+    }
+}
+pub trait lambda_1Impl {
+    fn operator_call(&self, z: i32) -> i32;
+}
+impl lambda_1Impl for Ptr<lambda_1> {
+    fn operator_call(&self, z: i32) -> i32 {
+        let z: Value<i32> = Rc::new(RefCell::new(z));
+        return ((((*(*self).upgrade().deref()).x.read())
+            + (*(*(*self).upgrade().deref()).y.borrow()))
+            + (*z.borrow()));
+    }
 }

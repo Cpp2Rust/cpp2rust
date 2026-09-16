@@ -247,9 +247,9 @@ std::string ConverterRefCount::BuildFnAdapter(
 }
 
 std::string ConverterRefCount::ConvertFunctionPointerType(
-    const clang::FunctionProtoType *proto, FnProtoType kind) {
+    const clang::FunctionProtoType *proto) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  return Converter::ConvertFunctionPointerType(proto, kind);
+  return Converter::ConvertFunctionPointerType(proto);
 }
 
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
@@ -691,10 +691,6 @@ void ConverterRefCount::ConvertVaListVarDecl(clang::VarDecl *decl) {
   StrCat(GetNamedDeclAsString(decl), token::kColon, "Value<VaList>");
 }
 
-bool ConverterRefCount::ConvertLambdaVarDecl(clang::VarDecl *decl) {
-  return false;
-}
-
 bool ConverterRefCount::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   bool unboxed = in_function_formals_;
   PushConversionKind push(*this, unboxed ? ConversionKind::Unboxed
@@ -807,6 +803,10 @@ bool ConverterRefCount::VisitConditionalOperator(
 }
 
 bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto *capture = LambdaCaptureAccess(expr->getDecl())) {
+    Convert(capture);
+    return false;
+  }
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
@@ -2085,16 +2085,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
                                                    clang::Expr *expr) {
   if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-          expr->IgnoreUnlessSpelledInSource())) {
+          expr->IgnoreUnlessSpelledInSource());
+      lambda && qual_type->isFunctionPointerType()) {
     Buffer buf(*this);
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-      StrCat("FnPtr::new(");
-      VisitLambdaExpr(lambda);
-      StrCat(')');
-    } else {
-      VisitLambdaExpr(lambda);
-    }
+    ConvertLambdaAsFnPtr(lambda);
     return std::move(buf).str();
   }
 
@@ -2684,7 +2678,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
                                          base->IgnoreParenImpCasts());
-  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+      !IsCapturedThis(base)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     if (in_ctor) {
@@ -2860,8 +2855,11 @@ void ConverterRefCount::ConvertCXXConstructorBody(
   StrCat("Rc::try_unwrap(__this).ok().unwrap().into_inner()");
 }
 
-bool ConverterRefCount::VisitCXXThisExpr(
-    [[maybe_unused]] clang::CXXThisExpr *expr) {
+bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
+  if (IsCapturedThis(expr)) {
+    Convert(LambdaCaptureAccess(nullptr));
+    return false;
+  }
   bool in_ctor =
       curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
   if (in_ctor) {
@@ -2871,5 +2869,43 @@ bool ConverterRefCount::VisitCXXThisExpr(
   }
   computed_expr_type_ = ComputedExprType::Pointer;
   return false;
+}
+
+bool ConverterRefCount::VisitLambdaExpr(clang::LambdaExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  return Converter::VisitLambdaExpr(expr);
+}
+
+void ConverterRefCount::ConvertLambdaCallable(clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  Converter::ConvertLambdaCallable(decl);
+}
+
+void ConverterRefCount::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
+  std::vector<ConversionKind> saved_conversion_kinds({ConversionKind::Unboxed});
+  saved_conversion_kinds.swap(conversion_kind_);
+  Converter::ConvertLambdaClass(decl);
+  conversion_kind_.swap(saved_conversion_kinds);
+}
+
+void ConverterRefCount::ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) {
+  auto *decl = expr->getLambdaClass();
+  ConvertLambdaClass(decl);
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  std::string args;
+  auto params = LambdaCallParams(decl->getLambdaCallOperator(), args);
+  StrCat("FnPtr::new(|", params, "| {",
+         LambdaCallBody(decl, GetRecordName(decl) + " {}", args), "})");
+  computed_expr_type_ = ComputedExprType::FreshValue;
+}
+
+std::string ConverterRefCount::LambdaCallBody(const clang::CXXRecordDecl *decl,
+                                              std::string_view value,
+                                              std::string_view args) {
+  auto *op = decl->getLambdaCallOperator();
+  return std::format("let __this: Value<{0}> = Rc::new(RefCell::new({1})); "
+                     "{2}::{3}(&__this.as_pointer(), {4})",
+                     GetRecordName(decl), value, GetUFCSName(op),
+                     GetMethodName(op), args);
 }
 } // namespace cpp2rust

@@ -25,9 +25,24 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { apply_1(5, None,) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(None),) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(Some(identity_0)),) }) == (5)));
-    let mut negate: Option<unsafe fn(i32) -> i32> = Some(|x: i32| {
-        return -x;
+    let mut negate: Option<unsafe fn(i32) -> i32> = Some(|a1: i32| {
+        let __this: lambda_2 = lambda_2 {};
+        unsafe { lambda_2::operator_call(&__this, a1) }
     });
     assert!(((unsafe { apply_1(5, Some(negate),) }) == (-5_i32)));
     return 0;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct lambda_2 {}
+impl lambda_2 {
+    pub unsafe fn operator_call(&self, mut x: i32) -> i32 {
+        return -x;
+    }
+}
+impl Callable1<i32, i32> for lambda_2 {
+    fn call(&self, a1: i32) -> i32 {
+        let __this: lambda_2 = self.clone();
+        unsafe { lambda_2::operator_call(&__this, a1) }
+    }
 }

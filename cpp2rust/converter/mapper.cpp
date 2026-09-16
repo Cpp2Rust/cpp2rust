@@ -872,7 +872,7 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
 
   if (auto cxx_record_decl = qual_type->getAsCXXRecordDecl()) {
     if (cxx_record_decl->isLambda()) {
-      return ToString(cxx_record_decl->getLambdaCallOperator());
+      return GetNamedDeclAsString(cxx_record_decl);
     }
   }
 

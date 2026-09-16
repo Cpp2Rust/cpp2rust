@@ -67,11 +67,8 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
-  enum class FnProtoType { LambdaCallOperator, FnPtr };
-
   virtual std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr);
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 
@@ -110,8 +107,6 @@ public:
   virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
 
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
-
-  virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
   bool VisitRecordDecl(clang::RecordDecl *decl);
 
@@ -422,6 +417,16 @@ public:
   virtual bool VisitConstantExpr(clang::ConstantExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
+  virtual void ConvertLambdaClass(clang::CXXRecordDecl *decl);
+  virtual void ConvertLambdaCallable(clang::CXXRecordDecl *decl);
+  virtual void ConvertLambdaAsFnPtr(clang::LambdaExpr *expr);
+  virtual std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
+                                     std::string_view value,
+                                     std::string_view args);
+  std::string LambdaCallParams(const clang::CXXMethodDecl *op,
+                               std::string &args);
+  clang::MemberExpr *LambdaCaptureAccess(const clang::ValueDecl *var);
+  bool IsCapturedThis(const clang::Expr *expr) const;
 
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
@@ -882,6 +887,8 @@ protected:
   // record name -> trait and impl for Ptr<record>, emitted after all
   // translation units.
   static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
+
+  std::string hoisted_records_;
 
   enum class ExprKind : uint8_t {
     Callee,
