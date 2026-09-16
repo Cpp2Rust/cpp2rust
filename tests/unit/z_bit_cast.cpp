@@ -1,6 +1,3 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
-
 #include <assert.h>
 void decay_cast(unsigned int *a1) {}
 void bit_cast(const void *p) {}
