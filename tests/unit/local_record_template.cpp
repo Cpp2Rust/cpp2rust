@@ -4,7 +4,7 @@ template <typename T> int get(T t) { return t.x; }
 
 namespace ns {
 template <typename T> int twice(T t) { return t.x * 2; }
-}
+} // namespace ns
 
 template <typename T> int wrap(T v) {
   struct Local {
