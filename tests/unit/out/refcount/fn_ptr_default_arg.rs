@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     assert!((({ apply_1(5, None,) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::null()),) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::new(identity_0)),) }) == 5));
-    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::new(
+    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
         (|x: i32| {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             return -(*x.borrow());

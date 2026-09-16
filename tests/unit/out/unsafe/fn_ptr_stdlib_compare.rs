@@ -29,14 +29,26 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut fn1: Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize> =
-        Some(libcc2rs::fread_unsafe);
-    assert!(((fn1) == (Some(libcc2rs::fread_unsafe))));
+        Some(
+            libcc2rs::fread_unsafe
+                as unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
+        );
+    assert!(
+        ((fn1)
+            == (Some(
+                libcc2rs::fread_unsafe
+                    as unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize
+            )))
+    );
     assert!(!((fn1).is_none()));
     let mut fn2: Option<unsafe fn(*mut libc::c_char, usize, usize, *mut ::libc::c_void) -> usize> =
         std::mem::transmute::<
             Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
             Option<unsafe fn(*mut libc::c_char, usize, usize, *mut ::libc::c_void) -> usize>,
-        >(Some(libcc2rs::fread_unsafe));
+        >(Some(
+            libcc2rs::fread_unsafe
+                as unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
+        ));
     assert!(
         ((fn1)
             == (std::mem::transmute::<
@@ -48,7 +60,10 @@ unsafe fn main_0() -> i32 {
         std::mem::transmute::<
             Option<unsafe fn(*mut libc::c_char, usize, usize, *mut ::libc::c_void) -> usize>,
             Option<unsafe fn(*mut ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
-        >(Some(my_alternative_fread_0));
+        >(Some(
+            my_alternative_fread_0
+                as unsafe fn(*mut libc::c_char, usize, usize, *mut ::libc::c_void) -> usize,
+        ));
     assert!(
         ((unsafe { (f3).unwrap()(std::ptr::null_mut(), 0_usize, 0_usize, std::ptr::null_mut(),) })
             == (22_usize))
@@ -121,15 +136,27 @@ unsafe fn main_0() -> i32 {
     }
     let mut gn1: Option<
         unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
-    > = Some(libcc2rs::fwrite_unsafe);
-    assert!(((gn1) == (Some(libcc2rs::fwrite_unsafe))));
+    > = Some(
+        libcc2rs::fwrite_unsafe
+            as unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
+    );
+    assert!(
+        ((gn1)
+            == (Some(
+                libcc2rs::fwrite_unsafe
+                    as unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize
+            )))
+    );
     assert!(!((gn1).is_none()));
     let mut gn2: Option<
         unsafe fn(*const libc::c_char, usize, usize, *mut ::libc::c_void) -> usize,
     > = std::mem::transmute::<
         Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
         Option<unsafe fn(*const libc::c_char, usize, usize, *mut ::libc::c_void) -> usize>,
-    >(Some(libcc2rs::fwrite_unsafe));
+    >(Some(
+        libcc2rs::fwrite_unsafe
+            as unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize,
+    ));
     assert!(
         ((gn1)
             == (std::mem::transmute::<
@@ -141,7 +168,10 @@ unsafe fn main_0() -> i32 {
         std::mem::transmute::<
             Option<unsafe fn(*const libc::c_char, usize, usize, *mut ::libc::c_void) -> usize>,
             Option<unsafe fn(*const ::libc::c_void, usize, usize, *mut ::libc::FILE) -> usize>,
-        >(Some(my_alternative_fwrite_1));
+        >(Some(
+            my_alternative_fwrite_1
+                as unsafe fn(*const libc::c_char, usize, usize, *mut ::libc::c_void) -> usize,
+        ));
     assert!(
         ((unsafe { (g3).unwrap()(std::ptr::null(), 0_usize, 0_usize, std::ptr::null_mut(),) })
             == (33_usize))

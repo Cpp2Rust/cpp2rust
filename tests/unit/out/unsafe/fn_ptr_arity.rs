@@ -32,7 +32,25 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut f: Option<
         unsafe fn(i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32) -> i32,
-    > = (Some(foo_0));
+    > = (Some(
+        foo_0
+            as unsafe fn(
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+                i32,
+            ) -> i32,
+    ));
     assert!(((unsafe { (f).unwrap()(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,) }) == (22)));
     return 0;
 }

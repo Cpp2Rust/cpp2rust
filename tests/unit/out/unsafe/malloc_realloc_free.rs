@@ -56,12 +56,14 @@ unsafe fn main_0() -> i32 {
         libcc2rs::free_unsafe((zeros as *mut i32 as *mut ::libc::c_void));
     }
     let mut pmalloc: Option<unsafe fn(usize) -> *mut ::libc::c_void> =
-        Some(libcc2rs::malloc_unsafe);
-    let mut pfree: Option<unsafe fn(*mut ::libc::c_void)> = Some(libcc2rs::free_unsafe);
-    let mut prealloc: Option<unsafe fn(*mut ::libc::c_void, usize) -> *mut ::libc::c_void> =
-        Some(libcc2rs::realloc_unsafe);
+        Some(libcc2rs::malloc_unsafe as unsafe fn(usize) -> *mut ::libc::c_void);
+    let mut pfree: Option<unsafe fn(*mut ::libc::c_void)> =
+        Some(libcc2rs::free_unsafe as unsafe fn(*mut ::libc::c_void));
+    let mut prealloc: Option<unsafe fn(*mut ::libc::c_void, usize) -> *mut ::libc::c_void> = Some(
+        libcc2rs::realloc_unsafe as unsafe fn(*mut ::libc::c_void, usize) -> *mut ::libc::c_void,
+    );
     let mut pcalloc: Option<unsafe fn(usize, usize) -> *mut ::libc::c_void> =
-        Some(libcc2rs::calloc_unsafe);
+        Some(libcc2rs::calloc_unsafe as unsafe fn(usize, usize) -> *mut ::libc::c_void);
     let mut __do_while = true;
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;

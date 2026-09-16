@@ -55,10 +55,9 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             apply_unary_3(
                 5,
-                &[
-                    (Some(square_0).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                &[(Some(square_0 as unsafe fn(i32) -> i32)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()],
             )
         }) == (25)) as i32)
             != 0)
@@ -67,10 +66,9 @@ unsafe fn main_0() -> i32 {
         ((((unsafe {
             apply_unary_3(
                 7,
-                &[
-                    (Some(negate_1).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                &[(Some(negate_1 as unsafe fn(i32) -> i32)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()],
             )
         }) == (-7_i32)) as i32)
             != 0)
@@ -80,10 +78,9 @@ unsafe fn main_0() -> i32 {
             apply_binary_4(
                 3,
                 4,
-                &[
-                    (Some(add_2).map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
-                        .into(),
-                ],
+                &[(Some(add_2 as unsafe fn(i32, i32) -> i32)
+                    .map_or(::std::ptr::null_mut(), |f| f as *mut ::libc::c_void))
+                .into()],
             )
         }) == (7)) as i32)
             != 0)
@@ -95,7 +92,7 @@ unsafe fn main_0() -> i32 {
                 ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
             let _extra: *mut ::libc::c_void =
                 ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
-            not_supported_5(_ctx, Some(square_0), _extra)
+            not_supported_5(_ctx, Some(square_0 as unsafe fn(i32) -> i32), _extra)
         }) == (-3_i32)) as i32)
             != 0)
     );

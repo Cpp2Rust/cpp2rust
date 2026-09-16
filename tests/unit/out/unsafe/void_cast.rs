@@ -84,10 +84,10 @@ unsafe fn main_0() -> i32 {
     assert!(((chosen) == (123)));
     &(bump_and_return_4);
     assert!(((side_effect_counter_3) == (2)));
-    &(Some(bump_and_return_4));
+    &(Some(bump_and_return_4 as unsafe fn() -> i32));
     assert!(((side_effect_counter_3) == (2)));
     &(std::mem::transmute::<Option<unsafe fn() -> i32>, Option<unsafe fn() -> i32>>(
-        (Some(bump_and_return_4)),
+        (Some(bump_and_return_4 as unsafe fn() -> i32)),
     ));
     assert!(((side_effect_counter_3) == (2)));
     let mut storage: i32 = 11;

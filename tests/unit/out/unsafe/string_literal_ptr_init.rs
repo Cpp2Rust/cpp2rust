@@ -34,7 +34,7 @@ pub static mut table_1: [label; 2] = unsafe {
         },
         label {
             name: ((c"second").as_ptr().cast_mut()).cast_const(),
-            probe: (Some(probe_two_0)),
+            probe: (Some(probe_two_0 as unsafe fn() -> i32)),
             mask: ((1) << (5)),
         },
     ]

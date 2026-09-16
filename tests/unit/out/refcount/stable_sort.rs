@@ -17,7 +17,8 @@ fn main_0() -> i32 {
                 let x: Value<i32> = Rc::new(RefCell::new(x));
                 let y: Value<i32> = Rc::new(RefCell::new(y));
                 return ((*x.borrow()) < (*y.borrow()));
-            })((x.read()).clone(), (y.read()).clone())
+            })
+            .call((x.read()).clone(), (y.read()).clone())
         };
         (arr1.as_pointer() as Ptr<i32>).sort_with_cmp(
             (arr1.as_pointer() as Ptr<i32>)
