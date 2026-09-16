@@ -10,6 +10,10 @@ pub fn get_0(t: Local) -> i32 {
     let t: Value<Local> = Rc::new(RefCell::new(t));
     return (*(*t.borrow()).x.borrow());
 }
+pub fn twice_1(t: Local) -> i32 {
+    let t: Value<Local> = Rc::new(RefCell::new(t));
+    return ((*(*t.borrow()).x.borrow()) * 2);
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -18,6 +22,7 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(7)),
     }));
     assert!((({ get_0((*l.borrow()).clone(),) }) == 7));
+    assert!((({ twice_1((*l.borrow()).clone(),) }) == 14));
     return 0;
 }
 #[derive(Default)]

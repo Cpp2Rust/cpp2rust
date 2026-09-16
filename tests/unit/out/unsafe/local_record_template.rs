@@ -9,6 +9,9 @@ use std::rc::Rc;
 pub unsafe fn get_0(mut t: Local) -> i32 {
     return t.x;
 }
+pub unsafe fn twice_1(mut t: Local) -> i32 {
+    return ((t.x) * (2));
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -17,6 +20,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut l: Local = Local { x: 7 };
     assert!(((unsafe { get_0(l,) }) == (7)));
+    assert!(((unsafe { twice_1(l,) }) == (14)));
     return 0;
 }
 #[repr(C)]
