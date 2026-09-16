@@ -1826,6 +1826,20 @@ void Converter::ConvertFunctionToFunctionPointer(
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
+std::string Converter::ConvertFnPtrCallee(clang::Expr *arg) {
+  PushExprKind push(*this, ExprKind::Callee);
+  Buffer buf(*this);
+  Convert(arg);
+  return std::move(buf).str();
+}
+
+std::string Converter::ConvertFnPtrPlaceholder(clang::Expr *arg) {
+  auto proto =
+      arg->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+  return std::format("({} as {} {})", ConvertFnPtrCallee(arg), keyword_unsafe_,
+                     ConvertFunctionPointerType(proto));
+}
+
 Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   using Kind = CallArg::Kind;
 
@@ -4617,22 +4631,20 @@ void Converter::PlaceholderCtx::dump() const {
                << ", declared_in_rule_as_rust_ptr: "
                << declared_in_rule_as_rust_ptr
                << ", access: " << static_cast<int>(access)
-               << ", param_type: " << param_type
+               << ", arg_idx: " << arg_idx
                << ", materialize_idx: " << materialize_idx << '\n';
 }
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
   if (arg->getType()->isFunctionPointerType()) {
-    PushExprKind push(*this, ExprKind::Callee);
-    Buffer buf(*this);
-    Convert(arg);
-    return std::move(buf).str();
+    return ConvertFnPtrPlaceholder(arg);
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    return std::format("({} as {})", ConvertFreshPointer(arg),
-                       ph_ctx.param_type);
+    return std::format(
+        "({} as {})", ConvertFreshPointer(arg),
+        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4647,8 +4659,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_pointer_receiver()) {
-    return std::format("({} as {})", ConvertFreshObject(arg),
-                       ph_ctx.param_type);
+    return std::format(
+        "({} as {})", ConvertFreshObject(arg),
+        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_object_receiver()) {
@@ -4727,7 +4740,7 @@ std::string Converter::ConvertIRFragment(
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
 
       PlaceholderCtx ph_ctx{
-          .param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx),
+          .arg_idx = arg_idx,
           .implicit_convert_to = GetParamImplicitConvertTarget(expr, arg_idx),
           .materialize_ctx = ctx,
           .materialize_idx =

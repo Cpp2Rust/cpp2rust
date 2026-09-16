@@ -1287,6 +1287,10 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
+std::string ConverterRefCount::ConvertFnPtrPlaceholder(clang::Expr *arg) {
+  return ConvertFnPtrCallee(arg);
+}
+
 void ConverterRefCount::ConvertEqualsNullPtr(clang::Expr *expr) {
   StrCat('(');
   Convert(expr);

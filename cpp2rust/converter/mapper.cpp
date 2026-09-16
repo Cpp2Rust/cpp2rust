@@ -682,10 +682,9 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
   if (!rule) {
     return text;
   }
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
+  auto &ty = subs.at(n - 1);
+  if (ty) {
+    ty = mapTypeStringRecursive(*ty);
   }
   return instantiateTgt(subs, text);
 }

@@ -25,7 +25,10 @@ unsafe fn main_0() -> i32 {
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(cmp_int_0 as *const ())),
+        >(
+            (cmp_int_0 as unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32)
+                as *const (),
+        )),
     );
     let mut i: i32 = 0;
     'loop_: while ((((i) < (7)) as i32) != 0) {
@@ -41,7 +44,10 @@ unsafe fn main_0() -> i32 {
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(cmp_int_0 as *const ())),
+        >(
+            (cmp_int_0 as unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32)
+                as *const (),
+        )),
     ) as *mut i32);
     assert!((((!((hit).is_null())) as i32) != 0));
     assert!(((((*hit) == (7)) as i32) != 0));
@@ -54,7 +60,10 @@ unsafe fn main_0() -> i32 {
         Some(std::mem::transmute::<
             *const (),
             unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(cmp_int_0 as *const ())),
+        >(
+            (cmp_int_0 as unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32)
+                as *const (),
+        )),
     ) as *mut i32);
     assert!(((((miss).is_null()) as i32) != 0));
     return 0;

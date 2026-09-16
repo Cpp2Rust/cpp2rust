@@ -221,7 +221,7 @@ public:
   };
 
   struct PlaceholderCtx {
-    std::string param_type;
+    unsigned arg_idx;
     std::optional<clang::QualType> implicit_convert_to;
     TempMaterializationCtx *materialize_ctx;
     int materialize_idx; // <0 = no idx, >=0 idx valid
@@ -308,6 +308,9 @@ public:
 
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
+
+  std::string ConvertFnPtrCallee(clang::Expr *arg);
+  virtual std::string ConvertFnPtrPlaceholder(clang::Expr *arg);
 
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
