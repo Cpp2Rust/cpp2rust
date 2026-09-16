@@ -34,17 +34,19 @@ unsafe fn f8(
     a1: *const ::libc::c_void,
     a2: usize,
     a3: usize,
-    a4: unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
+    a4: Option<unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32>,
 ) -> *mut ::libc::c_void {
     libc::bsearch(
         a0,
         a1,
         a2,
         a3,
-        Some(std::mem::transmute::<
-            *const (),
-            unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(a4 as *const ())),
+        a4.map(|__f| {
+            std::mem::transmute::<
+                *const (),
+                unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
+            >(__f as *const ())
+        }),
     )
 }
 
@@ -52,16 +54,18 @@ unsafe fn f9(
     a0: *mut ::libc::c_void,
     a1: usize,
     a2: usize,
-    a3: unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
+    a3: Option<unsafe fn(*const ::libc::c_void, *const ::libc::c_void) -> i32>,
 ) {
     libc::qsort(
         a0,
         a1,
         a2,
-        Some(std::mem::transmute::<
-            *const (),
-            unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
-        >(a3 as *const ())),
+        a3.map(|__f| {
+            std::mem::transmute::<
+                *const (),
+                unsafe extern "C" fn(*const ::libc::c_void, *const ::libc::c_void) -> i32,
+            >(__f as *const ())
+        }),
     )
 }
 

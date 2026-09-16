@@ -433,13 +433,15 @@ unsafe fn f57(a0: u32) -> bool {
 
 unsafe fn f58(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
-    a1: unsafe fn(*mut ::libc::c_void, *mut u8, u64, *mut u64) -> i32,
+    a1: Option<unsafe fn(*mut ::libc::c_void, *mut u8, u64, *mut u64) -> i32>,
     a2: *mut ::libc::c_void,
     a3: *mut u64,
 ) -> i32 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_read_tls(
         a0,
-        std::mem::transmute::<*const (), ::rustls_ffi::io::rustls_read_callback>(a1 as *const ()),
+        std::mem::transmute::<usize, ::rustls_ffi::io::rustls_read_callback>(
+            a1.map_or(0_usize, |__f| __f as usize),
+        ),
         a2,
         a3 as *mut usize,
     )
@@ -447,13 +449,15 @@ unsafe fn f58(
 }
 unsafe fn f59(
     a0: *mut ::rustls_ffi::connection::rustls_connection,
-    a1: unsafe fn(*mut ::libc::c_void, *const u8, u64, *mut u64) -> i32,
+    a1: Option<unsafe fn(*mut ::libc::c_void, *const u8, u64, *mut u64) -> i32>,
     a2: *mut ::libc::c_void,
     a3: *mut u64,
 ) -> i32 {
     ::rustls_ffi::connection::rustls_connection::rustls_connection_write_tls(
         a0,
-        std::mem::transmute::<*const (), ::rustls_ffi::io::rustls_write_callback>(a1 as *const ()),
+        std::mem::transmute::<usize, ::rustls_ffi::io::rustls_write_callback>(
+            a1.map_or(0_usize, |__f| __f as usize),
+        ),
         a2,
         a3 as *mut usize,
     )
@@ -461,13 +465,15 @@ unsafe fn f59(
 }
 unsafe fn f60(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
-    a1: unsafe fn(::rustls_ffi::rslice::rustls_str<'static>, *const u8, u64, *const u8, u64),
+    a1: Option<
+        unsafe fn(::rustls_ffi::rslice::rustls_str<'static>, *const u8, u64, *const u8, u64),
+    >,
     a2: Option<unsafe fn(::rustls_ffi::rslice::rustls_str<'static>) -> i32>,
 ) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_set_key_log(
         a0,
-        std::mem::transmute::<*const (), ::rustls_ffi::keylog::rustls_keylog_log_callback>(
-            a1 as *const (),
+        std::mem::transmute::<usize, ::rustls_ffi::keylog::rustls_keylog_log_callback>(
+            a1.map_or(0_usize, |__f| __f as usize),
         ),
         std::mem::transmute::<
             Option<unsafe fn(::rustls_ffi::rslice::rustls_str<'static>) -> i32>,
@@ -477,15 +483,17 @@ unsafe fn f60(
 }
 unsafe fn f61(
     a0: *mut ::rustls_ffi::client::rustls_client_config_builder,
-    a1: unsafe fn(
-        *mut ::libc::c_void,
-        *const ::rustls_ffi::client::rustls_verify_server_cert_params<'static>,
-    ) -> ::rustls_ffi::rustls_result,
+    a1: Option<
+        unsafe fn(
+            *mut ::libc::c_void,
+            *const ::rustls_ffi::client::rustls_verify_server_cert_params<'static>,
+        ) -> ::rustls_ffi::rustls_result,
+    >,
 ) -> ::rustls_ffi::rustls_result {
     ::rustls_ffi::client::rustls_client_config_builder::rustls_client_config_builder_dangerous_set_certificate_verifier(
         a0,
-        std::mem::transmute::<*const (), ::rustls_ffi::client::rustls_verify_server_cert_callback>(
-            a1 as *const (),
+        std::mem::transmute::<usize, ::rustls_ffi::client::rustls_verify_server_cert_callback>(
+            a1.map_or(0_usize, |__f| __f as usize),
         ),
     )
 }

@@ -1,6 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use libcc2rs::*;
 use std::io::{Seek, Write};
 
 unsafe fn f1<T1: Ord>(a0: *mut T1, a1: *mut T1) {
@@ -27,31 +28,15 @@ unsafe fn f3<T1: PartialEq>(a0: *mut T1, a1: *mut T1, a2: T1) -> *mut T1 {
     it
 }
 
-unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
+unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: T2)
 where
-    T2: FnMut(&T1, &T1) -> bool,
+    T2: Callable2<*const T1, *const T1, bool>,
 {
     let len = a1.offset_from(a0) as usize;
     ::std::slice::from_raw_parts_mut(a0, len).sort_by(|x, y| {
-        if (a2)(x, y) {
+        if a2.call(x as *const _, y as *const _) {
             std::cmp::Ordering::Less
-        } else if (a2)(y, x) {
-            std::cmp::Ordering::Greater
-        } else {
-            std::cmp::Ordering::Equal
-        }
-    })
-}
-
-unsafe fn f7<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
-where
-    T2: FnMut(&T1, &T1) -> bool,
-{
-    let len = a1.offset_from(a0) as usize;
-    ::std::slice::from_raw_parts_mut(a0, len).sort_by(|x, y| {
-        if (a2)(x, y) {
-            std::cmp::Ordering::Less
-        } else if (a2)(y, x) {
+        } else if a2.call(y as *const _, x as *const _) {
             std::cmp::Ordering::Greater
         } else {
             std::cmp::Ordering::Equal
@@ -113,31 +98,15 @@ unsafe fn f13(
     a2.try_clone().unwrap()
 }
 
-unsafe fn f14<T1: Ord + Copy, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
+unsafe fn f14<T1: Ord + Copy, T2>(a0: *mut T1, a1: *mut T1, a2: T2)
 where
-    T2: FnMut(T1, T1) -> bool,
+    T2: Callable2<T1, T1, bool>,
 {
     let len = a1.offset_from(a0) as usize;
     ::std::slice::from_raw_parts_mut(a0, len).sort_by(|x, y| {
-        if (a2)(*x, *y) {
+        if a2.call(*x, *y) {
             std::cmp::Ordering::Less
-        } else if (a2)(*y, *x) {
-            std::cmp::Ordering::Greater
-        } else {
-            std::cmp::Ordering::Equal
-        }
-    })
-}
-
-unsafe fn f15<T1: Ord + Copy, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
-where
-    T2: FnMut(T1, T1) -> bool,
-{
-    let len = a1.offset_from(a0) as usize;
-    ::std::slice::from_raw_parts_mut(a0, len).sort_by(|x, y| {
-        if (a2)(*x, *y) {
-            std::cmp::Ordering::Less
-        } else if (a2)(*y, *x) {
+        } else if a2.call(*y, *x) {
             std::cmp::Ordering::Greater
         } else {
             std::cmp::Ordering::Equal
