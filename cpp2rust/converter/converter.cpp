@@ -2392,7 +2392,15 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     auto *call = clang::dyn_cast<clang::CXXMemberCallExpr>(sub_expr);
     if (call && clang::isa<clang::CXXConversionDecl>(call->getMethodDecl()) &&
         call->getRecordDecl()->isLambda()) {
-      ConvertLambdaToFnPtr(call);
+      auto *decl = call->getRecordDecl();
+      if (clang::isa<clang::LambdaExpr>(
+              call->getImplicitObjectArgument()->IgnoreParenImpCasts())) {
+        Buffer buf(*this);
+        VisitCXXRecordDecl(decl);
+        hoisted_records_ += std::move(buf).str();
+      }
+      StrCat(LambdaFnPtr(decl->getLambdaCallOperator()));
+      computed_expr_type_ = ComputedExprType::FreshValue;
       break;
     }
     Convert(sub_expr);
@@ -3608,18 +3616,6 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   return false;
 }
 
-std::string Converter::LambdaCallParams(const clang::CXXMethodDecl *op,
-                                        std::string &args) {
-  std::string params;
-  unsigned i = 0;
-  for (auto *p : op->parameters()) {
-    auto name = std::format("a{}", ++i);
-    params += std::format("{}: {},", name, ToString(p->getType()));
-    args += name + ',';
-  }
-  return params;
-}
-
 static constexpr unsigned kMaxCallableArity = 3;
 
 void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
@@ -3628,8 +3624,6 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   if (!op->isConst()) {
     return;
   }
-  std::string args;
-  auto params = LambdaCallParams(op, args);
   auto ret = op->getReturnType()->isVoidType() ? std::string("()")
                                                : ToString(op->getReturnType());
   StrCat(keyword::kImpl, std::format("Callable{}", op->getNumParams()));
@@ -3645,36 +3639,27 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   StrCat(keyword::kFn, "call");
   {
     PushParen paren(*this);
-    StrCat("&self,", params);
+    StrCat("&self,");
+    for (unsigned i = 0; auto *p : op->parameters()) {
+      StrCat(std::format("a{}:", ++i), ToString(p->getType()), token::kComma);
+    }
   }
   StrCat(token::kArrow, ret);
   PushBrace fn_brace(*this);
-  StrCat(LambdaCallBody(decl, args));
-}
-
-std::string Converter::LambdaCallBody(const clang::CXXRecordDecl *decl,
-                                      std::string_view args) {
-  auto *op = decl->getLambdaCallOperator();
-  auto receiver = IsStaticMethod(op) ? "" : "self,";
-  return std::format("{} {{ {}::{}({}{}) }}", keyword_unsafe_, GetUFCSName(op),
-                     GetMethodName(op), receiver, args);
+  StrCat(keyword_unsafe_);
+  PushBrace unsafe_brace(*this);
+  StrCat(GetUFCSName(op), token::kDoubleColon, GetMethodName(op));
+  PushParen call_paren(*this);
+  if (!IsStaticMethod(op)) {
+    StrCat("self,");
+  }
+  for (unsigned i = 0; i < op->getNumParams(); ++i) {
+    StrCat(std::format("a{},", i + 1));
+  }
 }
 
 std::string Converter::LambdaFnPtr(const clang::CXXMethodDecl *op) {
   return std::format("Some({}::{})", GetUFCSName(op), GetMethodName(op));
-}
-
-void Converter::ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call) {
-  auto *decl = call->getRecordDecl();
-  auto *op = decl->getLambdaCallOperator();
-  auto *object = call->getImplicitObjectArgument()->IgnoreParenImpCasts();
-  if (clang::isa<clang::LambdaExpr>(object)) {
-    Buffer buf(*this);
-    VisitCXXRecordDecl(decl);
-    hoisted_records_ += std::move(buf).str();
-  }
-  StrCat(LambdaFnPtr(op));
-  computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
 clang::FieldDecl *
