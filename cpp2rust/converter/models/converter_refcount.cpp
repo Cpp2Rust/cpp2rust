@@ -431,7 +431,10 @@ bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (decl_ids_.count(GetID(decl))) {
     return false;
   }
+  std::vector<ConversionKind> saved_conversion_kinds({ConversionKind::Unboxed});
+  saved_conversion_kinds.swap(conversion_kind_);
   Converter::VisitCXXRecordDecl(decl);
+  conversion_kind_.swap(saved_conversion_kinds);
   return false;
 }
 
@@ -2885,13 +2888,6 @@ bool ConverterRefCount::VisitLambdaExpr(clang::LambdaExpr *expr) {
 void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   Converter::AddCallableTrait(decl);
-}
-
-void ConverterRefCount::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
-  std::vector<ConversionKind> saved_conversion_kinds({ConversionKind::Unboxed});
-  saved_conversion_kinds.swap(conversion_kind_);
-  Converter::ConvertLambdaClass(decl);
-  conversion_kind_.swap(saved_conversion_kinds);
 }
 
 std::string ConverterRefCount::LambdaFnPtr(const clang::CXXMethodDecl *op) {

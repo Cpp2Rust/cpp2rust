@@ -15,22 +15,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut fresh: Option<unsafe fn(i32) -> i32> = {
-        #[repr(C)]
-        #[derive(Copy, Clone, Default)]
-        pub struct lambda_1 {}
-        impl lambda_1 {
-            pub unsafe fn operator_call(mut x: i32) -> i32 {
-                return -x;
-            }
-        }
-        impl Callable1<i32, i32> for lambda_1 {
-            fn call(&self, a1: i32) -> i32 {
-                unsafe { lambda_1::operator_call(a1) }
-            }
-        }
-        Some(lambda_1::operator_call)
-    };
+    let mut fresh: Option<unsafe fn(i32) -> i32> = Some(lambda_1::operator_call);
     assert!(((unsafe { (fresh).unwrap()(5,) }) == (-5_i32)));
     let mut twice: lambda_2 = (lambda_2 {});
     let mut named: Option<unsafe fn(i32) -> i32> = Some(lambda_2::operator_call);
@@ -39,6 +24,19 @@ unsafe fn main_0() -> i32 {
     named = fresh;
     assert!(((unsafe { (named).unwrap()(3,) }) == (-3_i32)));
     return 0;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct lambda_1 {}
+impl lambda_1 {
+    pub unsafe fn operator_call(mut x: i32) -> i32 {
+        return -x;
+    }
+}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        unsafe { lambda_1::operator_call(a1) }
+    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]

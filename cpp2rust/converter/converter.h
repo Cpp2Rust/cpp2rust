@@ -111,6 +111,7 @@ public:
   bool VisitRecordDecl(clang::RecordDecl *decl);
 
   virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
+  void ConvertCXXRecordDecl(clang::CXXRecordDecl *decl);
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
@@ -417,7 +418,6 @@ public:
   virtual bool VisitConstantExpr(clang::ConstantExpr *expr);
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
-  virtual void ConvertLambdaClass(clang::CXXRecordDecl *decl);
   virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
   void ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call);
   virtual std::string LambdaFnPtr(const clang::CXXMethodDecl *op);

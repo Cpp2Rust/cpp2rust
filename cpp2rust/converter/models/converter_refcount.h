@@ -88,7 +88,6 @@ public:
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
   bool VisitLambdaExpr(clang::LambdaExpr *expr) override;
-  void ConvertLambdaClass(clang::CXXRecordDecl *decl) override;
   void AddCallableTrait(clang::CXXRecordDecl *decl) override;
   std::string LambdaFnPtr(const clang::CXXMethodDecl *op) override;
   std::string LambdaCallBody(const clang::CXXRecordDecl *decl,

@@ -908,10 +908,17 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
+  std::vector<ExprKind> saved_expr_kinds;
+  saved_expr_kinds.swap(curr_expr_kind_);
+  ConvertCXXRecordDecl(decl);
+  curr_expr_kind_.swap(saved_expr_kinds);
+  return false;
+}
 
+void Converter::ConvertCXXRecordDecl(clang::CXXRecordDecl *decl) {
   Mapper::AddRuleForUserDefinedType(decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
-    return false;
+    return;
   }
 
   if (decl->isStruct() || decl->isClass()) {
@@ -928,12 +935,12 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
       if (clang::isa<clang::ClassTemplateSpecializationDecl>(decl)) {
         ConvertLateInstantiatedMethods(decl);
       }
-      return false;
+      return;
     }
 
     if (decl->isAbstract()) {
       ConvertAbstractClass(decl);
-      return false;
+      return;
     }
 
     sema_->ForceDeclarationOfImplicitMembers(decl);
@@ -961,15 +968,13 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-      return false;
+      return;
     }
     EmitRustStructOrUnion(decl);
   } else {
     // FIXME: improve error handling
     assert(0 && "unsupported record kind");
   }
-
-  return false;
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
@@ -3589,7 +3594,7 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   auto *record = expr->getLambdaClass();
   {
     Buffer buf(*this);
-    ConvertLambdaClass(record);
+    VisitCXXRecordDecl(record);
     hoisted_records_ += std::move(buf).str();
   }
   PushParen paren(*this);
@@ -3605,13 +3610,6 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   }
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
-}
-
-void Converter::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
-  std::vector<ExprKind> saved_expr_kinds;
-  saved_expr_kinds.swap(curr_expr_kind_);
-  VisitCXXRecordDecl(decl);
-  curr_expr_kind_.swap(saved_expr_kinds);
 }
 
 std::string Converter::LambdaCallParams(const clang::CXXMethodDecl *op,
@@ -3669,10 +3667,10 @@ void Converter::ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call) {
   auto *decl = call->getRecordDecl();
   auto *op = decl->getLambdaCallOperator();
   auto *object = call->getImplicitObjectArgument()->IgnoreParenImpCasts();
-  bool fresh = clang::isa<clang::LambdaExpr>(object);
-  PushBrace brace(*this, fresh);
-  if (fresh) {
-    ConvertLambdaClass(decl);
+  if (clang::isa<clang::LambdaExpr>(object)) {
+    Buffer buf(*this);
+    VisitCXXRecordDecl(decl);
+    hoisted_records_ += std::move(buf).str();
   }
   StrCat(LambdaFnPtr(op));
   computed_expr_type_ = ComputedExprType::FreshValue;

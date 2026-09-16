@@ -15,31 +15,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fresh: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-        #[derive(Clone, Default)]
-        pub struct lambda_1 {}
-        impl lambda_1 {
-            pub fn operator_call(x: i32) -> i32 {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return -(*x.borrow());
-            }
-        }
-        impl ByteRepr for lambda_1 {
-            fn byte_size() -> usize {
-                1
-            }
-            fn to_bytes(&self, buf: &mut [u8]) {}
-            fn from_bytes(buf: &[u8]) -> Self {
-                Self {}
-            }
-        }
-        impl Callable1<i32, i32> for lambda_1 {
-            fn call(&self, a1: i32) -> i32 {
-                lambda_1::operator_call(a1)
-            }
-        }
-        FnPtr::new(lambda_1::operator_call)
-    }));
+    let fresh: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::new(lambda_1::operator_call)));
     assert!((({ (*(*fresh.borrow()))(5,) }) == -5_i32));
     let twice: Value<lambda_2> = Rc::new(RefCell::new((lambda_2 {})));
     let named: Value<FnPtr<fn(i32) -> i32>> =
@@ -49,6 +26,28 @@ fn main_0() -> i32 {
     (*named.borrow_mut()) = (*fresh.borrow()).clone();
     assert!((({ (*(*named.borrow()))(3,) }) == -3_i32));
     return 0;
+}
+#[derive(Clone, Default)]
+pub struct lambda_1 {}
+impl lambda_1 {
+    pub fn operator_call(x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return -(*x.borrow());
+    }
+}
+impl ByteRepr for lambda_1 {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        lambda_1::operator_call(a1)
+    }
 }
 #[derive(Clone, Default)]
 pub struct lambda_2 {}
