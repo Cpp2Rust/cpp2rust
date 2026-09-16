@@ -1812,7 +1812,9 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
 
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
+  auto proto = fn_decl->getType()->getAs<clang::FunctionProtoType>();
+  StrCat(std::format("Some({} as {} {})", Mapper::MapFunctionName(fn_decl),
+                     keyword_unsafe_, ConvertFunctionPointerType(proto)));
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
@@ -2407,6 +2409,12 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
     break;
   default:
+    if (type->isFunctionPointerType() &&
+        clang::isa<clang::LambdaExpr>(
+            sub_expr->IgnoreUnlessSpelledInSource())) {
+      ConvertVarInit(type, sub_expr);
+      break;
+    }
     if (auto *literal = clang::dyn_cast<clang::IntegerLiteral>(sub_expr)) {
       auto type = expr->getType();
       StrCat(getIntegerLiteral(literal, true, &type));
@@ -3589,21 +3597,31 @@ bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
 }
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
-  if (isAddrOf() && expr->capture_size() == 0) {
-    StrCat("Some");
+  bool to_fn_ptr = isAddrOf() && expr->capture_size() == 0;
+  if (to_fn_ptr) {
+    StrCat("Some(");
   }
-  PushParen paren(*this);
-  StrCat('|');
-  for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
-    StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
-           token::kComma);
+  {
+    PushParen paren(*this);
+    StrCat('|');
+    for (auto p :
+         expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
+      StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
+             token::kComma);
+    }
+    StrCat("| {");
+    EmitFunctionPreamble(expr->getLambdaClass()->getLambdaCallOperator());
+    PushCurrFunction push_fn(*this,
+                             expr->getLambdaClass()->getLambdaCallOperator());
+    ConvertFunctionBody(curr_function_);
+    StrCat('}');
   }
-  StrCat("| {");
-  EmitFunctionPreamble(expr->getLambdaClass()->getLambdaCallOperator());
-  PushCurrFunction push_fn(*this,
-                           expr->getLambdaClass()->getLambdaCallOperator());
-  ConvertFunctionBody(curr_function_);
-  StrCat('}');
+  if (to_fn_ptr) {
+    auto proto =
+        expr->getCallOperator()->getType()->getAs<clang::FunctionProtoType>();
+    StrCat(std::format(" as {} {})", keyword_unsafe_,
+                       ConvertFunctionPointerType(proto)));
+  }
   return false;
 }
 
@@ -4613,13 +4631,6 @@ void Converter::PlaceholderCtx::dump() const {
 
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
-  if (arg->getType()->isFunctionPointerType()) {
-    PushExprKind push(*this, ExprKind::Callee);
-    Buffer buf(*this);
-    Convert(arg);
-    return std::move(buf).str();
-  }
-
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
     return std::format(
         "({} as {})", ConvertFreshPointer(arg),
