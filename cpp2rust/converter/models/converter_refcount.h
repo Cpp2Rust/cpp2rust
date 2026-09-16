@@ -90,7 +90,7 @@ public:
   bool VisitLambdaExpr(clang::LambdaExpr *expr) override;
   void ConvertLambdaClass(clang::CXXRecordDecl *decl) override;
   void AddCallableTrait(clang::CXXRecordDecl *decl) override;
-  void ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) override;
+  std::string LambdaFnPtr(const clang::CXXMethodDecl *op) override;
   std::string LambdaCallBody(const clang::CXXRecordDecl *decl,
                              std::string_view value,
                              std::string_view args) override;

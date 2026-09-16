@@ -2383,6 +2383,16 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     break;
   }
+  case clang::CastKind::CK_UserDefinedConversion: {
+    auto *call = clang::dyn_cast<clang::CXXMemberCallExpr>(sub_expr);
+    if (call && clang::isa<clang::CXXConversionDecl>(call->getMethodDecl()) &&
+        call->getRecordDecl()->isLambda()) {
+      ConvertLambdaToFnPtr(call);
+      break;
+    }
+    Convert(sub_expr);
+    break;
+  }
   case clang::CastKind::CK_ConstructorConversion:
   case clang::CastKind::CK_DerivedToBase:
     Convert(sub_expr);
@@ -3577,7 +3587,11 @@ bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   auto *record = expr->getLambdaClass();
-  ConvertLambdaClass(record);
+  {
+    Buffer buf(*this);
+    ConvertLambdaClass(record);
+    hoisted_records_ += std::move(buf).str();
+  }
   PushParen paren(*this);
   StrCat(GetRecordName(record));
   {
@@ -3594,12 +3608,10 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
 }
 
 void Converter::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
-  Buffer buf(*this);
   std::vector<ExprKind> saved_expr_kinds;
   saved_expr_kinds.swap(curr_expr_kind_);
   VisitCXXRecordDecl(decl);
   curr_expr_kind_.swap(saved_expr_kinds);
-  hoisted_records_ += std::move(buf).str();
 }
 
 std::string Converter::LambdaCallParams(const clang::CXXMethodDecl *op,
@@ -3649,11 +3661,20 @@ std::string Converter::LambdaCallBody(const clang::CXXRecordDecl *decl,
       GetRecordName(decl), value, GetUFCSName(op), GetMethodName(op), args);
 }
 
-void Converter::ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) {
-  auto *decl = expr->getLambdaClass();
-  ConvertLambdaClass(decl);
+std::string Converter::LambdaFnPtr(const clang::CXXMethodDecl *op) {
+  return std::format("Some({}::{})", GetUFCSName(op), GetMethodName(op));
+}
+
+void Converter::ConvertLambdaToFnPtr(clang::CXXMemberCallExpr *call) {
+  auto *decl = call->getRecordDecl();
   auto *op = decl->getLambdaCallOperator();
-  StrCat("Some(", GetUFCSName(op), token::kDoubleColon, GetMethodName(op), ")");
+  auto *object = call->getImplicitObjectArgument()->IgnoreParenImpCasts();
+  bool fresh = clang::isa<clang::LambdaExpr>(object);
+  PushBrace brace(*this, fresh);
+  if (fresh) {
+    ConvertLambdaClass(decl);
+  }
+  StrCat(LambdaFnPtr(op));
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
@@ -4090,13 +4111,6 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     StrCat(token::kRef);
     if (IsMut(qual_type)) {
       StrCat(keyword_mut_);
-    }
-  }
-  if (qual_type->isFunctionPointerType()) {
-    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
-            expr->IgnoreUnlessSpelledInSource())) {
-      ConvertLambdaAsFnPtr(lambda);
-      return;
     }
   }
   auto *ignore_casts = expr->IgnoreCasts();

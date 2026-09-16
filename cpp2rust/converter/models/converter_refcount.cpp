@@ -2098,14 +2098,6 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
 std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
                                                    clang::Expr *expr) {
-  if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-          expr->IgnoreUnlessSpelledInSource());
-      lambda && qual_type->isFunctionPointerType()) {
-    Buffer buf(*this);
-    ConvertLambdaAsFnPtr(lambda);
-    return std::move(buf).str();
-  }
-
   PushInitType init_type(*this, qual_type);
   if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
@@ -2902,13 +2894,8 @@ void ConverterRefCount::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
   conversion_kind_.swap(saved_conversion_kinds);
 }
 
-void ConverterRefCount::ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) {
-  auto *decl = expr->getLambdaClass();
-  ConvertLambdaClass(decl);
-  auto *op = decl->getLambdaCallOperator();
-  StrCat("FnPtr::new(", GetUFCSName(op), token::kDoubleColon, GetMethodName(op),
-         ")");
-  computed_expr_type_ = ComputedExprType::FreshValue;
+std::string ConverterRefCount::LambdaFnPtr(const clang::CXXMethodDecl *op) {
+  return std::format("FnPtr::new({}::{})", GetUFCSName(op), GetMethodName(op));
 }
 
 std::string ConverterRefCount::LambdaCallBody(const clang::CXXRecordDecl *decl,
