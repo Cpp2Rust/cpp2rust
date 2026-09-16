@@ -34,13 +34,12 @@ unsafe fn main_0() -> i32 {
 #[derive(Copy, Clone, Default)]
 pub struct lambda_0 {}
 impl lambda_0 {
-    pub unsafe fn operator_call(&self, mut x: i32, mut y: i32) -> bool {
+    pub unsafe fn operator_call(mut x: i32, mut y: i32) -> bool {
         return ((x) < (y));
     }
 }
 impl Callable2<i32, i32, bool> for lambda_0 {
     fn call(&self, a1: i32, a2: i32) -> bool {
-        let __this: lambda_0 = self.clone();
-        unsafe { lambda_0::operator_call(&__this, a1, a2) }
+        unsafe { lambda_0::operator_call(a1, a2) }
     }
 }

@@ -2905,11 +2905,9 @@ void ConverterRefCount::ConvertLambdaClass(clang::CXXRecordDecl *decl) {
 void ConverterRefCount::ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) {
   auto *decl = expr->getLambdaClass();
   ConvertLambdaClass(decl);
-  PushConversionKind push(*this, ConversionKind::Unboxed);
-  std::string args;
-  auto params = LambdaCallParams(decl->getLambdaCallOperator(), args);
-  StrCat("FnPtr::new(|", params, "| {",
-         LambdaCallBody(decl, GetRecordName(decl) + " {}", args), "})");
+  auto *op = decl->getLambdaCallOperator();
+  StrCat("FnPtr::new(", GetUFCSName(op), token::kDoubleColon, GetMethodName(op),
+         ")");
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
@@ -2917,6 +2915,10 @@ std::string ConverterRefCount::LambdaCallBody(const clang::CXXRecordDecl *decl,
                                               std::string_view value,
                                               std::string_view args) {
   auto *op = decl->getLambdaCallOperator();
+  if (IsStaticMethod(op)) {
+    return std::format("{0}::{1}({2})", GetUFCSName(op), GetMethodName(op),
+                       args);
+  }
   return std::format("let __this: Value<{0}> = Rc::new(RefCell::new({1})); "
                      "{2}::{3}(&__this.as_pointer(), {4})",
                      GetRecordName(decl), value, GetUFCSName(op),

@@ -1020,7 +1020,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
   }
 
   if (method_target_ == MethodTarget::ValueImpl &&
-      (decl->isStatic() ||
+      (IsStaticMethod(decl) ||
        (!decl->isVirtual() && !decl->getParent()->isAbstract()))) {
     ConvertFunctionQualifiers(decl);
   }
@@ -1028,7 +1028,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 
   {
     PushParen paren(*this);
-    if (!decl->isStatic()) {
+    if (!IsStaticMethod(decl)) {
       StrCat(GetSelfMaybeWithMut(decl), token::kComma);
     }
     ConvertFunctionParameters(decl);
@@ -2041,7 +2041,7 @@ void Converter::ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr) {
   auto info = CollectCallInfo(expr);
   EmitHoistedArgs(info);
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
-    if (method->isInstance()) {
+    if (!IsStaticMethod(method)) {
       SetUFCSReceiver(expr->getArg(0), false, method);
     }
     StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
@@ -2850,7 +2850,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 
   if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
-      if (method->isStatic()) {
+      if (IsStaticMethod(method)) {
         return std::format("{}::{}", GetRecordName(method->getParent()),
                            GetNamedDeclAsString(method));
       }
@@ -3640,6 +3640,10 @@ std::string Converter::LambdaCallBody(const clang::CXXRecordDecl *decl,
                                       std::string_view value,
                                       std::string_view args) {
   auto *op = decl->getLambdaCallOperator();
+  if (IsStaticMethod(op)) {
+    return std::format("unsafe {{ {0}::{1}({2}) }}", GetUFCSName(op),
+                       GetMethodName(op), args);
+  }
   return std::format(
       "let __this: {0} = {1}; unsafe {{ {2}::{3}(&__this, {4}) }}",
       GetRecordName(decl), value, GetUFCSName(op), GetMethodName(op), args);
@@ -3648,10 +3652,8 @@ std::string Converter::LambdaCallBody(const clang::CXXRecordDecl *decl,
 void Converter::ConvertLambdaAsFnPtr(clang::LambdaExpr *expr) {
   auto *decl = expr->getLambdaClass();
   ConvertLambdaClass(decl);
-  std::string args;
-  auto params = LambdaCallParams(decl->getLambdaCallOperator(), args);
-  StrCat("Some(|", params, "| {",
-         LambdaCallBody(decl, GetRecordName(decl) + " {}", args), "})");
+  auto *op = decl->getLambdaCallOperator();
+  StrCat("Some(", GetUFCSName(op), token::kDoubleColon, GetMethodName(op), ")");
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 

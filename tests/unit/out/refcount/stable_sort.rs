@@ -25,6 +25,13 @@ fn main_0() -> i32 {
 }
 #[derive(Clone, Default)]
 pub struct lambda_0 {}
+impl lambda_0 {
+    pub fn operator_call(x: i32, y: i32) -> bool {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+        return ((*x.borrow()) < (*y.borrow()));
+    }
+}
 impl ByteRepr for lambda_0 {
     fn byte_size() -> usize {
         1
@@ -36,17 +43,6 @@ impl ByteRepr for lambda_0 {
 }
 impl Callable2<i32, i32, bool> for lambda_0 {
     fn call(&self, a1: i32, a2: i32) -> bool {
-        let __this: Value<lambda_0> = Rc::new(RefCell::new(self.clone()));
-        lambda_0Impl::operator_call(&__this.as_pointer(), a1, a2)
-    }
-}
-pub trait lambda_0Impl {
-    fn operator_call(&self, x: i32, y: i32) -> bool;
-}
-impl lambda_0Impl for Ptr<lambda_0> {
-    fn operator_call(&self, x: i32, y: i32) -> bool {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let y: Value<i32> = Rc::new(RefCell::new(y));
-        return ((*x.borrow()) < (*y.borrow()));
+        lambda_0::operator_call(a1, a2)
     }
 }

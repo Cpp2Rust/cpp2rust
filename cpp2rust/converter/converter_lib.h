@@ -95,6 +95,7 @@ bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 bool IsComparisonOperator(const clang::FunctionDecl *fn);
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
+bool IsStaticMethod(const clang::CXXMethodDecl *method);
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);

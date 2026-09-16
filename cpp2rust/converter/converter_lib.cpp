@@ -991,8 +991,17 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
          clang::isa<clang::CXXConstructorDecl>(method);
 }
 
+bool IsStaticMethod(const clang::CXXMethodDecl *method) {
+  if (method->isStatic()) {
+    return true;
+  }
+  auto *parent = method->getParent();
+  return parent->isLambda() && parent->getLambdaCallOperator() == method &&
+         parent->captures().empty();
+}
+
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (method->isDeleted() || method->isStatic() || method->isVirtual() ||
+  if (method->isDeleted() || IsStaticMethod(method) || method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
   }
