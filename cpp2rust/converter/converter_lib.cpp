@@ -330,6 +330,15 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
+  for (auto *field : decl->fields()) {
+    if (!field->getType()->isReferenceType()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {

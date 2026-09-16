@@ -480,6 +480,9 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    return;
+  }
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (cxx && cxx->isLambda() && !HasCallableCopyConstructor(cxx)) {
     return;
@@ -493,6 +496,10 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     PushBrace init_brace(*this);
     for (auto *field : decl->fields()) {
       auto name = GetNamedDeclAsString(field);
+      if (field->getType()->isReferenceType()) {
+        StrCat(std::format("{0}: self.{0}.clone(),", name));
+        continue;
+      }
       StrCat(std::format(
           "{0}: Rc::new(RefCell::new((*self.{0}.borrow()).clone())),", name));
     }
@@ -2077,6 +2084,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (decl->isUnion()) {
     return attrs;
+  }
+
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    attrs.emplace_back("Clone");
   }
 
   if (RecordDerivesDefault(decl)) {

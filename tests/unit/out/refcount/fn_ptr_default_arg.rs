@@ -33,15 +33,8 @@ fn main_0() -> i32 {
     assert!((({ apply_1(5, Some((*negate.borrow()).clone()),) }) == -5_i32));
     return 0;
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct lambda_2 {}
-impl Clone for lambda_2 {
-    fn clone(&self) -> Self {
-        let __this: Value<lambda_2> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<lambda_2> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for lambda_2 {
     fn byte_size() -> usize {
         1

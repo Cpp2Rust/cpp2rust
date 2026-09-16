@@ -38,18 +38,9 @@ fn main_0() -> i32 {
     assert!((({ apply_2((*scale.borrow()).clone(), 4,) }) == 12));
     return 0;
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct lambda_1 {
     base: Ptr<i32>,
-}
-impl Clone for lambda_1 {
-    fn clone(&self) -> Self {
-        let __this: Value<lambda_1> = Rc::new(RefCell::new(Self {
-            base: (self.base).clone(),
-        }));
-        let this: Ptr<lambda_1> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
 }
 impl ByteRepr for lambda_1 {}
 impl Callable1<i32, i32> for lambda_1 {
@@ -64,11 +55,9 @@ pub struct lambda_3 {
 }
 impl Clone for lambda_3 {
     fn clone(&self) -> Self {
-        let __this: Value<lambda_3> = Rc::new(RefCell::new(Self {
-            factor: Rc::new(RefCell::new((*self.factor.borrow()))),
-        }));
-        let this: Ptr<lambda_3> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            factor: Rc::new(RefCell::new((*self.factor.borrow()).clone())),
+        }
     }
 }
 impl ByteRepr for lambda_3 {

@@ -9,15 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     static inner_const_0: Value<i32> = Rc::new(RefCell::new(1));
 );
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct C {}
-impl Clone for C {
-    fn clone(&self) -> Self {
-        let __this: Value<C> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<C> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for C {
     fn byte_size() -> usize {
         1
@@ -30,15 +23,8 @@ impl ByteRepr for C {
 thread_local!(
     pub static inner_const_1: Value<i32> = Rc::new(RefCell::new(2));
 );
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct S {}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for S {
     fn byte_size() -> usize {
         1

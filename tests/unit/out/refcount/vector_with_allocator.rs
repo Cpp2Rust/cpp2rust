@@ -6,15 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct TestAllocator_int_ {}
-impl Clone for TestAllocator_int_ {
-    fn clone(&self) -> Self {
-        let __this: Value<TestAllocator_int_> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<TestAllocator_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for TestAllocator_int_ {
     fn byte_size() -> usize {
         1
@@ -24,15 +17,8 @@ impl ByteRepr for TestAllocator_int_ {
         Self {}
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct TestAllocator_double_ {}
-impl Clone for TestAllocator_double_ {
-    fn clone(&self) -> Self {
-        let __this: Value<TestAllocator_double_> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<TestAllocator_double_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for TestAllocator_double_ {
     fn byte_size() -> usize {
         1

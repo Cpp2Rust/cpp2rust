@@ -24,12 +24,10 @@ pub struct lambda_1 {
 }
 impl Clone for lambda_1 {
     fn clone(&self) -> Self {
-        let __this: Value<lambda_1> = Rc::new(RefCell::new(Self {
-            x: (self.x).clone(),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<lambda_1> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            x: self.x.clone(),
+            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
+        }
     }
 }
 impl ByteRepr for lambda_1 {}
@@ -39,18 +37,9 @@ impl Callable1<i32, i32> for lambda_1 {
         lambda_1Impl::operator_call(&__this.as_pointer(), a1)
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct lambda_0 {
     x: Ptr<i32>,
-}
-impl Clone for lambda_0 {
-    fn clone(&self) -> Self {
-        let __this: Value<lambda_0> = Rc::new(RefCell::new(Self {
-            x: (self.x).clone(),
-        }));
-        let this: Ptr<lambda_0> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
 }
 impl ByteRepr for lambda_0 {}
 impl Callable1<i32, i32> for lambda_0 {

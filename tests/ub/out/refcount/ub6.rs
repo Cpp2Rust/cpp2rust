@@ -6,20 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Pair {
     pub x1: Ptr<i32>,
     pub x2: Ptr<i32>,
-}
-impl Clone for Pair {
-    fn clone(&self) -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            x1: (self.x1).clone(),
-            x2: (self.x2).clone(),
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
 }
 impl ByteRepr for Pair {}
 pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {

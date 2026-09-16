@@ -23,15 +23,8 @@ fn main_0() -> i32 {
     };
     return 0;
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct lambda_0 {}
-impl Clone for lambda_0 {
-    fn clone(&self) -> Self {
-        let __this: Value<lambda_0> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<lambda_0> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for lambda_0 {
     fn byte_size() -> usize {
         1

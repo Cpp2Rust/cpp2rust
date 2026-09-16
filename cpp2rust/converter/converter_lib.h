@@ -79,6 +79,7 @@ bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
