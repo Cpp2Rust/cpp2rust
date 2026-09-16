@@ -2089,13 +2089,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     Buffer buf(*this);
     PushConversionKind push(*this, ConversionKind::Unboxed);
     if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-      auto proto = lambda->getCallOperator()
-                       ->getType()
-                       ->getAs<clang::FunctionProtoType>();
-      StrCat(
-          std::format("FnPtr::<{}>::new", ConvertFunctionPointerType(proto)));
-      PushParen paren(*this);
+      StrCat("FnPtr::new(");
       VisitLambdaExpr(lambda);
+      StrCat(')');
     } else {
       VisitLambdaExpr(lambda);
     }

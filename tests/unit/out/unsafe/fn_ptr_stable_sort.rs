@@ -28,11 +28,11 @@ unsafe fn main_0() -> i32 {
     {
         let len = v.as_mut_ptr().add(v.len()).offset_from(v.as_mut_ptr()) as usize;
         ::std::slice::from_raw_parts_mut(v.as_mut_ptr(), len).sort_by(|x, y| {
-            if Some(Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
+            if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
                 .call(x as *const _, y as *const _)
             {
                 std::cmp::Ordering::Less
-            } else if Some(Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
+            } else if (Compare_0 as unsafe fn(*const Item, *const Item) -> bool)
                 .call(y as *const _, x as *const _)
             {
                 std::cmp::Ordering::Greater

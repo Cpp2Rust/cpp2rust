@@ -34,16 +34,16 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut h1: Handler = Handler {
         tag: 1,
-        cb: Some(double_it_0 as unsafe fn(i32) -> i32),
+        cb: Some(double_it_0),
     };
     let mut h2: Handler = Handler {
         tag: 2,
-        cb: Some(negate_1 as unsafe fn(i32) -> i32),
+        cb: Some(negate_1),
     };
     assert!(!((h1.cb).is_none()));
     assert!(((unsafe { (h1.cb).unwrap()(5,) }) == (10)));
     assert!(((unsafe { (h2.cb).unwrap()(7,) }) == (-7_i32)));
-    (h1.cb) = Some(negate_1 as unsafe fn(i32) -> i32);
+    (h1.cb) = Some(negate_1);
     assert!(((unsafe { (h1.cb).unwrap()(3,) }) == (-3_i32)));
     assert!(((h1.cb) == (h2.cb)));
     return 0;
