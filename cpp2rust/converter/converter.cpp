@@ -4607,7 +4607,7 @@ void Converter::PlaceholderCtx::dump() const {
                << ", declared_in_rule_as_rust_ptr: "
                << declared_in_rule_as_rust_ptr
                << ", access: " << static_cast<int>(access)
-               << ", param_type: " << param_type
+               << ", arg_idx: " << arg_idx
                << ", materialize_idx: " << materialize_idx << '\n';
 }
 
@@ -4621,8 +4621,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
-    return std::format("({} as {})", ConvertFreshPointer(arg),
-                       ph_ctx.param_type);
+    return std::format(
+        "({} as {})", ConvertFreshPointer(arg),
+        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4637,8 +4638,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_pointer_receiver()) {
-    return std::format("({} as {})", ConvertFreshObject(arg),
-                       ph_ctx.param_type);
+    return std::format(
+        "({} as {})", ConvertFreshObject(arg),
+        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_object_receiver()) {
@@ -4717,7 +4719,7 @@ std::string Converter::ConvertIRFragment(
       bool is_receiver = HasReceiver(expr) && arg_idx == 0;
 
       PlaceholderCtx ph_ctx{
-          .param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx),
+          .arg_idx = arg_idx,
           .implicit_convert_to = GetParamImplicitConvertTarget(expr, arg_idx),
           .materialize_ctx = ctx,
           .materialize_idx =
