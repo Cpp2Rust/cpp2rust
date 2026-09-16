@@ -43,3 +43,8 @@ impl Callable2<i32, i32, bool> for lambda_0 {
         unsafe { lambda_0::operator_call(a1, a2) }
     }
 }
+impl lambda_0 {
+    pub fn to_free_function(&self) -> Option<unsafe fn(i32, i32) -> bool> {
+        Some(lambda_0::operator_call)
+    }
+}

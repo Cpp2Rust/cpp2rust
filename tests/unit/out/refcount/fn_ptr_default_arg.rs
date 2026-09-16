@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::null()),) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::new(identity_0)),) }) == 5));
     let negate: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(FnPtr::new(lambda_2::operator_call)));
+        Rc::new(RefCell::new(({ (lambda_2 {}).to_free_function() })));
     assert!((({ apply_1(5, Some((*negate.borrow()).clone()),) }) == -5_i32));
     return 0;
 }
@@ -51,5 +51,10 @@ impl ByteRepr for lambda_2 {
 impl Callable1<i32, i32> for lambda_2 {
     fn call(&self, a1: i32) -> i32 {
         { lambda_2::operator_call(a1) }
+    }
+}
+impl lambda_2 {
+    pub fn to_free_function(&self) -> FnPtr<fn(i32) -> i32> {
+        FnPtr::new(lambda_2::operator_call)
     }
 }

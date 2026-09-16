@@ -421,6 +421,8 @@ public:
 
   virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
 
+  virtual void AddFunctionPointerConversion(clang::CXXRecordDecl *decl);
+
   virtual std::string
   ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op);
 

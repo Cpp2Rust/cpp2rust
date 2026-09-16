@@ -965,6 +965,7 @@ void Converter::ConvertCXXRecordDecl(clang::CXXRecordDecl *decl) {
     EmitRustStructOrUnion(decl);
     if (decl->isLambda()) {
       AddCallableTrait(decl);
+      AddFunctionPointerConversion(decl);
     }
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
@@ -2388,24 +2389,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
     }
     break;
   }
-  case clang::CastKind::CK_UserDefinedConversion: {
-    auto *call = clang::dyn_cast<clang::CXXMemberCallExpr>(sub_expr);
-    if (call && clang::isa<clang::CXXConversionDecl>(call->getMethodDecl()) &&
-        call->getRecordDecl()->isLambda()) {
-      auto *decl = call->getRecordDecl();
-      if (clang::isa<clang::LambdaExpr>(
-              call->getImplicitObjectArgument()->IgnoreParenImpCasts())) {
-        Buffer buf(*this);
-        VisitCXXRecordDecl(decl);
-        hoisted_records_ += std::move(buf).str();
-      }
-      StrCat(ConvertLambdaToFunctionPointer(decl->getLambdaCallOperator()));
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      break;
-    }
-    Convert(sub_expr);
-    break;
-  }
   case clang::CastKind::CK_ConstructorConversion:
   case clang::CastKind::CK_DerivedToBase:
     Convert(sub_expr);
@@ -3169,7 +3152,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
     StrCat(GetOverloadedFunctionName(method));
   } else if (!name_override.empty()) {
     StrCat(token::kDot, name_override);
-  } else if (member->getDeclName().isIdentifier()) {
+  } else if (member->getDeclName().isIdentifier() ||
+             clang::isa<clang::CXXConversionDecl>(member)) {
     StrCat(token::kDot);
     StrCat(GetNamedDeclAsString(member));
   }
@@ -3661,6 +3645,21 @@ void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
 std::string
 Converter::ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op) {
   return std::format("Some({}::{})", GetUFCSName(op), GetMethodName(op));
+}
+
+void Converter::AddFunctionPointerConversion(clang::CXXRecordDecl *decl) {
+  for (auto *method : decl->methods()) {
+    auto *conv = clang::dyn_cast<clang::CXXConversionDecl>(method);
+    if (!conv) {
+      continue;
+    }
+    StrCat(keyword::kImpl, GetRecordName(decl));
+    PushBrace impl_brace(*this);
+    StrCat("pub fn", GetMethodName(conv), "(&self)", token::kArrow,
+           ToString(conv->getConversionType()));
+    PushBrace fn_brace(*this);
+    StrCat(ConvertLambdaToFunctionPointer(decl->getLambdaCallOperator()));
+  }
 }
 
 clang::FieldDecl *

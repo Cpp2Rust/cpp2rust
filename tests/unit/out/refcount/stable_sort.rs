@@ -46,3 +46,8 @@ impl Callable2<i32, i32, bool> for lambda_0 {
         { lambda_0::operator_call(a1, a2) }
     }
 }
+impl lambda_0 {
+    pub fn to_free_function(&self) -> FnPtr<fn(i32, i32) -> bool> {
+        FnPtr::new(lambda_0::operator_call)
+    }
+}

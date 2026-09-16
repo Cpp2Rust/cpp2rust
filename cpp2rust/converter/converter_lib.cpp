@@ -900,6 +900,9 @@ bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    if (conversion->getParent()->isLambda()) {
+      return "to_free_function";
+    }
     auto name = "operator_" + conversion->getConversionType().getAsString();
     std::replace_if(
         name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');

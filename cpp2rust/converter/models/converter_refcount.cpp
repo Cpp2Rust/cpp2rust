@@ -2883,6 +2883,12 @@ void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
   Converter::AddCallableTrait(decl);
 }
 
+void ConverterRefCount::AddFunctionPointerConversion(
+    clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  Converter::AddFunctionPointerConversion(decl);
+}
+
 std::string ConverterRefCount::ConvertLambdaToFunctionPointer(
     const clang::CXXMethodDecl *op) {
   return std::format("FnPtr::new({}::{})", GetUFCSName(op), GetMethodName(op));
