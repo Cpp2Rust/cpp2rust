@@ -481,7 +481,10 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   }
 
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (!cxx) {
+  if (cxx && cxx->isLambda() && !HasCallableCopyConstructor(cxx)) {
+    return;
+  }
+  if (!cxx || cxx->isLambda()) {
     StrCat(keyword::kImpl, "Clone for", record_name);
     PushBrace impl_brace(*this);
     StrCat("fn clone(&self) -> Self");
