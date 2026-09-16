@@ -3597,18 +3597,13 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
     VisitCXXRecordDecl(record);
     hoisted_records_ += std::move(buf).str();
   }
+  auto *init_list = new (ctx_) clang::InitListExpr(
+      ctx_, {},
+      llvm::ArrayRef(expr->capture_init_begin(), expr->capture_size()), {},
+      false);
+  init_list->setType(expr->getType());
   PushParen paren(*this);
-  StrCat(GetRecordName(record));
-  {
-    PushBrace brace(*this);
-    auto init = expr->capture_init_begin();
-    for (auto *field : record->fields()) {
-      StrCat(GetNamedDeclAsString(field), token::kColon);
-      ConvertVarInit(field->getType(), *init++);
-      StrCat(token::kComma);
-    }
-  }
-  computed_expr_type_ = ComputedExprType::FreshValue;
+  Convert(init_list);
   return false;
 }
 

@@ -2880,11 +2880,6 @@ bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   return false;
 }
 
-bool ConverterRefCount::VisitLambdaExpr(clang::LambdaExpr *expr) {
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
-  return Converter::VisitLambdaExpr(expr);
-}
-
 void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   Converter::AddCallableTrait(decl);
