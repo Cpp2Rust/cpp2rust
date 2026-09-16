@@ -1,6 +1,3 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
-
 #include <cassert>
 
 void more_refs(int x1, int x2, int &r1, const int &r2) {
