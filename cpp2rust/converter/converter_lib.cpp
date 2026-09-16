@@ -540,13 +540,24 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 }
 
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
+  std::string id;
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());
       spec && decl->getLexicalDeclContext() != decl->getDeclContext()) {
-    return Mapper::ToString(Mapper::GetTypeForDecl(spec));
+    id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
   }
-  return {};
+  for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
+    if (const auto *spec =
+            clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(dc)) {
+      id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
+    }
+    if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
+        fn && fn->getTemplateSpecializationArgs()) {
+      id += clang::ASTNameGenerator(fn->getASTContext()).getName(fn);
+    }
+  }
+  return id;
 }
 
 std::string GetID(const clang::Decl *decl) {
@@ -680,6 +691,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
              var && (var->isFileVarDecl() || var->isStaticLocal())) {
     id = GetDeclId(var->getCanonicalDecl(),
                    var->getFormalLinkage() != clang::Linkage::External);
+  } else if (auto *tag = clang::dyn_cast<clang::TagDecl>(decl);
+             tag && tag->getDeclContext()->isFunctionOrMethod()) {
+    id =
+        type_mapping.try_emplace(GetID(tag), type_mapping.size()).first->second;
   }
   if (id) {
     name += '_';
