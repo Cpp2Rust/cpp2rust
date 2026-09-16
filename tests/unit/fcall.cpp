@@ -1,6 +1,3 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
-
 #include <cassert>
 
 double f2(double x, double y) { return x - y; }
