@@ -141,6 +141,7 @@ impl Callable0<i32> for lambda_2 {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -199,3 +200,4 @@ impl SImpl for Ptr<S> {
         return ({ lambda_2::operator_call(&(*get.borrow_mut())) });
     }
 }
+pub fn __cpp2rust_init_globals() {}

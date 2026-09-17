@@ -37,6 +37,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -216,3 +217,4 @@ impl Callable1<i32, i32> for lambda_3 {
         { lambda_3::operator_call(self, a1) }
     }
 }
+pub fn __cpp2rust_init_globals() {}

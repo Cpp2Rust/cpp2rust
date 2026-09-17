@@ -86,6 +86,7 @@ impl Callable0<i32> for lambda_2 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -98,3 +99,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::read_scaled(&s,) }) == (20)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

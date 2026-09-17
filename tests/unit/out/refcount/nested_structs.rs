@@ -144,15 +144,8 @@ impl ByteRepr for Level0_Level1_2 {
         }
     }
 }
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Level0 {}
-impl Clone for Level0 {
-    fn clone(&self) -> Self {
-        let __this: Value<Level0> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Level0> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for Level0 {
     fn byte_size() -> usize {
         1

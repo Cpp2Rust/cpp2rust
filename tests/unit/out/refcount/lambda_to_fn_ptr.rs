@@ -12,6 +12,7 @@ pub fn apply_0(x: i32, fn_: FnPtr<fn(i32) -> i32>) -> i32 {
     return ({ (*(*fn_.borrow()))((*x.borrow())) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -81,3 +82,4 @@ impl lambda_2 {
         FnPtr::new(lambda_2::operator_call)
     }
 }
+pub fn __cpp2rust_init_globals() {}

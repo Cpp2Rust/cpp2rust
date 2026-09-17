@@ -30,6 +30,7 @@ pub fn apply_twice_6(fn_: lambda_3, x: i32) -> i32 {
     });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -131,3 +132,4 @@ impl lambda_5 {
         FnPtr::new(lambda_5::operator_call)
     }
 }
+pub fn __cpp2rust_init_globals() {}

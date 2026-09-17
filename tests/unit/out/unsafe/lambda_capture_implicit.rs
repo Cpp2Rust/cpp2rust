@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -88,3 +89,4 @@ impl Callable1<i32, i32> for lambda_2 {
         unsafe { lambda_2::operator_call(self, a1) }
     }
 }
+pub unsafe fn __cpp2rust_init_globals() {}

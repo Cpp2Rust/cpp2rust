@@ -11,6 +11,7 @@ pub unsafe fn apply_0(mut x: i32, mut fn_: Option<unsafe fn(i32) -> i32>) -> i32
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -61,3 +62,4 @@ impl lambda_2 {
         Some(lambda_2::operator_call)
     }
 }
+pub unsafe fn __cpp2rust_init_globals() {}

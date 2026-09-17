@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -136,3 +137,4 @@ impl Callable1<i32, i32> for lambda_2 {
         { lambda_2::operator_call(self, a1) }
     }
 }
+pub fn __cpp2rust_init_globals() {}

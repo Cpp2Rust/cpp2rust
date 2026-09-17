@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -46,3 +47,4 @@ impl lambda_1 {
         return self.total;
     }
 }
+pub unsafe fn __cpp2rust_init_globals() {}
