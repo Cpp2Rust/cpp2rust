@@ -71,4 +71,5 @@ in a variable clones it, and equality compares the address of the wrapped
 function, so a pointer stays equal to itself after being cast.
 
 A capture-less lambda assigned to a function pointer becomes
-`FnPtr::new(|...| ...)` with the closure inline (see [Lambdas](./lambdas.md)).
+`lambda_N::to_free_function()`, which returns
+`FnPtr::new(lambda_N::operator_call)` (see [Lambdas](./lambdas.md)).

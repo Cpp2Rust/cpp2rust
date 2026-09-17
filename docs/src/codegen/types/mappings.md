@@ -3,24 +3,24 @@
 The table gives the spelling of each C++ type in both models, before any
 refcount boxing. `T` stands for the translated inner type.
 
-| C++                            | Unsafe model                                    | Refcount model                                            |
-| ------------------------------ | ----------------------------------------------- | --------------------------------------------------------- |
-| `bool`                         | `bool`                                          | `bool`                                                    |
-| `int`, `unsigned long`, ...    | `i32`, `u64`, ... (host width)                  | same                                                      |
-| `float`, `double`              | `f32`, `f64`                                    | same                                                      |
-| `char`                         | `libc::c_char`                                  | `u8`                                                      |
-| `size_t` and other typedefs    | by type rule (`usize`), else desugared          | same                                                      |
-| `T[N]`                         | `[T; N]`                                        | `Box<[T]>`                                                |
-| `T[]`                          | `[T]`                                           | `Box<[T]>`                                                |
-| `struct S`, `enum E`           | `S`, `E`                                        | same                                                      |
-| `T *`, `T &`                   | `*mut T`, `*const T`                            | [`Ptr<T>`](../../runtime/rc.md#values-and-pointers)       |
-| `Abstract *`                   | `*mut dyn Abstract`                             | [`PtrDyn<dyn Abstract>`](../../runtime/ptr-dyn.md)        |
-| `void *`                       | `*mut ::libc::c_void`                           | [`AnyPtr`](../../runtime/void.md)                         |
-| `R (*)(A)`                     | `Option<unsafe fn(A) -> R>`                     | [`FnPtr<fn(A) -> R>`](../../runtime/fn-ptr.md)            |
-| `va_list`                      | [`VaList`](../../runtime/va-args.md)            | [`VaList`](../../runtime/va-args.md)                      |
-| lambda closure                 | `impl Fn(A) -> R` as a parameter, `_` elsewhere | same                                                      |
-| `std::unique_ptr<T>`           | by type rule (`Option<Box<T>>`)                 | by type rule (`Option<Value<T>>`)                         |
-| `std::vector<T>` and other STL | by type rule (`Vec<T>`)                         | by type rule (`Vec<T>`, `Vec<Value<Vec<T>>>` when nested) |
+| C++                            | Unsafe model                           | Refcount model                                            |
+| ------------------------------ | -------------------------------------- | --------------------------------------------------------- |
+| `bool`                         | `bool`                                 | `bool`                                                    |
+| `int`, `unsigned long`, ...    | `i32`, `u64`, ... (host width)         | same                                                      |
+| `float`, `double`              | `f32`, `f64`                           | same                                                      |
+| `char`                         | `libc::c_char`                         | `u8`                                                      |
+| `size_t` and other typedefs    | by type rule (`usize`), else desugared | same                                                      |
+| `T[N]`                         | `[T; N]`                               | `Box<[T]>`                                                |
+| `T[]`                          | `[T]`                                  | `Box<[T]>`                                                |
+| `struct S`, `enum E`           | `S`, `E`                               | same                                                      |
+| `T *`, `T &`                   | `*mut T`, `*const T`                   | [`Ptr<T>`](../../runtime/rc.md#values-and-pointers)       |
+| `Abstract *`                   | `*mut dyn Abstract`                    | [`PtrDyn<dyn Abstract>`](../../runtime/ptr-dyn.md)        |
+| `void *`                       | `*mut ::libc::c_void`                  | [`AnyPtr`](../../runtime/void.md)                         |
+| `R (*)(A)`                     | `Option<unsafe fn(A) -> R>`            | [`FnPtr<fn(A) -> R>`](../../runtime/fn-ptr.md)            |
+| `va_list`                      | [`VaList`](../../runtime/va-args.md)   | [`VaList`](../../runtime/va-args.md)                      |
+| lambda closure                 | [`lambda_N` struct](./lambdas.md)      | same                                                      |
+| `std::unique_ptr<T>`           | by type rule (`Option<Box<T>>`)        | by type rule (`Option<Value<T>>`)                         |
+| `std::vector<T>` and other STL | by type rule (`Vec<T>`)                | by type rule (`Vec<T>`, `Vec<Value<Vec<T>>>` when nested) |
 
 Other built-ins (`wchar_t`, `long double`, `char16_t`) are omitted. Rvalue
 references (`T &&`) have no mapping of their own; they reach the converter only

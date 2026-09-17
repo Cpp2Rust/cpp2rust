@@ -1,7 +1,9 @@
 # Lambdas
 
-A lambda becomes a Rust closure with the same parameters and a translated body.
-Given
+A lambda becomes a struct with one field per capture, an inherent
+`operator_call` method holding the translated body, a `Callable` impl so generic
+code can invoke it, and, for a capture-less lambda, a `to_free_function`
+associated method that yields it as a function pointer. Given
 
 ```cpp
 template <typename F> int apply(F fn, int x) { return fn(x); }
@@ -16,76 +18,125 @@ int main() {
 the unsafe model produces
 
 ```rust
-pub unsafe fn apply_0(mut fn_: impl Fn(i32) -> i32, mut x: i32) -> i32 {
-    return fn_(x);
+pub unsafe fn apply_0(mut fn_: lambda_1, mut x: i32) -> i32 {
+    return (unsafe { lambda_1::operator_call(&fn_, x) });
 }
 unsafe fn main_0() -> i32 {
     let mut base: i32 = 10;
-    return apply_0(
-        (|x: i32| {
-            return x + base;
-        })
-        .clone(),
-        5,
-    );
+    let mut add_base: lambda_1 = (lambda_1 { base: &mut base });
+    return (unsafe { apply_0(add_base, 5) });
+}
+pub struct lambda_1 {
+    base: *mut i32,
+}
+impl lambda_1 {
+    pub unsafe fn operator_call(&self, mut x: i32) -> i32 {
+        return ((x) + (*self.base));
+    }
+}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        unsafe { lambda_1::operator_call(self, a1) }
+    }
 }
 ```
 
 and the refcount model produces
 
 ```rust
-pub fn apply_0(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
-    let fn_: Value<_> = Rc::new(RefCell::new(fn_));
+pub fn apply_0(fn_: lambda_1, x: i32) -> i32 {
+    let fn_: Value<lambda_1> = Rc::new(RefCell::new(fn_));
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    return (*fn_.borrow_mut())(*x.borrow());
+    return ({ lambda_1::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
 }
 fn main_0() -> i32 {
     let base: Value<i32> = Rc::new(RefCell::new(10));
-    let add_base: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return *x.borrow() + *base.borrow();
+    let add_base: Value<lambda_1> = Rc::new(RefCell::new(
+        (lambda_1 {
+            base: base.as_pointer(),
         }),
     ));
-    return apply_0((*add_base.borrow()).clone(), 5);
+    return ({ apply_0((*add_base.borrow()).clone(), 5) });
+}
+pub struct lambda_1 {
+    base: Ptr<i32>,
+}
+impl lambda_1 {
+    pub fn operator_call(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) + (self.base.read()));
+    }
+}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        { lambda_1::operator_call(self, a1) }
+    }
 }
 ```
 
-## Closure and type
+## Closure struct
 
-The closure lists the lambda's parameters with their translated types and
-contains the body converted like a function body, including, in the refcount
-model, the preamble that boxes each parameter. The lambda's own type is never
-spelled: a variable holding one is `Value<_>` in the refcount model and the type
-is inferred, and a function template parameter that receives one is
-`impl Fn(A) -> R`, as `apply` shows. A call through such a parameter is a plain
-call, `fn_(x)`, with the refcount model borrowing the boxed closure first.
+The closure type is named `lambda_N`, numbered in order of appearance, and is
+emitted at file scope. Each capture becomes a field named after the captured
+variable, typed as the capture field of clang's closure class:
+
+| Capture  | C++ field type | Unsafe        | Refcount        |
+| -------- | -------------- | ------------- | --------------- |
+| `[x]`    | `T`            | `T`           | `Value<T>`      |
+| `[&x]`   | `T&`           | `*mut T`      | `Ptr<T>`        |
+| `[&arr]` | `T (&)[N]`     | `*mut [T; N]` | `Ptr<Box<[T]>>` |
+| `[this]` | `S*`           | `*mut S`      | `Value<Ptr<S>>` |
+
+The struct follows the same trait rules as an ordinary struct, described in
+[Traits](./traits.md).
+
+The lambda expression itself becomes a struct literal. A by-value capture copies
+the variable at that point, a by-reference capture takes its address, so C++'s
+distinction between `[x]` and `[&x]` is preserved: the first never sees later
+writes to `x`, the second does.
 
 ## Captures
 
-The C++ capture list is not translated. A Rust closure captures whatever it
-mentions by reference, so `[&base]` and `[base]` produce the same closure and
-both see the variable's current value at call time. For a by-reference capture
-this is C++'s semantics; for a by-value capture it is not, since C++ copies the
-variable when the lambda is created.
+Explicit, implicit and init-captures all translate the same way, because clang
+materializes every capture as a closure field before the converter runs. `[=]`
+and `[&]` produce one field per variable the body mentions, and `[y = x + 1]`
+produces a field `y` whose value in the struct literal is the initializer
+expression, evaluated where the lambda expression appears.
 
-## Where the closure is emitted
+A captured `this` becomes a field named `this_`. A use of `this` in the body,
+explicit or implied by a member access, reads that field: `self.this_` in the
+unsafe model, `(*self.this_.borrow())` in the refcount model. From there member
+access and method calls proceed as through any other pointer to the enclosing
+class.
 
-The refcount model emits a variable initialized with a lambda as a boxed closure
-once and clones it out of the box at each use.
+## Call operator
 
-> [!WARNING]
->
-> The unsafe model does not emit a `let` for such a variable; the closure is
-> emitted again at every use, which is why the example above shows it inline in
-> the `apply_0` call. This was a workaround: a stored closure that captures
-> locals by reference keeps them borrowed for as long as it lives, so
-> `let foo = || { a += 1; a }; return foo() + a;` does not compile, while
-> re-emitting the closure at each call keeps every borrow inside that call. It
-> is a bug, since the lambda's creation and its uses are no longer the same
-> object ([#314](https://github.com/Cpp2Rust/cpp2rust/issues/314)).
+The body is emitted as `operator_call` on the closure struct. Its receiver
+follows the C++ call operator:
 
-A capture-less lambda assigned to a function pointer becomes a function pointer
-value: `Some(|...| ...)` in the unsafe model and `FnPtr::new(|...| ...)` in the
-refcount model (see [Function Pointers](./fn-pointers.md)). Lambdas with
-captures cannot be converted to function pointers, as in C++.
+- `&self` for an ordinary lambda, whose call operator is `const`;
+- `&mut self` for a `mutable` lambda, so writes to by-value captures persist
+  across calls;
+- no receiver for a capture-less lambda, which makes `operator_call` a plain
+  associated function.
+
+## Callable
+
+A lambda whose call operator is `const` also implements
+[`Callable`](../../runtime/callable.md), so it can be passed to rules and
+helpers that take a callable argument.
+
+## Conversion to function pointer
+
+A capture-less lambda has a conversion operator to function pointer. It becomes
+a `to_free_function` method that returns the call operator as a function pointer
+value: `Some(lambda_N::operator_call)` in the unsafe model and
+`FnPtr::new(lambda_N::operator_call)` in the refcount model (see
+[Function Pointers](./fn-pointers.md)). Assigning or passing such a lambda where
+a function pointer is expected calls `to_free_function` on the closure object.
+
+## Where the struct is emitted
+
+The struct and its impls are hoisted to file scope after the enclosing top-level
+declaration, so the function body keeps only the struct literal instead of
+several items of boilerplate.

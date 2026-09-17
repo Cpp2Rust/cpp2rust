@@ -46,6 +46,8 @@ Language-feature emulation, used by both models:
   strings up to the null terminator.
 - [`fn_ptr`](./fn-ptr.md): `FnPtr`, function pointers with C-style address
   identity.
+- [`callable`](./callable.md): `Callable0` to `Callable3`, the call trait for
+  translated lambdas.
 - [`va_args`](./va-args.md): `VaArg` and `VaList`, the representation of
   variadic calls.
 - The [`goto`, `goto_block`, and `switch`](./control-flow.md) proc macros,
