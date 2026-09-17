@@ -35,6 +35,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { lambda_2::operator_call(&bump) });
     (unsafe { lambda_2::operator_call(&bump) });
     assert!(((counter) == (2)));
+    let mut arr: [u16; 4] = [3_u16, 1_u16, 2_u16, 0_u16];
+    let mut swap: lambda_3 = (lambda_3 { arr: &mut arr });
+    (unsafe { lambda_3::operator_call(&swap, 0_usize, 3_usize) });
+    assert!(((arr[(0) as usize] as i32) == (0)));
+    assert!(((arr[(3) as usize] as i32) == (3)));
     return 0;
 }
 #[repr(C)]
@@ -80,5 +85,22 @@ impl lambda_2 {
 impl Callable0<()> for lambda_2 {
     fn call(&self) -> () {
         unsafe { lambda_2::operator_call(self) }
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct lambda_3 {
+    arr: *mut [u16; 4],
+}
+impl lambda_3 {
+    pub unsafe fn operator_call(&self, mut i: usize, mut j: usize) {
+        let mut t: u16 = (*self.arr)[(j)];
+        (*self.arr)[(j)] = (*self.arr)[(i)];
+        (*self.arr)[(i)] = t;
+    }
+}
+impl Callable2<usize, usize, ()> for lambda_3 {
+    fn call(&self, a1: usize, a2: usize) -> () {
+        unsafe { lambda_3::operator_call(self, a1, a2) }
     }
 }

@@ -92,10 +92,7 @@ pub struct lambda_2 {
 }
 impl lambda_2 {
     pub unsafe fn operator_call(&self, mut y: i32) -> i32 {
-        let mut inner: lambda_3 = (lambda_3 {
-            x: &mut (*self.x),
-            y: y,
-        });
+        let mut inner: lambda_3 = (lambda_3 { x: self.x, y: y });
         return (unsafe { lambda_3::operator_call(&inner, 1) });
     }
 }

@@ -849,8 +849,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  auto *field = GetLambdaCapturedField(curr_function_, decl);
-  const auto decl_t = field ? field->getType() : decl->getType();
+  const auto decl_t = GetDeclRefType(curr_function_, expr);
   if (IsGlobalVar(expr)) {
     auto tp = decl_t->isReferenceType() ? "Ptr" : "Value";
     str = std::format("{}.with({}::clone)", str, std::move(tp));

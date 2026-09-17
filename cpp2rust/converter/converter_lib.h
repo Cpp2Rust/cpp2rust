@@ -181,6 +181,9 @@ const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn);
 clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
                                          const clang::ValueDecl *var);
 
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::DeclRefExpr *expr);
+
 clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::QualType type,
                                            clang::CXXConstructorDecl *ctor,

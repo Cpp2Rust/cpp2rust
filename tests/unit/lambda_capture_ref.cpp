@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <stddef.h>
+#include <stdint.h>
 
 struct S {
   int x;
@@ -23,6 +25,16 @@ int main() {
   bump();
   bump();
   assert(counter == 2);
+
+  uint16_t arr[4] = {3, 1, 2, 0};
+  auto swap = [&arr](size_t i, size_t j) {
+    uint16_t t = arr[j];
+    arr[j] = arr[i];
+    arr[i] = t;
+  };
+  swap(0, 3);
+  assert(arr[0] == 0);
+  assert(arr[3] == 3);
 
   return 0;
 }

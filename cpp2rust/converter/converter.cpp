@@ -2697,7 +2697,7 @@ bool Converter::IsReferenceType(const clang::Expr *expr) const {
            GetReturnTypeOfFunction(call)->isReferenceType();
   }
   if (const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(e)) {
-    return decl_ref->getDecl()->getType()->isReferenceType();
+    return GetDeclRefType(curr_function_, decl_ref)->isReferenceType();
   }
   if (const auto *member = clang::dyn_cast<clang::MemberExpr>(e)) {
     return member->getMemberDecl()->getType()->isReferenceType();
@@ -2906,8 +2906,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   auto str = ConvertDeclRefExpr(expr);
   auto decl = expr->getDecl();
-  auto *field = GetLambdaCapturedField(curr_function_, decl);
-  auto decl_t = field ? field->getType() : decl->getType();
+  auto decl_t = GetDeclRefType(curr_function_, expr);
 
   if (decl_t->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {

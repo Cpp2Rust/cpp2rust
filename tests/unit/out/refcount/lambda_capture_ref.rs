@@ -66,6 +66,15 @@ fn main_0() -> i32 {
     ({ lambda_2::operator_call(&(*bump.borrow_mut())) });
     ({ lambda_2::operator_call(&(*bump.borrow_mut())) });
     assert!(((*counter.borrow()) == 2));
+    let arr: Value<Box<[u16]>> = Rc::new(RefCell::new(Box::new([3_u16, 1_u16, 2_u16, 0_u16])));
+    let swap: Value<lambda_3> = Rc::new(RefCell::new(
+        (lambda_3 {
+            arr: (arr.as_pointer() as Ptr<Box<[u16]>>),
+        }),
+    ));
+    ({ lambda_3::operator_call(&(*swap.borrow_mut()), 0_usize, 3_usize) });
+    assert!((((*arr.borrow())[(0) as usize] as i32) == 0));
+    assert!((((*arr.borrow())[(3) as usize] as i32) == 3));
     return 0;
 }
 #[derive(Clone, Default)]
@@ -113,5 +122,35 @@ impl ByteRepr for lambda_2 {}
 impl Callable0<()> for lambda_2 {
     fn call(&self) -> () {
         { lambda_2::operator_call(self) }
+    }
+}
+#[derive(Clone, Default)]
+pub struct lambda_3 {
+    arr: Ptr<Box<[u16]>>,
+}
+impl lambda_3 {
+    pub fn operator_call(&self, i: usize, j: usize) {
+        let i: Value<usize> = Rc::new(RefCell::new(i));
+        let j: Value<usize> = Rc::new(RefCell::new(j));
+        let t: Value<u16> = Rc::new(RefCell::new(
+            ((self.arr.to_strong().as_pointer() as Ptr<u16>)
+                .offset((*j.borrow()) as isize)
+                .read()),
+        ));
+        let __rhs = ((self.arr.to_strong().as_pointer() as Ptr<u16>)
+            .offset((*i.borrow()) as isize)
+            .read());
+        (self.arr.to_strong().as_pointer() as Ptr<u16>)
+            .offset((*j.borrow()) as isize)
+            .write(__rhs);
+        (self.arr.to_strong().as_pointer() as Ptr<u16>)
+            .offset((*i.borrow()) as isize)
+            .write((*t.borrow()));
+    }
+}
+impl ByteRepr for lambda_3 {}
+impl Callable2<usize, usize, ()> for lambda_3 {
+    fn call(&self, a1: usize, a2: usize) -> () {
+        { lambda_3::operator_call(self, a1, a2) }
     }
 }

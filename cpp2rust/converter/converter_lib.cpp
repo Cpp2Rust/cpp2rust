@@ -692,6 +692,13 @@ clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
   return it == captures.end() ? nullptr : it->second;
 }
 
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::DeclRefExpr *expr) {
+  auto *decl = expr->getDecl();
+  auto *field = GetLambdaCapturedField(fn, decl);
+  return field ? field->getType() : decl->getType();
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
