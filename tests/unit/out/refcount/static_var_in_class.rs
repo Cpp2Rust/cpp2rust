@@ -67,6 +67,6 @@ impl CImpl for Ptr<C> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = inner_const_0.with(Value::clone);
-    let _ = inner_const_1.with(Value::clone);
+    let _ = inner_const_0.with(|_| ());
+    let _ = inner_const_1.with(|_| ());
 }

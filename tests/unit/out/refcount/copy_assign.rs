@@ -311,5 +311,5 @@ impl RefQualifiedImpl for Ptr<RefQualified> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = assigns_0.with(Value::clone);
+    let _ = assigns_0.with(|_| ());
 }

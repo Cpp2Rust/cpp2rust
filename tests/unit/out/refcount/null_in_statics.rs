@@ -64,12 +64,12 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = p_mut_0.with(Value::clone);
-    let _ = p_const_1.with(Value::clone);
-    let _ = cp_2.with(Value::clone);
-    let _ = arr_of_ptr_3.with(Value::clone);
-    let _ = pp_4.with(Value::clone);
-    let _ = const_arr_of_ptr_5.with(Value::clone);
-    let _ = cp_explicit_null_6.with(Value::clone);
-    let _ = p_zero_7.with(Value::clone);
+    let _ = p_mut_0.with(|_| ());
+    let _ = p_const_1.with(|_| ());
+    let _ = cp_2.with(|_| ());
+    let _ = arr_of_ptr_3.with(|_| ());
+    let _ = pp_4.with(|_| ());
+    let _ = const_arr_of_ptr_5.with(|_| ());
+    let _ = cp_explicit_null_6.with(|_| ());
+    let _ = p_zero_7.with(|_| ());
 }

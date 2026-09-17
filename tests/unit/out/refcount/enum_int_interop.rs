@@ -236,8 +236,8 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = global_color_0.with(Value::clone);
-    let _ = global_opt_1.with(Value::clone);
-    let _ = global_tag_2.with(Value::clone);
-    let _ = entries_3.with(Value::clone);
+    let _ = global_color_0.with(|_| ());
+    let _ = global_opt_1.with(|_| ());
+    let _ = global_tag_2.with(|_| ());
+    let _ = entries_3.with(|_| ());
 }

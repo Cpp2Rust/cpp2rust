@@ -79,5 +79,5 @@ impl SImpl for Ptr<S> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = total_0.with(Value::clone);
+    let _ = total_0.with(|_| ());
 }

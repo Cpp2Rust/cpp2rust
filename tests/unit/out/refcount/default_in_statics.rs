@@ -289,9 +289,9 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = static_fn_0.with(Value::clone);
-    let _ = static_outer_1.with(Value::clone);
-    let _ = static_inner_array_2.with(Value::clone);
-    let _ = static_foo_3.with(Value::clone);
-    let _ = static_foo_array_4.with(Value::clone);
+    let _ = static_fn_0.with(|_| ());
+    let _ = static_outer_1.with(|_| ());
+    let _ = static_inner_array_2.with(|_| ());
+    let _ = static_foo_3.with(|_| ());
+    let _ = static_foo_array_4.with(|_| ());
 }

@@ -191,5 +191,5 @@ impl NonCopyableImpl for Ptr<NonCopyable> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = side_effect_counter_3.with(Value::clone);
+    let _ = side_effect_counter_3.with(|_| ());
 }

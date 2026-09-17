@@ -518,7 +518,7 @@ impl Templated_int_Impl for Ptr<Templated_int_> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = global_0.with(Value::clone);
-    let _ = order_1.with(Value::clone);
-    let _ = order_count_2.with(Value::clone);
+    let _ = global_0.with(|_| ());
+    let _ = order_1.with(|_| ());
+    let _ = order_count_2.with(|_| ());
 }

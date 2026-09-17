@@ -177,5 +177,5 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = side_effect_0.with(Value::clone);
+    let _ = side_effect_0.with(|_| ());
 }

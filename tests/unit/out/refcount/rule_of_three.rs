@@ -188,6 +188,6 @@ impl BufferImpl for Ptr<Buffer> {
     }
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = alive_0.with(Value::clone);
-    let _ = copies_1.with(Value::clone);
+    let _ = alive_0.with(|_| ());
+    let _ = copies_1.with(|_| ());
 }

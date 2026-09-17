@@ -78,7 +78,7 @@ std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
                      GetNamedDeclAsString(decl));
 }
 
-void Converter::EmitGlobalInits(Model model, string &out) {
+void Converter::EmitGlobalInits(Model model, std::string &out) {
   out += model == Model::kUnsafe ? "pub unsafe fn __cpp2rust_init_globals() {\n"
                                  : "pub fn __cpp2rust_init_globals() {\n";
   for (const auto &line : global_inits_) {

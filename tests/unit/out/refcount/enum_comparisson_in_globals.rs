@@ -22,5 +22,5 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = global_0.with(Value::clone);
+    let _ = global_0.with(|_| ());
 }

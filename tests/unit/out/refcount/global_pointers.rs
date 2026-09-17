@@ -83,7 +83,7 @@ fn main_0() -> i32 {
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
-    let _ = single_entry_0.with(Value::clone);
-    let _ = entries_1.with(Value::clone);
-    let _ = arr_of_pointers_2.with(Value::clone);
+    let _ = single_entry_0.with(|_| ());
+    let _ = entries_1.with(|_| ());
+    let _ = arr_of_pointers_2.with(|_| ());
 }
