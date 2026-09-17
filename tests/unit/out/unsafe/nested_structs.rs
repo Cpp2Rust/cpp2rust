@@ -38,6 +38,7 @@ pub struct Level0_Level1_2 {
 pub struct Level0 {}
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -50,3 +51,4 @@ unsafe fn main_0() -> i32 {
         Level0_Level1_1_Level2_1_Level3_2 { x1: 5, x2: 6 };
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -13,6 +13,7 @@ pub unsafe fn bump_0(mut arg: *mut ::libc::c_void) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -27,3 +28,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((value) == (7)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

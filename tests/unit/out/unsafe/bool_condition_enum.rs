@@ -12,6 +12,7 @@ pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -36,3 +37,4 @@ unsafe fn main_0() -> i32 {
     assert!(!(b4));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

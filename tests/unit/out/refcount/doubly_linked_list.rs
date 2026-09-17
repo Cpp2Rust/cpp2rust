@@ -120,6 +120,7 @@ pub fn Tail_4(head: Ptr<Node>) -> Ptr<Node> {
     return (*curr.borrow()).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -445,3 +446,4 @@ impl NodeImpl for Ptr<Node> {
         (*(*(*self).upgrade().deref()).prev.borrow_mut()) = (*p.borrow()).clone();
     }
 }
+pub fn __cpp2rust_init_globals() {}

@@ -67,6 +67,7 @@ impl ByteRepr for Graph {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -109,3 +110,4 @@ impl GraphImpl for Ptr<Graph> {
             .write(__rhs);
     }
 }
+pub fn __cpp2rust_init_globals() {}

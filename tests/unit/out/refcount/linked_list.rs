@@ -81,6 +81,7 @@ pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     return (*head.borrow()).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -192,3 +193,4 @@ impl NodeImpl for Ptr<Node> {
         (*(*(*self).upgrade().deref()).next.borrow_mut()) = (*next.borrow()).clone();
     }
 }
+pub fn __cpp2rust_init_globals() {}

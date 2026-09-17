@@ -123,6 +123,7 @@ pub fn make_3(size: i32) -> Buffer {
     return Buffer::Buffer_pmutBuffer({ b.as_pointer() });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -223,4 +224,9 @@ impl BufferImpl for Ptr<Buffer> {
         (*moves_2.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = alive_0.with(|_| ());
+    let _ = copies_1.with(|_| ());
+    let _ = moves_2.with(|_| ());
 }

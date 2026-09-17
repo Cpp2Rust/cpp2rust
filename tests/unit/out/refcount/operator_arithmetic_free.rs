@@ -121,6 +121,7 @@ pub fn operator_add_12(a: i32, b: Ptr<S>) -> S {
     };
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -247,3 +248,4 @@ fn main_0() -> i32 {
     assert!(((*({ operator_add_12(1, a.as_pointer(),) }).v.borrow()) == 8));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

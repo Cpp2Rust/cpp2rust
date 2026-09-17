@@ -70,6 +70,7 @@ pub fn int_destroy_3(p: AnyPtr) {
     (*p.borrow()).reinterpret_cast::<i32>().write(0);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -88,4 +89,7 @@ fn main_0() -> i32 {
     (*(*vt.borrow()).get.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::null();
     assert!((*(*vt.borrow()).get.borrow()).is_null());
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = storage_0.with(|_| ());
 }

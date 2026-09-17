@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut copies_0: i32 = unsafe { 0 };
+pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
 #[derive(Default)]
 pub struct Counted {
@@ -19,7 +19,7 @@ impl Counted {
     }
     pub unsafe fn Counted_pconstCounted(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
-        copies_0.prefix_inc();
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
     }
 }
@@ -84,6 +84,7 @@ pub unsafe fn make_2(mut v: i32) -> Counted {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -92,20 +93,20 @@ unsafe fn main_0() -> i32 {
     let mut b: Counted = Counted::Counted_pconstCounted({ &a });
     let mut c: Counted = Counted::Counted_pconstCounted({ &a });
     let mut d: Counted = Counted::Counted_pconstCounted({ &a });
-    assert!(((copies_0) == (3)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
     assert!(((unsafe { by_value_1(Counted::Counted_pconstCounted({ &a },),) }) == (1)));
-    assert!(((copies_0) == (4)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (4)));
     let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
-    assert!(((copies_0) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let mut f: Counted = Counted::Counted({ 6 });
     assert!(((f.v) == (6)));
-    assert!(((copies_0) == (5)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let g: Counted = Counted::Counted({ 7 });
     let mut h: Counted = Counted::Counted_pconstCounted({ &g });
     assert!(((h.v) == (7)));
-    assert!(((copies_0) == (6)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (6)));
     let mut hold: Holder = Holder {
         c: Counted::Counted({ 8 }),
         arr: [Counted::Counted({ 9 }), Counted::Counted({ 10 })],
@@ -115,14 +116,14 @@ unsafe fn main_0() -> i32 {
         (((hold2.c.v) == (8)) && ((hold2.arr[(0) as usize].v) == (9)))
             && ((hold2.arr[(1) as usize].v) == (10))
     );
-    assert!(((copies_0) == (9)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (9)));
     let mut vec_: Vec<Counted> = Vec::new();
     {
         let a0_clone = a.clone();
         vec_.push(a0_clone)
     };
     assert!(((vec_[(0_usize)].v) == (1)));
-    assert!(((copies_0) == (10)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (10)));
     let mut n: NonConst = NonConst::NonConst();
     let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n });
     let cn: NonConst = NonConst::NonConst();
@@ -130,4 +131,7 @@ unsafe fn main_0() -> i32 {
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const copies_0);
 }

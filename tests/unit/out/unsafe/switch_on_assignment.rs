@@ -33,6 +33,7 @@ pub unsafe fn switch_on_assignment_0(mut x: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -42,3 +43,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { switch_on_assignment_0(9,) }) == (10)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

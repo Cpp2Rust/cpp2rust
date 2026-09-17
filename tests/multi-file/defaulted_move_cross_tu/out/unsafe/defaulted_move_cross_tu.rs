@@ -55,6 +55,7 @@ pub unsafe fn sum_0(s: *const S) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -73,3 +74,4 @@ pub unsafe fn shuffle_1(mut x: i32) -> i32 {
     assert!(b.v.is_empty());
     return (unsafe { sum_0(&c) });
 }
+pub unsafe fn __cpp2rust_init_globals() {}

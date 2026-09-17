@@ -85,6 +85,7 @@ thread_local!(
     }));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -135,4 +136,11 @@ fn main_0() -> i32 {
             == 2)
     );
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = alpha_0.with(|_| ());
+    let _ = beta_1.with(|_| ());
+    let _ = shared_2.with(|_| ());
+    let _ = items_3.with(|_| ());
+    let _ = obj_4.with(|_| ());
 }

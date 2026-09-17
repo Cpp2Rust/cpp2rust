@@ -16,6 +16,7 @@ pub fn foo_1(fn_: FnPtr<fn(AnyPtr) -> i32>, pi: Ptr<i32>) -> i32 {
     return ({ (*(*fn_.borrow()))(((*pi.borrow()).clone() as Ptr<i32>).to_any()) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -39,3 +40,4 @@ fn main_0() -> i32 {
     });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

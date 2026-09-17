@@ -102,6 +102,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -178,4 +179,7 @@ impl SImpl for Ptr<S> {
     fn operator_addr(&self) -> Ptr<i32> {
         return (((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset(0));
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = table_0.with(|_| ());
 }

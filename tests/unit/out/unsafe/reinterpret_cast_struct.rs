@@ -14,6 +14,7 @@ pub struct Point {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -28,3 +29,4 @@ unsafe fn main_0() -> i32 {
     assert!((((*bytes.offset((7) as isize)) as i32) == (8)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

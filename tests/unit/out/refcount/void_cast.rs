@@ -108,6 +108,7 @@ pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
     &(*x.upgrade().deref());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -188,4 +189,7 @@ impl NonCopyableImpl for Ptr<NonCopyable> {
             .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = side_effect_counter_3.with(|_| ());
 }

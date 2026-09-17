@@ -151,6 +151,7 @@ pub fn bump_ref_1(r: Ptr<Immovable>) {
     (*(*r.upgrade().deref()).v.borrow_mut()).postfix_inc();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -227,3 +228,4 @@ impl PrivateCopyImpl for Ptr<PrivateCopy> {
         return (*self).clone();
     }
 }
+pub fn __cpp2rust_init_globals() {}

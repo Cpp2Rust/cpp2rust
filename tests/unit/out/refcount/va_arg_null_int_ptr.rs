@@ -24,6 +24,7 @@ pub fn first_nonnull_0(count: i32, __args: &[VaArg]) -> i32 {
     return (*result.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -49,3 +50,4 @@ fn main_0() -> i32 {
     assert!((((({ first_nonnull_0(1, &[(AnyPtr::default()).into(),]) }) == -1_i32) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

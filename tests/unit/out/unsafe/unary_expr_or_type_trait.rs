@@ -20,6 +20,7 @@ pub unsafe fn pack_size_1(mut args_0: i32, mut args_1: f64) -> u64 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -40,3 +41,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { pack_size_1(1, 2.0E+0,) }) == (4_u64)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

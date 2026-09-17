@@ -11,6 +11,7 @@ pub fn foo_0(single: Ptr<i32>) {
     (*single.borrow()).delete();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -22,3 +23,4 @@ fn main_0() -> i32 {
     ({ foo_0((*x.borrow()).clone()) });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -13,6 +13,7 @@ pub const E_C: E = 2;
 pub const E_D: E = 4;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -23,3 +24,4 @@ unsafe fn main_0() -> i32 {
     assert!(((E_D as i32) == ((1) << (2))));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

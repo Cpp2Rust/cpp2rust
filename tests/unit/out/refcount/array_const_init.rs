@@ -59,6 +59,7 @@ thread_local!(
     }));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -82,4 +83,7 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).postfix_inc();
     }
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = s_0.with(|_| ());
 }

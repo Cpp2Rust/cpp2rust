@@ -15,6 +15,7 @@ pub fn strlen_0(ptr: Ptr<u8>) -> u32 {
     return (*count.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -29,3 +30,4 @@ fn main_0() -> i32 {
     assert!((({ strlen_0(((string.as_pointer() as Ptr<u8>).offset(0)),) }) == 5_u32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

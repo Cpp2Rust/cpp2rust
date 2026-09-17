@@ -28,6 +28,7 @@ pub unsafe fn switch_complex_cond_0(mut p: *mut i32, mut bias: i32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -39,3 +40,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { switch_complex_cond_0((&mut p_val as *mut i32), 99,) }) == (0)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

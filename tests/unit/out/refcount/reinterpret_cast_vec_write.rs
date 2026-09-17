@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -26,3 +27,4 @@ fn main_0() -> i32 {
     assert!((((vec_.as_pointer() as Ptr<u32>).offset(1_usize).read()) == 134678271_u32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

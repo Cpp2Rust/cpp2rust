@@ -77,6 +77,7 @@ impl ByteRepr for node {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -143,3 +144,4 @@ fn main_0() -> i32 {
     libcc2rs::free_refcount(((*n.borrow()).clone() as Ptr<node>).to_any());
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

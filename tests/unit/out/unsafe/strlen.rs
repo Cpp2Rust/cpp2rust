@@ -15,6 +15,7 @@ pub unsafe fn strlen_0(mut ptr: *mut libc::c_char) -> u32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -30,3 +31,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { strlen_0((&mut string[(0) as usize] as *mut libc::c_char),) }) == (5_u32)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

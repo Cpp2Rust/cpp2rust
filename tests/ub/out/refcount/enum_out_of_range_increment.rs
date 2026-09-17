@@ -11,6 +11,7 @@ pub const color_RED: color = 0;
 pub const color_GREEN: color = 1;
 pub const color_BLUE: color = 2;
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -22,3 +23,4 @@ fn main_0() -> i32 {
         1
     };
 }
+pub fn __cpp2rust_init_globals() {}

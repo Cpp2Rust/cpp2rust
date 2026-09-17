@@ -36,6 +36,7 @@ pub unsafe fn any_2(arr: *mut Option<Box<[*mut i32]>>, n1: *mut i32) -> bool {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -49,3 +50,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { fill_1(&mut arr, &mut n) });
     return ((unsafe { any_2(&mut arr, &mut n) }) as i32);
 }
+pub unsafe fn __cpp2rust_init_globals() {}

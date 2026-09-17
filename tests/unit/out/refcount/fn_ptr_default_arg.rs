@@ -20,6 +20,7 @@ pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     return (*x.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -35,3 +36,4 @@ fn main_0() -> i32 {
     assert!((({ apply_1(5, Some((*negate.borrow()).clone()),) }) == -5_i32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

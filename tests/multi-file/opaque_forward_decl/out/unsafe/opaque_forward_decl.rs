@@ -14,6 +14,7 @@ pub struct container {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -32,3 +33,4 @@ pub unsafe fn touch_0(mut c: *mut container) {
 }
 #[derive(Clone, Copy, Default, ByteRepr)]
 pub struct opaque;
+pub unsafe fn __cpp2rust_init_globals() {}

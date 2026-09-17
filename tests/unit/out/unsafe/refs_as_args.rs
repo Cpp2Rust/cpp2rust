@@ -19,6 +19,7 @@ pub unsafe fn more_refs_0(mut x1: i32, mut x2: i32, r1: *mut i32, r2: *const i32
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -29,3 +30,4 @@ unsafe fn main_0() -> i32 {
     assert!((((x1) + (x2)) == (21)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

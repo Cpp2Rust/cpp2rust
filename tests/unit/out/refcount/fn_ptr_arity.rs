@@ -39,6 +39,7 @@ pub fn foo_0(
     return 22;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -53,3 +54,4 @@ fn main_0() -> i32 {
     assert!((({ (*(*f.borrow()))(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,) }) == 22));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

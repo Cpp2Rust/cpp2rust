@@ -53,6 +53,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -66,3 +67,4 @@ fn main_0() -> i32 {
     ({ fn_0(v.as_pointer(), (*v2.borrow()).clone()) });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

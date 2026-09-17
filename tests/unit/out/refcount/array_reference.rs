@@ -160,6 +160,7 @@ pub fn total_len_9(names: Ptr<Box<[Ptr<u8>]>>) -> i32 {
     }));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -211,3 +212,4 @@ fn main_0() -> i32 {
     assert!((({ total_len_9((names.as_pointer() as Ptr<Box<[Ptr::<u8>]>>),) }) == 5));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

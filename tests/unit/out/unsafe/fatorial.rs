@@ -32,6 +32,7 @@ pub unsafe fn fatorial_by_ptr_2(mut n: *mut i32) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -43,3 +44,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { fatorial_0(n,) }) == (720)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

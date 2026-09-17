@@ -12,6 +12,7 @@ pub fn fn_0(u: Option<Value<i32>>) -> Option<Value<i32>> {
     return (*u.borrow_mut()).take();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -26,3 +27,4 @@ fn main_0() -> i32 {
     assert!(((*(*f.borrow()).as_ref().unwrap().borrow()) == 10));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

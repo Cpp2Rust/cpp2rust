@@ -13,6 +13,7 @@ pub fn foo_const_1(str: Ptr<u8>) {
     let str: Value<Ptr<u8>> = Rc::new(RefCell::new(str));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -55,3 +56,4 @@ fn main_0() -> i32 {
     ({ foo_const_1((inited_through_init_list.as_pointer() as Ptr<u8>)) });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

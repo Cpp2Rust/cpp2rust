@@ -103,6 +103,7 @@ pub unsafe fn bump_ref_1(r: *mut Immovable) {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -133,3 +134,4 @@ unsafe fn main_0() -> i32 {
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

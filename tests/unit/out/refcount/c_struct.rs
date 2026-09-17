@@ -155,6 +155,7 @@ impl ByteRepr for Container {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -215,3 +216,4 @@ fn main_0() -> i32 {
     assert!((((((*(*c2.borrow()).color.borrow()) as u32) == 2_u32) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

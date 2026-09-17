@@ -25,6 +25,7 @@ pub struct node {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -35,3 +36,4 @@ unsafe fn main_0() -> i32 {
     assert!((((((*n.x.bytes.as_mut_ptr().add((0) as usize)) as i32) == (171)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

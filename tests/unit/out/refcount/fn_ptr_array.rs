@@ -22,6 +22,7 @@ pub fn mul_2(a: i32, b: i32) -> i32 {
     return ((*a.borrow()) * (*b.borrow()));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -38,3 +39,4 @@ fn main_0() -> i32 {
     assert!(((*ops.borrow())[(0) as usize] != FnPtr::<fn(i32, i32) -> i32>::new(sub_1)));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

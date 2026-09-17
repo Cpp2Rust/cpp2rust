@@ -163,6 +163,7 @@ pub fn make_2(v: i32) -> Counted {
     return Counted::Counted_pconstCounted({ c.as_pointer() });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -235,4 +236,7 @@ fn main_0() -> i32 {
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = copies_0.with(|_| ());
 }

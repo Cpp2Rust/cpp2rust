@@ -54,6 +54,7 @@ pub unsafe fn operator_eq_5(mut a: i64, b: *const S) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -96,3 +97,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { operator_eq_5(6_i64, &s,) }) == (5)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

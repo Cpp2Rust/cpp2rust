@@ -17,6 +17,7 @@ pub fn apply_1(fn_: impl Fn(i32) -> i32, x: i32) -> i32 {
     return ({ (*fn_.borrow_mut())((*x.borrow())) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -40,3 +41,4 @@ fn main_0() -> i32 {
     assert!((({ apply_1((*scale.borrow()).clone(), 4,) }) == 12));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

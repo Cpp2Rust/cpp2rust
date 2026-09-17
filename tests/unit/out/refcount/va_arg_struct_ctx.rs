@@ -45,6 +45,7 @@ pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -70,3 +71,4 @@ fn main_0() -> i32 {
     assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

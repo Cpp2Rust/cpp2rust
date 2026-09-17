@@ -26,6 +26,7 @@ pub fn sm_0(n: i32) -> i32 {
     return (*steps.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -34,3 +35,4 @@ fn main_0() -> i32 {
     assert!((((({ sm_0(7,) }) == -1_i32) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

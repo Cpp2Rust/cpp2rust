@@ -17,6 +17,7 @@ pub fn smaller_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Ptr<i32> {
     };
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -28,3 +29,4 @@ fn main_0() -> i32 {
     }
     return ((*out.borrow()).read());
 }
+pub fn __cpp2rust_init_globals() {}

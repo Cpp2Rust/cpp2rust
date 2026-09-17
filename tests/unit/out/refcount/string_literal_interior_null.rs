@@ -22,6 +22,7 @@ thread_local!(
         Rc::new(RefCell::new(Ptr::from_string_literal(b"\x01\0")));
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -41,4 +42,7 @@ fn main_0() -> i32 {
     let d: Value<i32> = Rc::new(RefCell::new((b"abcd"[(*idx.borrow()) as usize] as i32)));
     assert!(((*d.borrow()) == (('b' as u8) as i32)));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = g_packet_1.with(|_| ());
 }

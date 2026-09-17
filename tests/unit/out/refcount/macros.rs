@@ -18,6 +18,7 @@ pub fn log_0(file: Ptr<u8>, line: i32, func: Ptr<u8>) {
     );
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -36,3 +37,4 @@ fn main_0() -> i32 {
     });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}
