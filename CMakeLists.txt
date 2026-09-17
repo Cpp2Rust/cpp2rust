@@ -155,17 +155,24 @@ execute_process(
 )
 
 add_custom_command(
-  OUTPUT ${PREPROCESSOR_BIN} ${RUSTLS_HEADER} ${PREPROCESSOR_STAMP}
+  OUTPUT ${RUSTLS_HEADER} ${PREPROCESSOR_STAMP}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
-  COMMAND ${CMAKE_COMMAND} -E env
-          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
-          cargo +${RUST_NIGHTLY_VERSION} build --release
-          --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   COMMAND ${CMAKE_COMMAND} -E touch "${PREPROCESSOR_STAMP}"
   DEPENDS ${rule_preprocessor_sources}
           "${PROJECT_SOURCE_DIR}/rules/build.rs"
           "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
+          "${RUST_STAMP_FILE}"
+  VERBATIM
+)
+
+add_custom_command(
+  OUTPUT ${PREPROCESSOR_BIN}
+  COMMAND ${CMAKE_COMMAND} -E env
+          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+          cargo +${RUST_NIGHTLY_VERSION} build --release
+          --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+  DEPENDS ${rule_preprocessor_sources}
           "${RUST_STAMP_FILE}"
   VERBATIM
 )
