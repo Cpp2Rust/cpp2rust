@@ -2685,7 +2685,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
                                          base->IgnoreParenImpCasts());
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
-      !IsCapturedThis(curr_function_, base)) {
+      !GetLambdaOf(curr_function_)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     if (in_ctor) {
@@ -2862,7 +2862,7 @@ void ConverterRefCount::ConvertCXXConstructorBody(
 }
 
 bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
-  if (IsCapturedThis(curr_function_, expr)) {
+  if (GetLambdaOf(curr_function_)) {
     StrCat("(*", keyword::kSelfValue, token::kDot, token::kLambdaThisCapture,
            ".borrow())");
     computed_expr_type_ = ComputedExprType::Pointer;

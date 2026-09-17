@@ -2840,9 +2840,9 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
 }
 
 std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
-  if (auto capture = GetLambdaCaptureName(curr_function_, expr->getDecl());
-      !capture.empty()) {
-    return capture;
+  if (auto *field = GetLambdaCapturedField(curr_function_, expr->getDecl())) {
+    return std::format("{}.{}", keyword::kSelfValue,
+                       GetNamedDeclAsString(field));
   }
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
@@ -3060,7 +3060,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
   if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
-      !IsCapturedThis(curr_function_, base)) {
+      !GetLambdaOf(curr_function_)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
@@ -3135,7 +3135,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 
   auto *base = expr->getBase();
   bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
-                      !ThisIsRustPtr() && !IsCapturedThis(curr_function_, base);
+                      !ThisIsRustPtr() && !GetLambdaOf(curr_function_);
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (base_is_this) {
     StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
@@ -3161,7 +3161,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 }
 
 bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
-  if (IsCapturedThis(curr_function_, expr)) {
+  if (GetLambdaOf(curr_function_)) {
     StrCat(keyword::kSelfValue, token::kDot, token::kLambdaThisCapture);
     computed_expr_type_ = ComputedExprType::Pointer;
     return false;

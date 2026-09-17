@@ -174,11 +174,6 @@ const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn);
 clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
                                          const clang::ValueDecl *var);
 
-std::string GetLambdaCaptureName(const clang::FunctionDecl *fn,
-                                 const clang::ValueDecl *var);
-
-bool IsCapturedThis(const clang::FunctionDecl *fn, const clang::Expr *expr);
-
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl);
 

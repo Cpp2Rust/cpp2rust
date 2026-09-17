@@ -654,28 +654,6 @@ clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
   return it == captures.end() ? nullptr : it->second;
 }
 
-std::string GetLambdaCaptureName(const clang::FunctionDecl *fn,
-                                 const clang::ValueDecl *var) {
-  auto *field = GetLambdaCapturedField(fn, var);
-  if (!field) {
-    return {};
-  }
-  return std::format("{}.{}", keyword::kSelfValue, GetNamedDeclAsString(field));
-}
-
-bool IsCapturedThis(const clang::FunctionDecl *fn, const clang::Expr *expr) {
-  if (!fn) {
-    return false;
-  }
-  auto *this_expr =
-      clang::dyn_cast<clang::CXXThisExpr>(expr->IgnoreParenImpCasts());
-  if (!this_expr) {
-    return false;
-  }
-  auto *lambda = GetLambdaOf(fn);
-  return lambda && this_expr->getType()->getPointeeCXXRecordDecl() != lambda;
-}
-
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
