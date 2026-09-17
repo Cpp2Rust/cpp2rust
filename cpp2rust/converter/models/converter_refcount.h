@@ -88,7 +88,9 @@ public:
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
   void AddCallableTrait(clang::CXXRecordDecl *decl) override;
+
   void AddFunctionPointerConversion(clang::CXXRecordDecl *decl) override;
+
   std::string
   ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op) override;
 
