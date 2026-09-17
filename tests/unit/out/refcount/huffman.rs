@@ -82,6 +82,23 @@ pub struct MinHeap {
     pub next: Value<i32>,
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
 }
+impl MinHeap {
+    pub fn MinHeap_pmutMinHeap(_a0: Ptr<MinHeap>) -> Self {
+        let __this: Value<MinHeap> = Rc::new(RefCell::new(Self {
+            size: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).size.borrow()))),
+            capacity: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).capacity.borrow()))),
+            arr: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).arr.borrow_mut()).take(),
+            )),
+            next: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).next.borrow()))),
+            alloc: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).alloc.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<MinHeap> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for MinHeap {
     fn byte_size() -> usize {
         32
@@ -335,6 +352,7 @@ pub trait MinHeapImpl {
         freq: Ptr<Option<Value<Box<[i32]>>>>,
         n: i32,
     );
+    fn operator_assign_pmutMinHeap(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
     fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
@@ -505,6 +523,20 @@ impl MinHeapImpl for Ptr<MinHeap> {
             ({ MinHeapImpl::Heapify(self, (*i.borrow())) });
             (*i.borrow_mut()).prefix_dec();
         }
+    }
+    fn operator_assign_pmutMinHeap(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
+        let __rhs = (*(*_a0.upgrade().deref()).size.borrow());
+        (*(*(*self).upgrade().deref()).size.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).capacity.borrow());
+        (*(*(*self).upgrade().deref()).capacity.borrow_mut()) = __rhs;
+        ((*(*self).upgrade().deref()).arr.as_pointer()
+            as Ptr<Option<Value<Box<[Ptr<MinHeapNode>]>>>>)
+            .write((*(*_a0.upgrade().deref()).arr.borrow_mut()).take());
+        let __rhs = (*(*_a0.upgrade().deref()).next.borrow());
+        (*(*(*self).upgrade().deref()).next.borrow_mut()) = __rhs;
+        ((*(*self).upgrade().deref()).alloc.as_pointer() as Ptr<Option<Value<Box<[MinHeapNode]>>>>)
+            .write((*(*_a0.upgrade().deref()).alloc.borrow_mut()).take());
+        return (*self).clone();
     }
 }
 pub trait MinHeapNodeImpl {

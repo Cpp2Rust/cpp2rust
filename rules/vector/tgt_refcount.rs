@@ -361,3 +361,7 @@ fn f104<T1>(a0: Ptr<T1>) -> Ptr<T1> {
 fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
     a0.write(a1)
 }
+
+fn f111<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: &mut Vec<Value<Vec<T1>>>) {
+    a0.write(std::mem::take(&mut *a1))
+}

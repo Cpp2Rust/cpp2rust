@@ -40,6 +40,17 @@ impl ByteRepr for Inner {
 pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
+impl Outer {
+    pub fn Outer_pmutOuter(_a0: Ptr<Outer>) -> Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
+            inner: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for Outer {
     fn byte_size() -> usize {
         8
@@ -90,4 +101,14 @@ fn main_0() -> i32 {
     (*(*b.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
     assert!((((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
     return 0;
+}
+pub trait OuterImpl {
+    fn operator_assign_pmutOuter(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
+}
+impl OuterImpl for Ptr<Outer> {
+    fn operator_assign_pmutOuter(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+        ((*(*self).upgrade().deref()).inner.as_pointer() as Ptr<Option<Value<Inner>>>)
+            .write((*(*_a0.upgrade().deref()).inner.borrow_mut()).take());
+        return (*self).clone();
+    }
 }

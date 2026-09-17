@@ -545,3 +545,9 @@ template <typename T1, typename T2 = std::allocator<T1>>
 std::vector<T1, T2> f110(const std::vector<T1, T2> &o) {
   return std::vector<T1, T2>(o);
 }
+
+template <typename T1>
+std::vector<std::vector<T1>> &f111(std::vector<std::vector<T1>> &dst,
+                                   std::vector<std::vector<T1>> &&src) {
+  return dst.operator=(std::move(src));
+}

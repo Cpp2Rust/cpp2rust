@@ -125,6 +125,7 @@ public:
   void EmitStmtExprTail(clang::Expr *tail) override;
 
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
+  bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) override;
 
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
 
@@ -245,8 +246,8 @@ private:
   void
   emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                     clang::CXXConstructExpr *ctor) override;
-  void emplace_back_emit_push_open(clang::CXXMemberCallExpr *call) override;
-  void emplace_back_emit_push_close(clang::CXXMemberCallExpr *call) override;
+  void emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                              std::string_view arg) override;
 
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
