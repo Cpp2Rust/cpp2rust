@@ -36,8 +36,15 @@ pub fn foo_3(x: Ptr<i32>, y: Ptr<i32>, z: Ptr<i32>) -> i32 {
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Foo {}
+impl Clone for Foo {
+    fn clone(&self) -> Self {
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for Foo {
     fn byte_size() -> usize {
         1
@@ -56,6 +63,7 @@ pub fn func_6(x: Ptr<i32>) -> i32 {
     return 1;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -112,3 +120,4 @@ impl FooImpl for Ptr<Foo> {
         let y: Value<f64> = Rc::new(RefCell::new(y));
     }
 }
+pub fn __cpp2rust_init_globals() {}

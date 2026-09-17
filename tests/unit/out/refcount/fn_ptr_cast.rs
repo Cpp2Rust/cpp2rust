@@ -100,6 +100,7 @@ pub fn test_call_through_cast_5() {
     assert!(((*result.borrow()) == 142));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -109,3 +110,4 @@ fn main_0() -> i32 {
     ({ test_call_through_cast_5() });
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -13,6 +13,7 @@ pub fn function_0(y: i32, z: i32) -> i32 {
     return (((*x.borrow()) + (*y.borrow())) + (*z.borrow()));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -20,3 +21,4 @@ fn main_0() -> i32 {
     assert!(((*y.borrow()) == 16));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

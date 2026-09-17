@@ -42,14 +42,18 @@ thread_local!(
     pub static config_0: Value<Config> = <Value<Config>>::default();
 );
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((*(*config_0.with(Value::clone).borrow()).count.borrow()) == 0) as i32) != 0));
+    assert!(((((*config_0.with(|rc| rc.borrow().clone()).count.borrow()) == 0) as i32) != 0));
     assert!(
-        (((((*(*config_0.with(Value::clone).borrow()).mode.borrow()) as u32)
+        (((((*config_0.with(|rc| rc.borrow().clone()).mode.borrow()) as u32)
             == ((Mode_MODE_NONE as i32) as u32)) as i32)
             != 0)
     );
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = config_0.with(|_| ());
 }

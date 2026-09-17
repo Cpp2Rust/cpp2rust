@@ -76,6 +76,7 @@ pub fn operator_eq_5(a: i64, b: Ptr<S>) -> i32 {
     };
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -176,3 +177,4 @@ impl SImpl for Ptr<S> {
         return (((*(*(*self).upgrade().deref()).v.borrow()) * (*o.borrow())) + 1);
     }
 }
+pub fn __cpp2rust_init_globals() {}

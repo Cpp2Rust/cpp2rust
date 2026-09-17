@@ -54,6 +54,7 @@ pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -79,3 +80,4 @@ impl StructWithCtorImpl for Ptr<StructWithCtor> {
         return (*(*self).upgrade().deref()).x2_.as_pointer();
     }
 }
+pub fn __cpp2rust_init_globals() {}

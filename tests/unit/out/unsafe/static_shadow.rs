@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
-pub static mut value_0: i32 = unsafe { 5 };
+pub static mut value_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 5 });
 pub unsafe fn param_shadow_1(mut value: i32) -> i32 {
     return ((value) + (1));
 }
@@ -15,10 +15,11 @@ pub unsafe fn local_shadow_2() -> i32 {
     return value;
 }
 pub unsafe fn read_global_3() -> i32 {
-    return value_0;
+    return (*std::cell::LazyCell::force_mut(&mut *&raw mut value_0));
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -27,4 +28,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((unsafe { local_shadow_2() }) == (99)) as i32) != 0));
     assert!(((((unsafe { read_global_3() }) == (5)) as i32) != 0));
     return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const value_0);
 }

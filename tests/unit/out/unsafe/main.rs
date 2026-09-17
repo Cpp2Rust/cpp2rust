@@ -17,7 +17,10 @@ pub fn main() {
         .map(|arg| arg.as_ptr() as *mut libc::c_char)
         .collect();
     argv.push(::std::ptr::null_mut());
-    unsafe { ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32) }
+    unsafe {
+        __cpp2rust_init_globals();
+        ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
+    }
 }
 unsafe fn main_0(mut argc: i32, mut argv: *mut *mut libc::c_char) -> i32 {
     let mut s: Vec<libc::c_char> = {
@@ -29,3 +32,4 @@ unsafe fn main_0(mut argc: i32, mut argv: *mut *mut libc::c_char) -> i32 {
     assert!((((argc) + (((s.len() - 1) > (0_usize)) as i32)) == (2)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

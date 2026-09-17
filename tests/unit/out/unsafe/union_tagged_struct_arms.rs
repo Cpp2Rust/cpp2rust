@@ -55,21 +55,23 @@ pub struct Branch {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
 unsafe fn main_0() -> i32 {
-    static mut items_4: [*mut libc::c_char; 3] = unsafe {
-        [
-            c"a".as_ptr().cast_mut(),
-            c"b".as_ptr().cast_mut(),
-            c"c".as_ptr().cast_mut(),
-        ]
-    };;
+    static mut items_4: std::cell::LazyCell<[*mut libc::c_char; 3]> =
+        std::cell::LazyCell::new(|| unsafe {
+            [
+                c"a".as_ptr().cast_mut(),
+                c"b".as_ptr().cast_mut(),
+                c"c".as_ptr().cast_mut(),
+            ]
+        });;
     let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice_enum_C_LIST;
     p_list.index = 0;
-    p_list.v.list.items = items_4.as_mut_ptr();
+    p_list.v.list.items = (*std::cell::LazyCell::force_mut(&mut *&raw mut items_4)).as_mut_ptr();
     p_list.v.list.count = 3_i64;
     p_list.v.list.cursor = 1_i64;
     assert!(((((p_list.v.list.count) == (3_i64)) as i32) != 0));
@@ -98,3 +100,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((p_integers.v.integers.width) == (3)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

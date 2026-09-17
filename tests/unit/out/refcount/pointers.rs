@@ -48,6 +48,7 @@ pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     return (*t.borrow()).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -95,3 +96,4 @@ impl TestImpl for Ptr<Test> {
         (*(*(*self).upgrade().deref()).x.borrow_mut()) = ((*x.borrow()) + (*y.borrow()));
     }
 }
+pub fn __cpp2rust_init_globals() {}

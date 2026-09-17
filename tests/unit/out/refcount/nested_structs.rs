@@ -144,8 +144,15 @@ impl ByteRepr for Level0_Level1_2 {
         }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Level0 {}
+impl Clone for Level0 {
+    fn clone(&self) -> Self {
+        let __this: Value<Level0> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Level0> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for Level0 {
     fn byte_size() -> usize {
         1
@@ -156,6 +163,7 @@ impl ByteRepr for Level0 {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -180,3 +188,4 @@ fn main_0() -> i32 {
         }));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

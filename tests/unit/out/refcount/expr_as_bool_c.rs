@@ -22,6 +22,7 @@ pub fn both_null_2(s1: Ptr<u8>, s2: Ptr<u8>) -> i32 {
         && ((((*s2.borrow()).is_null()) as i32) != 0)) as i32);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -90,3 +91,4 @@ fn main_0() -> i32 {
     assert!((((({ both_null_2((*p1.borrow()).clone(), Ptr::<u8>::null(),) }) == 0) as i32) != 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

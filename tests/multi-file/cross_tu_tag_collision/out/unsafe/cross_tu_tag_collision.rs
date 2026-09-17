@@ -18,6 +18,7 @@ pub unsafe fn a_value_0() -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -34,3 +35,4 @@ pub unsafe fn b_value_1() -> i32 {
     let mut w: widget_enum = widget_enum_WIDGET_C;
     return (w as i32);
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -20,41 +20,20 @@ pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     return (*x.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ apply_1(5, None,) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::null()),) }) == 5));
     assert!((({ apply_1(5, Some(FnPtr::<fn(i32) -> i32>::new(identity_0)),) }) == 5));
-    let negate: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(({ (lambda_2 {}).to_free_function() })));
+    let negate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::new(
+        (|x: i32| {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return -(*x.borrow());
+        }),
+    )));
     assert!((({ apply_1(5, Some((*negate.borrow()).clone()),) }) == -5_i32));
     return 0;
 }
-#[derive(Clone, Default)]
-pub struct lambda_2 {}
-impl lambda_2 {
-    pub fn operator_call(x: i32) -> i32 {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        return -(*x.borrow());
-    }
-}
-impl ByteRepr for lambda_2 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
-impl Callable1<i32, i32> for lambda_2 {
-    fn call(&self, a1: i32) -> i32 {
-        { lambda_2::operator_call(a1) }
-    }
-}
-impl lambda_2 {
-    pub fn to_free_function(&self) -> FnPtr<fn(i32) -> i32> {
-        FnPtr::new(lambda_2::operator_call)
-    }
-}
+pub fn __cpp2rust_init_globals() {}

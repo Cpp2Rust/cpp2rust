@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
+#include "converter/factory.h"
 #include "converter/lex.h"
 #include "converter/translation_rule.h"
 #include "logging.h"
@@ -51,9 +52,10 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static std::string EmitOpaqueRecords();
+  static void EmitOpaqueRecords(std::string &out);
+  static void EmitGlobalInits(Model model, std::string &out);
 
-  static std::string EmitMethodsOnPtr();
+  static void EmitMethodsOnPtr(std::string &out);
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
@@ -95,6 +97,8 @@ public:
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
 
   virtual bool VisitVarDecl(clang::VarDecl *decl);
+  virtual bool LazyStaticInit() const { return true; }
+  virtual std::string ForceGlobalInit(const clang::VarDecl *decl);
 
   void ConvertVarDecl(clang::VarDecl *decl);
 
@@ -483,7 +487,7 @@ protected:
     std::string str() && { return std::move(partial_code); }
   };
 
-  template <char kOpen, char kClose> class PushDelim {
+  template <auto kOpen, auto kClose> class PushDelim {
     Converter &c;
     bool enabled;
 
@@ -509,6 +513,8 @@ protected:
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
   using PushAngle = PushDelim<token::kLt, token::kGt>;
+  using PushLazyType = PushDelim<token::kLazyCellType, token::kGt>;
+  using PushLazyInit = PushDelim<token::kLazyCellNew, token::kCloseParen>;
 
   template <typename T>
   inline std::string
@@ -1041,6 +1047,7 @@ private:
   std::vector<ExprKind> curr_expr_kind_;
   static std::unordered_map<std::string, std::string> inner_structs_;
   static std::unordered_set<std::string> globals_;
+  static std::vector<std::string> global_inits_;
   clang::Sema *sema_ = nullptr;
 };
 } // namespace cpp2rust

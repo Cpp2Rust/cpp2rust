@@ -33,6 +33,7 @@ impl ByteRepr for S_int_ {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -58,3 +59,4 @@ impl S_int_Impl for Ptr<S_int_> {
         return (*(*(*self).upgrade().deref()).x.borrow());
     }
 }
+pub fn __cpp2rust_init_globals() {}

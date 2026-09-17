@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct S {
     pub r: Ptr<i32>,
 }
@@ -17,8 +17,18 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
+impl Clone for S {
+    fn clone(&self) -> Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self {
+            r: (self.r).clone(),
+        }));
+        let this: Ptr<S> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for S {}
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -29,3 +39,4 @@ fn main_0() -> i32 {
     assert!((((*s.borrow()).r.read()) == 5));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

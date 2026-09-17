@@ -33,6 +33,7 @@ pub fn for_in_switch_continue_0(n: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -40,3 +41,4 @@ fn main_0() -> i32 {
     assert!((({ for_in_switch_continue_0(99,) }) == -1_i32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

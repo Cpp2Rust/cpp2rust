@@ -18,6 +18,7 @@ pub unsafe fn apply_1(mut x: i32, mut fn_: Option<Option<unsafe fn(i32) -> i32>>
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -25,25 +26,10 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { apply_1(5, None,) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(None),) }) == (5)));
     assert!(((unsafe { apply_1(5, Some(Some(identity_0)),) }) == (5)));
-    let mut negate: Option<unsafe fn(i32) -> i32> = (unsafe { (lambda_2 {}).to_free_function() });
+    let mut negate: Option<unsafe fn(i32) -> i32> = Some(|x: i32| {
+        return -x;
+    });
     assert!(((unsafe { apply_1(5, Some(negate),) }) == (-5_i32)));
     return 0;
 }
-#[repr(C)]
-#[derive(Copy, Clone, Default)]
-pub struct lambda_2 {}
-impl lambda_2 {
-    pub unsafe fn operator_call(mut x: i32) -> i32 {
-        return -x;
-    }
-}
-impl Callable1<i32, i32> for lambda_2 {
-    fn call(&self, a1: i32) -> i32 {
-        unsafe { lambda_2::operator_call(a1) }
-    }
-}
-impl lambda_2 {
-    pub fn to_free_function(&self) -> Option<unsafe fn(i32) -> i32> {
-        Some(lambda_2::operator_call)
-    }
-}
+pub unsafe fn __cpp2rust_init_globals() {}

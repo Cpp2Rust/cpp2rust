@@ -52,6 +52,7 @@ pub fn not_supported_5(ctx: AnyPtr, fn_: FnPtr<fn(i32) -> i32>, extra: AnyPtr) -
     return -3_i32;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -81,3 +82,4 @@ fn main_0() -> i32 {
     );
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

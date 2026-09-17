@@ -17,6 +17,7 @@ pub unsafe fn test_1(mut fn_: Option<unsafe fn() -> bool>) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -24,3 +25,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { test_1(Some(test1_0),) }) == (1)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

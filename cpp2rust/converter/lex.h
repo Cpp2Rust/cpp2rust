@@ -30,6 +30,8 @@ inline constexpr char kDiv = '/';
 inline constexpr char kLt = '<';
 inline constexpr char kGt = '>';
 inline constexpr char kNewLine = '\n';
+inline constexpr const char kLazyCellType[] = "std::cell::LazyCell<";
+inline constexpr const char kLazyCellNew[] = "std::cell::LazyCell::new(||";
 } // namespace token
 
 namespace keyword {

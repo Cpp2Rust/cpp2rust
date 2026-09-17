@@ -6,8 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct TestAllocator_int_ {}
+impl Clone for TestAllocator_int_ {
+    fn clone(&self) -> Self {
+        let __this: Value<TestAllocator_int_> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<TestAllocator_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for TestAllocator_int_ {
     fn byte_size() -> usize {
         1
@@ -17,8 +24,15 @@ impl ByteRepr for TestAllocator_int_ {
         Self {}
     }
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct TestAllocator_double_ {}
+impl Clone for TestAllocator_double_ {
+    fn clone(&self) -> Self {
+        let __this: Value<TestAllocator_double_> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<TestAllocator_double_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for TestAllocator_double_ {
     fn byte_size() -> usize {
         1
@@ -74,6 +88,7 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -363,3 +378,4 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
         (*p.borrow()).delete_array();
     }
 }
+pub fn __cpp2rust_init_globals() {}

@@ -7,6 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -65,9 +66,10 @@ fn main_0() -> i32 {
     {
         assert!({
             let _lhs = (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-            _lhs == ((*expected_0.with(Value::clone).borrow())[(*i.borrow()) as usize] as i32)
+            _lhs == (expected_0.with(|rc| rc.borrow().clone())[(*i.borrow()) as usize] as i32)
         });
         (*i.borrow_mut()).postfix_inc();
     }
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

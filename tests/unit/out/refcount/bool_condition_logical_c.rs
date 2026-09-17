@@ -25,6 +25,7 @@ pub fn returns_zero_3() -> i32 {
     return 0;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -60,11 +61,11 @@ fn main_0() -> i32 {
     if (((((*zero.borrow()) != 0) && (({ observe_1(1) }) != 0)) as i32) != 0) {
         assert!((0 != 0));
     }
-    assert!(((((*side_effect_0.with(Value::clone).borrow()) == 0) as i32) != 0));
+    assert!((((side_effect_0.with(|rc| rc.borrow().clone()) == 0) as i32) != 0));
     if (((((*n.borrow()) != 0) || (({ observe_1(1) }) != 0)) as i32) != 0) {
         assert!((1 != 0));
     }
-    assert!(((((*side_effect_0.with(Value::clone).borrow()) == 0) as i32) != 0));
+    assert!((((side_effect_0.with(|rc| rc.borrow().clone()) == 0) as i32) != 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
     let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
@@ -174,4 +175,7 @@ fn main_0() -> i32 {
         assert!((1 != 0));
     }
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = side_effect_0.with(|_| ());
 }

@@ -154,6 +154,7 @@ pub fn declared_then_defined_6(d: Ptr<D>) -> i32 {
     return ((*(*d.upgrade().deref()).x.borrow()) + 1);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -195,3 +196,4 @@ fn main_0() -> i32 {
     assert!((({ declared_then_defined_6(d.as_pointer(),) }) == 8));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

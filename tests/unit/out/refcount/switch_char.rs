@@ -35,6 +35,7 @@ pub const Color_kRed: Color = 0;
 pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -45,3 +46,4 @@ fn main_0() -> i32 {
     assert!((({ switch_char_0(('z' as u8),) }) == 0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

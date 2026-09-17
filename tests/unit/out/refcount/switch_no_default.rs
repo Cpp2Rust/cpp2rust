@@ -26,6 +26,7 @@ pub fn no_default_0(x: i32) -> i32 {
     return (*r.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -33,3 +34,4 @@ fn main_0() -> i32 {
     assert!((({ no_default_0(42,) }) == -1_i32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

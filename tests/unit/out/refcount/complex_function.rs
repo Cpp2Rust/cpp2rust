@@ -43,9 +43,18 @@ impl ByteRepr for X1 {
         }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct X2 {
     pub v: Ptr<X1>,
+}
+impl Clone for X2 {
+    fn clone(&self) -> Self {
+        let __this: Value<X2> = Rc::new(RefCell::new(Self {
+            v: (self.v).clone(),
+        }));
+        let this: Ptr<X2> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl ByteRepr for X2 {}
 #[derive(Default)]
@@ -101,6 +110,7 @@ impl ByteRepr for X4 {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -411,3 +421,4 @@ impl X4Impl for Ptr<X4> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
 }
+pub fn __cpp2rust_init_globals() {}

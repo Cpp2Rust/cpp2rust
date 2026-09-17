@@ -6,13 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Static {}
 impl Static {
     pub fn operator_call(a: i32, b: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         return ((*a.borrow()) * (*b.borrow()));
+    }
+}
+impl Clone for Static {
+    fn clone(&self) -> Self {
+        let __this: Value<Static> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Static> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Static {
@@ -51,6 +58,7 @@ impl ByteRepr for S {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -121,3 +129,4 @@ impl SImpl for Ptr<S> {
         return ((*(*(*self).upgrade().deref()).v.borrow()) != 0);
     }
 }
+pub fn __cpp2rust_init_globals() {}

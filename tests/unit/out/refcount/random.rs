@@ -58,8 +58,15 @@ impl ByteRepr for Pair {}
 pub fn zero_0() -> i32 {
     return 0;
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct X1 {}
+impl Clone for X1 {
+    fn clone(&self) -> Self {
+        let __this: Value<X1> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<X1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for X1 {
     fn byte_size() -> usize {
         1
@@ -75,6 +82,7 @@ pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) 
     let p3: Value<Ptr<Pair>> = Rc::new(RefCell::new(p3));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -319,3 +327,4 @@ impl PairImpl for Ptr<Pair> {
         return ((*(*self).upgrade().deref()).x.as_pointer());
     }
 }
+pub fn __cpp2rust_init_globals() {}

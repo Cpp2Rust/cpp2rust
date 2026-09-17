@@ -26,6 +26,7 @@ namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
 std::unordered_set<std::string> Converter::decl_ids_;
 std::unordered_set<std::string> Converter::globals_;
+std::vector<std::string> Converter::global_inits_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
@@ -59,8 +60,7 @@ use std::rc::Rc;
 )");
 }
 
-std::string Converter::EmitMethodsOnPtr() {
-  std::string out;
+void Converter::EmitMethodsOnPtr(std::string &out) {
   for (const auto &[name, methods] : methods_on_ptr_) {
     out += methods.trait_header;
     out += " {\n";
@@ -71,18 +71,30 @@ std::string Converter::EmitMethodsOnPtr() {
     out += methods.impl_body;
     out += "}\n";
   }
-  return out;
 }
 
-std::string Converter::EmitOpaqueRecords() {
-  std::string out;
+std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
+  return std::format("std::cell::LazyCell::force(&*&raw const {});",
+                     GetNamedDeclAsString(decl));
+}
+
+void Converter::EmitGlobalInits(Model model, std::string &out) {
+  out += model == Model::kUnsafe ? "pub unsafe fn __cpp2rust_init_globals() {\n"
+                                 : "pub fn __cpp2rust_init_globals() {\n";
+  for (const auto &line : global_inits_) {
+    out += line;
+    out += '\n';
+  }
+  out += "}\n";
+}
+
+void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += "#[derive(Clone, Copy, Default, ByteRepr)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
   });
-  return out;
 }
 
 bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {
@@ -257,7 +269,9 @@ Converter::MaterializeTemp(const std::string &binding_name,
 
   auto binding =
       std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
-  auto ref = std::format("& mut {}", binding_name);
+  auto ref = in_const_initializer_
+                 ? std::format("& mut *& raw mut {}", binding_name)
+                 : std::format("& mut {}", binding_name);
   return {binding, ref};
 }
 
@@ -498,6 +512,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
     StrCat(AccessSpecifierAsString(decl->getAccess()), keyword::kStatic,
            keyword_mut_);
     ENSURE(decl_ids_.insert(GetID(decl)).second);
+    global_inits_.push_back(ForceGlobalInit(decl));
   } else if (decl->isStaticLocal()) {
     StrCat(keyword::kStatic, keyword_mut_);
   } else if (decl->isLocalVarDecl()) {
@@ -518,7 +533,10 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   if (is_parm_with_default_value) {
     StrCat("Option<");
   }
-  Convert(qual_type);
+  {
+    PushLazyType lazy(*this, IsGlobalVar(decl) && LazyStaticInit());
+    Convert(qual_type);
+  }
   if (is_parm_with_default_value) {
     StrCat('>');
   }
@@ -569,8 +587,9 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
   PushConstInitializer static_init(*this, decl->isFileVarDecl() ||
                                               decl->isStaticLocal());
   StrCat(token::kAssign);
-  StrCat(keyword_unsafe_);
   {
+    PushLazyInit lazy(*this, LazyStaticInit());
+    StrCat(keyword_unsafe_);
     PushBrace push(*this);
     ConvertVarDeclInitializer(decl);
   }
@@ -2896,7 +2915,11 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (IsGlobalVar(expr)) {
-    return GetNamedDeclAsString(expr->getDecl());
+    if (LazyStaticInit()) {
+      return std::format("(*std::cell::LazyCell::force_mut(&mut *&raw mut {}))",
+                         GetNamedDeclAsString(decl));
+    }
+    return GetNamedDeclAsString(decl);
   }
 
   return GetNamedDeclAsString(decl);
@@ -4294,14 +4317,15 @@ pub fn main() {{
     let mut argv: Vec<*mut libc::c_char> = args.iter().map(|arg| arg.as_ptr() as *mut libc::c_char).collect();
     argv.push(::std::ptr::null_mut());
     unsafe {{
+        __cpp2rust_init_globals();
         ::std::process::exit(main_0((argv.len() - 1) as i32, argv.as_mut_ptr()) as i32)
     }}
 }})",
                        main_function_name));
   } else {
-    StrCat(std::format(
-        "pub fn main() {{ unsafe {{ std::process::exit({}() as i32); }} }}",
-        main_function_name));
+    StrCat(std::format("pub fn main() {{ unsafe {{ __cpp2rust_init_globals(); "
+                       "std::process::exit({}() as i32); }} }}",
+                       main_function_name));
   }
 }
 

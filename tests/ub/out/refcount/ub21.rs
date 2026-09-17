@@ -15,6 +15,7 @@ pub fn strlen_0(s: Ptr<u8>) -> usize {
     return (*count.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -25,3 +26,4 @@ fn main_0() -> i32 {
     ])));
     return (({ strlen_0((s.as_pointer() as Ptr<u8>)) }) as i32);
 }
+pub fn __cpp2rust_init_globals() {}

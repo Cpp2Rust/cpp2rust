@@ -189,6 +189,7 @@ impl ByteRepr for Holder {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -197,7 +198,7 @@ fn main_0() -> i32 {
     let c: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 3 }, { 300 })));
     ({ PartialImpl::operator_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 2) && ((*(*a.borrow()).keep.borrow()) == 100));
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 1));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 1));
     ({
         PartialImpl::operator_assign(
             &c.as_pointer(),
@@ -205,18 +206,18 @@ fn main_0() -> i32 {
         )
     });
     assert!(((*(*c.borrow()).v.borrow()) == 2) && ((*(*c.borrow()).keep.borrow()) == 300));
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 3));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 3));
     ({
         let _o: Ptr<Partial> = a.as_pointer();
         PartialImpl::operator_assign(&a.as_pointer(), _o)
     });
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 3));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 3));
     ({
         let _o: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 9 }, { 900 })));
         PartialImpl::operator_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(((*(*a.borrow()).v.borrow()) == 9) && ((*(*a.borrow()).keep.borrow()) == 100));
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 4));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 4));
     let ra: Ptr<Partial> = a.as_pointer();
     ({
         let _o: Ptr<Partial> = c.as_pointer();
@@ -229,7 +230,7 @@ fn main_0() -> i32 {
         PartialImpl::operator_assign(&(*pa.borrow()), _o)
     });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 6));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         p: Rc::new(RefCell::new(Partial::Partial({ 4 }, { 40 }))),
         arr: Rc::new(RefCell::new(Box::new([
@@ -252,7 +253,7 @@ fn main_0() -> i32 {
         ((*(*(*h.borrow()).arr.borrow())[(1) as usize].v.borrow()) == 2)
             && ((*(*(*h.borrow()).arr.borrow())[(1) as usize].keep.borrow()) == 60)
     );
-    assert!(((*assigns_0.with(Value::clone).borrow()) == 8));
+    assert!((assigns_0.with(|rc| rc.borrow().clone()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
     let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
     let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
@@ -308,4 +309,7 @@ impl RefQualifiedImpl for Ptr<RefQualified> {
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = assigns_0.with(|_| ());
 }

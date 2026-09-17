@@ -23,13 +23,15 @@ pub fn foo_0() -> i32 {
         static kX2_5: Value<i32> = Rc::new(RefCell::new(2));
     );
     (*kX1_4.with(Value::clone).borrow_mut()) += 1;
-    return (((*kX1_4.with(Value::clone).borrow()) + (*kX2_5.with(Value::clone).borrow()))
-        + (*static_i_1.with(Value::clone).borrow()));
+    return ((kX1_4.with(|rc| rc.borrow().clone()) + kX2_5.with(|rc| rc.borrow().clone()))
+        + static_i_1.with(|rc| rc.borrow().clone()));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((((({ foo_0() }) + ({ foo_0() })) + ({ foo_0() })) == 15));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

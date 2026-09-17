@@ -18,6 +18,7 @@ impl S_int_ {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -35,3 +36,4 @@ impl S_int_ {
 pub unsafe fn f_0(mut p: *mut S_int_) -> i32 {
     return (unsafe { S_int_::get(&mut (*p)) });
 }
+pub unsafe fn __cpp2rust_init_globals() {}

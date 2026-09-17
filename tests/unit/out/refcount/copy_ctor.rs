@@ -163,6 +163,7 @@ pub fn make_2(v: i32) -> Counted {
     return Counted::Counted_pconstCounted({ c.as_pointer() });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -176,25 +177,25 @@ fn main_0() -> i32 {
     let d: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
         a.as_pointer()
     })));
-    assert!(((*copies_0.with(Value::clone).borrow()) == 3));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 3));
     assert!(
         (((*(*b.borrow()).v.borrow()) == 1) && ((*(*c.borrow()).v.borrow()) == 1))
             && ((*(*d.borrow()).v.borrow()) == 1)
     );
     assert!((({ by_value_1(Counted::Counted_pconstCounted({ a.as_pointer() },),) }) == 1));
-    assert!(((*copies_0.with(Value::clone).borrow()) == 4));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 4));
     let e: Value<Counted> = Rc::new(RefCell::new(({ make_2(5) })));
     assert!(((*(*e.borrow()).v.borrow()) == 5));
-    assert!(((*copies_0.with(Value::clone).borrow()) == 5));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 5));
     let f: Value<Counted> = Rc::new(RefCell::new(Counted::Counted({ 6 })));
     assert!(((*(*f.borrow()).v.borrow()) == 6));
-    assert!(((*copies_0.with(Value::clone).borrow()) == 5));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 5));
     let g: Value<Counted> = Rc::new(RefCell::new(Counted::Counted({ 7 })));
     let h: Value<Counted> = Rc::new(RefCell::new(Counted::Counted_pconstCounted({
         g.as_pointer()
     })));
     assert!(((*(*h.borrow()).v.borrow()) == 7));
-    assert!(((*copies_0.with(Value::clone).borrow()) == 6));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 6));
     let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
         c: Rc::new(RefCell::new(Counted::Counted({ 8 }))),
         arr: Rc::new(RefCell::new(Box::new([
@@ -208,7 +209,7 @@ fn main_0() -> i32 {
             && ((*(*(*hold2.borrow()).arr.borrow())[(0) as usize].v.borrow()) == 9))
             && ((*(*(*hold2.borrow()).arr.borrow())[(1) as usize].v.borrow()) == 10)
     );
-    assert!(((*copies_0.with(Value::clone).borrow()) == 9));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 9));
     let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));
     {
         let a0_clone = (*a.borrow()).clone();
@@ -223,7 +224,7 @@ fn main_0() -> i32 {
         .borrow())
             == 1)
     );
-    assert!(((*copies_0.with(Value::clone).borrow()) == 10));
+    assert!((copies_0.with(|rc| rc.borrow().clone()) == 10));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst()));
     let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_pmutNonConst({
         n.as_pointer()
@@ -235,4 +236,7 @@ fn main_0() -> i32 {
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = copies_0.with(|_| ());
 }

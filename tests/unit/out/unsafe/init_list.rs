@@ -9,6 +9,7 @@ use std::rc::Rc;
 pub unsafe fn f_0(mut list: Vec<i32>) {}
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -22,3 +23,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { f_0(vec![1, 2, 3, 4]) });
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

@@ -98,6 +98,7 @@ pub fn operator_shr_assign_9(a: Ptr<S>, n: i32) -> Ptr<S> {
     return (a).clone();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -169,3 +170,4 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 14_u32));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

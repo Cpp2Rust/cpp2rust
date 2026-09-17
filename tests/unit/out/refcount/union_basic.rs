@@ -45,6 +45,7 @@ impl ByteRepr for basic {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -55,3 +56,4 @@ fn main_0() -> i32 {
     assert!((((*u.borrow()).f().read()) == 3.140000105E+0));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

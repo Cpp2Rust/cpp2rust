@@ -59,6 +59,7 @@ impl ByteRepr for Box {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -125,3 +126,4 @@ impl SImpl for Ptr<S> {
         return (((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow())) + (2 as i32));
     }
 }
+pub fn __cpp2rust_init_globals() {}

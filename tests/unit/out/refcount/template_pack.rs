@@ -58,6 +58,7 @@ pub fn sizeof_pack_9(args_0: i32, args_1: i32, args_2: i32, args_3: i32) -> i32 
     return (4 as i32);
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -72,3 +73,4 @@ fn main_0() -> i32 {
     assert!((({ sizeof_pack_9(1, 2, 3, 4,) }) == 4));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

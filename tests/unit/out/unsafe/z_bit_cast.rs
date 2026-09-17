@@ -10,6 +10,7 @@ pub unsafe fn decay_cast_0(mut a1: *mut u32) {}
 pub unsafe fn bit_cast_1(mut p: *const ::libc::c_void) {}
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -29,3 +30,4 @@ unsafe fn main_0() -> i32 {
     assert!(((*(ptr as *mut u32).offset((0) as isize)) == (a1[(0) as usize])));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

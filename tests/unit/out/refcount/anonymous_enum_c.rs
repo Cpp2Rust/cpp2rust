@@ -71,6 +71,7 @@ impl ByteRepr for WithAnonField {
     }
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -97,3 +98,4 @@ fn main_0() -> i32 {
 pub type anon_3 = u32;
 pub const anon_3_THIRD_A: anon_3 = 0;
 pub const anon_3_THIRD_B: anon_3 = 1;
+pub fn __cpp2rust_init_globals() {}

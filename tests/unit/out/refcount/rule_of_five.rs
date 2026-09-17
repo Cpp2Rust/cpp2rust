@@ -123,6 +123,7 @@ pub fn make_3(size: i32) -> Buffer {
     return Buffer::Buffer_pmutBuffer({ b.as_pointer() });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -134,17 +135,17 @@ fn main_0() -> i32 {
         })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!(
-            (((*alive_0.with(Value::clone).borrow()) == 2)
-                && ((*copies_1.with(Value::clone).borrow()) == 1))
-                && ((*moves_2.with(Value::clone).borrow()) == 0)
+            ((alive_0.with(|rc| rc.borrow().clone()) == 2)
+                && (copies_1.with(|rc| rc.borrow().clone()) == 1))
+                && (moves_2.with(|rc| rc.borrow().clone()) == 0)
         );
         (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
         assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
         let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pmutBuffer({ a.as_pointer() })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!(
-            ((*alive_0.with(Value::clone).borrow()) == 3)
-                && ((*moves_2.with(Value::clone).borrow()) == 1)
+            (alive_0.with(|rc| rc.borrow().clone()) == 3)
+                && (moves_2.with(|rc| rc.borrow().clone()) == 1)
         );
         assert!(
             ((*(*a.borrow()).size.borrow()) == 0)
@@ -157,29 +158,29 @@ fn main_0() -> i32 {
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!(
-            ((*(*d.borrow()).size.borrow()) == 2) && ((*moves_2.with(Value::clone).borrow()) == 2)
+            ((*(*d.borrow()).size.borrow()) == 2) && (moves_2.with(|rc| rc.borrow().clone()) == 2)
         );
         ({ BufferImpl::operator_assign_pconstBuffer(&d.as_pointer(), b.as_pointer()) });
         assert!(
             (((*(*d.borrow()).size.borrow()) == 4)
                 && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100))
-                && ((*copies_1.with(Value::clone).borrow()) == 2)
+                && (copies_1.with(|rc| rc.borrow().clone()) == 2)
         );
         ({ BufferImpl::operator_assign_pmutBuffer(&d.as_pointer(), c.as_pointer()) });
         assert!(
             (((*(*d.borrow()).data.borrow())[(0) as usize] == 0)
                 && ((*(*c.borrow()).size.borrow()) == 0))
-                && ((*moves_2.with(Value::clone).borrow()) == 3)
+                && (moves_2.with(|rc| rc.borrow().clone()) == 3)
         );
         ({
             let _o: Ptr<Buffer> = d.as_pointer();
             BufferImpl::operator_assign_pmutBuffer(&d.as_pointer(), _o)
         });
         assert!(
-            ((*(*d.borrow()).size.borrow()) == 4) && ((*moves_2.with(Value::clone).borrow()) == 3)
+            ((*(*d.borrow()).size.borrow()) == 4) && (moves_2.with(|rc| rc.borrow().clone()) == 3)
         );
     }
-    assert!(((*alive_0.with(Value::clone).borrow()) == 0));
+    assert!((alive_0.with(|rc| rc.borrow().clone()) == 0));
     return 0;
 }
 pub trait BufferImpl {
@@ -223,4 +224,9 @@ impl BufferImpl for Ptr<Buffer> {
         (*moves_2.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = alive_0.with(|_| ());
+    let _ = copies_1.with(|_| ());
+    let _ = moves_2.with(|_| ());
 }

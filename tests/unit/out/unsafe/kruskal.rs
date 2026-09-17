@@ -217,6 +217,7 @@ pub unsafe fn MSTKruskal_2(graph: *mut Graph) -> f64 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -261,3 +262,4 @@ unsafe fn main_0() -> i32 {
     assert!(((total_weight) == (19_f64)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

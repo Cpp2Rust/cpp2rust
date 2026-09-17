@@ -41,6 +41,7 @@ pub fn sum_0(p: Point) -> i32 {
     return ((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow()));
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -59,3 +60,4 @@ fn main_0() -> i32 {
     assert!(((*s.borrow()) == 30));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -26,6 +26,7 @@ pub unsafe fn foo_0(
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -36,3 +37,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { (f).unwrap()(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,) }) == (22)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

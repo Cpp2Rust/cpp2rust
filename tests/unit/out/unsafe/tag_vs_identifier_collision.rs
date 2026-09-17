@@ -67,6 +67,7 @@ pub unsafe fn is_active_0(mut w: *mut widget) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -101,3 +102,4 @@ unsafe fn main_0() -> i32 {
     assert!(((((w.id) == (7)) as i32) != 0));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

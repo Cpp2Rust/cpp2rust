@@ -23,9 +23,11 @@ pub fn dowhile_0(x: i32) -> i32 {
     return (*x.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ dowhile_0(0,) }) == 202));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

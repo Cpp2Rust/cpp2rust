@@ -17,6 +17,7 @@ pub fn borrow_in_condition_and_in_body_0(x: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -24,3 +25,4 @@ fn main_0() -> i32 {
     assert!((({ borrow_in_condition_and_in_body_0(1,) }) == 2));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

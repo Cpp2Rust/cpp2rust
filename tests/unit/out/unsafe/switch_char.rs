@@ -35,6 +35,7 @@ pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -46,3 +47,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { switch_char_0(('z' as libc::c_char),) }) == (0)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

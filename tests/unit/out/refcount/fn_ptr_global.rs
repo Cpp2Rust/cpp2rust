@@ -24,31 +24,35 @@ pub fn set_op_3(fn_: FnPtr<fn(i32) -> i32>) {
 }
 pub fn call_op_4(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    if !(*g_op_2.with(Value::clone).borrow()).is_null() {
-        return ({ (*(*g_op_2.with(Value::clone).borrow()))((*x.borrow())) });
+    if !(g_op_2.with(|rc| rc.borrow().clone())).is_null() {
+        return ({ (*g_op_2.with(|rc| rc.borrow().clone()))((*x.borrow())) });
     }
     return (*x.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ call_op_4(5,) }) == 5));
     ({ set_op_3(FnPtr::<fn(i32) -> i32>::new(double_it_0)) });
-    assert!(!((*g_op_2.with(Value::clone).borrow()).is_null()));
+    assert!(!((g_op_2.with(|rc| rc.borrow().clone())).is_null()));
     assert!({
-        let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
+        let _lhs = (g_op_2.with(|rc| rc.borrow().clone())).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(double_it_0)
     });
     assert!((({ call_op_4(5,) }) == 10));
     ({ set_op_3(FnPtr::<fn(i32) -> i32>::new(triple_it_1)) });
     assert!({
-        let _lhs = (*g_op_2.with(Value::clone).borrow()).clone();
+        let _lhs = (g_op_2.with(|rc| rc.borrow().clone())).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(triple_it_1)
     });
     assert!((({ call_op_4(5,) }) == 15));
     ({ set_op_3(FnPtr::<fn(i32) -> i32>::null()) });
-    assert!((*g_op_2.with(Value::clone).borrow()).is_null());
+    assert!((g_op_2.with(|rc| rc.borrow().clone())).is_null());
     assert!((({ call_op_4(5,) }) == 5));
     return 0;
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = g_op_2.with(|_| ());
 }

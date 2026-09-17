@@ -296,6 +296,7 @@ pub fn HuffmanCodes_5(
     return (*out.borrow_mut()).take();
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -548,3 +549,4 @@ impl MinHeapNodeImpl for Ptr<MinHeapNode> {
             && ((*(*(*self).upgrade().deref()).right.borrow()).is_null());
     }
 }
+pub fn __cpp2rust_init_globals() {}

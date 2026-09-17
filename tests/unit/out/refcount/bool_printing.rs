@@ -13,6 +13,7 @@ pub fn bar_1() -> bool {
     return true;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -34,3 +35,4 @@ fn main_0() -> i32 {
     write!(libcc2rs::cout(), "{:}\n", (({ bar_1() }) as u8),);
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

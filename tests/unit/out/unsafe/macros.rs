@@ -11,6 +11,7 @@ pub unsafe fn log_0(mut file: *const libc::c_char, mut line: i32, mut func: *con
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -24,3 +25,4 @@ unsafe fn main_0() -> i32 {
     (unsafe { log_0(c"macros.cpp".as_ptr(), 9, c"main".as_ptr()) });
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

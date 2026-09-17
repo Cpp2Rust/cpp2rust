@@ -43,9 +43,11 @@ pub fn f1_2(x: f64, y: f64) -> f64 {
     return ({ f2_0((*z1.borrow()), (*x.borrow())) });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!((({ f1_2(1.0E+0, 2.0E+0,) }) == (-6_i32 as f64)));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

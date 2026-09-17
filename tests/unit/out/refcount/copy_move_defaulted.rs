@@ -433,6 +433,7 @@ pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
     });
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -825,3 +826,4 @@ impl UserCopyDefaultMoveImpl for Ptr<UserCopyDefaultMove> {
         return (*self).clone();
     }
 }
+pub fn __cpp2rust_init_globals() {}

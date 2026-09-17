@@ -48,7 +48,7 @@ thread_local!(
 );
 pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
-    return (*side_effect_counter_3.with(Value::clone).borrow());
+    return side_effect_counter_3.with(|rc| rc.borrow().clone());
 }
 #[derive(Default)]
 pub struct Holder {
@@ -108,6 +108,7 @@ pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
     &(*x.upgrade().deref());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -128,12 +129,12 @@ fn main_0() -> i32 {
     assert!(((*w.borrow()) == 3));
     assert!(((*counter.borrow()) == 3));
     &({ bump_and_return_4() });
-    assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 1));
+    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 1));
     let v: Value<i32> = Rc::new(RefCell::new({
         &({ bump_and_return_4() });
         99
     }));
-    assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
+    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
     assert!(((*v.borrow()) == 99));
     &(0);
     &(0);
@@ -150,11 +151,11 @@ fn main_0() -> i32 {
     assert!(((*err.borrow()) == 7));
     assert!(((*chosen.borrow()) == 123));
     &(bump_and_return_4);
-    assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
+    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
     &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
-    assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
+    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
     &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>(None));
-    assert!(((*side_effect_counter_3.with(Value::clone).borrow()) == 2));
+    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     &((*p.borrow()).read());
@@ -188,4 +189,7 @@ impl NonCopyableImpl for Ptr<NonCopyable> {
             .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
         return (*self).clone();
     }
+}
+pub fn __cpp2rust_init_globals() {
+    let _ = side_effect_counter_3.with(|_| ());
 }

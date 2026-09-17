@@ -11,6 +11,7 @@ pub const Code_CODE_OK: Code = 0;
 pub const Code_CODE_ERR: Code = 1;
 pub const Code_CODE_FATAL: Code = 2;
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -34,3 +35,4 @@ fn main_0() -> i32 {
     assert!(!(*b4.borrow()));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}

@@ -8,6 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -18,3 +19,4 @@ unsafe fn main_0() -> i32 {
     assert!((((arr1[(0) as usize]) + (arr1[(1) as usize])) == (7)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}

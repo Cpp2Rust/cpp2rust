@@ -6,10 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Pair {
     pub x1: Ptr<i32>,
     pub x2: Ptr<i32>,
+}
+impl Clone for Pair {
+    fn clone(&self) -> Self {
+        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
+            x1: (self.x1).clone(),
+            x2: (self.x2).clone(),
+        }));
+        let this: Ptr<Pair> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl ByteRepr for Pair {}
 pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {
@@ -50,6 +60,7 @@ pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     return (*out.borrow());
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -63,3 +74,4 @@ fn main_0() -> i32 {
     ({ fill_1(arr.as_pointer(), n.as_pointer()) });
     return (({ any_2(arr.as_pointer(), n.as_pointer()) }) as i32);
 }
+pub fn __cpp2rust_init_globals() {}
