@@ -52,10 +52,10 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static std::string EmitOpaqueRecords();
-  static std::string EmitGlobalInits(Model model);
+  static void EmitOpaqueRecords(std::string &out);
+  static void EmitGlobalInits(Model model, std::string &out);
 
-  static std::string EmitMethodsOnPtr();
+  static void EmitMethodsOnPtr(std::string &out);
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 

@@ -60,8 +60,7 @@ use std::rc::Rc;
 )");
 }
 
-std::string Converter::EmitMethodsOnPtr() {
-  std::string out;
+void Converter::EmitMethodsOnPtr(std::string &out) {
   for (const auto &[name, methods] : methods_on_ptr_) {
     out += methods.trait_header;
     out += " {\n";
@@ -72,7 +71,6 @@ std::string Converter::EmitMethodsOnPtr() {
     out += methods.impl_body;
     out += "}\n";
   }
-  return out;
 }
 
 std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
@@ -80,27 +78,23 @@ std::string Converter::ForceGlobalInit(const clang::VarDecl *decl) {
                      GetNamedDeclAsString(decl));
 }
 
-std::string Converter::EmitGlobalInits(Model model) {
-  std::string out = model == Model::kUnsafe
-                        ? "pub unsafe fn __cpp2rust_init_globals() {\n"
-                        : "pub fn __cpp2rust_init_globals() {\n";
+void Converter::EmitGlobalInits(Model model, string &out) {
+  out += model == Model::kUnsafe ? "pub unsafe fn __cpp2rust_init_globals() {\n"
+                                 : "pub fn __cpp2rust_init_globals() {\n";
   for (const auto &line : global_inits_) {
     out += line;
     out += '\n';
   }
   out += "}\n";
-  return out;
 }
 
-std::string Converter::EmitOpaqueRecords() {
-  std::string out;
+void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += "#[derive(Clone, Copy, Default, ByteRepr)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
   });
-  return out;
 }
 
 bool Converter::VisitRecoveryExpr(clang::RecoveryExpr *expr) {

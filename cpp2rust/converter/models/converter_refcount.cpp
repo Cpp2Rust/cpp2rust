@@ -2449,7 +2449,8 @@ void ConverterRefCount::ConvertPointerSubscript(
 }
 
 std::string ConverterRefCount::ForceGlobalInit(const clang::VarDecl *decl) {
-  return std::format("let _ = {}.with(|_| ());", GetNamedDeclAsString(decl), clone);
+  return std::format("let _ = {}.with(|_| ());", GetNamedDeclAsString(decl),
+                     clone);
 }
 
 void ConverterRefCount::ConvertFunctionMain(
