@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
     let mut vec_: Vec<MoveOnly> = Vec::new();
     vec_.push(MoveOnly::MoveOnly({ 7 }));
     let mut f: MoveOnly = MoveOnly::MoveOnly({ 8 });
-    vec_.push(std::mem::take(&mut f));
+    vec_.push(MoveOnly::MoveOnly_pmutMoveOnly({ &mut f }));
     assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
     assert!(((f.v) == (0)));
     let mut m: ConstMove = ConstMove::ConstMove();

@@ -96,12 +96,6 @@ unsafe fn main_0() -> i32 {
     assert!(((o.anon_3.i) == (9)));
     assert!(((o.anon_3.inner_named.j) == (10)));
     assert!(((o.anon_3.anon_5.k) == (11)));
-    #[repr(C)]
-    #[derive(Copy, Clone, Default)]
-    pub struct anon_6 {
-        pub x: i32,
-        pub z: i32,
-    };
     let mut s: anon_6 = <anon_6>::default();
     s.x = 1;
     s.z = 2;
@@ -118,5 +112,11 @@ unsafe fn main_0() -> i32 {
         } != 0)
     );
     return 0;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct anon_6 {
+    pub x: i32,
+    pub z: i32,
 }
 pub unsafe fn __cpp2rust_init_globals() {}

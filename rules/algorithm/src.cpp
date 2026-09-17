@@ -9,6 +9,7 @@
 
 struct T2 {
   friend bool operator<(T2 a, T2 b) { return false; }
+  bool operator()(const T2 &, const T2 &) const;
 };
 
 struct T1 {
@@ -91,14 +92,7 @@ template <class T1, class T2> T1 f3(T1 first, T1 last, const T2 &value) {
   return std::find(first, last, value);
 }
 
-// TODO
-auto lambda = [](const T2 &a, const T2 &b) { return false; };
-void f6(T1 first, T1 last, decltype(lambda) comp) {
-  return std::stable_sort(first, last, comp);
-}
-
-template <typename T1, typename T2>
-void f7(T1 first, T1 last, bool (*comp)(const T2 &, const T2 &)) {
+void f6(T1 first, T1 last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 
@@ -126,14 +120,7 @@ std::ostream_iterator<char> f13(std::string::iterator a0,
   return std::copy(a0, a1, a2);
 }
 
-// TODO
-auto lambda_nref = [](T2 a, T2 b) { return false; };
-void f14(T1 *first, T1 *last, decltype(lambda_nref) comp) {
-  return std::stable_sort(first, last, comp);
-}
-
-template <typename T1, typename T2>
-void f15(T1 *first, T1 *last, bool (*comp)(T2, T2)) {
+void f14(T1 *first, T1 *last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 

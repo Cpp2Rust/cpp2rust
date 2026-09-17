@@ -16,7 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install mdbook
-        run: cargo install mdbook
+        run: cargo install mdbook mdbook-mermaid
+      - name: Install mermaid assets
+        run: mdbook-mermaid install docs
       - name: Build book
         run: mdbook build docs
       - uses: actions/upload-pages-artifact@v5

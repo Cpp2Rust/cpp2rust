@@ -36,9 +36,6 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    pub type anon_3 = u32;
-    pub const anon_3_THIRD_A: anon_3 = 0;
-    pub const anon_3_THIRD_B: anon_3 = 1;;
     assert!(((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)));
     assert!(((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)));
     assert!(((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)));
@@ -53,4 +50,7 @@ unsafe fn main_0() -> i32 {
     assert!(((w.field as i32) == (anon_2_FIELD_B as i32)));
     return 0;
 }
+pub type anon_3 = u32;
+pub const anon_3_THIRD_A: anon_3 = 0;
+pub const anon_3_THIRD_B: anon_3 = 1;
 pub unsafe fn __cpp2rust_init_globals() {}

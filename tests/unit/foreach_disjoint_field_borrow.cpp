@@ -1,6 +1,3 @@
-// Copyright (c) 2022-present INESC-ID.
-// Distributed under the MIT license that can be found in the LICENSE file.
-
 // Test that iterating over one struct field while mutating another
 // does not cause a refcell double borrow error.
 #include <vector>

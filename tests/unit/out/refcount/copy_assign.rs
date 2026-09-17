@@ -149,7 +149,13 @@ impl Clone for Holder {
             p: Rc::new(RefCell::new(Partial::Partial_pconstPartial({
                 self.p.as_pointer()
             }))),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| {
+                    Partial::Partial_pconstPartial({
+                        (self.arr.as_pointer() as Ptr<Partial>).offset(__i)
+                    })
+                },
+            )))),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

@@ -96,7 +96,6 @@ thread_local!(
             .collect::<Vec<u8>>(),
     ));
 );
-thread_local!();
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 5 })));
 );

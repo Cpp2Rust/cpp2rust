@@ -291,34 +291,6 @@ fn main_0() -> i32 {
             == 11) as i32)
             != 0)
     );
-    #[derive(Default)]
-    pub struct anon_6 {
-        pub x: Value<i32>,
-        pub z: Value<i32>,
-    }
-    impl Clone for anon_6 {
-        fn clone(&self) -> Self {
-            Self {
-                x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-                z: Rc::new(RefCell::new((*self.z.borrow()).clone())),
-            }
-        }
-    }
-    impl ByteRepr for anon_6 {
-        fn byte_size() -> usize {
-            8
-        }
-        fn to_bytes(&self, buf: &mut [u8]) {
-            (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-            (*self.z.borrow()).to_bytes(&mut buf[4..8]);
-        }
-        fn from_bytes(buf: &[u8]) -> Self {
-            Self {
-                x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-                z: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            }
-        }
-    };
     let s: Value<anon_6> = <Value<anon_6>>::default();
     (*(*s.borrow()).x.borrow_mut()) = 1;
     (*(*s.borrow()).z.borrow_mut()) = 2;
@@ -335,5 +307,33 @@ fn main_0() -> i32 {
         } != 0)
     );
     return 0;
+}
+#[derive(Default)]
+pub struct anon_6 {
+    pub x: Value<i32>,
+    pub z: Value<i32>,
+}
+impl Clone for anon_6 {
+    fn clone(&self) -> Self {
+        Self {
+            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
+            z: Rc::new(RefCell::new((*self.z.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for anon_6 {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.z.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            z: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
 }
 pub fn __cpp2rust_init_globals() {}

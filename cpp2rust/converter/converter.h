@@ -225,7 +225,7 @@ public:
   };
 
   struct PlaceholderCtx {
-    std::string param_type;
+    unsigned arg_idx;
     std::optional<clang::QualType> implicit_convert_to;
     TempMaterializationCtx *materialize_ctx;
     int materialize_idx; // <0 = no idx, >=0 idx valid
@@ -313,6 +313,9 @@ public:
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
+  std::string ConvertFnPtrCallee(clang::Expr *arg);
+  virtual std::string ConvertFnPtrPlaceholder(clang::Expr *arg);
+
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 
@@ -334,6 +337,8 @@ public:
   void ConvertVAArgCall(clang::CallExpr *expr);
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
+
+  void DefineImplicitMembers(clang::CXXRecordDecl *decl);
 
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
@@ -388,6 +393,9 @@ public:
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
 
   virtual bool VisitInitListExpr(clang::InitListExpr *expr);
+  bool VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr);
+  bool VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr);
+  virtual bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr);
 
   virtual bool VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
 
@@ -446,14 +454,22 @@ public:
 
 protected:
   const clang::Expr *GetParentExpr(const clang::Expr *expr);
-  bool IsSubExprOf(const clang::Expr *sub_expr, const clang::Expr *parent_expr);
 
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
+
+  inline bool is_empty(char c) { return false; }
+  inline bool is_empty(const char *s) { return s == nullptr || *s == '\0'; }
+  template <size_t N> inline bool is_empty(const char (&s)[N]) {
+    return s[0] == '\0';
+  }
+  template <typename T> inline bool is_empty(const T &s) { return s.empty(); }
 
   template <typename... Ts>
   inline void _StrCat(const char *func, int line, const Ts &...vals) {
     log() << '[' << func << ':' << line << "] ";
-    ((log() << vals << '\n', *rs_code_ += vals, *rs_code_ += ' '), ...);
+    ((log() << vals << '\n', *rs_code_ += vals,
+      (is_empty(vals) ? void() : void(*rs_code_ += ' '))),
+     ...);
   }
 
   class Buffer {
@@ -887,6 +903,8 @@ protected:
   // translation units.
   static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
 
+  std::string hoisted_records_;
+
   enum class ExprKind : uint8_t {
     Callee,
     LValue,
@@ -1009,8 +1027,8 @@ protected:
   virtual bool emplace_back_plugin_convert(clang::CallExpr *call);
   virtual void emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                                  clang::CXXConstructExpr *ctor);
-  virtual void emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
-  virtual void emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
+  virtual void emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                      std::string_view arg);
 
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 

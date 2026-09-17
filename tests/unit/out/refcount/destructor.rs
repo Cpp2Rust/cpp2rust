@@ -112,7 +112,9 @@ pub struct ArrayMember {
 impl Clone for ArrayMember {
     fn clone(&self) -> Self {
         let __this: Value<ArrayMember> = Rc::new(RefCell::new(Self {
-            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
+            items: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| ((*self.items.borrow())[(__i) as usize]).clone(),
+            )))),
         }));
         let this: Ptr<ArrayMember> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

@@ -682,10 +682,9 @@ std::string InstantiateTemplate(const clang::Expr *expr, unsigned n) {
   if (!rule) {
     return text;
   }
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
+  auto &ty = subs.at(n - 1);
+  if (ty) {
+    ty = mapTypeStringRecursive(*ty);
   }
   return instantiateTgt(subs, text);
 }
@@ -880,6 +879,12 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   if (auto *tag = qual_type->getAsTagDecl();
       tag && !tag->getIdentifier() && !tag->getTypedefNameForAnonDecl()) {
     return ToString(clang::cast<clang::NamedDecl>(tag));
+  }
+
+  if (auto *tag = qual_type->getAsTagDecl();
+      tag && tag->getIdentifier() &&
+      tag->getDeclContext()->isFunctionOrMethod()) {
+    return GetNamedDeclAsString(tag);
   }
 
   if (auto renamed = DisambiguateAnonymousTag(qual_type->getAsTagDecl());

@@ -21,6 +21,9 @@ pub use libc_shims::*;
 mod fn_ptr;
 pub use fn_ptr::FnPtr;
 
+mod callable;
+pub use callable::*;
+
 mod inc;
 pub use inc::*;
 

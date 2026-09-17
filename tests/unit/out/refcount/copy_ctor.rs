@@ -114,7 +114,13 @@ impl Clone for Holder {
             c: Rc::new(RefCell::new(Counted::Counted_pconstCounted({
                 self.c.as_pointer()
             }))),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| {
+                    Counted::Counted_pconstCounted({
+                        (self.arr.as_pointer() as Ptr<Counted>).offset(__i)
+                    })
+                },
+            )))),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

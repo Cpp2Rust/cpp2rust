@@ -66,44 +66,6 @@ fn main_0() -> i32 {
     let a: Value<node_a> = Rc::new(RefCell::new(node_a {
         n: Rc::new(RefCell::new(123)),
     }));
-    pub struct anon_0 {
-        __bytes: Value<Box<[u8]>>,
-    }
-    impl anon_0 {
-        pub fn to_a(&self) -> Ptr<Ptr<node_a>> {
-            (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-        }
-        pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
-            (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-        }
-    }
-    impl Clone for anon_0 {
-        fn clone(&self) -> Self {
-            anon_0 {
-                __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-            }
-        }
-    }
-    impl Default for anon_0 {
-        fn default() -> Self {
-            anon_0 {
-                __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
-            }
-        }
-    }
-    impl ByteRepr for anon_0 {
-        fn byte_size() -> usize {
-            8
-        }
-        fn to_bytes(&self, buf: &mut [u8]) {
-            buf.copy_from_slice(&self.__bytes.borrow());
-        }
-        fn from_bytes(buf: &[u8]) -> Self {
-            anon_0 {
-                __bytes: Rc::new(RefCell::new(Box::from(buf))),
-            }
-        }
-    };
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
@@ -115,5 +77,43 @@ fn main_0() -> i32 {
             != 0)
     );
     return 0;
+}
+pub struct anon_0 {
+    __bytes: Value<Box<[u8]>>,
+}
+impl anon_0 {
+    pub fn to_a(&self) -> Ptr<Ptr<node_a>> {
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+    pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
+        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    }
+}
+impl Clone for anon_0 {
+    fn clone(&self) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
+    }
+}
+impl Default for anon_0 {
+    fn default() -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
+        }
+    }
+}
+impl ByteRepr for anon_0 {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        anon_0 {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
 }
 pub fn __cpp2rust_init_globals() {}

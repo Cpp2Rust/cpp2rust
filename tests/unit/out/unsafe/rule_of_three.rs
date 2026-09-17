@@ -114,14 +114,14 @@ unsafe fn main_0() -> i32 {
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2)));
         assert!(((unsafe { sum_2(&a,) }) == (6)));
         assert!(((unsafe { sum_2(&b,) }) == (106)));
-        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &mut a });
+        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (4))
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (3))
         );
         assert!(((a.size) == (4)) && ((a.data[(3) as usize]) == (3)));
-        (unsafe { Buffer::operator_assign(&mut d, &mut b) });
+        (unsafe { Buffer::operator_assign(&mut d, &b) });
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (4)));
         assert!(((b.data[(0) as usize]) == (100)) && ((d.data[(0) as usize]) == (100)));
     }

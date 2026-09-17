@@ -80,6 +80,17 @@ impl ByteRepr for Holder {
 pub struct NonCopyable {
     pub value: Value<Option<Value<i32>>>,
 }
+impl NonCopyable {
+    pub fn NonCopyable_pmutNonCopyable(_a0: Ptr<NonCopyable>) -> Self {
+        let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
+            value: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).value.borrow_mut()).take(),
+            )),
+        }));
+        let this: Ptr<NonCopyable> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for NonCopyable {
     fn byte_size() -> usize {
         8
@@ -168,6 +179,16 @@ fn main_0() -> i32 {
     ({ unused_noncopyable_param_5(g.as_pointer()) });
     assert!(((*(*(*g.borrow()).value.borrow()).as_ref().unwrap().borrow()) == 9));
     return 0;
+}
+pub trait NonCopyableImpl {
+    fn operator_assign_pmutNonCopyable(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
+}
+impl NonCopyableImpl for Ptr<NonCopyable> {
+    fn operator_assign_pmutNonCopyable(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
+        ((*(*self).upgrade().deref()).value.as_pointer() as Ptr<Option<Value<i32>>>)
+            .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
+        return (*self).clone();
+    }
 }
 pub fn __cpp2rust_init_globals() {
     let _ = side_effect_counter_3.with(Value::clone);

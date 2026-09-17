@@ -124,7 +124,7 @@ fn main_0() -> i32 {
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     (*vec_.borrow_mut()).push(MoveOnly::MoveOnly({ 7 }));
     let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 8 })));
-    (*vec_.borrow_mut()).push(std::mem::take(&mut (*f.borrow_mut())));
+    (*vec_.borrow_mut()).push(MoveOnly::MoveOnly_pmutMoveOnly({ f.as_pointer() }));
     assert!(
         ((*(*(vec_.as_pointer() as Ptr<MoveOnly>)
             .offset(0_usize)

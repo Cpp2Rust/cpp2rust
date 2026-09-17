@@ -221,6 +221,21 @@ pub struct DisjointSet {
     pub parent: Value<Option<Value<Box<[i32]>>>>,
     pub n: Value<i32>,
 }
+impl DisjointSet {
+    pub fn DisjointSet_pmutDisjointSet(_a0: Ptr<DisjointSet>) -> Self {
+        let __this: Value<DisjointSet> = Rc::new(RefCell::new(Self {
+            rank: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).rank.borrow_mut()).take(),
+            )),
+            parent: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).parent.borrow_mut()).take(),
+            )),
+            n: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).n.borrow()))),
+        }));
+        let this: Ptr<DisjointSet> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for DisjointSet {
     fn byte_size() -> usize {
         24
@@ -247,6 +262,19 @@ pub struct Graph {
     pub edges: Value<Option<Value<Box<[Edge]>>>>,
     pub V: Value<i32>,
     pub E: Value<i32>,
+}
+impl Graph {
+    pub fn Graph_pmutGraph(_a0: Ptr<Graph>) -> Self {
+        let __this: Value<Graph> = Rc::new(RefCell::new(Self {
+            edges: Rc::new(RefCell::new(
+                (*(*_a0.upgrade().deref()).edges.borrow_mut()).take(),
+            )),
+            V: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).V.borrow()))),
+            E: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).E.borrow()))),
+        }));
+        let this: Ptr<Graph> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl ByteRepr for Graph {
     fn byte_size() -> usize {
@@ -391,6 +419,7 @@ pub trait DisjointSetImpl {
     fn makeSet(&self);
     fn find(&self, x: i32) -> i32;
     fn merge(&self, x: i32, y: i32);
+    fn operator_assign_pmutDisjointSet(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet>;
 }
 impl DisjointSetImpl for Ptr<DisjointSet> {
     fn makeSet(&self) {
@@ -486,6 +515,29 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .unwrap()
                 .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
+    }
+    fn operator_assign_pmutDisjointSet(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
+        ((*(*self).upgrade().deref()).rank.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+            .write((*(*_a0.upgrade().deref()).rank.borrow_mut()).take());
+        ((*(*self).upgrade().deref()).parent.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
+            .write((*(*_a0.upgrade().deref()).parent.borrow_mut()).take());
+        let __rhs = (*(*_a0.upgrade().deref()).n.borrow());
+        (*(*(*self).upgrade().deref()).n.borrow_mut()) = __rhs;
+        return (*self).clone();
+    }
+}
+pub trait GraphImpl {
+    fn operator_assign_pmutGraph(&self, _a0: Ptr<Graph>) -> Ptr<Graph>;
+}
+impl GraphImpl for Ptr<Graph> {
+    fn operator_assign_pmutGraph(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
+        ((*(*self).upgrade().deref()).edges.as_pointer() as Ptr<Option<Value<Box<[Edge]>>>>)
+            .write((*(*_a0.upgrade().deref()).edges.borrow_mut()).take());
+        let __rhs = (*(*_a0.upgrade().deref()).V.borrow());
+        (*(*(*self).upgrade().deref()).V.borrow_mut()) = __rhs;
+        let __rhs = (*(*_a0.upgrade().deref()).E.borrow());
+        (*(*(*self).upgrade().deref()).E.borrow_mut()) = __rhs;
+        return (*self).clone();
     }
 }
 pub fn __cpp2rust_init_globals() {}
