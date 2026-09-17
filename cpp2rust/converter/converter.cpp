@@ -482,13 +482,12 @@ bool Converter::NeedsMut(const clang::VarDecl *decl, clang::QualType type,
 
 bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   auto qual_type = decl->getType();
-  auto name = GetNamedDeclAsString(decl);
-
   if (IsVaListType(qual_type) && decl->isLocalVarDecl()) {
     ConvertVaListVarDecl(decl);
     return true;
   }
 
+  auto name = GetNamedDeclAsString(decl);
   if (decl->isFileVarDecl()) {
     if ((decl->isThisDeclarationADefinition() ==
              clang::VarDecl::DeclarationOnly &&
