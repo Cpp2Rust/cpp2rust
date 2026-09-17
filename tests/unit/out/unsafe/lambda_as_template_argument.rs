@@ -12,6 +12,15 @@ pub unsafe fn apply_0(mut fn_: lambda_1, mut x: i32) -> i32 {
 pub unsafe fn apply_2(mut fn_: lambda_3, mut x: i32) -> i32 {
     return (unsafe { lambda_3::operator_call(&fn_, x) });
 }
+pub unsafe fn apply_4(mut fn_: lambda_5, mut x: i32) -> i32 {
+    return (unsafe { lambda_5::operator_call(x) });
+}
+pub unsafe fn apply_twice_6(mut fn_: lambda_3, mut x: i32) -> i32 {
+    return (unsafe {
+        let _x: i32 = (unsafe { lambda_3::operator_call(&fn_, x) });
+        lambda_3::operator_call(&fn_, _x)
+    });
+}
 pub fn main() {
     unsafe {
         std::process::exit(main_0() as i32);
@@ -26,6 +35,8 @@ unsafe fn main_0() -> i32 {
     let mut factor: i32 = 3;
     let mut scale: lambda_3 = (lambda_3 { factor: factor });
     assert!(((unsafe { apply_2(scale, 4,) }) == (12)));
+    assert!(((unsafe { apply_twice_6(scale, 4,) }) == (36)));
+    assert!(((unsafe { apply_4((lambda_5 {}), 9,) }) == (-9_i32)));
     return 0;
 }
 #[repr(C)]
@@ -56,5 +67,23 @@ impl lambda_3 {
 impl Callable1<i32, i32> for lambda_3 {
     fn call(&self, a1: i32) -> i32 {
         unsafe { lambda_3::operator_call(self, a1) }
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct lambda_5 {}
+impl lambda_5 {
+    pub unsafe fn operator_call(mut x: i32) -> i32 {
+        return -x;
+    }
+}
+impl Callable1<i32, i32> for lambda_5 {
+    fn call(&self, a1: i32) -> i32 {
+        unsafe { lambda_5::operator_call(a1) }
+    }
+}
+impl lambda_5 {
+    pub fn to_free_function(&self) -> Option<unsafe fn(i32) -> i32> {
+        Some(lambda_5::operator_call)
     }
 }

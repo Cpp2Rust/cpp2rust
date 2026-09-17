@@ -16,6 +16,19 @@ pub fn apply_2(fn_: lambda_3, x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return ({ lambda_3::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
 }
+pub fn apply_4(fn_: lambda_5, x: i32) -> i32 {
+    let fn_: Value<lambda_5> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({ lambda_5::operator_call((*x.borrow())) });
+}
+pub fn apply_twice_6(fn_: lambda_3, x: i32) -> i32 {
+    let fn_: Value<lambda_3> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({
+        let _x: i32 = ({ lambda_3::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
+        lambda_3::operator_call(&(*fn_.borrow_mut()), _x)
+    });
+}
 pub fn main() {
     std::process::exit(main_0());
 }
@@ -36,6 +49,8 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((({ apply_2((*scale.borrow()).clone(), 4,) }) == 12));
+    assert!((({ apply_twice_6((*scale.borrow()).clone(), 4,) }) == 36));
+    assert!((({ apply_4((lambda_5 {}), 9,) }) == -9_i32));
     return 0;
 }
 #[derive(Clone, Default)]
@@ -87,5 +102,32 @@ impl ByteRepr for lambda_3 {
 impl Callable1<i32, i32> for lambda_3 {
     fn call(&self, a1: i32) -> i32 {
         { lambda_3::operator_call(self, a1) }
+    }
+}
+#[derive(Clone, Default)]
+pub struct lambda_5 {}
+impl lambda_5 {
+    pub fn operator_call(x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return -(*x.borrow());
+    }
+}
+impl ByteRepr for lambda_5 {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
+impl Callable1<i32, i32> for lambda_5 {
+    fn call(&self, a1: i32) -> i32 {
+        { lambda_5::operator_call(a1) }
+    }
+}
+impl lambda_5 {
+    pub fn to_free_function(&self) -> FnPtr<fn(i32) -> i32> {
+        FnPtr::new(lambda_5::operator_call)
     }
 }
