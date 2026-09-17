@@ -3633,7 +3633,7 @@ static constexpr unsigned kMaxCallableArity = 3;
 
 void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
   auto *op = decl->getLambdaCallOperator();
-  assert(op->getNumParams() <= kMaxCallableArity);
+  ENSURE(op->getNumParams() <= kMaxCallableArity);
   if (!op->isConst()) {
     return;
   }
