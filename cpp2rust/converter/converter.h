@@ -426,12 +426,6 @@ public:
   virtual std::string
   ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op);
 
-  clang::FieldDecl *LambdaCaptureField(const clang::ValueDecl *var) const;
-
-  std::string LambdaCaptureName(const clang::ValueDecl *var) const;
-
-  bool IsCapturedThis(const clang::Expr *expr) const;
-
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
