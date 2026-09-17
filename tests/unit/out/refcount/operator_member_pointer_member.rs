@@ -32,7 +32,6 @@ impl ByteRepr for Inner {
         }
     }
 }
-thread_local!();
 #[derive(Default)]
 pub struct Table {}
 impl Table {

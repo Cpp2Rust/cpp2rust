@@ -721,10 +721,19 @@ void ConverterRefCount::EmitHoistedInArmAssignment(clang::VarDecl *decl) {
 }
 
 void ConverterRefCount::ConvertGlobalVarDecl(clang::VarDecl *decl) {
+  std::string str;
+  {
+    Buffer buf(*this);
+    ConvertVarDecl(decl);
+    str = std::move(buf).str();
+    if (str.empty()) {
+      return;
+    }
+  }
   StrCat("thread_local!");
   {
     PushParen paren(*this);
-    ConvertVarDecl(decl);
+    StrCat(str);
   }
   StrCat(token::kSemiColon);
 }
