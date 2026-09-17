@@ -633,18 +633,6 @@ const clang::LambdaCapture *GetLambdaCapture(const clang::FieldDecl *field) {
   return nullptr;
 }
 
-clang::FieldDecl *GetLambdaCaptureField(const clang::CXXRecordDecl *lambda,
-                                        const clang::ValueDecl *var) {
-  llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> captures;
-  clang::FieldDecl *this_capture = nullptr;
-  lambda->getCaptureFields(captures, this_capture);
-  if (!var) {
-    return this_capture;
-  }
-  auto it = captures.find(var);
-  return it == captures.end() ? nullptr : it->second;
-}
-
 const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn) {
   auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(fn);
   if (!method || !method->getParent()->isLambda()) {
@@ -655,11 +643,18 @@ const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn) {
 
 clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
                                          const clang::ValueDecl *var) {
-  if (!fn) {
+  auto *lambda = GetLambdaOf(fn);
+  if (!lambda) {
     return nullptr;
   }
-  auto *lambda = GetLambdaOf(fn);
-  return lambda ? GetLambdaCaptureField(lambda, var) : nullptr;
+  llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> captures;
+  clang::FieldDecl *this_capture = nullptr;
+  lambda->getCaptureFields(captures, this_capture);
+  if (!var) {
+    return this_capture;
+  }
+  auto it = captures.find(var);
+  return it == captures.end() ? nullptr : it->second;
 }
 
 std::string GetLambdaCaptureName(const clang::FunctionDecl *fn,
