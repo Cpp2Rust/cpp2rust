@@ -908,17 +908,9 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
-  std::vector<ExprKind> saved_expr_kinds;
-  saved_expr_kinds.swap(curr_expr_kind_);
-  ConvertCXXRecordDecl(decl);
-  curr_expr_kind_.swap(saved_expr_kinds);
-  return false;
-}
-
-void Converter::ConvertCXXRecordDecl(clang::CXXRecordDecl *decl) {
   Mapper::AddRuleForUserDefinedType(decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
-    return;
+    return false;
   }
 
   if (decl->isStruct() || decl->isClass()) {
@@ -935,12 +927,12 @@ void Converter::ConvertCXXRecordDecl(clang::CXXRecordDecl *decl) {
       if (!decl->isAbstract()) {
         ConvertLateInstantiatedMethods(decl);
       }
-      return;
+      return false;
     }
 
     if (decl->isAbstract()) {
       ConvertAbstractClass(decl);
-      return;
+      return false;
     }
 
     DefineImplicitMembers(decl);
@@ -951,13 +943,14 @@ void Converter::ConvertCXXRecordDecl(clang::CXXRecordDecl *decl) {
     }
   } else if (decl->isUnion()) {
     if (!record_decls_.MarkDefined(GetRecordName(decl))) {
-      return;
+      return false;
     }
     EmitRustStructOrUnion(decl);
   } else {
     // FIXME: improve error handling
     assert(0 && "unsupported record kind");
   }
+  return false;
 }
 
 void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {

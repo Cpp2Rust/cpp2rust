@@ -111,7 +111,6 @@ public:
   bool VisitRecordDecl(clang::RecordDecl *decl);
 
   virtual bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl);
-  void ConvertCXXRecordDecl(clang::CXXRecordDecl *decl);
 
   virtual void EmitRustStructOrUnion(clang::RecordDecl *decl);
 
