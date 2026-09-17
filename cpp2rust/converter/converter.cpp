@@ -284,7 +284,9 @@ Converter::MaterializeTemp(const std::string &binding_name,
 
   auto binding =
       std::format("{} mut {} : {} = {};", decl, binding_name, type_str, value);
-  auto ref = std::format("& mut {}", binding_name);
+  auto ref = in_const_initializer_
+                 ? std::format("& mut *& raw mut {}", binding_name)
+                 : std::format("& mut {}", binding_name);
   return {binding, ref};
 }
 

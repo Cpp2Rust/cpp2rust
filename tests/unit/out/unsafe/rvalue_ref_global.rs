@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 static mut __tmp_0: i32 = 5;
 pub static mut g_0: std::cell::LazyCell<*mut i32> =
-    std::cell::LazyCell::new(|| unsafe { &mut __tmp_0 });
+    std::cell::LazyCell::new(|| unsafe { &mut *&raw mut __tmp_0 });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
