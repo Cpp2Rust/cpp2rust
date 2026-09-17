@@ -30,7 +30,7 @@ fn main_0() -> i32 {
         ({ sum_bytes_0(Ptr::from_string_literal(b"\x01\0"), 2_u32) }),
     ));
     let b: Value<i32> = Rc::new(RefCell::new(
-        ({ sum_bytes_0((*g_packet_1.with(Value::clone).borrow()).clone(), 2_u32) }),
+        ({ sum_bytes_0((g_packet_1.with(|rc| rc.borrow().clone())).clone(), 2_u32) }),
     ));
     assert!(((*a.borrow()) == (*b.borrow())));
     assert!(((*a.borrow()) == 1));

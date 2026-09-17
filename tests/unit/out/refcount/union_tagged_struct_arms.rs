@@ -208,7 +208,7 @@ fn main_0() -> i32 {
     (*(*p_list.borrow()).index.borrow_mut()) = 0;
     (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
         .items
-        .borrow_mut()) = (items_4.with(Value::clone).as_pointer() as Ptr<Ptr<u8>>);
+        .borrow_mut()) = (items_4.with(|v| v.as_pointer()) as Ptr<Ptr<u8>>);
     (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
         .count
         .borrow_mut()) = 3_i64;

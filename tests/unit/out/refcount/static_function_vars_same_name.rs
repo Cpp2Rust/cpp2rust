@@ -10,13 +10,13 @@ pub fn a_0() -> i32 {
     thread_local!(
         static i_1: Value<i32> = Rc::new(RefCell::new(1));
     );
-    return (*i_1.with(Value::clone).borrow());
+    return i_1.with(|rc| rc.borrow().clone());
 }
 pub fn b_2() -> i32 {
     thread_local!(
         static i_3: Value<i32> = Rc::new(RefCell::new(2));
     );
-    return (*i_3.with(Value::clone).borrow());
+    return i_3.with(|rc| rc.borrow().clone());
 }
 pub fn main() {
     __cpp2rust_init_globals();

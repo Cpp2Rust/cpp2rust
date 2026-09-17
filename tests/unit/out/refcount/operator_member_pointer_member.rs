@@ -37,7 +37,7 @@ pub struct Table {}
 impl Table {
     pub fn operator_index(i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
-        return (table_0.with(Value::clone).as_pointer() as Ptr<i32>).offset((*i.borrow()));
+        return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset((*i.borrow()));
     }
 }
 impl Clone for Table {
@@ -151,7 +151,7 @@ fn main_0() -> i32 {
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
-    assert!(((*table_0.with(Value::clone).borrow())[(1) as usize] == 80));
+    assert!((table_0.with(|rc| rc.borrow().clone())[(1) as usize] == 80));
     return 0;
 }
 pub trait SImpl {

@@ -194,41 +194,41 @@ fn main_0() -> i32 {
         (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32)),
     ));
     assert!(((*extra.borrow()) == ((0 + 1) + 2)));
-    assert!((((*global_color_0.with(Value::clone).borrow()) as i32) == (Color_GREEN as i32)));
-    assert!((((*global_opt_1.with(Value::clone).borrow()) as i32) == (Option_OPT_B as i32)));
-    assert!((((*global_tag_2.with(Value::clone).borrow()) as i32) == (Tag_TAG_TWO as i32)));
+    assert!(((global_color_0.with(|rc| rc.borrow().clone()) as i32) == (Color_GREEN as i32)));
+    assert!(((global_opt_1.with(|rc| rc.borrow().clone()) as i32) == (Option_OPT_B as i32)));
+    assert!(((global_tag_2.with(|rc| rc.borrow().clone()) as i32) == (Tag_TAG_TWO as i32)));
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(0) as usize]
             .color
             .borrow()) as i32)
             == (Color_RED as i32))
     );
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(0) as usize]
             .opt
             .borrow()) as i32)
             == (Option_OPT_NONE as i32))
     );
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(1) as usize]
             .color
             .borrow()) as i32)
             == (Color_GREEN as i32))
     );
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(1) as usize]
             .opt
             .borrow()) as i32)
             == (Option_OPT_A as i32))
     );
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(2) as usize]
             .color
             .borrow()) as i32)
             == (Color_BLUE as i32))
     );
     assert!(
-        (((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
+        (((*entries_3.with(|rc| rc.borrow().clone())[(2) as usize]
             .opt
             .borrow()) as i32)
             == (Option_OPT_C as i32))

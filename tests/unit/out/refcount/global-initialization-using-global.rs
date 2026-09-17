@@ -11,16 +11,16 @@ thread_local!(
 );
 thread_local!(
     pub static second_1: Value<i32> =
-        Rc::new(RefCell::new(((*first_0.with(Value::clone).borrow()) + 1)));
+        Rc::new(RefCell::new((first_0.with(|rc| rc.borrow().clone()) + 1)));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((*first_0.with(Value::clone).borrow()) == 0));
+    assert!((first_0.with(|rc| rc.borrow().clone()) == 0));
     assert!(
-        ((*second_1.with(Value::clone).borrow()) == ((*first_0.with(Value::clone).borrow()) + 1))
+        (second_1.with(|rc| rc.borrow().clone()) == (first_0.with(|rc| rc.borrow().clone()) + 1))
     );
     return 0;
 }

@@ -70,7 +70,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((((((*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        ((((((*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .name
             .borrow())
         .offset((0) as isize)
@@ -79,7 +79,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        ((((((*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .name
             .borrow())
         .offset((4) as isize)
@@ -88,21 +88,21 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        ((((*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .probe
             .borrow())
         .is_null()) as i32)
             != 0)
     );
     assert!(
-        ((((*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        ((((*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .mask
             .borrow())
             == 16) as i32)
             != 0)
     );
     assert!(
-        ((((((*(*table_1.with(Value::clone).borrow())[(1) as usize]
+        ((((((*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
             .name
             .borrow())
         .offset((0) as isize)
@@ -112,14 +112,14 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            (*(*(*table_1.with(Value::clone).borrow())[(1) as usize]
+            (*(*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
                 .probe
                 .borrow()))()
         }) == 1) as i32)
             != 0)
     );
     assert!(
-        ((((*(*table_1.with(Value::clone).borrow())[(1) as usize]
+        ((((*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
             .mask
             .borrow())
             == 32) as i32)
@@ -138,7 +138,7 @@ fn main_0() -> i32 {
     );
     let have: Value<i32> = Rc::new(RefCell::new(0));
     let p: Value<AnyPtr> = Rc::new(RefCell::new(if ((*have.borrow()) != 0) {
-        (*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        (*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .name
             .borrow())
         .clone()
@@ -155,7 +155,7 @@ fn main_0() -> i32 {
     );
     (*have.borrow_mut()) = 1;
     (*p.borrow_mut()) = if ((*have.borrow()) != 0) {
-        (*(*table_1.with(Value::clone).borrow())[(0) as usize]
+        (*table_1.with(|rc| rc.borrow().clone())[(0) as usize]
             .name
             .borrow())
         .clone()

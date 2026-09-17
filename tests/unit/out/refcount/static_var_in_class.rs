@@ -55,7 +55,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<C> = Rc::new(RefCell::new(<C>::default()));
     assert!((({ CImpl::get(&c.as_pointer(),) }) == 1));
-    assert!(((*inner_const_1.with(Value::clone).borrow()) == 2));
+    assert!((inner_const_1.with(|rc| rc.borrow().clone()) == 2));
     return 0;
 }
 pub trait CImpl {
@@ -63,7 +63,7 @@ pub trait CImpl {
 }
 impl CImpl for Ptr<C> {
     fn get(&self) -> i32 {
-        return (*inner_const_0.with(Value::clone).borrow());
+        return inner_const_0.with(|rc| rc.borrow().clone());
     }
 }
 pub fn __cpp2rust_init_globals() {

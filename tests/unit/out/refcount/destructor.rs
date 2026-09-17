@@ -331,19 +331,19 @@ fn main_0() -> i32 {
         let s: Value<S> = Rc::new(RefCell::new(S {}));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 1));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 1));
     {
         let s: Value<S> = Rc::new(RefCell::new(S {}));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 2));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 2));
     {
         let d: Value<Defaulted> = Rc::new(RefCell::new(Defaulted {
             s: Rc::new(RefCell::new(S {})),
         }));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 3));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 3));
     {
         let o: Value<Outer> = Rc::new(RefCell::new(Outer {
             m: Rc::new(RefCell::new(Middle {
@@ -352,21 +352,21 @@ fn main_0() -> i32 {
         }));
         let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 4));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 4));
     {
         let am: Value<ArrayMember> = Rc::new(RefCell::new(ArrayMember {
             items: Rc::new(RefCell::new(Box::new([S {}, S {}, S {}]))),
         }));
         let _dtor_am = ScopedDestructor::new(&am, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 7));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 7));
     {
         let e: Value<EmptyBody> = Rc::new(RefCell::new(EmptyBody {
             s: Rc::new(RefCell::new(S {})),
         }));
         let _dtor_e = ScopedDestructor::new(&e, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 8));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 8));
     {
         let tc: Value<Templated_char_> = Rc::new(RefCell::new(Templated_char_ {
             v: Rc::new(RefCell::new(<u8>::default())),
@@ -377,7 +377,7 @@ fn main_0() -> i32 {
         }));
         let _dtor_ti = ScopedDestructor::new(&ti, |__p| __p.destructor());
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 13));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 13));
     {
         let a: Value<Copied> = Rc::new(RefCell::new(Copied {
             v: Rc::new(RefCell::new(5)),
@@ -387,7 +387,7 @@ fn main_0() -> i32 {
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!(((*(*b.borrow()).v.borrow()) == 5));
     }
-    assert!(((*global_0.with(Value::clone).borrow()) == 15));
+    assert!((global_0.with(|rc| rc.borrow().clone()) == 15));
     {
         let o: Value<Ordered> = Rc::new(RefCell::new(Ordered {
             first: Rc::new(RefCell::new(Tagged {
@@ -404,10 +404,10 @@ fn main_0() -> i32 {
         }));
         let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
     }
-    assert!(((*order_count_2.with(Value::clone).borrow()) == 3));
-    assert!(((*order_1.with(Value::clone).borrow())[(0) as usize] == 3));
-    assert!(((*order_1.with(Value::clone).borrow())[(1) as usize] == 2));
-    assert!(((*order_1.with(Value::clone).borrow())[(2) as usize] == 1));
+    assert!((order_count_2.with(|rc| rc.borrow().clone()) == 3));
+    assert!((order_1.with(|rc| rc.borrow().clone())[(0) as usize] == 3));
+    assert!((order_1.with(|rc| rc.borrow().clone())[(1) as usize] == 2));
+    assert!((order_1.with(|rc| rc.borrow().clone())[(2) as usize] == 1));
     return 0;
 }
 pub trait ArrayMemberImpl {
@@ -497,7 +497,7 @@ pub trait Templated_char_Impl {
 impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
         {
-            let rhs_0 = (((*global_0.with(Value::clone).borrow()) as usize)
+            let rhs_0 = ((global_0.with(|rc| rc.borrow().clone()) as usize)
                 .wrapping_add((::std::mem::size_of::<u8>() as usize)))
                 as i32;
             (*global_0.with(Value::clone).borrow_mut()) = rhs_0
@@ -510,7 +510,7 @@ pub trait Templated_int_Impl {
 impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
         {
-            let rhs_0 = (((*global_0.with(Value::clone).borrow()) as usize)
+            let rhs_0 = ((global_0.with(|rc| rc.borrow().clone()) as usize)
                 .wrapping_add((::std::mem::size_of::<i32>() as usize)))
                 as i32;
             (*global_0.with(Value::clone).borrow_mut()) = rhs_0

@@ -56,9 +56,9 @@ fn main_0() -> i32 {
         let s: Value<S> = Rc::new(RefCell::new(S::S({ 3 })));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
         assert!(((*(*s.borrow()).v.borrow()) == 4));
-        assert!(((*total_0.with(Value::clone).borrow()) == 8));
+        assert!((total_0.with(|rc| rc.borrow().clone()) == 8));
     }
-    assert!(((*total_0.with(Value::clone).borrow()) == 18));
+    assert!((total_0.with(|rc| rc.borrow().clone()) == 18));
     return 0;
 }
 pub trait SImpl {

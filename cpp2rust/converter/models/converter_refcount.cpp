@@ -853,9 +853,14 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   const auto decl_t = decl->getType();
+  bool is_global_value = false, is_global_ptr = false;
   if (IsGlobalVar(expr)) {
-    auto tp = decl_t->isReferenceType() ? "Ptr" : "Value";
-    str = std::format("{}.with({}::clone)", str, std::move(tp));
+    if (decl_t->isReferenceType()) {
+      str += ".with(Ptr::clone)";
+      is_global_ptr = true;
+    } else {
+      is_global_value = true;
+    }
   }
 
   if (auto *ref = decl_t->getAs<clang::ReferenceType>()) {
@@ -896,14 +901,32 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   }
 
   if (isAddrOf()) {
-    StrCat(str, ".as_pointer()");
+    if (is_global_value) {
+      StrCat(std::format("{}.with(|v| v.as_pointer())", std::move(str)));
+    } else if (is_global_ptr) {
+      StrCat(str);
+    } else {
+      StrCat(str, ".as_pointer()");
+    }
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
 
+  bool fresh = false;
   if (isRValue()) {
-    StrCat(std::format("(*{}.borrow())", std::move(str)));
+    if (is_global_value) {
+      StrCat(str, ".with(|rc| rc.borrow().clone())");
+      fresh = true;
+    } else if (is_global_ptr) {
+      StrCat(str);
+      fresh = true;
+    } else {
+      StrCat(std::format("(*{}.borrow())", std::move(str)));
+    }
   } else {
+    if (is_global_value) {
+      str += ".with(Value::clone)";
+    }
     StrCat(std::format("(*{}.borrow_mut())", std::move(str)));
   }
 
@@ -913,7 +936,11 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       return false;
     }
   }
-  SetValueFreshness(expr->getType());
+  if (fresh) {
+    SetFreshType(expr->getType());
+  } else {
+    SetValueFreshness(expr->getType());
+  }
   return false;
 }
 

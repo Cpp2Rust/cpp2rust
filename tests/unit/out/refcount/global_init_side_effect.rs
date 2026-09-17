@@ -47,7 +47,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((*total_0.with(Value::clone).borrow()) == 11));
+    assert!((total_0.with(|rc| rc.borrow().clone()) == 11));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

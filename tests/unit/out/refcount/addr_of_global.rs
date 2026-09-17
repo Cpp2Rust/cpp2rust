@@ -75,13 +75,13 @@ thread_local!(
 );
 thread_local!(
     pub static items_3: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
-        (alpha_0.with(Value::clone).as_pointer()),
-        (beta_1.with(Value::clone).as_pointer()),
+        (alpha_0.with(|v| v.as_pointer())),
+        (beta_1.with(|v| v.as_pointer())),
     ])));
 );
 thread_local!(
     pub static obj_4: Value<Outer> = Rc::new(RefCell::new(Outer {
-        p: Rc::new(RefCell::new((shared_2.with(Value::clone).as_pointer()))),
+        p: Rc::new(RefCell::new((shared_2.with(|v| v.as_pointer())))),
     }));
 );
 pub fn main() {
@@ -90,7 +90,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((*(*(*items_3.with(Value::clone).borrow())[(0) as usize]
+        ((*(*items_3.with(|rc| rc.borrow().clone())[(0) as usize]
             .upgrade()
             .deref())
         .value
@@ -98,7 +98,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*(*(*items_3.with(Value::clone).borrow())[(1) as usize]
+        ((*(*items_3.with(|rc| rc.borrow().clone())[(1) as usize]
             .upgrade()
             .deref())
         .value
@@ -106,7 +106,7 @@ fn main_0() -> i32 {
             == 2)
     );
     assert!(
-        ((*(*(*(*obj_4.with(Value::clone).borrow()).p.borrow())
+        ((*(*(*obj_4.with(|rc| rc.borrow().clone()).p.borrow())
             .upgrade()
             .deref())
         .value
@@ -115,12 +115,12 @@ fn main_0() -> i32 {
     );
     thread_local!(
         static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
-            (alpha_0.with(Value::clone).as_pointer()),
-            (beta_1.with(Value::clone).as_pointer()),
+            (alpha_0.with(|v| v.as_pointer())),
+            (beta_1.with(|v| v.as_pointer())),
         ])));
     );
     assert!(
-        ((*(*(*cache_5.with(Value::clone).borrow())[(0) as usize]
+        ((*(*cache_5.with(|rc| rc.borrow().clone())[(0) as usize]
             .upgrade()
             .deref())
         .value
@@ -128,7 +128,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((*(*(*cache_5.with(Value::clone).borrow())[(1) as usize]
+        ((*(*cache_5.with(|rc| rc.borrow().clone())[(1) as usize]
             .upgrade()
             .deref())
         .value

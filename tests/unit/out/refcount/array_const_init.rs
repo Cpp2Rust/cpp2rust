@@ -63,11 +63,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((*(*s_0.with(Value::clone).borrow()).head.borrow()) == 5) as i32) != 0));
+    assert!(((((*s_0.with(|rc| rc.borrow().clone()).head.borrow()) == 5) as i32) != 0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
         assert!(
-            ((((*(*s_0.with(Value::clone).borrow()).tail.borrow())[(*i.borrow()) as usize] == 0)
+            ((((*s_0.with(|rc| rc.borrow().clone()).tail.borrow())[(*i.borrow()) as usize] == 0)
                 as i32)
                 != 0)
         );
@@ -76,7 +76,7 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
         assert!(
-            (((((*(*s_0.with(Value::clone).borrow()).buf.borrow())[(*i.borrow()) as usize] as i32)
+            (((((*s_0.with(|rc| rc.borrow().clone()).buf.borrow())[(*i.borrow()) as usize] as i32)
                 == 0) as i32)
                 != 0)
         );

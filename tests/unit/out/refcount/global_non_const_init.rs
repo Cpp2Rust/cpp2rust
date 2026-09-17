@@ -31,7 +31,7 @@ thread_local!(
 );
 thread_local!(
     pub static depends_on_call_6: Value<i32> = Rc::new(RefCell::new(
-        ((*from_call_5.with(Value::clone).borrow()) + 1),
+        (from_call_5.with(|rc| rc.borrow().clone()) + 1),
     ));
 );
 #[derive()]
@@ -127,8 +127,8 @@ pub fn local_static_12() -> i32 {
     thread_local!(
         static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 3 })));
     );
-    return ((*once_13.with(Value::clone).borrow())
-        + (*(*local_ctor_14.with(Value::clone).borrow()).v.borrow()));
+    return (once_13.with(|rc| rc.borrow().clone())
+        + (*local_ctor_14.with(|rc| rc.borrow().clone()).v.borrow()));
 }
 #[derive()]
 pub struct Singleton {
@@ -146,7 +146,7 @@ impl Singleton {
         thread_local!(
             static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::Singleton()));
         );
-        return s_15.with(Value::clone).as_pointer();
+        return s_15.with(|v| v.as_pointer());
     }
 }
 impl Clone for Singleton {
@@ -181,22 +181,23 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((((*signature_3.with(Value::clone).borrow())[(0) as usize] as i32) == 10));
-    assert!((((*signature_3.with(Value::clone).borrow())[(1) as usize] as i32) == 4));
-    assert!((((*single_4.with(Value::clone).borrow()) as i32) == 18));
-    assert!(((*from_call_5.with(Value::clone).borrow()) == 1));
-    assert!(((*depends_on_call_6.with(Value::clone).borrow()) == 2));
-    assert!(((*(*default_ctor_7.with(Value::clone).borrow()).v.borrow()) == 2));
-    assert!(((*(*arg_ctor_8.with(Value::clone).borrow()).v.borrow()) == 7));
+    assert!(((signature_3.with(|rc| rc.borrow().clone())[(0) as usize] as i32) == 10));
+    assert!(((signature_3.with(|rc| rc.borrow().clone())[(1) as usize] as i32) == 4));
+    assert!(((single_4.with(|rc| rc.borrow().clone()) as i32) == 18));
+    assert!((from_call_5.with(|rc| rc.borrow().clone()) == 1));
+    assert!((depends_on_call_6.with(|rc| rc.borrow().clone()) == 2));
+    assert!(((*default_ctor_7.with(|rc| rc.borrow().clone()).v.borrow()) == 2));
+    assert!(((*arg_ctor_8.with(|rc| rc.borrow().clone()).v.borrow()) == 7));
     assert!(
-        (*str_9.with(Value::clone).borrow())
+        str_9
+            .with(|rc| rc.borrow().clone())
             .iter()
             .copied()
-            .take((*str_9.with(Value::clone).borrow()).len().saturating_sub(1))
+            .take(str_9.with(|rc| rc.borrow().clone()).len().saturating_sub(1))
             .eq(Ptr::from_string_literal(b"abc").to_c_string_iterator())
     );
-    assert!(((*member_10.with(Value::clone).borrow()) == 3));
-    assert!(((*(*inline_member_11.with(Value::clone).borrow()).v.borrow()) == 5));
+    assert!((member_10.with(|rc| rc.borrow().clone()) == 3));
+    assert!(((*inline_member_11.with(|rc| rc.borrow().clone()).v.borrow()) == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
     (*(*({ Singleton::instance() }).upgrade().deref())

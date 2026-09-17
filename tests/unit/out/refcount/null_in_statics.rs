@@ -43,24 +43,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*p_mut_0.with(Value::clone).borrow()).is_null());
-    assert!((*p_const_1.with(Value::clone).borrow()).is_null());
-    assert!((*cp_2.with(Value::clone).borrow()).is_null());
+    assert!((p_mut_0.with(|rc| rc.borrow().clone())).is_null());
+    assert!((p_const_1.with(|rc| rc.borrow().clone())).is_null());
+    assert!((cp_2.with(|rc| rc.borrow().clone())).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 4) {
-        assert!(((*arr_of_ptr_3.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null());
+        assert!((arr_of_ptr_3.with(|rc| rc.borrow().clone())[(*i.borrow()) as usize]).is_null());
         (*i.borrow_mut()).prefix_inc();
     }
-    assert!((*pp_4.with(Value::clone).borrow()).is_null());
+    assert!((pp_4.with(|rc| rc.borrow().clone())).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((*const_arr_of_ptr_5.with(Value::clone).borrow())[(*i.borrow()) as usize]).is_null()
+            (const_arr_of_ptr_5.with(|rc| rc.borrow().clone())[(*i.borrow()) as usize]).is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }
-    assert!((*cp_explicit_null_6.with(Value::clone).borrow()).is_null());
-    assert!((*p_zero_7.with(Value::clone).borrow()).is_null());
+    assert!((cp_explicit_null_6.with(|rc| rc.borrow().clone())).is_null());
+    assert!((p_zero_7.with(|rc| rc.borrow().clone())).is_null());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
