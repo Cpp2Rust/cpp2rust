@@ -63,5 +63,6 @@ inline constexpr const char kMut[] = "mut";
 namespace token {
 inline constexpr const char kDefault[] = "Default::default()";
 inline constexpr const char kIgnoreRule[] = "libcc2rs::IgnoreRule";
+inline constexpr const char kLambdaThisCapture[] = "this_";
 } // namespace token
 } // namespace cpp2rust

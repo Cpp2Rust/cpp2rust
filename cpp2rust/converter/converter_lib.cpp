@@ -650,18 +650,12 @@ clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
   llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> captures;
   clang::FieldDecl *this_capture = nullptr;
   lambda->getCaptureFields(captures, this_capture);
-  if (!var) {
-    return this_capture;
-  }
   auto it = captures.find(var);
   return it == captures.end() ? nullptr : it->second;
 }
 
 std::string GetLambdaCaptureName(const clang::FunctionDecl *fn,
                                  const clang::ValueDecl *var) {
-  if (!fn) {
-    return {};
-  }
   auto *field = GetLambdaCapturedField(fn, var);
   if (!field) {
     return {};
@@ -698,7 +692,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
     if (auto *capture = GetLambdaCapture(field)) {
       if (capture->capturesThis()) {
-        return "this_";
+        return token::kLambdaThisCapture;
       }
       return GetNamedDeclAsString(capture->getCapturedVar());
     }

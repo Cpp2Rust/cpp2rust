@@ -2863,7 +2863,7 @@ void ConverterRefCount::ConvertCXXConstructorBody(
 
 bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (IsCapturedThis(curr_function_, expr)) {
-    StrCat(GetLambdaCaptureName(curr_function_, nullptr));
+    StrCat(keyword::kSelfValue, token::kDot, token::kLambdaThisCapture);
     computed_expr_type_ = ComputedExprType::Pointer;
     return false;
   }
