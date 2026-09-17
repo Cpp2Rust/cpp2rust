@@ -21,11 +21,15 @@ impl Clone for Pair {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: Rc::new(RefCell::new((*self.y.borrow()))),
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            a: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 5, _>(
+                |__i: usize| (*self.a.borrow())[(__i) as usize],
+            )))),
             r: (self.r).clone(),
             p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
             pair: Rc::new(RefCell::new((*self.pair.borrow()).clone())),
-            ap: Rc::new(RefCell::new((*self.ap.borrow()).clone())),
+            ap: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| ((*self.ap.borrow())[(__i) as usize]).clone(),
+            )))),
         }));
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -54,8 +58,15 @@ impl ByteRepr for Pair {}
 pub fn zero_0() -> i32 {
     return 0;
 }
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct X1 {}
+impl Clone for X1 {
+    fn clone(&self) -> Self {
+        let __this: Value<X1> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<X1> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl ByteRepr for X1 {
     fn byte_size() -> usize {
         1

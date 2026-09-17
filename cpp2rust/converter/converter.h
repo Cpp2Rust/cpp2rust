@@ -330,6 +330,8 @@ public:
 
   virtual void ConvertVariadicArg(clang::Expr *arg);
 
+  void DefineImplicitMembers(clang::CXXRecordDecl *decl);
+
   virtual bool VisitCallExpr(clang::CallExpr *expr);
 
   virtual bool VisitIntegerLiteral(clang::IntegerLiteral *expr);
@@ -383,6 +385,9 @@ public:
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
 
   virtual bool VisitInitListExpr(clang::InitListExpr *expr);
+  bool VisitOpaqueValueExpr(clang::OpaqueValueExpr *expr);
+  bool VisitArrayInitIndexExpr(clang::ArrayInitIndexExpr *expr);
+  virtual bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr);
 
   virtual bool VisitCompoundLiteralExpr(clang::CompoundLiteralExpr *expr);
 
@@ -1011,8 +1016,8 @@ protected:
   virtual bool emplace_back_plugin_convert(clang::CallExpr *call);
   virtual void emplace_back_plugin_construct_arg(clang::QualType elem_type,
                                                  clang::CXXConstructExpr *ctor);
-  virtual void emplace_back_emit_push_open(clang::CXXMemberCallExpr *call);
-  virtual void emplace_back_emit_push_close(clang::CXXMemberCallExpr *call);
+  virtual void emplace_back_emit_push(clang::CXXMemberCallExpr *call,
+                                      std::string_view arg);
 
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 

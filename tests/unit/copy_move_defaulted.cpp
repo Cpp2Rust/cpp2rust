@@ -1,5 +1,5 @@
-// translation-fail
 #include <cassert>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -48,6 +48,32 @@ struct UserCopyDefaultMove {
     return *this;
   }
   UserCopyDefaultMove &operator=(UserCopyDefaultMove &&) = default;
+};
+
+struct Buffer {
+  std::vector<int> data;
+  std::vector<std::vector<int>> rows;
+  int n;
+  int arr[2];
+  Buffer(int n) : data(n, n), n(n), arr{n, n + 1} { rows.push_back(data); }
+  Buffer(const Buffer &) = delete;
+  Buffer(Buffer &&) = default;
+  Buffer &operator=(const Buffer &) = delete;
+  Buffer &operator=(Buffer &&) = default;
+};
+
+struct Owner {
+  std::vector<int> data;
+  int n;
+  int arr[2];
+  std::unique_ptr<int> p;
+};
+
+struct Holder {
+  Inner inner;
+  Explicit e;
+  std::unique_ptr<int> p;
+  Holder(int v) : inner{v}, e(v) {}
 };
 
 static bool same(const Explicit &a, const Explicit &b) {
@@ -101,5 +127,40 @@ int main() {
   u3 = u2;
   u4 = std::move(u2);
   assert(u3.v == 108 && u4.v == 8);
+
+  Buffer p(3);
+  Buffer q = std::move(p);
+  assert(q.n == 3 && q.data.size() == 3 && q.data[2] == 3 && p.data.empty());
+  Buffer r(1);
+  r = std::move(q);
+  assert(r.n == 3 && r.data.size() == 3 && r.arr[1] == 4 && q.data.empty());
+  assert(r.rows.size() == 1 && r.rows[0].size() == 3 && q.rows.empty());
+  std::vector<Buffer> bufs;
+  bufs.push_back(std::move(r));
+  bufs.emplace_back(std::move(bufs[0]));
+  assert(bufs[1].n == 3 && bufs[1].data.size() == 3 && bufs[0].data.empty());
+
+  Owner o1;
+  o1.data.push_back(5);
+  o1.n = 5;
+  o1.arr[0] = 5;
+  o1.arr[1] = 6;
+  o1.p.reset(new int(7));
+  Owner o2 = std::move(o1);
+  assert(o2.n == 5 && o2.data.size() == 1 && o2.arr[1] == 6 && *o2.p == 7);
+  assert(o1.data.empty() && o1.p.get() == nullptr);
+  Owner o3;
+  o3 = std::move(o2);
+  assert(o3.n == 5 && o3.data[0] == 5 && o3.arr[0] == 5 && *o3.p == 7);
+  assert(o2.data.empty() && o2.p.get() == nullptr);
+
+  Holder h1(4);
+  h1.p.reset(new int(9));
+  Holder h2 = std::move(h1);
+  assert(h2.inner.x == 4 && h2.e.v == 4 && *h2.p == 9 && h1.p.get() == nullptr);
+  Holder h3(1);
+  h3 = std::move(h2);
+  assert(h3.inner.x == 4 && h3.e.arr[1] == 5 && *h3.p == 9 &&
+         h2.p.get() == nullptr);
   return 0;
 }

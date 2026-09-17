@@ -33,12 +33,19 @@ impl ByteRepr for Inner {
     }
 }
 thread_local!();
-#[derive(Clone, Default)]
+#[derive(Default)]
 pub struct Table {}
 impl Table {
     pub fn operator_index(i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
         return (table_0.with(Value::clone).as_pointer() as Ptr<i32>).offset((*i.borrow()));
+    }
+}
+impl Clone for Table {
+    fn clone(&self) -> Self {
+        let __this: Value<Table> = Rc::new(RefCell::new(Self {}));
+        let this: Ptr<Table> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl ByteRepr for Table {
@@ -61,7 +68,9 @@ pub struct S {
 impl Clone for S {
     fn clone(&self) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            data: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.data.borrow())[(__i) as usize],
+            )))),
             inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
         }));
         let this: Ptr<S> = __this.as_pointer();

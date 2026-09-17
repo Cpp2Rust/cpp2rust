@@ -52,7 +52,9 @@ impl Clone for Outer {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             p1: Rc::new(RefCell::new((*self.p1.borrow()).clone())),
             p2: Rc::new(RefCell::new((*self.p2.borrow()).clone())),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
+            )))),
             cp: Rc::new(RefCell::new((*self.cp.borrow()).clone())),
             pp: Rc::new(RefCell::new((*self.pp.borrow()).clone())),
             inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),

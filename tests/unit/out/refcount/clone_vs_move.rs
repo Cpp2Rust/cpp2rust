@@ -46,7 +46,9 @@ impl Clone for Foo {
             x: Rc::new(RefCell::new((*self.x.borrow()))),
             y: (self.y).clone(),
             z: Rc::new(RefCell::new((*self.z.borrow()).clone())),
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            a: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.a.borrow())[(__i) as usize],
+            )))),
             bar: Rc::new(RefCell::new((*self.bar.borrow()).clone())),
         }));
         let this: Ptr<Foo> = __this.as_pointer();

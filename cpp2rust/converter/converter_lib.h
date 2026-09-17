@@ -70,11 +70,15 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
 
-bool IsUserDefinedMoveConstructor(const clang::CXXConstructorDecl *ctor);
-
-bool IsUserDefinedCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsDefaultedMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsConvertibleMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool IsConvertibleMoveAssignment(const clang::CXXMethodDecl *method);
+
+bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method);
 
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
@@ -83,6 +87,8 @@ bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
+
+bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
@@ -151,6 +157,7 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
 
+bool IsImplicitAssignmentCall(const clang::CallExpr *expr);
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
 
 bool IsSameTypeComparison(const clang::FunctionDecl *fn,
@@ -173,6 +180,11 @@ const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn);
 
 clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
                                          const clang::ValueDecl *var);
+
+clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
+                                           clang::QualType type,
+                                           clang::CXXConstructorDecl *ctor,
+                                           llvm::ArrayRef<clang::Expr *> args);
 
 std::vector<clang::CXXRecordDecl *>
 GetNestedStructs(const clang::CXXRecordDecl *decl);
@@ -248,6 +260,10 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr);
 bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
+
+const clang::Expr *IgnoreStdMove(const clang::Expr *expr);
+
+bool IsTemporaryObject(const clang::Expr *expr);
 
 bool ContainsVAArgExpr(const clang::Stmt *stmt);
 
