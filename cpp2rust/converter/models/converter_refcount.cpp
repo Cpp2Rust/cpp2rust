@@ -2863,7 +2863,8 @@ void ConverterRefCount::ConvertCXXConstructorBody(
 
 bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (IsCapturedThis(curr_function_, expr)) {
-    StrCat(keyword::kSelfValue, token::kDot, token::kLambdaThisCapture);
+    StrCat("(*", keyword::kSelfValue, token::kDot, token::kLambdaThisCapture,
+           ".borrow())");
     computed_expr_type_ = ComputedExprType::Pointer;
     return false;
   }
