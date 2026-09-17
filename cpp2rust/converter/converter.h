@@ -454,18 +454,18 @@ protected:
 #define StrCat(...) _StrCat(__FUNCTION__, __LINE__, __VA_ARGS__)
 
   inline bool is_empty(char c) { return false; }
-  inline bool is_empty(const char* s) { return s == nullptr || *s == '\0'; }
-  template <size_t N>
-  inline bool is_empty(const char (&s)[N]) { return s[0] == '\0'; }
-  template <typename T>
-  inline bool is_empty(const T &s) { return s.empty(); }
+  inline bool is_empty(const char *s) { return s == nullptr || *s == '\0'; }
+  template <size_t N> inline bool is_empty(const char (&s)[N]) {
+    return s[0] == '\0';
+  }
+  template <typename T> inline bool is_empty(const T &s) { return s.empty(); }
 
   template <typename... Ts>
   inline void _StrCat(const char *func, int line, const Ts &...vals) {
     log() << '[' << func << ':' << line << "] ";
-    ((log() << vals << '\n',
-      *rs_code_ += vals,
-      (is_empty(vals) ? void() : void(*rs_code_ += ' '))), ...);
+    ((log() << vals << '\n', *rs_code_ += vals,
+      (is_empty(vals) ? void() : void(*rs_code_ += ' '))),
+     ...);
   }
 
   class Buffer {
