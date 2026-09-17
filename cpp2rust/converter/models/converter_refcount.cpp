@@ -431,11 +431,8 @@ bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (decl_ids_.count(GetID(decl))) {
     return false;
   }
-  std::vector<ConversionKind> saved_conversion_kinds({ConversionKind::Unboxed});
-  saved_conversion_kinds.swap(conversion_kind_);
-  Converter::VisitCXXRecordDecl(decl);
-  conversion_kind_.swap(saved_conversion_kinds);
-  return false;
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXRecordDecl(decl);
 }
 
 bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
