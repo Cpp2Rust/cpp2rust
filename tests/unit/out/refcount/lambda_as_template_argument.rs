@@ -1,0 +1,135 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::{Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+pub fn apply_0(fn_: lambda_1, x: i32) -> i32 {
+    let fn_: Value<lambda_1> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({ lambda_1::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
+}
+pub fn apply_2(fn_: lambda_3, x: i32) -> i32 {
+    let fn_: Value<lambda_3> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({ lambda_3::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
+}
+pub fn apply_4(fn_: lambda_5, x: i32) -> i32 {
+    let fn_: Value<lambda_5> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({ lambda_5::operator_call((*x.borrow())) });
+}
+pub fn apply_twice_6(fn_: lambda_3, x: i32) -> i32 {
+    let fn_: Value<lambda_3> = Rc::new(RefCell::new(fn_));
+    let x: Value<i32> = Rc::new(RefCell::new(x));
+    return ({
+        let _x: i32 = ({ lambda_3::operator_call(&(*fn_.borrow_mut()), (*x.borrow())) });
+        lambda_3::operator_call(&(*fn_.borrow_mut()), _x)
+    });
+}
+pub fn main() {
+    __cpp2rust_init_globals();
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let base: Value<i32> = Rc::new(RefCell::new(10));
+    let add_base: Value<lambda_1> = Rc::new(RefCell::new(
+        (lambda_1 {
+            base: base.as_pointer(),
+        }),
+    ));
+    assert!((({ apply_0((*add_base.borrow()).clone(), 5,) }) == 15));
+    (*base.borrow_mut()) = 100;
+    assert!((({ apply_0((*add_base.borrow()).clone(), 5,) }) == 105));
+    let factor: Value<i32> = Rc::new(RefCell::new(3));
+    let scale: Value<lambda_3> = Rc::new(RefCell::new(
+        (lambda_3 {
+            factor: Rc::new(RefCell::new((*factor.borrow()))),
+        }),
+    ));
+    assert!((({ apply_2((*scale.borrow()).clone(), 4,) }) == 12));
+    assert!((({ apply_twice_6((*scale.borrow()).clone(), 4,) }) == 36));
+    assert!((({ apply_4((lambda_5 {}), 9,) }) == -9_i32));
+    return 0;
+}
+#[derive(Clone, Default)]
+pub struct lambda_1 {
+    base: Ptr<i32>,
+}
+impl lambda_1 {
+    pub fn operator_call(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) + (self.base.read()));
+    }
+}
+impl ByteRepr for lambda_1 {}
+impl Callable1<i32, i32> for lambda_1 {
+    fn call(&self, a1: i32) -> i32 {
+        { lambda_1::operator_call(self, a1) }
+    }
+}
+#[derive(Default)]
+pub struct lambda_3 {
+    factor: Value<i32>,
+}
+impl lambda_3 {
+    pub fn operator_call(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) * (*self.factor.borrow()));
+    }
+}
+impl Clone for lambda_3 {
+    fn clone(&self) -> Self {
+        Self {
+            factor: Rc::new(RefCell::new((*self.factor.borrow()).clone())),
+        }
+    }
+}
+impl ByteRepr for lambda_3 {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.factor.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            factor: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+impl Callable1<i32, i32> for lambda_3 {
+    fn call(&self, a1: i32) -> i32 {
+        { lambda_3::operator_call(self, a1) }
+    }
+}
+#[derive(Clone, Default)]
+pub struct lambda_5 {}
+impl lambda_5 {
+    pub fn operator_call(x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return -(*x.borrow());
+    }
+}
+impl ByteRepr for lambda_5 {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {}
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {}
+    }
+}
+impl Callable1<i32, i32> for lambda_5 {
+    fn call(&self, a1: i32) -> i32 {
+        { lambda_5::operator_call(a1) }
+    }
+}
+impl lambda_5 {
+    pub fn to_free_function(&self) -> FnPtr<fn(i32) -> i32> {
+        FnPtr::new(lambda_5::operator_call)
+    }
+}
+pub fn __cpp2rust_init_globals() {}

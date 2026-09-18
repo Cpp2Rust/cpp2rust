@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct S {}
 impl S {
     pub fn S(x: i32) -> Self {
@@ -17,13 +17,6 @@ impl S {
         let __this: Value<S> = Rc::new(RefCell::new(Self {}));
         let this: Ptr<S> = __this.as_pointer();
         (*total_0.with(Value::clone).borrow_mut()) += (*x.borrow());
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }

@@ -83,6 +83,7 @@ bool IsConvertibleImplicitMember(const clang::CXXMethodDecl *method);
 clang::CXXConstructorDecl *
 GetUserDefinedCopyConstructor(const clang::RecordDecl *decl);
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
 bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
@@ -100,6 +101,7 @@ bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 bool IsComparisonOperator(const clang::FunctionDecl *fn);
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
+bool IsStaticMethod(const clang::CXXMethodDecl *method);
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);
@@ -171,6 +173,16 @@ bool HasFieldsNeedingDestruction(const clang::CXXRecordDecl *decl);
 bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
+
+const clang::LambdaCapture *GetLambdaCapture(const clang::FieldDecl *field);
+
+const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn);
+
+clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
+                                         const clang::ValueDecl *var);
+
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::DeclRefExpr *expr);
 
 clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::QualType type,

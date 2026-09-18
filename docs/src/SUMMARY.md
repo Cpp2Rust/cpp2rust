@@ -31,6 +31,7 @@
 - [Increment and Decrement](./runtime/inc-dec.md)
 - [Iterators](./runtime/iterators.md)
 - [Function Pointers](./runtime/fn-ptr.md)
+- [Callable](./runtime/callable.md)
 - [Variadic Functions](./runtime/va-args.md)
 - [Control Flow Macros](./runtime/control-flow.md)
 - [I/O and Formatting](./runtime/io.md)

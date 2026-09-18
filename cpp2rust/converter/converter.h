@@ -69,11 +69,8 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
-  enum class FnProtoType { LambdaCallOperator, FnPtr };
-
   virtual std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr);
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 
@@ -114,8 +111,6 @@ public:
   virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
 
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
-
-  virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
   bool VisitRecordDecl(clang::RecordDecl *decl);
 
@@ -432,6 +427,13 @@ public:
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
+  virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
+
+  virtual void AddFunctionPointerConversion(clang::CXXRecordDecl *decl);
+
+  virtual std::string
+  ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op);
+
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
@@ -510,6 +512,7 @@ protected:
       PushDelim<token::kOpenCurlyBracket, token::kCloseCurlyBracket>;
   using PushParen = PushDelim<token::kOpenParen, token::kCloseParen>;
   using PushBracket = PushDelim<token::kOpenBracket, token::kCloseBracket>;
+  using PushAngle = PushDelim<token::kLt, token::kGt>;
   using PushLazyType = PushDelim<token::kLazyCellType, token::kGt>;
   using PushLazyInit = PushDelim<token::kLazyCellNew, token::kCloseParen>;
 

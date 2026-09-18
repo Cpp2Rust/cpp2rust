@@ -133,30 +133,32 @@ accesses are rules of their own, matched by the field: `it->first` and
 
 ## Callable arguments
 
-A rule parameter may be a callable. Function pointers are spelled directly; for
-a lambda, whose type cannot be written, the rule declares a file-scope lambda
-and takes `decltype(lambda)`:
+A rule parameter may be a callable: a function pointer, a functor or a lambda.
+The source side takes it through a helper type, and the target side binds the
+corresponding generic parameter with `Callable`:
 
 ```cpp
 // rules/algorithm/src.cpp
-auto lambda = [](const T2 &a, const T2 &b) { return false; };
-void f6(T1 first, T1 last, decltype(lambda) comp) {
+void f6(T1 first, T1 last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
 ```
 
 ```rust
 // rules/algorithm/tgt_unsafe.rs
-unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: &mut T2)
+unsafe fn f6<T1: Ord, T2>(a0: *mut T1, a1: *mut T1, a2: T2)
 where
-    T2: FnMut(&T1, &T1) -> bool,
-{ ... }
+    T2: Callable2<*const T1, *const T1, bool>,
+{ ... a2.call(x, y) ... }
 ```
+
+The bound is [`Callable`](../runtime/callable.md) rather than `Fn` so that one
+rule serves every kind of callable argument, including translated lambdas, which
+are structs and cannot implement `Fn`.
 
 `T1` and `T2` are not template parameters here but file-scope helper structs
 modelling an iterator and its value type; being named like generics, they bind
-as `T1`/`T2` at the use site. The function pointer version of the comparator is
-a separate rule (`f7`).
+as `T1`/`T2` at the use site.
 
 ## Iterators
 

@@ -23,8 +23,7 @@ public:
   bool VisitPointerType(clang::PointerType *type) override;
 
   std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr) override;
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
@@ -90,7 +89,12 @@ public:
 
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
-  bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
+  void AddCallableTrait(clang::CXXRecordDecl *decl) override;
+
+  void AddFunctionPointerConversion(clang::CXXRecordDecl *decl) override;
+
+  std::string
+  ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op) override;
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
 

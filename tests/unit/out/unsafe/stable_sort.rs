@@ -20,17 +20,9 @@ unsafe fn main_0() -> i32 {
             .offset((5) as isize)
             .offset_from(arr1.as_mut_ptr()) as usize;
         ::std::slice::from_raw_parts_mut(arr1.as_mut_ptr(), len).sort_by(|x, y| {
-            if (|x: i32, y: i32| {
-                return ((x) < (y));
-            })
-            .call(*x, *y)
-            {
+            if (lambda_0 {}).call(*x, *y) {
                 std::cmp::Ordering::Less
-            } else if (|x: i32, y: i32| {
-                return ((x) < (y));
-            })
-            .call(*y, *x)
-            {
+            } else if (lambda_0 {}).call(*y, *x) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -38,5 +30,23 @@ unsafe fn main_0() -> i32 {
         })
     };
     return 0;
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct lambda_0 {}
+impl lambda_0 {
+    pub unsafe fn operator_call(mut x: i32, mut y: i32) -> bool {
+        return ((x) < (y));
+    }
+}
+impl Callable2<i32, i32, bool> for lambda_0 {
+    fn call(&self, a1: i32, a2: i32) -> bool {
+        unsafe { lambda_0::operator_call(a1, a2) }
+    }
+}
+impl lambda_0 {
+    pub fn to_free_function(&self) -> Option<unsafe fn(i32, i32) -> bool> {
+        Some(lambda_0::operator_call)
+    }
 }
 pub unsafe fn __cpp2rust_init_globals() {}

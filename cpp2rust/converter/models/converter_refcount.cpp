@@ -247,9 +247,9 @@ std::string ConverterRefCount::BuildFnAdapter(
 }
 
 std::string ConverterRefCount::ConvertFunctionPointerType(
-    const clang::FunctionProtoType *proto, FnProtoType kind) {
+    const clang::FunctionProtoType *proto) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  return Converter::ConvertFunctionPointerType(proto, kind);
+  return Converter::ConvertFunctionPointerType(proto);
 }
 
 bool ConverterRefCount::VisitPointerType(clang::PointerType *type) {
@@ -431,8 +431,8 @@ bool ConverterRefCount::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   if (decl_ids_.count(GetID(decl))) {
     return false;
   }
-  Converter::VisitCXXRecordDecl(decl);
-  return false;
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXRecordDecl(decl);
 }
 
 bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
@@ -480,8 +480,14 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    return;
+  }
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (!cxx) {
+  if (cxx && cxx->isLambda() && !HasCallableCopyConstructor(cxx)) {
+    return;
+  }
+  if (!cxx || cxx->isLambda()) {
     StrCat(keyword::kImpl, "Clone for", record_name);
     PushBrace impl_brace(*this);
     StrCat("fn clone(&self) -> Self");
@@ -490,6 +496,10 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     PushBrace init_brace(*this);
     for (auto *field : decl->fields()) {
       auto name = GetNamedDeclAsString(field);
+      if (field->getType()->isReferenceType()) {
+        StrCat(std::format("{0}: self.{0}.clone(),", name));
+        continue;
+      }
       StrCat(std::format(
           "{0}: Rc::new(RefCell::new((*self.{0}.borrow()).clone())),", name));
     }
@@ -691,10 +701,6 @@ void ConverterRefCount::ConvertVaListVarDecl(clang::VarDecl *decl) {
   StrCat(GetNamedDeclAsString(decl), token::kColon, "Value<VaList>");
 }
 
-bool ConverterRefCount::ConvertLambdaVarDecl(clang::VarDecl *decl) {
-  return false;
-}
-
 bool ConverterRefCount::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   bool unboxed = in_function_formals_;
   PushConversionKind push(*this, unboxed ? ConversionKind::Unboxed
@@ -852,7 +858,7 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     return false;
   }
 
-  const auto decl_t = decl->getType();
+  const auto decl_t = GetDeclRefType(curr_function_, expr);
   bool is_global_value = false, is_global_ptr = false;
   if (IsGlobalVar(expr)) {
     if (decl_t->isReferenceType()) {
@@ -2115,6 +2121,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     return attrs;
   }
 
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    attrs.emplace_back("Clone");
+  }
+
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
   }
@@ -2123,20 +2133,6 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
 std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
                                                    clang::Expr *expr) {
-  if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-          expr->IgnoreUnlessSpelledInSource())) {
-    Buffer buf(*this);
-    PushConversionKind push(*this, ConversionKind::Unboxed);
-    if (qual_type->isFunctionPointerType() && lambda->capture_size() == 0) {
-      StrCat("FnPtr::new(");
-      VisitLambdaExpr(lambda);
-      StrCat(')');
-    } else {
-      VisitLambdaExpr(lambda);
-    }
-    return std::move(buf).str();
-  }
-
   PushInitType init_type(*this, qual_type);
   if (qual_type->isReferenceType() || qual_type->isFunctionPointerType()) {
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
@@ -2727,7 +2723,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   bool base_is_pointer = is_arrow && !clang::isa<clang::CXXOperatorCallExpr>(
                                          base->IgnoreParenImpCasts());
-  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+      !GetLambdaOf(curr_function_)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     if (in_ctor) {
@@ -2903,8 +2900,13 @@ void ConverterRefCount::ConvertCXXConstructorBody(
   StrCat("Rc::try_unwrap(__this).ok().unwrap().into_inner()");
 }
 
-bool ConverterRefCount::VisitCXXThisExpr(
-    [[maybe_unused]] clang::CXXThisExpr *expr) {
+bool ConverterRefCount::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
+  if (GetLambdaOf(curr_function_)) {
+    StrCat("(*", keyword::kSelfValue, token::kDot, token::kLambdaThisCapture,
+           ".borrow())");
+    computed_expr_type_ = ComputedExprType::Pointer;
+    return false;
+  }
   bool in_ctor =
       curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
   if (in_ctor) {
@@ -2915,4 +2917,21 @@ bool ConverterRefCount::VisitCXXThisExpr(
   computed_expr_type_ = ComputedExprType::Pointer;
   return false;
 }
+
+void ConverterRefCount::AddCallableTrait(clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  Converter::AddCallableTrait(decl);
+}
+
+void ConverterRefCount::AddFunctionPointerConversion(
+    clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  Converter::AddFunctionPointerConversion(decl);
+}
+
+std::string ConverterRefCount::ConvertLambdaToFunctionPointer(
+    const clang::CXXMethodDecl *op) {
+  return std::format("FnPtr::new({}::{})", GetUFCSName(op), GetMethodName(op));
+}
+
 } // namespace cpp2rust

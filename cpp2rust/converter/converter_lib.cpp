@@ -153,7 +153,9 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
   const auto src_loc = decl->getLocation();
-  return !decl->getBeginLoc().isInvalid() && !decl->isImplicit() &&
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  bool implicit = decl->isImplicit() && !(cxx && cxx->isLambda());
+  return !decl->getBeginLoc().isInvalid() && !implicit &&
          !src_mgr.isInSystemHeader(src_loc) &&
          !src_mgr.isInSystemMacro(src_loc);
 }
@@ -352,6 +354,15 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
+  for (auto *field : decl->fields()) {
+    if (!field->getType()->isReferenceType()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
@@ -395,6 +406,9 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
+  if (decl->isLambda()) {
+    return decl->getLambdaCallOperator()->hasBody();
+  }
   return decl->isThisDeclarationADefinition() &&
          std::all_of(
              decl->method_begin(), decl->method_end(), [](auto *method) {
@@ -640,11 +654,71 @@ static size_t GetDeclId(const clang::NamedDecl *decl, bool internal) {
   return type_mapping.try_emplace(key, type_mapping.size()).first->second;
 }
 
+const clang::LambdaCapture *GetLambdaCapture(const clang::FieldDecl *field) {
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
+  if (!cxx || !cxx->isLambda()) {
+    return nullptr;
+  }
+  auto capture = cxx->captures_begin();
+  for (auto *f : cxx->fields()) {
+    assert(capture != cxx->captures_end());
+    if (f == field) {
+      return capture;
+    }
+    ++capture;
+  }
+  assert(0 && "field is not a lambda capture");
+  return nullptr;
+}
+
+const clang::CXXRecordDecl *GetLambdaOf(const clang::FunctionDecl *fn) {
+  auto *method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(fn);
+  if (!method || !method->getParent()->isLambda()) {
+    return nullptr;
+  }
+  return method->getParent();
+}
+
+clang::FieldDecl *GetLambdaCapturedField(const clang::FunctionDecl *fn,
+                                         const clang::ValueDecl *var) {
+  auto *lambda = GetLambdaOf(fn);
+  if (!lambda) {
+    return nullptr;
+  }
+  llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> captures;
+  clang::FieldDecl *this_capture = nullptr;
+  lambda->getCaptureFields(captures, this_capture);
+  auto it = captures.find(var);
+  return it == captures.end() ? nullptr : it->second;
+}
+
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::DeclRefExpr *expr) {
+  auto *decl = expr->getDecl();
+  auto *field = GetLambdaCapturedField(fn, decl);
+  return field ? field->getType() : decl->getType();
+}
+
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
   auto name = decl->getDeclName().isIdentifier() ? decl->getName().str()
                                                  : decl->getNameAsString();
   if (auto *fn = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     name = GetFunctionBaseName(fn);
+  }
+
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+      cxx && cxx->isLambda()) {
+    return std::format("lambda_{}",
+                       type_mapping.try_emplace(GetID(cxx), type_mapping.size())
+                           .first->second);
+  }
+  if (auto *field = clang::dyn_cast<clang::FieldDecl>(decl)) {
+    if (auto *capture = GetLambdaCapture(field)) {
+      if (capture->capturesThis()) {
+        return token::kLambdaThisCapture;
+      }
+      return GetNamedDeclAsString(capture->getCapturedVar());
+    }
   }
 
   // Anonymous record or enum
@@ -887,17 +961,14 @@ bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
       method && IsConvertibleMoveAssignment(method)) {
     return true;
   }
-  if (!callee->isUserProvided() || !IsUserDefinedDecl(callee)) {
-    return false;
-  }
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
-    return !method->getParent()->isLambda();
-  }
-  return true;
+  return callee->isUserProvided() && IsUserDefinedDecl(callee);
 }
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    if (conversion->getParent()->isLambda()) {
+      return "to_free_function";
+    }
     auto name = "operator_" + conversion->getConversionType().getAsString();
     std::replace_if(
         name.begin(), name.end(), [](char c) { return !std::isalnum(c); }, '_');
@@ -992,8 +1063,21 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
          clang::isa<clang::CXXConstructorDecl>(method);
 }
 
+bool IsStaticMethod(const clang::CXXMethodDecl *method) {
+  if (method->isStatic()) {
+    return true;
+  }
+  auto *parent = method->getParent();
+  return parent->isLambda() && parent->getLambdaCallOperator() == method &&
+         parent->captures().empty();
+}
+
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (method->isDeleted() || method->isStatic() || method->isVirtual() ||
+  if (GetLambdaOf(method) &&
+      method->getParent()->getLambdaCallOperator() == method) {
+    return false;
+  }
+  if (method->isDeleted() || IsStaticMethod(method) || method->isVirtual() ||
       clang::isa<clang::CXXConstructorDecl>(method)) {
     return false;
   }
@@ -1003,8 +1087,7 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
   if (method->isImplicit() && !IsComparisonOperator(method)) {
     return false;
   }
-  if (!IsUserDefinedDecl(method->getParent()) ||
-      method->getParent()->isLambda()) {
+  if (!IsUserDefinedDecl(method->getParent())) {
     return false;
   }
   if (auto *definition = method->getDefinition();
