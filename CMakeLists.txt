@@ -142,7 +142,7 @@ set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
 
 set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/target_preprocessor/release/rule-preprocessor")
-set(PREPROCESSOR_STAMP "${CMAKE_BINARY_DIR}/.rule-preprocessor.stamp")
+set(RULES_LIB "${PROJECT_SOURCE_DIR}/rules/target/release/librules.rlib")
 
 file(GLOB_RECURSE rule_preprocessor_sources
      ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
@@ -155,14 +155,13 @@ execute_process(
 )
 
 add_custom_command(
-  OUTPUT ${RUSTLS_HEADER} ${PREPROCESSOR_STAMP}
+  OUTPUT ${RUSTLS_HEADER} ${RULES_LIB}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
-  COMMAND ${CMAKE_COMMAND} -E touch "${PREPROCESSOR_STAMP}"
-  DEPENDS ${rule_preprocessor_sources}
-          "${PROJECT_SOURCE_DIR}/rules/build.rs"
+  DEPENDS "${PROJECT_SOURCE_DIR}/rules/build.rs"
           "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
           "${RUST_STAMP_FILE}"
+  DEPFILE "${PROJECT_SOURCE_DIR}/rules/target/release/librules.d"
   VERBATIM
 )
 
@@ -177,7 +176,7 @@ add_custom_command(
   VERBATIM
 )
 
-file(GLOB rule_subdirs ${PROJECT_SOURCE_DIR}/rules/*)
+file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
@@ -228,7 +227,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
             LD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
             DYLD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
             ${PREPROCESSOR_BIN} ${_out_dir} ${_rule_dir}
-    DEPENDS ${_rust_srcs} ${PREPROCESSOR_BIN} ${PREPROCESSOR_STAMP}
+    DEPENDS ${_rust_srcs} ${PREPROCESSOR_BIN} ${RULES_LIB}
     VERBATIM
   )
   list(APPEND rust_rules_ir_outputs ${_rust_out})
@@ -244,6 +243,5 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
   "${PROJECT_SOURCE_DIR}/libcc2rs-macros/target"
   "${PROJECT_SOURCE_DIR}/libc-dep/target"
   "${PROJECT_SOURCE_DIR}/rules/target"
-  "${PROJECT_SOURCE_DIR}/rule-preprocessor/target"
   "${CMAKE_BINARY_DIR}/target_preprocessor"
 )
