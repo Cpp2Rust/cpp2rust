@@ -3,7 +3,31 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
+use std::iter::Flatten;
 use std::path::{Path, PathBuf};
+
+pub enum Model {
+    Refcount,
+    Unsafe,
+}
+
+impl Model {
+    pub const ALL: [Model; 2] = [Model::Refcount, Model::Unsafe];
+
+    pub fn src_filename(self) -> &'static str {
+        match self {
+            Model::Refcount => "tgt_refcount.rs",
+            Model::Unsafe => "tgt_unsafe.rs",
+        }
+    }
+
+    pub fn ir_filename(self) -> &'static str {
+        match self {
+            Model::Refcount => "ir_refcount.json",
+            Model::Unsafe => "ir_unsafe.json",
+        }
+    }
+}
 
 fn validate_consecutive_keys<'a>(
     keys: impl Iterator<Item = &'a String>,
@@ -231,30 +255,44 @@ pub enum RuleIr {
 /// Per-file IR: rule name -> FnIr or TypeIr
 pub type FileIr = BTreeMap<String, RuleIr>;
 
-/// All IR for all rule files.
+/// Per-dir IR
 pub struct RulesIR {
-    pub all_ir: HashMap<String, FileIr>,
-    pub crate_root: PathBuf,
+    pub dir: PathBuf,
+    pub refcount_ir: Option<FileIr>,
+    pub unsafe_ir: Option<FileIr>,
+}
+
+impl<'a> IntoIterator for &'a RulesIR {
+    type Item = (Model, &'a FileIr);
+    type IntoIter = Flatten<std::array::IntoIter<Option<Self::Item>, 2>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        [
+            self.refcount_ir.as_ref().map(|ir| (Model::Refcount, ir)),
+            self.unsafe_ir.as_ref().map(|ir| (Model::Unsafe, ir)),
+        ]
+        .into_iter()
+        .flatten()
+    }
 }
 
 impl RulesIR {
     pub fn write_ir(&self, out_dir: &Path) {
-        for (rule_path, file_ir) in &self.all_ir {
-            let rule_path = Path::new(rule_path);
-            let rule_name = rule_path.parent().unwrap().file_name().unwrap();
-            let json_name = rule_path
-                .file_name()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .replace("tgt_", "ir_")
-                .replace(".rs", ".json");
-            let json_path = out_dir.join(rule_name).join(json_name);
-
-            std::fs::create_dir_all(json_path.parent().unwrap()).unwrap();
+        for (model, file_ir) in self {
+            let json_path = out_dir.join(model.ir_filename());
             let json = serde_json::to_string_pretty(file_ir).unwrap();
             std::fs::write(&json_path, format!("{json}\n")).unwrap();
             println!("{}", json_path.display());
+        }
+    }
+
+    pub fn get_mut(&mut self, file: &str) -> Option<&mut FileIr> {
+        if file.ends_with(Model::Refcount.src_filename()) {
+            self.refcount_ir.as_mut()
+        } else if file.ends_with(Model::Unsafe.src_filename()) {
+            self.unsafe_ir.as_mut()
+        } else {
+            None
         }
     }
 }

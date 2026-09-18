@@ -1,16 +1,16 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::ir::RulesIR;
-use crate::ir::{Access, FnIr, RuleIr};
+use crate::ir::{Access, FnIr, RuleIr, RulesIR};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 pub struct SemanticAnalysis;
 
 impl SemanticAnalysis {
-    pub fn run(ir: RulesIR) -> RulesIR {
-        let args = build_rustc_args(&ir.crate_root);
+    pub fn run(ir: RulesIR, out_dir: &Path) -> RulesIR {
+        let crate_root = write_crate_root(&ir, out_dir);
+        let args = build_rustc_args(&crate_root);
         let mut resolver = MethodResolver { ir };
 
         if rustc_driver::catch_fatal_errors(|| {
@@ -26,14 +26,30 @@ impl SemanticAnalysis {
     }
 }
 
+fn write_crate_root(ir: &RulesIR, out_dir: &Path) -> PathBuf {
+    let mut buf = String::from("#![allow(warnings)]\n");
+    for (model, _) in ir {
+        let filename = model.src_filename();
+        let stem = filename.strip_suffix(".rs").unwrap();
+        let source = ir.dir.join(filename);
+        buf.push_str(&format!(
+            "#[path = r#\"{}\"#]\npub mod rule_{stem};\n",
+            source.display()
+        ));
+    }
+
+    let path = out_dir.join("crate_root.rs");
+    std::fs::write(&path, buf).unwrap();
+    path
+}
+
 fn build_rustc_args(crate_root: &Path) -> Vec<String> {
     let sysroot = get_sysroot();
-    let lib_path = crate_root.join("src").join("lib.rs");
     let build_dir = find_build_dir();
 
     let mut args = vec![
         "rustc".to_string(),
-        lib_path.to_string_lossy().to_string(),
+        crate_root.to_string_lossy().to_string(),
         "--crate-name".to_string(),
         "rules".to_string(),
         "--crate-type".to_string(),
@@ -217,7 +233,7 @@ struct MethodResolver {
 
 impl MethodResolver {
     fn resolve_rule<'tcx>(&mut self, tcx: rustc_middle::ty::TyCtxt<'tcx>, f: &FnDecl<'tcx>) {
-        let Some(file_ir) = self.ir.all_ir.get_mut(&f.source_file) else {
+        let Some(file_ir) = self.ir.get_mut(&f.source_file) else {
             return;
         };
         match file_ir.get_mut(&f.name) {
@@ -231,14 +247,14 @@ impl MethodResolver {
     }
 
     fn assert_no_unknowns(&self) {
-        for (source_file, file_ir) in &self.ir.all_ir {
+        for (model, file_ir) in &self.ir {
             for (rule_name, rule) in file_ir {
                 let RuleIr::Fn(fn_ir) = rule else { continue };
                 assert!(
                     !fn_ir.has_unknowns(),
                     "unresolved access=\"unknown\" in {} ({})",
                     rule_name,
-                    source_file
+                    self.ir.dir.join(model.src_filename()).display()
                 );
             }
         }
