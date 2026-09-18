@@ -86,13 +86,13 @@ add_custom_target("format"
                   COMMAND cargo +${RUST_NIGHTLY_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_NIGHTLY_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_NIGHTLY_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
@@ -140,6 +140,11 @@ add_custom_target("check"
 set(RULES_IR_DIR "${CMAKE_BINARY_DIR}/rules")
 
 set(RUSTLS_HEADER "${PROJECT_SOURCE_DIR}/rules/rustls/rustls.h")
+set(BROTLI_HEADERS
+    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/decode.h"
+    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/encode.h"
+    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/port.h"
+    "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/types.h")
 
 set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/target_preprocessor/release/rule-preprocessor")
 set(RULES_LIB "${PROJECT_SOURCE_DIR}/rules/target/release/librules.rlib")
@@ -155,7 +160,7 @@ execute_process(
 )
 
 add_custom_command(
-  OUTPUT ${RUSTLS_HEADER} ${RULES_LIB}
+  OUTPUT ${RUSTLS_HEADER} ${BROTLI_HEADERS} ${RULES_LIB}
   COMMAND cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   DEPENDS "${PROJECT_SOURCE_DIR}/rules/build.rs"
@@ -200,7 +205,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_cpp_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER}
+    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
@@ -243,5 +248,6 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
   "${PROJECT_SOURCE_DIR}/libcc2rs-macros/target"
   "${PROJECT_SOURCE_DIR}/libc-dep/target"
   "${PROJECT_SOURCE_DIR}/rules/target"
+  "${PROJECT_SOURCE_DIR}/rule-preprocessor/target"
   "${CMAKE_BINARY_DIR}/target_preprocessor"
 )

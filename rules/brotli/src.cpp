@@ -89,5 +89,3 @@ BrotliDecoderErrorCode f35(const BrotliDecoderState *state) {
 }
 
 uint32_t f36() { return BrotliDecoderVersion(); }
-
-BrotliDecoderErrorCode f37() { return BROTLI_DECODER_ERROR_DICTIONARY_NOT_SET; }
