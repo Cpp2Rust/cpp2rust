@@ -54,5 +54,26 @@ int main() {
 
   const wchar_t ew[2] = L"";
   assert(ew[0] == 0 && ew[1] == 0);
+
+  wchar_t wc = L'Ă';
+  char8_t bc = u8'A';
+  char16_t sc = u'Ă';
+  char32_t lc = U'Ă';
+  assert(wc == 0x102 && bc == 0x41 && sc == 0x102 && lc == 0x102);
+  assert(sizeof(L'a') == sizeof(wchar_t) && sizeof(u8'a') == 1 &&
+         sizeof(u'a') == 2 && sizeof(U'a') == 4);
+
+  assert(w[1] == L'Ă' && s[1] == u'Ă' && l[1] == U'Ă');
+  assert(b[0] == u8'\xC4' && b[1] == u8'\x82');
+  assert(second(L"AĂ") == L'Ă' && second(u"AĂ") == u'Ă');
+  assert(get(U"Ă")[0] == U'Ă' && get(U"Ă")[1] == U'\0');
+
+  assert(L'\n' == 10 && u'\t' == 9 && U'\\' == 92);
+  assert(L'a' + 1 == L'b');
+  assert(U'z' - U'a' == 25);
+  wchar_t wa[3] = {L'A', L'Ă', L'\0'};
+  assert(wa[0] == 0x41 && wa[1] == 0x102 && wa[2] == 0);
+  wa[0] = L'B';
+  assert(wa[0] == 'B');
   return 0;
 }

@@ -116,6 +116,50 @@ unsafe fn main_0() -> i32 {
     );
     let ew: [i32; 2] = [0 as i32, 0 as i32];
     assert!(((ew[(0) as usize]) == (0)) && ((ew[(1) as usize]) == (0)));
+    let mut wc: i32 = (258 as i32);
+    let mut bc: u8 = (65 as u8);
+    let mut sc: u16 = (258 as u16);
+    let mut lc: u32 = (258 as u32);
+    assert!(
+        ((((wc) == (258)) && ((bc as i32) == (65))) && ((sc as i32) == (258)))
+            && ((lc) == (258_u32))
+    );
+    assert!(
+        ((((::std::mem::size_of::<i32>()) == (::std::mem::size_of::<i32>()))
+            && ((::std::mem::size_of::<u8>()) == (1_usize)))
+            && ((::std::mem::size_of::<u16>()) == (2_usize)))
+            && ((::std::mem::size_of::<u32>()) == (4_usize))
+    );
+    assert!(
+        (((*w.offset((1) as isize)) == (258 as i32))
+            && (((*s.offset((1) as isize)) as i32) == ((258 as u16) as i32)))
+            && ((*l.offset((1) as isize)) == (258 as u32))
+    );
+    assert!(
+        (((*b.offset((0) as isize)) as i32) == ((196 as u8) as i32))
+            && (((*b.offset((1) as isize)) as i32) == ((130 as u8) as i32))
+    );
+    assert!(
+        ((unsafe { second_6(&[65 as i32, 258 as i32, 0 as i32,],) }) == (258 as i32))
+            && (((unsafe { second_8(&[65 as u16, 258 as u16, 0 as u16,],) }) as i32)
+                == ((258 as u16) as i32))
+    );
+    assert!(
+        ((*(unsafe { get_4([258 as u32, 0 as u32,].as_ptr(),) }).offset((0) as isize))
+            == (258 as u32))
+            && ((*(unsafe { get_4([258 as u32, 0 as u32,].as_ptr(),) }).offset((1) as isize))
+                == (0 as u32))
+    );
+    assert!((((10 as i32) == (10)) && (((9 as u16) as i32) == (9))) && ((92 as u32) == (92_u32)));
+    assert!((((97 as i32) + (1)) == (98 as i32)));
+    assert!((((122 as u32).wrapping_sub((97 as u32))) == (25_u32)));
+    let mut wa: [i32; 3] = [(65 as i32), (258 as i32), (0 as i32)];
+    assert!(
+        (((wa[(0) as usize]) == (65)) && ((wa[(1) as usize]) == (258)))
+            && ((wa[(2) as usize]) == (0))
+    );
+    wa[(0) as usize] = (66 as i32);
+    assert!(((wa[(0) as usize]) == (('B' as libc::c_char) as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

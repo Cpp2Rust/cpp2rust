@@ -192,6 +192,67 @@ fn main_0() -> i32 {
     );
     let ew: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::from([0 as i32, 0 as i32])));
     assert!(((*ew.borrow())[(0) as usize] == 0) && ((*ew.borrow())[(1) as usize] == 0));
+    let wc: Value<i32> = Rc::new(RefCell::new((258 as i32)));
+    let bc: Value<u8> = Rc::new(RefCell::new((65 as u8)));
+    let sc: Value<u16> = Rc::new(RefCell::new((258 as u16)));
+    let lc: Value<u32> = Rc::new(RefCell::new((258 as u32)));
+    assert!(
+        ((((*wc.borrow()) == 258) && (((*bc.borrow()) as i32) == 65))
+            && (((*sc.borrow()) as i32) == 258))
+            && ((*lc.borrow()) == 258_u32)
+    );
+    assert!(
+        (((::std::mem::size_of::<i32>() == ::std::mem::size_of::<i32>())
+            && (::std::mem::size_of::<u8>() == 1_usize))
+            && (::std::mem::size_of::<u16>() == 2_usize))
+            && (::std::mem::size_of::<u32>() == 4_usize)
+    );
+    assert!(
+        ((((*w.borrow()).offset((1) as isize).read()) == (258 as i32))
+            && ((((*s.borrow()).offset((1) as isize).read()) as i32) == ((258 as u16) as i32)))
+            && (((*l.borrow()).offset((1) as isize).read()) == (258 as u32))
+    );
+    assert!(
+        ((((*b.borrow()).offset((0) as isize).read()) as i32) == ((196 as u8) as i32))
+            && ((((*b.borrow()).offset((1) as isize).read()) as i32) == ((130 as u8) as i32))
+    );
+    assert!(
+        (({
+            second_6(Ptr::<Box<[i32]>>::from_string_literal_array(&[
+                65 as i32, 258 as i32, 0 as i32,
+            ]))
+        }) == (258 as i32))
+            && ((({
+                second_8(Ptr::<Box<[u16]>>::from_string_literal_array(&[
+                    65 as u16, 258 as u16, 0 as u16,
+                ]))
+            }) as i32)
+                == ((258 as u16) as i32))
+    );
+    assert!(
+        ((({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) })
+            .offset((0) as isize)
+            .read())
+            == (258 as u32))
+            && ((({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) })
+                .offset((1) as isize)
+                .read())
+                == (0 as u32))
+    );
+    assert!((((10 as i32) == 10) && (((9 as u16) as i32) == 9)) && ((92 as u32) == 92_u32));
+    assert!((((97 as i32) + 1) == (98 as i32)));
+    assert!(((122 as u32).wrapping_sub((97 as u32)) == 25_u32));
+    let wa: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([
+        (65 as i32),
+        (258 as i32),
+        (0 as i32),
+    ])));
+    assert!(
+        (((*wa.borrow())[(0) as usize] == 65) && ((*wa.borrow())[(1) as usize] == 258))
+            && ((*wa.borrow())[(2) as usize] == 0)
+    );
+    (*wa.borrow_mut())[(0) as usize] = (66 as i32);
+    assert!(((*wa.borrow())[(0) as usize] == (('B' as u8) as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
