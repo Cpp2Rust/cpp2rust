@@ -2520,6 +2520,11 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     Convert(expr->getSubExpr());
     return false;
   }
+  // A cast to a reference type only rebinds the operand, it converts nothing
+  if (type->isReferenceType()) {
+    Convert(sub_expr);
+    return false;
+  }
   switch (expr->getStmtClass()) {
   case clang::Stmt::CXXReinterpretCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
