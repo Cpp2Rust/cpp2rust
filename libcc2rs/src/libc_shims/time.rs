@@ -37,7 +37,7 @@ impl Tm {
         let zone: &'static [u8] = b"GMT";
         #[cfg(target_os = "macos")]
         let zone: &'static [u8] = b"UTC";
-        *tm.tm_zone.borrow_mut() = Ptr::from_string_literal(zone);
+        *tm.tm_zone.borrow_mut() = Ptr::<u8>::from_string_literal(zone);
         tm
     }
 
