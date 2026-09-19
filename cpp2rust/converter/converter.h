@@ -98,6 +98,7 @@ public:
   void EmitHoistedDecls(clang::CompoundStmt *body);
 
   virtual bool VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl);
+  bool VisitVarTemplateDecl(clang::VarTemplateDecl *decl);
 
   virtual bool VisitVarDecl(clang::VarDecl *decl);
   virtual bool LazyStaticInit() const { return true; }

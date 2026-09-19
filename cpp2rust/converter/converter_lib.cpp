@@ -574,6 +574,10 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   std::string id;
+  if (const auto *var =
+          clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
+    id += clang::ASTNameGenerator(var->getASTContext()).getName(var);
+  }
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());
