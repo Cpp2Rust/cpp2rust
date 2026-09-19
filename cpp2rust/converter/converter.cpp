@@ -2281,31 +2281,32 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
   return out;
 }
 
-std::string Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr,
-                                               uint64_t pad) {
+bool Converter::IsArrayInitContext() const {
+  return !curr_init_type_.empty() && curr_init_type_.back()->isArrayType();
+}
+
+std::string
+Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
   auto elem_type =
       ToStringBase(ctx_.getAsArrayType(expr->getType())->getElementType());
-  std::string out = "[";
-  for (unsigned i = 0; i < expr->getLength(); ++i) {
-    out += std::format("{} as {}, ", expr->getCodeUnit(i), elem_type);
+  uint64_t len = expr->getLength();
+  uint64_t total = len + 1;
+  if (IsArrayInitContext()) {
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
+      total = std::max(arr_ty->getSize().getZExtValue(), len);
+    }
   }
-  for (uint64_t i = 0; i < pad; ++i) {
-    out += std::format("0 as {}, ", elem_type);
+  std::string out = "[";
+  for (uint64_t i = 0; i < total; ++i) {
+    out += std::format("{} as {}, ", i < len ? expr->getCodeUnit(i) : 0,
+                       elem_type);
   }
   return out + ']';
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
-  if (expr->getCharByteWidth() != 1 ||
-      expr->getKind() == clang::StringLiteralKind::UTF8) {
-    uint64_t pad = 1;
-    if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
-      if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
-        uint64_t arr_size = arr_ty->getSize().getZExtValue();
-        pad = arr_size > expr->getLength() ? arr_size - expr->getLength() : 0;
-      }
-    }
-    StrCat(GetCodeUnitArrayLiteral(expr, pad));
+  if (IsCodeUnitStringLiteral(expr)) {
+    StrCat(GetCodeUnitArrayLiteral(expr));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }

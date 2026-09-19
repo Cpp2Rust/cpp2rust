@@ -149,6 +149,11 @@ bool IsStringLiteralExpr(const clang::Expr *expr) {
          clang::isa<clang::PredefinedExpr>(stripped);
 }
 
+bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr) {
+  return expr->getCharByteWidth() != 1 ||
+         expr->getKind() == clang::StringLiteralKind::UTF8;
+}
+
 bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
