@@ -16,12 +16,12 @@ impl MoveOnly {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn MoveOnly_pmutMoveOnly(o: *mut MoveOnly) -> Self {
+    pub unsafe fn MoveOnly_pmutMoveOnly_rv(o: *mut MoveOnly) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
-    pub unsafe fn operator_assign_pmutMoveOnly(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
+    pub unsafe fn operator_assign_pmutMoveOnly_rv(&mut self, o: *mut MoveOnly) -> *mut MoveOnly {
         if ((self as *mut MoveOnly) == (o)) {
             return &mut (*(self as *mut MoveOnly));
         }
@@ -40,14 +40,14 @@ impl ConstMoveAssign {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn operator_assign_pmutConstMoveAssign(
+    pub unsafe fn operator_assign_pmutConstMoveAssign_rv(
         &mut self,
         o: *mut ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut ConstMoveAssign));
     }
-    pub unsafe fn operator_assign_pconstConstMoveAssign(
+    pub unsafe fn operator_assign_pconstConstMoveAssign_rv(
         &mut self,
         o: *const ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
@@ -62,7 +62,7 @@ impl Default for ConstMoveAssign {
 }
 pub unsafe fn make_0(mut v: i32) -> MoveOnly {
     let mut m: MoveOnly = MoveOnly::MoveOnly({ v });
-    return MoveOnly::MoveOnly_pmutMoveOnly({ &mut m });
+    return MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut m });
 }
 pub fn main() {
     unsafe {
@@ -74,47 +74,47 @@ unsafe fn main_0() -> i32 {
     let mut a: MoveOnly = MoveOnly::MoveOnly({ 1 });
     let mut b: MoveOnly = MoveOnly::MoveOnly({ 2 });
     let mut c: MoveOnly = MoveOnly::MoveOnly({ 3 });
-    (unsafe { MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut b) });
+    (unsafe { MoveOnly::operator_assign_pmutMoveOnly_rv(&mut a, &mut b) });
     assert!(((a.v) == (2)));
     assert!(((b.v) == (0)));
     (unsafe {
         let mut _o: MoveOnly = MoveOnly::MoveOnly({ 3 });
-        MoveOnly::operator_assign_pmutMoveOnly(&mut b, &mut _o)
+        MoveOnly::operator_assign_pmutMoveOnly_rv(&mut b, &mut _o)
     });
     (unsafe {
-        MoveOnly::operator_assign_pmutMoveOnly(
+        MoveOnly::operator_assign_pmutMoveOnly_rv(
             &mut c,
-            &mut (*(unsafe { MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut b) })),
+            &mut (*(unsafe { MoveOnly::operator_assign_pmutMoveOnly_rv(&mut a, &mut b) })),
         )
     });
     assert!((((b.v) == (0)) && ((a.v) == (0))) && ((c.v) == (3)));
     (unsafe {
         let mut _o: MoveOnly = MoveOnly::MoveOnly({ 5 });
-        MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut _o)
+        MoveOnly::operator_assign_pmutMoveOnly_rv(&mut a, &mut _o)
     });
     assert!(((a.v) == (5)));
     (unsafe {
         let mut _o: MoveOnly = (unsafe { make_0(6) });
-        MoveOnly::operator_assign_pmutMoveOnly(&mut a, &mut _o)
+        MoveOnly::operator_assign_pmutMoveOnly_rv(&mut a, &mut _o)
     });
     assert!(((a.v) == (6)));
     (unsafe {
         let _o: *mut MoveOnly = &mut a;
-        MoveOnly::operator_assign_pmutMoveOnly(&mut a, _o)
+        MoveOnly::operator_assign_pmutMoveOnly_rv(&mut a, _o)
     });
     assert!(((a.v) == (6)));
     let mut vec_: Vec<MoveOnly> = Vec::new();
     vec_.push(MoveOnly::MoveOnly({ 7 }));
     let mut d: MoveOnly = MoveOnly::MoveOnly({ 8 });
-    (unsafe { MoveOnly::operator_assign_pmutMoveOnly(&mut vec_[(0_usize)], &mut d) });
+    (unsafe { MoveOnly::operator_assign_pmutMoveOnly_rv(&mut vec_[(0_usize)], &mut d) });
     assert!(((vec_[(0_usize)].v) == (8)));
     assert!(((d.v) == (0)));
     let mut m: ConstMoveAssign = ConstMoveAssign::ConstMoveAssign();
     let mut m1: ConstMoveAssign = ConstMoveAssign::ConstMoveAssign();
     let mut m2: ConstMoveAssign = ConstMoveAssign::ConstMoveAssign();
     let cm: ConstMoveAssign = ConstMoveAssign::ConstMoveAssign();
-    (unsafe { ConstMoveAssign::operator_assign_pmutConstMoveAssign(&mut m1, &mut m) });
-    (unsafe { ConstMoveAssign::operator_assign_pconstConstMoveAssign(&mut m2, &cm) });
+    (unsafe { ConstMoveAssign::operator_assign_pmutConstMoveAssign_rv(&mut m1, &mut m) });
+    (unsafe { ConstMoveAssign::operator_assign_pconstConstMoveAssign_rv(&mut m2, &cm) });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
     return 0;

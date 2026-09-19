@@ -125,7 +125,7 @@ impl MinHeap {
             i.prefix_dec();
         }
     }
-    pub unsafe fn MinHeap_pmutMinHeap(_a0: *mut MinHeap) -> Self {
+    pub unsafe fn MinHeap_pmutMinHeap_rv(_a0: *mut MinHeap) -> Self {
         let mut this = Self {
             size: (*_a0).size,
             capacity: (*_a0).capacity,
@@ -135,7 +135,7 @@ impl MinHeap {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutMinHeap(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
+    pub unsafe fn operator_assign_pmutMinHeap_rv(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
         self.size = (*_a0).size;
         self.capacity = (*_a0).capacity;
         self.arr = (*_a0).arr.take();

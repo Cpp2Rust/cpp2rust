@@ -11,7 +11,7 @@ pub struct Holder {
     pub val: Value<Option<Value<i32>>>,
 }
 impl Holder {
-    pub fn Holder_pmutHolder(_a0: Ptr<Holder>) -> Self {
+    pub fn Holder_pmutHolder_rv(_a0: Ptr<Holder>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).val.borrow_mut()).take(),
@@ -62,10 +62,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait HolderImpl {
-    fn operator_assign_pmutHolder(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
-    fn operator_assign_pmutHolder(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         ((*(*self).upgrade().deref()).val.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).val.borrow_mut()).take());
         return (*self).clone();

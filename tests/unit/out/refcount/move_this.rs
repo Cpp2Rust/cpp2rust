@@ -26,7 +26,7 @@ impl Chain {
         let this: Ptr<Chain> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Chain_pmutChain(o: Ptr<Chain>) -> Self {
+    pub fn Chain_pmutChain_rv(o: Ptr<Chain>) -> Self {
         let __this: Value<Chain> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 1))),
         }));
@@ -67,7 +67,7 @@ fn main_0() -> i32 {
     ({ ChainImpl::add_i32_lref(&({ ChainImpl::add_i32_lref(&a.as_pointer(), 1) }), 1) });
     assert!(((*(*a.borrow()).v.borrow()) == 3));
     let b0: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 5 })));
-    let b: Value<Chain> = Rc::new(RefCell::new(Chain::Chain_pmutChain({
+    let b: Value<Chain> = Rc::new(RefCell::new(Chain::Chain_pmutChain_rv({
         ({ ChainImpl::add_i32_rref(&({ ChainImpl::add_i32_rref(&b0.as_pointer(), 1) }), 1) })
     })));
     assert!(((*(*b.borrow()).v.borrow()) == 8) && ((*(*b0.borrow()).v.borrow()) == 0));
@@ -80,7 +80,7 @@ fn main_0() -> i32 {
     let g: Value<Chain> = Rc::new(RefCell::new(Chain::Chain({ 20 })));
     assert!(
         (({
-            consume_0(Chain::Chain_pmutChain({
+            consume_0(Chain::Chain_pmutChain_rv({
                 ({ ChainImpl::self_(&g.as_pointer()) })
             }))
         }) == 21)
@@ -109,7 +109,7 @@ impl ChainImpl for Ptr<Chain> {
         return (*self).clone();
     }
     fn take(&self) -> Chain {
-        return Chain::Chain_pmutChain({ (*self).clone() });
+        return Chain::Chain_pmutChain_rv({ (*self).clone() });
     }
     fn copy(&self) -> Chain {
         return Chain::Chain_pconstChain({ (*self).clone() });
