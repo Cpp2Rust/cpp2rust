@@ -1115,7 +1115,7 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
 }
 
 std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  return decl->isConst() ? "&self" : "&mut self";
+  return MethodNeedsMutableReceiver(decl) ? "&mut self" : "&self";
 }
 
 std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
@@ -3151,11 +3151,21 @@ void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
   }
   Buffer buf(*this);
   PushExprKind push(*this, ExprKind::LValue);
-  StrCat(method->isConst() ? "&" : "&mut");
+  auto object_type = is_arrow ? base->getType()->getPointeeType()
+                              : base->getType().getNonReferenceType();
+  bool cast_mut =
+      MethodNeedsMutableReceiver(method) && object_type.isConstQualified();
+  StrCat(MethodNeedsMutableReceiver(method) ? "&mut" : "&");
+  if (cast_mut) {
+    StrCat("*(&raw const");
+  }
   if (is_arrow) {
     ConvertArrow(base);
   } else {
     Convert(base);
+  }
+  if (cast_mut) {
+    StrCat(").cast_mut()");
   }
   ufcs_receiver_ = std::move(buf).str();
 }
@@ -4383,7 +4393,7 @@ std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
   auto record = GetRecordName(decl);
   auto arg = std::format("{} as *const {}", rhs, record);
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
-    auto recv = method->isConst()
+    auto recv = !MethodNeedsMutableReceiver(method)
                     ? std::string(lhs)
                     : std::format("&mut *(&raw const *{}).cast_mut()", lhs);
     return std::format("{}::{}({}, {})", GetUFCSName(method),

@@ -66,6 +66,55 @@ impl ByteRepr for Route {
         }
     }
 }
+#[derive(Default)]
+pub struct Counter {
+    pub v: Value<i32>,
+    pub calls: Value<i32>,
+}
+impl std::cmp::PartialEq for Counter {
+    fn eq(&self, other: &Self) -> bool {
+        {
+            CounterImpl::operator_eq(
+                &Rc::new(RefCell::new(Counter {
+                    v: self.v.clone(),
+                    calls: self.calls.clone(),
+                }))
+                .as_pointer(),
+                Rc::new(RefCell::new(Counter {
+                    v: other.v.clone(),
+                    calls: other.calls.clone(),
+                }))
+                .as_pointer(),
+            )
+        }
+    }
+}
+impl std::cmp::Eq for Counter {}
+impl Clone for Counter {
+    fn clone(&self) -> Self {
+        let __this: Value<Counter> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+            calls: Rc::new(RefCell::new((*self.calls.borrow()))),
+        }));
+        let this: Ptr<Counter> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Counter {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.calls.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            calls: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if (((*(*(*route.upgrade().deref()).path.borrow()).first.borrow()) % 2) != 0) {
         return ({
@@ -115,7 +164,40 @@ fn main_0() -> i32 {
             + (*old_cost.borrow()))
             == 9_f64)
     );
+    let c1: Value<Counter> = Rc::new(RefCell::new(Counter {
+        v: Rc::new(RefCell::new(3)),
+        calls: Rc::new(RefCell::new(0)),
+    }));
+    let c2: Value<Counter> = Rc::new(RefCell::new(Counter {
+        v: Rc::new(RefCell::new(3)),
+        calls: Rc::new(RefCell::new(0)),
+    }));
+    let pc: Value<Ptr<Counter>> = Rc::new(RefCell::new((c1.as_pointer())));
+    assert!((({ CounterImpl::Get(&c1.as_pointer(),) }) == 3));
+    assert!((({ CounterImpl::Get(&c2.as_pointer(),) }) == 3));
+    assert!((({ CounterImpl::Get(&(*pc.borrow()),) }) == 3));
+    assert!(({ CounterImpl::operator_eq(&c1.as_pointer(), c2.as_pointer(),) }));
+    assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
+    assert!(((*(*c1.borrow()).calls.borrow()) == 3));
+    assert!(((*(*c2.borrow()).calls.borrow()) == 2));
     return 0;
+}
+pub trait CounterImpl {
+    fn Get(&self) -> i32;
+    fn operator_eq(&self, o: Ptr<Counter>) -> bool;
+}
+impl CounterImpl for Ptr<Counter> {
+    fn Get(&self) -> i32 {
+        (*(*(*self).upgrade().deref()).calls.borrow_mut()).prefix_inc();
+        return (*(*(*self).upgrade().deref()).v.borrow());
+    }
+    fn operator_eq(&self, o: Ptr<Counter>) -> bool {
+        (*(*(*self).upgrade().deref()).calls.borrow_mut()).prefix_inc();
+        return {
+            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
+            _lhs == (*(*o.upgrade().deref()).v.borrow())
+        };
+    }
 }
 pub trait PairImpl {
     fn NOP(&self);
