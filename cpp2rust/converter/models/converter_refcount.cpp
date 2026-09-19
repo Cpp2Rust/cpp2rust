@@ -86,6 +86,19 @@ void ConverterRefCount::PendingDeref::set_unchecked(std::string str, bool fresh,
   type = ComputedExprType::Pending;
 }
 
+std::string
+ConverterRefCount::GetStringLiteralCodeUnit(const clang::Expr *expr) {
+  const auto *literal = clang::dyn_cast<clang::StringLiteral>(
+      expr->IgnoreParens()->IgnoreImplicit());
+  if (literal == nullptr ||
+      (literal->getCharByteWidth() == 1 &&
+       literal->getKind() != clang::StringLiteralKind::UTF8)) {
+    return "u8";
+  }
+  return ToStringBase(
+      ctx_.getAsArrayType(literal->getType())->getElementType());
+}
+
 std::string ConverterRefCount::GetInnerType(clang::QualType type) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto str = ToString(type);
@@ -1179,6 +1192,22 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
+  if (expr->getCharByteWidth() != 1 ||
+      expr->getKind() == clang::StringLiteralKind::UTF8) {
+    uint64_t pad = 1;
+    if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
+      if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
+        uint64_t arr_size = arr_ty->getSize().getZExtValue();
+        pad = arr_size > expr->getLength() ? arr_size - expr->getLength() : 0;
+      }
+      StrCat(std::format("Box::from({})", GetCodeUnitArrayLiteral(expr, pad)));
+    } else {
+      StrCat(std::format("&{}", GetCodeUnitArrayLiteral(expr, pad)));
+    }
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
+
   if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
     uint64_t pad = 1;
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {

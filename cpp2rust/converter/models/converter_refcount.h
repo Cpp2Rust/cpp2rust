@@ -267,6 +267,8 @@ private:
 
   std::string GetInnerType(clang::QualType type);
 
+  std::string GetStringLiteralCodeUnit(const clang::Expr *expr);
+
   std::string ConvertFreshLValue(clang::Expr *expr);
   std::string ConvertObject(clang::Expr *expr);
   std::string ConvertFreshObject(clang::Expr *expr) override;

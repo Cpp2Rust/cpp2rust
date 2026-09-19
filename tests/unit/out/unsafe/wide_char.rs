@@ -44,10 +44,10 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: *const libc::c_char = c"A".as_ptr();
-    let mut w: *const i32 = (&[65 as i32, 258 as i32, 0 as i32]).as_ptr();
-    let mut b: *const u8 = (&[196 as u8, 130 as u8, 0 as u8]).as_ptr();
-    let mut s: *const u16 = (&[65 as u16, 258 as u16, 0 as u16]).as_ptr();
-    let mut l: *const u32 = (&[65 as u32, 258 as u32, 0 as u32]).as_ptr();
+    let mut w: *const i32 = [65 as i32, 258 as i32, 0 as i32].as_ptr();
+    let mut b: *const u8 = [196 as u8, 130 as u8, 0 as u8].as_ptr();
+    let mut s: *const u16 = [65 as u16, 258 as u16, 0 as u16].as_ptr();
+    let mut l: *const u32 = [65 as u32, 258 as u32, 0 as u32].as_ptr();
     assert!((((*c.offset((0) as isize)) as i32) == (('A' as libc::c_char) as i32)));
     assert!(
         (((*b.offset((0) as isize)) as i32) == (196))
@@ -65,29 +65,29 @@ unsafe fn main_0() -> i32 {
             == (('A' as libc::c_char) as i32))
     );
     assert!(
-        ((*(unsafe { get_1((&[258 as i32, 0 as i32,]).as_ptr(),) }).offset((0) as isize)) == (258))
+        ((*(unsafe { get_1([258 as i32, 0 as i32,].as_ptr(),) }).offset((0) as isize)) == (258))
     );
     assert!(
-        (((*(unsafe { get_2((&[196 as u8, 130 as u8, 0 as u8,]).as_ptr(),) }).offset((0) as isize))
+        (((*(unsafe { get_2([196 as u8, 130 as u8, 0 as u8,].as_ptr(),) }).offset((0) as isize))
             as i32)
             == (196))
     );
     assert!(
-        (((*(unsafe { get_3((&[258 as u16, 0 as u16,]).as_ptr(),) }).offset((0) as isize)) as i32)
+        (((*(unsafe { get_3([258 as u16, 0 as u16,].as_ptr(),) }).offset((0) as isize)) as i32)
             == (258))
     );
     assert!(
-        ((*(unsafe { get_4((&[258 as u32, 0 as u32,]).as_ptr(),) }).offset((0) as isize))
+        ((*(unsafe { get_4([258 as u32, 0 as u32,].as_ptr(),) }).offset((0) as isize))
             == (258_u32))
     );
     assert!(
         (((unsafe { second_5(&std::mem::transmute(*b"AB\0"),) }) as i32)
             == (('B' as libc::c_char) as i32))
     );
-    assert!(((unsafe { second_6(&(&[65 as i32, 258 as i32, 0 as i32,]),) }) == (258)));
-    assert!((((unsafe { second_7(&(&[196 as u8, 130 as u8, 0 as u8,]),) }) as i32) == (130)));
-    assert!((((unsafe { second_8(&(&[65 as u16, 258 as u16, 0 as u16,]),) }) as i32) == (258)));
-    assert!(((unsafe { second_9(&(&[65 as u32, 258 as u32, 0 as u32,]),) }) == (258_u32)));
+    assert!(((unsafe { second_6(&[65 as i32, 258 as i32, 0 as i32,],) }) == (258)));
+    assert!((((unsafe { second_7(&[196 as u8, 130 as u8, 0 as u8,],) }) as i32) == (130)));
+    assert!((((unsafe { second_8(&[65 as u16, 258 as u16, 0 as u16,],) }) as i32) == (258)));
+    assert!(((unsafe { second_9(&[65 as u32, 258 as u32, 0 as u32,],) }) == (258_u32)));
     let nw: usize = ((::std::mem::size_of::<[i32; 4]>() as usize)
         .wrapping_div((::std::mem::size_of::<i32>() as usize)) as usize)
         .wrapping_sub(1_usize);
