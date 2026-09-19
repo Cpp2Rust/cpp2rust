@@ -17,7 +17,7 @@ fn main_0() -> i32 {
             None => nix::sys::stat::Mode::empty(),
         };
         match nix::fcntl::open(
-            Ptr::from_string_literal(b"/dev/null")
+            Ptr::<u8>::from_string_literal(b"/dev/null")
                 .to_rust_string()
                 .as_str(),
             nix::fcntl::OFlag::from_bits_retain(::libc::O_RDONLY),

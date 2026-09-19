@@ -127,7 +127,7 @@ fn main_0() -> i32 {
     {
         assert!((1 != 0));
     }
-    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
+    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hi")));
     let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     if (((((((*x.borrow()) > (*y.borrow())) as i32) != 0) && (!(*cp.borrow()).is_null())) as i32)
         != 0)

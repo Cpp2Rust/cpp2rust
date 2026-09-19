@@ -105,7 +105,9 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u32>()
         .write(305419896_u32);
     assert!(((*(*v.borrow()).b.borrow()) == 305419896_u32));
-    let text: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"example-body")));
+    let text: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+        b"example-body",
+    )));
     let len: Value<usize> = Rc::new(RefCell::new(
         ((*text.borrow()).to_c_string_iterator().count()).wrapping_add(1_usize),
     ));

@@ -36,13 +36,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let d: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
-        Ptr::from_string_literal(b"hello"),
+        Ptr::<u8>::from_string_literal(b"hello"),
     )));
     assert!((((!((*d.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (*d.borrow()).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"hello").to_c_string_iterator();
+            let mut __it2 = Ptr::<u8>::from_string_literal(b"hello").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any());
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"world")));
+    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"world")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         (('a' as i32) as u8),
         (('b' as i32) as u8),

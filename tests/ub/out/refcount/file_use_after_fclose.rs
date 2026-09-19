@@ -13,8 +13,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
-            &Ptr::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
