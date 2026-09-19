@@ -2210,6 +2210,13 @@ bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
 }
 
 bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
+  if (expr->getKind() != clang::CharacterLiteralKind::Ascii) {
+    PushParen paren(*this);
+    StrCat(std::to_string(expr->getValue()), keyword::kAs,
+           ToStringBase(expr->getType()));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   auto uc = static_cast<unsigned char>(expr->getValue());
   std::string ch = GetEscapedCharLiteral(expr->getValue());
   ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + '\'';
