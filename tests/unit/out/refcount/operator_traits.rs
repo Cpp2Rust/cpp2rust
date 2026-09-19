@@ -487,8 +487,10 @@ pub trait CmpImpl {
 }
 impl CmpImpl for Ptr<Cmp> {
     fn operator_cmp(&self, o: Ptr<Cmp>) -> std::cmp::Ordering {
-        return (*(*(*self).upgrade().deref()).v.borrow())
-            .cmp(&(*(*o.upgrade().deref()).v.borrow()));
+        return std::cmp::Ord::cmp(
+            &(*(*(*self).upgrade().deref()).v.borrow()),
+            &(*(*o.upgrade().deref()).v.borrow()),
+        );
     }
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool {
         return {

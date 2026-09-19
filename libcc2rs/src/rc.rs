@@ -167,12 +167,18 @@ impl<T> PartialEq for Ptr<T> {
 
 impl<T> Eq for Ptr<T> {}
 
+impl<T> Ord for Ptr<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.kind.partial_cmp(&other.kind) {
+            Some(std::cmp::Ordering::Equal) | None => self.byte_offset().cmp(&other.byte_offset()),
+            Some(ord) => ord,
+        }
+    }
+}
+
 impl<T> PartialOrd for Ptr<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.kind.partial_cmp(&other.kind) {
-            Some(std::cmp::Ordering::Equal) => self.byte_offset().partial_cmp(&other.byte_offset()),
-            ord => ord,
-        }
+        Some(self.cmp(other))
     }
 }
 
