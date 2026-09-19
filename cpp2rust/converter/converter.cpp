@@ -1165,8 +1165,11 @@ bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
 
 void Converter::ConvertCXXConstructorBody(clang::CXXConstructorDecl *decl) {
   EmitFunctionPreamble(decl);
-  StrCat(keyword::kLet, "mut", "this", token::kAssign, "Self");
-  {
+  StrCat(keyword::kLet, "mut", "this", token::kAssign);
+  if (decl->isDelegatingConstructor()) {
+    Convert((*decl->init_begin())->getInit());
+  } else {
+    StrCat("Self");
     PushBrace this_init(*this);
     EmitConstructorFieldInits(decl);
   }
@@ -1182,26 +1185,23 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
   assert(definition_or_null);
   auto *definition = clang::cast<clang::CXXConstructorDecl>(definition_or_null);
 
-  bool has_inits = !definition->inits().empty();
-  auto **ctor_initializer_list = definition->inits().begin();
-  int curr_init =
-      has_inits ? (ctor_initializer_list[0]->isBaseInitializer() ? 1 : 0) : 0;
-
   for (const auto *field : record_decl->fields()) {
     auto field_name = GetNamedDeclAsString(field);
     auto field_type = field->getType();
-    auto *ctor_initializer =
-        has_inits ? ctor_initializer_list[curr_init] : nullptr;
+    const clang::CXXCtorInitializer *ctor_initializer = nullptr;
+    for (const auto *init : definition->inits()) {
+      if (init->isMemberInitializer() && init->getMember() == field) {
+        ctor_initializer = init;
+        break;
+      }
+    }
 
-    if (has_inits &&
-        GetNamedDeclAsString(ctor_initializer->getMember()) == field_name) {
-      auto *ctor_init_expr = ctor_initializer->getInit();
+    if (ctor_initializer) {
       StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, ctor_init_expr);
-      curr_init = (curr_init + 1) % definition->getNumCtorInitializers();
-    } else if (field->hasInClassInitializer()) {
+      ConvertVarInit(field_type, ctor_initializer->getInit());
+    } else if (auto *init = field->getInClassInitializer()) {
       StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, field->getInClassInitializer());
+      ConvertVarInit(field_type, init);
     } else {
       StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
     }

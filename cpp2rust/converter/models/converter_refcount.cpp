@@ -2959,8 +2959,11 @@ void ConverterRefCount::ConvertCXXConstructorBody(
   auto record_name = GetRecordName(decl->getParent());
   StrCat(keyword::kLet, "__this", token::kColon,
          std::format("Value<{}>", record_name), token::kAssign,
-         "Rc::new(RefCell::new(Self");
-  {
+         "Rc::new(RefCell::new(");
+  if (decl->isDelegatingConstructor()) {
+    Convert((*decl->init_begin())->getInit());
+  } else {
+    StrCat("Self");
     PushBrace this_init(*this);
     EmitConstructorFieldInits(decl);
   }
