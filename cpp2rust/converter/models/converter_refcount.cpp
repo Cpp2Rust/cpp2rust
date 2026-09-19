@@ -1103,6 +1103,13 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  // p->~T() is a no-op when T has nothing to destruct
+  if (auto *dtor = clang::dyn_cast_or_null<clang::CXXDestructorDecl>(
+          expr->getCalleeDecl());
+      dtor && !RecordNeedsDestruction(dtor->getParent())) {
+    return false;
+  }
+
   if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
