@@ -99,15 +99,8 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 5 })));
 );
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Holder {}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         1

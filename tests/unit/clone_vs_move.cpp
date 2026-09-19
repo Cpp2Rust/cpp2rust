@@ -16,6 +16,11 @@ struct Foo {
   Bar bar;
 };
 
+struct Refs {
+  int &a;
+  int &b;
+};
+
 int main() {
   int x1 = 1;
   int x2 = x1;
@@ -181,6 +186,16 @@ int main() {
     assert(v4[i] == i + 2);
     assert(v2[i] == i + 1);
   }
+
+  int ra = 1, rb = 2;
+  Refs r1{ra, rb};
+  Refs r2 = r1;
+  r2.a = 10;
+  ++r2.b;
+  assert(ra == 10);
+  assert(rb == 3);
+  assert(r1.a == 10);
+  assert(r1.b == 3);
 
   return 0;
 }

@@ -87,6 +87,8 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
+
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);

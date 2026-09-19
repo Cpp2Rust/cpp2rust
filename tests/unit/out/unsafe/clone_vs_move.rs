@@ -31,6 +31,12 @@ impl Default for Foo {
         }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Refs {
+    pub a: *mut i32,
+    pub b: *mut i32,
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -246,6 +252,19 @@ unsafe fn main_0() -> i32 {
         assert!(((v2[(i as usize)]) == ((i) + (1))));
         i.prefix_inc();
     }
+    let mut ra: i32 = 1;
+    let mut rb: i32 = 2;
+    let mut r1: Refs = Refs {
+        a: &mut ra,
+        b: &mut rb,
+    };
+    let mut r2: Refs = r1;
+    (*r2.a) = 10;
+    (*r2.b).prefix_inc();
+    assert!(((ra) == (10)));
+    assert!(((rb) == (3)));
+    assert!(((*r1.a) == (10)));
+    assert!(((*r1.b) == (3)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
