@@ -33,5 +33,7 @@ int main() {
   assert(!z);
   Static st;
   assert(st(6, 7) == 42);
+  assert(S{5}() == 5);
+  assert(S{5}(1, 1) == 7);
   return 0;
 }
