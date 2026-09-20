@@ -3440,12 +3440,16 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
     if (!curr_init_type_.empty() && curr_init_type_.back()->isPointerType()) {
       StrCat(".as_mut_ptr()");
     }
+    SetFreshType(expr->getType());
   } else {
-    auto initializer_as_string = ToString(expr->getInitializer());
+    auto initializer_as_string =
+        expr->getInitializer() ? ToString(expr->getInitializer())
+                               : GetDefaultAsString(expr->getAllocatedType());
     auto new_as_string =
         std::format("(Box::leak(Box::new({})) as {})", initializer_as_string,
                     ToString(expr->getType()));
     StrCat(new_as_string);
+    SetFreshType(expr->getType());
   }
   return false;
 }
