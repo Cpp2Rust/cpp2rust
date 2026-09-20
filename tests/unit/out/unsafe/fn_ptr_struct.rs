@@ -47,14 +47,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p1: Option<unsafe fn(i32) -> i32> = (Some(pick));
-    let mut p2: Option<unsafe fn(i32) -> i32> = Some(solo);
+    let mut p1: Option<unsafe fn(i32) -> i32> = (Some(S::pick_i32));
+    let mut p2: Option<unsafe fn(i32) -> i32> = Some(S::solo);
     assert!(((unsafe { (p1).unwrap()(5,) }) == (6)));
     assert!(((unsafe { (p2).unwrap()(5,) }) == (8)));
-    assert!(((unsafe { S::pick(5_i64,) }) == (7)));
+    assert!(((unsafe { S::pick_i64(5_i64,) }) == (7)));
     let mut h3: Handler = Handler {
         tag: 3,
-        cb: (Some(pick)),
+        cb: (Some(S::pick_i32)),
     };
     assert!(((unsafe { (h3.cb).unwrap()(1,) }) == (2)));
     let mut h1: Handler = Handler {

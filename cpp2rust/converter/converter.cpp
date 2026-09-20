@@ -1896,9 +1896,18 @@ void Converter::EmitFnPtrCall(clang::Expr *callee) {
   StrCat(".unwrap()");
 }
 
+std::string Converter::GetFunctionRefName(const clang::FunctionDecl *fn_decl) {
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(fn_decl);
+      method && method->isStatic()) {
+    return std::format("{}::{}", GetRecordName(method->getParent()),
+                       GetMethodName(method));
+  }
+  return Mapper::MapFunctionName(fn_decl);
+}
+
 void Converter::ConvertFunctionToFunctionPointer(
     const clang::FunctionDecl *fn_decl) {
-  StrCat(std::format("Some({})", Mapper::MapFunctionName(fn_decl)));
+  StrCat(std::format("Some({})", GetFunctionRefName(fn_decl)));
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
@@ -3015,8 +3024,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
       if (method->isStatic()) {
-        return std::format("{}::{}", GetRecordName(method->getParent()),
-                           GetNamedDeclAsString(method));
+        return GetFunctionRefName(method);
       }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());

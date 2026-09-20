@@ -314,6 +314,8 @@ public:
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
+  std::string GetFunctionRefName(const clang::FunctionDecl *fn_decl);
+
   std::string ConvertFnPtrCallee(clang::Expr *arg);
   virtual std::string ConvertFnPtrPlaceholder(clang::Expr *arg);
 

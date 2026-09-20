@@ -76,15 +76,15 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p1: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(pick))));
+        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32))));
     let p2: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(solo)));
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
     assert!((({ (*(*p1.borrow()))(5,) }) == 6));
     assert!((({ (*(*p2.borrow()))(5,) }) == 8));
-    assert!((({ S::pick(5_i64,) }) == 7));
+    assert!((({ S::pick_i64(5_i64,) }) == 7));
     let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(3)),
-        cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(pick)))),
+        cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32)))),
     }));
     assert!((({ (*(*(*h3.borrow()).cb.borrow()))(1,) }) == 2));
     let h1: Value<Handler> = Rc::new(RefCell::new(Handler {
