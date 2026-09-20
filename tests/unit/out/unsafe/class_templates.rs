@@ -110,6 +110,53 @@ impl Boxed_long_ {
         return ((self.value) + (other));
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Outer_int__Inner_int_ {
+    pub t: i32,
+    pub u: i32,
+}
+impl Outer_int__Inner_int_ {
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Outer_int_ {
+    pub v: i32,
+}
+impl Outer_int_ {
+    pub unsafe fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
+        return Outer_int__Inner_int_ { t: self.v, u: n };
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Outer_long__Inner_int_ {
+    pub t: i64,
+    pub u: i32,
+}
+impl Outer_long__Inner_int_ {
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
+    }
+}
+impl Outer_long__Inner_int_ {
+    pub unsafe fn sum(&self) -> i32 {
+        return ((self.t as i32) + (self.u as i32));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Outer_long_ {
+    pub v: i64,
+}
+impl Outer_long_ {
+    pub unsafe fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
+        return Outer_long__Inner_int_ { t: self.v, u: n };
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -117,6 +164,22 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut oi: Outer_int_ = Outer_int_ { v: 3 };
+    assert!(
+        ((unsafe { Outer_int__Inner_int_::sum(&(unsafe { Outer_int_::with(&oi, 4,) }),) }) == (7))
+    );
+    let mut ol: Outer_long_ = Outer_long_ { v: 5_i64 };
+    let mut ic: Outer_long__Inner_char_ = Outer_long__Inner_char_ {
+        t: 6_i64,
+        u: ('a' as libc::c_char),
+    };
+    assert!(
+        ((unsafe { Outer_long__Inner_int_::sum(&(unsafe { Outer_long_::with(&ol, 2,) }),) })
+            == (7))
+    );
+    assert!(
+        ((unsafe { Outer_long__Inner_int_::sum(&ic,) }) == ((6) + (('a' as libc::c_char) as i32)))
+    );
     assert!(((unsafe { Boxed_int_::twice(3,) }) == (6)));
     let mut bi: Boxed_int_ = Boxed_int_ { value: 4 };
     assert!(((unsafe { Boxed_int_::plus(&bi, 5,) }) == (9)));
