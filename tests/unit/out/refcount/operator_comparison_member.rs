@@ -67,6 +67,12 @@ impl ByteRepr for S {
         }
     }
 }
+pub fn make_0(v: i32) -> S {
+    let v: Value<i32> = Rc::new(RefCell::new(v));
+    return S {
+        v: Rc::new(RefCell::new((*v.borrow()))),
+    };
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -89,6 +95,47 @@ fn main_0() -> i32 {
     assert!(({ SImpl::operator_ge(&a.as_pointer(), c.as_pointer(),) }));
     assert!(!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_lt_i32_const(&a.as_pointer(), 5,) }));
+    assert!(
+        ({
+            let _o: Value<S> = Rc::new(RefCell::new(({ make_0(1) })));
+            SImpl::operator_eq(
+                &Rc::new(RefCell::new(({ make_0(1) }))).as_pointer(),
+                _o.as_pointer(),
+            )
+        })
+    );
+    assert!(
+        ({
+            let _o: Value<S> = Rc::new(RefCell::new(({ make_0(2) })));
+            SImpl::operator_ne(
+                &Rc::new(RefCell::new(({ make_0(1) }))).as_pointer(),
+                _o.as_pointer(),
+            )
+        })
+    );
+    assert!(
+        ({
+            let _o: Value<S> = Rc::new(RefCell::new(({ make_0(2) })));
+            SImpl::operator_lt_pconstS_const(
+                &Rc::new(RefCell::new(({ make_0(1) }))).as_pointer(),
+                _o.as_pointer(),
+            )
+        })
+    );
+    assert!(
+        ({
+            SImpl::operator_gt(
+                &Rc::new(RefCell::new(({ make_0(2) }))).as_pointer(),
+                a.as_pointer(),
+            )
+        })
+    );
+    assert!(
+        ({
+            let _o: Value<S> = Rc::new(RefCell::new(({ make_0(1) })));
+            SImpl::operator_le(&a.as_pointer(), _o.as_pointer())
+        })
+    );
     return 0;
 }
 pub trait SImpl {
