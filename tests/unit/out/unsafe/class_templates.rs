@@ -142,7 +142,13 @@ impl Outer_long__Inner_int_ {
         return ((self.t as i32) + (self.u as i32));
     }
 }
-impl Outer_long__Inner_int_ {
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Outer_long__Inner_char_ {
+    pub t: i64,
+    pub u: libc::c_char,
+}
+impl Outer_long__Inner_char_ {
     pub unsafe fn sum(&self) -> i32 {
         return ((self.t as i32) + (self.u as i32));
     }
@@ -178,7 +184,7 @@ unsafe fn main_0() -> i32 {
             == (7))
     );
     assert!(
-        ((unsafe { Outer_long__Inner_int_::sum(&ic,) }) == ((6) + (('a' as libc::c_char) as i32)))
+        ((unsafe { Outer_long__Inner_char_::sum(&ic,) }) == ((6) + (('a' as libc::c_char) as i32)))
     );
     assert!(((unsafe { Boxed_int_::twice(3,) }) == (6)));
     let mut bi: Boxed_int_ = Boxed_int_ { value: 4 };

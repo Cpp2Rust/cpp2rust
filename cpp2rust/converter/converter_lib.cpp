@@ -595,6 +595,10 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
     id += clang::ASTNameGenerator(var->getASTContext()).getName(var);
   }
+  if (const auto *self =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    id += Mapper::ToString(Mapper::GetTypeForDecl(self));
+  }
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());

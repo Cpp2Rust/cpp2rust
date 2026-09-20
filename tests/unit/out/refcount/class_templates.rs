@@ -235,6 +235,36 @@ impl ByteRepr for Outer_long__Inner_int_ {
     }
 }
 #[derive(Default)]
+pub struct Outer_long__Inner_char_ {
+    pub t: Value<i64>,
+    pub u: Value<u8>,
+}
+impl Clone for Outer_long__Inner_char_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_long__Inner_char_> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new((*self.t.borrow()))),
+            u: Rc::new(RefCell::new((*self.u.borrow()))),
+        }));
+        let this: Ptr<Outer_long__Inner_char_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_long__Inner_char_ {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.t.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.u.borrow()).to_bytes(&mut buf[8..9]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            t: Rc::new(RefCell::new(<i64>::from_bytes(&buf[0..8]))),
+            u: Rc::new(RefCell::new(<u8>::from_bytes(&buf[8..9]))),
+        }
+    }
+}
+#[derive(Default)]
 pub struct Outer_long_ {
     pub v: Value<i64>,
 }
@@ -296,7 +326,7 @@ fn main_0() -> i32 {
         }) == 7)
     );
     assert!(
-        (({ Outer_long__Inner_int_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as u8) as i32)))
+        (({ Outer_long__Inner_char_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as u8) as i32)))
     );
     assert!((({ Boxed_int_::twice(3,) }) == 6));
     let bi: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_ {
@@ -491,14 +521,19 @@ impl Outer_long_Impl for Ptr<Outer_long_> {
         };
     }
 }
-pub trait Outer_long__Inner_int_Impl {
+pub trait Outer_long__Inner_char_Impl {
     fn sum(&self) -> i32;
 }
-impl Outer_long__Inner_int_Impl for Ptr<Outer_long__Inner_int_> {
+impl Outer_long__Inner_char_Impl for Ptr<Outer_long__Inner_char_> {
     fn sum(&self) -> i32 {
         return (((*(*(*self).upgrade().deref()).t.borrow()) as i32)
             + ((*(*(*self).upgrade().deref()).u.borrow()) as i32));
     }
+}
+pub trait Outer_long__Inner_int_Impl {
+    fn sum(&self) -> i32;
+}
+impl Outer_long__Inner_int_Impl for Ptr<Outer_long__Inner_int_> {
     fn sum(&self) -> i32 {
         return (((*(*(*self).upgrade().deref()).t.borrow()) as i32)
             + ((*(*(*self).upgrade().deref()).u.borrow()) as i32));
