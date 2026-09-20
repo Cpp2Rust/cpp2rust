@@ -59,6 +59,47 @@ pub unsafe fn operator_lt_6(a: *const S, mut b: i32) -> bool {
 pub unsafe fn operator_lt_7(mut a: i32, b: *const S) -> bool {
     return ((a) < ((*b).v));
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct V {
+    pub v: i32,
+}
+impl std::cmp::Ord for V {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        unsafe {
+            if operator_lt_8(self as *const V, other as *const V) {
+                std::cmp::Ordering::Less
+            } else if operator_lt_8(other as *const V, self as *const V) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for V {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for V {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe { operator_eq_9(self as *const V, other as *const V) }
+    }
+}
+impl std::cmp::Eq for V {}
+pub unsafe fn operator_eq_9(mut a: V, mut b: V) -> bool {
+    return ((a.v) == (b.v));
+}
+pub unsafe fn operator_ne_10(mut a: V, mut b: V) -> bool {
+    return ((a.v) != (b.v));
+}
+pub unsafe fn operator_lt_8(mut a: V, mut b: V) -> bool {
+    return ((a.v) < (b.v));
+}
+pub unsafe fn operator_gt_11(mut a: V, mut b: V) -> bool {
+    return ((a.v) > (b.v));
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -66,6 +107,39 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut x: V = V { v: 1 };
+    let mut y: V = V { v: 2 };
+    let mut z: V = V { v: 1 };
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_eq_9(_a, z)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_ne_10(_a, y)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = x;
+            operator_lt_8(_a, y)
+        })
+    );
+    assert!(
+        (unsafe {
+            let _a: V = y;
+            operator_gt_11(_a, x)
+        })
+    );
+    assert!(
+        !(unsafe {
+            let _a: V = y;
+            operator_lt_8(_a, x)
+        })
+    );
     let mut a: S = S { v: 1 };
     let mut b: S = S { v: 2 };
     let mut c: S = S { v: 1 };
