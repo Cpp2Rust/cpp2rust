@@ -67,9 +67,9 @@ pub struct V {
 impl std::cmp::Ord for V {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if operator_lt_8(self as *const V, other as *const V) {
+            if operator_lt_8(self.clone(), other.clone()) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_8(other as *const V, self as *const V) {
+            } else if operator_lt_8(other.clone(), self.clone()) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -84,7 +84,7 @@ impl std::cmp::PartialOrd for V {
 }
 impl std::cmp::PartialEq for V {
     fn eq(&self, other: &Self) -> bool {
-        unsafe { operator_eq_9(self as *const V, other as *const V) }
+        unsafe { operator_eq_9(self.clone(), other.clone()) }
     }
 }
 impl std::cmp::Eq for V {}

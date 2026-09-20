@@ -124,15 +124,9 @@ pub struct V {
 impl std::cmp::Ord for V {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            if operator_lt_8(
-                Rc::new(RefCell::new(V { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(V { v: other.v.clone() })).as_pointer(),
-            ) {
+            if operator_lt_8(self.clone(), other.clone()) {
                 std::cmp::Ordering::Less
-            } else if operator_lt_8(
-                Rc::new(RefCell::new(V { v: other.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(V { v: self.v.clone() })).as_pointer(),
-            ) {
+            } else if operator_lt_8(other.clone(), self.clone()) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -147,12 +141,7 @@ impl std::cmp::PartialOrd for V {
 }
 impl std::cmp::PartialEq for V {
     fn eq(&self, other: &Self) -> bool {
-        {
-            operator_eq_9(
-                Rc::new(RefCell::new(V { v: self.v.clone() })).as_pointer(),
-                Rc::new(RefCell::new(V { v: other.v.clone() })).as_pointer(),
-            )
-        }
+        { operator_eq_9(self.clone(), other.clone()) }
     }
 }
 impl std::cmp::Eq for V {}
