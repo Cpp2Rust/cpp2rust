@@ -75,6 +75,28 @@ fn main_0() -> i32 {
     assert!(!({ SImpl::operator__Bool(&z.as_pointer(),) }));
     let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
     assert!((({ Static::operator_call(6, 7,) }) == 42));
+    assert!(
+        (({
+            SImpl::operator_call_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(5)),
+                }))
+                .as_pointer(),
+            )
+        }) == 5)
+    );
+    assert!(
+        (({
+            SImpl::operator_call_i32_i32_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(5)),
+                }))
+                .as_pointer(),
+                1,
+                1,
+            )
+        }) == 7)
+    );
     return 0;
 }
 pub trait SImpl {
