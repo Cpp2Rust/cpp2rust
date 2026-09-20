@@ -26,30 +26,20 @@ pub fn get_4(s: Ptr<u32>) -> Ptr<u32> {
     let s: Value<Ptr<u32>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
-pub fn second_5(s: Ptr<Box<[u8]>>) -> u8 {
-    return ((s.to_strong().as_pointer() as Ptr<u8>)
-        .offset((1) as isize)
-        .read());
+pub fn second_5(s: Ptr<u8>) -> u8 {
+    return ((s).offset((1) as isize).read());
 }
-pub fn second_6(s: Ptr<Box<[i32]>>) -> i32 {
-    return ((s.to_strong().as_pointer() as Ptr<i32>)
-        .offset((1) as isize)
-        .read());
+pub fn second_6(s: Ptr<i32>) -> i32 {
+    return ((s).offset((1) as isize).read());
 }
-pub fn second_7(s: Ptr<Box<[u8]>>) -> u8 {
-    return ((s.to_strong().as_pointer() as Ptr<u8>)
-        .offset((1) as isize)
-        .read());
+pub fn second_7(s: Ptr<u8>) -> u8 {
+    return ((s).offset((1) as isize).read());
 }
-pub fn second_8(s: Ptr<Box<[u16]>>) -> u16 {
-    return ((s.to_strong().as_pointer() as Ptr<u16>)
-        .offset((1) as isize)
-        .read());
+pub fn second_8(s: Ptr<u16>) -> u16 {
+    return ((s).offset((1) as isize).read());
 }
-pub fn second_9(s: Ptr<Box<[u32]>>) -> u32 {
-    return ((s.to_strong().as_pointer() as Ptr<u32>)
-        .offset((1) as isize)
-        .read());
+pub fn second_9(s: Ptr<u32>) -> u32 {
+    return ((s).offset((1) as isize).read());
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -117,19 +107,18 @@ fn main_0() -> i32 {
             == 258_u32)
     );
     assert!(
-        ((({ second_5(Ptr::<Box<[u8]>>::from_string_literal_array(b"AB"),) }) as i32)
-            == (('B' as u8) as i32))
+        ((({ second_5(Ptr::<u8>::from_string_literal(b"AB"),) }) as i32) == (('B' as u8) as i32))
     );
     assert!(
         (({
-            second_6(Ptr::<Box<[i32]>>::from_string_literal_array(&[
+            second_6(Ptr::<i32>::from_string_literal(&[
                 65 as i32, 258 as i32, 0 as i32,
             ]))
         }) == 258)
     );
     assert!(
         ((({
-            second_7(Ptr::<Box<[u8]>>::from_string_literal_array(&[
+            second_7(Ptr::<u8>::from_string_literal(&[
                 196 as u8, 130 as u8, 0 as u8,
             ]))
         }) as i32)
@@ -137,7 +126,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            second_8(Ptr::<Box<[u16]>>::from_string_literal_array(&[
+            second_8(Ptr::<u16>::from_string_literal(&[
                 65 as u16, 258 as u16, 0 as u16,
             ]))
         }) as i32)
@@ -145,7 +134,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            second_9(Ptr::<Box<[u32]>>::from_string_literal_array(&[
+            second_9(Ptr::<u32>::from_string_literal(&[
                 65 as u32, 258 as u32, 0 as u32,
             ]))
         }) == 258_u32)
@@ -218,12 +207,12 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            second_6(Ptr::<Box<[i32]>>::from_string_literal_array(&[
+            second_6(Ptr::<i32>::from_string_literal(&[
                 65 as i32, 258 as i32, 0 as i32,
             ]))
         }) == (258 as i32))
             && ((({
-                second_8(Ptr::<Box<[u16]>>::from_string_literal_array(&[
+                second_8(Ptr::<u16>::from_string_literal(&[
                     65 as u16, 258 as u16, 0 as u16,
                 ]))
             }) as i32)

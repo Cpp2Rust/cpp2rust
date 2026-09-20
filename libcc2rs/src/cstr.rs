@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{AsPointer, Ptr, PtrKind};
+use crate::rc::{Ptr, PtrKind};
 
 impl fmt::Display for Ptr<u8> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -34,32 +34,24 @@ macro_rules! impl_string_literal {
                 RefCell::new(HashMap::new());
         }
 
-        impl Ptr<Box<[$t]>> {
+        impl Ptr<$t> {
             #[inline]
-            pub fn from_string_literal_array(s: &'static [$t]) -> Self {
+            pub fn from_string_literal(s: &'static [$t]) -> Self {
                 $cache.with(|literals| {
                     let mut literals = literals.borrow_mut();
                     let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
                         Rc::new(RefCell::new({
-                            let mut v = s.to_vec();
+                            let mut v = Vec::with_capacity(s.len() + 1);
+                            v.extend_from_slice(s);
                             v.push(0);
                             v.into_boxed_slice()
                         }))
                     }));
                     Ptr {
                         offset: 0,
-                        kind: PtrKind::StackSingle(weak),
+                        kind: PtrKind::StackArray(weak),
                     }
                 })
-            }
-        }
-
-        impl Ptr<$t> {
-            #[inline]
-            pub fn from_string_literal(s: &'static [$t]) -> Self {
-                Ptr::<Box<[$t]>>::from_string_literal_array(s)
-                    .to_strong()
-                    .as_pointer()
             }
         }
     };

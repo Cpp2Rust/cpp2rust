@@ -244,7 +244,7 @@ std::string Converter::ConvertFreshPointer(clang::Expr *expr) {
   return str;
 }
 
-std::string Converter::ConvertFreshObject(clang::Expr *expr) {
+std::string Converter::ConvertFreshObject(clang::Expr *expr, std::string_view) {
   return ConvertFreshPointer(expr);
 }
 
@@ -4858,9 +4858,10 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   }
 
   if (ph_ctx.needs_pointer_receiver()) {
-    return std::format(
-        "({} as {})", ConvertFreshObject(arg),
-        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
+    auto param_type =
+        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx);
+    return std::format("({} as {})", ConvertFreshObject(arg, param_type),
+                       param_type);
   }
 
   if (ph_ctx.needs_object_receiver()) {

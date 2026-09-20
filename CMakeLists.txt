@@ -96,8 +96,9 @@ add_custom_target("format"
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
+                  COMMAND npx prettier@3.9.8 --write ${PROJECT_SOURCE_DIR}/docs/src/**/*.md
                   DEPENDS "${RUST_STAMP_FILE}"
-                  COMMENT "Running clang-format, cargo fmt, cargo clippy, and ruff on all source files"
+                  COMMENT "Running clang-format, cargo fmt, cargo clippy, ruff, and prettier on all source files"
                   VERBATIM
                   )
 
@@ -152,6 +153,13 @@ set(RULES_LIB "${PROJECT_SOURCE_DIR}/rules/target/release/librules.rlib")
 file(GLOB_RECURSE rule_preprocessor_sources
      ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
 
+file(GLOB_RECURSE libcc2rs_sources CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/libcc2rs/src/*.rs
+     ${PROJECT_SOURCE_DIR}/libcc2rs-macros/src/*.rs)
+list(APPEND libcc2rs_sources
+     ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
+     ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml)
+
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E env RUSTUP_TOOLCHAIN=${RUST_NIGHTLY_VERSION}
           rustc --print sysroot
@@ -165,6 +173,7 @@ add_custom_command(
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   DEPENDS "${PROJECT_SOURCE_DIR}/rules/build.rs"
           "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
+          ${libcc2rs_sources}
           "${RUST_STAMP_FILE}"
   DEPFILE "${PROJECT_SOURCE_DIR}/rules/target/release/librules.d"
   VERBATIM
@@ -177,6 +186,7 @@ add_custom_command(
           cargo +${RUST_NIGHTLY_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   DEPENDS ${rule_preprocessor_sources}
+          ${libcc2rs_sources}
           "${RUST_STAMP_FILE}"
   VERBATIM
 )

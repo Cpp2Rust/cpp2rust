@@ -8,15 +8,17 @@ bound. The runtime provides a dedicated `PtrDyn<dyn T>` type, declared with
 for dynamic dispatch.
 
 A `PtrDyn` is created at the point where C++ converts a derived pointer to a
-base pointer. `to_strong` upgrades the `Ptr<Derived>` into its `Value<Derived>`,
-Rust's unsized coercion turns that into a `Value<dyn Base>`, and
-`as_pointer_dyn` takes the weak reference back out.
+base pointer. `Ptr::to_dyn` takes the weak reference out of the `Ptr<Derived>`
+and applies Rust's unsized coercion to it, turning a `Weak<RefCell<Derived>>`
+into a `Weak<RefCell<dyn Base>>`, without ever upgrading it. The coercion itself
+is written by the code generator as the closure `|w| w`, whose return type
+selects the target trait object.
 
 > [!NOTE]
 >
-> This coercion is why `Value` is a type alias for `Rc<RefCell<T>>` rather than
-> a struct of its own: `Rc` already implements it, and a new type could only opt
-> in through the nightly-only `CoerceUnsized` trait.
+> This coercion is why the pointee cell is a plain `RefCell` behind `Weak`
+> rather than a struct of the runtime's own: `Weak` already implements it, and a
+> new type could only opt in through the nightly-only `CoerceUnsized` trait.
 
 The conversion looks like this:
 
@@ -32,7 +34,7 @@ int r = b->f();
 ```rust
 let d: Value<Derived> = Rc::new(RefCell::new(<Derived>::default()));
 let b: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
-    ((d.as_pointer()).to_strong() as Value<dyn Base>).as_pointer_dyn(),
+    (d.as_pointer()).to_dyn::<dyn Base>(|w| w),
 ));
 let r: Value<i32> = Rc::new(RefCell::new(
     ({ (*(*b.borrow()).upgrade().deref()).f() }),
@@ -51,7 +53,9 @@ the call dispatches through the trait's vtable.
 > virtual call, so a method that deletes its own object panics on `delete`.
 
 `PtrDyn` is far smaller than `Ptr`: it is either null or a weak reference to a
-single object. It has no arithmetic, no comparison, no array kinds, and no byte
-view. Because `to_strong` is only defined for single-value pointers, a base
-pointer into an array of polymorphic objects (a `Derived arr[N]` walked through
-a `Base *`) cannot be formed.
+single object, on the stack or on the heap. `Ptr::to_dyn` keeps that
+distinction, so a base pointer made from a `new`ed object can be `delete`d and
+one made from a local cannot. It has no arithmetic, no comparison, no array
+kinds, and no byte view. Because `to_dyn` is only defined for single-value
+pointers, a base pointer into an array of polymorphic objects (a
+`Derived arr[N]` walked through a `Base *`) cannot be formed.
