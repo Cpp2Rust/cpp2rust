@@ -1636,7 +1636,11 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       for (const auto *field : record->fields()) {
         StrCat(GetNamedDeclAsString(field), token::kColon);
-        ConvertVarInit(field->getType(), expr->getInit(i++));
+        if (i < expr->getNumInits()) {
+          ConvertVarInit(field->getType(), expr->getInit(i++));
+        } else {
+          StrCat(GetDefaultAsString(field->getType()));
+        }
         StrCat(token::kComma);
       }
     }

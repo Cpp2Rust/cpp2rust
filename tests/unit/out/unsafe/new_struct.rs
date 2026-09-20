@@ -12,6 +12,13 @@ pub struct Pair {
     pub x: i32,
     pub y: i32,
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Triple {
+    pub a: i32,
+    pub b: i32,
+    pub p: Pair,
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -23,6 +30,23 @@ unsafe fn main_0() -> i32 {
     let mut out: i32 = (((*p).x) + ((*p).y));
     ::std::mem::drop(Box::from_raw(p));
     assert!(((out) == (3)));
+    let mut t: Triple = Triple {
+        a: 1,
+        b: 0_i32,
+        p: Pair { x: 0_i32, y: 0_i32 },
+    };
+    assert!(((t.a) == (1)));
+    assert!(((t.b) == (0)));
+    assert!(((t.p.x) == (0)) && ((t.p.y) == (0)));
+    let mut q: *mut Triple = (Box::leak(Box::new(Triple {
+        a: 2,
+        b: 3,
+        p: Pair { x: 0_i32, y: 0_i32 },
+    })) as *mut Triple);
+    assert!((((*q).a) == (2)));
+    assert!((((*q).b) == (3)));
+    assert!((((*q).p.x) == (0)) && (((*q).p.y) == (0)));
+    ::std::mem::drop(Box::from_raw(q));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
