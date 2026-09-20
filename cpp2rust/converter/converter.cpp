@@ -2954,10 +2954,11 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   ConvertCondition(expr->getCond());
   bool branch_is_addr =
       expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
+  bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
     if (branch_is_addr) {
-      StrCat(token::kRef, keyword_mut_);
+      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
@@ -2969,7 +2970,7 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   {
     PushBrace else_brace(*this);
     if (branch_is_addr) {
-      StrCat(token::kRef, keyword_mut_);
+      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
