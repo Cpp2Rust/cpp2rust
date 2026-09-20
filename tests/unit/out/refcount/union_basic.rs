@@ -44,12 +44,45 @@ impl ByteRepr for basic {
         }
     }
 }
+pub struct empty {
+    __bytes: Value<Box<[u8]>>,
+}
+impl empty {}
+impl Clone for empty {
+    fn clone(&self) -> Self {
+        empty {
+            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
+        }
+    }
+}
+impl Default for empty {
+    fn default() -> Self {
+        empty {
+            __bytes: Rc::new(RefCell::new(Box::from([0u8; 1]))),
+        }
+    }
+}
+impl ByteRepr for empty {
+    fn byte_size() -> usize {
+        1
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        buf.copy_from_slice(&self.__bytes.borrow());
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        empty {
+            __bytes: Rc::new(RefCell::new(Box::from(buf))),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
+    let e: Value<empty> = Rc::new(RefCell::new(<empty>::default()));
+    &(*e.borrow_mut());
     (*u.borrow_mut()).i().write(42);
     assert!((((*u.borrow()).i().read()) == 42));
     (*u.borrow_mut()).f().write(3.140000105E+0);
