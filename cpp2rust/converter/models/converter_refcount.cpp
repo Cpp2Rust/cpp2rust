@@ -1486,6 +1486,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
       return false;
     }
     return Converter::VisitExplicitCastExpr(expr);
+  case clang::Stmt::CXXFunctionalCastExprClass:
+    return Converter::VisitExplicitCastExpr(expr);
   default:
     return Convert(expr->getSubExpr());
   }

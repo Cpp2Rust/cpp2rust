@@ -2582,6 +2582,13 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     return false;
   }
   switch (expr->getStmtClass()) {
+  case clang::Stmt::CXXFunctionalCastExprClass:
+    if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
+      ConvertIntegerToEnumeralCast(expr, sub_expr);
+      return false;
+    }
+    Convert(sub_expr, type);
+    return false;
   case clang::Stmt::CXXReinterpretCastExprClass:
   case clang::Stmt::CXXStaticCastExprClass:
   case clang::Stmt::CStyleCastExprClass:
