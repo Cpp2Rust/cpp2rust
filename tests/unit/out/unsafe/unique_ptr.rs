@@ -82,17 +82,17 @@ pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
 }
 pub unsafe fn RndStuff_2() {
     let mut x1: Option<Box<[i32]>> = None;
-    let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(Box::leak(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
+    let mut x2: Option<Box<[i32]>> = Some(Box::from_raw(
+        Box::leak((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr(),
+    ));
     let mut i: i32 = 0;
     'loop_: while ((i) < (100)) {
         x2.as_mut().unwrap()[(i as usize)] = 1;
         i.prefix_inc();
     }
-    x2 = Some(Box::from_raw(Box::leak(
-        (0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
+    x2 = Some(Box::from_raw(
+        Box::leak((0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr(),
+    ));
     let mut i: i32 = 0;
     'loop_: while ((i) < (200)) {
         x2.as_mut().unwrap()[(i as usize)] = 2;
@@ -128,11 +128,14 @@ pub unsafe fn RndStuff_2() {
         assert!((((*p3_0.offset((i) as isize)).y) == (12)));
         i.prefix_inc();
     }
-    x3 = Some(Box::from_raw(Box::leak(
-        (0..50_usize)
-            .map(|_| <Pair>::default())
-            .collect::<Box<[Pair]>>(),
-    )));
+    x3 = Some(Box::from_raw(
+        Box::leak(
+            (0..50_usize)
+                .map(|_| <Pair>::default())
+                .collect::<Box<[Pair]>>(),
+        )
+        .as_mut_ptr(),
+    ));
     let mut i: i32 = 0;
     'loop_: while ((i) < (50)) {
         x3.as_mut().unwrap()[(i as usize)] = Pair {
