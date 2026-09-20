@@ -50,7 +50,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
                 let out: Value<Ptr<Ptr<u8>>> =
                     Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()));
-                (*out.borrow()).write(Ptr::from_string_literal(b"hello"));
+                (*out.borrow()).write(Ptr::<u8>::from_string_literal(b"hello"));
                 (*result.borrow_mut()) = 1;
                 break 'switch;
             }

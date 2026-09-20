@@ -1190,7 +1190,15 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
-  if (!curr_init_type_.empty() && curr_init_type_.back()->isArrayType()) {
+  if (IsCodeUnitStringLiteral(expr)) {
+    auto arr = GetCodeUnitArrayLiteral(expr);
+    StrCat(IsArrayInitContext() ? std::format("Box::from({})", arr)
+                                : '&' + arr);
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
+
+  if (IsArrayInitContext()) {
     uint64_t pad = 1;
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
@@ -1283,7 +1291,11 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
       return false;
     }
     if (IsStringLiteralExpr(sub_expr)) {
-      StrCat(std::format("Ptr::from_string_literal({})",
+      auto code_unit = ToStringBase(
+          ctx_.getAsArrayType(
+                  sub_expr->IgnoreParens()->IgnoreImplicit()->getType())
+              ->getElementType());
+      StrCat(std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                          ToString(sub_expr->IgnoreParens())));
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
@@ -2169,7 +2181,12 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
     }
     if (qual_type.getNonReferenceType()->isArrayType()) {
       if (IsStringLiteralExpr(expr)) {
-        return std::format("Ptr::from_string_literal_array({})",
+        auto code_unit = ToStringBase(
+            ctx_.getAsArrayType(
+                    expr->IgnoreParens()->IgnoreImplicit()->getType())
+                ->getElementType());
+        return std::format("Ptr::<Box<[{}]>>::from_string_literal_array({})",
+                           code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
       return std::format("({} as {})", ConvertFreshPointer(expr),
@@ -2461,7 +2478,12 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     {
       PushParen paren(*this, is_inner_boxed);
       if (IsStringLiteralExpr(base)) {
-        StrCat(std::format("Ptr::from_string_literal({}).offset({})",
+        auto code_unit = ToStringBase(
+            ctx_.getAsArrayType(
+                    base->IgnoreParens()->IgnoreImplicit()->getType())
+                ->getElementType());
+        StrCat(std::format("Ptr::<{}>::from_string_literal({}).offset({})",
+                           code_unit,
                            ToString(base->IgnoreParens()->IgnoreImplicit()),
                            ConvertSubscriptIndex(idx)));
       } else {

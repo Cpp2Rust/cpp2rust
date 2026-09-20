@@ -27,31 +27,48 @@ impl fmt::Display for Ptr<u8> {
     }
 }
 
-type StringLiteralMap = HashMap<&'static [u8], Rc<RefCell<Box<[u8]>>>>;
+macro_rules! impl_string_literal {
+    ($t:ty, $cache:ident) => {
+        thread_local! {
+            static $cache: RefCell<HashMap<&'static [$t], Rc<RefCell<Box<[$t]>>>>> =
+                RefCell::new(HashMap::new());
+        }
 
-thread_local! {
-    static STRING_LITERALS: RefCell<StringLiteralMap> = RefCell::new(HashMap::new());
-}
-
-impl Ptr<Box<[u8]>> {
-    #[inline]
-    pub fn from_string_literal_array(s: &'static [u8]) -> Self {
-        STRING_LITERALS.with(|literals| {
-            let mut literals = literals.borrow_mut();
-            let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
-                Rc::new(RefCell::new({
-                    let mut v = s.to_vec();
-                    v.push(0);
-                    v.into_boxed_slice()
-                }))
-            }));
-            Ptr {
-                offset: 0,
-                kind: PtrKind::StackSingle(weak),
+        impl Ptr<Box<[$t]>> {
+            #[inline]
+            pub fn from_string_literal_array(s: &'static [$t]) -> Self {
+                $cache.with(|literals| {
+                    let mut literals = literals.borrow_mut();
+                    let weak = Rc::downgrade(literals.entry(s).or_insert_with(|| {
+                        Rc::new(RefCell::new({
+                            let mut v = s.to_vec();
+                            v.push(0);
+                            v.into_boxed_slice()
+                        }))
+                    }));
+                    Ptr {
+                        offset: 0,
+                        kind: PtrKind::StackSingle(weak),
+                    }
+                })
             }
-        })
-    }
+        }
+
+        impl Ptr<$t> {
+            #[inline]
+            pub fn from_string_literal(s: &'static [$t]) -> Self {
+                Ptr::<Box<[$t]>>::from_string_literal_array(s)
+                    .to_strong()
+                    .as_pointer()
+            }
+        }
+    };
 }
+
+impl_string_literal!(u8, STRING_LITERALS_U8);
+impl_string_literal!(u16, STRING_LITERALS_U16);
+impl_string_literal!(u32, STRING_LITERALS_U32);
+impl_string_literal!(i32, STRING_LITERALS_I32);
 
 impl Ptr<u8> {
     #[allow(clippy::explicit_counter_loop)]
@@ -102,13 +119,6 @@ impl Ptr<u8> {
             b += 1;
         }
         0
-    }
-
-    #[inline]
-    pub fn from_string_literal(s: &'static [u8]) -> Self {
-        Ptr::<Box<[u8]>>::from_string_literal_array(s)
-            .to_strong()
-            .as_pointer()
     }
 
     pub fn to_c_string_iterator(&self) -> CStringIterator {

@@ -173,7 +173,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::from_string_literal(b"x")
+            Ptr::<u8>::from_string_literal(b"x")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))

@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_fd_io_test.tmp",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            Ptr::from_string_literal(b"hello world")
+            Ptr::<u8>::from_string_literal(b"hello world")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -97,7 +97,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"hello world").to_c_string_iterator();
+            let mut __it2 = Ptr::<u8>::from_string_literal(b"hello world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

@@ -2226,6 +2226,13 @@ bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
 }
 
 bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
+  if (expr->getKind() != clang::CharacterLiteralKind::Ascii) {
+    PushParen paren(*this);
+    StrCat(std::to_string(expr->getValue()), keyword::kAs,
+           ToStringBase(expr->getType()));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
   auto uc = static_cast<unsigned char>(expr->getValue());
   std::string ch = GetEscapedCharLiteral(expr->getValue());
   ch = (uc > 0x7F ? "b'" : "'") + std::move(ch) + '\'';
@@ -2290,7 +2297,37 @@ std::string Converter::GetEscapedStringLiteral(clang::Expr *expr,
   return out;
 }
 
+bool Converter::IsArrayInitContext() const {
+  return !curr_init_type_.empty() && curr_init_type_.back()->isArrayType();
+}
+
+std::string
+Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
+  auto elem_type =
+      ToStringBase(ctx_.getAsArrayType(expr->getType())->getElementType());
+  uint64_t len = expr->getLength();
+  uint64_t total = len + 1;
+  if (IsArrayInitContext()) {
+    if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
+      total = std::max(arr_ty->getSize().getZExtValue(), len);
+    }
+  }
+  std::string out = "[";
+  for (uint64_t i = 0; i < total; ++i) {
+    out += std::format("{} as {}, ", i < len ? expr->getCodeUnit(i) : 0,
+                       elem_type);
+  }
+  out += ']';
+  return out;
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
+  if (IsCodeUnitStringLiteral(expr)) {
+    StrCat(GetCodeUnitArrayLiteral(expr));
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return false;
+  }
+
   auto init_type = curr_init_type_.empty()
                        ? clang::QualType()
                        : curr_init_type_.back().getNonReferenceType();

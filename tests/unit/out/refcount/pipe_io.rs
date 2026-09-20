@@ -31,7 +31,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::from_string_literal(b"ab")
+            Ptr::<u8>::from_string_literal(b"ab")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(2_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -73,7 +73,7 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"ab").to_c_string_iterator();
+            let mut __it2 = Ptr::<u8>::from_string_literal(b"ab").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

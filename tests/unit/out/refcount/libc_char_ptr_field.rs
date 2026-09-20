@@ -31,7 +31,9 @@ fn main_0() -> i32 {
     ));
     let d: Value<Ptr<libcc2rs::Dirent>> = Rc::new(RefCell::new(
         match nix::dir::Dir::open(
-            Ptr::from_string_literal(b"/tmp").to_rust_string().as_str(),
+            Ptr::<u8>::from_string_literal(b"/tmp")
+                .to_rust_string()
+                .as_str(),
             nix::fcntl::OFlag::O_RDONLY,
             nix::sys::stat::Mode::empty(),
         ) {

@@ -66,8 +66,8 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
-                &Ptr::from_string_literal(b"rb").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
@@ -113,8 +113,8 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &Ptr::from_string_literal(b"/dev/zero").to_rust_string(),
-                &Ptr::from_string_literal(b"rb").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"/dev/zero").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
@@ -198,8 +198,8 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
-                &Ptr::from_string_literal(b"wb").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),
@@ -235,8 +235,8 @@ fn main_0() -> i32 {
         __do_while = false;
         let stream: Value<Ptr<CFile>> = Rc::new(RefCell::new(
             match CFile::open(
-                &Ptr::from_string_literal(b"/dev/null").to_rust_string(),
-                &Ptr::from_string_literal(b"wb").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"/dev/null").to_rust_string(),
+                &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
             ) {
                 Some(__f) => Ptr::alloc(__f),
                 None => Ptr::null(),

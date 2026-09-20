@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     ));
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"1.2.3.4")
+            match Ptr::<u8>::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -30,7 +30,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"1.2.3.4")
+            match Ptr::<u8>::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -61,7 +61,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"999.1.1.1")
+            match Ptr::<u8>::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -75,7 +75,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"999.1.1.1")
+            match Ptr::<u8>::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -96,7 +96,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::from_string_literal(b"not an ip")
+            match Ptr::<u8>::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -110,7 +110,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"not an ip")
+            match Ptr::<u8>::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -131,7 +131,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::from_string_literal(b"::1")
+            match Ptr::<u8>::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -145,7 +145,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"::1")
+            match Ptr::<u8>::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -171,7 +171,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::from_string_literal(b"2001:db8::5")
+            match Ptr::<u8>::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -185,7 +185,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::from_string_literal(b"2001:db8::5")
+            match Ptr::<u8>::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -255,7 +255,7 @@ fn main_0() -> i32 {
                 }
             }
             .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"10.0.0.1").to_c_string_iterator();
+            let mut __it2 = Ptr::<u8>::from_string_literal(b"10.0.0.1").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
@@ -328,7 +328,7 @@ fn main_0() -> i32 {
                 }
             }
             .to_c_string_iterator();
-            let mut __it2 = Ptr::from_string_literal(b"::1").to_c_string_iterator();
+            let mut __it2 = Ptr::<u8>::from_string_literal(b"::1").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

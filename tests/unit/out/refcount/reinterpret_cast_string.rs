@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"ABCD")
+        Ptr::<u8>::from_string_literal(b"ABCD")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),

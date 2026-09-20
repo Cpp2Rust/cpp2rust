@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     assert!(((((*eq.borrow()) == 1) as i32) != 0));
     assert!(((((*lt.borrow()) == 0) as i32) != 0));
     assert!(((((*neq.borrow()) == 0) as i32) != 0));
-    let p1: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
+    let p1: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hi")));
     let p2: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     let either: Value<i32> = Rc::new(RefCell::new(
         (((!(*p1.borrow()).is_null()) || (!(*p2.borrow()).is_null())) as i32),

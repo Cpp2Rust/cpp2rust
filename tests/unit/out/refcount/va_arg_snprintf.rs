@@ -30,7 +30,7 @@ fn main_0() -> i32 {
             extract_first_0(
                 (buf.as_pointer() as Ptr<u8>),
                 1,
-                Ptr::from_string_literal(b"%d"),
+                Ptr::<u8>::from_string_literal(b"%d"),
                 &[(42).into()],
             )
         }) == 42) as i32)
@@ -42,7 +42,7 @@ fn main_0() -> i32 {
             extract_first_0(
                 (buf.as_pointer() as Ptr<u8>),
                 1,
-                Ptr::from_string_literal(b"%d"),
+                Ptr::<u8>::from_string_literal(b"%d"),
                 &[(65).into()],
             )
         }) == 65) as i32)

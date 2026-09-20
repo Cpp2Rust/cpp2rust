@@ -89,7 +89,7 @@ thread_local!(
 );
 thread_local!(
     pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"abc")
+        Ptr::<u8>::from_string_literal(b"abc")
             .to_c_string_iterator()
             .chain(std::iter::once(0))
             .collect::<Vec<u8>>(),
@@ -186,7 +186,7 @@ fn main_0() -> i32 {
             .iter()
             .copied()
             .take(str_9.with(|rc| rc.borrow().clone()).len().saturating_sub(1))
-            .eq(Ptr::from_string_literal(b"abc").to_c_string_iterator())
+            .eq(Ptr::<u8>::from_string_literal(b"abc").to_c_string_iterator())
     );
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
     assert!(((*inline_member_11.with(|rc| rc.borrow().clone()).v.borrow()) == 5));

@@ -164,7 +164,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((({ len_0(Ptr::from_string_literal_array(b"beta"),) }) == 4));
+    assert!((({ len_0(Ptr::<Box<[u8]>>::from_string_literal_array(b"beta"),) }) == 4));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"abcd\0")));
     assert!((({ len_0((buf.as_pointer() as Ptr<Box<[u8]>>),) }) == 4));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
@@ -176,10 +176,10 @@ fn main_0() -> i32 {
     ({ fill_and_sum_5((arr.as_pointer() as Ptr<Box<[i32]>>), 2, out.as_pointer()) });
     assert!(((*out.borrow()) == 12));
     assert!(((*arr.borrow())[(0) as usize] == 2));
-    let lit: Ptr<Box<[u8]>> = Ptr::from_string_literal_array(b"beta");
+    let lit: Ptr<Box<[u8]>> = Ptr::<Box<[u8]>>::from_string_literal_array(b"beta");
     assert!((({ len_0(((lit).clone() as Ptr<Box<[u8]>>),) }) == 4));
     assert!(
-        ((((({ pick_6(Ptr::from_string_literal_array(b"beta"),) })
+        ((((({ pick_6(Ptr::<Box<[u8]>>::from_string_literal_array(b"beta"),) })
             .to_strong()
             .as_pointer() as Ptr::<u8>)
             .offset((0) as isize)
@@ -206,8 +206,8 @@ fn main_0() -> i32 {
     assert!(((*(*pts.borrow())[(1) as usize].y.borrow()) == 14));
     assert!((({ sum_points_7((pts.as_pointer() as Ptr<Box<[Point]>>),) }) == 30));
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal(b"ab"),
-        Ptr::from_string_literal(b"cde"),
+        Ptr::<u8>::from_string_literal(b"ab"),
+        Ptr::<u8>::from_string_literal(b"cde"),
     ])));
     assert!((({ total_len_9((names.as_pointer() as Ptr<Box<[Ptr::<u8>]>>),) }) == 5));
     return 0;

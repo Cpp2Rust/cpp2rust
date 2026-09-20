@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_termios_test.tmp",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({

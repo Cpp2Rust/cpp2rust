@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let joined: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let joined: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"alpha\nbeta\ngamma\n",
     )));
     assert!(((((*joined.borrow()).offset((0) as isize).read()) as i32) == (('a' as u8) as i32)));
@@ -23,7 +23,7 @@ fn main_0() -> i32 {
     assert!((((*arr.borrow())[(5) as usize] as i32) == (('r' as u8) as i32)));
     assert!((((*arr.borrow())[(6) as usize] as i32) == (('\0' as u8) as i32)));
     let split_pieces: Value<Ptr<u8>> =
-        Rc::new(RefCell::new(Ptr::from_string_literal(b"abcdefghi")));
+        Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"abcdefghi")));
     assert!(
         ((((*split_pieces.borrow()).offset((0) as isize).read()) as i32) == (('a' as u8) as i32))
     );
