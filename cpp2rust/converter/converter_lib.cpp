@@ -732,7 +732,7 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
         llvm::dyn_cast<clang::FunctionDecl>(pdecl->getDeclContext());
     const auto *ctor = llvm::dyn_cast_or_null<clang::CXXConstructorDecl>(fn);
     if (pdecl->isExplicitObjectParameter() ||
-        (ctor && ctor->isCopyConstructor())) {
+        (ctor && ctor->isCopyConstructor() && ctor->isDefaulted())) {
       name = "self";
     } else {
       name = std::format("_a{}", pdecl->getFunctionScopeIndex());

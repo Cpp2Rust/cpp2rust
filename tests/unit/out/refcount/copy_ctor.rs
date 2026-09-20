@@ -103,6 +103,47 @@ impl ByteRepr for NonConst {
         }
     }
 }
+#[derive(Default)]
+pub struct Ignored {
+    pub v: Value<i32>,
+}
+impl Ignored {
+    pub fn Ignored(v: i32) -> Self {
+        let v: Value<i32> = Rc::new(RefCell::new(v));
+        let __this: Value<Ignored> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*v.borrow()))),
+        }));
+        let this: Ptr<Ignored> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+    pub fn Ignored_pconstIgnored(_a0: Ptr<Ignored>) -> Self {
+        let __this: Value<Ignored> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new(-1_i32)),
+        }));
+        let this: Ptr<Ignored> = __this.as_pointer();
+        (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Clone for Ignored {
+    fn clone(&self) -> Self {
+        let __src: Value<Ignored> = Rc::new(RefCell::new(Ignored { v: self.v.clone() }));
+        Ignored::Ignored_pconstIgnored(__src.as_pointer())
+    }
+}
+impl ByteRepr for Ignored {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
 #[derive()]
 pub struct Holder {
     pub c: Value<Counted>,
@@ -225,6 +266,12 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
+    let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::Ignored({ 1 })));
+    let i2: Value<Ignored> = Rc::new(RefCell::new(Ignored::Ignored_pconstIgnored({
+        i1.as_pointer()
+    })));
+    assert!(((*(*i1.borrow()).v.borrow()) == 1) && ((*(*i2.borrow()).v.borrow()) == -1_i32));
+    assert!((copies_0.with(|rc| *rc.borrow()) == 11));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst()));
     let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_pmutNonConst({
         n.as_pointer()
