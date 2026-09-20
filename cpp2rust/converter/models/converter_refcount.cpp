@@ -366,7 +366,8 @@ ConverterRefCount::ConvertFreshObject(clang::Expr *expr,
           s.erase(pos, 2);
         return s;
       };
-      if (normalize(std::string(target_ptr_type)) == normalize(ConvertPtrType(pointee))) {
+      if (normalize(std::string(target_ptr_type)) ==
+          normalize(ConvertPtrType(pointee))) {
         shape = ObjectShape::Element;
       }
     }
