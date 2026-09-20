@@ -96,8 +96,9 @@ add_custom_target("format"
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
+                  COMMAND npx prettier@3.9.8 --write ${PROJECT_SOURCE_DIR}/docs/src/**/*.md
                   DEPENDS "${RUST_STAMP_FILE}"
-                  COMMENT "Running clang-format, cargo fmt, cargo clippy, and ruff on all source files"
+                  COMMENT "Running clang-format, cargo fmt, cargo clippy, ruff, and prettier on all source files"
                   VERBATIM
                   )
 

@@ -218,8 +218,8 @@ into the copy never reach the original allocation.
 >    it was called on, hits `delete`'s reference-count check and panics with a
 >    spurious `ub: invalid delete`.
 
-Where the code generator needs a different view of the same allocation, it
-does not upgrade at all. `decay` turns a pointer to a whole `Vec<T>` or `Box<[T]>`
+Where the code generator needs a different view of the same allocation, it does
+not upgrade at all. `decay` turns a pointer to a whole `Vec<T>` or `Box<[T]>`
 into a pointer to its first element by re-tagging the existing weak reference,
 and `Ptr::to_dyn` (see [Virtual Classes](./ptr-dyn.md)) does the same for the
 upcast to a trait object.

@@ -53,9 +53,9 @@ the call dispatches through the trait's vtable.
 > virtual call, so a method that deletes its own object panics on `delete`.
 
 `PtrDyn` is far smaller than `Ptr`: it is either null or a weak reference to a
-single object, on the stack or on the heap. `Ptr::to_dyn` keeps that distinction,
-so a base pointer made from a `new`ed object can be `delete`d and one made from a
-local cannot. It has no arithmetic, no comparison, no array kinds, and no byte
-view. Because `to_dyn` is only defined for single-value pointers, a base
-pointer into an array of polymorphic objects (a `Derived arr[N]` walked through
-a `Base *`) cannot be formed.
+single object, on the stack or on the heap. `Ptr::to_dyn` keeps that
+distinction, so a base pointer made from a `new`ed object can be `delete`d and
+one made from a local cannot. It has no arithmetic, no comparison, no array
+kinds, and no byte view. Because `to_dyn` is only defined for single-value
+pointers, a base pointer into an array of polymorphic objects (a
+`Derived arr[N]` walked through a `Base *`) cannot be formed.
