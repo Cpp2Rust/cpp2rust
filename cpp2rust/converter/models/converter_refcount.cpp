@@ -1352,7 +1352,7 @@ void ConverterRefCount::ConvertFunctionToFunctionPointer(
   StrCat(std::format("FnPtr::<{}>::new({})",
                      ConvertFunctionPointerType(
                          fn_decl->getType()->getAs<clang::FunctionProtoType>()),
-                     Mapper::MapFunctionName(fn_decl)));
+                     GetFunctionRefName(fn_decl)));
   computed_expr_type_ = ComputedExprType::FreshPointer;
 }
 
