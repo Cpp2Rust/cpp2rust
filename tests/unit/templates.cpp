@@ -10,6 +10,8 @@ template <typename T1, typename T2, typename T3> int func(T1 x1, T2 x2, T3 x3) {
 
 template <typename T> T half = T(1) / T(2);
 
+template <typename T> T *half<T *> = nullptr;
+
 int main() {
   int x = 10;
   double y = x;
@@ -21,5 +23,8 @@ int main() {
   half<int> = 7;
   assert(half<int> == 7);
   assert(half<double> == 0.5);
+  assert(half<int *> == nullptr);
+  half<int *> = &x;
+  assert(*half<int *> == 10);
   return 0;
 }
