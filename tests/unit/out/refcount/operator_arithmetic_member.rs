@@ -113,6 +113,23 @@ fn main_0() -> i32 {
         .borrow())
             == 9)
     );
+    assert!(
+        ((*({
+            let _o: Value<S> = Rc::new(RefCell::new(S {
+                v: Rc::new(RefCell::new(4)),
+            }));
+            SImpl::operator_add_pconstS_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(3)),
+                }))
+                .as_pointer(),
+                _o.as_pointer(),
+            )
+        })
+        .v
+        .borrow())
+            == 7)
+    );
     return 0;
 }
 pub trait SImpl {
