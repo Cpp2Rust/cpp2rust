@@ -4506,18 +4506,34 @@ std::string Converter::GetComparisonCall(const clang::FunctionDecl *op,
                                          const clang::CXXRecordDecl *decl,
                                          std::string_view lhs,
                                          std::string_view rhs) {
-  auto record = GetRecordName(decl);
-  auto arg = std::format("{} as *const {}", rhs, record);
+  auto arg = [&](unsigned i, std::string_view value) {
+    if (op->getParamDecl(i)->getType()->isReferenceType()) {
+      return GetComparisonReferenceArg(decl, value);
+    }
+    return std::format("{}.clone()", value);
+  };
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
-    auto recv = !MethodNeedsMutableReceiver(method)
-                    ? std::string(lhs)
-                    : std::format("&mut *(&raw const *{}).cast_mut()", lhs);
     return std::format("{}::{}({}, {})", GetUFCSName(method),
-                       GetMethodName(method), recv, arg);
+                       GetMethodName(method),
+                       GetComparisonReceiver(method, decl, lhs), arg(0, rhs));
   }
-  return std::format("{}({} as *const {}, {})",
-                     GetNamedDeclAsString(op->getCanonicalDecl()), lhs, record,
-                     arg);
+  return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
+                     arg(0, lhs), arg(1, rhs));
+}
+
+std::string
+Converter::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
+                                     std::string_view value) {
+  return std::format("{} as *const {}", value, GetRecordName(decl));
+}
+
+std::string Converter::GetComparisonReceiver(const clang::CXXMethodDecl *method,
+                                             const clang::CXXRecordDecl *,
+                                             std::string_view lhs) {
+  if (!MethodNeedsMutableReceiver(method)) {
+    return std::string(lhs);
+  }
+  return std::format("&mut *(&raw const *{}).cast_mut()", lhs);
 }
 
 void Converter::ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,

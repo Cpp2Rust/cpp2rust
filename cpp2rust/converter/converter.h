@@ -614,10 +614,17 @@ protected:
                                          std::string_view eq_body,
                                          std::string_view record_name);
 
-  virtual std::string GetComparisonCall(const clang::FunctionDecl *op,
-                                        const clang::CXXRecordDecl *decl,
-                                        std::string_view lhs,
-                                        std::string_view rhs);
+  std::string GetComparisonCall(const clang::FunctionDecl *op,
+                                const clang::CXXRecordDecl *decl,
+                                std::string_view lhs, std::string_view rhs);
+
+  virtual std::string
+  GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
+                            std::string_view value);
+
+  virtual std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
+                                            const clang::CXXRecordDecl *decl,
+                                            std::string_view lhs);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
