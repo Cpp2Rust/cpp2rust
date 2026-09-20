@@ -13,10 +13,10 @@ thread_local!(
     pub static same_name_same_type_1: Value<i32> = Rc::new(RefCell::new(5));
 );
 pub fn a_foo_2() -> i32 {
-    return same_name_different_type_0.with(|rc| rc.borrow().clone());
+    return same_name_different_type_0.with(|rc| *rc.borrow());
 }
 pub fn a_bar_3() -> i32 {
-    return same_name_same_type_1.with(|rc| rc.borrow().clone());
+    return same_name_same_type_1.with(|rc| *rc.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -36,10 +36,10 @@ thread_local!(
     pub static same_name_same_type_7: Value<i32> = Rc::new(RefCell::new(6));
 );
 pub fn b_foo_4() -> f32 {
-    return same_name_different_type_6.with(|rc| rc.borrow().clone());
+    return same_name_different_type_6.with(|rc| *rc.borrow());
 }
 pub fn b_bar_5() -> i32 {
-    return same_name_same_type_7.with(|rc| rc.borrow().clone());
+    return same_name_same_type_7.with(|rc| *rc.borrow());
 }
 pub fn __cpp2rust_init_globals() {
     let _ = same_name_different_type_0.with(|_| ());

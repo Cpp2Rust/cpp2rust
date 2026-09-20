@@ -918,7 +918,8 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
   bool fresh = false;
   if (isRValue()) {
     if (is_global_value) {
-      StrCat(str, ".with(|rc| rc.borrow().clone())");
+      StrCat(str, TypeIsCopyable(decl_t) ? ".with(|rc| *rc.borrow())"
+                                         : ".with(|rc| rc.borrow().clone())");
       fresh = true;
     } else if (is_global_ptr) {
       StrCat(str);
@@ -2176,8 +2177,28 @@ void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
   StrCat(BoxValue(ConvertVarInitValue(qual_type, expr)));
 }
 
+bool ConverterRefCount::EmitGlobalValueAssign(clang::Expr *lhs,
+                                              std::string_view assign_operator,
+                                              std::string_view rhs) {
+  auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(lhs->IgnoreImplicit());
+  if (!decl_ref) {
+    return false;
+  }
+  auto *var = clang::dyn_cast<clang::VarDecl>(decl_ref->getDecl());
+  if (!var || !IsGlobalVar(var) || var->getType()->isReferenceType()) {
+    return false;
+  }
+  StrCat(std::format("{}.with(|rc| *rc.borrow_mut() {} {})",
+                     GetNamedDeclAsString(var), assign_operator, rhs));
+  return true;
+}
+
 void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
                                         std::string_view rhs) {
+  if (EmitGlobalValueAssign(lhs, "=", rhs)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
+    return;
+  }
   auto lhs_str = ConvertLValue(lhs);
   if (!pending_deref_.empty()) {
     auto ptr = pending_deref_.take();
@@ -2202,6 +2223,8 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   if (assign_operator == "=") {
     EmitSetOrAssign(lhs, rhs_as_string);
+  } else if (EmitGlobalValueAssign(lhs, assign_operator, rhs_as_string)) {
+    computed_expr_type_ = ComputedExprType::FreshValue;
   } else {
     auto lhs_str = ConvertLValue(lhs);
     if (!pending_deref_.empty()) {

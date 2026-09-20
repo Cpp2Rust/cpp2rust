@@ -18,7 +18,7 @@ pub fn local_shadow_2() -> i32 {
     return (*value.borrow());
 }
 pub fn read_global_3() -> i32 {
-    return value_0.with(|rc| rc.borrow().clone());
+    return value_0.with(|rc| *rc.borrow());
 }
 pub fn main() {
     __cpp2rust_init_globals();

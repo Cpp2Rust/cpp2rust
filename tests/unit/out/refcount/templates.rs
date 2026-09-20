@@ -65,11 +65,11 @@ fn main_0() -> i32 {
             + (({ func_5(2.0E+0, (*x.borrow()), (*y.borrow()),) }) as f64))
             == 68_f64)
     );
-    assert!((half_6.with(|rc| rc.borrow().clone()) == 0));
-    assert!((half_7.with(|rc| rc.borrow().clone()) == 5.0E-1));
-    (*half_6.with(Value::clone).borrow_mut()) = 7;
-    assert!((half_6.with(|rc| rc.borrow().clone()) == 7));
-    assert!((half_7.with(|rc| rc.borrow().clone()) == 5.0E-1));
+    assert!((half_6.with(|rc| *rc.borrow()) == 0));
+    assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
+    half_6.with(|rc| *rc.borrow_mut() = 7);
+    assert!((half_6.with(|rc| *rc.borrow()) == 7));
+    assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -30,9 +30,8 @@ thread_local!(
     pub static from_call_5: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );
 thread_local!(
-    pub static depends_on_call_6: Value<i32> = Rc::new(RefCell::new(
-        (from_call_5.with(|rc| rc.borrow().clone()) + 1),
-    ));
+    pub static depends_on_call_6: Value<i32> =
+        Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
 #[derive()]
 pub struct Ctor {
@@ -120,7 +119,7 @@ pub fn local_static_12() -> i32 {
     thread_local!(
         static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 3 })));
     );
-    return (once_13.with(|rc| rc.borrow().clone())
+    return (once_13.with(|rc| *rc.borrow())
         + (*local_ctor_14.with(|rc| rc.borrow().clone()).v.borrow()));
 }
 #[derive()]
@@ -176,9 +175,9 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!(((signature_3.with(|rc| rc.borrow().clone())[(0) as usize] as i32) == 10));
     assert!(((signature_3.with(|rc| rc.borrow().clone())[(1) as usize] as i32) == 4));
-    assert!(((single_4.with(|rc| rc.borrow().clone()) as i32) == 18));
-    assert!((from_call_5.with(|rc| rc.borrow().clone()) == 1));
-    assert!((depends_on_call_6.with(|rc| rc.borrow().clone()) == 2));
+    assert!(((single_4.with(|rc| *rc.borrow()) as i32) == 18));
+    assert!((from_call_5.with(|rc| *rc.borrow()) == 1));
+    assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
     assert!(((*default_ctor_7.with(|rc| rc.borrow().clone()).v.borrow()) == 2));
     assert!(((*arg_ctor_8.with(|rc| rc.borrow().clone()).v.borrow()) == 7));
     assert!(
@@ -189,7 +188,7 @@ fn main_0() -> i32 {
             .take(str_9.with(|rc| rc.borrow().clone()).len().saturating_sub(1))
             .eq(Ptr::from_string_literal(b"abc").to_c_string_iterator())
     );
-    assert!((member_10.with(|rc| rc.borrow().clone()) == 3));
+    assert!((member_10.with(|rc| *rc.borrow()) == 3));
     assert!(((*inline_member_11.with(|rc| rc.borrow().clone()).v.borrow()) == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));

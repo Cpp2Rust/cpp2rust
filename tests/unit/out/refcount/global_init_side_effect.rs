@@ -16,7 +16,7 @@ impl S {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<S> = Rc::new(RefCell::new(Self {}));
         let this: Ptr<S> = __this.as_pointer();
-        (*total_0.with(Value::clone).borrow_mut()) += (*x.borrow());
+        total_0.with(|rc| *rc.borrow_mut() += (*x.borrow()));
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -40,7 +40,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((total_0.with(|rc| rc.borrow().clone()) == 11));
+    assert!((total_0.with(|rc| *rc.borrow()) == 11));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -117,10 +117,7 @@ fn main_0() -> i32 {
             a.as_pointer()
         })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
-        assert!(
-            (alive_0.with(|rc| rc.borrow().clone()) == 2)
-                && (copies_1.with(|rc| rc.borrow().clone()) == 1)
-        );
+        assert!((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1));
         (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
         assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
         let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 2 })));
@@ -130,37 +127,31 @@ fn main_0() -> i32 {
             ((*(*c.borrow()).size.borrow()) == 4)
                 && ((*(*c.borrow()).data.borrow())[(3) as usize] == 3)
         );
-        assert!(
-            (alive_0.with(|rc| rc.borrow().clone()) == 3)
-                && (copies_1.with(|rc| rc.borrow().clone()) == 2)
-        );
+        assert!((alive_0.with(|rc| *rc.borrow()) == 3) && (copies_1.with(|rc| *rc.borrow()) == 2));
         ({
             let _o: Ptr<Buffer> = c.as_pointer();
             BufferImpl::operator_assign(&c.as_pointer(), _o)
         });
-        assert!((copies_1.with(|rc| rc.borrow().clone()) == 2));
+        assert!((copies_1.with(|rc| *rc.borrow()) == 2));
         assert!((({ sum_2(a.as_pointer(),) }) == 6));
         assert!((({ sum_2(b.as_pointer(),) }) == 106));
         let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
             a.as_pointer()
         })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
-        assert!(
-            (alive_0.with(|rc| rc.borrow().clone()) == 4)
-                && (copies_1.with(|rc| rc.borrow().clone()) == 3)
-        );
+        assert!((alive_0.with(|rc| *rc.borrow()) == 4) && (copies_1.with(|rc| *rc.borrow()) == 3));
         assert!(
             ((*(*a.borrow()).size.borrow()) == 4)
                 && ((*(*a.borrow()).data.borrow())[(3) as usize] == 3)
         );
         ({ BufferImpl::operator_assign(&d.as_pointer(), b.as_pointer()) });
-        assert!((copies_1.with(|rc| rc.borrow().clone()) == 4));
+        assert!((copies_1.with(|rc| *rc.borrow()) == 4));
         assert!(
             ((*(*b.borrow()).data.borrow())[(0) as usize] == 100)
                 && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100)
         );
     }
-    assert!((alive_0.with(|rc| rc.borrow().clone()) == 0));
+    assert!((alive_0.with(|rc| *rc.borrow()) == 0));
     return 0;
 }
 pub trait BufferImpl {

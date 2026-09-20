@@ -197,18 +197,18 @@ fn main_0() -> i32 {
     ));
     assert!(((((*extra.borrow()) == ((0 + 1) + 2)) as i32) != 0));
     assert!(
-        ((((global_color_0.with(|rc| rc.borrow().clone()) as u32) == ((Color_GREEN as i32) as u32))
+        ((((global_color_0.with(|rc| *rc.borrow()) as u32) == ((Color_GREEN as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
-        ((((global_opt_1.with(|rc| rc.borrow().clone()) as u32) == ((Option_OPT_B as i32) as u32))
+        ((((global_opt_1.with(|rc| *rc.borrow()) as u32) == ((Option_OPT_B as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
-        ((((global_tag_2.with(|rc| rc.borrow().clone()) as u32)
-            == ((Tag_enum_TAG_TWO as i32) as u32)) as i32)
+        ((((global_tag_2.with(|rc| *rc.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32))
+            as i32)
             != 0)
     );
     assert!(
@@ -274,7 +274,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*names.borrow())[(global_tag_2.with(|rc| rc.borrow().clone())) as usize]
+        ((((((*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize]
             .offset((0) as isize)
             .read()) as i32)
             == ('b' as i32)) as i32)

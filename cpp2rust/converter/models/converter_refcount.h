@@ -260,6 +260,13 @@ private:
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 
+  // If lhs is a direct reference to a global/static value (not a reference
+  // type), emits `var.with(|rc| *rc.borrow_mut() <op> <rhs>)` and returns
+  // true. This avoids cloning the Rc just to assign through it. Returns
+  // false (emitting nothing) if lhs doesn't match this shape.
+  bool EmitGlobalValueAssign(clang::Expr *lhs, std::string_view assign_operator,
+                             std::string_view rhs);
+
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
   std::string DerefPtrExpr(std::string_view ptr_expr,
