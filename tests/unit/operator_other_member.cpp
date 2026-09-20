@@ -30,7 +30,9 @@ int main() {
     assert(false);
   }
   S z{0};
+  assert(s);
   assert(!z);
+  assert(s && !z);
   Static st;
   assert(st(6, 7) == 42);
   return 0;
