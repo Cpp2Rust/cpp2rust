@@ -1632,7 +1632,7 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     StrCat(GetUnsafeTypeAsString(qual_type));
     {
       PushBrace brace(*this);
-      int i = 0;
+      unsigned i = 0;
       PushConversionKind push(*this, ConversionKind::FullRefCount);
       for (const auto *field : record->fields()) {
         StrCat(GetNamedDeclAsString(field), token::kColon);
