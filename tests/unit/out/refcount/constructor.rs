@@ -21,7 +21,7 @@ impl S {
         }));
         let this: Ptr<S> = __this.as_pointer();
         ({ SImpl::mut_method(&this) });
-        (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(&this) });
+        total_0.with(|rc| *rc.borrow_mut() += ({ SImpl::const_method(&this) }));
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -118,9 +118,9 @@ fn main_0() -> i32 {
         let s: Value<S> = Rc::new(RefCell::new(S::S({ 3 })));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
         assert!(((*(*s.borrow()).v.borrow()) == 4));
-        assert!((total_0.with(|rc| rc.borrow().clone()) == 8));
+        assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }
-    assert!((total_0.with(|rc| rc.borrow().clone()) == 18));
+    assert!((total_0.with(|rc| *rc.borrow()) == 18));
     let p: Value<Point> = Rc::new(RefCell::new(Point::Point3()));
     assert!(((*(*p.borrow()).x.borrow()) == 104));
     assert!(((*(*p.borrow()).y.borrow()) == 50));
@@ -143,7 +143,7 @@ impl SImpl for Ptr<S> {
     }
     fn destructor(&self) {
         ({ SImpl::mut_method(self) });
-        (*total_0.with(Value::clone).borrow_mut()) += ({ SImpl::const_method(self) });
+        total_0.with(|rc| *rc.borrow_mut() += ({ SImpl::const_method(self) }));
     }
 }
 pub fn __cpp2rust_init_globals() {
