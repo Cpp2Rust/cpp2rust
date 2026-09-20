@@ -957,6 +957,9 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   StrCat(keyword::kPub, keyword::kUnion, GetRecordName(decl));
   {
     PushBrace brace(*this);
+    if (decl->field_empty()) {
+      StrCat("__empty: u8,");
+    }
     for (auto *field : decl->fields()) {
       VisitFieldDecl(field);
     }

@@ -17,6 +17,16 @@ impl Default for basic {
         unsafe { std::mem::zeroed() }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union empty {
+    __empty: u8,
+}
+impl Default for empty {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -25,6 +35,8 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut u: basic = <basic>::default();
+    let mut e: empty = <empty>::default();
+    &(e);
     u.i = 42;
     assert!(((u.i) == (42)));
     u.f = 3.140000105E+0;
