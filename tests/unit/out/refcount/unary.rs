@@ -25,6 +25,12 @@ fn main_0() -> i32 {
     (*out.borrow_mut()).prefix_inc();
     let x3: Value<i32> = Rc::new(RefCell::new((*out.borrow_mut()).postfix_dec()));
     assert!(((((*out.borrow_mut()).postfix_inc() + (*x2.borrow())) + (*x3.borrow())) == 19));
+    let n: Value<i32> = Rc::new(RefCell::new((*x2.borrow())));
+    let d: Value<f64> = Rc::new(RefCell::new(1.5E+0));
+    assert!(((*n.borrow()) == (*x2.borrow())));
+    assert!(((*d.borrow()) == 1.5E+0));
+    assert!((((*n.borrow()) + (*n.borrow())) == (2 * (*x2.borrow()))));
+    assert!(((*a.borrow())[(0) as usize] == (*a.borrow())[(0) as usize]));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
