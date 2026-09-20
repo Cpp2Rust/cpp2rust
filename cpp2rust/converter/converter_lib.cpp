@@ -402,6 +402,15 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
 
+bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method) {
+  if (!method->isConst()) {
+    return true;
+  }
+  return std::any_of(method->getParent()->field_begin(),
+                     method->getParent()->field_end(),
+                     [](const clang::FieldDecl *f) { return f->isMutable(); });
+}
+
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
   return !IsConvertibleCopyOrMoveConstructor(ctor) &&
          (ctor->isCopyOrMoveConstructor() ||

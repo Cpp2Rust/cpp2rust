@@ -97,6 +97,8 @@ bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
 
+bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method);
+
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
