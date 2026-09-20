@@ -200,4 +200,16 @@ impl GraphImpl for Ptr<Graph> {
             .write(__rhs);
     }
 }
+pub trait PartialImpl {
+    fn get(&self) -> Ptr<i32> {
+        unimplemented!()
+    }
+    fn next(&self) -> Ptr<Partial> {
+        unimplemented!()
+    }
+    fn next_i32(&self, _a0: i32) -> Partial {
+        unimplemented!()
+    }
+}
+impl PartialImpl for Ptr<Partial> {}
 pub fn __cpp2rust_init_globals() {}

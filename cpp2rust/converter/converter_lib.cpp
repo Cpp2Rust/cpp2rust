@@ -1033,8 +1033,8 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
       !IsComparisonOperator(method)) {
     return false;
   }
-  if (clang::isa<clang::CXXDestructorDecl>(method)) {
-    return GetUserDefinedDestructor(method->getParent()) != nullptr;
+  if (auto *dtor = clang::dyn_cast<clang::CXXDestructorDecl>(method)) {
+    return !dtor->isImplicit() && !dtor->isDefaulted();
   }
   return true;
 }

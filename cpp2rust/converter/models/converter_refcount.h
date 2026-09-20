@@ -66,6 +66,7 @@ public:
 
   void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) override;
 
+  void ConvertMethodOnPtrTraitDecl(clang::CXXMethodDecl *method);
   void ConvertMethodOnPtr(clang::CXXMethodDecl *method);
 
   bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;

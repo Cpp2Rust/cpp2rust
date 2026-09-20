@@ -57,7 +57,16 @@ impl S {
 }
 impl S {}
 pub trait SImpl {
+    fn destructor(&self) {
+        unimplemented!()
+    }
     fn get(&self) -> i32;
+    fn set(&self, x: i32) {
+        unimplemented!()
+    }
+    fn add(&self, x: i32) -> i32 {
+        unimplemented!()
+    }
 }
 impl SImpl for Ptr<S> {
     fn get(&self) -> i32 {

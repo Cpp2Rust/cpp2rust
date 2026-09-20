@@ -52,4 +52,10 @@ fn main_0() -> i32 {
     assert!(((*(*b.borrow()).tag.borrow()) == 3));
     return 0;
 }
+pub trait ProbeImpl {
+    fn operator_inc(&self) -> Ptr<Probe> {
+        unimplemented!()
+    }
+}
+impl ProbeImpl for Ptr<Probe> {}
 pub fn __cpp2rust_init_globals() {}
