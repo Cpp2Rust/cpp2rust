@@ -2296,12 +2296,13 @@ Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
       total = std::max(arr_ty->getSize().getZExtValue(), len);
     }
   }
-  std::string out = "[";
+  std::string out = '[';
   for (uint64_t i = 0; i < total; ++i) {
     out += std::format("{} as {}, ", i < len ? expr->getCodeUnit(i) : 0,
                        elem_type);
   }
-  return out + ']';
+  out += ']';
+  return out;
 }
 
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
