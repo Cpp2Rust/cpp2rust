@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     )));
     (*e.borrow()).offset((0) as isize).write(6);
     (*e.borrow()).offset((1) as isize).write(7);
-    (*e.borrow()).delete_array();
+    (*e.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

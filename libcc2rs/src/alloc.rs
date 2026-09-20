@@ -9,10 +9,9 @@ pub fn malloc_refcount(a0: usize) -> AnyPtr {
 }
 
 pub fn free_refcount(a0: AnyPtr) {
-    if a0.is_null() {
-        return;
+    if !a0.is_null() {
+        a0.reinterpret_cast::<u8>().delete();
     }
-    a0.reinterpret_cast::<u8>().delete_array();
 }
 
 pub fn realloc_refcount(a0: AnyPtr, a1: usize) -> AnyPtr {
@@ -20,9 +19,10 @@ pub fn realloc_refcount(a0: AnyPtr, a1: usize) -> AnyPtr {
         return malloc_refcount(a1);
     }
     let __new = Ptr::alloc_array(vec![0u8; a1].into_boxed_slice()).to_any();
-    let __n = a1.min(a0.reinterpret_cast::<u8>().len());
+    let __src = a0.reinterpret_cast::<u8>();
+    let __n = a1.min(__src.len());
     __new.memcpy(&a0, __n);
-    a0.reinterpret_cast::<u8>().delete_array();
+    __src.delete();
     __new
 }
 

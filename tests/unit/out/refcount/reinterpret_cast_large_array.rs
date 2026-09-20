@@ -38,7 +38,7 @@ fn main_0() -> i32 {
             .read()) as i32)
             == 39304)
     );
-    (*arr.borrow()).delete_array();
+    (*arr.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

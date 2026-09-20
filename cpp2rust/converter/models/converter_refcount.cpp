@@ -1878,7 +1878,7 @@ bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   if (!TypeNeedsDestruction(expr->getDestroyedType())) {
     Convert(expr->getArgument());
-    StrCat(expr->isArrayForm() ? ".delete_array()" : ".delete()");
+    StrCat(".delete()");
     return false;
   }
 
@@ -1889,10 +1889,10 @@ bool ConverterRefCount::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
     StrCat(std::format("for __i in 0..__p.len() {{ __p.offset(__i as "
                        "isize).{}(); }}",
                        kDestructorName));
-    StrCat("__p.delete_array()", token::kSemiColon);
+    StrCat("__p.delete();");
   } else {
-    StrCat(std::format("__p.{}()", kDestructorName), token::kSemiColon);
-    StrCat("__p.delete()", token::kSemiColon);
+    StrCat(std::format("__p.{}();", kDestructorName));
+    StrCat("__p.delete();");
   }
   return false;
 }

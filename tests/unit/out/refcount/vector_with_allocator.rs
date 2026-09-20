@@ -308,7 +308,7 @@ impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));
         let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
-        (*p.borrow()).delete_array();
+        (*p.borrow()).delete();
     }
 }
 pub trait TestAllocator_int_Impl {
@@ -327,7 +327,7 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
     fn deallocate(&self, p: Ptr<i32>, _a1: usize) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
         let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
-        (*p.borrow()).delete_array();
+        (*p.borrow()).delete();
     }
 }
 pub fn __cpp2rust_init_globals() {}

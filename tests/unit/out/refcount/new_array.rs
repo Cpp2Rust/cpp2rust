@@ -28,7 +28,7 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    (*array.borrow()).delete_array();
+    (*array.borrow()).delete();
     let filled: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..4_usize)
             .map(|_| <i32>::default())
@@ -49,7 +49,7 @@ fn main_0() -> i32 {
     {
         return 1;
     }
-    (*filled.borrow()).delete_array();
+    (*filled.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

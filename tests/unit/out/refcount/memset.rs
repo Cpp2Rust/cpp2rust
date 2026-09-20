@@ -31,7 +31,7 @@ fn main_0() -> i32 {
         (*sum.borrow_mut()) += __rhs;
         (*i.borrow_mut()).prefix_inc();
     }
-    (*arr.borrow()).delete_array();
+    (*arr.borrow()).delete();
     assert!(((*sum.borrow()) == 50529027));
     return 0;
 }

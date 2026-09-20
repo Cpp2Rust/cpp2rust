@@ -17,7 +17,7 @@ fn main_0() -> i32 {
             .collect::<Box<[i32]>>(),
     )));
     let out: Value<i32> = Rc::new(RefCell::new(((*arr.borrow()).offset((10) as isize).read())));
-    (*arr.borrow()).delete_array();
+    (*arr.borrow()).delete();
     return (*out.borrow());
 }
 pub fn __cpp2rust_init_globals() {}

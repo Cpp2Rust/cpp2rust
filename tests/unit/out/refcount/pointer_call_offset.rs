@@ -31,7 +31,7 @@ fn main_0() -> i32 {
             .offset((3) as isize)
             .read()),
     ));
-    (*p1.borrow()).delete_array();
+    (*p1.borrow()).delete();
     assert!(((*out.borrow()) == 9));
     return 0;
 }

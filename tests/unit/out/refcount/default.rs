@@ -81,7 +81,7 @@ fn main_0() -> i32 {
             .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
     )));
-    (*default_pointers.borrow()).delete_array();
+    (*default_pointers.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

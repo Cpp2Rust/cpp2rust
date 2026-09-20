@@ -26,7 +26,7 @@ fn main_0() -> i32 {
     assert!((((*arr.borrow()).offset((0) as isize).read()) == 67306154_u32));
     (*bytes.borrow()).offset((5) as isize).write(187_u8);
     assert!((((*arr.borrow()).offset((1) as isize).read()) == 134724357_u32));
-    (*arr.borrow()).delete_array();
+    (*arr.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

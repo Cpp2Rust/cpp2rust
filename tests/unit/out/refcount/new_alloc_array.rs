@@ -37,7 +37,7 @@ fn main_0() -> i32 {
         (*p1.borrow_mut()).prefix_inc();
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
-    (*p2.borrow()).delete_array();
+    (*p2.borrow()).delete();
     assert!(((*out.borrow()) == 99));
     return 0;
 }

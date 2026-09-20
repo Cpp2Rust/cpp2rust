@@ -59,7 +59,7 @@ fn main_0() -> i32 {
         ((*i.borrow()).offset((0) as isize).read()),
         ((*i.borrow()).offset((1) as isize).read()),
     );
-    (*i.borrow()).delete_array();
+    (*i.borrow()).delete();
     ({ swap_by_ptr_1(Ptr::alloc(7), Ptr::alloc(8)) });
     ({
         swap_by_ptr_1(

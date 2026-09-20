@@ -128,18 +128,9 @@ fn main_0() -> i32 {
         let mut __cur = (*list.borrow()).clone();
         while !__cur.is_null() {
             let __next = __cur.with(|__i| {
-                let __name = __i.ifa_name.borrow();
-                if !__name.is_null() {
-                    __name.delete_array();
-                }
-                let __addr = __i.ifa_addr.borrow();
-                if !__addr.is_null() {
-                    __addr.delete();
-                }
-                let __mask = __i.ifa_netmask.borrow();
-                if !__mask.is_null() {
-                    __mask.delete();
-                }
+                __i.ifa_name.borrow().delete();
+                __i.ifa_addr.borrow().delete();
+                __i.ifa_netmask.borrow().delete();
                 (*__i.ifa_next.borrow()).clone()
             });
             __cur.delete();
