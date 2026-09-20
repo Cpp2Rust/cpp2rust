@@ -3,6 +3,6 @@
 
 #include <assert.h>
 
-void f1(bool condition) {
+bool f1(bool condition) {
   return cpp2rust_assert_fail(condition);
 }
