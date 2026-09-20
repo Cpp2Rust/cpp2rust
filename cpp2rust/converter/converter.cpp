@@ -551,7 +551,7 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
 
   bool is_parm_with_default_value = false;
   if (auto parm = clang::dyn_cast<clang::ParmVarDecl>(decl)) {
-    is_parm_with_default_value = parm->hasDefaultArg();
+    is_parm_with_default_value = HasUsableDefaultArg(parm);
   }
 
   if (is_parm_with_default_value) {
@@ -1229,7 +1229,7 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   auto params = decl->getDefinition() ? decl->getDefinition()->parameters()
                                       : decl->parameters();
   for (auto *param : params) {
-    if (param->hasDefaultArg()) {
+    if (HasUsableDefaultArg(param)) {
       auto name = GetNamedDeclAsString(param);
       auto type = ToString(param->getType());
       auto init = std::format("{}.unwrap_or({})", name,
@@ -1946,7 +1946,8 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
         .param_type = function ? function->getParamDecl(i)->getType()
                                : proto->getParamType(i),
         .expr = arg,
-        .has_default = function && function->getParamDecl(i)->hasDefaultArg(),
+        .has_default =
+            function && HasUsableDefaultArg(function->getParamDecl(i)),
         .kind = (IsLiteral(arg) || info.is_libc_passthrough) ? Kind::Inline
                                                              : Kind::Hoisted,
     };
@@ -3583,7 +3584,7 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
   for (unsigned param_idx = 0; param_idx < ctor->getNumParams(); ++param_idx) {
     auto param = ctor->getParamDecl(param_idx);
     auto param_type = param->getType();
-    bool has_default = param->hasDefaultArg();
+    bool has_default = HasUsableDefaultArg(param);
 
     if (arg_idx < expr->getNumArgs() &&
         clang::isa<clang::CXXDefaultArgExpr>(expr->getArg(arg_idx))) {
