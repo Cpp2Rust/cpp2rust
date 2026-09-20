@@ -480,6 +480,9 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    return;
+  }
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
     StrCat(keyword::kImpl, "Clone for", record_name);
@@ -2120,6 +2123,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (decl->isUnion()) {
     return attrs;
+  }
+
+  if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
+    attrs.emplace_back("Clone");
   }
 
   if (RecordDerivesDefault(decl)) {

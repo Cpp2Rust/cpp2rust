@@ -69,6 +69,12 @@ impl Default for Foo {
     }
 }
 impl ByteRepr for Foo {}
+#[derive(Clone, Default)]
+pub struct Refs {
+    pub a: Ptr<i32>,
+    pub b: Ptr<i32>,
+}
+impl ByteRepr for Refs {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -507,6 +513,19 @@ fn main_0() -> i32 {
         );
         (*i.borrow_mut()).prefix_inc();
     }
+    let ra: Value<i32> = Rc::new(RefCell::new(1));
+    let rb: Value<i32> = Rc::new(RefCell::new(2));
+    let r1: Value<Refs> = Rc::new(RefCell::new(Refs {
+        a: ra.as_pointer(),
+        b: rb.as_pointer(),
+    }));
+    let r2: Value<Refs> = Rc::new(RefCell::new((*r1.borrow()).clone()));
+    (*r2.borrow()).a.write(10);
+    (*r2.borrow()).b.with_mut(|__v| __v.prefix_inc());
+    assert!(((*ra.borrow()) == 10));
+    assert!(((*rb.borrow()) == 3));
+    assert!((((*r1.borrow()).a.read()) == 10));
+    assert!((((*r1.borrow()).b.read()) == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
