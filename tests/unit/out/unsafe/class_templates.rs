@@ -84,6 +84,32 @@ impl MyContainer_float_ {
         };
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Boxed_int_ {
+    pub value: i32,
+}
+impl Boxed_int_ {
+    pub unsafe fn twice(mut v: i32) -> i32 {
+        return ((v) + (v));
+    }
+    pub unsafe fn plus(&self, mut other: i32) -> i32 {
+        return ((self.value) + (other));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Boxed_long_ {
+    pub value: i64,
+}
+impl Boxed_long_ {
+    pub unsafe fn twice(mut v: i64) -> i64 {
+        return ((v) + (v));
+    }
+    pub unsafe fn plus(&self, mut other: i64) -> i64 {
+        return ((self.value) + (other));
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -91,6 +117,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    assert!(((unsafe { Boxed_int_::twice(3,) }) == (6)));
+    let mut bi: Boxed_int_ = Boxed_int_ { value: 4 };
+    assert!(((unsafe { Boxed_int_::plus(&bi, 5,) }) == (9)));
+    assert!(((unsafe { Boxed_long_::twice(10_i64,) }) == (20_i64)));
+    let mut bl: Boxed_long_ = Boxed_long_ { value: 7_i64 };
+    assert!(((unsafe { Boxed_long_::plus(&bl, 1_i64,) }) == (8_i64)));
     let mut imc: MyContainer_int_ = <MyContainer_int_>::default();
     assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     (unsafe {
