@@ -574,6 +574,10 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
+  if (RecordDerivesByteRepr(decl)) {
+    return;
+  }
+
   auto struct_name = GetRecordName(decl);
 
   if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
@@ -2150,6 +2154,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
     attrs.emplace_back("Clone");
+  }
+
+  if (RecordDerivesByteRepr(decl)) {
+    attrs.emplace_back("ByteRepr");
   }
 
   if (RecordDerivesDefault(decl)) {

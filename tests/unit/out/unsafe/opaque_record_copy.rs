@@ -7,7 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Copy, Clone, Default)]
+pub struct Probe {}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Probe,
     pub tag: i32,
@@ -24,10 +27,8 @@ unsafe fn main_0() -> i32 {
         tag: 0_i32,
     };
     a.tag = 3;
-    let mut b: Wrapper_Probe_ = a.clone();
+    let mut b: Wrapper_Probe_ = a;
     assert!(((b.tag) == (3)));
     return 0;
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
-pub struct Probe;
 pub unsafe fn __cpp2rust_init_globals() {}

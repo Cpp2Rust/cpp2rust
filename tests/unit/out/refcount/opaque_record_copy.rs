@@ -6,6 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(Clone, ByteRepr, Default)]
+pub struct Probe {}
 #[derive(Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Value<Probe>,
@@ -50,6 +52,4 @@ fn main_0() -> i32 {
     assert!(((*(*b.borrow()).tag.borrow()) == 3));
     return 0;
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
-pub struct Probe;
 pub fn __cpp2rust_init_globals() {}

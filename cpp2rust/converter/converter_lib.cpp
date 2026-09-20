@@ -357,6 +357,10 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   return !cxx->defaultedCopyConstructorIsDeleted();
 }
 
+bool RecordDerivesByteRepr(const clang::RecordDecl *decl) {
+  return !decl->isUnion() && decl->field_empty();
+}
+
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
   for (auto *field : decl->fields()) {
     if (!field->getType()->isReferenceType()) {
@@ -418,17 +422,7 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 }
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
-  return decl->isThisDeclarationADefinition() &&
-         std::all_of(
-             decl->method_begin(), decl->method_end(), [](auto *method) {
-               auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method);
-               return method->getDefinition() || method->isPureVirtual() ||
-                      method->getTemplateInstantiationPattern() ||
-                      method->getDescribedFunctionTemplate() ||
-                      (ctor ? ctor->isCopyOrMoveConstructor()
-                            : method->isCopyAssignmentOperator() ||
-                                  method->isMoveAssignmentOperator());
-             });
+  return decl->isThisDeclarationADefinition() && !decl->isDependentContext();
 }
 
 bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl) {

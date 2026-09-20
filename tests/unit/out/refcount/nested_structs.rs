@@ -144,17 +144,8 @@ impl ByteRepr for Level0_Level1_2 {
         }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Level0 {}
-impl ByteRepr for Level0 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

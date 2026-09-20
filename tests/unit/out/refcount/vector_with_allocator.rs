@@ -6,28 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct TestAllocator_int_ {}
-impl ByteRepr for TestAllocator_int_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct TestAllocator_double_ {}
-impl ByteRepr for TestAllocator_double_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
 }

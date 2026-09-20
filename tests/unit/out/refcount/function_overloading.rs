@@ -36,17 +36,8 @@ pub fn foo_3(x: Ptr<i32>, y: Ptr<i32>, z: Ptr<i32>) -> i32 {
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Foo {}
-impl ByteRepr for Foo {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 pub fn func_5(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return 1;
