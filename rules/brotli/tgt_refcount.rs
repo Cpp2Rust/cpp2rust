@@ -89,7 +89,7 @@ fn f9(a0: *mut ::brotli_sys::BrotliDecoderState, a1: Ptr<usize>) -> Ptr<u8> {
             let output: *const u8 = ::brotli_sys::BrotliDecoderTakeOutput(a0, _v1 as *mut usize);
             let slice = std::slice::from_raw_parts(output, *_v1);
             let result: Ptr<Vec<u8>> = Ptr::alloc(slice.to_vec());
-            (result.to_strong().as_pointer() as Ptr<u8>).clone()
+            result.decay()
         })
     }
 }

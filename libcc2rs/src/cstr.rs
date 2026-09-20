@@ -7,7 +7,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::CStringIterator;
-use crate::rc::{AsPointer, Ptr, PtrKind};
+use crate::rc::{Ptr, PtrKind};
 
 impl fmt::Display for Ptr<u8> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -57,9 +57,7 @@ macro_rules! impl_string_literal {
         impl Ptr<$t> {
             #[inline]
             pub fn from_string_literal(s: &'static [$t]) -> Self {
-                Ptr::<Box<[$t]>>::from_string_literal_array(s)
-                    .to_strong()
-                    .as_pointer()
+                Ptr::<Box<[$t]>>::from_string_literal_array(s).decay()
             }
         }
     };

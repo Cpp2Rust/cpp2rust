@@ -280,8 +280,16 @@ private:
   std::string GetInnerType(clang::QualType type);
 
   std::string ConvertFreshLValue(clang::Expr *expr);
-  std::string ConvertObject(clang::Expr *expr);
-  std::string ConvertFreshObject(clang::Expr *expr) override;
+  // What an Object-kind conversion of a boxed container/array should yield:
+  // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
+  // element (Ptr<T>).
+  enum class ObjectShape { Whole, Element };
+  std::string ConvertObject(clang::Expr *expr,
+                            ObjectShape shape = ObjectShape::Whole);
+  std::string
+  ConvertFreshObject(clang::Expr *expr,
+                     std::string_view target_ptr_type = {}) override;
+  bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,
                std::optional<clang::QualType> implicit_convert_to = {});
@@ -367,6 +375,7 @@ private:
   std::string BoxValue(std::string &&str) const;
 
   std::vector<ConversionKind> conversion_kind_;
+  ObjectShape object_shape_ = ObjectShape::Whole;
 
   // Set by pointer-related visit methods (ConvertDeref,
   // ConvertPointerSubscript, etc.) when converting an LValue that goes through

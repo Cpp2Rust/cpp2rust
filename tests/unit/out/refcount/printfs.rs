@@ -52,10 +52,7 @@ fn main_0() -> i32 {
         ))
         .as_pointer() as Ptr<u8>)
     );
-    println!(
-        "{}",
-        (({ fn2_1(s.as_pointer(),) }).to_strong().as_pointer() as Ptr<u8>)
-    );
+    println!("{}", (({ fn2_1(s.as_pointer(),) }).decay() as Ptr<u8>));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

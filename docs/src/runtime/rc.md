@@ -58,8 +58,8 @@ A `Ptr<T>` knows what it points into:
 - `Null`: the null pointer, and the default value.
 - `StackSingle` and `HeapSingle`: a single value.
 - `StackArray` and `HeapArray`: a fixed-size array.
-- `Vec`: a growable buffer; `std::vector` contents and string literals live in
-  one.
+- `StackVec` and `HeapVec`: a growable buffer; `std::vector` contents and string
+  literals live in one.
 - `Reinterpreted`: a byte-level view produced by a cast (see
   [Type Reinterpretation](./reinterpret.md)).
 
@@ -218,10 +218,11 @@ into the copy never reach the original allocation.
 >    it was called on, hits `delete`'s reference-count check and panics with a
 >    spurious `ub: invalid delete`.
 
-`to_strong` skips the `StrongPtr` and returns the `Value<T>` itself. It is only
-defined for the single-value kinds and is what the code generator uses when it
-needs the owning cell of a pointee, for example to coerce a `Value<Derived>` to
-a `Value<dyn Base>` (see [Virtual Classes](./ptr-dyn.md)).
+Where the code generator needs a different view of the same allocation, it
+does not upgrade at all. `decay` turns a pointer to a whole `Vec<T>` or `Box<[T]>`
+into a pointer to its first element by re-tagging the existing weak reference,
+and `Ptr::to_dyn` (see [Virtual Classes](./ptr-dyn.md)) does the same for the
+upcast to a trait object.
 
 ## Arithmetic
 
