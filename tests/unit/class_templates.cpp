@@ -28,7 +28,25 @@ template <typename T> T Boxed<T>::twice(T v) { return v + v; }
 
 template <typename T> T Boxed<T>::plus(T other) const { return value + other; }
 
+template <typename T> struct Outer {
+  template <typename U> struct Inner {
+    T t;
+    U u;
+    int sum() const { return (int)t + (int)u; }
+  };
+
+  T v;
+  Inner<int> with(int n) const { return Inner<int>{v, n}; }
+};
+
 int main() {
+  Outer<int> oi{3};
+  assert(oi.with(4).sum() == 7);
+  Outer<long> ol{5};
+  Outer<long>::Inner<char> ic{6, 'a'};
+  assert(ol.with(2).sum() == 7);
+  assert(ic.sum() == 6 + 'a');
+
   assert(Boxed<int>::twice(3) == 6);
   Boxed<int> bi{4};
   assert(bi.plus(5) == 9);

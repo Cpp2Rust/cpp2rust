@@ -148,11 +148,186 @@ impl ByteRepr for Boxed_long_ {
         }
     }
 }
+#[derive(Default)]
+pub struct Outer_int__Inner_int_ {
+    pub t: Value<i32>,
+    pub u: Value<i32>,
+}
+impl Clone for Outer_int__Inner_int_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_int__Inner_int_> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new((*self.t.borrow()))),
+            u: Rc::new(RefCell::new((*self.u.borrow()))),
+        }));
+        let this: Ptr<Outer_int__Inner_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_int__Inner_int_ {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.t.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.u.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            t: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            u: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Outer_int_ {
+    pub v: Value<i32>,
+}
+impl Clone for Outer_int_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_int_> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+        }));
+        let this: Ptr<Outer_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_int_ {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Outer_long__Inner_int_ {
+    pub t: Value<i64>,
+    pub u: Value<i32>,
+}
+impl Clone for Outer_long__Inner_int_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_long__Inner_int_> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new((*self.t.borrow()))),
+            u: Rc::new(RefCell::new((*self.u.borrow()))),
+        }));
+        let this: Ptr<Outer_long__Inner_int_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_long__Inner_int_ {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.t.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.u.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            t: Rc::new(RefCell::new(<i64>::from_bytes(&buf[0..8]))),
+            u: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Outer_long__Inner_char_ {
+    pub t: Value<i64>,
+    pub u: Value<u8>,
+}
+impl Clone for Outer_long__Inner_char_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_long__Inner_char_> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new((*self.t.borrow()))),
+            u: Rc::new(RefCell::new((*self.u.borrow()))),
+        }));
+        let this: Ptr<Outer_long__Inner_char_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_long__Inner_char_ {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.t.borrow()).to_bytes(&mut buf[0..8]);
+        (*self.u.borrow()).to_bytes(&mut buf[8..9]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            t: Rc::new(RefCell::new(<i64>::from_bytes(&buf[0..8]))),
+            u: Rc::new(RefCell::new(<u8>::from_bytes(&buf[8..9]))),
+        }
+    }
+}
+#[derive(Default)]
+pub struct Outer_long_ {
+    pub v: Value<i64>,
+}
+impl Clone for Outer_long_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer_long_> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+        }));
+        let this: Ptr<Outer_long_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Outer_long_ {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i64>::from_bytes(&buf[0..8]))),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let oi: Value<Outer_int_> = Rc::new(RefCell::new(Outer_int_ {
+        v: Rc::new(RefCell::new(3)),
+    }));
+    assert!(
+        (({
+            Outer_int__Inner_int_Impl::sum(
+                &Rc::new(RefCell::new(
+                    ({ Outer_int_Impl::with(&oi.as_pointer(), 4) }),
+                ))
+                .as_pointer(),
+            )
+        }) == 7)
+    );
+    let ol: Value<Outer_long_> = Rc::new(RefCell::new(Outer_long_ {
+        v: Rc::new(RefCell::new(5_i64)),
+    }));
+    let ic: Value<Outer_long__Inner_char_> = Rc::new(RefCell::new(Outer_long__Inner_char_ {
+        t: Rc::new(RefCell::new(6_i64)),
+        u: Rc::new(RefCell::new(('a' as u8))),
+    }));
+    assert!(
+        (({
+            Outer_long__Inner_int_Impl::sum(
+                &Rc::new(RefCell::new(
+                    ({ Outer_long_Impl::with(&ol.as_pointer(), 2) }),
+                ))
+                .as_pointer(),
+            )
+        }) == 7)
+    );
+    assert!(
+        (({ Outer_long__Inner_char_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as u8) as i32)))
+    );
     assert!((({ Boxed_int_::twice(3,) }) == 6));
     let bi: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_ {
         value: Rc::new(RefCell::new(4)),
@@ -311,6 +486,57 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
             let a0_clone = (item.read()).clone();
             (*(*(*self).upgrade().deref()).vec_.borrow_mut()).push(a0_clone)
         };
+    }
+}
+pub trait Outer_int_Impl {
+    fn with(&self, n: i32) -> Outer_int__Inner_int_;
+}
+impl Outer_int_Impl for Ptr<Outer_int_> {
+    fn with(&self, n: i32) -> Outer_int__Inner_int_ {
+        let n: Value<i32> = Rc::new(RefCell::new(n));
+        return Outer_int__Inner_int_ {
+            t: Rc::new(RefCell::new((*(*(*self).upgrade().deref()).v.borrow()))),
+            u: Rc::new(RefCell::new((*n.borrow()))),
+        };
+    }
+}
+pub trait Outer_int__Inner_int_Impl {
+    fn sum(&self) -> i32;
+}
+impl Outer_int__Inner_int_Impl for Ptr<Outer_int__Inner_int_> {
+    fn sum(&self) -> i32 {
+        return (((*(*(*self).upgrade().deref()).t.borrow()) as i32)
+            + ((*(*(*self).upgrade().deref()).u.borrow()) as i32));
+    }
+}
+pub trait Outer_long_Impl {
+    fn with(&self, n: i32) -> Outer_long__Inner_int_;
+}
+impl Outer_long_Impl for Ptr<Outer_long_> {
+    fn with(&self, n: i32) -> Outer_long__Inner_int_ {
+        let n: Value<i32> = Rc::new(RefCell::new(n));
+        return Outer_long__Inner_int_ {
+            t: Rc::new(RefCell::new((*(*(*self).upgrade().deref()).v.borrow()))),
+            u: Rc::new(RefCell::new((*n.borrow()))),
+        };
+    }
+}
+pub trait Outer_long__Inner_char_Impl {
+    fn sum(&self) -> i32;
+}
+impl Outer_long__Inner_char_Impl for Ptr<Outer_long__Inner_char_> {
+    fn sum(&self) -> i32 {
+        return (((*(*(*self).upgrade().deref()).t.borrow()) as i32)
+            + ((*(*(*self).upgrade().deref()).u.borrow()) as i32));
+    }
+}
+pub trait Outer_long__Inner_int_Impl {
+    fn sum(&self) -> i32;
+}
+impl Outer_long__Inner_int_Impl for Ptr<Outer_long__Inner_int_> {
+    fn sum(&self) -> i32 {
+        return (((*(*(*self).upgrade().deref()).t.borrow()) as i32)
+            + ((*(*(*self).upgrade().deref()).u.borrow()) as i32));
     }
 }
 pub fn __cpp2rust_init_globals() {}

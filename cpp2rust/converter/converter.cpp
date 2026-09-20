@@ -823,6 +823,12 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
         }
       }
     }
+    if (auto *nested_tmpl = clang::dyn_cast<clang::ClassTemplateDecl>(d)) {
+      for (auto *spec : nested_tmpl->specializations()) {
+        inner_structs_[GetID(spec)] = GetRecordName(spec);
+        VisitCXXRecordDecl(spec);
+      }
+    }
   }
 
   if (decl->isUnion()) {
