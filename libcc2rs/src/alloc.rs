@@ -27,7 +27,7 @@ pub fn realloc_refcount(a0: AnyPtr, a1: usize) -> AnyPtr {
 }
 
 pub fn calloc_refcount(a0: usize, a1: usize) -> AnyPtr {
-    Ptr::alloc_array(vec![0u8; a0.wrapping_mul(a1)].into_boxed_slice()).to_any()
+    Ptr::alloc_array(vec![0u8; a0 * a1].into_boxed_slice()).to_any()
 }
 
 pub fn strdup_refcount(a0: Ptr<u8>) -> Ptr<u8> {
