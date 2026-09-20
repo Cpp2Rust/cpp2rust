@@ -1677,6 +1677,12 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
   return false;
 }
 
+bool ConverterRefCount::VisitCXXStdInitializerListExpr(
+    clang::CXXStdInitializerListExpr *expr) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  return Converter::VisitCXXStdInitializerListExpr(expr);
+}
+
 void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   auto member = expr->getMemberDecl();
   std::string str;

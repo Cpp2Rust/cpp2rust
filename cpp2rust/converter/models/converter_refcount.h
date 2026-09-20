@@ -127,6 +127,10 @@ public:
   void EmitStmtExprTail(clang::Expr *tail) override;
 
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
+
+  bool VisitCXXStdInitializerListExpr(
+      clang::CXXStdInitializerListExpr *expr) override;
+
   bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) override;
 
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
