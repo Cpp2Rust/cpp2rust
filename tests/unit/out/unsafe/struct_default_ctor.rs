@@ -23,6 +23,12 @@ impl Default for S {
         unsafe { S::S() }
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Declared {
+    pub v: i32,
+}
+impl Declared {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -30,6 +36,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut d: *mut Declared = std::ptr::null_mut();
+    assert!((d).is_null());
     let mut s: S = S::S();
     assert!(((s.a) == (11)));
     assert!(((s.b as i32) == (true as i32)));

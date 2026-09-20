@@ -521,7 +521,7 @@ unsigned GetCtorIndex(clang::CXXConstructorDecl *ctor) {
 clang::CXXConstructorDecl *
 GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
   for (auto c : decl->ctors()) {
-    if (c->isUserProvided() && c->isDefaultConstructor()) {
+    if (c->isUserProvided() && c->isDefaultConstructor() && c->hasBody()) {
       return c;
     }
   }
