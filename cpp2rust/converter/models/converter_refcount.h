@@ -36,10 +36,12 @@ public:
 
   const char *CharRustType() const override { return "u8"; }
 
-  std::string GetComparisonCall(const clang::FunctionDecl *op,
-                                const clang::CXXRecordDecl *decl,
-                                std::string_view lhs,
-                                std::string_view rhs) override;
+  std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
+                                        std::string_view value) override;
+
+  std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
+                                    const clang::CXXRecordDecl *decl,
+                                    std::string_view lhs) override;
 
   std::string GetShallowCopy(const clang::RecordDecl *decl,
                              std::string_view src);

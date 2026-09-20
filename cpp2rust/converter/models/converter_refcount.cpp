@@ -443,18 +443,19 @@ bool ConverterRefCount::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
   return false;
 }
 
-std::string ConverterRefCount::GetComparisonCall(
-    const clang::FunctionDecl *op, const clang::CXXRecordDecl *decl,
-    std::string_view lhs, std::string_view rhs) {
+std::string
+ConverterRefCount::GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
+                                             std::string_view value) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
-  auto lhs_ptr = BoxValue(GetShallowCopy(decl, lhs)) + ".as_pointer()";
-  auto rhs_ptr = BoxValue(GetShallowCopy(decl, rhs)) + ".as_pointer()";
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(op)) {
-    return std::format("{}::{}(&{}, {})", GetUFCSName(method),
-                       GetMethodName(method), lhs_ptr, rhs_ptr);
-  }
-  return std::format("{}({}, {})", GetNamedDeclAsString(op->getCanonicalDecl()),
-                     lhs_ptr, rhs_ptr);
+  return BoxValue(GetShallowCopy(decl, value)) + ".as_pointer()";
+}
+
+std::string
+ConverterRefCount::GetComparisonReceiver(const clang::CXXMethodDecl *,
+                                         const clang::CXXRecordDecl *decl,
+                                         std::string_view lhs) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  return std::format("&{}.as_pointer()", BoxValue(GetShallowCopy(decl, lhs)));
 }
 
 std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
