@@ -2575,7 +2575,8 @@ bool Converter::VisitCXXRewrittenBinaryOperator(
 
 bool Converter::VisitBinaryOperator(clang::BinaryOperator *expr) {
   if (expr->getOpcode() == clang::BO_Cmp) {
-    StrCat(std::format("({}).cmp(&({}))", ConvertRValue(expr->getLHS()),
+    StrCat(std::format("std::cmp::Ord::cmp(&({}), &({}))",
+                       ConvertRValue(expr->getLHS()),
                        ConvertRValue(expr->getRHS())));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;

@@ -48,6 +48,11 @@ struct Secondary {
   bool operator>=(const Secondary &) const = default;
 };
 
+struct PtrMember {
+  int *p;
+  auto operator<=>(const PtrMember &) const = default;
+};
+
 int main() {
   Eq e1{1, 2}, e2{1, 2}, e3{1, 3};
   assert(e1 == e2);
@@ -72,5 +77,10 @@ int main() {
   assert(s1 < s2);
   assert(s2 >= s1);
   assert(!(s2 < s1));
+  int arr[2] = {0, 0};
+  PtrMember p1{arr}, p2{arr + 1}, p3{arr};
+  assert(p1 < p2);
+  assert(p1 == p3);
+  assert((p2 <=> p1) == std::strong_ordering::greater);
   return 0;
 }
