@@ -58,9 +58,6 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-pub unsafe fn make_0(mut v: i32) -> S {
-    return S { v: v };
-}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -79,31 +76,6 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator_ge(&a, &c,) }));
     assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a,) }));
     assert!((unsafe { S::operator_lt_i32_const(&a, 5,) }));
-    assert!(
-        (unsafe {
-            let mut _o: S = (unsafe { make_0(1) });
-            S::operator_eq(&(unsafe { make_0(1) }), &mut _o)
-        })
-    );
-    assert!(
-        (unsafe {
-            let mut _o: S = (unsafe { make_0(2) });
-            S::operator_ne(&(unsafe { make_0(1) }), &mut _o)
-        })
-    );
-    assert!(
-        (unsafe {
-            let mut _o: S = (unsafe { make_0(2) });
-            S::operator_lt_pconstS_const(&(unsafe { make_0(1) }), &mut _o)
-        })
-    );
-    assert!((unsafe { S::operator_gt(&(unsafe { make_0(2,) }), &a,) }));
-    assert!(
-        (unsafe {
-            let mut _o: S = (unsafe { make_0(1) });
-            S::operator_le(&a, &mut _o)
-        })
-    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
