@@ -13,5 +13,11 @@ int main() {
   ++out;
   int x3 = out--;
   assert(out++ + x2 + x3 == 19);
+  int n = +x2;
+  double d = +1.5;
+  assert(n == x2);
+  assert(d == 1.5);
+  assert(+n + +n == 2 * x2);
+  assert(+a[0] == a[0]);
   return 0;
 }
