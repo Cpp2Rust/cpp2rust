@@ -6,6 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Pod {
+    pub v: i32,
+}
 pub unsafe fn zero_0() -> *mut i32 {
     return std::ptr::null_mut();
 }
@@ -13,6 +18,7 @@ pub unsafe fn zero_1() -> i64 {
     return 0_i64;
 }
 pub unsafe fn destroy_2(mut p: *mut i32) {}
+pub unsafe fn destroy_3(mut p: *mut Pod) {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -30,6 +36,9 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 5;
     (unsafe { destroy_2((&mut x as *mut i32)) });
     assert!(((x) == (5)));
+    let mut pod: Pod = Pod { v: 7 };
+    (unsafe { destroy_3((&mut pod as *mut Pod)) });
+    assert!(((pod.v) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
