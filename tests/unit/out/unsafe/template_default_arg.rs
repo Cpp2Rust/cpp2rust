@@ -65,8 +65,7 @@ pub unsafe fn scaled_2(mut x: A, mut n: Option<i32>) -> i32 {
     let mut n: i32 = n.unwrap_or((::std::mem::size_of::<A>() as i32));
     return ((x.v) * (n));
 }
-pub unsafe fn always_given_3(mut x: Option<NoDefault>) -> i32 {
-    let mut x: NoDefault = x.unwrap_or();
+pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
 #[repr(C)]
@@ -79,8 +78,7 @@ impl S_NoDefault_ {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn get(&self, mut t: Option<NoDefault>) -> i32 {
-        let mut t: NoDefault = t.unwrap_or();
+    pub unsafe fn get(&self, mut t: NoDefault) -> i32 {
         return ((self.v) + (t.v));
     }
 }
@@ -99,9 +97,9 @@ unsafe fn main_0() -> i32 {
             == ((3) * (::std::mem::size_of::<A>() as i32)))
     );
     assert!(((unsafe { scaled_2(A::A2({ 3 },), Some(2),) }) == (6)));
-    assert!(((unsafe { always_given_3(Some(NoDefault::NoDefault({ 3 },)),) }) == (3)));
+    assert!(((unsafe { always_given_3(NoDefault::NoDefault({ 3 },),) }) == (3)));
     let mut s: S_NoDefault_ = S_NoDefault_::S_NoDefault_({ 1 });
-    assert!(((unsafe { S_NoDefault_::get(&s, Some(NoDefault::NoDefault({ 4 },)),) }) == (5)));
+    assert!(((unsafe { S_NoDefault_::get(&s, NoDefault::NoDefault({ 4 },),) }) == (5)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

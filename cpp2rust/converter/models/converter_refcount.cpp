@@ -671,7 +671,7 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
       auto type = ToString(param->getType());
       auto init = name;
 
-      if (param->hasDefaultArg()) {
+      if (HasUsableDefaultArg(param)) {
         init = std::format("{}.unwrap_or({})", name,
                            ToString(param->getDefaultArg()));
       }

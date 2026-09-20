@@ -130,6 +130,8 @@ unsigned GetCtorIndex(clang::CXXConstructorDecl *ctor);
 clang::CXXConstructorDecl *
 GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl);
 
+bool HasUsableDefaultArg(const clang::ParmVarDecl *param);
+
 std::string GetMainFileName(const clang::ASTContext &ctx);
 
 std::string GetFileName(const clang::Decl *decl);

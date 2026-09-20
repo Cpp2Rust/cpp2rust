@@ -534,6 +534,10 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
   return nullptr;
 }
 
+bool HasUsableDefaultArg(const clang::ParmVarDecl *param) {
+  return param->hasDefaultArg() && !param->hasUninstantiatedDefaultArg();
+}
+
 std::string GetMainFileName(const clang::ASTContext &ctx) {
   const auto &src_mgr = ctx.getSourceManager();
   auto file_id = src_mgr.getMainFileID();

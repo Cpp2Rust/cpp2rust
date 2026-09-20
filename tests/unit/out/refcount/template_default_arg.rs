@@ -143,8 +143,8 @@ pub fn scaled_2(x: A, n: Option<i32>) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n.unwrap_or((4usize as i32))));
     return ((*(*x.borrow()).v.borrow()) * (*n.borrow()));
 }
-pub fn always_given_3(x: Option<NoDefault>) -> i32 {
-    let x: Value<NoDefault> = Rc::new(RefCell::new(x.unwrap_or()));
+pub fn always_given_3(x: NoDefault) -> i32 {
+    let x: Value<NoDefault> = Rc::new(RefCell::new(x));
     return (*(*x.borrow()).v.borrow());
 }
 #[derive(Default)]
@@ -193,19 +193,17 @@ fn main_0() -> i32 {
     assert!((({ used_1(None,) }) == 2));
     assert!((({ scaled_2(A::A2({ 3 },), None,) }) == (3 * (4usize as i32))));
     assert!((({ scaled_2(A::A2({ 3 },), Some(2),) }) == 6));
-    assert!((({ always_given_3(Some(NoDefault::NoDefault({ 3 },)),) }) == 3));
+    assert!((({ always_given_3(NoDefault::NoDefault({ 3 },),) }) == 3));
     let s: Value<S_NoDefault_> = Rc::new(RefCell::new(S_NoDefault_::S_NoDefault_({ 1 })));
-    assert!(
-        (({ S_NoDefault_Impl::get(&s.as_pointer(), Some(NoDefault::NoDefault({ 4 },)),) }) == 5)
-    );
+    assert!((({ S_NoDefault_Impl::get(&s.as_pointer(), NoDefault::NoDefault({ 4 },),) }) == 5));
     return 0;
 }
 pub trait S_NoDefault_Impl {
-    fn get(&self, t: Option<NoDefault>) -> i32;
+    fn get(&self, t: NoDefault) -> i32;
 }
 impl S_NoDefault_Impl for Ptr<S_NoDefault_> {
-    fn get(&self, t: Option<NoDefault>) -> i32 {
-        let t: Value<NoDefault> = Rc::new(RefCell::new(t.unwrap_or()));
+    fn get(&self, t: NoDefault) -> i32 {
+        let t: Value<NoDefault> = Rc::new(RefCell::new(t));
         return ((*(*(*self).upgrade().deref()).v.borrow()) + (*(*t.borrow()).v.borrow()));
     }
 }
