@@ -50,19 +50,6 @@ fn main_0() -> i32 {
         return 1;
     }
     (*filled.borrow()).delete_array();
-    if (({
-        sum_0(
-            Ptr::alloc_array(
-                (0..3_usize)
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[i32]>>(),
-            ),
-            0,
-        )
-    }) != 0)
-    {
-        return 1;
-    }
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

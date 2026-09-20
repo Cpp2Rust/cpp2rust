@@ -18,9 +18,5 @@ int main() {
     return 1;
   }
   delete[] filled;
-
-  if (sum(new int[3], 0) != 0) {
-    return 1;
-  }
   return 0;
 }

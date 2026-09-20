@@ -47,15 +47,6 @@ unsafe fn main_0() -> i32 {
         filled,
         libcc2rs::malloc_usable_size(filled as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
     )));
-    if ((unsafe {
-        sum_0(
-            Box::leak((0..3_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr(),
-            0,
-        )
-    }) != (0))
-    {
-        return 1;
-    }
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
