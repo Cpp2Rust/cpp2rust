@@ -18,6 +18,14 @@ struct S {
   }
 };
 
+struct Point {
+  int x;
+  int y;
+  Point(int x, int y) : x(x), y(y) {}
+  Point(int v) : Point(v, v + 1) { y *= 10; }
+  Point() : Point(4) { x += 100; }
+};
+
 int main() {
   {
     S s(3);
@@ -25,5 +33,11 @@ int main() {
     assert(total == 8);
   }
   assert(total == 18);
+  Point p;
+  assert(p.x == 104);
+  assert(p.y == 50);
+  Point q(7);
+  assert(q.x == 7);
+  assert(q.y == 80);
   return 0;
 }
