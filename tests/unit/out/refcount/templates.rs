@@ -50,6 +50,9 @@ thread_local!(
 thread_local!(
     pub static half_7: Value<f64> = Rc::new(RefCell::new((1_f64 / 2_f64)));
 );
+thread_local!(
+    pub static half_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+);
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -70,9 +73,13 @@ fn main_0() -> i32 {
     half_6.with(|rc| *rc.borrow_mut() = 7);
     assert!((half_6.with(|rc| *rc.borrow()) == 7));
     assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
+    assert!((half_8.with(|rc| rc.borrow().clone())).is_null());
+    half_8.with(|rc| *rc.borrow_mut() = (x.as_pointer()));
+    assert!(((half_8.with(|rc| rc.borrow().clone()).read()) == 10));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
     let _ = half_6.with(|_| ());
     let _ = half_7.with(|_| ());
+    let _ = half_8.with(|_| ());
 }

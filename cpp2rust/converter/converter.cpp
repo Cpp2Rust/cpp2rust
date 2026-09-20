@@ -635,6 +635,9 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
 }
 
 bool Converter::VisitVarDecl(clang::VarDecl *decl) {
+  if (clang::isa<clang::VarTemplatePartialSpecializationDecl>(decl)) {
+    return false;
+  }
   if (ConvertLambdaVarDecl(decl)) {
     return false;
   }
