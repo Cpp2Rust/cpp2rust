@@ -4186,6 +4186,18 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
       return;
     }
+    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
+            expr->IgnoreParenImpCasts());
+        cond && cond->isLValue()) {
+      {
+        PushExprKind push(*this, ExprKind::LValue);
+        PushInitType init_type(*this, qual_type);
+        Convert(cond);
+      }
+      StrCat(keyword::kAs);
+      Convert(qual_type);
+      return;
+    }
     StrCat(token::kRef);
     if (IsMut(qual_type)) {
       StrCat(keyword_mut_);
