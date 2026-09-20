@@ -52,7 +52,26 @@ pub fn sum_twice_4(a: Ptr<Box<[i32]>>) -> i32 {
     return (({ sum_2(((a).clone() as Ptr<Box<[i32]>>)) })
         + ({ sum_2(((a).clone() as Ptr<Box<[i32]>>)) }));
 }
-pub fn fill_and_sum_5(a: Ptr<Box<[i32]>>, v: i32, out: Ptr<i32>) {
+pub fn sum_ptr_5(p: Ptr<i32>) -> i32 {
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
+    return ((((*p.borrow()).offset((0) as isize).read())
+        + ((*p.borrow()).offset((1) as isize).read()))
+        + ((*p.borrow()).offset((2) as isize).read()));
+}
+pub fn sum_decayed_6(a: Ptr<Box<[i32]>>) -> i32 {
+    return ({ sum_ptr_5((a.to_strong().as_pointer() as Ptr<i32>)) });
+}
+pub fn bump_ptr_7(p: Ptr<i32>) {
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
+    {
+        let _ptr = (*p.borrow()).offset((0) as isize);
+        _ptr.write(_ptr.read() + 1)
+    };
+}
+pub fn bump_decayed_8(a: Ptr<Box<[i32]>>) {
+    ({ bump_ptr_7((a.to_strong().as_pointer() as Ptr<i32>)) });
+}
+pub fn fill_and_sum_9(a: Ptr<Box<[i32]>>, v: i32, out: Ptr<i32>) {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     ({
         let _a: Ptr<Box<[i32]>> = ((a).clone() as Ptr<Box<[i32]>>);
@@ -62,7 +81,7 @@ pub fn fill_and_sum_5(a: Ptr<Box<[i32]>>, v: i32, out: Ptr<i32>) {
     let __rhs = ({ sum_twice_4(((a).clone() as Ptr<Box<[i32]>>)) });
     out.write(__rhs);
 }
-pub fn pick_6(s: Ptr<Box<[u8]>>) -> Ptr<Box<[u8]>> {
+pub fn pick_10(s: Ptr<Box<[u8]>>) -> Ptr<Box<[u8]>> {
     return ((s).clone() as Ptr<Box<[u8]>>);
 }
 #[derive(Default)]
@@ -95,7 +114,7 @@ impl ByteRepr for Point {
         }
     }
 }
-pub fn sum_points_7(p: Ptr<Box<[Point]>>) -> i32 {
+pub fn sum_points_11(p: Ptr<Box<[Point]>>) -> i32 {
     return {
         let _lhs = {
             let _lhs = {
@@ -127,7 +146,7 @@ pub fn sum_points_7(p: Ptr<Box<[Point]>>) -> i32 {
         .borrow())
     };
 }
-pub fn shift_points_8(p: Ptr<Box<[Point]>>, d: i32) {
+pub fn shift_points_12(p: Ptr<Box<[Point]>>, d: i32) {
     let d: Value<i32> = Rc::new(RefCell::new(d));
     (*(*(p.to_strong().as_pointer() as Ptr<Point>)
         .offset((0) as isize)
@@ -142,7 +161,7 @@ pub fn shift_points_8(p: Ptr<Box<[Point]>>, d: i32) {
     .y
     .borrow_mut()) += (*d.borrow());
 }
-pub fn total_len_9(names: Ptr<Box<[Ptr<u8>]>>) -> i32 {
+pub fn total_len_13(names: Ptr<Box<[Ptr<u8>]>>) -> i32 {
     return (({
         len5_1(
             ((names.to_strong().as_pointer() as Ptr<Ptr<u8>>)
@@ -173,13 +192,13 @@ fn main_0() -> i32 {
     assert!((({ sum_2((arr.as_pointer() as Ptr<Box<[i32]>>),) }) == 21));
     assert!((({ sum_twice_4((arr.as_pointer() as Ptr<Box<[i32]>>),) }) == 42));
     let out: Value<i32> = Rc::new(RefCell::new(0));
-    ({ fill_and_sum_5((arr.as_pointer() as Ptr<Box<[i32]>>), 2, out.as_pointer()) });
+    ({ fill_and_sum_9((arr.as_pointer() as Ptr<Box<[i32]>>), 2, out.as_pointer()) });
     assert!(((*out.borrow()) == 12));
     assert!(((*arr.borrow())[(0) as usize] == 2));
     let lit: Ptr<Box<[u8]>> = Ptr::<Box<[u8]>>::from_string_literal_array(b"beta");
     assert!((({ len_0(((lit).clone() as Ptr<Box<[u8]>>),) }) == 4));
     assert!(
-        ((((({ pick_6(Ptr::<Box<[u8]>>::from_string_literal_array(b"beta"),) })
+        ((((({ pick_10(Ptr::<Box<[u8]>>::from_string_literal_array(b"beta"),) })
             .to_strong()
             .as_pointer() as Ptr::<u8>)
             .offset((0) as isize)
@@ -187,7 +206,7 @@ fn main_0() -> i32 {
             == (('b' as u8) as i32))
     );
     assert!(
-        (({ len_0((({ pick_6((buf.as_pointer() as Ptr<Box<[u8]>>),) }) as Ptr<Box<[u8]>>),) })
+        (({ len_0((({ pick_10((buf.as_pointer() as Ptr<Box<[u8]>>),) }) as Ptr<Box<[u8]>>),) })
             == 4)
     );
     let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(Box::new([
@@ -200,16 +219,22 @@ fn main_0() -> i32 {
             y: Rc::new(RefCell::new(4)),
         },
     ])));
-    assert!((({ sum_points_7((pts.as_pointer() as Ptr<Box<[Point]>>),) }) == 10));
-    ({ shift_points_8((pts.as_pointer() as Ptr<Box<[Point]>>), 10) });
+    assert!((({ sum_points_11((pts.as_pointer() as Ptr<Box<[Point]>>),) }) == 10));
+    ({ shift_points_12((pts.as_pointer() as Ptr<Box<[Point]>>), 10) });
     assert!(((*(*pts.borrow())[(0) as usize].x.borrow()) == 11));
     assert!(((*(*pts.borrow())[(1) as usize].y.borrow()) == 14));
-    assert!((({ sum_points_7((pts.as_pointer() as Ptr<Box<[Point]>>),) }) == 30));
+    assert!((({ sum_points_11((pts.as_pointer() as Ptr<Box<[Point]>>),) }) == 30));
+    assert!(
+        (({ sum_decayed_6((arr.as_pointer() as Ptr<Box<[i32]>>),) })
+            == ({ sum_2((arr.as_pointer() as Ptr<Box<[i32]>>),) }))
+    );
+    ({ bump_decayed_8((arr.as_pointer() as Ptr<Box<[i32]>>)) });
+    assert!(((*arr.borrow())[(0) as usize] == 3));
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<u8>::from_string_literal(b"ab"),
         Ptr::<u8>::from_string_literal(b"cde"),
     ])));
-    assert!((({ total_len_9((names.as_pointer() as Ptr<Box<[Ptr::<u8>]>>),) }) == 5));
+    assert!((({ total_len_13((names.as_pointer() as Ptr<Box<[Ptr::<u8>]>>),) }) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

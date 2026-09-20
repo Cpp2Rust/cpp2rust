@@ -26,6 +26,14 @@ void fill(int (&a)[3], int v) {
 
 int sum_twice(const int (&a)[3]) { return sum(a) + sum(a); }
 
+int sum_ptr(const int *p) { return p[0] + p[1] + p[2]; }
+
+int sum_decayed(const int (&a)[3]) { return sum_ptr(a); }
+
+void bump_ptr(int *p) { p[0] += 1; }
+
+void bump_decayed(int (&a)[3]) { bump_ptr(a); }
+
 void fill_and_sum(int (&a)[3], int v, int &out) {
   fill(a, v);
   out = sum_twice(a);
@@ -74,6 +82,10 @@ int main() {
   assert(pts[0].x == 11);
   assert(pts[1].y == 14);
   assert(sum_points(pts) == 30);
+  assert(sum_decayed(arr) == sum(arr));
+  bump_decayed(arr);
+  assert(arr[0] == 3);
+
   const char *names[2] = {"ab", "cde"};
   assert(total_len(names) == 5);
   return 0;
