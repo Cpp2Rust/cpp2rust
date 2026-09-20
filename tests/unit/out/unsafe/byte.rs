@@ -16,24 +16,24 @@ unsafe fn main_0() -> i32 {
     let mut b1: u8 = 1_u8;
     let mut ushift1: u32 = 3_u32;
     let mut shl1: u8 = b1 << ushift1;
-    assert!(((shl1) == (8)));
+    assert!(((shl1) == ((8) as u8)));
     let mut ushift2: u32 = 2_u32;
     let mut shr1: u8 = shl1 >> ushift2;
-    assert!(((shr1) == (2)));
+    assert!(((shr1) == ((2) as u8)));
     let mut ushift3: u32 = 5_u32;
     {
         let n_ = b1 << ushift3;
         b1 = n_;
         b1
     };
-    assert!(((b1) == (32)));
+    assert!(((b1) == ((32) as u8)));
     let mut ushift4: u32 = 3_u32;
     {
         let n_ = b1 >> ushift4;
         b1 = n_;
         b1
     };
-    assert!(((b1) == (4)));
+    assert!(((b1) == ((4) as u8)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
