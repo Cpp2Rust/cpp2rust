@@ -18,7 +18,25 @@ public:
   void push_back(const_reference item) { vec.push_back(item); }
 };
 
+template <typename T> struct Boxed {
+  T value;
+  static T twice(T v);
+  T plus(T other) const;
+};
+
+template <typename T> T Boxed<T>::twice(T v) { return v + v; }
+
+template <typename T> T Boxed<T>::plus(T other) const { return value + other; }
+
 int main() {
+  assert(Boxed<int>::twice(3) == 6);
+  Boxed<int> bi{4};
+  assert(bi.plus(5) == 9);
+
+  assert(Boxed<long>::twice(10) == 20);
+  Boxed<long> bl{7};
+  assert(bl.plus(1) == 8);
+
   MyContainer<int> imc;
   assert(imc.empty());
   imc.push_back(1);
