@@ -2958,10 +2958,11 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   ConvertCondition(expr->getCond());
   bool branch_is_addr =
       expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
+  bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
     if (branch_is_addr) {
-      StrCat(token::kRef, keyword_mut_);
+      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
@@ -2973,7 +2974,7 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   {
     PushBrace else_brace(*this);
     if (branch_is_addr) {
-      StrCat(token::kRef, keyword_mut_);
+      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
                                                          : autoref_mut_);
@@ -4188,6 +4189,18 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
   if (qual_type->isReferenceType() && !IsReferenceType(expr)) {
     if (llvm::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
       StrCat(EmitMaterializedTempBinding(qual_type, expr));
+      return;
+    }
+    if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
+            expr->IgnoreParenImpCasts());
+        cond && cond->isLValue()) {
+      {
+        PushExprKind push(*this, ExprKind::LValue);
+        PushInitType init_type(*this, qual_type);
+        Convert(cond);
+      }
+      StrCat(keyword::kAs);
+      Convert(qual_type);
       return;
     }
     StrCat(token::kRef);
