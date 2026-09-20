@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct S {}
 impl S {
     pub fn S(x: i32) -> Self {
@@ -18,15 +18,6 @@ impl S {
         let this: Ptr<S> = __this.as_pointer();
         total_0.with(|rc| *rc.borrow_mut() += (*x.borrow()));
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 thread_local!(

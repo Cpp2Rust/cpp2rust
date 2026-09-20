@@ -30,6 +30,27 @@ impl Graph {
         })) as *mut GraphNode);
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Partial {
+    pub p: *mut i32,
+}
+impl Partial {
+    pub unsafe fn Partial1(mut q: *mut i32) -> Self {
+        let mut this = Self { p: q };
+        this
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Declared {}
+impl Declared {}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct S {
+    pub i: i32,
+    pub d: *mut Declared,
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -41,6 +62,22 @@ unsafe fn main_0() -> i32 {
         V: 5_u32,
         adj: std::ptr::null_mut(),
     };
+    let mut arr: [i32; 3] = [3, 1, 4];
+    let mut it: Partial = Partial::Partial1({ arr.as_mut_ptr() });
+    if ((it.p) != (arr.as_mut_ptr())) {
+        return 1;
+    }
+    let mut def: Partial = <Partial>::default();
+    if !((def.p).is_null()) {
+        return 1;
+    }
+    let mut s: S = S {
+        i: 7,
+        d: std::ptr::null_mut(),
+    };
+    if ((s.i) != (7)) || (!((s.d).is_null())) {
+        return 1;
+    }
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

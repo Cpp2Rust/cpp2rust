@@ -1114,6 +1114,9 @@ bool Converter::ConvertCXXMethodDecl(clang::CXXMethodDecl *decl) {
   ConvertFunctionReturnType(decl);
   if (decl->isPureVirtual() || method_target_ == MethodTarget::TraitDecl) {
     StrCat(token::kSemiColon);
+  } else if (method_target_ == MethodTarget::TraitDefault) {
+    PushBrace body(*this);
+    StrCat("unimplemented!()");
   } else {
     PushBrace body(*this);
     EmitFunctionPreamble(decl);

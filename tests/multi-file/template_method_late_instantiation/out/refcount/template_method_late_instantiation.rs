@@ -48,7 +48,9 @@ pub fn f_0(p: Ptr<S_int_>) -> i32 {
 }
 pub trait S_int_Impl {
     fn set(&self, v: i32);
-    fn get(&self) -> i32;
+    fn get(&self) -> i32 {
+        unimplemented!()
+    }
 }
 impl S_int_Impl for Ptr<S_int_> {
     fn set(&self, v: i32) {

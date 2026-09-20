@@ -691,6 +691,7 @@ protected:
   enum class MethodTarget : uint8_t {
     ValueImpl,
     TraitDecl,
+    TraitDefault,
     PtrImpl,
   };
   MethodTarget method_target_ = MethodTarget::ValueImpl;

@@ -221,6 +221,9 @@ impl NoCopyImpl for Ptr<NoCopy> {
     }
 }
 pub trait PrivateCopyImpl {
+    fn operator_assign_pconstPrivateCopy(&self, _a0: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
+        unimplemented!()
+    }
     fn operator_assign_pmutPrivateCopy_rv(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy>;
 }
 impl PrivateCopyImpl for Ptr<PrivateCopy> {

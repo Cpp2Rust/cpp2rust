@@ -574,6 +574,10 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
+  if (RecordDerivesByteRepr(decl)) {
+    return;
+  }
+
   auto struct_name = GetRecordName(decl);
 
   if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
@@ -2152,6 +2156,10 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("Clone");
   }
 
+  if (RecordDerivesByteRepr(decl)) {
+    attrs.emplace_back("ByteRepr");
+  }
+
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
   }
@@ -2855,17 +2863,20 @@ bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
   return false;
 }
 
-void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
-  auto *record = method->getParent();
+void ConverterRefCount::ConvertMethodOnPtrTraitDecl(
+    clang::CXXMethodDecl *method) {
+  Buffer buf(*this);
   {
-    Buffer buf(*this);
-    {
-      PushCurrFunction push_fn(*this, method);
-      PushMethodTarget push(*this, MethodTarget::TraitDecl);
-      ConvertCXXMethodDecl(method);
-    }
-    MethodsOnPtrFor(record).trait_body += std::move(buf).str();
+    PushCurrFunction push_fn(*this, method);
+    PushMethodTarget push(*this, method->getDefinition()
+                                     ? MethodTarget::TraitDecl
+                                     : MethodTarget::TraitDefault);
+    ConvertCXXMethodDecl(method);
   }
+  MethodsOnPtrFor(method->getParent()).trait_body += std::move(buf).str();
+}
+
+void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
   if (!method->isThisDeclarationADefinition()) {
     return;
   }
@@ -2874,7 +2885,7 @@ void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
     PushMethodTarget push(*this, MethodTarget::PtrImpl);
     VisitCXXMethodDecl(method);
   }
-  MethodsOnPtrFor(record).impl_body += std::move(buf).str();
+  MethodsOnPtrFor(method->getParent()).impl_body += std::move(buf).str();
 }
 
 void ConverterRefCount::ConvertLateInstantiatedMethods(
@@ -2908,7 +2919,8 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
                         });
 
   auto convert_method = [&](clang::CXXMethodDecl *method) {
-    if (IsMethodOnPtr(method) && method->getDefinition()) {
+    if (IsMethodOnPtr(method)) {
+      ConvertMethodOnPtrTraitDecl(method);
       ConvertMethodOnPtr(method);
     }
   };

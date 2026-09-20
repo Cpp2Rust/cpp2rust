@@ -223,6 +223,9 @@ impl Boxed_long_Impl for Ptr<Boxed_long_> {
 pub trait MyContainer_char_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
+    fn back_const(&self) -> Ptr<u8> {
+        unimplemented!()
+    }
     fn back(&self) -> Ptr<u8>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<u8>);
@@ -251,6 +254,9 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
 pub trait MyContainer_float_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
+    fn back_const(&self) -> Ptr<f32> {
+        unimplemented!()
+    }
     fn back(&self) -> Ptr<f32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<f32>);
@@ -279,6 +285,9 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
 pub trait MyContainer_int_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
+    fn back_const(&self) -> Ptr<i32> {
+        unimplemented!()
+    }
     fn back(&self) -> Ptr<i32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<i32>);

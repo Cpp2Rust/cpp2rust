@@ -9,17 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static global_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct S {}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 #[derive(Default)]
 pub struct Defaulted {
     pub s: Value<S>,

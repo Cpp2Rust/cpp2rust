@@ -98,17 +98,8 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 5 })));
 );
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Holder {}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
 );

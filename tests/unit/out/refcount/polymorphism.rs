@@ -9,36 +9,18 @@ use std::rc::{Rc, Weak};
 pub trait Animal {
     fn bark(&self) -> bool;
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Dog {}
 impl Animal for Dog {
     fn bark(&self) -> bool {
         return true;
     }
 }
-impl ByteRepr for Dog {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Cat {}
 impl Animal for Cat {
     fn bark(&self) -> bool {
         return false;
-    }
-}
-impl ByteRepr for Cat {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 pub fn main() {
