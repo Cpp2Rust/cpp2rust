@@ -1444,6 +1444,9 @@ bool IsTemporaryObject(const clang::Expr *expr) {
   if (operand != expr) {
     return !operand->isGLValue();
   }
+  if (clang::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+    return true;
+  }
   return !expr->isLValue();
 }
 

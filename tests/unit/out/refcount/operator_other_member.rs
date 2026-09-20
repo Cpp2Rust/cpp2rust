@@ -86,17 +86,21 @@ fn main_0() -> i32 {
     assert!((({ Static::operator_call(6, 7,) }) == 42));
     assert!(
         (({
-            SImpl::operator_call_const(&S {
-                v: Rc::new(RefCell::new(5)),
-            })
+            SImpl::operator_call_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(5)),
+                }))
+                .as_pointer(),
+            )
         }) == 5)
     );
     assert!(
         (({
             SImpl::operator_call_i32_i32_const(
-                &S {
+                &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(5)),
-                },
+                }))
+                .as_pointer(),
                 1,
                 1,
             )
