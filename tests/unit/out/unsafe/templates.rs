@@ -24,6 +24,10 @@ pub unsafe fn func_4(mut x1: i32, mut x2: i32, mut x3: i32) -> i32 {
 pub unsafe fn func_5(mut x1: f64, mut x2: i32, mut x3: f64) -> i32 {
     return ((((x1) + (x2 as f64)) + (x3)) as i32);
 }
+pub static mut half_6: std::cell::LazyCell<i32> =
+    std::cell::LazyCell::new(|| unsafe { ((1) / (2)) });
+pub static mut half_7: std::cell::LazyCell<f64> =
+    std::cell::LazyCell::new(|| unsafe { ((1_f64) / (2_f64)) });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -41,6 +45,14 @@ unsafe fn main_0() -> i32 {
             + ((unsafe { func_5(2.0E+0, x, y,) }) as f64))
             == (68_f64))
     );
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) == (0)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (5.0E-1)));
+    (*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) = 7;
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_6)) == (7)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut half_7)) == (5.0E-1)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const half_6);
+    std::cell::LazyCell::force(&*&raw const half_7);
+}

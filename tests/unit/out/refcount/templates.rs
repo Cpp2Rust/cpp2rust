@@ -44,6 +44,12 @@ pub fn func_5(x1: f64, x2: i32, x3: f64) -> i32 {
     let x3: Value<f64> = Rc::new(RefCell::new(x3));
     return ((((*x1.borrow()) + ((*x2.borrow()) as f64)) + (*x3.borrow())) as i32);
 }
+thread_local!(
+    pub static half_6: Value<i32> = Rc::new(RefCell::new((1 / 2)));
+);
+thread_local!(
+    pub static half_7: Value<f64> = Rc::new(RefCell::new((1_f64 / 2_f64)));
+);
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -59,6 +65,14 @@ fn main_0() -> i32 {
             + (({ func_5(2.0E+0, (*x.borrow()), (*y.borrow()),) }) as f64))
             == 68_f64)
     );
+    assert!((half_6.with(|rc| rc.borrow().clone()) == 0));
+    assert!((half_7.with(|rc| rc.borrow().clone()) == 5.0E-1));
+    (*half_6.with(Value::clone).borrow_mut()) = 7;
+    assert!((half_6.with(|rc| rc.borrow().clone()) == 7));
+    assert!((half_7.with(|rc| rc.borrow().clone()) == 5.0E-1));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = half_6.with(|_| ());
+    let _ = half_7.with(|_| ());
+}

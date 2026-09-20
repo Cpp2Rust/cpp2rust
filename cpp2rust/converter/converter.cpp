@@ -490,6 +490,13 @@ bool Converter::VisitFunctionTemplateDecl(clang::FunctionTemplateDecl *decl) {
   return false;
 }
 
+bool Converter::VisitVarTemplateDecl(clang::VarTemplateDecl *decl) {
+  for (auto *var_decl : decl->specializations()) {
+    VisitVarDecl(var_decl);
+  }
+  return false;
+}
+
 void Converter::ConvertVaListVarDecl(clang::VarDecl *decl) {
   if (clang::isa<clang::ParmVarDecl>(decl)) {
     // va_list parameter (decayed to __va_list_tag *)
