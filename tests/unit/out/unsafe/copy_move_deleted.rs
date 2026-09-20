@@ -16,12 +16,12 @@ impl NoCopy {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn NoCopy_pmutNoCopy(o: *mut NoCopy) -> Self {
+    pub unsafe fn NoCopy_pmutNoCopy_rv(o: *mut NoCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
-    pub unsafe fn operator_assign_pmutNoCopy(&mut self, o: *mut NoCopy) -> *mut NoCopy {
+    pub unsafe fn operator_assign_pmutNoCopy_rv(&mut self, o: *mut NoCopy) -> *mut NoCopy {
         self.v = (*o).v;
         (*o).v = 0;
         return &mut (*(self as *mut NoCopy));
@@ -37,12 +37,12 @@ impl PrivateCopy {
         let mut this = Self { v: 0 };
         this
     }
-    pub unsafe fn PrivateCopy_pmutPrivateCopy(o: *mut PrivateCopy) -> Self {
+    pub unsafe fn PrivateCopy_pmutPrivateCopy_rv(o: *mut PrivateCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
-    pub unsafe fn operator_assign_pmutPrivateCopy(
+    pub unsafe fn operator_assign_pmutPrivateCopy_rv(
         &mut self,
         o: *mut PrivateCopy,
     ) -> *mut PrivateCopy {
@@ -79,17 +79,20 @@ pub struct Container {
     pub tag: i32,
 }
 impl Container {
-    pub unsafe fn Container_pmutContainer(_a0: *mut Container) -> Self {
+    pub unsafe fn Container_pmutContainer_rv(_a0: *mut Container) -> Self {
         let mut this = Self {
-            inner: NoCopy::NoCopy_pmutNoCopy({ &mut (*_a0).inner }),
+            inner: NoCopy::NoCopy_pmutNoCopy_rv({ &mut (*_a0).inner }),
             tag: (*_a0).tag,
         };
         this
     }
-    pub unsafe fn operator_assign_pmutContainer(&mut self, _a0: *mut Container) -> *mut Container {
+    pub unsafe fn operator_assign_pmutContainer_rv(
+        &mut self,
+        _a0: *mut Container,
+    ) -> *mut Container {
         (unsafe {
             let _o: *mut NoCopy = &mut (*_a0).inner;
-            NoCopy::operator_assign_pmutNoCopy(&mut self.inner, _o)
+            NoCopy::operator_assign_pmutNoCopy_rv(&mut self.inner, _o)
         });
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut Container));
@@ -109,17 +112,17 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: NoCopy = NoCopy::NoCopy({ 1 });
-    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy({ &mut a });
+    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy_rv({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
-    (unsafe { NoCopy::operator_assign_pmutNoCopy(&mut a, &mut b) });
+    (unsafe { NoCopy::operator_assign_pmutNoCopy_rv(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
     (unsafe { bump_0((&mut a as *mut NoCopy)) });
     assert!(((a.v) == (2)));
     let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
     p.v = 3;
-    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy({ &mut p });
+    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
-    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy(&mut p, &mut q) });
+    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy_rv(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
     let mut im: Immovable = Immovable::Immovable();
     im.v = 4;
@@ -130,7 +133,7 @@ unsafe fn main_0() -> i32 {
         inner: NoCopy::NoCopy({ 6 }),
         tag: 7,
     };
-    let mut d: Container = Container::Container_pmutContainer({ &mut c });
+    let mut d: Container = Container::Container_pmutContainer_rv({ &mut c });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }

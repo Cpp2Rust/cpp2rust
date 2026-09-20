@@ -3993,6 +3993,9 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
 
   for (auto *parameter : decl->parameters()) {
     name += GetUnsafeTypeAsString(parameter->getType());
+    if (parameter->getType()->isRValueReferenceType()) {
+      name += "_rv";
+    }
     name += '_';
   }
 
@@ -4051,10 +4054,12 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   ReplaceAll(name, "[", "arr");
   ReplaceAll(name, "]", "arr");
   ReplaceAll(name, ";", "_");
+  ReplaceAll(name, ",", "_");
   name.erase(std::remove_if(name.begin(), name.end(),
                             [](char c) {
                               return c == '<' || c == '>' || c == ' ' ||
-                                     c == ':';
+                                     c == ':' || c == '(' || c == ')' ||
+                                     c == '-';
                             }),
              name.end());
   std::replace(name.begin(), name.end(), '*', 'p');
