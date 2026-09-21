@@ -21,11 +21,13 @@ impl<T> FnPtr<T> {
 `FnPtr` dereferences to the function, so a call through it is `(*fp)(args)`.
 Calling a null pointer panics with `ub:`.
 
-`FnPtr` stores its function type-erased and identifies it by address through the
-`FnAddr` trait. Rust has no way to write an impl for every `fn` arity at once,
-so `FnAddr` is implemented by a macro for `fn` types of zero to sixteen
-parameters. A function with more parameters cannot be wrapped in an `FnPtr`, and
-taking its address fails to compile with a missing `FnAddr` bound.
+`FnPtr` stores the function inline, together with its address, which is how
+pointers are compared; the `FnAddr` trait provides the address. Creating,
+copying, and calling a function pointer does not allocate. Rust has no way to
+write an impl for every `fn` arity at once, so `FnAddr` is implemented by a
+macro for `fn` types of zero to sixteen parameters. A function with more
+parameters cannot be wrapped in an `FnPtr`, and taking its address fails to
+compile with a missing `FnAddr` bound.
 
 ```cpp
 typedef int (*int_fn)(int);
@@ -80,7 +82,10 @@ The code generator can build an adapter when the arguments and return type of
 the two function types have the same representation. Otherwise it passes `None`,
 and calling through the cast pointer panics with `ub:`.
 
-Equality compares the address of the function the pointer was created with.
+A cast to a different type is the only operation that allocates: the pointer
+then also keeps the function it was created with, type-erased, so that casting
+back to that type can restore it. Equality compares the address of the function
+the pointer was created with.
 
 Casting a function pointer to `void *` is `to_any`, and `AnyPtr::cast_fn::<T>`
 recovers it. `reinterpret_cast` on an `AnyPtr` holding a function currently

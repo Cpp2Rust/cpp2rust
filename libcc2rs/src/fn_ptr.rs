@@ -2,7 +2,6 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use std::any::{Any, TypeId};
-use std::marker::PhantomData;
 use std::ops::Deref;
 use std::rc::Rc;
 
@@ -32,70 +31,74 @@ macro_rules! impl_fn_addr {
 }
 impl_fn_addr!();
 
-trait ErasedFn: Any {
-    fn addr(&self) -> usize;
-}
-
-impl<T: FnAddr + Any> ErasedFn for T {
-    fn addr(&self) -> usize {
-        self.fn_addr()
-    }
-}
-
 pub struct FnPtr<T> {
-    original: Option<Rc<dyn ErasedFn>>,
-    current_cast: Option<Rc<dyn ErasedFn>>,
-    // FnPtr does not use T, hence wrap in PhantomData
-    _marker: PhantomData<T>,
+    // Address of the function the pointer was created from. 0 for null, which
+    // is never the address of a function.
+    addr: usize,
+    // The function as callable through T. None if the pointer was cast to T
+    // without an adapter, when calling it is UB.
+    current: Option<T>,
+    // The function the pointer was created from, kept type-erased once the
+    // pointer is cast to a different type so that it can be cast back. While
+    // the pointer keeps its type this is None (and `current` is the original),
+    // so creating and copying function pointers does not allocate.
+    original: Option<Rc<dyn Any>>,
 }
 
 impl<T> FnPtr<T> {
     #[inline]
     pub fn null() -> Self {
         FnPtr {
+            addr: 0,
+            current: None,
             original: None,
-            current_cast: None,
-            _marker: PhantomData,
         }
     }
 
     #[inline]
     pub fn is_null(&self) -> bool {
-        self.original.is_none()
+        self.addr == 0
     }
 }
 
 impl<T: FnAddr + 'static> FnPtr<T> {
+    #[inline]
     pub fn new(f: T) -> Self {
-        let rc: Rc<dyn ErasedFn> = Rc::new(f);
         FnPtr {
-            original: Some(rc.clone()),
-            current_cast: Some(rc),
-            _marker: PhantomData,
+            addr: f.fn_addr(),
+            current: Some(f),
+            original: None,
         }
     }
 }
 
-impl<T: 'static> FnPtr<T> {
-    pub fn cast<U: FnAddr + 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
-        let original = self.original.as_ref().expect("ub: null fn pointer cast");
+impl<T: FnAddr + Copy + 'static> FnPtr<T> {
+    pub fn cast<U: FnAddr + Copy + 'static>(&self, adapter: Option<U>) -> FnPtr<U> {
+        assert!(!self.is_null(), "ub: null fn pointer cast");
 
-        let current_cast = if self
-            .current_cast
-            .as_ref()
-            .is_some_and(|rc| Any::type_id(&**rc) == TypeId::of::<U>())
-        {
-            self.current_cast.clone()
-        } else if Any::type_id(&**original) == TypeId::of::<U>() {
-            Some(original.clone())
-        } else {
-            adapter.map(|a| Rc::new(a) as Rc<dyn ErasedFn>)
+        // The current function, if it already has type U.
+        let current_as_u = self.current.as_ref().and_then(|current| {
+            let current: &dyn Any = current;
+            current.downcast_ref::<U>().copied()
+        });
+        // The function this pointer was created from, if it has type U. While
+        // `original` is unset, that is the current function.
+        let original_as_u = match &self.original {
+            Some(original) => original.downcast_ref::<U>().copied(),
+            None => current_as_u,
+        };
+
+        let original = match &self.original {
+            Some(original) => Some(original.clone()),
+            // Casting to the same type keeps the pointer as is.
+            None if TypeId::of::<T>() == TypeId::of::<U>() => None,
+            None => self.current.map(|current| Rc::new(current) as Rc<dyn Any>),
         };
 
         FnPtr {
-            original: Some(original.clone()),
-            current_cast,
-            _marker: PhantomData,
+            addr: self.addr,
+            current: current_as_u.or(original_as_u).or(adapter),
+            original,
         }
     }
 }
@@ -103,25 +106,21 @@ impl<T: 'static> FnPtr<T> {
 impl<T: 'static> Deref for FnPtr<T> {
     type Target = T;
     fn deref(&self) -> &T {
-        if self.original.is_none() {
+        if self.is_null() {
             panic!("ub: null fn pointer call");
         }
-        let rc = self
-            .current_cast
+        self.current
             .as_ref()
-            .expect("ub: calling through incompatible fn pointer type");
-        let any: &dyn Any = &**rc;
-        any.downcast_ref::<T>()
-            .expect("ub: fn pointer type mismatch")
+            .expect("ub: calling through incompatible fn pointer type")
     }
 }
 
-impl<T> Clone for FnPtr<T> {
+impl<T: Copy> Clone for FnPtr<T> {
     fn clone(&self) -> Self {
         FnPtr {
+            addr: self.addr,
+            current: self.current,
             original: self.original.clone(),
-            current_cast: self.current_cast.clone(),
-            _marker: PhantomData,
         }
     }
 }
@@ -134,11 +133,7 @@ impl<T> Default for FnPtr<T> {
 
 impl<T> PartialEq for FnPtr<T> {
     fn eq(&self, other: &Self) -> bool {
-        match (&self.original, &other.original) {
-            (None, None) => true,
-            (Some(a), Some(b)) => a.addr() == b.addr(),
-            _ => false,
-        }
+        self.addr == other.addr
     }
 }
 
@@ -146,7 +141,7 @@ impl<T> Eq for FnPtr<T> {}
 
 impl<T: 'static> ByteRepr for FnPtr<T> {}
 
-impl<T: 'static> ErasedPtr for FnPtr<T> {
+impl<T: Copy + 'static> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {
         panic!("byte view not supported on fn pointer");
     }
@@ -161,7 +156,7 @@ impl<T: 'static> ErasedPtr for FnPtr<T> {
     }
 }
 
-impl<T: 'static> FnPtr<T> {
+impl<T: Copy + 'static> FnPtr<T> {
     pub fn to_any(&self) -> AnyPtr {
         AnyPtr {
             ptr: Rc::new(self.clone()),
@@ -170,7 +165,81 @@ impl<T: 'static> FnPtr<T> {
 }
 
 impl AnyPtr {
-    pub fn cast_fn<T: 'static>(&self) -> Option<FnPtr<T>> {
+    pub fn cast_fn<T: Copy + 'static>(&self) -> Option<FnPtr<T>> {
         self.ptr.as_any().downcast_ref::<FnPtr<T>>().cloned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn add_one(x: i32) -> i32 {
+        x + 1
+    }
+
+    fn twice(x: i32) -> i32 {
+        x * 2
+    }
+
+    #[test]
+    fn call_null_and_equality() {
+        let f = FnPtr::<fn(i32) -> i32>::new(add_one);
+        assert!(!f.is_null());
+        assert_eq!((*f)(1), 2);
+        assert!(f == f.clone());
+        assert!(f != FnPtr::new(twice as fn(i32) -> i32));
+        assert!(FnPtr::<fn(i32) -> i32>::null().is_null());
+        assert!(FnPtr::<fn(i32) -> i32>::null() == FnPtr::default());
+        assert!(f != FnPtr::null());
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: null fn pointer call")]
+    fn call_null_panics() {
+        let f = FnPtr::<fn(i32) -> i32>::null();
+        (*f)(1);
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: null fn pointer cast")]
+    fn cast_null_panics() {
+        FnPtr::<fn(i32) -> i32>::null().cast::<fn(u32) -> u32>(None);
+    }
+
+    #[test]
+    fn cast_with_adapter_and_back() {
+        let f = FnPtr::<fn(i32) -> i32>::new(add_one);
+        let g =
+            f.cast::<fn(u32) -> u32>(Some((|x: u32| add_one(x as i32) as u32) as fn(u32) -> u32));
+        assert_eq!((*g)(4), 5);
+        // Equality is by the original function.
+        assert!(g == f.cast::<fn(u32) -> u32>(None));
+        // Casting back recovers the original function, without an adapter.
+        let h = g.cast::<fn(i32) -> i32>(None);
+        assert!(h == f);
+        assert_eq!((*h)(4), 5);
+        // Casting to the same type keeps the pointer.
+        let same = f.cast::<fn(i32) -> i32>(None);
+        assert_eq!((*same)(9), 10);
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: calling through incompatible fn pointer type")]
+    fn cast_without_adapter_cannot_be_called() {
+        let f = FnPtr::<fn(i32) -> i32>::new(add_one);
+        let g = f.cast::<fn(u32) -> u32>(None);
+        (*g)(1);
+    }
+
+    #[test]
+    fn any_ptr_roundtrip() {
+        let f = FnPtr::<fn(i32) -> i32>::new(twice);
+        let any = f.to_any();
+        assert!(!any.is_null());
+        let back = any.cast_fn::<fn(i32) -> i32>().unwrap();
+        assert_eq!((*back)(21), 42);
+        assert!(back == f);
+        assert!(any.cast_fn::<fn(u8)>().is_none());
     }
 }
