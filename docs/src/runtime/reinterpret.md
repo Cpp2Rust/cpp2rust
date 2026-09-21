@@ -105,6 +105,21 @@ Deleting through a reinterpreted pointer frees the original allocation. That is
 how `free` works on a buffer that has been cast around: the pointer is
 reinterpreted to bytes and the original allocation is deleted.
 
+### Cost
+
+A cast allocates exactly one small object, the view, which holds a weak
+reference to the original allocation, the size of the target type, and a
+reference to a stateless table of the byte-level operations for the original's
+storage type (a single value, a `Vec`, or a boxed slice). Copying or offsetting
+the resulting `Ptr` only bumps a reference count, so a loop over a `malloc`ed
+array pays for the cast once, not per access.
+
+Accessing memory through a view does not allocate: the bytes of the accessed
+element are staged in a stack buffer (a heap buffer is used only for accesses
+larger than 64 bytes). When the original allocation is a `u8` buffer, as it is
+for everything that comes from `malloc`, reads and writes copy the bytes
+directly instead of serializing the elements one by one.
+
 ## Known limitations
 
 Reading a struct through a reinterpreted pointer builds a fresh struct with

@@ -11,13 +11,13 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use crate::reinterpret::{ByteRepr, OriginalAlloc, SingleOriginalAlloc, SliceOriginalAlloc};
+use crate::reinterpret::{ByteRepr, OriginalAlloc, with_scratch};
 
 pub type Value<T> = Rc<RefCell<T>>;
 
 pub(crate) struct ReinterpretedView {
     // Pointer to the source of reinterpret
-    pub(crate) alloc: Rc<dyn OriginalAlloc>,
+    pub(crate) alloc: OriginalAlloc,
     // C++ size of the reinterpreted view
     elem_byte_size: usize,
 }
@@ -46,7 +46,7 @@ pub enum StrongPtr<T> {
         offset: usize,
     },
     Reinterpreted {
-        alloc: Rc<dyn OriginalAlloc>,
+        alloc: OriginalAlloc,
         byte_offset: usize,
         // Local buffer for deref(). None until first access.
         // Read-through: refreshed from alloc on every deref() call.
@@ -66,9 +66,10 @@ impl<T: ByteRepr> StrongPtr<T> {
                 cell,
             } => {
                 // Read-through: always re-read from the original allocation.
-                let mut buf = vec![0u8; T::byte_size()];
-                alloc.read_bytes(*byte_offset, &mut buf);
-                *cell.borrow_mut() = Some(T::from_bytes(&buf));
+                with_scratch(T::byte_size(), |buf| {
+                    alloc.read_bytes(*byte_offset, buf);
+                    *cell.borrow_mut() = Some(T::from_bytes(buf));
+                });
                 Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
             }
         }
@@ -360,7 +361,7 @@ impl<T> Ptr<T> {
                 offset: self.offset,
             },
             PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
-                alloc: Rc::clone(&data.alloc),
+                alloc: data.alloc.clone(),
                 byte_offset: self.offset,
                 cell: RefCell::new(None),
             },
@@ -383,33 +384,50 @@ impl<T> Ptr<T> {
             return self_any.downcast_ref::<Ptr<U>>().unwrap().clone();
         }
 
-        if U::byte_size() == 0 {
-            panic!("cannot reinterpret_cast to zero-sized type");
+        match self.original_alloc() {
+            Some((alloc, byte_offset)) => Ptr::<U>::from_original_alloc(alloc, byte_offset),
+            None => Ptr::null(),
         }
+    }
 
-        let src_byte_off = self.offset.wrapping_mul(T::byte_size());
-        let (alloc, abs_byte_off): (Rc<dyn OriginalAlloc>, usize) = match &self.kind {
-            PtrKind::Null => return Ptr::null(),
+    // The original allocation this pointer refers to, together with the byte
+    // offset of the pointer into it. None for null pointers.
+    pub(crate) fn original_alloc(&self) -> Option<(OriginalAlloc, usize)>
+    where
+        T: ByteRepr,
+    {
+        Some(match &self.kind {
+            PtrKind::Null => return None,
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => (
-                Rc::new(SingleOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                OriginalAlloc::single(weak),
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => (
-                Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                OriginalAlloc::slice(weak),
+                self.offset.wrapping_mul(T::byte_size()),
             ),
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => (
-                Rc::new(SliceOriginalAlloc { weak: weak.clone() }),
-                src_byte_off,
+                OriginalAlloc::slice(weak),
+                self.offset.wrapping_mul(T::byte_size()),
             ),
-            PtrKind::Reinterpreted(data) => (Rc::clone(&data.alloc), self.offset),
-        };
+            PtrKind::Reinterpreted(data) => (data.alloc.clone(), self.offset),
+        })
+    }
 
+    // A pointer that views the bytes of `alloc`, starting at `byte_offset`, as
+    // a sequence of `T`. This is the only allocation of a reinterpret cast.
+    pub(crate) fn from_original_alloc(alloc: OriginalAlloc, byte_offset: usize) -> Self
+    where
+        T: ByteRepr,
+    {
+        if T::byte_size() == 0 {
+            panic!("cannot reinterpret_cast to zero-sized type");
+        }
         Ptr {
-            offset: abs_byte_off,
+            offset: byte_offset,
             kind: PtrKind::Reinterpreted(Rc::new(ReinterpretedView {
                 alloc,
-                elem_byte_size: U::byte_size(),
+                elem_byte_size: T::byte_size(),
             })),
         }
     }
@@ -438,15 +456,14 @@ impl<T> Ptr<T> {
                 let mut borrow = rc.borrow_mut();
                 f(&mut borrow[self.offset])
             }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
-                data.alloc.read_bytes(self.offset, &mut buf);
-                let mut val = T::from_bytes(&buf);
+            PtrKind::Reinterpreted(data) => with_scratch(T::byte_size(), |buf| {
+                data.alloc.read_bytes(self.offset, buf);
+                let mut val = T::from_bytes(buf);
                 let ret = f(&mut val);
-                val.to_bytes(&mut buf);
-                data.alloc.write_bytes(self.offset, &buf);
+                val.to_bytes(buf);
+                data.alloc.write_bytes(self.offset, buf);
                 ret
-            }
+            }),
         }
     }
 
@@ -472,12 +489,10 @@ impl<T> Ptr<T> {
                 let borrow = rc.borrow();
                 f(&borrow[self.offset])
             }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; T::byte_size()];
-                data.alloc.read_bytes(self.offset, &mut buf);
-                let val = T::from_bytes(&buf);
-                f(&val)
-            }
+            PtrKind::Reinterpreted(data) => with_scratch(T::byte_size(), |buf| {
+                data.alloc.read_bytes(self.offset, buf);
+                f(&T::from_bytes(buf))
+            }),
         }
     }
 }
@@ -503,13 +518,12 @@ impl Ptr<u8> {
                 let mut b = rc.borrow_mut();
                 f(&mut b[off..off + len])
             }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; len];
-                data.alloc.read_bytes(off, &mut buf);
-                let r = f(&mut buf);
-                data.alloc.write_bytes(off, &buf);
+            PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
+                data.alloc.read_bytes(off, buf);
+                let r = f(buf);
+                data.alloc.write_bytes(off, buf);
                 r
-            }
+            }),
         }
     }
 
@@ -533,11 +547,10 @@ impl Ptr<u8> {
                 let b = rc.borrow();
                 f(&b[off..off + len])
             }
-            PtrKind::Reinterpreted(data) => {
-                let mut buf = vec![0u8; len];
-                data.alloc.read_bytes(off, &mut buf);
-                f(&buf)
-            }
+            PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
+                data.alloc.read_bytes(off, buf);
+                f(buf)
+            }),
         }
     }
 
@@ -999,15 +1012,17 @@ impl<T: 'static> ByteRepr for Ptr<T> {}
 
 impl<T: 'static> Ptr<T> {
     pub fn to_int(&self) -> usize {
-        let mut buf = vec![0u8; Self::byte_size()];
-        self.to_bytes(&mut buf);
-        usize::from_bytes(&buf[..std::mem::size_of::<usize>()])
+        with_scratch(Self::byte_size(), |buf| {
+            self.to_bytes(buf);
+            usize::from_bytes(&buf[..std::mem::size_of::<usize>()])
+        })
     }
 
     pub fn from_int(value: usize) -> Self {
-        let mut buf = vec![0u8; Self::byte_size()];
-        value.to_bytes(&mut buf[..std::mem::size_of::<usize>()]);
-        Self::from_bytes(&buf)
+        with_scratch(Self::byte_size(), |buf| {
+            value.to_bytes(&mut buf[..std::mem::size_of::<usize>()]);
+            Self::from_bytes(buf)
+        })
     }
 }
 
@@ -1045,6 +1060,54 @@ mod tests {
         let v: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
         let p: Ptr<Box<[i32]>> = (&v as &dyn AsPointer<Box<[i32]>>).as_pointer();
         p.decay().delete();
+    }
+
+    #[test]
+    fn reinterpreted_unaligned_access_spans_elements() {
+        let p: Ptr<u16> = Ptr::alloc_array(vec![0u16; 4].into_boxed_slice());
+        let words = p
+            .reinterpret_cast::<u8>()
+            .offset(2)
+            .reinterpret_cast::<u32>();
+        words.write(0xAABBCCDD);
+        assert_eq!(words.read(), 0xAABBCCDD);
+        let halves: Vec<u16> = (0..4).map(|i| p.offset(i).read()).collect();
+        assert_eq!(halves, vec![0, 0xCCDD, 0xAABB, 0]);
+        p.delete();
+    }
+
+    #[test]
+    fn reinterpreted_u8_storage_is_read_and_written_bytewise() {
+        let p: Ptr<u8> = Ptr::alloc_array(vec![0u8; 16].into_boxed_slice());
+        let ints = p.reinterpret_cast::<u32>();
+        for i in 0..4 {
+            ints.offset(i).write(0x01010101 * (i as u32 + 1));
+        }
+        assert_eq!(p.offset(5).read(), 0x02);
+        assert_eq!(ints.offset(3).read(), 0x04040404);
+        // An unaligned view over the same bytes.
+        let unaligned = p.offset(1).reinterpret_cast::<u32>();
+        assert_eq!(unaligned.read(), 0x02010101);
+        p.delete();
+    }
+
+    #[test]
+    #[should_panic]
+    fn reinterpreted_write_past_the_end_panics() {
+        let p: Ptr<u32> = Ptr::alloc_array(vec![0u32; 2].into_boxed_slice());
+        // A u32 straddling the end of the allocation.
+        let q = p
+            .reinterpret_cast::<u8>()
+            .offset(6)
+            .reinterpret_cast::<u32>();
+        q.write(1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn reinterpreted_u8_write_past_the_end_panics() {
+        let p: Ptr<u8> = Ptr::alloc_array(vec![0u8; 6].into_boxed_slice());
+        p.reinterpret_cast::<u32>().offset(1).write(1);
     }
 
     #[test]
