@@ -57,6 +57,8 @@ public:
 
   static void EmitMethodsOnPtr(std::string &out);
 
+  static void EmitVTableImpls(std::string &out);
+
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
   virtual bool VisitRecordType(clang::RecordType *type);
@@ -603,6 +605,10 @@ protected:
                              const std::string_view signature,
                              bool (*predicate)(clang::CXXMethodDecl *));
 
+  void ConvertVTableMethods(clang::CXXRecordDecl *decl);
+
+  bool ConvertVTableMethod(clang::CXXMethodDecl *decl);
+
   void AddOrdTrait(const clang::CXXRecordDecl *decl);
 
   void ConvertOrdAndPartialOrdTraits(const clang::CXXRecordDecl *decl,
@@ -906,15 +912,24 @@ protected:
     std::unordered_map<std::string, bool> entries_;
   };
   static RecordIndex record_decls_;
+  struct DeferredBlock {
+    std::string header;
+    std::string body;
+  };
   struct MethodsOnPtr {
-    std::string trait_header;
-    std::string trait_body;
-    std::string impl_header;
-    std::string impl_body;
+    DeferredBlock trait;
+    DeferredBlock impl;
   };
   // record name -> trait and impl for Ptr<record>, emitted after all
   // translation units.
   static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
+
+  static std::map<std::string, DeferredBlock> vtable_impls_;
+
+  static void EmitDeferredBlock(const DeferredBlock &block,
+                                std::string &out);
+
+  DeferredBlock &VTableImplFor(const clang::CXXRecordDecl *decl);
 
   std::string hoisted_records_;
 

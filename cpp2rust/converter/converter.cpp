@@ -30,6 +30,7 @@ std::vector<std::string> Converter::global_inits_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
 std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
+std::map<std::string, Converter::DeferredBlock> Converter::vtable_impls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
   bool is_star = expr->getOperator() == clang::OverloadedOperatorKind::OO_Star;
@@ -60,16 +61,24 @@ use std::rc::Rc;
 )");
 }
 
+void Converter::EmitDeferredBlock(const DeferredBlock &block,
+                                  std::string &out) {
+  out += block.header;
+  out += " {\n";
+  out += block.body;
+  out += "}\n";
+}
+
+void Converter::EmitVTableImpls(std::string &out) {
+  for (const auto &[name, impl] : vtable_impls_) {
+    EmitDeferredBlock(impl, out);
+  }
+}
+
 void Converter::EmitMethodsOnPtr(std::string &out) {
   for (const auto &[name, methods] : methods_on_ptr_) {
-    out += methods.trait_header;
-    out += " {\n";
-    out += methods.trait_body;
-    out += "}\n";
-    out += methods.impl_header;
-    out += " {\n";
-    out += methods.impl_body;
-    out += "}\n";
+    EmitDeferredBlock(methods.trait, out);
+    EmitDeferredBlock(methods.impl, out);
   }
 }
 
@@ -866,20 +875,8 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
 
   // C++ method decls
   if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    auto struct_name = GetRecordName(cxx);
-
     ConvertCXXRecordMethods(cxx);
-
-    if (cxx->bases_begin() != cxx->bases_end()) {
-      ConvertCXXMethodDecls(
-          cxx,
-          std::format("{} impl {} for {}", keyword_unsafe_,
-                      GetUnsafeTypeAsString(cxx->bases_begin()->getType()),
-                      struct_name),
-          [](auto *method) {
-            return !method->isImplicit() && method->isVirtual();
-          });
-    }
+    ConvertVTableMethods(cxx);
   }
 
   // Traits
@@ -1076,7 +1073,7 @@ bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
   PushCurrFunction push_fn(*this, decl);
 
   if (decl->isOutOfLine() && !decl->overridden_methods().empty()) {
-    return false;
+    return ConvertVTableMethod(decl);
   }
   if (decl->isOutOfLine() && !decl->isTemplateInstantiation()) {
     return ConvertOutOfLineMethod(decl);
@@ -4473,6 +4470,48 @@ void Converter::ConvertCXXMethodDecls(
   if (!first) {
     StrCat(token::kCloseCurlyBracket);
   }
+}
+
+Converter::DeferredBlock &
+Converter::VTableImplFor(const clang::CXXRecordDecl *decl) {
+  auto name = GetRecordName(decl);
+  auto [it, inserted] = vtable_impls_.try_emplace(name);
+  if (inserted) {
+    it->second.header = std::format(
+        "{} impl {} for {}", keyword_unsafe_,
+        GetUnsafeTypeAsString(decl->bases_begin()->getType()), name);
+  }
+  return it->second;
+}
+
+void Converter::ConvertVTableMethods(clang::CXXRecordDecl *decl) {
+  if (decl->bases_begin() == decl->bases_end()) {
+    return;
+  }
+  bool any = false;
+  Buffer buf(*this);
+  for (auto *method : decl->methods()) {
+    if (!method->isImplicit() && method->isVirtual()) {
+      any = true;
+      VisitCXXMethodDecl(method);
+    }
+  }
+  auto body = std::move(buf).str();
+  if (!any) {
+    return;
+  }
+  VTableImplFor(decl).body += body;
+}
+
+bool Converter::ConvertVTableMethod(clang::CXXMethodDecl *decl) {
+  auto *record = decl->getParent();
+  if (record->bases_begin() == record->bases_end()) {
+    return false;
+  }
+  Buffer buf(*this);
+  auto emitted = ConvertCXXMethodDecl(decl);
+  VTableImplFor(record).body += std::move(buf).str();
+  return emitted;
 }
 
 void Converter::ConvertOrdAndPartialOrdTraitsBase(

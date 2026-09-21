@@ -2884,8 +2884,8 @@ ConverterRefCount::MethodsOnPtrFor(const clang::CXXRecordDecl *decl) {
   auto name = GetRecordName(decl);
   auto [it, inserted] = methods_on_ptr_.try_emplace(name);
   if (inserted) {
-    it->second.trait_header = std::format("pub trait {}", TraitName(decl));
-    it->second.impl_header =
+    it->second.trait.header = std::format("pub trait {}", TraitName(decl));
+    it->second.impl.header =
         std::format("impl {} for Ptr<{}>", TraitName(decl), name);
   }
   return it->second;
@@ -2900,7 +2900,7 @@ bool ConverterRefCount::ConvertOutOfLineMethod(clang::CXXMethodDecl *decl) {
     PushMethodTarget push(*this, MethodTarget::PtrImpl);
     ConvertCXXMethodDecl(decl);
   }
-  MethodsOnPtrFor(decl->getParent()).impl_body += std::move(buf).str();
+  MethodsOnPtrFor(decl->getParent()).impl.body += std::move(buf).str();
   return false;
 }
 
@@ -2914,7 +2914,7 @@ void ConverterRefCount::ConvertMethodOnPtrTraitDecl(
                                      : MethodTarget::TraitDefault);
     ConvertCXXMethodDecl(method);
   }
-  MethodsOnPtrFor(method->getParent()).trait_body += std::move(buf).str();
+  MethodsOnPtrFor(method->getParent()).trait.body += std::move(buf).str();
 }
 
 void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
@@ -2926,7 +2926,7 @@ void ConverterRefCount::ConvertMethodOnPtr(clang::CXXMethodDecl *method) {
     PushMethodTarget push(*this, MethodTarget::PtrImpl);
     VisitCXXMethodDecl(method);
   }
-  MethodsOnPtrFor(method->getParent()).impl_body += std::move(buf).str();
+  MethodsOnPtrFor(method->getParent()).impl.body += std::move(buf).str();
 }
 
 void ConverterRefCount::ConvertLateInstantiatedMethods(
@@ -2971,9 +2971,9 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
   ForEachTemplateInstantiatedMethod(decl, convert_method);
 
   if (!GetUserDefinedDestructor(decl) && HasFieldsNeedingDestruction(decl)) {
-    MethodsOnPtrFor(decl).trait_body +=
+    MethodsOnPtrFor(decl).trait.body +=
         std::format("fn {}(&self);\n", kDestructorName);
-    MethodsOnPtrFor(decl).impl_body += std::format(
+    MethodsOnPtrFor(decl).impl.body += std::format(
         "fn {}(&self) {{ {} }}\n", kDestructorName, DestroyMembers(decl));
   }
 }

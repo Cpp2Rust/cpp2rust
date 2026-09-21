@@ -242,10 +242,15 @@ public:
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                        const clang::CXXMethodDecl *method) override;
+
   std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
+
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
+
   MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
+
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 
   std::pair<std::string, std::string>
