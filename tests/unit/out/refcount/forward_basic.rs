@@ -81,63 +81,120 @@ pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
 pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kRvalueOverload;
 }
-pub fn forward_by_decltype_2(x: Ptr<Tracked>) -> Overload {
+impl Holder {
+    pub fn Holder1(x: Ptr<Tracked>) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new(Tracked::Tracked_pconstTracked({
+                (x).clone()
+            }))),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Holder {
+    pub fn Holder2(x: Ptr<Tracked>) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new(Tracked::Tracked_pmutTracked_rv({
+                (x).clone()
+            }))),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+#[derive(Default)]
+pub struct Holder {
+    pub t: Value<Tracked>,
+}
+impl Clone for Holder {
+    fn clone(&self) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            t: Rc::new(RefCell::new(Tracked::Tracked_pconstTracked({
+                self.t.as_pointer()
+            }))),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        12
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.t.borrow()).to_bytes(&mut buf[0..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            t: Rc::new(RefCell::new(<Tracked>::from_bytes(&buf[0..12]))),
+        }
+    }
+}
+pub fn forward_once_2(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_0((x).clone()) });
 }
-pub fn forward_by_decltype_3(x: Ptr<Tracked>) -> Overload {
+pub fn forward_once_3(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_1((x).clone()) });
 }
-pub fn forward_abbreviated_4(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_0((x).clone()) });
+pub fn forward_twice_4(x: Ptr<Tracked>) -> Overload {
+    return ({ forward_once_2((x).clone()) });
 }
-pub fn forward_abbreviated_5(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_1((x).clone()) });
+pub fn forward_twice_5(x: Ptr<Tracked>) -> Overload {
+    return ({ forward_once_3((x).clone()) });
 }
-pub fn forward_abbreviated_pack_6(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> i32 {
-    return {
-        let _lhs = (({ chosen_overload_0((args_0).clone()) }) as i32);
-        _lhs + (({ chosen_overload_1((args_1).clone()) }) as i32)
-    };
+pub fn forward_into_ctor_6(x: Ptr<Tracked>) -> Holder {
+    return Holder::Holder1({ (x).clone() });
+}
+pub fn forward_into_ctor_7(x: Ptr<Tracked>) -> Holder {
+    return Holder::Holder2({ (x).clone() });
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 3 })));
+    let lvalue: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 7 })));
     assert!(
-        ((({ forward_by_decltype_2(a.as_pointer(),) }) as i32)
-            == (Overload_kLvalueOverload as i32))
+        ((({ forward_once_2(lvalue.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
     );
-    assert!(((*(*a.borrow()).v.borrow()) == 3));
+    assert!(((*(*lvalue.borrow()).v.borrow()) == 7));
     assert!(
         ((({
-            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 4 })));
-            forward_by_decltype_3(_x.as_pointer())
+            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 8 })));
+            forward_once_3(_x.as_pointer())
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 5 })));
+    let relayed: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 9 })));
     assert!(
-        ((({ forward_abbreviated_4(b.as_pointer(),) }) as i32)
+        ((({ forward_twice_4(relayed.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(((*(*b.borrow()).v.borrow()) == 5));
+    assert!(((*(*relayed.borrow()).v.borrow()) == 9));
     assert!(
         ((({
-            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 6 })));
-            forward_abbreviated_5(_x.as_pointer())
+            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 10 })));
+            forward_twice_5(_x.as_pointer())
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 7 })));
-    assert!(
-        (({
-            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 8 })));
-            forward_abbreviated_pack_6(c.as_pointer(), _args_1.as_pointer())
-        }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
-    );
-    assert!(((*(*c.borrow()).v.borrow()) == 7));
+    let kept: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 11 })));
+    let from_lvalue: Value<Holder> =
+        Rc::new(RefCell::new(({ forward_into_ctor_6(kept.as_pointer()) })));
+    assert!(((*(*(*from_lvalue.borrow()).t.borrow()).v.borrow()) == 11));
+    assert!(((*(*(*from_lvalue.borrow()).t.borrow()).copies.borrow()) == 1));
+    assert!(((*(*(*from_lvalue.borrow()).t.borrow()).moves.borrow()) == 0));
+    assert!(((*(*kept.borrow()).v.borrow()) == 11));
+    let from_rvalue: Value<Holder> = Rc::new(RefCell::new(
+        ({
+            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 12 })));
+            forward_into_ctor_7(_x.as_pointer())
+        }),
+    ));
+    assert!(((*(*(*from_rvalue.borrow()).t.borrow()).v.borrow()) == 12));
+    assert!(((*(*(*from_rvalue.borrow()).t.borrow()).copies.borrow()) == 0));
+    assert!(((*(*(*from_rvalue.borrow()).t.borrow()).moves.borrow()) == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

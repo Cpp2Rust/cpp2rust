@@ -128,17 +128,17 @@ unsafe fn main_0() -> i32 {
     let mut i: i32 = 3;
     assert!(
         ((unsafe {
-            let mut _args: Tracked = Tracked::Tracked({ 4 });
-            let mut _args: i32 = 5;
-            forward_pack_7(&mut a, &mut _args, &mut i, &mut _args)
+            let mut _args_1: Tracked = Tracked::Tracked({ 4 });
+            let mut _args_3: i32 = 5;
+            forward_pack_7(&mut a, &mut _args_1, &mut i, &mut _args_3)
         }) == (1234))
     );
     assert!(((a.v) == (1)));
     assert!(((i) == (3)));
     let mut lhs: Tracked = Tracked::Tracked({ 6 });
     let mut p: Pair = (unsafe {
-        let mut _args: Tracked = Tracked::Tracked({ 7 });
-        forward_pack_into_ctor_8(&mut lhs, &mut _args)
+        let mut _args_1: Tracked = Tracked::Tracked({ 7 });
+        forward_pack_into_ctor_8(&mut lhs, &mut _args_1)
     });
     assert!(((p.a.v) == (6)));
     assert!(((p.a.copies) == (1)));

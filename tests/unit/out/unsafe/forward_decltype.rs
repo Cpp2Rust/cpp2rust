@@ -104,8 +104,8 @@ unsafe fn main_0() -> i32 {
     let mut c: Tracked = Tracked::Tracked({ 7 });
     assert!(
         ((unsafe {
-            let mut _args: Tracked = Tracked::Tracked({ 8 });
-            forward_abbreviated_pack_6(&mut c, &mut _args)
+            let mut _args_1: Tracked = Tracked::Tracked({ 8 });
+            forward_abbreviated_pack_6(&mut c, &mut _args_1)
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );
     assert!(((c.v) == (7)));

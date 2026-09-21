@@ -91,7 +91,7 @@ pub unsafe fn forward_into_ctor_6(x: *mut Tracked) -> Holder {
     return Holder::Holder1({ x });
 }
 pub unsafe fn forward_into_ctor_7(x: *mut Tracked) -> Holder {
-    return (*x);
+    return Holder::Holder2({ x });
 }
 pub fn main() {
     unsafe {

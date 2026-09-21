@@ -402,6 +402,7 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor) {
   return !ctor->isCopyOrMoveConstructor() &&
+         !IsUserDefinedDecl(ctor->getParent()) &&
          ctor->isConvertingConstructor(false) && ctor->getNumParams() == 1 &&
          ctor->getParamDecl(0)->getType()->isRValueReferenceType();
 }
