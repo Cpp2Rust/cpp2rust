@@ -64,7 +64,7 @@ pub unsafe fn chosen_overload_3(_a0: *mut i32) -> Overload {
 }
 pub unsafe fn forward_pack_4() -> i32 {
     let mut digits: i32 = 0;
-    <::libc::c_void>::default();
+    ();
     return digits;
 }
 pub unsafe fn forward_pack_5(args: *mut Tracked) -> i32 {
