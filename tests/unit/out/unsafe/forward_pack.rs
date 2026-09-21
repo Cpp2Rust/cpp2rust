@@ -69,12 +69,12 @@ pub unsafe fn forward_pack_4() -> i32 {
 }
 pub unsafe fn forward_pack_5(args: *mut Tracked) -> i32 {
     let mut digits: i32 = 0;
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_0(args) }) as i32)));
+    digits = (((digits) * (10)) + ((unsafe { chosen_overload_0(args) }) as i32));
     return digits;
 }
 pub unsafe fn forward_pack_6(args: *mut Tracked) -> i32 {
     let mut digits: i32 = 0;
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_1(args) }) as i32)));
+    digits = (((digits) * (10)) + ((unsafe { chosen_overload_1(args) }) as i32));
     return digits;
 }
 pub unsafe fn forward_pack_7(
@@ -84,10 +84,16 @@ pub unsafe fn forward_pack_7(
     args_3: *mut i32,
 ) -> i32 {
     let mut digits: i32 = 0;
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_0(args_0) }) as i32)));
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_1(args_1) }) as i32)));
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_2(args_2) }) as i32)));
-    (digits = (((digits) * (10)) + ((unsafe { chosen_overload_3(args_3) }) as i32)));
+    {
+        digits = (((digits) * (10)) + ((unsafe { chosen_overload_0(args_0) }) as i32));
+        {
+            digits = (((digits) * (10)) + ((unsafe { chosen_overload_1(args_1) }) as i32));
+            {
+                digits = (((digits) * (10)) + ((unsafe { chosen_overload_2(args_2) }) as i32));
+                digits = (((digits) * (10)) + ((unsafe { chosen_overload_3(args_3) }) as i32))
+            }
+        }
+    };
     return digits;
 }
 impl Pair {

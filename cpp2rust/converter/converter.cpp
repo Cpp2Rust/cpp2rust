@@ -2730,6 +2730,7 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       ConvertCast(lhs_type);
     }
   } else if (expr->isCommaOp()) {
+    PushBrace brace(*this);
     {
       PushExprKind push(*this, ExprKind::Void);
       Convert(lhs);
@@ -3099,13 +3100,10 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 }
 
 bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
-  // Comma operator becomes (A, B, C) -> { A; B; C }
-  if (auto *bin = clang::dyn_cast<clang::BinaryOperator>(expr->getSubExpr())) {
-    if (bin->isCommaOp()) {
-      PushBrace push(*this);
-      Convert(expr->getSubExpr());
-      return false;
-    }
+  if (auto *bin = clang::dyn_cast<clang::BinaryOperator>(expr->getSubExpr());
+      bin && (bin->isCommaOp() || (bin->isAssignmentOp() && isVoid()))) {
+    Convert(expr->getSubExpr());
+    return false;
   }
 
   {

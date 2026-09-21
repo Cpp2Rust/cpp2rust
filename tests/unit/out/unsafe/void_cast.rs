@@ -71,8 +71,10 @@ unsafe fn main_0() -> i32 {
     assert!(((z) == (7)));
     let mut counter: i32 = 0;
     let mut w: i32 = {
-        &(counter);
-        counter = 3;
+        {
+            &(counter);
+            counter = 3
+        };
         counter
     };
     assert!(((w) == (3)));
