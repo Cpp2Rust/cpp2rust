@@ -908,9 +908,12 @@ bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {
   if (!callee) {
     return false;
   }
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
-      method && method->isDefaulted() && IsComparisonOperator(method)) {
-    return IsUserDefinedDecl(method->getParent());
+  if (callee->isDefaulted() && IsComparisonOperator(callee)) {
+    const clang::Decl *owner = callee;
+    if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee)) {
+      owner = method->getParent();
+    }
+    return IsUserDefinedDecl(owner);
   }
   if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(callee);
       method && IsConvertibleMoveAssignment(method)) {
