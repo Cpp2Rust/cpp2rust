@@ -29,7 +29,6 @@ std::unordered_set<std::string> Converter::globals_;
 std::vector<std::string> Converter::global_inits_;
 std::unordered_set<std::string> Converter::abstract_structs_;
 Converter::RecordIndex Converter::record_decls_;
-std::map<std::string, Converter::MethodsOnPtr> Converter::methods_on_ptr_;
 std::map<std::string, Converter::DeferredBlock> Converter::vtable_impls_;
 
 void Converter::ConvertUniquePtrDeref(clang::CXXOperatorCallExpr *expr) {
@@ -72,13 +71,6 @@ void Converter::EmitDeferredBlock(const DeferredBlock &block,
 void Converter::EmitVTableImpls(std::string &out) {
   for (const auto &[name, impl] : vtable_impls_) {
     EmitDeferredBlock(impl, out);
-  }
-}
-
-void Converter::EmitMethodsOnPtr(std::string &out) {
-  for (const auto &[name, methods] : methods_on_ptr_) {
-    EmitDeferredBlock(methods.trait, out);
-    EmitDeferredBlock(methods.impl, out);
   }
 }
 

@@ -17,6 +17,16 @@
 #include "converter/mapper.h"
 
 namespace cpp2rust {
+std::map<std::string, ConverterRefCount::MethodsOnPtr>
+    ConverterRefCount::methods_on_ptr_;
+
+void ConverterRefCount::EmitMethodsOnPtr(std::string &out) {
+  for (const auto &[name, methods] : methods_on_ptr_) {
+    EmitDeferredBlock(methods.trait, out);
+    EmitDeferredBlock(methods.impl, out);
+  }
+}
+
 ConverterRefCount::ConverterRefCount(std::string &rs_code,
                                      clang::ASTContext &ctx)
     : Converter(rs_code, ctx, "", ""),
@@ -2879,7 +2889,7 @@ ConverterRefCount::TraitName(const clang::CXXRecordDecl *decl) const {
   return GetRecordName(decl) + "Impl";
 }
 
-Converter::MethodsOnPtr &
+ConverterRefCount::MethodsOnPtr &
 ConverterRefCount::MethodsOnPtrFor(const clang::CXXRecordDecl *decl) {
   auto name = GetRecordName(decl);
   auto [it, inserted] = methods_on_ptr_.try_emplace(name);

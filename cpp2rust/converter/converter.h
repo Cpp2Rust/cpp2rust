@@ -55,8 +55,6 @@ public:
   static void EmitOpaqueRecords(std::string &out);
   static void EmitGlobalInits(Model model, std::string &out);
 
-  static void EmitMethodsOnPtr(std::string &out);
-
   static void EmitVTableImpls(std::string &out);
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
@@ -916,14 +914,6 @@ protected:
     std::string header;
     std::string body;
   };
-  struct MethodsOnPtr {
-    DeferredBlock trait;
-    DeferredBlock impl;
-  };
-  // record name -> trait and impl for Ptr<record>, emitted after all
-  // translation units.
-  static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
-
   static std::map<std::string, DeferredBlock> vtable_impls_;
 
   static void EmitDeferredBlock(const DeferredBlock &block,
