@@ -1047,16 +1047,24 @@ void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
       sema_->DefineImplicitMoveAssignment(decl->getLocation(), method);
     }
   }
-  for (auto *method : decl->methods()) {
-    if (IsComparisonOperator(method) && method->isDefaulted() &&
-        !method->doesThisDeclarationHaveABody()) {
-#if CLANG_VERSION_MAJOR >= 24
-      auto kind = method->getDefaultedComparisonKind();
-#else
-      auto kind = sema_->getDefaultedComparisonKind(method);
-#endif
-      sema_->DefineDefaultedComparison(decl->getLocation(), method, kind);
+  auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
+    if (!fn || !IsComparisonOperator(fn) || !fn->isDefaulted() ||
+        fn->doesThisDeclarationHaveABody()) {
+      return;
     }
+#if CLANG_VERSION_MAJOR >= 24
+    auto kind = fn->getDefaultedComparisonKind();
+#else
+    auto kind = sema_->getDefaultedComparisonKind(fn);
+#endif
+    sema_->DefineDefaultedComparison(decl->getLocation(), fn, kind);
+  };
+  for (auto *method : decl->methods()) {
+    define_defaulted_comparison(method);
+  }
+  for (auto *friend_decl : decl->friends()) {
+    define_defaulted_comparison(clang::dyn_cast_or_null<clang::FunctionDecl>(
+        friend_decl->getFriendDecl()));
   }
   sema_->TUScope = saved_tu_scope;
 }
