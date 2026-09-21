@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let vec_: Value<Vec<u8>> = Rc::new(RefCell::new(vec![195_u8, 167_u8]));
     let i: Value<i32> = Rc::new(RefCell::new(27));
     let str: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"rdas.").to_c_bytes();
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"foo.").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));

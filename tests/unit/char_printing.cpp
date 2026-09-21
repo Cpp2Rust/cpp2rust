@@ -5,7 +5,7 @@
 int main() {
   std::vector<unsigned char> vec = {0xc3, 0xa7};
   int i = 27;
-  std::string str = "rdas.";
+  std::string str = "foo.";
 
   std::cout << i << " a" << vec[0] << vec[1] << 'o' << str << std::endl
             << std::hex << "0x" << 27 << " açordas?" << '\n'
