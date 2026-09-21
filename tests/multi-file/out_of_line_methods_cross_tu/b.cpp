@@ -11,6 +11,6 @@ int S::add(int x) {
   return v;
 }
 
-D::D(int f) : f(f) {}
+Derived::Derived(int factor) : factor(factor) {}
 
-int D::scale(int x) { return f * x; }
+int Derived::apply(int x) { return factor * x; }

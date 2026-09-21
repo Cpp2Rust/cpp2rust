@@ -16,13 +16,13 @@ public:
 class Base {
 public:
   virtual ~Base() {}
-  virtual int scale(int x) = 0;
+  virtual int apply(int x) = 0;
 };
 
-class D : public Base {
+class Derived : public Base {
 public:
-  D(int f);
-  int scale(int x) override;
+  Derived(int factor);
+  int apply(int x) override;
 
-  int f;
+  int factor;
 };

@@ -34,33 +34,32 @@ impl ByteRepr for S {
     }
 }
 pub trait Base {
-    fn scale(&self, x: i32) -> i32;
+    fn apply(&self, x: i32) -> i32;
 }
 #[derive(Default)]
-pub struct D {
-    pub f: Value<i32>,
+pub struct Derived {
+    pub factor: Value<i32>,
 }
-impl D {}
-impl Base for D {}
-impl Clone for D {
+impl Derived {}
+impl Clone for Derived {
     fn clone(&self) -> Self {
-        let __this: Value<D> = Rc::new(RefCell::new(Self {
-            f: Rc::new(RefCell::new((*self.f.borrow()))),
+        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
+            factor: Rc::new(RefCell::new((*self.factor.borrow()))),
         }));
-        let this: Ptr<D> = __this.as_pointer();
+        let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for D {
+impl ByteRepr for Derived {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.f.borrow()).to_bytes(&mut buf[8..12]);
+        (*self.factor.borrow()).to_bytes(&mut buf[8..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            f: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            factor: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
         }
     }
 }
@@ -74,10 +73,11 @@ fn main_0() -> i32 {
     ({ SImpl::set(&s.as_pointer(), 4) });
     assert!((({ SImpl::get(&s.as_pointer(),) }) == 4));
     assert!((({ SImpl::add(&s.as_pointer(), 2,) }) == 6));
-    let d: Value<D> = Rc::new(RefCell::new(D::D({ 3 })));
-    let b: Value<PtrDyn<dyn Base>> =
-        Rc::new(RefCell::new((d.as_pointer()).to_dyn::<dyn Base>(|w| w)));
-    assert!((({ (*(*b.borrow()).upgrade().deref()).scale(5,) }) == 15));
+    let derived: Value<Derived> = Rc::new(RefCell::new(Derived::Derived({ 3 })));
+    let base: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
+        (derived.as_pointer()).to_dyn::<dyn Base>(|w| w),
+    ));
+    assert!((({ (*(*base.borrow()).upgrade().deref()).apply(5,) }) == 15));
     return 0;
 }
 impl S {
@@ -90,18 +90,24 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl D {
-    pub fn D(f: i32) -> Self {
-        let f: Value<i32> = Rc::new(RefCell::new(f));
-        let __this: Value<D> = Rc::new(RefCell::new(Self {
-            f: Rc::new(RefCell::new((*f.borrow()))),
+impl Derived {
+    pub fn Derived(factor: i32) -> Self {
+        let factor: Value<i32> = Rc::new(RefCell::new(factor));
+        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
+            factor: Rc::new(RefCell::new((*factor.borrow()))),
         }));
-        let this: Ptr<D> = __this.as_pointer();
+        let this: Ptr<Derived> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl S {}
-impl D {}
+impl Derived {}
+impl Base for Derived {
+    fn apply(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*self.factor.borrow()) * (*x.borrow()));
+    }
+}
 pub trait SImpl {
     fn destructor(&self) {
         unimplemented!()

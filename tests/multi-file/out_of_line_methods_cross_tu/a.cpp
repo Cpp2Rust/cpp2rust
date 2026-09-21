@@ -9,8 +9,8 @@ int main() {
   assert(s.get() == 4);
   assert(s.add(2) == 6);
 
-  D d(3);
-  Base *b = &d;
-  assert(b->scale(5) == 15);
+  Derived derived(3);
+  Base *base = &derived;
+  assert(base->apply(5) == 15);
   return 0;
 }

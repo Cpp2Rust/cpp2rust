@@ -17,15 +17,14 @@ impl S {
     }
 }
 pub unsafe trait Base {
-    unsafe fn scale(&mut self, x: i32) -> i32;
+    unsafe fn apply(&mut self, x: i32) -> i32;
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
-pub struct D {
-    pub f: i32,
+pub struct Derived {
+    pub factor: i32,
 }
-impl D {}
-unsafe impl Base for D {}
+impl Derived {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -38,9 +37,9 @@ unsafe fn main_0() -> i32 {
     (unsafe { S::set(&mut s, 4) });
     assert!(((unsafe { S::get(&s,) }) == (4)));
     assert!(((unsafe { S::add(&mut s, 2,) }) == (6)));
-    let mut d: D = D::D({ 3 });
-    let mut b: *mut dyn Base = (&mut d as *mut D);
-    assert!(((unsafe { (*b).scale(5,) }) == (15)));
+    let mut derived: Derived = Derived::Derived({ 3 });
+    let mut base: *mut dyn Base = (&mut derived as *mut Derived);
+    assert!(((unsafe { (*base).apply(5,) }) == (15)));
     return 0;
 }
 impl S {
@@ -49,9 +48,9 @@ impl S {
         this
     }
 }
-impl D {
-    pub unsafe fn D(mut f: i32) -> Self {
-        let mut this = Self { f: f };
+impl Derived {
+    pub unsafe fn Derived(mut factor: i32) -> Self {
+        let mut this = Self { factor: factor };
         this
     }
 }
@@ -70,5 +69,10 @@ impl S {
         return self.v;
     }
 }
-impl D {}
+impl Derived {}
+unsafe impl Base for Derived {
+    unsafe fn apply(&mut self, x: i32) -> i32 {
+        return ((self.factor) * (x));
+    }
+}
 pub unsafe fn __cpp2rust_init_globals() {}
