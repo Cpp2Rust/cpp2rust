@@ -11,7 +11,7 @@ pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
     return {
         let mut r = (*v.borrow()).clone();
         r.pop();
-        r.extend(Ptr::<u8>::from_string_literal(b" str").to_c_string_iterator());
+        Ptr::<u8>::from_string_literal(b" str").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
     };
@@ -31,23 +31,21 @@ fn main_0() -> i32 {
     assert!(!((*in_.borrow()).is_null()));
     println!("{}", Ptr::<u8>::from_string_literal(b"printf"));
     print!("hello world");
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::<u8>::from_string_literal(b"a string")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"a string").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     println!("{}", (s.as_pointer() as Ptr<u8>));
     println!(
         "{}",
         (Rc::new(RefCell::new(
             ({
-                fn_0(
-                    Ptr::<u8>::from_string_literal(b"foo")
-                        .to_c_string_iterator()
-                        .chain(std::iter::once(0))
-                        .collect::<Vec<u8>>(),
-                )
+                fn_0({
+                    let mut __bytes = Ptr::<u8>::from_string_literal(b"foo").to_c_bytes();
+                    __bytes.push(0);
+                    __bytes
+                })
             })
         ))
         .as_pointer() as Ptr<u8>)

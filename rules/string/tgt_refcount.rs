@@ -23,7 +23,7 @@ fn f1(a0: Vec<u8>, a1: usize, a2: usize) -> Vec<u8> {
 fn f3(a0: Vec<u8>, a1: Ptr<u8>) -> Vec<u8> {
     let mut r = a0;
     r.pop();
-    r.extend(a1.to_c_string_iterator());
+    a1.with_c_str(|__s| r.extend_from_slice(__s));
     r.push(0);
     r
 }
@@ -53,9 +53,9 @@ fn f7(a0: Ptr<u8>, a1: usize) -> Vec<u8> {
 }
 
 fn f10(a0: Ptr<u8>) -> Vec<u8> {
-    a0.to_c_string_iterator()
-        .chain(std::iter::once(0))
-        .collect::<Vec<u8>>()
+    let mut __bytes = a0.to_c_bytes();
+    __bytes.push(0);
+    __bytes
 }
 
 fn f11(a0: Ptr<u8>) -> Ptr<u8> {
@@ -83,18 +83,19 @@ fn f15(a0: Ptr<u8>) -> Ptr<u8> {
 }
 
 fn f16(a0: Vec<u8>, a1: Ptr<u8>) -> usize {
-    let __lookup: Vec<u8> = a1.to_c_string_iterator().collect();
-    a0.iter()
-        .take(a0.len().saturating_sub(1))
-        .rposition(|&x| __lookup.contains(&x))
-        .unwrap_or(usize::MAX)
+    a1.with_c_str(|__lookup| {
+        a0.iter()
+            .take(a0.len().saturating_sub(1))
+            .rposition(|&x| __lookup.contains(&x))
+            .unwrap_or(usize::MAX)
+    })
 }
 
 // TODO: This should modify a0 in place
 fn f17(a0: Vec<u8>, a1: Ptr<u8>) -> Vec<u8> {
     let mut __tmp2 = a0;
     __tmp2.pop();
-    __tmp2.extend(a1.to_c_string_iterator());
+    a1.with_c_str(|__s| __tmp2.extend_from_slice(__s));
     __tmp2.push(0);
     __tmp2
 }

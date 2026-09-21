@@ -11,12 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::<u8>::from_string_literal(b"ABCD")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"ABCD").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (s.as_pointer() as Ptr<u8>).reinterpret_cast::<u8>(),
     ));

@@ -21,9 +21,7 @@ pub fn test_stat_0() {
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     {
-        let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello")
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
         match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -76,9 +74,7 @@ pub fn test_fstat_1() {
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     {
-        let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello world")
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = Ptr::<u8>::from_string_literal(b"hello world").to_c_bytes();
         match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,

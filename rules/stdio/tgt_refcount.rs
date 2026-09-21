@@ -72,7 +72,7 @@ fn f11(a0: i32, a1: Ptr<CFile>) -> i32 {
 }
 
 fn f12(a0: Ptr<u8>, a1: Ptr<CFile>) -> i32 {
-    let __bytes: Vec<u8> = a0.to_c_string_iterator().collect();
+    let __bytes = a0.to_c_bytes();
     match a1.with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => 0,
         false => -1,
@@ -80,7 +80,7 @@ fn f12(a0: Ptr<u8>, a1: Ptr<CFile>) -> i32 {
 }
 
 fn f13(a0: Ptr<u8>) -> i32 {
-    let mut __bytes: Vec<u8> = a0.to_c_string_iterator().collect();
+    let mut __bytes = a0.to_c_bytes();
     __bytes.push(b'\n');
     match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => 0,

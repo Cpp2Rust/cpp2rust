@@ -88,12 +88,11 @@ thread_local!(
     pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 7 })));
 );
 thread_local!(
-    pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::<u8>::from_string_literal(b"abc")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"abc").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
 );
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 5 })));

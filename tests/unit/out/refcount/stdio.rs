@@ -31,9 +31,7 @@ pub fn test_fputc_0() {
 }
 pub fn test_fputs_1() {
     {
-        let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello")
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -50,7 +48,7 @@ pub fn test_fputs_1() {
         b"from variable",
     )));
     {
-        let __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
+        let __bytes = (*s.borrow()).to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -70,9 +68,7 @@ pub fn test_fputs_1() {
         (('\0' as i32) as u8),
     ])));
     {
-        let __bytes: Vec<u8> = (buf.as_pointer() as Ptr<u8>)
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = (buf.as_pointer() as Ptr<u8>).to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -88,9 +84,7 @@ pub fn test_fputs_1() {
 }
 pub fn test_puts_2() {
     {
-        let mut __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"puts hello")
-            .to_c_string_iterator()
-            .collect();
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"puts hello").to_c_bytes();
         __bytes.push(b'\n');
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
@@ -101,7 +95,7 @@ pub fn test_puts_2() {
         b"puts variable",
     )));
     {
-        let mut __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
+        let mut __bytes = (*s.borrow()).to_c_bytes();
         __bytes.push(b'\n');
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,

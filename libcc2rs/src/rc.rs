@@ -655,6 +655,13 @@ impl<T> Iterator for Ptr<T> {
             None
         }
     }
+
+    // Lets collections built from the iterator (e.g. `std::string`'s
+    // constructors) allocate their storage once instead of growing it.
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let remaining = self.len().saturating_sub(self.get_offset());
+        (remaining, Some(remaining))
+    }
 }
 
 // Ptr iterator that yields values instead of pointers.

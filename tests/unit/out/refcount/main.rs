@@ -26,12 +26,11 @@ pub fn main() {
 fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     let argc: Value<i32> = Rc::new(RefCell::new(argc));
     let argv: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(argv));
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new(
-        ((*argv.borrow()).offset((0) as isize).read())
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = ((*argv.borrow()).offset((0) as isize).read()).to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     assert!(((*argc.borrow()) == 1));
     assert!((((*s.borrow()).len() - 1) > 0_usize));
     assert!((((*argc.borrow()) + ((((*s.borrow()).len() - 1) > 0_usize) as i32)) == 2));

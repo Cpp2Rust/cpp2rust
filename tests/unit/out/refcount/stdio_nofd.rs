@@ -32,9 +32,7 @@ pub fn test_fputc_fputs_0() {
     );
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"BCD\n")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"BCD\n").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -115,9 +113,7 @@ pub fn test_fputc_fputs_0() {
 pub fn test_puts_1() {
     assert!(
         ((({
-            let mut __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello from puts")
-                .to_c_string_iterator()
-                .collect();
+            let mut __bytes = Ptr::<u8>::from_string_literal(b"hello from puts").to_c_bytes();
             __bytes.push(b'\n');
             match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
@@ -143,9 +139,7 @@ pub fn test_fgets_getc_2() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"line1\nline2\n")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"line1\nline2\n").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -377,9 +371,7 @@ pub fn test_freopen_3() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -470,9 +462,7 @@ pub fn test_fseeko_4() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"hello world")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"hello world").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -584,9 +574,7 @@ pub fn test_rename_5() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"data")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"data").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -683,9 +671,7 @@ pub fn test_setvbuf_6() {
     assert!((((0 == 0) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::<u8>::from_string_literal(b"x")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"x").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
