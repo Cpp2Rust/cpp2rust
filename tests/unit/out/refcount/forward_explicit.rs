@@ -100,22 +100,16 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 5 })));
     assert!(
-        ((({ chosen_overload_0(({ forward_5(a.as_pointer(),) }),) }) as i32)
-            == (Overload_kLvalueOverload as i32))
+        ((({ chosen_overload_0(a.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((*(*a.borrow()).v.borrow()) == 5));
     assert!(
-        ((({ chosen_overload_1(({ forward_6(a.as_pointer(),) }),) }) as i32)
-            == (Overload_kRvalueOverload as i32))
+        ((({ chosen_overload_1(a.as_pointer(),) }) as i32) == (Overload_kRvalueOverload as i32))
     );
     assert!(((*(*a.borrow()).v.borrow()) == 5));
     let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 6 })));
     let moved: Value<Tracked> = Rc::new(RefCell::new(
-        ({
-            copy_or_move_into_param_4(Tracked::Tracked_pmutTracked_rv({
-                ({ forward_6(b.as_pointer()) })
-            }))
-        }),
+        ({ copy_or_move_into_param_4(Tracked::Tracked_pmutTracked_rv({ b.as_pointer() })) }),
     ));
     assert!(((*(*moved.borrow()).v.borrow()) == 6));
     assert!(((*(*moved.borrow()).copies.borrow()) == 0));
@@ -123,11 +117,7 @@ fn main_0() -> i32 {
     assert!(((*(*b.borrow()).v.borrow()) == 0));
     let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 7 })));
     let copied: Value<Tracked> = Rc::new(RefCell::new(
-        ({
-            copy_or_move_into_param_4(Tracked::Tracked_pconstTracked({
-                ({ forward_5(c.as_pointer()) })
-            }))
-        }),
+        ({ copy_or_move_into_param_4(Tracked::Tracked_pconstTracked({ c.as_pointer() })) }),
     ));
     assert!(((*(*copied.borrow()).v.borrow()) == 7));
     assert!(((*(*copied.borrow()).copies.borrow()) == 1));
@@ -135,16 +125,13 @@ fn main_0() -> i32 {
     assert!(((*(*c.borrow()).v.borrow()) == 7));
     let i: Value<i32> = Rc::new(RefCell::new(8));
     assert!(
-        ((({ chosen_overload_2(({ forward_7(i.as_pointer(),) }),) }) as i32)
-            == (Overload_kIntLvalueOverload as i32))
+        ((({ chosen_overload_2(i.as_pointer(),) }) as i32) == (Overload_kIntLvalueOverload as i32))
     );
     assert!(
-        ((({ chosen_overload_3(({ forward_8(i.as_pointer(),) }),) }) as i32)
-            == (Overload_kIntRvalueOverload as i32))
+        ((({ chosen_overload_3(i.as_pointer(),) }) as i32) == (Overload_kIntRvalueOverload as i32))
     );
     assert!(
-        ((({ chosen_overload_3(({ forward_9(i.as_pointer(),) }),) }) as i32)
-            == (Overload_kIntRvalueOverload as i32))
+        ((({ chosen_overload_3(i.as_pointer(),) }) as i32) == (Overload_kIntRvalueOverload as i32))
     );
     assert!(((*i.borrow()) == 8));
     return 0;

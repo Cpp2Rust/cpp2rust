@@ -55,20 +55,20 @@ pub unsafe fn chosen_overload_1(_a0: *mut Tracked) -> Overload {
     return Overload_kRvalueOverload;
 }
 pub unsafe fn forward_by_decltype_2(x: *mut Tracked) -> Overload {
-    return (unsafe { chosen_overload_0((unsafe { forward_3(x) })) });
+    return (unsafe { chosen_overload_0(x) });
 }
-pub unsafe fn forward_by_decltype_4(x: *mut Tracked) -> Overload {
-    return (unsafe { chosen_overload_1((unsafe { forward_5(x) })) });
+pub unsafe fn forward_by_decltype_3(x: *mut Tracked) -> Overload {
+    return (unsafe { chosen_overload_1(x) });
 }
-pub unsafe fn forward_abbreviated_6(x: *mut Tracked) -> Overload {
-    return (unsafe { chosen_overload_0((unsafe { forward_3(x) })) });
+pub unsafe fn forward_abbreviated_4(x: *mut Tracked) -> Overload {
+    return (unsafe { chosen_overload_0(x) });
 }
-pub unsafe fn forward_abbreviated_7(x: *mut Tracked) -> Overload {
-    return (unsafe { chosen_overload_1((unsafe { forward_5(x) })) });
+pub unsafe fn forward_abbreviated_5(x: *mut Tracked) -> Overload {
+    return (unsafe { chosen_overload_1(x) });
 }
-pub unsafe fn forward_abbreviated_pack_8(args_0: *mut Tracked, args_1: *mut Tracked) -> i32 {
-    return (((unsafe { chosen_overload_0((unsafe { forward_3(args_0) })) }) as i32)
-        + ((unsafe { chosen_overload_1((unsafe { forward_5(args_1) })) }) as i32));
+pub unsafe fn forward_abbreviated_pack_6(args_0: *mut Tracked, args_1: *mut Tracked) -> i32 {
+    return (((unsafe { chosen_overload_0(args_0) }) as i32)
+        + ((unsafe { chosen_overload_1(args_1) }) as i32));
 }
 pub fn main() {
     unsafe {
@@ -85,19 +85,19 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((unsafe {
             let mut _x: Tracked = Tracked::Tracked({ 4 });
-            forward_by_decltype_4(&mut _x)
+            forward_by_decltype_3(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
     let mut b: Tracked = Tracked::Tracked({ 5 });
     assert!(
-        (((unsafe { forward_abbreviated_6(&mut b,) }) as i32) == (Overload_kLvalueOverload as i32))
+        (((unsafe { forward_abbreviated_4(&mut b,) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((b.v) == (5)));
     assert!(
         (((unsafe {
             let mut _x: Tracked = Tracked::Tracked({ 6 });
-            forward_abbreviated_7(&mut _x)
+            forward_abbreviated_5(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
@@ -105,7 +105,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((unsafe {
             let mut _args: Tracked = Tracked::Tracked({ 8 });
-            forward_abbreviated_pack_8(&mut c, &mut _args)
+            forward_abbreviated_pack_6(&mut c, &mut _args)
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );
     assert!(((c.v) == (7)));

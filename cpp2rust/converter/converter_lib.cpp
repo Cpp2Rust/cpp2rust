@@ -1435,17 +1435,27 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
   return false;
 }
 
-const clang::Expr *IgnoreStdMove(const clang::Expr *expr) {
+bool IsCallToStdForward(const clang::CallExpr *expr) {
+  const auto *callee = expr->getDirectCallee();
+  if (!callee) {
+    return false;
+  }
+  const auto builtin_id = callee->getBuiltinID();
+  return builtin_id == clang::Builtin::BIforward ||
+         builtin_id == clang::Builtin::BIforward_like;
+}
+
+const clang::Expr *IgnoreStdMoveAndForward(const clang::Expr *expr) {
   if (const auto *call =
           clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
-      call && call->isCallToStdMove()) {
+      call && (call->isCallToStdMove() || IsCallToStdForward(call))) {
     return call->getArg(0);
   }
   return expr;
 }
 
 bool IsTemporaryObject(const clang::Expr *expr) {
-  const auto *operand = IgnoreStdMove(expr);
+  const auto *operand = IgnoreStdMoveAndForward(expr);
   if (operand != expr) {
     return !operand->isGLValue();
   }

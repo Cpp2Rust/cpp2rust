@@ -82,21 +82,21 @@ pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kRvalueOverload;
 }
 pub fn forward_by_decltype_2(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_0(({ forward_3((x).clone()) })) });
+    return ({ chosen_overload_0((x).clone()) });
 }
-pub fn forward_by_decltype_4(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_1(({ forward_5((x).clone()) })) });
+pub fn forward_by_decltype_3(x: Ptr<Tracked>) -> Overload {
+    return ({ chosen_overload_1((x).clone()) });
 }
-pub fn forward_abbreviated_6(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_0(({ forward_3((x).clone()) })) });
+pub fn forward_abbreviated_4(x: Ptr<Tracked>) -> Overload {
+    return ({ chosen_overload_0((x).clone()) });
 }
-pub fn forward_abbreviated_7(x: Ptr<Tracked>) -> Overload {
-    return ({ chosen_overload_1(({ forward_5((x).clone()) })) });
+pub fn forward_abbreviated_5(x: Ptr<Tracked>) -> Overload {
+    return ({ chosen_overload_1((x).clone()) });
 }
-pub fn forward_abbreviated_pack_8(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> i32 {
+pub fn forward_abbreviated_pack_6(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> i32 {
     return {
-        let _lhs = (({ chosen_overload_0(({ forward_3((args_0).clone()) })) }) as i32);
-        _lhs + (({ chosen_overload_1(({ forward_5((args_1).clone()) })) }) as i32)
+        let _lhs = (({ chosen_overload_0((args_0).clone()) }) as i32);
+        _lhs + (({ chosen_overload_1((args_1).clone()) }) as i32)
     };
 }
 pub fn main() {
@@ -113,20 +113,20 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 4 })));
-            forward_by_decltype_4(_x.as_pointer())
+            forward_by_decltype_3(_x.as_pointer())
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
     let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 5 })));
     assert!(
-        ((({ forward_abbreviated_6(b.as_pointer(),) }) as i32)
+        ((({ forward_abbreviated_4(b.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
     assert!(((*(*b.borrow()).v.borrow()) == 5));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 6 })));
-            forward_abbreviated_7(_x.as_pointer())
+            forward_abbreviated_5(_x.as_pointer())
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
@@ -134,7 +134,7 @@ fn main_0() -> i32 {
     assert!(
         (({
             let _args: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 8 })));
-            forward_abbreviated_pack_8(c.as_pointer(), _args.as_pointer())
+            forward_abbreviated_pack_6(c.as_pointer(), _args.as_pointer())
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );
     assert!(((*(*c.borrow()).v.borrow()) == 7));
