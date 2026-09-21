@@ -55,7 +55,7 @@ public:
   static void EmitOpaqueRecords(std::string &out);
   static void EmitGlobalInits(Model model, std::string &out);
 
-  static void EmitVTableImpls(std::string &out);
+  static void EmitVirtualMethods(std::string &out);
 
   virtual bool VisitBuiltinType(clang::BuiltinType *type);
 
@@ -603,9 +603,9 @@ protected:
                              const std::string_view signature,
                              bool (*predicate)(clang::CXXMethodDecl *));
 
-  void ConvertVTableMethods(clang::CXXRecordDecl *decl);
+  void ConvertVirtualMethods(clang::CXXRecordDecl *decl);
 
-  bool ConvertVTableMethod(clang::CXXMethodDecl *decl);
+  bool ConvertOutOfLineVirtualMethod(clang::CXXMethodDecl *decl);
 
   void AddOrdTrait(const clang::CXXRecordDecl *decl);
 
@@ -914,11 +914,11 @@ protected:
     std::string header;
     std::string body;
   };
-  static std::map<std::string, DeferredBlock> vtable_impls_;
+  static std::map<std::string, DeferredBlock> virtual_methods_;
 
   static void EmitDeferredBlock(const DeferredBlock &block, std::string &out);
 
-  DeferredBlock &VTableImplFor(const clang::CXXRecordDecl *decl);
+  DeferredBlock &VirtualMethodsFor(const clang::CXXRecordDecl *decl);
 
   std::string hoisted_records_;
 
