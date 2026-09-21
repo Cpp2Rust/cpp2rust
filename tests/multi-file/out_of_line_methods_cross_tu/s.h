@@ -12,3 +12,17 @@ public:
 
   int v;
 };
+
+class Base {
+public:
+  virtual ~Base() {}
+  virtual int apply(int x) = 0;
+};
+
+class Derived : public Base {
+public:
+  Derived(int factor);
+  int apply(int x) override;
+
+  int factor;
+};

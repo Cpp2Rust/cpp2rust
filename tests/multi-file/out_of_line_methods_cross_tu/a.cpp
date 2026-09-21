@@ -8,5 +8,9 @@ int main() {
   s.set(4);
   assert(s.get() == 4);
   assert(s.add(2) == 6);
+
+  Derived derived(3);
+  Base *base = &derived;
+  assert(base->apply(5) == 15);
   return 0;
 }

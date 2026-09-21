@@ -33,6 +33,36 @@ impl ByteRepr for S {
         }
     }
 }
+pub trait Base {
+    fn apply(&self, x: i32) -> i32;
+}
+#[derive(Default)]
+pub struct Derived {
+    pub factor: Value<i32>,
+}
+impl Derived {}
+impl Clone for Derived {
+    fn clone(&self) -> Self {
+        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
+            factor: Rc::new(RefCell::new((*self.factor.borrow()))),
+        }));
+        let this: Ptr<Derived> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Derived {
+    fn byte_size() -> usize {
+        16
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.factor.borrow()).to_bytes(&mut buf[8..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            factor: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -43,6 +73,11 @@ fn main_0() -> i32 {
     ({ SImpl::set(&s.as_pointer(), 4) });
     assert!((({ SImpl::get(&s.as_pointer(),) }) == 4));
     assert!((({ SImpl::add(&s.as_pointer(), 2,) }) == 6));
+    let derived: Value<Derived> = Rc::new(RefCell::new(Derived::Derived({ 3 })));
+    let base: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
+        (derived.as_pointer()).to_dyn::<dyn Base>(|w| w),
+    ));
+    assert!((({ (*(*base.borrow()).upgrade().deref()).apply(5,) }) == 15));
     return 0;
 }
 impl S {
@@ -55,7 +90,24 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
+impl Derived {
+    pub fn Derived(factor: i32) -> Self {
+        let factor: Value<i32> = Rc::new(RefCell::new(factor));
+        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
+            factor: Rc::new(RefCell::new((*factor.borrow()))),
+        }));
+        let this: Ptr<Derived> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl S {}
+impl Derived {}
+impl Base for Derived {
+    fn apply(&self, x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*self.factor.borrow()) * (*x.borrow()));
+    }
+}
 pub trait SImpl {
     fn destructor(&self) {
         unimplemented!()

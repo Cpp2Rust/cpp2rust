@@ -12,6 +12,8 @@ public:
 
   void EmitFilePreamble() override;
 
+  static void EmitMethodsOnPtr(std::string &out);
+
   bool VisitRecordType(clang::RecordType *type) override;
 
   bool VisitConstantArrayType(clang::ConstantArrayType *type) override;
@@ -242,10 +244,24 @@ public:
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                        const clang::CXXMethodDecl *method) override;
+
   std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
+
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
+
+  struct MethodsOnPtr {
+    DeferredBlock trait;
+    DeferredBlock impl;
+  };
+
+  // record name -> trait and impl for Ptr<record>, emitted after all
+  // translation units.
+  static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
+
   MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
+
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 
   std::pair<std::string, std::string>

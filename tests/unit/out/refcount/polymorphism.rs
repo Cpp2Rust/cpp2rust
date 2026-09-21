@@ -11,18 +11,8 @@ pub trait Animal {
 }
 #[derive(Clone, ByteRepr, Default)]
 pub struct Dog {}
-impl Animal for Dog {
-    fn bark(&self) -> bool {
-        return true;
-    }
-}
 #[derive(Clone, ByteRepr, Default)]
 pub struct Cat {}
-impl Animal for Cat {
-    fn bark(&self) -> bool {
-        return false;
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -41,6 +31,16 @@ fn main_0() -> i32 {
     ));
     assert!((*eat1.borrow()) && (!(*eat2.borrow())));
     return 0;
+}
+impl Animal for Cat {
+    fn bark(&self) -> bool {
+        return false;
+    }
+}
+impl Animal for Dog {
+    fn bark(&self) -> bool {
+        return true;
+    }
 }
 pub trait CatImpl {
     fn meow(&self) -> bool;

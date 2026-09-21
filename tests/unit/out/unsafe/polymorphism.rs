@@ -12,22 +12,12 @@ pub unsafe trait Animal {
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Dog {}
-unsafe impl Animal for Dog {
-    unsafe fn bark(&self) -> bool {
-        return true;
-    }
-}
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Cat {}
 impl Cat {
     unsafe fn meow(&self) -> bool {
         return true;
-    }
-}
-unsafe impl Animal for Cat {
-    unsafe fn bark(&self) -> bool {
-        return false;
     }
 }
 pub fn main() {
@@ -45,5 +35,15 @@ unsafe fn main_0() -> i32 {
     let mut eat2: bool = (unsafe { (*(animal).cast_const()).bark() });
     assert!((eat1) && (!(eat2)));
     return 0;
+}
+unsafe impl Animal for Cat {
+    unsafe fn bark(&self) -> bool {
+        return false;
+    }
+}
+unsafe impl Animal for Dog {
+    unsafe fn bark(&self) -> bool {
+        return true;
+    }
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -10,3 +10,7 @@ int S::add(int x) {
   v += x;
   return v;
 }
+
+Derived::Derived(int factor) : factor(factor) {}
+
+int Derived::apply(int x) { return factor * x; }
