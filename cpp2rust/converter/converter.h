@@ -916,8 +916,7 @@ protected:
   };
   static std::map<std::string, DeferredBlock> vtable_impls_;
 
-  static void EmitDeferredBlock(const DeferredBlock &block,
-                                std::string &out);
+  static void EmitDeferredBlock(const DeferredBlock &block, std::string &out);
 
   DeferredBlock &VTableImplFor(const clang::CXXRecordDecl *decl);
 
