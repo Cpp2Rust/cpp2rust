@@ -4597,13 +4597,28 @@ void Converter::AddOrdTrait(const clang::CXXRecordDecl *decl) {
       break;
     }
   };
+  auto consider_decl = [&](const clang::NamedDecl *found) {
+    if (const auto *tmpl =
+            clang::dyn_cast<clang::FunctionTemplateDecl>(found)) {
+      for (const auto *spec : tmpl->specializations()) {
+        consider(spec);
+      }
+      return;
+    }
+    consider(clang::dyn_cast<clang::FunctionDecl>(found));
+  };
   for (const auto *method : decl->methods()) {
     consider(method);
   }
   for (auto op : {clang::OO_EqualEqual, clang::OO_Less, clang::OO_Spaceship}) {
     auto name = ctx_.DeclarationNames.getCXXOperatorName(op);
     for (const auto *found : decl->getDeclContext()->lookup(name)) {
-      consider(clang::dyn_cast<clang::FunctionDecl>(found));
+      consider_decl(found);
+    }
+  }
+  for (const auto *friend_decl : decl->friends()) {
+    if (const auto *found = friend_decl->getFriendDecl()) {
+      consider_decl(found);
     }
   }
 
