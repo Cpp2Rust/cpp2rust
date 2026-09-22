@@ -35,7 +35,23 @@ pub unsafe fn test_popcountl_7() {
     assert!(((((0_u64.count_ones() as i32) == (0)) as i32) != 0));
     assert!(((((255_u64.count_ones() as i32) == (8)) as i32) != 0));
 }
-pub unsafe fn test_mul_overflow_long_8() {
+pub unsafe fn test_clzl_8() {
+    assert!(((((1_u64.leading_zeros() as i32) == (63)) as i32) != 0));
+    assert!(((((9223372036854775808_u64.leading_zeros() as i32) == (0)) as i32) != 0));
+}
+pub unsafe fn test_inff_9() {
+    let mut inf: f32 = f32::INFINITY;
+    assert!(((((inf) > (0.0E+0)) as i32) != 0));
+    assert!(((((inf) == ((inf) * (2.0E+0))) as i32) != 0));
+    assert!((((((1.0E+0) / (inf)) == (0.0E+0)) as i32) != 0));
+}
+pub unsafe fn test_nanf_10() {
+    let mut nan: f32 = f32::NAN;
+    assert!(((((nan) != (nan)) as i32) != 0));
+    assert!(((!((((nan) < (0.0E+0)) as i32) != 0) as i32) != 0));
+    assert!(((!((((nan) > (0.0E+0)) as i32) != 0) as i32) != 0));
+}
+pub unsafe fn test_mul_overflow_long_11() {
     let mut r: i64 = 0_i64;
     assert!(
         ((!({
@@ -52,7 +68,7 @@ pub unsafe fn test_mul_overflow_long_8() {
         ovf
     });
 }
-pub unsafe fn test_mul_overflow_long_long_9() {
+pub unsafe fn test_mul_overflow_long_long_12() {
     let mut r: i64 = 0_i64;
     assert!(
         ((!({
@@ -84,8 +100,11 @@ unsafe fn main_0() -> i32 {
     (unsafe { test_bswap64_5() });
     (unsafe { test_ctzl_6() });
     (unsafe { test_popcountl_7() });
-    (unsafe { test_mul_overflow_long_8() });
-    (unsafe { test_mul_overflow_long_long_9() });
+    (unsafe { test_clzl_8() });
+    (unsafe { test_inff_9() });
+    (unsafe { test_nanf_10() });
+    (unsafe { test_mul_overflow_long_11() });
+    (unsafe { test_mul_overflow_long_long_12() });
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
