@@ -56,6 +56,25 @@ void self_ref_push(std::vector<Chunk> *comps) {
   comps->push_back(comps->front());
 }
 
+struct Pair {
+  int first;
+  int second;
+  Pair() : first(-1), second(-1) {}
+  Pair(int a) : first(a), second(0) {}
+  Pair(int a, int b) : first(a), second(b * 2) {}
+};
+
+void emplace_ctor_args(std::vector<Pair> *pairs) {
+  pairs->emplace_back();
+  pairs->emplace_back(3);
+  pairs->emplace_back(4, 5);
+}
+
+void emplace_scalar(std::vector<long> *values, int x) {
+  values->emplace_back();
+  values->emplace_back(x);
+}
+
 int main() {
   std::vector<std::vector<uint8_t>> vecs;
   push_param(&vecs);
@@ -98,6 +117,19 @@ int main() {
   self_ref_push(&chunks);
   assert(chunks.size() == 3);
   assert(chunks[2].data == 42);
+
+  std::vector<Pair> pairs;
+  emplace_ctor_args(&pairs);
+  assert(pairs.size() == 3);
+  assert(pairs[0].first == -1 && pairs[0].second == -1);
+  assert(pairs[1].first == 3 && pairs[1].second == 0);
+  assert(pairs[2].first == 4 && pairs[2].second == 10);
+
+  std::vector<long> values;
+  emplace_scalar(&values, 7);
+  assert(values.size() == 2);
+  assert(values[0] == 0);
+  assert(values[1] == 7);
 
   return 0;
 }

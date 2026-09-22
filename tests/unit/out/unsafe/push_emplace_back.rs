@@ -58,26 +58,85 @@ pub unsafe fn emplace_local_from_field_4(mut jpg: *mut JPEGData, mut cond: bool)
     } else {
         dest = (&mut (*jpg).app_data as *mut Vec<Vec<u8>>);
     }
-    (*dest).push(
-        core::slice::from_raw_parts(
+    {
+        let __init = core::slice::from_raw_parts(
             head.as_mut_ptr(),
             (head.as_mut_ptr().offset((3) as isize)).offset_from(head.as_mut_ptr()) as usize,
         )
         .iter()
         .map(|x| u8::try_from(x.clone()).ok().unwrap())
-        .collect(),
-    );
+        .collect();
+        (*dest).push(__init)
+    };
 }
 pub unsafe fn nested_emplace_move_5(mut bw: *mut Writer) {
     {
-        let __arg = (*bw).chunk;
-        (*(*bw).output).push(__arg)
+        let __init = (*bw).chunk;
+        (*(*bw).output).push(__init)
     };
 }
 pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     {
         let a0_clone = (*((*comps).first_mut().unwrap())).clone();
         (*comps).push(a0_clone)
+    };
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Pair {
+    pub first: i32,
+    pub second: i32,
+}
+impl Pair {
+    pub unsafe fn Pair1() -> Self {
+        let mut this = Self {
+            first: -1_i32,
+            second: -1_i32,
+        };
+        this
+    }
+    pub unsafe fn Pair2(mut a: i32) -> Self {
+        let mut this = Self {
+            first: a,
+            second: 0,
+        };
+        this
+    }
+    pub unsafe fn Pair3(mut a: i32, mut b: i32) -> Self {
+        let mut this = Self {
+            first: a,
+            second: ((b) * (2)),
+        };
+        this
+    }
+}
+impl Default for Pair {
+    fn default() -> Self {
+        unsafe { Pair::Pair1() }
+    }
+}
+pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
+    {
+        let __init = Pair::Pair1();
+        (*pairs).push(__init)
+    };
+    {
+        let __init = Pair::Pair2({ 3 });
+        (*pairs).push(__init)
+    };
+    {
+        let __init = Pair::Pair3({ 4 }, { 5 });
+        (*pairs).push(__init)
+    };
+}
+pub unsafe fn emplace_scalar_8(mut values: *mut Vec<i64>, mut x: i32) {
+    {
+        let __init = 0_i64;
+        (*values).push(__init)
+    };
+    {
+        let __init = x as i64;
+        (*values).push(__init)
     };
 }
 pub fn main() {
@@ -122,6 +181,17 @@ unsafe fn main_0() -> i32 {
     (unsafe { self_ref_push_6((&mut chunks as *mut Vec<Chunk>)) });
     assert!(((chunks.len()) == (3_usize)));
     assert!(((chunks[(2_usize)].data) == (42)));
+    let mut pairs: Vec<Pair> = Vec::new();
+    (unsafe { emplace_ctor_args_7((&mut pairs as *mut Vec<Pair>)) });
+    assert!(((pairs.len()) == (3_usize)));
+    assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
+    assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
+    assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
+    let mut values: Vec<i64> = Vec::new();
+    (unsafe { emplace_scalar_8((&mut values as *mut Vec<i64>), 7) });
+    assert!(((values.len()) == (2_usize)));
+    assert!(((values[(0_usize)]) == (0_i64)));
+    assert!(((values[(1_usize)]) == (7_i64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
