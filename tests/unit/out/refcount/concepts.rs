@@ -6,24 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Sized {}
-impl Clone for Sized {
-    fn clone(&self) -> Self {
-        let __this: Value<Sized> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Sized> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Sized {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 pub fn is_small_0() -> bool {
     return true;
 }
@@ -58,13 +42,14 @@ pub fn pick_6(x: f32) -> i32 {
     return 2;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     assert!(({ is_small_0() }));
     assert!(!({ is_small_1() }));
     assert!(true);
-    assert!(!false);
+    assert!(!(false));
     assert!(({ has_size_2() }));
     assert!(!({ has_size_3() }));
     assert!((({ pick_4(1,) }) == 1));
@@ -80,3 +65,4 @@ impl SizedImpl for Ptr<Sized> {
         return 4;
     }
 }
+pub fn __cpp2rust_init_globals() {}

@@ -46,6 +46,7 @@ pub unsafe fn pick_6(mut x: f32) -> i32 {
 }
 pub fn main() {
     unsafe {
+        __cpp2rust_init_globals();
         std::process::exit(main_0() as i32);
     }
 }
@@ -53,7 +54,7 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { is_small_0() }));
     assert!(!(unsafe { is_small_1() }));
     assert!(true);
-    assert!(!false);
+    assert!(!(false));
     assert!((unsafe { has_size_2() }));
     assert!(!(unsafe { has_size_3() }));
     assert!(((unsafe { pick_4(1,) }) == (1)));
@@ -61,3 +62,4 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { pick_6(1.0E+0,) }) == (2)));
     return 0;
 }
+pub unsafe fn __cpp2rust_init_globals() {}
