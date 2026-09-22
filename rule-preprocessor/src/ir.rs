@@ -164,6 +164,9 @@ pub enum BodyFragment {
     VaArgs {
         va_args: std::marker::PhantomData<()>,
     },
+    Init {
+        init: std::marker::PhantomData<()>,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

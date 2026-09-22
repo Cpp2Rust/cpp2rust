@@ -199,6 +199,7 @@ impl<'tcx> FnDecl<'tcx> {
                     panic!("Argument is not a simple binding");
                 }
             })
+            .filter(|name| name != "init")
             .collect()
     }
 
