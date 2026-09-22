@@ -3582,6 +3582,7 @@ void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
 }
 
 void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
+  HoistMaterializedTempBindings hoist_temps(*this, /*as_block=*/true);
   auto ctor = expr->getConstructor();
   StrCat(GetRecordName(ctor->getParent()), token::kDoubleColon,
          GetCtorName(ctor));
@@ -3604,7 +3605,6 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     if (arg_idx < expr->getNumArgs()) {
       clang::Expr *arg = expr->getArg(arg_idx++);
       PushBrace brace(*this);
-      HoistMaterializedTempBindings hoist_temps(*this);
 
       if (has_default) {
         StrCat("Some(");

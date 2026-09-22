@@ -860,10 +860,12 @@ protected:
     std::string *prev;
     std::string bindings;
     std::optional<Buffer> buf;
+    bool as_block;
 
   public:
-    explicit HoistMaterializedTempBindings(Converter &c)
-        : c(c), prev(c.materialized_temp_bindings_), buf(c) {
+    explicit HoistMaterializedTempBindings(Converter &c, bool as_block = false)
+        : c(c), prev(c.materialized_temp_bindings_), buf(c),
+          as_block(as_block) {
       c.materialized_temp_bindings_ = &bindings;
     }
     ~HoistMaterializedTempBindings() {
@@ -871,6 +873,10 @@ protected:
       std::string body = std::move(*buf).str();
       buf.reset();
 
+      if (as_block && !bindings.empty()) {
+        c.StrCat('{', bindings, body, '}');
+        return;
+      }
       c.StrCat(bindings, body);
     }
     HoistMaterializedTempBindings(const HoistMaterializedTempBindings &) =
