@@ -74,6 +74,8 @@ std::string GetExprMapKey(const std::string &str) {
   return result;
 }
 
+constexpr std::string_view kPackMarker = "&&...";
+
 std::string GetTypeMapKey(const std::string &str) {
   auto n = str.find_first_of("<[");
   if (n == std::string::npos || str[n] == '<') {
@@ -898,6 +900,13 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
   return normalizeTranslationRule(std::move(type));
 }
 
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl) {
+  if (auto *primary = decl->getPrimaryTemplate()) {
+    decl = primary->getTemplatedDecl();
+  }
+  return decl->getNumParams() && decl->parameters().back()->isParameterPack();
+}
+
 std::string ToString(const clang::NamedDecl *decl) {
   if (auto *record = clang::dyn_cast<clang::RecordDecl>(decl);
       record && !record->getIdentifier()) {
@@ -970,12 +979,26 @@ std::string ToString(const clang::NamedDecl *decl) {
     func_decl->printQualifiedName(os, getPrintPolicy());
   }
 
+  bool has_pack = HasFunctionParameterPack(func_decl);
+  unsigned num_params = func_decl->getNumParams();
+  if (has_pack) {
+    const auto *primary = func_decl->getPrimaryTemplate();
+    num_params =
+        (primary ? primary->getTemplatedDecl() : func_decl)->getNumParams() - 1;
+  }
+
   os << '(';
-  for (unsigned i = 0, n = func_decl->getNumParams(); i < n; ++i) {
+  for (unsigned i = 0; i < num_params; ++i) {
     if (i) {
       os << ", ";
     }
     os << ToString(func_decl->getParamDecl(i)->getType());
+  }
+  if (has_pack) {
+    if (num_params) {
+      os << ", ";
+    }
+    os << kPackMarker;
   }
   if (func_decl->isVariadic()) {
     if (func_decl->getNumParams()) {
