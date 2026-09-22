@@ -263,7 +263,18 @@ pub fn emplace_ctor_args_7(pairs: Ptr<Vec<Pair>>) {
         (*pairs.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
 }
-pub fn emplace_scalar_8(values: Ptr<Vec<i64>>, x: i32) {
+pub fn emplace_deque_8(queue: Ptr<Vec<Pair>>) {
+    let queue: Value<Ptr<Vec<Pair>>> = Rc::new(RefCell::new(queue));
+    {
+        let __init = Pair::Pair3({ 6 }, { 7 });
+        (*queue.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+    };
+    {
+        let __init = Pair::Pair1();
+        (*queue.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
+    };
+}
+pub fn emplace_scalar_9(values: Ptr<Vec<i64>>, x: i32) {
     let values: Value<Ptr<Vec<i64>>> = Rc::new(RefCell::new(values));
     let x: Value<i32> = Rc::new(RefCell::new(x));
     {
@@ -464,8 +475,36 @@ fn main_0() -> i32 {
             .borrow())
                 == 10)
     );
+    let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Default::default()));
+    ({ emplace_deque_8((queue.as_pointer())) });
+    assert!(
+        ((*(*(queue.as_pointer() as Ptr<Pair>).upgrade().deref())
+            .first
+            .borrow())
+            == 6)
+            && ((*(*(queue.as_pointer() as Ptr<Pair>).upgrade().deref())
+                .second
+                .borrow())
+                == 14)
+    );
+    assert!(
+        ((*(*(queue.as_pointer() as Ptr<Pair>)
+            .to_last()
+            .upgrade()
+            .deref())
+        .first
+        .borrow())
+            == -1_i32)
+            && ((*(*(queue.as_pointer() as Ptr<Pair>)
+                .to_last()
+                .upgrade()
+                .deref())
+            .second
+            .borrow())
+                == -1_i32)
+    );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
-    ({ emplace_scalar_8((values.as_pointer()), 7) });
+    ({ emplace_scalar_9((values.as_pointer()), 7) });
     assert!(((*values.borrow()).len() == 2_usize));
     assert!((((values.as_pointer() as Ptr<i64>).offset(0_usize).read()) == 0_i64));
     assert!((((values.as_pointer() as Ptr<i64>).offset(1_usize).read()) == 7_i64));

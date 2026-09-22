@@ -129,7 +129,17 @@ pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
         (*pairs).push(__init)
     };
 }
-pub unsafe fn emplace_scalar_8(mut values: *mut Vec<i64>, mut x: i32) {
+pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
+    {
+        let __init = Pair::Pair3({ 6 }, { 7 });
+        (*queue).push(__init)
+    };
+    {
+        let __init = Pair::Pair1();
+        (*queue).push(__init)
+    };
+}
+pub unsafe fn emplace_scalar_9(mut values: *mut Vec<i64>, mut x: i32) {
     {
         let __init = 0_i64;
         (*values).push(__init)
@@ -187,8 +197,18 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
     assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
     assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
+    let mut queue: Vec<Pair> = Default::default();
+    (unsafe { emplace_deque_8((&mut queue as *mut Vec<Pair>)) });
+    assert!(
+        (((*((queue).first_mut().unwrap())).first) == (6))
+            && (((*((queue).first_mut().unwrap())).second) == (14))
+    );
+    assert!(
+        (((*(queue.last_mut().unwrap())).first) == (-1_i32))
+            && (((*(queue.last_mut().unwrap())).second) == (-1_i32))
+    );
     let mut values: Vec<i64> = Vec::new();
-    (unsafe { emplace_scalar_8((&mut values as *mut Vec<i64>), 7) });
+    (unsafe { emplace_scalar_9((&mut values as *mut Vec<i64>), 7) });
     assert!(((values.len()) == (2_usize)));
     assert!(((values[(0_usize)]) == (0_i64)));
     assert!(((values[(1_usize)]) == (7_i64)));

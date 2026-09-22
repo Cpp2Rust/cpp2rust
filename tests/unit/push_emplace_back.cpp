@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstdint>
+#include <deque>
 #include <vector>
 
 struct Chunk {
@@ -70,6 +71,11 @@ void emplace_ctor_args(std::vector<Pair> *pairs) {
   pairs->emplace_back(4, 5);
 }
 
+void emplace_deque(std::deque<Pair> *queue) {
+  queue->emplace_back(6, 7);
+  queue->emplace_back();
+}
+
 void emplace_scalar(std::vector<long> *values, int x) {
   values->emplace_back();
   values->emplace_back(x);
@@ -124,6 +130,11 @@ int main() {
   assert(pairs[0].first == -1 && pairs[0].second == -1);
   assert(pairs[1].first == 3 && pairs[1].second == 0);
   assert(pairs[2].first == 4 && pairs[2].second == 10);
+
+  std::deque<Pair> queue;
+  emplace_deque(&queue);
+  assert(queue.front().first == 6 && queue.front().second == 14);
+  assert(queue.back().first == -1 && queue.back().second == -1);
 
   std::vector<long> values;
   emplace_scalar(&values, 7);
