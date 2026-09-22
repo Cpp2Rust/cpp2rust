@@ -17,7 +17,7 @@ pub unsafe fn agg_0(mut n: i32) -> i32 {
     let mut buf256: [u8; 256] = [0_u8; 256];
     let mut arr64: [i32; 64] = [0_i32; 64];
     let mut longs: [i64; 33] = [0_i64; 33];
-    let mut p: Point = <Point>::default();
+    let mut p: Point = Point { x: 0_i32, y: 0_i32 };
     let mut ptr: *mut i32 = std::ptr::null_mut();
     let mut fp: Option<unsafe fn(i32) -> i32> = None;
     let mut file: *mut ::libc::FILE = std::ptr::null_mut();

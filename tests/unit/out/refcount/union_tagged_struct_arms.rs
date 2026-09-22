@@ -203,7 +203,11 @@ fn main_0() -> i32 {
             Ptr::<u8>::from_string_literal(b"c"),
         ])));
     );
-    let p_list: Value<Branch> = <Value<Branch>>::default();
+    let p_list: Value<Branch> = Rc::new(RefCell::new(Branch {
+        choice: Rc::new(RefCell::new(Choice_enum_C_LIST)),
+        index: Rc::new(RefCell::new(0_i32)),
+        v: Rc::new(RefCell::new(<anon_0>::default())),
+    }));
     (*(*p_list.borrow()).choice.borrow_mut()) = Choice_enum_C_LIST;
     (*(*p_list.borrow()).index.borrow_mut()) = 0;
     (*(*(*(*p_list.borrow()).v.borrow()).list().upgrade().deref())
@@ -233,7 +237,11 @@ fn main_0() -> i32 {
             == ('b' as i32)) as i32)
             != 0)
     );
-    let p_letters: Value<Branch> = <Value<Branch>>::default();
+    let p_letters: Value<Branch> = Rc::new(RefCell::new(Branch {
+        choice: Rc::new(RefCell::new(Choice_enum_C_LIST)),
+        index: Rc::new(RefCell::new(0_i32)),
+        v: Rc::new(RefCell::new(<anon_0>::default())),
+    }));
     (*(*p_letters.borrow()).choice.borrow_mut()) = Choice_enum_C_LETTERS;
     (*(*p_letters.borrow()).index.borrow_mut()) = 1;
     (*(*(*(*p_letters.borrow()).v.borrow())
@@ -276,7 +284,11 @@ fn main_0() -> i32 {
             == 25) as i32)
             != 0)
     );
-    let p_integers: Value<Branch> = <Value<Branch>>::default();
+    let p_integers: Value<Branch> = Rc::new(RefCell::new(Branch {
+        choice: Rc::new(RefCell::new(Choice_enum_C_LIST)),
+        index: Rc::new(RefCell::new(0_i32)),
+        v: Rc::new(RefCell::new(<anon_0>::default())),
+    }));
     (*(*p_integers.borrow()).choice.borrow_mut()) = Choice_enum_C_INTEGERS;
     (*(*p_integers.borrow()).index.borrow_mut()) = 2;
     (*(*(*(*p_integers.borrow()).v.borrow())

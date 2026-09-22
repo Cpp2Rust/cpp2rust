@@ -24,8 +24,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut o: Outer = <Outer>::default();
-    let mut info: Outer_RunInfo = <Outer_RunInfo>::default();
+    let mut o: Outer = Outer {
+        runs: Default::default(),
+    };
+    let mut info: Outer_RunInfo = Outer_RunInfo {
+        block_idx: 0_i32,
+        num_extra_zero_runs: 0_i32,
+    };
     info.block_idx = 1;
     info.num_extra_zero_runs = 2;
     {

@@ -74,7 +74,9 @@ unsafe fn main_0() -> i32 {
     if ((it.p) != (arr.as_mut_ptr())) {
         return 1;
     }
-    let mut def: Partial = <Partial>::default();
+    let mut def: Partial = Partial {
+        p: std::ptr::null_mut(),
+    };
     if !((def.p).is_null()) {
         return 1;
     }

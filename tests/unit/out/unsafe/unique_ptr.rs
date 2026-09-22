@@ -75,7 +75,7 @@ pub unsafe fn DoStuffWithSafePointer_0(safe_ptr: *mut Option<Box<SafePointer>>) 
 pub unsafe fn Consume_1(mut safe_ptr: Option<Box<SafePointer>>) -> i32 {
     let mut x: Option<Box<SafePointer>> = safe_ptr.take();
     let mut p: Option<Box<Pair>> = Some(Box::from_raw(
-        (Box::leak(Box::new(<Pair>::default())) as *mut Pair),
+        (Box::leak(Box::new(Pair { x: 0_i32, y: 0_i32 })) as *mut Pair),
     ));
     return ((*(*x.as_deref_mut().unwrap()).ptr.as_deref_mut().unwrap())
         + ((*p.as_deref_mut().unwrap()).x));
@@ -130,7 +130,7 @@ pub unsafe fn RndStuff_2() {
     }
     x3 = Some(Box::from_raw(Box::leak(
         (0..50_usize)
-            .map(|_| <Pair>::default())
+            .map(|_| Pair { x: 0_i32, y: 0_i32 })
             .collect::<Box<[Pair]>>(),
     )));
     let mut i: i32 = 0;

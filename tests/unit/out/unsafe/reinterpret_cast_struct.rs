@@ -19,7 +19,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: Point = <Point>::default();
+    let mut p: Point = Point { x: 0_i32, y: 0_i32 };
     p.x = 67305985;
     p.y = 134678021;
     let mut bytes: *mut u8 = ((&mut p as *mut Point) as *mut u8);

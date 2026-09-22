@@ -24,15 +24,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let array: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..100_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
+        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     (*array.borrow()).delete();
     let filled: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..4_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
+        (0..4_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 4) {

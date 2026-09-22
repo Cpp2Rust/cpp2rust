@@ -200,7 +200,10 @@ fn main_0() -> i32 {
             .deref())
         .is_empty()
     );
-    let jpg: Value<JPEGData> = Rc::new(RefCell::new(<JPEGData>::default()));
+    let jpg: Value<JPEGData> = Rc::new(RefCell::new(JPEGData {
+        com_data: Rc::new(RefCell::new(Vec::new())),
+        app_data: Rc::new(RefCell::new(Vec::new())),
+    }));
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*(*jpg.borrow()).com_data.borrow()).len() == 1_usize));
     assert!(
@@ -248,7 +251,12 @@ fn main_0() -> i32 {
     let chunks: Value<Vec<Chunk>> = Rc::new(RefCell::new(Vec::new()));
     ({ shrink_through_ptr_2((chunks.as_pointer())) });
     assert!((*chunks.borrow()).is_empty());
-    let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::default()));
+    let w: Value<Writer> = Rc::new(RefCell::new(Writer {
+        output: Rc::new(RefCell::new(Ptr::<Vec<Chunk>>::null())),
+        chunk: Rc::new(RefCell::new(Chunk {
+            data: Rc::new(RefCell::new(0_i32)),
+        })),
+    }));
     (*(*(*w.borrow()).chunk.borrow()).data.borrow_mut()) = 42;
     (*(*w.borrow()).output.borrow_mut()) = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });

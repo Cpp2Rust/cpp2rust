@@ -60,7 +60,7 @@ impl ArrayMember {
 impl Default for ArrayMember {
     fn default() -> Self {
         ArrayMember {
-            items: std::array::from_fn::<_, 3, _>(|_| <S>::default()),
+            items: std::array::from_fn::<_, 3, _>(|_| S {}),
         }
     }
 }

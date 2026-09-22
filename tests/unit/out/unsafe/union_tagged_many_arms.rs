@@ -39,24 +39,39 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Slot = <Slot>::default();
+    let mut a: Slot = Slot {
+        tag: Tag_enum_T_NUM_S,
+        payload: <anon_0>::default(),
+    };
     a.tag = Tag_enum_T_NUM_S;
     a.payload.signed_n = (-7_i32 as i64);
     assert!(((((a.payload.signed_n) == (-7_i32 as i64)) as i32) != 0));
-    let mut b: Slot = <Slot>::default();
+    let mut b: Slot = Slot {
+        tag: Tag_enum_T_NUM_S,
+        payload: <anon_0>::default(),
+    };
     b.tag = Tag_enum_T_NUM_U;
     b.payload.unsigned_n = 3735928559_u64;
     assert!(((((b.payload.unsigned_n) == (3735928559_u64)) as i32) != 0));
-    let mut c: Slot = <Slot>::default();
+    let mut c: Slot = Slot {
+        tag: Tag_enum_T_NUM_S,
+        payload: <anon_0>::default(),
+    };
     c.tag = Tag_enum_T_TEXT;
     c.payload.text = (c"hello".as_ptr().cast_mut()).cast_const();
     assert!((((((*c.payload.text.offset((0) as isize)) as i32) == ('h' as i32)) as i32) != 0));
-    let mut d: Slot = <Slot>::default();
+    let mut d: Slot = Slot {
+        tag: Tag_enum_T_NUM_S,
+        payload: <anon_0>::default(),
+    };
     d.tag = Tag_enum_T_FLOAT;
     d.payload.f = 1.5E+0;
     assert!(((((d.payload.f) == (1.5E+0)) as i32) != 0));
     let mut x: i32 = 0;
-    let mut e: Slot = <Slot>::default();
+    let mut e: Slot = Slot {
+        tag: Tag_enum_T_NUM_S,
+        payload: <anon_0>::default(),
+    };
     e.tag = Tag_enum_T_REF;
     e.payload.handle = ((&mut x as *mut i32) as *mut i32 as *mut ::libc::c_void);
     assert!(

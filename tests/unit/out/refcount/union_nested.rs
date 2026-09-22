@@ -22,10 +22,8 @@ impl Clone for record {
 impl Default for record {
     fn default() -> Self {
         record {
-            code: <Value<u16>>::default(),
-            pad: Rc::new(RefCell::new(
-                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-            )),
+            code: Rc::new(RefCell::new(0_u16)),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -189,7 +187,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let ex: Value<Outer> = <Value<Outer>>::default();
+    let ex: Value<Outer> = Rc::new(RefCell::new(Outer {
+        kind: Rc::new(RefCell::new(0_i32)),
+        level: Rc::new(RefCell::new(0_i32)),
+        variant: Rc::new(RefCell::new(0_i32)),
+        len: Rc::new(RefCell::new(0_u32)),
+        body: Rc::new(RefCell::new(<anon_1>::default())),
+    }));
     {
         ((ex.as_pointer()) as Ptr<Outer>)
             .to_any()

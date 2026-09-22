@@ -27,7 +27,7 @@ unsafe fn main_0() -> i32 {
     (*y) = 9;
     assert!(((*y) == (9)));
     ::std::mem::drop(Box::from_raw(y));
-    let mut p: *mut Pair = (Box::leak(Box::new(<Pair>::default())) as *mut Pair);
+    let mut p: *mut Pair = (Box::leak(Box::new(Pair { x: 0_i32, y: 0_i32 })) as *mut Pair);
     (*p).x = 1;
     (*p).y = 2;
     assert!(((((*p).x) + ((*p).y)) == (3)));

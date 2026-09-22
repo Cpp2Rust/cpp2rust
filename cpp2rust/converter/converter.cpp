@@ -4048,16 +4048,9 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     return getTypedLiteral("0.0", ToString(qual_type));
   }
 
-  if (auto record = qual_type->getAsRecordDecl();
-      record && in_const_initializer_) {
-    if (auto cxx = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
-      ENSURE(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
-             "Default initializing globals using default constructor is not "
-             "supported");
-    }
-    Buffer buf(*this);
-    EmitDefaultStructLiteral(record);
-    return std::move(buf).str();
+  if (auto literal = GetDefaultStructLiteralAsString(qual_type);
+      !literal.empty()) {
+    return literal;
   }
 
   if (auto record = qual_type->getAsRecordDecl()) {
@@ -4077,6 +4070,21 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   }
 
   return std::format("<{}>::default()", ToString(qual_type));
+}
+
+std::string
+Converter::GetDefaultStructLiteralAsString(clang::QualType qual_type) {
+  auto *record = qual_type->getAsRecordDecl();
+  if (record == nullptr || record->isUnion()) {
+    return {};
+  }
+  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(record);
+      cxx && GetUserDefinedDefaultConstructor(cxx)) {
+    return {};
+  }
+  Buffer buf(*this);
+  EmitDefaultStructLiteral(record);
+  return std::move(buf).str();
 }
 
 std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {

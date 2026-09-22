@@ -124,7 +124,10 @@ fn main_0() -> i32 {
     let buf64: Value<i64> = Rc::new(RefCell::new(0_i64));
     let buf32: Value<i32> = Rc::new(RefCell::new(0));
     let buf16: Value<i16> = Rc::new(RefCell::new(0_i16));
-    let s: Value<Sink> = <Value<Sink>>::default();
+    let s: Value<Sink> = Rc::new(RefCell::new(Sink {
+        width: Rc::new(RefCell::new(Width_enum_W_64)),
+        out: Rc::new(RefCell::new(<anon_0>::default())),
+    }));
     (*(*s.borrow()).width.borrow_mut()) = Width_enum_W_64;
     (*(*s.borrow()).out.borrow_mut())
         .handle()

@@ -182,6 +182,9 @@ public:
 
   std::string GetDefaultAsStringFallback(clang::QualType qual_type) override;
 
+  std::string
+  GetDefaultStructLiteralAsString(clang::QualType qual_type) override;
+
   std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
 
   std::vector<const char *>

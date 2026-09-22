@@ -91,8 +91,8 @@ pub struct Holder {
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            c: <Counted>::default(),
-            arr: std::array::from_fn::<_, 2, _>(|_| <Counted>::default()),
+            c: Counted { v: 0_i32 },
+            arr: std::array::from_fn::<_, 2, _>(|_| Counted { v: 0_i32 }),
         }
     }
 }

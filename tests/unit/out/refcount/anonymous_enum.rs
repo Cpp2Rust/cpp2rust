@@ -86,7 +86,10 @@ fn main_0() -> i32 {
     assert!((((*td.borrow()) as i32) == (TdEnum_TD_A as i32)));
     (*td.borrow_mut()) = TdEnum_TD_B;
     assert!((((*td.borrow()) as i32) == (TdEnum_TD_B as i32)));
-    let w: Value<WithAnonField> = Rc::new(RefCell::new(<WithAnonField>::default()));
+    let w: Value<WithAnonField> = Rc::new(RefCell::new(WithAnonField {
+        a: Rc::new(RefCell::new(0_i32)),
+        field: Rc::new(RefCell::new(anon_2_FIELD_A)),
+    }));
     (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_A;
     assert!((((*(*w.borrow()).field.borrow()) as i32) == (anon_2_FIELD_A as i32)));
     (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_B;

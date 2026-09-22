@@ -21,7 +21,7 @@ impl Default for S {
     fn default() -> Self {
         S {
             data: [0_i32; 3],
-            inner: <Inner>::default(),
+            inner: Inner { x: 0_i32 },
         }
     }
 }

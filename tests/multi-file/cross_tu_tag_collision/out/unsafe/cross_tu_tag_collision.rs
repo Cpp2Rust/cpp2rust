@@ -12,7 +12,7 @@ pub struct widget {
     pub id: i32,
 }
 pub unsafe fn a_value_0() -> i32 {
-    let mut w: widget = <widget>::default();
+    let mut w: widget = widget { id: 0_i32 };
     w.id = 11;
     return w.id;
 }

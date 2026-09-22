@@ -552,6 +552,9 @@ protected:
 
   virtual std::string GetDefaultAsStringFallback(clang::QualType qual_type);
 
+  virtual std::string
+  GetDefaultStructLiteralAsString(clang::QualType qual_type);
+
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
 
   virtual std::string

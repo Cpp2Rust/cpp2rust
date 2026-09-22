@@ -68,7 +68,9 @@ impl ByteRepr for Command {
     }
 }
 pub fn test_void_ptr_to_fn_3() {
-    let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
+    let cmd: Value<Command> = Rc::new(RefCell::new(Command {
+        data: Rc::new(RefCell::new(AnyPtr::default())),
+    }));
     (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ((*(*cmd.borrow()).data.borrow())

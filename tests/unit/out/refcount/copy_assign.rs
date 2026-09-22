@@ -164,10 +164,16 @@ impl Clone for Holder {
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            p: <Value<Partial>>::default(),
+            p: Rc::new(RefCell::new(Partial {
+                v: Rc::new(RefCell::new(0_i32)),
+                keep: Rc::new(RefCell::new(0_i32)),
+            })),
             arr: Rc::new(RefCell::new(
                 (0..2)
-                    .map(|_| <Partial>::default())
+                    .map(|_| Partial {
+                        v: Rc::new(RefCell::new(0_i32)),
+                        keep: Rc::new(RefCell::new(0_i32)),
+                    })
                     .collect::<Box<[Partial]>>(),
             )),
         }

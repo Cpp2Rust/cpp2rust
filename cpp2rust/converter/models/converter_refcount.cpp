@@ -2187,7 +2187,22 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
 
 std::string
 ConverterRefCount::GetDefaultAsStringFallback(clang::QualType qual_type) {
-  return std::format("<{}>::default()", ToString(qual_type));
+  if (qual_type->isReferenceType()) {
+    return Converter::GetDefaultAsStringFallback(qual_type);
+  }
+
+  std::string unboxed;
+  {
+    PushConversionKind push(*this, ConversionKind::Unboxed);
+    unboxed = Converter::GetDefaultAsStringFallback(qual_type);
+  }
+  return BoxValue(std::move(unboxed));
+}
+
+std::string
+ConverterRefCount::GetDefaultStructLiteralAsString(clang::QualType qual_type) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  return Converter::GetDefaultStructLiteralAsString(qual_type);
 }
 
 std::string

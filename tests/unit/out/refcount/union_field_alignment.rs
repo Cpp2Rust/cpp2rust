@@ -77,7 +77,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let n: Value<node> = <Value<node>>::default();
+    let n: Value<node> = Rc::new(RefCell::new(node {
+        next: Rc::new(RefCell::new(Ptr::<node>::null())),
+        x: Rc::new(RefCell::new(<anon_0>::default())),
+    }));
     (*(*n.borrow()).next.borrow_mut()) = Ptr::<node>::null();
     ((*(*n.borrow()).x.borrow()).bytes().reinterpret_cast::<u8>() as Ptr<u8>)
         .offset((0) as isize)

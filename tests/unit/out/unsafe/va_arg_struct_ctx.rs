@@ -26,7 +26,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut ctx: context = <context>::default();
+    let mut ctx: context = context {
+        verbose: 0_i32,
+        last_error: 0_i32,
+    };
     ctx.verbose = 1;
     ctx.last_error = 0;
     (unsafe {

@@ -30,7 +30,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut n: node = <node>::default();
+    let mut n: node = node {
+        next: std::ptr::null_mut(),
+        x: <anon_0>::default(),
+    };
     n.next = std::ptr::null_mut();
     (*n.x.bytes.as_mut_ptr().add((0) as usize)) = 171_u8;
     assert!((((((*n.x.bytes.as_mut_ptr().add((0) as usize)) as i32) == (171)) as i32) != 0));

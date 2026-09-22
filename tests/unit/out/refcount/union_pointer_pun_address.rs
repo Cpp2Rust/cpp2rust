@@ -66,7 +66,7 @@ fn main_0() -> i32 {
     let a: Value<node_a> = Rc::new(RefCell::new(node_a {
         n: Rc::new(RefCell::new(123)),
     }));
-    let ptr: Value<anon_0> = <Value<anon_0>>::default();
+    let ptr: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
     assert!(

@@ -51,7 +51,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Box<[NonCopy]>> = Rc::new(RefCell::new(
         (0..3)
-            .map(|_| <NonCopy>::default())
+            .map(|_| NonCopy {
+                data: Rc::new(RefCell::new(Default::default())),
+                tag: Rc::new(RefCell::new(0)),
+            })
             .collect::<Box<[NonCopy]>>(),
     ));
     (*(*arr.borrow())[(0) as usize].tag.borrow_mut()) = 7;

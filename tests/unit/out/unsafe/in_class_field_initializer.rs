@@ -31,7 +31,7 @@ impl Default for S {
             a: 1,
             b: (2 as libc::c_char),
             c: Inner { x: 3, y: 4 },
-            d: <Inner>::default(),
+            d: Inner { x: 3, y: 4 },
         }
     }
 }
@@ -62,7 +62,12 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = <S>::default();
+    let mut s: S = S {
+        a: 1,
+        b: (2 as libc::c_char),
+        c: Inner { x: 3, y: 4 },
+        d: Inner { x: 3, y: 4 },
+    };
     assert!(((s.a) == (1)));
     assert!(((s.b as i32) == (2)));
     assert!(((s.c.x) == (3)));

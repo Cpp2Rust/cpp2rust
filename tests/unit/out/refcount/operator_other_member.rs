@@ -78,7 +78,7 @@ fn main_0() -> i32 {
         ({ SImpl::operator__Bool(&s.as_pointer(),) })
             && (!({ SImpl::operator__Bool(&z.as_pointer(),) }))
     );
-    let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
+    let st: Value<Static> = Rc::new(RefCell::new(Static {}));
     assert!((({ Static::operator_call(6, 7,) }) == 42));
     assert!(
         (({

@@ -338,7 +338,9 @@ fn main_0() -> i32 {
         value: Rc::new(RefCell::new(7_i64)),
     }));
     assert!((({ Boxed_long_Impl::plus(&bl.as_pointer(), 1_i64,) }) == 8_i64));
-    let imc: Value<MyContainer_int_> = Rc::new(RefCell::new(<MyContainer_int_>::default()));
+    let imc: Value<MyContainer_int_> = Rc::new(RefCell::new(MyContainer_int_ {
+        vec_: Rc::new(RefCell::new(Default::default())),
+    }));
     assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
     ({
         let _item: Value<i32> = Rc::new(RefCell::new(1));
@@ -350,7 +352,9 @@ fn main_0() -> i32 {
     );
     ({ MyContainer_int_Impl::pop_back(&imc.as_pointer()) });
     assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
-    let cmc: Value<MyContainer_char_> = Rc::new(RefCell::new(<MyContainer_char_>::default()));
+    let cmc: Value<MyContainer_char_> = Rc::new(RefCell::new(MyContainer_char_ {
+        vec_: Rc::new(RefCell::new(Default::default())),
+    }));
     assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
     ({
         let _item: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
@@ -363,7 +367,9 @@ fn main_0() -> i32 {
     );
     ({ MyContainer_char_Impl::pop_back(&cmc.as_pointer()) });
     assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
-    let fmc: Value<MyContainer_float_> = Rc::new(RefCell::new(<MyContainer_float_>::default()));
+    let fmc: Value<MyContainer_float_> = Rc::new(RefCell::new(MyContainer_float_ {
+        vec_: Rc::new(RefCell::new(Default::default())),
+    }));
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
     ({
         let _item: Value<f32> = Rc::new(RefCell::new((1.0E+0 as f32)));

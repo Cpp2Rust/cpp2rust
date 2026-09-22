@@ -66,7 +66,7 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::operator__Bool(&s,) }));
     assert!(!(unsafe { S::operator__Bool(&z,) }));
     assert!((unsafe { S::operator__Bool(&s,) }) && (!(unsafe { S::operator__Bool(&z,) })));
-    let mut st: Static = <Static>::default();
+    let mut st: Static = Static {};
     assert!(((unsafe { Static::operator_call(6, 7,) }) == (42)));
     assert!(((unsafe { S::operator_call_const(&S { v: 5 },) }) == (5)));
     assert!(((unsafe { S::operator_call_i32_i32_const(&S { v: 5 }, 1, 1,) }) == (7)));

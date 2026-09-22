@@ -49,7 +49,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let ctx: Value<context> = <Value<context>>::default();
+    let ctx: Value<context> = Rc::new(RefCell::new(context {
+        verbose: Rc::new(RefCell::new(0_i32)),
+        last_error: Rc::new(RefCell::new(0_i32)),
+    }));
     (*(*ctx.borrow()).verbose.borrow_mut()) = 1;
     (*(*ctx.borrow()).last_error.borrow_mut()) = 0;
     ({

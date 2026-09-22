@@ -7,7 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn first_0() -> i32 {
-    let p: Value<anon_1> = <Value<anon_1>>::default();
+    let p: Value<anon_1> = Rc::new(RefCell::new(anon_1 {
+        x: Rc::new(RefCell::new(0_i32)),
+        y: Rc::new(RefCell::new(0_i32)),
+    }));
     (*(*p.borrow()).x.borrow_mut()) = 1;
     (*(*p.borrow()).y.borrow_mut()) = 2;
     return ((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow()));
@@ -41,7 +44,10 @@ impl ByteRepr for anon_1 {
     }
 }
 pub fn second_2() -> i32 {
-    let q: Value<anon_3> = <Value<anon_3>>::default();
+    let q: Value<anon_3> = Rc::new(RefCell::new(anon_3 {
+        a: Rc::new(RefCell::new(0_i64)),
+        b: Rc::new(RefCell::new(0_i64)),
+    }));
     (*(*q.borrow()).a.borrow_mut()) = 10_i64;
     (*(*q.borrow()).b.borrow_mut()) = 20_i64;
     return (((*(*q.borrow()).a.borrow()) + (*(*q.borrow()).b.borrow())) as i32);

@@ -38,11 +38,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut standalone: Inner = <Inner>::default();
+    let mut standalone: Inner = Inner { a: 0_i32, b: 0_i32 };
     standalone.a = 3;
     standalone.b = 4;
     assert!(((((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)) as i32) != 0));
-    let mut outer: Outer = <Outer>::default();
+    let mut outer: Outer = Outer {
+        u: <anon_1>::default(),
+    };
     {
         let byte_0 = ((&mut outer as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Outer>() {

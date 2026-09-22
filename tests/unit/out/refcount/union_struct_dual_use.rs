@@ -108,11 +108,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let standalone: Value<Inner> = <Value<Inner>>::default();
+    let standalone: Value<Inner> = Rc::new(RefCell::new(Inner {
+        a: Rc::new(RefCell::new(0_i32)),
+        b: Rc::new(RefCell::new(0_i32)),
+    }));
     (*(*standalone.borrow()).a.borrow_mut()) = 3;
     (*(*standalone.borrow()).b.borrow_mut()) = 4;
     assert!((((({ sum_inner_0((standalone.as_pointer()),) }) == 7) as i32) != 0));
-    let outer: Value<Outer> = <Value<Outer>>::default();
+    let outer: Value<Outer> = Rc::new(RefCell::new(Outer {
+        u: Rc::new(RefCell::new(<anon_1>::default())),
+    }));
     {
         ((outer.as_pointer()) as Ptr<Outer>)
             .to_any()

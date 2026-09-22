@@ -32,7 +32,10 @@ impl Default for Outer {
             arr: [std::ptr::null_mut(); 3],
             cp: std::ptr::null(),
             pp: std::ptr::null_mut(),
-            inner: <Inner>::default(),
+            inner: Inner {
+                v: 0_i32,
+                name: std::ptr::null(),
+            },
             x: 0_i32,
             fn_: None,
         }

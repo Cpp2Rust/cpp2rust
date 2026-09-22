@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     let g: *mut i32 = &mut x;
     let mut q: *mut i32 = (&mut x as *mut i32);
     let mut z: *mut i32 = p;
-    let mut xx: X = <X>::default();
+    let mut xx: X = X { x: 0_i32 };
     let mut zz: *mut X = (&mut xx as *mut X);
     xx.x = 1;
     q = (&mut xx.x as *mut i32);

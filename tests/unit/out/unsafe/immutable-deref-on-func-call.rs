@@ -25,7 +25,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut arr: *mut Item = Box::leak(
         (0..2_usize)
-            .map(|_| <Item>::default())
+            .map(|_| Item { value: 0_i32 })
             .collect::<Box<[Item]>>(),
     )
     .as_mut_ptr();

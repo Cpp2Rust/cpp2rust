@@ -35,7 +35,9 @@ pub struct Command {
     pub data: *mut ::libc::c_void,
 }
 pub unsafe fn test_void_ptr_to_fn_3() {
-    let mut cmd: Command = <Command>::default();
+    let mut cmd: Command = Command {
+        data: std::ptr::null_mut(),
+    };
     cmd.data = std::mem::transmute::<Option<unsafe fn(i32) -> i32>, *mut ::libc::c_void>(Some(
         double_it_0,
     ));

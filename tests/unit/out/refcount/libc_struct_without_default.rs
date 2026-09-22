@@ -104,7 +104,12 @@ fn main_0() -> i32 {
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     (*(*st.borrow()).st_size.borrow_mut()) = 1024_i64;
     assert!(((*(*st.borrow()).st_size.borrow()) == 1024_i64));
-    let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
+    let ud: Value<UserDefined> = Rc::new(RefCell::new(UserDefined {
+        a: Rc::new(RefCell::new(
+            std::array::from_fn::<_, 1, _>(|_| Default::default()).to_vec(),
+        )),
+        v: Rc::new(RefCell::new(Default::default())),
+    }));
     assert!(
         ((((*ud.borrow()).a.as_pointer() as Ptr<i32>)
             .offset(0_usize)
@@ -112,7 +117,9 @@ fn main_0() -> i32 {
             == 0)
     );
     assert!(((*(*ud.borrow()).v.borrow()).len() == 0_usize));
-    let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::default()));
+    let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(FieldIsLibcType {
+        addr: Rc::new(RefCell::new(Default::default())),
+    }));
     assert!((((*(*(*filt.borrow()).addr.borrow()).sa_family.borrow()) as i32) == 0));
     return 0;
 }

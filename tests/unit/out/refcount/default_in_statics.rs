@@ -77,8 +77,11 @@ impl Default for Outer {
             )),
             cp: Rc::new(RefCell::new(Ptr::<u8>::null())),
             pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
-            inner: <Value<Inner>>::default(),
-            x: <Value<i32>>::default(),
+            inner: Rc::new(RefCell::new(Inner {
+                v: Rc::new(RefCell::new(0_i32)),
+                name: Rc::new(RefCell::new(Ptr::<u8>::null())),
+            })),
+            x: Rc::new(RefCell::new(0_i32)),
             fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
@@ -140,7 +143,7 @@ impl Default for Foo {
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            n: <Value<i32>>::default(),
+            n: Rc::new(RefCell::new(0_i32)),
         }
     }
 }
@@ -174,11 +177,32 @@ thread_local!(
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
 thread_local!(
-    pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    pub static static_outer_1: Value<Outer> = Rc::new(RefCell::new(Outer {
+        p1: Rc::new(RefCell::new(Ptr::<i32>::null())),
+        p2: Rc::new(RefCell::new(Ptr::<i32>::null())),
+        arr: Rc::new(RefCell::new(
+            (0..3)
+                .map(|_| Ptr::<i32>::null())
+                .collect::<Box<[Ptr<i32>]>>(),
+        )),
+        cp: Rc::new(RefCell::new(Ptr::<u8>::null())),
+        pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
+        inner: Rc::new(RefCell::new(Inner {
+            v: Rc::new(RefCell::new(0_i32)),
+            name: Rc::new(RefCell::new(Ptr::<u8>::null())),
+        })),
+        x: Rc::new(RefCell::new(0_i32)),
+        fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+    }));
 );
 thread_local!(
     pub static static_inner_array_2: Value<Box<[Inner]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
+        (0..2)
+            .map(|_| Inner {
+                v: Rc::new(RefCell::new(0_i32)),
+                name: Rc::new(RefCell::new(Ptr::<u8>::null())),
+            })
+            .collect::<Box<[Inner]>>(),
     ));
 );
 thread_local!(
@@ -210,7 +234,23 @@ thread_local!(
 );
 pub fn check_local_static_5() {
     thread_local!(
-        static local_outer_6: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+        static local_outer_6: Value<Outer> = Rc::new(RefCell::new(Outer {
+            p1: Rc::new(RefCell::new(Ptr::<i32>::null())),
+            p2: Rc::new(RefCell::new(Ptr::<i32>::null())),
+            arr: Rc::new(RefCell::new(
+                (0..3)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+            )),
+            cp: Rc::new(RefCell::new(Ptr::<u8>::null())),
+            pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
+            inner: Rc::new(RefCell::new(Inner {
+                v: Rc::new(RefCell::new(0_i32)),
+                name: Rc::new(RefCell::new(Ptr::<u8>::null())),
+            })),
+            x: Rc::new(RefCell::new(0_i32)),
+            fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+        }));
     );
     thread_local!(
         static local_fn_7: Value<FnPtr<fn(i32) -> i32>> =

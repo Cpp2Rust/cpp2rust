@@ -98,8 +98,14 @@ pub struct Holder {
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            p: <Partial>::default(),
-            arr: std::array::from_fn::<_, 2, _>(|_| <Partial>::default()),
+            p: Partial {
+                v: 0_i32,
+                keep: 0_i32,
+            },
+            arr: std::array::from_fn::<_, 2, _>(|_| Partial {
+                v: 0_i32,
+                keep: 0_i32,
+            }),
         }
     }
 }

@@ -48,7 +48,7 @@ impl Default for S {
     fn default() -> Self {
         S {
             data: [0_i32; 3],
-            inner: <Inner>::default(),
+            inner: Inner { x: 0_i32 },
         }
     }
 }
@@ -77,7 +77,7 @@ unsafe fn main_0() -> i32 {
     assert!(((*p) == (1)));
     (*p) = 5;
     assert!(((s.data[(0) as usize]) == (5)));
-    let mut t: Table = <Table>::default();
+    let mut t: Table = Table {};
     assert!(((*(unsafe { Table::operator_index(1,) })) == (8)));
     (*(unsafe { Table::operator_index(1) })) = 80;
     assert!((((*std::cell::LazyCell::force_mut(&mut *&raw mut table_0))[(1) as usize]) == (80)));

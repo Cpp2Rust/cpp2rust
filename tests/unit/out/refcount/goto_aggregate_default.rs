@@ -36,23 +36,22 @@ impl ByteRepr for Point {
 }
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let buf40: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..40).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
-    let buf256: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..256).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
-    let arr64: Value<Box<[i32]>> = Rc::new(RefCell::new(
-        (0..64).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-    ));
-    let longs: Value<Box<[i64]>> = Rc::new(RefCell::new(
-        (0..33).map(|_| <i64>::default()).collect::<Box<[i64]>>(),
-    ));
-    let p: Value<Point> = <Value<Point>>::default();
+    let buf40: Value<Box<[u8]>> =
+        Rc::new(RefCell::new((0..40).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf256: Value<Box<[u8]>> =
+        Rc::new(RefCell::new((0..256).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let arr64: Value<Box<[i32]>> =
+        Rc::new(RefCell::new((0..64).map(|_| 0_i32).collect::<Box<[i32]>>()));
+    let longs: Value<Box<[i64]>> =
+        Rc::new(RefCell::new((0..33).map(|_| 0_i64).collect::<Box<[i64]>>()));
+    let p: Value<Point> = Rc::new(RefCell::new(Point {
+        x: Rc::new(RefCell::new(0_i32)),
+        y: Rc::new(RefCell::new(0_i32)),
+    }));
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let fp: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
     let file: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
-    let total: Value<i32> = <Value<i32>>::default();
+    let total: Value<i32> = Rc::new(RefCell::new(0_i32));
     goto_block!({
         '__entry: {
             *total.borrow_mut() = 0;

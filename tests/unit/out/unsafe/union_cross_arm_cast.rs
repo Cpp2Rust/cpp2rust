@@ -65,7 +65,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: Container = <Container>::default();
+    let mut c: Container = Container {
+        len: 0_u32,
+        u: <anon_0>::default(),
+    };
     {
         let byte_0 =
             ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
