@@ -31,7 +31,7 @@ impl Graph {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone)]
 pub struct Partial {
     pub p: *mut i32,
 }
@@ -39,6 +39,13 @@ impl Partial {
     pub unsafe fn Partial1(mut q: *mut i32) -> Self {
         let mut this = Self { p: q };
         this
+    }
+}
+impl Default for Partial {
+    fn default() -> Self {
+        Partial {
+            p: std::ptr::null_mut(),
+        }
     }
 }
 #[repr(C)]
