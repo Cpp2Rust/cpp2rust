@@ -50,6 +50,84 @@ impl Default for ConstMove {
         unsafe { ConstMove::ConstMove() }
     }
 }
+#[repr(C)]
+#[derive(Default)]
+pub struct ThrowingMove {
+    pub v: i32,
+    pub copies: i32,
+    pub moves: i32,
+}
+impl ThrowingMove {
+    pub unsafe fn ThrowingMove(mut v: i32) -> Self {
+        let mut this = Self {
+            v: v,
+            copies: 0,
+            moves: 0,
+        };
+        this
+    }
+    pub unsafe fn ThrowingMove_pconstThrowingMove(o: *const ThrowingMove) -> Self {
+        let mut this = Self {
+            v: (*o).v,
+            copies: (((*o).copies) + (1)),
+            moves: (*o).moves,
+        };
+        this
+    }
+    pub unsafe fn ThrowingMove_pmutThrowingMove_rv(o: *mut ThrowingMove) -> Self {
+        let mut this = Self {
+            v: (*o).v,
+            copies: (*o).copies,
+            moves: (((*o).moves) + (1)),
+        };
+        (*o).v = 0;
+        this
+    }
+}
+impl Clone for ThrowingMove {
+    fn clone(&self) -> Self {
+        unsafe { ThrowingMove::ThrowingMove_pconstThrowingMove(self as *const ThrowingMove) }
+    }
+}
+#[repr(C)]
+#[derive(Default)]
+pub struct NoexceptMove {
+    pub v: i32,
+    pub copies: i32,
+    pub moves: i32,
+}
+impl NoexceptMove {
+    pub unsafe fn NoexceptMove(mut v: i32) -> Self {
+        let mut this = Self {
+            v: v,
+            copies: 0,
+            moves: 0,
+        };
+        this
+    }
+    pub unsafe fn NoexceptMove_pconstNoexceptMove(o: *const NoexceptMove) -> Self {
+        let mut this = Self {
+            v: (*o).v,
+            copies: (((*o).copies) + (1)),
+            moves: (*o).moves,
+        };
+        this
+    }
+    pub unsafe fn NoexceptMove_pmutNoexceptMove_rv(o: *mut NoexceptMove) -> Self {
+        let mut this = Self {
+            v: (*o).v,
+            copies: (*o).copies,
+            moves: (((*o).moves) + (1)),
+        };
+        (*o).v = 0;
+        this
+    }
+}
+impl Clone for NoexceptMove {
+    fn clone(&self) -> Self {
+        unsafe { NoexceptMove::NoexceptMove_pconstNoexceptMove(self as *const NoexceptMove) }
+    }
+}
 pub unsafe fn by_value_0(mut m: MoveOnly) -> i32 {
     return m.v;
 }
@@ -91,6 +169,22 @@ unsafe fn main_0() -> i32 {
     let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove_rv({ &cm });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
+    let mut t: ThrowingMove = ThrowingMove::ThrowingMove({ 1 });
+    let mut t1: ThrowingMove = ThrowingMove::ThrowingMove_pconstThrowingMove({ &t });
+    assert!(((t1.v) == (1)));
+    assert!(((t1.copies) == (1)));
+    assert!(((t1.moves) == (0)));
+    assert!(((t.v) == (1)));
+    let mut n: NoexceptMove = NoexceptMove::NoexceptMove({ 2 });
+    let mut n1: NoexceptMove = NoexceptMove::NoexceptMove_pmutNoexceptMove_rv({ &mut n });
+    assert!(((n1.v) == (2)));
+    assert!(((n1.copies) == (0)));
+    assert!(((n1.moves) == (1)));
+    assert!(((n.v) == (0)));
+    let mut g: MoveOnly = MoveOnly::MoveOnly({ 3 });
+    let mut g1: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut g });
+    assert!(((g1.v) == (3)));
+    assert!(((g.v) == (0)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

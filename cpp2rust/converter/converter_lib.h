@@ -262,9 +262,9 @@ bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
-bool IsCallToStdForward(const clang::CallExpr *expr);
+bool IsTransparentStdCall(const clang::CallExpr *expr);
 
-const clang::Expr *IgnoreStdMoveAndForward(const clang::Expr *expr);
+const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr);
 
 bool IsTemporaryObject(const clang::Expr *expr);
 

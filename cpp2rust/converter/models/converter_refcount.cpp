@@ -1170,7 +1170,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (expr->isCallToStdMove() || IsCallToStdForward(expr)) {
+  if (IsTransparentStdCall(expr)) {
     return Converter::VisitCallExpr(expr);
   }
 
@@ -2772,7 +2772,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
   auto arg_idx = receiver_ph->n;
   auto *arg = BuildUnifiedArgs(expr, args, num_args)[arg_idx];
   if (auto *call = clang::dyn_cast<clang::CallExpr>(arg->IgnoreCasts());
-      call && (call->isCallToStdMove() || IsCallToStdForward(call))) {
+      call && IsTransparentStdCall(call)) {
     arg = call->getArg(0);
   }
 
