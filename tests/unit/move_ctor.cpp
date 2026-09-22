@@ -23,7 +23,8 @@ struct ThrowingMove {
   ThrowingMove(int v) : v(v), copies(0), moves(0) {}
   ThrowingMove(const ThrowingMove &o)
       : v(o.v), copies(o.copies + 1), moves(o.moves) {}
-  ThrowingMove(ThrowingMove &&o) : v(o.v), copies(o.copies), moves(o.moves + 1) {
+  ThrowingMove(ThrowingMove &&o)
+      : v(o.v), copies(o.copies), moves(o.moves + 1) {
     o.v = 0;
   }
 };
