@@ -6,6 +6,11 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+const _: () = assert!(true, "Small<int>");
+const _: () = assert!(
+    ((::std::mem::size_of::<i32>()) == (4_usize)),
+    "sizeof(int) == 4"
+);
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Sized {}
@@ -51,6 +56,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    const _: () = assert!(!(false), "!Small<long>");;
     assert!((unsafe { is_small_0() }));
     assert!(!(unsafe { is_small_1() }));
     assert!(true);

@@ -6,6 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+const _: () = assert!(true, "Small<int>");
+const _: () = assert!(
+    (::std::mem::size_of::<i32>() == 4_usize),
+    "sizeof(int) == 4"
+);
 #[derive(Clone, ByteRepr, Default)]
 pub struct Sized {}
 pub fn is_small_0() -> bool {
@@ -46,6 +51,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    const _: () = assert!(!(false), "!Small<long>");;
     assert!(({ is_small_0() }));
     assert!(!({ is_small_1() }));
     assert!(true);

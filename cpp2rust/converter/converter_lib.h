@@ -38,6 +38,13 @@ bool IsGlobalVar(const clang::VarDecl *decl);
 
 bool IsGlobalVar(const clang::Expr *expr);
 
+bool IsRustConstEvaluableExpr(const clang::Expr *expr);
+
+std::string GetEscapedCharLiteral(char character);
+
+std::string GetAssertMessageAsString(const clang::Expr *expr,
+                                     const clang::ASTContext &ctx);
+
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 
 bool IsInMainFile(const clang::Decl *decl);

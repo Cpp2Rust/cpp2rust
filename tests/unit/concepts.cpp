@@ -6,6 +6,7 @@ template <typename T>
 concept Small = sizeof(T) <= 4;
 
 static_assert(Small<int>);
+static_assert(sizeof(int) == 4);
 
 template <typename T>
 concept HasSize = requires(T t) {

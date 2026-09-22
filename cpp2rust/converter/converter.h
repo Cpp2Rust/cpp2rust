@@ -354,7 +354,6 @@ public:
 
   virtual bool VisitCharacterLiteral(clang::CharacterLiteral *expr);
 
-  std::string GetEscapedCharLiteral(char character) const;
   std::string GetCodeUnitArrayLiteral(const clang::StringLiteral *expr);
   bool IsArrayInitContext() const;
 

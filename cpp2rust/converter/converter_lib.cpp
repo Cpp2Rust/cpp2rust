@@ -5,9 +5,11 @@
 
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
+#include <clang/AST/ExprConcepts.h>
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <clang/Lex/Lexer.h>
 #include <llvm/Support/Path.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -106,6 +108,67 @@ bool IsBuiltinConstantP(const clang::Expr *expr) {
     return value_decl->getName() == "__builtin_constant_p";
   }
   return false;
+}
+
+bool IsRustConstEvaluableExpr(const clang::Expr *expr) {
+  expr = expr->IgnoreParenImpCasts();
+  if (clang::isa<clang::IntegerLiteral, clang::ConceptSpecializationExpr>(
+          expr)) {
+    return true;
+  }
+  if (auto *trait = clang::dyn_cast<clang::UnaryExprOrTypeTraitExpr>(expr)) {
+    return trait->getKind() == clang::UnaryExprOrTypeTrait::UETT_SizeOf;
+  }
+  if (auto *unary = clang::dyn_cast<clang::UnaryOperator>(expr)) {
+    return unary->getOpcode() == clang::UO_LNot &&
+           IsRustConstEvaluableExpr(unary->getSubExpr());
+  }
+  if (auto *binary = clang::dyn_cast<clang::BinaryOperator>(expr)) {
+    return (binary->isEqualityOp() || binary->isRelationalOp()) &&
+           IsRustConstEvaluableExpr(binary->getLHS()) &&
+           IsRustConstEvaluableExpr(binary->getRHS());
+  }
+  return false;
+}
+
+std::string GetEscapedCharLiteral(char character) {
+  switch (character) {
+  case '"':
+    return "\\\"";
+  case '\'':
+    return "\\'";
+  case '\\':
+    return "\\\\";
+  case '\n':
+    return "\\n";
+  case '\r':
+    return "\\r";
+  case '\t':
+    return "\\t";
+  case '\0':
+    return "\\0";
+  }
+  auto uc = static_cast<unsigned char>(character);
+  if (uc < 0x20 || uc >= 0x7F) {
+    return std::format("\\x{:02x}", uc);
+  }
+  return std::string(1, character);
+}
+
+std::string GetAssertMessageAsString(const clang::Expr *expr,
+                                     const clang::ASTContext &ctx) {
+  auto text = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(expr->getSourceRange()),
+      ctx.getSourceManager(), ctx.getLangOpts());
+  std::string message = R"(, ")";
+  for (char c : text) {
+    // Doubled so that assert! does not read them as a format placeholder.
+    if (c == '{' || c == '}') {
+      message += c;
+    }
+    message += GetEscapedCharLiteral(c);
+  }
+  return message + '"';
 }
 
 bool IsComparisonWithNullOp(const clang::BinaryOperator *expr) {
