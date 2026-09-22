@@ -69,13 +69,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Option<Value<Outer>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Outer {
+    let o: Value<Option<Value<Outer>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
+        let __tmp_0: Value<Outer> = Rc::new(RefCell::new(Outer {
             inner: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Inner {
                 x: Rc::new(RefCell::new(10)),
                 y: Rc::new(RefCell::new(20)),
             }))))),
-        })))));
+        }));
+        Outer::Outer_pmutOuter_rv({ __tmp_0.as_pointer() })
+    })))));
     (*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
         .as_ref()
         .unwrap()

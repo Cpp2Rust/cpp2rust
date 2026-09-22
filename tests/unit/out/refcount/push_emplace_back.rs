@@ -271,7 +271,7 @@ pub fn emplace_scalar_8(values: Ptr<Vec<i64>>, x: i32) {
         (*values.borrow()).with_mut(|__v: &mut Vec<i64>| __v.push(__init))
     };
     {
-        let __init = (*x.borrow_mut()) as i64;
+        let __init = ((*x.borrow()) as i64);
         (*values.borrow()).with_mut(|__v: &mut Vec<i64>| __v.push(__init))
     };
 }

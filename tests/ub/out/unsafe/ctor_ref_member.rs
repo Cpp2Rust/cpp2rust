@@ -24,10 +24,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::S({
+    let mut s: S = {
         let mut __tmp_0: i32 = 5;
-        &mut __tmp_0
-    });
+        S::S({ &mut __tmp_0 })
+    };
     assert!(((*s.r) == (5)));
     return 0;
 }

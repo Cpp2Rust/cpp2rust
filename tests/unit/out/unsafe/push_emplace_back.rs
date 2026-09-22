@@ -135,7 +135,7 @@ pub unsafe fn emplace_scalar_8(mut values: *mut Vec<i64>, mut x: i32) {
         (*values).push(__init)
     };
     {
-        let __init = x as i64;
+        let __init = (x as i64);
         (*values).push(__init)
     };
 }

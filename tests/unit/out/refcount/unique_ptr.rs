@@ -298,8 +298,11 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let safe_ptr: Value<Option<Value<SafePointer>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(SafePointer {
-            ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
+            let __tmp_0: Value<SafePointer> = Rc::new(RefCell::new(SafePointer {
+                ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
+            }));
+            SafePointer::SafePointer_pmutSafePointer_rv({ __tmp_0.as_pointer() })
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
     assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
