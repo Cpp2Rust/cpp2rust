@@ -122,8 +122,10 @@ fn main_0() -> i32 {
     assert!(((*z.borrow()) == 7));
     let counter: Value<i32> = Rc::new(RefCell::new(0));
     let w: Value<i32> = Rc::new(RefCell::new({
-        &(*counter.borrow_mut());
-        (*counter.borrow_mut()) = 3;
+        {
+            &(*counter.borrow_mut());
+            (*counter.borrow_mut()) = 3
+        };
         (*counter.borrow())
     }));
     assert!(((*w.borrow()) == 3));

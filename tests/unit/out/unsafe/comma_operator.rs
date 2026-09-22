@@ -21,15 +21,19 @@ unsafe fn main_0() -> i32 {
     assert!(((x) == (2)));
     assert!(((y) == (3)));
     let mut z: i32 = {
-        1;
-        2;
+        {
+            1;
+            2
+        };
         3
     };
     assert!(((z) == (3)));
     let mut counter: i32 = 0;
     let mut w: i32 = {
-        counter.postfix_inc();
-        counter.postfix_inc();
+        {
+            counter.postfix_inc();
+            counter.postfix_inc()
+        };
         counter
     };
     assert!(((counter) == (2)));
@@ -37,8 +41,10 @@ unsafe fn main_0() -> i32 {
     let mut a: i32 = 0;
     let mut b: i32 = 0;
     if {
-        a = 1;
-        b = 2;
+        {
+            a = 1;
+            b = 2
+        };
         (((a) + (b)) > (0))
     } {
         assert!(((a) == (1)));

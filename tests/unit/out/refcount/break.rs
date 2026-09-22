@@ -20,14 +20,20 @@ pub fn for_test_0(n: i32) -> i32 {
         let w: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*w.borrow()) < (*j.borrow())) {
             break;
-            (*w.borrow_mut()) += 1;
-            (*k.borrow_mut()) += 1;
-            (*i.borrow_mut()) += (*k.borrow());
+            {
+                {
+                    (*w.borrow_mut()) += 1;
+                    (*k.borrow_mut()) += 1
+                };
+                (*i.borrow_mut()) += (*k.borrow())
+            };
         }
         let __rhs = ((*x.borrow()) + 1);
         (*x.borrow_mut()) = __rhs;
-        (*j.borrow_mut()) = (*i.borrow());
-        (*i.borrow_mut()) += 1;
+        {
+            (*j.borrow_mut()) = (*i.borrow());
+            (*i.borrow_mut()) += 1
+        };
     }
     return (*x.borrow());
 }
