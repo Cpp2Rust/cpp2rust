@@ -10,8 +10,8 @@ struct S {
   int v;
   Overload f() { return kMutableOverload; }
   Overload f() const { return kConstOverload; }
-  int &ref() { return v; }
-  const int &ref() const { return v; }
+  int &value_ref() { return v; }
+  const int &value_ref() const { return v; }
 };
 
 static Overload g(S &) { return kMutableOverload; }
@@ -26,9 +26,9 @@ int main() {
   assert(g(s) == kMutableOverload);
   assert(g(std::as_const(s)) == kConstOverload);
 
-  s.ref() = 9;
+  s.value_ref() = 9;
   assert(s.v == 9);
-  assert(std::as_const(s).ref() == 9);
+  assert(std::as_const(s).value_ref() == 9);
 
   const S &cs = std::as_const(s);
   assert(cs.f() == kConstOverload);
