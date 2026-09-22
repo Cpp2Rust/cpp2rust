@@ -5068,22 +5068,19 @@ Converter::ConvertInitFragment(clang::Expr *expr,
 void Converter::ConvertConstructFromArgs(clang::QualType type,
                                          llvm::ArrayRef<clang::Expr *> args,
                                          clang::SourceLocation loc) {
-  if (type->isRecordType()) {
-    if (auto *ctor = BuildConstructExpr(GetSema(), type, args, loc)) {
-      ConvertConstructedValue(type, ctor);
-      return;
-    }
+  auto *init = BuildInitExpr(GetSema(), type, args, loc);
+  assert(init && "type cannot be initialized from the arguments");
+  if (auto *ctor =
+          clang::dyn_cast<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
+    ConvertConstructedValue(type, ctor);
+    return;
   }
 
-  assert(type.isPODType(ctx_) && "no constructor and no pod type");
   if (args.empty()) {
     StrCat(GetDefaultAsString(type));
     return;
   }
-  assert(args.size() == 1 && "multiple arguments passed for building POD type");
-  Convert(args[0]);
-  StrCat("as");
-  StrCat(GetUnsafeTypeAsString(type));
+  Convert(init);
 }
 
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {

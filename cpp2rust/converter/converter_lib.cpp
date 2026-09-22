@@ -1243,10 +1243,9 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
   return all_args;
 }
 
-clang::CXXConstructExpr *BuildConstructExpr(clang::Sema &sema,
-                                            clang::QualType type,
-                                            llvm::ArrayRef<clang::Expr *> args,
-                                            clang::SourceLocation loc) {
+clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
+                           llvm::ArrayRef<clang::Expr *> args,
+                           clang::SourceLocation loc) {
   llvm::SmallVector<clang::Expr *, 4> init_args(args.begin(), args.end());
   auto kind = args.size() == 1 && clang::isa<clang::InitListExpr>(
                                       args[0]->IgnoreParenImpCasts())
@@ -1263,8 +1262,7 @@ clang::CXXConstructExpr *BuildConstructExpr(clang::Sema &sema,
     return nullptr;
   }
 
-  return clang::dyn_cast<clang::CXXConstructExpr>(
-      result.get()->IgnoreImplicit());
+  return result.get();
 }
 
 clang::Expr *GetCallee(clang::CallExpr *expr) {
