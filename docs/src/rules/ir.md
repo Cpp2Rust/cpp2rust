@@ -32,9 +32,10 @@ strings.
 ### Parameter packs
 
 A function parameter pack prints as `&&...`, so the key of a rule for
-`emplace_back(Args &&...args)` matches calls with any number of arguments. A rule
-that takes an [`init`](./writing-rules.md#constructing-from-forwarded-arguments)
-value also records which template argument of the callee `init` builds:
+`emplace_back(Args &&...args)` matches calls with any number of arguments. A
+rule that takes an
+[`init`](./writing-rules.md#constructing-from-forwarded-arguments) value also
+records which template argument of the callee `init` builds:
 
 ```json
 "f112": {

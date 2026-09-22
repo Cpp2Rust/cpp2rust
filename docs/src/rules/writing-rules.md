@@ -311,13 +311,13 @@ unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
 }
 ```
 
-`T` must be one of the callee's template arguments. The preprocessor records
-its position as a (depth, index) pair, and at a call like `v.emplace_back(4, 5)`
-on a `std::vector<Point>` the converter reads the template argument at that
-position from the resolved callee (`Point`). It then asks Sema which
-constructor builds a `Point` from `(4, 5)` and substitutes the converted
-construction for `init`. Binding `init` to a local before touching `a0` keeps
-the construction from overlapping a borrow of the container.
+`T` must be one of the callee's template arguments. The preprocessor records its
+position as a (depth, index) pair, and at a call like `v.emplace_back(4, 5)` on
+a `std::vector<Point>` the converter reads the template argument at that
+position from the resolved callee (`Point`). It then asks Sema which constructor
+builds a `Point` from `(4, 5)` and substitutes the converted construction for
+`init`. Binding `init` to a local before touching `a0` keeps the construction
+from overlapping a borrow of the container.
 
 ## Passthrough rules
 
