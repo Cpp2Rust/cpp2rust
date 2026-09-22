@@ -25,6 +25,7 @@ pub fn classify_2(x: i32) -> i32 {
     return 1;
 }
 pub fn main() {
+    __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
@@ -34,3 +35,4 @@ fn main_0() -> i32 {
     assert!((({ classify_2(1,) }) == 1));
     return 0;
 }
+pub fn __cpp2rust_init_globals() {}
