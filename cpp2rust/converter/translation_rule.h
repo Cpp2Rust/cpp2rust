@@ -6,6 +6,7 @@
 #include <clang/AST/Expr.h>
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -43,11 +44,15 @@ struct VaArgsFragment {
   void dump() const;
 };
 
+struct InitFragment {
+  void dump() const;
+};
+
 struct MethodCallFragment; // forward declaration
 
-using BodyFragment =
-    std::variant<TextFragment, PlaceholderFragment, GenericFragment,
-                 VaArgsFragment, std::unique_ptr<MethodCallFragment>>;
+using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
+                                  GenericFragment, VaArgsFragment, InitFragment,
+                                  std::unique_ptr<MethodCallFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
@@ -68,8 +73,14 @@ struct TypeInfo {
   void dump() const;
 };
 
+struct InitTypeLocation {
+  unsigned depth;
+  unsigned index;
+};
+
 struct ExprRule {
   std::string src;
+  std::optional<InitTypeLocation> init_type;
   std::vector<TypeInfo> params;
   TypeInfo return_type;
   std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
