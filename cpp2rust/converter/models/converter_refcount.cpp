@@ -1126,10 +1126,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   std::optional<TempMaterializationCtx> ctx;
   std::string str;
-  if (auto plugin_str = TryPluginConvert(expr)) {
-    StrCat(*plugin_str);
-    return false;
-  } else {
+  {
     PushConversionKind push(*this, ConversionKind::Unboxed);
     Buffer buf(*this);
     ctx = Converter::ConvertCallExpr(expr);
@@ -2663,24 +2660,10 @@ std::string ConverterRefCount::AccessLValueObject(clang::MemberExpr *member) {
   return is_mut ? ConvertLValue(object) : ConvertRValue(object);
 }
 
-void ConverterRefCount::emplace_back_plugin_construct_arg(
-    clang::QualType elem_type, clang::CXXConstructExpr *ctor) {
-  PushUnboxedIfSimple push(*this, "Vec<%>", elem_type);
-  ConvertVarInit(elem_type, ctor);
-}
-
-void ConverterRefCount::emplace_back_emit_push(clang::CXXMemberCallExpr *call,
-                                               std::string_view arg) {
-  auto *obj = GetCallObject(call);
-  auto obj_type = obj->getType().getNonReferenceType();
-  if (obj_type->isPointerType()) {
-    obj_type = obj_type->getPointeeType();
-  }
-  StrCat(ConvertObject(obj), ".with_mut");
-  PushParen outer(*this);
-  StrCat("|__v: &mut ", ToString(obj_type.getNonReferenceType()), "| __v.push");
-  PushParen inner(*this);
-  StrCat(arg);
+void ConverterRefCount::ConvertConstructedValue(clang::QualType type,
+                                                clang::CXXConstructExpr *ctor) {
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  ConvertVarInit(type, ctor);
 }
 
 const char *

@@ -268,11 +268,8 @@ private:
   MaterializeTemp(const std::string &binding_name, clang::QualType param_type,
                   clang::Expr *expr) override;
 
-  void
-  emplace_back_plugin_construct_arg(clang::QualType elem_type,
-                                    clang::CXXConstructExpr *ctor) override;
-  void emplace_back_emit_push(clang::CXXMemberCallExpr *call,
-                              std::string_view arg) override;
+  void ConvertConstructedValue(clang::QualType type,
+                               clang::CXXConstructExpr *ctor) override;
 
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
