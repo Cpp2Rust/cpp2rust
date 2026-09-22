@@ -12,6 +12,7 @@ fails the build; the notes below call out the ones that are not checked.
 | Parameters            | free-form (`o`, `it`, `key`, `dst`, `n`, ...) | must be `a0`, `a1`, ... consecutive from 0          |
 | Generics              | `T1`, `T2`, ... (type and non-type params)    | `T1`, `T2`, ... consecutive from 1                  |
 | Variadic pack         | `typename... Args`                            | trailing `va: &[VaArg]`                             |
+| Constructing pack     | `Init<T, Args> &&...args`                     | trailing `init: RustType`                           |
 | Locals in Rust bodies |                                               | double-underscore prefix: `__v`, `__fd`, `__e`, ... |
 
 Notes:

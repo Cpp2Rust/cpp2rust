@@ -29,6 +29,20 @@ This signature string is the lookup key for the whole rule: the converter prints
 C++ constructs from the input AST with the same printer and compares the
 strings.
 
+### Parameter packs
+
+A function parameter pack prints as `&&...`, so the key of a rule for
+`emplace_back(Args &&...args)` matches calls with any number of arguments. A rule
+that takes an [`init`](./writing-rules.md#constructing-from-forwarded-arguments)
+value also records which template argument of the callee `init` builds:
+
+```json
+"f112": {
+  "key": "T1 & std::vector<T1>::emplace_back(&&...)",
+  "init_type": { "depth": 0, "index": 0 }
+}
+```
+
 ## Target IR (`ir_unsafe.json` / `ir_refcount.json`)
 
 An expression rule serializes as an `ExprRule` object: the rule's signature plus
@@ -63,6 +77,7 @@ The fragment kinds are:
   so the code generator can rewrite the pair (see
   [Rule Rewriting](./rewriting.md)).
 - `va_args`: the expansion point for a variadic tail.
+- `init`: the value built from the call's trailing arguments.
 
 Every type in the Rules IR (in `params`, `return_type`, and type rules) is a
 `TypeInfo` object, the type text plus a set of flags:
@@ -82,8 +97,8 @@ An `ExprRule` carries two flags of its own:
   expression.
 - `is_extern`: the rule is an extern passthrough declaration and has no body.
 
-Fields that are false, empty, or unset are omitted from the Rules IR. A `va`
-parameter is never listed in `params`, and a `()` return type is omitted.
+Fields that are false, empty, or unset are omitted from the Rules IR. A `va` or
+`init` parameter is never listed in `params`, and a `()` return type is omitted.
 
 A type rule serializes as a `TypeRule` object: its `TypeInfo` plus the `init`
 initializer expression, merged into one object:
