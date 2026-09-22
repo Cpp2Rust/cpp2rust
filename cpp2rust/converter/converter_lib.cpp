@@ -1436,27 +1436,34 @@ bool IsBuiltinVaCopy(const clang::CallExpr *expr) {
   return false;
 }
 
-bool IsCallToStdForward(const clang::CallExpr *expr) {
+bool IsTransparentStdCall(const clang::CallExpr *expr) {
   const auto *callee = expr->getDirectCallee();
   if (!callee) {
     return false;
   }
-  const auto builtin_id = callee->getBuiltinID();
-  return builtin_id == clang::Builtin::BIforward ||
-         builtin_id == clang::Builtin::BIforward_like;
+  switch (callee->getBuiltinID()) {
+  case clang::Builtin::BImove:
+  case clang::Builtin::BImove_if_noexcept:
+  case clang::Builtin::BIforward:
+  case clang::Builtin::BIforward_like:
+  case clang::Builtin::BIas_const:
+    return true;
+  default:
+    return false;
+  }
 }
 
-const clang::Expr *IgnoreStdMoveAndForward(const clang::Expr *expr) {
+const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr) {
   if (const auto *call =
           clang::dyn_cast<clang::CallExpr>(expr->IgnoreParenImpCasts());
-      call && (call->isCallToStdMove() || IsCallToStdForward(call))) {
+      call && IsTransparentStdCall(call)) {
     return call->getArg(0);
   }
   return expr;
 }
 
 bool IsTemporaryObject(const clang::Expr *expr) {
-  const auto *operand = IgnoreStdMoveAndForward(expr);
+  const auto *operand = IgnoreTransparentStdCall(expr);
   if (operand != expr) {
     return !operand->isGLValue();
   }
