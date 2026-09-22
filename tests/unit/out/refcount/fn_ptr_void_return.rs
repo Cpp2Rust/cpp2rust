@@ -18,7 +18,7 @@ pub fn zero_out_1(x: Ptr<i32>) {
 pub fn run_2(fn_: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     let fn_: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(fn_));
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
-    ({ (*(*fn_.borrow()))((*x.borrow()).clone()) });
+    ({ (*fn_.borrow()).call((*x.borrow()).clone()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -34,7 +34,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<fn(Ptr<i32>)>::new(negate_0)));
     assert!(!((*fn_.borrow()).is_null()));
     let b: Value<i32> = Rc::new(RefCell::new(10));
-    ({ (*(*fn_.borrow()))((b.as_pointer())) });
+    ({ (*fn_.borrow()).call((b.as_pointer())) });
     assert!(((*b.borrow()) == -10_i32));
     return 0;
 }

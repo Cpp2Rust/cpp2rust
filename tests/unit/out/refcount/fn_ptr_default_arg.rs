@@ -15,7 +15,7 @@ pub fn apply_1(x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(fn_.unwrap_or(FnPtr::<fn(i32) -> i32>::null())));
     if !(*fn_.borrow()).is_null() {
-        return ({ (*(*fn_.borrow()))((*x.borrow())) });
+        return ({ (*fn_.borrow()).call((*x.borrow())) });
     }
     return (*x.borrow());
 }

@@ -112,9 +112,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            (*(*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
+            (*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
                 .probe
-                .borrow()))()
+                .borrow())
+            .call()
         }) == 1) as i32)
             != 0)
     );
