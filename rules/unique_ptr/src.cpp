@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <memory>
 
+template <typename T, typename A> using Init = A;
+
 template <typename T1> using t1 = std::unique_ptr<T1>;
 template <typename T1> using t2 = std::unique_ptr<T1[]>;
 
@@ -31,17 +33,9 @@ template <typename T1> void f6(std::unique_ptr<T1[]> &o, T1 *p) {
 
 template <typename T1> T1 *f7(std::unique_ptr<T1[]> &o) { return o.get(); }
 
-// template <typename T, typename... Args>
-// std::unique_ptr<T> f8(Args&&... args) {
-//     return std::make_unique<T>(std::forward<Args>(args)...);
-// }
-
-// Rust does not have variadic generics. We should consider writing specialized
-// versions for make_unique with 1, 2, 3, etc arguments and translate the
-// specialized versions.
-
-template <typename T1, typename T2> std::unique_ptr<T1> f8(T2 &&a0) {
-  return std::make_unique<T1>(std::move(a0));
+template <typename T1, typename... Args>
+std::unique_ptr<T1> f8(Init<T1, Args> &&...args) {
+  return std::make_unique<T1>(std::forward<Args>(args)...);
 }
 
 template <typename T1> void f9(std::unique_ptr<T1[]> &o) {
