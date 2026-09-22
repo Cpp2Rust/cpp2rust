@@ -4,6 +4,8 @@
 #include <deque>
 #include <vector>
 
+template <typename T, typename A> using Init = A;
+
 template <typename T1> using t1 = std::deque<T1>;
 
 template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
@@ -39,4 +41,15 @@ std::deque<T1> &f10(std::deque<T1> &dst, const std::deque<T1> &src) {
 template <typename T1>
 std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
   return dst.operator=(std::move(src));
+}
+
+template <typename T1, typename... Args>
+T1 &f12(std::deque<T1> &o, Init<T1, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
+}
+
+template <typename T1, typename... Args>
+std::vector<T1> &f13(std::deque<std::vector<T1>> &o,
+                     Init<std::vector<T1>, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
 }
