@@ -35,7 +35,23 @@ pub fn test_popcountl_7() {
     assert!((((0_u64.count_ones() as i32 == 0) as i32) != 0));
     assert!((((255_u64.count_ones() as i32 == 8) as i32) != 0));
 }
-pub fn test_mul_overflow_long_8() {
+pub fn test_clzl_8() {
+    assert!((((1_u64.leading_zeros() as i32 == 63) as i32) != 0));
+    assert!((((9223372036854775808_u64.leading_zeros() as i32 == 0) as i32) != 0));
+}
+pub fn test_inff_9() {
+    let inf: Value<f32> = Rc::new(RefCell::new(f32::INFINITY));
+    assert!(((((*inf.borrow()) > 0.0E+0) as i32) != 0));
+    assert!(((((*inf.borrow()) == ((*inf.borrow()) * 2.0E+0)) as i32) != 0));
+    assert!(((((1.0E+0 / (*inf.borrow())) == 0.0E+0) as i32) != 0));
+}
+pub fn test_nanf_10() {
+    let nan: Value<f32> = Rc::new(RefCell::new(f32::NAN));
+    assert!(((((*nan.borrow()) != (*nan.borrow())) as i32) != 0));
+    assert!(((!((((*nan.borrow()) < 0.0E+0) as i32) != 0) as i32) != 0));
+    assert!(((!((((*nan.borrow()) > 0.0E+0) as i32) != 0) as i32) != 0));
+}
+pub fn test_mul_overflow_long_11() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
         ((!({
@@ -52,7 +68,7 @@ pub fn test_mul_overflow_long_8() {
         ovf
     });
 }
-pub fn test_mul_overflow_long_long_9() {
+pub fn test_mul_overflow_long_long_12() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));
     assert!(
         ((!({
@@ -82,8 +98,11 @@ fn main_0() -> i32 {
     ({ test_bswap64_5() });
     ({ test_ctzl_6() });
     ({ test_popcountl_7() });
-    ({ test_mul_overflow_long_8() });
-    ({ test_mul_overflow_long_long_9() });
+    ({ test_clzl_8() });
+    ({ test_inff_9() });
+    ({ test_nanf_10() });
+    ({ test_mul_overflow_long_11() });
+    ({ test_mul_overflow_long_long_12() });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

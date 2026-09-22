@@ -57,3 +57,17 @@ unsafe fn f14(a0: *mut u8, a1: *const u8, a2: usize) -> *mut u8 {
     }
     a0
 }
+
+unsafe fn f15() { std::process::abort() }
+
+unsafe fn f16(a0: u64) -> i32 {
+    a0.leading_zeros() as i32
+}
+
+unsafe fn f17() -> f32 {
+    f32::INFINITY
+}
+
+unsafe fn f18(a0: *const ::core::ffi::c_char) -> f32 {
+    f32::NAN
+}
