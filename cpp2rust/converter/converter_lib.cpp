@@ -1441,17 +1441,12 @@ bool IsTransparentStdCall(const clang::CallExpr *expr) {
   if (!callee) {
     return false;
   }
-  if (callee->isInStdNamespace() && callee->getIdentifier() &&
-      callee->getName() == "launder") {
-    return true;
-  }
   switch (callee->getBuiltinID()) {
   case clang::Builtin::BImove:
   case clang::Builtin::BImove_if_noexcept:
   case clang::Builtin::BIforward:
   case clang::Builtin::BIforward_like:
   case clang::Builtin::BIas_const:
-  case clang::Builtin::BI__builtin_launder:
     return true;
   default:
     return false;
