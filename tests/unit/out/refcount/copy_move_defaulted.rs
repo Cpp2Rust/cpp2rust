@@ -578,9 +578,8 @@ fn main_0() -> i32 {
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
     (*bufs.borrow_mut()).push(Buffer::move_from({ r.as_pointer() }));
     {
-        let __arg = Buffer::move_from({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
-        bufs.as_pointer()
-            .with_mut(|__v: &mut Vec<Buffer>| __v.push(__arg))
+        let __init = Buffer::move_from({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
+        (*bufs.borrow_mut()).push(__init)
     };
     assert!(
         (((*(*(bufs.as_pointer() as Ptr<Buffer>)

@@ -19,6 +19,10 @@
 
 #include "logging.h"
 
+namespace clang {
+class Sema;
+} // namespace clang
+
 namespace cpp2rust {
 
 // Order matters: each category is a superset of the previous one.
@@ -244,6 +248,10 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
 // args are used as-is.
 std::vector<clang::Expr *>
 BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args);
+
+clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
+                           llvm::ArrayRef<clang::Expr *> args,
+                           clang::SourceLocation loc);
 
 const clang::CXXForRangeStmt *
 GetParentForRange(clang::ASTContext &ctx, const clang::MemberExpr *member);

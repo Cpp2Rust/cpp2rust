@@ -43,11 +43,15 @@ struct VaArgsFragment {
   void dump() const;
 };
 
+struct InitFragment {
+  void dump() const;
+};
+
 struct MethodCallFragment; // forward declaration
 
-using BodyFragment =
-    std::variant<TextFragment, PlaceholderFragment, GenericFragment,
-                 VaArgsFragment, std::unique_ptr<MethodCallFragment>>;
+using BodyFragment = std::variant<TextFragment, PlaceholderFragment,
+                                  GenericFragment, VaArgsFragment, InitFragment,
+                                  std::unique_ptr<MethodCallFragment>>;
 
 struct MethodCallFragment {
   std::vector<BodyFragment> receiver;
@@ -68,8 +72,16 @@ struct TypeInfo {
   void dump() const;
 };
 
+struct InitTypeLocation {
+  unsigned depth = -1u;
+  unsigned index = -1u;
+
+  bool valid() const { return depth != -1u; }
+};
+
 struct ExprRule {
   std::string src;
+  InitTypeLocation init_type;
   std::vector<TypeInfo> params;
   TypeInfo return_type;
   std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]

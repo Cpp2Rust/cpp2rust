@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include <vector>
 
+template <typename T, typename A> using Init = A;
+
 template <typename T1> using t1 = std::vector<T1>;
 template <typename T1> using t2 = typename std::vector<T1>::iterator;
 template <typename T1> using t3 = std::vector<std::vector<T1>>;
@@ -550,4 +552,20 @@ template <typename T1>
 std::vector<std::vector<T1>> &f111(std::vector<std::vector<T1>> &dst,
                                    std::vector<std::vector<T1>> &&src) {
   return dst.operator=(std::move(src));
+}
+
+template <typename T1, typename... Args>
+T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
+}
+
+template <typename T1, typename... Args>
+std::vector<T1> &f113(std::vector<std::vector<T1>> &o,
+                      Init<std::vector<T1>, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
+}
+
+template <typename T1, typename T2 = std::allocator<T1>, typename... Args>
+T1 &f114(std::vector<T1, T2> &o, Init<T1, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
 }

@@ -23,10 +23,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S::new({
+    let s: Value<S> = Rc::new(RefCell::new({
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
-        __tmp_0.as_pointer()
-    })));
+        S::new({ __tmp_0.as_pointer() })
+    }));
     assert!((((*s.borrow()).r.read()) == 5));
     return 0;
 }

@@ -8,6 +8,7 @@
 #include <clang/Basic/LangOptions.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Basic/Version.h>
+#include <clang/Sema/Template.h>
 #include <llvm/ADT/DenseMap.h>
 #include <llvm/Support/ConvertUTF.h>
 #include <llvm/Support/ErrorHandling.h>
@@ -1766,15 +1767,6 @@ void Converter::ConvertPrintf(clang::CallExpr *expr) {
   StrCat(')');
 }
 
-std::optional<std::string> Converter::TryPluginConvert(clang::CallExpr *call) {
-  if (emplace_back_plugin_match(call)) {
-    Buffer buf(*this);
-    emplace_back_plugin_convert(call);
-    return std::move(buf).str();
-  }
-  return std::nullopt;
-}
-
 void Converter::ConvertVariadicArg(clang::Expr *arg) {
   if (arg->getType()->isFunctionPointerType()) {
     Convert(arg);
@@ -1826,12 +1818,6 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
-    return false;
-  }
-
-  if (auto plugin_str = TryPluginConvert(expr)) {
-    StrCat(*plugin_str);
-    SetFreshType(expr->getType());
     return false;
   }
 
@@ -3623,6 +3609,7 @@ void Converter::ConvertArrayCXXConstructExpr(clang::CXXConstructExpr *expr) {
 }
 
 void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
+  HoistMaterializedTempBindings hoist_temps(*this, /*as_block=*/true);
   auto ctor = expr->getConstructor();
   StrCat(GetRecordName(ctor->getParent()), token::kDoubleColon,
          GetCtorName(ctor));
@@ -3645,7 +3632,6 @@ void Converter::ConvertCXXConstructExprArgs(clang::CXXConstructExpr *expr) {
     if (arg_idx < expr->getNumArgs()) {
       clang::Expr *arg = expr->getArg(arg_idx++);
       PushBrace brace(*this);
-      HoistMaterializedTempBindings hoist_temps(*this);
 
       if (has_default) {
         StrCat("Some(");
@@ -5042,6 +5028,8 @@ std::string Converter::ConvertIRFragment(
       result += ConvertPlaceholder(expr, arg, ph_ctx);
     } else if (std::get_if<TranslationRule::VaArgsFragment>(&frag)) {
       result += ConvertVariadicTail(expr, all_args);
+    } else if (std::get_if<TranslationRule::InitFragment>(&frag)) {
+      result += ConvertInitFragment(expr, all_args);
     } else if (auto *mc =
                    std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
       result += ConvertMappedMethodCall(expr, **mc, args, num_args, ctx);
@@ -5068,6 +5056,43 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
   }
   StrCat("]");
   return std::move(buf).str();
+}
+
+std::string
+Converter::ConvertInitFragment(clang::Expr *expr,
+                               const std::vector<clang::Expr *> &all_args) {
+  const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  assert(tgt_ir && tgt_ir->init_type.valid());
+  auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
+  assert(callee);
+  auto type = GetSema()
+                  .getTemplateInstantiationArgs(callee)(tgt_ir->init_type.depth,
+                                                        tgt_ir->init_type.index)
+                  .getAsType();
+
+  Buffer buf(*this);
+  ConvertConstructFromArgs(
+      type, llvm::ArrayRef(all_args).drop_front(tgt_ir->params.size()),
+      expr->getExprLoc());
+  return std::move(buf).str();
+}
+
+void Converter::ConvertConstructFromArgs(clang::QualType type,
+                                         llvm::ArrayRef<clang::Expr *> args,
+                                         clang::SourceLocation loc) {
+  auto *init = BuildInitExpr(GetSema(), type, args, loc);
+  assert(init && "type cannot be initialized from the arguments");
+  if (auto *ctor =
+          clang::dyn_cast<clang::CXXConstructExpr>(init->IgnoreImplicit())) {
+    ConvertConstructedValue(type, ctor);
+    return;
+  }
+
+  if (args.empty()) {
+    StrCat(GetDefaultAsString(type));
+    return;
+  }
+  Convert(init);
 }
 
 std::string Converter::AccessLValueObject(clang::MemberExpr *member) {
@@ -5168,9 +5193,9 @@ void Converter::dump_expr_kinds() {
         << ", isVoid: " << isVoid() << '\n';
 }
 
-void Converter::emplace_back_plugin_construct_arg(
-    clang::QualType elem_type, clang::CXXConstructExpr *ctor) {
-  ConvertVarInit(elem_type, ctor);
+void Converter::ConvertConstructedValue(clang::QualType type,
+                                        clang::CXXConstructExpr *ctor) {
+  ConvertVarInit(type, ctor);
 }
 
 const char *Converter::GetPointerDerefPrefix(clang::QualType pointee_type) {

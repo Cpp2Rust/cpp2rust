@@ -365,3 +365,8 @@ fn f105<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
 fn f111<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, a1: &mut Vec<Value<Vec<T1>>>) {
     a0.write(std::mem::take(&mut *a1))
 }
+
+fn f113<T1: ByteRepr + Clone>(a0: Ptr<Vec<Value<Vec<T1>>>>, init: Vec<T1>) {
+    let __init = init;
+    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(__init))))
+}

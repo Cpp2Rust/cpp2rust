@@ -91,6 +91,7 @@ When a rule matches, the converter walks its body fragments and emits:
     arguments.
 - `generic` fragments as the Rust mapping of the bound C++ type,
 - `va_args` fragments as the converted variadic tail,
+- `init` fragments as the value built from the call's trailing arguments,
 - `method_call` fragments as receiver followed by body, possibly rewritten (see
   [Rule Rewriting](./rewriting.md)).
 

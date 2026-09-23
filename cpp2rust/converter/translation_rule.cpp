@@ -90,6 +90,8 @@ std::vector<BodyFragment> ParseBodyFragmentsJSON(const llvm::json::Array &arr) {
           ParseMethodCallFragmentJSON(*mc)));
     } else if (frag_obj->get("va_args")) {
       result.push_back(VaArgsFragment{});
+    } else if (frag_obj->get("init")) {
+      result.push_back(InitFragment{});
     }
   }
   return result;
@@ -213,6 +215,16 @@ void LoadIrSrc(ExprRules &exprs, TypeRules &types,
         llvm::errs() << name << '\n';
         assert(0 && "ir_src.json expr entry has no matching IR target rule");
       }
+      if (auto *obj = entry_val.getAsObject()) {
+        it->second.src = obj->getString("key")->str();
+        auto *init_type = obj->getObject("init_type");
+        assert(init_type && "ir_src.json expr entry object without init_type");
+        it->second.init_type = InitTypeLocation{
+            (unsigned)*init_type->getInteger("depth"),
+            (unsigned)*init_type->getInteger("index"),
+        };
+        continue;
+      }
       it->second.src = val->str();
     } else if (name[0] == 't') {
       auto it = types.find(name);
@@ -234,10 +246,21 @@ void BodyFragmentDump(const BodyFragment &frag) {
     g->dump();
   } else if (auto *v = std::get_if<VaArgsFragment>(&frag)) {
     v->dump();
+  } else if (auto *i = std::get_if<InitFragment>(&frag)) {
+    i->dump();
   } else if (auto *mc =
                  std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
     (*mc)->dump();
   }
+}
+
+bool HasInitFragment(const std::vector<BodyFragment> &body) {
+  return std::any_of(body.begin(), body.end(), [](const BodyFragment &frag) {
+    if (auto *mc = std::get_if<std::unique_ptr<MethodCallFragment>>(&frag)) {
+      return HasInitFragment((*mc)->receiver) || HasInitFragment((*mc)->body);
+    }
+    return std::holds_alternative<InitFragment>(frag);
+  });
 }
 
 } // namespace
@@ -245,6 +268,8 @@ void BodyFragmentDump(const BodyFragment &frag) {
 void TextFragment::dump() const { log() << "  text: \"" << text << "\"\n"; }
 
 void VaArgsFragment::dump() const { log() << "  va_args\n"; }
+
+void InitFragment::dump() const { log() << "  init\n"; }
 
 void PlaceholderFragment::dump() const {
   log() << "  placeholder: " << n;
@@ -287,6 +312,10 @@ void MethodCallFragment::dump() const {
 
 void ExprRule::dump() const {
   log() << "Matching: " << src << '\n';
+  if (init_type.valid()) {
+    log() << "  init type: depth " << init_type.depth << ", index "
+          << init_type.index << '\n';
+  }
   unsigned i = 0;
   for (auto &info : params) {
     log() << "  param a" << i++ << ": ";
@@ -316,6 +345,14 @@ void ExprRule::validate(const std::string &name) const {
     llvm::errs() << name << '\n';
     dump();
     llvm::report_fatal_error("Expr rule loaded from IR but has no src");
+  }
+
+  if (HasInitFragment(body) && !init_type.valid()) {
+    llvm::errs() << name << '\n';
+    dump();
+    llvm::report_fatal_error(
+        "Expr rule uses init but its src pack is not declared as Init<T, "
+        "Args>");
   }
 
   if (generics.empty())

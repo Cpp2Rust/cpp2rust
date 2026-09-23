@@ -48,3 +48,17 @@ unsafe fn f10<T1: Clone>(a0: &mut Vec<T1>, a1: Vec<T1>) {
 unsafe fn f11<T1>(a0: &mut Vec<T1>, a1: &mut Vec<T1>) {
     *a0 = std::mem::take(&mut *a1)
 }
+
+unsafe fn f12<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
+    a0.push(__init)
+}
+
+unsafe fn f13<T1>(a0: &mut Vec<Vec<T1>>, init: Vec<T1>) {
+    let __init = init;
+    a0.push(__init)
+}
+
+unsafe fn f14<T1>() -> Vec<T1> {
+    Vec::new()
+}
