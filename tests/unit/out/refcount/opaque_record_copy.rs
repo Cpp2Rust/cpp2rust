@@ -45,7 +45,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Wrapper_Probe_> = Rc::new(RefCell::new(Wrapper_Probe_ {
         base_: Rc::new(RefCell::new(Probe {})),
-        tag: Rc::new(RefCell::new(<i32>::default())),
+        tag: Rc::new(RefCell::new(0_i32)),
     }));
     (*(*a.borrow()).tag.borrow_mut()) = 3;
     let b: Value<Wrapper_Probe_> = Rc::new(RefCell::new((*a.borrow()).clone()));

@@ -24,7 +24,7 @@ impl Clone for Handler {
 impl Default for Handler {
     fn default() -> Self {
         Handler {
-            tag: <Value<i32>>::default(),
+            tag: Rc::new(RefCell::new(0_i32)),
             cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }

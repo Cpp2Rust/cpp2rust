@@ -128,24 +128,15 @@ pub fn Consume_1(safe_ptr: Option<Value<SafePointer>>) -> i32 {
 pub fn RndStuff_2() {
     let x1: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(None));
     let x2: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
-        Ptr::alloc_array(
-            (0..100_usize)
-                .map(|_| <i32>::default())
-                .collect::<Box<[i32]>>(),
-        )
-        .to_owned_opt(),
+        Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 100) {
         (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
         (*i.borrow_mut()).prefix_inc();
     }
-    (*x2.borrow_mut()) = Ptr::alloc_array(
-        (0..200_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
-    )
-    .to_owned_opt();
+    (*x2.borrow_mut()) =
+        Ptr::alloc_array((0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
         (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 2;

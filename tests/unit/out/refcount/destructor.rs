@@ -231,9 +231,8 @@ impl ByteRepr for Copied {
     }
 }
 thread_local!(
-    pub static order_1: Value<Box<[i32]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-    ));
+    pub static order_1: Value<Box<[i32]>> =
+        Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>()));
 );
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
@@ -353,11 +352,11 @@ fn main_0() -> i32 {
     assert!((global_0.with(|rc| *rc.borrow()) == 8));
     {
         let tc: Value<Templated_char_> = Rc::new(RefCell::new(Templated_char_ {
-            v: Rc::new(RefCell::new(<u8>::default())),
+            v: Rc::new(RefCell::new(0_u8)),
         }));
         let _dtor_tc = ScopedDestructor::new(&tc, |__p| __p.destructor());
         let ti: Value<Templated_int_> = Rc::new(RefCell::new(Templated_int_ {
-            v: Rc::new(RefCell::new(<i32>::default())),
+            v: Rc::new(RefCell::new(0_i32)),
         }));
         let _dtor_ti = ScopedDestructor::new(&ti, |__p| __p.destructor());
     }

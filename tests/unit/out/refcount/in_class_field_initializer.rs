@@ -125,8 +125,8 @@ impl Clone for Boxed_int_ {
 impl Default for Boxed_int_ {
     fn default() -> Self {
         Boxed_int_ {
-            v: <Value<i32>>::default(),
-            tag: <Value<i32>>::default(),
+            v: Rc::new(RefCell::new(0_i32)),
+            tag: Rc::new(RefCell::new(0_i32)),
         }
     }
 }

@@ -60,10 +60,8 @@ impl Clone for Frame {
 impl Default for Frame {
     fn default() -> Self {
         Frame {
-            tag: <Value<u16>>::default(),
-            body: Rc::new(RefCell::new(
-                (0..64).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-            )),
+            tag: Rc::new(RefCell::new(0_u16)),
+            body: Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -92,8 +90,8 @@ fn main_0() -> i32 {
     assert!((8_usize == 8_usize));
     let v: Value<Layout> = Rc::new(RefCell::new(Layout {
         a: Rc::new(RefCell::new(0_u8)),
-        b: Rc::new(RefCell::new(<u32>::default())),
-        c: Rc::new(RefCell::new(<u16>::default())),
+        b: Rc::new(RefCell::new(0_u32)),
+        c: Rc::new(RefCell::new(0_u16)),
     }));
     (*(*v.borrow()).b.borrow_mut()) = 3735928559_u32;
     let base: Value<Ptr<u8>> = Rc::new(RefCell::new((v.as_pointer()).reinterpret_cast::<u8>()));
