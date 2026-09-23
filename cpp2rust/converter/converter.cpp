@@ -685,6 +685,10 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   }
 
   for (auto f : decl->fields()) {
+    if (f->hasInClassInitializer()) {
+      return false;
+    }
+
     // Records that contain function pointer do not derive Default
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
@@ -3392,6 +3396,7 @@ bool Converter::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
 }
 
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
+  auto *syntactic = expr->isSyntacticForm() ? expr : expr->getSyntacticForm();
   if (auto form = expr->getSemanticForm())
     expr = form;
 
@@ -3413,6 +3418,12 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
       }
+      SetFreshType(qual_type);
+      return false;
+    }
+
+    if (syntactic->getNumInits() == 0) {
+      StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }
@@ -4058,18 +4069,6 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
 
   if (qual_type->isFloatingType()) {
     return getTypedLiteral("0.0", ToString(qual_type));
-  }
-
-  if (auto record = qual_type->getAsRecordDecl();
-      record && in_const_initializer_) {
-    if (auto cxx = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
-      ENSURE(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
-             "Default initializing globals using default constructor is not "
-             "supported");
-    }
-    Buffer buf(*this);
-    EmitDefaultStructLiteral(record);
-    return std::move(buf).str();
   }
 
   if (auto record = qual_type->getAsRecordDecl()) {
@@ -4730,8 +4729,13 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   StrCat(GetRecordName(decl));
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
-    StrCat(GetNamedDeclAsString(field), token::kColon,
-           GetDefaultAsString(field->getType()), token::kComma);
+    StrCat(GetNamedDeclAsString(field), token::kColon);
+    if (auto *init = field->getInClassInitializer()) {
+      ConvertVarInit(field->getType(), init);
+    } else {
+      StrCat(GetDefaultAsString(field->getType()));
+    }
+    StrCat(token::kComma);
   }
 }
 

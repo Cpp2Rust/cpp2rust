@@ -65,9 +65,8 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-            (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-        ));
+        let buf: Value<Box<[u8]>> =
+            Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
@@ -112,9 +111,8 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-            (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-        ));
+        let buf: Value<Box<[u8]>> =
+            Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
@@ -188,9 +186,8 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-            (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-        ));
+        let buf: Value<Box<[u8]>> =
+            Rc::new(RefCell::new((0..10).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,
@@ -225,9 +222,8 @@ fn main_0() -> i32 {
             },
         ));
         assert!(!((*stream.borrow()).is_null()));
-        let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-            (0..10).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-        ));
+        let buf: Value<Box<[u8]>> =
+            Rc::new(RefCell::new((0..10).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,

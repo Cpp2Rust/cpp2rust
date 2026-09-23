@@ -78,7 +78,7 @@ impl Default for Outer {
             cp: Rc::new(RefCell::new(Ptr::<u8>::null())),
             pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
             inner: <Value<Inner>>::default(),
-            x: <Value<i32>>::default(),
+            x: Rc::new(RefCell::new(0_i32)),
             fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
@@ -140,7 +140,7 @@ impl Default for Foo {
             s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
             fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
             fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            n: <Value<i32>>::default(),
+            n: Rc::new(RefCell::new(0_i32)),
         }
     }
 }

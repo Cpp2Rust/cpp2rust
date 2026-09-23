@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let N: Value<i32> = Rc::new(RefCell::new(10000));
     let arr: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..((*N.borrow()) as usize))
-            .map(|_| <u32>::default())
+            .map(|_| 0_u32)
             .collect::<Box<[u32]>>(),
     )));
     let i: Value<i32> = Rc::new(RefCell::new(0));

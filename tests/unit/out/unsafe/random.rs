@@ -214,8 +214,8 @@ unsafe fn main_0() -> i32 {
     y1.pair = (&mut y2 as *mut Pair);
     y2.pair = (&mut y3 as *mut Pair);
     (unsafe { Pair::method(&mut (*(*y1.pair).pair)) });
-    let mut x: X1 = X1 {};
-    let mut y: X1 = X1 {};
+    let mut x: X1 = <X1>::default();
+    let mut y: X1 = <X1>::default();
     x1 = ((unsafe { zero_0() }) + (y1.x));
     y1.x = ((unsafe { zero_0() }) + (5));
     let mut ptr2ptr_1: *mut *mut i32 = (&mut px1 as *mut *mut i32);

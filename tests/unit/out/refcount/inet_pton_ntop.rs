@@ -11,9 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
             match Ptr::<u8>::from_string_literal(b"1.2.3.4")
@@ -211,9 +209,8 @@ fn main_0() -> i32 {
             && (((((*buf.borrow())[(15) as usize] as i32) == 5) as i32) != 0)) as i32)
             != 0)
     );
-    let text: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..64).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let text: Value<Box<[u8]>> =
+        Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
         ((({
@@ -270,22 +267,8 @@ fn main_0() -> i32 {
             != 0)
     );
     let sixteen: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
     ])));
     (*sixteen.borrow_mut())[(15) as usize] = 1_u8;
     assert!(

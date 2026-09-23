@@ -22,10 +22,8 @@ impl Clone for record {
 impl Default for record {
     fn default() -> Self {
         record {
-            code: <Value<u16>>::default(),
-            pad: Rc::new(RefCell::new(
-                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-            )),
+            code: Rc::new(RefCell::new(0_u16)),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }

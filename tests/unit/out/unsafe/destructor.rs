@@ -147,45 +147,39 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     {
-        let mut s: S = S {};
+        let mut s: S = <S>::default();
         let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (1)));
     {
-        let mut s: S = S {};
+        let mut s: S = <S>::default();
         let _dtor_s = ScopedDestructorUnsafe::new(&raw mut s, S::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (2)));
     {
-        let mut d: Defaulted = Defaulted { s: S {} };
+        let mut d: Defaulted = <Defaulted>::default();
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Defaulted::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (3)));
     {
-        let mut o: Outer = Outer {
-            m: Middle { s: S {} },
-        };
+        let mut o: Outer = <Outer>::default();
         let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Outer::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (4)));
     {
-        let mut am: ArrayMember = ArrayMember {
-            items: [S {}, S {}, S {}],
-        };
+        let mut am: ArrayMember = <ArrayMember>::default();
         let _dtor_am = ScopedDestructorUnsafe::new(&raw mut am, ArrayMember::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (7)));
     {
-        let mut e: EmptyBody = EmptyBody { s: S {} };
+        let mut e: EmptyBody = <EmptyBody>::default();
         let _dtor_e = ScopedDestructorUnsafe::new(&raw mut e, EmptyBody::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (8)));
     {
-        let mut tc: Templated_char_ = Templated_char_ {
-            v: (0 as libc::c_char),
-        };
+        let mut tc: Templated_char_ = <Templated_char_>::default();
         let _dtor_tc = ScopedDestructorUnsafe::new(&raw mut tc, Templated_char_::destructor);
-        let mut ti: Templated_int_ = Templated_int_ { v: 0_i32 };
+        let mut ti: Templated_int_ = <Templated_int_>::default();
         let _dtor_ti = ScopedDestructorUnsafe::new(&raw mut ti, Templated_int_::destructor);
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut global_0)) == (13)));
