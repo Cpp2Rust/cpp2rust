@@ -1369,7 +1369,12 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     return false;
   }
   StrCat(keyword::kIf);
-  ConvertCondition(stmt->getCond());
+  if (auto *cond = clang::dyn_cast<clang::ConstantExpr>(stmt->getCond());
+      cond && stmt->isConstexpr()) {
+    StrCat(cond->getResultAsAPSInt() != 0 ? keyword::kTrue : keyword::kFalse);
+  } else {
+    ConvertCondition(stmt->getCond());
+  }
   ConvertBody(stmt->getThen());
   if (stmt->hasElseStorage()) {
     StrCat(keyword::kElse);
