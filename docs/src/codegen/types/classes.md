@@ -90,9 +90,9 @@ behind pointers, is emitted at the end of the file as an empty
 
 A constructor becomes an associated function named after the class. It opens
 with `let mut this = Self { ... }`, one field per member initializer, then runs
-the C++ body and returns `this`. Only implicit or defaulted copy and move
-constructors are supported: a user-defined one stops the translation, and the
-implicit copy is what the `Clone` impl represents.
+the C++ body and returns `this`. Copy and move constructors become `copy_from`
+and `move_from` (see [Naming](./naming.md)); the `Clone` impl calls `copy_from`
+when the copy constructor is user-defined.
 
 Methods take `&self` when `const` and `&mut self` otherwise in the unsafe model.
 In the refcount model they always take `&self`, since mutation goes through the

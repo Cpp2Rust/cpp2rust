@@ -27,3 +27,8 @@ name unless they are overloaded, in which case the parameter types are appended
 (`method_i32`, `method_i32_const`). `operator<` is emitted as `lt`; comparison
 operators additionally produce the corresponding trait impls (`PartialOrd`,
 `Ord`, `PartialEq`).
+
+Copy and move constructors are named `copy_from` and `move_from`, and copy and
+move assignment operators `copy_assign` and `move_assign`, as long as the class
+has only one member of that kind and no method already uses the name; otherwise
+they get the overloaded form.
