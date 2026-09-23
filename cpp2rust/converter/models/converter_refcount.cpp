@@ -1719,6 +1719,11 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
+    if (IsStaticMethod(method)) {
+      StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
+      SetFreshType(expr->getType());
+      return false;
+    }
     if (IsMethodOnPtr(method)) {
       SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
       StrCat(TraitName(method->getParent()), token::kDoubleColon,

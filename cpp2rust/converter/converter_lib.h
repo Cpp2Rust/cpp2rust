@@ -110,6 +110,13 @@ bool IsComparisonOperator(const clang::FunctionDecl *fn);
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 
 bool IsStaticMethod(const clang::CXXMethodDecl *method);
+
+bool IsLambdaCallOperator(const clang::CXXMethodDecl *method);
+
+std::vector<clang::CXXMethodDecl *>
+GetLambdaCallOperators(const clang::CXXRecordDecl *decl);
+
+bool LambdaCallOperatorIsDeducible(const clang::CXXMethodDecl *op);
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleFunctionDecl(const clang::FunctionDecl *decl);

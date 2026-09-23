@@ -277,7 +277,7 @@ void ForEachTemplateInstantiatedMethod(
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
   if (decl->getTemplateSpecializationArgs() != nullptr &&
-      IsUserDefinedDecl(decl)) {
+      (IsUserDefinedDecl(decl) || decl->getParent()->isLambda())) {
     return true;
   }
   const auto method_name = decl->getNameAsString();
@@ -426,7 +426,9 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   if (decl->isLambda()) {
-    return decl->getLambdaCallOperator()->hasBody();
+    // The call operator of a generic lambda is a template pattern
+    return decl->isGenericLambda() ||
+           decl->getLambdaCallOperator()->hasBody();
   }
   return decl->isThisDeclarationADefinition() && !decl->isDependentContext();
 }
@@ -1087,18 +1089,54 @@ bool IsEmittableMethod(clang::CXXMethodDecl *method) {
          clang::isa<clang::CXXConstructorDecl>(method);
 }
 
+bool IsLambdaCallOperator(const clang::CXXMethodDecl *method) {
+  auto *parent = method->getParent();
+  if (!parent->isLambda()) {
+    return false;
+  }
+  if (auto *tmpl = method->getPrimaryTemplate()) {
+    return tmpl == parent->getDependentLambdaCallOperator();
+  }
+  return method == parent->getLambdaCallOperator();
+}
+
+bool LambdaCallOperatorIsDeducible(const clang::CXXMethodDecl *op) {
+  const auto *tmpl = op->getPrimaryTemplate();
+  if (tmpl == nullptr) {
+    return true;
+  }
+  return llvm::any_of(tmpl->getTemplatedDecl()->parameters(),
+                      [](const auto *param) {
+                        return param->getType()->isDependentType();
+                      });
+}
+
+std::vector<clang::CXXMethodDecl *>
+GetLambdaCallOperators(const clang::CXXRecordDecl *decl) {
+  std::vector<clang::CXXMethodDecl *> ops;
+  if (auto *tmpl = decl->getDependentLambdaCallOperator()) {
+    for (auto *spec : tmpl->specializations()) {
+      if (auto *m = clang::dyn_cast<clang::CXXMethodDecl>(spec);
+          m && m->hasBody()) {
+        ops.push_back(m);
+      }
+    }
+    return ops;
+  }
+  ops.push_back(decl->getLambdaCallOperator());
+  return ops;
+}
+
 bool IsStaticMethod(const clang::CXXMethodDecl *method) {
   if (method->isStatic()) {
     return true;
   }
-  auto *parent = method->getParent();
-  return parent->isLambda() && parent->getLambdaCallOperator() == method &&
-         parent->captures().empty();
+  return IsLambdaCallOperator(method) &&
+         method->getParent()->captures().empty();
 }
 
 bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
-  if (GetLambdaOf(method) &&
-      method->getParent()->getLambdaCallOperator() == method) {
+  if (IsLambdaCallOperator(method)) {
     return false;
   }
   if (method->isDeleted() || IsStaticMethod(method) || method->isVirtual() ||

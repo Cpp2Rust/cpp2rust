@@ -433,8 +433,12 @@ public:
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
   virtual void AddCallableTrait(clang::CXXRecordDecl *decl);
+  void AddCallableTrait(clang::CXXRecordDecl *decl, clang::CXXMethodDecl *op);
 
   virtual void AddFunctionPointerConversion(clang::CXXRecordDecl *decl);
+  void AddFunctionPointerConversion(clang::CXXRecordDecl *decl,
+                                    clang::CXXConversionDecl *conv,
+                                    const clang::CXXMethodDecl *op);
 
   virtual std::string
   ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op);

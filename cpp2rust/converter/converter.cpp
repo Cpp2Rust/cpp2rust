@@ -3140,6 +3140,12 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
+      method && IsStaticMethod(method) && !Mapper::Contains(expr)) {
+    StrCat(GetUFCSName(method), token::kDoubleColon, GetMethodName(method));
+    SetFreshType(expr->getType());
+    return false;
+  }
+  if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
     SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
     StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
@@ -3762,9 +3768,15 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
 static constexpr unsigned kMaxCallableArity = 3;
 
 void Converter::AddCallableTrait(clang::CXXRecordDecl *decl) {
-  auto *op = decl->getLambdaCallOperator();
+  for (auto *op : GetLambdaCallOperators(decl)) {
+    AddCallableTrait(decl, op);
+  }
+}
+
+void Converter::AddCallableTrait(clang::CXXRecordDecl *decl,
+                                 clang::CXXMethodDecl *op) {
   ENSURE(op->getNumParams() <= kMaxCallableArity);
-  if (!op->isConst()) {
+  if (!op->isConst() || !LambdaCallOperatorIsDeducible(op)) {
     return;
   }
   auto ret = op->getReturnType()->isVoidType() ? std::string("()")
@@ -3808,17 +3820,37 @@ Converter::ConvertLambdaToFunctionPointer(const clang::CXXMethodDecl *op) {
 
 void Converter::AddFunctionPointerConversion(clang::CXXRecordDecl *decl) {
   for (auto *method : decl->methods()) {
+    if (auto *conv = clang::dyn_cast<clang::CXXConversionDecl>(method)) {
+      AddFunctionPointerConversion(decl, conv, decl->getLambdaCallOperator());
+    }
+  }
+  auto *call_tmpl = decl->getDependentLambdaCallOperator();
+  if (!call_tmpl) {
+    return;
+  }
+  ForEachTemplateInstantiatedMethod(decl, [&](clang::CXXMethodDecl *method) {
     auto *conv = clang::dyn_cast<clang::CXXConversionDecl>(method);
     if (!conv) {
-      continue;
+      return;
     }
-    StrCat(keyword::kImpl, GetRecordName(decl));
-    PushBrace impl_brace(*this);
-    StrCat("pub fn", GetMethodName(conv), "(&self)", token::kArrow,
-           ToString(conv->getConversionType()));
-    PushBrace fn_brace(*this);
-    StrCat(ConvertLambdaToFunctionPointer(decl->getLambdaCallOperator()));
-  }
+    void *insert_pos = nullptr;
+    auto *op = call_tmpl->findSpecialization(
+        conv->getTemplateSpecializationArgs()->asArray(), insert_pos);
+    assert(op && "missing call operator for lambda conversion");
+    AddFunctionPointerConversion(decl, conv,
+                                 clang::cast<clang::CXXMethodDecl>(op));
+  });
+}
+
+void Converter::AddFunctionPointerConversion(clang::CXXRecordDecl *decl,
+                                             clang::CXXConversionDecl *conv,
+                                             const clang::CXXMethodDecl *op) {
+  StrCat(keyword::kImpl, GetRecordName(decl));
+  PushBrace impl_brace(*this);
+  StrCat("pub fn", GetMethodName(conv), "(&self)", token::kArrow,
+         ToString(conv->getConversionType()));
+  PushBrace fn_brace(*this);
+  StrCat(ConvertLambdaToFunctionPointer(op));
 }
 
 bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
