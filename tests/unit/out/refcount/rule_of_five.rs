@@ -24,9 +24,7 @@ impl Buffer {
     pub fn new(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(
-                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: Rc::new(RefCell::new((*size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
@@ -45,9 +43,7 @@ impl Buffer {
     }
     pub fn Buffer_pconstBuffer(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(
-                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: Rc::new(RefCell::new((*(*o.upgrade().deref()).size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
@@ -63,9 +59,7 @@ impl Buffer {
     }
     pub fn Buffer_pmutBuffer_rv(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(
-                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: Rc::new(RefCell::new((*(*o.upgrade().deref()).size.borrow()))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
@@ -94,10 +88,8 @@ impl Clone for Buffer {
 impl Default for Buffer {
     fn default() -> Self {
         Buffer {
-            data: Rc::new(RefCell::new(
-                (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
-            size: <Value<i32>>::default(),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            size: Rc::new(RefCell::new(0_i32)),
         }
     }
 }

@@ -42,7 +42,7 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub unsafe fn Boxed_int_(mut x: i32, mut t: i32) -> Self {
+    pub unsafe fn new(mut x: i32, mut t: i32) -> Self {
         let mut this = Self { v: x, tag: t };
         this
     }
@@ -69,7 +69,7 @@ unsafe fn main_0() -> i32 {
     assert!(((s.c.y) == (4)));
     assert!(((s.d.x) == (3)));
     assert!(((s.d.y) == (4)));
-    let mut boxed: Boxed_int_ = Boxed_int_::Boxed_int_({ 5 }, { 9 });
+    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
     assert!(((boxed.v) == (5)));
     assert!(((boxed.tag) == (9)));
     return 0;

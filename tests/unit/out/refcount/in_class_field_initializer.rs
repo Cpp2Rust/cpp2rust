@@ -101,7 +101,7 @@ pub struct Boxed_int_ {
     pub tag: Value<i32>,
 }
 impl Boxed_int_ {
-    pub fn Boxed_int_(x: i32, t: i32) -> Self {
+    pub fn new(x: i32, t: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let t: Value<i32> = Rc::new(RefCell::new(t));
         let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
@@ -157,7 +157,7 @@ fn main_0() -> i32 {
     assert!(((*(*(*s.borrow()).c.borrow()).y.borrow()) == 4));
     assert!(((*(*(*s.borrow()).d.borrow()).x.borrow()) == 3));
     assert!(((*(*(*s.borrow()).d.borrow()).y.borrow()) == 4));
-    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::Boxed_int_({ 5 }, { 9 })));
+    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::new({ 5 }, { 9 })));
     assert!(((*(*boxed.borrow()).v.borrow()) == 5));
     assert!(((*(*boxed.borrow()).tag.borrow()) == 9));
     return 0;
