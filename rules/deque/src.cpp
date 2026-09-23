@@ -53,3 +53,5 @@ std::vector<T1> &f13(std::deque<std::vector<T1>> &o,
                      Init<std::vector<T1>, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
+
+template <typename T1> std::deque<T1> f14() { return std::deque<T1>(); }

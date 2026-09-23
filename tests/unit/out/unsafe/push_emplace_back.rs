@@ -197,7 +197,7 @@ unsafe fn main_0() -> i32 {
     assert!(((pairs[(0_usize)].first) == (-1_i32)) && ((pairs[(0_usize)].second) == (-1_i32)));
     assert!(((pairs[(1_usize)].first) == (3)) && ((pairs[(1_usize)].second) == (0)));
     assert!(((pairs[(2_usize)].first) == (4)) && ((pairs[(2_usize)].second) == (10)));
-    let mut queue: Vec<Pair> = Default::default();
+    let mut queue: Vec<Pair> = Vec::new();
     (unsafe { emplace_deque_8((&mut queue as *mut Vec<Pair>)) });
     assert!(
         (((*((queue).first_mut().unwrap())).first) == (6))

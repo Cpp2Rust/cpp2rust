@@ -475,7 +475,7 @@ fn main_0() -> i32 {
             .borrow())
                 == 10)
     );
-    let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Default::default()));
+    let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
         ((*(*(queue.as_pointer() as Ptr<Pair>).upgrade().deref())

@@ -58,3 +58,7 @@ unsafe fn f13<T1>(a0: &mut Vec<Vec<T1>>, init: Vec<T1>) {
     let __init = init;
     a0.push(__init)
 }
+
+unsafe fn f14<T1>() -> Vec<T1> {
+    Vec::new()
+}
