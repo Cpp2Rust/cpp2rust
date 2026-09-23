@@ -66,7 +66,7 @@ pub struct Cmp {
 }
 impl Cmp {
     pub unsafe fn operator_cmp(&self, o: *const Cmp) -> std::cmp::Ordering {
-        return (self.v).cmp(&((*o).v));
+        return std::cmp::Ord::cmp(&(self.v), &((*o).v));
     }
     pub unsafe fn operator_eq(&self, o: *const Cmp) -> bool {
         return ((self.v) == ((*o).v));

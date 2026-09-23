@@ -232,6 +232,11 @@ pub struct CStringIterator {
 
 impl Iterator for CStringIterator {
     type Item = u8;
+
+    fn count(self) -> usize {
+        self.ptr.c_str_len()
+    }
+
     fn next(&mut self) -> Option<Self::Item> {
         // read until the null terminator
         match self.ptr.read() {

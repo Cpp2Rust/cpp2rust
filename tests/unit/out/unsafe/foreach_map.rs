@@ -18,8 +18,10 @@ unsafe fn main_0() -> i32 {
     let mut k: i32 = 100;
     'loop_: while ((i) < (100)) {
         (*m.entry(i).or_default().as_mut()) = ((k as f64) / (2.0E+0));
-        i.prefix_inc();
-        k.prefix_dec();
+        {
+            i.prefix_inc();
+            k.prefix_dec()
+        };
     }
     let mut sum: f64 = 0_f64;
     'loop_: for i in UnsafeMapIterator::begin(&m as *const BTreeMap<i32, Box<f64>>) {

@@ -19,7 +19,7 @@ impl NoCopy {
         let this: Ptr<NoCopy> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn NoCopy_pmutNoCopy(o: Ptr<NoCopy>) -> Self {
+    pub fn NoCopy_pmutNoCopy_rv(o: Ptr<NoCopy>) -> Self {
         let __this: Value<NoCopy> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
         }));
@@ -53,7 +53,7 @@ impl PrivateCopy {
         let this: Ptr<PrivateCopy> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn PrivateCopy_pmutPrivateCopy(o: Ptr<PrivateCopy>) -> Self {
+    pub fn PrivateCopy_pmutPrivateCopy_rv(o: Ptr<PrivateCopy>) -> Self {
         let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
         }));
@@ -117,9 +117,9 @@ pub struct Container {
     pub tag: Value<i32>,
 }
 impl Container {
-    pub fn Container_pmutContainer(_a0: Ptr<Container>) -> Self {
+    pub fn Container_pmutContainer_rv(_a0: Ptr<Container>) -> Self {
         let __this: Value<Container> = Rc::new(RefCell::new(Self {
-            inner: Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy({
+            inner: Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy_rv({
                 (*_a0.upgrade().deref()).inner.as_pointer()
             }))),
             tag: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).tag.borrow()))),
@@ -156,19 +156,22 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy({ 1 })));
-    let b: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy({ a.as_pointer() })));
+    let b: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy_rv({
+        a.as_pointer()
+    })));
     assert!(((*(*b.borrow()).v.borrow()) == 1) && ((*(*a.borrow()).v.borrow()) == 0));
-    ({ NoCopyImpl::operator_assign_pmutNoCopy(&a.as_pointer(), b.as_pointer()) });
+    ({ NoCopyImpl::operator_assign_pmutNoCopy_rv(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 1) && ((*(*b.borrow()).v.borrow()) == 0));
     ({ bump_0((a.as_pointer())) });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     let p: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::PrivateCopy()));
     (*(*p.borrow()).v.borrow_mut()) = 3;
-    let q: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::PrivateCopy_pmutPrivateCopy({
-        p.as_pointer()
-    })));
+    let q: Value<PrivateCopy> =
+        Rc::new(RefCell::new(PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({
+            p.as_pointer()
+        })));
     assert!(((*(*q.borrow()).v.borrow()) == 3) && ((*(*p.borrow()).v.borrow()) == 0));
-    ({ PrivateCopyImpl::operator_assign_pmutPrivateCopy(&p.as_pointer(), q.as_pointer()) });
+    ({ PrivateCopyImpl::operator_assign_pmutPrivateCopy_rv(&p.as_pointer(), q.as_pointer()) });
     assert!(((*(*p.borrow()).v.borrow()) == 3) && ((*(*q.borrow()).v.borrow()) == 0));
     let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::Immovable()));
     (*(*im.borrow()).v.borrow_mut()) = 4;
@@ -179,7 +182,7 @@ fn main_0() -> i32 {
         inner: Rc::new(RefCell::new(NoCopy::NoCopy({ 6 }))),
         tag: Rc::new(RefCell::new(7)),
     }));
-    let d: Value<Container> = Rc::new(RefCell::new(Container::Container_pmutContainer({
+    let d: Value<Container> = Rc::new(RefCell::new(Container::Container_pmutContainer_rv({
         c.as_pointer()
     })));
     assert!(
@@ -190,13 +193,13 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait ContainerImpl {
-    fn operator_assign_pmutContainer(&self, _a0: Ptr<Container>) -> Ptr<Container>;
+    fn operator_assign_pmutContainer_rv(&self, _a0: Ptr<Container>) -> Ptr<Container>;
 }
 impl ContainerImpl for Ptr<Container> {
-    fn operator_assign_pmutContainer(&self, _a0: Ptr<Container>) -> Ptr<Container> {
+    fn operator_assign_pmutContainer_rv(&self, _a0: Ptr<Container>) -> Ptr<Container> {
         ({
             let _o: Ptr<NoCopy> = (*_a0.upgrade().deref()).inner.as_pointer();
-            NoCopyImpl::operator_assign_pmutNoCopy(
+            NoCopyImpl::operator_assign_pmutNoCopy_rv(
                 &(*(*self).upgrade().deref()).inner.as_pointer(),
                 _o,
             )
@@ -207,10 +210,10 @@ impl ContainerImpl for Ptr<Container> {
     }
 }
 pub trait NoCopyImpl {
-    fn operator_assign_pmutNoCopy(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy>;
+    fn operator_assign_pmutNoCopy_rv(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy>;
 }
 impl NoCopyImpl for Ptr<NoCopy> {
-    fn operator_assign_pmutNoCopy(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy> {
+    fn operator_assign_pmutNoCopy_rv(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy> {
         let __rhs = (*(*o.upgrade().deref()).v.borrow());
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
         (*(*o.upgrade().deref()).v.borrow_mut()) = 0;
@@ -218,10 +221,13 @@ impl NoCopyImpl for Ptr<NoCopy> {
     }
 }
 pub trait PrivateCopyImpl {
-    fn operator_assign_pmutPrivateCopy(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy>;
+    fn operator_assign_pconstPrivateCopy(&self, _a0: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
+        unimplemented!()
+    }
+    fn operator_assign_pmutPrivateCopy_rv(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy>;
 }
 impl PrivateCopyImpl for Ptr<PrivateCopy> {
-    fn operator_assign_pmutPrivateCopy(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
+    fn operator_assign_pmutPrivateCopy_rv(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
         let __rhs = (*(*o.upgrade().deref()).v.borrow());
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
         (*(*o.upgrade().deref()).v.borrow_mut()) = 0;

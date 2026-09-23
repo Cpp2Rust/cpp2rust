@@ -22,9 +22,9 @@ pub fn foo_0() -> i32 {
     thread_local!(
         static kX2_5: Value<i32> = Rc::new(RefCell::new(2));
     );
-    (*kX1_4.with(Value::clone).borrow_mut()) += 1;
-    return ((kX1_4.with(|rc| rc.borrow().clone()) + kX2_5.with(|rc| rc.borrow().clone()))
-        + static_i_1.with(|rc| rc.borrow().clone()));
+    kX1_4.with(|rc| *rc.borrow_mut() += 1);
+    return ((kX1_4.with(|rc| *rc.borrow()) + kX2_5.with(|rc| *rc.borrow()))
+        + static_i_1.with(|rc| *rc.borrow()));
 }
 pub fn main() {
     __cpp2rust_init_globals();

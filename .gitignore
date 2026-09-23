@@ -6,6 +6,7 @@ _buildconfig.py
 target/
 Cargo.lock
 rules/rustls/rustls.h
+rules/brotli/brotli/
 
 # Python
 *.pyc

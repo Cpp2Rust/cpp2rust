@@ -46,6 +46,8 @@ bool IsUnionArrayMember(const clang::Expr *base);
 
 bool IsStringLiteralExpr(const clang::Expr *expr);
 
+bool IsCodeUnitStringLiteral(const clang::StringLiteral *expr);
+
 bool IsUserDefinedDecl(const clang::Decl *decl);
 
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
@@ -88,11 +90,17 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 
+bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
+
+bool RecordDerivesByteRepr(const clang::RecordDecl *decl);
+
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 
 bool IsRValueConvertingConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor);
+
+bool MethodNeedsMutableReceiver(const clang::CXXMethodDecl *method);
 
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl);
 
@@ -125,6 +133,8 @@ unsigned GetCtorIndex(clang::CXXConstructorDecl *ctor);
 
 clang::CXXConstructorDecl *
 GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl);
+
+bool HasUsableDefaultArg(const clang::ParmVarDecl *param);
 
 std::string GetMainFileName(const clang::ASTContext &ctx);
 
@@ -264,7 +274,9 @@ bool IsBuiltinVaEnd(const clang::CallExpr *expr);
 
 bool IsBuiltinVaCopy(const clang::CallExpr *expr);
 
-const clang::Expr *IgnoreStdMove(const clang::Expr *expr);
+bool IsTransparentStdCall(const clang::CallExpr *expr);
+
+const clang::Expr *IgnoreTransparentStdCall(const clang::Expr *expr);
 
 bool IsTemporaryObject(const clang::Expr *expr);
 

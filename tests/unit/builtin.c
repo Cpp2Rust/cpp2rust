@@ -53,6 +53,25 @@ static void test_popcountl(void) {
   assert(__builtin_popcountl(0xFFUL) == 8);
 }
 
+static void test_clzl(void) {
+  assert(__builtin_clzl(1UL) == 63);
+  assert(__builtin_clzl(0x8000000000000000UL) == 0);
+}
+
+static void test_inff(void) {
+  float inf = __builtin_inff();
+  assert(inf > 0.0f);
+  assert(inf == inf * 2.0f);
+  assert(1.0f / inf == 0.0f);
+}
+
+static void test_nanf(void) {
+  float nan = __builtin_nanf("");
+  assert(nan != nan);
+  assert(!(nan < 0.0f));
+  assert(!(nan > 0.0f));
+}
+
 static void test_mul_overflow_long(void) {
   long r = 0;
   assert(!__builtin_mul_overflow(3L, 7L, &r));
@@ -76,6 +95,9 @@ int main(void) {
   test_bswap64();
   test_ctzl();
   test_popcountl();
+  test_clzl();
+  test_inff();
+  test_nanf();
   test_mul_overflow_long();
   test_mul_overflow_long_long();
   return 0;

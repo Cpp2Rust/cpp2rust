@@ -31,9 +31,7 @@ pub fn test_fputc_0() {
 }
 pub fn test_fputs_1() {
     {
-        let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello")
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -46,9 +44,11 @@ pub fn test_fputs_1() {
             _ => -1,
         }
     };
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"from variable")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+        b"from variable",
+    )));
     {
-        let __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
+        let __bytes = (*s.borrow()).to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -68,9 +68,7 @@ pub fn test_fputs_1() {
         (('\0' as i32) as u8),
     ])));
     {
-        let __bytes: Vec<u8> = (buf.as_pointer() as Ptr<u8>)
-            .to_c_string_iterator()
-            .collect();
+        let __bytes = (buf.as_pointer() as Ptr<u8>).to_c_bytes();
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
@@ -86,18 +84,18 @@ pub fn test_fputs_1() {
 }
 pub fn test_puts_2() {
     {
-        let mut __bytes: Vec<u8> = Ptr::from_string_literal(b"puts hello")
-            .to_c_string_iterator()
-            .collect();
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"puts hello").to_c_bytes();
         __bytes.push(b'\n');
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
             false => -1,
         }
     };
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"puts variable")));
+    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+        b"puts variable",
+    )));
     {
-        let mut __bytes: Vec<u8> = (*s.borrow()).to_c_string_iterator().collect();
+        let mut __bytes = (*s.borrow()).to_c_bytes();
         __bytes.push(b'\n');
         match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
             true => 0,
@@ -109,13 +107,13 @@ pub fn test_fileno_3() {
     assert!((((libcc2rs::c_stdin().with(|__f| __f.fd) == 0) as i32) != 0));
     assert!((((libcc2rs::c_stdout().with(|__f| __f.fd) == 1) as i32) != 0));
     assert!((((libcc2rs::c_stderr().with(|__f| __f.fd) == 2) as i32) != 0));
-    let file: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let file: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_fileno_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*file.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),

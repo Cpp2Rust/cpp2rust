@@ -60,7 +60,7 @@ fn main_0() -> i32 {
                 .value
                 .borrow())),
     ));
-    (*arr.borrow()).delete_array();
+    (*arr.borrow()).delete();
     assert!(((*result.borrow()) == 11));
     return 0;
 }

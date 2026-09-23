@@ -22,8 +22,10 @@ fn main_0() -> i32 {
                     .as_pointer()
             })
             .write((((*k.borrow()) as f64) / 2.0E+0));
-        (*i.borrow_mut()).prefix_inc();
-        (*k.borrow_mut()).prefix_dec();
+        {
+            (*i.borrow_mut()).prefix_inc();
+            (*k.borrow_mut()).prefix_dec()
+        };
     }
     let sum: Value<f64> = Rc::new(RefCell::new(0_f64));
     'loop_: for i in RefcountMapIter::begin(m.as_pointer()) {

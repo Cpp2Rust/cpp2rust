@@ -63,17 +63,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"first"))),
             color: Rc::new(RefCell::new(Color_RED)),
             opt: Rc::new(RefCell::new(Option_OPT_NONE)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"second"))),
             color: Rc::new(RefCell::new(Color_GREEN)),
             opt: Rc::new(RefCell::new(Option_OPT_A)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"third"))),
             color: Rc::new(RefCell::new(Color_BLUE)),
             opt: Rc::new(RefCell::new(Option_OPT_C)),
         },
@@ -197,18 +197,18 @@ fn main_0() -> i32 {
     ));
     assert!(((((*extra.borrow()) == ((0 + 1) + 2)) as i32) != 0));
     assert!(
-        ((((global_color_0.with(|rc| rc.borrow().clone()) as u32) == ((Color_GREEN as i32) as u32))
+        ((((global_color_0.with(|rc| *rc.borrow()) as u32) == ((Color_GREEN as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
-        ((((global_opt_1.with(|rc| rc.borrow().clone()) as u32) == ((Option_OPT_B as i32) as u32))
+        ((((global_opt_1.with(|rc| *rc.borrow()) as u32) == ((Option_OPT_B as i32) as u32))
             as i32)
             != 0)
     );
     assert!(
-        ((((global_tag_2.with(|rc| rc.borrow().clone()) as u32)
-            == ((Tag_enum_TAG_TWO as i32) as u32)) as i32)
+        ((((global_tag_2.with(|rc| *rc.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32))
+            as i32)
             != 0)
     );
     assert!(
@@ -254,9 +254,9 @@ fn main_0() -> i32 {
             != 0)
     );
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::from_string_literal(b"red"),
-        Ptr::from_string_literal(b"green"),
-        Ptr::from_string_literal(b"blue"),
+        Ptr::<u8>::from_string_literal(b"red"),
+        Ptr::<u8>::from_string_literal(b"green"),
+        Ptr::<u8>::from_string_literal(b"blue"),
     ])));
     let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
     assert!(
@@ -274,7 +274,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*names.borrow())[(global_tag_2.with(|rc| rc.borrow().clone())) as usize]
+        ((((((*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize]
             .offset((0) as isize)
             .read()) as i32)
             == ('b' as i32)) as i32)

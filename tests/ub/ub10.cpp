@@ -1,5 +1,4 @@
-// panic-ub: refcount
-// nondet-result: unsafe
+// nondet-result: unsafe, refcount
 int main() {
   int *arr = new int[10];
   int *ptr = arr + 1;

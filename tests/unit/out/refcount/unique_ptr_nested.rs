@@ -41,7 +41,7 @@ pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
 impl Outer {
-    pub fn Outer_pmutOuter(_a0: Ptr<Outer>) -> Self {
+    pub fn Outer_pmutOuter_rv(_a0: Ptr<Outer>) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             inner: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),
@@ -104,10 +104,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait OuterImpl {
-    fn operator_assign_pmutOuter(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
+    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
-    fn operator_assign_pmutOuter(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         ((*(*self).upgrade().deref()).inner.as_pointer() as Ptr<Option<Value<Inner>>>)
             .write((*(*_a0.upgrade().deref()).inner.borrow_mut()).take());
         return (*self).clone();

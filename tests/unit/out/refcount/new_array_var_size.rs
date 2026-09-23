@@ -17,14 +17,14 @@ fn main_0() -> i32 {
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    (*A.borrow()).delete_array();
+    (*A.borrow()).delete();
     let N2: Ptr<i32> = N.as_pointer();
     let A2: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..((N2.read()) as usize))
             .map(|_| <i32>::default())
             .collect::<Box<[i32]>>(),
     )));
-    (*A2.borrow()).delete_array();
+    (*A2.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

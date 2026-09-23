@@ -53,15 +53,15 @@ fn main_0() -> i32 {
     {
         assert!(true);
     }
-    (*side_effect_0.with(Value::clone).borrow_mut()) = 0;
+    side_effect_0.with(|rc| *rc.borrow_mut() = 0);
     if ((*zero.borrow()) != 0) && (({ observe_1(1) }) != 0) {
         assert!(false);
     }
-    assert!((side_effect_0.with(|rc| rc.borrow().clone()) == 0));
+    assert!((side_effect_0.with(|rc| *rc.borrow()) == 0));
     if ((*n.borrow()) != 0) || (({ observe_1(1) }) != 0) {
         assert!(true);
     }
-    assert!((side_effect_0.with(|rc| rc.borrow().clone()) == 0));
+    assert!((side_effect_0.with(|rc| *rc.borrow()) == 0));
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let y: Value<i32> = Rc::new(RefCell::new(3));
     let flags: Value<u32> = Rc::new(RefCell::new(2_u32));
@@ -104,7 +104,7 @@ fn main_0() -> i32 {
     if ((*n.borrow()) != 0) || (((*bits.borrow()) & 256_i64) != 0) {
         assert!(true);
     }
-    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(b"hi")));
+    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hi")));
     let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     if ((*x.borrow()) > (*y.borrow())) && (!(*cp.borrow()).is_null()) {
         assert!(true);

@@ -88,6 +88,13 @@ unsafe fn main_0() -> i32 {
         (((*(unsafe { S::operator_inc(&mut (*(unsafe { S::operator_inc(&mut a,) })),) })).v)
             == (9))
     );
+    assert!(
+        (((unsafe {
+            let mut _o: S = S { v: 4 };
+            S::operator_add_pconstS_const(&S { v: 3 }, &mut _o)
+        })
+        .v) == (7))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

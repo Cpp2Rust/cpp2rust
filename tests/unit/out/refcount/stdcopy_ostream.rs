@@ -11,12 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let str: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"Hello, world!\n")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    let str: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"Hello, world!\n").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     let file: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"test_stdcopy_ostream.txt\0")));
     {
         let ofs: Value<::std::fs::File> = Rc::new(RefCell::new(

@@ -45,5 +45,6 @@ int main() {
   assert((a--).v == 8);
   assert(a.v == 7);
   assert((++(++a)).v == 9);
+  assert((S{3} + S{4}).v == 7);
   return 0;
 }

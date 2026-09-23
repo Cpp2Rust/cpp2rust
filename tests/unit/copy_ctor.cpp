@@ -17,6 +17,12 @@ struct NonConst {
   NonConst(const NonConst &o) : mark(o.mark + 10) {}
 };
 
+struct Ignored {
+  int v;
+  Ignored(int v) : v(v) {}
+  Ignored(const Ignored &) : v(-1) { ++copies; }
+};
+
 struct Holder {
   Counted c;
   Counted arr[2];
@@ -62,6 +68,11 @@ int main() {
   vec.push_back(a);
   assert(vec[0].v == 1);
   assert(copies == 10);
+
+  Ignored i1(1);
+  Ignored i2(i1);
+  assert(i1.v == 1 && i2.v == -1);
+  assert(copies == 11);
 
   NonConst n;
   NonConst n1(n);

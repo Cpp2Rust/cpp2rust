@@ -54,11 +54,39 @@ pub fn negate_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return -(*x.borrow());
 }
+#[derive(Clone, ByteRepr, Default)]
+pub struct S {}
+impl S {
+    pub fn pick_i32(x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) + 1);
+    }
+    pub fn pick_i64(x: i64) -> i32 {
+        let x: Value<i64> = Rc::new(RefCell::new(x));
+        return (((*x.borrow()) as i32) + 2);
+    }
+    pub fn solo(x: i32) -> i32 {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        return ((*x.borrow()) + 3);
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let p1: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32))));
+    let p2: Value<FnPtr<fn(i32) -> i32>> =
+        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
+    assert!((({ (*p1.borrow()).call(5,) }) == 6));
+    assert!((({ (*p2.borrow()).call(5,) }) == 8));
+    assert!((({ S::pick_i64(5_i64,) }) == 7));
+    let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
+        tag: Rc::new(RefCell::new(3)),
+        cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32)))),
+    }));
+    assert!((({ (*(*h3.borrow()).cb.borrow()).call(1,) }) == 2));
     let h1: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(1)),
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0))),
@@ -68,10 +96,10 @@ fn main_0() -> i32 {
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(negate_1))),
     }));
     assert!(!((*(*h1.borrow()).cb.borrow()).is_null()));
-    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(5,) }) == 10));
-    assert!((({ (*(*(*h2.borrow()).cb.borrow()))(7,) }) == -7_i32));
+    assert!((({ (*(*h1.borrow()).cb.borrow()).call(5,) }) == 10));
+    assert!((({ (*(*h2.borrow()).cb.borrow()).call(7,) }) == -7_i32));
     (*(*h1.borrow()).cb.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(negate_1);
-    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(3,) }) == -3_i32));
+    assert!((({ (*(*h1.borrow()).cb.borrow()).call(3,) }) == -3_i32));
     assert!({
         let _lhs = (*(*h1.borrow()).cb.borrow()).clone();
         _lhs == (*(*h2.borrow()).cb.borrow()).clone()

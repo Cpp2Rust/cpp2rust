@@ -19,13 +19,19 @@ pub unsafe fn for_test_0(n: i32) -> i32 {
         let mut w: i32 = 0;
         'loop_: while ((w) < (j)) {
             break;
-            w += 1;
-            k += 1;
-            i += k;
+            {
+                {
+                    w += 1;
+                    k += 1
+                };
+                i += k
+            };
         }
         x = ((x) + (1));
-        j = i;
-        i += 1;
+        {
+            j = i;
+            i += 1
+        };
     }
     return x;
 }

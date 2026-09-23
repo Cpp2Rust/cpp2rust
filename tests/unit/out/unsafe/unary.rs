@@ -27,6 +27,12 @@ unsafe fn main_0() -> i32 {
     out.prefix_inc();
     let mut x3: i32 = out.postfix_dec();
     assert!(((((out.postfix_inc()) + (x2)) + (x3)) == (19)));
+    let mut n: i32 = x2;
+    let mut d: f64 = 1.5E+0;
+    assert!(((n) == (x2)));
+    assert!(((d) == (1.5E+0)));
+    assert!((((n) + (n)) == ((2) * (x2))));
+    assert!(((a[(0) as usize]) == (a[(0) as usize])));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -48,7 +48,7 @@ thread_local!(
 );
 pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
-    return side_effect_counter_3.with(|rc| rc.borrow().clone());
+    return side_effect_counter_3.with(|rc| *rc.borrow());
 }
 #[derive(Default)]
 pub struct Holder {
@@ -81,7 +81,7 @@ pub struct NonCopyable {
     pub value: Value<Option<Value<i32>>>,
 }
 impl NonCopyable {
-    pub fn NonCopyable_pmutNonCopyable(_a0: Ptr<NonCopyable>) -> Self {
+    pub fn NonCopyable_pmutNonCopyable_rv(_a0: Ptr<NonCopyable>) -> Self {
         let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).value.borrow_mut()).take(),
@@ -122,19 +122,21 @@ fn main_0() -> i32 {
     assert!(((*z.borrow()) == 7));
     let counter: Value<i32> = Rc::new(RefCell::new(0));
     let w: Value<i32> = Rc::new(RefCell::new({
-        &(*counter.borrow_mut());
-        (*counter.borrow_mut()) = 3;
+        {
+            &(*counter.borrow_mut());
+            (*counter.borrow_mut()) = 3
+        };
         (*counter.borrow())
     }));
     assert!(((*w.borrow()) == 3));
     assert!(((*counter.borrow()) == 3));
     &({ bump_and_return_4() });
-    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 1));
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 1));
     let v: Value<i32> = Rc::new(RefCell::new({
         &({ bump_and_return_4() });
         99
     }));
-    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     assert!(((*v.borrow()) == 99));
     &(0);
     &(0);
@@ -151,11 +153,11 @@ fn main_0() -> i32 {
     assert!(((*err.borrow()) == 7));
     assert!(((*chosen.borrow()) == 123));
     &(bump_and_return_4);
-    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
-    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
-    &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>(None));
-    assert!((side_effect_counter_3.with(|rc| rc.borrow().clone()) == 2));
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
+    &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>());
+    assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
     &((*p.borrow()).read());
@@ -181,10 +183,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait NonCopyableImpl {
-    fn operator_assign_pmutNonCopyable(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
+    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
-    fn operator_assign_pmutNonCopyable(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
+    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         ((*(*self).upgrade().deref()).value.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
         return (*self).clone();

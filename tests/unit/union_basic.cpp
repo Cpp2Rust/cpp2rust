@@ -5,8 +5,12 @@ union basic {
   float f;
 };
 
+union empty {};
+
 int main(void) {
   union basic u;
+  union empty e;
+  (void)e;
 
   u.i = 42;
   assert(u.i == 42);

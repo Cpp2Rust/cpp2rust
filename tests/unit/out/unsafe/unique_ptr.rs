@@ -15,13 +15,13 @@ impl SafePointer {
     pub unsafe fn inc(&mut self) {
         (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
     }
-    pub unsafe fn SafePointer_pmutSafePointer(_a0: *mut SafePointer) -> Self {
+    pub unsafe fn SafePointer_pmutSafePointer_rv(_a0: *mut SafePointer) -> Self {
         let mut this = Self {
             ptr: (*_a0).ptr.take(),
         };
         this
     }
-    pub unsafe fn operator_assign_pmutSafePointer(
+    pub unsafe fn operator_assign_pmutSafePointer_rv(
         &mut self,
         _a0: *mut SafePointer,
     ) -> *mut SafePointer {

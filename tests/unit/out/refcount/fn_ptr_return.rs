@@ -32,13 +32,13 @@ fn main_0() -> i32 {
         let _lhs = (*f.borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(inc_0)
     });
-    assert!((({ (*(*f.borrow()))(10,) }) == 11));
+    assert!((({ (*f.borrow()).call(10,) }) == 11));
     let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(0) })));
     assert!({
         let _lhs = (*g.borrow()).clone();
         _lhs == FnPtr::<fn(i32) -> i32>::new(dec_1)
     });
-    assert!((({ (*(*g.borrow()))(10,) }) == 9));
+    assert!((({ (*g.borrow()).call(10,) }) == 9));
     assert!({
         let _lhs = (*f.borrow()).clone();
         _lhs != (*g.borrow()).clone()

@@ -5,11 +5,11 @@ use cfg_expr::Expression;
 use cfg_expr::expr::{Predicate, TargetPredicate};
 use ra_ap_syntax::ast::{HasAttrs, HasGenericParams, HasName, HasTypeBounds};
 use ra_ap_syntax::{AstNode, SyntaxKind, ast, match_ast};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use crate::ir::{
-    Access, BodyFragment, FileIr, FnIr, MethodCallInner, PlaceholderInner, RuleIr, RulesIR,
+    Access, BodyFragment, FileIr, FnIr, MethodCallInner, Model, PlaceholderInner, RuleIr, RulesIR,
     TypeInfo, TypeIr,
 };
 
@@ -87,46 +87,23 @@ fn cfg_matches_host(fn_item: &ast::Fn) -> bool {
 pub struct SyntacticAnalysis;
 
 impl SyntacticAnalysis {
-    pub fn run(crate_root: &Path) -> RulesIR {
-        let rule_files = Self::collect_rule_files(crate_root);
-        let mut all_ir = HashMap::new();
-
-        for rule_file in &rule_files {
-            let source = std::fs::read_to_string(rule_file).unwrap();
-            let file_ir = Self::parse_rule_file(&source, rule_file);
-
-            let canonical = rule_file
-                .canonicalize()
-                .unwrap_or_else(|_| rule_file.clone())
-                .to_string_lossy()
-                .to_string();
-            all_ir.insert(canonical, file_ir);
-        }
+    pub fn run(rule_dir: &Path) -> RulesIR {
+        let [refcount_ir, unsafe_ir] = Self::collect_rule_files(rule_dir).map(|opt| {
+            opt.map(|f| Self::parse_rule_file(&std::fs::read_to_string(&f).unwrap(), &f))
+        });
 
         RulesIR {
-            all_ir,
-            crate_root: crate_root.to_path_buf(),
+            dir: rule_dir.to_path_buf(),
+            refcount_ir,
+            unsafe_ir,
         }
     }
 
-    fn collect_rule_files(dir: &Path) -> Vec<PathBuf> {
-        let mut out = Vec::new();
-        let Ok(entries) = std::fs::read_dir(dir) else {
-            return out;
-        };
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                out.extend(Self::collect_rule_files(&path));
-            } else if let Some(name) = path.file_name().and_then(|s| s.to_str())
-                && name.starts_with("tgt_")
-                && name.ends_with(".rs")
-            {
-                out.push(path);
-            }
-        }
-        out.sort();
-        out
+    fn collect_rule_files(dir: &Path) -> [Option<PathBuf>; 2] {
+        Model::ALL.map(|m| {
+            let p = dir.join(m.src_filename());
+            p.exists().then_some(p)
+        })
     }
 
     fn parse_rule_file(source: &str, path: &Path) -> FileIr {

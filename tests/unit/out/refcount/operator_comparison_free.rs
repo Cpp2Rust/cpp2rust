@@ -117,11 +117,120 @@ pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
         _lhs < (*(*b.upgrade().deref()).v.borrow())
     };
 }
+#[derive(Default)]
+pub struct V {
+    pub v: Value<i32>,
+}
+impl std::cmp::Ord for V {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        {
+            if operator_lt_8(self.clone(), other.clone()) {
+                std::cmp::Ordering::Less
+            } else if operator_lt_8(other.clone(), self.clone()) {
+                std::cmp::Ordering::Greater
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        }
+    }
+}
+impl std::cmp::PartialOrd for V {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl std::cmp::PartialEq for V {
+    fn eq(&self, other: &Self) -> bool {
+        { operator_eq_9(self.clone(), other.clone()) }
+    }
+}
+impl std::cmp::Eq for V {}
+impl Clone for V {
+    fn clone(&self) -> Self {
+        let __this: Value<V> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+        }));
+        let this: Ptr<V> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for V {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+pub fn operator_eq_9(a: V, b: V) -> bool {
+    let a: Value<V> = Rc::new(RefCell::new(a));
+    let b: Value<V> = Rc::new(RefCell::new(b));
+    return ((*(*a.borrow()).v.borrow()) == (*(*b.borrow()).v.borrow()));
+}
+pub fn operator_ne_10(a: V, b: V) -> bool {
+    let a: Value<V> = Rc::new(RefCell::new(a));
+    let b: Value<V> = Rc::new(RefCell::new(b));
+    return ((*(*a.borrow()).v.borrow()) != (*(*b.borrow()).v.borrow()));
+}
+pub fn operator_lt_8(a: V, b: V) -> bool {
+    let a: Value<V> = Rc::new(RefCell::new(a));
+    let b: Value<V> = Rc::new(RefCell::new(b));
+    return ((*(*a.borrow()).v.borrow()) < (*(*b.borrow()).v.borrow()));
+}
+pub fn operator_gt_11(a: V, b: V) -> bool {
+    let a: Value<V> = Rc::new(RefCell::new(a));
+    let b: Value<V> = Rc::new(RefCell::new(b));
+    return ((*(*a.borrow()).v.borrow()) > (*(*b.borrow()).v.borrow()));
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let x: Value<V> = Rc::new(RefCell::new(V {
+        v: Rc::new(RefCell::new(1)),
+    }));
+    let y: Value<V> = Rc::new(RefCell::new(V {
+        v: Rc::new(RefCell::new(2)),
+    }));
+    let z: Value<V> = Rc::new(RefCell::new(V {
+        v: Rc::new(RefCell::new(1)),
+    }));
+    assert!(
+        ({
+            let _a: V = (*x.borrow()).clone();
+            operator_eq_9(_a, (*z.borrow()).clone())
+        })
+    );
+    assert!(
+        ({
+            let _a: V = (*x.borrow()).clone();
+            operator_ne_10(_a, (*y.borrow()).clone())
+        })
+    );
+    assert!(
+        ({
+            let _a: V = (*x.borrow()).clone();
+            operator_lt_8(_a, (*y.borrow()).clone())
+        })
+    );
+    assert!(
+        ({
+            let _a: V = (*y.borrow()).clone();
+            operator_gt_11(_a, (*x.borrow()).clone())
+        })
+    );
+    assert!(
+        !({
+            let _a: V = (*y.borrow()).clone();
+            operator_lt_8(_a, (*x.borrow()).clone())
+        })
+    );
     let a: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(1)),
     }));

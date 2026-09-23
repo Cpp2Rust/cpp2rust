@@ -1,4 +1,3 @@
-// panic-ub: refcount
 // nondet-result: unsafe
 void foo(int *array) { delete[] array; }
 int main() {

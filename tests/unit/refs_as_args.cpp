@@ -12,10 +12,22 @@ void more_refs(int x1, int x2, int &r1, const int &r2) {
   r1 = rx2;
 }
 
+struct Val {
+  int x;
+};
+
+static int sum(Val a, Val b) { return a.x + b.x; }
+
 int main() {
   int x1 = 1;
   const int x2 = 2;
   more_refs(3, 4, x1, x2);
   assert(x1 + x2 == 21);
+  Val v{5};
+  int acc = sum(static_cast<Val &>(v), v);
+  acc += sum(static_cast<const Val &>(v), v);
+  acc += sum(static_cast<Val &&>(v), v);
+  acc += sum((const Val &)v, v);
+  assert(acc == 40);
   return 0;
 }

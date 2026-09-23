@@ -23,6 +23,24 @@ pub unsafe fn half_3(mut x: f64) -> f64 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
+pub struct Flag {
+    pub v: i32,
+}
+impl Flag {
+    pub unsafe fn operator__Bool(&self) -> bool {
+        return ((self.v) != (0));
+    }
+}
+pub unsafe fn use_4(mut f: Flag) -> i32 {
+    assert!((unsafe { Flag::operator__Bool(&f,) }));
+    return f.v;
+}
+pub unsafe fn checked_5(mut x: i32) -> i32 {
+    assert!(((x) > (0)));
+    return ((x) + (1));
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
 pub struct P {
     pub v: i32,
 }
@@ -44,6 +62,14 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { scaled_2(3,) }) == (3)));
     assert!(((unsafe { scaled_2(-3_i32,) }) == (6)));
     assert!(((unsafe { half_3(5.0E+0,) }) == (2.5E+0)));
+    assert!(((unsafe { checked_5(1,) }) == (2)));
+    let c: i32 = (unsafe { checked_5(4) });
+    assert!(((c) == (5)));
+    assert!(((unsafe { use_4(Flag { v: 2 },) }) == (2)));
+    let u: i32 = (unsafe { use_4(Flag { v: 3 }) });
+    assert!(((u) == (3)));
+    let mut ptr: *mut i32 = arr.as_mut_ptr();
+    assert!(!(ptr).is_null());
     let mut p: P = P { v: 9 };
     assert!(((unsafe { P::get(&p,) }) == (9)));
     let k: i32 = (unsafe { scaled_2(4) });

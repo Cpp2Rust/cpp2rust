@@ -32,21 +32,12 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Table {}
 impl Table {
     pub fn operator_index(i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
         return (table_0.with(|v| v.as_pointer()) as Ptr<i32>).offset((*i.borrow()));
-    }
-}
-impl ByteRepr for Table {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 thread_local!(

@@ -65,17 +65,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"first"))),
             color: Rc::new(RefCell::new(Color_RED)),
             opt: Rc::new(RefCell::new(Option_OPT_NONE)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"second"))),
             color: Rc::new(RefCell::new(Color_GREEN)),
             opt: Rc::new(RefCell::new(Option_OPT_A)),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"third"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"third"))),
             color: Rc::new(RefCell::new(Color_BLUE)),
             opt: Rc::new(RefCell::new(Option_OPT_C)),
         },
@@ -194,9 +194,9 @@ fn main_0() -> i32 {
         (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32)),
     ));
     assert!(((*extra.borrow()) == ((0 + 1) + 2)));
-    assert!(((global_color_0.with(|rc| rc.borrow().clone()) as i32) == (Color_GREEN as i32)));
-    assert!(((global_opt_1.with(|rc| rc.borrow().clone()) as i32) == (Option_OPT_B as i32)));
-    assert!(((global_tag_2.with(|rc| rc.borrow().clone()) as i32) == (Tag_TAG_TWO as i32)));
+    assert!(((global_color_0.with(|rc| *rc.borrow()) as i32) == (Color_GREEN as i32)));
+    assert!(((global_opt_1.with(|rc| *rc.borrow()) as i32) == (Option_OPT_B as i32)));
+    assert!(((global_tag_2.with(|rc| *rc.borrow()) as i32) == (Tag_TAG_TWO as i32)));
     assert!(
         (((*entries_3.with(|rc| rc.borrow().clone())[(0) as usize]
             .color

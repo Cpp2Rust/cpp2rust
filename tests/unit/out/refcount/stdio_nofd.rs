@@ -7,13 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_fputc_fputs_0() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_puts.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -32,9 +32,7 @@ pub fn test_fputc_fputs_0() {
     );
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"BCD\n")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"BCD\n").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -52,7 +50,7 @@ pub fn test_fputc_fputs_0() {
     );
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
-        &Ptr::from_string_literal(b"rb").to_rust_string(),
+        &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -89,7 +87,7 @@ pub fn test_fputc_fputs_0() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"ABCD\n").to_any(), 5_usize)
+            .memcmp(&Ptr::<u8>::from_string_literal(b"ABCD\n").to_any(), 5_usize)
             == 0) as i32)
             != 0)
     );
@@ -115,9 +113,7 @@ pub fn test_fputc_fputs_0() {
 pub fn test_puts_1() {
     assert!(
         ((({
-            let mut __bytes: Vec<u8> = Ptr::from_string_literal(b"hello from puts")
-                .to_c_string_iterator()
-                .collect();
+            let mut __bytes = Ptr::<u8>::from_string_literal(b"hello from puts").to_c_bytes();
             __bytes.push(b'\n');
             match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
@@ -128,13 +124,13 @@ pub fn test_puts_1() {
     );
 }
 pub fn test_fgets_getc_2() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_gets.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -143,9 +139,7 @@ pub fn test_fgets_getc_2() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"line1\nline2\n")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"line1\nline2\n").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -163,7 +157,7 @@ pub fn test_fgets_getc_2() {
     );
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
-        &Ptr::from_string_literal(b"rb").to_rust_string(),
+        &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -211,7 +205,10 @@ pub fn test_fgets_getc_2() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"line1\n").to_any(), 7_usize)
+            .memcmp(
+                &Ptr::<u8>::from_string_literal(b"line1\n").to_any(),
+                7_usize
+            )
             == 0) as i32)
             != 0)
     );
@@ -255,7 +252,7 @@ pub fn test_fgets_getc_2() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"ine").to_any(), 4_usize)
+            .memcmp(&Ptr::<u8>::from_string_literal(b"ine").to_any(), 4_usize)
             == 0) as i32)
             != 0)
     );
@@ -298,7 +295,7 @@ pub fn test_fgets_getc_2() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"2\n").to_any(), 3_usize)
+            .memcmp(&Ptr::<u8>::from_string_literal(b"2\n").to_any(), 3_usize)
             == 0) as i32)
             != 0)
     );
@@ -359,13 +356,13 @@ pub fn test_fgets_getc_2() {
     );
 }
 pub fn test_freopen_3() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_reopen.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -374,9 +371,7 @@ pub fn test_freopen_3() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -395,7 +390,7 @@ pub fn test_freopen_3() {
         }
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"rb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
         ) {
             Some(__f) => {
                 __stream.write(__f);
@@ -428,7 +423,7 @@ pub fn test_freopen_3() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"hello").to_any(), 5_usize)
+            .memcmp(&Ptr::<u8>::from_string_literal(b"hello").to_any(), 5_usize)
             == 0) as i32)
             != 0)
     );
@@ -452,13 +447,13 @@ pub fn test_freopen_3() {
     );
 }
 pub fn test_fseeko_4() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_seek.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -467,9 +462,7 @@ pub fn test_fseeko_4() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"hello world")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"hello world").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -487,7 +480,7 @@ pub fn test_fseeko_4() {
     );
     (*fp.borrow_mut()) = match CFile::open(
         &(*path.borrow()).to_rust_string(),
-        &Ptr::from_string_literal(b"rb").to_rust_string(),
+        &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -523,7 +516,7 @@ pub fn test_fseeko_4() {
     assert!(
         (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::from_string_literal(b"world").to_any(), 5_usize)
+            .memcmp(&Ptr::<u8>::from_string_literal(b"world").to_any(), 5_usize)
             == 0) as i32)
             != 0)
     );
@@ -563,16 +556,16 @@ pub fn test_fseeko_4() {
     );
 }
 pub fn test_rename_5() {
-    let from: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let from: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_from.tmp",
     )));
-    let to: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let to: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_to.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*from.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -581,9 +574,7 @@ pub fn test_rename_5() {
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"data")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"data").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,
@@ -615,7 +606,7 @@ pub fn test_rename_5() {
     assert!(
         ((((match CFile::open(
             &(*from.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"rb").to_rust_string()
+            &Ptr::<u8>::from_string_literal(b"rb").to_rust_string()
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -625,7 +616,7 @@ pub fn test_rename_5() {
     );
     (*fp.borrow_mut()) = match CFile::open(
         &(*to.borrow()).to_rust_string(),
-        &Ptr::from_string_literal(b"rb").to_rust_string(),
+        &Ptr::<u8>::from_string_literal(b"rb").to_rust_string(),
     ) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -664,13 +655,13 @@ pub fn test_rename_5() {
     );
 }
 pub fn test_setvbuf_6() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::from_string_literal(
+    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
         b"cpp2rust_stdio_nofd_vbuf.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
@@ -680,9 +671,7 @@ pub fn test_setvbuf_6() {
     assert!((((0 == 0) as i32) != 0));
     assert!(
         ((({
-            let __bytes: Vec<u8> = Ptr::from_string_literal(b"x")
-                .to_c_string_iterator()
-                .collect();
+            let __bytes = Ptr::<u8>::from_string_literal(b"x").to_c_bytes();
             match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
                 true => 0,
                 false => -1,

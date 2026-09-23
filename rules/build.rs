@@ -9,7 +9,7 @@ use std::{
 
 fn main() {
     let crate_root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    let modules_rs = crate_root.join("src").join("modules.rs");
+    let modules_rs = PathBuf::from(env::var("OUT_DIR").unwrap()).join("modules.rs");
 
     // Collect all tgt_*.rs files
     let mut files = Vec::new();
@@ -38,6 +38,23 @@ fn main() {
     fs::copy(&src, &dst)
         .unwrap_or_else(|e| panic!("failed to copy {} to {}: {e}", src.display(), dst.display()));
 
+    println!("cargo:rerun-if-env-changed=DEP_BROTLI_INCLUDE");
+    let brotli_inc = env::var("DEP_BROTLI_INCLUDE")
+        .expect("brotli-sys did not export its include dir (DEP_BROTLI_INCLUDE)");
+    let brotli_src_dir = Path::new(&brotli_inc).join("brotli");
+    let brotli_dst_dir = crate_root.join("brotli").join("brotli");
+    fs::create_dir_all(&brotli_dst_dir).unwrap();
+    for name in ["decode.h", "encode.h", "port.h", "types.h"] {
+        let src = brotli_src_dir.join(name);
+        let dst = brotli_dst_dir.join(name);
+        let content = fs::read_to_string(&src)
+            .unwrap_or_else(|e| panic!("failed to read {}: {e}", src.display()))
+            .replace("#include <brotli/port.h>", "#include \"port.h\"")
+            .replace("#include <brotli/types.h>", "#include \"types.h\"");
+        fs::write(&dst, content)
+            .unwrap_or_else(|e| panic!("failed to write {}: {e}", dst.display()));
+    }
+
     // Generate modules that include absolute paths
     let mut buf = String::new();
     for f in files {
@@ -64,10 +81,10 @@ fn main() {
             module_name = format!("m_{}", module_name);
         }
 
-        let rel = f.strip_prefix(&crate_root).unwrap_or(&f);
+        // Generate to OUT_DIR
         buf.push_str(&format!(
-            "#[path = r#\"../{}\"#]\npub mod {};\n",
-            rel.display(),
+            "#[path = r#\"{}\"#]\npub mod {};\n",
+            abs.display(),
             module_name
         ));
     }

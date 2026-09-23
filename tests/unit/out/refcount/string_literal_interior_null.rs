@@ -19,7 +19,7 @@ pub fn sum_bytes_0(buf: Ptr<u8>, len: u32) -> i32 {
 }
 thread_local!(
     pub static g_packet_1: Value<Ptr<u8>> =
-        Rc::new(RefCell::new(Ptr::from_string_literal(b"\x01\0")));
+        Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"\x01\0")));
 );
 pub fn main() {
     __cpp2rust_init_globals();
@@ -27,7 +27,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(
-        ({ sum_bytes_0(Ptr::from_string_literal(b"\x01\0"), 2_u32) }),
+        ({ sum_bytes_0(Ptr::<u8>::from_string_literal(b"\x01\0"), 2_u32) }),
     ));
     let b: Value<i32> = Rc::new(RefCell::new(
         ({ sum_bytes_0((g_packet_1.with(|rc| rc.borrow().clone())).clone(), 2_u32) }),

@@ -62,6 +62,27 @@ impl Default for NonConst {
     }
 }
 #[repr(C)]
+#[derive(Default)]
+pub struct Ignored {
+    pub v: i32,
+}
+impl Ignored {
+    pub unsafe fn Ignored(mut v: i32) -> Self {
+        let mut this = Self { v: v };
+        this
+    }
+    pub unsafe fn Ignored_pconstIgnored(_a0: *const Ignored) -> Self {
+        let mut this = Self { v: -1_i32 };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        this
+    }
+}
+impl Clone for Ignored {
+    fn clone(&self) -> Self {
+        unsafe { Ignored::Ignored_pconstIgnored(self as *const Ignored) }
+    }
+}
+#[repr(C)]
 #[derive(Clone)]
 pub struct Holder {
     pub c: Counted,
@@ -124,6 +145,10 @@ unsafe fn main_0() -> i32 {
     };
     assert!(((vec_[(0_usize)].v) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (10)));
+    let mut i1: Ignored = Ignored::Ignored({ 1 });
+    let mut i2: Ignored = Ignored::Ignored_pconstIgnored({ &i1 });
+    assert!(((i1.v) == (1)) && ((i2.v) == (-1_i32)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (11)));
     let mut n: NonConst = NonConst::NonConst();
     let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n });
     let cn: NonConst = NonConst::NonConst();

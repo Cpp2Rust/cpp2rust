@@ -31,7 +31,7 @@ impl S {
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn S_pmutS(_a0: Ptr<S>) -> Self {
+    pub fn S_pmutS_rv(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             data_: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).data_.borrow()))),
         }));

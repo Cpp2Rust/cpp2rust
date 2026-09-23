@@ -103,6 +103,9 @@ fn main_0() -> i32 {
 }
 pub trait Box_Point_Impl {
     fn get(&self) -> Point;
+    fn twice(&self) -> Point {
+        unimplemented!()
+    }
 }
 impl Box_Point_Impl for Ptr<Box_Point_> {
     fn get(&self) -> Point {
@@ -110,6 +113,9 @@ impl Box_Point_Impl for Ptr<Box_Point_> {
     }
 }
 pub trait Box_int_Impl {
+    fn get(&self) -> i32 {
+        unimplemented!()
+    }
     fn twice(&self) -> i32;
 }
 impl Box_int_Impl for Ptr<Box_int_> {

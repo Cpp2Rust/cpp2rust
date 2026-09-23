@@ -6,22 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct Static {}
 impl Static {
     pub fn operator_call(a: i32, b: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         return ((*a.borrow()) * (*b.borrow()));
-    }
-}
-impl ByteRepr for Static {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 #[derive(Default)]
@@ -81,9 +72,36 @@ fn main_0() -> i32 {
     let z: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(0)),
     }));
+    assert!(({ SImpl::operator__Bool(&s.as_pointer(),) }));
     assert!(!({ SImpl::operator__Bool(&z.as_pointer(),) }));
+    assert!(
+        ({ SImpl::operator__Bool(&s.as_pointer(),) })
+            && (!({ SImpl::operator__Bool(&z.as_pointer(),) }))
+    );
     let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
     assert!((({ Static::operator_call(6, 7,) }) == 42));
+    assert!(
+        (({
+            SImpl::operator_call_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(5)),
+                }))
+                .as_pointer(),
+            )
+        }) == 5)
+    );
+    assert!(
+        (({
+            SImpl::operator_call_i32_i32_const(
+                &Rc::new(RefCell::new(S {
+                    v: Rc::new(RefCell::new(5)),
+                }))
+                .as_pointer(),
+                1,
+                1,
+            )
+        }) == 7)
+    );
     return 0;
 }
 pub trait SImpl {

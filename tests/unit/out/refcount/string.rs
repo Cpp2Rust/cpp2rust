@@ -11,12 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s1: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"hello")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
-    ));
+    let s1: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     assert!((((*s1.borrow()).len() - 1) == 5_usize));
     assert!((((*s1.borrow()).len() - 1) == ((*s1.borrow()).len() - 1)));
     assert!(
@@ -39,7 +38,7 @@ fn main_0() -> i32 {
             .iter()
             .copied()
             .take((*s1.borrow()).len().saturating_sub(1))
-            .eq(Ptr::from_string_literal(b"hello").to_c_string_iterator())
+            .eq(Ptr::<u8>::from_string_literal(b"hello").to_c_string_iterator())
     );
     let p1: Value<Ptr<u8>> = Rc::new(RefCell::new((s1.as_pointer() as Ptr<u8>)));
     assert!(((((*p1.borrow()).offset((0) as isize).read()) as i32) == (('h' as u8) as i32)));
@@ -119,16 +118,14 @@ fn main_0() -> i32 {
     let s4: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut __tmp1 = (*s1.borrow())[(1_usize) as usize
             ..::std::cmp::min(
-                (1_usize + {
-                    let __lookup: Vec<u8> = Ptr::from_string_literal(b"l")
-                        .to_c_string_iterator()
-                        .collect();
-                    (*s1.borrow())
-                        .iter()
-                        .take((*s1.borrow()).len().saturating_sub(1))
-                        .rposition(|&x| __lookup.contains(&x))
-                        .unwrap_or(usize::MAX)
-                }) as usize,
+                (1_usize
+                    + Ptr::<u8>::from_string_literal(b"l").with_c_str(|__lookup| {
+                        (*s1.borrow())
+                            .iter()
+                            .take((*s1.borrow()).len().saturating_sub(1))
+                            .rposition(|&x| __lookup.contains(&x))
+                            .unwrap_or(usize::MAX)
+                    })) as usize,
                 (*s1.borrow()).len().saturating_sub(1),
             )]
             .to_vec();
@@ -151,7 +148,7 @@ fn main_0() -> i32 {
     let s5: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut r = (*s1.borrow()).clone();
         r.pop();
-        r.extend(Ptr::from_string_literal(b", world").to_c_string_iterator());
+        Ptr::<u8>::from_string_literal(b", world").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
     }));
@@ -202,7 +199,7 @@ fn main_0() -> i32 {
             .iter()
             .copied()
             .take((*string.borrow()).len().saturating_sub(1))
-            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
+            .eq(Ptr::<u8>::from_string_literal(b"bar").to_c_string_iterator())
     );
     {
         (*string.borrow_mut()).pop();
@@ -227,7 +224,7 @@ fn main_0() -> i32 {
             .iter()
             .copied()
             .take((*string.borrow()).len().saturating_sub(1))
-            .eq(Ptr::from_string_literal(b"bar").to_c_string_iterator())
+            .eq(Ptr::<u8>::from_string_literal(b"bar").to_c_string_iterator())
     );
     {
         (*string.borrow_mut()).pop();
@@ -287,7 +284,7 @@ fn main_0() -> i32 {
     let result: Value<Vec<u8>> = Rc::new(RefCell::new({
         let mut r = (*string.borrow()).clone();
         r.pop();
-        r.extend(Ptr::from_string_literal(b" foo").to_c_string_iterator());
+        Ptr::<u8>::from_string_literal(b" foo").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
     }));
@@ -412,56 +409,45 @@ fn main_0() -> i32 {
         ((((substr_2.as_pointer() as Ptr<u8>).offset(7_usize).read()) as i32)
             == (('o' as u8) as i32))
     );
-    let pos: Value<usize> = Rc::new(RefCell::new({
-        let __lookup: Vec<u8> = Ptr::from_string_literal(b"b")
-            .to_c_string_iterator()
-            .collect();
-        (*result.borrow())
-            .iter()
-            .take((*result.borrow()).len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    }));
-    assert!(((*pos.borrow()) == 0_usize));
-    (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = Ptr::from_string_literal(b"f")
-            .to_c_string_iterator()
-            .collect();
-        (*result.borrow())
-            .iter()
-            .take((*result.borrow()).len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    };
-    assert!(((*pos.borrow()) == 5_usize));
-    (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = Ptr::from_string_literal(b"o")
-            .to_c_string_iterator()
-            .collect();
-        (*result.borrow())
-            .iter()
-            .take((*result.borrow()).len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    };
-    assert!(((*pos.borrow()) == 7_usize));
-    (*pos.borrow_mut()) = {
-        let __lookup: Vec<u8> = Ptr::from_string_literal(b"x")
-            .to_c_string_iterator()
-            .collect();
-        (*result.borrow())
-            .iter()
-            .take((*result.borrow()).len().saturating_sub(1))
-            .rposition(|&x| __lookup.contains(&x))
-            .unwrap_or(usize::MAX)
-    };
-    assert!(((*pos.borrow()) == ((-1_i64 as u64) as usize)));
-    let string_to_cast: Value<Vec<u8>> = Rc::new(RefCell::new(
-        Ptr::from_string_literal(b"cast")
-            .to_c_string_iterator()
-            .chain(std::iter::once(0))
-            .collect::<Vec<u8>>(),
+    let pos: Value<usize> = Rc::new(RefCell::new(
+        Ptr::<u8>::from_string_literal(b"b").with_c_str(|__lookup| {
+            (*result.borrow())
+                .iter()
+                .take((*result.borrow()).len().saturating_sub(1))
+                .rposition(|&x| __lookup.contains(&x))
+                .unwrap_or(usize::MAX)
+        }),
     ));
+    assert!(((*pos.borrow()) == 0_usize));
+    (*pos.borrow_mut()) = Ptr::<u8>::from_string_literal(b"f").with_c_str(|__lookup| {
+        (*result.borrow())
+            .iter()
+            .take((*result.borrow()).len().saturating_sub(1))
+            .rposition(|&x| __lookup.contains(&x))
+            .unwrap_or(usize::MAX)
+    });
+    assert!(((*pos.borrow()) == 5_usize));
+    (*pos.borrow_mut()) = Ptr::<u8>::from_string_literal(b"o").with_c_str(|__lookup| {
+        (*result.borrow())
+            .iter()
+            .take((*result.borrow()).len().saturating_sub(1))
+            .rposition(|&x| __lookup.contains(&x))
+            .unwrap_or(usize::MAX)
+    });
+    assert!(((*pos.borrow()) == 7_usize));
+    (*pos.borrow_mut()) = Ptr::<u8>::from_string_literal(b"x").with_c_str(|__lookup| {
+        (*result.borrow())
+            .iter()
+            .take((*result.borrow()).len().saturating_sub(1))
+            .rposition(|&x| __lookup.contains(&x))
+            .unwrap_or(usize::MAX)
+    });
+    assert!(((*pos.borrow()) == ((-1_i64 as u64) as usize)));
+    let string_to_cast: Value<Vec<u8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<u8>::from_string_literal(b"cast").to_c_bytes();
+        __bytes.push(0);
+        __bytes
+    }));
     let output_data: Value<Ptr<u8>> = Rc::new(RefCell::new(
         ((string_to_cast.as_pointer() as Ptr<u8>).offset(0_usize)).reinterpret_cast::<u8>(),
     ));

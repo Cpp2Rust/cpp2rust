@@ -198,9 +198,9 @@ pub fn main() {
 fn main_0() -> i32 {
     thread_local!(
         static items_4: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-            Ptr::from_string_literal(b"a"),
-            Ptr::from_string_literal(b"b"),
-            Ptr::from_string_literal(b"c"),
+            Ptr::<u8>::from_string_literal(b"a"),
+            Ptr::<u8>::from_string_literal(b"b"),
+            Ptr::<u8>::from_string_literal(b"c"),
         ])));
     );
     let p_list: Value<Branch> = <Value<Branch>>::default();

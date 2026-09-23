@@ -8,5 +8,5 @@ use libcc2rs::*;
 // TODO: we need to track ourselves the locale settings and change the behavior of the relevant
 // functions based on the set locale.
 fn f1(a0: i32, a1: Ptr<u8>) -> Ptr<u8> {
-    Ptr::from_string_literal(b"C")
+    Ptr::<u8>::from_string_literal(b"C")
 }

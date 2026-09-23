@@ -167,7 +167,3 @@ unsafe fn f35(a0: *const ::brotli_sys::BrotliDecoderState) -> ::brotli_sys::Brot
 unsafe fn f36() -> u32 {
     ::brotli_sys::BrotliDecoderVersion()
 }
-
-unsafe fn f37() -> ::brotli_sys::BrotliDecoderErrorCode {
-    -19_i32 as ::brotli_sys::BrotliDecoderErrorCode
-}

@@ -4,6 +4,8 @@
 use std::cell::{Ref, RefCell, RefMut};
 use std::rc::{Rc, Weak};
 
+use crate::rc::{Ptr, PtrKind};
+
 pub struct StrongPtrDyn<T: ?Sized> {
     rc: Rc<RefCell<T>>,
 }
@@ -23,6 +25,7 @@ enum PtrKindDyn<T: ?Sized> {
     #[default]
     Null, // TODO: is this useful?
     StackSingle(Weak<RefCell<T>>),
+    HeapSingle(Weak<RefCell<T>>),
 }
 
 impl<T: ?Sized> Clone for PtrKindDyn<T> {
@@ -30,6 +33,7 @@ impl<T: ?Sized> Clone for PtrKindDyn<T> {
         match &self {
             PtrKindDyn::Null => PtrKindDyn::Null,
             PtrKindDyn::StackSingle(weak) => PtrKindDyn::StackSingle(weak.clone()),
+            PtrKindDyn::HeapSingle(weak) => PtrKindDyn::HeapSingle(weak.clone()),
         }
     }
 }
@@ -44,7 +48,7 @@ impl<T: ?Sized> PtrDyn<T> {
     pub fn upgrade(&self) -> StrongPtrDyn<T> {
         match &self.kind {
             PtrKindDyn::Null => panic!("ub: dereference of null pointer"),
-            PtrKindDyn::StackSingle(weak) => {
+            PtrKindDyn::StackSingle(weak) | PtrKindDyn::HeapSingle(weak) => {
                 assert_eq!(self.offset, 0, "ub: invalid offset");
                 StrongPtrDyn {
                     rc: weak.upgrade().expect("ub: dangling pointer"),
@@ -63,16 +67,29 @@ impl<T: ?Sized> Clone for PtrDyn<T> {
     }
 }
 
-pub trait AsPointerDyn<T: ?Sized> {
-    fn as_pointer_dyn(&self) -> PtrDyn<T>;
-}
-
-impl<T: ?Sized> AsPointerDyn<T> for Rc<RefCell<T>> {
+impl<T> Ptr<T> {
     #[inline]
-    fn as_pointer_dyn(&self) -> PtrDyn<T> {
-        PtrDyn {
-            offset: 0,
-            kind: PtrKindDyn::StackSingle(Rc::downgrade(self)),
+    pub fn to_dyn<U: ?Sized>(&self, coerce: fn(Weak<RefCell<T>>) -> Weak<RefCell<U>>) -> PtrDyn<U> {
+        match &self.kind {
+            PtrKind::Null => PtrDyn {
+                offset: 0,
+                kind: PtrKindDyn::Null,
+            },
+            PtrKind::StackSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
+                PtrDyn {
+                    offset: 0,
+                    kind: PtrKindDyn::StackSingle(coerce(weak.clone())),
+                }
+            }
+            PtrKind::HeapSingle(weak) => {
+                assert_eq!(self.offset, 0, "ub: invalid offset");
+                PtrDyn {
+                    offset: 0,
+                    kind: PtrKindDyn::HeapSingle(coerce(weak.clone())),
+                }
+            }
+            _ => panic!("ub: invalid upcast"),
         }
     }
 }

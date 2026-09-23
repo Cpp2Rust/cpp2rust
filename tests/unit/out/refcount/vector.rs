@@ -41,7 +41,7 @@ fn main_0() -> i32 {
     {
         let idx = (v2.as_pointer() as Ptr<i32>).get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
-        (v2.as_pointer() as Ptr<Vec<i32>>).to_strong().as_pointer() as Ptr<i32>
+        (v2.as_pointer() as Ptr<Vec<i32>>).decay()
     };
     assert!(((*v2.borrow()).len() == 2_usize));
     assert!((((v2.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 2));

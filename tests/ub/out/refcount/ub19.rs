@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn foo_0(array: Ptr<i32>) {
     let array: Value<Ptr<i32>> = Rc::new(RefCell::new(array));
-    (*array.borrow()).delete_array();
+    (*array.borrow()).delete();
 }
 pub fn main() {
     __cpp2rust_init_globals();

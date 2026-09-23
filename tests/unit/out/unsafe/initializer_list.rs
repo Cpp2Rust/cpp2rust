@@ -20,6 +20,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { f_0(vec![1, 2, 3,],) }) == (3_usize)));
+    let mut v: Vec<i32> = vec![4, 5, 6];
+    assert!(((v.len()) == (3_usize)));
+    assert!(((((v[(0_usize)]) + (v[(1_usize)])) + (v[(2_usize)])) == (15)));
+    let mut l: Vec<i32> = vec![7, 8];
+    assert!(((l.len()) == (2_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

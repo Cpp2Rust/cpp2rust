@@ -12,6 +12,8 @@ public:
 
   void EmitFilePreamble() override;
 
+  static void EmitMethodsOnPtr(std::string &out);
+
   bool VisitRecordType(clang::RecordType *type) override;
 
   bool VisitConstantArrayType(clang::ConstantArrayType *type) override;
@@ -35,10 +37,12 @@ public:
 
   const char *CharRustType() const override { return "u8"; }
 
-  std::string GetComparisonCall(const clang::FunctionDecl *op,
-                                const clang::CXXRecordDecl *decl,
-                                std::string_view lhs,
-                                std::string_view rhs) override;
+  std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
+                                        std::string_view value) override;
+
+  std::string GetComparisonReceiver(const clang::CXXMethodDecl *method,
+                                    const clang::CXXRecordDecl *decl,
+                                    std::string_view lhs) override;
 
   std::string GetShallowCopy(const clang::RecordDecl *decl,
                              std::string_view src);
@@ -65,6 +69,7 @@ public:
 
   void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) override;
 
+  void ConvertMethodOnPtrTraitDecl(clang::CXXMethodDecl *method);
   void ConvertMethodOnPtr(clang::CXXMethodDecl *method);
 
   bool VisitCXXThisExpr(clang::CXXThisExpr *expr) override;
@@ -131,6 +136,10 @@ public:
   void EmitStmtExprTail(clang::Expr *tail) override;
 
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
+
+  bool VisitCXXStdInitializerListExpr(
+      clang::CXXStdInitializerListExpr *expr) override;
+
   bool VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) override;
 
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
@@ -239,10 +248,24 @@ public:
 private:
   void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                        const clang::CXXMethodDecl *method) override;
+
   std::string GetUFCSName(const clang::CXXMethodDecl *method) const override;
+
   std::string TraitName(const clang::CXXRecordDecl *decl) const;
+
+  struct MethodsOnPtr {
+    DeferredBlock trait;
+    DeferredBlock impl;
+  };
+
+  // record name -> trait and impl for Ptr<record>, emitted after all
+  // translation units.
+  static std::map<std::string, MethodsOnPtr> methods_on_ptr_;
+
   MethodsOnPtr &MethodsOnPtrFor(const clang::CXXRecordDecl *decl);
+
   std::string DestroyMembers(const clang::CXXRecordDecl *decl) override;
+
   void EmitScopedDestructor(const clang::VarDecl *decl) override;
 
   std::pair<std::string, std::string>
@@ -258,11 +281,21 @@ private:
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
-  std::string BuildFnAdapter(const clang::FunctionDecl *src_fn,
-                             const clang::FunctionProtoType *src_proto,
-                             const clang::FunctionProtoType *target_proto);
+  // Converts `expr` for use where a `qual_type` function pointer is
+  // expected, inserting a `.cast()` if `expr`'s own fn pointer type differs
+  // from `qual_type` -- e.g. because the two describe the same C function
+  // pointer type through different typedefs that the translation maps to
+  // distinct Rust types (`size_t` vs `unsigned long`).
+  std::string ConvertFnPtrValue(clang::QualType qual_type, clang::Expr *expr);
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
+
+  // If lhs is a direct reference to a global/static value (not a reference
+  // type), emits `var.with(|rc| *rc.borrow_mut() <op> <rhs>)` and returns
+  // true. This avoids cloning the Rc just to assign through it. Returns
+  // false (emitting nothing) if lhs doesn't match this shape.
+  bool EmitGlobalValueAssign(clang::Expr *lhs, std::string_view assign_operator,
+                             std::string_view rhs);
 
   // Wraps a pointer expression with deref prefix/suffix: e.g.
   // "(*ptr.upgrade().deref())" or "(ptr.read())"
@@ -272,8 +305,16 @@ private:
   std::string GetInnerType(clang::QualType type);
 
   std::string ConvertFreshLValue(clang::Expr *expr);
-  std::string ConvertObject(clang::Expr *expr);
-  std::string ConvertFreshObject(clang::Expr *expr) override;
+  // What an Object-kind conversion of a boxed container/array should yield:
+  // a pointer to the whole object (Ptr<Vec<T>>), or one to its first
+  // element (Ptr<T>).
+  enum class ObjectShape { Whole, Element };
+  std::string ConvertObject(clang::Expr *expr,
+                            ObjectShape shape = ObjectShape::Whole);
+  std::string
+  ConvertFreshObject(clang::Expr *expr,
+                     std::string_view target_ptr_type = {}) override;
+  bool WantsElementPtr() const { return object_shape_ == ObjectShape::Element; }
   std::string
   ConvertFresh(clang::Expr *expr,
                std::optional<clang::QualType> implicit_convert_to = {});
@@ -359,6 +400,7 @@ private:
   std::string BoxValue(std::string &&str) const;
 
   std::vector<ConversionKind> conversion_kind_;
+  ObjectShape object_shape_ = ObjectShape::Whole;
 
   // Set by pointer-related visit methods (ConvertDeref,
   // ConvertPointerSubscript, etc.) when converting an LValue that goes through

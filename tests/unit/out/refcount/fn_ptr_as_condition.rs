@@ -17,7 +17,7 @@ pub fn maybe_call_1(cb: FnPtr<fn(Ptr<i32>)>, x: Ptr<i32>) {
     let cb: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(cb));
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     if !(*cb.borrow()).is_null() {
-        ({ (*(*cb.borrow()))((*x.borrow()).clone()) });
+        ({ (*cb.borrow()).call((*x.borrow()).clone()) });
     }
 }
 pub fn main() {
@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     }
     let c: Value<i32> = Rc::new(RefCell::new(3));
     if !(*fn_.borrow()).is_null() {
-        ({ (*(*fn_.borrow()))((c.as_pointer())) });
+        ({ (*fn_.borrow()).call((c.as_pointer())) });
     }
     assert!(((*c.borrow()) == 6));
     return 0;

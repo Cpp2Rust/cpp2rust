@@ -122,8 +122,8 @@ allocation as bytes. Three helpers from the runtime cover the cases:
 Two casts do not use these helpers. An array decaying to a pointer is spelled
 `arr.as_pointer() as Ptr<T>`, where the `as` only names the pointer type. An
 upcast from a derived class to an abstract base becomes
-`(p.to_strong() as Value<dyn Base>).as_pointer_dyn()`, which is the ordinary
-Rust unsizing coercion applied to the owning cell (see
+`p.to_dyn::<dyn Base>(|w| w)`, which is the ordinary Rust unsizing coercion
+applied to the pointer's weak reference (see
 [Virtual Classes](../../runtime/ptr-dyn.md)). Casts between pointers and
 integers use the [integer cast](../../runtime/rc.md#integer-casts) API of `Ptr`.
 

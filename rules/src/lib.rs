@@ -2,4 +2,4 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 #![allow(warnings)]
-mod modules;
+include!(concat!(env!("OUT_DIR"), "/modules.rs"));

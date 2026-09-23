@@ -19,15 +19,19 @@ fn main_0() -> i32 {
     assert!(((*x.borrow()) == 2));
     assert!(((*y.borrow()) == 3));
     let z: Value<i32> = Rc::new(RefCell::new({
-        1;
-        2;
+        {
+            1;
+            2
+        };
         3
     }));
     assert!(((*z.borrow()) == 3));
     let counter: Value<i32> = Rc::new(RefCell::new(0));
     let w: Value<i32> = Rc::new(RefCell::new({
-        (*counter.borrow_mut()).postfix_inc();
-        (*counter.borrow_mut()).postfix_inc();
+        {
+            (*counter.borrow_mut()).postfix_inc();
+            (*counter.borrow_mut()).postfix_inc()
+        };
         (*counter.borrow())
     }));
     assert!(((*counter.borrow()) == 2));
@@ -35,8 +39,10 @@ fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(0));
     let b: Value<i32> = Rc::new(RefCell::new(0));
     if {
-        (*a.borrow_mut()) = 1;
-        (*b.borrow_mut()) = 2;
+        {
+            (*a.borrow_mut()) = 1;
+            (*b.borrow_mut()) = 2
+        };
         (((*a.borrow()) + (*b.borrow())) > 0)
     } {
         assert!(((*a.borrow()) == 1));

@@ -22,10 +22,15 @@ fn main() {
     let mut args = std::env::args().skip(1);
     let out_dir = args
         .next()
-        .expect("usage: rule-preprocessor <out-dir> [rules-crate-dir]");
-    let in_dir = args.next().unwrap_or_else(|| "../rules".to_string());
-    SemanticAnalysis::run(SyntacticAnalysis::run(
-        &std::fs::canonicalize(&in_dir).unwrap(),
-    ))
-    .write_ir(&std::path::PathBuf::from(out_dir));
+        .expect("usage: rule-preprocessor <out-dir> <rule-dir>");
+    let in_dir = args
+        .next()
+        .expect("usage: rule-preprocessor <out-dir> <rule-dir>");
+
+    let out = std::path::PathBuf::from(out_dir);
+    SemanticAnalysis::run(
+        SyntacticAnalysis::run(&std::fs::canonicalize(&in_dir).unwrap()),
+        &out,
+    )
+    .write_ir(&out);
 }

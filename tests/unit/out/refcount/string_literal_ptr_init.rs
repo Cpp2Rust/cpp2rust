@@ -53,12 +53,12 @@ pub fn probe_two_0() -> i32 {
 thread_local!(
     pub static table_1: Value<Box<[label]>> = Rc::new(RefCell::new(Box::new([
         label {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"first"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"first"))),
             probe: Rc::new(RefCell::new(FnPtr::<fn() -> i32>::null())),
             mask: Rc::new(RefCell::new((1 << 4))),
         },
         label {
-            name: Rc::new(RefCell::new(Ptr::from_string_literal(b"second"))),
+            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"second"))),
             probe: Rc::new(RefCell::new((FnPtr::<fn() -> i32>::new(probe_two_0)))),
             mask: Rc::new(RefCell::new((1 << 5))),
         },
@@ -112,9 +112,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            (*(*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
+            (*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
                 .probe
-                .borrow()))()
+                .borrow())
+            .call()
         }) == 1) as i32)
             != 0)
     );
@@ -125,8 +126,9 @@ fn main_0() -> i32 {
             == 32) as i32)
             != 0)
     );
-    let tail: Value<Ptr<u8>> =
-        Rc::new(RefCell::new((Ptr::from_string_literal(b"ab.cd").offset(2))));
+    let tail: Value<Ptr<u8>> = Rc::new(RefCell::new(
+        (Ptr::<u8>::from_string_literal(b"ab.cd").offset(2)),
+    ));
     assert!(
         ((((((*tail.borrow()).offset((0) as isize).read()) as i32) == ('.' as i32)) as i32) != 0)
     );
@@ -144,7 +146,7 @@ fn main_0() -> i32 {
         .clone()
         .to_any()
     } else {
-        Ptr::from_string_literal(b"").to_any()
+        Ptr::<u8>::from_string_literal(b"").to_any()
     }));
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())
@@ -161,7 +163,7 @@ fn main_0() -> i32 {
         .clone()
         .to_any()
     } else {
-        Ptr::from_string_literal(b"").to_any()
+        Ptr::<u8>::from_string_literal(b"").to_any()
     };
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())

@@ -6,28 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct TestAllocator_int_ {}
-impl ByteRepr for TestAllocator_int_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct TestAllocator_double_ {}
-impl ByteRepr for TestAllocator_double_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
-    }
-}
 pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
 }
@@ -40,35 +22,19 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     (*v2.borrow_mut()).push(0);
     (*v2.borrow_mut()).push(1);
     (*v2.borrow_mut()).push(3);
-    (*x.borrow_mut()) = ((v.to_strong().as_pointer() as Ptr<i32>)
-        .offset(2_usize)
-        .read());
+    (*x.borrow_mut()) = ((v.decay() as Ptr<i32>).offset(2_usize).read());
     (v2.as_pointer() as Ptr<i32>).offset(0_usize).write(1);
-    ((if true {
-        v3.as_pointer()
-    } else {
-        v.to_strong().as_pointer()
-    }) as Ptr<i32>)
+    ((if true { v3.as_pointer() } else { v.decay() }) as Ptr<i32>)
         .offset(0_usize)
         .write(7);
-    (((*v4.borrow()).to_strong().as_pointer()) as Ptr<i32>)
+    (((*v4.borrow()).decay()) as Ptr<i32>)
         .offset(1_usize)
         .write(13);
     assert!(((*x.borrow()) == 6));
-    assert!((((v.to_strong().as_pointer() as Ptr<i32>).read()) == 4));
-    assert!(
-        (((v.to_strong().as_pointer() as Ptr<i32>)
-            .offset(1_usize)
-            .read())
-            == 5)
-    );
-    assert!(
-        (((v.to_strong().as_pointer() as Ptr<i32>)
-            .offset(2_usize)
-            .read())
-            == 6)
-    );
-    assert!((((v.to_strong().as_pointer() as Ptr<i32>).to_last().read()) == 20));
+    assert!((((v.decay() as Ptr<i32>).read()) == 4));
+    assert!((((v.decay() as Ptr<i32>).offset(1_usize).read()) == 5));
+    assert!((((v.decay() as Ptr<i32>).offset(2_usize).read()) == 6));
+    assert!((((v.decay() as Ptr<i32>).to_last().read()) == 20));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 7));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 13));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
@@ -105,7 +71,7 @@ fn main_0() -> i32 {
     {
         let idx = (v2.as_pointer() as Ptr<i32>).get_offset();
         (v2.as_pointer() as Ptr<Vec<i32>>).with_mut(|__v: &mut Vec<i32>| __v.remove(idx));
-        (v2.as_pointer() as Ptr<Vec<i32>>).to_strong().as_pointer() as Ptr<i32>
+        (v2.as_pointer() as Ptr<Vec<i32>>).decay()
     };
     assert!(((*v2.borrow()).len() == 2_usize));
     assert!((((v2.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 2));
@@ -342,7 +308,7 @@ impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));
         let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
-        (*p.borrow()).delete_array();
+        (*p.borrow()).delete();
     }
 }
 pub trait TestAllocator_int_Impl {
@@ -361,7 +327,7 @@ impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
     fn deallocate(&self, p: Ptr<i32>, _a1: usize) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
         let _a1: Value<usize> = Rc::new(RefCell::new(_a1));
-        (*p.borrow()).delete_array();
+        (*p.borrow()).delete();
     }
 }
 pub fn __cpp2rust_init_globals() {}

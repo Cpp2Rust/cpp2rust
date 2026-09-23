@@ -33,7 +33,19 @@ pub unsafe fn fill_3(a: *mut [i32; 3], mut v: i32) {
 pub unsafe fn sum_twice_4(a: *const [i32; 3]) -> i32 {
     return ((unsafe { sum_2(a) }) + (unsafe { sum_2(a) }));
 }
-pub unsafe fn fill_and_sum_5(a: *mut [i32; 3], mut v: i32, out: *mut i32) {
+pub unsafe fn sum_ptr_5(mut p: *const i32) -> i32 {
+    return (((*p.offset((0) as isize)) + (*p.offset((1) as isize))) + (*p.offset((2) as isize)));
+}
+pub unsafe fn sum_decayed_6(a: *const [i32; 3]) -> i32 {
+    return (unsafe { sum_ptr_5((*a).as_ptr()) });
+}
+pub unsafe fn bump_ptr_7(mut p: *mut i32) {
+    (*p.offset((0) as isize)) += 1;
+}
+pub unsafe fn bump_decayed_8(a: *mut [i32; 3]) {
+    (unsafe { bump_ptr_7((*a).as_mut_ptr()) });
+}
+pub unsafe fn fill_and_sum_9(a: *mut [i32; 3], mut v: i32, out: *mut i32) {
     (unsafe {
         let _a: *mut [i32; 3] = a;
         let _v: i32 = v;
@@ -41,7 +53,7 @@ pub unsafe fn fill_and_sum_5(a: *mut [i32; 3], mut v: i32, out: *mut i32) {
     });
     (*out) = (unsafe { sum_twice_4(a) });
 }
-pub unsafe fn pick_6(s: *const [libc::c_char; 5]) -> *const [libc::c_char; 5] {
+pub unsafe fn pick_10(s: *const [libc::c_char; 5]) -> *const [libc::c_char; 5] {
     return s;
 }
 #[repr(C)]
@@ -50,15 +62,15 @@ pub struct Point {
     pub x: i32,
     pub y: i32,
 }
-pub unsafe fn sum_points_7(p: *const [Point; 2]) -> i32 {
+pub unsafe fn sum_points_11(p: *const [Point; 2]) -> i32 {
     return (((((*p)[(0) as usize].x) + ((*p)[(0) as usize].y)) + ((*p)[(1) as usize].x))
         + ((*p)[(1) as usize].y));
 }
-pub unsafe fn shift_points_8(p: *mut [Point; 2], mut d: i32) {
+pub unsafe fn shift_points_12(p: *mut [Point; 2], mut d: i32) {
     (*p)[(0) as usize].x += d;
     (*p)[(1) as usize].y += d;
 }
-pub unsafe fn total_len_9(names: *mut [*const libc::c_char; 2]) -> i32 {
+pub unsafe fn total_len_13(names: *mut [*const libc::c_char; 2]) -> i32 {
     return ((unsafe { len5_1((*names)[(0) as usize]) })
         + (unsafe { len5_1((*names)[(1) as usize]) }));
 }
@@ -78,24 +90,27 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { sum_2(&arr,) }) == (21)));
     assert!(((unsafe { sum_twice_4(&arr,) }) == (42)));
     let mut out: i32 = 0;
-    (unsafe { fill_and_sum_5(&mut arr, 2, &mut out) });
+    (unsafe { fill_and_sum_9(&mut arr, 2, &mut out) });
     assert!(((out) == (12)));
     assert!(((arr[(0) as usize]) == (2)));
     let lit: *const [libc::c_char; 5] = &std::mem::transmute(*b"beta\0");
     assert!(((unsafe { len_0(lit,) }) == (4)));
     assert!(
-        (((*(unsafe { pick_6(&std::mem::transmute(*b"beta\0"),) }))[(0) as usize] as i32)
+        (((*(unsafe { pick_10(&std::mem::transmute(*b"beta\0"),) }))[(0) as usize] as i32)
             == (('b' as libc::c_char) as i32))
     );
-    assert!(((unsafe { len_0((unsafe { pick_6(&buf,) }),) }) == (4)));
+    assert!(((unsafe { len_0((unsafe { pick_10(&buf,) }),) }) == (4)));
     let mut pts: [Point; 2] = [Point { x: 1, y: 2 }, Point { x: 3, y: 4 }];
-    assert!(((unsafe { sum_points_7(&pts,) }) == (10)));
-    (unsafe { shift_points_8(&mut pts, 10) });
+    assert!(((unsafe { sum_points_11(&pts,) }) == (10)));
+    (unsafe { shift_points_12(&mut pts, 10) });
     assert!(((pts[(0) as usize].x) == (11)));
     assert!(((pts[(1) as usize].y) == (14)));
-    assert!(((unsafe { sum_points_7(&pts,) }) == (30)));
+    assert!(((unsafe { sum_points_11(&pts,) }) == (30)));
+    assert!(((unsafe { sum_decayed_6(&arr,) }) == (unsafe { sum_2(&arr,) })));
+    (unsafe { bump_decayed_8(&mut arr) });
+    assert!(((arr[(0) as usize]) == (3)));
     let mut names: [*const libc::c_char; 2] = [c"ab".as_ptr(), c"cde".as_ptr()];
-    assert!(((unsafe { total_len_9(&mut names,) }) == (5)));
+    assert!(((unsafe { total_len_13(&mut names,) }) == (5)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

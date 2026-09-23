@@ -10,18 +10,15 @@ thread_local!(
     pub static first_0: Value<i32> = <Value<i32>>::default();
 );
 thread_local!(
-    pub static second_1: Value<i32> =
-        Rc::new(RefCell::new((first_0.with(|rc| rc.borrow().clone()) + 1)));
+    pub static second_1: Value<i32> = Rc::new(RefCell::new((first_0.with(|rc| *rc.borrow()) + 1)));
 );
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((first_0.with(|rc| rc.borrow().clone()) == 0));
-    assert!(
-        (second_1.with(|rc| rc.borrow().clone()) == (first_0.with(|rc| rc.borrow().clone()) + 1))
-    );
+    assert!((first_0.with(|rc| *rc.borrow()) == 0));
+    assert!((second_1.with(|rc| *rc.borrow()) == (first_0.with(|rc| *rc.borrow()) + 1)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

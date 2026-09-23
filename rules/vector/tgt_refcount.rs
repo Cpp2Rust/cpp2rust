@@ -30,7 +30,7 @@ fn t7<T1>() -> Ptr<T1> {
 fn f1<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<T1>) -> Ptr<T1> {
     let idx = a1.get_offset();
     a0.with_mut(|__v: &mut Vec<T1>| __v.remove(idx));
-    a0.to_strong().as_pointer() as Ptr<T1>
+    a0.decay()
 }
 
 fn f6<T1>(a0: Ptr<T1>) -> Ptr<T1> {
@@ -217,7 +217,7 @@ fn f58<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
 fn f60<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: Ptr<T1>) -> Ptr<T1> {
     let idx = a1.get_offset();
     a0.with_mut(|__v: &mut Vec<T1>| __v.remove(idx));
-    a0.to_strong().as_pointer() as Ptr<T1>
+    a0.decay()
 }
 
 fn f65<T1>(a0: Ptr<T1>) -> Ptr<T1> {
