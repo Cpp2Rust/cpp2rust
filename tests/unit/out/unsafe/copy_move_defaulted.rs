@@ -351,8 +351,8 @@ unsafe fn main_0() -> i32 {
     let mut bufs: Vec<Buffer> = Vec::new();
     bufs.push(Buffer::move_from({ &mut r }));
     {
-        let __arg = Buffer::move_from({ &mut bufs[(0_usize)] });
-        bufs.push(__arg)
+        let __init = Buffer::move_from({ &mut bufs[(0_usize)] });
+        bufs.push(__init)
     };
     assert!(
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))

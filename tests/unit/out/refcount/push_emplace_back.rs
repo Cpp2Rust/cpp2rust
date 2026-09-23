@@ -278,7 +278,7 @@ pub fn emplace_scalar_9(values: Ptr<Vec<i64>>, x: i32) {
     let values: Value<Ptr<Vec<i64>>> = Rc::new(RefCell::new(values));
     let x: Value<i32> = Rc::new(RefCell::new(x));
     {
-        let __init = <i64>::default();
+        let __init = 0_i64;
         (*values.borrow()).with_mut(|__v: &mut Vec<i64>| __v.push(__init))
     };
     {
