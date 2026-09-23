@@ -13,8 +13,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
     {
-        let fun =
-            |x: Ptr<i32>, y: Ptr<i32>| (lambda_0 {}).call((x.read()).clone(), (y.read()).clone());
+        let fun = |x: Ptr<i32>, y: Ptr<i32>| {
+            (<lambda_0>::default()).call((x.read()).clone(), (y.read()).clone())
+        };
         (arr1.as_pointer() as Ptr<i32>).sort_with_cmp(
             (arr1.as_pointer() as Ptr<i32>)
                 .offset((5) as isize)

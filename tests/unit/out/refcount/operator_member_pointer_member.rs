@@ -63,9 +63,7 @@ impl Clone for S {
 impl Default for S {
     fn default() -> Self {
         S {
-            data: Rc::new(RefCell::new(
-                (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
+            data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
             inner: <Value<Inner>>::default(),
         }
     }

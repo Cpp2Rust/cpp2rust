@@ -44,7 +44,7 @@ fn main_0() -> i32 {
     ));
     assert!((({ apply_int_0((*scale.borrow()).clone(), 4,) }) == 12));
     assert!((({ apply_double_6((*scale.borrow()).clone(), 1.5E+0,) }) == 4.5E+0));
-    assert!((({ apply_int_2((lambda_3 {}), 9,) }) == -9_i32));
+    assert!((({ apply_int_2((<lambda_3>::default()), 9,) }) == -9_i32));
     let offset: Value<lambda_5> = Rc::new(RefCell::new(
         (lambda_5 {
             factor: Rc::new(RefCell::new((*factor.borrow()))),

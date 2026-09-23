@@ -51,7 +51,7 @@ fn main_0() -> i32 {
     ));
     assert!((({ apply_2((*scale.borrow()).clone(), 4,) }) == 12));
     assert!((({ apply_twice_6((*scale.borrow()).clone(), 4,) }) == 36));
-    assert!((({ apply_4((lambda_5 {}), 9,) }) == -9_i32));
+    assert!((({ apply_4((<lambda_5>::default()), 9,) }) == -9_i32));
     return 0;
 }
 #[derive(Clone, Default)]

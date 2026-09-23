@@ -11,11 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let zero: Value<lambda_0> = Rc::new(RefCell::new((lambda_0 {})));
+    let zero: Value<lambda_0> = Rc::new(RefCell::new((<lambda_0>::default())));
     assert!((({ lambda_0::operator_call() }) == 42));
-    let one: Value<lambda_1> = Rc::new(RefCell::new((lambda_1 {})));
+    let one: Value<lambda_1> = Rc::new(RefCell::new((<lambda_1>::default())));
     assert!((({ lambda_1::operator_call(1,) }) == 2));
-    let three: Value<lambda_2> = Rc::new(RefCell::new((lambda_2 {})));
+    let three: Value<lambda_2> = Rc::new(RefCell::new((<lambda_2>::default())));
     assert!((({ lambda_2::operator_call(1, 2, 3,) }) == 123));
     let hits: Value<i32> = Rc::new(RefCell::new(0));
     let no_return: Value<lambda_3> = Rc::new(RefCell::new(

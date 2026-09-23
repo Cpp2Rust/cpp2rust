@@ -16,10 +16,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fresh: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(({ (lambda_1 {}).to_free_function() })));
+    let fresh: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        ({ (<lambda_1>::default()).to_free_function() }),
+    ));
     assert!((({ (*fresh.borrow()).call(5,) }) == -5_i32));
-    let twice: Value<lambda_2> = Rc::new(RefCell::new((lambda_2 {})));
+    let twice: Value<lambda_2> = Rc::new(RefCell::new((<lambda_2>::default())));
     let named: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(({ (*twice.borrow()).to_free_function() })));
     assert!((({ (*named.borrow()).call(5,) }) == 10));

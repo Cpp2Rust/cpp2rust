@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let negate: Value<lambda_0> = Rc::new(RefCell::new((lambda_0 {})));
+    let negate: Value<lambda_0> = Rc::new(RefCell::new((<lambda_0>::default())));
     let fi: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ({ (*negate.borrow()).to_free_function_int_const() }),
     ));
@@ -20,7 +20,7 @@ fn main_0() -> i32 {
     ));
     assert!((({ (*fi.borrow()).call(3,) }) == -3_i32));
     assert!((({ (*fd.borrow()).call(1.5E+0,) }) == -1.5E+0));
-    let square: Value<lambda_1> = Rc::new(RefCell::new((lambda_1 {})));
+    let square: Value<lambda_1> = Rc::new(RefCell::new((<lambda_1>::default())));
     let si: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         ({ (*square.borrow()).to_free_function_int_const() }),
     ));

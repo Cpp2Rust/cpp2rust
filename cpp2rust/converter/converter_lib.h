@@ -70,6 +70,11 @@ void ForEachTemplateInstantiatedMethod(
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method);
+
+bool CanUseCopyOrMoveName(const clang::CXXMethodDecl *decl,
+                          const std::string &name);
+
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
@@ -173,6 +178,11 @@ clang::QualType GetReturnTypeOfFunction(const clang::CallExpr *expr);
 const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
+
+void ToIdentifier(std::string &name);
+
+std::string GetConversionName(const clang::CXXConversionDecl *decl,
+                              const std::string &rust_type);
 
 bool IsImplicitAssignmentCall(const clang::CallExpr *expr);
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);

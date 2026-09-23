@@ -58,12 +58,7 @@ fn main_0() -> i32 {
         (*(*(*ptr.borrow()).upgrade().deref()).flags.borrow_mut()) = rhs_0
     };
     assert!((((*(*(*ptr.borrow()).upgrade().deref()).flags.borrow()) as i32) == 2));
-    let bits: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8,
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-    ])));
+    let bits: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([0_u8, 0_u8, 0_u8, 0_u8])));
     {
         let rhs_0 = (((*bits.borrow())[((5) / 8) as usize] as i32)
             | (((1 << ((5) & 7)) as u8) as i32)) as u8;

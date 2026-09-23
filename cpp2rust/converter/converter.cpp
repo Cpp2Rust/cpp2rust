@@ -650,6 +650,10 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   }
 
   for (auto f : decl->fields()) {
+    if (f->hasInClassInitializer()) {
+      return false;
+    }
+
     // Records that contain function pointer do not derive Default
     if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
       if (ptr_ty->getPointeeType()->isFunctionType()) {
@@ -1062,8 +1066,16 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
   if (clang::isa<clang::CXXDestructorDecl>(decl)) {
     return kDestructorName;
   }
+  if (const char *name = GetCopyOrMoveName(decl);
+      name && CanUseCopyOrMoveName(decl, name)) {
+    return name;
+  }
   if (IsOverloadedMethod(decl)) {
     return GetOverloadedFunctionName(decl);
+  }
+  if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    return GetConversionName(
+        conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
   }
   return GetNamedDeclAsString(decl);
 }
@@ -1107,12 +1119,15 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
 
 std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
   if (decl->isCopyOrMoveConstructor()) {
+    if (const char *name = GetCopyOrMoveName(decl);
+        CanUseCopyOrMoveName(decl, name)) {
+      return name;
+    }
     return GetOverloadedFunctionName(decl);
   }
-  return GetRecordName(decl->getParent()) +
-         (GetNumberOfConvertingCtors(decl->getParent()) != 1
-              ? std::to_string(GetCtorIndex(decl))
-              : "");
+  return GetNumberOfConvertingCtors(decl->getParent()) != 1
+             ? std::format("new_{}", GetCtorIndex(decl))
+             : "new";
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
@@ -1332,7 +1347,12 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     return false;
   }
   StrCat(keyword::kIf);
-  ConvertCondition(stmt->getCond());
+  if (auto *cond = clang::dyn_cast<clang::ConstantExpr>(stmt->getCond());
+      cond && stmt->isConstexpr()) {
+    StrCat(cond->getResultAsAPSInt() != 0 ? keyword::kTrue : keyword::kFalse);
+  } else {
+    ConvertCondition(stmt->getCond());
+  }
   ConvertBody(stmt->getThen());
   if (stmt->hasElseStorage()) {
     StrCat(keyword::kElse);
@@ -3298,7 +3318,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
-    StrCat(GetOverloadedFunctionName(method));
+    StrCat(GetMethodName(method));
   } else if (!name_override.empty()) {
     StrCat(token::kDot, name_override);
   } else if (member->getDeclName().isIdentifier() ||
@@ -3346,6 +3366,7 @@ bool Converter::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
 }
 
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
+  auto *syntactic = expr->isSyntacticForm() ? expr : expr->getSyntacticForm();
   if (auto form = expr->getSemanticForm())
     expr = form;
 
@@ -3367,6 +3388,13 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
       }
+      SetFreshType(qual_type);
+      return false;
+    }
+
+    auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(record);
+    if (syntactic->getNumInits() == 0 && !(cxx && cxx->isLambda())) {
+      StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }
@@ -4100,18 +4128,6 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
     return getTypedLiteral("0.0", ToString(qual_type));
   }
 
-  if (auto record = qual_type->getAsRecordDecl();
-      record && in_const_initializer_) {
-    if (auto cxx = clang::dyn_cast<clang::CXXRecordDecl>(record)) {
-      ENSURE(GetUserDefinedDefaultConstructor(cxx) == nullptr &&
-             "Default initializing globals using default constructor is not "
-             "supported");
-    }
-    Buffer buf(*this);
-    EmitDefaultStructLiteral(record);
-    return std::move(buf).str();
-  }
-
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
         qual_type.isPODType(ctx_)) {
@@ -4138,6 +4154,10 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   auto name = GetFunctionBaseName(decl);
+  if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    name = GetConversionName(
+        conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
+  }
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
       ctor && !ctor->getParent()->getIdentifier()) {
     name = GetRecordName(ctor->getParent());
@@ -4207,19 +4227,7 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
     }
   }
 
-  ReplaceAll(name, "[", "arr");
-  ReplaceAll(name, "]", "arr");
-  ReplaceAll(name, ";", "_");
-  ReplaceAll(name, ",", "_");
-  name.erase(std::remove_if(name.begin(), name.end(),
-                            [](char c) {
-                              return c == '<' || c == '>' || c == ' ' ||
-                                     c == ':' || c == '(' || c == ')' ||
-                                     c == '-';
-                            }),
-             name.end());
-  std::replace(name.begin(), name.end(), '*', 'p');
-
+  ToIdentifier(name);
   return name;
 }
 
@@ -4769,8 +4777,13 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   StrCat(GetRecordName(decl));
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
-    StrCat(GetNamedDeclAsString(field), token::kColon,
-           GetDefaultAsString(field->getType()), token::kComma);
+    StrCat(GetNamedDeclAsString(field), token::kColon);
+    if (auto *init = field->getInClassInitializer()) {
+      ConvertVarInit(field->getType(), init);
+    } else {
+      StrCat(GetDefaultAsString(field->getType()));
+    }
+    StrCat(token::kComma);
   }
 }
 

@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let twice: Value<lambda_0> = Rc::new(RefCell::new((lambda_0 {})));
+    let twice: Value<lambda_0> = Rc::new(RefCell::new((<lambda_0>::default())));
     assert!((({ lambda_0::operator_call_i32__int_const(4,) }) == 8));
     assert!((({ lambda_0::operator_call_f64__double_const(1.5E+0,) }) == 3.0E+0));
     let base: Value<i32> = Rc::new(RefCell::new(10));
@@ -40,7 +40,7 @@ fn main_0() -> i32 {
         )
     });
     assert!(((*total.borrow()) == 26));
-    let sub: Value<lambda_3> = Rc::new(RefCell::new((lambda_3 {})));
+    let sub: Value<lambda_3> = Rc::new(RefCell::new((<lambda_3>::default())));
     assert!((({ lambda_3::operator_call_i32_i32__int_const(9, 4,) }) == 5));
     assert!((({ lambda_3::operator_call_f64_f64__double_const(2.5E+0, 1.0E+0,) }) == 1.5E+0));
     let mixed: Value<lambda_4> = Rc::new(RefCell::new(
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
             lambda_4::operator_call_i32_f64__int_double_const(&(*mixed.borrow_mut()), 2, 5.0E-1)
         }) == 1.1E+1)
     );
-    let cast_to: Value<lambda_5> = Rc::new(RefCell::new((lambda_5 {})));
+    let cast_to: Value<lambda_5> = Rc::new(RefCell::new((<lambda_5>::default())));
     assert!((({ lambda_5::operator_call_i32__int_const(5,) }) == 2));
     assert!((({ lambda_5::operator_call_i32__double_const(5,) }) == 2.5E+0));
     return 0;

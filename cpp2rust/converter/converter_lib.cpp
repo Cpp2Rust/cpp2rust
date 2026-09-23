@@ -288,6 +288,44 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
+const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method) {
+  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
+    if (ctor->isCopyConstructor()) {
+      return "copy_from";
+    }
+    if (ctor->isMoveConstructor()) {
+      return "move_from";
+    }
+    return nullptr;
+  }
+  if (method->isCopyAssignmentOperator()) {
+    return "copy_assign";
+  }
+  if (method->isMoveAssignmentOperator()) {
+    return "move_assign";
+  }
+  return nullptr;
+}
+
+bool CanUseCopyOrMoveName(const clang::CXXMethodDecl *decl,
+                          const std::string &name) {
+  const auto *record = decl->getParent();
+  bool is_unique_member =
+      std::count_if(record->method_begin(), record->method_end(),
+                    [&name](const clang::CXXMethodDecl *method) {
+                      const char *method_name = GetCopyOrMoveName(method);
+                      return !method->isDeleted() && method_name &&
+                             method_name == name;
+                    }) == 1;
+  bool is_unique_name =
+      std::none_of(record->method_begin(), record->method_end(),
+                   [&name](const clang::CXXMethodDecl *method) {
+                     return method->getDeclName().isIdentifier() &&
+                            method->getName() == name;
+                   });
+  return is_unique_member && is_unique_name;
+}
+
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor) {
   return ctor->isCopyConstructor() && ctor->isUserProvided() &&
          IsUserDefinedDecl(ctor);
@@ -1003,6 +1041,38 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
     return GetOverloadedOperator(decl);
   }
   return decl->getNameAsString();
+}
+
+void ToIdentifier(std::string &name) {
+  ReplaceAll(name, "[", "arr");
+  ReplaceAll(name, "]", "arr");
+  ReplaceAll(name, ";", "_");
+  ReplaceAll(name, ",", "_");
+  name.erase(std::remove_if(name.begin(), name.end(),
+                            [](char c) {
+                              return c == '<' || c == '>' || c == ' ' ||
+                                     c == ':' || c == '(' || c == ')' ||
+                                     c == '-';
+                            }),
+             name.end());
+  std::replace(name.begin(), name.end(), '*', 'p');
+}
+
+std::string GetConversionName(const clang::CXXConversionDecl *decl,
+                              const std::string &rust_type) {
+  if (decl->getParent()->isLambda()) {
+    return GetFunctionBaseName(decl);
+  }
+  auto name = "to_" + rust_type;
+  ToIdentifier(name);
+  const auto *record = decl->getParent();
+  bool is_unique_name =
+      std::none_of(record->method_begin(), record->method_end(),
+                   [&name](const clang::CXXMethodDecl *method) {
+                     return method->getDeclName().isIdentifier() &&
+                            method->getName() == name;
+                   });
+  return is_unique_name ? name : GetFunctionBaseName(decl);
 }
 
 clang::CXXDestructorDecl *

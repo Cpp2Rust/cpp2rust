@@ -38,11 +38,9 @@ impl Clone for Pair {
 impl Default for Pair {
     fn default() -> Self {
         Pair {
-            x: <Value<i32>>::default(),
-            y: <Value<i32>>::default(),
-            a: Rc::new(RefCell::new(
-                (0..5).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-            )),
+            x: Rc::new(RefCell::new(0_i32)),
+            y: Rc::new(RefCell::new(0_i32)),
+            a: Rc::new(RefCell::new((0..5).map(|_| 0_i32).collect::<Box<[i32]>>())),
             r: <Ptr<i32>>::default(),
             p: Rc::new(RefCell::new(Ptr::<i32>::null())),
             pair: Rc::new(RefCell::new(Ptr::<Pair>::null())),
@@ -277,8 +275,8 @@ fn main_0() -> i32 {
                 .borrow()),
         )
     });
-    let x: Value<X1> = Rc::new(RefCell::new(X1 {}));
-    let y: Value<X1> = Rc::new(RefCell::new(X1 {}));
+    let x: Value<X1> = Rc::new(RefCell::new(<X1>::default()));
+    let y: Value<X1> = Rc::new(RefCell::new(<X1>::default()));
     (*x1.borrow_mut()) = (({ zero_0() }) + (*(*y1.borrow()).x.borrow()));
     (*(*y1.borrow()).x.borrow_mut()) = (({ zero_0() }) + 5);
     let ptr2ptr_1: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((px1.as_pointer())));

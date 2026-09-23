@@ -231,9 +231,8 @@ impl ByteRepr for Copied {
     }
 }
 thread_local!(
-    pub static order_1: Value<Box<[i32]>> = Rc::new(RefCell::new(
-        (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
-    ));
+    pub static order_1: Value<Box<[i32]>> =
+        Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>()));
 );
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
@@ -312,53 +311,39 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let s: Value<S> = Rc::new(RefCell::new(S {}));
+        let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 1));
     {
-        let s: Value<S> = Rc::new(RefCell::new(S {}));
+        let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 2));
     {
-        let d: Value<Defaulted> = Rc::new(RefCell::new(Defaulted {
-            s: Rc::new(RefCell::new(S {})),
-        }));
+        let d: Value<Defaulted> = Rc::new(RefCell::new(<Defaulted>::default()));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 3));
     {
-        let o: Value<Outer> = Rc::new(RefCell::new(Outer {
-            m: Rc::new(RefCell::new(Middle {
-                s: Rc::new(RefCell::new(S {})),
-            })),
-        }));
+        let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
         let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 4));
     {
-        let am: Value<ArrayMember> = Rc::new(RefCell::new(ArrayMember {
-            items: Rc::new(RefCell::new(Box::new([S {}, S {}, S {}]))),
-        }));
+        let am: Value<ArrayMember> = Rc::new(RefCell::new(<ArrayMember>::default()));
         let _dtor_am = ScopedDestructor::new(&am, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 7));
     {
-        let e: Value<EmptyBody> = Rc::new(RefCell::new(EmptyBody {
-            s: Rc::new(RefCell::new(S {})),
-        }));
+        let e: Value<EmptyBody> = Rc::new(RefCell::new(<EmptyBody>::default()));
         let _dtor_e = ScopedDestructor::new(&e, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 8));
     {
-        let tc: Value<Templated_char_> = Rc::new(RefCell::new(Templated_char_ {
-            v: Rc::new(RefCell::new(<u8>::default())),
-        }));
+        let tc: Value<Templated_char_> = Rc::new(RefCell::new(<Templated_char_>::default()));
         let _dtor_tc = ScopedDestructor::new(&tc, |__p| __p.destructor());
-        let ti: Value<Templated_int_> = Rc::new(RefCell::new(Templated_int_ {
-            v: Rc::new(RefCell::new(<i32>::default())),
-        }));
+        let ti: Value<Templated_int_> = Rc::new(RefCell::new(<Templated_int_>::default()));
         let _dtor_ti = ScopedDestructor::new(&ti, |__p| __p.destructor());
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 13));
