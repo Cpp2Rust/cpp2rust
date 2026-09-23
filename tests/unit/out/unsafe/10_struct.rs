@@ -31,14 +31,21 @@ impl Graph {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone)]
 pub struct Partial {
     pub p: *mut i32,
 }
 impl Partial {
-    pub unsafe fn Partial1(mut q: *mut i32) -> Self {
+    pub unsafe fn new_1(mut q: *mut i32) -> Self {
         let mut this = Self { p: q };
         this
+    }
+}
+impl Default for Partial {
+    fn default() -> Self {
+        Partial {
+            p: std::ptr::null_mut(),
+        }
     }
 }
 #[repr(C)]
@@ -63,7 +70,7 @@ unsafe fn main_0() -> i32 {
         adj: std::ptr::null_mut(),
     };
     let mut arr: [i32; 3] = [3, 1, 4];
-    let mut it: Partial = Partial::Partial1({ arr.as_mut_ptr() });
+    let mut it: Partial = Partial::new_1({ arr.as_mut_ptr() });
     if ((it.p) != (arr.as_mut_ptr())) {
         return 1;
     }

@@ -8,13 +8,13 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn foo_0() -> i32 {
     thread_local!(
-        static static_i_1: Value<i32> = <Value<i32>>::default();
+        static static_i_1: Value<i32> = Rc::new(RefCell::new(0_i32));
     );
     thread_local!(
-        static static_f_2: Value<f32> = <Value<f32>>::default();
+        static static_f_2: Value<f32> = Rc::new(RefCell::new(0.0_f32));
     );
     thread_local!(
-        static static_b_3: Value<bool> = <Value<bool>>::default();
+        static static_b_3: Value<bool> = Rc::new(RefCell::new(false));
     );
     thread_local!(
         static kX1_4: Value<i32> = Rc::new(RefCell::new(1));

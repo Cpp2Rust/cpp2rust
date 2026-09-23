@@ -27,12 +27,12 @@ pub struct Flag {
     pub v: i32,
 }
 impl Flag {
-    pub unsafe fn operator__Bool(&self) -> bool {
+    pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }
 }
 pub unsafe fn use_4(mut f: Flag) -> i32 {
-    assert!((unsafe { Flag::operator__Bool(&f,) }));
+    assert!((unsafe { Flag::to_bool(&f,) }));
     return f.v;
 }
 pub unsafe fn checked_5(mut x: i32) -> i32 {

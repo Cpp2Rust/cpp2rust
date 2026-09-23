@@ -81,7 +81,7 @@ pub struct NonCopyable {
     pub value: Value<Option<Value<i32>>>,
 }
 impl NonCopyable {
-    pub fn NonCopyable_pmutNonCopyable_rv(_a0: Ptr<NonCopyable>) -> Self {
+    pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).value.borrow_mut()).take(),
@@ -156,7 +156,7 @@ fn main_0() -> i32 {
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
-    &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>(None));
+    &((FnPtr::<fn() -> i32>::new(bump_and_return_4)).cast::<fn() -> i32>());
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     let storage: Value<i32> = Rc::new(RefCell::new(11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((storage.as_pointer())));
@@ -183,10 +183,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait NonCopyableImpl {
-    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
+    fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
-    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
+    fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         ((*(*self).upgrade().deref()).value.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
         return (*self).clone();

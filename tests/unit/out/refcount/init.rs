@@ -40,7 +40,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = <Value<i32>>::default();
+    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let g: Ptr<i32> = x.as_pointer();
     let q: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));

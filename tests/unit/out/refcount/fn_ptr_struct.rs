@@ -24,7 +24,7 @@ impl Clone for Handler {
 impl Default for Handler {
     fn default() -> Self {
         Handler {
-            tag: <Value<i32>>::default(),
+            tag: Rc::new(RefCell::new(0_i32)),
             cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
         }
     }
@@ -79,14 +79,14 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32))));
     let p2: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
-    assert!((({ (*(*p1.borrow()))(5,) }) == 6));
-    assert!((({ (*(*p2.borrow()))(5,) }) == 8));
+    assert!((({ (*p1.borrow()).call(5,) }) == 6));
+    assert!((({ (*p2.borrow()).call(5,) }) == 8));
     assert!((({ S::pick_i64(5_i64,) }) == 7));
     let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(3)),
         cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32)))),
     }));
-    assert!((({ (*(*(*h3.borrow()).cb.borrow()))(1,) }) == 2));
+    assert!((({ (*(*h3.borrow()).cb.borrow()).call(1,) }) == 2));
     let h1: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(1)),
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(double_it_0))),
@@ -96,10 +96,10 @@ fn main_0() -> i32 {
         cb: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(negate_1))),
     }));
     assert!(!((*(*h1.borrow()).cb.borrow()).is_null()));
-    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(5,) }) == 10));
-    assert!((({ (*(*(*h2.borrow()).cb.borrow()))(7,) }) == -7_i32));
+    assert!((({ (*(*h1.borrow()).cb.borrow()).call(5,) }) == 10));
+    assert!((({ (*(*h2.borrow()).cb.borrow()).call(7,) }) == -7_i32));
     (*(*h1.borrow()).cb.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(negate_1);
-    assert!((({ (*(*(*h1.borrow()).cb.borrow()))(3,) }) == -3_i32));
+    assert!((({ (*(*h1.borrow()).cb.borrow()).call(3,) }) == -3_i32));
     assert!({
         let _lhs = (*(*h1.borrow()).cb.borrow()).clone();
         _lhs == (*(*h2.borrow()).cb.borrow()).clone()

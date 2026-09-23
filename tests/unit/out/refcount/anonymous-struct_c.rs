@@ -246,7 +246,7 @@ fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(Outer {
         named: Rc::new(RefCell::new(Named {
             a: Rc::new(RefCell::new(0)),
-            b: Rc::new(RefCell::new(<i32>::default())),
+            b: Rc::new(RefCell::new(0_i32)),
         })),
         anon0: Rc::new(RefCell::new(<anon_0>::default())),
         anon1: Rc::new(RefCell::new(<anon_1>::default())),

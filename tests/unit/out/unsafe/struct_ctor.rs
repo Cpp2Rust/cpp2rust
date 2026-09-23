@@ -13,7 +13,7 @@ pub struct StructWithCtor {
     x2_: i32,
 }
 impl StructWithCtor {
-    pub unsafe fn StructWithCtor(mut x1: i32, mut x2: i32) -> Self {
+    pub unsafe fn new(mut x1: i32, mut x2: i32) -> Self {
         let mut this = Self { x1_: x1, x2_: x2 };
         this.x1_.prefix_inc();
         this.x2_.prefix_dec();
@@ -36,7 +36,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut struct_with_ctor: StructWithCtor = StructWithCtor::StructWithCtor({ 1 }, { 2 });
+    let mut struct_with_ctor: StructWithCtor = StructWithCtor::new({ 1 }, { 2 });
     let mut x: i32 = 3;
     assert!(
         (((*(unsafe { foo_0(&mut x,) })) == (3))

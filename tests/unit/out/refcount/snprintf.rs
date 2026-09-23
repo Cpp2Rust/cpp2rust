@@ -11,9 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..32).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..32).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         ((({
             let __s = libcc2rs::format_c(
@@ -384,9 +382,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!((((((*buf.borrow())[(0) as usize] as i32) == ('Z' as i32)) as i32) != 0));
-    let fmt: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let fmt: Value<Box<[u8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
     (*fmt.borrow_mut())[(0) as usize] = (('%' as i32) as u8);
     (*fmt.borrow_mut())[(1) as usize] = (('5' as i32) as u8);
     (*fmt.borrow_mut())[(2) as usize] = (('.' as i32) as u8);

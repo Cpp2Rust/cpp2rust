@@ -19,7 +19,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn Tracked(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -27,7 +27,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn Tracked_pconstTracked(o: *const Tracked) -> Self {
+    pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (((*o).copies) + (1)),
@@ -35,7 +35,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn Tracked_pmutTracked_rv(o: *mut Tracked) -> Self {
+    pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (*o).copies,
@@ -47,7 +47,7 @@ impl Tracked {
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::Tracked_pconstTracked(self as *const Tracked) }
+        unsafe { Tracked::copy_from(self as *const Tracked) }
     }
 }
 pub unsafe fn chosen_overload_0(_a0: *const Tracked) -> Overload {
@@ -97,10 +97,10 @@ pub unsafe fn forward_pack_7(
     return digits;
 }
 impl Pair {
-    pub unsafe fn Pair(x: *mut Tracked, y: *mut Tracked) -> Self {
+    pub unsafe fn new(x: *mut Tracked, y: *mut Tracked) -> Self {
         let mut this = Self {
-            a: Tracked::Tracked_pconstTracked({ x }),
-            b: Tracked::Tracked_pmutTracked_rv({ y }),
+            a: Tracked::copy_from({ x }),
+            b: Tracked::move_from({ y }),
         };
         this
     }
@@ -112,7 +112,7 @@ pub struct Pair {
     pub b: Tracked,
 }
 pub unsafe fn forward_pack_into_ctor_8(args_0: *mut Tracked, args_1: *mut Tracked) -> Pair {
-    return Pair::Pair({ args_0 }, { args_1 });
+    return Pair::new({ args_0 }, { args_1 });
 }
 pub fn main() {
     unsafe {
@@ -122,28 +122,28 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     assert!(((unsafe { forward_pack_4() }) == (0)));
-    let mut a: Tracked = Tracked::Tracked({ 1 });
+    let mut a: Tracked = Tracked::new({ 1 });
     assert!(((unsafe { forward_pack_5(&mut a,) }) == (Overload_kLvalueOverload as i32)));
     assert!(((a.v) == (1)));
     assert!(
         ((unsafe {
-            let mut _args: Tracked = Tracked::Tracked({ 2 });
+            let mut _args: Tracked = Tracked::new({ 2 });
             forward_pack_6(&mut _args)
         }) == (Overload_kRvalueOverload as i32))
     );
     let mut i: i32 = 3;
     assert!(
         ((unsafe {
-            let mut _args_1: Tracked = Tracked::Tracked({ 4 });
+            let mut _args_1: Tracked = Tracked::new({ 4 });
             let mut _args_3: i32 = 5;
             forward_pack_7(&mut a, &mut _args_1, &mut i, &mut _args_3)
         }) == (1234))
     );
     assert!(((a.v) == (1)));
     assert!(((i) == (3)));
-    let mut lhs: Tracked = Tracked::Tracked({ 6 });
+    let mut lhs: Tracked = Tracked::new({ 6 });
     let mut p: Pair = (unsafe {
-        let mut _args_1: Tracked = Tracked::Tracked({ 7 });
+        let mut _args_1: Tracked = Tracked::new({ 7 });
         forward_pack_into_ctor_8(&mut lhs, &mut _args_1)
     });
     assert!(((p.a.v) == (6)));

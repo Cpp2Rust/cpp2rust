@@ -63,8 +63,8 @@ unsafe fn main_0() -> i32 {
     });
     let mut bar: i32 = 5;
     out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
-    let mut foo1: Foo = Foo {};
-    let foo2: Foo = Foo {};
+    let mut foo1: Foo = <Foo>::default();
+    let foo2: Foo = <Foo>::default();
     (unsafe { Foo::foo(&mut foo1) });
     (unsafe { Foo::method_i32(&mut foo1, 1) });
     (unsafe { Foo::foo_const(&foo2) });

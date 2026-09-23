@@ -33,26 +33,26 @@ pub struct Ctor {
     pub v: i32,
 }
 impl Ctor {
-    pub unsafe fn Ctor1() -> Self {
+    pub unsafe fn new_1() -> Self {
         let mut this = Self {
             v: (unsafe { next_0() }),
         };
         this
     }
-    pub unsafe fn Ctor2(mut x: i32) -> Self {
+    pub unsafe fn new_2(mut x: i32) -> Self {
         let mut this = Self { v: x };
         this
     }
 }
 impl Default for Ctor {
     fn default() -> Self {
-        unsafe { Ctor::Ctor1() }
+        unsafe { Ctor::new_1() }
     }
 }
 pub static mut default_ctor_7: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::Ctor1() });
+    std::cell::LazyCell::new(|| unsafe { Ctor::new_1() });
 pub static mut arg_ctor_8: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::Ctor2({ 7 }) });
+    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 7 }) });
 pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
     std::cell::LazyCell::new(|| unsafe {
         {
@@ -62,7 +62,7 @@ pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
         }
     });
 pub static mut inline_member_11: std::cell::LazyCell<Ctor> =
-    std::cell::LazyCell::new(|| unsafe { Ctor::Ctor2({ 5 }) });
+    std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 5 }) });
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct Holder {}
@@ -72,7 +72,7 @@ pub unsafe fn local_static_12() -> i32 {
     static mut once_13: std::cell::LazyCell<i32> =
         std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });;
     static mut local_ctor_14: std::cell::LazyCell<Ctor> =
-        std::cell::LazyCell::new(|| unsafe { Ctor::Ctor2({ 3 }) });;
+        std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 3 }) });;
     return ((*std::cell::LazyCell::force_mut(&mut *&raw mut once_13))
         + ((*std::cell::LazyCell::force_mut(&mut *&raw mut local_ctor_14)).v));
 }
@@ -82,19 +82,19 @@ pub struct Singleton {
     pub hits: i32,
 }
 impl Singleton {
-    pub unsafe fn Singleton() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { hits: 0 };
         this
     }
     pub unsafe fn instance() -> *mut Singleton {
         static mut s_15: std::cell::LazyCell<Singleton> =
-            std::cell::LazyCell::new(|| unsafe { Singleton::Singleton() });;
+            std::cell::LazyCell::new(|| unsafe { Singleton::new() });;
         return &mut (*std::cell::LazyCell::force_mut(&mut *&raw mut s_15));
     }
 }
 impl Default for Singleton {
     fn default() -> Self {
-        unsafe { Singleton::Singleton() }
+        unsafe { Singleton::new() }
     }
 }
 pub fn main() {

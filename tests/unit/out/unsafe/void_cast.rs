@@ -37,16 +37,13 @@ pub struct NonCopyable {
     pub value: Option<Box<i32>>,
 }
 impl NonCopyable {
-    pub unsafe fn NonCopyable_pmutNonCopyable_rv(_a0: *mut NonCopyable) -> Self {
+    pub unsafe fn move_from(_a0: *mut NonCopyable) -> Self {
         let mut this = Self {
             value: (*_a0).value.take(),
         };
         this
     }
-    pub unsafe fn operator_assign_pmutNonCopyable_rv(
-        &mut self,
-        _a0: *mut NonCopyable,
-    ) -> *mut NonCopyable {
+    pub unsafe fn move_assign(&mut self, _a0: *mut NonCopyable) -> *mut NonCopyable {
         self.value = (*_a0).value.take();
         return &mut (*(self as *mut NonCopyable));
     }

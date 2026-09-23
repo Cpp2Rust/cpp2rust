@@ -49,16 +49,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([
-        <i64>::default(),
-        <i64>::default(),
-        <i64>::default(),
-        <i64>::default(),
-    ])));
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        c: Rc::new(RefCell::new(<u8>::default())),
-        x: Rc::new(RefCell::new(<i64>::default())),
-    }));
+    let arr: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([0_i64, 0_i64, 0_i64, 0_i64])));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));
     assert!((16usize == 16_usize));

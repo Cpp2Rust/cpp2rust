@@ -138,7 +138,7 @@ impl DisjointSet {
                 ((self.rank.as_mut().unwrap()[(xset as usize)]) + (1));
         }
     }
-    pub unsafe fn DisjointSet_pmutDisjointSet_rv(_a0: *mut DisjointSet) -> Self {
+    pub unsafe fn move_from(_a0: *mut DisjointSet) -> Self {
         let mut this = Self {
             rank: (*_a0).rank.take(),
             parent: (*_a0).parent.take(),
@@ -146,10 +146,7 @@ impl DisjointSet {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutDisjointSet_rv(
-        &mut self,
-        _a0: *mut DisjointSet,
-    ) -> *mut DisjointSet {
+    pub unsafe fn move_assign(&mut self, _a0: *mut DisjointSet) -> *mut DisjointSet {
         self.rank = (*_a0).rank.take();
         self.parent = (*_a0).parent.take();
         self.n = (*_a0).n;
@@ -164,7 +161,7 @@ pub struct Graph {
     pub E: i32,
 }
 impl Graph {
-    pub unsafe fn Graph_pmutGraph_rv(_a0: *mut Graph) -> Self {
+    pub unsafe fn move_from(_a0: *mut Graph) -> Self {
         let mut this = Self {
             edges: (*_a0).edges.take(),
             V: (*_a0).V,
@@ -172,7 +169,7 @@ impl Graph {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutGraph_rv(&mut self, _a0: *mut Graph) -> *mut Graph {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Graph) -> *mut Graph {
         self.edges = (*_a0).edges.take();
         self.V = (*_a0).V;
         self.E = (*_a0).E;

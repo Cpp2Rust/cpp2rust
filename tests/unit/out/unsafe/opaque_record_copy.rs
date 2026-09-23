@@ -22,10 +22,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Wrapper_Probe_ = Wrapper_Probe_ {
-        base_: Probe {},
-        tag: 0_i32,
-    };
+    let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
     a.tag = 3;
     let mut b: Wrapper_Probe_ = a;
     assert!(((b.tag) == (3)));

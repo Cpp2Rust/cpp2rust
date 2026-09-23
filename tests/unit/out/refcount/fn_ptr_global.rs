@@ -25,7 +25,7 @@ pub fn set_op_3(fn_: FnPtr<fn(i32) -> i32>) {
 pub fn call_op_4(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     if !(g_op_2.with(|rc| rc.borrow().clone())).is_null() {
-        return ({ (*g_op_2.with(|rc| rc.borrow().clone()))((*x.borrow())) });
+        return ({ g_op_2.with(|rc| rc.borrow().clone()).call((*x.borrow())) });
     }
     return (*x.borrow());
 }

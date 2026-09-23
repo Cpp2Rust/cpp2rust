@@ -23,7 +23,7 @@ pub struct S {
     data_: Value<i32>,
 }
 impl S {
-    pub fn S(data: i32) -> Self {
+    pub fn new(data: i32) -> Self {
         let data: Value<i32> = Rc::new(RefCell::new(data));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             data_: Rc::new(RefCell::new((*data.borrow()))),
@@ -31,7 +31,7 @@ impl S {
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn S_pmutS_rv(_a0: Ptr<S>) -> Self {
+    pub fn move_from(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             data_: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).data_.borrow()))),
         }));
@@ -110,9 +110,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
-    let b: Value<S> = Rc::new(RefCell::new(S::S({ 2 })));
-    let c: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
+    let a: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
+    let b: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
+    let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     assert!(
         ({
             let _x: Ptr<S> = a.as_pointer();

@@ -22,11 +22,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let grid: Value<Box<[Value<Box<[u8]>>]>> = Rc::new(RefCell::new(
         (0..3)
-            .map(|_| {
-                Rc::new(RefCell::new(
-                    (0..6).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-                ))
-            })
+            .map(|_| Rc::new(RefCell::new((0..6).map(|_| 0_u8).collect::<Box<[u8]>>())))
             .collect::<Box<[Value<Box<[u8]>>]>>(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
