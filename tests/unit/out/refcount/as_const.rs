@@ -59,6 +59,10 @@ fn main_0() -> i32 {
     let cs: Ptr<S> = s.as_pointer();
     assert!(((({ SImpl::f_const(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
     assert!(((*(*cs.upgrade().deref()).v.borrow()) == 9));
+    let p: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
+    (*(*(*p.borrow()).upgrade().deref()).v.borrow_mut()) = 11;
+    assert!(((*(*s.borrow()).v.borrow()) == 11));
+    assert!(((({ SImpl::f(&(*p.borrow()),) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }
 pub trait SImpl {

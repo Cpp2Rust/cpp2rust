@@ -52,6 +52,10 @@ unsafe fn main_0() -> i32 {
     let cs: *const S = &s;
     assert!((((unsafe { S::f_const(&(*cs),) }) as i32) == (Overload_kConstOverload as i32)));
     assert!((((*cs).v) == (9)));
+    let mut p: *mut S = (&mut s as *mut S);
+    (*p).v = 11;
+    assert!(((s.v) == (11)));
+    assert!((((unsafe { S::f(&mut (*p),) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

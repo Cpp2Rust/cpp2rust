@@ -13,21 +13,21 @@ pub struct S {
     pub n: [i32; 2],
 }
 impl S {
-    pub unsafe fn S(mut x: i32) -> Self {
+    pub unsafe fn new(mut x: i32) -> Self {
         let mut this = Self {
             v: vec![x; (x as usize) as usize],
             n: [x, ((x) + (1))],
         };
         this
     }
-    pub unsafe fn move_from(_a0: *mut S) -> Self {
+    pub unsafe fn S_pmutS_rv(_a0: *mut S) -> Self {
         let mut this = Self {
             v: std::mem::take(&mut (*_a0).v),
             n: std::array::from_fn::<_, 2, _>(|__i: usize| (*_a0).n[(__i)]),
         };
         this
     }
-    pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
+    pub unsafe fn operator_assign_pmutS_rv(&mut self, _a0: *mut S) -> *mut S {
         self.v = std::mem::take(&mut (*_a0).v);
         {
             if 8_usize != 0 {
@@ -60,17 +60,17 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = S::S({ 2 });
+    let mut s: S = S::new({ 2 });
     assert!(((unsafe { sum_0(&s,) }) == (7)));
     assert!(((unsafe { shuffle_1(3,) }) == (10)));
     return 0;
 }
 pub unsafe fn shuffle_1(mut x: i32) -> i32 {
-    let mut a: S = S::S({ x });
-    let mut b: S = S::move_from({ &mut a });
+    let mut a: S = S::new({ x });
+    let mut b: S = S::S_pmutS_rv({ &mut a });
     assert!(a.v.is_empty());
-    let mut c: S = S::S({ 1 });
-    (unsafe { S::move_assign(&mut c, &mut b) });
+    let mut c: S = S::new({ 1 });
+    (unsafe { S::operator_assign_pmutS_rv(&mut c, &mut b) });
     assert!(b.v.is_empty());
     return (unsafe { sum_0(&c) });
 }

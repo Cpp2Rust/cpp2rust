@@ -19,7 +19,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn Tracked(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -27,7 +27,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn copy_from(o: *const Tracked) -> Self {
+    pub unsafe fn Tracked_pconstTracked(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (((*o).copies) + (1)),
@@ -35,7 +35,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn move_from(o: *mut Tracked) -> Self {
+    pub unsafe fn Tracked_pmutTracked_rv(o: *mut Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (*o).copies,
@@ -47,7 +47,7 @@ impl Tracked {
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::copy_from(self as *const Tracked) }
+        unsafe { Tracked::Tracked_pconstTracked(self as *const Tracked) }
     }
 }
 pub unsafe fn chosen_overload_0(_a0: *const Tracked) -> Overload {
@@ -63,7 +63,7 @@ pub unsafe fn chosen_overload_3(_a0: *mut i32) -> Overload {
     return Overload_kIntRvalueOverload;
 }
 pub unsafe fn copy_or_move_into_param_4(mut t: Tracked) -> Tracked {
-    return Tracked::move_from({ &mut t });
+    return Tracked::Tracked_pmutTracked_rv({ &mut t });
 }
 pub fn main() {
     unsafe {
@@ -72,21 +72,23 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::Tracked({ 5 });
+    let mut a: Tracked = Tracked::new({ 5 });
     assert!((((unsafe { chosen_overload_0(&a,) }) as i32) == (Overload_kLvalueOverload as i32)));
     assert!(((a.v) == (5)));
     assert!(
         (((unsafe { chosen_overload_1(&mut a,) }) as i32) == (Overload_kRvalueOverload as i32))
     );
     assert!(((a.v) == (5)));
-    let mut b: Tracked = Tracked::Tracked({ 6 });
-    let mut moved: Tracked = (unsafe { copy_or_move_into_param_4(Tracked::move_from({ &mut b })) });
+    let mut b: Tracked = Tracked::new({ 6 });
+    let mut moved: Tracked =
+        (unsafe { copy_or_move_into_param_4(Tracked::Tracked_pmutTracked_rv({ &mut b })) });
     assert!(((moved.v) == (6)));
     assert!(((moved.copies) == (0)));
     assert!(((moved.moves) == (2)));
     assert!(((b.v) == (0)));
-    let mut c: Tracked = Tracked::Tracked({ 7 });
-    let mut copied: Tracked = (unsafe { copy_or_move_into_param_4(Tracked::copy_from({ &c })) });
+    let mut c: Tracked = Tracked::new({ 7 });
+    let mut copied: Tracked =
+        (unsafe { copy_or_move_into_param_4(Tracked::Tracked_pconstTracked({ &c })) });
     assert!(((copied.v) == (7)));
     assert!(((copied.copies) == (1)));
     assert!(((copied.moves) == (1)));

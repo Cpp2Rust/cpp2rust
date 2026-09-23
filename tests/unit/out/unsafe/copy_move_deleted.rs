@@ -12,16 +12,16 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
-    pub unsafe fn NoCopy(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn move_from(o: *mut NoCopy) -> Self {
+    pub unsafe fn NoCopy_pmutNoCopy_rv(o: *mut NoCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
-    pub unsafe fn move_assign(&mut self, o: *mut NoCopy) -> *mut NoCopy {
+    pub unsafe fn operator_assign_pmutNoCopy_rv(&mut self, o: *mut NoCopy) -> *mut NoCopy {
         self.v = (*o).v;
         (*o).v = 0;
         return &mut (*(self as *mut NoCopy));
@@ -33,16 +33,19 @@ pub struct PrivateCopy {
     pub v: i32,
 }
 impl PrivateCopy {
-    pub unsafe fn PrivateCopy() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
     }
-    pub unsafe fn move_from(o: *mut PrivateCopy) -> Self {
+    pub unsafe fn PrivateCopy_pmutPrivateCopy_rv(o: *mut PrivateCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
     }
-    pub unsafe fn move_assign(&mut self, o: *mut PrivateCopy) -> *mut PrivateCopy {
+    pub unsafe fn operator_assign_pmutPrivateCopy_rv(
+        &mut self,
+        o: *mut PrivateCopy,
+    ) -> *mut PrivateCopy {
         self.v = (*o).v;
         (*o).v = 0;
         return &mut (*(self as *mut PrivateCopy));
@@ -50,7 +53,7 @@ impl PrivateCopy {
 }
 impl Default for PrivateCopy {
     fn default() -> Self {
-        unsafe { PrivateCopy::PrivateCopy() }
+        unsafe { PrivateCopy::new() }
     }
 }
 #[repr(C)]
@@ -59,14 +62,14 @@ pub struct Immovable {
     pub v: i32,
 }
 impl Immovable {
-    pub unsafe fn Immovable() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
     }
 }
 impl Default for Immovable {
     fn default() -> Self {
-        unsafe { Immovable::Immovable() }
+        unsafe { Immovable::new() }
     }
 }
 #[repr(C)]
@@ -76,17 +79,20 @@ pub struct Container {
     pub tag: i32,
 }
 impl Container {
-    pub unsafe fn move_from(_a0: *mut Container) -> Self {
+    pub unsafe fn Container_pmutContainer_rv(_a0: *mut Container) -> Self {
         let mut this = Self {
-            inner: NoCopy::move_from({ &mut (*_a0).inner }),
+            inner: NoCopy::NoCopy_pmutNoCopy_rv({ &mut (*_a0).inner }),
             tag: (*_a0).tag,
         };
         this
     }
-    pub unsafe fn move_assign(&mut self, _a0: *mut Container) -> *mut Container {
+    pub unsafe fn operator_assign_pmutContainer_rv(
+        &mut self,
+        _a0: *mut Container,
+    ) -> *mut Container {
         (unsafe {
             let _o: *mut NoCopy = &mut (*_a0).inner;
-            NoCopy::move_assign(&mut self.inner, _o)
+            NoCopy::operator_assign_pmutNoCopy_rv(&mut self.inner, _o)
         });
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut Container));
@@ -105,29 +111,29 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: NoCopy = NoCopy::NoCopy({ 1 });
-    let mut b: NoCopy = NoCopy::move_from({ &mut a });
+    let mut a: NoCopy = NoCopy::new({ 1 });
+    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy_rv({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
-    (unsafe { NoCopy::move_assign(&mut a, &mut b) });
+    (unsafe { NoCopy::operator_assign_pmutNoCopy_rv(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
     (unsafe { bump_0((&mut a as *mut NoCopy)) });
     assert!(((a.v) == (2)));
-    let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
+    let mut p: PrivateCopy = PrivateCopy::new();
     p.v = 3;
-    let mut q: PrivateCopy = PrivateCopy::move_from({ &mut p });
+    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
-    (unsafe { PrivateCopy::move_assign(&mut p, &mut q) });
+    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy_rv(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
-    let mut im: Immovable = Immovable::Immovable();
+    let mut im: Immovable = Immovable::new();
     im.v = 4;
     (unsafe { bump_ref_1(&mut im) });
     let mut pim: *mut Immovable = (&mut im as *mut Immovable);
     assert!((((*pim).v) == (5)));
     let mut c: Container = Container {
-        inner: NoCopy::NoCopy({ 6 }),
+        inner: NoCopy::new({ 6 }),
         tag: 7,
     };
-    let mut d: Container = Container::move_from({ &mut c });
+    let mut d: Container = Container::Container_pmutContainer_rv({ &mut c });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }

@@ -21,7 +21,7 @@ pub struct Buffer {
     pub size: Value<i32>,
 }
 impl Buffer {
-    pub fn Buffer(size: i32) -> Self {
+    pub fn new(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
@@ -43,7 +43,7 @@ impl Buffer {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn copy_from(o: Ptr<Buffer>) -> Self {
+    pub fn Buffer_pconstBuffer(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
                 (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
@@ -61,7 +61,7 @@ impl Buffer {
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn move_from(o: Ptr<Buffer>) -> Self {
+    pub fn Buffer_pmutBuffer_rv(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
                 (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
@@ -88,7 +88,7 @@ impl Clone for Buffer {
             data: self.data.clone(),
             size: self.size.clone(),
         }));
-        Buffer::copy_from(__src.as_pointer())
+        Buffer::Buffer_pconstBuffer(__src.as_pointer())
     }
 }
 impl Default for Buffer {
@@ -118,9 +118,9 @@ impl ByteRepr for Buffer {
 }
 pub fn make_3(size: i32) -> Buffer {
     let size: Value<i32> = Rc::new(RefCell::new(size));
-    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ (*size.borrow()) })));
+    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ (*size.borrow()) })));
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
-    return Buffer::move_from({ b.as_pointer() });
+    return Buffer::Buffer_pmutBuffer_rv({ b.as_pointer() });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -128,9 +128,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
+        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
-        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
+        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
+            a.as_pointer()
+        })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!(
             ((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1))
@@ -138,7 +140,9 @@ fn main_0() -> i32 {
         );
         (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
         assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
-        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::move_from({ a.as_pointer() })));
+        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pmutBuffer_rv({
+            a.as_pointer()
+        })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 3) && (moves_2.with(|rc| *rc.borrow()) == 1));
         assert!(
@@ -152,13 +156,13 @@ fn main_0() -> i32 {
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!(((*(*d.borrow()).size.borrow()) == 2) && (moves_2.with(|rc| *rc.borrow()) == 2));
-        ({ BufferImpl::copy_assign(&d.as_pointer(), b.as_pointer()) });
+        ({ BufferImpl::operator_assign_pconstBuffer(&d.as_pointer(), b.as_pointer()) });
         assert!(
             (((*(*d.borrow()).size.borrow()) == 4)
                 && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100))
                 && (copies_1.with(|rc| *rc.borrow()) == 2)
         );
-        ({ BufferImpl::move_assign(&d.as_pointer(), c.as_pointer()) });
+        ({ BufferImpl::operator_assign_pmutBuffer_rv(&d.as_pointer(), c.as_pointer()) });
         assert!(
             (((*(*d.borrow()).data.borrow())[(0) as usize] == 0)
                 && ((*(*c.borrow()).size.borrow()) == 0))
@@ -166,7 +170,7 @@ fn main_0() -> i32 {
         );
         ({
             let _o: Ptr<Buffer> = d.as_pointer();
-            BufferImpl::move_assign(&d.as_pointer(), _o)
+            BufferImpl::operator_assign_pmutBuffer_rv(&d.as_pointer(), _o)
         });
         assert!(((*(*d.borrow()).size.borrow()) == 4) && (moves_2.with(|rc| *rc.borrow()) == 3));
     }
@@ -175,14 +179,14 @@ fn main_0() -> i32 {
 }
 pub trait BufferImpl {
     fn destructor(&self);
-    fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
-    fn move_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
+    fn operator_assign_pconstBuffer(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
+    fn operator_assign_pmutBuffer_rv(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
 }
 impl BufferImpl for Ptr<Buffer> {
     fn destructor(&self) {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_dec();
     }
-    fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
+    fn operator_assign_pconstBuffer(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
@@ -197,7 +201,7 @@ impl BufferImpl for Ptr<Buffer> {
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
-    fn move_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
+    fn operator_assign_pmutBuffer_rv(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }

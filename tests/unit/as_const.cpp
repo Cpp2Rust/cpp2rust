@@ -1,4 +1,5 @@
 #include <cassert>
+#include <new>
 #include <utility>
 
 enum Overload {
@@ -33,6 +34,11 @@ int main() {
   const S &cs = std::as_const(s);
   assert(cs.f() == kConstOverload);
   assert(cs.v == 9);
+
+  S *p = std::launder(&s);
+  p->v = 11;
+  assert(s.v == 11);
+  assert(std::launder(p)->f() == kMutableOverload);
 
   return 0;
 }

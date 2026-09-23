@@ -1102,6 +1102,10 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
   if (IsOverloadedMethod(decl)) {
     return GetOverloadedFunctionName(decl);
   }
+  if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    return GetConversionName(
+        conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
+  }
   return GetNamedDeclAsString(decl);
 }
 
@@ -1150,10 +1154,9 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
     }
     return GetOverloadedFunctionName(decl);
   }
-  return GetRecordName(decl->getParent()) +
-         (GetNumberOfConvertingCtors(decl->getParent()) != 1
-              ? std::to_string(GetCtorIndex(decl))
-              : "");
+  return GetNumberOfConvertingCtors(decl->getParent()) != 1
+             ? std::format("new_{}", GetCtorIndex(decl))
+             : "new";
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {
@@ -4090,6 +4093,10 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 std::string
 Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   auto name = GetFunctionBaseName(decl);
+  if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
+    name = GetConversionName(
+        conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
+  }
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
       ctor && !ctor->getParent()->getIdentifier()) {
     name = GetRecordName(ctor->getParent());
@@ -4159,19 +4166,7 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
     }
   }
 
-  ReplaceAll(name, "[", "arr");
-  ReplaceAll(name, "]", "arr");
-  ReplaceAll(name, ";", "_");
-  ReplaceAll(name, ",", "_");
-  name.erase(std::remove_if(name.begin(), name.end(),
-                            [](char c) {
-                              return c == '<' || c == '>' || c == ' ' ||
-                                     c == ':' || c == '(' || c == ')' ||
-                                     c == '-';
-                            }),
-             name.end());
-  std::replace(name.begin(), name.end(), '*', 'p');
-
+  ToIdentifier(name);
   return name;
 }
 
