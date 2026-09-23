@@ -27,7 +27,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn Tracked_pconstTracked(o: *const Tracked) -> Self {
+    pub unsafe fn copy_from(o: *const Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (((*o).copies) + (1)),
@@ -35,7 +35,7 @@ impl Tracked {
         };
         this
     }
-    pub unsafe fn Tracked_pmutTracked_rv(o: *mut Tracked) -> Self {
+    pub unsafe fn move_from(o: *mut Tracked) -> Self {
         let mut this = Self {
             v: (*o).v,
             copies: (*o).copies,
@@ -47,7 +47,7 @@ impl Tracked {
 }
 impl Clone for Tracked {
     fn clone(&self) -> Self {
-        unsafe { Tracked::Tracked_pconstTracked(self as *const Tracked) }
+        unsafe { Tracked::copy_from(self as *const Tracked) }
     }
 }
 pub unsafe fn chosen_overload_0(_a0: *const Tracked) -> Overload {
@@ -99,8 +99,8 @@ pub unsafe fn forward_pack_7(
 impl Pair {
     pub unsafe fn new(x: *mut Tracked, y: *mut Tracked) -> Self {
         let mut this = Self {
-            a: Tracked::Tracked_pconstTracked({ x }),
-            b: Tracked::Tracked_pmutTracked_rv({ y }),
+            a: Tracked::copy_from({ x }),
+            b: Tracked::move_from({ y }),
         };
         this
     }

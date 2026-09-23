@@ -17,7 +17,7 @@ impl Counted {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn Counted_pconstCounted(o: *const Counted) -> Self {
+    pub unsafe fn copy_from(o: *const Counted) -> Self {
         let mut this = Self { v: (*o).v };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
@@ -25,7 +25,7 @@ impl Counted {
 }
 impl Clone for Counted {
     fn clone(&self) -> Self {
-        unsafe { Counted::Counted_pconstCounted(self as *const Counted) }
+        unsafe { Counted::copy_from(self as *const Counted) }
     }
 }
 #[repr(C)]
@@ -71,7 +71,7 @@ impl Ignored {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn Ignored_pconstIgnored(_a0: *const Ignored) -> Self {
+    pub unsafe fn copy_from(_a0: *const Ignored) -> Self {
         let mut this = Self { v: -1_i32 };
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
         this
@@ -79,7 +79,7 @@ impl Ignored {
 }
 impl Clone for Ignored {
     fn clone(&self) -> Self {
-        unsafe { Ignored::Ignored_pconstIgnored(self as *const Ignored) }
+        unsafe { Ignored::copy_from(self as *const Ignored) }
     }
 }
 #[repr(C)]
@@ -101,7 +101,7 @@ pub unsafe fn by_value_1(mut c: Counted) -> i32 {
 }
 pub unsafe fn make_2(mut v: i32) -> Counted {
     let mut c: Counted = Counted::new({ v });
-    return Counted::Counted_pconstCounted({ &c });
+    return Counted::copy_from({ &c });
 }
 pub fn main() {
     unsafe {
@@ -111,12 +111,12 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Counted = Counted::new({ 1 });
-    let mut b: Counted = Counted::Counted_pconstCounted({ &a });
-    let mut c: Counted = Counted::Counted_pconstCounted({ &a });
-    let mut d: Counted = Counted::Counted_pconstCounted({ &a });
+    let mut b: Counted = Counted::copy_from({ &a });
+    let mut c: Counted = Counted::copy_from({ &a });
+    let mut d: Counted = Counted::copy_from({ &a });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (3)));
     assert!((((b.v) == (1)) && ((c.v) == (1))) && ((d.v) == (1)));
-    assert!(((unsafe { by_value_1(Counted::Counted_pconstCounted({ &a },),) }) == (1)));
+    assert!(((unsafe { by_value_1(Counted::copy_from({ &a },),) }) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (4)));
     let mut e: Counted = (unsafe { make_2(5) });
     assert!(((e.v) == (5)));
@@ -125,7 +125,7 @@ unsafe fn main_0() -> i32 {
     assert!(((f.v) == (6)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (5)));
     let g: Counted = Counted::new({ 7 });
-    let mut h: Counted = Counted::Counted_pconstCounted({ &g });
+    let mut h: Counted = Counted::copy_from({ &g });
     assert!(((h.v) == (7)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (6)));
     let mut hold: Holder = Holder {
@@ -146,7 +146,7 @@ unsafe fn main_0() -> i32 {
     assert!(((vec_[(0_usize)].v) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (10)));
     let mut i1: Ignored = Ignored::new({ 1 });
-    let mut i2: Ignored = Ignored::Ignored_pconstIgnored({ &i1 });
+    let mut i2: Ignored = Ignored::copy_from({ &i1 });
     assert!(((i1.v) == (1)) && ((i2.v) == (-1_i32)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (11)));
     let mut n: NonConst = NonConst::new();
