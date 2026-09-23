@@ -11,14 +11,14 @@ pub static mut total_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| u
 #[derive(Copy, Clone, Default)]
 pub struct S {}
 impl S {
-    pub unsafe fn S(mut x: i32) -> Self {
+    pub unsafe fn new(mut x: i32) -> Self {
         let mut this = Self {};
         (*std::cell::LazyCell::force_mut(&mut *&raw mut total_0)) += x;
         this
     }
 }
-pub static mut a_1: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::S({ 1 }) });
-pub static mut b_2: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::S({ 10 }) });
+pub static mut a_1: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::new({ 1 }) });
+pub static mut b_2: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe { S::new({ 10 }) });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

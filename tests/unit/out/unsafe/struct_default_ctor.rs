@@ -13,14 +13,14 @@ pub struct S {
     pub b: bool,
 }
 impl S {
-    pub unsafe fn S() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { a: 11, b: true };
         this
     }
 }
 impl Default for S {
     fn default() -> Self {
-        unsafe { S::S() }
+        unsafe { S::new() }
     }
 }
 #[repr(C)]
@@ -38,7 +38,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut d: *mut Declared = std::ptr::null_mut();
     assert!((d).is_null());
-    let mut s: S = S::S();
+    let mut s: S = S::new();
     assert!(((s.a) == (11)));
     assert!(((s.b as i32) == (true as i32)));
     return 0;

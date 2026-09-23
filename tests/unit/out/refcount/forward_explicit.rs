@@ -18,7 +18,7 @@ pub struct Tracked {
     pub moves: Value<i32>,
 }
 impl Tracked {
-    pub fn Tracked(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -98,7 +98,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 5 })));
+    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 5 })));
     assert!(
         ((({ chosen_overload_0(a.as_pointer(),) }) as i32) == (Overload_kLvalueOverload as i32))
     );
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
         ((({ chosen_overload_1(a.as_pointer(),) }) as i32) == (Overload_kRvalueOverload as i32))
     );
     assert!(((*(*a.borrow()).v.borrow()) == 5));
-    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 6 })));
+    let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
     let moved: Value<Tracked> = Rc::new(RefCell::new(
         ({ copy_or_move_into_param_4(Tracked::Tracked_pmutTracked_rv({ b.as_pointer() })) }),
     ));
@@ -115,7 +115,7 @@ fn main_0() -> i32 {
     assert!(((*(*moved.borrow()).copies.borrow()) == 0));
     assert!(((*(*moved.borrow()).moves.borrow()) == 2));
     assert!(((*(*b.borrow()).v.borrow()) == 0));
-    let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 7 })));
+    let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
     let copied: Value<Tracked> = Rc::new(RefCell::new(
         ({ copy_or_move_into_param_4(Tracked::Tracked_pconstTracked({ c.as_pointer() })) }),
     ));
