@@ -942,6 +942,35 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   return decl->getNameAsString();
 }
 
+void ToIdentifier(std::string &name) {
+  ReplaceAll(name, "[", "arr");
+  ReplaceAll(name, "]", "arr");
+  ReplaceAll(name, ";", "_");
+  ReplaceAll(name, ",", "_");
+  name.erase(std::remove_if(name.begin(), name.end(),
+                            [](char c) {
+                              return c == '<' || c == '>' || c == ' ' ||
+                                     c == ':' || c == '(' || c == ')' ||
+                                     c == '-';
+                            }),
+             name.end());
+  std::replace(name.begin(), name.end(), '*', 'p');
+}
+
+std::string GetConversionName(const clang::CXXConversionDecl *decl,
+                              const std::string &rust_type) {
+  auto name = "to_" + rust_type;
+  ToIdentifier(name);
+  const auto *record = decl->getParent();
+  bool is_unique_name =
+      std::none_of(record->method_begin(), record->method_end(),
+                   [&name](const clang::CXXMethodDecl *method) {
+                     return method->getDeclName().isIdentifier() &&
+                            method->getName() == name;
+                   });
+  return is_unique_name ? name : GetFunctionBaseName(decl);
+}
+
 clang::CXXDestructorDecl *
 GetUserDefinedDestructor(const clang::CXXRecordDecl *decl) {
   if (!decl->hasDefinition() || !IsUserDefinedDecl(decl) ||
