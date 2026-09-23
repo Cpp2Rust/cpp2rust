@@ -74,7 +74,7 @@ std::string GetExprMapKey(const std::string &str) {
   return result;
 }
 
-constexpr std::string_view kPackMarker = "&&...";
+constexpr const char kPackMarker[] = "&&...";
 
 std::string GetTypeMapKey(const std::string &str) {
   auto n = str.find_first_of("<[");
