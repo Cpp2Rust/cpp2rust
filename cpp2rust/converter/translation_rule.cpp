@@ -312,9 +312,9 @@ void MethodCallFragment::dump() const {
 
 void ExprRule::dump() const {
   log() << "Matching: " << src << '\n';
-  if (init_type) {
-    log() << "  init type: depth " << init_type->depth << ", index "
-          << init_type->index << '\n';
+  if (init_type.valid()) {
+    log() << "  init type: depth " << init_type.depth << ", index "
+          << init_type.index << '\n';
   }
   unsigned i = 0;
   for (auto &info : params) {
@@ -347,7 +347,7 @@ void ExprRule::validate(const std::string &name) const {
     llvm::report_fatal_error("Expr rule loaded from IR but has no src");
   }
 
-  if (HasInitFragment(body) && !init_type) {
+  if (HasInitFragment(body) && !init_type.valid()) {
     llvm::errs() << name << '\n';
     dump();
     llvm::report_fatal_error(

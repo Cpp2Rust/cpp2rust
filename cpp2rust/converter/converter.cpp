@@ -5062,12 +5062,12 @@ std::string
 Converter::ConvertInitFragment(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
   const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
-  assert(tgt_ir && tgt_ir->init_type);
+  assert(tgt_ir && tgt_ir->init_type.valid());
   auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
   assert(callee);
   auto type = GetSema()
-                  .getTemplateInstantiationArgs(callee)(
-                      tgt_ir->init_type->depth, tgt_ir->init_type->index)
+                  .getTemplateInstantiationArgs(callee)(tgt_ir->init_type.depth,
+                                                        tgt_ir->init_type.index)
                   .getAsType();
 
   Buffer buf(*this);

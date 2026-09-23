@@ -6,7 +6,6 @@
 #include <clang/AST/Expr.h>
 
 #include <filesystem>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -74,13 +73,15 @@ struct TypeInfo {
 };
 
 struct InitTypeLocation {
-  unsigned depth;
-  unsigned index;
+  unsigned depth = -1u;
+  unsigned index = -1u;
+
+  bool valid() const { return depth != -1u; }
 };
 
 struct ExprRule {
   std::string src;
-  std::optional<InitTypeLocation> init_type;
+  InitTypeLocation init_type;
   std::vector<TypeInfo> params;
   TypeInfo return_type;
   std::vector<std::vector<std::string>> generics; // "T1" -> ["Ord", "Clone"]
