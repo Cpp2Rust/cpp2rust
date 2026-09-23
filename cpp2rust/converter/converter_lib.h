@@ -169,6 +169,11 @@ const char *GetOverloadedOperator(const clang::FunctionDecl *decl);
 
 std::string GetFunctionBaseName(const clang::FunctionDecl *decl);
 
+void ToIdentifier(std::string &name);
+
+std::string GetConversionName(const clang::CXXConversionDecl *decl,
+                              const std::string &rust_type);
+
 bool IsImplicitAssignmentCall(const clang::CallExpr *expr);
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
 

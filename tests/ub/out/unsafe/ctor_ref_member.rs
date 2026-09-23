@@ -12,7 +12,7 @@ pub struct S {
     pub r: *const i32,
 }
 impl S {
-    pub unsafe fn S(x: *const i32) -> Self {
+    pub unsafe fn new(x: *const i32) -> Self {
         let mut this = Self { r: x };
         this
     }
@@ -24,10 +24,10 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut s: S = {
+    let mut s: S = S::new({
         let mut __tmp_0: i32 = 5;
-        S::S({ &mut __tmp_0 })
-    };
+        &mut __tmp_0
+    });
     assert!(((*s.r) == (5)));
     return 0;
 }

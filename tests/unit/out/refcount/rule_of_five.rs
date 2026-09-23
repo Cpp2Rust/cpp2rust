@@ -21,7 +21,7 @@ pub struct Buffer {
     pub size: Value<i32>,
 }
 impl Buffer {
-    pub fn Buffer(size: i32) -> Self {
+    pub fn new(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
@@ -118,7 +118,7 @@ impl ByteRepr for Buffer {
 }
 pub fn make_3(size: i32) -> Buffer {
     let size: Value<i32> = Rc::new(RefCell::new(size));
-    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ (*size.borrow()) })));
+    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ (*size.borrow()) })));
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
     return Buffer::Buffer_pmutBuffer_rv({ b.as_pointer() });
 }
@@ -128,7 +128,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
+        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
         let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
             a.as_pointer()

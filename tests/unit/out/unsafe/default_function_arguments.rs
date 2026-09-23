@@ -20,7 +20,7 @@ pub struct Bar {
     pub v: i32,
 }
 impl Bar {
-    pub unsafe fn Bar(mut v: Option<i32>) -> Self {
+    pub unsafe fn new(mut v: Option<i32>) -> Self {
         let mut v: i32 = v.unwrap_or(1);
         let mut this = Self { v: v };
         this
@@ -28,7 +28,7 @@ impl Bar {
 }
 impl Default for Bar {
     fn default() -> Self {
-        unsafe { Bar::Bar(None) }
+        unsafe { Bar::new(None) }
     }
 }
 pub fn main() {
@@ -50,10 +50,10 @@ unsafe fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
-    let mut b: Bar = Bar::Bar(None);
+    let mut b: Bar = Bar::new(None);
     assert!(((b.v) == (1)));
-    assert!(((Bar::Bar({ Some(2) },).v) == (2)));
-    let mut arr: [Bar; 3] = [Bar::Bar(None), Bar::Bar(None), Bar::Bar(None)];
+    assert!(((Bar::new({ Some(2) },).v) == (2)));
+    let mut arr: [Bar; 3] = [Bar::new(None), Bar::new(None), Bar::new(None)];
     assert!(((arr[(0) as usize].v) == (1)));
     assert!(((arr[(2) as usize].v) == (1)));
     return 0;

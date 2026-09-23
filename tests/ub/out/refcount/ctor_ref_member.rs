@@ -11,7 +11,7 @@ pub struct S {
     pub r: Ptr<i32>,
 }
 impl S {
-    pub fn S(x: Ptr<i32>) -> Self {
+    pub fn new(x: Ptr<i32>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self { r: (x).clone() }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -23,10 +23,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new({
+    let s: Value<S> = Rc::new(RefCell::new(S::new({
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
-        S::S({ __tmp_0.as_pointer() })
-    }));
+        __tmp_0.as_pointer()
+    })));
     assert!((((*s.borrow()).r.read()) == 5));
     return 0;
 }

@@ -132,21 +132,35 @@ public:
   virtual const char *CharRustType() const { return "libc::c_char"; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
+
   virtual bool ShouldConvertMethod(const clang::CXXMethodDecl *decl);
+
   virtual bool ConvertOutOfLineMethod(clang::CXXMethodDecl *decl);
+
   bool ConvertCXXMethodDecl(clang::CXXMethodDecl *decl);
+
   std::string GetMethodName(const clang::CXXMethodDecl *decl);
+
   virtual std::string GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl);
+
   std::string GetCtorName(clang::CXXConstructorDecl *decl);
+
   virtual void ConvertCXXRecordMethods(clang::CXXRecordDecl *decl);
+
   virtual void ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl);
+
   virtual std::string DestroyMembers(const clang::CXXRecordDecl *decl);
+
   virtual void EmitScopedDestructor(const clang::VarDecl *decl);
+
   void EmitDeallocation(clang::CXXDeleteExpr *expr,
                         const std::string &argument_as_string);
+
   virtual void SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                const clang::CXXMethodDecl *method);
+
   void ConvertUserOperatorCall(clang::CXXOperatorCallExpr *expr);
+
   virtual std::string GetUFCSName(const clang::CXXMethodDecl *method) const;
 
   virtual bool ThisIsRustPtr() const { return false; }

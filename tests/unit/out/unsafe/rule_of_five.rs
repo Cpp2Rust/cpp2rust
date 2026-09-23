@@ -16,7 +16,7 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
-    pub unsafe fn Buffer(mut size: i32) -> Self {
+    pub unsafe fn new(mut size: i32) -> Self {
         let mut this = Self {
             data: [0_i32; 4],
             size: size,
@@ -105,7 +105,7 @@ impl Default for Buffer {
     }
 }
 pub unsafe fn make_3(mut size: i32) -> Buffer {
-    let mut b: Buffer = Buffer::Buffer({ size });
+    let mut b: Buffer = Buffer::new({ size });
     let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
     return Buffer::Buffer_pmutBuffer_rv({ &mut b });
 }
@@ -117,7 +117,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     {
-        let mut a: Buffer = Buffer::Buffer({ 4 });
+        let mut a: Buffer = Buffer::new({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
         let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);

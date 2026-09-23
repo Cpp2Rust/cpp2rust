@@ -12,7 +12,7 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub unsafe fn MoveOnly(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
@@ -28,7 +28,7 @@ pub struct ConstMove {
     pub mark: i32,
 }
 impl ConstMove {
-    pub unsafe fn ConstMove() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { mark: 0 };
         this
     }
@@ -47,7 +47,7 @@ impl ConstMove {
 }
 impl Default for ConstMove {
     fn default() -> Self {
-        unsafe { ConstMove::ConstMove() }
+        unsafe { ConstMove::new() }
     }
 }
 #[repr(C)]
@@ -58,7 +58,7 @@ pub struct ThrowingMove {
     pub moves: i32,
 }
 impl ThrowingMove {
-    pub unsafe fn ThrowingMove(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -97,7 +97,7 @@ pub struct NoexceptMove {
     pub moves: i32,
 }
 impl NoexceptMove {
-    pub unsafe fn NoexceptMove(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -132,7 +132,7 @@ pub unsafe fn by_value_0(mut m: MoveOnly) -> i32 {
     return m.v;
 }
 pub unsafe fn make_1(mut v: i32) -> MoveOnly {
-    let mut m: MoveOnly = MoveOnly::MoveOnly({ v });
+    let mut m: MoveOnly = MoveOnly::new({ v });
     return MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut m });
 }
 pub fn main() {
@@ -142,7 +142,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: MoveOnly = MoveOnly::MoveOnly({ 1 });
+    let mut a: MoveOnly = MoveOnly::new({ 1 });
     let mut b: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut a });
     assert!(((b.v) == (1)));
     assert!(((a.v) == (0)));
@@ -154,34 +154,34 @@ unsafe fn main_0() -> i32 {
     assert!(((c.v) == (0)));
     let mut e: MoveOnly = (unsafe { make_1(5) });
     assert!(((e.v) == (5)));
-    assert!(((unsafe { by_value_0(MoveOnly::MoveOnly({ 6 },),) }) == (6)));
+    assert!(((unsafe { by_value_0(MoveOnly::new({ 6 },),) }) == (6)));
     assert!(((unsafe { by_value_0(MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut e },),) }) == (5)));
     assert!(((e.v) == (0)));
     let mut vec_: Vec<MoveOnly> = Vec::new();
-    vec_.push(MoveOnly::MoveOnly({ 7 }));
-    let mut f: MoveOnly = MoveOnly::MoveOnly({ 8 });
+    vec_.push(MoveOnly::new({ 7 }));
+    let mut f: MoveOnly = MoveOnly::new({ 8 });
     vec_.push(MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut f }));
     assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
     assert!(((f.v) == (0)));
-    let mut m: ConstMove = ConstMove::ConstMove();
+    let mut m: ConstMove = ConstMove::new();
     let mut m1: ConstMove = ConstMove::ConstMove_pmutConstMove_rv({ &mut m });
-    let cm: ConstMove = ConstMove::ConstMove();
+    let cm: ConstMove = ConstMove::new();
     let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove_rv({ &cm });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
-    let mut t: ThrowingMove = ThrowingMove::ThrowingMove({ 1 });
+    let mut t: ThrowingMove = ThrowingMove::new({ 1 });
     let mut t1: ThrowingMove = ThrowingMove::ThrowingMove_pconstThrowingMove({ &t });
     assert!(((t1.v) == (1)));
     assert!(((t1.copies) == (1)));
     assert!(((t1.moves) == (0)));
     assert!(((t.v) == (1)));
-    let mut n: NoexceptMove = NoexceptMove::NoexceptMove({ 2 });
+    let mut n: NoexceptMove = NoexceptMove::new({ 2 });
     let mut n1: NoexceptMove = NoexceptMove::NoexceptMove_pmutNoexceptMove_rv({ &mut n });
     assert!(((n1.v) == (2)));
     assert!(((n1.copies) == (0)));
     assert!(((n1.moves) == (1)));
     assert!(((n.v) == (0)));
-    let mut g: MoveOnly = MoveOnly::MoveOnly({ 3 });
+    let mut g: MoveOnly = MoveOnly::new({ 3 });
     let mut g1: MoveOnly = MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut g });
     assert!(((g1.v) == (3)));
     assert!(((g.v) == (0)));

@@ -18,7 +18,7 @@ pub struct Buffer {
     pub size: Value<i32>,
 }
 impl Buffer {
-    pub fn Buffer(size: i32) -> Self {
+    pub fn new(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
@@ -111,7 +111,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     {
-        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
+        let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
         let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
             a.as_pointer()
@@ -120,7 +120,7 @@ fn main_0() -> i32 {
         assert!((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1));
         (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
         assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
-        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 2 })));
+        let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ 2 })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         ({ BufferImpl::operator_assign(&c.as_pointer(), a.as_pointer()) });
         assert!(

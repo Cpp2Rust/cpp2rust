@@ -17,7 +17,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn Tracked(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -77,34 +77,34 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::Tracked({ 3 });
+    let mut a: Tracked = Tracked::new({ 3 });
     assert!(
         (((unsafe { forward_by_decltype_2(&mut a,) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((a.v) == (3)));
     assert!(
         (((unsafe {
-            let mut _x: Tracked = Tracked::Tracked({ 4 });
+            let mut _x: Tracked = Tracked::new({ 4 });
             forward_by_decltype_3(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let mut b: Tracked = Tracked::Tracked({ 5 });
+    let mut b: Tracked = Tracked::new({ 5 });
     assert!(
         (((unsafe { forward_abbreviated_4(&mut b,) }) as i32) == (Overload_kLvalueOverload as i32))
     );
     assert!(((b.v) == (5)));
     assert!(
         (((unsafe {
-            let mut _x: Tracked = Tracked::Tracked({ 6 });
+            let mut _x: Tracked = Tracked::new({ 6 });
             forward_abbreviated_5(&mut _x)
         }) as i32)
             == (Overload_kRvalueOverload as i32))
     );
-    let mut c: Tracked = Tracked::Tracked({ 7 });
+    let mut c: Tracked = Tracked::new({ 7 });
     assert!(
         ((unsafe {
-            let mut _args_1: Tracked = Tracked::Tracked({ 8 });
+            let mut _args_1: Tracked = Tracked::new({ 8 });
             forward_abbreviated_pack_6(&mut c, &mut _args_1)
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );

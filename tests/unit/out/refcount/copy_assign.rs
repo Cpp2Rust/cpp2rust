@@ -15,7 +15,7 @@ pub struct Partial {
     pub keep: Value<i32>,
 }
 impl Partial {
-    pub fn Partial(v: i32, keep: i32) -> Self {
+    pub fn new(v: i32, keep: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let keep: Value<i32> = Rc::new(RefCell::new(keep));
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
@@ -63,7 +63,7 @@ pub struct NonConstAssign {
     pub mark: Value<i32>,
 }
 impl NonConstAssign {
-    pub fn NonConstAssign() -> Self {
+    pub fn new() -> Self {
         let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(0)),
         }));
@@ -82,7 +82,7 @@ impl Clone for NonConstAssign {
 }
 impl Default for NonConstAssign {
     fn default() -> Self {
-        { NonConstAssign::NonConstAssign() }
+        { NonConstAssign::new() }
     }
 }
 impl ByteRepr for NonConstAssign {
@@ -103,7 +103,7 @@ pub struct RefQualified {
     pub mark: Value<i32>,
 }
 impl RefQualified {
-    pub fn RefQualified() -> Self {
+    pub fn new() -> Self {
         let __this: Value<RefQualified> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(0)),
         }));
@@ -122,7 +122,7 @@ impl Clone for RefQualified {
 }
 impl Default for RefQualified {
     fn default() -> Self {
-        { RefQualified::RefQualified() }
+        { RefQualified::new() }
     }
 }
 impl ByteRepr for RefQualified {
@@ -193,9 +193,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 1 }, { 100 })));
-    let b: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 2 }, { 200 })));
-    let c: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 3 }, { 300 })));
+    let a: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 1 }, { 100 })));
+    let b: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 2 }, { 200 })));
+    let c: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 3 }, { 300 })));
     ({ PartialImpl::operator_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 2) && ((*(*a.borrow()).keep.borrow()) == 100));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 1));
@@ -213,7 +213,7 @@ fn main_0() -> i32 {
     });
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
-        let _o: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 9 }, { 900 })));
+        let _o: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 9 }, { 900 })));
         PartialImpl::operator_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(((*(*a.borrow()).v.borrow()) == 9) && ((*(*a.borrow()).keep.borrow()) == 100));
@@ -232,10 +232,10 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        p: Rc::new(RefCell::new(Partial::Partial({ 4 }, { 40 }))),
+        p: Rc::new(RefCell::new(Partial::new({ 4 }, { 40 }))),
         arr: Rc::new(RefCell::new(Box::new([
-            Partial::Partial({ 5 }, { 50 }),
-            Partial::Partial({ 6 }, { 60 }),
+            Partial::new({ 5 }, { 50 }),
+            Partial::new({ 6 }, { 60 }),
         ]))),
     }));
     ({ PartialImpl::operator_assign(&(*h.borrow()).p.as_pointer(), b.as_pointer()) });
@@ -254,18 +254,18 @@ fn main_0() -> i32 {
             && ((*(*(*h.borrow()).arr.borrow())[(1) as usize].keep.borrow()) == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
-    let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
-    let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
-    let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
-    let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::NonConstAssign()));
+    let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
+    let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
+    let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
+    let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     ({ NonConstAssignImpl::operator_assign_pmutNonConstAssign(&n1.as_pointer(), n.as_pointer()) });
     ({
         NonConstAssignImpl::operator_assign_pconstNonConstAssign(&n2.as_pointer(), cn.as_pointer())
     });
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
-    let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
-    let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
+    let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
+    let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     ({ RefQualifiedImpl::operator_assign(&r1.as_pointer(), r.as_pointer()) });
     assert!(((*(*r1.borrow()).mark.borrow()) == 1));
     return 0;

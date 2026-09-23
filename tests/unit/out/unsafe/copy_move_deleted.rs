@@ -12,7 +12,7 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
-    pub unsafe fn NoCopy(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
@@ -33,7 +33,7 @@ pub struct PrivateCopy {
     pub v: i32,
 }
 impl PrivateCopy {
-    pub unsafe fn PrivateCopy() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
     }
@@ -53,7 +53,7 @@ impl PrivateCopy {
 }
 impl Default for PrivateCopy {
     fn default() -> Self {
-        unsafe { PrivateCopy::PrivateCopy() }
+        unsafe { PrivateCopy::new() }
     }
 }
 #[repr(C)]
@@ -62,14 +62,14 @@ pub struct Immovable {
     pub v: i32,
 }
 impl Immovable {
-    pub unsafe fn Immovable() -> Self {
+    pub unsafe fn new() -> Self {
         let mut this = Self { v: 0 };
         this
     }
 }
 impl Default for Immovable {
     fn default() -> Self {
-        unsafe { Immovable::Immovable() }
+        unsafe { Immovable::new() }
     }
 }
 #[repr(C)]
@@ -111,26 +111,26 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: NoCopy = NoCopy::NoCopy({ 1 });
+    let mut a: NoCopy = NoCopy::new({ 1 });
     let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy_rv({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
     (unsafe { NoCopy::operator_assign_pmutNoCopy_rv(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
     (unsafe { bump_0((&mut a as *mut NoCopy)) });
     assert!(((a.v) == (2)));
-    let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
+    let mut p: PrivateCopy = PrivateCopy::new();
     p.v = 3;
     let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
     (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy_rv(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
-    let mut im: Immovable = Immovable::Immovable();
+    let mut im: Immovable = Immovable::new();
     im.v = 4;
     (unsafe { bump_ref_1(&mut im) });
     let mut pim: *mut Immovable = (&mut im as *mut Immovable);
     assert!((((*pim).v) == (5)));
     let mut c: Container = Container {
-        inner: NoCopy::NoCopy({ 6 }),
+        inner: NoCopy::new({ 6 }),
         tag: 7,
     };
     let mut d: Container = Container::Container_pmutContainer_rv({ &mut c });
