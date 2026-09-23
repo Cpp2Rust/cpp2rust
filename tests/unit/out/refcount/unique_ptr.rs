@@ -11,7 +11,7 @@ pub struct SafePointer {
     pub ptr: Value<Option<Value<i32>>>,
 }
 impl SafePointer {
-    pub fn SafePointer_pmutSafePointer_rv(_a0: Ptr<SafePointer>) -> Self {
+    pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
         let __this: Value<SafePointer> = Rc::new(RefCell::new(Self {
             ptr: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).ptr.borrow_mut()).take(),
@@ -317,7 +317,7 @@ impl PairImpl for Ptr<Pair> {
 }
 pub trait SafePointerImpl {
     fn inc(&self);
-    fn operator_assign_pmutSafePointer_rv(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer>;
+    fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer>;
 }
 impl SafePointerImpl for Ptr<SafePointer> {
     fn inc(&self) {
@@ -327,7 +327,7 @@ impl SafePointerImpl for Ptr<SafePointer> {
             .borrow_mut())
         .prefix_inc();
     }
-    fn operator_assign_pmutSafePointer_rv(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
+    fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
         ((*(*self).upgrade().deref()).ptr.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).ptr.borrow_mut()).take());
         return (*self).clone();

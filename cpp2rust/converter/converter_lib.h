@@ -70,6 +70,11 @@ void ForEachTemplateInstantiatedMethod(
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method);
+
+bool CanUseCopyOrMoveName(const clang::CXXMethodDecl *decl,
+                          const std::string &name);
+
 bool IsUserDefinedCopyConstructor(const clang::CXXConstructorDecl *ctor);
 
 bool IsConvertibleCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);

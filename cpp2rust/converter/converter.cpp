@@ -1095,6 +1095,10 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
   if (clang::isa<clang::CXXDestructorDecl>(decl)) {
     return kDestructorName;
   }
+  if (const char *name = GetCopyOrMoveName(decl);
+      name && CanUseCopyOrMoveName(decl, name)) {
+    return name;
+  }
   if (IsOverloadedMethod(decl)) {
     return GetOverloadedFunctionName(decl);
   }
@@ -1144,6 +1148,10 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
 
 std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
   if (decl->isCopyOrMoveConstructor()) {
+    if (const char *name = GetCopyOrMoveName(decl);
+        CanUseCopyOrMoveName(decl, name)) {
+      return name;
+    }
     return GetOverloadedFunctionName(decl);
   }
   return GetNumberOfConvertingCtors(decl->getParent()) != 1
@@ -3342,7 +3350,7 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsOverloadedMethod(method)) {
     StrCat(token::kDot);
-    StrCat(GetOverloadedFunctionName(method));
+    StrCat(GetMethodName(method));
   } else if (!name_override.empty()) {
     StrCat(token::kDot, name_override);
   } else if (member->getDeclName().isIdentifier()) {
