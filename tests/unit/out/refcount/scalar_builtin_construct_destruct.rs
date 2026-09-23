@@ -36,7 +36,7 @@ pub fn zero_0() -> Ptr<i32> {
     return Ptr::<i32>::null();
 }
 pub fn zero_1() -> i64 {
-    return 0_i64;
+    return <i64>::default();
 }
 pub fn destroy_2(p: Ptr<i32>) {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
@@ -49,8 +49,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let i: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let d: Value<f64> = Rc::new(RefCell::new(0.0_f64));
+    let i: Value<i32> = Rc::new(RefCell::new(<i32>::default()));
+    let d: Value<f64> = Rc::new(RefCell::new(<f64>::default()));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ zero_0() })));
     assert!(((*i.borrow()) == 0));
     assert!(((*d.borrow()) == 0.0E+0));

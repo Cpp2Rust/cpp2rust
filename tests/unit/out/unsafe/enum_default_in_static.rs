@@ -16,12 +16,8 @@ pub struct Config {
     pub count: i32,
     pub mode: Mode,
 }
-pub static mut config_0: std::cell::LazyCell<Config> = std::cell::LazyCell::new(|| unsafe {
-    Config {
-        count: 0_i32,
-        mode: Mode_MODE_NONE,
-    }
-});
+pub static mut config_0: std::cell::LazyCell<Config> =
+    std::cell::LazyCell::new(|| unsafe { <Config>::default() });
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();

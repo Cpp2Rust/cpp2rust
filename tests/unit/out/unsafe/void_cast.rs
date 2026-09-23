@@ -119,9 +119,7 @@ unsafe fn main_0() -> i32 {
     &(h.field);
     let mut hp: *mut Holder = (&mut h as *mut Holder);
     &((*hp).field);
-    let mut nt: NonTrivial = NonTrivial {
-        data: Default::default(),
-    };
+    let mut nt: NonTrivial = <NonTrivial>::default();
     (unsafe { unused_ref_param_1(&nt) });
     (unsafe { unused_ptr_param_2((&mut nt as *mut NonTrivial).cast_const()) });
     let mut g: NonCopyable = NonCopyable {

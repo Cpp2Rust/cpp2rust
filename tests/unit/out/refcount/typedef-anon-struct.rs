@@ -67,13 +67,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Outer> = Rc::new(RefCell::new(Outer {
-        runs: Rc::new(RefCell::new(Default::default())),
-    }));
-    let info: Value<Outer_RunInfo> = Rc::new(RefCell::new(Outer_RunInfo {
-        block_idx: Rc::new(RefCell::new(0_i32)),
-        num_extra_zero_runs: Rc::new(RefCell::new(0_i32)),
-    }));
+    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
+    let info: Value<Outer_RunInfo> = Rc::new(RefCell::new(<Outer_RunInfo>::default()));
     (*(*info.borrow()).block_idx.borrow_mut()) = 1;
     (*(*info.borrow()).num_extra_zero_runs.borrow_mut()) = 2;
     {

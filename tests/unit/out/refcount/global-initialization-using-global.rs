@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 thread_local!(
-    pub static first_0: Value<i32> = Rc::new(RefCell::new(0_i32));
+    pub static first_0: Value<i32> = <Value<i32>>::default();
 );
 thread_local!(
     pub static second_1: Value<i32> = Rc::new(RefCell::new((first_0.with(|rc| *rc.borrow()) + 1)));

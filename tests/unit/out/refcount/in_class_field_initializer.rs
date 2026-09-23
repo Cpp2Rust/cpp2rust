@@ -72,10 +72,7 @@ impl Default for S {
                 x: Rc::new(RefCell::new(3)),
                 y: Rc::new(RefCell::new(4)),
             })),
-            d: Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(3)),
-                y: Rc::new(RefCell::new(4)),
-            })),
+            d: <Value<Inner>>::default(),
         }
     }
 }
@@ -128,8 +125,8 @@ impl Clone for Boxed_int_ {
 impl Default for Boxed_int_ {
     fn default() -> Self {
         Boxed_int_ {
-            v: Rc::new(RefCell::new(0_i32)),
-            tag: Rc::new(RefCell::new(0_i32)),
+            v: <Value<i32>>::default(),
+            tag: <Value<i32>>::default(),
         }
     }
 }
@@ -153,18 +150,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2_u8)),
-        c: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
-        })),
-        d: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
-        })),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     assert!(((*(*s.borrow()).a.borrow()) == 1));
     assert!((((*(*s.borrow()).b.borrow()) as i32) == 2));
     assert!(((*(*(*s.borrow()).c.borrow()).x.borrow()) == 3));

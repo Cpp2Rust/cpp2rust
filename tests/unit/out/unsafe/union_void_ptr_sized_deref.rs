@@ -59,10 +59,7 @@ unsafe fn main_0() -> i32 {
     let mut buf64: i64 = 0_i64;
     let mut buf32: i32 = 0;
     let mut buf16: i16 = 0_i16;
-    let mut s: Sink = Sink {
-        width: Width_enum_W_64,
-        out: <anon_0>::default(),
-    };
+    let mut s: Sink = <Sink>::default();
     s.width = Width_enum_W_64;
     s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 1234605616436508552_i64) });

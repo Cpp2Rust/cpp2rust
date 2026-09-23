@@ -41,10 +41,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Point> = Rc::new(RefCell::new(Point {
-        x: Rc::new(RefCell::new(0_i32)),
-        y: Rc::new(RefCell::new(0_i32)),
-    }));
+    let p: Value<Point> = Rc::new(RefCell::new(<Point>::default()));
     (*(*p.borrow()).x.borrow_mut()) = 67305985;
     (*(*p.borrow()).y.borrow_mut()) = 134678021;
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((p.as_pointer()).reinterpret_cast::<u8>()));

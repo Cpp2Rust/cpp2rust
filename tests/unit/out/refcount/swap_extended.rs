@@ -48,7 +48,11 @@ fn main_0() -> i32 {
     let h: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(6)));
     write!(libcc2rs::cout(), "{:}\n", ((*h.borrow()).read()),);
     (*h.borrow()).delete();
-    let i: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(Box::new([7, 8, 0_i32]))));
+    let i: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(Box::new([
+        7,
+        8,
+        <i32>::default(),
+    ]))));
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",

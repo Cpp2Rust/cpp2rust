@@ -54,7 +54,7 @@ impl ByteRepr for Vtable {
     }
 }
 thread_local!(
-    pub static storage_0: Value<i32> = Rc::new(RefCell::new(0_i32));
+    pub static storage_0: Value<i32> = <Value<i32>>::default();
 );
 pub fn int_create_1(val: i32) -> AnyPtr {
     let val: Value<i32> = Rc::new(RefCell::new(val));

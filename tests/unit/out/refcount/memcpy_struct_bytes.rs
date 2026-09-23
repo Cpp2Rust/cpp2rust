@@ -43,7 +43,9 @@ fn main_0() -> i32 {
         x: Rc::new(RefCell::new(3)),
         y: Rc::new(RefCell::new(7)),
     }));
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
             &((src.as_pointer()) as Ptr<point>).to_any(),
@@ -51,10 +53,7 @@ fn main_0() -> i32 {
         );
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
-    let dst: Value<point> = Rc::new(RefCell::new(point {
-        x: Rc::new(RefCell::new(0_i32)),
-        y: Rc::new(RefCell::new(0_i32)),
-    }));
+    let dst: Value<point> = <Value<point>>::default();
     {
         ((dst.as_pointer()) as Ptr<point>).to_any().memcpy(
             &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),

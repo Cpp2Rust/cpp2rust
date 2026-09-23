@@ -43,10 +43,7 @@ unsafe fn main_0() -> i32 {
     assert!(((td as i32) == (TdEnum_TD_A as i32)));
     td = TdEnum_TD_B;
     assert!(((td as i32) == (TdEnum_TD_B as i32)));
-    let mut w: WithAnonField = WithAnonField {
-        a: 0_i32,
-        field: anon_2_FIELD_A,
-    };
+    let mut w: WithAnonField = <WithAnonField>::default();
     w.field = anon_2_FIELD_A;
     assert!(((w.field as i32) == (anon_2_FIELD_A as i32)));
     w.field = anon_2_FIELD_B;

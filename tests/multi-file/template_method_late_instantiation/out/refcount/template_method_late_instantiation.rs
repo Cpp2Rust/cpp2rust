@@ -44,9 +44,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<S_int_> = Rc::new(RefCell::new(S_int_ {
-        x: Rc::new(RefCell::new(0)),
-    }));
+    let p: Value<S_int_> = Rc::new(RefCell::new(<S_int_>::default()));
     ({ S_int_Impl::set(&p.as_pointer(), 3) });
     assert!((({ f_0((p.as_pointer()),) }) == 3));
     return 0;

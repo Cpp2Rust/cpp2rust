@@ -26,10 +26,12 @@ impl Clone for record {
 impl Default for record {
     fn default() -> Self {
         record {
-            code: Rc::new(RefCell::new(0_u16)),
-            lo: Rc::new(RefCell::new(0_u16)),
-            hi: Rc::new(RefCell::new(0_u32)),
-            pad: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            code: <Value<u16>>::default(),
+            lo: <Value<u16>>::default(),
+            hi: <Value<u32>>::default(),
+            pad: Rc::new(RefCell::new(
+                (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
         }
     }
 }
@@ -118,8 +120,22 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     let out: Value<AnyPtr> = Rc::new(RefCell::new(out));
     let cap: Value<usize> = Rc::new(RefCell::new(cap));
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
     ])));
     (*src.borrow_mut())[(0) as usize] = 2_u8;
     (*src.borrow_mut())[(1) as usize] = 0_u8;
@@ -149,9 +165,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Container> = Rc::new(RefCell::new(Container {
-        view: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let c: Value<Container> = <Value<Container>>::default();
     {
         ((c.as_pointer()) as Ptr<Container>)
             .to_any()

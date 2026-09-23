@@ -33,7 +33,7 @@ impl Default for Explicit {
     fn default() -> Self {
         Explicit {
             v: 0_i32,
-            inner: Inner { x: 0_i32 },
+            inner: <Inner>::default(),
             arr: [0_i32; 2],
         }
     }
@@ -49,7 +49,7 @@ impl Default for Implicit {
     fn default() -> Self {
         Implicit {
             v: 0_i32,
-            inner: Inner { x: 0_i32 },
+            inner: <Inner>::default(),
             arr: [0_i32; 2],
         }
     }
@@ -374,12 +374,7 @@ unsafe fn main_0() -> i32 {
         (((bufs[(1_usize)].n) == (3)) && ((bufs[(1_usize)].data.len()) == (3_usize)))
             && (bufs[(0_usize)].data.is_empty())
     );
-    let mut o1: Owner = Owner {
-        data: Default::default(),
-        n: 0_i32,
-        arr: [0_i32; 2],
-        p: None,
-    };
+    let mut o1: Owner = <Owner>::default();
     o1.data.push(5);
     o1.n = 5;
     o1.arr[(0) as usize] = 5;
@@ -405,12 +400,7 @@ unsafe fn main_0() -> i32 {
                 .map_or(::std::ptr::null_mut(), |v| v as *mut i32))
             .is_null())
     );
-    let mut o3: Owner = Owner {
-        data: Default::default(),
-        n: 0_i32,
-        arr: [0_i32; 2],
-        p: None,
-    };
+    let mut o3: Owner = <Owner>::default();
     (unsafe { Owner::operator_assign_pmutOwner_rv(&mut o3, &mut o2) });
     assert!(
         ((((o3.n) == (5)) && ((o3.data[(0_usize)]) == (5))) && ((o3.arr[(0) as usize]) == (5)))

@@ -31,7 +31,9 @@ fn main_0() -> i32 {
         }
     }));
     FdRegistry::close((*fd.borrow()));
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     let n: Value<isize> = Rc::new(RefCell::new(
         match FdRegistry::with_fd((*fd.borrow()), |__fd| {
             ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)

@@ -227,10 +227,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let w: Value<widget> = Rc::new(RefCell::new(widget {
-        id: Rc::new(RefCell::new(0_i32)),
-        mode: Rc::new(RefCell::new(widget_enum_MODE_IDLE)),
-    }));
+    let w: Value<widget> = <Value<widget>>::default();
     (*(*w.borrow()).id.borrow_mut()) = 7;
     (*(*w.borrow()).mode.borrow_mut()) = widget_enum_MODE_ACTIVE;
     assert!((({ is_active_0((w.as_pointer()),) }) != 0));
@@ -240,36 +237,25 @@ fn main_0() -> i32 {
             as i32)
             != 0)
     );
-    let p: Value<point_struct> = Rc::new(RefCell::new(point_struct {
-        x: Rc::new(RefCell::new(0_i32)),
-        y: Rc::new(RefCell::new(0_i32)),
-    }));
+    let p: Value<point_struct> = <Value<point_struct>>::default();
     (*(*p.borrow()).x.borrow_mut()) = 3;
     (*(*p.borrow()).y.borrow_mut()) = 4;
     assert!((((((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow())) == 7) as i32) != 0));
-    let up: Value<point> = Rc::new(RefCell::new(<point>::default()));
+    let up: Value<point> = <Value<point>>::default();
     (*up.borrow_mut()).whole().write(5);
     assert!((((((*up.borrow()).whole().read()) == 5) as i32) != 0));
-    let b: Value<slot_union> = Rc::new(RefCell::new(<slot_union>::default()));
+    let b: Value<slot_union> = <Value<slot_union>>::default();
     (*b.borrow_mut()).i().write(9);
     assert!((((((*b.borrow()).i().read()) == 9) as i32) != 0));
     let e: Value<slot> = Rc::new(RefCell::new(slot_SLOT_B));
     assert!((((((*e.borrow()) as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
-    let inner_tag: Value<Inner> = Rc::new(RefCell::new(Inner {
-        tag_field: Rc::new(RefCell::new(0_i32)),
-    }));
+    let inner_tag: Value<Inner> = <Value<Inner>>::default();
     (*(*inner_tag.borrow()).tag_field.borrow_mut()) = 11;
     assert!(((((*(*inner_tag.borrow()).tag_field.borrow()) == 11) as i32) != 0));
-    let inner_typedef: Value<Inner_struct> = Rc::new(RefCell::new(Inner_struct {
-        typedef_field: Rc::new(RefCell::new(0_i32)),
-    }));
+    let inner_typedef: Value<Inner_struct> = <Value<Inner_struct>>::default();
     (*(*inner_typedef.borrow()).typedef_field.borrow_mut()) = 22;
     assert!(((((*(*inner_typedef.borrow()).typedef_field.borrow()) == 22) as i32) != 0));
-    let o: Value<Outer> = Rc::new(RefCell::new(Outer {
-        field: Rc::new(RefCell::new(Inner {
-            tag_field: Rc::new(RefCell::new(0_i32)),
-        })),
-    }));
+    let o: Value<Outer> = <Value<Outer>>::default();
     (*(*(*o.borrow()).field.borrow()).tag_field.borrow_mut()) = 33;
     assert!(((((*(*(*o.borrow()).field.borrow()).tag_field.borrow()) == 33) as i32) != 0));
     assert!(((((*(*w.borrow()).id.borrow()) == 7) as i32) != 0));

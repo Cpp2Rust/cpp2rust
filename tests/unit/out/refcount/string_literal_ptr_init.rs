@@ -26,7 +26,7 @@ impl Default for label {
         label {
             name: Rc::new(RefCell::new(Ptr::<u8>::null())),
             probe: Rc::new(RefCell::new(FnPtr::<fn() -> i32>::null())),
-            mask: Rc::new(RefCell::new(0_i32)),
+            mask: <Value<i32>>::default(),
         }
     }
 }

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn first_0() -> i32 {
-    let mut p: anon_1 = anon_1 { x: 0_i32, y: 0_i32 };
+    let mut p: anon_1 = <anon_1>::default();
     p.x = 1;
     p.y = 2;
     return ((p.x) + (p.y));
@@ -19,7 +19,7 @@ pub struct anon_1 {
     pub y: i32,
 }
 pub unsafe fn second_2() -> i32 {
-    let mut q: anon_3 = anon_3 { a: 0_i64, b: 0_i64 };
+    let mut q: anon_3 = <anon_3>::default();
     q.a = 10_i64;
     q.b = 20_i64;
     return (((q.a) + (q.b)) as i32);

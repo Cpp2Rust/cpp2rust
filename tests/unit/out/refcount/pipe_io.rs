@@ -11,8 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fds: Value<Box<[i32]>> =
-        Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
+    let fds: Value<Box<[i32]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+    ));
     assert!(
         (((match nix::unistd::pipe() {
             Ok((__r, __w)) => {
@@ -43,7 +44,9 @@ fn main_0() -> i32 {
         } == 2_isize) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()

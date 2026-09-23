@@ -63,13 +63,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut ex: Outer = Outer {
-        kind: 0_i32,
-        level: 0_i32,
-        variant: 0_i32,
-        len: 0_u32,
-        body: <anon_1>::default(),
-    };
+    let mut ex: Outer = <Outer>::default();
     {
         let byte_0 = ((&mut ex as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Outer>() {

@@ -72,16 +72,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut w: widget = widget {
-        id: 0_i32,
-        mode: widget_enum_MODE_IDLE,
-    };
+    let mut w: widget = <widget>::default();
     w.id = 7;
     w.mode = widget_enum_MODE_ACTIVE;
     assert!(((unsafe { is_active_0((&mut w as *mut widget),) }) != 0));
     w.mode = widget_enum_MODE_DONE;
     assert!(((((w.mode as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32) != 0));
-    let mut p: point_struct = point_struct { x: 0_i32, y: 0_i32 };
+    let mut p: point_struct = <point_struct>::default();
     p.x = 3;
     p.y = 4;
     assert!((((((p.x) + (p.y)) == (7)) as i32) != 0));
@@ -93,17 +90,13 @@ unsafe fn main_0() -> i32 {
     assert!(((((b.i) == (9)) as i32) != 0));
     let mut e: slot = slot_SLOT_B;
     assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
-    let mut inner_tag: Inner = Inner { tag_field: 0_i32 };
+    let mut inner_tag: Inner = <Inner>::default();
     inner_tag.tag_field = 11;
     assert!(((((inner_tag.tag_field) == (11)) as i32) != 0));
-    let mut inner_typedef: Inner_struct = Inner_struct {
-        typedef_field: 0_i32,
-    };
+    let mut inner_typedef: Inner_struct = <Inner_struct>::default();
     inner_typedef.typedef_field = 22;
     assert!(((((inner_typedef.typedef_field) == (22)) as i32) != 0));
-    let mut o: Outer = Outer {
-        field: Inner { tag_field: 0_i32 },
-    };
+    let mut o: Outer = <Outer>::default();
     o.field.tag_field = 33;
     assert!(((((o.field.tag_field) == (33)) as i32) != 0));
     assert!(((((w.id) == (7)) as i32) != 0));

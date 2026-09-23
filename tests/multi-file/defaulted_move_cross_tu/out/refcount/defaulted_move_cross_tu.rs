@@ -41,7 +41,9 @@ impl Default for S {
     fn default() -> Self {
         S {
             v: Rc::new(RefCell::new(Default::default())),
-            n: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            n: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
         }
     }
 }

@@ -31,7 +31,7 @@ unsafe fn main_0() -> i32 {
         }
         (buf.as_mut_ptr() as *mut u8 as *mut ::libc::c_void)
     };
-    let mut dst: point = point { x: 0_i32, y: 0_i32 };
+    let mut dst: point = <point>::default();
     {
         if ::std::mem::size_of::<point>() != 0 {
             ::std::ptr::copy_nonoverlapping(

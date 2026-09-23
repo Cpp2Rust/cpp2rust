@@ -39,9 +39,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Ptr<Item>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..2_usize)
-            .map(|_| Item {
-                value: Rc::new(RefCell::new(0_i32)),
-            })
+            .map(|_| <Item>::default())
             .collect::<Box<[Item]>>(),
     )));
     (*(*(*arr.borrow()).offset((0) as isize).upgrade().deref())

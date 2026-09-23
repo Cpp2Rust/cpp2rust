@@ -27,7 +27,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(0));
-    let b: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let b: Value<i32> = <Value<i32>>::default();
     if ({
         (*b.borrow_mut()) = (*a.borrow());
         (*b.borrow())
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
         }) != 0) as i32)
             != 0)
     );
-    let c: Value<bool> = Rc::new(RefCell::new(false));
+    let c: Value<bool> = <Value<bool>>::default();
     (*c.borrow_mut()) = ({
         (*a.borrow_mut()) = (*b.borrow());
         (*a.borrow())

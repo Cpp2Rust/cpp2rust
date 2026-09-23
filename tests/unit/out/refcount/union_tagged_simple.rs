@@ -85,11 +85,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
-    let m1: Value<Event> = Rc::new(RefCell::new(Event {
-        kind: Rc::new(RefCell::new(Kind_enum_KIND_NONE)),
-        handle: Rc::new(RefCell::new(AnyPtr::default())),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let m1: Value<Event> = <Value<Event>>::default();
     (*(*m1.borrow()).kind.borrow_mut()) = Kind_enum_KIND_DONE;
     (*(*m1.borrow()).handle.borrow_mut()) = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (*(*m1.borrow()).payload.borrow_mut()).code().write(42);
@@ -99,11 +95,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!((((((*(*m1.borrow()).payload.borrow()).code().read()) == 42) as i32) != 0));
-    let m2: Value<Event> = Rc::new(RefCell::new(Event {
-        kind: Rc::new(RefCell::new(Kind_enum_KIND_NONE)),
-        handle: Rc::new(RefCell::new(AnyPtr::default())),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let m2: Value<Event> = <Value<Event>>::default();
     (*(*m2.borrow()).kind.borrow_mut()) = Kind_enum_KIND_NONE;
     (*(*m2.borrow()).handle.borrow_mut()) = ((dummy.as_pointer()) as Ptr<i32>).to_any();
     (*(*m2.borrow()).payload.borrow_mut())

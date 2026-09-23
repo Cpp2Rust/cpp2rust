@@ -27,7 +27,7 @@ impl Default for Foo {
             y: <*mut i32>::default(),
             z: std::ptr::null_mut(),
             a: [0_i32; 3],
-            bar: Bar { w: 0_i32 },
+            bar: <Bar>::default(),
         }
     }
 }

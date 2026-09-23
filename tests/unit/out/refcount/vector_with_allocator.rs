@@ -16,7 +16,7 @@ pub fn copy_0(copy_vector: Vec<i32>) {
 pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
-    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let x: Value<i32> = <Value<i32>>::default();
     let v4: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v3.as_pointer())));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (*v2.borrow_mut()).push(0);
@@ -299,7 +299,11 @@ pub trait TestAllocator_double_Impl {
 impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn allocate(&self, n: usize) -> Ptr<f64> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
-        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0.0_f64).collect::<Box<[f64]>>());
+        return Ptr::alloc_array(
+            (0..(*n.borrow()))
+                .map(|_| <f64>::default())
+                .collect::<Box<[f64]>>(),
+        );
     }
     fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));
@@ -314,7 +318,11 @@ pub trait TestAllocator_int_Impl {
 impl TestAllocator_int_Impl for Ptr<TestAllocator_int_> {
     fn allocate(&self, n: usize) -> Ptr<i32> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
-        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0_i32).collect::<Box<[i32]>>());
+        return Ptr::alloc_array(
+            (0..(*n.borrow()))
+                .map(|_| <i32>::default())
+                .collect::<Box<[i32]>>(),
+        );
     }
     fn deallocate(&self, p: Ptr<i32>, _a1: usize) {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));

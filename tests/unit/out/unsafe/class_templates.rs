@@ -192,9 +192,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { Boxed_long_::twice(10_i64,) }) == (20_i64)));
     let mut bl: Boxed_long_ = Boxed_long_ { value: 7_i64 };
     assert!(((unsafe { Boxed_long_::plus(&bl, 1_i64,) }) == (8_i64)));
-    let mut imc: MyContainer_int_ = MyContainer_int_ {
-        vec_: Default::default(),
-    };
+    let mut imc: MyContainer_int_ = <MyContainer_int_>::default();
     assert!((unsafe { MyContainer_int_::empty(&imc,) }));
     (unsafe {
         let mut _item: i32 = 1;
@@ -206,9 +204,7 @@ unsafe fn main_0() -> i32 {
     );
     (unsafe { MyContainer_int_::pop_back(&mut imc) });
     assert!((unsafe { MyContainer_int_::empty(&imc,) }));
-    let mut cmc: MyContainer_char_ = MyContainer_char_ {
-        vec_: Default::default(),
-    };
+    let mut cmc: MyContainer_char_ = <MyContainer_char_>::default();
     assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
     (unsafe {
         let mut _item: libc::c_char = ('a' as libc::c_char);
@@ -221,9 +217,7 @@ unsafe fn main_0() -> i32 {
     );
     (unsafe { MyContainer_char_::pop_back(&mut cmc) });
     assert!((unsafe { MyContainer_char_::empty(&cmc,) }));
-    let mut fmc: MyContainer_float_ = MyContainer_float_ {
-        vec_: Default::default(),
-    };
+    let mut fmc: MyContainer_float_ = <MyContainer_float_>::default();
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));
     (unsafe {
         let mut _item: f32 = (1.0E+0 as f32);

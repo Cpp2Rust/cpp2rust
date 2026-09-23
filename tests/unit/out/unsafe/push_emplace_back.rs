@@ -91,10 +91,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { push_param_0((&mut vecs as *mut Vec<Vec<u8>>)) });
     assert!(((vecs.len()) == (1_usize)));
     assert!(vecs[(0_usize)].is_empty());
-    let mut jpg: JPEGData = JPEGData {
-        com_data: Vec::new(),
-        app_data: Vec::new(),
-    };
+    let mut jpg: JPEGData = <JPEGData>::default();
     (unsafe { push_local_from_field_1((&mut jpg as *mut JPEGData), true) });
     assert!(((jpg.com_data.len()) == (1_usize)));
     assert!(((jpg.com_data[(0_usize)].len()) == (3_usize)));
@@ -105,10 +102,7 @@ unsafe fn main_0() -> i32 {
     let mut chunks: Vec<Chunk> = Vec::new();
     (unsafe { shrink_through_ptr_2((&mut chunks as *mut Vec<Chunk>)) });
     assert!(chunks.is_empty());
-    let mut w: Writer = Writer {
-        output: std::ptr::null_mut(),
-        chunk: Chunk { data: 0_i32 },
-    };
+    let mut w: Writer = <Writer>::default();
     w.chunk.data = 42;
     w.output = (&mut chunks as *mut Vec<Chunk>);
     (unsafe { nested_push_move_3((&mut w as *mut Writer)) });

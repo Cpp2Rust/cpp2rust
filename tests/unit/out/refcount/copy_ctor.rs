@@ -170,14 +170,10 @@ impl Clone for Holder {
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            c: Rc::new(RefCell::new(Counted {
-                v: Rc::new(RefCell::new(0_i32)),
-            })),
+            c: <Value<Counted>>::default(),
             arr: Rc::new(RefCell::new(
                 (0..2)
-                    .map(|_| Counted {
-                        v: Rc::new(RefCell::new(0_i32)),
-                    })
+                    .map(|_| <Counted>::default())
                     .collect::<Box<[Counted]>>(),
             )),
         }

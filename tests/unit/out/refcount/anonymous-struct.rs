@@ -261,28 +261,28 @@ pub fn main() {
 fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(Outer {
         named: Rc::new(RefCell::new(Outer_Named {
-            a: Rc::new(RefCell::new(0_i32)),
-            b: Rc::new(RefCell::new(0_i32)),
+            a: Rc::new(RefCell::new(<i32>::default())),
+            b: Rc::new(RefCell::new(<i32>::default())),
         })),
         anonymous_named_0: Rc::new(RefCell::new(anon_0 {
-            c: Rc::new(RefCell::new(0_i32)),
-            d: Rc::new(RefCell::new(0_i32)),
+            c: Rc::new(RefCell::new(<i32>::default())),
+            d: Rc::new(RefCell::new(<i32>::default())),
         })),
         anonymous_named_1: Rc::new(RefCell::new(anon_1 {
-            g: Rc::new(RefCell::new(0_i32)),
-            h: Rc::new(RefCell::new(0_i32)),
+            g: Rc::new(RefCell::new(<i32>::default())),
+            h: Rc::new(RefCell::new(<i32>::default())),
         })),
         anon_2: Rc::new(RefCell::new(anon_2 {
-            e: Rc::new(RefCell::new(0_i32)),
-            f: Rc::new(RefCell::new(0_i32)),
+            e: Rc::new(RefCell::new(<i32>::default())),
+            f: Rc::new(RefCell::new(<i32>::default())),
         })),
         anon_3: Rc::new(RefCell::new(anon_3 {
-            i: Rc::new(RefCell::new(0_i32)),
+            i: Rc::new(RefCell::new(<i32>::default())),
             inner_named: Rc::new(RefCell::new(anon_4 {
-                j: Rc::new(RefCell::new(0_i32)),
+                j: Rc::new(RefCell::new(<i32>::default())),
             })),
             anon_5: Rc::new(RefCell::new(anon_5 {
-                k: Rc::new(RefCell::new(0_i32)),
+                k: Rc::new(RefCell::new(<i32>::default())),
             })),
         })),
     }));
@@ -322,10 +322,7 @@ fn main_0() -> i32 {
             .borrow())
             == 11)
     );
-    let s: Value<anon_6> = Rc::new(RefCell::new(anon_6 {
-        x: Rc::new(RefCell::new(0_i32)),
-        z: Rc::new(RefCell::new(0_i32)),
-    }));
+    let s: Value<anon_6> = Rc::new(RefCell::new(<anon_6>::default()));
     (*(*s.borrow()).x.borrow_mut()) = 1;
     (*(*s.borrow()).z.borrow_mut()) = 2;
     assert!(

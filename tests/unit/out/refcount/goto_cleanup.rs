@@ -8,8 +8,8 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn early_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let intentionally_const_var: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let ret: Value<i32> = <Value<i32>>::default();
+    let intentionally_const_var: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
@@ -29,7 +29,7 @@ pub fn early_0(n: i32) -> i32 {
 }
 pub fn from_loop_1(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
@@ -52,7 +52,7 @@ pub fn from_loop_1(n: i32) -> i32 {
 }
 pub fn from_switch_2(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let ret: Value<i32> = <Value<i32>>::default();
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
@@ -104,7 +104,7 @@ impl ByteRepr for wrapper {
 pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
     let w: Value<Ptr<wrapper>> = Rc::new(RefCell::new(w));
     let fail: Value<i32> = Rc::new(RefCell::new(fail));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let ret: Value<i32> = <Value<i32>>::default();
     let item: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     goto_block!({
         '__entry: {
@@ -125,14 +125,18 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
 }
 pub fn via_arrays_4(fail: i32) -> i32 {
     let fail: Value<i32> = Rc::new(RefCell::new(fail));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let remain: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    let name: Value<Box<[u8]>> = Rc::new(RefCell::new((0..5).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let ret: Value<i32> = <Value<i32>>::default();
+    let remain: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
+    let name: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..5).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
-            *remain.borrow_mut() = Box::new([0_u8, 0_u8, 0_u8, 0_u8]);
+            *remain.borrow_mut() =
+                Box::new([0_u8, <u8>::default(), <u8>::default(), <u8>::default()]);
             *name.borrow_mut() = Box::from(*b"wxyz\0");
             if ((*fail.borrow()) != 0) {
                 (*ret.borrow_mut()) = -1_i32;

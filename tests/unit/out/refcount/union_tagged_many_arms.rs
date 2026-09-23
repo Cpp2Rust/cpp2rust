@@ -92,10 +92,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Slot> = Rc::new(RefCell::new(Slot {
-        tag: Rc::new(RefCell::new(Tag_enum_T_NUM_S)),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let a: Value<Slot> = <Value<Slot>>::default();
     (*(*a.borrow()).tag.borrow_mut()) = Tag_enum_T_NUM_S;
     (*(*a.borrow()).payload.borrow_mut())
         .signed_n()
@@ -103,10 +100,7 @@ fn main_0() -> i32 {
     assert!(
         (((((*(*a.borrow()).payload.borrow()).signed_n().read()) == (-7_i32 as i64)) as i32) != 0)
     );
-    let b: Value<Slot> = Rc::new(RefCell::new(Slot {
-        tag: Rc::new(RefCell::new(Tag_enum_T_NUM_S)),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let b: Value<Slot> = <Value<Slot>>::default();
     (*(*b.borrow()).tag.borrow_mut()) = Tag_enum_T_NUM_U;
     (*(*b.borrow()).payload.borrow_mut())
         .unsigned_n()
@@ -114,10 +108,7 @@ fn main_0() -> i32 {
     assert!(
         (((((*(*b.borrow()).payload.borrow()).unsigned_n().read()) == 3735928559_u64) as i32) != 0)
     );
-    let c: Value<Slot> = Rc::new(RefCell::new(Slot {
-        tag: Rc::new(RefCell::new(Tag_enum_T_NUM_S)),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let c: Value<Slot> = <Value<Slot>>::default();
     (*(*c.borrow()).tag.borrow_mut()) = Tag_enum_T_TEXT;
     (*(*c.borrow()).payload.borrow_mut())
         .text()
@@ -129,18 +120,12 @@ fn main_0() -> i32 {
             == ('h' as i32)) as i32)
             != 0)
     );
-    let d: Value<Slot> = Rc::new(RefCell::new(Slot {
-        tag: Rc::new(RefCell::new(Tag_enum_T_NUM_S)),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let d: Value<Slot> = <Value<Slot>>::default();
     (*(*d.borrow()).tag.borrow_mut()) = Tag_enum_T_FLOAT;
     (*(*d.borrow()).payload.borrow_mut()).f().write(1.5E+0);
     assert!((((((*(*d.borrow()).payload.borrow()).f().read()) == 1.5E+0) as i32) != 0));
     let x: Value<i32> = Rc::new(RefCell::new(0));
-    let e: Value<Slot> = Rc::new(RefCell::new(Slot {
-        tag: Rc::new(RefCell::new(Tag_enum_T_NUM_S)),
-        payload: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let e: Value<Slot> = <Value<Slot>>::default();
     (*(*e.borrow()).tag.borrow_mut()) = Tag_enum_T_REF;
     (*(*e.borrow()).payload.borrow_mut())
         .handle()

@@ -68,11 +68,11 @@ impl Clone for Explicit {
 impl Default for Explicit {
     fn default() -> Self {
         Explicit {
-            v: Rc::new(RefCell::new(0_i32)),
-            inner: Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(0_i32)),
-            })),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            v: <Value<i32>>::default(),
+            inner: <Value<Inner>>::default(),
+            arr: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
         }
     }
 }
@@ -115,11 +115,11 @@ impl Clone for Implicit {
 impl Default for Implicit {
     fn default() -> Self {
         Implicit {
-            v: Rc::new(RefCell::new(0_i32)),
-            inner: Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(0_i32)),
-            })),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            v: <Value<i32>>::default(),
+            inner: <Value<Inner>>::default(),
+            arr: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
         }
     }
 }
@@ -283,8 +283,10 @@ impl Default for Buffer {
         Buffer {
             data: Rc::new(RefCell::new(Default::default())),
             rows: Rc::new(RefCell::new(Vec::new())),
-            n: Rc::new(RefCell::new(0_i32)),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            n: <Value<i32>>::default(),
+            arr: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
         }
     }
 }
@@ -338,8 +340,10 @@ impl Default for Owner {
     fn default() -> Self {
         Owner {
             data: Rc::new(RefCell::new(Default::default())),
-            n: Rc::new(RefCell::new(0_i32)),
-            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            n: <Value<i32>>::default(),
+            arr: Rc::new(RefCell::new(
+                (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
             p: Rc::new(RefCell::new(None)),
         }
     }
@@ -646,12 +650,7 @@ fn main_0() -> i32 {
             .borrow())
             .is_empty())
     );
-    let o1: Value<Owner> = Rc::new(RefCell::new(Owner {
-        data: Rc::new(RefCell::new(Default::default())),
-        n: Rc::new(RefCell::new(0_i32)),
-        arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
-        p: Rc::new(RefCell::new(None)),
-    }));
+    let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     (*(*o1.borrow()).data.borrow_mut()).push(5);
     (*(*o1.borrow()).n.borrow_mut()) = 5;
     (*(*o1.borrow()).arr.borrow_mut())[(0) as usize] = 5;
@@ -671,12 +670,7 @@ fn main_0() -> i32 {
         ((*(*o1.borrow()).data.borrow()).is_empty())
             && (((*(*o1.borrow()).p.borrow()).as_pointer()).is_null())
     );
-    let o3: Value<Owner> = Rc::new(RefCell::new(Owner {
-        data: Rc::new(RefCell::new(Default::default())),
-        n: Rc::new(RefCell::new(0_i32)),
-        arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
-        p: Rc::new(RefCell::new(None)),
-    }));
+    let o3: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     ({ OwnerImpl::operator_assign_pmutOwner_rv(&o3.as_pointer(), o2.as_pointer()) });
     assert!(
         ((((*(*o3.borrow()).n.borrow()) == 5)

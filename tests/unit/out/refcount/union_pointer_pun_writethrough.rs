@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i64> = Rc::new(RefCell::new((-1_i32 as i64)));
-    let pp: Value<anon_0> = Rc::new(RefCell::new(<anon_0>::default()));
+    let pp: Value<anon_0> = <Value<anon_0>>::default();
     (*pp.borrow_mut()).as_signed().write((x.as_pointer()));
     ((*pp.borrow()).as_unsigned().read()).write(42_u64);
     assert!(((((*x.borrow()) == 42_i64) as i32) != 0));

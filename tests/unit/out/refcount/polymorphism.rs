@@ -18,13 +18,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let dog: Value<Dog> = Rc::new(RefCell::new(Dog {}));
+    let dog: Value<Dog> = Rc::new(RefCell::new(<Dog>::default()));
     let animal: Value<PtrDyn<dyn Animal>> =
         Rc::new(RefCell::new((dog.as_pointer()).to_dyn::<dyn Animal>(|w| w)));
     let eat1: Value<bool> = Rc::new(RefCell::new(
         ({ (*(*animal.borrow()).upgrade().deref()).bark() }),
     ));
-    let cat: Value<Cat> = Rc::new(RefCell::new(Cat {}));
+    let cat: Value<Cat> = Rc::new(RefCell::new(<Cat>::default()));
     (*animal.borrow_mut()) = (cat.as_pointer()).to_dyn::<dyn Animal>(|w| w);
     let eat2: Value<bool> = Rc::new(RefCell::new(
         ({ (*(*animal.borrow()).upgrade().deref()).bark() }),

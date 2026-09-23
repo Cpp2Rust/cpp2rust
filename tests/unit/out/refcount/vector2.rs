@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
-    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let x: Value<i32> = <Value<i32>>::default();
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let v4: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v3.as_pointer())));
     (*v2.borrow_mut()).push(0);

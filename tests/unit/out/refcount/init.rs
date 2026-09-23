@@ -40,14 +40,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let x: Value<i32> = <Value<i32>>::default();
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     let g: Ptr<i32> = x.as_pointer();
     let q: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
     let z: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
-    let xx: Value<X> = Rc::new(RefCell::new(X {
-        x: Rc::new(RefCell::new(0_i32)),
-    }));
+    let xx: Value<X> = Rc::new(RefCell::new(<X>::default()));
     let zz: Value<Ptr<X>> = Rc::new(RefCell::new((xx.as_pointer())));
     (*(*xx.borrow()).x.borrow_mut()) = 1;
     (*q.borrow_mut()) = ((*xx.borrow()).x.as_pointer());

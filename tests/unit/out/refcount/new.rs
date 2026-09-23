@@ -49,10 +49,7 @@ fn main_0() -> i32 {
     (*y.borrow()).write(9);
     assert!((((*y.borrow()).read()) == 9));
     (*y.borrow()).delete();
-    let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(Pair {
-        x: Rc::new(RefCell::new(0_i32)),
-        y: Rc::new(RefCell::new(0_i32)),
-    })));
+    let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(<Pair>::default())));
     (*(*(*p.borrow()).upgrade().deref()).x.borrow_mut()) = 1;
     (*(*(*p.borrow()).upgrade().deref()).y.borrow_mut()) = 2;
     assert!(

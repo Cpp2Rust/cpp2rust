@@ -35,21 +35,13 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut dummy: i32 = 0;
-    let mut m1: Event = Event {
-        kind: Kind_enum_KIND_NONE,
-        handle: std::ptr::null_mut(),
-        payload: <anon_0>::default(),
-    };
+    let mut m1: Event = <Event>::default();
     m1.kind = Kind_enum_KIND_DONE;
     m1.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m1.payload.code = 42;
     assert!(((((m1.kind as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0));
     assert!(((((m1.payload.code) == (42)) as i32) != 0));
-    let mut m2: Event = Event {
-        kind: Kind_enum_KIND_NONE,
-        handle: std::ptr::null_mut(),
-        payload: <anon_0>::default(),
-    };
+    let mut m2: Event = <Event>::default();
     m2.kind = Kind_enum_KIND_NONE;
     m2.handle = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);
     m2.payload.obj = ((&mut dummy as *mut i32) as *mut i32 as *mut ::libc::c_void);

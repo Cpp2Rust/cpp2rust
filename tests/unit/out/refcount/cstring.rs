@@ -8,8 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_memcpy_0() {
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hello\0")));
-    let dst: Value<Box<[u8]>> =
-        Rc::new(RefCell::new(Box::new([0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8])));
+    let dst: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        0_u8,
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+    ])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
         ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
             &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
@@ -33,7 +39,9 @@ pub fn test_memcpy_0() {
     );
 }
 pub fn test_memset_1() {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()

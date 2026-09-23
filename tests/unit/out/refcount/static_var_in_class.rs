@@ -21,7 +21,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<C> = Rc::new(RefCell::new(C {}));
+    let c: Value<C> = Rc::new(RefCell::new(<C>::default()));
     assert!((({ CImpl::get(&c.as_pointer(),) }) == 1));
     assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
     return 0;

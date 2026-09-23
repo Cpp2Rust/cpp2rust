@@ -63,10 +63,10 @@ impl Clone for S {
 impl Default for S {
     fn default() -> Self {
         S {
-            data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            inner: Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(0_i32)),
-            })),
+            data: Rc::new(RefCell::new(
+                (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
+            inner: <Value<Inner>>::default(),
         }
     }
 }
@@ -132,7 +132,7 @@ fn main_0() -> i32 {
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
     assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
-    let t: Value<Table> = Rc::new(RefCell::new(Table {}));
+    let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
     assert!((table_0.with(|rc| rc.borrow().clone())[(1) as usize] == 80));

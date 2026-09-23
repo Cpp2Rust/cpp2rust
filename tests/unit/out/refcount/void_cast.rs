@@ -170,9 +170,7 @@ fn main_0() -> i32 {
     &(*(*h.borrow()).field.borrow_mut());
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     &(*(*(*hp.borrow()).upgrade().deref()).field.borrow_mut());
-    let nt: Value<NonTrivial> = Rc::new(RefCell::new(NonTrivial {
-        data: Rc::new(RefCell::new(Default::default())),
-    }));
+    let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });
     let g: Value<NonCopyable> = Rc::new(RefCell::new(NonCopyable {

@@ -28,7 +28,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p: S_int_ = S_int_ { x: 0 };
+    let mut p: S_int_ = <S_int_>::default();
     (unsafe { S_int_::set(&mut p, 3) });
     assert!(((unsafe { f_0((&mut p as *mut S_int_),) }) == (3)));
     return 0;

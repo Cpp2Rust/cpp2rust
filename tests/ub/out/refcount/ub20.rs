@@ -16,7 +16,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
+        (0..10_usize)
+            .map(|_| <i32>::default())
+            .collect::<Box<[i32]>>(),
     )));
     ({ foo_0((*x.borrow()).clone()) });
     return 0;

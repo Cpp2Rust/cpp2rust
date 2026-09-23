@@ -51,9 +51,7 @@ fn main_0() -> i32 {
     (((*p.borrow()).decay()) as Ptr<i32>)
         .offset(1_usize)
         .write(30);
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        v: Rc::new(RefCell::new(Default::default())),
-    }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     (*(*h.borrow()).v.borrow_mut()).push(40);
     (*(*h.borrow()).v.borrow_mut()).push(50);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));

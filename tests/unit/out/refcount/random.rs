@@ -38,9 +38,11 @@ impl Clone for Pair {
 impl Default for Pair {
     fn default() -> Self {
         Pair {
-            x: Rc::new(RefCell::new(0_i32)),
-            y: Rc::new(RefCell::new(0_i32)),
-            a: Rc::new(RefCell::new((0..5).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            x: <Value<i32>>::default(),
+            y: <Value<i32>>::default(),
+            a: Rc::new(RefCell::new(
+                (0..5).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
             r: <Ptr<i32>>::default(),
             p: Rc::new(RefCell::new(Ptr::<i32>::null())),
             pair: Rc::new(RefCell::new(Ptr::<Pair>::null())),

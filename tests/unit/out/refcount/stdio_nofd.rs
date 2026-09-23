@@ -57,8 +57,22 @@ pub fn test_fputc_fputs_0() {
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
     ])));
     assert!(
         ((({
@@ -149,7 +163,9 @@ pub fn test_fgets_getc_2() {
         None => Ptr::null(),
     };
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     assert!(
         (((!(({
             let __buf = (buf.as_pointer() as Ptr<u8>);
@@ -385,7 +401,14 @@ pub fn test_freopen_3() {
     }));
     assert!((((!((*fp2.borrow()).is_null())) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
+        0_u8,
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
     ])));
     assert!(
         ((({
@@ -471,7 +494,14 @@ pub fn test_fseeko_4() {
             != 0)
     );
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
+        0_u8,
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
+        <u8>::default(),
     ])));
     assert!(
         ((({

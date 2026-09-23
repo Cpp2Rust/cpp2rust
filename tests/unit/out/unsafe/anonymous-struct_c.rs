@@ -65,14 +65,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut o: Outer = Outer {
         named: Named { a: 0, b: 0_i32 },
-        anon0: anon_0 { c: 0_i32, d: 0_i32 },
-        anon1: anon_1 { g: 0_i32, h: 0_i32 },
-        anon_2: anon_2 { e: 0_i32, f: 0_i32 },
-        anon_3: anon_3 {
-            i: 0_i32,
-            inner_named: anon_4 { j: 0_i32 },
-            anon_5: anon_5 { k: 0_i32 },
-        },
+        anon0: <anon_0>::default(),
+        anon1: <anon_1>::default(),
+        anon_2: <anon_2>::default(),
+        anon_3: <anon_3>::default(),
     };
     o.named.a = 1;
     o.named.b = 2;
@@ -96,7 +92,7 @@ unsafe fn main_0() -> i32 {
     assert!(((((o.anon_3.i) == (9)) as i32) != 0));
     assert!(((((o.anon_3.inner_named.j) == (10)) as i32) != 0));
     assert!(((((o.anon_3.anon_5.k) == (11)) as i32) != 0));
-    let mut s: anon_6 = anon_6 { x: 0_i32, z: 0_i32 };
+    let mut s: anon_6 = <anon_6>::default();
     s.x = 1;
     s.z = 2;
     assert!(

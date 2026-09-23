@@ -46,7 +46,7 @@ impl Default for Pointers {
                     .map(|_| Ptr::<i32>::null())
                     .collect::<Box<[Ptr<i32>]>>(),
             )),
-            x5: Rc::new(RefCell::new(0_i32)),
+            x5: <Value<i32>>::default(),
         }
     }
 }
@@ -78,21 +78,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let default_pointers: Value<Ptr<Pointers>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..10_usize)
-            .map(|_| Pointers {
-                x1: Rc::new(RefCell::new(Ptr::<i32>::null())),
-                x2: Rc::new(RefCell::new(Ptr::<i32>::null())),
-                x3: Rc::new(RefCell::new(
-                    (0..5)
-                        .map(|_| Ptr::<i32>::null())
-                        .collect::<Box<[Ptr<i32>]>>(),
-                )),
-                x4: Rc::new(RefCell::new(
-                    (0..10)
-                        .map(|_| Ptr::<i32>::null())
-                        .collect::<Box<[Ptr<i32>]>>(),
-                )),
-                x5: Rc::new(RefCell::new(0_i32)),
-            })
+            .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
     )));
     (*default_pointers.borrow()).delete();

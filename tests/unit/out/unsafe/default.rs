@@ -35,13 +35,7 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut default_pointers: *mut Pointers = Box::leak(
         (0..10_usize)
-            .map(|_| Pointers {
-                x1: std::ptr::null_mut(),
-                x2: std::ptr::null(),
-                x3: [std::ptr::null_mut(); 5],
-                x4: [std::ptr::null(); 10],
-                x5: 0_i32,
-            })
+            .map(|_| <Pointers>::default())
             .collect::<Box<[Pointers]>>(),
     )
     .as_mut_ptr();

@@ -68,11 +68,7 @@ unsafe fn main_0() -> i32 {
                 c"c".as_ptr().cast_mut(),
             ]
         });;
-    let mut p_list: Branch = Branch {
-        choice: Choice_enum_C_LIST,
-        index: 0_i32,
-        v: <anon_0>::default(),
-    };
+    let mut p_list: Branch = <Branch>::default();
     p_list.choice = Choice_enum_C_LIST;
     p_list.index = 0;
     p_list.v.list.items = (*std::cell::LazyCell::force_mut(&mut *&raw mut items_4)).as_mut_ptr();
@@ -84,11 +80,7 @@ unsafe fn main_0() -> i32 {
             == ('b' as i32)) as i32)
             != 0)
     );
-    let mut p_letters: Branch = Branch {
-        choice: Choice_enum_C_LIST,
-        index: 0_i32,
-        v: <anon_0>::default(),
-    };
+    let mut p_letters: Branch = <Branch>::default();
     p_letters.choice = Choice_enum_C_LETTERS;
     p_letters.index = 1;
     p_letters.v.letters.lo = ('a' as i32);
@@ -96,11 +88,7 @@ unsafe fn main_0() -> i32 {
     p_letters.v.letters.curr = ('m' as i32);
     p_letters.v.letters.step = 1_u8;
     assert!((((((p_letters.v.letters.hi) - (p_letters.v.letters.lo)) == (25)) as i32) != 0));
-    let mut p_integers: Branch = Branch {
-        choice: Choice_enum_C_LIST,
-        index: 0_i32,
-        v: <anon_0>::default(),
-    };
+    let mut p_integers: Branch = <Branch>::default();
     p_integers.choice = Choice_enum_C_INTEGERS;
     p_integers.index = 2;
     p_integers.v.integers.lo = 1_i64;

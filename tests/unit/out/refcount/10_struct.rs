@@ -161,9 +161,7 @@ fn main_0() -> i32 {
     } {
         return 1;
     }
-    let def: Value<Partial> = Rc::new(RefCell::new(Partial {
-        p: Rc::new(RefCell::new(Ptr::<i32>::null())),
-    }));
+    let def: Value<Partial> = Rc::new(RefCell::new(<Partial>::default()));
     if !((*(*def.borrow()).p.borrow()).is_null()) {
         return 1;
     }

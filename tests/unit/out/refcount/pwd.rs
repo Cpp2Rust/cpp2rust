@@ -57,8 +57,9 @@ pub fn test_getpwuid_missing_1() {
 }
 pub fn test_getpwuid_r_2() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
-    let buf: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..4096).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..4096).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(
@@ -161,7 +162,9 @@ pub fn test_getpwuid_r_2() {
 }
 pub fn test_getpwuid_r_erange_3() {
     let pw: Value<libcc2rs::Passwd> = Rc::new(RefCell::new(Default::default()));
-    let tiny: Value<Box<[u8]>> = Rc::new(RefCell::new((0..1).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let tiny: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..1).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     let result: Value<Ptr<libcc2rs::Passwd>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Passwd>::null()));
     assert!(

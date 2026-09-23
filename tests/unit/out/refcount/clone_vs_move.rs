@@ -58,13 +58,13 @@ impl Clone for Foo {
 impl Default for Foo {
     fn default() -> Self {
         Foo {
-            x: Rc::new(RefCell::new(0_i32)),
+            x: <Value<i32>>::default(),
             y: <Ptr<i32>>::default(),
             z: Rc::new(RefCell::new(Ptr::<i32>::null())),
-            a: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            bar: Rc::new(RefCell::new(Bar {
-                w: Rc::new(RefCell::new(0_i32)),
-            })),
+            a: Rc::new(RefCell::new(
+                (0..3).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+            )),
+            bar: <Value<Bar>>::default(),
         }
     }
 }

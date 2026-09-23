@@ -39,10 +39,7 @@ impl ByteRepr for Config {
     }
 }
 thread_local!(
-    pub static config_0: Value<Config> = Rc::new(RefCell::new(Config {
-        count: Rc::new(RefCell::new(0_i32)),
-        mode: Rc::new(RefCell::new(Mode_MODE_NONE)),
-    }));
+    pub static config_0: Value<Config> = <Value<Config>>::default();
 );
 pub fn main() {
     __cpp2rust_init_globals();

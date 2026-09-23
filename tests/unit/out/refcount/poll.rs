@@ -11,8 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fds: Value<Box<[i32]>> =
-        Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>()));
+    let fds: Value<Box<[i32]>> = Rc::new(RefCell::new(
+        (0..2).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+    ));
     assert!(
         (((match nix::unistd::pipe() {
             Ok((__r, __w)) => {
@@ -109,7 +110,7 @@ fn main_0() -> i32 {
         ((((((*(*pfd.borrow())[(0) as usize].revents.borrow()) as i32) & 1) != 0) as i32) != 0)
     );
     assert!((((((*(*pfd.borrow())[(1) as usize].revents.borrow()) as i32) == 0) as i32) != 0));
-    let ch: Value<u8> = Rc::new(RefCell::new(0_u8));
+    let ch: Value<u8> = <Value<u8>>::default();
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
             ((ch.as_pointer()) as Ptr<u8>)

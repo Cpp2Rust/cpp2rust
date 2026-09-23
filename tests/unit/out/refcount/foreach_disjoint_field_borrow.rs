@@ -41,10 +41,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(Default::default())),
-        a: Rc::new(RefCell::new(0_i32)),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     (*(*s.borrow()).v.borrow_mut()).push(1);
     'loop_: for mut e in (*s.borrow()).v.as_pointer() as Ptr<i32> {
         let e: Value<i32> = Rc::new(RefCell::new(e.read()));

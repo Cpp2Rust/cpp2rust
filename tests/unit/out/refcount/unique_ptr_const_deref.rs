@@ -54,9 +54,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        val: Rc::new(RefCell::new(None)),
-    }));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     ((*h.borrow()).val.as_pointer() as Ptr<Option<Value<i32>>>)
         .write(Some(Rc::new(RefCell::new(10))).take());
     ({ write_val_1((h.as_pointer()), 42) });

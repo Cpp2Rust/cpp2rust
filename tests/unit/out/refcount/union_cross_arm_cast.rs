@@ -22,8 +22,10 @@ impl Clone for shape_a {
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
-            code: Rc::new(RefCell::new(0_u16)),
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            code: <Value<u16>>::default(),
+            pad: Rc::new(RefCell::new(
+                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
         }
     }
 }
@@ -64,11 +66,13 @@ impl Clone for shape_b {
 impl Default for shape_b {
     fn default() -> Self {
         shape_b {
-            code: Rc::new(RefCell::new(0_u16)),
-            lo: Rc::new(RefCell::new(0_u16)),
-            mid: Rc::new(RefCell::new(0_u32)),
-            fill: Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>())),
-            tail: Rc::new(RefCell::new(0_u32)),
+            code: <Value<u16>>::default(),
+            lo: <Value<u16>>::default(),
+            mid: <Value<u32>>::default(),
+            fill: Rc::new(RefCell::new(
+                (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+            )),
+            tail: <Value<u32>>::default(),
         }
     }
 }
@@ -167,10 +171,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Container> = Rc::new(RefCell::new(Container {
-        len: Rc::new(RefCell::new(0_u32)),
-        u: Rc::new(RefCell::new(<anon_0>::default())),
-    }));
+    let c: Value<Container> = <Value<Container>>::default();
     {
         ((c.as_pointer()) as Ptr<Container>)
             .to_any()

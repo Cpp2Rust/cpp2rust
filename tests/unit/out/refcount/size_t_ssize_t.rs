@@ -127,8 +127,9 @@ fn main_0() -> i32 {
         } as usize),
     ));
     assert!(((*bound.borrow()) == 4_usize));
-    let data: Value<Box<[i32]>> =
-        Rc::new(RefCell::new((0..8).map(|_| 0_i32).collect::<Box<[i32]>>()));
+    let data: Value<Box<[i32]>> = Rc::new(RefCell::new(
+        (0..8).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
+    ));
     let count: Value<usize> = Rc::new(RefCell::new(
         (::std::mem::size_of::<[i32; 8]>() as usize)
             .wrapping_div((::std::mem::size_of::<i32>() as usize)),

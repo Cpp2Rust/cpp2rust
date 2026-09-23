@@ -22,7 +22,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
+        (0..64).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
+    ));
     assert!(
         (((({
             extract_first_0(

@@ -18,7 +18,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut obj: XX = XX { x: 0_i32 };
+    let mut obj: XX = <XX>::default();
     let mut ptr: *mut XX = (&mut obj as *mut XX);
     (*ptr).x = 2;
     let mut c: bool = false;

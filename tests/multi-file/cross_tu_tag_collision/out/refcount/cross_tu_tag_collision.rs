@@ -31,9 +31,7 @@ impl ByteRepr for widget {
     }
 }
 pub fn a_value_0() -> i32 {
-    let w: Value<widget> = Rc::new(RefCell::new(widget {
-        id: Rc::new(RefCell::new(0_i32)),
-    }));
+    let w: Value<widget> = <Value<widget>>::default();
     (*(*w.borrow()).id.borrow_mut()) = 11;
     return (*(*w.borrow()).id.borrow());
 }

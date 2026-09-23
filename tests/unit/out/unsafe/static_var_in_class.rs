@@ -26,7 +26,7 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut c: C = C {};
+    let mut c: C = <C>::default();
     assert!(((unsafe { C::get(&mut c,) }) == (1)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut inner_const_1)) == (2)));
     return 0;

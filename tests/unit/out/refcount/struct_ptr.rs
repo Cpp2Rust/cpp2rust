@@ -37,9 +37,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let obj: Value<XX> = Rc::new(RefCell::new(XX {
-        x: Rc::new(RefCell::new(0_i32)),
-    }));
+    let obj: Value<XX> = Rc::new(RefCell::new(<XX>::default()));
     let ptr: Value<Ptr<XX>> = Rc::new(RefCell::new((obj.as_pointer())));
     (*(*(*ptr.borrow()).upgrade().deref()).x.borrow_mut()) = 2;
     let c: Value<bool> = Rc::new(RefCell::new(false));
