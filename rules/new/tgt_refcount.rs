@@ -18,3 +18,7 @@ fn f3(a0: usize) -> AnyPtr {
 fn f4(a0: AnyPtr) {
     libcc2rs::free_refcount(a0)
 }
+
+fn f5<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+    a0
+}

@@ -18,7 +18,7 @@ pub struct Tracked {
     pub moves: Value<i32>,
 }
 impl Tracked {
-    pub fn Tracked(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -148,7 +148,7 @@ pub fn forward_pack_7(
     return (*digits.borrow());
 }
 impl Pair {
-    pub fn Pair(x: Ptr<Tracked>, y: Ptr<Tracked>) -> Self {
+    pub fn new(x: Ptr<Tracked>, y: Ptr<Tracked>) -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new(Tracked::Tracked_pconstTracked({
                 (x).clone()
@@ -196,7 +196,7 @@ impl ByteRepr for Pair {
     }
 }
 pub fn forward_pack_into_ctor_8(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> Pair {
-    return Pair::Pair({ (args_0).clone() }, { (args_1).clone() });
+    return Pair::new({ (args_0).clone() }, { (args_1).clone() });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -204,19 +204,19 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((({ forward_pack_4() }) == 0));
-    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 1 })));
+    let a: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 1 })));
     assert!((({ forward_pack_5(a.as_pointer(),) }) == (Overload_kLvalueOverload as i32)));
     assert!(((*(*a.borrow()).v.borrow()) == 1));
     assert!(
         (({
-            let _args: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 2 })));
+            let _args: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 2 })));
             forward_pack_6(_args.as_pointer())
         }) == (Overload_kRvalueOverload as i32))
     );
     let i: Value<i32> = Rc::new(RefCell::new(3));
     assert!(
         (({
-            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 4 })));
+            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 4 })));
             let _args_3: Value<i32> = Rc::new(RefCell::new(5));
             forward_pack_7(
                 a.as_pointer(),
@@ -228,10 +228,10 @@ fn main_0() -> i32 {
     );
     assert!(((*(*a.borrow()).v.borrow()) == 1));
     assert!(((*i.borrow()) == 3));
-    let lhs: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 6 })));
+    let lhs: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
     let p: Value<Pair> = Rc::new(RefCell::new(
         ({
-            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::Tracked({ 7 })));
+            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
             forward_pack_into_ctor_8(lhs.as_pointer(), _args_1.as_pointer())
         }),
     ));

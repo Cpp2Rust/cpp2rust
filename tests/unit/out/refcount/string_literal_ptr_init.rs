@@ -26,7 +26,7 @@ impl Default for label {
         label {
             name: Rc::new(RefCell::new(Ptr::<u8>::null())),
             probe: Rc::new(RefCell::new(FnPtr::<fn() -> i32>::null())),
-            mask: Rc::new(RefCell::new(0_i32)),
+            mask: <Value<i32>>::default(),
         }
     }
 }
@@ -112,9 +112,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((({
-            (*(*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
+            (*table_1.with(|rc| rc.borrow().clone())[(1) as usize]
                 .probe
-                .borrow()))()
+                .borrow())
+            .call()
         }) == 1) as i32)
             != 0)
     );

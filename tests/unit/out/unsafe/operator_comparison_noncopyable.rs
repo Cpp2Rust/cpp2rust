@@ -18,7 +18,7 @@ pub struct S {
     data_: i32,
 }
 impl S {
-    pub unsafe fn S(mut data: i32) -> Self {
+    pub unsafe fn new(mut data: i32) -> Self {
         let mut this = Self { data_: data };
         this
     }
@@ -60,9 +60,9 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: S = S::S({ 1 });
-    let mut b: S = S::S({ 2 });
-    let mut c: S = S::S({ 1 });
+    let mut a: S = S::new({ 1 });
+    let mut b: S = S::new({ 2 });
+    let mut c: S = S::new({ 1 });
     assert!(
         (unsafe {
             let _x: *const S = &a;

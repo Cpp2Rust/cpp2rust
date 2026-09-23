@@ -23,7 +23,7 @@ pub struct S {
     data_: Value<i32>,
 }
 impl S {
-    pub fn S(data: i32) -> Self {
+    pub fn new(data: i32) -> Self {
         let data: Value<i32> = Rc::new(RefCell::new(data));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             data_: Rc::new(RefCell::new((*data.borrow()))),
@@ -110,9 +110,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
-    let b: Value<S> = Rc::new(RefCell::new(S::S({ 2 })));
-    let c: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
+    let a: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
+    let b: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
+    let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     assert!(
         ({
             let _x: Ptr<S> = a.as_pointer();

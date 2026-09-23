@@ -66,12 +66,12 @@ impl ByteRepr for Graph {
         }
     }
 }
-#[derive()]
+#[derive(Default)]
 pub struct Partial {
     pub p: Value<Ptr<i32>>,
 }
 impl Partial {
-    pub fn Partial1(q: Ptr<i32>) -> Self {
+    pub fn new_1(q: Ptr<i32>) -> Self {
         let q: Value<Ptr<i32>> = Rc::new(RefCell::new(q));
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
             p: Rc::new(RefCell::new((*q.borrow()).clone())),
@@ -87,13 +87,6 @@ impl Clone for Partial {
         }));
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Default for Partial {
-    fn default() -> Self {
-        Partial {
-            p: Rc::new(RefCell::new(Ptr::<i32>::null())),
-        }
     }
 }
 impl ByteRepr for Partial {
@@ -152,7 +145,7 @@ fn main_0() -> i32 {
         adj: Rc::new(RefCell::new(Ptr::<Ptr<GraphNode>>::null())),
     }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
-    let it: Value<Partial> = Rc::new(RefCell::new(Partial::Partial1({
+    let it: Value<Partial> = Rc::new(RefCell::new(Partial::new_1({
         (arr.as_pointer() as Ptr<i32>)
     })));
     if {

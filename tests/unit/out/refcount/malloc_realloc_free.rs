@@ -88,16 +88,15 @@ fn main_0() -> i32 {
     'loop_: while __do_while || (0 != 0) {
         __do_while = false;
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
-            ({ (*(*pmalloc.borrow()))(::std::mem::size_of::<i32>()) }).reinterpret_cast::<i32>(),
+            ({ (*pmalloc.borrow()).call(::std::mem::size_of::<i32>()) }).reinterpret_cast::<i32>(),
         ));
         (*p.borrow()).write(42);
         assert!((((((*p.borrow()).read()) == 42) as i32) != 0));
-        ({ (*(*pfree.borrow()))(((*p.borrow()).clone() as Ptr<i32>).to_any()) });
+        ({ (*pfree.borrow()).call(((*p.borrow()).clone() as Ptr<i32>).to_any()) });
         let arr: Value<Ptr<i32>> = Rc::new(RefCell::new(
             ({
-                (*(*pmalloc.borrow()))(
-                    (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
-                )
+                (*pmalloc.borrow())
+                    .call((4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)))
             })
             .reinterpret_cast::<i32>(),
         ));
@@ -109,19 +108,18 @@ fn main_0() -> i32 {
         }
         assert!((((((*arr.borrow()).offset((0) as isize).read()) == 0) as i32) != 0));
         assert!((((((*arr.borrow()).offset((3) as isize).read()) == 30) as i32) != 0));
-        ({ (*(*pfree.borrow()))(((*arr.borrow()).clone() as Ptr<i32>).to_any()) });
+        ({ (*pfree.borrow()).call(((*arr.borrow()).clone() as Ptr<i32>).to_any()) });
         let grow: Value<Ptr<i32>> = Rc::new(RefCell::new(
             ({
-                (*(*pmalloc.borrow()))(
-                    (2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
-                )
+                (*pmalloc.borrow())
+                    .call((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)))
             })
             .reinterpret_cast::<i32>(),
         ));
         (*grow.borrow()).offset((0) as isize).write(1);
         (*grow.borrow()).offset((1) as isize).write(2);
         let __rhs = ({
-            (*(*prealloc.borrow()))(
+            (*prealloc.borrow()).call(
                 ((*grow.borrow()).clone() as Ptr<i32>).to_any(),
                 (4_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)),
             )
@@ -134,9 +132,9 @@ fn main_0() -> i32 {
         assert!((((((*grow.borrow()).offset((1) as isize).read()) == 2) as i32) != 0));
         assert!((((((*grow.borrow()).offset((2) as isize).read()) == 3) as i32) != 0));
         assert!((((((*grow.borrow()).offset((3) as isize).read()) == 4) as i32) != 0));
-        ({ (*(*pfree.borrow()))(((*grow.borrow()).clone() as Ptr<i32>).to_any()) });
+        ({ (*pfree.borrow()).call(((*grow.borrow()).clone() as Ptr<i32>).to_any()) });
         let zeros: Value<Ptr<i32>> = Rc::new(RefCell::new(
-            ({ (*(*pcalloc.borrow()))(4_usize, ::std::mem::size_of::<i32>()) })
+            ({ (*pcalloc.borrow()).call(4_usize, ::std::mem::size_of::<i32>()) })
                 .reinterpret_cast::<i32>(),
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
@@ -146,7 +144,7 @@ fn main_0() -> i32 {
             );
             (*i.borrow_mut()).postfix_inc();
         }
-        ({ (*(*pfree.borrow()))(((*zeros.borrow()).clone() as Ptr<i32>).to_any()) });
+        ({ (*pfree.borrow()).call(((*zeros.borrow()).clone() as Ptr<i32>).to_any()) });
     }
     return 0;
 }

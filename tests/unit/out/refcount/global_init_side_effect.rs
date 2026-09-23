@@ -12,7 +12,7 @@ thread_local!(
 #[derive(Clone, ByteRepr, Default)]
 pub struct S {}
 impl S {
-    pub fn S(x: i32) -> Self {
+    pub fn new(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<S> = Rc::new(RefCell::new(Self {}));
         let this: Ptr<S> = __this.as_pointer();
@@ -21,10 +21,10 @@ impl S {
     }
 }
 thread_local!(
-    pub static a_1: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
+    pub static a_1: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
 );
 thread_local!(
-    pub static b_2: Value<S> = Rc::new(RefCell::new(S::S({ 10 })));
+    pub static b_2: Value<S> = Rc::new(RefCell::new(S::new({ 10 })));
 );
 pub fn main() {
     __cpp2rust_init_globals();

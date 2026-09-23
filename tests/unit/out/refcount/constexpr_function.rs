@@ -53,7 +53,7 @@ impl ByteRepr for Flag {
 }
 pub fn use_4(f: Flag) -> i32 {
     let f: Value<Flag> = Rc::new(RefCell::new(f));
-    assert!(({ FlagImpl::operator__Bool(&f.as_pointer(),) }));
+    assert!(({ FlagImpl::to_bool(&f.as_pointer(),) }));
     return (*(*f.borrow()).v.borrow());
 }
 pub fn checked_5(x: i32) -> i32 {
@@ -127,10 +127,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait FlagImpl {
-    fn operator__Bool(&self) -> bool;
+    fn to_bool(&self) -> bool;
 }
 impl FlagImpl for Ptr<Flag> {
-    fn operator__Bool(&self) -> bool {
+    fn to_bool(&self) -> bool {
         return ((*(*(*self).upgrade().deref()).v.borrow()) != 0);
     }
 }

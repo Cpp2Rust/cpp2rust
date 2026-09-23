@@ -19,7 +19,7 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub unsafe fn Tracked(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self {
             v: v,
             copies: 0,
@@ -72,21 +72,21 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Tracked = Tracked::Tracked({ 5 });
+    let mut a: Tracked = Tracked::new({ 5 });
     assert!((((unsafe { chosen_overload_0(&a,) }) as i32) == (Overload_kLvalueOverload as i32)));
     assert!(((a.v) == (5)));
     assert!(
         (((unsafe { chosen_overload_1(&mut a,) }) as i32) == (Overload_kRvalueOverload as i32))
     );
     assert!(((a.v) == (5)));
-    let mut b: Tracked = Tracked::Tracked({ 6 });
+    let mut b: Tracked = Tracked::new({ 6 });
     let mut moved: Tracked =
         (unsafe { copy_or_move_into_param_4(Tracked::Tracked_pmutTracked_rv({ &mut b })) });
     assert!(((moved.v) == (6)));
     assert!(((moved.copies) == (0)));
     assert!(((moved.moves) == (2)));
     assert!(((b.v) == (0)));
-    let mut c: Tracked = Tracked::Tracked({ 7 });
+    let mut c: Tracked = Tracked::new({ 7 });
     let mut copied: Tracked =
         (unsafe { copy_or_move_into_param_4(Tracked::Tracked_pconstTracked({ &c })) });
     assert!(((copied.v) == (7)));

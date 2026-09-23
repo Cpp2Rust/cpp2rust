@@ -12,7 +12,7 @@ pub struct S {
     pub n: Value<Box<[i32]>>,
 }
 impl S {
-    pub fn S(x: i32) -> Self {
+    pub fn new(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(vec![
@@ -74,17 +74,17 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S::S({ 2 })));
+    let s: Value<S> = Rc::new(RefCell::new(S::new({ 2 })));
     assert!((({ sum_0(s.as_pointer(),) }) == 7));
     assert!((({ shuffle_1(3,) }) == 10));
     return 0;
 }
 pub fn shuffle_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
-    let a: Value<S> = Rc::new(RefCell::new(S::S({ (*x.borrow()) })));
+    let a: Value<S> = Rc::new(RefCell::new(S::new({ (*x.borrow()) })));
     let b: Value<S> = Rc::new(RefCell::new(S::S_pmutS_rv({ a.as_pointer() })));
     assert!((*(*a.borrow()).v.borrow()).is_empty());
-    let c: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
+    let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     ({ SImpl::operator_assign_pmutS_rv(&c.as_pointer(), b.as_pointer()) });
     assert!((*(*b.borrow()).v.borrow()).is_empty());
     return ({ sum_0(c.as_pointer()) });

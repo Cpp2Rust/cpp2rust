@@ -61,23 +61,20 @@ fn main_0() -> i32 {
             .borrow())
             == 34)
     );
-    let i: Value<i32> = Rc::new(RefCell::new(({ SImpl::operator_int(&s.as_pointer()) })));
+    let i: Value<i32> = Rc::new(RefCell::new(({ SImpl::to_i32(&s.as_pointer()) })));
     assert!(((*i.borrow()) == 3));
-    assert!(((({ SImpl::operator_int(&s.as_pointer(),) }) + 1) == 4));
-    if ({ SImpl::operator__Bool(&s.as_pointer()) }) {
-        assert!(({ SImpl::operator__Bool(&s.as_pointer(),) }));
+    assert!(((({ SImpl::to_i32(&s.as_pointer(),) }) + 1) == 4));
+    if ({ SImpl::to_bool(&s.as_pointer()) }) {
+        assert!(({ SImpl::to_bool(&s.as_pointer(),) }));
     } else {
         assert!(false);
     }
     let z: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(0)),
     }));
-    assert!(({ SImpl::operator__Bool(&s.as_pointer(),) }));
-    assert!(!({ SImpl::operator__Bool(&z.as_pointer(),) }));
-    assert!(
-        ({ SImpl::operator__Bool(&s.as_pointer(),) })
-            && (!({ SImpl::operator__Bool(&z.as_pointer(),) }))
-    );
+    assert!(({ SImpl::to_bool(&s.as_pointer(),) }));
+    assert!(!({ SImpl::to_bool(&z.as_pointer(),) }));
+    assert!(({ SImpl::to_bool(&s.as_pointer(),) }) && (!({ SImpl::to_bool(&z.as_pointer(),) })));
     let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
     assert!((({ Static::operator_call(6, 7,) }) == 42));
     assert!(
@@ -109,8 +106,8 @@ pub trait SImpl {
     fn operator_call_i32_const(&self, a: i32) -> i32;
     fn operator_call_i32_i32_const(&self, a: i32, b: i32) -> i32;
     fn operator_comma(&self, o: Ptr<S>) -> S;
-    fn operator_int(&self) -> i32;
-    fn operator__Bool(&self) -> bool;
+    fn to_i32(&self) -> i32;
+    fn to_bool(&self) -> bool;
 }
 impl SImpl for Ptr<S> {
     fn operator_call_const(&self) -> i32 {
@@ -133,10 +130,10 @@ impl SImpl for Ptr<S> {
             })),
         };
     }
-    fn operator_int(&self) -> i32 {
+    fn to_i32(&self) -> i32 {
         return (*(*(*self).upgrade().deref()).v.borrow());
     }
-    fn operator__Bool(&self) -> bool {
+    fn to_bool(&self) -> bool {
         return ((*(*(*self).upgrade().deref()).v.borrow()) != 0);
     }
 }

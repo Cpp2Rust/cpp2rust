@@ -34,10 +34,10 @@ impl S {
             v: (((self.v) * (10)) + ((*o).v)),
         };
     }
-    pub unsafe fn operator_int(&self) -> i32 {
+    pub unsafe fn to_i32(&self) -> i32 {
         return self.v;
     }
-    pub unsafe fn operator__Bool(&self) -> bool {
+    pub unsafe fn to_bool(&self) -> bool {
         return ((self.v) != (0));
     }
 }
@@ -54,18 +54,18 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::operator_call_i32_const(&s, 1,) }) == (4)));
     assert!(((unsafe { S::operator_call_i32_i32_const(&s, 1, 2,) }) == (6)));
     assert!((((unsafe { S::operator_comma(&s, &t,) }).v) == (34)));
-    let mut i: i32 = (unsafe { S::operator_int(&s) });
+    let mut i: i32 = (unsafe { S::to_i32(&s) });
     assert!(((i) == (3)));
-    assert!((((unsafe { S::operator_int(&s,) }) + (1)) == (4)));
-    if (unsafe { S::operator__Bool(&s) }) {
-        assert!((unsafe { S::operator__Bool(&s,) }));
+    assert!((((unsafe { S::to_i32(&s,) }) + (1)) == (4)));
+    if (unsafe { S::to_bool(&s) }) {
+        assert!((unsafe { S::to_bool(&s,) }));
     } else {
         assert!(false);
     }
     let mut z: S = S { v: 0 };
-    assert!((unsafe { S::operator__Bool(&s,) }));
-    assert!(!(unsafe { S::operator__Bool(&z,) }));
-    assert!((unsafe { S::operator__Bool(&s,) }) && (!(unsafe { S::operator__Bool(&z,) })));
+    assert!((unsafe { S::to_bool(&s,) }));
+    assert!(!(unsafe { S::to_bool(&z,) }));
+    assert!((unsafe { S::to_bool(&s,) }) && (!(unsafe { S::to_bool(&z,) })));
     let mut st: Static = <Static>::default();
     assert!(((unsafe { Static::operator_call(6, 7,) }) == (42)));
     assert!(((unsafe { S::operator_call_const(&S { v: 5 },) }) == (5)));
