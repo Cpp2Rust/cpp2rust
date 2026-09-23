@@ -24,7 +24,7 @@ impl Outer {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutOuter_rv(&mut self, _a0: *mut Outer) -> *mut Outer {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.inner = (*_a0).inner.take();
         return &mut (*(self as *mut Outer));
     }

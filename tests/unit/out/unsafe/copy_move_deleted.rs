@@ -21,7 +21,7 @@ impl NoCopy {
         (*o).v = 0;
         this
     }
-    pub unsafe fn operator_assign_pmutNoCopy_rv(&mut self, o: *mut NoCopy) -> *mut NoCopy {
+    pub unsafe fn move_assign(&mut self, o: *mut NoCopy) -> *mut NoCopy {
         self.v = (*o).v;
         (*o).v = 0;
         return &mut (*(self as *mut NoCopy));
@@ -42,10 +42,7 @@ impl PrivateCopy {
         (*o).v = 0;
         this
     }
-    pub unsafe fn operator_assign_pmutPrivateCopy_rv(
-        &mut self,
-        o: *mut PrivateCopy,
-    ) -> *mut PrivateCopy {
+    pub unsafe fn move_assign(&mut self, o: *mut PrivateCopy) -> *mut PrivateCopy {
         self.v = (*o).v;
         (*o).v = 0;
         return &mut (*(self as *mut PrivateCopy));
@@ -86,13 +83,10 @@ impl Container {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutContainer_rv(
-        &mut self,
-        _a0: *mut Container,
-    ) -> *mut Container {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Container) -> *mut Container {
         (unsafe {
             let _o: *mut NoCopy = &mut (*_a0).inner;
-            NoCopy::operator_assign_pmutNoCopy_rv(&mut self.inner, _o)
+            NoCopy::move_assign(&mut self.inner, _o)
         });
         self.tag = (*_a0).tag;
         return &mut (*(self as *mut Container));
@@ -114,7 +108,7 @@ unsafe fn main_0() -> i32 {
     let mut a: NoCopy = NoCopy::NoCopy({ 1 });
     let mut b: NoCopy = NoCopy::move_from({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
-    (unsafe { NoCopy::operator_assign_pmutNoCopy_rv(&mut a, &mut b) });
+    (unsafe { NoCopy::move_assign(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
     (unsafe { bump_0((&mut a as *mut NoCopy)) });
     assert!(((a.v) == (2)));
@@ -122,7 +116,7 @@ unsafe fn main_0() -> i32 {
     p.v = 3;
     let mut q: PrivateCopy = PrivateCopy::move_from({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
-    (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy_rv(&mut p, &mut q) });
+    (unsafe { PrivateCopy::move_assign(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
     let mut im: Immovable = Immovable::Immovable();
     im.v = 4;

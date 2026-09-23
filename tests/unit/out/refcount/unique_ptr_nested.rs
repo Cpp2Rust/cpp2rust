@@ -104,10 +104,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait OuterImpl {
-    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
-    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         ((*(*self).upgrade().deref()).inner.as_pointer() as Ptr<Option<Value<Inner>>>)
             .write((*(*_a0.upgrade().deref()).inner.borrow_mut()).take());
         return (*self).clone();

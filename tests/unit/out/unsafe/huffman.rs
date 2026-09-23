@@ -135,7 +135,7 @@ impl MinHeap {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutMinHeap_rv(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
+    pub unsafe fn move_assign(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
         self.size = (*_a0).size;
         self.capacity = (*_a0).capacity;
         self.arr = (*_a0).arr.take();

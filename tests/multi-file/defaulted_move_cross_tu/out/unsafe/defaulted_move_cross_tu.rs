@@ -27,7 +27,7 @@ impl S {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutS_rv(&mut self, _a0: *mut S) -> *mut S {
+    pub unsafe fn move_assign(&mut self, _a0: *mut S) -> *mut S {
         self.v = std::mem::take(&mut (*_a0).v);
         {
             if 8_usize != 0 {
@@ -70,7 +70,7 @@ pub unsafe fn shuffle_1(mut x: i32) -> i32 {
     let mut b: S = S::move_from({ &mut a });
     assert!(a.v.is_empty());
     let mut c: S = S::S({ 1 });
-    (unsafe { S::operator_assign_pmutS_rv(&mut c, &mut b) });
+    (unsafe { S::move_assign(&mut c, &mut b) });
     assert!(b.v.is_empty());
     return (unsafe { sum_0(&c) });
 }

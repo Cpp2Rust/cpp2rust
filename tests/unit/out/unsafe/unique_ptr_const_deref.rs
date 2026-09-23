@@ -18,7 +18,7 @@ impl Holder {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutHolder_rv(&mut self, _a0: *mut Holder) -> *mut Holder {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Holder) -> *mut Holder {
         self.val = (*_a0).val.take();
         return &mut (*(self as *mut Holder));
     }

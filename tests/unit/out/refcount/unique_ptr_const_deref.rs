@@ -62,10 +62,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait HolderImpl {
-    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
 }
 impl HolderImpl for Ptr<Holder> {
-    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         ((*(*self).upgrade().deref()).val.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).val.borrow_mut()).take());
         return (*self).clone();

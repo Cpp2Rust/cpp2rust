@@ -183,10 +183,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait NonCopyableImpl {
-    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
+    fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable>;
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
-    fn operator_assign_pmutNonCopyable_rv(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
+    fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         ((*(*self).upgrade().deref()).value.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
         return (*self).clone();

@@ -192,38 +192,38 @@ fn main_0() -> i32 {
     let a: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 1 }, { 100 })));
     let b: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 2 }, { 200 })));
     let c: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 3 }, { 300 })));
-    ({ PartialImpl::operator_assign(&a.as_pointer(), b.as_pointer()) });
+    ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 2) && ((*(*a.borrow()).keep.borrow()) == 100));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 1));
     ({
-        PartialImpl::operator_assign(
+        PartialImpl::copy_assign(
             &c.as_pointer(),
-            ({ PartialImpl::operator_assign(&a.as_pointer(), b.as_pointer()) }),
+            ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) }),
         )
     });
     assert!(((*(*c.borrow()).v.borrow()) == 2) && ((*(*c.borrow()).keep.borrow()) == 300));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
         let _o: Ptr<Partial> = a.as_pointer();
-        PartialImpl::operator_assign(&a.as_pointer(), _o)
+        PartialImpl::copy_assign(&a.as_pointer(), _o)
     });
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
         let _o: Value<Partial> = Rc::new(RefCell::new(Partial::Partial({ 9 }, { 900 })));
-        PartialImpl::operator_assign(&a.as_pointer(), _o.as_pointer())
+        PartialImpl::copy_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(((*(*a.borrow()).v.borrow()) == 9) && ((*(*a.borrow()).keep.borrow()) == 100));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 4));
     let ra: Ptr<Partial> = a.as_pointer();
     ({
         let _o: Ptr<Partial> = c.as_pointer();
-        PartialImpl::operator_assign(&ra, _o)
+        PartialImpl::copy_assign(&ra, _o)
     });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     let pa: Value<Ptr<Partial>> = Rc::new(RefCell::new((a.as_pointer())));
     ({
         let _o: Ptr<Partial> = b.as_pointer();
-        PartialImpl::operator_assign(&(*pa.borrow()), _o)
+        PartialImpl::copy_assign(&(*pa.borrow()), _o)
     });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
@@ -234,9 +234,9 @@ fn main_0() -> i32 {
             Partial::Partial({ 6 }, { 60 }),
         ]))),
     }));
-    ({ PartialImpl::operator_assign(&(*h.borrow()).p.as_pointer(), b.as_pointer()) });
+    ({ PartialImpl::copy_assign(&(*h.borrow()).p.as_pointer(), b.as_pointer()) });
     ({
-        PartialImpl::operator_assign(
+        PartialImpl::copy_assign(
             &((*h.borrow()).arr.as_pointer() as Ptr<Partial>).offset(1),
             c.as_pointer(),
         )
@@ -262,7 +262,7 @@ fn main_0() -> i32 {
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
     let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::RefQualified()));
-    ({ RefQualifiedImpl::operator_assign(&r1.as_pointer(), r.as_pointer()) });
+    ({ RefQualifiedImpl::copy_assign(&r1.as_pointer(), r.as_pointer()) });
     assert!(((*(*r1.borrow()).mark.borrow()) == 1));
     return 0;
 }
@@ -283,10 +283,10 @@ impl NonConstAssignImpl for Ptr<NonConstAssign> {
     }
 }
 pub trait PartialImpl {
-    fn operator_assign(&self, o: Ptr<Partial>) -> Ptr<Partial>;
+    fn copy_assign(&self, o: Ptr<Partial>) -> Ptr<Partial>;
 }
 impl PartialImpl for Ptr<Partial> {
-    fn operator_assign(&self, o: Ptr<Partial>) -> Ptr<Partial> {
+    fn copy_assign(&self, o: Ptr<Partial>) -> Ptr<Partial> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
@@ -297,10 +297,10 @@ impl PartialImpl for Ptr<Partial> {
     }
 }
 pub trait RefQualifiedImpl {
-    fn operator_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified>;
+    fn copy_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified>;
 }
 impl RefQualifiedImpl for Ptr<RefQualified> {
-    fn operator_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
+    fn copy_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();

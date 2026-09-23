@@ -541,12 +541,7 @@ fn main_0() -> i32 {
             1
         })));
     (*m3.borrow_mut()) = (*m1.borrow()).clone();
-    ({
-        DefaultCopyUserMoveImpl::operator_assign_pmutDefaultCopyUserMove_rv(
-            &m4.as_pointer(),
-            m1.as_pointer(),
-        )
-    });
+    ({ DefaultCopyUserMoveImpl::move_assign(&m4.as_pointer(), m1.as_pointer()) });
     assert!(
         (((*(*m3.borrow()).v.borrow()) == 7) && ((*(*m4.borrow()).v.borrow()) == 7))
             && ((*(*m1.borrow()).v.borrow()) == 0)
@@ -573,18 +568,8 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(UserCopyDefaultMove::UserCopyDefaultMove({
             1
         })));
-    ({
-        UserCopyDefaultMoveImpl::operator_assign_pconstUserCopyDefaultMove(
-            &u3.as_pointer(),
-            u2.as_pointer(),
-        )
-    });
-    ({
-        UserCopyDefaultMoveImpl::operator_assign_pmutUserCopyDefaultMove_rv(
-            &u4.as_pointer(),
-            u2.as_pointer(),
-        )
-    });
+    ({ UserCopyDefaultMoveImpl::copy_assign(&u3.as_pointer(), u2.as_pointer()) });
+    ({ UserCopyDefaultMoveImpl::move_assign(&u4.as_pointer(), u2.as_pointer()) });
     assert!(((*(*u3.borrow()).v.borrow()) == 108) && ((*(*u4.borrow()).v.borrow()) == 8));
     let p: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 3 })));
     let q: Value<Buffer> = Rc::new(RefCell::new(Buffer::move_from({ p.as_pointer() })));
@@ -597,7 +582,7 @@ fn main_0() -> i32 {
             && ((*(*p.borrow()).data.borrow()).is_empty())
     );
     let r: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 1 })));
-    ({ BufferImpl::operator_assign_pmutBuffer_rv(&r.as_pointer(), q.as_pointer()) });
+    ({ BufferImpl::move_assign(&r.as_pointer(), q.as_pointer()) });
     assert!(
         ((((*(*r.borrow()).n.borrow()) == 3) && ((*(*r.borrow()).data.borrow()).len() == 3_usize))
             && ((*(*r.borrow()).arr.borrow())[(1) as usize] == 4))
@@ -668,7 +653,7 @@ fn main_0() -> i32 {
             && (((*(*o1.borrow()).p.borrow()).as_pointer()).is_null())
     );
     let o3: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
-    ({ OwnerImpl::operator_assign_pmutOwner_rv(&o3.as_pointer(), o2.as_pointer()) });
+    ({ OwnerImpl::move_assign(&o3.as_pointer(), o2.as_pointer()) });
     assert!(
         ((((*(*o3.borrow()).n.borrow()) == 5)
             && ((((*o3.borrow()).data.as_pointer() as Ptr<i32>)
@@ -698,7 +683,7 @@ fn main_0() -> i32 {
     );
     let h3: Value<Holder> = Rc::new(RefCell::new(Holder::Holder({ 1 })));
     let _dtor_h3 = ScopedDestructor::new(&h3, |__p| __p.destructor());
-    ({ HolderImpl::operator_assign_pmutHolder_rv(&h3.as_pointer(), h2.as_pointer()) });
+    ({ HolderImpl::move_assign(&h3.as_pointer(), h2.as_pointer()) });
     assert!(
         ((((*(*(*h3.borrow()).inner.borrow()).x.borrow()) == 4)
             && ((*(*(*h3.borrow()).e.borrow()).arr.borrow())[(1) as usize] == 5))
@@ -708,10 +693,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait BufferImpl {
-    fn operator_assign_pmutBuffer_rv(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer>;
+    fn move_assign(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer>;
 }
 impl BufferImpl for Ptr<Buffer> {
-    fn operator_assign_pmutBuffer_rv(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer> {
+    fn move_assign(&self, _a0: Ptr<Buffer>) -> Ptr<Buffer> {
         ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
         ));
@@ -733,16 +718,10 @@ impl BufferImpl for Ptr<Buffer> {
     }
 }
 pub trait DefaultCopyUserMoveImpl {
-    fn operator_assign_pmutDefaultCopyUserMove_rv(
-        &self,
-        o: Ptr<DefaultCopyUserMove>,
-    ) -> Ptr<DefaultCopyUserMove>;
+    fn move_assign(&self, o: Ptr<DefaultCopyUserMove>) -> Ptr<DefaultCopyUserMove>;
 }
 impl DefaultCopyUserMoveImpl for Ptr<DefaultCopyUserMove> {
-    fn operator_assign_pmutDefaultCopyUserMove_rv(
-        &self,
-        o: Ptr<DefaultCopyUserMove>,
-    ) -> Ptr<DefaultCopyUserMove> {
+    fn move_assign(&self, o: Ptr<DefaultCopyUserMove>) -> Ptr<DefaultCopyUserMove> {
         let __rhs = (*(*o.upgrade().deref()).v.borrow());
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
         (*(*o.upgrade().deref()).v.borrow_mut()) = 0;
@@ -756,11 +735,11 @@ impl ExplicitImpl for Ptr<Explicit> {
     fn destructor(&self) {}
 }
 pub trait HolderImpl {
-    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder>;
     fn destructor(&self);
 }
 impl HolderImpl for Ptr<Holder> {
-    fn operator_assign_pmutHolder_rv(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
+    fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         let __rhs = (*(*_a0.upgrade().deref()).inner.borrow()).clone();
         (*(*(*self).upgrade().deref()).inner.borrow_mut()) = __rhs;
         let __rhs = (*(*_a0.upgrade().deref()).e.borrow()).clone();
@@ -774,10 +753,10 @@ impl HolderImpl for Ptr<Holder> {
     }
 }
 pub trait OwnerImpl {
-    fn operator_assign_pmutOwner_rv(&self, _a0: Ptr<Owner>) -> Ptr<Owner>;
+    fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner>;
 }
 impl OwnerImpl for Ptr<Owner> {
-    fn operator_assign_pmutOwner_rv(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
+    fn move_assign(&self, _a0: Ptr<Owner>) -> Ptr<Owner> {
         ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
         ));
@@ -798,28 +777,16 @@ impl OwnerImpl for Ptr<Owner> {
     }
 }
 pub trait UserCopyDefaultMoveImpl {
-    fn operator_assign_pconstUserCopyDefaultMove(
-        &self,
-        o: Ptr<UserCopyDefaultMove>,
-    ) -> Ptr<UserCopyDefaultMove>;
-    fn operator_assign_pmutUserCopyDefaultMove_rv(
-        &self,
-        _a0: Ptr<UserCopyDefaultMove>,
-    ) -> Ptr<UserCopyDefaultMove>;
+    fn copy_assign(&self, o: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove>;
+    fn move_assign(&self, _a0: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove>;
 }
 impl UserCopyDefaultMoveImpl for Ptr<UserCopyDefaultMove> {
-    fn operator_assign_pconstUserCopyDefaultMove(
-        &self,
-        o: Ptr<UserCopyDefaultMove>,
-    ) -> Ptr<UserCopyDefaultMove> {
+    fn copy_assign(&self, o: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
         let __rhs = ((*(*o.upgrade().deref()).v.borrow()) + 100);
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
         return (*self).clone();
     }
-    fn operator_assign_pmutUserCopyDefaultMove_rv(
-        &self,
-        _a0: Ptr<UserCopyDefaultMove>,
-    ) -> Ptr<UserCopyDefaultMove> {
+    fn move_assign(&self, _a0: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
         let __rhs = (*(*_a0.upgrade().deref()).v.borrow());
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
         return (*self).clone();

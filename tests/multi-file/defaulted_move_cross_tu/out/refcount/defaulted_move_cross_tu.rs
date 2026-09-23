@@ -87,15 +87,15 @@ pub fn shuffle_1(x: i32) -> i32 {
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
     assert!((*(*a.borrow()).v.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
-    ({ SImpl::operator_assign_pmutS_rv(&c.as_pointer(), b.as_pointer()) });
+    ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
     assert!((*(*b.borrow()).v.borrow()).is_empty());
     return ({ sum_0(c.as_pointer()) });
 }
 pub trait SImpl {
-    fn operator_assign_pmutS_rv(&self, _a0: Ptr<S>) -> Ptr<S>;
+    fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_assign_pmutS_rv(&self, _a0: Ptr<S>) -> Ptr<S> {
+    fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
         ((*(*self).upgrade().deref()).v.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
         ));

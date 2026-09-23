@@ -45,7 +45,7 @@ impl Buffer {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)).prefix_inc();
         this
     }
-    pub unsafe fn operator_assign(&mut self, o: *const Buffer) -> *mut Buffer {
+    pub unsafe fn copy_assign(&mut self, o: *const Buffer) -> *mut Buffer {
         if (((self as *mut Buffer).cast_const()) == (o)) {
             return &mut (*(self as *mut Buffer));
         }
@@ -101,7 +101,7 @@ unsafe fn main_0() -> i32 {
         assert!(((a.data[(0) as usize]) == (0)));
         let mut c: Buffer = Buffer::Buffer({ 2 });
         let _dtor_c = ScopedDestructorUnsafe::new(&raw mut c, Buffer::destructor);
-        (unsafe { Buffer::operator_assign(&mut c, &a) });
+        (unsafe { Buffer::copy_assign(&mut c, &a) });
         assert!(((c.size) == (4)) && ((c.data[(3) as usize]) == (3)));
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (3))
@@ -109,7 +109,7 @@ unsafe fn main_0() -> i32 {
         );
         (unsafe {
             let _o: *const Buffer = &c;
-            Buffer::operator_assign(&mut c, _o)
+            Buffer::copy_assign(&mut c, _o)
         });
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2)));
         assert!(((unsafe { sum_2(&a,) }) == (6)));
@@ -121,7 +121,7 @@ unsafe fn main_0() -> i32 {
                 && ((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (3))
         );
         assert!(((a.size) == (4)) && ((a.data[(3) as usize]) == (3)));
-        (unsafe { Buffer::operator_assign(&mut d, &b) });
+        (unsafe { Buffer::copy_assign(&mut d, &b) });
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (4)));
         assert!(((b.data[(0) as usize]) == (100)) && ((d.data[(0) as usize]) == (100)));
     }

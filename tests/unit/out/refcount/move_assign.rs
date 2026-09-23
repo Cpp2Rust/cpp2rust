@@ -85,17 +85,17 @@ fn main_0() -> i32 {
     let a: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 1 })));
     let b: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 2 })));
     let c: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 3 })));
-    ({ MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&a.as_pointer(), b.as_pointer()) });
+    ({ MoveOnlyImpl::move_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
     assert!(((*(*b.borrow()).v.borrow()) == 0));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 3 })));
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&b.as_pointer(), _o.as_pointer())
+        MoveOnlyImpl::move_assign(&b.as_pointer(), _o.as_pointer())
     });
     ({
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(
+        MoveOnlyImpl::move_assign(
             &c.as_pointer(),
-            ({ MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&a.as_pointer(), b.as_pointer()) }),
+            ({ MoveOnlyImpl::move_assign(&a.as_pointer(), b.as_pointer()) }),
         )
     });
     assert!(
@@ -104,24 +104,24 @@ fn main_0() -> i32 {
     );
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 5 })));
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&a.as_pointer(), _o.as_pointer())
+        MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(((*(*a.borrow()).v.borrow()) == 5));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(({ make_0(6) })));
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&a.as_pointer(), _o.as_pointer())
+        MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
     assert!(((*(*a.borrow()).v.borrow()) == 6));
     ({
         let _o: Ptr<MoveOnly> = a.as_pointer();
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(&a.as_pointer(), _o)
+        MoveOnlyImpl::move_assign(&a.as_pointer(), _o)
     });
     assert!(((*(*a.borrow()).v.borrow()) == 6));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     (*vec_.borrow_mut()).push(MoveOnly::MoveOnly({ 7 }));
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 8 })));
     ({
-        MoveOnlyImpl::operator_assign_pmutMoveOnly_rv(
+        MoveOnlyImpl::move_assign(
             &(vec_.as_pointer() as Ptr<MoveOnly>).offset(0_usize),
             d.as_pointer(),
         )
@@ -185,10 +185,10 @@ impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
     }
 }
 pub trait MoveOnlyImpl {
-    fn operator_assign_pmutMoveOnly_rv(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly>;
+    fn move_assign(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly>;
 }
 impl MoveOnlyImpl for Ptr<MoveOnly> {
-    fn operator_assign_pmutMoveOnly_rv(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly> {
+    fn move_assign(&self, o: Ptr<MoveOnly>) -> Ptr<MoveOnly> {
         if ((*self) == (o)) {
             return (*self).clone();
         }

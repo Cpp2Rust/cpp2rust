@@ -152,13 +152,13 @@ fn main_0() -> i32 {
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!(((*(*d.borrow()).size.borrow()) == 2) && (moves_2.with(|rc| *rc.borrow()) == 2));
-        ({ BufferImpl::operator_assign_pconstBuffer(&d.as_pointer(), b.as_pointer()) });
+        ({ BufferImpl::copy_assign(&d.as_pointer(), b.as_pointer()) });
         assert!(
             (((*(*d.borrow()).size.borrow()) == 4)
                 && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100))
                 && (copies_1.with(|rc| *rc.borrow()) == 2)
         );
-        ({ BufferImpl::operator_assign_pmutBuffer_rv(&d.as_pointer(), c.as_pointer()) });
+        ({ BufferImpl::move_assign(&d.as_pointer(), c.as_pointer()) });
         assert!(
             (((*(*d.borrow()).data.borrow())[(0) as usize] == 0)
                 && ((*(*c.borrow()).size.borrow()) == 0))
@@ -166,7 +166,7 @@ fn main_0() -> i32 {
         );
         ({
             let _o: Ptr<Buffer> = d.as_pointer();
-            BufferImpl::operator_assign_pmutBuffer_rv(&d.as_pointer(), _o)
+            BufferImpl::move_assign(&d.as_pointer(), _o)
         });
         assert!(((*(*d.borrow()).size.borrow()) == 4) && (moves_2.with(|rc| *rc.borrow()) == 3));
     }
@@ -175,14 +175,14 @@ fn main_0() -> i32 {
 }
 pub trait BufferImpl {
     fn destructor(&self);
-    fn operator_assign_pconstBuffer(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
-    fn operator_assign_pmutBuffer_rv(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
+    fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
+    fn move_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer>;
 }
 impl BufferImpl for Ptr<Buffer> {
     fn destructor(&self) {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_dec();
     }
-    fn operator_assign_pconstBuffer(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
+    fn copy_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
@@ -197,7 +197,7 @@ impl BufferImpl for Ptr<Buffer> {
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
-    fn operator_assign_pmutBuffer_rv(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
+    fn move_assign(&self, o: Ptr<Buffer>) -> Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }

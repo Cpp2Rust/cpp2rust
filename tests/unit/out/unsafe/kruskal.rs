@@ -146,10 +146,7 @@ impl DisjointSet {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutDisjointSet_rv(
-        &mut self,
-        _a0: *mut DisjointSet,
-    ) -> *mut DisjointSet {
+    pub unsafe fn move_assign(&mut self, _a0: *mut DisjointSet) -> *mut DisjointSet {
         self.rank = (*_a0).rank.take();
         self.parent = (*_a0).parent.take();
         self.n = (*_a0).n;
@@ -172,7 +169,7 @@ impl Graph {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutGraph_rv(&mut self, _a0: *mut Graph) -> *mut Graph {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Graph) -> *mut Graph {
         self.edges = (*_a0).edges.take();
         self.V = (*_a0).V;
         self.E = (*_a0).E;

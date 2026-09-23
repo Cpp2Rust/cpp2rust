@@ -419,7 +419,7 @@ pub trait DisjointSetImpl {
     fn makeSet(&self);
     fn find(&self, x: i32) -> i32;
     fn merge(&self, x: i32, y: i32);
-    fn operator_assign_pmutDisjointSet_rv(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet>;
+    fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet>;
 }
 impl DisjointSetImpl for Ptr<DisjointSet> {
     fn makeSet(&self) {
@@ -516,7 +516,7 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
                 .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
     }
-    fn operator_assign_pmutDisjointSet_rv(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
+    fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
         ((*(*self).upgrade().deref()).rank.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
             .write((*(*_a0.upgrade().deref()).rank.borrow_mut()).take());
         ((*(*self).upgrade().deref()).parent.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>)
@@ -527,10 +527,10 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
     }
 }
 pub trait GraphImpl {
-    fn operator_assign_pmutGraph_rv(&self, _a0: Ptr<Graph>) -> Ptr<Graph>;
+    fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph>;
 }
 impl GraphImpl for Ptr<Graph> {
-    fn operator_assign_pmutGraph_rv(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
+    fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
         ((*(*self).upgrade().deref()).edges.as_pointer() as Ptr<Option<Value<Box<[Edge]>>>>)
             .write((*(*_a0.upgrade().deref()).edges.borrow_mut()).take());
         let __rhs = (*(*_a0.upgrade().deref()).V.borrow());

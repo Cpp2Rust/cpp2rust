@@ -25,7 +25,7 @@ impl Partial {
         };
         this
     }
-    pub unsafe fn operator_assign(&mut self, o: *const Partial) -> *mut Partial {
+    pub unsafe fn copy_assign(&mut self, o: *const Partial) -> *mut Partial {
         if (((self as *mut Partial).cast_const()) == (o)) {
             return &mut (*(self as *mut Partial));
         }
@@ -79,7 +79,7 @@ impl RefQualified {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn operator_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
+    pub unsafe fn copy_assign(&mut self, o: *const RefQualified) -> *mut RefQualified {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut RefQualified));
     }
@@ -113,38 +113,33 @@ unsafe fn main_0() -> i32 {
     let mut a: Partial = Partial::Partial({ 1 }, { 100 });
     let mut b: Partial = Partial::Partial({ 2 }, { 200 });
     let mut c: Partial = Partial::Partial({ 3 }, { 300 });
-    (unsafe { Partial::operator_assign(&mut a, &b) });
+    (unsafe { Partial::copy_assign(&mut a, &b) });
     assert!(((a.v) == (2)) && ((a.keep) == (100)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (1)));
-    (unsafe {
-        Partial::operator_assign(
-            &mut c,
-            &(*(unsafe { Partial::operator_assign(&mut a, &b) })),
-        )
-    });
+    (unsafe { Partial::copy_assign(&mut c, &(*(unsafe { Partial::copy_assign(&mut a, &b) }))) });
     assert!(((c.v) == (2)) && ((c.keep) == (300)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
     (unsafe {
         let _o: *const Partial = &a;
-        Partial::operator_assign(&mut a, _o)
+        Partial::copy_assign(&mut a, _o)
     });
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (3)));
     (unsafe {
         let mut _o: Partial = Partial::Partial({ 9 }, { 900 });
-        Partial::operator_assign(&mut a, &mut _o)
+        Partial::copy_assign(&mut a, &mut _o)
     });
     assert!(((a.v) == (9)) && ((a.keep) == (100)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (4)));
     let ra: *mut Partial = &mut a;
     (unsafe {
         let _o: *const Partial = &c;
-        Partial::operator_assign(&mut (*ra), _o)
+        Partial::copy_assign(&mut (*ra), _o)
     });
     assert!(((a.v) == (2)));
     let mut pa: *mut Partial = (&mut a as *mut Partial);
     (unsafe {
         let _o: *const Partial = &b;
-        Partial::operator_assign(&mut (*pa), _o)
+        Partial::copy_assign(&mut (*pa), _o)
     });
     assert!(((a.v) == (2)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (6)));
@@ -155,8 +150,8 @@ unsafe fn main_0() -> i32 {
             Partial::Partial({ 6 }, { 60 }),
         ],
     };
-    (unsafe { Partial::operator_assign(&mut h.p, &b) });
-    (unsafe { Partial::operator_assign(&mut h.arr[(1) as usize], &c) });
+    (unsafe { Partial::copy_assign(&mut h.p, &b) });
+    (unsafe { Partial::copy_assign(&mut h.arr[(1) as usize], &c) });
     assert!(((h.p.v) == (2)) && ((h.p.keep) == (40)));
     assert!(((h.arr[(1) as usize].v) == (2)) && ((h.arr[(1) as usize].keep) == (60)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut assigns_0)) == (8)));
@@ -170,7 +165,7 @@ unsafe fn main_0() -> i32 {
     assert!(((n2.mark) == (10)));
     let mut r: RefQualified = RefQualified::RefQualified();
     let mut r1: RefQualified = RefQualified::RefQualified();
-    (unsafe { RefQualified::operator_assign(&mut r1, &r) });
+    (unsafe { RefQualified::copy_assign(&mut r1, &r) });
     assert!(((r1.mark) == (1)));
     return 0;
 }

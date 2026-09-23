@@ -21,10 +21,7 @@ impl SafePointer {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutSafePointer_rv(
-        &mut self,
-        _a0: *mut SafePointer,
-    ) -> *mut SafePointer {
+    pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
         self.ptr = (*_a0).ptr.take();
         return &mut (*(self as *mut SafePointer));
     }

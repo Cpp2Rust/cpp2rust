@@ -43,10 +43,7 @@ impl NonCopyable {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutNonCopyable_rv(
-        &mut self,
-        _a0: *mut NonCopyable,
-    ) -> *mut NonCopyable {
+    pub unsafe fn move_assign(&mut self, _a0: *mut NonCopyable) -> *mut NonCopyable {
         self.value = (*_a0).value.take();
         return &mut (*(self as *mut NonCopyable));
     }
