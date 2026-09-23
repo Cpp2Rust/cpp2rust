@@ -12,7 +12,7 @@ pub struct Holder {
     pub val: Option<Box<i32>>,
 }
 impl Holder {
-    pub unsafe fn Holder_pmutHolder_rv(_a0: *mut Holder) -> Self {
+    pub unsafe fn move_from(_a0: *mut Holder) -> Self {
         let mut this = Self {
             val: (*_a0).val.take(),
         };

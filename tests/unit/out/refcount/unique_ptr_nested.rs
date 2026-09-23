@@ -41,7 +41,7 @@ pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
 impl Outer {
-    pub fn Outer_pmutOuter_rv(_a0: Ptr<Outer>) -> Self {
+    pub fn move_from(_a0: Ptr<Outer>) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             inner: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),

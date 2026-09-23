@@ -24,7 +24,7 @@ impl S {
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn S_pmutS_rv(_a0: Ptr<S>) -> Self {
+    pub fn move_from(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(std::mem::take(
                 &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
@@ -84,7 +84,7 @@ fn main_0() -> i32 {
 pub fn shuffle_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let a: Value<S> = Rc::new(RefCell::new(S::S({ (*x.borrow()) })));
-    let b: Value<S> = Rc::new(RefCell::new(S::S_pmutS_rv({ a.as_pointer() })));
+    let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
     assert!((*(*a.borrow()).v.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
     ({ SImpl::operator_assign_pmutS_rv(&c.as_pointer(), b.as_pointer()) });

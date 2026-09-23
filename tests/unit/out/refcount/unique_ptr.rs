@@ -11,7 +11,7 @@ pub struct SafePointer {
     pub ptr: Value<Option<Value<i32>>>,
 }
 impl SafePointer {
-    pub fn SafePointer_pmutSafePointer_rv(_a0: Ptr<SafePointer>) -> Self {
+    pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
         let __this: Value<SafePointer> = Rc::new(RefCell::new(Self {
             ptr: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).ptr.borrow_mut()).take(),

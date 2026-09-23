@@ -19,7 +19,7 @@ impl MoveOnly {
         let this: Ptr<MoveOnly> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn MoveOnly_pmutMoveOnly_rv(o: Ptr<MoveOnly>) -> Self {
+    pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
         }));
@@ -75,7 +75,7 @@ impl ByteRepr for ConstMoveAssign {
 pub fn make_0(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ (*v.borrow()) })));
-    return MoveOnly::MoveOnly_pmutMoveOnly_rv({ m.as_pointer() });
+    return MoveOnly::move_from({ m.as_pointer() });
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -25,7 +25,7 @@ impl Partial {
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Partial_pconstPartial(o: Ptr<Partial>) -> Self {
+    pub fn copy_from(o: Ptr<Partial>) -> Self {
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
             keep: Rc::new(RefCell::new((*(*o.upgrade().deref()).keep.borrow()))),
@@ -40,7 +40,7 @@ impl Clone for Partial {
             v: self.v.clone(),
             keep: self.keep.clone(),
         }));
-        Partial::Partial_pconstPartial(__src.as_pointer())
+        Partial::copy_from(__src.as_pointer())
     }
 }
 impl ByteRepr for Partial {
@@ -146,14 +146,10 @@ pub struct Holder {
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            p: Rc::new(RefCell::new(Partial::Partial_pconstPartial({
-                self.p.as_pointer()
-            }))),
+            p: Rc::new(RefCell::new(Partial::copy_from({ self.p.as_pointer() }))),
             arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| {
-                    Partial::Partial_pconstPartial({
-                        (self.arr.as_pointer() as Ptr<Partial>).offset(__i)
-                    })
+                    Partial::copy_from({ (self.arr.as_pointer() as Ptr<Partial>).offset(__i) })
                 },
             )))),
         }));

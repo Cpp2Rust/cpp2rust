@@ -26,7 +26,7 @@ impl Tracked {
         let this: Ptr<Tracked> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Tracked_pconstTracked(o: Ptr<Tracked>) -> Self {
+    pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
             copies: Rc::new(RefCell::new(
@@ -37,7 +37,7 @@ impl Tracked {
         let this: Ptr<Tracked> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Tracked_pmutTracked_rv(o: Ptr<Tracked>) -> Self {
+    pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
             copies: Rc::new(RefCell::new((*(*o.upgrade().deref()).copies.borrow()))),
@@ -55,7 +55,7 @@ impl Clone for Tracked {
             copies: self.copies.clone(),
             moves: self.moves.clone(),
         }));
-        Tracked::Tracked_pconstTracked(__src.as_pointer())
+        Tracked::copy_from(__src.as_pointer())
     }
 }
 impl ByteRepr for Tracked {
@@ -84,9 +84,7 @@ pub fn chosen_overload_1(_a0: Ptr<Tracked>) -> Overload {
 impl Holder {
     pub fn Holder1(x: Ptr<Tracked>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            t: Rc::new(RefCell::new(Tracked::Tracked_pconstTracked({
-                (x).clone()
-            }))),
+            t: Rc::new(RefCell::new(Tracked::copy_from({ (x).clone() }))),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -95,9 +93,7 @@ impl Holder {
 impl Holder {
     pub fn Holder2(x: Ptr<Tracked>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            t: Rc::new(RefCell::new(Tracked::Tracked_pmutTracked_rv({
-                (x).clone()
-            }))),
+            t: Rc::new(RefCell::new(Tracked::move_from({ (x).clone() }))),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -110,9 +106,7 @@ pub struct Holder {
 impl Clone for Holder {
     fn clone(&self) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            t: Rc::new(RefCell::new(Tracked::Tracked_pconstTracked({
-                self.t.as_pointer()
-            }))),
+            t: Rc::new(RefCell::new(Tracked::copy_from({ self.t.as_pointer() }))),
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

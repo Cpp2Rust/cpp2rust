@@ -16,7 +16,7 @@ impl NoCopy {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn NoCopy_pmutNoCopy_rv(o: *mut NoCopy) -> Self {
+    pub unsafe fn move_from(o: *mut NoCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
@@ -37,7 +37,7 @@ impl PrivateCopy {
         let mut this = Self { v: 0 };
         this
     }
-    pub unsafe fn PrivateCopy_pmutPrivateCopy_rv(o: *mut PrivateCopy) -> Self {
+    pub unsafe fn move_from(o: *mut PrivateCopy) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
@@ -79,9 +79,9 @@ pub struct Container {
     pub tag: i32,
 }
 impl Container {
-    pub unsafe fn Container_pmutContainer_rv(_a0: *mut Container) -> Self {
+    pub unsafe fn move_from(_a0: *mut Container) -> Self {
         let mut this = Self {
-            inner: NoCopy::NoCopy_pmutNoCopy_rv({ &mut (*_a0).inner }),
+            inner: NoCopy::move_from({ &mut (*_a0).inner }),
             tag: (*_a0).tag,
         };
         this
@@ -112,7 +112,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: NoCopy = NoCopy::NoCopy({ 1 });
-    let mut b: NoCopy = NoCopy::NoCopy_pmutNoCopy_rv({ &mut a });
+    let mut b: NoCopy = NoCopy::move_from({ &mut a });
     assert!(((b.v) == (1)) && ((a.v) == (0)));
     (unsafe { NoCopy::operator_assign_pmutNoCopy_rv(&mut a, &mut b) });
     assert!(((a.v) == (1)) && ((b.v) == (0)));
@@ -120,7 +120,7 @@ unsafe fn main_0() -> i32 {
     assert!(((a.v) == (2)));
     let mut p: PrivateCopy = PrivateCopy::PrivateCopy();
     p.v = 3;
-    let mut q: PrivateCopy = PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({ &mut p });
+    let mut q: PrivateCopy = PrivateCopy::move_from({ &mut p });
     assert!(((q.v) == (3)) && ((p.v) == (0)));
     (unsafe { PrivateCopy::operator_assign_pmutPrivateCopy_rv(&mut p, &mut q) });
     assert!(((p.v) == (3)) && ((q.v) == (0)));
@@ -133,7 +133,7 @@ unsafe fn main_0() -> i32 {
         inner: NoCopy::NoCopy({ 6 }),
         tag: 7,
     };
-    let mut d: Container = Container::Container_pmutContainer_rv({ &mut c });
+    let mut d: Container = Container::move_from({ &mut c });
     assert!((((d.inner.v) == (6)) && ((d.tag) == (7))) && ((c.inner.v) == (0)));
     return 0;
 }

@@ -153,7 +153,7 @@ impl DefaultCopyUserMove {
         let this: Ptr<DefaultCopyUserMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn DefaultCopyUserMove_pmutDefaultCopyUserMove_rv(o: Ptr<DefaultCopyUserMove>) -> Self {
+    pub fn move_from(o: Ptr<DefaultCopyUserMove>) -> Self {
         let __this: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
         }));
@@ -197,14 +197,14 @@ impl UserCopyDefaultMove {
         let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn UserCopyDefaultMove_pconstUserCopyDefaultMove(o: Ptr<UserCopyDefaultMove>) -> Self {
+    pub fn copy_from(o: Ptr<UserCopyDefaultMove>) -> Self {
         let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 100))),
         }));
         let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn UserCopyDefaultMove_pmutUserCopyDefaultMove_rv(_a0: Ptr<UserCopyDefaultMove>) -> Self {
+    pub fn move_from(_a0: Ptr<UserCopyDefaultMove>) -> Self {
         let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).v.borrow()))),
         }));
@@ -216,7 +216,7 @@ impl Clone for UserCopyDefaultMove {
     fn clone(&self) -> Self {
         let __src: Value<UserCopyDefaultMove> =
             Rc::new(RefCell::new(UserCopyDefaultMove { v: self.v.clone() }));
-        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove(__src.as_pointer())
+        UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
 impl ByteRepr for UserCopyDefaultMove {
@@ -261,7 +261,7 @@ impl Buffer {
         );
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Buffer_pmutBuffer_rv(_a0: Ptr<Buffer>) -> Self {
+    pub fn move_from(_a0: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(std::mem::take(
                 &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
@@ -319,7 +319,7 @@ pub struct Owner {
     pub p: Value<Option<Value<i32>>>,
 }
 impl Owner {
-    pub fn Owner_pmutOwner_rv(_a0: Ptr<Owner>) -> Self {
+    pub fn move_from(_a0: Ptr<Owner>) -> Self {
         let __this: Value<Owner> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(std::mem::take(
                 &mut (*(*_a0.upgrade().deref()).data.borrow_mut()),
@@ -386,7 +386,7 @@ impl Holder {
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Holder_pmutHolder_rv(_a0: Ptr<Holder>) -> Self {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
             inner: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).inner.borrow()).clone(),
@@ -525,9 +525,9 @@ fn main_0() -> i32 {
             7
         })));
     let m1: Value<DefaultCopyUserMove> = Rc::new(RefCell::new((*m.borrow()).clone()));
-    let m2: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(
-        DefaultCopyUserMove::DefaultCopyUserMove_pmutDefaultCopyUserMove_rv({ m.as_pointer() }),
-    ));
+    let m2: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(DefaultCopyUserMove::move_from({
+        m.as_pointer()
+    })));
     assert!(
         (((*(*m1.borrow()).v.borrow()) == 7) && ((*(*m2.borrow()).v.borrow()) == 7))
             && ((*(*m.borrow()).v.borrow()) == 0)
@@ -555,12 +555,12 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(UserCopyDefaultMove::UserCopyDefaultMove({
             8
         })));
-    let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(
-        UserCopyDefaultMove::UserCopyDefaultMove_pconstUserCopyDefaultMove({ u.as_pointer() }),
-    ));
-    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(
-        UserCopyDefaultMove::UserCopyDefaultMove_pmutUserCopyDefaultMove_rv({ u.as_pointer() }),
-    ));
+    let u1: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(UserCopyDefaultMove::copy_from({
+        u.as_pointer()
+    })));
+    let u2: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(UserCopyDefaultMove::move_from({
+        u.as_pointer()
+    })));
     assert!(
         (((*(*u1.borrow()).v.borrow()) == 108) && ((*(*u2.borrow()).v.borrow()) == 8))
             && ((*(*u.borrow()).v.borrow()) == 8)
@@ -587,9 +587,7 @@ fn main_0() -> i32 {
     });
     assert!(((*(*u3.borrow()).v.borrow()) == 108) && ((*(*u4.borrow()).v.borrow()) == 8));
     let p: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 3 })));
-    let q: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pmutBuffer_rv({
-        p.as_pointer()
-    })));
+    let q: Value<Buffer> = Rc::new(RefCell::new(Buffer::move_from({ p.as_pointer() })));
     assert!(
         ((((*(*q.borrow()).n.borrow()) == 3) && ((*(*q.borrow()).data.borrow()).len() == 3_usize))
             && ((((*q.borrow()).data.as_pointer() as Ptr<i32>)
@@ -619,10 +617,9 @@ fn main_0() -> i32 {
             && ((*(*q.borrow()).rows.borrow()).is_empty())
     );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
-    (*bufs.borrow_mut()).push(Buffer::Buffer_pmutBuffer_rv({ r.as_pointer() }));
+    (*bufs.borrow_mut()).push(Buffer::move_from({ r.as_pointer() }));
     {
-        let __arg =
-            Buffer::Buffer_pmutBuffer_rv({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
+        let __arg = Buffer::move_from({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
         bufs.as_pointer()
             .with_mut(|__v: &mut Vec<Buffer>| __v.push(__arg))
     };
@@ -659,7 +656,7 @@ fn main_0() -> i32 {
         let _p: Ptr<_> = Ptr::alloc(7);
         (*(*o1.borrow()).p.borrow_mut()) = _p.to_owned_opt()
     };
-    let o2: Value<Owner> = Rc::new(RefCell::new(Owner::Owner_pmutOwner_rv({ o1.as_pointer() })));
+    let o2: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o1.as_pointer() })));
     assert!(
         ((((*(*o2.borrow()).n.borrow()) == 5)
             && ((*(*o2.borrow()).data.borrow()).len() == 1_usize))
@@ -691,9 +688,7 @@ fn main_0() -> i32 {
         let _p: Ptr<_> = Ptr::alloc(9);
         (*(*h1.borrow()).p.borrow_mut()) = _p.to_owned_opt()
     };
-    let h2: Value<Holder> = Rc::new(RefCell::new(Holder::Holder_pmutHolder_rv({
-        h1.as_pointer()
-    })));
+    let h2: Value<Holder> = Rc::new(RefCell::new(Holder::move_from({ h1.as_pointer() })));
     let _dtor_h2 = ScopedDestructor::new(&h2, |__p| __p.destructor());
     assert!(
         ((((*(*(*h2.borrow()).inner.borrow()).x.borrow()) == 4)

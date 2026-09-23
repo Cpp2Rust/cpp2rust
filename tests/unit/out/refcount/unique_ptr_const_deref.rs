@@ -11,7 +11,7 @@ pub struct Holder {
     pub val: Value<Option<Value<i32>>>,
 }
 impl Holder {
-    pub fn Holder_pmutHolder_rv(_a0: Ptr<Holder>) -> Self {
+    pub fn move_from(_a0: Ptr<Holder>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
             val: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).val.borrow_mut()).take(),

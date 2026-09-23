@@ -18,7 +18,7 @@ pub struct Outer {
     pub inner: Option<Box<Inner>>,
 }
 impl Outer {
-    pub unsafe fn Outer_pmutOuter_rv(_a0: *mut Outer) -> Self {
+    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             inner: (*_a0).inner.take(),
         };

@@ -15,7 +15,7 @@ impl SafePointer {
     pub unsafe fn inc(&mut self) {
         (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
     }
-    pub unsafe fn SafePointer_pmutSafePointer_rv(_a0: *mut SafePointer) -> Self {
+    pub unsafe fn move_from(_a0: *mut SafePointer) -> Self {
         let mut this = Self {
             ptr: (*_a0).ptr.take(),
         };

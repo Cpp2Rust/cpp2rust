@@ -40,7 +40,7 @@ impl Buffer {
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Buffer_pconstBuffer(o: Ptr<Buffer>) -> Self {
+    pub fn copy_from(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new(
                 (0..4).map(|_| <i32>::default()).collect::<Box<[i32]>>(),
@@ -65,7 +65,7 @@ impl Clone for Buffer {
             data: self.data.clone(),
             size: self.size.clone(),
         }));
-        Buffer::Buffer_pconstBuffer(__src.as_pointer())
+        Buffer::copy_from(__src.as_pointer())
     }
 }
 impl Default for Buffer {
@@ -113,9 +113,7 @@ fn main_0() -> i32 {
     {
         let a: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer({ 4 })));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
-        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
-            a.as_pointer()
-        })));
+        let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1));
         (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
@@ -135,9 +133,7 @@ fn main_0() -> i32 {
         assert!((copies_1.with(|rc| *rc.borrow()) == 2));
         assert!((({ sum_2(a.as_pointer(),) }) == 6));
         assert!((({ sum_2(b.as_pointer(),) }) == 106));
-        let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::Buffer_pconstBuffer({
-            a.as_pointer()
-        })));
+        let d: Value<Buffer> = Rc::new(RefCell::new(Buffer::copy_from({ a.as_pointer() })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 4) && (copies_1.with(|rc| *rc.borrow()) == 3));
         assert!(

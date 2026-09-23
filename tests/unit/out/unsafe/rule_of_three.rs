@@ -31,7 +31,7 @@ impl Buffer {
     pub unsafe fn destructor(&mut self) {
         (*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)).prefix_dec();
     }
-    pub unsafe fn Buffer_pconstBuffer(o: *const Buffer) -> Self {
+    pub unsafe fn copy_from(o: *const Buffer) -> Self {
         let mut this = Self {
             data: [0_i32; 4],
             size: (*o).size,
@@ -61,7 +61,7 @@ impl Buffer {
 }
 impl Clone for Buffer {
     fn clone(&self) -> Self {
-        unsafe { Buffer::Buffer_pconstBuffer(self as *const Buffer) }
+        unsafe { Buffer::copy_from(self as *const Buffer) }
     }
 }
 impl Default for Buffer {
@@ -91,7 +91,7 @@ unsafe fn main_0() -> i32 {
     {
         let mut a: Buffer = Buffer::Buffer({ 4 });
         let _dtor_a = ScopedDestructorUnsafe::new(&raw mut a, Buffer::destructor);
-        let mut b: Buffer = Buffer::Buffer_pconstBuffer({ &a });
+        let mut b: Buffer = Buffer::copy_from({ &a });
         let _dtor_b = ScopedDestructorUnsafe::new(&raw mut b, Buffer::destructor);
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (2))
@@ -114,7 +114,7 @@ unsafe fn main_0() -> i32 {
         assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_1)) == (2)));
         assert!(((unsafe { sum_2(&a,) }) == (6)));
         assert!(((unsafe { sum_2(&b,) }) == (106)));
-        let mut d: Buffer = Buffer::Buffer_pconstBuffer({ &a });
+        let mut d: Buffer = Buffer::copy_from({ &a });
         let _dtor_d = ScopedDestructorUnsafe::new(&raw mut d, Buffer::destructor);
         assert!(
             ((*std::cell::LazyCell::force_mut(&mut *&raw mut alive_0)) == (4))

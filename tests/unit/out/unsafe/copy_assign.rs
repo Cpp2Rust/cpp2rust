@@ -18,7 +18,7 @@ impl Partial {
         let mut this = Self { v: v, keep: keep };
         this
     }
-    pub unsafe fn Partial_pconstPartial(o: *const Partial) -> Self {
+    pub unsafe fn copy_from(o: *const Partial) -> Self {
         let mut this = Self {
             v: (*o).v,
             keep: (*o).keep,
@@ -36,7 +36,7 @@ impl Partial {
 }
 impl Clone for Partial {
     fn clone(&self) -> Self {
-        unsafe { Partial::Partial_pconstPartial(self as *const Partial) }
+        unsafe { Partial::copy_from(self as *const Partial) }
     }
 }
 #[repr(C)]

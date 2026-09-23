@@ -81,7 +81,7 @@ pub struct NonCopyable {
     pub value: Value<Option<Value<i32>>>,
 }
 impl NonCopyable {
-    pub fn NonCopyable_pmutNonCopyable_rv(_a0: Ptr<NonCopyable>) -> Self {
+    pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
             value: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).value.borrow_mut()).take(),

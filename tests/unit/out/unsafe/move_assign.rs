@@ -16,7 +16,7 @@ impl MoveOnly {
         let mut this = Self { v: v };
         this
     }
-    pub unsafe fn MoveOnly_pmutMoveOnly_rv(o: *mut MoveOnly) -> Self {
+    pub unsafe fn move_from(o: *mut MoveOnly) -> Self {
         let mut this = Self { v: (*o).v };
         (*o).v = 0;
         this
@@ -62,7 +62,7 @@ impl Default for ConstMoveAssign {
 }
 pub unsafe fn make_0(mut v: i32) -> MoveOnly {
     let mut m: MoveOnly = MoveOnly::MoveOnly({ v });
-    return MoveOnly::MoveOnly_pmutMoveOnly_rv({ &mut m });
+    return MoveOnly::move_from({ &mut m });
 }
 pub fn main() {
     unsafe {

@@ -1138,8 +1138,32 @@ std::string Converter::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
   return MethodNeedsMutableReceiver(decl) ? "&mut self" : "&self";
 }
 
+static bool CanUseShortCopyOrMoveCtorName(clang::CXXConstructorDecl *decl,
+                                          const std::string &name) {
+  const auto *record = decl->getParent();
+  bool is_unique_ctor =
+      std::count_if(record->ctor_begin(), record->ctor_end(),
+                    [decl](const clang::CXXConstructorDecl *ctor) {
+                      return !ctor->isDeleted() &&
+                             (decl->isCopyConstructor()
+                                  ? ctor->isCopyConstructor()
+                                  : ctor->isMoveConstructor());
+                    }) == 1;
+  bool is_unique_name =
+      std::none_of(record->method_begin(), record->method_end(),
+                   [&name](const clang::CXXMethodDecl *method) {
+                     return method->getDeclName().isIdentifier() &&
+                            method->getName() == name;
+                   });
+  return is_unique_ctor && is_unique_name;
+}
+
 std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
   if (decl->isCopyOrMoveConstructor()) {
+    std::string name = decl->isCopyConstructor() ? "copy_from" : "move_from";
+    if (CanUseShortCopyOrMoveCtorName(decl, name)) {
+      return name;
+    }
     return GetOverloadedFunctionName(decl);
   }
   return GetRecordName(decl->getParent()) +

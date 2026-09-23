@@ -222,7 +222,7 @@ pub struct DisjointSet {
     pub n: Value<i32>,
 }
 impl DisjointSet {
-    pub fn DisjointSet_pmutDisjointSet_rv(_a0: Ptr<DisjointSet>) -> Self {
+    pub fn move_from(_a0: Ptr<DisjointSet>) -> Self {
         let __this: Value<DisjointSet> = Rc::new(RefCell::new(Self {
             rank: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).rank.borrow_mut()).take(),
@@ -264,7 +264,7 @@ pub struct Graph {
     pub E: Value<i32>,
 }
 impl Graph {
-    pub fn Graph_pmutGraph_rv(_a0: Ptr<Graph>) -> Self {
+    pub fn move_from(_a0: Ptr<Graph>) -> Self {
         let __this: Value<Graph> = Rc::new(RefCell::new(Self {
             edges: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).edges.borrow_mut()).take(),
