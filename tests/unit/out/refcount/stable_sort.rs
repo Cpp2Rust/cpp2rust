@@ -24,22 +24,13 @@ fn main_0() -> i32 {
     };
     return 0;
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct lambda_0 {}
 impl lambda_0 {
     pub fn operator_call(x: i32, y: i32) -> bool {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
         return ((*x.borrow()) < (*y.borrow()));
-    }
-}
-impl ByteRepr for lambda_0 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 impl Callable2<i32, i32, bool> for lambda_0 {

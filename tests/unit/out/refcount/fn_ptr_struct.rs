@@ -81,7 +81,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
     assert!((({ (*p1.borrow()).call(5,) }) == 6));
     assert!((({ (*p2.borrow()).call(5,) }) == 8));
-    assert!((({ S::pick_i64(5_i64,) }) == 7));
+    assert!((({ S::pick(5_i64,) }) == 7));
     let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(3)),
         cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32)))),

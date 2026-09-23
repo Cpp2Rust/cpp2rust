@@ -105,21 +105,12 @@ impl Callable1<i32, i32> for lambda_3 {
         { lambda_3::operator_call(self, a1) }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct lambda_5 {}
 impl lambda_5 {
     pub fn operator_call(x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return -(*x.borrow());
-    }
-}
-impl ByteRepr for lambda_5 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 impl Callable1<i32, i32> for lambda_5 {

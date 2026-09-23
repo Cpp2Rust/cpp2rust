@@ -41,20 +41,11 @@ fn main_0() -> i32 {
     assert!(((*product.borrow()) == 6));
     return 0;
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct lambda_0 {}
 impl lambda_0 {
     pub fn operator_call() -> i32 {
         return 42;
-    }
-}
-impl ByteRepr for lambda_0 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 impl Callable0<i32> for lambda_0 {
@@ -67,21 +58,12 @@ impl lambda_0 {
         FnPtr::new(lambda_0::operator_call)
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct lambda_1 {}
 impl lambda_1 {
     pub fn operator_call(x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return ((*x.borrow()) + 1);
-    }
-}
-impl ByteRepr for lambda_1 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 impl Callable1<i32, i32> for lambda_1 {
@@ -94,7 +76,7 @@ impl lambda_1 {
         FnPtr::new(lambda_1::operator_call)
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, ByteRepr, Default)]
 pub struct lambda_2 {}
 impl lambda_2 {
     pub fn operator_call(x: i32, y: i32, z: i32) -> i32 {
@@ -102,15 +84,6 @@ impl lambda_2 {
         let y: Value<i32> = Rc::new(RefCell::new(y));
         let z: Value<i32> = Rc::new(RefCell::new(z));
         return ((((*x.borrow()) * 100) + ((*y.borrow()) * 10)) + (*z.borrow()));
-    }
-}
-impl ByteRepr for lambda_2 {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {}
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {}
     }
 }
 impl Callable3<i32, i32, i32, i32> for lambda_2 {

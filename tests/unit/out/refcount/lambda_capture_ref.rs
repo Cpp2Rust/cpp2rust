@@ -70,7 +70,7 @@ fn main_0() -> i32 {
     let arr: Value<Box<[u16]>> = Rc::new(RefCell::new(Box::new([3_u16, 1_u16, 2_u16, 0_u16])));
     let swap: Value<lambda_3> = Rc::new(RefCell::new(
         (lambda_3 {
-            arr: (arr.as_pointer() as Ptr<Box<[u16]>>),
+            arr: (arr.as_pointer() as Ptr<u16>),
         }),
     ));
     ({ lambda_3::operator_call(&(*swap.borrow_mut()), 0_usize, 3_usize) });
@@ -127,24 +127,18 @@ impl Callable0<()> for lambda_2 {
 }
 #[derive(Clone, Default)]
 pub struct lambda_3 {
-    arr: Ptr<Box<[u16]>>,
+    arr: Ptr<u16>,
 }
 impl lambda_3 {
     pub fn operator_call(&self, i: usize, j: usize) {
         let i: Value<usize> = Rc::new(RefCell::new(i));
         let j: Value<usize> = Rc::new(RefCell::new(j));
         let t: Value<u16> = Rc::new(RefCell::new(
-            ((self.arr.to_strong().as_pointer() as Ptr<u16>)
-                .offset((*j.borrow()) as isize)
-                .read()),
+            ((self.arr).offset((*j.borrow()) as isize).read()),
         ));
-        let __rhs = ((self.arr.to_strong().as_pointer() as Ptr<u16>)
-            .offset((*i.borrow()) as isize)
-            .read());
-        (self.arr.to_strong().as_pointer() as Ptr<u16>)
-            .offset((*j.borrow()) as isize)
-            .write(__rhs);
-        (self.arr.to_strong().as_pointer() as Ptr<u16>)
+        let __rhs = ((self.arr).offset((*i.borrow()) as isize).read());
+        (self.arr).offset((*j.borrow()) as isize).write(__rhs);
+        (self.arr)
             .offset((*i.borrow()) as isize)
             .write((*t.borrow()));
     }
