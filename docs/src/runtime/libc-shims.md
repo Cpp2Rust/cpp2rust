@@ -3,10 +3,10 @@
 In the refcount model every struct member is wrapped in a `Value`, so a libc
 struct cannot be used directly. Even without that wrapping the layouts would not
 meet: libc structs hold raw pointers, which are incompatible with the refcounted
-pointers the model uses. The `libc_shims` modules therefore define Rust
-counterparts for the libc types translated programs use. A shim struct mirrors
-its C struct member by member, with each field a `Value<T>`, and converts to or
-from the underlying libc or nix type at the call boundary.
+pointers the model uses. The shim modules therefore define Rust counterparts for
+the libc types translated programs use. A shim struct mirrors its C struct
+member by member, with each field a `Value<T>`, and converts to or from the
+underlying libc or nix type at the call boundary.
 
 `Stat` is a typical shim:
 
@@ -30,11 +30,16 @@ success nix returns a raw `libc::stat`, so the result goes through
 
 ## The modules
 
-| Module    | C types                                                                                          |
+Each shim lives next to the rules that use it, as `rules/<dir>/shim.rs`. The
+libcc2rs build script finds every such file and includes it as a module of the
+crate, re-exported at the crate root, so a shim refers to other runtime items
+through `crate::` and translated code reaches it as `libcc2rs::Stat`.
+
+| Rule dir  | C types                                                                                          |
 | --------- | ------------------------------------------------------------------------------------------------ |
-| `cfile`   | `FILE` (`CFile`)                                                                                 |
+| `stdio`   | `FILE` (`CFile`)                                                                                 |
 | `dirent`  | `struct dirent`, `DIR` (`Dirent`, `CDir`)                                                        |
-| `fdset`   | `fd_set` (`CFdSet`)                                                                              |
+| `select`  | `fd_set` (`CFdSet`)                                                                              |
 | `ifaddrs` | `struct ifaddrs` (`Ifaddrs`)                                                                     |
 | `ip`      | `struct in_addr`, `struct in6_addr` (`InAddr`, `In6Addr`)                                        |
 | `netdb`   | `struct addrinfo` (`Addrinfo`)                                                                   |
@@ -50,7 +55,7 @@ stdio stream logic (see [I/O and Formatting](./io.md)), and the `time` shims
 convert through the `jiff` crate. `CFdSet` and the `sockaddr` family need more
 than a field-by-field mirror and are described in their own sections below.
 
-Each shim module also gives the raw `libc` struct it mirrors an empty `ByteRepr`
+Each shim file also gives the raw `libc` struct it mirrors an empty `ByteRepr`
 impl (`impl ByteRepr for ::libc::stat {}`), whose methods panic. These exist so
 that the generated `ByteRepr` implementation of a translated struct with a libc
 struct member still compiles; reinterpreting such a struct is not supported at
