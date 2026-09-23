@@ -83,7 +83,7 @@ pub struct MinHeap {
     pub alloc: Value<Option<Value<Box<[MinHeapNode]>>>>,
 }
 impl MinHeap {
-    pub fn MinHeap_pmutMinHeap_rv(_a0: Ptr<MinHeap>) -> Self {
+    pub fn move_from(_a0: Ptr<MinHeap>) -> Self {
         let __this: Value<MinHeap> = Rc::new(RefCell::new(Self {
             size: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).size.borrow()))),
             capacity: Rc::new(RefCell::new((*(*_a0.upgrade().deref()).capacity.borrow()))),
@@ -127,23 +127,20 @@ impl ByteRepr for MinHeap {
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     let capacity: Value<i32> = Rc::new(RefCell::new(capacity));
     let minHeap: Value<Option<Value<MinHeap>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
-            let __tmp_0: Value<MinHeap> = Rc::new(RefCell::new(MinHeap {
-                size: Rc::new(RefCell::new(0)),
-                capacity: Rc::new(RefCell::new((*capacity.borrow()))),
-                arr: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                    (0..((*capacity.borrow()) as usize))
-                        .map(|_| <Ptr<MinHeapNode>>::default())
-                        .collect::<Box<[_]>>(),
-                ))))),
-                next: Rc::new(RefCell::new(0)),
-                alloc: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-                    (0..10000_usize)
-                        .map(|_| <MinHeapNode>::default())
-                        .collect::<Box<[_]>>(),
-                ))))),
-            }));
-            MinHeap::MinHeap_pmutMinHeap_rv({ __tmp_0.as_pointer() })
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(MinHeap {
+            size: Rc::new(RefCell::new(0)),
+            capacity: Rc::new(RefCell::new((*capacity.borrow()))),
+            arr: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                (0..((*capacity.borrow()) as usize))
+                    .map(|_| <Ptr<MinHeapNode>>::default())
+                    .collect::<Box<[_]>>(),
+            ))))),
+            next: Rc::new(RefCell::new(0)),
+            alloc: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+                (0..10000_usize)
+                    .map(|_| <MinHeapNode>::default())
+                    .collect::<Box<[_]>>(),
+            ))))),
         })))));
     return (*minHeap.borrow_mut()).take();
 }
@@ -356,7 +353,7 @@ pub trait MinHeapImpl {
         freq: Ptr<Option<Value<Box<[i32]>>>>,
         n: i32,
     );
-    fn operator_assign_pmutMinHeap_rv(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
+    fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
     fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
@@ -528,7 +525,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             (*i.borrow_mut()).prefix_dec();
         }
     }
-    fn operator_assign_pmutMinHeap_rv(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
+    fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap> {
         let __rhs = (*(*_a0.upgrade().deref()).size.borrow());
         (*(*(*self).upgrade().deref()).size.borrow_mut()) = __rhs;
         let __rhs = (*(*_a0.upgrade().deref()).capacity.borrow());

@@ -22,10 +22,8 @@ impl Clone for shape_a {
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
-            code: <Value<u16>>::default(),
-            pad: Rc::new(RefCell::new(
-                (0..14).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-            )),
+            code: Rc::new(RefCell::new(0_u16)),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -64,12 +62,10 @@ impl Clone for shape_b {
 impl Default for shape_b {
     fn default() -> Self {
         shape_b {
-            code: <Value<u16>>::default(),
-            lo: <Value<u16>>::default(),
-            hi: <Value<u32>>::default(),
-            fill: Rc::new(RefCell::new(
-                (0..8).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-            )),
+            code: Rc::new(RefCell::new(0_u16)),
+            lo: Rc::new(RefCell::new(0_u16)),
+            hi: Rc::new(RefCell::new(0_u32)),
+            fill: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -202,22 +198,8 @@ fn main_0() -> i32 {
             != 0)
     );
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
+        0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
-        <u8>::default(),
     ])));
     (*src.borrow_mut())[(0) as usize] = 2_u8;
     (*src.borrow_mut())[(2) as usize] = 80_u8;

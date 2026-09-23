@@ -18,13 +18,13 @@ pub struct Outer {
     pub inner: Option<Box<Inner>>,
 }
 impl Outer {
-    pub unsafe fn Outer_pmutOuter_rv(_a0: *mut Outer) -> Self {
+    pub unsafe fn move_from(_a0: *mut Outer) -> Self {
         let mut this = Self {
             inner: (*_a0).inner.take(),
         };
         this
     }
-    pub unsafe fn operator_assign_pmutOuter_rv(&mut self, _a0: *mut Outer) -> *mut Outer {
+    pub unsafe fn move_assign(&mut self, _a0: *mut Outer) -> *mut Outer {
         self.inner = (*_a0).inner.take();
         return &mut (*(self as *mut Outer));
     }
@@ -36,11 +36,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut o: Option<Box<Outer>> = Some(Box::new({
-        let mut __tmp_0: Outer = Outer {
-            inner: Some(Box::new(Inner { x: 10, y: 20 })),
-        };
-        Outer::Outer_pmutOuter_rv({ &mut __tmp_0 })
+    let mut o: Option<Box<Outer>> = Some(Box::new(Outer {
+        inner: Some(Box::new(Inner { x: 10, y: 20 })),
     }));
     (*(*o.as_deref_mut().unwrap()).inner.as_deref_mut().unwrap()).x += 5;
     let mut sum: i32 = (((*(*o.as_deref_mut().unwrap()).inner.as_deref_mut().unwrap()).x)

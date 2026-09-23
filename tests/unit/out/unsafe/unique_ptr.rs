@@ -15,16 +15,13 @@ impl SafePointer {
     pub unsafe fn inc(&mut self) {
         (*self.ptr.as_deref_mut().unwrap()).prefix_inc();
     }
-    pub unsafe fn SafePointer_pmutSafePointer_rv(_a0: *mut SafePointer) -> Self {
+    pub unsafe fn move_from(_a0: *mut SafePointer) -> Self {
         let mut this = Self {
             ptr: (*_a0).ptr.take(),
         };
         this
     }
-    pub unsafe fn operator_assign_pmutSafePointer_rv(
-        &mut self,
-        _a0: *mut SafePointer,
-    ) -> *mut SafePointer {
+    pub unsafe fn move_assign(&mut self, _a0: *mut SafePointer) -> *mut SafePointer {
         self.ptr = (*_a0).ptr.take();
         return &mut (*(self as *mut SafePointer));
     }
@@ -163,10 +160,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: Option<Box<i32>> = Some(Box::new(0));
-    let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new({
-        let mut __tmp_0: SafePointer = SafePointer { ptr: x.take() };
-        SafePointer::SafePointer_pmutSafePointer_rv({ &mut __tmp_0 })
-    }));
+    let mut safe_ptr: Option<Box<SafePointer>> = Some(Box::new(SafePointer { ptr: x.take() }));
     (unsafe { DoStuffWithSafePointer_0(&mut safe_ptr) });
     assert!(((unsafe { Consume_1(safe_ptr.take(),) }) == (60)));
     return 0;

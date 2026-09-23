@@ -125,7 +125,7 @@ impl MinHeap {
             i.prefix_dec();
         }
     }
-    pub unsafe fn MinHeap_pmutMinHeap_rv(_a0: *mut MinHeap) -> Self {
+    pub unsafe fn move_from(_a0: *mut MinHeap) -> Self {
         let mut this = Self {
             size: (*_a0).size,
             capacity: (*_a0).capacity,
@@ -135,7 +135,7 @@ impl MinHeap {
         };
         this
     }
-    pub unsafe fn operator_assign_pmutMinHeap_rv(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
+    pub unsafe fn move_assign(&mut self, _a0: *mut MinHeap) -> *mut MinHeap {
         self.size = (*_a0).size;
         self.capacity = (*_a0).capacity;
         self.arr = (*_a0).arr.take();
@@ -145,23 +145,20 @@ impl MinHeap {
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
-    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new({
-        let mut __tmp_0: MinHeap = MinHeap {
-            size: 0,
-            capacity: capacity,
-            arr: Some(
-                (0..(capacity as usize))
-                    .map(|_| <*mut MinHeapNode>::default())
-                    .collect::<Box<[_]>>(),
-            ),
-            next: 0,
-            alloc: Some(
-                (0..10000_usize)
-                    .map(|_| <MinHeapNode>::default())
-                    .collect::<Box<[_]>>(),
-            ),
-        };
-        MinHeap::MinHeap_pmutMinHeap_rv({ &mut __tmp_0 })
+    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new(MinHeap {
+        size: 0,
+        capacity: capacity,
+        arr: Some(
+            (0..(capacity as usize))
+                .map(|_| <*mut MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ),
+        next: 0,
+        alloc: Some(
+            (0..10000_usize)
+                .map(|_| <MinHeapNode>::default())
+                .collect::<Box<[_]>>(),
+        ),
     }));
     return minHeap.take();
 }

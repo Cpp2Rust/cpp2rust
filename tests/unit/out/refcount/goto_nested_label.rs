@@ -11,7 +11,7 @@ pub fn scan_0(n: i32) -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        let j: Value<i32> = <Value<i32>>::default();
+        let j: Value<i32> = Rc::new(RefCell::new(0_i32));
         goto_block!({
             '__entry: {
                 *j.borrow_mut() = 0;

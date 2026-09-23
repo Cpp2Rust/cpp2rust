@@ -7,10 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct NonCopy {
     pub data: Vec<i32>,
     pub tag: i32,
+}
+impl Default for NonCopy {
+    fn default() -> Self {
+        NonCopy {
+            data: Default::default(),
+            tag: 0,
+        }
+    }
 }
 pub fn main() {
     unsafe {

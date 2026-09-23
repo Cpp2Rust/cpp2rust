@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive()]
 pub struct S_int_ {
     pub x: Value<i32>,
 }
@@ -17,6 +17,13 @@ impl Clone for S_int_ {
         }));
         let this: Ptr<S_int_> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for S_int_ {
+    fn default() -> Self {
+        S_int_ {
+            x: Rc::new(RefCell::new(0)),
+        }
     }
 }
 impl ByteRepr for S_int_ {

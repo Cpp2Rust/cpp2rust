@@ -163,9 +163,7 @@ pub fn test_strftime_5() {
         .is_null())) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..64).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
@@ -270,9 +268,8 @@ pub fn test_strftime_5() {
             != 0)
     );
     println!("{}", (buf.as_pointer() as Ptr::<u8>));
-    let small: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..4).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let small: Value<Box<[u8]>> =
+        Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());

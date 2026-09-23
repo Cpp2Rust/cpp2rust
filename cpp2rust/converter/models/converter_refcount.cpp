@@ -1595,6 +1595,7 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
+  auto *syntactic = expr->isSyntacticForm() ? expr : expr->getSyntacticForm();
   if (auto form = expr->getSemanticForm())
     expr = form;
 
@@ -1615,6 +1616,15 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
         ConverterRefCount::VisitInitListExpr(init);
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
+      }
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+
+    if (syntactic->getNumInits() == 0) {
+      {
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        StrCat(GetDefaultAsString(qual_type));
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
@@ -2111,6 +2121,18 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
 
 std::string
 ConverterRefCount::GetDefaultAsStringFallback(clang::QualType qual_type) {
+  auto canonical = qual_type.getUnqualifiedType().getCanonicalType();
+  if (canonical->isBooleanType() ||
+      (canonical->isIntegerType() && !canonical->isEnumeralType()) ||
+      canonical->isFloatingType()) {
+    std::string unboxed;
+    {
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      unboxed = Converter::GetDefaultAsStringFallback(qual_type);
+    }
+    return BoxValue(std::move(unboxed));
+  }
+
   return std::format("<{}>::default()", ToString(qual_type));
 }
 

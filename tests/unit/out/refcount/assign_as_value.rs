@@ -11,9 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..2).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..2).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<u8>)));
     let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
     (*q.borrow_mut()) = {
@@ -27,7 +25,7 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    let out: Value<u8> = <Value<u8>>::default();
+    let out: Value<u8> = Rc::new(RefCell::new(0_u8));
     'switch: {
         let __match_cond = (({
             (*out.borrow_mut()) = (('x' as i32) as u8);

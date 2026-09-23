@@ -46,7 +46,7 @@ impl Default for Pointers {
                     .map(|_| Ptr::<i32>::null())
                     .collect::<Box<[Ptr<i32>]>>(),
             )),
-            x5: <Value<i32>>::default(),
+            x5: Rc::new(RefCell::new(0_i32)),
         }
     }
 }

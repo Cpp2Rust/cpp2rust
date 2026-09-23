@@ -11,7 +11,7 @@ pub struct SafePointer {
     pub ptr: Value<Option<Value<i32>>>,
 }
 impl SafePointer {
-    pub fn SafePointer_pmutSafePointer_rv(_a0: Ptr<SafePointer>) -> Self {
+    pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
         let __this: Value<SafePointer> = Rc::new(RefCell::new(Self {
             ptr: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).ptr.borrow_mut()).take(),
@@ -128,24 +128,15 @@ pub fn Consume_1(safe_ptr: Option<Value<SafePointer>>) -> i32 {
 pub fn RndStuff_2() {
     let x1: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(None));
     let x2: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
-        Ptr::alloc_array(
-            (0..100_usize)
-                .map(|_| <i32>::default())
-                .collect::<Box<[i32]>>(),
-        )
-        .to_owned_opt(),
+        Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 100) {
         (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
         (*i.borrow_mut()).prefix_inc();
     }
-    (*x2.borrow_mut()) = Ptr::alloc_array(
-        (0..200_usize)
-            .map(|_| <i32>::default())
-            .collect::<Box<[i32]>>(),
-    )
-    .to_owned_opt();
+    (*x2.borrow_mut()) =
+        Ptr::alloc_array((0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt();
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
         (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 2;
@@ -298,11 +289,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let safe_ptr: Value<Option<Value<SafePointer>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
-            let __tmp_0: Value<SafePointer> = Rc::new(RefCell::new(SafePointer {
-                ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
-            }));
-            SafePointer::SafePointer_pmutSafePointer_rv({ __tmp_0.as_pointer() })
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(SafePointer {
+            ptr: Rc::new(RefCell::new((*x.borrow_mut()).take())),
         })))));
     ({ DoStuffWithSafePointer_0(safe_ptr.as_pointer()) });
     assert!((({ Consume_1((*safe_ptr.borrow_mut()).take(),) }) == 60));
@@ -320,7 +308,7 @@ impl PairImpl for Ptr<Pair> {
 }
 pub trait SafePointerImpl {
     fn inc(&self);
-    fn operator_assign_pmutSafePointer_rv(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer>;
+    fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer>;
 }
 impl SafePointerImpl for Ptr<SafePointer> {
     fn inc(&self) {
@@ -330,7 +318,7 @@ impl SafePointerImpl for Ptr<SafePointer> {
             .borrow_mut())
         .prefix_inc();
     }
-    fn operator_assign_pmutSafePointer_rv(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
+    fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
         ((*(*self).upgrade().deref()).ptr.as_pointer() as Ptr<Option<Value<i32>>>)
             .write((*(*_a0.upgrade().deref()).ptr.borrow_mut()).take());
         return (*self).clone();

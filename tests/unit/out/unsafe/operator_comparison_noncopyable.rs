@@ -22,7 +22,7 @@ impl S {
         let mut this = Self { data_: data };
         this
     }
-    pub unsafe fn S_pmutS_rv(_a0: *mut S) -> Self {
+    pub unsafe fn move_from(_a0: *mut S) -> Self {
         let mut this = Self {
             data_: (*_a0).data_,
         };

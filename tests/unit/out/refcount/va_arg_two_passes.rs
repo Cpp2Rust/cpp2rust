@@ -12,7 +12,7 @@ pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     let sum: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let val: Value<i32> = <Value<i32>>::default();
+    let val: Value<i32> = Rc::new(RefCell::new(0_i32));
     'loop_: while (((({
         (*val.borrow_mut()) = (*ap.borrow_mut()).arg::<i32>();
         (*val.borrow())

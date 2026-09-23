@@ -19,14 +19,14 @@ impl Chain {
         let this: Ptr<Chain> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Chain_pconstChain(o: Ptr<Chain>) -> Self {
+    pub fn copy_from(o: Ptr<Chain>) -> Self {
         let __this: Value<Chain> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 100))),
         }));
         let this: Ptr<Chain> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Chain_pmutChain_rv(o: Ptr<Chain>) -> Self {
+    pub fn move_from(o: Ptr<Chain>) -> Self {
         let __this: Value<Chain> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(((*(*o.upgrade().deref()).v.borrow()) + 1))),
         }));
@@ -38,7 +38,7 @@ impl Chain {
 impl Clone for Chain {
     fn clone(&self) -> Self {
         let __src: Value<Chain> = Rc::new(RefCell::new(Chain { v: self.v.clone() }));
-        Chain::Chain_pconstChain(__src.as_pointer())
+        Chain::copy_from(__src.as_pointer())
     }
 }
 impl ByteRepr for Chain {
@@ -67,7 +67,7 @@ fn main_0() -> i32 {
     ({ ChainImpl::add_i32_lref(&({ ChainImpl::add_i32_lref(&a.as_pointer(), 1) }), 1) });
     assert!(((*(*a.borrow()).v.borrow()) == 3));
     let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5 })));
-    let b: Value<Chain> = Rc::new(RefCell::new(Chain::Chain_pmutChain_rv({
+    let b: Value<Chain> = Rc::new(RefCell::new(Chain::move_from({
         ({ ChainImpl::add_i32_rref(&({ ChainImpl::add_i32_rref(&b0.as_pointer(), 1) }), 1) })
     })));
     assert!(((*(*b.borrow()).v.borrow()) == 8) && ((*(*b0.borrow()).v.borrow()) == 0));
@@ -80,7 +80,7 @@ fn main_0() -> i32 {
     let g: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 20 })));
     assert!(
         (({
-            consume_0(Chain::Chain_pmutChain_rv({
+            consume_0(Chain::move_from({
                 ({ ChainImpl::self_(&g.as_pointer()) })
             }))
         }) == 21)
@@ -109,10 +109,10 @@ impl ChainImpl for Ptr<Chain> {
         return (*self).clone();
     }
     fn take(&self) -> Chain {
-        return Chain::Chain_pmutChain_rv({ (*self).clone() });
+        return Chain::move_from({ (*self).clone() });
     }
     fn copy(&self) -> Chain {
-        return Chain::Chain_pconstChain({ (*self).clone() });
+        return Chain::copy_from({ (*self).clone() });
     }
     fn self_(&self) -> Ptr<Chain> {
         return (*self).clone();

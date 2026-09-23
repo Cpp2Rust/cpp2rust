@@ -33,7 +33,7 @@ unsafe fn main_0() -> i32 {
     let mut t: Triple = Triple {
         a: 1,
         b: 0_i32,
-        p: Pair { x: 0_i32, y: 0_i32 },
+        p: <Pair>::default(),
     };
     assert!(((t.a) == (1)));
     assert!(((t.b) == (0)));
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
     let mut q: *mut Triple = (Box::leak(Box::new(Triple {
         a: 2,
         b: 3,
-        p: Pair { x: 0_i32, y: 0_i32 },
+        p: <Pair>::default(),
     })) as *mut Triple);
     assert!((((*q).a) == (2)));
     assert!((((*q).b) == (3)));

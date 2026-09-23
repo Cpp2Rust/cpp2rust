@@ -41,7 +41,7 @@ pub struct Outer {
     pub inner: Value<Option<Value<Inner>>>,
 }
 impl Outer {
-    pub fn Outer_pmutOuter_rv(_a0: Ptr<Outer>) -> Self {
+    pub fn move_from(_a0: Ptr<Outer>) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             inner: Rc::new(RefCell::new(
                 (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),
@@ -69,15 +69,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Option<Value<Outer>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
-        let __tmp_0: Value<Outer> = Rc::new(RefCell::new(Outer {
+    let o: Value<Option<Value<Outer>>> =
+        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Outer {
             inner: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Inner {
                 x: Rc::new(RefCell::new(10)),
                 y: Rc::new(RefCell::new(20)),
             }))))),
-        }));
-        Outer::Outer_pmutOuter_rv({ __tmp_0.as_pointer() })
-    })))));
+        })))));
     (*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
         .as_ref()
         .unwrap()
@@ -106,10 +104,10 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait OuterImpl {
-    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer>;
 }
 impl OuterImpl for Ptr<Outer> {
-    fn operator_assign_pmutOuter_rv(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
+    fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         ((*(*self).upgrade().deref()).inner.as_pointer() as Ptr<Option<Value<Inner>>>)
             .write((*(*_a0.upgrade().deref()).inner.borrow_mut()).take());
         return (*self).clone();

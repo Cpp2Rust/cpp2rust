@@ -89,9 +89,7 @@ fn main_0() -> i32 {
         } == 6_i64) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(
-        (0..16).map(|_| <u8>::default()).collect::<Box<[u8]>>(),
-    ));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
