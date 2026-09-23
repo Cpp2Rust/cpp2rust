@@ -88,21 +88,21 @@ pub struct Pair {
     pub second: i32,
 }
 impl Pair {
-    pub unsafe fn Pair1() -> Self {
+    pub unsafe fn new_1() -> Self {
         let mut this = Self {
             first: -1_i32,
             second: -1_i32,
         };
         this
     }
-    pub unsafe fn Pair2(mut a: i32) -> Self {
+    pub unsafe fn new_2(mut a: i32) -> Self {
         let mut this = Self {
             first: a,
             second: 0,
         };
         this
     }
-    pub unsafe fn Pair3(mut a: i32, mut b: i32) -> Self {
+    pub unsafe fn new_3(mut a: i32, mut b: i32) -> Self {
         let mut this = Self {
             first: a,
             second: ((b) * (2)),
@@ -112,30 +112,30 @@ impl Pair {
 }
 impl Default for Pair {
     fn default() -> Self {
-        unsafe { Pair::Pair1() }
+        unsafe { Pair::new_1() }
     }
 }
 pub unsafe fn emplace_ctor_args_7(mut pairs: *mut Vec<Pair>) {
     {
-        let __init = Pair::Pair1();
+        let __init = Pair::new_1();
         (*pairs).push(__init)
     };
     {
-        let __init = Pair::Pair2({ 3 });
+        let __init = Pair::new_2({ 3 });
         (*pairs).push(__init)
     };
     {
-        let __init = Pair::Pair3({ 4 }, { 5 });
+        let __init = Pair::new_3({ 4 }, { 5 });
         (*pairs).push(__init)
     };
 }
 pub unsafe fn emplace_deque_8(mut queue: *mut Vec<Pair>) {
     {
-        let __init = Pair::Pair3({ 6 }, { 7 });
+        let __init = Pair::new_3({ 6 }, { 7 });
         (*queue).push(__init)
     };
     {
-        let __init = Pair::Pair1();
+        let __init = Pair::new_1();
         (*queue).push(__init)
     };
 }

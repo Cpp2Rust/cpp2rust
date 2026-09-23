@@ -190,7 +190,7 @@ pub struct Pair {
     pub second: Value<i32>,
 }
 impl Pair {
-    pub fn Pair1() -> Self {
+    pub fn new_1() -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             first: Rc::new(RefCell::new(-1_i32)),
             second: Rc::new(RefCell::new(-1_i32)),
@@ -198,7 +198,7 @@ impl Pair {
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Pair2(a: i32) -> Self {
+    pub fn new_2(a: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
             first: Rc::new(RefCell::new((*a.borrow()))),
@@ -207,7 +207,7 @@ impl Pair {
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Pair3(a: i32, b: i32) -> Self {
+    pub fn new_3(a: i32, b: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
@@ -230,7 +230,7 @@ impl Clone for Pair {
 }
 impl Default for Pair {
     fn default() -> Self {
-        { Pair::Pair1() }
+        { Pair::new_1() }
     }
 }
 impl ByteRepr for Pair {
@@ -251,26 +251,26 @@ impl ByteRepr for Pair {
 pub fn emplace_ctor_args_7(pairs: Ptr<Vec<Pair>>) {
     let pairs: Value<Ptr<Vec<Pair>>> = Rc::new(RefCell::new(pairs));
     {
-        let __init = Pair::Pair1();
+        let __init = Pair::new_1();
         (*pairs.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
-        let __init = Pair::Pair2({ 3 });
+        let __init = Pair::new_2({ 3 });
         (*pairs.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
-        let __init = Pair::Pair3({ 4 }, { 5 });
+        let __init = Pair::new_3({ 4 }, { 5 });
         (*pairs.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
 }
 pub fn emplace_deque_8(queue: Ptr<Vec<Pair>>) {
     let queue: Value<Ptr<Vec<Pair>>> = Rc::new(RefCell::new(queue));
     {
-        let __init = Pair::Pair3({ 6 }, { 7 });
+        let __init = Pair::new_3({ 6 }, { 7 });
         (*queue.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
     {
-        let __init = Pair::Pair1();
+        let __init = Pair::new_1();
         (*queue.borrow()).with_mut(|__v: &mut Vec<Pair>| __v.push(__init))
     };
 }
