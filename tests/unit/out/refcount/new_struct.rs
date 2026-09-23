@@ -88,10 +88,7 @@ fn main_0() -> i32 {
     let t: Value<Triple> = Rc::new(RefCell::new(Triple {
         a: Rc::new(RefCell::new(1)),
         b: Rc::new(RefCell::new(0_i32)),
-        p: Rc::new(RefCell::new(Pair {
-            x: Rc::new(RefCell::new(0_i32)),
-            y: Rc::new(RefCell::new(0_i32)),
-        })),
+        p: Rc::new(RefCell::new(<Pair>::default())),
     }));
     assert!(((*(*t.borrow()).a.borrow()) == 1));
     assert!(((*(*t.borrow()).b.borrow()) == 0));
@@ -102,10 +99,7 @@ fn main_0() -> i32 {
     let q: Value<Ptr<Triple>> = Rc::new(RefCell::new(Ptr::alloc(Triple {
         a: Rc::new(RefCell::new(2)),
         b: Rc::new(RefCell::new(3)),
-        p: Rc::new(RefCell::new(Pair {
-            x: Rc::new(RefCell::new(0_i32)),
-            y: Rc::new(RefCell::new(0_i32)),
-        })),
+        p: Rc::new(RefCell::new(<Pair>::default())),
     })));
     assert!(((*(*(*q.borrow()).upgrade().deref()).a.borrow()) == 2));
     assert!(((*(*(*q.borrow()).upgrade().deref()).b.borrow()) == 3));

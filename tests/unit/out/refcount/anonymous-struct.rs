@@ -259,33 +259,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Outer> = Rc::new(RefCell::new(Outer {
-        named: Rc::new(RefCell::new(Outer_Named {
-            a: Rc::new(RefCell::new(0_i32)),
-            b: Rc::new(RefCell::new(0_i32)),
-        })),
-        anonymous_named_0: Rc::new(RefCell::new(anon_0 {
-            c: Rc::new(RefCell::new(0_i32)),
-            d: Rc::new(RefCell::new(0_i32)),
-        })),
-        anonymous_named_1: Rc::new(RefCell::new(anon_1 {
-            g: Rc::new(RefCell::new(0_i32)),
-            h: Rc::new(RefCell::new(0_i32)),
-        })),
-        anon_2: Rc::new(RefCell::new(anon_2 {
-            e: Rc::new(RefCell::new(0_i32)),
-            f: Rc::new(RefCell::new(0_i32)),
-        })),
-        anon_3: Rc::new(RefCell::new(anon_3 {
-            i: Rc::new(RefCell::new(0_i32)),
-            inner_named: Rc::new(RefCell::new(anon_4 {
-                j: Rc::new(RefCell::new(0_i32)),
-            })),
-            anon_5: Rc::new(RefCell::new(anon_5 {
-                k: Rc::new(RefCell::new(0_i32)),
-            })),
-        })),
-    }));
+    let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     (*(*(*o.borrow()).named.borrow()).a.borrow_mut()) = 1;
     (*(*(*o.borrow()).named.borrow()).b.borrow_mut()) = 2;
     (*(*(*o.borrow()).anonymous_named_0.borrow()).c.borrow_mut()) = 3;

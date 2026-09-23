@@ -69,8 +69,8 @@ fn main_0() -> i32 {
     });
     let bar: Value<i32> = Rc::new(RefCell::new(5));
     (*out.borrow_mut()) += (((*bar.borrow()) + ({ foo_0(0) })) + ({ foo_1((x.as_pointer())) }));
-    let foo1: Value<Foo> = Rc::new(RefCell::new(Foo {}));
-    let foo2: Value<Foo> = Rc::new(RefCell::new(Foo {}));
+    let foo1: Value<Foo> = Rc::new(RefCell::new(<Foo>::default()));
+    let foo2: Value<Foo> = Rc::new(RefCell::new(<Foo>::default()));
     ({ FooImpl::foo(&foo1.as_pointer()) });
     ({ FooImpl::method_i32(&foo1.as_pointer(), 1) });
     ({ FooImpl::foo_const(&foo2.as_pointer()) });

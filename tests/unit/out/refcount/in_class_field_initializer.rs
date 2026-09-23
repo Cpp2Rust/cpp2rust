@@ -68,10 +68,7 @@ impl Default for S {
         S {
             a: Rc::new(RefCell::new(1)),
             b: Rc::new(RefCell::new(2_u8)),
-            c: Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(3)),
-                y: Rc::new(RefCell::new(4)),
-            })),
+            c: Rc::new(RefCell::new(<Inner>::default())),
             d: <Value<Inner>>::default(),
         }
     }

@@ -30,7 +30,7 @@ impl Default for S {
         S {
             a: 1,
             b: (2 as libc::c_char),
-            c: Inner { x: 3, y: 4 },
+            c: <Inner>::default(),
             d: <Inner>::default(),
         }
     }

@@ -1598,6 +1598,7 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
 }
 
 bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
+  auto *syntactic = expr->isSyntacticForm() ? expr : expr->getSyntacticForm();
   if (auto form = expr->getSemanticForm())
     expr = form;
 
@@ -1618,6 +1619,15 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
         ConverterRefCount::VisitInitListExpr(init);
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
+      }
+      computed_expr_type_ = ComputedExprType::FreshValue;
+      return false;
+    }
+
+    if (syntactic->getNumInits() == 0) {
+      {
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        StrCat(GetDefaultAsString(qual_type));
       }
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;

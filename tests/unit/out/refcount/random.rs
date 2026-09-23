@@ -275,8 +275,8 @@ fn main_0() -> i32 {
                 .borrow()),
         )
     });
-    let x: Value<X1> = Rc::new(RefCell::new(X1 {}));
-    let y: Value<X1> = Rc::new(RefCell::new(X1 {}));
+    let x: Value<X1> = Rc::new(RefCell::new(<X1>::default()));
+    let y: Value<X1> = Rc::new(RefCell::new(<X1>::default()));
     (*x1.borrow_mut()) = (({ zero_0() }) + (*(*y1.borrow()).x.borrow()));
     (*(*y1.borrow()).x.borrow_mut()) = (({ zero_0() }) + 5);
     let ptr2ptr_1: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((px1.as_pointer())));

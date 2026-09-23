@@ -3388,6 +3388,7 @@ bool Converter::VisitArrayInitLoopExpr(clang::ArrayInitLoopExpr *expr) {
 }
 
 bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
+  auto *syntactic = expr->isSyntacticForm() ? expr : expr->getSyntacticForm();
   if (auto form = expr->getSemanticForm())
     expr = form;
 
@@ -3409,6 +3410,12 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
       } else {
         StrCat(GetArrayDefaultAsString(qual_type));
       }
+      SetFreshType(qual_type);
+      return false;
+    }
+
+    if (syntactic->getNumInits() == 0) {
+      StrCat(GetDefaultAsString(qual_type));
       SetFreshType(qual_type);
       return false;
     }

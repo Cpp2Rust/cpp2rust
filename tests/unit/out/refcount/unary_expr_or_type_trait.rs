@@ -50,10 +50,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let arr: Value<Box<[i64]>> = Rc::new(RefCell::new(Box::new([0_i64, 0_i64, 0_i64, 0_i64])));
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        c: Rc::new(RefCell::new(0_u8)),
-        x: Rc::new(RefCell::new(0_i64)),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));
     assert!((16usize == 16_usize));
