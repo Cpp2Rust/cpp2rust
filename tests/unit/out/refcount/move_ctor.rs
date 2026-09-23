@@ -11,7 +11,7 @@ pub struct MoveOnly {
     pub v: Value<i32>,
 }
 impl MoveOnly {
-    pub fn MoveOnly(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -46,7 +46,7 @@ pub struct ConstMove {
     pub mark: Value<i32>,
 }
 impl ConstMove {
-    pub fn ConstMove() -> Self {
+    pub fn new() -> Self {
         let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(0)),
         }));
@@ -70,7 +70,7 @@ impl ConstMove {
 }
 impl Default for ConstMove {
     fn default() -> Self {
-        { ConstMove::ConstMove() }
+        { ConstMove::new() }
     }
 }
 impl ByteRepr for ConstMove {
@@ -93,7 +93,7 @@ pub struct ThrowingMove {
     pub moves: Value<i32>,
 }
 impl ThrowingMove {
-    pub fn ThrowingMove(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -159,7 +159,7 @@ pub struct NoexceptMove {
     pub moves: Value<i32>,
 }
 impl NoexceptMove {
-    pub fn NoexceptMove(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -224,7 +224,7 @@ pub fn by_value_0(m: MoveOnly) -> i32 {
 }
 pub fn make_1(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
-    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ (*v.borrow()) })));
+    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
     return MoveOnly::MoveOnly_pmutMoveOnly_rv({ m.as_pointer() });
 }
 pub fn main() {
@@ -232,7 +232,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 1 })));
+    let a: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 1 })));
     let b: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly_pmutMoveOnly_rv({
         a.as_pointer()
     })));
@@ -250,12 +250,12 @@ fn main_0() -> i32 {
     assert!(((*(*c.borrow()).v.borrow()) == 0));
     let e: Value<MoveOnly> = Rc::new(RefCell::new(({ make_1(5) })));
     assert!(((*(*e.borrow()).v.borrow()) == 5));
-    assert!((({ by_value_0(MoveOnly::MoveOnly({ 6 },),) }) == 6));
+    assert!((({ by_value_0(MoveOnly::new({ 6 },),) }) == 6));
     assert!((({ by_value_0(MoveOnly::MoveOnly_pmutMoveOnly_rv({ e.as_pointer() },),) }) == 5));
     assert!(((*(*e.borrow()).v.borrow()) == 0));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
-    (*vec_.borrow_mut()).push(MoveOnly::MoveOnly({ 7 }));
-    let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 8 })));
+    (*vec_.borrow_mut()).push(MoveOnly::new({ 7 }));
+    let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
     (*vec_.borrow_mut()).push(MoveOnly::MoveOnly_pmutMoveOnly_rv({ f.as_pointer() }));
     assert!(
         ((*(*(vec_.as_pointer() as Ptr<MoveOnly>)
@@ -274,17 +274,17 @@ fn main_0() -> i32 {
                 == 8)
     );
     assert!(((*(*f.borrow()).v.borrow()) == 0));
-    let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove()));
+    let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
     let m1: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pmutConstMove_rv({
         m.as_pointer()
     })));
-    let cm: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove()));
+    let cm: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
     let m2: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pconstConstMove_rv({
         cm.as_pointer()
     })));
     assert!(((*(*m1.borrow()).mark.borrow()) == 1));
     assert!(((*(*m2.borrow()).mark.borrow()) == 10));
-    let t: Value<ThrowingMove> = Rc::new(RefCell::new(ThrowingMove::ThrowingMove({ 1 })));
+    let t: Value<ThrowingMove> = Rc::new(RefCell::new(ThrowingMove::new({ 1 })));
     let t1: Value<ThrowingMove> = Rc::new(RefCell::new(
         ThrowingMove::ThrowingMove_pconstThrowingMove({ t.as_pointer() }),
     ));
@@ -292,7 +292,7 @@ fn main_0() -> i32 {
     assert!(((*(*t1.borrow()).copies.borrow()) == 1));
     assert!(((*(*t1.borrow()).moves.borrow()) == 0));
     assert!(((*(*t.borrow()).v.borrow()) == 1));
-    let n: Value<NoexceptMove> = Rc::new(RefCell::new(NoexceptMove::NoexceptMove({ 2 })));
+    let n: Value<NoexceptMove> = Rc::new(RefCell::new(NoexceptMove::new({ 2 })));
     let n1: Value<NoexceptMove> = Rc::new(RefCell::new(
         NoexceptMove::NoexceptMove_pmutNoexceptMove_rv({ n.as_pointer() }),
     ));
@@ -300,7 +300,7 @@ fn main_0() -> i32 {
     assert!(((*(*n1.borrow()).copies.borrow()) == 0));
     assert!(((*(*n1.borrow()).moves.borrow()) == 1));
     assert!(((*(*n.borrow()).v.borrow()) == 0));
-    let g: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly({ 3 })));
+    let g: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
     let g1: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::MoveOnly_pmutMoveOnly_rv({
         g.as_pointer()
     })));

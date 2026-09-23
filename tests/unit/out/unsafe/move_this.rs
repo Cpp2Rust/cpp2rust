@@ -12,7 +12,7 @@ pub struct Chain {
     pub v: i32,
 }
 impl Chain {
-    pub unsafe fn Chain(mut v: i32) -> Self {
+    pub unsafe fn new(mut v: i32) -> Self {
         let mut this = Self { v: v };
         this
     }
@@ -62,19 +62,19 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut a: Chain = Chain::Chain({ 1 });
+    let mut a: Chain = Chain::new({ 1 });
     (unsafe { Chain::add_i32_lref(&mut (*(unsafe { Chain::add_i32_lref(&mut a, 1) })), 1) });
     assert!(((a.v) == (3)));
-    let mut b0: Chain = Chain::Chain({ 5 });
+    let mut b0: Chain = Chain::new({ 5 });
     let mut b: Chain = Chain::Chain_pmutChain_rv({
         (unsafe { Chain::add_i32_rref(&mut (*(unsafe { Chain::add_i32_rref(&mut b0, 1) })), 1) })
     });
     assert!(((b.v) == (8)) && ((b0.v) == (0)));
-    let mut c: Chain = (unsafe { Chain::take(&mut Chain::Chain({ 10 })) });
+    let mut c: Chain = (unsafe { Chain::take(&mut Chain::new({ 10 })) });
     assert!(((c.v) == (11)));
     let mut d: Chain = (unsafe { Chain::copy(&c) });
     assert!(((d.v) == (111)) && ((c.v) == (11)));
-    let mut g: Chain = Chain::Chain({ 20 });
+    let mut g: Chain = Chain::new({ 20 });
     assert!(
         ((unsafe {
             consume_0(Chain::Chain_pmutChain_rv({
@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
             }))
         }) == (21))
     );
-    let mut e: Chain = Chain::Chain({ 30 });
+    let mut e: Chain = Chain::new({ 30 });
     let mut f: Chain = (unsafe { Chain::take(&mut e) });
     assert!(((f.v) == (31)) && ((e.v) == (0)));
     return 0;

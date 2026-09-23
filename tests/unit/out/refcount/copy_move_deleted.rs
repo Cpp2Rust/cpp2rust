@@ -11,7 +11,7 @@ pub struct NoCopy {
     pub v: Value<i32>,
 }
 impl NoCopy {
-    pub fn NoCopy(v: i32) -> Self {
+    pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<NoCopy> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*v.borrow()))),
@@ -46,7 +46,7 @@ pub struct PrivateCopy {
     pub v: Value<i32>,
 }
 impl PrivateCopy {
-    pub fn PrivateCopy() -> Self {
+    pub fn new() -> Self {
         let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(0)),
         }));
@@ -64,7 +64,7 @@ impl PrivateCopy {
 }
 impl Default for PrivateCopy {
     fn default() -> Self {
-        { PrivateCopy::PrivateCopy() }
+        { PrivateCopy::new() }
     }
 }
 impl ByteRepr for PrivateCopy {
@@ -85,7 +85,7 @@ pub struct Immovable {
     pub v: Value<i32>,
 }
 impl Immovable {
-    pub fn Immovable() -> Self {
+    pub fn new() -> Self {
         let __this: Value<Immovable> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(0)),
         }));
@@ -95,7 +95,7 @@ impl Immovable {
 }
 impl Default for Immovable {
     fn default() -> Self {
-        { Immovable::Immovable() }
+        { Immovable::new() }
     }
 }
 impl ByteRepr for Immovable {
@@ -155,7 +155,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy({ 1 })));
+    let a: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::new({ 1 })));
     let b: Value<NoCopy> = Rc::new(RefCell::new(NoCopy::NoCopy_pmutNoCopy_rv({
         a.as_pointer()
     })));
@@ -164,7 +164,7 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 1) && ((*(*b.borrow()).v.borrow()) == 0));
     ({ bump_0((a.as_pointer())) });
     assert!(((*(*a.borrow()).v.borrow()) == 2));
-    let p: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::PrivateCopy()));
+    let p: Value<PrivateCopy> = Rc::new(RefCell::new(PrivateCopy::new()));
     (*(*p.borrow()).v.borrow_mut()) = 3;
     let q: Value<PrivateCopy> =
         Rc::new(RefCell::new(PrivateCopy::PrivateCopy_pmutPrivateCopy_rv({
@@ -173,13 +173,13 @@ fn main_0() -> i32 {
     assert!(((*(*q.borrow()).v.borrow()) == 3) && ((*(*p.borrow()).v.borrow()) == 0));
     ({ PrivateCopyImpl::operator_assign_pmutPrivateCopy_rv(&p.as_pointer(), q.as_pointer()) });
     assert!(((*(*p.borrow()).v.borrow()) == 3) && ((*(*q.borrow()).v.borrow()) == 0));
-    let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::Immovable()));
+    let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::new()));
     (*(*im.borrow()).v.borrow_mut()) = 4;
     ({ bump_ref_1(im.as_pointer()) });
     let pim: Value<Ptr<Immovable>> = Rc::new(RefCell::new((im.as_pointer())));
     assert!(((*(*(*pim.borrow()).upgrade().deref()).v.borrow()) == 5));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
-        inner: Rc::new(RefCell::new(NoCopy::NoCopy({ 6 }))),
+        inner: Rc::new(RefCell::new(NoCopy::new({ 6 }))),
         tag: Rc::new(RefCell::new(7)),
     }));
     let d: Value<Container> = Rc::new(RefCell::new(Container::Container_pmutContainer_rv({

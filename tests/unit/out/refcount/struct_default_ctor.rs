@@ -12,7 +12,7 @@ pub struct S {
     pub b: Value<bool>,
 }
 impl S {
-    pub fn S() -> Self {
+    pub fn new() -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             a: Rc::new(RefCell::new(11)),
             b: Rc::new(RefCell::new(true)),
@@ -33,7 +33,7 @@ impl Clone for S {
 }
 impl Default for S {
     fn default() -> Self {
-        { S::S() }
+        { S::new() }
     }
 }
 impl ByteRepr for S {
@@ -85,7 +85,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let d: Value<Ptr<Declared>> = Rc::new(RefCell::new(Ptr::<Declared>::null()));
     assert!((*d.borrow()).is_null());
-    let s: Value<S> = Rc::new(RefCell::new(S::S()));
+    let s: Value<S> = Rc::new(RefCell::new(S::new()));
     assert!(((*(*s.borrow()).a.borrow()) == 11));
     assert!((((*(*s.borrow()).b.borrow()) as i32) == (true as i32)));
     return 0;

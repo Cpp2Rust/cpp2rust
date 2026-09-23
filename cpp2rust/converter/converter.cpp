@@ -1142,10 +1142,9 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
   if (decl->isCopyOrMoveConstructor()) {
     return GetOverloadedFunctionName(decl);
   }
-  return GetRecordName(decl->getParent()) +
-         (GetNumberOfConvertingCtors(decl->getParent()) != 1
-              ? std::to_string(GetCtorIndex(decl))
-              : "");
+  return GetNumberOfConvertingCtors(decl->getParent()) != 1
+             ? std::format("new_{}", GetCtorIndex(decl))
+             : "new";
 }
 
 bool Converter::VisitCXXConstructorDecl(clang::CXXConstructorDecl *decl) {

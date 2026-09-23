@@ -38,14 +38,14 @@ pub struct Ctor {
     pub v: Value<i32>,
 }
 impl Ctor {
-    pub fn Ctor1() -> Self {
+    pub fn new_1() -> Self {
         let __this: Value<Ctor> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(({ next_0() }))),
         }));
         let this: Ptr<Ctor> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn Ctor2(x: i32) -> Self {
+    pub fn new_2(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<Ctor> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*x.borrow()))),
@@ -65,7 +65,7 @@ impl Clone for Ctor {
 }
 impl Default for Ctor {
     fn default() -> Self {
-        { Ctor::Ctor1() }
+        { Ctor::new_1() }
     }
 }
 impl ByteRepr for Ctor {
@@ -82,10 +82,10 @@ impl ByteRepr for Ctor {
     }
 }
 thread_local!(
-    pub static default_ctor_7: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor1()));
+    pub static default_ctor_7: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_1()));
 );
 thread_local!(
-    pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 7 })));
+    pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 7 })));
 );
 thread_local!(
     pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new({
@@ -95,7 +95,7 @@ thread_local!(
     }));
 );
 thread_local!(
-    pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 5 })));
+    pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
 );
 #[derive(Clone, ByteRepr, Default)]
 pub struct Holder {}
@@ -107,7 +107,7 @@ pub fn local_static_12() -> i32 {
         static once_13: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
     );
     thread_local!(
-        static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::Ctor2({ 3 })));
+        static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
     );
     return (once_13.with(|rc| *rc.borrow())
         + (*local_ctor_14.with(|rc| rc.borrow().clone()).v.borrow()));
@@ -117,7 +117,7 @@ pub struct Singleton {
     pub hits: Value<i32>,
 }
 impl Singleton {
-    pub fn Singleton() -> Self {
+    pub fn new() -> Self {
         let __this: Value<Singleton> = Rc::new(RefCell::new(Self {
             hits: Rc::new(RefCell::new(0)),
         }));
@@ -126,7 +126,7 @@ impl Singleton {
     }
     pub fn instance() -> Ptr<Singleton> {
         thread_local!(
-            static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::Singleton()));
+            static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::new()));
         );
         return s_15.with(|v| v.as_pointer());
     }
@@ -142,7 +142,7 @@ impl Clone for Singleton {
 }
 impl Default for Singleton {
     fn default() -> Self {
-        { Singleton::Singleton() }
+        { Singleton::new() }
     }
 }
 impl ByteRepr for Singleton {

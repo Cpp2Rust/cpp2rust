@@ -68,12 +68,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S::S({ 1 })));
+    let s: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     assert!((({ SImpl::get(&s.as_pointer(),) }) == 1));
     ({ SImpl::set(&s.as_pointer(), 4) });
     assert!((({ SImpl::get(&s.as_pointer(),) }) == 4));
     assert!((({ SImpl::add(&s.as_pointer(), 2,) }) == 6));
-    let derived: Value<Derived> = Rc::new(RefCell::new(Derived::Derived({ 3 })));
+    let derived: Value<Derived> = Rc::new(RefCell::new(Derived::new({ 3 })));
     let base: Value<PtrDyn<dyn Base>> = Rc::new(RefCell::new(
         (derived.as_pointer()).to_dyn::<dyn Base>(|w| w),
     ));
@@ -81,7 +81,7 @@ fn main_0() -> i32 {
     return 0;
 }
 impl S {
-    pub fn S(x: i32) -> Self {
+    pub fn new(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new((*x.borrow()))),
@@ -91,7 +91,7 @@ impl S {
     }
 }
 impl Derived {
-    pub fn Derived(factor: i32) -> Self {
+    pub fn new(factor: i32) -> Self {
         let factor: Value<i32> = Rc::new(RefCell::new(factor));
         let __this: Value<Derived> = Rc::new(RefCell::new(Self {
             factor: Rc::new(RefCell::new((*factor.borrow()))),
