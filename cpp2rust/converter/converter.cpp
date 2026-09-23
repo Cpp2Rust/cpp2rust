@@ -2994,9 +2994,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
   if (auto *function = decl->getAsFunction()) {
     if (auto method = clang::dyn_cast<clang::CXXMethodDecl>(function)) {
       if (IsStaticMethod(method)) {
-        //return GetFunctionRefName(method);
-        return std::format("{}::{}", GetRecordName(method->getParent()),
-                           GetNamedDeclAsString(method));
+        return GetFunctionRefName(method);
       }
     }
     return GetNamedDeclAsString(function->getCanonicalDecl());

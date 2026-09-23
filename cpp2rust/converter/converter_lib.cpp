@@ -427,8 +427,7 @@ bool IsPassThroughConstructor(const clang::CXXConstructorDecl *ctor) {
 bool IsConvertibleCXXRecordDecl(const clang::CXXRecordDecl *decl) {
   if (decl->isLambda()) {
     // The call operator of a generic lambda is a template pattern
-    return decl->isGenericLambda() ||
-           decl->getLambdaCallOperator()->hasBody();
+    return decl->isGenericLambda() || decl->getLambdaCallOperator()->hasBody();
   }
   return decl->isThisDeclarationADefinition() && !decl->isDependentContext();
 }
@@ -1105,10 +1104,9 @@ bool LambdaCallOperatorIsDeducible(const clang::CXXMethodDecl *op) {
   if (tmpl == nullptr) {
     return true;
   }
-  return llvm::any_of(tmpl->getTemplatedDecl()->parameters(),
-                      [](const auto *param) {
-                        return param->getType()->isDependentType();
-                      });
+  return llvm::any_of(
+      tmpl->getTemplatedDecl()->parameters(),
+      [](const auto *param) { return param->getType()->isDependentType(); });
 }
 
 std::vector<clang::CXXMethodDecl *>

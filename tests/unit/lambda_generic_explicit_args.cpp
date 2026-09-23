@@ -8,7 +8,9 @@ static int sum(Val a, Val b) { return a.x + b.x; }
 
 int main() {
   int total = 0;
-  auto tally = [&total]<typename T, typename U> { total += sizeof(T) + sizeof(U); };
+  auto tally = [&total]<typename T, typename U> {
+    total += sizeof(T) + sizeof(U);
+  };
   tally.operator()<char, char>();
   tally.operator()<int, char>();
   assert(total == 7);
