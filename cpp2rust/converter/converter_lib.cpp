@@ -8,6 +8,7 @@
 #include <clang/AST/Mangle.h>
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Path.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -767,7 +768,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
 
   if (name.empty()) {
     auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);
-    assert(pdecl && "Unexpected unnamed construct");
+    if (!pdecl) {
+      decl->dump();
+      llvm::report_fatal_error("Unexpected unnamed construct");
+    }
 
     const auto *fn =
         llvm::dyn_cast<clang::FunctionDecl>(pdecl->getDeclContext());

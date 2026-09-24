@@ -1,5 +1,5 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
-// no-compile
+// translation-fail
 #include <assert.h>
 #include <stdarg.h>
 
@@ -25,6 +25,8 @@ int main() {
   assert(p(2) == 6);
 
   assert(call_nttp<+[](int x) { return x - 1; }>(5) == 4);
+  assert(call_nttp<+[](int x) { return x * 10; }>(5) == 50);
+  assert(call_nttp<[](int x) { return x + 100; }>(5) == 105);
 
   auto sum = [](int n, ...) {
     va_list ap;
