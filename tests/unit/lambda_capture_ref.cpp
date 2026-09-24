@@ -1,3 +1,4 @@
+// no-compile
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -35,6 +36,16 @@ int main() {
   swap(0, 3);
   assert(arr[0] == 0);
   assert(arr[3] == 3);
+
+  int total = 0;
+  auto add = [&t = total](int x) { t += x; };
+  add(2);
+  add(3);
+  assert(total == 5);
+
+  auto set_y = [&y = s.y](int v) { y = v; };
+  set_y(9);
+  assert(s.y == 9);
 
   return 0;
 }

@@ -8,6 +8,9 @@ struct Owner {
   Owner(const Owner &) = delete;
   Owner(Owner &&o) : p(o.p) { o.p = nullptr; }
   ~Owner() { delete p; }
+  auto take() {
+    return [self = std::move(*this)]() { return *self.p; };
+  }
 };
 
 int main() {
@@ -27,6 +30,11 @@ int main() {
   consume();
   consume();
   assert(total == 7);
+
+  Owner o2(9);
+  auto t = o2.take();
+  assert(o2.p == nullptr);
+  assert(t() == 9);
 
   return 0;
 }
