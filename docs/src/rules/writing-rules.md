@@ -285,6 +285,40 @@ fn f1(a0: i32, a1: i32, va: &[VaArg]) -> i32 { ... }
 Bodies read the arguments through the va-args API in `libcc2rs` (`VaArg`,
 `VaList`, the `VaArgGet` accessors, `format_c`).
 
+## Constructing from forwarded arguments
+
+Functions like `emplace_back` forward their arguments to a constructor. Rust has
+no equivalent, so the rule receives the finished value instead: the Rust side
+takes a trailing parameter named `init`, and the converter builds it at the call
+site from the arguments after the fixed ones. The C++ side spells the pack as
+`Init<T, Args>`, a transparent alias
+(`template <typename T, typename A> using Init = A;`) whose `T` names the type
+to build:
+
+```cpp
+// rules/vector/src.cpp
+template <typename T1, typename... Args>
+T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
+  return o.emplace_back(std::forward<Args>(args)...);
+}
+```
+
+```rust
+// rules/vector/tgt_unsafe.rs
+unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
+    a0.push(__init)
+}
+```
+
+`T` must be one of the callee's template arguments. The preprocessor records its
+position as a (depth, index) pair, and at a call like `v.emplace_back(4, 5)` on
+a `std::vector<Point>` the converter reads the template argument at that
+position from the resolved callee (`Point`). It then asks Sema which constructor
+builds a `Point` from `(4, 5)` and substitutes the converted construction for
+`init`. Binding `init` to a local before touching `a0` keeps the construction
+from overlapping a borrow of the container.
+
 ## Passthrough rules
 
 When a call should be forwarded verbatim to the same-named function in Rust's

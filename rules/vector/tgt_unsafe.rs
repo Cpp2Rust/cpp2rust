@@ -493,3 +493,18 @@ unsafe fn f110<T1: Clone>(a0: Vec<T1>) -> Vec<T1> {
 unsafe fn f111<T1: Clone>(a0: &mut Vec<Vec<T1>>, a1: &mut Vec<Vec<T1>>) {
     *a0 = std::mem::take(&mut *a1)
 }
+
+unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
+    a0.push(__init)
+}
+
+unsafe fn f113<T1>(a0: &mut Vec<Vec<T1>>, init: Vec<T1>) {
+    let __init = init;
+    a0.push(__init)
+}
+
+unsafe fn f114<T1>(a0: &mut Vec<T1>, init: T1) {
+    let __init = init;
+    a0.push(__init)
+}

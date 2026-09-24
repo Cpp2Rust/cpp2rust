@@ -142,8 +142,14 @@ public:
         }
 
         LookupInfo lookup(fcall->getCallee());
-        clang::NamedDecl *decl =
-            lookupCalledDecl(func->getDescribedFunctionTemplate(), lookup);
+        clang::FunctionDecl *rule = nullptr;
+        clang::FunctionDecl *decl = lookupCalledDecl(
+            func->getDescribedFunctionTemplate(), lookup, &rule);
+        if (Mapper::HasFunctionParameterPack(func) &&
+            Mapper::HasFunctionParameterPack(decl)) {
+          addPackRule(func, rule, decl);
+          return;
+        }
         add(Mapper::ToString(decl));
         return;
       }
@@ -198,8 +204,8 @@ public:
       if (const auto *uctor =
               R.Nodes.getNodeAs<clang::CXXUnresolvedConstructExpr>("uctor")) {
         LookupInfo lookup(uctor);
-        clang::NamedDecl *decl =
-            lookupCalledDecl(func->getDescribedFunctionTemplate(), lookup);
+        clang::NamedDecl *decl = lookupCalledDecl(
+            func->getDescribedFunctionTemplate(), lookup, nullptr);
         add(Mapper::ToString(decl));
         return;
       }
@@ -217,6 +223,64 @@ private:
   llvm::json::Object &out_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
+
+  void addPackRule(const clang::FunctionDecl *func, clang::FunctionDecl *rule,
+                   clang::FunctionDecl *callee) {
+    auto key = Mapper::ToString(callee);
+    auto init_type = getInitType(func, rule);
+    if (init_type.isNull()) {
+      out_.try_emplace(func->getQualifiedNameAsString(), std::move(key));
+      return;
+    }
+
+    auto [depth, index] = findTemplateArgument(callee, init_type);
+    out_.try_emplace(func->getQualifiedNameAsString(),
+                     llvm::json::Object{
+                         {"key", std::move(key)},
+                         {"init_type", llvm::json::Object{{"depth", depth},
+                                                          {"index", index}}},
+                     });
+  }
+
+  clang::QualType getInitType(const clang::FunctionDecl *func,
+                              clang::FunctionDecl *rule) {
+    auto pattern = func->parameters()
+                       .back()
+                       ->getType()
+                       ->castAs<clang::PackExpansionType>()
+                       ->getPattern()
+                       .getNonReferenceType();
+    const auto *alias = pattern->getAs<clang::TemplateSpecializationType>();
+    if (!alias || !alias->isTypeAlias() ||
+        alias->getTemplateName().getAsTemplateDecl()->getName() != "Init") {
+      return clang::QualType();
+    }
+
+    auto *tmpl = func->getDescribedFunctionTemplate();
+    const clang::Sema::InstantiatingTemplate Inst(*sema_, loc_, tmpl);
+    return getSubstType(Inst, alias->template_arguments()[0].getAsType(),
+                        rule->getTemplateSpecializationArgs()->asArray());
+  }
+
+  std::pair<unsigned, unsigned>
+  findTemplateArgument(const clang::FunctionDecl *callee,
+                       clang::QualType type) {
+    auto args = sema_->getTemplateInstantiationArgs(callee);
+    for (unsigned depth = 0; depth < args.getNumLevels(); ++depth) {
+      for (unsigned index = 0; index < args.getNumSubsitutedArgs(depth);
+           ++index) {
+        const auto &arg = args(depth, index);
+        if (arg.getKind() == clang::TemplateArgument::Type &&
+            sema_->Context.hasSameType(arg.getAsType(), type)) {
+          return {depth, index};
+        }
+      }
+    }
+    llvm::errs() << "ERROR: Init type " << Mapper::ToString(type)
+                 << " is not a template argument of "
+                 << Mapper::ToString(callee) << '\n';
+    std::exit(EXIT_FAILURE);
+  }
 
   void forceCompleteDefinition(clang::QualType type) {
     type = type.getCanonicalType();
@@ -712,11 +776,15 @@ private:
   }
 
   clang::FunctionDecl *lookupCalledDecl(clang::FunctionTemplateDecl *decl,
-                                        LookupInfo &lookup) {
+                                        LookupInfo &lookup,
+                                        clang::FunctionDecl **rule_out) {
     clang::NamespaceDecl *ns = createNamespaceDecl();
     clang::Sema::ContextRAII savedContext(*sema_, ns);
     clang::FunctionDecl *rule = instantiateRuleDecl(decl);
     assert(rule && "Rule instantiation failed");
+    if (rule_out) {
+      *rule_out = rule;
+    }
     llvm::ArrayRef<clang::ParmVarDecl *> parms = rule->parameters();
     auto csk = lookup.name.getNameKind() ==
                        clang::DeclarationName::NameKind::CXXOperatorName

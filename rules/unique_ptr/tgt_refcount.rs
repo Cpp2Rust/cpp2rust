@@ -44,8 +44,8 @@ fn f7<T1>(a0: Value<T1>) -> Ptr<T1> {
     a0.as_pointer()
 }
 
-fn f8<T1>(a0: T1) -> Option<Value<T1>> {
-    Some(Rc::new(RefCell::new(a0)))
+fn f8<T1>(init: T1) -> Option<Value<T1>> {
+    Some(Rc::new(RefCell::new(init)))
 }
 
 fn f9<T1>(a0: &mut Option<Value<Box<[T1]>>>) {
