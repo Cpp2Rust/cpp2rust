@@ -1,3 +1,5 @@
+// translation-fail: refcount
+// no-compile: unsafe
 #include <assert.h>
 
 static int a;

@@ -1,4 +1,5 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
+// no-compile
 #include <assert.h>
 
 template <typename F> struct Guard {

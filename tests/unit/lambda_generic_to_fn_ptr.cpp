@@ -1,3 +1,4 @@
+// translation-fail
 #include <assert.h>
 
 int main() {

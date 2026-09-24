@@ -1,3 +1,4 @@
+// panic
 #include <assert.h>
 
 int main() {

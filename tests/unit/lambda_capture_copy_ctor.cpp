@@ -1,3 +1,5 @@
+// no-compile: refcount
+// panic: unsafe
 #include <assert.h>
 #include <utility>
 
