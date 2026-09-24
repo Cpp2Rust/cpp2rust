@@ -45,6 +45,37 @@ impl Default for Counted {
         unsafe { Counted::new() }
     }
 }
+pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
+#[repr(C)]
+#[derive()]
+pub struct Dropped {}
+impl Dropped {
+    pub unsafe fn new() -> Self {
+        let mut this = Self {};
+        this
+    }
+    pub unsafe fn copy_from(_a0: *const Dropped) -> Self {
+        let mut this = Self {};
+        this
+    }
+    pub unsafe fn move_from(_a0: *mut Dropped) -> Self {
+        let mut this = Self {};
+        this
+    }
+    pub unsafe fn destructor(&mut self) {
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)).postfix_inc();
+    }
+}
+impl Clone for Dropped {
+    fn clone(&self) -> Self {
+        unsafe { Dropped::copy_from(self as *const Dropped) }
+    }
+}
+impl Default for Dropped {
+    fn default() -> Self {
+        unsafe { Dropped::new() }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -96,6 +127,16 @@ unsafe fn main_0() -> i32 {
     })
     .clone();
     assert!(((unsafe { a2() }) == (4)));
+    {
+        let mut m2: _ = (|| {});
+    }
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
+    {
+        let mut k2: _ = (|| {}).clone();
+    }
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     return 0;
 }
-pub unsafe fn __cpp2rust_init_globals() {}
+pub unsafe fn __cpp2rust_init_globals() {
+    std::cell::LazyCell::force(&*&raw const drops_0);
+}

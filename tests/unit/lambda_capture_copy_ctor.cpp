@@ -11,6 +11,15 @@ struct Counted {
   Counted(Counted &&o) : copies(o.copies), moves(o.moves + 1) {}
 };
 
+int drops = 0;
+
+struct Dropped {
+  Dropped() {}
+  Dropped(const Dropped &) {}
+  Dropped(Dropped &&) {}
+  ~Dropped() { drops++; }
+};
+
 int main() {
   Counted c;
   auto f = [c]() { return c.copies * 10 + c.moves; };
@@ -32,6 +41,18 @@ int main() {
 
   auto a2 = a;
   assert(a2() == 4);
+
+  {
+    auto m = [d = Dropped()]() {};
+    auto m2 = std::move(m);
+  }
+  assert(drops == 2);
+
+  {
+    auto k = [d = Dropped()]() {};
+    auto k2 = k;
+  }
+  assert(drops == 4);
 
   return 0;
 }
