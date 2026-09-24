@@ -1951,8 +1951,10 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       proto = ptr_ty->getPointeeType()->getAs<clang::FunctionProtoType>();
     }
   }
-  assert((function || proto) &&
-         "Either function decl or function prototype should be known");
+  if (!function && !proto) {
+    llvm::report_fatal_error(
+        "Either function decl or function prototype should be known");
+  }
 
   unsigned num_args = expr->getNumArgs() - arg_begin;
   unsigned num_named_params =
