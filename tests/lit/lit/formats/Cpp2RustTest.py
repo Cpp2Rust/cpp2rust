@@ -3,7 +3,7 @@
 
 import lit.Test
 import lit.util
-from .._buildconfig import CXX, CC
+from .._buildconfig import BUILD_DIR, CXX, CC
 from .base import TestFormat
 from dataclasses import dataclass
 from pathlib import Path
@@ -217,9 +217,8 @@ class TestContext:
     def build_rust(self):
         exp = self.expectations
 
-        parent = Path(__file__).resolve().parent.parent.parent.parent.parent
-        cc2rs_dir = parent / "libcc2rs" / "target" / "release"
-        libc_dep_deps = parent / "libc-dep" / "target" / "release" / "deps"
+        cc2rs_dir = BUILD_DIR / "libcc2rs-target" / "release"
+        libc_dep_deps = BUILD_DIR / "libc-dep-target" / "release" / "deps"
         # pick the most recently compiled libc
         libc_rlib = max(
             libc_dep_deps.glob("liblibc-*.rlib"),

@@ -87,9 +87,9 @@ The environment is load-bearing:
 CMake drives all of this via the `preprocess-rust-rules` target: it first builds
 the `rules` crate with the stable toolchain (which also regenerates
 `rules/src/modules.rs`), then runs the preprocessor with
-`CARGO_TARGET_DIR=<build>/target_preprocessor`. That initial `cargo build` of
-the `rules` crate is what actually gates the build on rule bodies type-checking
-(see below). The preprocessor works in two phases.
+`CARGO_TARGET_DIR=<build>/rule-preprocessor-target`. That initial `cargo build`
+of the `rules` crate is what actually gates the build on rule bodies
+type-checking (see below). The preprocessor works in two phases.
 
 **Phase 1, syntactic.** Each `tgt_*.rs` file is parsed with rust-analyzer's
 parser, and functions whose `#[cfg]` does not match the host are dropped. Every

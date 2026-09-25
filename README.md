@@ -8,6 +8,9 @@ Cpp2Rust's algorithm is described in the paper
 [Cpp2Rust: Automatic Translation of C++ to Safe Rust](https://web.ist.utl.pt/nuno.lopes/pubs/cpp2rust-pldi26.pdf)
 published at PLDI 2026.
 
+The [developer's manual](https://cpp2rust.github.io/cpp2rust/) describes how
+Cpp2Rust works internally and how to extend it.
+
 
 ## Overview
 
@@ -92,7 +95,7 @@ fn main_0() -> i32 {
 Compile and run with:
 
 ```bash
-rustc hello.rs -L ../libcc2rs/target/debug
+rustc hello.rs -L build/libcc2rs-target/release
 ./hello
 ```
 

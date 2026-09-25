@@ -38,7 +38,7 @@ fn main_0() -> i32 {
 Compile and run with:
 
 ```bash
-rustc hello.rs -L ../libcc2rs/target/debug
+rustc hello.rs -L build/libcc2rs-target/release
 ./hello
 ```
 

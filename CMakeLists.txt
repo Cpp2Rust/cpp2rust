@@ -67,6 +67,20 @@ add_custom_command(
     VERBATIM
 )
 
+function(set_cargo_env var crate)
+  set(_dir "${CMAKE_BINARY_DIR}/${crate}-target")
+  set(${var} ${CMAKE_COMMAND} -E env
+             CARGO_TARGET_DIR=${_dir}
+             CARGO_RESOLVER_LOCKFILE_PATH=${_dir}/Cargo.lock
+      PARENT_SCOPE)
+endfunction()
+
+set_cargo_env(CARGO_ENV_RULES rules)
+set_cargo_env(CARGO_ENV_RULE_PREPROCESSOR rule-preprocessor)
+set_cargo_env(CARGO_ENV_LIBCC2RS libcc2rs)
+set_cargo_env(CARGO_ENV_LIBCC2RS_MACROS libcc2rs-macros)
+set_cargo_env(CARGO_ENV_LIBC_DEP libc-dep)
+
 add_subdirectory(cpp2rust)
 add_subdirectory(libc-dep)
 add_subdirectory(libcc2rs)
@@ -86,13 +100,17 @@ add_custom_target("format"
                   COMMAND cargo +${RUST_NIGHTLY_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND ${CARGO_ENV_RULES}
+                          cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_NIGHTLY_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
+                          cargo +${RUST_NIGHTLY_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND ${CARGO_ENV_LIBCC2RS}
+                          cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
+                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS}
+                          cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}
                   COMMAND ${RUFF} --silent format ${PYTHON_SOURCES}
@@ -107,14 +125,16 @@ if (NOT LIT_FLAGS)
 endif()
 
 add_custom_target("check-libcc2rs"
-                  COMMAND cargo +${RUST_STABLE_VERSION} test
+                  COMMAND ${CARGO_ENV_LIBCC2RS}
+                          cargo +${RUST_STABLE_VERSION} test
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs"
                   DEPENDS "${RUST_STAMP_FILE}"
                   USES_TERMINAL
                  )
 
 add_custom_target("check-libcc2rs-macros"
-                  COMMAND cargo +${RUST_STABLE_VERSION} test
+                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS}
+                          cargo +${RUST_STABLE_VERSION} test
                   WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/libcc2rs-macros"
                   DEPENDS "${RUST_STAMP_FILE}"
                   USES_TERMINAL
@@ -147,8 +167,8 @@ set(BROTLI_HEADERS
     "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/port.h"
     "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/types.h")
 
-set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/target_preprocessor/release/rule-preprocessor")
-set(RULES_LIB "${PROJECT_SOURCE_DIR}/rules/target/release/librules.rlib")
+set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/rule-preprocessor-target/release/rule-preprocessor")
+set(RULES_LIB "${CMAKE_BINARY_DIR}/rules-target/release/librules.rlib")
 
 file(GLOB_RECURSE rule_preprocessor_sources
      ${PROJECT_SOURCE_DIR}/rule-preprocessor/src/*.rs)
@@ -169,20 +189,20 @@ execute_process(
 
 add_custom_command(
   OUTPUT ${RUSTLS_HEADER} ${BROTLI_HEADERS} ${RULES_LIB}
-  COMMAND cargo +${RUST_STABLE_VERSION} build --release
+  COMMAND ${CARGO_ENV_RULES}
+          cargo +${RUST_STABLE_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
   DEPENDS "${PROJECT_SOURCE_DIR}/rules/build.rs"
           "${PROJECT_SOURCE_DIR}/rules/Cargo.toml"
           ${libcc2rs_sources}
           "${RUST_STAMP_FILE}"
-  DEPFILE "${PROJECT_SOURCE_DIR}/rules/target/release/librules.d"
+  DEPFILE "${CMAKE_BINARY_DIR}/rules-target/release/librules.d"
   VERBATIM
 )
 
 add_custom_command(
   OUTPUT ${PREPROCESSOR_BIN}
-  COMMAND ${CMAKE_COMMAND} -E env
-          CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
           cargo +${RUST_NIGHTLY_VERSION} build --release
           --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
   DEPENDS ${rule_preprocessor_sources}
@@ -236,8 +256,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   add_custom_command(
     OUTPUT ${_rust_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-    COMMAND ${CMAKE_COMMAND} -E env
-            CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}/target_preprocessor
+    COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
             RUSTUP_TOOLCHAIN=${RUST_NIGHTLY_VERSION}
             LD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
             DYLD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
@@ -254,10 +273,9 @@ add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})
 
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES
-  "${PROJECT_SOURCE_DIR}/libcc2rs/target"
-  "${PROJECT_SOURCE_DIR}/libcc2rs-macros/target"
-  "${PROJECT_SOURCE_DIR}/libc-dep/target"
-  "${PROJECT_SOURCE_DIR}/rules/target"
-  "${PROJECT_SOURCE_DIR}/rule-preprocessor/target"
-  "${CMAKE_BINARY_DIR}/target_preprocessor"
+  "${CMAKE_BINARY_DIR}/libcc2rs-target"
+  "${CMAKE_BINARY_DIR}/libcc2rs-macros-target"
+  "${CMAKE_BINARY_DIR}/libc-dep-target"
+  "${CMAKE_BINARY_DIR}/rule-preprocessor-target"
+  "${CMAKE_BINARY_DIR}/rules-target"
 )

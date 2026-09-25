@@ -8,6 +8,7 @@ from pathlib import Path
 
 CXX = Path(r"@CMAKE_CXX_COMPILER@")
 CC = Path(r"@CMAKE_C_COMPILER@")
+BUILD_DIR = Path(r"@CMAKE_BINARY_DIR@")
 ]]
     ESCAPE_QUOTES
     @ONLY
