@@ -1284,6 +1284,27 @@ bool Converter::VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *) {
   return false;
 }
 
+bool Converter::VisitStaticAssertDecl(clang::StaticAssertDecl *decl) {
+  auto *assert_expr = decl->getAssertExpr();
+  if (assert_expr->isValueDependent()) {
+    return false;
+  }
+  std::string condition;
+  if (assert_expr->getType()->isBooleanType() &&
+      IsRustConstEvaluableExpr(assert_expr)) {
+    condition = ToString(assert_expr);
+  } else {
+    bool value = false;
+    ENSURE(assert_expr->EvaluateAsBooleanCondition(value, ctx_));
+    condition = value ? keyword::kTrue : keyword::kFalse;
+  }
+  StrCat(std::format("const _: () = assert!({}{});", condition,
+                     GetAssertMessageAsString(assert_expr, ctx_)));
+  return false;
+}
+
+bool Converter::VisitConceptDecl(clang::ConceptDecl *) { return false; }
+
 static bool IsaSemiColonStmt(const clang::Stmt *stmt) {
   switch (stmt->getStmtClass()) {
   case clang::Stmt::IfStmtClass:
@@ -2273,30 +2294,6 @@ bool Converter::VisitCharacterLiteral(clang::CharacterLiteral *expr) {
   }
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
-}
-
-std::string Converter::GetEscapedCharLiteral(char character) const {
-  switch (character) {
-  case '"':
-    return "\\\"";
-  case '\'':
-    return "\\'";
-  case '\\':
-    return "\\\\";
-  case '\n':
-    return "\\n";
-  case '\r':
-    return "\\r";
-  case '\t':
-    return "\\t";
-  case '\0':
-    return "\\0";
-  }
-  auto uc = static_cast<unsigned char>(character);
-  if (uc < 0x20 || uc >= 0x7F) {
-    return std::format("\\x{:02x}", uc);
-  }
-  return std::string(1, character);
 }
 
 std::string Converter::GetEscapedUTF8CharLiteral(clang::Expr *expr) const {
@@ -3715,6 +3712,21 @@ bool Converter::VisitUnaryExprOrTypeTraitExpr(
     // FIXME: improve error handling
     log() << "unsupported unary expr or type trait expr\n";
   }
+  return false;
+}
+
+bool Converter::VisitConceptSpecializationExpr(
+    clang::ConceptSpecializationExpr *expr) {
+  assert(!expr->isValueDependent());
+  StrCat(expr->isSatisfied() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
+bool Converter::VisitRequiresExpr(clang::RequiresExpr *expr) {
+  assert(!expr->isValueDependent());
+  StrCat(expr->isSatisfied() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
 
