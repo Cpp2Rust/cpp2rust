@@ -698,6 +698,16 @@ protected:
   std::string ConvertVariadicTail(clang::Expr *expr,
                                   const std::vector<clang::Expr *> &all_args);
 
+  std::string ConvertInitFragment(clang::Expr *expr,
+                                  const std::vector<clang::Expr *> &all_args);
+
+  void ConvertConstructFromArgs(clang::QualType type,
+                                llvm::ArrayRef<clang::Expr *> args,
+                                clang::SourceLocation loc);
+
+  virtual void ConvertConstructedValue(clang::QualType type,
+                                       clang::CXXConstructExpr *ctor);
+
   virtual std::string ConvertMappedMethodCall(
       clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
       clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx);
@@ -871,10 +881,12 @@ protected:
     std::string *prev;
     std::string bindings;
     std::optional<Buffer> buf;
+    bool as_block;
 
   public:
-    explicit HoistMaterializedTempBindings(Converter &c)
-        : c(c), prev(c.materialized_temp_bindings_), buf(c) {
+    explicit HoistMaterializedTempBindings(Converter &c, bool as_block = false)
+        : c(c), prev(c.materialized_temp_bindings_), buf(c),
+          as_block(as_block) {
       c.materialized_temp_bindings_ = &bindings;
     }
     ~HoistMaterializedTempBindings() {
@@ -882,6 +894,10 @@ protected:
       std::string body = std::move(*buf).str();
       buf.reset();
 
+      if (as_block && !bindings.empty()) {
+        c.StrCat('{', bindings, body, '}');
+        return;
+      }
       c.StrCat(bindings, body);
     }
     HoistMaterializedTempBindings(const HoistMaterializedTempBindings &) =
@@ -1057,19 +1073,6 @@ protected:
   /// Returns ref_expression.
   std::string EmitMaterializedTempBinding(clang::QualType param_type,
                                           clang::Expr *expr);
-
-  // TODO: move this into the Plugin infrastructure. Plugins are used for
-  // functions that cannot be translated using the rules/ directory. For
-  // example emplace_back, make_unique, printf, etc. Generally variadic
-  // argument functions and functions that use perfect forwarding.
-  std::optional<std::string> TryPluginConvert(clang::CallExpr *call);
-
-  bool emplace_back_plugin_match(clang::CallExpr *call);
-  virtual bool emplace_back_plugin_convert(clang::CallExpr *call);
-  virtual void emplace_back_plugin_construct_arg(clang::QualType elem_type,
-                                                 clang::CXXConstructExpr *ctor);
-  virtual void emplace_back_emit_push(clang::CXXMemberCallExpr *call,
-                                      std::string_view arg);
 
   virtual const char *GetPointerDerefPrefix(clang::QualType pointee_type);
 

@@ -24,3 +24,8 @@ fn f10<T1: Clone + ByteRepr>(a0: Ptr<Vec<T1>>, a1: Vec<T1>) {
 fn f11<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
     a0.write(std::mem::take(&mut *a1))
 }
+
+fn f13<T1: ByteRepr>(a0: Ptr<Vec<Value<Vec<T1>>>>, init: Vec<T1>) {
+    let __init = init;
+    a0.with_mut(|__v: &mut Vec<Value<Vec<T1>>>| __v.push(Rc::new(RefCell::new(__init))))
+}

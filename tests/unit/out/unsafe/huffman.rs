@@ -145,20 +145,23 @@ impl MinHeap {
     }
 }
 pub unsafe fn AllocMinHeap_1(mut capacity: i32) -> Option<Box<MinHeap>> {
-    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new(MinHeap {
-        size: 0,
-        capacity: capacity,
-        arr: Some(
-            (0..(capacity as usize))
-                .map(|_| <*mut MinHeapNode>::default())
-                .collect::<Box<[_]>>(),
-        ),
-        next: 0,
-        alloc: Some(
-            (0..10000_usize)
-                .map(|_| <MinHeapNode>::default())
-                .collect::<Box<[_]>>(),
-        ),
+    let mut minHeap: Option<Box<MinHeap>> = Some(Box::new({
+        let mut __tmp_0: MinHeap = MinHeap {
+            size: 0,
+            capacity: capacity,
+            arr: Some(
+                (0..(capacity as usize))
+                    .map(|_| <*mut MinHeapNode>::default())
+                    .collect::<Box<[_]>>(),
+            ),
+            next: 0,
+            alloc: Some(
+                (0..10000_usize)
+                    .map(|_| <MinHeapNode>::default())
+                    .collect::<Box<[_]>>(),
+            ),
+        };
+        MinHeap::move_from({ &mut __tmp_0 })
     }));
     return minHeap.take();
 }

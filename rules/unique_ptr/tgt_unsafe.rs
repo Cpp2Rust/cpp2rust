@@ -38,8 +38,8 @@ unsafe fn f7<T1>(a0: &mut Option<Box<[T1]>>) -> *mut T1 {
         .map_or(::std::ptr::null_mut(), |s| s.as_mut_ptr())
 }
 
-unsafe fn f8<T1>(a0: T1) -> Option<Box<T1>> {
-    Some(Box::new(a0))
+unsafe fn f8<T1>(init: T1) -> Option<Box<T1>> {
+    Some(Box::new(init))
 }
 
 unsafe fn f9<T1>(a0: &mut Option<Box<[T1]>>) {

@@ -10,6 +10,9 @@
 #include <clang/AST/ParentMapContext.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/Lexer.h>
+#include <clang/Sema/Initialization.h>
+#include <clang/Sema/Sema.h>
+#include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/Path.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -830,7 +833,10 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
 
   if (name.empty()) {
     auto *pdecl = llvm::dyn_cast<clang::ParmVarDecl>(decl);
-    assert(pdecl && "Unexpected unnamed construct");
+    if (!pdecl) {
+      decl->dump();
+      llvm::report_fatal_error("Unexpected unnamed construct");
+    }
 
     const auto *fn =
         llvm::dyn_cast<clang::FunctionDecl>(pdecl->getDeclContext());
@@ -1369,6 +1375,28 @@ BuildUnifiedArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
     all_args.push_back(args[i]);
   }
   return all_args;
+}
+
+clang::Expr *BuildInitExpr(clang::Sema &sema, clang::QualType type,
+                           llvm::ArrayRef<clang::Expr *> args,
+                           clang::SourceLocation loc) {
+  llvm::SmallVector<clang::Expr *, 4> init_args(args.begin(), args.end());
+  auto kind = args.size() == 1 && clang::isa<clang::InitListExpr>(
+                                      args[0]->IgnoreParenImpCasts())
+                  ? clang::InitializationKind::CreateDirectList(loc)
+                  : clang::InitializationKind::CreateDirect(loc, {}, {});
+  auto entity = clang::InitializedEntity::InitializeTemporary(type);
+  clang::InitializationSequence seq(sema, entity, kind, init_args);
+  if (!seq) {
+    return nullptr;
+  }
+
+  auto result = seq.Perform(sema, entity, kind, init_args);
+  if (result.isInvalid()) {
+    return nullptr;
+  }
+
+  return result.get();
 }
 
 clang::Expr *GetCallee(clang::CallExpr *expr) {

@@ -204,6 +204,13 @@ impl<'a> FragmentCtx<'a> {
                     });
                     return;
                 }
+                if param.is_init {
+                    self.flush_text();
+                    self.fragments.push(BodyFragment::Init {
+                        init: std::marker::PhantomData,
+                    });
+                    return;
+                }
                 let mut access = self.builder.classify_access(token);
                 if param.is_mut_ref && self.text_buf.ends_with('*') {
                     self.text_buf.pop();
@@ -272,6 +279,7 @@ struct ParamInfo {
     is_unsafe_pointer: bool,
     is_mut_ref: bool,
     is_va_args: bool,
+    is_init: bool,
 }
 
 struct FnIrBuilder<'a> {
@@ -306,6 +314,7 @@ impl<'a> FnIrBuilder<'a> {
                 !is_va_args || name == "va",
                 "variadic argument parameter must be named `va`, found `{name}`"
             );
+            let is_init = name == "init";
             params.push(ParamInfo {
                 name,
                 ty: ty.syntax().text().to_string(),
@@ -313,8 +322,17 @@ impl<'a> FnIrBuilder<'a> {
                 is_unsafe_pointer,
                 is_mut_ref: matches!(&ty, ast::Type::RefType(r) if r.mut_token().is_some()),
                 is_va_args,
+                is_init,
             });
         }
+        assert!(
+            params.iter().rev().skip(1).all(|p| !p.is_init),
+            "`init` must be the last parameter"
+        );
+        assert!(
+            !(params.iter().any(|p| p.is_init) && params.iter().any(|p| p.is_va_args)),
+            "`init` and `va` cannot be used together"
+        );
         params
     }
 
@@ -490,7 +508,7 @@ impl<'a> FnIrBuilder<'a> {
 
         let params_map: BTreeMap<String, TypeInfo> = params
             .iter()
-            .filter(|p| !p.is_va_args)
+            .filter(|p| !p.is_va_args && !p.is_init)
             .map(|p| {
                 (
                     p.name.clone(),

@@ -46,6 +46,8 @@ enum class ScalarSugar {
   kPreserve,
 };
 
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl);
+
 clang::QualType GetTypeForDecl(const clang::NamedDecl *decl);
 std::string ToString(clang::QualType qual_type,
                      ScalarSugar sugar = ScalarSugar::kDesugar);
