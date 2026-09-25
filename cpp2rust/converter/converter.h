@@ -318,6 +318,10 @@ public:
   virtual void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
                                                  clang::Expr *expr);
 
+  virtual bool FunctionPointerCastNeedsTransmute() const { return true; }
+
+  void ConvertFunctionPointerTransmute(clang::Expr *expr, clang::QualType type);
+
   void EmitHoistedArgs(CallInfo &info);
 
   void EmitArgList(const CallInfo &info);

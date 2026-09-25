@@ -1,4 +1,3 @@
-// XFAIL: unsafe
 #include <assert.h>
 #include <stddef.h>
 

@@ -114,6 +114,7 @@ public:
 
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
+  bool FunctionPointerCastNeedsTransmute() const override { return false; }
 
   bool VisitCallExpr(clang::CallExpr *expr) override;
 

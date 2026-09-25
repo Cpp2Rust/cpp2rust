@@ -28,7 +28,10 @@ unsafe fn main_0() -> i32 {
     assert!(((((unsafe { call_with_ulong_0(Some(same_type_1),) }) == (4_u64)) as i32) != 0));
     assert!(
         ((((unsafe {
-            call_with_ulong_0(Some(via_size_t_param_2) as Option<unsafe fn(u64) -> u64>)
+            call_with_ulong_0(std::mem::transmute::<
+                Option<unsafe fn(usize) -> u64>,
+                Option<unsafe fn(u64) -> u64>,
+            >(Some(via_size_t_param_2)))
         }) == (4_u64)) as i32)
             != 0)
     );

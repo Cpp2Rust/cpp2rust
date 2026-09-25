@@ -2039,10 +2039,27 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   if (param_type->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     ConvertVarInit(param_type, expr);
+  } else if (FunctionPointerCastNeedsTransmute() &&
+             param_type->isFunctionPointerType() &&
+             expr->getType()->isFunctionPointerType() &&
+             !IsCastRedundantInRust(expr, param_type)) {
+    ConvertFunctionPointerTransmute(expr, param_type);
+    return;
   } else {
     ConvertVarInit(param_type, expr);
   }
   ConvertParamTyPointerCastIfNeeded(param_type, expr);
+}
+
+void Converter::ConvertFunctionPointerTransmute(clang::Expr *expr,
+                                                clang::QualType type) {
+  StrCat("std::mem::transmute::<");
+  Convert(expr->getType());
+  StrCat(',');
+  Convert(type);
+  StrCat(">(");
+  Convert(expr);
+  StrCat(')');
 }
 
 void Converter::ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
@@ -2625,13 +2642,7 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     }
     if (type->isFunctionPointerType() ||
         sub_expr->getType()->isFunctionPointerType()) {
-      StrCat("std::mem::transmute::<");
-      Convert(sub_expr->getType());
-      StrCat(',');
-      Convert(type);
-      StrCat(">(");
-      Convert(sub_expr);
-      StrCat(')');
+      ConvertFunctionPointerTransmute(sub_expr, type);
       return false;
     }
     if (type->isEnumeralType() && !sub_expr->getType()->isEnumeralType()) {
