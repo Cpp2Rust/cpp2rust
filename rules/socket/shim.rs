@@ -1,8 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use super::{In6Addr, InAddr};
-use crate::{ByteRepr, Ptr, Value};
+use crate::{ByteRepr, In6Addr, InAddr, Ptr, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 

@@ -59,9 +59,9 @@ The OS and libc surface:
 - [`format`](./io.md#formatting): `printf`-style format string evaluation.
 - [`fd`](./io.md#file-descriptors): a registry tying integer file descriptors to
   their owning objects.
-- [`libc_shims`](./libc-shims.md): safe wrappers over libc APIs, one submodule
-  per area (files, directories, sockets, name resolution, polling, terminal
-  control, time, and so on).
+- [libc shims](./libc-shims.md): safe wrappers over libc APIs, one `shim.rs` per
+  rule directory (files, directories, sockets, name resolution, polling,
+  terminal control, time, and so on), compiled into the crate at build time.
 - [`compat`](./compat.md): platform-specific definitions, such as the location
   of `errno` and `malloc_usable_size`.
 

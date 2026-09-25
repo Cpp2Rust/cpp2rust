@@ -1,8 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use super::{Sockaddr, SockaddrIn, SockaddrIn6, SockaddrStorage};
-use crate::{ByteRepr, Ptr, Value};
+use crate::{ByteRepr, Ptr, Sockaddr, SockaddrIn, SockaddrIn6, SockaddrStorage, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 

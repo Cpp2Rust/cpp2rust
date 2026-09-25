@@ -15,8 +15,7 @@ pub use void::*;
 mod ptr_dyn;
 pub use ptr_dyn::*;
 
-mod libc_shims;
-pub use libc_shims::*;
+include!(concat!(env!("OUT_DIR"), "/rule_shims.rs"));
 
 mod fn_ptr_arg;
 
