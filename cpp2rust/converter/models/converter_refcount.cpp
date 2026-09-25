@@ -268,15 +268,21 @@ bool ConverterRefCount::VisitConstantArrayType(clang::ConstantArrayType *type) {
     Convert(type->getElementType());
     StrCat(std::format("; {}]", GetNumAsString(type->getSize()).c_str()));
     break;
-  case ConversionKind::Ptr:
+  case ConversionKind::Ptr: {
+    PushConversionKind elem(*this, ConversionKind::FullRefCount,
+                            type->getElementType()->isArrayType());
     Convert(type->getElementType());
     break;
+  }
   case ConversionKind::Pointee:
-  case ConversionKind::FullRefCount:
+  case ConversionKind::FullRefCount: {
+    PushConversionKind elem(*this, ConversionKind::FullRefCount,
+                            type->getElementType()->isArrayType());
     StrCat("Box<[");
     Convert(type->getElementType());
     StrCat("]>");
     break;
+  }
   }
   return false;
 }
@@ -2814,6 +2820,10 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   assert(!ptr_type.isNull() && ptr_type->isPointerType());
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto pointee = ptr_type->getPointeeType();
+  if (pointee->isArrayType()) {
+    PushConversionKind array(*this, ConversionKind::FullRefCount);
+    return std::string(Trim(ToString(pointee)));
+  }
   if (!pointee->isRecordType()) {
     return std::string(Trim(ToString(pointee)));
   }
