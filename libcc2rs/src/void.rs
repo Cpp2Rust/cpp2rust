@@ -33,7 +33,7 @@ where
     }
 
     fn equals(&self, other: &dyn ErasedPtr) -> bool {
-        other.as_any().downcast_ref::<Ptr<T>>() == Some(self)
+        other.as_bytes() == self.as_bytes()
     }
 
     fn is_null(&self) -> bool {
