@@ -4122,10 +4122,7 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
   }
 
   for (auto *parameter : decl->parameters()) {
-    name += GetUnsafeTypeAsString(parameter->getType());
-    if (parameter->getType()->isRValueReferenceType()) {
-      name += "_rv";
-    }
+    name += GetOverloadParamTypeAsString(parameter->getType());
     name += '_';
   }
 
@@ -4221,6 +4218,18 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
   Converter converter(type_as_string, ctx_);
   converter.Convert(qual_type);
   return std::string(Trim(type_as_string));
+}
+
+std::string
+Converter::GetOverloadParamTypeAsString(clang::QualType type) const {
+  auto str = GetUnsafeTypeAsString(type);
+  if (type->isVoidPointerType() && type->getPointeeType().isConstQualified()) {
+    str += "_const";
+  }
+  if (type->isRValueReferenceType()) {
+    name += "_rv";
+  }
+  return str;
 }
 
 void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
