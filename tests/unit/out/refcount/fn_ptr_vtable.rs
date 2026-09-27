@@ -59,7 +59,7 @@ thread_local!(
 pub fn int_create_1(val: i32) -> AnyPtr {
     let val: Value<i32> = Rc::new(RefCell::new(val));
     storage_0.with(|rc| *rc.borrow_mut() = (*val.borrow()));
-    return ((storage_0.with(|v| v.as_pointer())) as Ptr<i32>).to_any();
+    return (storage_0.with(|v| v.as_pointer())).to_any();
 }
 pub fn int_get_2(p: AnyPtr) -> i32 {
     let p: Value<AnyPtr> = Rc::new(RefCell::new(p));

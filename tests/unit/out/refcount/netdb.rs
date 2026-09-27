@@ -142,23 +142,17 @@ pub fn test_ipv4_literal_0() {
         ((8080 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_port.as_pointer()) as Ptr::<u16>)
+        (((((*(*sin.borrow()).upgrade().deref()).sin_port.as_pointer())
             .to_any()
-            .memcmp(
-                &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                2_usize
-            )
+            .memcmp(&(port_be.as_pointer() as Ptr::<u8>).to_any(), 2_usize)
             == 0) as i32)
             != 0)
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        (((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer())
             .to_any()
-            .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                4_usize
-            )
+            .memcmp(&(addr_be.as_pointer() as Ptr::<u8>).to_any(), 4_usize)
             == 0) as i32)
             != 0)
     );
@@ -308,12 +302,9 @@ pub fn test_ipv6_literal_1() {
         ((443 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_port.as_pointer()) as Ptr::<u16>)
+        (((((*(*sin6.borrow()).upgrade().deref()).sin6_port.as_pointer())
             .to_any()
-            .memcmp(
-                &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                2_usize
-            )
+            .memcmp(&(port_be.as_pointer() as Ptr::<u8>).to_any(), 2_usize)
             == 0) as i32)
             != 0)
     );
@@ -322,13 +313,9 @@ pub fn test_ipv6_literal_1() {
         1_u8,
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_addr.as_pointer())
-            as Ptr<libcc2rs::In6Addr>)
+        (((((*(*sin6.borrow()).upgrade().deref()).sin6_addr.as_pointer())
             .to_any()
-            .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                16_usize
-            )
+            .memcmp(&(addr_be.as_pointer() as Ptr::<u8>).to_any(), 16_usize)
             == 0) as i32)
             != 0)
     );
@@ -453,12 +440,9 @@ pub fn test_null_hints_2() {
     ));
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        (((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer())
             .to_any()
-            .memcmp(
-                &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                4_usize
-            )
+            .memcmp(&(addr_be.as_pointer() as Ptr::<u8>).to_any(), 4_usize)
             == 0) as i32)
             != 0)
     );

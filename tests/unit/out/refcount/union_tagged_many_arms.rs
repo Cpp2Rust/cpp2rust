@@ -129,11 +129,11 @@ fn main_0() -> i32 {
     (*(*e.borrow()).tag.borrow_mut()) = Tag_enum_T_REF;
     (*(*e.borrow()).payload.borrow_mut())
         .handle()
-        .write(((x.as_pointer()) as Ptr<i32>).to_any());
+        .write((x.as_pointer()).to_any());
     assert!(
         ((({
             let _lhs = ((*(*e.borrow()).payload.borrow()).handle().read()).clone();
-            _lhs == ((x.as_pointer()) as Ptr<i32>).to_any()
+            _lhs == (x.as_pointer()).to_any()
         }) as i32)
             != 0)
     );

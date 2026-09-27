@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let n: Value<isize> = Rc::new(RefCell::new(
         match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            (buf.as_pointer() as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(::std::mem::size_of::<[u8; 4]>(), |__buf| {

@@ -169,17 +169,16 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     {
-        ((c.as_pointer()) as Ptr<Container>)
+        (c.as_pointer())
             .to_any()
             .memset((0) as u8, 68usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+        (c.as_pointer()).to_any()
     };
     (*(*(*(*c.borrow()).u.borrow()).a().upgrade().deref())
         .code
         .borrow_mut()) = 10_u16;
     (*(*c.borrow()).len.borrow_mut()) = (28usize as u32);
     (*(*(((*(*c.borrow()).u.borrow()).a())
-        .clone()
         .to_any()
         .reinterpret_cast::<shape_b>())
     .upgrade()

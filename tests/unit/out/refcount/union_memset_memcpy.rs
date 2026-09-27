@@ -160,10 +160,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     {
-        ((c.as_pointer()) as Ptr<Container>)
+        (c.as_pointer())
             .to_any()
             .memset((0) as u8, 256usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+        (c.as_pointer()).to_any()
     };
     assert!(
         (((((*(*(*(*c.borrow()).view.borrow()).a().upgrade().deref())
@@ -216,7 +216,7 @@ fn main_0() -> i32 {
             .reinterpret_cast::<u8>()) as Ptr<u8>)
             .to_any()
             .memcpy(
-                &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                &(src.as_pointer() as Ptr<u8>).to_any(),
                 (*len.borrow()) as usize,
             );
         (((*(*c.borrow()).view.borrow())
@@ -242,10 +242,10 @@ fn main_0() -> i32 {
             != 0)
     );
     {
-        ((c.as_pointer()) as Ptr<Container>)
+        (c.as_pointer())
             .to_any()
             .memset((0) as u8, 256usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+        (c.as_pointer()).to_any()
     };
     assert!(
         (((((*(*(*(*c.borrow()).view.borrow()).b().upgrade().deref())

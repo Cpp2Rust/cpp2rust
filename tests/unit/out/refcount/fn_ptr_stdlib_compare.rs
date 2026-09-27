@@ -68,14 +68,14 @@ fn main_0() -> i32 {
         let buf: Value<Box<[u8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+            (buf.as_pointer() as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            (buf.as_pointer() as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = (buf.as_pointer() as Ptr<u8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
@@ -114,16 +114,16 @@ fn main_0() -> i32 {
         let buf: Value<Box<[u8]>> =
             Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+            (buf.as_pointer() as Ptr<u8>).to_any().memset(
                 (('X' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 16]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            (buf.as_pointer() as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
                 (*fn1.borrow()).call(
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                    (buf.as_pointer() as Ptr<u8>).to_any(),
                     1_usize,
                     10_usize,
                     (*stream.borrow()).clone(),
@@ -189,14 +189,14 @@ fn main_0() -> i32 {
         let buf: Value<Box<[u8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+            (buf.as_pointer() as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            (buf.as_pointer() as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = (buf.as_pointer() as Ptr<u8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 10_usize;
             let __a3 = (*stream.borrow()).clone();
@@ -225,16 +225,16 @@ fn main_0() -> i32 {
         let buf: Value<Box<[u8]>> =
             Rc::new(RefCell::new((0..10).map(|_| 0_u8).collect::<Box<[u8]>>()));
         {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memset(
+            (buf.as_pointer() as Ptr<u8>).to_any().memset(
                 (('Y' as u8) as i32) as u8,
                 ::std::mem::size_of::<[u8; 10]>() as usize,
             );
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            (buf.as_pointer() as Ptr<u8>).to_any()
         };
         let n: Value<usize> = Rc::new(RefCell::new(
             ({
                 (*gn1.borrow()).call(
-                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                    (buf.as_pointer() as Ptr<u8>).to_any(),
                     1_usize,
                     10_usize,
                     (*stream.borrow()).clone(),

@@ -74,8 +74,8 @@ fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
     assert!(
         (((({
-            let _ctx: AnyPtr = ((dummy.as_pointer()) as Ptr<i32>).to_any();
-            let _extra: AnyPtr = ((dummy.as_pointer()) as Ptr<i32>).to_any();
+            let _ctx: AnyPtr = (dummy.as_pointer()).to_any();
+            let _extra: AnyPtr = (dummy.as_pointer()).to_any();
             not_supported_5(_ctx, FnPtr::<fn(i32) -> i32>::new(square_0), _extra)
         }) == -3_i32) as i32)
             != 0)

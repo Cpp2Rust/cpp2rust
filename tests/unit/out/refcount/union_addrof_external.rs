@@ -138,7 +138,7 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     ));
     {
         (*out.borrow()).memcpy(
-            &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+            &(src.as_pointer() as Ptr<u8>).to_any(),
             (*n.borrow()) as usize,
         );
         (*out.borrow()).clone()
@@ -151,10 +151,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let c: Value<Container> = <Value<Container>>::default();
     {
-        ((c.as_pointer()) as Ptr<Container>)
+        (c.as_pointer())
             .to_any()
             .memset((0) as u8, 128usize as usize);
-        ((c.as_pointer()) as Ptr<Container>).to_any()
+        (c.as_pointer()).to_any()
     };
     ({
         let _out: AnyPtr = ((*c.borrow()).view.as_pointer()).to_any();

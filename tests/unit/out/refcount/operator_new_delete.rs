@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     ));
     (*a.borrow()).write(42);
     assert!((((*a.borrow()).read()) == 42));
-    libcc2rs::free_refcount(((*a.borrow()).clone() as Ptr<i32>).to_any());
+    libcc2rs::free_refcount((*a.borrow()).to_any());
     let arr: Value<Ptr<i32>> = Rc::new(RefCell::new(
         libcc2rs::malloc_refcount((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize))
             .reinterpret_cast::<i32>(),
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
             + ((*arr.borrow()).offset((1) as isize).read()))
             == 1)
     );
-    libcc2rs::free_refcount(((*arr.borrow()).clone() as Ptr<i32>).to_any());
+    libcc2rs::free_refcount((*arr.borrow()).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

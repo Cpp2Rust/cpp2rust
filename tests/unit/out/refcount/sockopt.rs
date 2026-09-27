@@ -45,7 +45,7 @@ fn main_0() -> i32 {
             let __a0 = (*s.borrow());
             let __a1 = libc::SOL_SOCKET;
             let __a2 = libc::SO_KEEPALIVE;
-            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
+            let __a3 = (on.as_pointer()).to_any();
             libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
         } == 0) as i32)
             != 0)
@@ -55,7 +55,7 @@ fn main_0() -> i32 {
             let __a0 = (*s.borrow());
             let __a1 = libc::IPPROTO_TCP;
             let __a2 = libc::TCP_NODELAY;
-            let __a3 = ((on.as_pointer()) as Ptr<i32>).to_any();
+            let __a3 = (on.as_pointer()).to_any();
             libcc2rs::setsockopt_refcount(__a0, __a1, __a2, __a3)
         } == 0) as i32)
             != 0)
@@ -69,7 +69,7 @@ fn main_0() -> i32 {
                     nix::sys::socket::getsockopt(&__fd, nix::sys::socket::sockopt::SocketError)
                 }) {
                     Ok(__err) => {
-                        ((err.as_pointer()) as Ptr<i32>)
+                        (err.as_pointer())
                             .to_any()
                             .reinterpret_cast::<i32>()
                             .write(__err);

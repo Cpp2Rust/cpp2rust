@@ -12,7 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdout()).clone()));
-    let p: Value<AnyPtr> = Rc::new(RefCell::new((*fp.borrow()).clone().to_any()));
+    let p: Value<AnyPtr> = Rc::new(RefCell::new((*fp.borrow()).to_any()));
     let fp2: Value<Ptr<CFile>> = Rc::new(RefCell::new((*p.borrow()).reinterpret_cast::<CFile>()));
     assert!(
         ((({

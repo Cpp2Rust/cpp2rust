@@ -62,7 +62,7 @@ pub fn test_fputc_fputs_0() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = (buf.as_pointer() as Ptr<u8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 16_usize;
             let __a3 = (*fp.borrow()).clone();
@@ -71,10 +71,10 @@ pub fn test_fputc_fputs_0() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
-            .to_any()
-            .memcmp(&Ptr::<u8>::from_string_literal(b"ABCD\n").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.as_pointer() as Ptr::<u8>).to_any().memcmp(
+            &(Ptr::<u8>::from_string_literal(b"ABCD\n")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(
@@ -187,13 +187,10 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
-            .to_any()
-            .memcmp(
-                &Ptr::<u8>::from_string_literal(b"line1\n").to_any(),
-                7_usize
-            )
-            == 0) as i32)
+        ((((buf.as_pointer() as Ptr::<u8>).to_any().memcmp(
+            &(Ptr::<u8>::from_string_literal(b"line1\n")).to_any(),
+            7_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(((((*fp.borrow()).with_mut(|__f| __f.getc()) == ('l' as i32)) as i32) != 0));
@@ -234,9 +231,9 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+        ((((buf.as_pointer() as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::<u8>::from_string_literal(b"ine").to_any(), 4_usize)
+            .memcmp(&(Ptr::<u8>::from_string_literal(b"ine")).to_any(), 4_usize)
             == 0) as i32)
             != 0)
     );
@@ -277,9 +274,9 @@ pub fn test_fgets_getc_2() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+        ((((buf.as_pointer() as Ptr::<u8>)
             .to_any()
-            .memcmp(&Ptr::<u8>::from_string_literal(b"2\n").to_any(), 3_usize)
+            .memcmp(&(Ptr::<u8>::from_string_literal(b"2\n")).to_any(), 3_usize)
             == 0) as i32)
             != 0)
     );
@@ -389,7 +386,7 @@ pub fn test_freopen_3() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = (buf.as_pointer() as Ptr<u8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 8_usize;
             let __a3 = (*fp2.borrow()).clone();
@@ -398,10 +395,10 @@ pub fn test_freopen_3() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
-            .to_any()
-            .memcmp(&Ptr::<u8>::from_string_literal(b"hello").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.as_pointer() as Ptr::<u8>).to_any().memcmp(
+            &(Ptr::<u8>::from_string_literal(b"hello")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(
@@ -475,7 +472,7 @@ pub fn test_fseeko_4() {
     ])));
     assert!(
         ((({
-            let __a0 = ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any();
+            let __a0 = (buf.as_pointer() as Ptr<u8>).to_any();
             let __a1 = 1_usize;
             let __a2 = 5_usize;
             let __a3 = (*fp.borrow()).clone();
@@ -484,10 +481,10 @@ pub fn test_fseeko_4() {
             != 0)
     );
     assert!(
-        (((((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
-            .to_any()
-            .memcmp(&Ptr::<u8>::from_string_literal(b"world").to_any(), 5_usize)
-            == 0) as i32)
+        ((((buf.as_pointer() as Ptr::<u8>).to_any().memcmp(
+            &(Ptr::<u8>::from_string_literal(b"world")).to_any(),
+            5_usize
+        ) == 0) as i32)
             != 0)
     );
     assert!(

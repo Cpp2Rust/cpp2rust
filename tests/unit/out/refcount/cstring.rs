@@ -11,15 +11,14 @@ pub fn test_memcpy_0() {
     let dst: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
-            &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            6_usize as usize,
-        );
-        ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+        (dst.as_pointer() as Ptr<u8>)
+            .to_any()
+            .memcpy(&(src.as_pointer() as Ptr<u8>).to_any(), 6_usize as usize);
+        (dst.as_pointer() as Ptr<u8>).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+        _lhs == (dst.as_pointer() as Ptr<u8>).to_any()
     });
     assert!(
         ((((*dst.borrow())[(0) as usize] as i32) == (('h' as u8) as i32))
@@ -35,14 +34,14 @@ pub fn test_memcpy_0() {
 pub fn test_memset_1() {
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        (buf.as_pointer() as Ptr<u8>)
             .to_any()
             .memset((('x' as u8) as i32) as u8, 4_usize as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+        (buf.as_pointer() as Ptr<u8>).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+        _lhs == (buf.as_pointer() as Ptr<u8>).to_any()
     });
     assert!(
         (((((*buf.borrow())[(0) as usize] as i32) == (('x' as u8) as i32))
@@ -56,30 +55,21 @@ pub fn test_memcmp_2() {
     let b: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([1_u8, 2_u8, 3_u8, 4_u8])));
     let c: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([1_u8, 2_u8, 9_u8, 4_u8])));
     assert!(
-        (((a.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+        ((a.as_pointer() as Ptr::<u8>)
             .to_any()
-            .memcmp(
-                &((b.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                4_usize
-            )
+            .memcmp(&(b.as_pointer() as Ptr::<u8>).to_any(), 4_usize)
             == 0)
     );
     assert!(
-        (((a.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+        ((a.as_pointer() as Ptr::<u8>)
             .to_any()
-            .memcmp(
-                &((c.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                4_usize
-            )
+            .memcmp(&(c.as_pointer() as Ptr::<u8>).to_any(), 4_usize)
             < 0)
     );
     assert!(
-        (((c.as_pointer() as Ptr::<u8>) as Ptr::<u8>)
+        ((c.as_pointer() as Ptr::<u8>)
             .to_any()
-            .memcmp(
-                &((a.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
-                4_usize
-            )
+            .memcmp(&(a.as_pointer() as Ptr::<u8>).to_any(), 4_usize)
             > 0)
     );
 }
@@ -93,17 +83,14 @@ pub fn test_memmove_3() {
         ('\0' as u8),
     ])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize))
             .to_any()
-            .memcpy(
-                &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                4_usize as usize,
-            );
-        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
+            .memcpy(&(buf.as_pointer() as Ptr<u8>).to_any(), 4_usize as usize);
+        ((buf.as_pointer() as Ptr<u8>).offset((1) as isize)).to_any()
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
+        _lhs == ((buf.as_pointer() as Ptr<u8>).offset((1) as isize)).to_any()
     });
     assert!(
         ((((*buf.borrow())[(0) as usize] as i32) == (('a' as u8) as i32))
@@ -411,7 +398,7 @@ pub fn test_strncmp_7() {
 pub fn test_memchr_8() {
     let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([16_u8, 32_u8, 48_u8, 64_u8])));
     let r: Value<AnyPtr> = Rc::new(RefCell::new({
-        let mut __p = ((data.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        let mut __p = (data.as_pointer() as Ptr<u8>)
             .to_any()
             .reinterpret_cast::<u8>();
         let mut __i: usize = 0;
@@ -428,11 +415,11 @@ pub fn test_memchr_8() {
     }));
     assert!({
         let _lhs = (*r.borrow()).clone();
-        _lhs == (((data.as_pointer() as Ptr<u8>).offset(2)) as Ptr<u8>).to_any()
+        _lhs == ((data.as_pointer() as Ptr<u8>).offset(2)).to_any()
     });
     assert!(
         ({
-            let mut __p = ((data.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            let mut __p = (data.as_pointer() as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>();
             let mut __i: usize = 0;
@@ -449,9 +436,7 @@ pub fn test_memchr_8() {
         })
         .is_null()
     );
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(
-        ((data.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-    ));
+    let p: Value<AnyPtr> = Rc::new(RefCell::new((data.as_pointer() as Ptr<u8>).to_any()));
     let n: Value<usize> = Rc::new(RefCell::new(4_usize));
     assert!({
         let _lhs = {
@@ -569,7 +554,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((*d.borrow()).to_any());
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"world")));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ('a' as u8),
@@ -597,7 +582,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d2.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((*d2.borrow()).to_any());
     let d3: Value<Ptr<u8>> = Rc::new(RefCell::new(libcc2rs::strdup_refcount(
         (buf.as_pointer() as Ptr<u8>),
     )));
@@ -618,7 +603,7 @@ pub fn test_strdup_10() {
             }
         } == 0)
     );
-    libcc2rs::free_refcount(((*d3.borrow()).clone() as Ptr<u8>).to_any());
+    libcc2rs::free_refcount((*d3.borrow()).to_any());
 }
 pub fn test_strcspn_11() {
     assert!(

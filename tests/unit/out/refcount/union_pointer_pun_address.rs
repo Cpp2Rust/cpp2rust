@@ -71,7 +71,7 @@ fn main_0() -> i32 {
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
     assert!(
         ((({
-            let _lhs = (*out.borrow()).clone().to_any();
+            let _lhs = (*out.borrow()).to_any();
             _lhs == (a.as_pointer()).to_any()
         }) as i32)
             != 0)

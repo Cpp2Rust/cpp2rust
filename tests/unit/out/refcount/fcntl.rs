@@ -131,7 +131,7 @@ fn main_0() -> i32 {
     let b: Value<u8> = Rc::new(RefCell::new(0_u8));
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((b.as_pointer()) as Ptr<u8>)
+            (b.as_pointer())
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))
