@@ -9,6 +9,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <format>
@@ -735,6 +736,16 @@ std::string ToRustName(std::string name) {
   for (auto &c : name) {
     if (!std::isalnum(c) && c != '_') {
       c = '_';
+    }
+  }
+  // Ptr -> Ptr_ so it doesn't shadow libcc2rs::Ptr; Ptr_ -> Ptr__ so it doesn't
+  // collide with the renamed Ptr, etc
+  for (std::string_view runtime_name : {"Ptr", "Value"}) {
+    if (name.starts_with(runtime_name) &&
+        std::ranges::all_of(std::string_view(name).substr(runtime_name.size()),
+                            [](char c) { return c == '_'; })) {
+      name += '_';
+      break;
     }
   }
   return name;
