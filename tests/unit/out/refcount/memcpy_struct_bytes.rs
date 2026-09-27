@@ -45,18 +45,19 @@ fn main_0() -> i32 {
     }));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>()));
     {
-        (buf.as_pointer() as Ptr<u8>).to_any().memcpy(
-            &(src.as_pointer()).to_any(),
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
+            &((src.as_pointer()) as Ptr<point>).to_any(),
             ::std::mem::size_of::<[u8; 8]>() as usize,
         );
-        (buf.as_pointer() as Ptr<u8>).to_any()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     let dst: Value<point> = <Value<point>>::default();
     {
-        (dst.as_pointer())
-            .to_any()
-            .memcpy(&(buf.as_pointer() as Ptr<u8>).to_any(), 8usize as usize);
-        (dst.as_pointer()).to_any()
+        ((dst.as_pointer()) as Ptr<point>).to_any().memcpy(
+            &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+            8usize as usize,
+        );
+        ((dst.as_pointer()) as Ptr<point>).to_any()
     };
     assert!(((((*(*dst.borrow()).x.borrow()) == 3) as i32) != 0));
     assert!(((((*(*dst.borrow()).y.borrow()) == 7) as i32) != 0));

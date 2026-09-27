@@ -24,7 +24,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 9, 1, 7, 3, 8, 4])));
     {
-        let __base = (arr.as_pointer() as Ptr<i32>)
+        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
             .to_any()
             .reinterpret_cast::<u8>();
         for __i in 0..8_usize {
@@ -68,7 +68,7 @@ fn main_0() -> i32 {
     let key: Value<i32> = Rc::new(RefCell::new(7));
     let hit: Value<Ptr<i32>> = Rc::new(RefCell::new(
         {
-            let __base = (arr.as_pointer() as Ptr<i32>)
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
                 .to_any()
                 .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
@@ -77,7 +77,10 @@ fn main_0() -> i32 {
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0((key.as_pointer()).to_any().clone(), __elem.to_any());
+                let __r = cmp_int_0(
+                    ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
+                    __elem.to_any(),
+                );
                 if __r == 0 {
                     __found = __elem.to_any();
                 } else if __r < 0 {
@@ -95,7 +98,7 @@ fn main_0() -> i32 {
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
     let miss: Value<Ptr<i32>> = Rc::new(RefCell::new(
         {
-            let __base = (arr.as_pointer() as Ptr<i32>)
+            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
                 .to_any()
                 .reinterpret_cast::<u8>();
             let mut __lo: isize = 0;
@@ -104,7 +107,10 @@ fn main_0() -> i32 {
             while __lo <= __hi && __found.is_null() {
                 let __mid = __lo + (__hi - __lo) / 2;
                 let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0((miss_key.as_pointer()).to_any().clone(), __elem.to_any());
+                let __r = cmp_int_0(
+                    ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
+                    __elem.to_any(),
+                );
                 if __r == 0 {
                     __found = __elem.to_any();
                 } else if __r < 0 {

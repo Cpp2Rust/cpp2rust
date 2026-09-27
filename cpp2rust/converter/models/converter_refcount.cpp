@@ -1234,16 +1234,21 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
         return Convert(sub_expr);
       }
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      if (sub_expr->getType()->isPointerType() &&
-          sub_expr->getType()->getPointeeType()->isArrayType()) {
-        StrCat(std::format("({} as Ptr<{}>).to_any()",
-                           ConvertFreshPointer(sub_expr),
+      auto ptr = ConvertPointer(sub_expr);
+      if (!isFresh()) {
+        StrCat(std::format("({}).to_any()", ptr));
+      } else if (sub_expr->getType()->isPointerType() &&
+                 sub_expr->getType()->getPointeeType()->isArrayType()) {
+        StrCat(std::format("({} as Ptr<{}>).to_any()", ptr,
                            ToString(sub_expr->getType()
                                         ->getPointeeType()
                                         ->getAsArrayTypeUnsafe()
                                         ->getElementType())));
+      } else if (IsStringLiteralExpr(sub_expr)) {
+        StrCat(std::format("{}.to_any()", ptr));
       } else {
-        StrCat(std::format("({}).to_any()", ConvertPointer(sub_expr)));
+        StrCat(std::format("({} as {}).to_any()", ptr,
+                           ToString(sub_expr->getType())));
       }
       computed_expr_type_ = ComputedExprType::FreshPointer;
     } else if (sub_expr->getType()->isVoidPointerType() &&

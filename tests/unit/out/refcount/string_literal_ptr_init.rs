@@ -145,7 +145,7 @@ fn main_0() -> i32 {
             .borrow())
         .to_any()
     } else {
-        (Ptr::<u8>::from_string_literal(b"")).to_any()
+        Ptr::<u8>::from_string_literal(b"").to_any()
     }));
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())
@@ -161,7 +161,7 @@ fn main_0() -> i32 {
             .borrow())
         .to_any()
     } else {
-        (Ptr::<u8>::from_string_literal(b"")).to_any()
+        Ptr::<u8>::from_string_literal(b"").to_any()
     };
     assert!(
         (((((((*p.borrow()).reinterpret_cast::<u8>())

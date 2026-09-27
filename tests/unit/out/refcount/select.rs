@@ -33,10 +33,10 @@ fn main_0() -> i32 {
     (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
     let tv: Value<libcc2rs::Timeval> = Rc::new(RefCell::new(Default::default()));
     {
-        (tv.as_pointer())
+        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>)
             .to_any()
             .memset((0) as u8, 16usize as usize);
-        (tv.as_pointer()).to_any()
+        ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any()
     };
     (*(*tv.borrow()).tv_sec.borrow_mut()) = 0_i64;
     assert!(
@@ -172,7 +172,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            (Ptr::<u8>::from_string_literal(b"x"))
+            Ptr::<u8>::from_string_literal(b"x")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))

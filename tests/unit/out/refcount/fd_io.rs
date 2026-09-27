@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (Ptr::<u8>::from_string_literal(b"hello world"))
+            Ptr::<u8>::from_string_literal(b"hello world")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -70,14 +70,14 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     {
-        (buf.as_pointer() as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
-        (buf.as_pointer() as Ptr<u8>).to_any()
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (buf.as_pointer() as Ptr<u8>)
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
@@ -111,7 +111,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            (buf.as_pointer() as Ptr<u8>)
+            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {

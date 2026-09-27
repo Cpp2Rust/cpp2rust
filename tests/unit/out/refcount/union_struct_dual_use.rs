@@ -114,10 +114,10 @@ fn main_0() -> i32 {
     assert!((((({ sum_inner_0((standalone.as_pointer()),) }) == 7) as i32) != 0));
     let outer: Value<Outer> = <Value<Outer>>::default();
     {
-        (outer.as_pointer())
+        ((outer.as_pointer()) as Ptr<Outer>)
             .to_any()
             .memset((0) as u8, 16usize as usize);
-        (outer.as_pointer()).to_any()
+        ((outer.as_pointer()) as Ptr<Outer>).to_any()
     };
     (*(*(*(*outer.borrow()).u.borrow()).inner().upgrade().deref())
         .a

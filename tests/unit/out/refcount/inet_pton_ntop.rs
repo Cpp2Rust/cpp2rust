@@ -19,7 +19,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -33,7 +33,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -64,7 +64,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -78,7 +78,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -99,7 +99,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -113,7 +113,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -134,7 +134,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -148,7 +148,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -174,7 +174,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv4Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(4, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -188,7 +188,7 @@ fn main_0() -> i32 {
                 .parse::<std::net::Ipv6Addr>()
             {
                 Ok(__ip) => {
-                    (buf.as_pointer() as Ptr<u8>)
+                    ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice_mut(16, |__s| __s.copy_from_slice(&__ip.octets()));
@@ -216,13 +216,13 @@ fn main_0() -> i32 {
         ((({
             let mut __it1 = {
                 let __text = if libc::AF_INET == libc::AF_INET {
-                    let __b: [u8; 4] = (four.as_pointer() as Ptr<u8>)
+                    let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
                 } else if libc::AF_INET == libc::AF_INET6 {
-                    let __b: [u8; 16] = (four.as_pointer() as Ptr<u8>)
+                    let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice(16, |__s| __s.try_into().unwrap());
@@ -275,13 +275,13 @@ fn main_0() -> i32 {
         ((({
             let mut __it1 = {
                 let __text = if libc::AF_INET6 == libc::AF_INET {
-                    let __b: [u8; 4] = (sixteen.as_pointer() as Ptr<u8>)
+                    let __b: [u8; 4] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice(4, |__s| __s.try_into().unwrap());
                     Some(std::net::Ipv4Addr::from(__b).to_string())
                 } else if libc::AF_INET6 == libc::AF_INET6 {
-                    let __b: [u8; 16] = (sixteen.as_pointer() as Ptr<u8>)
+                    let __b: [u8; 16] = ((sixteen.as_pointer() as Ptr<u8>) as Ptr<u8>)
                         .to_any()
                         .reinterpret_cast::<u8>()
                         .with_slice(16, |__s| __s.try_into().unwrap());
@@ -328,13 +328,13 @@ fn main_0() -> i32 {
     assert!(
         (((({
             let __text = if libc::AF_INET == libc::AF_INET {
-                let __b: [u8; 4] = (four.as_pointer() as Ptr<u8>)
+                let __b: [u8; 4] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
                     .to_any()
                     .reinterpret_cast::<u8>()
                     .with_slice(4, |__s| __s.try_into().unwrap());
                 Some(std::net::Ipv4Addr::from(__b).to_string())
             } else if libc::AF_INET == libc::AF_INET6 {
-                let __b: [u8; 16] = (four.as_pointer() as Ptr<u8>)
+                let __b: [u8; 16] = ((four.as_pointer() as Ptr<u8>) as Ptr<u8>)
                     .to_any()
                     .reinterpret_cast::<u8>()
                     .with_slice(16, |__s| __s.try_into().unwrap());
