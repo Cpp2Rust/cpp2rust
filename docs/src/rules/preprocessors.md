@@ -61,22 +61,24 @@ compiler's own libraries (`rustc_driver`, `rustc_middle`, ...). It processes the
 whole rules tree in one invocation:
 
 ```bash
+CARGO_TARGET_DIR=<target> cargo +nightly build --release \
+    --message-format=json-render-diagnostics \
+    --manifest-path rule-preprocessor/Cargo.toml > <target>/artifacts.json
+RULE_PREPROCESSOR_ARTIFACTS=<target>/artifacts.json \
 CARGO_TARGET_DIR=<target> cargo +nightly run --release \
     --manifest-path rule-preprocessor/Cargo.toml -- <build>/rules [rules-dir]
 ```
 
 The environment is load-bearing:
 
-- `CARGO_TARGET_DIR` must be set (the tool aborts otherwise): the rlibs of the
-  rule dependencies (`libcc2rs`, `libc`, `nix`, ...) are looked up in
-  `$CARGO_TARGET_DIR/<profile>/deps`, which the `cargo run` above populates. The
-  crate list is hardcoded, so a new dependency in `rules/Cargo.toml` also needs
-  an entry in `rule-preprocessor/src/semantic.rs`.
-
-  > [!WARNING]
-  >
-  > Stale rlibs from an earlier build can be picked up silently. Run
-  > `ninja clean` to fix this.
+- `RULE_PREPROCESSOR_ARTIFACTS` must be set (the tool aborts otherwise): it
+  points to cargo's JSON build output, from which the rlibs of the rule
+  dependencies (`libcc2rs`, `libc`, `nix`, ...) are taken. The target dir is not
+  scanned directly because it may hold stale copies of the same crates with
+  different hashes (e.g., from `cargo clippy` or an older toolchain), and mixing
+  them makes type checking fail. The crate list is hardcoded, so a new
+  dependency in `rules/Cargo.toml` also needs an entry in
+  `rule-preprocessor/src/semantic.rs`.
 
 - The sysroot comes from running `rustc --print=sysroot`, so the `rustc` on
   `PATH` must be the same nightly the preprocessor was built with (running
@@ -86,10 +88,11 @@ The environment is load-bearing:
 
 CMake drives all of this via the `preprocess-rust-rules` target: it first builds
 the `rules` crate with the stable toolchain (which also regenerates
-`rules/src/modules.rs`), then runs the preprocessor with
-`CARGO_TARGET_DIR=<build>/rule-preprocessor-target`. That initial `cargo build`
-of the `rules` crate is what actually gates the build on rule bodies
-type-checking (see below). The preprocessor works in two phases.
+`rules/src/modules.rs`), then builds the preprocessor in
+`<build>/rule-preprocessor-target`, saving cargo's output to `artifacts.json`
+there, and runs it. That initial `cargo build` of the `rules` crate is what
+actually gates the build on rule bodies type-checking (see below). The
+preprocessor works in two phases.
 
 **Phase 1, syntactic.** Each `tgt_*.rs` file is parsed with rust-analyzer's
 parser, and functions whose `#[cfg]` does not match the host are dropped. Every

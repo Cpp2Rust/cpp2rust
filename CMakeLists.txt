@@ -168,6 +168,7 @@ set(BROTLI_HEADERS
     "${PROJECT_SOURCE_DIR}/rules/brotli/brotli/types.h")
 
 set(PREPROCESSOR_BIN "${CMAKE_BINARY_DIR}/rule-preprocessor-target/release/rule-preprocessor")
+set(PREPROCESSOR_ARTIFACTS "${CMAKE_BINARY_DIR}/rule-preprocessor-target/artifacts.json")
 set(RULES_LIB "${CMAKE_BINARY_DIR}/rules-target/release/librules.rlib")
 
 file(GLOB_RECURSE rule_preprocessor_sources
@@ -201,10 +202,12 @@ add_custom_command(
 )
 
 add_custom_command(
-  OUTPUT ${PREPROCESSOR_BIN}
+  OUTPUT ${PREPROCESSOR_BIN} ${PREPROCESSOR_ARTIFACTS}
   COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
           cargo +${RUST_NIGHTLY_VERSION} build --release
+          --message-format=json-render-diagnostics
           --manifest-path "${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml"
+          > ${PREPROCESSOR_ARTIFACTS}
   DEPENDS ${rule_preprocessor_sources}
           ${libcc2rs_sources}
           "${RUST_STAMP_FILE}"
@@ -257,11 +260,12 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_rust_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
+            RULE_PREPROCESSOR_ARTIFACTS=${PREPROCESSOR_ARTIFACTS}
             RUSTUP_TOOLCHAIN=${RUST_NIGHTLY_VERSION}
             LD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
             DYLD_LIBRARY_PATH=${NIGHTLY_SYSROOT}/lib
             ${PREPROCESSOR_BIN} ${_out_dir} ${_rule_dir}
-    DEPENDS ${_rust_srcs} ${PREPROCESSOR_BIN} ${RULES_LIB}
+    DEPENDS ${_rust_srcs} ${PREPROCESSOR_BIN} ${PREPROCESSOR_ARTIFACTS} ${RULES_LIB}
     VERBATIM
   )
   list(APPEND rust_rules_ir_outputs ${_rust_out})

@@ -45,7 +45,6 @@ fn write_crate_root(ir: &RulesIR, out_dir: &Path) -> PathBuf {
 
 fn build_rustc_args(crate_root: &Path) -> Vec<String> {
     let sysroot = get_sysroot();
-    let build_dir = find_build_dir();
 
     let mut args = vec![
         "rustc".to_string(),
@@ -59,19 +58,19 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         format!("--sysroot={}", sysroot.display()),
     ];
 
-    // Add -L for all out/ directories within the build dir so transitive deps
-    // are discoverable. Also support legacy flat deps/ layout.
-    let legacy_deps = build_dir
-        .parent()
-        .map(|p| p.join("deps"))
-        .filter(|p| p.is_dir());
-    if let Some(ref deps) = legacy_deps {
+    let artifacts = read_cargo_artifacts();
+
+    // Make transitive deps discoverable, as cargo does.
+    let mut lib_dirs: Vec<&Path> = artifacts
+        .values()
+        .flatten()
+        .filter_map(|lib| lib.parent())
+        .collect();
+    lib_dirs.sort();
+    lib_dirs.dedup();
+    for dir in lib_dirs {
         args.push("-L".to_string());
-        args.push(format!("dependency={}", deps.display()));
-    }
-    for out_dir in find_all_out_dirs(&build_dir) {
-        args.push("-L".to_string());
-        args.push(format!("dependency={}", out_dir.display()));
+        args.push(format!("dependency={}", dir.display()));
     }
 
     for dep in &[
@@ -84,15 +83,13 @@ fn build_rustc_args(crate_root: &Path) -> Vec<String> {
         "jiff",
         "xattr",
     ] {
-        if let Some(lib) = find_artifact(&build_dir, dep) {
-            args.push("--extern".to_string());
-            args.push(format!("{}={}", dep, lib.display()));
-        } else if let Some(ref deps) = legacy_deps
-            && let Some(lib) = find_artifact_in_dir(deps, dep)
-        {
-            args.push("--extern".to_string());
-            args.push(format!("{}={}", dep, lib.display()));
-        }
+        let lib = match artifacts.get(*dep).map(Vec::as_slice) {
+            Some([lib]) => lib,
+            Some([]) | None => panic!("no artifact for crate `{dep}` in cargo's build output"),
+            Some(libs) => panic!("multiple artifacts for crate `{dep}`: {libs:?}"),
+        };
+        args.push("--extern".to_string());
+        args.push(format!("{}={}", dep, lib.display()));
     }
 
     args
@@ -106,78 +103,52 @@ fn get_sysroot() -> PathBuf {
     PathBuf::from(String::from_utf8(output.stdout).unwrap().trim())
 }
 
-fn find_build_dir() -> PathBuf {
-    let target_dir = std::env::var("CARGO_TARGET_DIR").expect("CARGO_TARGET_DIR must be set");
-    let profile = if cfg!(debug_assertions) {
-        "debug"
-    } else {
-        "release"
-    };
-    PathBuf::from(target_dir).join(profile).join("build")
-}
+/// Read the output of `cargo build --message-format=json` for this crate and
+/// map each library crate name to the artifacts that build produced. The
+/// target dir may also hold stale artifacts of the same crates (e.g., from an
+/// older toolchain or from `cargo clippy`), so it cannot simply be scanned.
+fn read_cargo_artifacts() -> HashMap<String, Vec<PathBuf>> {
+    let path = std::env::var("RULE_PREPROCESSOR_ARTIFACTS")
+        .expect("RULE_PREPROCESSOR_ARTIFACTS must be set");
+    let contents =
+        std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("failed to read {path}: {e}"));
 
-/// Collect all `<pkg>/<hash>/out/` directories within the build dir.
-fn find_all_out_dirs(build_dir: &Path) -> Vec<PathBuf> {
-    let mut out_dirs = Vec::new();
-    if let Ok(pkgs) = std::fs::read_dir(build_dir) {
-        for pkg in pkgs.flatten() {
-            if !pkg.file_type().map(|t| t.is_dir()).unwrap_or(false) {
-                continue;
-            }
-            if let Ok(hashes) = std::fs::read_dir(pkg.path()) {
-                for hash_dir in hashes.flatten() {
-                    let out = hash_dir.path().join("out");
-                    if out.is_dir() {
-                        out_dirs.push(out);
-                    }
-                }
-            }
+    let mut artifacts: HashMap<String, Vec<PathBuf>> = HashMap::new();
+    for line in contents.lines() {
+        let Ok(msg) = serde_json::from_str::<serde_json::Value>(line) else {
+            continue;
+        };
+        if msg["reason"] != "compiler-artifact" {
+            continue;
+        }
+        let Some(name) = msg["target"]["name"].as_str() else {
+            continue;
+        };
+        let Some(filenames) = msg["filenames"].as_array() else {
+            continue;
+        };
+        let filenames: Vec<PathBuf> = filenames
+            .iter()
+            .filter_map(|f| f.as_str())
+            .map(PathBuf::from)
+            .collect();
+        let find = |ext: &str| {
+            filenames
+                .iter()
+                .find(|f| f.extension().is_some_and(|e| e == ext))
+        };
+        let Some(lib) = find("rmeta")
+            .or_else(|| find("rlib"))
+            .or_else(|| find(std::env::consts::DLL_EXTENSION))
+        else {
+            continue;
+        };
+        let libs = artifacts.entry(name.to_string()).or_default();
+        if !libs.contains(lib) {
+            libs.push(lib.clone());
         }
     }
-    out_dirs
-}
-
-/// Find an artifact in the new Cargo build layout: build/<pkg>/<hash>/out/
-fn find_artifact(build_dir: &Path, crate_name: &str) -> Option<PathBuf> {
-    // Package directory name uses hyphens where crate name uses underscores
-    let pkg_name = crate_name.replace('_', "-");
-    let pkg_dir = build_dir.join(&pkg_name);
-    if let Ok(entries) = std::fs::read_dir(&pkg_dir) {
-        for entry in entries.flatten() {
-            let out_dir = entry.path().join("out");
-            if out_dir.is_dir()
-                && let Some(path) = find_artifact_in_dir(&out_dir, crate_name)
-            {
-                return Some(path);
-            }
-        }
-    }
-    None
-}
-
-/// Find an artifact by crate name in a specific directory.
-fn find_artifact_in_dir(dir: &Path, crate_name: &str) -> Option<PathBuf> {
-    let prefixes = [format!("{}-", crate_name), format!("lib{}-", crate_name)];
-    let mut fallback = None;
-    if let Ok(entries) = std::fs::read_dir(dir) {
-        for entry in entries.flatten() {
-            let name = entry.file_name().to_string_lossy().to_string();
-            if !prefixes.iter().any(|p| name.starts_with(p)) {
-                continue;
-            }
-            if name.ends_with(".rmeta")
-                || name.ends_with(".so")
-                || name.ends_with(".dylib")
-                || name.ends_with(".dll")
-            {
-                return Some(entry.path());
-            }
-            if name.ends_with(".rlib") {
-                fallback = Some(entry.path());
-            }
-        }
-    }
-    fallback
+    artifacts
 }
 
 struct FnDecl<'tcx> {
