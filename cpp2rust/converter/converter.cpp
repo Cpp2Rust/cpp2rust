@@ -3985,10 +3985,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
-  if (qual_type->isVoidType()) {
-    return "()";
-  }
-
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return "VaList::default()";
@@ -4020,18 +4016,6 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 
 std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   qual_type = qual_type.getUnqualifiedType().getCanonicalType();
-
-  if (qual_type->isBooleanType()) {
-    return "false";
-  }
-
-  if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
-    return getTypedLiteral("0", ToString(qual_type));
-  }
-
-  if (qual_type->isFloatingType()) {
-    return getTypedLiteral("0.0", ToString(qual_type));
-  }
 
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&

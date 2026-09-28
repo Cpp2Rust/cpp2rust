@@ -2089,10 +2089,6 @@ ConverterRefCount::GetArrayDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
-  if (qual_type->isVoidType()) {
-    return "()";
-  }
-
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue("VaList::default()");
@@ -2117,12 +2113,8 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
       ret =
           std::format("FnPtr::<{}>::null()", ConvertFunctionPointerType(proto));
     } else {
-      if (pointee_type->isVoidType()) {
-        ret = "AnyPtr::default()";
-      } else {
-        PushConversionKind push(*this, ConversionKind::Unboxed);
-        ret = std::format("Ptr::<{}>::null()", ConvertPointeeType(qual_type));
-      }
+      PushConversionKind push(*this, ConversionKind::Unboxed);
+      ret = std::format("Ptr::<{}>::null()", ConvertPointeeType(qual_type));
     }
   } else {
     return Converter::GetDefaultAsString(qual_type);
@@ -2133,18 +2125,6 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
 
 std::string
 ConverterRefCount::GetDefaultAsStringFallback(clang::QualType qual_type) {
-  auto canonical = qual_type.getUnqualifiedType().getCanonicalType();
-  if (canonical->isBooleanType() ||
-      (canonical->isIntegerType() && !canonical->isEnumeralType()) ||
-      canonical->isFloatingType()) {
-    std::string unboxed;
-    {
-      PushConversionKind push(*this, ConversionKind::Unboxed);
-      unboxed = Converter::GetDefaultAsStringFallback(qual_type);
-    }
-    return BoxValue(std::move(unboxed));
-  }
-
   return std::format("<{}>::default()", ToString(qual_type));
 }
 
