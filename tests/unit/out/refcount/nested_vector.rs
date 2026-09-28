@@ -17,9 +17,8 @@ fn main_0() -> i32 {
         __v.push(Rc::new(RefCell::new((*v2.borrow()).clone())))
     });
     assert!(
-        ((((*v1.borrow())[(*v1.borrow()).len() - 1]
-            .as_pointer()
-            .decay() as Ptr<i32>)
+        (((Ptr::<Vec<i32>>::decay(&((*v1.borrow())[(*v1.borrow()).len() - 1].as_pointer()))
+            as Ptr<i32>)
             .offset(0_usize as isize)
             .read())
             == 1)
