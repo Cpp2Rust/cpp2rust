@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::write(
             fd,
-            (c"hello".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            (c"hello".as_ptr().cast_mut() as *const ::libc::c_void),
             5_usize
         )) == (5_isize)) as i32)
             != 0)

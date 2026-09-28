@@ -151,61 +151,12 @@ std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
 }
 
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
-  switch (type->getKind()) {
-  case clang::BuiltinType::Bool:
-    StrCat("bool");
-    break;
-  case clang::BuiltinType::Float:
-    StrCat("f32");
-    break;
-  case clang::BuiltinType::Double:
-  case clang::BuiltinType::LongDouble:
-    StrCat("f64");
-    break;
-  case clang::BuiltinType::Char_S:
-  case clang::BuiltinType::Char_U:
-    StrCat(CharRustType());
-    break;
-  case clang::BuiltinType::SChar:
-    StrCat("i8");
-    break;
-  case clang::BuiltinType::UChar:
-    StrCat("u8");
-    break;
-  case clang::BuiltinType::UShort:
-  case clang::BuiltinType::UInt:
-  case clang::BuiltinType::ULong:
-  case clang::BuiltinType::ULongLong:
-  case clang::BuiltinType::Short:
-  case clang::BuiltinType::Int:
-  case clang::BuiltinType::Long:
-  case clang::BuiltinType::LongLong:
-  case clang::BuiltinType::WChar_S:
-  case clang::BuiltinType::WChar_U:
-  case clang::BuiltinType::Char8:
-  case clang::BuiltinType::Char16:
-  case clang::BuiltinType::Char32:
-    StrCat(std::format("{}{}", type->isSignedInteger() ? 'i' : 'u',
-                       ctx_.getTypeSize(type)));
-    break;
-  case clang::BuiltinType::Void:
-    StrCat("::libc::c_void");
-    break;
-  case clang::BuiltinType::UInt128:
-    StrCat("u128");
-    break;
-  case clang::BuiltinType::Int128:
-    StrCat("i128");
-    break;
-  case clang::BuiltinType::NullPtr:
-    Convert(ctx_.VoidPtrTy);
-    break;
-  default:
-    llvm::errs() << "unsupported builtin type: "
-                 << type->getName(ctx_.getPrintingPolicy()) << '\n';
-    assert(0 && "unsupported builtin type\n");
-    break;
+  auto mapped = Mapper::Map(clang::QualType(type, 0));
+  if (mapped.empty()) {
+    llvm::report_fatal_error(llvm::Twine("no type rule for builtin type: ") +
+                             type->getName(ctx_.getPrintingPolicy()));
   }
+  StrCat(mapped);
   return false;
 }
 
@@ -2507,11 +2458,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_BitCast: {
     PushParen paren(*this);
     Convert(sub_expr);
-    if (type->isVoidPointerType()) {
-      StrCat(keyword::kAs,
-             type->getPointeeType().isConstQualified() ? "*const" : "*mut");
-      StrCat(ConvertPointeeType(sub_expr->getType()));
-    }
     ConvertCast(type);
     SetFreshType(type);
     break;
@@ -4034,10 +3980,6 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
-  if (qual_type->isVoidType()) {
-    return "()";
-  }
-
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return "VaList::default()";
@@ -4069,18 +4011,6 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
 
 std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   qual_type = qual_type.getUnqualifiedType().getCanonicalType();
-
-  if (qual_type->isBooleanType()) {
-    return "false";
-  }
-
-  if (qual_type->isIntegerType() && !qual_type->isEnumeralType()) {
-    return getTypedLiteral("0", ToString(qual_type));
-  }
-
-  if (qual_type->isFloatingType()) {
-    return getTypedLiteral("0.0", ToString(qual_type));
-  }
 
   if (auto record = qual_type->getAsRecordDecl()) {
     if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&

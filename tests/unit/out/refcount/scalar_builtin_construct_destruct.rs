@@ -50,7 +50,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let d: Value<f64> = Rc::new(RefCell::new(0.0_f64));
+    let d: Value<f64> = Rc::new(RefCell::new(0_f64));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ zero_0() })));
     assert!(((*i.borrow()) == 0));
     assert!(((*d.borrow()) == 0.0E+0));

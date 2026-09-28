@@ -54,7 +54,7 @@ unsafe fn f6<T1>(a0: &mut Vec<T1>) -> *mut T1 {
     a0.as_mut_ptr()
 }
 unsafe fn f7<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
-    &mut (a0)[a1 as usize]
+    (&mut (a0)[a1 as usize] as *mut T1)
 }
 unsafe fn f8<T1: Default>(a0: usize) -> Vec<T1> {
     (0..(a0) as usize)
@@ -281,7 +281,7 @@ unsafe fn f65<T1>(a0: &mut Vec<T1>) -> *mut T1 {
 }
 
 unsafe fn f66<T1>(a0: &mut Vec<T1>, a1: usize) -> *mut T1 {
-    &mut (a0)[a1 as usize]
+    (&mut (a0)[a1 as usize] as *mut T1)
 }
 
 unsafe fn f67<T1: Default>(a0: usize) -> Vec<T1> {

@@ -26,7 +26,7 @@ pub static mut storage_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(||
 pub unsafe fn int_create_1(mut val: i32) -> *mut ::libc::c_void {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) = val;
     return ((&raw mut (*std::cell::LazyCell::force_mut(&mut *&raw mut storage_0)) as *mut i32)
-        as *mut i32 as *mut ::libc::c_void);
+        as *mut ::libc::c_void);
 }
 pub unsafe fn int_get_2(mut p: *mut ::libc::c_void) -> i32 {
     return (*(p as *mut i32));

@@ -25,7 +25,7 @@ impl TestAllocator_int_ {
 pub struct TestAllocator_double_ {}
 impl TestAllocator_double_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut f64 {
-        return Box::leak((0..n).map(|_| 0.0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
+        return Box::leak((0..n).map(|_| 0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
@@ -170,15 +170,15 @@ unsafe fn main_0() -> i32 {
     x0 = 6.0E+0;
     assert!(((*((v6).last_mut().unwrap())) == (5.0E+0)));
     let mut idx: i32 = 0;
-    assert!(((*&mut (v6)[(idx as usize) as usize]) == (2.0E+0)));
-    assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (5.0E+0)));
-    let ref1: *mut f64 = &mut (v6)[(s2).wrapping_sub(1_usize) as usize];
+    assert!(((*(&mut (v6)[(idx as usize) as usize] as *mut f64)) == (2.0E+0)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (5.0E+0)));
+    let ref1: *mut f64 = (&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64);
     (*ref1) += 1.5E+0;
-    assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (6.5E+0)));
-    let mut x1: f64 = (*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]);
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5E+0)));
+    let mut x1: f64 = (*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64));
     assert!(((x1) == (6.5E+0)));
     x1 -= 1.5E+0;
-    assert!(((*&mut (v6)[(s2).wrapping_sub(1_usize) as usize]) == (6.5E+0)));
+    assert!(((*(&mut (v6)[(s2).wrapping_sub(1_usize) as usize] as *mut f64)) == (6.5E+0)));
     let mut v7: Vec<i32> = Vec::new();
     let mut v8: Vec<i32> = Vec::new();
     v7.push(4);
@@ -243,7 +243,8 @@ unsafe fn main_0() -> i32 {
     assert!(((v13.len()) == (5_usize)));
     assert!(((v13[(0_usize)] as i32) == (10)) && ((v13[(4_usize)] as i32) == (50)));
     assert!(
-        ((((s1).wrapping_add(s2)).wrapping_add(((*&mut (v2)[0_usize as usize]) as usize)))
+        ((((s1).wrapping_add(s2))
+            .wrapping_add(((*(&mut (v2)[0_usize as usize] as *mut i32)) as usize)))
             == (103_usize))
     );
     return 0;

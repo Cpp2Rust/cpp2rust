@@ -13,7 +13,7 @@ pub unsafe fn foo_1(
     mut fn_: Option<unsafe fn(*mut ::libc::c_void) -> i32>,
     mut pi: *mut i32,
 ) -> i32 {
-    return (unsafe { (fn_).unwrap()((pi as *mut i32 as *mut ::libc::c_void)) });
+    return (unsafe { (fn_).unwrap()((pi as *mut ::libc::c_void)) });
 }
 pub fn main() {
     unsafe {

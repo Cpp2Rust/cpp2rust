@@ -19,16 +19,14 @@ pub unsafe fn test_memcpy_0() {
     let mut r: *mut ::libc::c_void = {
         if 6_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
-                (src.as_ptr() as *const libc::c_char as *const ::libc::c_void),
-                (dst.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+                (src.as_ptr() as *const ::libc::c_void),
+                (dst.as_mut_ptr() as *mut ::libc::c_void),
                 6_usize as usize,
             )
         }
-        (dst.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
+        (dst.as_mut_ptr() as *mut ::libc::c_void)
     };
-    assert!(
-        ((((r) == (dst.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)) as i32) != 0)
-    );
+    assert!(((((r) == (dst.as_mut_ptr() as *mut ::libc::c_void)) as i32) != 0));
     assert!(
         ((((((((((dst[(0) as usize] as i32) == ('h' as i32)) as i32) != 0)
             && ((((dst[(1) as usize] as i32) == ('e' as i32)) as i32) != 0)) as i32)
@@ -47,15 +45,13 @@ pub unsafe fn test_memcpy_0() {
 pub unsafe fn test_memset_1() {
     let mut buf: [libc::c_char; 4] = [(0 as libc::c_char); 4];
     let mut r: *mut ::libc::c_void = {
-        let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
         for offset in 0..4_usize {
             *byte_0.offset(offset as isize) = ('x' as i32) as u8;
         }
-        (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
+        (buf.as_mut_ptr() as *mut ::libc::c_void)
     };
-    assert!(
-        ((((r) == (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)) as i32) != 0)
-    );
+    assert!(((((r) == (buf.as_mut_ptr() as *mut ::libc::c_void)) as i32) != 0));
     assert!(
         (((((((((((((buf[(0) as usize] as i32) == ('x' as i32)) as i32) != 0)
             && ((((buf[(1) as usize] as i32) == ('x' as i32)) as i32) != 0))
@@ -89,11 +85,11 @@ pub unsafe fn test_memcmp_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (a.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (a.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (b.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (b.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;
@@ -110,11 +106,11 @@ pub unsafe fn test_memcmp_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (a.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (a.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (c.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;
@@ -131,11 +127,11 @@ pub unsafe fn test_memcmp_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (c.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (c.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (a.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (a.as_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;
@@ -162,18 +158,15 @@ pub unsafe fn test_memmove_3() {
     let mut r: *mut ::libc::c_void = {
         if 4_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void),
-                (buf.as_mut_ptr().offset((1) as isize) as *mut libc::c_char as *mut ::libc::c_void),
+                (buf.as_mut_ptr() as *const ::libc::c_void),
+                (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void),
                 4_usize as usize,
             )
         }
-        (buf.as_mut_ptr().offset((1) as isize) as *mut libc::c_char as *mut ::libc::c_void)
+        (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void)
     };
     assert!(
-        ((((r)
-            == (buf.as_mut_ptr().offset((1) as isize) as *mut libc::c_char as *mut ::libc::c_void))
-            as i32)
-            != 0)
+        ((((r) == (buf.as_mut_ptr().offset((1) as isize) as *mut ::libc::c_void)) as i32) != 0)
     );
     assert!(
         ((((((((((buf[(0) as usize] as i32) == ('a' as i32)) as i32) != 0)
@@ -310,32 +303,28 @@ pub unsafe fn test_memchr_8() {
         (64 as libc::c_char),
     ];
     let mut r: *mut ::libc::c_void = libc::memchr(
-        (data.as_ptr() as *const libc::c_char as *const ::libc::c_void) as *const ::libc::c_void,
+        (data.as_ptr() as *const ::libc::c_void) as *const ::libc::c_void,
         48,
         4_usize as usize,
     );
     assert!(
-        ((((r)
-            == ((&data[(2) as usize] as *const libc::c_char) as *mut libc::c_char
-                as *mut ::libc::c_void)) as i32)
+        ((((r) == ((&data[(2) as usize] as *const libc::c_char) as *mut ::libc::c_void)) as i32)
             != 0)
     );
     assert!(
         ((((libc::memchr(
-            (data.as_ptr() as *const libc::c_char as *const ::libc::c_void)
-                as *const ::libc::c_void,
+            (data.as_ptr() as *const ::libc::c_void) as *const ::libc::c_void,
             153,
             4_usize as usize
         ))
         .is_null()) as i32)
             != 0)
     );
-    let mut p: *const ::libc::c_void =
-        (data.as_ptr() as *const libc::c_char as *const ::libc::c_void);
+    let mut p: *const ::libc::c_void = (data.as_ptr() as *const ::libc::c_void);
     let mut n: usize = 4_usize;
     assert!(
-        ((((libc::memchr(p as *const ::libc::c_void, 16, n as usize))
-            == (p as *mut ::libc::c_void as *mut ::libc::c_void)) as i32)
+        ((((libc::memchr(p as *const ::libc::c_void, 16, n as usize)) == (p as *mut ::libc::c_void))
+            as i32)
             != 0)
     );
 }

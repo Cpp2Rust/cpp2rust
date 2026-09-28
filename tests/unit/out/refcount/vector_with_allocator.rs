@@ -315,7 +315,7 @@ pub trait TestAllocator_double_Impl {
 impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn allocate(&self, n: usize) -> Ptr<f64> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
-        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0.0_f64).collect::<Box<[f64]>>());
+        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0_f64).collect::<Box<[f64]>>());
     }
     fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));

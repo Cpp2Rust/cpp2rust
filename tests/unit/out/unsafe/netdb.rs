@@ -40,12 +40,11 @@ pub unsafe fn test_ipv4_literal_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin).sin_port as *mut u16) as *const u16 as *const ::libc::c_void)
-                    as *const u8,
+                ((&mut (*sin).sin_port as *mut u16) as *const ::libc::c_void) as *const u8,
                 2_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (port_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (port_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 2_usize as usize,
             );
             let mut diff = 0_i32;
@@ -63,12 +62,12 @@ pub unsafe fn test_ipv4_literal_0() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
-                    as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
+                    as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (addr_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;
@@ -118,12 +117,11 @@ pub unsafe fn test_ipv6_literal_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin6).sin6_port as *mut u16) as *const u16 as *const ::libc::c_void)
-                    as *const u8,
+                ((&mut (*sin6).sin6_port as *mut u16) as *const ::libc::c_void) as *const u8,
                 2_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (port_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (port_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 2_usize as usize,
             );
             let mut diff = 0_i32;
@@ -144,12 +142,12 @@ pub unsafe fn test_ipv6_literal_1() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::in6_addr
-                    as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin6).sin6_addr as *mut ::libc::in6_addr) as *const ::libc::c_void)
+                    as *const u8,
                 16_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (addr_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 16_usize as usize,
             );
             let mut diff = 0_i32;
@@ -183,12 +181,12 @@ pub unsafe fn test_null_hints_2() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
-                    as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
+                    as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (addr_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (addr_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;

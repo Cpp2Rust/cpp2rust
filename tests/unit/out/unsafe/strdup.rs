@@ -28,7 +28,7 @@ unsafe fn main_0() -> i32 {
         )) == (0)) as i32)
             != 0)
     );
-    libcc2rs::free_unsafe((d as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d as *mut ::libc::c_void));
     let mut p: *const libc::c_char = (c"world".as_ptr().cast_mut()).cast_const();
     let mut buf: [libc::c_char; 4] = [
         (('a' as i32) as libc::c_char),
@@ -39,18 +39,18 @@ unsafe fn main_0() -> i32 {
     let mut d2: *mut libc::c_char = libcc2rs::strdup_unsafe(p);
     assert!((((!((d2).is_null())) as i32) != 0));
     assert!(((((libc::strcmp((d2).cast_const(), p)) == (0)) as i32) != 0));
-    libcc2rs::free_unsafe((d2 as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d2 as *mut ::libc::c_void));
     let mut d3: *mut libc::c_char = libcc2rs::strdup_unsafe((buf.as_mut_ptr()).cast_const());
     assert!((((!((d3).is_null())) as i32) != 0));
     assert!(
         ((((libc::strcmp((d3).cast_const(), (buf.as_mut_ptr()).cast_const())) == (0)) as i32) != 0)
     );
-    libcc2rs::free_unsafe((d3 as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d3 as *mut ::libc::c_void));
     let mut d4: *mut libc::c_char = std::ptr::null_mut();
     d4 = libcc2rs::strdup_unsafe(p);
     assert!((((!((d4).is_null())) as i32) != 0));
     assert!(((((libc::strcmp((d4).cast_const(), p)) == (0)) as i32) != 0));
-    libcc2rs::free_unsafe((d4 as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((d4 as *mut ::libc::c_void));
     let mut rec: record = record {
         name: std::ptr::null_mut(),
     };
@@ -58,7 +58,7 @@ unsafe fn main_0() -> i32 {
     (*r).name = libcc2rs::strdup_unsafe(p);
     assert!((((!(((*r).name).is_null())) as i32) != 0));
     assert!(((((libc::strcmp(((*r).name).cast_const(), p)) == (0)) as i32) != 0));
-    libcc2rs::free_unsafe(((*r).name as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe(((*r).name as *mut ::libc::c_void));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

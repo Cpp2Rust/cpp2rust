@@ -59,7 +59,7 @@ unsafe fn main_0() -> i32 {
     assert!((((((*q) as i32) == (20)) as i32) != 0));
     (*q) = 187_u8;
     assert!((((((*q) as i32) == (187)) as i32) != 0));
-    libcc2rs::free_unsafe((n as *mut node as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((n as *mut ::libc::c_void));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
