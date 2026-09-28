@@ -97,7 +97,7 @@ public:
 
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
-  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
+  void ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) override;
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 

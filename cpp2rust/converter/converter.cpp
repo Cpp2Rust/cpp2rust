@@ -3021,7 +3021,8 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   return false;
 }
 
-std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
+std::string Converter::ConvertDeclRef(clang::Expr *expr,
+                                      clang::ValueDecl *decl) {
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
@@ -3029,8 +3030,7 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
     }
   }
 
-  auto *decl = expr->getDecl();
-  if (ShouldReplaceWithMappedBody(expr)) {
+  if (ShouldReplaceWithMappedBody(decl)) {
     if (auto str = GetMappedAsString(expr); !str.empty()) {
       return str;
     }
@@ -3053,7 +3053,8 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
     return name;
   }
 
-  if (IsGlobalVar(expr)) {
+  if (auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+      var && IsGlobalVar(var)) {
     if (LazyStaticInit()) {
       return std::format("(*std::cell::LazyCell::force_mut(&mut *&raw mut {}))",
                          GetNamedDeclAsString(decl));
@@ -3065,24 +3066,28 @@ std::string Converter::ConvertDeclRefExpr(clang::DeclRefExpr *expr) {
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
-  auto str = ConvertDeclRefExpr(expr);
-  auto decl = expr->getDecl();
+  ConvertDeclRefValue(expr, expr->getDecl());
+  return false;
+}
+
+void Converter::ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) {
+  auto str = ConvertDeclRef(expr, decl);
 
   if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
     EmitDeref(std::move(str), decl->getType().getNonReferenceType());
     SetValueFreshness(expr->getType());
-    return false;
+    return;
   }
 
   if (auto *fn_decl = clang::dyn_cast<clang::FunctionDecl>(decl)) {
     if (isAddrOf()) {
       ConvertFunctionToFunctionPointer(fn_decl);
-      return false;
+      return;
     }
     StrCat(str);
     SetFreshType(expr->getType());
-    return false;
+    return;
   }
 
   if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
@@ -3093,7 +3098,7 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
           PushParen paren(*this);
           VisitLambdaExpr(lambda);
           computed_expr_type_ = ComputedExprType::FreshValue;
-          return false;
+          return;
         }
       }
     }
@@ -3103,16 +3108,15 @@ bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
            str);
     computed_expr_type_ = ComputedExprType::FreshPointer;
-    return false;
+    return;
   }
 
   StrCat(str);
   if (clang::isa<clang::EnumConstantDecl>(decl)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
-    return false;
+    return;
   }
   SetValueFreshness(expr->getType());
-  return false;
 }
 
 bool Converter::VisitParenExpr(clang::ParenExpr *expr) {
@@ -3194,24 +3198,12 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   return false;
 }
 
-clang::DeclRefExpr *
-Converter::GetStaticMemberAsDeclRef(clang::MemberExpr *expr) {
-  auto *decl = expr->getMemberDecl();
-  if (!clang::isa<clang::VarDecl, clang::EnumConstantDecl>(decl)) {
-    return nullptr;
-  }
-  return clang::DeclRefExpr::Create(
-      ctx_, clang::NestedNameSpecifierLoc(), clang::SourceLocation(), decl,
-      /*RefersToEnclosingVariableOrCapture=*/false, expr->getMemberLoc(),
-      expr->getType(), expr->getValueKind());
-}
-
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
-  if (auto *ref = GetStaticMemberAsDeclRef(expr)) {
-    Convert(ref);
+  auto *member = expr->getMemberDecl();
+  if (clang::isa<clang::VarDecl, clang::EnumConstantDecl>(member)) {
+    ConvertDeclRefValue(expr, member);
     return false;
   }
-  auto *member = expr->getMemberDecl();
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
     SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
@@ -5185,8 +5177,9 @@ bool Converter::isCallee() const {
   return !curr_expr_kind_.empty() && curr_expr_kind_.back() == ExprKind::Callee;
 }
 
-bool Converter::ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const {
-  if (clang::isa<clang::FunctionDecl>(expr->getDecl()) && isAddrOf()) {
+bool Converter::ShouldReplaceWithMappedBody(
+    const clang::ValueDecl *decl) const {
+  if (clang::isa<clang::FunctionDecl>(decl) && isAddrOf()) {
     return false;
   }
   return true;
