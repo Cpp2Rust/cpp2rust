@@ -73,9 +73,9 @@ fn main_0() -> i32 {
     half_6.with(|rc| *rc.borrow_mut() = 7);
     assert!((half_6.with(|rc| *rc.borrow()) == 7));
     assert!((half_7.with(|rc| *rc.borrow()) == 5.0E-1));
-    assert!((half_8.with(|rc| rc.borrow().clone())).is_null());
+    assert!((*half_8.with(Value::clone).borrow()).is_null());
     half_8.with(|rc| *rc.borrow_mut() = (x.as_pointer()));
-    assert!(((half_8.with(|rc| rc.borrow().clone()).read()) == 10));
+    assert!((((*half_8.with(Value::clone).borrow()).read()) == 10));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -90,23 +90,29 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((*(*items_3.with(|rc| rc.borrow().clone())[(0) as usize]
-            .upgrade()
-            .deref())
+        ((*(*({
+            let __idx = (0) as usize;
+            items_3.with(|rc| rc.borrow()[__idx].clone())
+        })
+        .upgrade()
+        .deref())
         .value
         .borrow())
             == 1)
     );
     assert!(
-        ((*(*items_3.with(|rc| rc.borrow().clone())[(1) as usize]
-            .upgrade()
-            .deref())
+        ((*(*({
+            let __idx = (1) as usize;
+            items_3.with(|rc| rc.borrow()[__idx].clone())
+        })
+        .upgrade()
+        .deref())
         .value
         .borrow())
             == 2)
     );
     assert!(
-        ((*(*(*obj_4.with(|rc| rc.borrow().clone()).p.borrow())
+        ((*(*(*(*obj_4.with(Value::clone).borrow()).p.borrow())
             .upgrade()
             .deref())
         .value
@@ -120,17 +126,23 @@ fn main_0() -> i32 {
         ])));
     );
     assert!(
-        ((*(*cache_5.with(|rc| rc.borrow().clone())[(0) as usize]
-            .upgrade()
-            .deref())
+        ((*(*({
+            let __idx = (0) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx].clone())
+        })
+        .upgrade()
+        .deref())
         .value
         .borrow())
             == 1)
     );
     assert!(
-        ((*(*cache_5.with(|rc| rc.borrow().clone())[(1) as usize]
-            .upgrade()
-            .deref())
+        ((*(*({
+            let __idx = (1) as usize;
+            cache_5.with(|rc| rc.borrow()[__idx].clone())
+        })
+        .upgrade()
+        .deref())
         .value
         .borrow())
             == 2)

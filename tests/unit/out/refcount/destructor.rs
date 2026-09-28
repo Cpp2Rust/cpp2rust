@@ -374,9 +374,24 @@ fn main_0() -> i32 {
         let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
     }
     assert!((order_count_2.with(|rc| *rc.borrow()) == 3));
-    assert!((order_1.with(|rc| rc.borrow().clone())[(0) as usize] == 3));
-    assert!((order_1.with(|rc| rc.borrow().clone())[(1) as usize] == 2));
-    assert!((order_1.with(|rc| rc.borrow().clone())[(2) as usize] == 1));
+    assert!(
+        (({
+            let __idx = (0) as usize;
+            order_1.with(|rc| rc.borrow()[__idx])
+        }) == 3)
+    );
+    assert!(
+        (({
+            let __idx = (1) as usize;
+            order_1.with(|rc| rc.borrow()[__idx])
+        }) == 2)
+    );
+    assert!(
+        (({
+            let __idx = (2) as usize;
+            order_1.with(|rc| rc.borrow()[__idx])
+        }) == 1)
+    );
     return 0;
 }
 pub trait ArrayMemberImpl {

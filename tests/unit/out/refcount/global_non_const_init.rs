@@ -110,7 +110,7 @@ pub fn local_static_12() -> i32 {
         static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
     );
     return (once_13.with(|rc| *rc.borrow())
-        + (*local_ctor_14.with(|rc| rc.borrow().clone()).v.borrow()));
+        + (*(*local_ctor_14.with(Value::clone).borrow()).v.borrow()));
 }
 #[derive()]
 pub struct Singleton {
@@ -163,23 +163,34 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((signature_3.with(|rc| rc.borrow().clone())[(0) as usize] as i32) == 10));
-    assert!(((signature_3.with(|rc| rc.borrow().clone())[(1) as usize] as i32) == 4));
+    assert!(
+        ((({
+            let __idx = (0) as usize;
+            signature_3.with(|rc| rc.borrow()[__idx])
+        }) as i32)
+            == 10)
+    );
+    assert!(
+        ((({
+            let __idx = (1) as usize;
+            signature_3.with(|rc| rc.borrow()[__idx])
+        }) as i32)
+            == 4)
+    );
     assert!(((single_4.with(|rc| *rc.borrow()) as i32) == 18));
     assert!((from_call_5.with(|rc| *rc.borrow()) == 1));
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
-    assert!(((*default_ctor_7.with(|rc| rc.borrow().clone()).v.borrow()) == 2));
-    assert!(((*arg_ctor_8.with(|rc| rc.borrow().clone()).v.borrow()) == 7));
+    assert!(((*(*default_ctor_7.with(Value::clone).borrow()).v.borrow()) == 2));
+    assert!(((*(*arg_ctor_8.with(Value::clone).borrow()).v.borrow()) == 7));
     assert!(
-        str_9
-            .with(|rc| rc.borrow().clone())
+        (*str_9.with(Value::clone).borrow())
             .iter()
             .copied()
-            .take(str_9.with(|rc| rc.borrow().clone()).len().saturating_sub(1))
+            .take((*str_9.with(Value::clone).borrow()).len().saturating_sub(1))
             .eq(Ptr::<u8>::from_string_literal(b"abc").to_c_string_iterator())
     );
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
-    assert!(((*inline_member_11.with(|rc| rc.borrow().clone()).v.borrow()) == 5));
+    assert!(((*(*inline_member_11.with(Value::clone).borrow()).v.borrow()) == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
     (*(*({ Singleton::instance() }).upgrade().deref())

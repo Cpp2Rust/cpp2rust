@@ -66,7 +66,10 @@ fn main_0() -> i32 {
     {
         assert!({
             let _lhs = (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-            _lhs == (expected_0.with(|rc| rc.borrow().clone())[(*i.borrow()) as usize] as i32)
+            _lhs == (({
+                let __idx = (*i.borrow()) as usize;
+                expected_0.with(|rc| rc.borrow()[__idx])
+            }) as i32)
         });
         (*i.borrow_mut()).postfix_inc();
     }

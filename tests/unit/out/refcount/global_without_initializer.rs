@@ -46,8 +46,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((s_0.with(|rc| rc.borrow().clone())).is_null());
-    assert!((file_1.with(|rc| rc.borrow().clone())).is_null());
+    assert!((*s_0.with(Value::clone).borrow()).is_null());
+    assert!((*file_1.with(Value::clone).borrow()).is_null());
     assert!((size_2.with(|rc| *rc.borrow()) == 0_usize));
     return 0;
 }

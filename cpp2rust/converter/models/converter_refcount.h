@@ -219,6 +219,9 @@ public:
 
   void ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
                              clang::QualType type) override;
+  // The global array referenced by base when one of its elements is read as
+  // an rvalue and can be copied out of the array, or nullptr otherwise.
+  clang::DeclRefExpr *GetGlobalArrayRValue(clang::Expr *base);
   void ConvertPointerSubscript(clang::ArraySubscriptExpr *expr) override;
 
   void ConvertFunctionMain(const clang::FunctionDecl *decl,

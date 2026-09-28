@@ -133,7 +133,12 @@ fn main_0() -> i32 {
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
-    assert!((table_0.with(|rc| rc.borrow().clone())[(1) as usize] == 80));
+    assert!(
+        (({
+            let __idx = (1) as usize;
+            table_0.with(|rc| rc.borrow()[__idx])
+        }) == 80)
+    );
     return 0;
 }
 pub trait SImpl {

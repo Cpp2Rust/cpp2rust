@@ -914,10 +914,13 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
 
   bool fresh = false;
   if (isRValue()) {
-    if (is_global_value) {
-      StrCat(str, TypeIsCopyable(decl_t) ? ".with(|rc| *rc.borrow())"
-                                         : ".with(|rc| rc.borrow().clone())");
+    if (is_global_value && TypeIsCopyable(decl_t)) {
+      StrCat(str, ".with(|rc| *rc.borrow())");
       fresh = true;
+    } else if (is_global_value) {
+      // Borrow the global in place, like a local. Cloning it would be
+      // expensive for arrays, and writes through its fields would be lost.
+      StrCat(std::format("(*{}.with(Value::clone).borrow())", std::move(str)));
     } else if (is_global_ptr) {
       StrCat(str);
       fresh = true;
@@ -2504,6 +2507,26 @@ std::string ConverterRefCount::ConvertSubscriptIndex(clang::Expr *idx) {
   return str;
 }
 
+clang::DeclRefExpr *ConverterRefCount::GetGlobalArrayRValue(clang::Expr *base) {
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(base->IgnoreImplicit());
+  if (!isRValue() || !ref || !IsGlobalVar(ref) ||
+      ref->getDecl()->getType()->isReferenceType() ||
+      (ShouldReplaceWithMappedBody(ref) && !GetMappedAsString(ref).empty())) {
+    return nullptr;
+  }
+  auto *arr_ty = ctx_.getAsArrayType(ref->getType());
+  if (!arr_ty) {
+    return nullptr;
+  }
+  // Records are accessed in place, as their fields may be written to.
+  auto elem_ty = arr_ty->getElementType();
+  if (!TypeIsCopyable(elem_ty) && !elem_ty->isPointerType() &&
+      !elem_ty->isArrayType()) {
+    return nullptr;
+  }
+  return ref;
+}
+
 void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
                                               clang::Expr *idx,
                                               clang::QualType type) {
@@ -2539,6 +2562,14 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
     }
 
     computed_expr_type_ = ComputedExprType::FreshPointer;
+  } else if (auto *global = GetGlobalArrayRValue(base)) {
+    // Read just the element instead of cloning the whole global array.
+    // The index is evaluated first, as it may itself access the global.
+    StrCat(std::format(
+        "({{ let __idx = ({}) as usize; {}.with(|rc| rc.borrow()[__idx]{}) }})",
+        ConvertRValue(idx), ConvertDeclRefExpr(global),
+        TypeIsCopyable(type) ? "" : ".clone()"));
+    SetFreshType(type);
   } else {
     if (isLValue() &&
         clang::isa<clang::ArraySubscriptExpr>(base->IgnoreImplicit())) {

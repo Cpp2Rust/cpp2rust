@@ -212,42 +212,42 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(0) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
             .color
             .borrow()) as u32)
             == ((Color_RED as i32) as u32)) as i32)
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(0) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(0) as usize]
             .opt
             .borrow()) as u32)
             == ((Option_OPT_NONE as i32) as u32)) as i32)
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(1) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
             .color
             .borrow()) as u32)
             == ((Color_GREEN as i32) as u32)) as i32)
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(1) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(1) as usize]
             .opt
             .borrow()) as u32)
             == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(2) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
             .color
             .borrow()) as u32)
             == ((Color_BLUE as i32) as u32)) as i32)
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(2) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(2) as usize]
             .opt
             .borrow()) as u32)
             == ((Option_OPT_C as i32) as u32)) as i32)
@@ -267,7 +267,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*entries_3.with(|rc| rc.borrow().clone())[(*idx.borrow()) as usize]
+        (((((*(*entries_3.with(Value::clone).borrow())[(*idx.borrow()) as usize]
             .opt
             .borrow()) as u32)
             == ((Option_OPT_A as i32) as u32)) as i32)
