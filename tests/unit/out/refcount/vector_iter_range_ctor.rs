@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     );
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
     let v4: Value<Vec<u32>> = Rc::new(RefCell::new({
-        let __count = ({ end_0((src1.as_pointer() as Ptr<u32>)) }).get_offset()
+        let __count = (src1.as_pointer() as Ptr<u32>).to_end().get_offset()
             - (src1.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src1.as_pointer() as Ptr<u32>), __count).collect::<Vec<_>>()
     }));

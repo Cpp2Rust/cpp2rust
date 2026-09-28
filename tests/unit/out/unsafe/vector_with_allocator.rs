@@ -224,7 +224,7 @@ unsafe fn main_0() -> i32 {
     let src1: [u32; 3] = [1_u32, 2_u32, 3_u32];
     let mut v12: Vec<u32> = core::slice::from_raw_parts(
         src1.as_ptr(),
-        (unsafe { end_2(&src1) }).offset_from(src1.as_ptr()) as usize,
+        (src1.as_ptr().add(src1.len())).offset_from(src1.as_ptr()) as usize,
     )
     .to_vec();
     assert!(((v12.len()) == (3_usize)));

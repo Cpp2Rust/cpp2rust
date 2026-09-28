@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     let i2: Value<i32> = Rc::new(RefCell::new(0_i32));
     let carr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
     let carr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 0_i32, 0_i32])));
-    let arr: Value<std_array_int__3_> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    let arr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
     ({ f_0(vec![1, 2, 3, 4]) });
     return 0;
