@@ -165,7 +165,7 @@ unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> *mut libc::c_char {
     if a1 as usize >= a0.len() - 1 {
         panic!("out of bounds access")
     } else {
-        &mut a0[a1 as usize]
+        (&mut a0[a1 as usize] as *mut libc::c_char)
     }
 }
 
