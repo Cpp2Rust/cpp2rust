@@ -26,7 +26,7 @@ pub fn twice_2(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return ((*n.borrow()) * 2);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub base: Value<i32>,
 }
@@ -52,7 +52,7 @@ impl ByteRepr for S {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Box {
     pub v: Value<i32>,
 }

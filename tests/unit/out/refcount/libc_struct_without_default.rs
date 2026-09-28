@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct UserDefined {
     pub a: Value<Vec<i32>>,
     pub v: Value<Vec<i32>>,
@@ -46,7 +46,7 @@ impl ByteRepr for UserDefined {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct FieldIsLibcType {
     pub addr: Value<libcc2rs::Sockaddr>,
 }

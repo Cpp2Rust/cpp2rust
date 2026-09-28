@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct header {
     pub tag: Value<i32>,
     pub size: Value<i32>,
@@ -34,7 +34,7 @@ impl ByteRepr for header {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct view {
     pub tag: Value<i32>,
 }

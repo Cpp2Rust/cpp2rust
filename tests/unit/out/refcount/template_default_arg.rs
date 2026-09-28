@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct A {
     pub v: Value<i32>,
 }
@@ -54,7 +54,7 @@ impl ByteRepr for A {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct B {
     pub v: Value<i32>,
 }
@@ -94,7 +94,7 @@ impl ByteRepr for B {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct NoDefault {
     pub v: Value<i32>,
 }
@@ -147,7 +147,7 @@ pub fn always_given_3(x: NoDefault) -> i32 {
     let x: Value<NoDefault> = Rc::new(RefCell::new(x));
     return (*(*x.borrow()).v.borrow());
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S_NoDefault_ {
     pub v: Value<i32>,
 }

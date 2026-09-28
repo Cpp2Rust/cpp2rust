@@ -92,7 +92,7 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
 
 void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "#[derive(Clone, Copy, Default, ByteRepr)]";
+    out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
     out += "pub struct ";
     out += name;
     out += ";\n";

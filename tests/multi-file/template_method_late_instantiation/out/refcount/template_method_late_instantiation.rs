@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct S_int_ {
     pub x: Value<i32>,
 }

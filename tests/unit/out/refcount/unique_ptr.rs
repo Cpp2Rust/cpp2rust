@@ -34,7 +34,7 @@ impl ByteRepr for SafePointer {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,

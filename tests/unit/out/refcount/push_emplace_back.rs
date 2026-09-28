@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Chunk {
     pub data: Value<i32>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for Chunk {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Writer {
     pub output: Value<Ptr<Vec<Chunk>>>,
     pub chunk: Value<Chunk>,
@@ -62,7 +62,7 @@ impl ByteRepr for Writer {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct JPEGData {
     pub com_data: Value<Vec<Value<Vec<u8>>>>,
     pub app_data: Value<Vec<Value<Vec<u8>>>>,
@@ -187,7 +187,7 @@ pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
         (*comps.borrow()).with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Pair {
     pub first: Value<i32>,
     pub second: Value<i32>,

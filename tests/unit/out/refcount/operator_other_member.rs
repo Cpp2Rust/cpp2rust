@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Static {}
 impl Static {
     pub fn operator_call(a: i32, b: i32) -> i32 {
@@ -15,7 +15,7 @@ impl Static {
         return ((*a.borrow()) * (*b.borrow()));
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: Value<i32>,
 }

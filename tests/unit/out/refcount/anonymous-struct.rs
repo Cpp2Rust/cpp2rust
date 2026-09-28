@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_Named {
     pub a: Value<i32>,
     pub b: Value<i32>,
@@ -36,7 +36,7 @@ impl ByteRepr for Outer_Named {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_0 {
     pub c: Value<i32>,
     pub d: Value<i32>,
@@ -66,7 +66,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
     pub g: Value<i32>,
     pub h: Value<i32>,
@@ -96,7 +96,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_2 {
     pub e: Value<i32>,
     pub f: Value<i32>,
@@ -126,7 +126,7 @@ impl ByteRepr for anon_2 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_4 {
     pub j: Value<i32>,
 }
@@ -152,7 +152,7 @@ impl ByteRepr for anon_4 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_5 {
     pub k: Value<i32>,
 }
@@ -178,7 +178,7 @@ impl ByteRepr for anon_5 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
     pub i: Value<i32>,
     pub inner_named: Value<anon_4>,
@@ -212,7 +212,7 @@ impl ByteRepr for anon_3 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub named: Value<Outer_Named>,
     pub anonymous_named_0: Value<anon_0>,
@@ -313,7 +313,7 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_6 {
     pub x: Value<i32>,
     pub z: Value<i32>,

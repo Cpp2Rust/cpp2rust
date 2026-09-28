@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Vtable {
     pub create: Value<FnPtr<fn(i32) -> AnyPtr>>,
     pub get: Value<FnPtr<fn(AnyPtr) -> i32>>,

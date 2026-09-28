@@ -501,7 +501,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (!HasCallableCopyConstructor(cxx)) {
+  if (!RecordImplementsClone(decl)) {
     return;
   }
 
@@ -2158,6 +2158,11 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordDerivesByteRepr(decl)) {
     attrs.emplace_back("ByteRepr");
+  }
+
+  if (RecordImplementsClone(decl)) {
+    attrs.emplace_back("VaArg");
+    attrs.emplace_back("FnPtrArg");
   }
 
   if (RecordDerivesDefault(decl)) {

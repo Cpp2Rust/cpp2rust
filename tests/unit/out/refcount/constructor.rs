@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: Value<i32>,
 }
@@ -47,7 +47,7 @@ impl ByteRepr for S {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,

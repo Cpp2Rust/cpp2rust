@@ -40,7 +40,7 @@ pub fn wrap_10(v: i64) -> i32 {
     }));
     return ({ get_6((*l.borrow()).clone()) });
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Local_5 {
     pub x: Value<i32>,
 }
@@ -66,7 +66,7 @@ impl ByteRepr for Local_5 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Local_7 {
     pub x: Value<i64>,
 }
@@ -99,7 +99,7 @@ pub fn other_11() -> i32 {
     }));
     return (({ get_0((*l.borrow()).clone()) }) + ((*(*l.borrow()).y.borrow()) as i32));
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Local_1 {
     pub x: Value<i64>,
     pub y: Value<i64>,
@@ -144,7 +144,7 @@ fn main_0() -> i32 {
     assert!((({ wrap_10(6_i64,) }) == 6));
     return 0;
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Local_3 {
     pub x: Value<i32>,
 }

@@ -31,6 +31,6 @@ unsafe fn main_0() -> i32 {
 pub unsafe fn touch_0(mut c: *mut container) {
     &((*c).p);
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
+#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 pub struct opaque;
 pub unsafe fn __cpp2rust_init_globals() {}

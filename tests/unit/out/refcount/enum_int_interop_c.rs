@@ -19,7 +19,7 @@ pub type Tag_enum = u32;
 pub const Tag_enum_TAG_ZERO: Tag_enum = 0;
 pub const Tag_enum_TAG_ONE: Tag_enum = 1;
 pub const Tag_enum_TAG_TWO: Tag_enum = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,
     pub color: Value<Color>,

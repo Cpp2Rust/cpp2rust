@@ -44,7 +44,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct node {
     pub len: Value<usize>,
     pub pos: Value<usize>,
