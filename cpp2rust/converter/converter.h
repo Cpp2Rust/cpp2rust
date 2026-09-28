@@ -407,7 +407,10 @@ public:
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
   virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);
-  std::string ConvertDeclRefExpr(clang::DeclRefExpr *expr);
+
+  virtual void ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl);
+
+  std::string ConvertDeclRef(clang::Expr *expr, clang::ValueDecl *decl);
 
   virtual bool VisitParenExpr(clang::ParenExpr *expr);
 
@@ -730,7 +733,7 @@ protected:
 
   bool RecordHasCopyableFields(const clang::RecordDecl *decl);
 
-  bool ShouldReplaceWithMappedBody(clang::DeclRefExpr *expr) const;
+  bool ShouldReplaceWithMappedBody(const clang::ValueDecl *decl) const;
 
   std::string *rs_code_;
   clang::ASTContext &ctx_;
