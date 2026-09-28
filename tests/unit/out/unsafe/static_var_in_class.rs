@@ -48,8 +48,8 @@ unsafe fn main_0() -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) += 5;
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (25)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (25)));
-    assert!(((unsafe { s.f() }) == (25)));
-    assert!(((unsafe { (*p).f() }) == (25)));
+    assert!(((unsafe { S::f() }) == (25)));
+    assert!(((unsafe { S::f() }) == (25)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

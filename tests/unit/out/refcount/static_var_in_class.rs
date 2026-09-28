@@ -45,8 +45,8 @@ fn main_0() -> i32 {
     (*counter_2.with(Value::clone).borrow_mut()) += 5;
     assert!((counter_2.with(|rc| *rc.borrow()) == 25));
     assert!((counter_2.with(|rc| *rc.borrow()) == 25));
-    assert!((({ (*s.borrow()).f() }) == 25));
-    assert!((({ (*(*p.borrow()).upgrade().deref()).f() }) == 25));
+    assert!((({ S::f() }) == 25));
+    assert!((({ S::f() }) == 25));
     return 0;
 }
 pub trait CImpl {

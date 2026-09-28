@@ -3200,7 +3200,7 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
 
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
   auto *member = expr->getMemberDecl();
-  if (clang::isa<clang::VarDecl, clang::EnumConstantDecl>(member)) {
+  if (!member->isCXXInstanceMember()) {
     ConvertDeclRefValue(expr, member);
     return false;
   }
