@@ -150,13 +150,12 @@ impl Buffer {
         {
             if 8_usize != 0 {
                 ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
-                        as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
                     8_usize as usize,
                 )
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         return &mut (*(self as *mut Buffer));
     }
@@ -195,13 +194,12 @@ impl Owner {
         {
             if 8_usize != 0 {
                 ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
-                        as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
                     8_usize as usize,
                 )
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         self.p = (*_a0).p.take();
         return &mut (*(self as *mut Owner));

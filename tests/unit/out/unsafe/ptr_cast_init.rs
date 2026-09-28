@@ -34,8 +34,7 @@ unsafe fn main_0() -> i32 {
     let mut v: *mut view = (hp as *mut view);
     assert!((((((*v).tag) == (7)) as i32) != 0));
     let mut data: [libc::c_char; 3] = std::mem::transmute(*b"hi\0");
-    let mut vp: *mut ::libc::c_void =
-        (data.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void);
+    let mut vp: *mut ::libc::c_void = (data.as_mut_ptr() as *mut ::libc::c_void);
     let mut n: i32 = 2;
     let mut sel: *mut libc::c_char = (if ((((n) < (100)) as i32) != 0) {
         vp

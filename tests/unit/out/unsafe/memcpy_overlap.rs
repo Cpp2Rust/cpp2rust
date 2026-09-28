@@ -24,12 +24,12 @@ unsafe fn main_0() -> i32 {
     {
         if 4_usize != 0 {
             ::std::ptr::copy_nonoverlapping(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void),
-                (buf.as_mut_ptr().offset((2) as isize) as *mut libc::c_char as *mut ::libc::c_void),
+                (buf.as_mut_ptr() as *const ::libc::c_void),
+                (buf.as_mut_ptr().offset((2) as isize) as *mut ::libc::c_void),
                 4_usize as usize,
             )
         }
-        (buf.as_mut_ptr().offset((2) as isize) as *mut libc::c_char as *mut ::libc::c_void)
+        (buf.as_mut_ptr().offset((2) as isize) as *mut ::libc::c_void)
     };
     assert!(((buf[(0) as usize] as i32) == (1)));
     assert!(((buf[(1) as usize] as i32) == (2)));

@@ -2458,11 +2458,6 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_BitCast: {
     PushParen paren(*this);
     Convert(sub_expr);
-    if (type->isVoidPointerType()) {
-      StrCat(keyword::kAs,
-             type->getPointeeType().isConstQualified() ? "*const" : "*mut");
-      StrCat(ConvertPointeeType(sub_expr->getType()));
-    }
     ConvertCast(type);
     SetFreshType(type);
     break;

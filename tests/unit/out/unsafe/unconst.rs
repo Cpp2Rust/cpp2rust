@@ -15,8 +15,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let a: i32 = 1;
     let mut p: *const i32 = (&a as *const i32);
-    let mut q: *mut i32 = (((((p) as *const i32 as *const ::libc::c_void) as u64)
-        as *mut ::libc::c_void) as *mut i32);
+    let mut q: *mut i32 =
+        (((((p) as *const ::libc::c_void) as u64) as *mut ::libc::c_void) as *mut i32);
     assert!(((p) == ((q).cast_const())));
     return 0;
 }

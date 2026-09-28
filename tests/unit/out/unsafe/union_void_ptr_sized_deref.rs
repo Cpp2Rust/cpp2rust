@@ -61,15 +61,15 @@ unsafe fn main_0() -> i32 {
     let mut buf16: i16 = 0_i16;
     let mut s: Sink = <Sink>::default();
     s.width = Width_enum_W_64;
-    s.out.handle = ((&mut buf64 as *mut i64) as *mut i64 as *mut ::libc::c_void);
+    s.out.handle = ((&mut buf64 as *mut i64) as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 1234605616436508552_i64) });
     assert!(((((buf64) == (1234605616436508552_i64)) as i32) != 0));
     s.width = Width_enum_W_32;
-    s.out.handle = ((&mut buf32 as *mut i32) as *mut i32 as *mut ::libc::c_void);
+    s.out.handle = ((&mut buf32 as *mut i32) as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 305419896_i64) });
     assert!(((((buf32) == (305419896)) as i32) != 0));
     s.width = Width_enum_W_16;
-    s.out.handle = ((&mut buf16 as *mut i16) as *mut i16 as *mut ::libc::c_void);
+    s.out.handle = ((&mut buf16 as *mut i16) as *mut ::libc::c_void);
     (unsafe { write_count_1((&mut s as *mut Sink), 4660_i64) });
     assert!(((((buf16 as i32) == (4660)) as i32) != 0));
     return 0;

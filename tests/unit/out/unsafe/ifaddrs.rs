@@ -33,12 +33,12 @@ unsafe fn main_0() -> i32 {
         let mut lo_be: [u8; 4] = [127_u8, 0_u8, 0_u8, 1_u8];
         if (((({
             let sa = core::slice::from_raw_parts(
-                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
-                    as *const ::libc::c_void) as *const u8,
+                ((&mut (*sin).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
+                    as *const u8,
                 4_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (lo_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                (lo_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 4_usize as usize,
             );
             let mut diff = 0_i32;
@@ -61,12 +61,12 @@ unsafe fn main_0() -> i32 {
             assert!(
                 (((({
                     let sa = core::slice::from_raw_parts(
-                        ((&mut (*mask).sin_addr as *mut ::libc::in_addr) as *const ::libc::in_addr
-                            as *const ::libc::c_void) as *const u8,
+                        ((&mut (*mask).sin_addr as *mut ::libc::in_addr) as *const ::libc::c_void)
+                            as *const u8,
                         4_usize as usize,
                     );
                     let sb = core::slice::from_raw_parts(
-                        (mask_be.as_mut_ptr() as *const u8 as *const ::libc::c_void) as *const u8,
+                        (mask_be.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                         4_usize as usize,
                     );
                     let mut diff = 0_i32;
