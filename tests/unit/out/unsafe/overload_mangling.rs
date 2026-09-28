@@ -67,6 +67,29 @@ impl S {
     pub unsafe fn apply_12(&self, mut f: Option<unsafe fn(i32) -> i32>, mut x: i32) -> i32 {
         return ((self.base) + (unsafe { (f).unwrap()(x) }));
     }
+    pub unsafe fn combine_13(
+        &self,
+        p: *const (i32, i64),
+        mut f: Option<unsafe fn(i32) -> i32>,
+        mut q: *const i32,
+        mut n: u64,
+    ) -> i32 {
+        return ((((self.base) + ((*p).1 as i32)) + (unsafe { (f).unwrap()((*q)) })) + (n as i32));
+    }
+    pub unsafe fn combine_14(
+        &self,
+        p: *const (i32, i32),
+        mut f: Option<unsafe fn(*mut i32, i32)>,
+        mut q: *mut i32,
+        mut n: u64,
+    ) -> i32 {
+        (unsafe {
+            let _arg0: *mut i32 = q;
+            let _arg1: i32 = (n as i32);
+            (f).unwrap()(_arg0, _arg1)
+        });
+        return (((self.base) + ((*p).0)) + (*q));
+    }
     pub unsafe fn width_1_char(&self, mut x: i32) -> i32 {
         return ((self.base) + ((x) * (::std::mem::size_of::<libc::c_char>() as i32)));
     }
@@ -120,6 +143,21 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::apply_10(&s, Some(inc_0), 1,) }) == (102)));
     assert!(((unsafe { S::apply_11(&s, Some(add_1), 1,) }) == (111)));
     assert!(((unsafe { S::apply_12(&s, Some(twice_2), 3,) }) == (106)));
+    let c: i32 = 3;
+    assert!(
+        ((unsafe {
+            let mut _p: (i32, i64) = (1.into(), 2_i64.into());
+            S::combine_13(&s, &mut _p, Some(twice_2), (&c as *const i32), 4_u64)
+        }) == (112))
+    );
+    let mut z: i32 = 1;
+    assert!(
+        ((unsafe {
+            let mut _p: (i32, i32) = (1.into(), 2.into());
+            S::combine_14(&s, &mut _p, Some(add_1), (&mut z as *mut i32), 5_u64)
+        }) == (107))
+    );
+    assert!(((z) == (6)));
     let mut a: Access_S_ = <Access_S_>::default();
     let mut cs: *const S = (&mut s as *mut S).cast_const();
     let cr: *const S = &s;

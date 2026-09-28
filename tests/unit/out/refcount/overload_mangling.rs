@@ -136,6 +136,39 @@ fn main_0() -> i32 {
     assert!(
         (({ SImpl::apply_12(&s.as_pointer(), FnPtr::<fn(i32) -> i32>::new(twice_2), 3,) }) == 106)
     );
+    let c: Value<i32> = Rc::new(RefCell::new(3));
+    assert!(
+        (({
+            let _p: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new((
+                Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+                Rc::new(RefCell::new(2_i64.try_into().expect("failed conversion"))),
+            )));
+            SImpl::combine_13(
+                &s.as_pointer(),
+                _p.as_pointer(),
+                FnPtr::<fn(i32) -> i32>::new(twice_2),
+                (c.as_pointer()),
+                4_u64,
+            )
+        }) == 112)
+    );
+    let z: Value<i32> = Rc::new(RefCell::new(1));
+    assert!(
+        (({
+            let _p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new((
+                Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+                Rc::new(RefCell::new(2.try_into().expect("failed conversion"))),
+            )));
+            SImpl::combine_14(
+                &s.as_pointer(),
+                _p.as_pointer(),
+                FnPtr::<fn(Ptr<i32>, i32)>::new(add_1),
+                (z.as_pointer()),
+                5_u64,
+            )
+        }) == 107)
+    );
+    assert!(((*z.borrow()) == 6));
     let a: Value<Access_S_> = Rc::new(RefCell::new(<Access_S_>::default()));
     let cs: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
     let cr: Ptr<S> = s.as_pointer();
@@ -186,6 +219,20 @@ pub trait SImpl {
     fn apply_10(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32;
     fn apply_11(&self, f: FnPtr<fn(Ptr<i32>, i32)>, x: i32) -> i32;
     fn apply_12(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32;
+    fn combine_13(
+        &self,
+        p: Ptr<(Value<i32>, Value<i64>)>,
+        f: FnPtr<fn(i32) -> i32>,
+        q: Ptr<i32>,
+        n: u64,
+    ) -> i32;
+    fn combine_14(
+        &self,
+        p: Ptr<(Value<i32>, Value<i32>)>,
+        f: FnPtr<fn(Ptr<i32>, i32)>,
+        q: Ptr<i32>,
+        n: u64,
+    ) -> i32;
     fn width_1_char(&self, x: i32) -> i32;
     fn width_1_int(&self, x: i32) -> i32;
     fn scale_2_2(&self, x: i32) -> i32;
@@ -241,6 +288,50 @@ impl SImpl for Ptr<S> {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
             _lhs + ({ (*f.borrow()).call((*x.borrow())) })
+        };
+    }
+    fn combine_13(
+        &self,
+        p: Ptr<(Value<i32>, Value<i64>)>,
+        f: FnPtr<fn(i32) -> i32>,
+        q: Ptr<i32>,
+        n: u64,
+    ) -> i32 {
+        let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
+        let q: Value<Ptr<i32>> = Rc::new(RefCell::new(q));
+        let n: Value<u64> = Rc::new(RefCell::new(n));
+        return {
+            let _lhs = {
+                let _lhs = {
+                    let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+                    _lhs + ((*(*p.upgrade().deref()).1.borrow()) as i32)
+                };
+                _lhs + ({ (*f.borrow()).call(((*q.borrow()).read())) })
+            };
+            _lhs + ((*n.borrow()) as i32)
+        };
+    }
+    fn combine_14(
+        &self,
+        p: Ptr<(Value<i32>, Value<i32>)>,
+        f: FnPtr<fn(Ptr<i32>, i32)>,
+        q: Ptr<i32>,
+        n: u64,
+    ) -> i32 {
+        let f: Value<FnPtr<fn(Ptr<i32>, i32)>> = Rc::new(RefCell::new(f));
+        let q: Value<Ptr<i32>> = Rc::new(RefCell::new(q));
+        let n: Value<u64> = Rc::new(RefCell::new(n));
+        ({
+            let _arg0: Ptr<i32> = (*q.borrow()).clone();
+            let _arg1: i32 = ((*n.borrow()) as i32);
+            (*f.borrow()).call(_arg0, _arg1)
+        });
+        return {
+            let _lhs = {
+                let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+                _lhs + (*(*p.upgrade().deref()).0.borrow())
+            };
+            _lhs + ((*q.borrow()).read())
         };
     }
     fn width_1_char(&self, x: i32) -> i32 {

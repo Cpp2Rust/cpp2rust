@@ -36,6 +36,15 @@ struct S {
     return base + x;
   }
   int apply(int (*f)(int), int x) const { return base + f(x); }
+  int combine(const std::pair<int, long> &p, int (*f)(int), const int *q,
+              unsigned long n) const {
+    return base + (int)p.second + f(*q) + (int)n;
+  }
+  int combine(const std::pair<int, int> &p, void (*f)(int *, int), int *q,
+              unsigned long n) const {
+    f(q, (int)n);
+    return base + p.first + *q;
+  }
 };
 
 struct Box {
@@ -60,6 +69,11 @@ int main() {
   assert(s.apply(inc, 1) == 102);
   assert(s.apply(add, 1) == 111);
   assert(s.apply(twice, 3) == 106);
+  const int c = 3;
+  assert(s.combine(std::pair<int, long>(1, 2L), twice, &c, 4UL) == 112);
+  int z = 1;
+  assert(s.combine(std::pair<int, int>(1, 2), add, &z, 5UL) == 107);
+  assert(z == 6);
   Access<S> a;
   const S *cs = &s;
   const S &cr = s;
