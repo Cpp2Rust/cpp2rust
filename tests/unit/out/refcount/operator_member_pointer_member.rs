@@ -94,11 +94,11 @@ fn main_0() -> i32 {
             x: Rc::new(RefCell::new(9)),
         })),
     }));
-    assert!(((({ SImpl::operator_index_i32(&s.as_pointer(), 1,) }).read()) == 2));
-    ({ SImpl::operator_index_i32(&s.as_pointer(), 1) }).write(20);
-    assert!(((({ SImpl::operator_index_i32(&s.as_pointer(), 1,) }).read()) == 20));
+    assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 2));
+    ({ SImpl::operator_index_1(&s.as_pointer(), 1) }).write(20);
+    assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 20));
     let cs: Ptr<S> = s.as_pointer();
-    assert!(((({ SImpl::operator_index_i32_const(&cs, 2,) }).read()) == 3));
+    assert!(((({ SImpl::operator_index_2(&cs, 2,) }).read()) == 3));
     assert!(
         ((*(*({ SImpl::operator_deref(&s.as_pointer(),) })
             .upgrade()
@@ -142,18 +142,18 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn operator_index_i32(&self, i: i32) -> Ptr<i32>;
-    fn operator_index_i32_const(&self, i: i32) -> Ptr<i32>;
+    fn operator_index_1(&self, i: i32) -> Ptr<i32>;
+    fn operator_index_2(&self, i: i32) -> Ptr<i32>;
     fn operator_deref(&self) -> Ptr<Inner>;
     fn operator_arrow(&self) -> Ptr<Inner>;
     fn operator_addr(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_index_i32(&self, i: i32) -> Ptr<i32> {
+    fn operator_index_1(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
         return ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset((*i.borrow()));
     }
-    fn operator_index_i32_const(&self, i: i32) -> Ptr<i32> {
+    fn operator_index_2(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
         return ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset((*i.borrow()));
     }

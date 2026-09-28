@@ -580,7 +580,7 @@ protected:
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
 
   virtual std::string
-  GetOverloadedFunctionName(const clang::FunctionDecl *decl);
+  GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);
 
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 
@@ -588,8 +588,6 @@ protected:
   GetStructAttributes(const clang::RecordDecl *decl);
 
   virtual std::string GetUnsafeTypeAsString(clang::QualType qual_type) const;
-
-  virtual std::string GetOverloadParamTypeAsString(clang::QualType type) const;
 
   virtual bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
                         llvm::StringRef name) const;

@@ -86,14 +86,14 @@ fn main_0() -> i32 {
     let t: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(4)),
     }));
-    assert!((({ SImpl::operator_eq_i32_const(&s.as_pointer(), 6,) }) == 1));
-    assert!((({ SImpl::operator_eq_i64_const(&s.as_pointer(), 6_i64,) }) == 2));
-    assert!((({ SImpl::operator_eq_f64_const(&s.as_pointer(), 6.0E+0,) }) == 3));
-    assert!((({ SImpl::operator_eq_i32_const(&s.as_pointer(), 7,) }) == 0));
+    assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 6,) }) == 1));
+    assert!((({ SImpl::operator_eq_2(&s.as_pointer(), 6_i64,) }) == 2));
+    assert!((({ SImpl::operator_eq_3(&s.as_pointer(), 6.0E+0,) }) == 3));
+    assert!((({ SImpl::operator_eq_1(&s.as_pointer(), 7,) }) == 0));
     assert!((({ SImpl::operator_add(&s.as_pointer(), t.as_pointer(),) }) == 10));
     assert!((({ SImpl::operator_sub(&s.as_pointer(), (*t.borrow()).clone(),) }) == 2));
-    assert!((({ SImpl::operator_mul_PtrS_const_const(&s.as_pointer(), t.as_pointer(),) }) == 24));
-    assert!((({ SImpl::operator_mul_i32_const(&s.as_pointer(), 2,) }) == 13));
+    assert!((({ SImpl::operator_mul_6(&s.as_pointer(), t.as_pointer(),) }) == 24));
+    assert!((({ SImpl::operator_mul_7(&s.as_pointer(), 2,) }) == 13));
     assert!(
         (({
             let _a: Ptr<S> = s.as_pointer();
@@ -123,16 +123,16 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn operator_eq_i32_const(&self, o: i32) -> i32;
-    fn operator_eq_i64_const(&self, o: i64) -> i32;
-    fn operator_eq_f64_const(&self, o: f64) -> i32;
+    fn operator_eq_1(&self, o: i32) -> i32;
+    fn operator_eq_2(&self, o: i64) -> i32;
+    fn operator_eq_3(&self, o: f64) -> i32;
     fn operator_add(&self, o: Ptr<S>) -> i32;
     fn operator_sub(&self, o: S) -> i32;
-    fn operator_mul_PtrS_const_const(&self, o: Ptr<S>) -> i32;
-    fn operator_mul_i32_const(&self, o: i32) -> i32;
+    fn operator_mul_6(&self, o: Ptr<S>) -> i32;
+    fn operator_mul_7(&self, o: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
-    fn operator_eq_i32_const(&self, o: i32) -> i32 {
+    fn operator_eq_1(&self, o: i32) -> i32 {
         let o: Value<i32> = Rc::new(RefCell::new(o));
         return if ((*(*(*self).upgrade().deref()).v.borrow()) == (*o.borrow())) {
             1
@@ -140,7 +140,7 @@ impl SImpl for Ptr<S> {
             0
         };
     }
-    fn operator_eq_i64_const(&self, o: i64) -> i32 {
+    fn operator_eq_2(&self, o: i64) -> i32 {
         let o: Value<i64> = Rc::new(RefCell::new(o));
         return if (((*(*(*self).upgrade().deref()).v.borrow()) as i64) == (*o.borrow())) {
             2
@@ -148,7 +148,7 @@ impl SImpl for Ptr<S> {
             0
         };
     }
-    fn operator_eq_f64_const(&self, o: f64) -> i32 {
+    fn operator_eq_3(&self, o: f64) -> i32 {
         let o: Value<f64> = Rc::new(RefCell::new(o));
         return if (((*(*(*self).upgrade().deref()).v.borrow()) as f64) == (*o.borrow())) {
             3
@@ -166,13 +166,13 @@ impl SImpl for Ptr<S> {
         let o: Value<S> = Rc::new(RefCell::new(o));
         return ((*(*(*self).upgrade().deref()).v.borrow()) - (*(*o.borrow()).v.borrow()));
     }
-    fn operator_mul_PtrS_const_const(&self, o: Ptr<S>) -> i32 {
+    fn operator_mul_6(&self, o: Ptr<S>) -> i32 {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs * (*(*o.upgrade().deref()).v.borrow())
         };
     }
-    fn operator_mul_i32_const(&self, o: i32) -> i32 {
+    fn operator_mul_7(&self, o: i32) -> i32 {
         let o: Value<i32> = Rc::new(RefCell::new(o));
         return (((*(*(*self).upgrade().deref()).v.borrow()) * (*o.borrow())) + 1);
     }

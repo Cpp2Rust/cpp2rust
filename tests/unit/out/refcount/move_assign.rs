@@ -140,42 +140,23 @@ fn main_0() -> i32 {
     let m1: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m2: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let cm: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
-    ({
-        ConstMoveAssignImpl::operator_assign_PtrConstMoveAssign_rv(&m1.as_pointer(), m.as_pointer())
-    });
-    ({
-        ConstMoveAssignImpl::operator_assign_PtrConstMoveAssign_const_rv(
-            &m2.as_pointer(),
-            cm.as_pointer(),
-        )
-    });
+    ({ ConstMoveAssignImpl::operator_assign_2(&m1.as_pointer(), m.as_pointer()) });
+    ({ ConstMoveAssignImpl::operator_assign_3(&m2.as_pointer(), cm.as_pointer()) });
     assert!(((*(*m1.borrow()).mark.borrow()) == 1));
     assert!(((*(*m2.borrow()).mark.borrow()) == 10));
     return 0;
 }
 pub trait ConstMoveAssignImpl {
-    fn operator_assign_PtrConstMoveAssign_rv(
-        &self,
-        o: Ptr<ConstMoveAssign>,
-    ) -> Ptr<ConstMoveAssign>;
-    fn operator_assign_PtrConstMoveAssign_const_rv(
-        &self,
-        o: Ptr<ConstMoveAssign>,
-    ) -> Ptr<ConstMoveAssign>;
+    fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign>;
+    fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign>;
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
-    fn operator_assign_PtrConstMoveAssign_rv(
-        &self,
-        o: Ptr<ConstMoveAssign>,
-    ) -> Ptr<ConstMoveAssign> {
+    fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
-    fn operator_assign_PtrConstMoveAssign_const_rv(
-        &self,
-        o: Ptr<ConstMoveAssign>,
-    ) -> Ptr<ConstMoveAssign> {
+    fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();

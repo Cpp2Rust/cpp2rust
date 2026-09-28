@@ -133,19 +133,6 @@ ConverterRefCount::GetSafeTypeAsString(clang::QualType qual_type) const {
   return std::string(Trim(type_as_string));
 }
 
-std::string
-ConverterRefCount::GetOverloadParamTypeAsString(clang::QualType type) const {
-  auto str = GetSafeTypeAsString(type);
-  if ((type->isPointerType() || type->isReferenceType()) &&
-      type->getPointeeType().isConstQualified()) {
-    str += "_const";
-  }
-  if (type->isRValueReferenceType()) {
-    str += "_rv";
-  }
-  return str;
-}
-
 bool ConverterRefCount::NeedsMut(const clang::VarDecl *decl,
                                  clang::QualType type,
                                  llvm::StringRef /*name*/) const {

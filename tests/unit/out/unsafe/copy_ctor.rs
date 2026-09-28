@@ -38,13 +38,13 @@ impl NonConst {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn NonConst_pmutNonConst(o: *mut NonConst) -> Self {
+    pub unsafe fn new_1(o: *mut NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
         this
     }
-    pub unsafe fn NonConst_pconstNonConst_const(o: *const NonConst) -> Self {
+    pub unsafe fn new_2(o: *const NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
@@ -53,7 +53,7 @@ impl NonConst {
 }
 impl Clone for NonConst {
     fn clone(&self) -> Self {
-        unsafe { NonConst::NonConst_pmutNonConst(self as *const NonConst as *mut NonConst) }
+        unsafe { NonConst::new_1(self as *const NonConst as *mut NonConst) }
     }
 }
 impl Default for NonConst {
@@ -150,9 +150,9 @@ unsafe fn main_0() -> i32 {
     assert!(((i1.v) == (1)) && ((i2.v) == (-1_i32)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (11)));
     let mut n: NonConst = NonConst::new();
-    let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n });
+    let mut n1: NonConst = NonConst::new_1({ &mut n });
     let cn: NonConst = NonConst::new();
-    let mut n2: NonConst = NonConst::NonConst_pconstNonConst_const({ &cn });
+    let mut n2: NonConst = NonConst::new_2({ &cn });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     return 0;

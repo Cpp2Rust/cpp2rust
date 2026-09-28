@@ -62,14 +62,14 @@ impl NonConst {
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn NonConst_PtrNonConst(o: Ptr<NonConst>) -> Self {
+    pub fn new_1(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn NonConst_PtrNonConst_const(o: Ptr<NonConst>) -> Self {
+    pub fn new_2(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 10))),
         }));
@@ -82,7 +82,7 @@ impl Clone for NonConst {
         let __src: Value<NonConst> = Rc::new(RefCell::new(NonConst {
             mark: self.mark.clone(),
         }));
-        NonConst::NonConst_PtrNonConst(__src.as_pointer())
+        NonConst::new_1(__src.as_pointer())
     }
 }
 impl Default for NonConst {
@@ -259,13 +259,9 @@ fn main_0() -> i32 {
     assert!(((*(*i1.borrow()).v.borrow()) == 1) && ((*(*i2.borrow()).v.borrow()) == -1_i32));
     assert!((copies_0.with(|rc| *rc.borrow()) == 11));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
-    let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_PtrNonConst({
-        n.as_pointer()
-    })));
+    let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::new_1({ n.as_pointer() })));
     let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
-    let n2: Value<NonConst> = Rc::new(RefCell::new(NonConst::NonConst_PtrNonConst_const({
-        cn.as_pointer()
-    })));
+    let n2: Value<NonConst> = Rc::new(RefCell::new(NonConst::new_2({ cn.as_pointer() })));
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     return 0;
