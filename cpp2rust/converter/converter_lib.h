@@ -107,8 +107,6 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
 
-bool RecordImplementsClone(const clang::RecordDecl *decl);
-
 bool RecordDerivesByteRepr(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);

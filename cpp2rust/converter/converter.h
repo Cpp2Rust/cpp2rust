@@ -660,6 +660,8 @@ protected:
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
 
+  virtual bool RecordImplementsClone(const clang::RecordDecl *decl);
+
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 
   virtual void AddDefaultTraitForUnion(const clang::RecordDecl *decl);
