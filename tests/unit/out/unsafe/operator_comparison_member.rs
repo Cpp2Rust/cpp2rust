@@ -18,7 +18,7 @@ impl S {
     pub unsafe fn operator_ne(&self, o: *const S) -> bool {
         return ((self.v) != ((*o).v));
     }
-    pub unsafe fn operator_lt_pconstS_const(&self, o: *const S) -> bool {
+    pub unsafe fn operator_lt_pconstS_const_const(&self, o: *const S) -> bool {
         return ((self.v) < ((*o).v));
     }
     pub unsafe fn operator_gt(&self, o: *const S) -> bool {
@@ -37,9 +37,9 @@ impl S {
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if S::operator_lt_pconstS_const(self, other as *const S) {
+            if S::operator_lt_pconstS_const_const(self, other as *const S) {
                 std::cmp::Ordering::Less
-            } else if S::operator_lt_pconstS_const(other, self as *const S) {
+            } else if S::operator_lt_pconstS_const_const(other, self as *const S) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -70,11 +70,11 @@ unsafe fn main_0() -> i32 {
     let mut c: S = S { v: 1 };
     assert!((unsafe { S::operator_eq(&a, &c,) }));
     assert!((unsafe { S::operator_ne(&a, &b,) }));
-    assert!((unsafe { S::operator_lt_pconstS_const(&a, &b,) }));
+    assert!((unsafe { S::operator_lt_pconstS_const_const(&a, &b,) }));
     assert!((unsafe { S::operator_gt(&b, &a,) }));
     assert!((unsafe { S::operator_le(&a, &c,) }));
     assert!((unsafe { S::operator_ge(&a, &c,) }));
-    assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a,) }));
+    assert!(!(unsafe { S::operator_lt_pconstS_const_const(&b, &a,) }));
     assert!((unsafe { S::operator_lt_i32_const(&a, 5,) }));
     return 0;
 }

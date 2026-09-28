@@ -38,7 +38,7 @@ impl ConstMove {
         };
         this
     }
-    pub unsafe fn ConstMove_pconstConstMove_rv(o: *const ConstMove) -> Self {
+    pub unsafe fn ConstMove_pconstConstMove_const_rv(o: *const ConstMove) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
@@ -166,7 +166,7 @@ unsafe fn main_0() -> i32 {
     let mut m: ConstMove = ConstMove::new();
     let mut m1: ConstMove = ConstMove::ConstMove_pmutConstMove_rv({ &mut m });
     let cm: ConstMove = ConstMove::new();
-    let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove_rv({ &cm });
+    let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove_const_rv({ &cm });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
     let mut t: ThrowingMove = ThrowingMove::new({ 1 });

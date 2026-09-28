@@ -12,12 +12,12 @@ pub struct S {
     pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_add_pconstS_const(&self, o: *const S) -> S {
+    pub unsafe fn operator_add_pconstS_const_const(&self, o: *const S) -> S {
         return S {
             v: ((self.v) + ((*o).v)),
         };
     }
-    pub unsafe fn operator_sub_pconstS_const(&self, o: *const S) -> S {
+    pub unsafe fn operator_sub_pconstS_const_const(&self, o: *const S) -> S {
         return S {
             v: ((self.v) - ((*o).v)),
         };
@@ -71,8 +71,8 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut a: S = S { v: 7 };
     let mut b: S = S { v: 2 };
-    assert!((((unsafe { S::operator_add_pconstS_const(&a, &b,) }).v) == (9)));
-    assert!((((unsafe { S::operator_sub_pconstS_const(&a, &b,) }).v) == (5)));
+    assert!((((unsafe { S::operator_add_pconstS_const_const(&a, &b,) }).v) == (9)));
+    assert!((((unsafe { S::operator_sub_pconstS_const_const(&a, &b,) }).v) == (5)));
     assert!((((unsafe { S::operator_mul(&a, &b,) }).v) == (14)));
     assert!((((unsafe { S::operator_div(&a, &b,) }).v) == (3)));
     assert!((((unsafe { S::operator_rem(&a, &b,) }).v) == (1)));
@@ -91,7 +91,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         (((unsafe {
             let mut _o: S = S { v: 4 };
-            S::operator_add_pconstS_const(&S { v: 3 }, &mut _o)
+            S::operator_add_pconstS_const_const(&S { v: 3 }, &mut _o)
         })
         .v) == (7))
     );

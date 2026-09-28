@@ -5,6 +5,13 @@ static void inc(int *p) { *p += 1; }
 static void add(int *p, int n) { *p += n; }
 static int twice(int n) { return n * 2; }
 
+template <typename T> struct Access {
+  int get(T *p) { return p->base; }
+  int get(const T *p) { return p->base + 1; }
+  int ref(T &r) { return r.base + 2; }
+  int ref(const T &r) { return r.base + 3; }
+};
+
 struct S {
   int base;
   template <typename T> int width(int x) const {
@@ -53,6 +60,13 @@ int main() {
   assert(s.apply(inc, 1) == 102);
   assert(s.apply(add, 1) == 111);
   assert(s.apply(twice, 3) == 106);
+  Access<S> a;
+  const S *cs = &s;
+  const S &cr = s;
+  assert(a.get(&s) == 100);
+  assert(a.get(cs) == 101);
+  assert(a.ref(s) == 102);
+  assert(a.ref(cr) == 103);
   Box b{4};
   assert(b.v == 4);
   return 0;

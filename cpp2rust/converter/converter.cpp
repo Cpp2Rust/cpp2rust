@@ -4223,11 +4223,12 @@ std::string Converter::GetUnsafeTypeAsString(clang::QualType qual_type) const {
 std::string
 Converter::GetOverloadParamTypeAsString(clang::QualType type) const {
   auto str = GetUnsafeTypeAsString(type);
-  if (type->isVoidPointerType() && type->getPointeeType().isConstQualified()) {
+  if ((type->isPointerType() || type->isReferenceType()) &&
+      type->getPointeeType().isConstQualified()) {
     str += "_const";
   }
   if (type->isRValueReferenceType()) {
-    name += "_rv";
+    str += "_rv";
   }
   return str;
 }

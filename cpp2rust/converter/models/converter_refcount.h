@@ -329,8 +329,8 @@ private:
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
-  std::string
-  GetOverloadParamTypeAsString(clang::QualType type) const override;
+
+  std::string GetOverloadParamTypeAsString(clang::QualType type) const override;
 
   bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
                 llvm::StringRef /*name*/) const override;

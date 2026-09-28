@@ -47,7 +47,7 @@ impl ConstMoveAssign {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut ConstMoveAssign));
     }
-    pub unsafe fn operator_assign_pconstConstMoveAssign_rv(
+    pub unsafe fn operator_assign_pconstConstMoveAssign_const_rv(
         &mut self,
         o: *const ConstMoveAssign,
     ) -> *mut ConstMoveAssign {
@@ -114,7 +114,7 @@ unsafe fn main_0() -> i32 {
     let mut m2: ConstMoveAssign = ConstMoveAssign::new();
     let cm: ConstMoveAssign = ConstMoveAssign::new();
     (unsafe { ConstMoveAssign::operator_assign_pmutConstMoveAssign_rv(&mut m1, &mut m) });
-    (unsafe { ConstMoveAssign::operator_assign_pconstConstMoveAssign_rv(&mut m2, &cm) });
+    (unsafe { ConstMoveAssign::operator_assign_pconstConstMoveAssign_const_rv(&mut m2, &cm) });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
     return 0;

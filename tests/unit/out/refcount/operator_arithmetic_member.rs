@@ -44,13 +44,13 @@ fn main_0() -> i32 {
         v: Rc::new(RefCell::new(2)),
     }));
     assert!(
-        ((*({ SImpl::operator_add_pconstS_const(&a.as_pointer(), b.as_pointer(),) })
+        ((*({ SImpl::operator_add_PtrS_const_const(&a.as_pointer(), b.as_pointer(),) })
             .v
             .borrow())
             == 9)
     );
     assert!(
-        ((*({ SImpl::operator_sub_pconstS_const(&a.as_pointer(), b.as_pointer(),) })
+        ((*({ SImpl::operator_sub_PtrS_const_const(&a.as_pointer(), b.as_pointer(),) })
             .v
             .borrow())
             == 5)
@@ -118,7 +118,7 @@ fn main_0() -> i32 {
             let _o: Value<S> = Rc::new(RefCell::new(S {
                 v: Rc::new(RefCell::new(4)),
             }));
-            SImpl::operator_add_pconstS_const(
+            SImpl::operator_add_PtrS_const_const(
                 &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(3)),
                 }))
@@ -133,8 +133,8 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn operator_add_pconstS_const(&self, o: Ptr<S>) -> S;
-    fn operator_sub_pconstS_const(&self, o: Ptr<S>) -> S;
+    fn operator_add_PtrS_const_const(&self, o: Ptr<S>) -> S;
+    fn operator_sub_PtrS_const_const(&self, o: Ptr<S>) -> S;
     fn operator_mul(&self, o: Ptr<S>) -> S;
     fn operator_div(&self, o: Ptr<S>) -> S;
     fn operator_rem(&self, o: Ptr<S>) -> S;
@@ -146,7 +146,7 @@ pub trait SImpl {
     fn operator_post_dec_i32(&self, _a0: i32) -> S;
 }
 impl SImpl for Ptr<S> {
-    fn operator_add_pconstS_const(&self, o: Ptr<S>) -> S {
+    fn operator_add_PtrS_const_const(&self, o: Ptr<S>) -> S {
         return S {
             v: Rc::new(RefCell::new({
                 let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
@@ -154,7 +154,7 @@ impl SImpl for Ptr<S> {
             })),
         };
     }
-    fn operator_sub_pconstS_const(&self, o: Ptr<S>) -> S {
+    fn operator_sub_PtrS_const_const(&self, o: Ptr<S>) -> S {
         return S {
             v: Rc::new(RefCell::new({
                 let _lhs = (*(*(*self).upgrade().deref()).v.borrow());

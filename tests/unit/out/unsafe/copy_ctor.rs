@@ -44,7 +44,7 @@ impl NonConst {
         };
         this
     }
-    pub unsafe fn NonConst_pconstNonConst(o: *const NonConst) -> Self {
+    pub unsafe fn NonConst_pconstNonConst_const(o: *const NonConst) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
@@ -152,7 +152,7 @@ unsafe fn main_0() -> i32 {
     let mut n: NonConst = NonConst::new();
     let mut n1: NonConst = NonConst::NonConst_pmutNonConst({ &mut n });
     let cn: NonConst = NonConst::new();
-    let mut n2: NonConst = NonConst::NonConst_pconstNonConst({ &cn });
+    let mut n2: NonConst = NonConst::NonConst_pconstNonConst_const({ &cn });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     return 0;

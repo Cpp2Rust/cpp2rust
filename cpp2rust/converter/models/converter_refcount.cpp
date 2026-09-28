@@ -141,7 +141,7 @@ ConverterRefCount::GetOverloadParamTypeAsString(clang::QualType type) const {
     str += "_const";
   }
   if (type->isRValueReferenceType()) {
-    name += "_rv";
+    str += "_rv";
   }
   return str;
 }

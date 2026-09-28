@@ -27,7 +27,7 @@ impl S {
     pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
         return ((self.v) - (o.v));
     }
-    pub unsafe fn operator_mul_pconstS_const(&self, o: *const S) -> i32 {
+    pub unsafe fn operator_mul_pconstS_const_const(&self, o: *const S) -> i32 {
         return ((self.v) * ((*o).v));
     }
     pub unsafe fn operator_mul_i32_const(&self, mut o: i32) -> i32 {
@@ -67,7 +67,7 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { S::operator_eq_i32_const(&s, 7,) }) == (0)));
     assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
     assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));
-    assert!(((unsafe { S::operator_mul_pconstS_const(&s, &t,) }) == (24)));
+    assert!(((unsafe { S::operator_mul_pconstS_const_const(&s, &t,) }) == (24)));
     assert!(((unsafe { S::operator_mul_i32_const(&s, 2,) }) == (13)));
     assert!(
         ((unsafe {

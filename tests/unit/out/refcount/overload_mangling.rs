@@ -26,6 +26,8 @@ pub fn twice_2(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return ((*n.borrow()) * 2);
 }
+#[derive(Clone, ByteRepr, Default)]
+pub struct Access_S_ {}
 #[derive(Default)]
 pub struct S {
     pub base: Value<i32>,
@@ -95,11 +97,11 @@ fn main_0() -> i32 {
     assert!((({ SImpl::plain_i32_const(&s.as_pointer(), 1,) }) == 101));
     assert!((({ SImpl::plain_i64_const(&s.as_pointer(), 1_i64,) }) == 102));
     let y: Value<i32> = Rc::new(RefCell::new(1));
-    assert!((({ SImpl::take_pmuti32_const(&s.as_pointer(), y.as_pointer(),) }) == 102));
+    assert!((({ SImpl::take_Ptri32_const(&s.as_pointer(), y.as_pointer(),) }) == 102));
     assert!(
         (({
             let _x: Value<i32> = Rc::new(RefCell::new(5));
-            SImpl::take_pmuti32_rv_const(&s.as_pointer(), _x.as_pointer())
+            SImpl::take_Ptri32_rv_const(&s.as_pointer(), _x.as_pointer())
         }) == 107)
     );
     assert!(
@@ -126,7 +128,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            SImpl::apply_OptionunsafefnPtri32__i32_const(
+            SImpl::apply_FnPtrfnPtri32__i32_const(
                 &s.as_pointer(),
                 FnPtr::<fn(Ptr<i32>)>::new(inc_0),
                 1,
@@ -135,7 +137,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            SImpl::apply_OptionunsafefnPtri32_i32__i32_const(
+            SImpl::apply_FnPtrfnPtri32_i32__i32_const(
                 &s.as_pointer(),
                 FnPtr::<fn(Ptr<i32>, i32)>::new(add_1),
                 1,
@@ -144,12 +146,24 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            SImpl::apply_Optionunsafefni32_i32_i32_const(
+            SImpl::apply_FnPtrfni32_i32_i32_const(
                 &s.as_pointer(),
                 FnPtr::<fn(i32) -> i32>::new(twice_2),
                 3,
             )
         }) == 106)
+    );
+    let a: Value<Access_S_> = Rc::new(RefCell::new(<Access_S_>::default()));
+    let cs: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
+    let cr: Ptr<S> = s.as_pointer();
+    assert!((({ Access_S_Impl::get_PtrS(&a.as_pointer(), (s.as_pointer()),) }) == 100));
+    assert!((({ Access_S_Impl::get_PtrS_const(&a.as_pointer(), (*cs.borrow()).clone(),) }) == 101));
+    assert!((({ Access_S_Impl::ref_PtrS(&a.as_pointer(), s.as_pointer(),) }) == 102));
+    assert!(
+        (({
+            let _r: Ptr<S> = (cr).clone();
+            Access_S_Impl::ref_PtrS_const(&a.as_pointer(), _r)
+        }) == 103)
     );
     let b: Value<Box> = Rc::new(RefCell::new(Box {
         v: Rc::new(RefCell::new(4)),
@@ -157,17 +171,38 @@ fn main_0() -> i32 {
     assert!(((*(*b.borrow()).v.borrow()) == 4));
     return 0;
 }
+pub trait Access_S_Impl {
+    fn get_PtrS(&self, p: Ptr<S>) -> i32;
+    fn get_PtrS_const(&self, p: Ptr<S>) -> i32;
+    fn ref_PtrS(&self, r: Ptr<S>) -> i32;
+    fn ref_PtrS_const(&self, r: Ptr<S>) -> i32;
+}
+impl Access_S_Impl for Ptr<Access_S_> {
+    fn get_PtrS(&self, p: Ptr<S>) -> i32 {
+        let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
+        return (*(*(*p.borrow()).upgrade().deref()).base.borrow());
+    }
+    fn get_PtrS_const(&self, p: Ptr<S>) -> i32 {
+        let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
+        return ((*(*(*p.borrow()).upgrade().deref()).base.borrow()) + 1);
+    }
+    fn ref_PtrS(&self, r: Ptr<S>) -> i32 {
+        return ((*(*r.upgrade().deref()).base.borrow()) + 2);
+    }
+    fn ref_PtrS_const(&self, r: Ptr<S>) -> i32 {
+        return ((*(*r.upgrade().deref()).base.borrow()) + 3);
+    }
+}
 pub trait SImpl {
     fn plain_i32_const(&self, x: i32) -> i32;
     fn plain_i64_const(&self, x: i64) -> i32;
-    fn take_pmuti32_const(&self, x: Ptr<i32>) -> i32;
-    fn take_pmuti32_rv_const(&self, x: Ptr<i32>) -> i32;
+    fn take_Ptri32_const(&self, x: Ptr<i32>) -> i32;
+    fn take_Ptri32_rv_const(&self, x: Ptr<i32>) -> i32;
     fn pick_Valuei32_Valuei32_const(&self, p: (Value<i32>, Value<i32>)) -> i32;
     fn pick_Valuei32_Valuei64_const(&self, p: (Value<i32>, Value<i64>)) -> i32;
-    fn apply_OptionunsafefnPtri32__i32_const(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32;
-    fn apply_OptionunsafefnPtri32_i32__i32_const(&self, f: FnPtr<fn(Ptr<i32>, i32)>, x: i32)
-    -> i32;
-    fn apply_Optionunsafefni32_i32_i32_const(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32;
+    fn apply_FnPtrfnPtri32__i32_const(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32;
+    fn apply_FnPtrfnPtri32_i32__i32_const(&self, f: FnPtr<fn(Ptr<i32>, i32)>, x: i32) -> i32;
+    fn apply_FnPtrfni32_i32_i32_const(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32;
     fn width_i32__char_const(&self, x: i32) -> i32;
     fn width_i32__int_const(&self, x: i32) -> i32;
     fn scale_i32__2_const(&self, x: i32) -> i32;
@@ -184,13 +219,13 @@ impl SImpl for Ptr<S> {
         let x: Value<i64> = Rc::new(RefCell::new(x));
         return (((*(*(*self).upgrade().deref()).base.borrow()) + ((*x.borrow()) as i32)) + 1);
     }
-    fn take_pmuti32_const(&self, x: Ptr<i32>) -> i32 {
+    fn take_Ptri32_const(&self, x: Ptr<i32>) -> i32 {
         return ({
             let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
             _lhs + (x.read())
         } + 1);
     }
-    fn take_pmuti32_rv_const(&self, x: Ptr<i32>) -> i32 {
+    fn take_Ptri32_rv_const(&self, x: Ptr<i32>) -> i32 {
         return ({
             let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
             _lhs + (x.read())
@@ -205,23 +240,19 @@ impl SImpl for Ptr<S> {
         return ((*(*(*self).upgrade().deref()).base.borrow())
             + ((*(*p.borrow()).1.borrow()) as i32));
     }
-    fn apply_OptionunsafefnPtri32__i32_const(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32 {
+    fn apply_FnPtrfnPtri32__i32_const(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ (*f.borrow()).call((x.as_pointer())) });
         return ((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow()));
     }
-    fn apply_OptionunsafefnPtri32_i32__i32_const(
-        &self,
-        f: FnPtr<fn(Ptr<i32>, i32)>,
-        x: i32,
-    ) -> i32 {
+    fn apply_FnPtrfnPtri32_i32__i32_const(&self, f: FnPtr<fn(Ptr<i32>, i32)>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(Ptr<i32>, i32)>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ (*f.borrow()).call((x.as_pointer()), 10) });
         return ((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow()));
     }
-    fn apply_Optionunsafefni32_i32_i32_const(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
+    fn apply_FnPtrfni32_i32_i32_const(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return {

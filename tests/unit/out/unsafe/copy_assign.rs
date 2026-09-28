@@ -56,7 +56,7 @@ impl NonConstAssign {
         self.mark = (((*o).mark) + (1));
         return &mut (*(self as *mut NonConstAssign));
     }
-    pub unsafe fn operator_assign_pconstNonConstAssign(
+    pub unsafe fn operator_assign_pconstNonConstAssign_const(
         &mut self,
         o: *const NonConstAssign,
     ) -> *mut NonConstAssign {
@@ -157,7 +157,7 @@ unsafe fn main_0() -> i32 {
     let mut n2: NonConstAssign = NonConstAssign::new();
     let cn: NonConstAssign = NonConstAssign::new();
     (unsafe { NonConstAssign::operator_assign_pmutNonConstAssign(&mut n1, &mut n) });
-    (unsafe { NonConstAssign::operator_assign_pconstNonConstAssign(&mut n2, &cn) });
+    (unsafe { NonConstAssign::operator_assign_pconstNonConstAssign_const(&mut n2, &cn) });
     assert!(((n1.mark) == (1)));
     assert!(((n2.mark) == (10)));
     let mut r: RefQualified = RefQualified::new();

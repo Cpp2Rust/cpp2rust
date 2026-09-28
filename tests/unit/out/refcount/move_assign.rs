@@ -141,13 +141,10 @@ fn main_0() -> i32 {
     let m2: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let cm: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     ({
-        ConstMoveAssignImpl::operator_assign_pmutConstMoveAssign_rv(
-            &m1.as_pointer(),
-            m.as_pointer(),
-        )
+        ConstMoveAssignImpl::operator_assign_PtrConstMoveAssign_rv(&m1.as_pointer(), m.as_pointer())
     });
     ({
-        ConstMoveAssignImpl::operator_assign_pconstConstMoveAssign_rv(
+        ConstMoveAssignImpl::operator_assign_PtrConstMoveAssign_const_rv(
             &m2.as_pointer(),
             cm.as_pointer(),
         )
@@ -157,17 +154,17 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait ConstMoveAssignImpl {
-    fn operator_assign_pmutConstMoveAssign_rv(
+    fn operator_assign_PtrConstMoveAssign_rv(
         &self,
         o: Ptr<ConstMoveAssign>,
     ) -> Ptr<ConstMoveAssign>;
-    fn operator_assign_pconstConstMoveAssign_rv(
+    fn operator_assign_PtrConstMoveAssign_const_rv(
         &self,
         o: Ptr<ConstMoveAssign>,
     ) -> Ptr<ConstMoveAssign>;
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
-    fn operator_assign_pmutConstMoveAssign_rv(
+    fn operator_assign_PtrConstMoveAssign_rv(
         &self,
         o: Ptr<ConstMoveAssign>,
     ) -> Ptr<ConstMoveAssign> {
@@ -175,7 +172,7 @@ impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
-    fn operator_assign_pconstConstMoveAssign_rv(
+    fn operator_assign_PtrConstMoveAssign_const_rv(
         &self,
         o: Ptr<ConstMoveAssign>,
     ) -> Ptr<ConstMoveAssign> {

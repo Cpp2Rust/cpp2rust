@@ -17,6 +17,23 @@ pub unsafe fn twice_2(mut n: i32) -> i32 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
+pub struct Access_S_ {}
+impl Access_S_ {
+    pub unsafe fn get_pmutS(&mut self, mut p: *mut S) -> i32 {
+        return (*p).base;
+    }
+    pub unsafe fn get_pconstS_const(&mut self, mut p: *const S) -> i32 {
+        return (((*p).base) + (1));
+    }
+    pub unsafe fn ref_pmutS(&mut self, r: *mut S) -> i32 {
+        return (((*r).base) + (2));
+    }
+    pub unsafe fn ref_pconstS_const(&mut self, r: *const S) -> i32 {
+        return (((*r).base) + (3));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
 pub struct S {
     pub base: i32,
 }
@@ -118,6 +135,18 @@ unsafe fn main_0() -> i32 {
     );
     assert!(
         ((unsafe { S::apply_Optionunsafefni32_i32_i32_const(&s, Some(twice_2), 3,) }) == (106))
+    );
+    let mut a: Access_S_ = <Access_S_>::default();
+    let mut cs: *const S = (&mut s as *mut S).cast_const();
+    let cr: *const S = &s;
+    assert!(((unsafe { Access_S_::get_pmutS(&mut a, (&mut s as *mut S),) }) == (100)));
+    assert!(((unsafe { Access_S_::get_pconstS_const(&mut a, cs,) }) == (101)));
+    assert!(((unsafe { Access_S_::ref_pmutS(&mut a, &mut s,) }) == (102)));
+    assert!(
+        ((unsafe {
+            let _r: *const S = cr;
+            Access_S_::ref_pconstS_const(&mut a, _r)
+        }) == (103))
     );
     let mut b: Box = Box { v: 4 };
     assert!(((b.v) == (4)));
