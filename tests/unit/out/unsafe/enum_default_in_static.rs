@@ -11,7 +11,7 @@ pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Config {
     pub count: i32,
     pub mode: Mode,

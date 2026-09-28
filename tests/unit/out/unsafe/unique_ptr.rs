@@ -27,7 +27,7 @@ impl SafePointer {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Pair {
     pub x: i32,
     pub y: i32,

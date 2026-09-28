@@ -10,7 +10,7 @@ pub unsafe fn operator_eq_0(_a0: *const Defaulted, _a1: *const Defaulted) -> boo
     return (((*_a0).a) == ((*_a1).a)) && (((*_a0).b) == ((*_a1).b));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Defaulted {
     pub a: i32,
     pub b: i32,
@@ -37,7 +37,7 @@ pub unsafe fn operator_eq_2(_a0: *const DefaultedOrd, _a1: *const DefaultedOrd) 
     return (((*_a0).a) == ((*_a1).a));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct DefaultedOrd {
     pub a: i32,
 }
@@ -69,7 +69,7 @@ pub unsafe fn operator_add_5(x: *const Inline, y: *const Inline) -> Inline {
     };
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inline {
     pub a: i32,
 }
@@ -98,7 +98,7 @@ impl std::cmp::PartialEq for Inline {
 }
 impl std::cmp::Eq for Inline {}
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct OutOfLine {
     pub a: i32,
 }
@@ -128,7 +128,7 @@ pub unsafe fn operator_eq_10(x: *const Tmpl_int_, y: *const Tmpl_long_) -> bool 
     return (((*x).v as i64) == ((*y).v));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Tmpl_int_ {
     pub v: i32,
 }
@@ -157,7 +157,7 @@ impl std::cmp::PartialEq for Tmpl_int_ {
 }
 impl std::cmp::Eq for Tmpl_int_ {}
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Tmpl_long_ {
     pub v: i64,
 }
@@ -168,7 +168,7 @@ pub unsafe fn operator_eq_11(
     return (((*_a0).v) == ((*_a1).v));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct TmplDefaulted_int_ {
     pub v: i32,
 }

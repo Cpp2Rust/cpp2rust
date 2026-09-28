@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct A {
     pub v: i32,
 }
@@ -27,7 +27,7 @@ impl Default for A {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct B {
     pub v: i32,
 }
@@ -43,7 +43,7 @@ impl Default for B {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct NoDefault {
     pub v: i32,
 }
@@ -69,7 +69,7 @@ pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {
     return x.v;
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S_NoDefault_ {
     pub v: i32,
 }

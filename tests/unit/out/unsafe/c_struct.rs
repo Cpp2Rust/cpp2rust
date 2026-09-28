@@ -7,19 +7,19 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Line {
     pub start: Point,
     pub end: Point,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Node {
     pub value: i32,
     pub next: *mut Node,
@@ -29,13 +29,13 @@ pub const Color_RED: Color = 0;
 pub const Color_GREEN: Color = 1;
 pub const Color_BLUE: Color = 2;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inner {
     pub a: i32,
     pub b: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Container {
     pub inner: Inner,
     pub color: Color,

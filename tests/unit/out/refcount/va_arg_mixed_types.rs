@@ -96,7 +96,12 @@ fn main_0() -> i32 {
         (((({
             sum_mixed_0(
                 2,
-                &[(3).into(), (*p.borrow()).into(), (0).into(), (5).into()],
+                &[
+                    (3).into(),
+                    ((*p.borrow()).clone()).into(),
+                    (0).into(),
+                    (5).into(),
+                ],
             )
         }) == 61) as i32)
             != 0)

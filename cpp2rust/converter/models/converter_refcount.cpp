@@ -470,8 +470,8 @@ std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
 }
 
 bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
-  if (decl->isUnion() ||
-      (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl))) {
+  if (decl->isUnion() || (HasDefaultedCopyConstructor(decl) &&
+                          RecordHasOnlyReferenceFields(decl))) {
     return true;
   }
   return !clang::isa<clang::CXXRecordDecl>(decl) ||

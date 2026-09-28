@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 static mut inner_const_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct C {}
 impl C {
     pub unsafe fn get(&mut self) -> i32 {
@@ -19,7 +19,7 @@ pub static mut inner_const_1: std::cell::LazyCell<i32> = std::cell::LazyCell::ne
 pub type anon_3 = u32;
 pub const anon_3_kValue: anon_3 = 3;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {}
 impl S {
     pub unsafe fn f() -> i32 {

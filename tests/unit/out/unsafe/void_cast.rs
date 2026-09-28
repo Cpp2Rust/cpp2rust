@@ -10,7 +10,7 @@ pub unsafe fn unused_param_0(mut x: i32) {
     &(x);
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct NonTrivial {
     pub data: Vec<i32>,
 }
@@ -27,7 +27,7 @@ pub unsafe fn bump_and_return_4() -> i32 {
     return (*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Holder {
     pub field: i32,
 }

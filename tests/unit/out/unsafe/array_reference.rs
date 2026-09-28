@@ -57,7 +57,7 @@ pub unsafe fn pick_10(s: *const [libc::c_char; 5]) -> *const [libc::c_char; 5] {
     return s;
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
