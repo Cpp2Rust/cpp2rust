@@ -18,6 +18,11 @@ pub type anon_3 = u32;
 pub const anon_3_kValue: anon_3 = 3;
 #[derive(Clone, ByteRepr, Default)]
 pub struct S {}
+impl S {
+    pub fn f() -> i32 {
+        return counter_2.with(|rc| *rc.borrow());
+    }
+}
 thread_local!(
     pub static counter_2: Value<i32> = Rc::new(RefCell::new(10));
 );
@@ -40,6 +45,8 @@ fn main_0() -> i32 {
     (*counter_2.with(Value::clone).borrow_mut()) += 5;
     assert!((counter_2.with(|rc| *rc.borrow()) == 25));
     assert!((counter_2.with(|rc| *rc.borrow()) == 25));
+    assert!((({ (*s.borrow()).f() }) == 25));
+    assert!((({ (*(*p.borrow()).upgrade().deref()).f() }) == 25));
     return 0;
 }
 pub trait CImpl {

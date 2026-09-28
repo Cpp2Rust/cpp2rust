@@ -21,6 +21,11 @@ pub const anon_3_kValue: anon_3 = 3;
 #[repr(C)]
 #[derive(Copy, Clone, Default)]
 pub struct S {}
+impl S {
+    pub unsafe fn f() -> i32 {
+        return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2));
+    }
+}
 pub static mut counter_2: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 10 });
 pub fn main() {
     unsafe {
@@ -43,6 +48,8 @@ unsafe fn main_0() -> i32 {
     (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) += 5;
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (25)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut counter_2)) == (25)));
+    assert!(((unsafe { s.f() }) == (25)));
+    assert!(((unsafe { (*p).f() }) == (25)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {

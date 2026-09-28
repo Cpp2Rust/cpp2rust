@@ -11,6 +11,7 @@ struct S {
   static const int inner_const = 2;
   static int counter;
   enum { kValue = 3 };
+  static int f() { return counter; }
 };
 
 int S::counter = 10;
@@ -30,5 +31,7 @@ int main() {
   p->counter += 5;
   assert(s.counter == 25);
   assert(S::counter == 25);
+  assert(s.f() == 25);
+  assert(p->f() == 25);
   return 0;
 }
