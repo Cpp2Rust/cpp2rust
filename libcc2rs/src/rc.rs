@@ -26,9 +26,11 @@ pub(crate) struct ReinterpretedView {
 pub(crate) enum PtrKind<T> {
     #[default]
     Null,
+    // Variants with the same payload are kept adjacent so that matches on
+    // Stack*/Heap* pairs compile to range checks rather than jump tables.
     StackSingle(Weak<RefCell<T>>),
-    StackArray(Weak<RefCell<Box<[T]>>>),
     HeapSingle(Weak<RefCell<T>>),
+    StackArray(Weak<RefCell<Box<[T]>>>),
     HeapArray(Weak<RefCell<Box<[T]>>>),
     StackVec(Weak<RefCell<Vec<T>>>),
     HeapVec(Weak<RefCell<Vec<T>>>),
@@ -55,6 +57,9 @@ pub enum StrongPtr<T> {
 }
 
 impl<T: ByteRepr> StrongPtr<T> {
+    // Inlined together with Ptr::upgrade so that the match on the kind of
+    // the pointer is folded away.
+    #[inline(always)]
     pub fn deref(&self) -> Ref<'_, T> {
         match self {
             StrongPtr::StackSingle(rc) => rc.borrow(),
@@ -64,15 +69,22 @@ impl<T: ByteRepr> StrongPtr<T> {
                 alloc,
                 byte_offset,
                 cell,
-            } => {
-                // Read-through: always re-read from the original allocation.
-                with_scratch(T::byte_size(), |buf| {
-                    alloc.read_bytes(*byte_offset, buf);
-                    *cell.borrow_mut() = Some(T::from_bytes(buf));
-                });
-                Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
-            }
+            } => Self::deref_reinterpreted(alloc, *byte_offset, cell),
         }
+    }
+
+    #[inline(never)]
+    fn deref_reinterpreted<'a>(
+        alloc: &OriginalAlloc,
+        byte_offset: usize,
+        cell: &'a RefCell<Option<T>>,
+    ) -> Ref<'a, T> {
+        // Read-through: always re-read from the original allocation.
+        with_scratch(T::byte_size(), |buf| {
+            alloc.read_bytes(byte_offset, buf);
+            *cell.borrow_mut() = Some(T::from_bytes(buf));
+        });
+        Ref::map(cell.borrow(), |opt| opt.as_ref().unwrap())
     }
 }
 
@@ -94,6 +106,7 @@ impl<T> fmt::Debug for PtrKind<T> {
 }
 
 impl<T> Clone for PtrKind<T> {
+    #[inline]
     fn clone(&self) -> Self {
         match self {
             PtrKind::Null => PtrKind::Null,
@@ -155,6 +168,7 @@ impl<T> Default for Ptr<T> {
 }
 
 impl<T> Clone for Ptr<T> {
+    #[inline]
     fn clone(&self) -> Self {
         Self {
             offset: self.offset,
@@ -345,19 +359,19 @@ impl<T> Ptr<T> {
         }
     }
 
+    #[inline(always)]
     pub fn upgrade(&self) -> StrongPtr<T> {
         match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
+            PtrKind::Null => null_deref(),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                StrongPtr::StackSingle(weak.upgrade().expect("ub: dangling pointer"))
+                StrongPtr::StackSingle(weak.upgrade().unwrap_or_else(|| dangling()))
             }
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => StrongPtr::Vec {
-                rc: weak.upgrade().expect("ub: dangling pointer"),
+                rc: weak.upgrade().unwrap_or_else(|| dangling()),
                 offset: self.offset,
             },
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => StrongPtr::StackArray {
-                rc: weak.upgrade().expect("ub: dangling pointer"),
+                rc: weak.upgrade().unwrap_or_else(|| dangling()),
                 offset: self.offset,
             },
             PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
@@ -368,6 +382,7 @@ impl<T> Ptr<T> {
         }
     }
 
+    #[inline(always)]
     pub fn write(&self, value: T)
     where
         T: ByteRepr,
@@ -434,67 +449,101 @@ impl<T> Ptr<T> {
 }
 
 impl<T> Ptr<T> {
+    #[inline(always)]
     pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R
     where
         T: ByteRepr,
     {
         match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
                 f(&mut *borrow)
             }
-            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let mut borrow = rc.borrow_mut();
-                f(&mut borrow[self.offset])
-            }
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
                 f(&mut borrow[self.offset])
             }
-            PtrKind::Reinterpreted(data) => with_scratch(T::byte_size(), |buf| {
-                data.alloc.read_bytes(self.offset, buf);
-                let mut val = T::from_bytes(buf);
-                let ret = f(&mut val);
-                val.to_bytes(buf);
-                data.alloc.write_bytes(self.offset, buf);
-                ret
-            }),
+            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
+                let mut borrow = rc.borrow_mut();
+                f(&mut borrow[self.offset])
+            }
+            PtrKind::Reinterpreted(data) => Self::with_mut_reinterpreted(data, self.offset, f),
+            PtrKind::Null => null_deref(),
         }
     }
 
+    #[inline(never)]
+    fn with_mut_reinterpreted<R>(
+        data: &ReinterpretedView,
+        offset: usize,
+        f: impl FnOnce(&mut T) -> R,
+    ) -> R
+    where
+        T: ByteRepr,
+    {
+        with_scratch(T::byte_size(), |buf| {
+            data.alloc.read_bytes(offset, buf);
+            let mut val = T::from_bytes(buf);
+            let ret = f(&mut val);
+            val.to_bytes(buf);
+            data.alloc.write_bytes(offset, buf);
+            ret
+        })
+    }
+
+    #[inline(always)]
     pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R
     where
         T: ByteRepr,
     {
         match &self.kind {
-            PtrKind::Null => panic!("ub: null pointer"),
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
-                assert_eq!(self.offset, 0, "ub: invalid offset");
-                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let borrow = rc.borrow();
                 f(&*borrow)
             }
-            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
-                let borrow = rc.borrow();
-                f(&borrow[self.offset])
-            }
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
-                let rc = weak.upgrade().expect("ub: dangling pointer");
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let borrow = rc.borrow();
                 f(&borrow[self.offset])
             }
-            PtrKind::Reinterpreted(data) => with_scratch(T::byte_size(), |buf| {
-                data.alloc.read_bytes(self.offset, buf);
-                f(&T::from_bytes(buf))
-            }),
+            PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
+                let rc = weak.upgrade().unwrap_or_else(|| dangling());
+                let borrow = rc.borrow();
+                f(&borrow[self.offset])
+            }
+            PtrKind::Reinterpreted(data) => Self::with_reinterpreted(data, self.offset, f),
+            PtrKind::Null => null_deref(),
         }
     }
+
+    #[inline(never)]
+    fn with_reinterpreted<R>(data: &ReinterpretedView, offset: usize, f: impl FnOnce(&T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
+        with_scratch(T::byte_size(), |buf| {
+            data.alloc.read_bytes(offset, buf);
+            f(&T::from_bytes(buf))
+        })
+    }
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn null_deref() -> ! {
+    panic!("ub: null pointer")
+}
+
+#[cold]
+#[inline(never)]
+#[track_caller]
+fn dangling() -> ! {
+    panic!("ub: dangling pointer")
 }
 
 impl Ptr<u8> {
@@ -563,6 +612,7 @@ impl Ptr<u8> {
 }
 
 impl<T: Clone + ByteRepr> Ptr<T> {
+    #[inline(always)]
     pub fn read(&self) -> T {
         self.with(|v| v.clone())
     }
@@ -1060,6 +1110,40 @@ mod tests {
         let v: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
         let p: Ptr<Box<[i32]>> = (&v as &dyn AsPointer<Box<[i32]>>).as_pointer();
         p.decay().delete();
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: dangling pointer")]
+    fn read_dangling_panics() {
+        let p = {
+            let v: Value<i32> = Rc::new(RefCell::new(1));
+            v.as_pointer()
+        };
+        p.read();
+    }
+
+    #[test]
+    #[should_panic(expected = "ub: dangling pointer")]
+    fn write_dangling_array_panics() {
+        let p: Ptr<u8> = Ptr::alloc_array(vec![0u8; 4].into_boxed_slice());
+        let q = p.offset(1);
+        p.delete();
+        q.write(1);
+    }
+
+    #[test]
+    fn read_write_through_pointer_to_pointer() {
+        let a: Value<Box<[i32]>> = Rc::new(RefCell::new(vec![1, 2, 3].into_boxed_slice()));
+        let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5]));
+        let pp: Value<Ptr<i32>> = Rc::new(RefCell::new(a.as_pointer()));
+        let pp_ptr = pp.as_pointer();
+        pp_ptr.write(pp_ptr.read().offset(2));
+        assert_eq!(pp.borrow().read(), 3);
+        pp_ptr.read().write(7);
+        assert_eq!(a.borrow()[2], 7);
+        pp_ptr.write(v.as_pointer().offset(1));
+        pp_ptr.read().write(8);
+        assert_eq!(*v.borrow(), vec![4, 8]);
     }
 
     #[test]
