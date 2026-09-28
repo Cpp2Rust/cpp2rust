@@ -414,6 +414,7 @@ public:
   void ConvertMemberExpr(clang::MemberExpr *expr);
 
   virtual bool VisitMemberExpr(clang::MemberExpr *expr);
+  clang::DeclRefExpr *GetStaticMemberAsDeclRef(clang::MemberExpr *expr);
 
   virtual bool VisitCXXThisExpr(clang::CXXThisExpr *expr);
 

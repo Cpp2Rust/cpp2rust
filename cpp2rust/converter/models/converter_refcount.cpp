@@ -1726,6 +1726,10 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
 }
 
 bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
+  if (auto *ref = GetStaticMemberAsDeclRef(expr)) {
+    Convert(ref);
+    return false;
+  }
   auto *member = expr->getMemberDecl();
   bool known = Mapper::Contains(expr);
 

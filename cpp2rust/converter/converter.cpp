@@ -3194,7 +3194,23 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   return false;
 }
 
+clang::DeclRefExpr *
+Converter::GetStaticMemberAsDeclRef(clang::MemberExpr *expr) {
+  auto *decl = expr->getMemberDecl();
+  if (!clang::isa<clang::VarDecl, clang::EnumConstantDecl>(decl)) {
+    return nullptr;
+  }
+  return clang::DeclRefExpr::Create(
+      ctx_, clang::NestedNameSpecifierLoc(), clang::SourceLocation(), decl,
+      /*RefersToEnclosingVariableOrCapture=*/false, expr->getMemberLoc(),
+      expr->getType(), expr->getValueKind());
+}
+
 bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
+  if (auto *ref = GetStaticMemberAsDeclRef(expr)) {
+    Convert(ref);
+    return false;
+  }
   auto *member = expr->getMemberDecl();
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
