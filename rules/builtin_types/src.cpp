@@ -3,56 +3,36 @@
 
 #include <cstddef>
 
-typedef bool t1;
-typedef bool *t2;
-typedef const bool *t3;
-typedef float t4;
-typedef float *t5;
-typedef const float *t6;
-typedef double t7;
-typedef double *t8;
-typedef const double *t9;
-typedef char t10;
-typedef char *t11;
-typedef const char *t12;
-typedef signed char t13;
-typedef signed char *t14;
-typedef const signed char *t15;
-typedef unsigned char t16;
-typedef unsigned char *t17;
-typedef const unsigned char *t18;
-typedef short t19;
-typedef short *t20;
-typedef const short *t21;
-typedef unsigned short t22;
-typedef unsigned short *t23;
-typedef const unsigned short *t24;
-typedef int t25;
-typedef int *t26;
-typedef const int *t27;
-typedef unsigned int t28;
-typedef unsigned int *t29;
-typedef const unsigned int *t30;
-typedef long t31;
-typedef long *t32;
-typedef const long *t33;
-typedef unsigned long t34;
-typedef unsigned long *t35;
-typedef const unsigned long *t36;
-typedef long long t37;
-typedef long long *t38;
-typedef const long long *t39;
-typedef unsigned long long t40;
-typedef unsigned long long *t41;
-typedef const unsigned long long *t42;
-typedef void *t43;
-typedef const void *t44;
-typedef decltype(nullptr) t45;
-typedef void t46;
-typedef long double t47;
-typedef wchar_t t48;
-typedef char8_t t49;
-typedef char16_t t50;
-typedef char32_t t51;
-typedef __int128 t52;
-typedef unsigned __int128 t53;
+#define BUILTIN_TYPE(N, T)                                                     \
+  typedef T t##N##0;                                                           \
+  typedef T *t##N##1;                                                          \
+  typedef const T *t##N##2;                                                    \
+  typedef volatile T *t##N##3;                                                 \
+  typedef const volatile T *t##N##4;
+
+typedef decltype(nullptr) t0;
+
+BUILTIN_TYPE(1, bool)
+BUILTIN_TYPE(2, char)
+BUILTIN_TYPE(3, signed char)
+BUILTIN_TYPE(4, unsigned char)
+BUILTIN_TYPE(5, char8_t)
+BUILTIN_TYPE(6, short)
+BUILTIN_TYPE(7, unsigned short)
+BUILTIN_TYPE(8, char16_t)
+BUILTIN_TYPE(9, int)
+BUILTIN_TYPE(10, unsigned int)
+BUILTIN_TYPE(11, wchar_t)
+BUILTIN_TYPE(12, char32_t)
+BUILTIN_TYPE(13, float)
+BUILTIN_TYPE(14, long)
+BUILTIN_TYPE(15, unsigned long)
+BUILTIN_TYPE(16, long long)
+BUILTIN_TYPE(17, unsigned long long)
+BUILTIN_TYPE(18, double)
+BUILTIN_TYPE(19, long double)
+BUILTIN_TYPE(20, __int128)
+BUILTIN_TYPE(21, unsigned __int128)
+BUILTIN_TYPE(22, void)
+
+#undef BUILTIN_TYPE
