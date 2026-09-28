@@ -300,7 +300,8 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
     auto pointee = expr->getType()->getPointeeType();
     if (IsBoxedType(pointee) || pointee->isArrayType()) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
-      return std::format("{}.decay()", std::move(str));
+      return std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
+                         std::move(str));
     }
   }
   return str;
@@ -872,8 +873,10 @@ bool ConverterRefCount::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
       return false;
     }
 
-    if (isObject() && WantsElementPtr() && IsBoxedType(ref->getPointeeType())) {
-      StrCat(str, ".decay()");
+    if (auto pointee = ref->getPointeeType();
+        isObject() && WantsElementPtr() && IsBoxedType(pointee)) {
+      StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
+                         std::move(str)));
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
     }
@@ -1162,7 +1165,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   if (isObject() && WantsElementPtr() && ref &&
       IsBoxedType(ref->getPointeeType())) {
-    StrCat(std::format("{}.decay()", std::move(str)));
+    StrCat(std::format("Ptr::<{}>::decay(&({}))",
+                       ToString(ref->getPointeeType()), std::move(str)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
@@ -2623,24 +2627,32 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
     return;
   }
 
+  std::string str;
   {
+    Buffer buf(*this);
     bool deref = !isAddrOf();
-    PushParen paren(*this, deref);
-    if (deref) {
-      StrCat(GetPointerDerefPrefix(pointee_type));
+    {
+      PushParen paren(*this, deref);
+      if (deref) {
+        StrCat(GetPointerDerefPrefix(pointee_type));
+      }
+      Convert(expr);
+      if (deref) {
+        StrCat(GetPointerDerefSuffix(pointee_type));
+        SetValueFreshness(pointee_type);
+      }
     }
-    Convert(expr);
-    if (deref) {
-      StrCat(GetPointerDerefSuffix(pointee_type));
-      SetValueFreshness(pointee_type);
-    }
+    str = std::move(buf).str();
   }
 
   if (isObject() && WantsElementPtr() &&
       (IsBoxedType(pointee_type) || pointee_type->isArrayType())) {
-    StrCat(".decay()");
+    StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
+                       std::move(str)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
   }
+  StrCat(std::move(str));
 }
 
 void ConverterRefCount::ConvertArrow(clang::Expr *expr) {

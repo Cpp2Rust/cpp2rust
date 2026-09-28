@@ -180,7 +180,10 @@ pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
 pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
     let comps: Value<Ptr<Vec<Chunk>>> = Rc::new(RefCell::new(comps));
     {
-        let a0_clone = (*((*comps.borrow()).decay() as Ptr<Chunk>).upgrade().deref()).clone();
+        let a0_clone = (*(Ptr::<Vec<Chunk>>::decay(&(*comps.borrow())) as Ptr<Chunk>)
+            .upgrade()
+            .deref())
+        .clone();
         (*comps.borrow()).with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
