@@ -2053,6 +2053,10 @@ bool ConverterRefCount::VisitCXXScalarValueInitExpr(
 }
 
 void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
+  if (arg->getType()->isRecordType()) {
+    StrCat(ConvertFreshRValue(arg));
+    return;
+  }
   if (arg->getType()->isPointerType()) {
     StrCat(ConvertFreshPointer(arg));
     return;
