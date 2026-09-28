@@ -25,7 +25,7 @@ impl TestAllocator_int_ {
 pub struct TestAllocator_double_ {}
 impl TestAllocator_double_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut f64 {
-        return Box::leak((0..n).map(|_| 0.0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
+        return Box::leak((0..n).map(|_| 0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
         ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
