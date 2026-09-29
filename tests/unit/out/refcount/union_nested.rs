@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct record {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
@@ -80,7 +80,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct inner {
     pub view: Value<anon_0>,
 }
@@ -142,7 +142,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub kind: Value<i32>,
     pub level: Value<i32>,

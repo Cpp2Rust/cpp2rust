@@ -6,6 +6,12 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, Default)]
+pub struct pair {
+    pub a: i32,
+    pub b: i32,
+}
 pub unsafe fn sum_mixed_0(mut count: i32, __args: &[VaArg]) -> i32 {
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
@@ -17,6 +23,9 @@ pub unsafe fn sum_mixed_0(mut count: i32, __args: &[VaArg]) -> i32 {
             total += ap.arg::<i32>();
         } else if ((((tag) == (1)) as i32) != 0) {
             total += (ap.arg::<f64>() as i32);
+        } else if ((((tag) == (3)) as i32) != 0) {
+            let mut p: pair = ap.arg::<pair>();
+            total += ((p.a) * (p.b));
         } else {
             let mut val: i64 = ap.arg::<i64>();
             total += (val as i32);
@@ -56,6 +65,12 @@ unsafe fn main_0() -> i32 {
                 &[(1).into(), (3.7E+0).into(), (2).into(), (100_i64).into()],
             )
         }) == (103)) as i32)
+            != 0)
+    );
+    let mut p: pair = pair { a: 7, b: 8 };
+    assert!(
+        ((((unsafe { sum_mixed_0(2, &[(3).into(), (p).into(), (0).into(), (5).into(),]) }) == (61))
+            as i32)
             != 0)
     );
     return 0;

@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_int_ {}
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_double_ {}
 pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));

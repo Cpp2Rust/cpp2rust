@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct shape_a {
     pub code: Value<u16>,
     pub pad: Value<Box<[u8]>>,
@@ -42,7 +42,7 @@ impl ByteRepr for shape_a {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct shape_b {
     pub code: Value<u16>,
     pub lo: Value<u16>,
@@ -129,7 +129,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Container {
     pub view: Value<anon_0>,
 }

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: Value<u32>,
     pub y: Value<u32>,
@@ -36,7 +36,7 @@ impl ByteRepr for Point {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub first: Value<u32>,
     pub second: Value<u32>,

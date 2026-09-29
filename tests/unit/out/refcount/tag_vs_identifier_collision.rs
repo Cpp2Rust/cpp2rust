@@ -10,7 +10,7 @@ pub type widget_enum = u32;
 pub const widget_enum_MODE_IDLE: widget_enum = 0;
 pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
 pub const widget_enum_MODE_DONE: widget_enum = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct widget {
     pub id: Value<i32>,
     pub mode: Value<widget_enum>,
@@ -38,7 +38,7 @@ impl ByteRepr for widget {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct point_struct {
     pub x: Value<i32>,
     pub y: Value<i32>,
@@ -145,7 +145,7 @@ impl ByteRepr for slot_union {
 pub type slot = u32;
 pub const slot_SLOT_A: slot = 0;
 pub const slot_SLOT_B: slot = 1;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub tag_field: Value<i32>,
 }
@@ -169,7 +169,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub field: Value<Inner>,
 }
@@ -193,7 +193,7 @@ impl ByteRepr for Outer {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner_struct {
     pub typedef_field: Value<i32>,
 }

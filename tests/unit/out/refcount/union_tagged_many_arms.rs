@@ -59,7 +59,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Slot {
     pub tag: Value<Tag_enum>,
     pub payload: Value<anon_0>,

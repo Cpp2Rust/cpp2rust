@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_int_ {
     vec_: Value<Vec<i32>>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for MyContainer_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_char_ {
     vec_: Value<Vec<u8>>,
 }
@@ -58,7 +58,7 @@ impl ByteRepr for MyContainer_char_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
 }
@@ -84,7 +84,7 @@ impl ByteRepr for MyContainer_float_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Boxed_int_ {
     pub value: Value<i32>,
 }
@@ -116,7 +116,7 @@ impl ByteRepr for Boxed_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Boxed_long_ {
     pub value: Value<i64>,
 }
@@ -148,7 +148,7 @@ impl ByteRepr for Boxed_long_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_int__Inner_int_ {
     pub t: Value<i32>,
     pub u: Value<i32>,
@@ -178,7 +178,7 @@ impl ByteRepr for Outer_int__Inner_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_int_ {
     pub v: Value<i32>,
 }
@@ -204,7 +204,7 @@ impl ByteRepr for Outer_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_int_ {
     pub t: Value<i64>,
     pub u: Value<i32>,
@@ -234,7 +234,7 @@ impl ByteRepr for Outer_long__Inner_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_char_ {
     pub t: Value<i64>,
     pub u: Value<u8>,
@@ -264,7 +264,7 @@ impl ByteRepr for Outer_long__Inner_char_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long_ {
     pub v: Value<i64>,
 }

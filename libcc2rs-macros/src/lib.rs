@@ -4,9 +4,11 @@
 use proc_macro::TokenStream;
 
 mod byte_repr;
+mod fn_ptr_arg;
 mod goto;
 mod state_machine;
 mod switch;
+mod va_arg;
 
 //     switch!(match <condition> {
 //         <pat> [if <guard>] => { /* body; may contain break or continue */ },
@@ -90,4 +92,14 @@ pub fn goto(_input: TokenStream) -> TokenStream {
 #[proc_macro_derive(ByteRepr)]
 pub fn derive_byte_repr(input: TokenStream) -> TokenStream {
     byte_repr::expand(input)
+}
+
+#[proc_macro_derive(VaArg)]
+pub fn derive_va_arg(input: TokenStream) -> TokenStream {
+    va_arg::expand(input)
+}
+
+#[proc_macro_derive(FnPtrArg)]
+pub fn derive_fn_ptr_arg(input: TokenStream) -> TokenStream {
+    fn_ptr_arg::expand(input)
 }

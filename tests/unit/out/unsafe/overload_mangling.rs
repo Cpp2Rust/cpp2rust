@@ -16,7 +16,7 @@ pub unsafe fn twice_2(mut n: i32) -> i32 {
     return ((n) * (2));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub base: i32,
 }
@@ -82,7 +82,7 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Box {
     pub v: i32,
 }

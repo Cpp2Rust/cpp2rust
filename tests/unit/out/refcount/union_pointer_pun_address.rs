@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct node_a {
     pub n: Value<i32>,
 }
@@ -30,7 +30,7 @@ impl ByteRepr for node_a {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct node_b {
     pub data: Value<AnyPtr>,
     pub next: Value<Ptr<node_b>>,

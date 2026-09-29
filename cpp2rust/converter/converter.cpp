@@ -92,7 +92,7 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
 
 void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "#[derive(Clone, Copy, Default, ByteRepr)]";
+    out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -4147,6 +4147,10 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
     struct_attrs.emplace_back("Clone");
   }
 
+  if (RecordImplementsClone(decl)) {
+    struct_attrs.emplace_back("VaArg");
+  }
+
   if (RecordDerivesDefault(decl)) {
     struct_attrs.emplace_back("Default");
   }
@@ -4635,6 +4639,11 @@ void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
                      source.isConstQualified()
                          ? ""
                          : std::format(" as *mut {}", record_name)));
+}
+
+bool Converter::RecordImplementsClone(const clang::RecordDecl *decl) {
+  return HasDefaultedCopyConstructor(decl) ||
+         GetUserDefinedCopyConstructor(decl) != nullptr;
 }
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {

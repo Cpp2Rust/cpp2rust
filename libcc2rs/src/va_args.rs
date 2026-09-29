@@ -1,7 +1,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use std::any::Any;
 use std::ffi::c_void;
+use std::rc::Rc;
 
 use crate::void::AnyPtr;
 
@@ -14,6 +16,7 @@ pub enum VaArg {
     Double(f64),
     RawPtr(*mut c_void),
     Ptr(AnyPtr),
+    Record(Rc<dyn Any>),
 }
 
 macro_rules! impl_va_arg_from {
@@ -97,6 +100,16 @@ macro_rules! impl_va_arg_get {
             }
         }
     )*};
+}
+
+pub fn va_record_get<T: Any + Clone>(v: &VaArg) -> T {
+    match v {
+        VaArg::Record(r) => r
+            .downcast_ref::<T>()
+            .expect("VaArgGet: record type mismatch")
+            .clone(),
+        _ => panic!("VaArgGet: expected record"),
+    }
 }
 
 impl_va_arg_get!(int: i8, i16, i32, i64, u8, u16, u32, u64);

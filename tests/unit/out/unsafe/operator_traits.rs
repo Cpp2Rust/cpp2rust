@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Lt {
     pub v: i32,
 }
@@ -44,7 +44,7 @@ impl std::cmp::PartialEq for Lt {
 }
 impl std::cmp::Eq for Lt {}
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Eq {
     pub v: i32,
 }
@@ -60,7 +60,7 @@ impl std::cmp::PartialEq for Eq {
 }
 impl std::cmp::Eq for Eq {}
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Cmp {
     pub v: i32,
 }
@@ -89,7 +89,7 @@ impl std::cmp::PartialEq for Cmp {
 }
 impl std::cmp::Eq for Cmp {}
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Free {
     pub v: i32,
 }
@@ -124,7 +124,7 @@ pub unsafe fn operator_eq_1(a: *const Free, b: *const Free) -> bool {
     return (((*a).v) == ((*b).v));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Wrapped_int_ {
     pub v: i32,
 }

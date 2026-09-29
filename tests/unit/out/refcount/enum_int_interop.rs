@@ -19,7 +19,7 @@ pub type Tag = u32;
 pub const Tag_TAG_ZERO: Tag = 0;
 pub const Tag_TAG_ONE: Tag = 1;
 pub const Tag_TAG_TWO: Tag = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Entry {
     pub name: Value<Ptr<u8>>,
     pub color: Value<Color>,

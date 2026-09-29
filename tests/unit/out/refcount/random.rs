@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
@@ -56,7 +56,7 @@ impl ByteRepr for Pair {}
 pub fn zero_0() -> i32 {
     return 0;
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct X1 {}
 pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) {
     let x1: Value<i32> = Rc::new(RefCell::new(x1));

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub x: Value<i32>,
     pub y: Value<i32>,
@@ -36,7 +36,7 @@ impl ByteRepr for Pair {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Triple {
     pub a: Value<i32>,
     pub b: Value<i32>,

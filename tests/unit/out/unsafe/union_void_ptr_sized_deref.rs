@@ -24,7 +24,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Sink {
     pub width: Width_enum,
     pub out: anon_0,

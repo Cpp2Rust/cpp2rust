@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: Value<i32>,
 }
@@ -117,7 +117,7 @@ pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
         _lhs < (*(*b.upgrade().deref()).v.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct V {
     pub v: Value<i32>,
 }

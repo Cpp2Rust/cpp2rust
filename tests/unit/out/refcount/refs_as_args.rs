@@ -42,7 +42,7 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let __rhs = (rx2.read());
     r1.write(__rhs);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Val {
     pub x: Value<i32>,
 }

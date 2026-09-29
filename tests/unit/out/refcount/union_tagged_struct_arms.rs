@@ -10,7 +10,7 @@ pub type Choice_enum = u32;
 pub const Choice_enum_C_LIST: Choice_enum = 1;
 pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
     pub items: Value<Ptr<Ptr<u8>>>,
     pub count: Value<i64>,
@@ -42,7 +42,7 @@ impl ByteRepr for anon_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_2 {
     pub lo: Value<i32>,
     pub hi: Value<i32>,
@@ -78,7 +78,7 @@ impl ByteRepr for anon_2 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
     pub lo: Value<i64>,
     pub hi: Value<i64>,
@@ -159,7 +159,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Branch {
     pub choice: Value<Choice_enum>,
     pub index: Value<i32>,

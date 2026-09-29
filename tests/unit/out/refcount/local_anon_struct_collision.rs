@@ -12,7 +12,7 @@ pub fn first_0() -> i32 {
     (*(*p.borrow()).y.borrow_mut()) = 2;
     return ((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow()));
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
     pub x: Value<i32>,
     pub y: Value<i32>,
@@ -46,7 +46,7 @@ pub fn second_2() -> i32 {
     (*(*q.borrow()).b.borrow_mut()) = 20_i64;
     return (((*(*q.borrow()).a.borrow()) + (*(*q.borrow()).b.borrow())) as i32);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
     pub a: Value<i64>,
     pub b: Value<i64>,

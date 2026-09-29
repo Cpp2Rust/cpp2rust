@@ -33,7 +33,7 @@ thread_local!(
     pub static depends_on_call_6: Value<i32> =
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Ctor {
     pub v: Value<i32>,
 }
@@ -97,7 +97,7 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
 );
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Holder {}
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
@@ -112,7 +112,7 @@ pub fn local_static_12() -> i32 {
     return (once_13.with(|rc| *rc.borrow())
         + (*(*local_ctor_14.with(Value::clone).borrow()).v.borrow()));
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Singleton {
     pub hits: Value<i32>,
 }

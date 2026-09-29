@@ -4,18 +4,21 @@
 // Support for FnPtr::cast synthesizing a call-through adapter automatically,
 // for any function pointer types T -> U.
 
+use std::any::Any;
+
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
 
 // A type-erased view of one argument or return value, used only transiently
 // (within a single adapted call) and never allocated.
-pub(crate) enum ArgRepr<'a> {
+pub enum ArgRepr<'a> {
     Bytes([u8; 16], usize),
     Ptr(&'a dyn ErasedPtr),
+    Record(&'a dyn Any),
 }
 
-pub(crate) trait FnPtrArg: 'static {
+pub trait FnPtrArg: 'static {
     fn to_repr(&self) -> ArgRepr<'_>;
     // Panics if `r` describes a value that isn't a meaningful `Self` (wrong
     // kind, or same kind but incompatible size).
@@ -105,7 +108,9 @@ impl<T: ByteRepr> FnPtrArg for Ptr<T> {
                 Some(exact) => exact.clone(),
                 None => e.as_bytes().reinterpret_cast(),
             },
-            ArgRepr::Bytes(..) => panic!("ub: calling through incompatible fn pointer type"),
+            ArgRepr::Bytes(..) | ArgRepr::Record(_) => {
+                panic!("ub: calling through incompatible fn pointer type")
+            }
         }
     }
 }
@@ -118,8 +123,20 @@ impl FnPtrArg for AnyPtr {
     fn from_repr(r: &ArgRepr) -> Self {
         match r {
             ArgRepr::Ptr(e) => e.as_bytes().to_any(),
-            ArgRepr::Bytes(..) => panic!("ub: calling through incompatible fn pointer type"),
+            ArgRepr::Bytes(..) | ArgRepr::Record(_) => {
+                panic!("ub: calling through incompatible fn pointer type")
+            }
         }
+    }
+}
+
+pub fn record_from_repr<T: Any + Clone>(r: &ArgRepr) -> T {
+    match r {
+        ArgRepr::Record(v) => v
+            .downcast_ref::<T>()
+            .expect("ub: calling through incompatible fn pointer type")
+            .clone(),
+        _ => panic!("ub: calling through incompatible fn pointer type"),
     }
 }
 

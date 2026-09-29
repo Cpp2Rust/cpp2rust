@@ -11,7 +11,7 @@ pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 pub const Overload_kIntLvalueOverload: Overload = 3;
 pub const Overload_kIntRvalueOverload: Overload = 4;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Tracked {
     pub v: Value<i32>,
     pub copies: Value<i32>,
