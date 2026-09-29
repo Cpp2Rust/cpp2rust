@@ -33,7 +33,6 @@
 
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
-#include "converter/mapper.h"
 #include "converter/printer.h"
 
 namespace fs = std::filesystem;
@@ -98,7 +97,6 @@ public:
 
   void run(const clang::ast_matchers::MatchFinder::MatchResult &R) override {
     assert(sema_);
-    Mapper::PushASTContext scoped(*R.Context);
     if (auto func = R.Nodes.getNodeAs<clang::FunctionDecl>("validate_func")) {
       const char *err = nullptr;
       if (auto body =

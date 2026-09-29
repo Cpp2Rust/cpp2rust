@@ -50,35 +50,37 @@ static bool IsBoxedType(std::string_view type) {
   return type.starts_with("Vec<") || type.starts_with("Box<");
 }
 
-static bool IsBoxedType(clang::QualType type) {
-  return IsBoxedType(Mapper::Map(type.getUnqualifiedType()));
+static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
+  return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
 }
 
-static bool NeedsMutAccess(const clang::CXXMethodDecl *method,
+static bool NeedsMutAccess(clang::ASTContext &ctx,
+                           const clang::CXXMethodDecl *method,
                            clang::QualType base_type) {
-  return !method->isConst() && IsBoxedType(base_type);
+  return !method->isConst() && IsBoxedType(ctx, base_type);
 }
 
-static bool IsPointerType(clang::QualType type) {
-  return type->isPointerType() ||
-         GetStrongestIteratorCategory(type) == IteratorCategory::Contiguous;
+static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
+  return type->isPointerType() || GetStrongestIteratorCategory(ctx, type) ==
+                                      IteratorCategory::Contiguous;
 }
 
-bool ConverterRefCount::PendingDeref::compute_inner_boxed(clang::Expr *expr) {
+bool ConverterRefCount::PendingDeref::compute_inner_boxed(
+    clang::Expr *expr) const {
   if (!expr) {
     return false;
   }
-  if (!IsBoxedType(expr->getType().getNonReferenceType())) {
+  if (!IsBoxedType(ctx, expr->getType().getNonReferenceType())) {
     return false;
   }
   if (auto *ase = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
     auto base_type = ase->getBase()->IgnoreCasts()->getType();
     if (base_type->isPointerType())
-      return IsBoxedType(base_type->getPointeeType());
-    return IsBoxedType(base_type.getNonReferenceType());
+      return IsBoxedType(ctx, base_type->getPointeeType());
+    return IsBoxedType(ctx, base_type.getNonReferenceType());
   }
   if (auto *oce = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
-    return IsBoxedType(oce->getArg(0)->getType().getNonReferenceType());
+    return IsBoxedType(ctx, oce->getArg(0)->getType().getNonReferenceType());
   }
   return false;
 }
@@ -117,7 +119,7 @@ ConverterRefCount::PushUnboxedIfSimple::PushUnboxedIfSimple(
 
   // Vectors are boxed until the last element
   if (!unboxed && (outer == "Vec<%>" || outer == "Box<%>")) {
-    if (!IsBoxedType(inner_type)) {
+    if (!IsBoxedType(c.ctx_, inner_type)) {
       unboxed = true;
     }
   }
@@ -171,7 +173,7 @@ bool ConverterRefCount::Convert(clang::QualType qual_type) {
     return false;
   }
 
-  if (!Mapper::Contains(qual_type))
+  if (!Mapper::Contains(ctx_, qual_type))
     qual_type = qual_type.getUnqualifiedType().getDesugaredType(ctx_);
 
   if (qual_type->isReferenceType() || qual_type->isIncompleteArrayType()) {
@@ -305,7 +307,7 @@ std::string ConverterRefCount::ConvertObject(clang::Expr *expr,
   object_shape_ = saved_shape;
   if (shape == ObjectShape::Element && expr->getType()->isPointerType()) {
     auto pointee = expr->getType()->getPointeeType();
-    if (IsBoxedType(pointee) || pointee->isArrayType()) {
+    if (IsBoxedType(ctx_, pointee) || pointee->isArrayType()) {
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
                          std::move(str));
@@ -321,7 +323,7 @@ ConverterRefCount::ConvertFreshObject(clang::Expr *expr,
   if (!target_ptr_type.empty()) {
     auto type = expr->getType().getNonReferenceType();
     auto pointee = type->isPointerType() ? type->getPointeeType() : type;
-    if (IsBoxedType(pointee) || pointee->isArrayType()) {
+    if (IsBoxedType(ctx_, pointee) || pointee->isArrayType()) {
       auto normalize = [](std::string s) {
         std::erase(s, ' ');
         for (size_t pos; (pos = s.find("::<")) != std::string::npos;)
@@ -391,7 +393,7 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
 std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
   std::string str;
   // decays into Ptr; remove the outer type Vec<>
-  if (IsBoxedType(type)) {
+  if (IsBoxedType(ctx_, type)) {
     str = GetInnerType(type);
   } else {
     PushConversionKind push(*this, ConversionKind::Ptr);
@@ -549,7 +551,7 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
 
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
+  Mapper::SetDerives(ctx_, ctx_.getCanonicalTagType(decl),
                      std::vector<std::string>(attrs.begin(), attrs.end()));
 
   StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
@@ -882,7 +884,7 @@ void ConverterRefCount::ConvertDeclRefValue(clang::Expr *expr,
     }
 
     if (auto pointee = ref->getPointeeType();
-        isObject() && WantsElementPtr() && IsBoxedType(pointee)) {
+        isObject() && WantsElementPtr() && IsBoxedType(ctx_, pointee)) {
       StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee),
                          std::move(str)));
       computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -1121,7 +1123,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
+  if (IsImplicitAssignmentCall(expr) &&
+      !Mapper::Contains(ctx_, expr->getCallee())) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
@@ -1133,7 +1136,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
       opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(expr->getCallee())) {
+      !Mapper::Contains(ctx_, expr->getCallee())) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -1167,14 +1170,14 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (isAddrOf() && !ty->isReferenceType() && !IsPointerType(ty)) {
+  if (isAddrOf() && !ty->isReferenceType() && !IsPointerType(ctx_, ty)) {
     PushConversionKind push(*this, ConversionKind::FullRefCount);
     StrCat(BoxValue(std::move(str)), ".as_pointer()");
     return false;
   }
 
   if (isObject() && WantsElementPtr() && ref &&
-      IsBoxedType(ref->getPointeeType())) {
+      IsBoxedType(ctx_, ref->getPointeeType())) {
     StrCat(std::format("Ptr::<{}>::decay(&({}))",
                        ToString(ref->getPointeeType()), std::move(str)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -1188,7 +1191,7 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
   if (IsPassThroughRule(expr)) {
     return false;
   }
-  if (IsPointerType(ty) || ty->isReferenceType()) {
+  if (IsPointerType(ctx_, ty) || ty->isReferenceType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
   } else {
     computed_expr_type_ = ComputedExprType::FreshValue;
@@ -1738,7 +1741,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     ConvertDeclRefValue(expr, member);
     return false;
   }
-  bool known = Mapper::Contains(expr);
+  bool known = Mapper::Contains(ctx_, expr);
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && !known) {
@@ -1756,7 +1759,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (base_type->isPointerType()) {
       base_type = base_type->getPointeeType();
     }
-    bool needs_mut = NeedsMutAccess(method, base_type);
+    bool needs_mut = NeedsMutAccess(ctx_, method, base_type);
     PushExprKind push(*this, needs_mut ? ExprKind::LValue : ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
     SetFreshType(expr->getType());
@@ -1884,7 +1887,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
 
   EmitByValueShadow(
       loop_var_name, loop_var->getType(), std::string(loop_var_name),
-      "Value<" + Mapper::Map(GetForRangeIteratorType(stmt)) + '>');
+      "Value<" + Mapper::Map(ctx_, GetForRangeIteratorType(stmt)) + '>');
 
   ConvertForRangeBody(stmt, loop_var);
 
@@ -1906,7 +1909,7 @@ bool ConverterRefCount::VisitCXXForRangeStmtVector(
   PushBrace brace(*this);
 
   // handle multi-level types such as Vec<Value<Vec<T>>>
-  if (IsBoxedType(stmt->getRangeInit()->getType()) &&
+  if (IsBoxedType(ctx_, stmt->getRangeInit()->getType()) &&
       GetInnerType(stmt->getRangeInit()->getType()).starts_with("Value<")) {
     StrCat(keyword::kLet, loop_var_name, token::kColon);
 
@@ -2110,7 +2113,7 @@ std::string ConverterRefCount::GetDefaultAsString(clang::QualType qual_type) {
     return BoxValue(std::move(arr));
   }
 
-  if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return BoxValue(std::move(init));
   }
@@ -2342,19 +2345,19 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
   if (may_cause_borrow_mut_err) {
     StrCat(std::format(
         "{{ let _lhs = {}; _lhs {} {} }}",
-        ConvertFreshRValue(lhs,
-                           GetOperandImplicitConversionTarget(expr, lhs, rhs)),
+        ConvertFreshRValue(
+            lhs, GetOperandImplicitConversionTarget(ctx_, expr, lhs, rhs)),
         opcode,
         ConvertFreshRValue(
-            rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs))));
+            rhs, GetOperandImplicitConversionTarget(ctx_, expr, rhs, lhs))));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return;
   }
 
   PushParen outer(*this);
-  Convert(lhs, GetOperandImplicitConversionTarget(expr, lhs, rhs));
+  Convert(lhs, GetOperandImplicitConversionTarget(ctx_, expr, lhs, rhs));
   StrCat(opcode);
-  Convert(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
+  Convert(rhs, GetOperandImplicitConversionTarget(ctx_, expr, rhs, lhs));
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
@@ -2390,7 +2393,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       break;
     }
 
-    if (GetStrongestIteratorCategory(expr->getArg(0)->getType()) ==
+    if (GetStrongestIteratorCategory(ctx_, expr->getArg(0)->getType()) ==
         IteratorCategory::Bidirectional) {
       Convert(expr->getArg(0));
       break;
@@ -2430,8 +2433,8 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     }
 
     bool is_inner_boxed =
-        IsBoxedType(expr->getType().getNonReferenceType()) &&
-        IsBoxedType(expr->getArg(0)->getType().getNonReferenceType());
+        IsBoxedType(ctx_, expr->getType().getNonReferenceType()) &&
+        IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
 
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);
@@ -2673,7 +2676,7 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
   }
 
   if (isObject() && WantsElementPtr() &&
-      (IsBoxedType(pointee_type) || pointee_type->isArrayType())) {
+      (IsBoxedType(ctx_, pointee_type) || pointee_type->isArrayType())) {
     StrCat(std::format("Ptr::<{}>::decay(&({}))", ToString(pointee_type),
                        std::move(str)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -2694,7 +2697,7 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
     return;
   }
 
-  if (GetStrongestIteratorCategory(op->getArg(0)->getType()) ==
+  if (GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
       IteratorCategory::Bidirectional) {
     Convert(op->getArg(0));
     return;
@@ -2711,7 +2714,7 @@ std::string ConverterRefCount::AccessLValueObject(clang::MemberExpr *member) {
   if (member->isArrow()) {
     auto *op =
         clang::dyn_cast<clang::CXXOperatorCallExpr>(object->IgnoreImplicit());
-    if (op && GetStrongestIteratorCategory(op->getArg(0)->getType()) ==
+    if (op && GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
                   IteratorCategory::Bidirectional) {
       return ConvertRValue(op->getArg(0));
     }
@@ -2781,7 +2784,7 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
   }
 
-  auto param_type = Mapper::GetParamType(GetCalleeOrExpr(expr), arg_idx);
+  auto param_type = Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), arg_idx);
 
   if (arg->getType()->isPointerType()) {
     return std::format("{}.with_mut(|__v: {}| __v{})", ConvertPointer(arg),

@@ -9,39 +9,30 @@
 
 #include <string>
 
-#include "converter/factory.h"
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::Mapper {
-class PushASTContext {
-public:
-  explicit PushASTContext(clang::ASTContext &ctx);
-  ~PushASTContext();
-  PushASTContext(const PushASTContext &) = delete;
-  PushASTContext &operator=(const PushASTContext &) = delete;
+bool Contains(clang::ASTContext &ctx, clang::QualType qual_type);
+bool Contains(clang::ASTContext &ctx, const clang::Expr *expr);
 
-private:
-  clang::ASTContext *prev_;
-};
-
-bool Contains(clang::QualType qual_type);
-bool Contains(const clang::Expr *expr);
-
-std::string Map(clang::QualType qual_type);
-std::string MapInitializer(clang::QualType qual_type);
-const TranslationRule::ExprRule *GetExprRule(const clang::Expr *expr);
-bool IsLibcPassthrough(const clang::Expr *expr);
-std::string MapFunctionName(const clang::FunctionDecl *decl);
-std::string InstantiateTemplate(const clang::Expr *expr, unsigned n);
-bool ReturnsPointer(const clang::Expr *expr);
-std::string GetParamType(const clang::Expr *expr, unsigned index);
-bool ParamIsPointer(const clang::Expr *expr, unsigned index);
-bool MapsToPointer(clang::QualType qual_type);
-bool MapsToRefcountPointer(clang::QualType qual_type);
-const std::vector<std::string> *MappedDerives(clang::QualType qual_type);
-void SetDerives(clang::QualType qual_type, std::vector<std::string> derives);
-
-void LoadTranslationRules(Model model, clang::ASTContext &ctx,
-                          const std::string &rules_dir);
-void AddRuleForUserDefinedType(clang::NamedDecl *decl);
+std::string Map(clang::ASTContext &ctx, clang::QualType qual_type);
+std::string MapInitializer(clang::ASTContext &ctx, clang::QualType qual_type);
+const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
+                                             const clang::Expr *expr);
+bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
+std::string MapFunctionName(clang::ASTContext &ctx,
+                            const clang::FunctionDecl *decl);
+std::string InstantiateTemplate(clang::ASTContext &ctx, const clang::Expr *expr,
+                                unsigned n);
+bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);
+std::string GetParamType(clang::ASTContext &ctx, const clang::Expr *expr,
+                         unsigned index);
+bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
+                    unsigned index);
+bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type);
+bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type);
+const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
+                                              clang::QualType qual_type);
+void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
+                std::vector<std::string> derives);
 } // namespace cpp2rust::Mapper

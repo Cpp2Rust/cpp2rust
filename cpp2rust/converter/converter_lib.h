@@ -35,7 +35,7 @@ enum class IteratorCategory {
 };
 
 std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::QualType type);
+GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(const clang::VarDecl *decl);
@@ -275,16 +275,17 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
-bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
+bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
+                             clang::QualType to);
 
-bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type);
+bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
+                         clang::QualType param_type);
 
-bool IsSizeType(clang::QualType type);
+bool IsSizeType(clang::ASTContext &ctx, clang::QualType type);
 
-std::optional<clang::QualType>
-GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
-                                   const clang::Expr *operand,
-                                   const clang::Expr *sibling);
+std::optional<clang::QualType> GetOperandImplicitConversionTarget(
+    clang::ASTContext &ctx, const clang::BinaryOperator *op,
+    const clang::Expr *operand, const clang::Expr *sibling);
 
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 

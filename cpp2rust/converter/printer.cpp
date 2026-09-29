@@ -133,7 +133,8 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
       bool builtin_alias = canonical->isBuiltinType() &&
                            (pointee->getAs<clang::TypedefType>() ||
                             pointee->getAs<clang::PredefinedSugarType>());
-      if (!builtin_alias && Mapper::Map(pointee) == Mapper::Map(canonical)) {
+      if (!builtin_alias &&
+          Mapper::Map(ctx, pointee) == Mapper::Map(ctx, canonical)) {
         pointee = canonical;
       }
       std::string out;
@@ -212,7 +213,7 @@ std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   if (const auto op = func_decl->getOverloadedOperator();
       op >= clang::OverloadedOperatorKind::OO_LessLess &&
       op <= clang::OverloadedOperatorKind::OO_GreaterGreaterEqual) {
-    // ensure matchTemplate does not consider these operator names when matching
+    // ensure MatchTemplate does not consider these operator names when matching
     func_decl->getQualifier().print(os, getPrintPolicy(ctx));
     os << "operator ";
     switch (op) {
