@@ -167,6 +167,11 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag);
 
+clang::QualType GetTypeForDecl(clang::ASTContext &ctx,
+                               const clang::NamedDecl *decl);
+
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl);
+
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);
 
 template <class T> llvm::SmallString<16> GetNumAsString(const T &num) {

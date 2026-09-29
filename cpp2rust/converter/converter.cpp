@@ -22,6 +22,7 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
 
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
@@ -649,7 +650,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
     }
 
     // Records that contain std::array do not derive Default
-    if (Mapper::ToString(f->getType()).contains("std::array")) {
+    if (Printer::ToString(ctx_, f->getType()).contains("std::array")) {
       return false;
     }
 
@@ -1590,7 +1591,7 @@ const clang::Expr *Converter::GetParentExpr(const clang::Expr *expr) {
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
-  std::string arg_str = Mapper::ToString(arg);
+  std::string arg_str = Printer::ToString(ctx_, arg);
   if (auto *str_lit =
           clang::dyn_cast<clang::StringLiteral>(arg->IgnoreImplicit())) {
     if (!IsAsciiStringLiteral(str_lit)) {
@@ -1637,7 +1638,7 @@ bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
     std::string str = ToString(arg);
     raw_args += "(&(" + str + ").iter().take((" + str +
                 ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
-  } else if (Mapper::ToString(arg).contains("std::endl")) {
+  } else if (Printer::ToString(ctx_, arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
     raw_args += "(b" + GetEscapedStringLiteral(arg);
@@ -1724,7 +1725,7 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
 
 void Converter::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
-      Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
+      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
 
   StrCat("printf(");
   for (unsigned i = is_fprintf; i < expr->getNumArgs(); ++i) {
@@ -2168,7 +2169,7 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  if (auto fn = Mapper::ToString(callee);
+  if (auto fn = Printer::ToString(ctx_, callee);
       fn.starts_with("int printf") || fn.starts_with("int fprintf")) {
     ConvertPrintf(expr);
   } else if (IsTransparentStdCall(expr)) {
@@ -3957,7 +3958,7 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
           clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
     return GetDefaultAsString(array_type->getElementType());
   }
-  if (Mapper::ToString(qual_type).contains("std::array")) {
+  if (Printer::ToString(ctx_, qual_type).contains("std::array")) {
     assert(GetTemplateArgs(qual_type).has_value());
     auto template_args = *GetTemplateArgs(qual_type);
     assert(template_args.size() == 2);
@@ -4080,11 +4081,11 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
       name += '_';
       switch (arg.getKind()) {
       case clang::TemplateArgument::Type:
-        name += Mapper::ToRustName(
+        name += Printer::ToRustName(
             arg.getAsType().getCanonicalType().getAsString());
         break;
       case clang::TemplateArgument::Integral:
-        name += Mapper::ToRustName(
+        name += Printer::ToRustName(
             std::string(GetNumAsString(arg.getAsIntegral())));
         break;
       default:
@@ -4128,7 +4129,8 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
   if (auto it = inner_structs_.find(ID); it != inner_structs_.end()) {
     return it->second;
   }
-  return Mapper::ToRustName(Mapper::ToString(Mapper::GetTypeForDecl(decl)));
+  return Printer::ToRustName(
+      Printer::ToString(ctx_, GetTypeForDecl(ctx_, decl)));
 }
 
 std::vector<const char *>
@@ -4201,7 +4203,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       !Mapper::Contains(
           clang::cast<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts())
               ->getCallee()) &&
-      Mapper::ToString(ctor->getConstructor()->getThisType()) ==
+      Printer::ToString(ctx_, ctor->getConstructor()->getThisType()) ==
           "std::string") {
     {
       PushParen paren(*this);

@@ -34,6 +34,7 @@
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
 
 namespace fs = std::filesystem;
 
@@ -125,7 +126,8 @@ public:
           type = lookupType(tdecl);
         }
       }
-      auto src = Mapper::ToString(type, Mapper::ScalarSugar::kPreserve);
+      auto src =
+          Printer::ToString(*R.Context, type, Printer::ScalarSugar::kPreserve);
       out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
       return;
     }
@@ -137,7 +139,7 @@ public:
 
       if (const auto *fcall = R.Nodes.getNodeAs<clang::CallExpr>("fcall")) {
         if (fcall->getDirectCallee()) {
-          add(Mapper::ToString(fcall));
+          add(Printer::ToString(*R.Context, fcall));
           return;
         }
 
@@ -145,46 +147,45 @@ public:
         clang::FunctionDecl *rule = nullptr;
         clang::FunctionDecl *decl = lookupCalledDecl(
             func->getDescribedFunctionTemplate(), lookup, &rule);
-        if (Mapper::HasFunctionParameterPack(func) &&
-            Mapper::HasFunctionParameterPack(decl)) {
+        if (HasFunctionParameterPack(func) && HasFunctionParameterPack(decl)) {
           addPackRule(func, rule, decl);
           return;
         }
-        add(Mapper::ToString(decl));
+        add(Printer::ToString(*R.Context, decl));
         return;
       }
       if (const auto *ctor =
               R.Nodes.getNodeAs<clang::CXXConstructExpr>("ctor")) {
         if (ctor->getConstructor()) {
-          add(Mapper::ToString(ctor));
+          add(Printer::ToString(*R.Context, ctor));
           return;
         }
       }
       if (const auto *muse = R.Nodes.getNodeAs<clang::MemberExpr>("muse")) {
         if (llvm::isa<clang::FieldDecl>(muse->getMemberDecl())) {
-          add(Mapper::ToString(muse));
+          add(Printer::ToString(*R.Context, muse));
           return;
         }
       }
       if (const auto *um =
               R.Nodes.getNodeAs<clang::UnresolvedMemberExpr>("umuse")) {
-        add(Mapper::ToString(um));
+        add(Printer::ToString(*R.Context, um));
         return;
       }
       if (R.Nodes.getNodeAs<clang::DeclRefExpr>("declref")) {
         if (const auto *enum_val =
                 R.Nodes.getNodeAs<clang::EnumConstantDecl>("enum_val")) {
-          add(Mapper::ToString(enum_val));
+          add(Printer::ToString(*R.Context, enum_val));
           return;
         } else if (const auto *decl =
                        R.Nodes.getNodeAs<clang::VarDecl>("decl")) {
-          add(Mapper::ToString(decl));
+          add(Printer::ToString(*R.Context, decl));
           return;
         }
       }
       if (const auto *uop =
               R.Nodes.getNodeAs<clang::UnaryOperator>("udeclref")) {
-        add(Mapper::ToString(uop));
+        add(Printer::ToString(*R.Context, uop));
         return;
       }
       if (const auto *dsme =
@@ -193,12 +194,12 @@ public:
           clang::MemberExpr *expr = lookupArrowAccess(
               func->getDescribedFunctionTemplate(), dsme->getMemberNameInfo(),
               dsme->getQualifierLoc());
-          add(Mapper::ToString(expr));
+          add(Printer::ToString(*R.Context, expr));
           return;
         }
         clang::NamedDecl *decl = lookupMemberAccess(
             func->getDescribedFunctionTemplate(), dsme->getMember());
-        add(Mapper::ToString(decl));
+        add(Printer::ToString(*R.Context, decl));
         return;
       }
       if (const auto *uctor =
@@ -206,13 +207,13 @@ public:
         LookupInfo lookup(uctor);
         clang::NamedDecl *decl = lookupCalledDecl(
             func->getDescribedFunctionTemplate(), lookup, nullptr);
-        add(Mapper::ToString(decl));
+        add(Printer::ToString(*R.Context, decl));
         return;
       }
       if (const auto *lit =
               R.Nodes.getNodeAs<clang::IntegerLiteral>("macro_int")) {
         if (lit->getBeginLoc().isMacroID()) {
-          add(Mapper::ToString(lit));
+          add(Printer::ToString(*R.Context, lit));
         }
         return;
       }
@@ -226,7 +227,7 @@ private:
 
   void addPackRule(const clang::FunctionDecl *func, clang::FunctionDecl *rule,
                    clang::FunctionDecl *callee) {
-    auto key = Mapper::ToString(callee);
+    auto key = Printer::ToString(sema_->Context, callee);
     auto init_type = getInitType(func, rule);
     if (init_type.isNull()) {
       out_.try_emplace(func->getQualifiedNameAsString(), std::move(key));
@@ -276,9 +277,10 @@ private:
         }
       }
     }
-    llvm::errs() << "ERROR: Init type " << Mapper::ToString(type)
+    llvm::errs() << "ERROR: Init type "
+                 << Printer::ToString(sema_->Context, type)
                  << " is not a template argument of "
-                 << Mapper::ToString(callee) << '\n';
+                 << Printer::ToString(sema_->Context, callee) << '\n';
     std::exit(EXIT_FAILURE);
   }
 

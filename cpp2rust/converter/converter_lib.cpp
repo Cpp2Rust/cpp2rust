@@ -26,6 +26,7 @@
 
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
 static const char rust_keywords[][12] = {
@@ -699,6 +700,7 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 }
 
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
+  auto &ctx = decl->getASTContext();
   std::string id;
   if (const auto *var =
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
@@ -706,18 +708,18 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
-    id += Mapper::ToString(Mapper::GetTypeForDecl(self));
+    id += Printer::ToString(ctx, GetTypeForDecl(ctx, self));
   }
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());
       spec && decl->getLexicalDeclContext() != decl->getDeclContext()) {
-    id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
+    id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
   }
   for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
     if (const auto *spec =
             clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(dc)) {
-      id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
+      id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
     }
     if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
         fn && fn->getTemplateSpecializationArgs()) {
@@ -735,6 +737,35 @@ std::string GetID(const clang::Decl *decl) {
 
 std::string GetMethodID(const clang::CXXMethodDecl *decl) {
   return decl->getQualifiedNameAsString() + GetID(decl);
+}
+
+clang::QualType GetTypeForDecl(clang::ASTContext &ctx,
+                               const clang::NamedDecl *decl) {
+  if (const auto *spec =
+          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    llvm::ArrayRef<clang::TemplateArgument> args =
+        spec->getTemplateArgs().asArray();
+    llvm::SmallVector<clang::TemplateArgument, 4> canon(args.begin(),
+                                                        args.end());
+    ctx.canonicalizeTemplateArguments(canon);
+
+    return ctx.getTemplateSpecializationType(
+        clang::ElaboratedTypeKeyword::None,
+        clang::TemplateName(spec->getSpecializedTemplate()), args, canon);
+  }
+
+  const auto *rdecl = llvm::dyn_cast<clang::TagDecl>(decl);
+  assert(rdecl && "Unsupported decl type");
+
+  return ctx.getTagType(clang::ElaboratedTypeKeyword::None,
+                        rdecl->getQualifier(), rdecl, /*OwnsTag*/ false);
+}
+
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl) {
+  if (auto *primary = decl->getPrimaryTemplate()) {
+    decl = primary->getTemplatedDecl();
+  }
+  return decl->getNumParams() && decl->parameters().back()->isParameterPack();
 }
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {

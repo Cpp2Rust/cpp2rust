@@ -15,6 +15,7 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
 
 namespace cpp2rust {
 std::map<std::string, ConverterRefCount::MethodsOnPtr>
@@ -1063,7 +1064,7 @@ static std::vector<const char *> printf2fmt(std::string &format) {
 
 void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
-      Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
+      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
   std::string format;
   if (auto *str = clang::dyn_cast<clang::StringLiteral>(
           expr->getArg(is_fprintf)->IgnoreImplicit())) {
@@ -1076,7 +1077,7 @@ void ConverterRefCount::ConvertPrintf(clang::CallExpr *expr) {
   }
   bool ends_newline = format.ends_with("\\n\"");
 
-  auto fd = is_fprintf ? Mapper::ToString(expr->getArg(0)) : "stdout";
+  auto fd = is_fprintf ? Printer::ToString(ctx_, expr->getArg(0)) : "stdout";
   if (fd == "stdout" || fd == "__stdoutp") {
     StrCat(ends_newline ? "println!(" : "print!(");
   } else if (fd == "stderr" || fd == "__stderrp") {
