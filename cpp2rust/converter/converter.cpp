@@ -602,6 +602,15 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   }
   EmitScopedDestructor(decl);
 
+  if (auto *decomp = clang::dyn_cast<clang::DecompositionDecl>(decl)) {
+    for (auto *binding : decomp->bindings()) {
+      if (auto *holding = binding->getHoldingVar()) {
+        StrCat(token::kSemiColon);
+        VisitVarDecl(holding);
+      }
+    }
+  }
+
   return false;
 }
 
