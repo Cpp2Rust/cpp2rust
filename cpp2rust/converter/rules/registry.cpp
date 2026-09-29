@@ -6,67 +6,28 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
-#include <unordered_map>
+#include <memory>
 #include <utility>
 
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
+#include "converter/rules/string_matcher.h"
 
 namespace cpp2rust::RuleRegistry {
 
 namespace {
 
-using ExprRuleMap =
-    std::unordered_multimap<std::string, TranslationRule::ExprRule>;
-using TypeRuleMap =
-    std::unordered_multimap<std::string, TranslationRule::TypeRule>;
-
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
+
+std::unique_ptr<Matching::Matcher> matcher_;
 
 ExprRuleMap exprs_; // key -> ExprRule
 TypeRuleMap types_; // key -> TypeRule
 
-std::string ExprKey(const std::string &str) {
-  // Extract the function name from something like
-  // const T1 & std::foo<T1, T2>::fn_name(args)
-  auto n = str.find_first_of('(');
-  if (n == std::string::npos) {
-    n = str.size();
-  }
-
-  // Walk backwards from '(' tracking <> depth:
-  // - skip characters inside template arguments (depth > 0)
-  // - stop at the first space outside all angle brackets
-  std::string result;
-  int depth = 0;
-  for (int i = (int)n - 1; i >= 0; --i) {
-    char c = str[i];
-    if (c == '>')
-      ++depth;
-    else if (c == '<')
-      --depth;
-    else if (c == ' ' && depth == 0)
-      break;
-    else if (depth == 0)
-      result += c;
-  }
-  std::reverse(result.begin(), result.end());
-  return result;
-}
-
-std::string TypeKey(const std::string &str) {
-  auto n = str.find_first_of("<[");
-  if (n == std::string::npos || str[n] == '<') {
-    return str.substr(0, n);
-  }
-  // something like int[][] or T1[] -> []
-  return str.substr(n + 1);
-}
-
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
-  auto key = TypeKey(src);
   rule.src = std::move(src);
+  auto key = matcher_->Key(rule);
   types_.emplace(std::move(key), std::move(rule));
 }
 
@@ -83,10 +44,10 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       continue;
     }
     for (auto &[_, rule] : expr_rules) {
-      exprs_.emplace(ExprKey(rule.src), std::move(rule));
+      exprs_.emplace(matcher_->Key(rule), std::move(rule));
     }
     for (auto &[_, rule] : type_rules) {
-      auto key = TypeKey(rule.src);
+      auto key = matcher_->Key(rule);
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
         if (it->second.src == rule.src) {
@@ -102,78 +63,34 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   }
 }
 
-template <typename T>
-Match<T> search(std::unordered_multimap<std::string, T> &map,
-                const std::string &txt, const std::string &key) {
-  auto [it, end] = map.equal_range(key);
-  T *rule = nullptr;
-  Matching::Bindings subs;
-
-  for (; it != end; ++it) {
-    auto &this_rule = it->second;
-    auto this_subs = Matching::MatchTemplate(this_rule.src, txt);
-    if (!this_subs) {
-      continue;
-    }
-    // tie breaker: prefer more specific rules (usually the longer ones)
-    if (!rule || this_rule.src.size() > rule->src.size()) {
-      rule = &this_rule;
-      subs = *std::move(this_subs);
-    }
-  }
-  return {rule, std::move(subs)};
-}
-
 } // namespace
 
-Match<TranslationRule::ExprRule> SearchExpr(const std::string &str) {
-  return search(exprs_, str, ExprKey(str));
+std::ranges::subrange<ExprRuleMap::iterator>
+ExprCandidates(const std::string &key) {
+  auto [begin, end] = exprs_.equal_range(key);
+  return {begin, end};
 }
 
-Match<TranslationRule::TypeRule> SearchType(const std::string &str) {
-  return search(types_, str, TypeKey(str));
+std::ranges::subrange<TypeRuleMap::iterator>
+TypeCandidates(const std::string &key) {
+  auto [begin, end] = types_.equal_range(key);
+  return {begin, end};
 }
 
-TranslationRule::ExprRule *Search(clang::ASTContext &ctx,
-                                  const clang::Expr *expr) {
+Matching::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
+                                                  const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
-    return nullptr;
-  }
-  auto qualified_name = Printer::ToString(ctx, expr);
-  auto [rule, subs] = SearchExpr(qualified_name);
-  log() << "search expr " << qualified_name << ", result:\n";
-  if (rule) {
-    rule->dump();
-  } else {
-    log() << "None\n";
-  }
-  return rule;
-}
-
-Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
-                                        clang::QualType qual_type) {
-  auto sugared =
-      Printer::ToString(ctx, qual_type, Printer::ScalarSugar::kPreserve);
-  if (auto res = SearchType(sugared); res.first) {
-    log() << "search type " << sugared
-          << ", result: " << res.first->type_info.type << '\n';
-    return res;
-  }
-  auto type = Printer::ToString(ctx, qual_type);
-  if (type == sugared) {
-    log() << "search type " << type << ", result: None\n";
     return {};
   }
-  auto res = SearchType(type);
-  log() << "search type " << type
-        << ", result: " << (res.first ? res.first->type_info.type : "None")
-        << '\n';
-  return res;
+  return matcher_->Find(ctx, expr);
 }
 
-bool HasExprKey(const std::string &str) {
-  return exprs_.contains(ExprKey(str));
+Matching::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
+                                                  clang::QualType qual_type) {
+  return matcher_->Find(ctx, qual_type);
 }
+
+Matching::Matcher &GetMatcher() { return *matcher_; }
 
 Model CurrentModel() { return model_; }
 
@@ -229,6 +146,7 @@ void Load(Model model, const std::string &rules_dir) {
   }
   translation_rules_loaded_ = true;
 
+  matcher_ = std::make_unique<Matching::StringMatcher>();
   addRulesFromDirectory(rules_dir, model);
 
 #if 0

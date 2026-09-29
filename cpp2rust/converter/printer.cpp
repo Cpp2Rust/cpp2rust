@@ -213,7 +213,7 @@ std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
   if (const auto op = func_decl->getOverloadedOperator();
       op >= clang::OverloadedOperatorKind::OO_LessLess &&
       op <= clang::OverloadedOperatorKind::OO_GreaterGreaterEqual) {
-    // ensure MatchTemplate does not consider these operator names when matching
+    // ensure matchTemplate does not consider these operator names when matching
     func_decl->getQualifier().print(os, getPrintPolicy(ctx));
     os << "operator ";
     switch (op) {

@@ -1,16 +1,21 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include "converter/rules/matching.h"
+#include "converter/rules/string_matcher.h"
 
 #include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <string_view>
 
-#include "converter/translation_rule.h"
+#include "converter/converter_lib.h"
+#include "converter/mapper.h"
+#include "converter/printer.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust::Matching {
+
+namespace {
 
 // Attempts to unify an instantiated C++ type or function signature with a
 // corresponding template pattern. If the two match structurally, it returns
@@ -21,7 +26,7 @@ namespace cpp2rust::Matching {
 //   template_str   = "std::vector<T1>::vector()"
 //   instantiated   = "std::vector<int>::vector()"
 //   result         = { "int" }
-std::optional<Bindings> MatchTemplate(const std::string &template_str,
+std::optional<Bindings> matchTemplate(const std::string &template_str,
                                       const std::string &instantiated) {
   auto matchLiteralAt = [&](const std::string &input_str, size_t pos,
                             std::string_view literal, size_t &end_pos) -> bool {
@@ -256,6 +261,140 @@ std::optional<Bindings> MatchTemplate(const std::string &template_str,
   }
 
   return captured;
+}
+
+std::string exprKey(const std::string &str) {
+  // Extract the function name from something like
+  // const T1 & std::foo<T1, T2>::fn_name(args)
+  auto n = str.find_first_of('(');
+  if (n == std::string::npos) {
+    n = str.size();
+  }
+
+  // Walk backwards from '(' tracking <> depth:
+  // - skip characters inside template arguments (depth > 0)
+  // - stop at the first space outside all angle brackets
+  std::string result;
+  int depth = 0;
+  for (int i = (int)n - 1; i >= 0; --i) {
+    char c = str[i];
+    if (c == '>')
+      ++depth;
+    else if (c == '<')
+      --depth;
+    else if (c == ' ' && depth == 0)
+      break;
+    else if (depth == 0)
+      result += c;
+  }
+  std::reverse(result.begin(), result.end());
+  return result;
+}
+
+std::string typeKey(const std::string &str) {
+  auto n = str.find_first_of("<[");
+  if (n == std::string::npos || str[n] == '<') {
+    return str.substr(0, n);
+  }
+  // something like int[][] or T1[] -> []
+  return str.substr(n + 1);
+}
+
+template <typename Rule, typename Candidates>
+Match<Rule> search(Candidates candidates, const std::string &txt) {
+  Rule *rule = nullptr;
+  Bindings subs;
+
+  for (auto &[_, this_rule] : candidates) {
+    auto this_subs = matchTemplate(this_rule.src, txt);
+    if (!this_subs) {
+      continue;
+    }
+    // tie breaker: prefer more specific rules (usually the longer ones)
+    if (!rule || this_rule.src.size() > rule->src.size()) {
+      rule = &this_rule;
+      subs = *std::move(this_subs);
+    }
+  }
+  return {rule, std::move(subs)};
+}
+
+Match<TranslationRule::ExprRule> searchExpr(const std::string &txt) {
+  return search<TranslationRule::ExprRule>(
+      RuleRegistry::ExprCandidates(exprKey(txt)), txt);
+}
+
+Match<TranslationRule::TypeRule> searchType(const std::string &txt) {
+  return search<TranslationRule::TypeRule>(
+      RuleRegistry::TypeCandidates(typeKey(txt)), txt);
+}
+
+std::string mapTypeString(const std::string &cpp_type) {
+  auto [rule, subs] = searchType(cpp_type);
+  if (!rule) {
+    llvm::errs() << "cpp_type: " << cpp_type << '\n';
+    assert(0 && "Type is not present in the registry");
+  }
+  for (auto &ty : subs) {
+    if (ty) {
+      ty = mapTypeString(*ty);
+    }
+  }
+  return Mapper::InstantiateTgt(subs, rule->type_info.type);
+}
+
+} // namespace
+
+std::string StringMatcher::Key(const TranslationRule::ExprRule &rule) const {
+  return exprKey(rule.src);
+}
+
+std::string StringMatcher::Key(const TranslationRule::TypeRule &rule) const {
+  return typeKey(rule.src);
+}
+
+Match<TranslationRule::ExprRule> StringMatcher::Find(clang::ASTContext &ctx,
+                                                     const clang::Expr *expr) {
+  auto qualified_name = Printer::ToString(ctx, expr);
+  auto res = searchExpr(qualified_name);
+  log() << "search expr " << qualified_name << ", result:\n";
+  if (res.first) {
+    res.first->dump();
+  } else {
+    log() << "None\n";
+  }
+  return res;
+}
+
+Match<TranslationRule::TypeRule> StringMatcher::Find(clang::ASTContext &ctx,
+                                                     clang::QualType type) {
+  auto sugared = Printer::ToString(ctx, type, Printer::ScalarSugar::kPreserve);
+  if (auto res = searchType(sugared); res.first) {
+    log() << "search type " << sugared
+          << ", result: " << res.first->type_info.type << '\n';
+    return res;
+  }
+  auto desugared = Printer::ToString(ctx, type);
+  if (desugared == sugared) {
+    log() << "search type " << desugared << ", result: None\n";
+    return {};
+  }
+  auto res = searchType(desugared);
+  log() << "search type " << desugared
+        << ", result: " << (res.first ? res.first->type_info.type : "None")
+        << '\n';
+  return res;
+}
+
+bool StringMatcher::HasRuleNamed(clang::ASTContext &ctx,
+                                 const clang::FunctionDecl *decl) {
+  return !RuleRegistry::ExprCandidates(exprKey(Printer::ToString(ctx, decl)))
+              .empty();
+}
+
+std::string StringMatcher::MapBinding(clang::ASTContext &ctx,
+                                      const Bindings &bindings, unsigned n) {
+  return mapTypeString(bindings.at(n).value());
 }
 
 } // namespace cpp2rust::Matching

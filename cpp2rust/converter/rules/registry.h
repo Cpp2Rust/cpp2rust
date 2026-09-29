@@ -8,23 +8,30 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/Type.h>
 
+#include <ranges>
 #include <string>
-#include <utility>
+#include <unordered_map>
 
 #include "converter/factory.h"
 #include "converter/rules/matching.h"
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::RuleRegistry {
-template <typename Rule> using Match = std::pair<Rule *, Matching::Bindings>;
+using ExprRuleMap =
+    std::unordered_multimap<std::string, TranslationRule::ExprRule>;
+using TypeRuleMap =
+    std::unordered_multimap<std::string, TranslationRule::TypeRule>;
 
-Match<TranslationRule::ExprRule> SearchExpr(const std::string &str);
-Match<TranslationRule::TypeRule> SearchType(const std::string &str);
-TranslationRule::ExprRule *Search(clang::ASTContext &ctx,
-                                  const clang::Expr *expr);
-Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
-                                        clang::QualType qual_type);
-bool HasExprKey(const std::string &str);
+std::ranges::subrange<ExprRuleMap::iterator>
+ExprCandidates(const std::string &key);
+std::ranges::subrange<TypeRuleMap::iterator>
+TypeCandidates(const std::string &key);
+
+Matching::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
+                                                  const clang::Expr *expr);
+Matching::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
+                                                  clang::QualType qual_type);
+Matching::Matcher &GetMatcher();
 
 Model CurrentModel();
 

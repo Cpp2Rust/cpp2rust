@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "converter/rules/matching.h"
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::Mapper {
@@ -35,4 +36,7 @@ const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
                                               clang::QualType qual_type);
 void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
                 std::vector<std::string> derives);
+
+std::string InstantiateTgt(const Matching::Bindings &types,
+                           const std::string &tgt_template);
 } // namespace cpp2rust::Mapper

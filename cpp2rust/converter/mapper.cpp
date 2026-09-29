@@ -14,13 +14,25 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
-#include "converter/printer.h"
 #include "converter/rules/registry.h"
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::Mapper {
 
 namespace {
+
+Matching::Bindings mapBindings(clang::ASTContext &ctx,
+                               const Matching::Bindings &bindings) {
+  Matching::Bindings mapped(bindings.size());
+  for (unsigned i = 0; i < bindings.size(); ++i) {
+    if (bindings[i]) {
+      mapped[i] = RuleRegistry::GetMatcher().MapBinding(ctx, bindings, i);
+    }
+  }
+  return mapped;
+}
+
+} // namespace
 
 // Substitutes concrete types into a target template string using the provided
 // type mapping. Each template parameter in `tgt_template` is replaced with its
@@ -30,7 +42,7 @@ namespace {
 //   types        = { {"i32"} }
 //   tgt_template = "Vec<T1>"
 //   result       = "Vec<i32>"
-std::string instantiateTgt(const Matching::Bindings &types,
+std::string InstantiateTgt(const Matching::Bindings &types,
                            const std::string &tgt_template) {
   assert(types.size() <= TranslationRule::kMaxGenerics &&
          "template placeholder exceeds kMaxGenerics");
@@ -51,33 +63,17 @@ std::string instantiateTgt(const Matching::Bindings &types,
   return instantiated_template;
 }
 
-std::string mapTypeStringRecursive(const std::string &cpp_type) {
-  auto [rule, subs] = RuleRegistry::SearchType(cpp_type);
-  if (!rule) {
-    llvm::errs() << "cpp_type: " << cpp_type << '\n';
-    assert(0 && "Type is not present in the registry");
-  }
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
-  }
-  return instantiateTgt(subs, rule->type_info.type);
-}
-
-} // namespace
-
 bool Contains(clang::ASTContext &ctx, clang::QualType qual_type) {
   return RuleRegistry::Search(ctx, qual_type).first != nullptr;
 }
 
 bool Contains(clang::ASTContext &ctx, const clang::Expr *expr) {
-  return RuleRegistry::Search(ctx, expr) != nullptr;
+  return RuleRegistry::Search(ctx, expr).first != nullptr;
 }
 
 const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
                                              const clang::Expr *expr) {
-  return RuleRegistry::Search(ctx, expr);
+  return RuleRegistry::Search(ctx, expr).first;
 }
 
 bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
@@ -97,7 +93,7 @@ std::string MapFunctionName(clang::ASTContext &ctx,
                             const clang::FunctionDecl *decl) {
   assert(decl);
   if (!IsUserDefinedDecl(decl) &&
-      RuleRegistry::HasExprKey(Printer::ToString(ctx, decl))) {
+      RuleRegistry::GetMatcher().HasRuleNamed(ctx, decl)) {
     return std::format("libcc2rs::{}_{}", decl->getNameAsString(),
                        RuleRegistry::CurrentModel() == Model::kRefCount
                            ? "refcount"
@@ -108,28 +104,22 @@ std::string MapFunctionName(clang::ASTContext &ctx,
 
 std::string InstantiateTemplate(clang::ASTContext &ctx, const clang::Expr *expr,
                                 unsigned n) {
-  auto expr_str = Printer::ToString(ctx, expr);
-  auto [rule, subs] = RuleRegistry::SearchExpr(expr_str);
+  auto [rule, subs] = RuleRegistry::Search(ctx, expr);
   auto text = std::format("T{}", n);
   if (!rule) {
     return text;
   }
   auto &ty = subs.at(n - 1);
   if (ty) {
-    ty = mapTypeStringRecursive(*ty);
+    ty = RuleRegistry::GetMatcher().MapBinding(ctx, subs, n - 1);
   }
-  return instantiateTgt(subs, text);
+  return InstantiateTgt(subs, text);
 }
 
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule) {
-    for (auto &ty : subs) {
-      if (ty) {
-        ty = mapTypeStringRecursive(*ty);
-      }
-    }
-    return instantiateTgt(subs, rule->type_info.type);
+    return InstantiateTgt(mapBindings(ctx, subs), rule->type_info.type);
   }
   return {};
 }
@@ -137,12 +127,7 @@ std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
 std::string MapInitializer(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule && !rule->initializer.empty()) {
-    for (auto &ty : subs) {
-      if (ty) {
-        ty = mapTypeStringRecursive(*ty);
-      }
-    }
-    return instantiateTgt(subs, rule->initializer);
+    return InstantiateTgt(mapBindings(ctx, subs), rule->initializer);
   }
   return {};
 }
@@ -169,28 +154,23 @@ void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
     rule->type_info.derives = std::move(derives);
   }
 }
+
 bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr) {
-  auto rule = RuleRegistry::Search(ctx, expr);
+  auto rule = RuleRegistry::Search(ctx, expr).first;
   return rule && rule->return_type.is_pointer();
 }
 
 const TranslationRule::TypeInfo &
 GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
-  auto rule = RuleRegistry::Search(ctx, expr);
+  auto rule = RuleRegistry::Search(ctx, expr).first;
   assert(rule && "expression must have a translation rule");
   return rule->params.at(index);
 }
 
 std::string GetParamType(clang::ASTContext &ctx, const clang::Expr *expr,
                          unsigned index) {
-  auto expr_str = Printer::ToString(ctx, expr);
-  auto [rule, subs] = RuleRegistry::SearchExpr(expr_str);
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeStringRecursive(*ty);
-    }
-  }
-  return instantiateTgt(subs, rule->params.at(index).type);
+  auto [rule, subs] = RuleRegistry::Search(ctx, expr);
+  return InstantiateTgt(mapBindings(ctx, subs), rule->params.at(index).type);
 }
 
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
