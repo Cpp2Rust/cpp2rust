@@ -12,6 +12,7 @@
 #include <cctype>
 #include <format>
 #include <regex>
+#include <string_view>
 #include <utility>
 
 #include "converter/converter_lib.h"
@@ -108,6 +109,12 @@ std::string ToRustName(std::string name) {
     if (!std::isalnum(c) && c != '_') {
       c = '_';
     }
+  }
+
+  std::string_view stem(name);
+  stem = stem.substr(0, stem.find_last_not_of('_') + 1);
+  if (stem == "Ptr" || stem == "Value") {
+    name += '_';
   }
   return name;
 }
