@@ -3012,6 +3012,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto *binding = clang::dyn_cast<clang::BindingDecl>(expr->getDecl())) {
+    Convert(binding->getBinding());
+    return false;
+  }
   ConvertDeclRefValue(expr, expr->getDecl());
   return false;
 }
