@@ -583,7 +583,7 @@ protected:
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
 
   virtual std::string
-  GetOverloadedFunctionName(const clang::FunctionDecl *decl);
+  GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);
 
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 

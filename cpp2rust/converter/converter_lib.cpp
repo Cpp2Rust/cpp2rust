@@ -352,6 +352,24 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        }) > 1;
 }
 
+unsigned GetMethodIndex(const clang::CXXMethodDecl *decl) {
+  const clang::Decl *key = decl->getCanonicalDecl();
+  if (auto *tmpl = decl->getPrimaryTemplate()) {
+    key = tmpl->getCanonicalDecl();
+  }
+  unsigned index = 0;
+  for (auto *d : decl->getParent()->decls()) {
+    if (clang::isa<clang::CXXMethodDecl, clang::FunctionTemplateDecl>(d)) {
+      ++index;
+      if (d->getCanonicalDecl() == key) {
+        return index;
+      }
+    }
+  }
+  assert(false && "method not found in its record");
+  return 0;
+}
+
 const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method) {
   if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(method)) {
     if (ctor->isCopyConstructor()) {

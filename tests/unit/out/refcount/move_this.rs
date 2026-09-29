@@ -64,11 +64,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 1 })));
-    ({ ChainImpl::add_i32_lref(&({ ChainImpl::add_i32_lref(&a.as_pointer(), 1) }), 1) });
+    ({ ChainImpl::add_4(&({ ChainImpl::add_4(&a.as_pointer(), 1) }), 1) });
     assert!(((*(*a.borrow()).v.borrow()) == 3));
     let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5 })));
     let b: Value<Chain> = Rc::new(RefCell::new(Chain::move_from({
-        ({ ChainImpl::add_i32_rref(&({ ChainImpl::add_i32_rref(&b0.as_pointer(), 1) }), 1) })
+        ({ ChainImpl::add_5(&({ ChainImpl::add_5(&b0.as_pointer(), 1) }), 1) })
     })));
     assert!(((*(*b.borrow()).v.borrow()) == 8) && ((*(*b0.borrow()).v.borrow()) == 0));
     let c: Value<Chain> = Rc::new(RefCell::new(
@@ -91,19 +91,19 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait ChainImpl {
-    fn add_i32_lref(&self, n: i32) -> Ptr<Chain>;
-    fn add_i32_rref(&self, n: i32) -> Ptr<Chain>;
+    fn add_4(&self, n: i32) -> Ptr<Chain>;
+    fn add_5(&self, n: i32) -> Ptr<Chain>;
     fn take(&self) -> Chain;
     fn copy(&self) -> Chain;
     fn self_(&self) -> Ptr<Chain>;
 }
 impl ChainImpl for Ptr<Chain> {
-    fn add_i32_lref(&self, n: i32) -> Ptr<Chain> {
+    fn add_4(&self, n: i32) -> Ptr<Chain> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         (*(*(*self).upgrade().deref()).v.borrow_mut()) += (*n.borrow());
         return (*self).clone();
     }
-    fn add_i32_rref(&self, n: i32) -> Ptr<Chain> {
+    fn add_5(&self, n: i32) -> Ptr<Chain> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         (*(*(*self).upgrade().deref()).v.borrow_mut()) += (*n.borrow());
         return (*self).clone();

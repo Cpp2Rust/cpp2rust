@@ -52,9 +52,9 @@ fn main_0() -> i32 {
     let t: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(4)),
     }));
-    assert!((({ SImpl::operator_call_const(&s.as_pointer(),) }) == 3));
-    assert!((({ SImpl::operator_call_i32_const(&s.as_pointer(), 1,) }) == 4));
-    assert!((({ SImpl::operator_call_i32_i32_const(&s.as_pointer(), 1, 2,) }) == 6));
+    assert!((({ SImpl::operator_call_1(&s.as_pointer(),) }) == 3));
+    assert!((({ SImpl::operator_call_2(&s.as_pointer(), 1,) }) == 4));
+    assert!((({ SImpl::operator_call_3(&s.as_pointer(), 1, 2,) }) == 6));
     assert!(
         ((*({ SImpl::operator_comma(&s.as_pointer(), t.as_pointer(),) })
             .v
@@ -79,7 +79,7 @@ fn main_0() -> i32 {
     assert!((({ Static::operator_call(6, 7,) }) == 42));
     assert!(
         (({
-            SImpl::operator_call_const(
+            SImpl::operator_call_1(
                 &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(5)),
                 }))
@@ -89,7 +89,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (({
-            SImpl::operator_call_i32_i32_const(
+            SImpl::operator_call_3(
                 &Rc::new(RefCell::new(S {
                     v: Rc::new(RefCell::new(5)),
                 }))
@@ -102,22 +102,22 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn operator_call_const(&self) -> i32;
-    fn operator_call_i32_const(&self, a: i32) -> i32;
-    fn operator_call_i32_i32_const(&self, a: i32, b: i32) -> i32;
+    fn operator_call_1(&self) -> i32;
+    fn operator_call_2(&self, a: i32) -> i32;
+    fn operator_call_3(&self, a: i32, b: i32) -> i32;
     fn operator_comma(&self, o: Ptr<S>) -> S;
     fn to_i32(&self) -> i32;
     fn to_bool(&self) -> bool;
 }
 impl SImpl for Ptr<S> {
-    fn operator_call_const(&self) -> i32 {
+    fn operator_call_1(&self) -> i32 {
         return (*(*(*self).upgrade().deref()).v.borrow());
     }
-    fn operator_call_i32_const(&self, a: i32) -> i32 {
+    fn operator_call_2(&self, a: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         return ((*(*(*self).upgrade().deref()).v.borrow()) + (*a.borrow()));
     }
-    fn operator_call_i32_i32_const(&self, a: i32, b: i32) -> i32 {
+    fn operator_call_3(&self, a: i32, b: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         return (((*(*(*self).upgrade().deref()).v.borrow()) + (*a.borrow())) + (*b.borrow()));

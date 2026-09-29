@@ -13,12 +13,12 @@ pub struct S {
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            if SImpl::operator_lt_pconstS_const(
+            if SImpl::operator_lt_3(
                 &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Less
-            } else if SImpl::operator_lt_pconstS_const(
+            } else if SImpl::operator_lt_3(
                 &Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
             ) {
@@ -83,22 +83,22 @@ fn main_0() -> i32 {
     }));
     assert!(({ SImpl::operator_eq(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ne(&a.as_pointer(), b.as_pointer(),) }));
-    assert!(({ SImpl::operator_lt_pconstS_const(&a.as_pointer(), b.as_pointer(),) }));
+    assert!(({ SImpl::operator_lt_3(&a.as_pointer(), b.as_pointer(),) }));
     assert!(({ SImpl::operator_gt(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_le(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ge(&a.as_pointer(), c.as_pointer(),) }));
-    assert!(!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) }));
-    assert!(({ SImpl::operator_lt_i32_const(&a.as_pointer(), 5,) }));
+    assert!(!({ SImpl::operator_lt_3(&b.as_pointer(), a.as_pointer(),) }));
+    assert!(({ SImpl::operator_lt_7(&a.as_pointer(), 5,) }));
     return 0;
 }
 pub trait SImpl {
     fn operator_eq(&self, o: Ptr<S>) -> bool;
     fn operator_ne(&self, o: Ptr<S>) -> bool;
-    fn operator_lt_pconstS_const(&self, o: Ptr<S>) -> bool;
+    fn operator_lt_3(&self, o: Ptr<S>) -> bool;
     fn operator_gt(&self, o: Ptr<S>) -> bool;
     fn operator_le(&self, o: Ptr<S>) -> bool;
     fn operator_ge(&self, o: Ptr<S>) -> bool;
-    fn operator_lt_i32_const(&self, o: i32) -> bool;
+    fn operator_lt_7(&self, o: i32) -> bool;
 }
 impl SImpl for Ptr<S> {
     fn operator_eq(&self, o: Ptr<S>) -> bool {
@@ -113,7 +113,7 @@ impl SImpl for Ptr<S> {
             _lhs != (*(*o.upgrade().deref()).v.borrow())
         };
     }
-    fn operator_lt_pconstS_const(&self, o: Ptr<S>) -> bool {
+    fn operator_lt_3(&self, o: Ptr<S>) -> bool {
         return {
             let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
             _lhs < (*(*o.upgrade().deref()).v.borrow())
@@ -137,7 +137,7 @@ impl SImpl for Ptr<S> {
             _lhs >= (*(*o.upgrade().deref()).v.borrow())
         };
     }
-    fn operator_lt_i32_const(&self, o: i32) -> bool {
+    fn operator_lt_7(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));
         return ((*(*(*self).upgrade().deref()).v.borrow()) < (*o.borrow()));
     }

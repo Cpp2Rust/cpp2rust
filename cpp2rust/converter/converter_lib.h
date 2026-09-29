@@ -81,6 +81,8 @@ void ForEachTemplateInstantiatedMethod(
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
 
+unsigned GetMethodIndex(const clang::CXXMethodDecl *decl);
+
 const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method);
 
 bool CanUseCopyOrMoveName(const clang::CXXMethodDecl *decl,

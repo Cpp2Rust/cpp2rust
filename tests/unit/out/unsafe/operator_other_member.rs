@@ -20,13 +20,13 @@ pub struct S {
     pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_call_const(&self) -> i32 {
+    pub unsafe fn operator_call_1(&self) -> i32 {
         return self.v;
     }
-    pub unsafe fn operator_call_i32_const(&self, mut a: i32) -> i32 {
+    pub unsafe fn operator_call_2(&self, mut a: i32) -> i32 {
         return ((self.v) + (a));
     }
-    pub unsafe fn operator_call_i32_i32_const(&self, mut a: i32, mut b: i32) -> i32 {
+    pub unsafe fn operator_call_3(&self, mut a: i32, mut b: i32) -> i32 {
         return (((self.v) + (a)) + (b));
     }
     pub unsafe fn operator_comma(&self, o: *const S) -> S {
@@ -50,9 +50,9 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: S = S { v: 3 };
     let mut t: S = S { v: 4 };
-    assert!(((unsafe { S::operator_call_const(&s,) }) == (3)));
-    assert!(((unsafe { S::operator_call_i32_const(&s, 1,) }) == (4)));
-    assert!(((unsafe { S::operator_call_i32_i32_const(&s, 1, 2,) }) == (6)));
+    assert!(((unsafe { S::operator_call_1(&s,) }) == (3)));
+    assert!(((unsafe { S::operator_call_2(&s, 1,) }) == (4)));
+    assert!(((unsafe { S::operator_call_3(&s, 1, 2,) }) == (6)));
     assert!((((unsafe { S::operator_comma(&s, &t,) }).v) == (34)));
     let mut i: i32 = (unsafe { S::to_i32(&s) });
     assert!(((i) == (3)));
@@ -68,8 +68,8 @@ unsafe fn main_0() -> i32 {
     assert!((unsafe { S::to_bool(&s,) }) && (!(unsafe { S::to_bool(&z,) })));
     let mut st: Static = <Static>::default();
     assert!(((unsafe { Static::operator_call(6, 7,) }) == (42)));
-    assert!(((unsafe { S::operator_call_const(&S { v: 5 },) }) == (5)));
-    assert!(((unsafe { S::operator_call_i32_i32_const(&S { v: 5 }, 1, 1,) }) == (7)));
+    assert!(((unsafe { S::operator_call_1(&S { v: 5 },) }) == (5)));
+    assert!(((unsafe { S::operator_call_3(&S { v: 5 }, 1, 1,) }) == (7)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     assert!(((*(*a.borrow()).v.borrow()) == 4_u32));
     ({ SImpl::operator_bitxor_assign(&a.as_pointer(), b.as_pointer()) });
     assert!(((*(*a.borrow()).v.borrow()) == 0_u32));
-    ({ SImpl::operator_assign_u32(&a.as_pointer(), 3_u32) });
+    ({ SImpl::operator_assign_1(&a.as_pointer(), 3_u32) });
     assert!(((*(*a.borrow()).v.borrow()) == 3_u32));
     ({ SImpl::operator_shl_assign(&a.as_pointer(), 2) });
     assert!(((*(*a.borrow()).v.borrow()) == 12_u32));
@@ -76,7 +76,7 @@ fn main_0() -> i32 {
     let c: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(0_u32)),
     }));
-    (*c.borrow_mut()) = (*({ SImpl::operator_assign_u32(&a.as_pointer(), 1_u32) })
+    (*c.borrow_mut()) = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
         .deref())
     .clone();
@@ -85,7 +85,7 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn operator_assign_u32(&self, n: u32) -> Ptr<S>;
+    fn operator_assign_1(&self, n: u32) -> Ptr<S>;
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S>;
     fn operator_sub_assign(&self, o: Ptr<S>) -> Ptr<S>;
     fn operator_mul_assign(&self, o: Ptr<S>) -> Ptr<S>;
@@ -98,7 +98,7 @@ pub trait SImpl {
     fn operator_shr_assign(&self, n: i32) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_assign_u32(&self, n: u32) -> Ptr<S> {
+    fn operator_assign_1(&self, n: u32) -> Ptr<S> {
         let n: Value<u32> = Rc::new(RefCell::new(n));
         (*(*(*self).upgrade().deref()).v.borrow_mut()) = (*n.borrow());
         return (*self).clone();

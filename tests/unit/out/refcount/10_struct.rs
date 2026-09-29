@@ -211,10 +211,10 @@ pub trait PartialImpl {
     fn get(&self) -> Ptr<i32> {
         unimplemented!()
     }
-    fn next(&self) -> Ptr<Partial> {
+    fn next_4(&self) -> Ptr<Partial> {
         unimplemented!()
     }
-    fn next_i32(&self, _a0: i32) -> Partial {
+    fn next_5(&self, _a0: i32) -> Partial {
         unimplemented!()
     }
 }

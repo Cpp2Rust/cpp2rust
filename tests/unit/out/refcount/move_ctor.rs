@@ -53,14 +53,14 @@ impl ConstMove {
         let this: Ptr<ConstMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn ConstMove_pmutConstMove_rv(o: Ptr<ConstMove>) -> Self {
+    pub fn new_1(o: Ptr<ConstMove>) -> Self {
         let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
         }));
         let this: Ptr<ConstMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn ConstMove_pconstConstMove_rv(o: Ptr<ConstMove>) -> Self {
+    pub fn new_2(o: Ptr<ConstMove>) -> Self {
         let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
             mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 10))),
         }));
@@ -269,13 +269,9 @@ fn main_0() -> i32 {
     );
     assert!(((*(*f.borrow()).v.borrow()) == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
-    let m1: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pmutConstMove_rv({
-        m.as_pointer()
-    })));
+    let m1: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new_1({ m.as_pointer() })));
     let cm: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
-    let m2: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::ConstMove_pconstConstMove_rv({
-        cm.as_pointer()
-    })));
+    let m2: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new_2({ cm.as_pointer() })));
     assert!(((*(*m1.borrow()).mark.borrow()) == 1));
     assert!(((*(*m2.borrow()).mark.borrow()) == 10));
     let t: Value<ThrowingMove> = Rc::new(RefCell::new(ThrowingMove::new({ 1 })));

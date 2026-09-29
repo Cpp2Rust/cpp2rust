@@ -28,10 +28,10 @@ pub struct S {
     pub inner: Inner,
 }
 impl S {
-    pub unsafe fn operator_index_i32(&mut self, mut i: i32) -> *mut i32 {
+    pub unsafe fn operator_index_1(&mut self, mut i: i32) -> *mut i32 {
         return &mut self.data[(i) as usize];
     }
-    pub unsafe fn operator_index_i32_const(&self, mut i: i32) -> *const i32 {
+    pub unsafe fn operator_index_2(&self, mut i: i32) -> *const i32 {
         return &self.data[(i) as usize];
     }
     pub unsafe fn operator_deref(&mut self) -> *mut Inner {
@@ -63,11 +63,11 @@ unsafe fn main_0() -> i32 {
         data: [1, 2, 3],
         inner: Inner { x: 9 },
     };
-    assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (2)));
-    (*(unsafe { S::operator_index_i32(&mut s, 1) })) = 20;
-    assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (20)));
+    assert!(((*(unsafe { S::operator_index_1(&mut s, 1,) })) == (2)));
+    (*(unsafe { S::operator_index_1(&mut s, 1) })) = 20;
+    assert!(((*(unsafe { S::operator_index_1(&mut s, 1,) })) == (20)));
     let cs: *const S = &s;
-    assert!(((*(unsafe { S::operator_index_i32_const(&(*cs), 2,) })) == (3)));
+    assert!(((*(unsafe { S::operator_index_2(&(*cs), 2,) })) == (3)));
     assert!((((*(unsafe { S::operator_deref(&mut s,) })).x) == (9)));
     (*(unsafe { S::operator_deref(&mut s) })).x = 10;
     assert!((((*(unsafe { S::operator_arrow(&mut s,) })).x) == (10)));
