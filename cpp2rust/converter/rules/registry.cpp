@@ -3,6 +3,8 @@
 
 #include "converter/rules/registry.h"
 
+#include <clang/Basic/SourceManager.h>
+
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
@@ -59,6 +61,13 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   }
 }
 
+const TranslationRule::TypeInfo &
+GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
+  auto rule = Search(ctx, expr).first;
+  assert(rule && "expression must have a translation rule");
+  return rule->params.at(index);
+}
+
 } // namespace
 
 std::ranges::subrange<ExprRuleMap::iterator>
@@ -84,6 +93,57 @@ Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
 Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
                                                  clang::QualType qual_type) {
   return Matcher::Find(ctx, qual_type);
+}
+
+const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
+                                             const clang::Expr *expr) {
+  return Search(ctx, expr).first;
+}
+
+bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
+  auto rule = Search(ctx, qual_type).first;
+  return rule && rule->type_info.is_pointer();
+}
+
+bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type) {
+  auto rule = Search(ctx, qual_type).first;
+  return rule && rule->type_info.is_refcount_pointer;
+}
+
+const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
+                                              clang::QualType qual_type) {
+  auto rule = Search(ctx, qual_type).first;
+  return rule ? &rule->type_info.derives : nullptr;
+}
+
+void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
+                std::vector<std::string> derives) {
+  if (auto *rule = Search(ctx, qual_type).first) {
+    rule->type_info.derives = std::move(derives);
+  }
+}
+
+bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr) {
+  auto rule = Search(ctx, expr).first;
+  return rule && rule->return_type.is_pointer();
+}
+
+bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
+                    unsigned index) {
+  return GetParamInfo(ctx, expr, index).is_pointer();
+}
+
+bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr) {
+  const auto *tgt_ir = GetExprRule(ctx, expr);
+  if (tgt_ir == nullptr || !tgt_ir->body.empty() || !tgt_ir->is_extern) {
+    return false;
+  }
+  const auto *ref =
+      clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
+  const auto *decl = ref != nullptr ? ref->getDecl() : nullptr;
+  return decl != nullptr &&
+         decl->getASTContext().getSourceManager().isInSystemHeader(
+             decl->getLocation());
 }
 
 Model CurrentModel() { return model_; }

@@ -673,14 +673,15 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
 }
 
 bool Converter::IsPassThroughRule(clang::Expr *expr) const {
-  const auto *rule = Mapper::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  const auto *rule = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   return rule && rule->body.size() == 1 &&
          std::holds_alternative<TranslationRule::PlaceholderFragment>(
              rule->body[0]);
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
-  auto *derives = Mapper::MappedDerives(ctx_, ctx_.getCanonicalTagType(decl));
+  auto *derives =
+      RuleRegistry::MappedDerives(ctx_, ctx_.getCanonicalTagType(decl));
   return derives &&
          std::find(derives->begin(), derives->end(), "Copy") != derives->end();
 }
@@ -803,8 +804,9 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_, ctx_.getCanonicalTagType(decl),
-                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  RuleRegistry::SetDerives(
+      ctx_, ctx_.getCanonicalTagType(decl),
+      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -902,8 +904,9 @@ void Converter::EmitReprC(clang::RecordDecl *decl) {
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   EmitReprC(decl);
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_, ctx_.getCanonicalTagType(decl),
-                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  RuleRegistry::SetDerives(
+      ctx_, ctx_.getCanonicalTagType(decl),
+      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -1797,7 +1800,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   }
 
   if (Mapper::Contains(ctx_, expr->getCallee())) {
-    if (Mapper::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr))) {
+    if (RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr))) {
       ConvertGenericCallExpr(expr);
       return false;
     }
@@ -1937,7 +1940,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
   info.is_libc_passthrough =
-      Mapper::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr));
+      RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr));
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -2421,7 +2424,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
 bool Converter::IsCastRedundantInRust(clang::Expr *expr,
                                       clang::QualType target_type) {
   auto target = GetUnsafeTypeAsString(target_type);
-  if (const auto *rule = Mapper::GetExprRule(ctx_, expr)) {
+  if (const auto *rule = RuleRegistry::GetExprRule(ctx_, expr)) {
     return rule->return_type.type == target;
   }
   return GetUnsafeTypeAsString(expr->getType()) == target;
@@ -3278,7 +3281,7 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
 
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
-    if (Mapper::ReturnsPointer(ctx_, expr)) {
+    if (RuleRegistry::ReturnsPointer(ctx_, expr)) {
       StrCat(token::kStar, mapped);
     } else {
       StrCat(mapped);
@@ -4950,7 +4953,7 @@ std::string Converter::ConvertMappedMethodCall(
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                          unsigned num_args,
                                          TempMaterializationCtx *ctx) {
-  auto *tgt_ir = Mapper::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   if (!tgt_ir)
     return {};
 
@@ -4990,9 +4993,9 @@ std::string Converter::ConvertIRFragment(
           .access = ph->access,
           .is_receiver = is_receiver,
           .is_cpp_ptr = arg->getType()->isPointerType(),
-          .maps_to_rust_ptr = Mapper::MapsToPointer(ctx_, arg->getType()),
-          .declared_in_rule_as_rust_ptr =
-              Mapper::ParamIsPointer(ctx_, GetCalleeOrExpr(expr), arg_idx),
+          .maps_to_rust_ptr = RuleRegistry::MapsToPointer(ctx_, arg->getType()),
+          .declared_in_rule_as_rust_ptr = RuleRegistry::ParamIsPointer(
+              ctx_, GetCalleeOrExpr(expr), arg_idx),
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
@@ -5012,7 +5015,7 @@ std::string Converter::ConvertIRFragment(
 std::string
 Converter::ConvertVariadicTail(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = Mapper::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
 
   Buffer buf(*this);
@@ -5031,7 +5034,7 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
 std::string
 Converter::ConvertInitFragment(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = Mapper::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   assert(tgt_ir && tgt_ir->init_type.valid());
   auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
   assert(callee);

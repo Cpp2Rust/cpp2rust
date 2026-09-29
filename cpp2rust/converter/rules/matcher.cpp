@@ -8,6 +8,16 @@
 
 namespace cpp2rust::Matcher {
 
+Bindings MapBindings(clang::ASTContext &ctx, const Bindings &bindings) {
+  Bindings mapped(bindings.size());
+  for (unsigned i = 0; i < bindings.size(); ++i) {
+    if (bindings[i]) {
+      mapped[i] = MapBinding(ctx, bindings, i);
+    }
+  }
+  return mapped;
+}
+
 // Substitutes concrete types into a target template string using the provided
 // type mapping. Each template parameter in `tgt_template` is replaced with its
 // corresponding instantiated type from `types`.

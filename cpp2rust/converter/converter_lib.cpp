@@ -27,6 +27,7 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 #include "converter/printer.h"
+#include "converter/rules/registry.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
 static const char rust_keywords[][12] = {
@@ -1480,7 +1481,7 @@ GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   if (!Mapper::Contains(ctx, type)) {
     return std::nullopt;
   }
-  if (Mapper::MapsToRefcountPointer(ctx, type)) {
+  if (RuleRegistry::MapsToRefcountPointer(ctx, type)) {
     return IteratorCategory::Contiguous;
   }
   auto mapped = Mapper::Map(ctx, type);

@@ -11,6 +11,7 @@
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "converter/factory.h"
 #include "converter/rules/matcher.h"
@@ -31,6 +32,19 @@ Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
                                                  const clang::Expr *expr);
 Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
                                                  clang::QualType qual_type);
+
+const TranslationRule::ExprRule *GetExprRule(clang::ASTContext &ctx,
+                                             const clang::Expr *expr);
+bool IsLibcPassthrough(clang::ASTContext &ctx, const clang::Expr *expr);
+bool ReturnsPointer(clang::ASTContext &ctx, const clang::Expr *expr);
+bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,
+                    unsigned index);
+bool MapsToPointer(clang::ASTContext &ctx, clang::QualType qual_type);
+bool MapsToRefcountPointer(clang::ASTContext &ctx, clang::QualType qual_type);
+const std::vector<std::string> *MappedDerives(clang::ASTContext &ctx,
+                                              clang::QualType qual_type);
+void SetDerives(clang::ASTContext &ctx, clang::QualType qual_type,
+                std::vector<std::string> derives);
 
 Model CurrentModel();
 

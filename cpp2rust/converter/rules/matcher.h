@@ -32,6 +32,7 @@ bool HasRuleNamed(clang::ASTContext &ctx, const clang::FunctionDecl *decl);
 
 std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
                        unsigned n);
+Bindings MapBindings(clang::ASTContext &ctx, const Bindings &bindings);
 
 std::string InstantiateTgt(const Bindings &types,
                            const std::string &tgt_template);

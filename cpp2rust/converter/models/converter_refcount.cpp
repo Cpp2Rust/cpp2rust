@@ -16,6 +16,7 @@
 #include "converter/lex.h"
 #include "converter/mapper.h"
 #include "converter/printer.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust {
 std::map<std::string, ConverterRefCount::MethodsOnPtr>
@@ -551,8 +552,9 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   auto name = GetRecordName(decl);
 
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_, ctx_.getCanonicalTagType(decl),
-                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  RuleRegistry::SetDerives(
+      ctx_, ctx_.getCanonicalTagType(decl),
+      std::vector<std::string>(attrs.begin(), attrs.end()));
 
   StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
 
