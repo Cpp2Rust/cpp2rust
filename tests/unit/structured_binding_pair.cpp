@@ -1,4 +1,5 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++17
+// no-compile
 #include <assert.h>
 #include <utility>
 
