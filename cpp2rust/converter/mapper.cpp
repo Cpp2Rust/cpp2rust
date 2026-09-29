@@ -739,13 +739,10 @@ std::string ToRustName(std::string name) {
     }
   }
 
-  for (std::string_view runtime_name : {"Ptr", "Value"}) {
-    if (name.starts_with(runtime_name) &&
-        std::ranges::all_of(std::string_view(name).substr(runtime_name.size()),
-                            [](char c) { return c == '_'; })) {
-      name += '_';
-      break;
-    }
+  std::string_view stem(name);
+  stem = stem.substr(0, stem.find_last_not_of('_') + 1);
+  if (stem == "Ptr" || stem == "Value") {
+    name += '_';
   }
   return name;
 }
