@@ -53,7 +53,7 @@ impl ByteRepr for StructWithCtor {
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Value_ {
     pub v: Value<i32>,
 }
@@ -89,7 +89,7 @@ impl ByteRepr for Value_ {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Ptr_ {
     pub v1: Value<Value_>,
     pub v2: Value<Value_>,
