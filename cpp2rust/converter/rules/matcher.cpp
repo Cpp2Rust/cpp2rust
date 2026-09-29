@@ -8,11 +8,11 @@
 
 namespace cpp2rust::Matcher {
 
-Bindings MapBindings(clang::ASTContext &ctx, const Bindings &bindings) {
+Bindings MapBindings(const Bindings &bindings) {
   Bindings mapped(bindings.size());
   for (unsigned i = 0; i < bindings.size(); ++i) {
     if (bindings[i]) {
-      mapped[i] = MapBinding(ctx, bindings, i);
+      mapped[i] = MapBinding(bindings, i);
     }
   }
   return mapped;

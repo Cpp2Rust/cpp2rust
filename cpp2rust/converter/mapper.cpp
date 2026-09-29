@@ -47,7 +47,7 @@ std::string InstantiateTemplate(clang::ASTContext &ctx, const clang::Expr *expr,
   }
   auto &ty = subs.at(n - 1);
   if (ty) {
-    ty = Matcher::MapBinding(ctx, subs, n - 1);
+    ty = Matcher::MapBinding(subs, n - 1);
   }
   return Matcher::InstantiateTgt(subs, text);
 }
@@ -55,7 +55,7 @@ std::string InstantiateTemplate(clang::ASTContext &ctx, const clang::Expr *expr,
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule) {
-    return Matcher::InstantiateTgt(Matcher::MapBindings(ctx, subs),
+    return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
                                    rule->type_info.type);
   }
   return {};
@@ -64,7 +64,7 @@ std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
 std::string MapInitializer(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule && !rule->initializer.empty()) {
-    return Matcher::InstantiateTgt(Matcher::MapBindings(ctx, subs),
+    return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
                                    rule->initializer);
   }
   return {};
@@ -73,7 +73,7 @@ std::string MapInitializer(clang::ASTContext &ctx, clang::QualType qual_type) {
 std::string GetParamType(clang::ASTContext &ctx, const clang::Expr *expr,
                          unsigned index) {
   auto [rule, subs] = RuleRegistry::Search(ctx, expr);
-  return Matcher::InstantiateTgt(Matcher::MapBindings(ctx, subs),
+  return Matcher::InstantiateTgt(Matcher::MapBindings(subs),
                                  rule->params.at(index).type);
 }
 

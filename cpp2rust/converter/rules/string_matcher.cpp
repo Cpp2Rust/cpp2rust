@@ -389,8 +389,7 @@ bool HasRuleNamed(clang::ASTContext &ctx, const clang::FunctionDecl *decl) {
               .empty();
 }
 
-std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
-                       unsigned n) {
+std::string MapBinding(const Bindings &bindings, unsigned n) {
   return mapTypeString(bindings.at(n).value());
 }
 
