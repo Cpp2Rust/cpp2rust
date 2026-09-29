@@ -53,6 +53,87 @@ impl ByteRepr for StructWithCtor {
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
+#[derive(Default)]
+pub struct Value_ {
+    pub v: Value<i32>,
+}
+impl Value_ {
+    pub fn new(u: i32) -> Self {
+        let u: Value<i32> = Rc::new(RefCell::new(u));
+        let __this: Value<Value_> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*u.borrow()))),
+        }));
+        let this: Ptr<Value_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Clone for Value_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Value_> = Rc::new(RefCell::new(Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()))),
+        }));
+        let this: Ptr<Value_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Value_ {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+        }
+    }
+}
+#[derive()]
+pub struct Ptr_ {
+    pub v1: Value<Value_>,
+    pub v2: Value<Value_>,
+}
+impl Ptr_ {
+    pub fn new() -> Self {
+        let __this: Value<Ptr_> = Rc::new(RefCell::new(Self {
+            v1: Rc::new(RefCell::new(Value_::new({ 11 }))),
+            v2: Rc::new(RefCell::new(Value_::new({ 22 }))),
+        }));
+        let this: Ptr<Ptr_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Clone for Ptr_ {
+    fn clone(&self) -> Self {
+        let __this: Value<Ptr_> = Rc::new(RefCell::new(Self {
+            v1: Rc::new(RefCell::new((*self.v1.borrow()).clone())),
+            v2: Rc::new(RefCell::new((*self.v2.borrow()).clone())),
+        }));
+        let this: Ptr<Ptr_> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for Ptr_ {
+    fn default() -> Self {
+        { Ptr_::new() }
+    }
+}
+impl ByteRepr for Ptr_ {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (*self.v1.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.v2.borrow()).to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v1: Rc::new(RefCell::new(<Value_>::from_bytes(&buf[0..4]))),
+            v2: Rc::new(RefCell::new(<Value_>::from_bytes(&buf[4..8]))),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -66,6 +147,9 @@ fn main_0() -> i32 {
             && ((({ StructWithCtorImpl::x1(&struct_with_ctor.as_pointer(),) }).read()) == 2))
             && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1)
     );
+    let p: Value<Ptr_> = Rc::new(RefCell::new(Ptr_::new()));
+    assert!(((*(*(*p.borrow()).v1.borrow()).v.borrow()) == 11));
+    assert!(((*(*(*p.borrow()).v2.borrow()).v.borrow()) == 22));
     return 0;
 }
 pub trait StructWithCtorImpl {
