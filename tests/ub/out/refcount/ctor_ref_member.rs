@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub r: Ptr<i32>,
 }

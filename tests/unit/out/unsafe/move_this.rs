@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct Chain {
     pub v: i32,
 }

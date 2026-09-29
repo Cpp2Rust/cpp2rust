@@ -9,9 +9,9 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static global_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct S {}
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Defaulted {
     pub s: Value<S>,
 }
@@ -37,7 +37,7 @@ impl ByteRepr for Defaulted {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Middle {
     pub s: Value<S>,
 }
@@ -63,7 +63,7 @@ impl ByteRepr for Middle {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub m: Value<Middle>,
 }
@@ -89,7 +89,7 @@ impl ByteRepr for Outer {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct ArrayMember {
     pub items: Value<Box<[S]>>,
 }
@@ -126,7 +126,7 @@ impl ByteRepr for ArrayMember {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct EmptyBody {
     pub s: Value<S>,
 }
@@ -152,7 +152,7 @@ impl ByteRepr for EmptyBody {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Templated_char_ {
     pub v: Value<u8>,
 }
@@ -178,7 +178,7 @@ impl ByteRepr for Templated_char_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Templated_int_ {
     pub v: Value<i32>,
 }
@@ -204,7 +204,7 @@ impl ByteRepr for Templated_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Copied {
     pub v: Value<i32>,
 }
@@ -237,7 +237,7 @@ thread_local!(
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Tagged {
     pub tag: Value<i32>,
 }
@@ -263,7 +263,7 @@ impl ByteRepr for Tagged {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Ordered {
     pub first: Value<Tagged>,
     pub dummy1: Value<i32>,

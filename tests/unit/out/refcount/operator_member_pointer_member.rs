@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: Value<i32>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Table {}
 impl Table {
     pub fn operator_index(i: i32) -> Ptr<i32> {
@@ -43,7 +43,7 @@ impl Table {
 thread_local!(
     pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
 );
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct S {
     pub data: Value<Box<[i32]>>,
     pub inner: Value<Inner>,

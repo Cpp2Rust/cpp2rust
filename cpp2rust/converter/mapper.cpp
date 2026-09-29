@@ -9,6 +9,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <format>
@@ -458,110 +459,6 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   }
 }
 
-void addBuiltinTypes(Model model) {
-  assert(ctx_);
-
-  auto add_scalar_rule = [&](const std::string &cxx, const std::string &rust,
-                             const std::string &initializer = {}) {
-    auto plain = TranslationRule::TypeRule::Plain(rust);
-    plain.initializer = initializer;
-    std::vector<std::string> derives = {"Copy",  "Clone",     "Default",
-                                        "Debug", "PartialEq", "PartialOrd"};
-    if (!(rust == "f32" || rust == "f64")) {
-      derives.insert(derives.end(), {"Eq", "Ord", "Hash"});
-    }
-    plain.type_info.derives = std::move(derives);
-    AddTypeRule(cxx, TranslationRule::TypeRule(plain));
-    AddTypeRule("const " + cxx, std::move(plain));
-
-    switch (model) {
-    case Model::kUnsafe:
-      AddTypeRule(cxx + " *",
-                  TranslationRule::TypeRule::UnsafePtr("*mut " + rust));
-      AddTypeRule("const " + cxx + " *",
-                  TranslationRule::TypeRule::UnsafePtr("*const " + rust));
-      break;
-    case Model::kRefCount:
-      AddTypeRule(cxx + " *", TranslationRule::TypeRule::RefcountPtr(
-                                  "Ptr::<" + rust + ">"));
-      AddTypeRule("const " + cxx + " *", TranslationRule::TypeRule::RefcountPtr(
-                                             "Ptr::<" + rust + ">"));
-      break;
-    }
-  };
-
-  auto add_builtin_rule = [&](clang::QualType qt, const std::string &rust) {
-    add_scalar_rule(ToString(qt), rust);
-  };
-
-  auto add_size_rules = [&](clang::QualType size_type,
-                            std::initializer_list<const char *> aliases,
-                            const std::string &rust) {
-    auto initializer = "0_" + rust;
-    for (const char *alias : aliases) {
-      add_scalar_rule(alias, rust, initializer);
-    }
-    if (const auto *predef = clang::dyn_cast<clang::PredefinedSugarType>(
-            size_type.getTypePtr())) {
-      add_scalar_rule(predef->getIdentifier()->getName().str(), rust,
-                      initializer);
-    }
-  };
-
-  auto build_rust_type = [&](clang::QualType qt) {
-    unsigned bits = ctx_->getTypeSize(qt);
-    char sign = qt->isSignedIntegerType() ? 'i' : 'u';
-    return std::format("{}{}", sign, bits);
-  };
-
-  // Misc
-  add_builtin_rule(ctx_->BoolTy, "bool");
-  add_builtin_rule(ctx_->FloatTy, "f32");
-  add_builtin_rule(ctx_->DoubleTy, "f64");
-
-  switch (model) {
-  case Model::kUnsafe:
-    AddTypeRule(ToString(ctx_->VoidTy) + " *",
-                TranslationRule::TypeRule::UnsafePtr("*mut ::libc::c_void"));
-    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
-                TranslationRule::TypeRule::UnsafePtr("*const ::libc::c_void"));
-    break;
-  case Model::kRefCount:
-    AddTypeRule(ToString(ctx_->VoidTy) + " *",
-                TranslationRule::TypeRule::RefcountPtr("AnyPtr"));
-    AddTypeRule("const " + ToString(ctx_->VoidTy) + " *",
-                TranslationRule::TypeRule::RefcountPtr("AnyPtr"));
-    break;
-  }
-
-  // Char
-  switch (model) {
-  case Model::kUnsafe:
-    add_builtin_rule(ctx_->CharTy, "libc::c_char");
-    break;
-  case Model::kRefCount:
-    add_builtin_rule(ctx_->CharTy, "u8");
-    break;
-  }
-  add_builtin_rule(ctx_->SignedCharTy, "i8");
-  add_builtin_rule(ctx_->UnsignedCharTy, "u8");
-
-  // Integers
-  add_builtin_rule(ctx_->ShortTy, build_rust_type(ctx_->ShortTy));
-  add_builtin_rule(ctx_->UnsignedShortTy,
-                   build_rust_type(ctx_->UnsignedShortTy));
-  add_builtin_rule(ctx_->IntTy, build_rust_type(ctx_->IntTy));
-  add_builtin_rule(ctx_->UnsignedIntTy, build_rust_type(ctx_->UnsignedIntTy));
-  add_builtin_rule(ctx_->LongTy, build_rust_type(ctx_->LongTy));
-  add_builtin_rule(ctx_->UnsignedLongTy, build_rust_type(ctx_->UnsignedLongTy));
-  add_builtin_rule(ctx_->LongLongTy, build_rust_type(ctx_->LongLongTy));
-  add_builtin_rule(ctx_->UnsignedLongLongTy,
-                   build_rust_type(ctx_->UnsignedLongLongTy));
-
-  add_size_rules(ctx_->getSizeType(), {"size_t", "size_type"}, "usize");
-  add_size_rules(ctx_->getSignedSizeType(), {"ssize_t"}, "isize");
-}
-
 clang::QualType normalizeQualType(clang::QualType qual_type) {
   assert(ctx_);
 
@@ -841,6 +738,12 @@ std::string ToRustName(std::string name) {
       c = '_';
     }
   }
+
+  std::string_view stem(name);
+  stem = stem.substr(0, stem.find_last_not_of('_') + 1);
+  if (stem == "Ptr" || stem == "Value") {
+    name += '_';
+  }
   return name;
 }
 
@@ -862,7 +765,10 @@ std::string ToString(clang::QualType qual_type, ScalarSugar sugar) {
     } else if (const auto *ptr = t->getAs<clang::PointerType>()) {
       auto pointee = ptr->getPointeeType();
       auto canonical = pointee.getCanonicalType().getDesugaredType(*ctx_);
-      if (Map(pointee) == Map(canonical)) {
+      bool builtin_alias = canonical->isBuiltinType() &&
+                           (pointee->getAs<clang::TypedefType>() ||
+                            pointee->getAs<clang::PredefinedSugarType>());
+      if (!builtin_alias && Map(pointee) == Map(canonical)) {
         pointee = canonical;
       }
       std::string out;
@@ -1123,7 +1029,6 @@ void LoadTranslationRules(Model model, clang::ASTContext &ctx,
   }
   translation_rules_loaded_ = true;
 
-  addBuiltinTypes(model);
   addRulesFromDirectory(rules_dir, model);
 
 #if 0

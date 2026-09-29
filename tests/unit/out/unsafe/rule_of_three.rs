@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive()]
+#[derive(VaArg)]
 pub struct Buffer {
     pub data: [i32; 4],
     pub size: i32,

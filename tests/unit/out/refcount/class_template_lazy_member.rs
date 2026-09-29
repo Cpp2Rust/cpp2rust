@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: Value<i32>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for Point {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Box_int_ {
     pub val: Value<i32>,
 }
@@ -58,7 +58,7 @@ impl ByteRepr for Box_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Box_Point_ {
     pub val: Value<Point>,
 }

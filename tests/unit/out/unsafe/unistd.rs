@@ -14,7 +14,7 @@ pub unsafe fn test_close_0() {
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut ::libc::c_void),
             1_usize
         )) == (-1_i32 as isize)) as i32)
             != 0)
@@ -44,22 +44,18 @@ pub unsafe fn test_lseek_1() {
         (0 as libc::c_char),
     ];
     assert!(
-        ((((libc::read(
-            fd,
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
-            5_usize
-        )) == (5_isize)) as i32)
+        ((((libc::read(fd, (buf.as_mut_ptr() as *mut ::libc::c_void), 5_usize)) == (5_isize))
+            as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
-                    as *const u8,
+                (c"world".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let mut diff = 0_i32;
@@ -105,22 +101,18 @@ pub unsafe fn test_read_2() {
         (0 as libc::c_char),
     ];
     assert!(
-        ((((libc::read(
-            fd,
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
-            16_usize
-        )) == (11_isize)) as i32)
+        ((((libc::read(fd, (buf.as_mut_ptr() as *mut ::libc::c_void), 16_usize)) == (11_isize))
+            as i32)
             != 0)
     );
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 11_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (c"hello world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void)
-                    as *const u8,
+                (c"hello world".as_ptr().cast_mut() as *const ::libc::c_void) as *const u8,
                 11_usize as usize,
             );
             let mut diff = 0_i32;
@@ -151,11 +143,8 @@ pub unsafe fn test_pipe_4() {
     assert!(((((libc::pipe(fds.as_mut_ptr())) == (0)) as i32) != 0));
     let mut msg: *const libc::c_char = (c"world".as_ptr().cast_mut()).cast_const();
     assert!(
-        ((((libc::write(
-            fds[(1) as usize],
-            (msg as *const libc::c_char as *const ::libc::c_void),
-            5_usize
-        )) == (5_isize)) as i32)
+        ((((libc::write(fds[(1) as usize], (msg as *const ::libc::c_void), 5_usize)) == (5_isize))
+            as i32)
             != 0)
     );
     let mut buf: [libc::c_char; 8] = [
@@ -171,7 +160,7 @@ pub unsafe fn test_pipe_4() {
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut ::libc::c_void),
             8_usize
         )) == (5_isize)) as i32)
             != 0)
@@ -179,11 +168,11 @@ pub unsafe fn test_pipe_4() {
     assert!(
         (((({
             let sa = core::slice::from_raw_parts(
-                (buf.as_mut_ptr() as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (buf.as_mut_ptr() as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let sb = core::slice::from_raw_parts(
-                (msg as *const libc::c_char as *const ::libc::c_void) as *const u8,
+                (msg as *const ::libc::c_void) as *const u8,
                 5_usize as usize,
             );
             let mut diff = 0_i32;
@@ -201,7 +190,7 @@ pub unsafe fn test_pipe_4() {
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut ::libc::c_void),
             8_usize
         )) == (0_isize)) as i32)
             != 0)

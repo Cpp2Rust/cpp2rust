@@ -8,8 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn foo_0() -> i32 {
     static mut static_i_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0_i32 });;
-    static mut static_f_2: std::cell::LazyCell<f32> =
-        std::cell::LazyCell::new(|| unsafe { 0.0_f32 });;
+    static mut static_f_2: std::cell::LazyCell<f32> = std::cell::LazyCell::new(|| unsafe { 0_f32 });;
     static mut static_b_3: std::cell::LazyCell<bool> =
         std::cell::LazyCell::new(|| unsafe { false });;
     static mut kX1_4: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 1 });;

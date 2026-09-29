@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Tracked {
     pub v: Value<i32>,
     pub copies: Value<i32>,

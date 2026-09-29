@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct container {
     pub p: Value<Ptr<opaque>>,
     pub x: Value<i32>,
@@ -52,6 +52,6 @@ pub fn touch_0(c: Ptr<container>) {
     let c: Value<Ptr<container>> = Rc::new(RefCell::new(c));
     &(*(*(*c.borrow()).upgrade().deref()).p.borrow());
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
+#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 pub struct opaque;
 pub fn __cpp2rust_init_globals() {}

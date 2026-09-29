@@ -7,6 +7,7 @@
 
 using t1 = std::string;
 using t2 = std::string::iterator;
+typedef std::string::size_type t3;
 
 std::string f1(const std::string &s, std::size_t pos, std::size_t count) {
   return s.substr(pos, count);

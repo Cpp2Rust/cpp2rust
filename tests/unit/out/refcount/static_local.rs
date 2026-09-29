@@ -11,7 +11,7 @@ pub fn foo_0() -> i32 {
         static static_i_1: Value<i32> = Rc::new(RefCell::new(0_i32));
     );
     thread_local!(
-        static static_f_2: Value<f32> = Rc::new(RefCell::new(0.0_f32));
+        static static_f_2: Value<f32> = Rc::new(RefCell::new(0_f32));
     );
     thread_local!(
         static static_b_3: Value<bool> = Rc::new(RefCell::new(false));

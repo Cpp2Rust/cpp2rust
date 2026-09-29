@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: Value<i32>,
 }

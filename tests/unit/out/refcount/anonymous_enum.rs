@@ -12,7 +12,7 @@ pub const anon_0_FIRST_B: anon_0 = 1;
 pub type anon_1 = u32;
 pub const anon_1_SECOND_A: anon_1 = 0;
 pub const anon_1_SECOND_B: anon_1 = 1;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub a: Value<i32>,
 }
@@ -44,7 +44,7 @@ pub const TdEnum_TD_B: TdEnum = 1;
 pub type anon_2 = u32;
 pub const anon_2_FIELD_A: anon_2 = 0;
 pub const anon_2_FIELD_B: anon_2 = 1;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct WithAnonField {
     pub a: Value<i32>,
     pub field: Value<anon_2>,

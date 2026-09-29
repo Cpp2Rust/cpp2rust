@@ -25,7 +25,7 @@ pub fn half_3(x: f64) -> f64 {
     let x: Value<f64> = Rc::new(RefCell::new(x));
     return ((*x.borrow()) / 2.0E+0);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Flag {
     pub v: Value<i32>,
 }
@@ -61,7 +61,7 @@ pub fn checked_5(x: i32) -> i32 {
     assert!(((*x.borrow()) > 0));
     return ((*x.borrow()) + 1);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct P {
     pub v: Value<i32>,
 }

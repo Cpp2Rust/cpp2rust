@@ -18,6 +18,7 @@ pub use ptr_dyn::*;
 include!(concat!(env!("OUT_DIR"), "/rule_shims.rs"));
 
 mod fn_ptr_arg;
+pub use fn_ptr_arg::{ArgRepr, FnPtrArg, record_from_repr};
 
 mod fn_ptr;
 pub use fn_ptr::FnPtr;
@@ -55,4 +56,4 @@ pub use fd::*;
 mod format;
 pub use format::*;
 
-pub use libcc2rs_macros::{ByteRepr, goto, goto_block, switch};
+pub use libcc2rs_macros::{ByteRepr, FnPtrArg, VaArg, goto, goto_block, switch};

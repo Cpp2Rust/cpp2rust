@@ -49,6 +49,8 @@ public:
                              std::string_view src);
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
+  bool RecordImplementsClone(const clang::RecordDecl *decl) override;
+
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool
@@ -97,7 +99,7 @@ public:
 
   bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
 
-  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) override;
+  void ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) override;
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
 

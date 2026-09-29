@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
@@ -33,7 +33,7 @@ impl MyContainer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_char_ {
     vec_: Vec<libc::c_char>,
 }
@@ -59,7 +59,7 @@ impl MyContainer_char_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
@@ -85,7 +85,7 @@ impl MyContainer_float_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Boxed_int_ {
     pub value: i32,
 }
@@ -98,7 +98,7 @@ impl Boxed_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Boxed_long_ {
     pub value: i64,
 }
@@ -111,7 +111,7 @@ impl Boxed_long_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_int__Inner_int_ {
     pub t: i32,
     pub u: i32,
@@ -122,7 +122,7 @@ impl Outer_int__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_int_ {
     pub v: i32,
 }
@@ -132,7 +132,7 @@ impl Outer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long__Inner_int_ {
     pub t: i64,
     pub u: i32,
@@ -143,7 +143,7 @@ impl Outer_long__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long__Inner_char_ {
     pub t: i64,
     pub u: libc::c_char,
@@ -154,7 +154,7 @@ impl Outer_long__Inner_char_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long_ {
     pub v: i64,
 }

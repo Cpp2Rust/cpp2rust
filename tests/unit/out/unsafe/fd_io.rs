@@ -26,7 +26,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::write(
             fd,
-            (c"hello world".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            (c"hello world".as_ptr().cast_mut() as *const ::libc::c_void),
             11_usize
         )) == (11_isize)) as i32)
             != 0)
@@ -36,16 +36,16 @@ unsafe fn main_0() -> i32 {
     assert!(((((fd) >= (0)) as i32) != 0));
     let mut buf: [libc::c_char; 16] = [(0 as libc::c_char); 16];
     {
-        let byte_0 = (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = (buf.as_mut_ptr() as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<[libc::c_char; 16]>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void)
+        (buf.as_mut_ptr() as *mut ::libc::c_void)
     };
     assert!(
         ((((libc::read(
             fd,
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 16]>()
         )) == (11_isize)) as i32)
             != 0)
@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::read(
             fd,
-            (buf.as_mut_ptr() as *mut libc::c_char as *mut ::libc::c_void),
+            (buf.as_mut_ptr() as *mut ::libc::c_void),
             ::std::mem::size_of::<[libc::c_char; 16]>()
         )) == (0_isize)) as i32)
             != 0)

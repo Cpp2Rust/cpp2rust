@@ -27,7 +27,7 @@ fn main_0() -> i32 {
     let xc8: Value<u8> = Rc::new(RefCell::new(66_u8));
     let xc16: Value<u16> = Rc::new(RefCell::new(67_u16));
     let xc32: Value<u32> = Rc::new(RefCell::new(68_u32));
-    let xnp: Value<Value<AnyPtr>> = Rc::new(RefCell::new(Default::default()));
+    let xnp: Value<AnyPtr> = Rc::new(RefCell::new(Default::default()));
     assert!(
         (((((((((((((*xu8.borrow()) as i32) + ((*xu16.borrow()) as i32)) as u32)
             .wrapping_add((*xu32.borrow()))) as u64)
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
             .wrapping_add((*xc32.borrow()))
             == 266_u32)
     );
-    assert!((<AnyPtr>::default()).is_null());
+    assert!((AnyPtr::default()).is_null());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

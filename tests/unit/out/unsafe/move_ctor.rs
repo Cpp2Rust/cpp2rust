@@ -51,7 +51,7 @@ impl Default for ConstMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct ThrowingMove {
     pub v: i32,
     pub copies: i32,
@@ -90,7 +90,7 @@ impl Clone for ThrowingMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct NoexceptMove {
     pub v: i32,
     pub copies: i32,

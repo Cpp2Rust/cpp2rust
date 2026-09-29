@@ -30,7 +30,7 @@ pub unsafe fn test_double_cast_2() {
     assert!(((fn2) == (fn_)));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Command {
     pub data: *mut ::libc::c_void,
 }
@@ -52,12 +52,8 @@ pub unsafe fn test_call_through_cast_5() {
         Option<unsafe fn(*mut ::libc::c_void, i32) -> i32>,
     >(Some(add_offset_4));
     let mut val: i32 = 100;
-    let mut result: i32 = (unsafe {
-        (gfn).unwrap()(
-            ((&mut val as *mut i32) as *mut i32 as *mut ::libc::c_void),
-            42,
-        )
-    });
+    let mut result: i32 =
+        (unsafe { (gfn).unwrap()(((&mut val as *mut i32) as *mut ::libc::c_void), 42) });
     assert!(((result) == (142)));
 }
 pub fn main() {

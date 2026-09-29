@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_1 {
     pub x1: Value<i32>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1_Level3_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Level0_Level1_1_Level2_1_Level3_2 {
     pub x1: Value<i32>,
     pub x2: Value<i32>,
@@ -62,7 +62,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1_Level3_2 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Level0_Level1_1_Level2_1 {
     pub x1: Value<i32>,
 }
@@ -88,7 +88,7 @@ impl ByteRepr for Level0_Level1_1_Level2_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Level0_Level1_1 {
     pub x1: Value<i32>,
 }
@@ -114,7 +114,7 @@ impl ByteRepr for Level0_Level1_1 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Level0_Level1_2 {
     pub x1: Value<i32>,
     pub x2: Value<i32>,
@@ -144,7 +144,7 @@ impl ByteRepr for Level0_Level1_2 {
         }
     }
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Level0 {}
 pub fn main() {
     __cpp2rust_init_globals();

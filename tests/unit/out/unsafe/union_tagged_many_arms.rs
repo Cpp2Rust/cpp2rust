@@ -27,7 +27,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Slot {
     pub tag: Tag_enum,
     pub payload: anon_0,
@@ -58,12 +58,8 @@ unsafe fn main_0() -> i32 {
     let mut x: i32 = 0;
     let mut e: Slot = <Slot>::default();
     e.tag = Tag_enum_T_REF;
-    e.payload.handle = ((&mut x as *mut i32) as *mut i32 as *mut ::libc::c_void);
-    assert!(
-        ((((e.payload.handle) == ((&mut x as *mut i32) as *mut i32 as *mut ::libc::c_void))
-            as i32)
-            != 0)
-    );
+    e.payload.handle = ((&mut x as *mut i32) as *mut ::libc::c_void);
+    assert!(((((e.payload.handle) == ((&mut x as *mut i32) as *mut ::libc::c_void)) as i32) != 0));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

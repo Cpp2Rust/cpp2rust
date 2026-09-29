@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Counted {
     pub v: Value<i32>,
 }
@@ -50,7 +50,7 @@ impl ByteRepr for Counted {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct NonConst {
     pub mark: Value<i32>,
 }
@@ -103,7 +103,7 @@ impl ByteRepr for NonConst {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Ignored {
     pub v: Value<i32>,
 }
@@ -144,7 +144,7 @@ impl ByteRepr for Ignored {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Holder {
     pub c: Value<Counted>,
     pub arr: Value<Box<[Counted]>>,

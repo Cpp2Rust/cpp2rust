@@ -43,7 +43,7 @@ unsafe fn main_0() -> i32 {
     );
     assert!((((xld) * (2_f64)) == (3_f64)));
     assert!(((((((xwc) + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32)) == (266_u32)));
-    assert!((<*mut ::libc::c_void>::default()).is_null());
+    assert!((std::ptr::null_mut::<::libc::c_void>()).is_null());
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

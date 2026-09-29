@@ -18,7 +18,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::write(
             fds[(1) as usize],
-            (c"x".as_ptr().cast_mut() as *const libc::c_char as *const ::libc::c_void),
+            (c"x".as_ptr().cast_mut() as *const ::libc::c_void),
             1_usize
         )) == (1_isize)) as i32)
             != 0)
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
     assert!(
         ((((libc::read(
             fds[(0) as usize],
-            ((&mut ch as *mut libc::c_char) as *mut libc::c_char as *mut ::libc::c_void),
+            ((&mut ch as *mut libc::c_char) as *mut ::libc::c_void),
             1_usize
         )) == (1_isize)) as i32)
             != 0)

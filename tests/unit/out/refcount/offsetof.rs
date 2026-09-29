@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Layout {
     pub a: Value<u8>,
     pub b: Value<u32>,
@@ -40,7 +40,7 @@ impl ByteRepr for Layout {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Frame {
     pub tag: Value<u16>,
     pub body: Value<Box<[u8]>>,

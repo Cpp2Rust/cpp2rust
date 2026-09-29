@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct label {
     pub name: *const libc::c_char,
     pub probe: Option<unsafe fn() -> i32>,
@@ -100,7 +100,7 @@ unsafe fn main_0() -> i32 {
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].name
             as *mut ::libc::c_void)
     } else {
-        (c"".as_ptr().cast_mut() as *mut libc::c_char as *mut ::libc::c_void)
+        (c"".as_ptr().cast_mut() as *mut ::libc::c_void)
     };
     assert!(
         (((((*(p as *const libc::c_char).offset((0) as isize)) as i32) == ('\0' as i32)) as i32)
@@ -111,7 +111,7 @@ unsafe fn main_0() -> i32 {
         ((*std::cell::LazyCell::force_mut(&mut *&raw mut table_1))[(0) as usize].name
             as *mut ::libc::c_void)
     } else {
-        (c"".as_ptr().cast_mut() as *mut libc::c_char as *mut ::libc::c_void)
+        (c"".as_ptr().cast_mut() as *mut ::libc::c_void)
     };
     assert!(
         (((((*(p as *const libc::c_char).offset((0) as isize)) as i32) == ('f' as i32)) as i32)

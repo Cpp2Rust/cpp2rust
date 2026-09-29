@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Handler {
     pub tag: Value<i32>,
     pub cb: Value<FnPtr<fn(i32) -> i32>>,
@@ -54,7 +54,7 @@ pub fn negate_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return -(*x.borrow());
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
     pub fn pick_1(x: i32) -> i32 {

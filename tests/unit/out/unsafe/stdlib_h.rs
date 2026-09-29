@@ -60,7 +60,7 @@ pub unsafe fn test_realpath_1() {
             as i32)
             != 0)
     );
-    libcc2rs::free_unsafe((p as *mut libc::c_char as *mut ::libc::c_void));
+    libcc2rs::free_unsafe((p as *mut ::libc::c_void));
     (*libcc2rs::cpp2rust_errno_unsafe()) = 0;
     assert!(
         ((((libc::realpath(

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct record {
     pub code: u16,
     pub lo: u16,
@@ -36,7 +36,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Container {
     pub view: anon_0,
 }
@@ -61,7 +61,7 @@ pub unsafe fn fill_1(mut out: *mut ::libc::c_void, mut cap: usize) {
     {
         if n != 0 {
             ::std::ptr::copy_nonoverlapping(
-                (src.as_mut_ptr() as *const u8 as *const ::libc::c_void),
+                (src.as_mut_ptr() as *const ::libc::c_void),
                 out,
                 n as usize,
             )
@@ -78,12 +78,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
     {
-        let byte_0 =
-            ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = ((&mut c as *mut Container) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
+        ((&mut c as *mut Container) as *mut ::libc::c_void)
     };
     (unsafe {
         let _out: *mut ::libc::c_void = ((&mut c.view as *mut anon_0) as *mut ::libc::c_void);

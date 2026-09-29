@@ -110,7 +110,7 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Box {
     pub v: i32,
 }

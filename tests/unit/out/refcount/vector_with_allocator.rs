@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_int_ {}
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_double_ {}
 pub fn copy_0(copy_vector: Vec<i32>) {
     let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
@@ -315,7 +315,7 @@ pub trait TestAllocator_double_Impl {
 impl TestAllocator_double_Impl for Ptr<TestAllocator_double_> {
     fn allocate(&self, n: usize) -> Ptr<f64> {
         let n: Value<usize> = Rc::new(RefCell::new(n));
-        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0.0_f64).collect::<Box<[f64]>>());
+        return Ptr::alloc_array((0..(*n.borrow())).map(|_| 0_f64).collect::<Box<[f64]>>());
     }
     fn deallocate(&self, p: Ptr<f64>, _a1: usize) {
         let p: Value<Ptr<f64>> = Rc::new(RefCell::new(p));

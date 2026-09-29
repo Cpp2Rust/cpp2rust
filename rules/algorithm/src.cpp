@@ -7,79 +7,6 @@
 #include <string>
 #include <vector>
 
-struct T2 {
-  friend bool operator<(T2 a, T2 b) { return false; }
-  bool operator()(const T2 &, const T2 &) const;
-};
-
-struct T1 {
-  using value_type = T2;
-  using difference_type = std::ptrdiff_t;
-  using reference = T2 &;
-  using pointer = T2 *;
-  using iterator_category = std::random_access_iterator_tag;
-
-  pointer p = nullptr;
-
-  T1() = default;
-
-  operator T2() const { return {}; }
-
-  reference operator*() const { return *p; }
-  pointer operator->() const { return p; }
-  reference operator[](difference_type n) const { return p[n]; }
-
-  T1 &operator++() {
-    ++p;
-    return *this;
-  }
-  T1 operator++(int) {
-    T1 tmp = *this;
-    ++*this;
-    return tmp;
-  }
-  T1 &operator--() {
-    --p;
-    return *this;
-  }
-  T1 operator--(int) {
-    T1 tmp = *this;
-    --*this;
-    return tmp;
-  }
-
-  T1 &operator+=(difference_type n) {
-    p += n;
-    return *this;
-  }
-  T1 &operator-=(difference_type n) {
-    p -= n;
-    return *this;
-  }
-  friend T1 operator+(T1 it, difference_type n) {
-    it += n;
-    return it;
-  }
-  friend T1 operator+(difference_type n, T1 it) {
-    it += n;
-    return it;
-  }
-  friend T1 operator-(T1 it, difference_type n) {
-    it -= n;
-    return it;
-  }
-  friend difference_type operator-(T1 a, T1 b) { return a.p - b.p; }
-
-  friend bool operator==(T1 a, T1 b) { return a.p == b.p; }
-  friend bool operator!=(T1 a, T1 b) { return a.p != b.p; }
-  friend bool operator<(T1 a, T1 b) { return a.p < b.p; }
-  friend bool operator>(T1 a, T1 b) { return a.p > b.p; }
-  friend bool operator<=(T1 a, T1 b) { return a.p <= b.p; }
-  friend bool operator>=(T1 a, T1 b) { return a.p >= b.p; }
-
-  T1 &operator=(const T2 &rhs) { return *this; }
-};
-
 template <typename T1> void f1(T1 first, T1 last) {
   return std::sort(first, last);
 }
@@ -92,6 +19,7 @@ template <class T1, class T2> T1 f3(T1 first, T1 last, const T2 &value) {
   return std::find(first, last, value);
 }
 
+template <typename T1, typename T2>
 void f6(T1 first, T1 last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }
@@ -120,6 +48,7 @@ std::ostream_iterator<char> f13(std::string::iterator a0,
   return std::copy(a0, a1, a2);
 }
 
+template <typename T1, typename T2>
 void f14(T1 *first, T1 *last, T2 comp) {
   return std::stable_sort(first, last, comp);
 }

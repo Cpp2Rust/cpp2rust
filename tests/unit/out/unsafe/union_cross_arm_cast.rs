@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct shape_a {
     pub code: u16,
     pub pad: [libc::c_char; 14],
@@ -21,7 +21,7 @@ impl Default for shape_a {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct shape_b {
     pub code: u16,
     pub lo: u16,
@@ -53,7 +53,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Container {
     pub len: u32,
     pub u: anon_0,
@@ -67,12 +67,11 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut c: Container = <Container>::default();
     {
-        let byte_0 =
-            ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = ((&mut c as *mut Container) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Container>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut c as *mut Container) as *mut Container as *mut ::libc::c_void)
+        ((&mut c as *mut Container) as *mut ::libc::c_void)
     };
     c.u.a.code = 10_u16;
     c.len = (::std::mem::size_of::<shape_b>() as u32);

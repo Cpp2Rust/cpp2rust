@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct container {
     pub p: Value<Ptr<opaque>>,
     pub x: Value<i32>,
@@ -46,6 +46,6 @@ fn main_0() -> i32 {
     &(*(*c.borrow()).p.borrow());
     return ((*(*c.borrow()).x.borrow()) - 42);
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
+#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 pub struct opaque;
 pub fn __cpp2rust_init_globals() {}

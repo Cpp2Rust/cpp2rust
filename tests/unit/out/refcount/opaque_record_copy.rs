@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Probe {}
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Value<Probe>,
     pub tag: Value<i32>,

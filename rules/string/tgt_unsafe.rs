@@ -9,6 +9,10 @@ fn t2() -> *mut libc::c_char {
     ::std::ptr::null_mut()
 }
 
+fn t3() -> usize {
+    0_usize
+}
+
 unsafe fn f1(a0: Vec<libc::c_char>, a1: usize, a2: usize) -> Vec<libc::c_char> {
     let mut __tmp1 = a0[(a1) as usize..::std::cmp::min((a1 + a2) as usize, a0.len() - 1)].to_vec();
     __tmp1.push(0);
@@ -161,7 +165,7 @@ unsafe fn f26(a0: &mut Vec<libc::c_char>, a1: usize) -> *mut libc::c_char {
     if a1 as usize >= a0.len() - 1 {
         panic!("out of bounds access")
     } else {
-        &mut a0[a1 as usize]
+        (&mut a0[a1 as usize] as *mut libc::c_char)
     }
 }
 

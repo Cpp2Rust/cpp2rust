@@ -27,8 +27,6 @@ pub fn twice_2(n: i32) -> i32 {
     return ((*n.borrow()) * 2);
 }
 #[derive(Clone, ByteRepr, Default)]
-pub struct Access_S_ {}
-#[derive(Default)]
 pub struct S {
     pub base: Value<i32>,
 }
@@ -54,7 +52,7 @@ impl ByteRepr for S {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Box {
     pub v: Value<i32>,
 }

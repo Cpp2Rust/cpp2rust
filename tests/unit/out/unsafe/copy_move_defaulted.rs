@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Clone, VaArg)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -39,7 +39,7 @@ impl Default for Explicit {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct Implicit {
     pub v: i32,
     pub inner: Inner,
@@ -55,7 +55,7 @@ impl Default for Implicit {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
@@ -76,7 +76,7 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }
@@ -150,13 +150,12 @@ impl Buffer {
         {
             if 8_usize != 0 {
                 ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
-                        as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
                     8_usize as usize,
                 )
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         return &mut (*(self as *mut Buffer));
     }
@@ -195,13 +194,12 @@ impl Owner {
         {
             if 8_usize != 0 {
                 ::std::ptr::copy_nonoverlapping(
-                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const [i32; 2]
-                        as *const ::libc::c_void),
-                    ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void),
+                    ((&mut (*_a0).arr as *mut [i32; 2]) as *const ::libc::c_void),
+                    ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void),
                     8_usize as usize,
                 )
             }
-            ((&mut self.arr as *mut [i32; 2]) as *mut [i32; 2] as *mut ::libc::c_void)
+            ((&mut self.arr as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         self.p = (*_a0).p.take();
         return &mut (*(self as *mut Owner));

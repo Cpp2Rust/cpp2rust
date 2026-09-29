@@ -86,7 +86,7 @@ impl ByteRepr for ConstMove {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct ThrowingMove {
     pub v: Value<i32>,
     pub copies: Value<i32>,
@@ -152,7 +152,7 @@ impl ByteRepr for ThrowingMove {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct NoexceptMove {
     pub v: Value<i32>,
     pub copies: Value<i32>,

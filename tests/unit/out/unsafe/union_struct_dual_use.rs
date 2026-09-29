@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inner {
     pub a: i32,
     pub b: i32,
@@ -27,7 +27,7 @@ impl Default for anon_1 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer {
     pub u: anon_1,
 }
@@ -44,11 +44,11 @@ unsafe fn main_0() -> i32 {
     assert!(((((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)) as i32) != 0));
     let mut outer: Outer = <Outer>::default();
     {
-        let byte_0 = ((&mut outer as *mut Outer) as *mut Outer as *mut ::libc::c_void) as *mut u8;
+        let byte_0 = ((&mut outer as *mut Outer) as *mut ::libc::c_void) as *mut u8;
         for offset in 0..::std::mem::size_of::<Outer>() {
             *byte_0.offset(offset as isize) = 0 as u8;
         }
-        ((&mut outer as *mut Outer) as *mut Outer as *mut ::libc::c_void)
+        ((&mut outer as *mut Outer) as *mut ::libc::c_void)
     };
     outer.u.inner.a = 3;
     outer.u.inner.b = 4;

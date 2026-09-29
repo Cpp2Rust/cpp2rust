@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub v: Value<i32>,
     pub name: Value<Ptr<u8>>,
@@ -36,7 +36,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Outer {
     pub p1: Value<Ptr<i32>>,
     pub p2: Value<Ptr<i32>>,
@@ -112,7 +112,7 @@ impl ByteRepr for Outer {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Foo {
     pub s1: Value<Ptr<u8>>,
     pub s2: Value<Ptr<u8>>,

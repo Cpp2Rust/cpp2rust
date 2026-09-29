@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Partial {
     pub v: Value<i32>,
     pub keep: Value<i32>,
@@ -58,7 +58,7 @@ impl ByteRepr for Partial {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct NonConstAssign {
     pub mark: Value<i32>,
 }
@@ -98,7 +98,7 @@ impl ByteRepr for NonConstAssign {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct RefQualified {
     pub mark: Value<i32>,
 }
@@ -138,7 +138,7 @@ impl ByteRepr for RefQualified {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Holder {
     pub p: Value<Partial>,
     pub arr: Value<Box<[Partial]>>,

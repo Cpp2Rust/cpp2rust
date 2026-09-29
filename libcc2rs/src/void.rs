@@ -6,7 +6,7 @@ use std::rc::Rc;
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 
-pub(crate) trait ErasedPtr: std::any::Any {
+pub trait ErasedPtr: std::any::Any {
     fn as_bytes(&self) -> Ptr<u8>;
     fn as_any(&self) -> &dyn std::any::Any;
     fn equals(&self, other: &dyn ErasedPtr) -> bool;
