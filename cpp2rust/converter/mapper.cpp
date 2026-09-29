@@ -6,7 +6,6 @@
 #include <clang/AST/ExprCXX.h>
 #include <clang/Basic/SourceManager.h>
 
-#include <cctype>
 #include <cstdlib>
 #include <format>
 #include <optional>
@@ -33,35 +32,6 @@ Matching::Bindings mapBindings(clang::ASTContext &ctx,
 }
 
 } // namespace
-
-// Substitutes concrete types into a target template string using the provided
-// type mapping. Each template parameter in `tgt_template` is replaced with its
-// corresponding instantiated type from `types`.
-//
-// Example:
-//   types        = { {"i32"} }
-//   tgt_template = "Vec<T1>"
-//   result       = "Vec<i32>"
-std::string InstantiateTgt(const Matching::Bindings &types,
-                           const std::string &tgt_template) {
-  assert(types.size() <= TranslationRule::kMaxGenerics &&
-         "template placeholder exceeds kMaxGenerics");
-  std::string instantiated_template = tgt_template;
-  std::string::size_type pos = 0;
-  while ((pos = instantiated_template.find('T', pos)) != std::string::npos) {
-    if (pos + 1 >= instantiated_template.size()) {
-      break;
-    }
-    if (!std::isdigit(instantiated_template[pos + 1])) {
-      ++pos;
-      continue;
-    }
-    const auto &repl = types.at(instantiated_template[pos + 1] - '1').value();
-    instantiated_template.replace(pos, 2, repl);
-    pos += repl.length();
-  }
-  return instantiated_template;
-}
 
 bool Contains(clang::ASTContext &ctx, clang::QualType qual_type) {
   return RuleRegistry::Search(ctx, qual_type).first != nullptr;
@@ -113,13 +83,14 @@ std::string InstantiateTemplate(clang::ASTContext &ctx, const clang::Expr *expr,
   if (ty) {
     ty = RuleRegistry::GetMatcher().MapBinding(ctx, subs, n - 1);
   }
-  return InstantiateTgt(subs, text);
+  return Matching::InstantiateTgt(subs, text);
 }
 
 std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule) {
-    return InstantiateTgt(mapBindings(ctx, subs), rule->type_info.type);
+    return Matching::InstantiateTgt(mapBindings(ctx, subs),
+                                    rule->type_info.type);
   }
   return {};
 }
@@ -127,7 +98,7 @@ std::string Map(clang::ASTContext &ctx, clang::QualType qual_type) {
 std::string MapInitializer(clang::ASTContext &ctx, clang::QualType qual_type) {
   auto [rule, subs] = RuleRegistry::Search(ctx, qual_type);
   if (rule && !rule->initializer.empty()) {
-    return InstantiateTgt(mapBindings(ctx, subs), rule->initializer);
+    return Matching::InstantiateTgt(mapBindings(ctx, subs), rule->initializer);
   }
   return {};
 }
@@ -170,7 +141,8 @@ GetParamInfo(clang::ASTContext &ctx, const clang::Expr *expr, unsigned index) {
 std::string GetParamType(clang::ASTContext &ctx, const clang::Expr *expr,
                          unsigned index) {
   auto [rule, subs] = RuleRegistry::Search(ctx, expr);
-  return InstantiateTgt(mapBindings(ctx, subs), rule->params.at(index).type);
+  return Matching::InstantiateTgt(mapBindings(ctx, subs),
+                                  rule->params.at(index).type);
 }
 
 bool ParamIsPointer(clang::ASTContext &ctx, const clang::Expr *expr,

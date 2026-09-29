@@ -38,4 +38,7 @@ public:
   virtual std::string MapBinding(clang::ASTContext &ctx,
                                  const Bindings &bindings, unsigned n) = 0;
 };
+
+std::string InstantiateTgt(const Bindings &types,
+                           const std::string &tgt_template);
 } // namespace cpp2rust::Matching

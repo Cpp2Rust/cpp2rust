@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "converter/converter_lib.h"
-#include "converter/mapper.h"
 #include "converter/printer.h"
 #include "converter/rules/registry.h"
 
@@ -340,7 +339,7 @@ std::string mapTypeString(const std::string &cpp_type) {
       ty = mapTypeString(*ty);
     }
   }
-  return Mapper::InstantiateTgt(subs, rule->type_info.type);
+  return InstantiateTgt(subs, rule->type_info.type);
 }
 
 } // namespace
