@@ -9,6 +9,7 @@
 #include <clang/Lex/Lexer.h>
 #include <llvm/Support/ThreadPool.h>
 
+#include <algorithm>
 #include <cctype>
 #include <cstdlib>
 #include <format>
@@ -736,6 +737,12 @@ std::string ToRustName(std::string name) {
     if (!std::isalnum(c) && c != '_') {
       c = '_';
     }
+  }
+
+  std::string_view stem(name);
+  stem = stem.substr(0, stem.find_last_not_of('_') + 1);
+  if (stem == "Ptr" || stem == "Value") {
+    name += '_';
   }
   return name;
 }

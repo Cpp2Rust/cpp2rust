@@ -29,6 +29,37 @@ impl StructWithCtor {
 pub unsafe fn foo_0(x: *mut i32) -> *mut i32 {
     return x;
 }
+#[repr(C)]
+#[derive(Copy, Clone, Default)]
+pub struct Value_ {
+    pub v: i32,
+}
+impl Value_ {
+    pub unsafe fn new(mut u: i32) -> Self {
+        let mut this = Self { v: u };
+        this
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Ptr_ {
+    pub v1: Value_,
+    pub v2: Value_,
+}
+impl Ptr_ {
+    pub unsafe fn new() -> Self {
+        let mut this = Self {
+            v1: Value_::new({ 11 }),
+            v2: Value_::new({ 22 }),
+        };
+        this
+    }
+}
+impl Default for Ptr_ {
+    fn default() -> Self {
+        unsafe { Ptr_::new() }
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -43,6 +74,9 @@ unsafe fn main_0() -> i32 {
             && ((*(unsafe { StructWithCtor::x1(&struct_with_ctor,) })) == (2)))
             && ((*(unsafe { StructWithCtor::x2(&struct_with_ctor,) })) == (1))
     );
+    let mut p: Ptr_ = Ptr_::new();
+    assert!(((p.v1.v) == (11)));
+    assert!(((p.v2.v) == (22)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
