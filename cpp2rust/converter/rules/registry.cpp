@@ -6,12 +6,10 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
-#include <memory>
 #include <utility>
 
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
-#include "converter/rules/string_matcher.h"
 
 namespace cpp2rust::RuleRegistry {
 
@@ -20,14 +18,12 @@ namespace {
 Model model_ = Model::kUnsafe;
 bool translation_rules_loaded_ = false;
 
-std::unique_ptr<Matching::Matcher> matcher_;
-
 ExprRuleMap exprs_; // key -> ExprRule
 TypeRuleMap types_; // key -> TypeRule
 
 void AddTypeRule(std::string src, TranslationRule::TypeRule &&rule) {
   rule.src = std::move(src);
-  auto key = matcher_->Key(rule);
+  auto key = Matcher::Key(rule);
   types_.emplace(std::move(key), std::move(rule));
 }
 
@@ -44,10 +40,10 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
       continue;
     }
     for (auto &[_, rule] : expr_rules) {
-      exprs_.emplace(matcher_->Key(rule), std::move(rule));
+      exprs_.emplace(Matcher::Key(rule), std::move(rule));
     }
     for (auto &[_, rule] : type_rules) {
-      auto key = matcher_->Key(rule);
+      auto key = Matcher::Key(rule);
       auto [begin, end] = types_.equal_range(key);
       for (auto it = begin; it != end; ++it) {
         if (it->second.src == rule.src) {
@@ -77,20 +73,18 @@ TypeCandidates(const std::string &key) {
   return {begin, end};
 }
 
-Matching::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
-                                                  const clang::Expr *expr) {
+Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
+                                                 const clang::Expr *expr) {
   if (RefersToUserDefinedDecl(expr)) {
     return {};
   }
-  return matcher_->Find(ctx, expr);
+  return Matcher::Find(ctx, expr);
 }
 
-Matching::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
-                                                  clang::QualType qual_type) {
-  return matcher_->Find(ctx, qual_type);
+Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
+                                                 clang::QualType qual_type) {
+  return Matcher::Find(ctx, qual_type);
 }
-
-Matching::Matcher &GetMatcher() { return *matcher_; }
 
 Model CurrentModel() { return model_; }
 
@@ -146,7 +140,6 @@ void Load(Model model, const std::string &rules_dir) {
   }
   translation_rules_loaded_ = true;
 
-  matcher_ = std::make_unique<Matching::StringMatcher>();
   addRulesFromDirectory(rules_dir, model);
 
 #if 0

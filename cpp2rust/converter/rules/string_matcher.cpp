@@ -1,8 +1,6 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include "converter/rules/string_matcher.h"
-
 #include <algorithm>
 #include <cassert>
 #include <cctype>
@@ -10,9 +8,10 @@
 
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
+#include "converter/rules/matcher.h"
 #include "converter/rules/registry.h"
 
-namespace cpp2rust::Matching {
+namespace cpp2rust::Matcher {
 
 namespace {
 
@@ -344,16 +343,16 @@ std::string mapTypeString(const std::string &cpp_type) {
 
 } // namespace
 
-std::string StringMatcher::Key(const TranslationRule::ExprRule &rule) const {
+std::string Key(const TranslationRule::ExprRule &rule) {
   return exprKey(rule.src);
 }
 
-std::string StringMatcher::Key(const TranslationRule::TypeRule &rule) const {
+std::string Key(const TranslationRule::TypeRule &rule) {
   return typeKey(rule.src);
 }
 
-Match<TranslationRule::ExprRule> StringMatcher::Find(clang::ASTContext &ctx,
-                                                     const clang::Expr *expr) {
+Match<TranslationRule::ExprRule> Find(clang::ASTContext &ctx,
+                                      const clang::Expr *expr) {
   auto qualified_name = Printer::ToString(ctx, expr);
   auto res = searchExpr(qualified_name);
   log() << "search expr " << qualified_name << ", result:\n";
@@ -365,8 +364,8 @@ Match<TranslationRule::ExprRule> StringMatcher::Find(clang::ASTContext &ctx,
   return res;
 }
 
-Match<TranslationRule::TypeRule> StringMatcher::Find(clang::ASTContext &ctx,
-                                                     clang::QualType type) {
+Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
+                                      clang::QualType type) {
   auto sugared = Printer::ToString(ctx, type, Printer::ScalarSugar::kPreserve);
   if (auto res = searchType(sugared); res.first) {
     log() << "search type " << sugared
@@ -385,15 +384,14 @@ Match<TranslationRule::TypeRule> StringMatcher::Find(clang::ASTContext &ctx,
   return res;
 }
 
-bool StringMatcher::HasRuleNamed(clang::ASTContext &ctx,
-                                 const clang::FunctionDecl *decl) {
+bool HasRuleNamed(clang::ASTContext &ctx, const clang::FunctionDecl *decl) {
   return !RuleRegistry::ExprCandidates(exprKey(Printer::ToString(ctx, decl)))
               .empty();
 }
 
-std::string StringMatcher::MapBinding(clang::ASTContext &ctx,
-                                      const Bindings &bindings, unsigned n) {
+std::string MapBinding(clang::ASTContext &ctx, const Bindings &bindings,
+                       unsigned n) {
   return mapTypeString(bindings.at(n).value());
 }
 
-} // namespace cpp2rust::Matching
+} // namespace cpp2rust::Matcher

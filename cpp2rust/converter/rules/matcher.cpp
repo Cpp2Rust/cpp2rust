@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include "converter/rules/matcher.h"
+
 #include <cassert>
 #include <cctype>
 
-#include "converter/rules/matching.h"
-
-namespace cpp2rust::Matching {
+namespace cpp2rust::Matcher {
 
 // Substitutes concrete types into a target template string using the provided
 // type mapping. Each template parameter in `tgt_template` is replaced with its
@@ -37,4 +37,4 @@ std::string InstantiateTgt(const Bindings &types,
   return instantiated_template;
 }
 
-} // namespace cpp2rust::Matching
+} // namespace cpp2rust::Matcher

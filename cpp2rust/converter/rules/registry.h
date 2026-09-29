@@ -13,7 +13,7 @@
 #include <unordered_map>
 
 #include "converter/factory.h"
-#include "converter/rules/matching.h"
+#include "converter/rules/matcher.h"
 #include "converter/translation_rule.h"
 
 namespace cpp2rust::RuleRegistry {
@@ -27,11 +27,10 @@ ExprCandidates(const std::string &key);
 std::ranges::subrange<TypeRuleMap::iterator>
 TypeCandidates(const std::string &key);
 
-Matching::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
-                                                  const clang::Expr *expr);
-Matching::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
-                                                  clang::QualType qual_type);
-Matching::Matcher &GetMatcher();
+Matcher::Match<TranslationRule::ExprRule> Search(clang::ASTContext &ctx,
+                                                 const clang::Expr *expr);
+Matcher::Match<TranslationRule::TypeRule> Search(clang::ASTContext &ctx,
+                                                 clang::QualType qual_type);
 
 Model CurrentModel();
 
