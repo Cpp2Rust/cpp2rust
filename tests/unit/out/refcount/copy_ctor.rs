@@ -9,22 +9,21 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, VaArg, FnPtrArg, Default)]
 pub struct Counted {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl Counted {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-        }));
+        let __this: Value<Counted> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<Counted> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn copy_from(o: Ptr<Counted>) -> Self {
         let __this: Value<Counted> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
+            v: { o.with(|__s: &Counted| __s.v) },
         }));
         let this: Ptr<Counted> = __this.as_pointer();
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -37,29 +36,45 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for Counted {}
 #[derive(VaArg, FnPtrArg)]
+=======
+impl ByteRepr for Counted {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.v.to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: <i32>::from_bytes(&buf[0..4]),
+        }
+    }
+}
+#[derive(Record, VaArg, FnPtrArg)]
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct NonConst {
-    pub mark: Value<i32>,
+    #[offset(0)]
+    pub mark: i32,
 }
 impl NonConst {
     pub fn new() -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(0)),
-        }));
+        let __this: Value<NonConst> = Rc::new(RefCell::new(Self { mark: 0 }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_1(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 1))),
+            mark: { (o.with(|__s: &NonConst| __s.mark) + 1) },
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_2(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(((*(*o.upgrade().deref()).mark.borrow()) + 10))),
+            mark: { (o.with(|__s: &NonConst| __s.mark) + 10) },
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -78,24 +93,38 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for NonConst {}
 #[derive(VaArg, FnPtrArg, Default)]
+=======
+impl ByteRepr for NonConst {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.mark.to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            mark: <i32>::from_bytes(&buf[0..4]),
+        }
+    }
+}
+#[derive(Record, VaArg, FnPtrArg, Default)]
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Ignored {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl Ignored {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Ignored> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-        }));
+        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<Ignored> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn copy_from(_a0: Ptr<Ignored>) -> Self {
-        let __this: Value<Ignored> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new(-1_i32)),
-        }));
+        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: -1_i32 }));
         let this: Ptr<Ignored> = __this.as_pointer();
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -107,42 +136,63 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for Ignored {}
 #[derive(VaArg, FnPtrArg)]
-pub struct Holder {
-    pub c: Value<Counted>,
-    pub arr: Value<Box<[Counted]>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            c: Rc::new(RefCell::new(Counted::copy_from({ self.c.as_pointer() }))),
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| {
-                    Counted::copy_from({ (self.arr.as_pointer() as Ptr<Counted>).offset(__i) })
-                },
-            )))),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+=======
+impl ByteRepr for Ignored {
+    fn byte_size() -> usize {
+        4
     }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.v.to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: <i32>::from_bytes(&buf[0..4]),
+        }
+    }
+}
+#[derive(Clone, Record, VaArg, FnPtrArg)]
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+pub struct Holder {
+    #[offset(0)]
+    pub c: Counted,
+    #[offset(4)]
+    pub arr: Box<[Counted]>,
 }
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            c: <Value<Counted>>::default(),
-            arr: Rc::new(RefCell::new(
-                (0..2)
-                    .map(|_| <Counted>::default())
-                    .collect::<Box<[Counted]>>(),
-            )),
+            c: <Counted>::default(),
+            arr: (0..2)
+                .map(|_| <Counted>::default())
+                .collect::<Box<[Counted]>>(),
         }
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for Holder {}
+=======
+impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        12
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.c.to_bytes(&mut buf[0..4]);
+        self.arr.to_bytes(&mut buf[4..12]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            c: <Counted>::from_bytes(&buf[0..4]),
+            arr: <Box<[Counted]>>::from_bytes(&buf[4..12]),
+        }
+    }
+}
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn by_value_1(c: Counted) -> i32 {
     let c: Value<Counted> = Rc::new(RefCell::new(c));
-    return (*(*c.borrow()).v.borrow());
+    return { (*c.borrow()).v };
 }
 pub fn make_2(v: i32) -> Counted {
     let v: Value<i32> = Rc::new(RefCell::new(v));
@@ -160,33 +210,28 @@ fn main_0() -> i32 {
     let d: Value<Counted> = Rc::new(RefCell::new(Counted::copy_from({ a.as_pointer() })));
     assert!((copies_0.with(|rc| *rc.borrow()) == 3));
     assert!(
-        (((*(*b.borrow()).v.borrow()) == 1) && ((*(*c.borrow()).v.borrow()) == 1))
-            && ((*(*d.borrow()).v.borrow()) == 1)
+        (({ (*b.borrow()).v } == 1) && ({ (*c.borrow()).v } == 1)) && ({ (*d.borrow()).v } == 1)
     );
     assert!((({ by_value_1(Counted::copy_from({ a.as_pointer() },),) }) == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 4));
     let e: Value<Counted> = Rc::new(RefCell::new(({ make_2(5) })));
-    assert!(((*(*e.borrow()).v.borrow()) == 5));
+    assert!(({ (*e.borrow()).v } == 5));
     assert!((copies_0.with(|rc| *rc.borrow()) == 5));
     let f: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 6 })));
-    assert!(((*(*f.borrow()).v.borrow()) == 6));
+    assert!(({ (*f.borrow()).v } == 6));
     assert!((copies_0.with(|rc| *rc.borrow()) == 5));
     let g: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 7 })));
     let h: Value<Counted> = Rc::new(RefCell::new(Counted::copy_from({ g.as_pointer() })));
-    assert!(((*(*h.borrow()).v.borrow()) == 7));
+    assert!(({ (*h.borrow()).v } == 7));
     assert!((copies_0.with(|rc| *rc.borrow()) == 6));
     let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
-        c: Rc::new(RefCell::new(Counted::new({ 8 }))),
-        arr: Rc::new(RefCell::new(Box::new([
-            Counted::new({ 9 }),
-            Counted::new({ 10 }),
-        ]))),
+        c: Counted::new({ 8 }),
+        arr: Box::new([Counted::new({ 9 }), Counted::new({ 10 })]),
     }));
     let hold2: Value<Holder> = Rc::new(RefCell::new((*hold.borrow()).clone()));
     assert!(
-        (((*(*(*hold2.borrow()).c.borrow()).v.borrow()) == 8)
-            && ((*(*(*hold2.borrow()).arr.borrow())[(0) as usize].v.borrow()) == 9))
-            && ((*(*(*hold2.borrow()).arr.borrow())[(1) as usize].v.borrow()) == 10)
+        (({ (*hold2.borrow()).c.v } == 8) && ({ (*hold2.borrow()).arr[(0) as usize].v } == 9))
+            && ({ (*hold2.borrow()).arr[(1) as usize].v } == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));
@@ -195,25 +240,22 @@ fn main_0() -> i32 {
         (*vec_.borrow_mut()).push(a0_clone)
     };
     assert!(
-        ((*(*(vec_.as_pointer() as Ptr<Counted>)
+        ((vec_.as_pointer() as Ptr<Counted>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .v
-        .borrow())
+            .with(|__s: &Counted| __s.v)
             == 1)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
     let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));
     let i2: Value<Ignored> = Rc::new(RefCell::new(Ignored::copy_from({ i1.as_pointer() })));
-    assert!(((*(*i1.borrow()).v.borrow()) == 1) && ((*(*i2.borrow()).v.borrow()) == -1_i32));
+    assert!(({ (*i1.borrow()).v } == 1) && ({ (*i2.borrow()).v } == -1_i32));
     assert!((copies_0.with(|rc| *rc.borrow()) == 11));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
     let n1: Value<NonConst> = Rc::new(RefCell::new(NonConst::new_1({ n.as_pointer() })));
     let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
     let n2: Value<NonConst> = Rc::new(RefCell::new(NonConst::new_2({ cn.as_pointer() })));
-    assert!(((*(*n1.borrow()).mark.borrow()) == 1));
-    assert!(((*(*n2.borrow()).mark.borrow()) == 10));
+    assert!(({ (*n1.borrow()).mark } == 1));
+    assert!(({ (*n2.borrow()).mark } == 10));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

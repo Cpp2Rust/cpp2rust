@@ -60,6 +60,7 @@ A `Ptr<T>` knows what it points into:
 - `StackArray` and `HeapArray`: a fixed-size array.
 - `StackVec` and `HeapVec`: a growable buffer; `std::vector` contents and string
   literals live in one.
+- `Field`: a field of a struct (see [Pointers to fields](#pointers-to-fields)).
 - `Reinterpreted`: a byte-level view produced by a cast (see
   [Type Reinterpretation](./reinterpret.md)).
 
@@ -71,6 +72,71 @@ arrays low.
 Two pointers compare equal when they point into the same allocation at the same
 byte offset, and ordering compares allocation addresses, as C++ pointer
 comparison does.
+
+## Pointers to fields
+
+Fields are stored inline in their struct, so a struct and all of its fields
+share one allocation and one `RefCell`. A pointer to a field is to a struct
+what a pointer to an element is to an array: it records a weak reference to the
+allocation that holds the struct, its root, together with the byte offset of
+the field in it. `field_ptr!` creates one:
+
+```c
+struct point { int x; int y; };
+struct point p;
+int *y = &p.y;
+```
+
+```rust
+let p: Value<point> = Rc::new(RefCell::new(<point>::default()));
+let y: Value<Ptr<i32>> = Rc::new(RefCell::new(field_ptr!(p, y)));
+```
+
+`field_ptr!(p, y)` works on a `Value` or a `Ptr` to a struct. The offsets are
+those of the C layout of the struct, which the code generator gets from Clang
+and writes on the fields as `#[offset(N)]` attributes; `#[derive(Record)]`
+turns them into the implementation of the `Record` trait:
+
+```rust
+#[derive(Clone, Record, Default)]
+pub struct point {
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
+}
+```
+
+A field pointer is thus the same size as any other pointer, and creating one
+allocates nothing. Pointers to fields of fields, and to fields of array
+elements, add up the offsets, and keep the allocation of the outermost struct or
+array as their root. A pointer to an array field can either point to the whole
+field (`Ptr<Box<[T]>>`) or index into it (`Ptr<T>`); the expected pointer type
+picks which, as for `as_pointer`.
+
+An access through a field pointer borrows the root, and finds the field from
+its offset and its type with `Record::locate`, which the derive generates as a
+comparison of the offset against those of the fields, recursing into nested
+structs and arrays of structs. A field is identified by its type too, as a
+struct and its first field share an offset. An offset that doesn't find a field
+of the pointer's type panics with `ub: invalid field pointer`.
+
+Vectors, whose elements are not part of the struct's layout, are not stored
+inline: a `std::vector` field is a `Value<Vec<T>>` of its own, and pointers to
+its elements, and to the fields of those, have the vector as their root.
+
+Reading a field through a pointer borrows the struct only for the duration of a
+closure, e.g., `p.with(|s: &point| s.y)`, so that the borrow ends before the
+rest of the statement runs; `p.with_mut(|s: &mut point| s.y = 3)` writes it.
+
+A field of a reinterpreted struct is itself a reinterpreted pointer, to the
+bytes of the field. Conversely, reinterpreting a field pointer views the bytes
+of the field alone, as if it were its own allocation.
+
+Since all fields share the borrow of their struct, an expression must not write
+to a field while another field of the same struct is borrowed. The code
+generator scopes the borrows of field reads so that they end before any write
+in the same statement.
 
 ## The heap
 
@@ -180,26 +246,25 @@ pub enum StrongPtr<T> {
     StackSingle(Rc<RefCell<T>>),
     Vec { rc: Rc<RefCell<Vec<T>>>, offset: usize },
     StackArray { rc: Rc<RefCell<Box<[T]>>>, offset: usize },
-    Reinterpreted {
-        alloc: Rc<dyn OriginalAlloc>,
-        byte_offset: usize,
-        cell: RefCell<Option<T>>,
-    },
+    Field { root: Rc<dyn Root>, field: u32, offset: usize },
+    Reinterpreted { alloc: OriginalAlloc, byte_offset: usize, cell: RefCell<Option<T>> },
 }
 ```
 
-Its one operation is `deref`, which returns a `Ref<'_, T>` to the pointee. The
-`Ref` borrows the `StrongPtr`, so the borrow of the `RefCell` lasts as long as
-the strong pointer does: in `p.upgrade().deref().field`, the temporary
+`deref` returns a `Ref<'_, T>` to the pointee, and `deref_mut` a `RefMut<'_, T>`.
+The `Ref` borrows the `StrongPtr`, so the borrow of the `RefCell` lasts as long
+as the strong pointer does: in `p.upgrade().deref().field`, the temporary
 `StrongPtr` lives until the end of the enclosing statement, and so does the
-borrow. That is what makes a member access through a pointer expressible without
-a closure. There is no `deref_mut`; writes go through `with_mut`.
+borrow. The code generator prefers the `with` and `with_mut` closures, and
+upgrades only where the result of an access must borrow the pointee beyond a
+closure.
 
 For the `Reinterpreted` variant there is no value to reference, only bytes in
-another allocation. `deref` reads those bytes into the local `cell` and hands
-out a `Ref` to that copy, refreshing it on every call. The copy is what
-[Type Reinterpretation](./reinterpret.md#known-limitations) is about: writes
-into the copy never reach the original allocation.
+another allocation. `deref` reads those bytes into a local cell and hands out a
+`Ref` to that copy, refreshing it on every call. `deref_mut` panics: a write
+must go through `with_mut`, which writes the bytes through to the original
+allocation before it returns, so that the write is visible through every other
+pointer at once.
 
 > [!WARNING]
 >

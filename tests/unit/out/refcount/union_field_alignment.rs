@@ -44,31 +44,25 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct node {
-    pub next: Value<Ptr<node>>,
-    pub x: Value<anon_0>,
-}
-impl Clone for node {
-    fn clone(&self) -> Self {
-        Self {
-            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub next: Ptr<node>,
+    #[offset(8)]
+    pub x: anon_0,
 }
 impl ByteRepr for node {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.next.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.x.borrow()).to_bytes(&mut buf[8..16]);
+        self.next.to_bytes(&mut buf[0..8]);
+        self.x.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            next: Rc::new(RefCell::new(<Ptr<node>>::from_bytes(&buf[0..8]))),
-            x: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..16]))),
+            next: <Ptr<node>>::from_bytes(&buf[0..8]),
+            x: <anon_0>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -78,12 +72,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let n: Value<node> = <Value<node>>::default();
-    (*(*n.borrow()).next.borrow_mut()) = Ptr::<node>::null();
-    ((*(*n.borrow()).x.borrow()).bytes().reinterpret_cast::<u8>() as Ptr<u8>)
-        .offset((0) as isize)
+    (*n.borrow_mut()).next = Ptr::<node>::null();
+    { ((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>).offset((0) as isize) }
         .write(171_u8);
     assert!(
-        (((((((*(*n.borrow()).x.borrow()).bytes().reinterpret_cast::<u8>() as Ptr::<u8>)
+        (((((((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset((0) as isize)
             .read()) as i32)
             == 171) as i32)

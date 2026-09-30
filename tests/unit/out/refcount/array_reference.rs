@@ -70,33 +70,25 @@ pub fn fill_and_sum_9(a: Ptr<i32>, v: i32, out: Ptr<i32>) {
 pub fn pick_10(s: Ptr<u8>) -> Ptr<u8> {
     return ((s).clone() as Ptr<u8>);
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Point> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl ByteRepr for Point {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -104,18 +96,20 @@ pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return {
         let _lhs = {
             let _lhs = {
-                let _lhs = (*(*(p).offset((0) as isize).upgrade().deref()).x.borrow());
-                _lhs + (*(*(p).offset((0) as isize).upgrade().deref()).y.borrow())
+                let _lhs = (p).offset((0) as isize).with(|__s: &Point| __s.x);
+                _lhs + (p).offset((0) as isize).with(|__s: &Point| __s.y)
             };
-            _lhs + (*(*(p).offset((1) as isize).upgrade().deref()).x.borrow())
+            _lhs + (p).offset((1) as isize).with(|__s: &Point| __s.x)
         };
-        _lhs + (*(*(p).offset((1) as isize).upgrade().deref()).y.borrow())
+        _lhs + (p).offset((1) as isize).with(|__s: &Point| __s.y)
     };
 }
 pub fn shift_points_12(p: Ptr<Point>, d: i32) {
     let d: Value<i32> = Rc::new(RefCell::new(d));
-    (*(*(p).offset((0) as isize).upgrade().deref()).x.borrow_mut()) += (*d.borrow());
-    (*(*(p).offset((1) as isize).upgrade().deref()).y.borrow_mut()) += (*d.borrow());
+    (p).offset((0) as isize)
+        .with_mut(|__s: &mut Point| __s.x += (*d.borrow()));
+    (p).offset((1) as isize)
+        .with_mut(|__s: &mut Point| __s.y += (*d.borrow()));
 }
 pub fn total_len_13(names: Ptr<Ptr<u8>>) -> i32 {
     return (({ len5_1(((names).offset((0) as isize).read()).clone()) })
@@ -148,19 +142,13 @@ fn main_0() -> i32 {
     );
     assert!((({ len_0((({ pick_10((buf.as_pointer() as Ptr<u8>),) }) as Ptr<u8>),) }) == 4));
     let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(Box::new([
-        Point {
-            x: Rc::new(RefCell::new(1)),
-            y: Rc::new(RefCell::new(2)),
-        },
-        Point {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
-        },
+        Point { x: 1, y: 2 },
+        Point { x: 3, y: 4 },
     ])));
     assert!((({ sum_points_11((pts.as_pointer() as Ptr<Point>),) }) == 10));
     ({ shift_points_12((pts.as_pointer() as Ptr<Point>), 10) });
-    assert!(((*(*pts.borrow())[(0) as usize].x.borrow()) == 11));
-    assert!(((*(*pts.borrow())[(1) as usize].y.borrow()) == 14));
+    assert!(({ (*pts.borrow())[(0) as usize].x } == 11));
+    assert!(({ (*pts.borrow())[(1) as usize].y } == 14));
     assert!((({ sum_points_11((pts.as_pointer() as Ptr<Point>),) }) == 30));
     assert!(
         (({ sum_decayed_6((arr.as_pointer() as Ptr<i32>),) })

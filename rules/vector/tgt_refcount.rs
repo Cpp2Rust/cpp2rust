@@ -45,7 +45,7 @@ fn f9<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f10<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f10<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
@@ -53,7 +53,7 @@ fn f13<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f17<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f17<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -140,7 +140,7 @@ fn f37<T1: TryFrom<T2>, T2: Clone + ByteRepr>(a0: Ptr<T2>, a1: Ptr<T2>) -> Vec<T
         .collect::<Vec<_>>()
 }
 
-fn f40<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f40<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -163,7 +163,7 @@ fn f43<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f44<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f44<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -175,7 +175,7 @@ fn f50<T1: ByteRepr>(a0: Ptr<Vec<T1>>, a1: usize) -> Ptr<Vec<T1>> {
     }
 }
 
-fn f51<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f51<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
@@ -206,7 +206,7 @@ fn f55<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
     a0.write(std::mem::take(&mut *a1))
 }
 
-fn f57<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f57<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -232,7 +232,7 @@ fn f68<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f69<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f69<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
@@ -240,7 +240,7 @@ fn f72<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f76<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f76<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -323,7 +323,7 @@ fn f95<T1>(a0: Ptr<T1>) -> Ptr<T1> {
     a0
 }
 
-fn f96<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f96<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 
@@ -331,7 +331,7 @@ fn f98<T1>(a0: Ptr<T1>, a1: usize) -> Ptr<T1> {
     a0.offset(a1 as isize)
 }
 
-fn f99<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f99<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 
@@ -354,7 +354,7 @@ fn f103<T1: ByteRepr + Clone>(a0: Ptr<Vec<T1>>, a1: &mut Vec<T1>) {
     a0.write(std::mem::take(&mut *a1))
 }
 
-fn f104<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f104<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_end()
 }
 

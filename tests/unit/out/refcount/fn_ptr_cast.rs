@@ -36,37 +36,29 @@ pub fn test_double_cast_2() {
         _lhs == (*fn_.borrow()).clone()
     });
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Command {
-    pub data: Value<AnyPtr>,
-}
-impl Clone for Command {
-    fn clone(&self) -> Self {
-        let __this: Value<Command> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        }));
-        let this: Ptr<Command> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub data: AnyPtr,
 }
 impl ByteRepr for Command {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
+        self.data.to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
+            data: <AnyPtr>::from_bytes(&buf[0..8]),
         }
     }
 }
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
-    (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
+    (*cmd.borrow_mut()).data = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
-        (*(*cmd.borrow()).data.borrow())
+        { (*cmd.borrow()).data.clone() }
             .cast_fn::<fn(i32) -> i32>()
             .expect("ub:wrong fn type"),
     ));

@@ -6,33 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Point {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Point> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl ByteRepr for Point {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -79,19 +71,13 @@ fn main_0() -> i32 {
         (*i1.borrow()),
         ({ read_1((*ref_1.borrow()).clone(),) }),
     );
-    let point: Value<Point> = Rc::new(RefCell::new(Point {
-        x: Rc::new(RefCell::new(3)),
-        y: Rc::new(RefCell::new(4)),
-    }));
+    let point: Value<Point> = Rc::new(RefCell::new(Point { x: 3, y: 4 }));
     let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));
-    (*(*(*point_ref.borrow()).upgrade().deref()).x.borrow_mut()) = 30;
-    (*(*(*point_ref.borrow()).upgrade().deref()).y.borrow_mut()) = 40;
-    write!(
-        libcc2rs::cout(),
-        "{:} {:}\n",
-        (*(*point.borrow()).x.borrow()),
-        (*(*point.borrow()).y.borrow()),
-    );
+    (*point_ref.borrow()).with_mut(|__s: &mut Point| __s.x = 30);
+    (*point_ref.borrow()).with_mut(|__s: &mut Point| __s.y = 40);
+    write!(libcc2rs::cout(), "{:} {:}\n", { (*point.borrow()).x }, {
+        (*point.borrow()).y
+    },);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -5,7 +5,7 @@ use libcc2rs::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn f1<T1>(a0: Ptr<T1>) -> Ptr<T1> {
+fn f1<T1: 'static>(a0: Ptr<T1>) -> Ptr<T1> {
     a0.to_last()
 }
 

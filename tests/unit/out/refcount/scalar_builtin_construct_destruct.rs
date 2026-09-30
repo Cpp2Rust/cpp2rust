@@ -6,29 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Pod {
-    pub v: Value<i32>,
-}
-impl Clone for Pod {
-    fn clone(&self) -> Self {
-        let __this: Value<Pod> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Pod> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 impl ByteRepr for Pod {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            v: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -59,11 +51,9 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
     ({ destroy_2((x.as_pointer())) });
     assert!(((*x.borrow()) == 5));
-    let pod: Value<Pod> = Rc::new(RefCell::new(Pod {
-        v: Rc::new(RefCell::new(7)),
-    }));
+    let pod: Value<Pod> = Rc::new(RefCell::new(Pod { v: 7 }));
     ({ destroy_3((pod.as_pointer())) });
-    assert!(((*(*pod.borrow()).v.borrow()) == 7));
+    assert!(({ (*pod.borrow()).v } == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

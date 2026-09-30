@@ -6,88 +6,96 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Chunk {
-    pub data: Value<i32>,
-}
-impl Clone for Chunk {
-    fn clone(&self) -> Self {
-        let __this: Value<Chunk> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()))),
-        }));
-        let this: Ptr<Chunk> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub data: i32,
 }
 impl ByteRepr for Chunk {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..4]);
+        self.data.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            data: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Writer {
-    pub output: Value<Ptr<Vec<Chunk>>>,
-    pub chunk: Value<Chunk>,
-}
-impl Clone for Writer {
-    fn clone(&self) -> Self {
-        let __this: Value<Writer> = Rc::new(RefCell::new(Self {
-            output: Rc::new(RefCell::new((*self.output.borrow()).clone())),
-            chunk: Rc::new(RefCell::new((*self.chunk.borrow()).clone())),
-        }));
-        let this: Ptr<Writer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub output: Ptr<Vec<Chunk>>,
+    #[offset(8)]
+    pub chunk: Chunk,
 }
 impl ByteRepr for Writer {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.output.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.chunk.borrow()).to_bytes(&mut buf[8..12]);
+        self.output.to_bytes(&mut buf[0..8]);
+        self.chunk.to_bytes(&mut buf[8..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            output: Rc::new(RefCell::new(<Ptr<Vec<Chunk>>>::from_bytes(&buf[0..8]))),
-            chunk: Rc::new(RefCell::new(<Chunk>::from_bytes(&buf[8..12]))),
+            output: <Ptr<Vec<Chunk>>>::from_bytes(&buf[0..8]),
+            chunk: <Chunk>::from_bytes(&buf[8..12]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, VaArg, FnPtrArg, Default)]
 pub struct JPEGData {
+    #[offset(0)]
     pub com_data: Value<Vec<Value<Vec<u8>>>>,
+    #[offset(24)]
     pub app_data: Value<Vec<Value<Vec<u8>>>>,
 }
 impl Clone for JPEGData {
     fn clone(&self) -> Self {
         let __this: Value<JPEGData> = Rc::new(RefCell::new(Self {
-            com_data: Rc::new(RefCell::new(
-                (*self.com_data.borrow())
-                    .iter()
-                    .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
-                    .collect(),
-            )),
-            app_data: Rc::new(RefCell::new(
-                (*self.app_data.borrow())
-                    .iter()
-                    .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
-                    .collect(),
-            )),
+            com_data: {
+                Rc::new(RefCell::new(
+                    (*self.com_data.borrow())
+                        .iter()
+                        .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
+                        .collect(),
+                ))
+            },
+            app_data: {
+                Rc::new(RefCell::new(
+                    (*self.app_data.borrow())
+                        .iter()
+                        .map(|inner_vec| Rc::new(RefCell::new(inner_vec.borrow().clone())))
+                        .collect(),
+                ))
+            },
         }));
         let this: Ptr<JPEGData> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for JPEGData {}
+=======
+impl ByteRepr for JPEGData {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.com_data.to_bytes(&mut buf[0..24]);
+        self.app_data.to_bytes(&mut buf[24..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            com_data: <Value<Vec<Value<Vec<u8>>>>>::from_bytes(&buf[0..24]),
+            app_data: <Value<Vec<Value<Vec<u8>>>>>::from_bytes(&buf[24..48]),
+        }
+    }
+}
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));
     ((*dest.borrow()).clone() as Ptr<Vec<Value<Vec<u8>>>>)
@@ -100,9 +108,9 @@ pub fn push_local_from_field_1(jpg: Ptr<JPEGData>, cond: bool) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> =
         Rc::new(RefCell::new(Ptr::<Vec<Value<Vec<u8>>>>::null()));
     if (*cond.borrow()) {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).com_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).with(|__s: &JPEGData| __s.com_data.as_pointer()));
     } else {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).app_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).with(|__s: &JPEGData| __s.app_data.as_pointer()));
     }
     ((*dest.borrow()).clone() as Ptr<Vec<Value<Vec<u8>>>>).with_mut(
         |__v: &mut Vec<Value<Vec<u8>>>| {
@@ -124,9 +132,11 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 }
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
-    (*(*(*bw.borrow()).upgrade().deref()).output.borrow()).with_mut(|__v: &mut Vec<Chunk>| {
-        __v.push((*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone())
-    });
+    (*bw.borrow())
+        .with(|__s: &Writer| (__s.output).clone())
+        .with_mut(|__v: &mut Vec<Chunk>| {
+            __v.push(((*(*bw.borrow()).upgrade().deref()).chunk).clone())
+        });
 }
 pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
     let jpg: Value<Ptr<JPEGData>> = Rc::new(RefCell::new(jpg));
@@ -135,9 +145,9 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> =
         Rc::new(RefCell::new(Ptr::<Vec<Value<Vec<u8>>>>::null()));
     if (*cond.borrow()) {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).com_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).with(|__s: &JPEGData| __s.com_data.as_pointer()));
     } else {
-        (*dest.borrow_mut()) = ((*(*jpg.borrow()).upgrade().deref()).app_data.as_pointer());
+        (*dest.borrow_mut()) = ((*jpg.borrow()).with(|__s: &JPEGData| __s.app_data.as_pointer()));
     }
     {
         let __init = {
@@ -156,8 +166,9 @@ pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
 pub fn nested_emplace_move_5(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
     {
-        let __init = (*(*(*bw.borrow()).upgrade().deref()).chunk.borrow()).clone();
-        (*(*(*bw.borrow()).upgrade().deref()).output.borrow())
+        let __init = ((*(*bw.borrow()).upgrade().deref()).chunk).clone();
+        (*bw.borrow())
+            .with(|__s: &Writer| (__s.output).clone())
             .with_mut(|__v: &mut Vec<Chunk>| __v.push(__init))
     };
 }
@@ -171,16 +182,18 @@ pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
         (*comps.borrow()).with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Pair {
-    pub first: Value<i32>,
-    pub second: Value<i32>,
+    #[offset(0)]
+    pub first: i32,
+    #[offset(4)]
+    pub second: i32,
 }
 impl Pair {
     pub fn new_1() -> Self {
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new(-1_i32)),
-            second: Rc::new(RefCell::new(-1_i32)),
+            first: -1_i32,
+            second: -1_i32,
         }));
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -188,8 +201,8 @@ impl Pair {
     pub fn new_2(a: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new((*a.borrow()))),
-            second: Rc::new(RefCell::new(0)),
+            first: (*a.borrow()),
+            second: 0,
         }));
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -198,18 +211,8 @@ impl Pair {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new((*a.borrow()))),
-            second: Rc::new(RefCell::new(((*b.borrow()) * 2))),
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for Pair {
-    fn clone(&self) -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new((*self.first.borrow()))),
-            second: Rc::new(RefCell::new((*self.second.borrow()))),
+            first: (*a.borrow()),
+            second: ((*b.borrow()) * 2),
         }));
         let this: Ptr<Pair> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -225,13 +228,13 @@ impl ByteRepr for Pair {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.second.borrow()).to_bytes(&mut buf[4..8]);
+        self.first.to_bytes(&mut buf[0..4]);
+        self.second.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            first: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            second: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            first: <i32>::from_bytes(&buf[0..4]),
+            second: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -295,7 +298,7 @@ fn main_0() -> i32 {
     ({ push_local_from_field_1((jpg.as_pointer()), true) });
     assert!(((*(*jpg.borrow()).com_data.borrow()).len() == 1_usize));
     assert!(
-        ((*(((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((*(({ (*jpg.borrow()).com_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -306,7 +309,7 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((((({ (*jpg.borrow()).com_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -316,7 +319,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((((({ (*jpg.borrow()).com_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -326,7 +329,7 @@ fn main_0() -> i32 {
             == 2)
     );
     assert!(
-        ((((((*jpg.borrow()).com_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((((({ (*jpg.borrow()).com_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -340,23 +343,20 @@ fn main_0() -> i32 {
     ({ shrink_through_ptr_2((chunks.as_pointer())) });
     assert!((*chunks.borrow()).is_empty());
     let w: Value<Writer> = Rc::new(RefCell::new(<Writer>::default()));
-    (*(*(*w.borrow()).chunk.borrow()).data.borrow_mut()) = 42;
-    (*(*w.borrow()).output.borrow_mut()) = (chunks.as_pointer());
+    (*w.borrow_mut()).chunk.data = 42;
+    (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 1_usize));
     assert!(
-        ((*(*(chunks.as_pointer() as Ptr<Chunk>)
+        ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .data
-        .borrow())
+            .with(|__s: &Chunk| __s.data)
             == 42)
     );
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*(*jpg.borrow()).app_data.borrow()).len() == 1_usize));
     assert!(
-        ((*(((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((*(({ (*jpg.borrow()).app_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -367,7 +367,7 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((((({ (*jpg.borrow()).app_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -377,7 +377,7 @@ fn main_0() -> i32 {
             == 1)
     );
     assert!(
-        ((((((*jpg.borrow()).app_data.as_pointer() as Ptr<Value<Vec<u8>>>)
+        ((((({ (*jpg.borrow()).app_data.as_pointer() } as Ptr<Value<Vec<u8>>>)
             .offset(0_usize)
             .upgrade()
             .deref()
@@ -387,107 +387,71 @@ fn main_0() -> i32 {
             == 3)
     );
     assert!(((*(*jpg.borrow()).com_data.borrow()).len() == 1_usize));
-    (*(*(*w.borrow()).chunk.borrow()).data.borrow_mut()) = 99;
-    (*(*w.borrow()).output.borrow_mut()) = (chunks.as_pointer());
+    (*w.borrow_mut()).chunk.data = 99;
+    (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_emplace_move_5((w.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 2_usize));
     assert!(
-        ((*(*(chunks.as_pointer() as Ptr<Chunk>)
+        ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(1_usize)
-            .upgrade()
-            .deref())
-        .data
-        .borrow())
+            .with(|__s: &Chunk| __s.data)
             == 99)
     );
     ({ self_ref_push_6((chunks.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 3_usize));
     assert!(
-        ((*(*(chunks.as_pointer() as Ptr<Chunk>)
+        ((chunks.as_pointer() as Ptr<Chunk>)
             .offset(2_usize)
-            .upgrade()
-            .deref())
-        .data
-        .borrow())
+            .with(|__s: &Chunk| __s.data)
             == 42)
     );
     let pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_ctor_args_7((pairs.as_pointer())) });
     assert!(((*pairs.borrow()).len() == 3_usize));
     assert!(
-        ((*(*(pairs.as_pointer() as Ptr<Pair>)
+        ((pairs.as_pointer() as Ptr<Pair>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .first
-        .borrow())
+            .with(|__s: &Pair| __s.first)
             == -1_i32)
-            && ((*(*(pairs.as_pointer() as Ptr<Pair>)
+            && ((pairs.as_pointer() as Ptr<Pair>)
                 .offset(0_usize)
-                .upgrade()
-                .deref())
-            .second
-            .borrow())
+                .with(|__s: &Pair| __s.second)
                 == -1_i32)
     );
     assert!(
-        ((*(*(pairs.as_pointer() as Ptr<Pair>)
+        ((pairs.as_pointer() as Ptr<Pair>)
             .offset(1_usize)
-            .upgrade()
-            .deref())
-        .first
-        .borrow())
+            .with(|__s: &Pair| __s.first)
             == 3)
-            && ((*(*(pairs.as_pointer() as Ptr<Pair>)
+            && ((pairs.as_pointer() as Ptr<Pair>)
                 .offset(1_usize)
-                .upgrade()
-                .deref())
-            .second
-            .borrow())
+                .with(|__s: &Pair| __s.second)
                 == 0)
     );
     assert!(
-        ((*(*(pairs.as_pointer() as Ptr<Pair>)
+        ((pairs.as_pointer() as Ptr<Pair>)
             .offset(2_usize)
-            .upgrade()
-            .deref())
-        .first
-        .borrow())
+            .with(|__s: &Pair| __s.first)
             == 4)
-            && ((*(*(pairs.as_pointer() as Ptr<Pair>)
+            && ((pairs.as_pointer() as Ptr<Pair>)
                 .offset(2_usize)
-                .upgrade()
-                .deref())
-            .second
-            .borrow())
+                .with(|__s: &Pair| __s.second)
                 == 10)
     );
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
     assert!(
-        ((*(*(queue.as_pointer() as Ptr<Pair>).upgrade().deref())
-            .first
-            .borrow())
-            == 6)
-            && ((*(*(queue.as_pointer() as Ptr<Pair>).upgrade().deref())
-                .second
-                .borrow())
-                == 14)
+        ((queue.as_pointer() as Ptr<Pair>).with(|__s: &Pair| __s.first) == 6)
+            && ((queue.as_pointer() as Ptr<Pair>).with(|__s: &Pair| __s.second) == 14)
     );
     assert!(
-        ((*(*(queue.as_pointer() as Ptr<Pair>)
+        ((queue.as_pointer() as Ptr<Pair>)
             .to_last()
-            .upgrade()
-            .deref())
-        .first
-        .borrow())
+            .with(|__s: &Pair| __s.first)
             == -1_i32)
-            && ((*(*(queue.as_pointer() as Ptr<Pair>)
+            && ((queue.as_pointer() as Ptr<Pair>)
                 .to_last()
-                .upgrade()
-                .deref())
-            .second
-            .borrow())
+                .with(|__s: &Pair| __s.second)
                 == -1_i32)
     );
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));

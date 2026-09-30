@@ -1,4 +1,3 @@
-// panic: refcount
 #include <cassert>
 #include <cstdint>
 
@@ -13,7 +12,6 @@ struct Pair {
 };
 
 // Reinterpret between two structs with identical layout.
-// Fails because custom structs don't implement ByteRepr (yet!).
 int main() {
   Point pt = {10, 20};
   Pair *pair = reinterpret_cast<Pair *>(&pt);

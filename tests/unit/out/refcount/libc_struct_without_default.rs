@@ -6,16 +6,18 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct UserDefined {
+    #[offset(0)]
     pub a: Value<Vec<i32>>,
+    #[offset(8)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for UserDefined {
     fn clone(&self) -> Self {
         let __this: Value<UserDefined> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
+            a: { Rc::new(RefCell::new((*self.a.borrow()).clone())) },
+            v: { Rc::new(RefCell::new((*self.v.borrow()).clone())) },
         }));
         let this: Ptr<UserDefined> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -31,24 +33,35 @@ impl Default for UserDefined {
         }
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for UserDefined {}
 #[derive(VaArg, FnPtrArg)]
-pub struct FieldIsLibcType {
-    pub addr: Value<libcc2rs::Sockaddr>,
-}
-impl Clone for FieldIsLibcType {
-    fn clone(&self) -> Self {
-        let __this: Value<FieldIsLibcType> = Rc::new(RefCell::new(Self {
-            addr: Rc::new(RefCell::new((*self.addr.borrow()).clone())),
-        }));
-        let this: Ptr<FieldIsLibcType> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+=======
+impl ByteRepr for UserDefined {
+    fn byte_size() -> usize {
+        32
     }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.a.to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[8..32]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            a: <Value<Vec<i32>>>::from_bytes(&buf[0..4]),
+            v: <Value<Vec<i32>>>::from_bytes(&buf[8..32]),
+        }
+    }
+}
+#[derive(Clone, Record, VaArg, FnPtrArg)]
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+pub struct FieldIsLibcType {
+    #[offset(0)]
+    pub addr: libcc2rs::Sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         FieldIsLibcType {
-            addr: Rc::new(RefCell::new(Default::default())),
+            addr: Default::default(),
         }
     }
 }
@@ -57,11 +70,11 @@ impl ByteRepr for FieldIsLibcType {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.addr.borrow()).to_bytes(&mut buf[0..16]);
+        self.addr.to_bytes(&mut buf[0..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            addr: Rc::new(RefCell::new(<libcc2rs::Sockaddr>::from_bytes(&buf[0..16]))),
+            addr: <libcc2rs::Sockaddr>::from_bytes(&buf[0..16]),
         }
     }
 }
@@ -91,15 +104,10 @@ fn main_0() -> i32 {
     (*(*st.borrow()).st_size.borrow_mut()) = 1024_i64;
     assert!(((*(*st.borrow()).st_size.borrow()) == 1024_i64));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
-    assert!(
-        ((((*ud.borrow()).a.as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read())
-            == 0)
-    );
+    assert!(({ (*(*ud.borrow()).a.borrow())[(0_usize) as usize] } == 0));
     assert!(((*(*ud.borrow()).v.borrow()).len() == 0_usize));
     let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::default()));
-    assert!((((*(*(*filt.borrow()).addr.borrow()).sa_family.borrow()) as i32) == 0));
+    assert!((((*(*filt.borrow()).addr.sa_family.borrow()) as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

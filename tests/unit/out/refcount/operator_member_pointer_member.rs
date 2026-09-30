@@ -6,33 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub x: Value<i32>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
 }
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Table {}
 impl Table {
     pub fn operator_index(i: i32) -> Ptr<i32> {
@@ -43,28 +35,18 @@ impl Table {
 thread_local!(
     pub static table_0: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([7, 8, 9])));
 );
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct S {
-    pub data: Value<Box<[i32]>>,
-    pub inner: Value<Inner>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| (*self.data.borrow())[(__i) as usize],
-            )))),
-            inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub data: Box<[i32]>,
+    #[offset(12)]
+    pub inner: Inner,
 }
 impl Default for S {
     fn default() -> Self {
         S {
-            data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            inner: <Value<Inner>>::default(),
+            data: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            inner: <Inner>::default(),
         }
     }
 }
@@ -73,13 +55,13 @@ impl ByteRepr for S {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..12]);
-        (*self.inner.borrow()).to_bytes(&mut buf[12..16]);
+        self.data.to_bytes(&mut buf[0..12]);
+        self.inner.to_bytes(&mut buf[12..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..12]))),
-            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[12..16]))),
+            data: <Box<[i32]>>::from_bytes(&buf[0..12]),
+            inner: <Inner>::from_bytes(&buf[12..16]),
         }
     }
 }
@@ -89,47 +71,33 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
-        data: Rc::new(RefCell::new(Box::new([1, 2, 3]))),
-        inner: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(9)),
-        })),
+        data: Box::new([1, 2, 3]),
+        inner: Inner { x: 9 },
     }));
     assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 2));
     ({ SImpl::operator_index_1(&s.as_pointer(), 1) }).write(20);
     assert!(((({ SImpl::operator_index_1(&s.as_pointer(), 1,) }).read()) == 20));
     let cs: Ptr<S> = s.as_pointer();
     assert!(((({ SImpl::operator_index_2(&cs, 2,) }).read()) == 3));
+    assert!((({ SImpl::operator_deref(&s.as_pointer(),) }).with(|__s: &Inner| __s.x) == 9));
+    ({ SImpl::operator_deref(&s.as_pointer()) }).with_mut(|__s: &mut Inner| __s.x = 10);
     assert!(
-        ((*(*({ SImpl::operator_deref(&s.as_pointer(),) })
-            .upgrade()
-            .deref())
-        .x
-        .borrow())
-            == 9)
+        ({
+            (*({ SImpl::operator_arrow(&s.as_pointer()) })
+                .upgrade()
+                .deref())
+            .x
+        } == 10)
     );
-    (*(*({ SImpl::operator_deref(&s.as_pointer()) })
+    (*({ SImpl::operator_arrow(&s.as_pointer()) })
         .upgrade()
-        .deref())
-    .x
-    .borrow_mut()) = 10;
-    assert!(
-        ((*(*({ SImpl::operator_arrow(&s.as_pointer(),) })
-            .upgrade()
-            .deref())
-        .x
-        .borrow())
-            == 10)
-    );
-    (*(*({ SImpl::operator_arrow(&s.as_pointer()) })
-        .upgrade()
-        .deref())
-    .x
-    .borrow_mut()) = 11;
-    assert!(((*(*(*s.borrow()).inner.borrow()).x.borrow()) == 11));
+        .deref_mut())
+    .x = 11;
+    assert!(({ (*s.borrow()).inner.x } == 11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ SImpl::operator_addr(&s.as_pointer()) })));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
+    assert!(((*s.borrow()).data[(0) as usize] == 5));
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
@@ -151,20 +119,20 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_index_1(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
-        return ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset((*i.borrow()));
+        return (field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()));
     }
     fn operator_index_2(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
-        return ((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset((*i.borrow()));
+        return (field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()));
     }
     fn operator_deref(&self) -> Ptr<Inner> {
-        return (*(*self).upgrade().deref()).inner.as_pointer();
+        return field_ptr!((*self), inner);
     }
     fn operator_arrow(&self) -> Ptr<Inner> {
-        return ((*(*self).upgrade().deref()).inner.as_pointer());
+        return (field_ptr!((*self), inner));
     }
     fn operator_addr(&self) -> Ptr<i32> {
-        return (((*(*self).upgrade().deref()).data.as_pointer() as Ptr<i32>).offset(0));
+        return ((field_ptr!((*self), data) as Ptr<i32>).offset(0));
     }
 }
 pub fn __cpp2rust_init_globals() {

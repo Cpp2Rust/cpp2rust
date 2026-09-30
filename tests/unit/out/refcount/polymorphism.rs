@@ -9,9 +9,9 @@ use std::rc::{Rc, Weak};
 pub trait Animal {
     fn bark(&self) -> bool;
 }
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Dog {}
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Cat {}
 pub fn main() {
     __cpp2rust_init_globals();

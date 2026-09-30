@@ -6,44 +6,36 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct POD {
-    pub x1: Value<i32>,
-    pub x2: Value<i32>,
-    pub x3: Value<i32>,
-}
-impl Clone for POD {
-    fn clone(&self) -> Self {
-        let __this: Value<POD> = Rc::new(RefCell::new(Self {
-            x1: Rc::new(RefCell::new((*self.x1.borrow()))),
-            x2: Rc::new(RefCell::new((*self.x2.borrow()))),
-            x3: Rc::new(RefCell::new((*self.x3.borrow()))),
-        }));
-        let this: Ptr<POD> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x1: i32,
+    #[offset(4)]
+    pub x2: i32,
+    #[offset(8)]
+    pub x3: i32,
 }
 impl ByteRepr for POD {
     fn byte_size() -> usize {
         12
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x1.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.x2.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.x3.borrow()).to_bytes(&mut buf[8..12]);
+        self.x1.to_bytes(&mut buf[0..4]);
+        self.x2.to_bytes(&mut buf[4..8]);
+        self.x3.to_bytes(&mut buf[8..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            x2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            x3: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
+            x1: <i32>::from_bytes(&buf[0..4]),
+            x2: <i32>::from_bytes(&buf[4..8]),
+            x3: <i32>::from_bytes(&buf[8..12]),
         }
     }
 }
 pub fn PODIncrement_0(pod: Ptr<POD>) {
-    (*(*pod.upgrade().deref()).x1.borrow_mut()) += 1;
-    (*(*pod.upgrade().deref()).x2.borrow_mut()) += 2;
-    (*(*pod.upgrade().deref()).x3.borrow_mut()) += 3;
+    pod.with_mut(|__s: &mut POD| __s.x1 += 1);
+    pod.with_mut(|__s: &mut POD| __s.x2 += 2);
+    pod.with_mut(|__s: &mut POD| __s.x3 += 3);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -51,21 +43,17 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p1: Value<POD> = Rc::new(RefCell::new(POD {
-        x1: Rc::new(RefCell::new(10)),
-        x2: Rc::new(RefCell::new(11)),
-        x3: Rc::new(RefCell::new(12)),
+        x1: 10,
+        x2: 11,
+        x3: 12,
     }));
     let p2: Value<POD> = Rc::new(RefCell::new(POD {
-        x1: Rc::new(RefCell::new((*(*p1.borrow()).x1.borrow()))),
-        x2: Rc::new(RefCell::new((*(*p1.borrow()).x2.borrow()))),
-        x3: Rc::new(RefCell::new((*(*p1.borrow()).x3.borrow()))),
+        x1: { (*p1.borrow()).x1 },
+        x2: { (*p1.borrow()).x2 },
+        x3: { (*p1.borrow()).x3 },
     }));
     ({ PODIncrement_0(p2.as_pointer()) });
-    assert!(
-        ((((*(*p2.borrow()).x1.borrow()) + (*(*p2.borrow()).x2.borrow()))
-            + (*(*p2.borrow()).x3.borrow()))
-            == 39)
-    );
+    assert!(((({ (*p2.borrow()).x1 } + { (*p2.borrow()).x2 }) + { (*p2.borrow()).x3 }) == 39));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

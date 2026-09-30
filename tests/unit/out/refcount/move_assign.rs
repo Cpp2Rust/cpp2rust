@@ -6,38 +6,53 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(Record, Default)]
 pub struct MoveOnly {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl MoveOnly {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-        }));
+        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
+            v: { o.with(|__s: &MoveOnly| __s.v) },
         }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
-        (*(*o.upgrade().deref()).v.borrow_mut()) = 0;
+        o.with_mut(|__s: &mut MoveOnly| __s.v = 0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for MoveOnly {}
 #[derive()]
+=======
+impl ByteRepr for MoveOnly {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.v.to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            v: <i32>::from_bytes(&buf[0..4]),
+        }
+    }
+}
+#[derive(Record)]
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct ConstMoveAssign {
-    pub mark: Value<i32>,
+    #[offset(0)]
+    pub mark: i32,
 }
 impl ConstMoveAssign {
     pub fn new() -> Self {
-        let __this: Value<ConstMoveAssign> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(0)),
-        }));
+        let __this: Value<ConstMoveAssign> = Rc::new(RefCell::new(Self { mark: 0 }));
         let this: Ptr<ConstMoveAssign> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -47,7 +62,23 @@ impl Default for ConstMoveAssign {
         { ConstMoveAssign::new() }
     }
 }
+<<<<<<< HEAD
 impl ByteRepr for ConstMoveAssign {}
+=======
+impl ByteRepr for ConstMoveAssign {
+    fn byte_size() -> usize {
+        4
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.mark.to_bytes(&mut buf[0..4]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            mark: <i32>::from_bytes(&buf[0..4]),
+        }
+    }
+}
+>>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn make_0(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
@@ -62,8 +93,8 @@ fn main_0() -> i32 {
     let b: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 2 })));
     let c: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
     ({ MoveOnlyImpl::move_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(((*(*a.borrow()).v.borrow()) == 2));
-    assert!(((*(*b.borrow()).v.borrow()) == 0));
+    assert!(({ (*a.borrow()).v } == 2));
+    assert!(({ (*b.borrow()).v } == 0));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
         MoveOnlyImpl::move_assign(&b.as_pointer(), _o.as_pointer())
@@ -75,24 +106,23 @@ fn main_0() -> i32 {
         )
     });
     assert!(
-        (((*(*b.borrow()).v.borrow()) == 0) && ((*(*a.borrow()).v.borrow()) == 0))
-            && ((*(*c.borrow()).v.borrow()) == 3)
+        (({ (*b.borrow()).v } == 0) && ({ (*a.borrow()).v } == 0)) && ({ (*c.borrow()).v } == 3)
     );
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 5 })));
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 5));
+    assert!(({ (*a.borrow()).v } == 5));
     ({
         let _o: Value<MoveOnly> = Rc::new(RefCell::new(({ make_0(6) })));
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 6));
+    assert!(({ (*a.borrow()).v } == 6));
     ({
         let _o: Ptr<MoveOnly> = a.as_pointer();
         MoveOnlyImpl::move_assign(&a.as_pointer(), _o)
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 6));
+    assert!(({ (*a.borrow()).v } == 6));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
     (*vec_.borrow_mut()).push(MoveOnly::new({ 7 }));
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
@@ -103,23 +133,20 @@ fn main_0() -> i32 {
         )
     });
     assert!(
-        ((*(*(vec_.as_pointer() as Ptr<MoveOnly>)
+        ((vec_.as_pointer() as Ptr<MoveOnly>)
             .offset(0_usize)
-            .upgrade()
-            .deref())
-        .v
-        .borrow())
+            .with(|__s: &MoveOnly| __s.v)
             == 8)
     );
-    assert!(((*(*d.borrow()).v.borrow()) == 0));
+    assert!(({ (*d.borrow()).v } == 0));
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m1: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m2: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let cm: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     ({ ConstMoveAssignImpl::operator_assign_2(&m1.as_pointer(), m.as_pointer()) });
     ({ ConstMoveAssignImpl::operator_assign_3(&m2.as_pointer(), cm.as_pointer()) });
-    assert!(((*(*m1.borrow()).mark.borrow()) == 1));
-    assert!(((*(*m2.borrow()).mark.borrow()) == 10));
+    assert!(({ (*m1.borrow()).mark } == 1));
+    assert!(({ (*m2.borrow()).mark } == 10));
     return 0;
 }
 pub trait ConstMoveAssignImpl {
@@ -128,13 +155,13 @@ pub trait ConstMoveAssignImpl {
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
     fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
+        let __rhs = (o.with(|__s: &ConstMoveAssign| __s.mark) + 1);
+        (*self).with_mut(|__s: &mut ConstMoveAssign| __s.mark = __rhs);
         return (*self).clone();
     }
     fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
+        let __rhs = (o.with(|__s: &ConstMoveAssign| __s.mark) + 10);
+        (*self).with_mut(|__s: &mut ConstMoveAssign| __s.mark = __rhs);
         return (*self).clone();
     }
 }
@@ -146,9 +173,9 @@ impl MoveOnlyImpl for Ptr<MoveOnly> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = (*(*o.upgrade().deref()).v.borrow());
-        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
-        (*(*o.upgrade().deref()).v.borrow_mut()) = 0;
+        let __rhs = o.with(|__s: &MoveOnly| __s.v);
+        (*self).with_mut(|__s: &mut MoveOnly| __s.v = __rhs);
+        o.with_mut(|__s: &mut MoveOnly| __s.v = 0);
         return (*self).clone();
     }
 }

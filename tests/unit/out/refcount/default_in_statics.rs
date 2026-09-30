@@ -6,80 +6,60 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub v: Value<i32>,
-    pub name: Value<Ptr<u8>>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub v: i32,
+    #[offset(8)]
+    pub name: Ptr<u8>,
 }
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.name.borrow()).to_bytes(&mut buf[8..16]);
+        self.v.to_bytes(&mut buf[0..4]);
+        self.name.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[8..16]))),
+            v: <i32>::from_bytes(&buf[0..4]),
+            name: <Ptr<u8>>::from_bytes(&buf[8..16]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Outer {
-    pub p1: Value<Ptr<i32>>,
-    pub p2: Value<Ptr<i32>>,
-    pub arr: Value<Box<[Ptr<i32>]>>,
-    pub cp: Value<Ptr<u8>>,
-    pub pp: Value<Ptr<Ptr<i32>>>,
-    pub inner: Value<Inner>,
-    pub x: Value<i32>,
-    pub fn_: Value<FnPtr<fn(i32) -> i32>>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            p1: Rc::new(RefCell::new((*self.p1.borrow()).clone())),
-            p2: Rc::new(RefCell::new((*self.p2.borrow()).clone())),
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
-            )))),
-            cp: Rc::new(RefCell::new((*self.cp.borrow()).clone())),
-            pp: Rc::new(RefCell::new((*self.pp.borrow()).clone())),
-            inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            fn_: Rc::new(RefCell::new((*self.fn_.borrow()).clone())),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub p1: Ptr<i32>,
+    #[offset(8)]
+    pub p2: Ptr<i32>,
+    #[offset(16)]
+    pub arr: Box<[Ptr<i32>]>,
+    #[offset(40)]
+    pub cp: Ptr<u8>,
+    #[offset(48)]
+    pub pp: Ptr<Ptr<i32>>,
+    #[offset(56)]
+    pub inner: Inner,
+    #[offset(72)]
+    pub x: i32,
+    #[offset(80)]
+    pub fn_: FnPtr<fn(i32) -> i32>,
 }
 impl Default for Outer {
     fn default() -> Self {
         Outer {
-            p1: Rc::new(RefCell::new(Ptr::<i32>::null())),
-            p2: Rc::new(RefCell::new(Ptr::<i32>::null())),
-            arr: Rc::new(RefCell::new(
-                (0..3)
-                    .map(|_| Ptr::<i32>::null())
-                    .collect::<Box<[Ptr<i32>]>>(),
-            )),
-            cp: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            pp: Rc::new(RefCell::new(Ptr::<Ptr<i32>>::null())),
-            inner: <Value<Inner>>::default(),
-            x: Rc::new(RefCell::new(0_i32)),
-            fn_: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
+            p1: Ptr::<i32>::null(),
+            p2: Ptr::<i32>::null(),
+            arr: (0..3)
+                .map(|_| Ptr::<i32>::null())
+                .collect::<Box<[Ptr<i32>]>>(),
+            cp: Ptr::<u8>::null(),
+            pp: Ptr::<Ptr<i32>>::null(),
+            inner: <Inner>::default(),
+            x: 0_i32,
+            fn_: FnPtr::<fn(i32) -> i32>::null(),
         }
     }
 }
@@ -88,59 +68,49 @@ impl ByteRepr for Outer {
         88
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p1.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.p2.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.arr.borrow()).to_bytes(&mut buf[16..40]);
-        (*self.cp.borrow()).to_bytes(&mut buf[40..48]);
-        (*self.pp.borrow()).to_bytes(&mut buf[48..56]);
-        (*self.inner.borrow()).to_bytes(&mut buf[56..72]);
-        (*self.x.borrow()).to_bytes(&mut buf[72..76]);
-        (*self.fn_.borrow()).to_bytes(&mut buf[80..88]);
+        self.p1.to_bytes(&mut buf[0..8]);
+        self.p2.to_bytes(&mut buf[8..16]);
+        self.arr.to_bytes(&mut buf[16..40]);
+        self.cp.to_bytes(&mut buf[40..48]);
+        self.pp.to_bytes(&mut buf[48..56]);
+        self.inner.to_bytes(&mut buf[56..72]);
+        self.x.to_bytes(&mut buf[72..76]);
+        self.fn_.to_bytes(&mut buf[80..88]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            p1: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[0..8]))),
-            p2: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[8..16]))),
-            arr: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[16..40]))),
-            cp: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[40..48]))),
-            pp: Rc::new(RefCell::new(<Ptr<Ptr<i32>>>::from_bytes(&buf[48..56]))),
-            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[56..72]))),
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[72..76]))),
-            fn_: Rc::new(RefCell::new(<FnPtr<fn(i32) -> i32>>::from_bytes(
-                &buf[80..88],
-            ))),
+            p1: <Ptr<i32>>::from_bytes(&buf[0..8]),
+            p2: <Ptr<i32>>::from_bytes(&buf[8..16]),
+            arr: <Box<[Ptr<i32>]>>::from_bytes(&buf[16..40]),
+            cp: <Ptr<u8>>::from_bytes(&buf[40..48]),
+            pp: <Ptr<Ptr<i32>>>::from_bytes(&buf[48..56]),
+            inner: <Inner>::from_bytes(&buf[56..72]),
+            x: <i32>::from_bytes(&buf[72..76]),
+            fn_: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[80..88]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Foo {
-    pub s1: Value<Ptr<u8>>,
-    pub s2: Value<Ptr<u8>>,
-    pub fn1: Value<FnPtr<fn(i32) -> i32>>,
-    pub fn2: Value<FnPtr<fn(i32) -> i32>>,
-    pub n: Value<i32>,
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        let __this: Value<Foo> = Rc::new(RefCell::new(Self {
-            s1: Rc::new(RefCell::new((*self.s1.borrow()).clone())),
-            s2: Rc::new(RefCell::new((*self.s2.borrow()).clone())),
-            fn1: Rc::new(RefCell::new((*self.fn1.borrow()).clone())),
-            fn2: Rc::new(RefCell::new((*self.fn2.borrow()).clone())),
-            n: Rc::new(RefCell::new((*self.n.borrow()))),
-        }));
-        let this: Ptr<Foo> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub s1: Ptr<u8>,
+    #[offset(8)]
+    pub s2: Ptr<u8>,
+    #[offset(16)]
+    pub fn1: FnPtr<fn(i32) -> i32>,
+    #[offset(24)]
+    pub fn2: FnPtr<fn(i32) -> i32>,
+    #[offset(32)]
+    pub n: i32,
 }
 impl Default for Foo {
     fn default() -> Self {
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            n: Rc::new(RefCell::new(0_i32)),
+            s1: Ptr::<u8>::null(),
+            s2: Ptr::<u8>::null(),
+            fn1: FnPtr::<fn(i32) -> i32>::null(),
+            fn2: FnPtr::<fn(i32) -> i32>::null(),
+            n: 0_i32,
         }
     }
 }
@@ -149,23 +119,19 @@ impl ByteRepr for Foo {
         40
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s1.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.s2.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.fn1.borrow()).to_bytes(&mut buf[16..24]);
-        (*self.fn2.borrow()).to_bytes(&mut buf[24..32]);
-        (*self.n.borrow()).to_bytes(&mut buf[32..36]);
+        self.s1.to_bytes(&mut buf[0..8]);
+        self.s2.to_bytes(&mut buf[8..16]);
+        self.fn1.to_bytes(&mut buf[16..24]);
+        self.fn2.to_bytes(&mut buf[24..32]);
+        self.n.to_bytes(&mut buf[32..36]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            s1: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
-            s2: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[8..16]))),
-            fn1: Rc::new(RefCell::new(<FnPtr<fn(i32) -> i32>>::from_bytes(
-                &buf[16..24],
-            ))),
-            fn2: Rc::new(RefCell::new(<FnPtr<fn(i32) -> i32>>::from_bytes(
-                &buf[24..32],
-            ))),
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[32..36]))),
+            s1: <Ptr<u8>>::from_bytes(&buf[0..8]),
+            s2: <Ptr<u8>>::from_bytes(&buf[8..16]),
+            fn1: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[16..24]),
+            fn2: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[24..32]),
+            n: <i32>::from_bytes(&buf[32..36]),
         }
     }
 }
@@ -183,28 +149,28 @@ thread_local!(
 );
 thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
-        s1: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hello"))),
-        s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-        fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-        fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-        n: Rc::new(RefCell::new(42)),
+        s1: Ptr::<u8>::from_string_literal(b"hello"),
+        s2: Ptr::<u8>::null(),
+        fn1: FnPtr::<fn(i32) -> i32>::null(),
+        fn2: FnPtr::<fn(i32) -> i32>::null(),
+        n: 42,
     }));
 );
 thread_local!(
     pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"first"))),
-            s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            n: Rc::new(RefCell::new(1)),
+            s1: Ptr::<u8>::from_string_literal(b"first"),
+            s2: Ptr::<u8>::null(),
+            fn1: FnPtr::<fn(i32) -> i32>::null(),
+            fn2: FnPtr::<fn(i32) -> i32>::null(),
+            n: 1,
         },
         Foo {
-            s1: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"second"))),
-            s2: Rc::new(RefCell::new(Ptr::<u8>::null())),
-            fn1: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            fn2: Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null())),
-            n: Rc::new(RefCell::new(2)),
+            s1: Ptr::<u8>::from_string_literal(b"second"),
+            s2: Ptr::<u8>::null(),
+            fn1: FnPtr::<fn(i32) -> i32>::null(),
+            fn2: FnPtr::<fn(i32) -> i32>::null(),
+            n: 2,
         },
     ])));
 );
@@ -219,8 +185,8 @@ pub fn check_local_static_5() {
     thread_local!(
         static local_p_8: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
     );
-    assert!((*(*local_outer_6.with(Value::clone).borrow()).p1.borrow()).is_null());
-    assert!((*(*local_outer_6.with(Value::clone).borrow()).fn_.borrow()).is_null());
+    assert!(({ (*local_outer_6.with(Value::clone).borrow()).p1.clone() }).is_null());
+    assert!(({ (*local_outer_6.with(Value::clone).borrow()).fn_.clone() }).is_null());
     assert!((*local_fn_7.with(Value::clone).borrow()).is_null());
     assert!((*local_p_8.with(Value::clone).borrow()).is_null());
 }
@@ -230,57 +196,67 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((*static_fn_0.with(Value::clone).borrow()).is_null());
-    assert!((*(*static_outer_1.with(Value::clone).borrow()).p1.borrow()).is_null());
-    assert!((*(*static_outer_1.with(Value::clone).borrow()).p2.borrow()).is_null());
-    assert!((*(*static_outer_1.with(Value::clone).borrow()).cp.borrow()).is_null());
-    assert!((*(*static_outer_1.with(Value::clone).borrow()).pp.borrow()).is_null());
-    assert!((*(*static_outer_1.with(Value::clone).borrow()).fn_.borrow()).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).p1.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).p2.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).cp.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).pp.clone() }).is_null());
+    assert!(({ (*static_outer_1.with(Value::clone).borrow()).fn_.clone() }).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((*(*static_outer_1.with(Value::clone).borrow()).arr.borrow())[(*i.borrow()) as usize])
-                .is_null()
+            ((*static_outer_1.with(Value::clone).borrow()).arr[(*i.borrow()) as usize]).is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        (*(*(*static_outer_1.with(Value::clone).borrow()).inner.borrow())
-            .name
-            .borrow())
+        ({
+            (*static_outer_1.with(Value::clone).borrow())
+                .inner
+                .name
+                .clone()
+        })
         .is_null()
     );
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*static_inner_array_2.with(Value::clone).borrow())[(*i.borrow()) as usize]
-                .name
-                .borrow())
+            ({
+                (*static_inner_array_2.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                    .name
+                    .clone()
+            })
             .is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }
-    assert!((*(*static_foo_3.with(Value::clone).borrow()).s2.borrow()).is_null());
-    assert!((*(*static_foo_3.with(Value::clone).borrow()).fn1.borrow()).is_null());
-    assert!((*(*static_foo_3.with(Value::clone).borrow()).fn2.borrow()).is_null());
-    assert!(((*(*static_foo_3.with(Value::clone).borrow()).n.borrow()) == 42));
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).s2.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).fn1.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).fn2.clone() }).is_null());
+    assert!(({ (*static_foo_3.with(Value::clone).borrow()).n } == 42));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
-                .s2
-                .borrow())
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                    .s2
+                    .clone()
+            })
             .is_null()
         );
         assert!(
-            (*(*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
-                .fn1
-                .borrow())
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                    .fn1
+                    .clone()
+            })
             .is_null()
         );
         assert!(
-            (*(*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
-                .fn2
-                .borrow())
+            ({
+                (*static_foo_array_4.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                    .fn2
+                    .clone()
+            })
             .is_null()
         );
         (*i.borrow_mut()).prefix_inc();

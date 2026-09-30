@@ -1,0 +1,210 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::{Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+pub struct Point {
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
+}
+impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
+        }
+    }
+}
+#[derive(Record, VaArg, FnPtrArg, Default)]
+pub struct Holder {
+    #[offset(0)]
+    pub values: Value<Vec<i32>>,
+    #[offset(24)]
+    pub points: Value<Vec<Point>>,
+}
+impl Clone for Holder {
+    fn clone(&self) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            values: { Rc::new(RefCell::new((*self.values.borrow()).clone())) },
+            points: { Rc::new(RefCell::new((*self.points.borrow()).clone())) },
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl ByteRepr for Holder {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.values.to_bytes(&mut buf[0..24]);
+        self.points.to_bytes(&mut buf[24..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            values: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            points: <Value<Vec<Point>>>::from_bytes(&buf[24..48]),
+        }
+    }
+}
+pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
+    v.with_mut(|__v: &mut Vec<i32>| __v.push(42));
+    return (((*v.upgrade().deref()).len() as i32) - 1);
+}
+pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
+    let s: Value<i32> = Rc::new(RefCell::new(0));
+    let i: Value<usize> = Rc::new(RefCell::new(0_usize));
+    'loop_: while {
+        let _lhs = (*i.borrow());
+        _lhs < (*v.upgrade().deref()).len()
+    } {
+        (*s.borrow_mut()) += ((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
+            .offset((*i.borrow()))
+            .read());
+        (*i.borrow_mut()).prefix_inc();
+    }
+    return (*s.borrow());
+}
+pub fn main() {
+    __cpp2rust_init_globals();
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
+    (v.as_pointer() as Ptr<i32>).offset(0_usize).write(10);
+    assert!((((v.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 10));
+    {
+        let _ptr = (v.as_pointer() as Ptr<i32>).offset(1_usize);
+        _ptr.write(_ptr.read() + 5)
+    };
+    (v.as_pointer() as Ptr<i32>)
+        .offset(2_usize)
+        .with_mut(|__v| __v.postfix_inc());
+    assert!(
+        (((v.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 7)
+            && (((v.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 4)
+    );
+    let __rhs = ((v.as_pointer() as Ptr<i32>).offset(1_usize).read());
+    (v.as_pointer() as Ptr<i32>).offset(0_usize).write(__rhs);
+    assert!((((v.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 7));
+    (v.as_pointer() as Ptr<i32>).offset(1_usize).write(0);
+    assert!(
+        (((v.as_pointer() as Ptr<i32>)
+            .offset((((v.as_pointer() as Ptr<i32>).offset(1_usize).read()) as usize))
+            .read())
+            == 7)
+    );
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    let __rhs = 3;
+    let __idx = ((*i.borrow_mut()).postfix_inc() as usize);
+    (v.as_pointer() as Ptr<i32>).offset(__idx).write(__rhs);
+    assert!(((*i.borrow()) == 1) && (((v.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 3));
+    assert!(
+        (((v.as_pointer() as Ptr<i32>)
+            .offset((({ push_and_index_0(v.as_pointer(),) }) as usize))
+            .read())
+            == 42)
+    );
+    let __rhs = 5;
+    let __idx = (({ push_and_index_0(v.as_pointer()) }) as usize);
+    (v.as_pointer() as Ptr<i32>).offset(__idx).write(__rhs);
+    assert!(
+        ((*v.borrow()).len() == 5_usize)
+            && (((v.as_pointer() as Ptr<i32>).offset(4_usize).read()) == 5)
+    );
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((v.as_pointer() as Ptr<i32>).offset(2_usize))));
+    (*p.borrow()).write(9);
+    assert!((((v.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 9));
+    assert!((({ sum_ref_1(v.as_pointer(),) }) == ((((3 + 0) + 9) + 42) + 5)));
+    let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
+    {
+        let __a0 = 2_usize as usize;
+        (*(*h.borrow()).values.borrow_mut()).resize_with(__a0, || <i32>::default())
+    };
+    (*(*h.borrow()).values.borrow_mut())[(1_usize) as usize] = 6;
+    (*(*h.borrow()).points.borrow_mut()).push(Point { x: 1, y: 2 });
+    (*(*h.borrow()).points.borrow_mut())[(0_usize) as usize].y = 5;
+    assert!(({ (*(*h.borrow()).values.borrow())[(1_usize) as usize] } == 6));
+    assert!(
+        (({
+            PointImpl::sum(&{
+                ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>).offset(0_usize)
+            })
+        }) == 6)
+    );
+    let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
+    let __rhs =
+        ((*hp.borrow()).with(|__s: &Holder| (*__s.values.borrow())[(1_usize) as usize]) + 1);
+    (*hp.borrow()).with(|__s: &Holder| (*__s.values.borrow_mut())[(0_usize) as usize] = __rhs);
+    let __rhs = (*hp.borrow()).with(|__s: &Holder| (*__s.values.borrow())[(0_usize) as usize]);
+    (*hp.borrow()).with(|__s: &Holder| (*__s.points.borrow_mut())[(0_usize) as usize].x = __rhs);
+    assert!(
+        ({ (*(*h.borrow()).values.borrow())[(0_usize) as usize] } == 7)
+            && ({ (*(*h.borrow()).points.borrow())[(0_usize) as usize].x } == 7)
+    );
+    let q: Value<Point> = Rc::new(RefCell::new(
+        ((*(*h.borrow()).points.borrow())[(0_usize) as usize]).clone(),
+    ));
+    (*q.borrow_mut()).x = 0;
+    assert!(({ (*(*h.borrow()).points.borrow())[(0_usize) as usize].x } == 7));
+    let grid: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
+    (grid.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
+        __v.push(Rc::new(RefCell::new(vec![0; 3_usize as usize])))
+    });
+    (grid.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
+        __v.push(Rc::new(RefCell::new(vec![0; 3_usize as usize])))
+    });
+    ((grid.as_pointer() as Ptr<Value<Vec<i32>>>)
+        .offset(1_usize)
+        .upgrade()
+        .deref()
+        .as_pointer() as Ptr<i32>)
+        .offset(2_usize)
+        .write(8);
+    assert!(
+        ((((grid.as_pointer() as Ptr<Value<Vec<i32>>>)
+            .offset(1_usize)
+            .upgrade()
+            .deref()
+            .as_pointer() as Ptr<i32>)
+            .offset(2_usize)
+            .read())
+            == 8)
+            && ((((grid.as_pointer() as Ptr<Value<Vec<i32>>>)
+                .offset(0_usize)
+                .upgrade()
+                .deref()
+                .as_pointer() as Ptr<i32>)
+                .offset(2_usize)
+                .read())
+                == 0)
+    );
+    let a: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5, 6]));
+    let __rhs = (((a.as_pointer() as Ptr<i32>).offset(0_usize).read())
+        + ((a.as_pointer() as Ptr<i32>).offset(2_usize).read()));
+    (a.as_pointer() as Ptr<i32>).offset(1_usize).write(__rhs);
+    assert!((((a.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 10));
+    return 0;
+}
+pub trait PointImpl {
+    fn sum(&self) -> i32;
+}
+impl PointImpl for Ptr<Point> {
+    fn sum(&self) -> i32 {
+        return ((*self).with(|__s: &Point| __s.x) + (*self).with(|__s: &Point| __s.y));
+    }
+}
+pub fn __cpp2rust_init_globals() {}

@@ -144,6 +144,12 @@ impl Ptr<u8> {
                 let b = rc.borrow();
                 f(until_nul(&b[self.offset..]))
             }
+            PtrKind::Field(root, field) => {
+                let root = crate::field::upgrade(root);
+                f(until_nul(
+                    &Ptr::<u8>::borrow_field(&*root, *field)[self.offset..],
+                ))
+            }
             PtrKind::Reinterpreted(_) => f(&self.to_c_string_iterator().collect::<Vec<u8>>()),
         }
     }

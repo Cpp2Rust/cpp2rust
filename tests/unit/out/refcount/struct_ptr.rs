@@ -6,29 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct XX {
-    pub x: Value<i32>,
-}
-impl Clone for XX {
-    fn clone(&self) -> Self {
-        let __this: Value<XX> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<XX> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
 }
 impl ByteRepr for XX {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -39,14 +31,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let obj: Value<XX> = Rc::new(RefCell::new(<XX>::default()));
     let ptr: Value<Ptr<XX>> = Rc::new(RefCell::new((obj.as_pointer())));
-    (*(*(*ptr.borrow()).upgrade().deref()).x.borrow_mut()) = 2;
+    (*ptr.borrow()).with_mut(|__s: &mut XX| __s.x = 2);
     let c: Value<bool> = Rc::new(RefCell::new(false));
     let r: Value<i32> = Rc::new(RefCell::new(if (*c.borrow()) {
-        (*(*obj.borrow()).x.borrow())
+        { (*obj.borrow()).x }
     } else {
-        (*(*(*ptr.borrow()).upgrade().deref()).x.borrow())
+        (*ptr.borrow()).with(|__s: &XX| __s.x)
     }));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*obj.borrow()).x.as_pointer())));
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((field_ptr!(obj, x))));
     assert!(
         ({
             let _lhs = ((*p.borrow()).read());

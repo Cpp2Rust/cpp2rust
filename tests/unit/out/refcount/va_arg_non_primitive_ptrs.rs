@@ -6,31 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct node {
-    pub data: Value<i32>,
-    pub next: Value<Ptr<node>>,
-}
-impl Clone for node {
-    fn clone(&self) -> Self {
-        Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub data: i32,
+    #[offset(8)]
+    pub next: Ptr<node>,
 }
 impl ByteRepr for node {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+        self.data.to_bytes(&mut buf[0..4]);
+        self.next.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            next: Rc::new(RefCell::new(<Ptr<node>>::from_bytes(&buf[8..16]))),
+            data: <i32>::from_bytes(&buf[0..4]),
+            next: <Ptr<node>>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -63,7 +57,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
             __v if __v == (opt_OPT_NODE as i32) => {
                 let n: Value<Ptr<node>> =
                     Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<node>>()));
-                (*result.borrow_mut()) = (*(*(*n.borrow()).upgrade().deref()).data.borrow());
+                (*result.borrow_mut()) = (*n.borrow()).with(|__s: &node| __s.data);
                 break 'switch;
             }
             __v if __v == (opt_OPT_NODE_OUT as i32) => {
@@ -91,12 +85,8 @@ fn main_0() -> i32 {
     );
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     assert!(
-        (((({
-            dispatch_0(
-                (opt_OPT_FILE as i32),
-                &[((libcc2rs::c_stdout()).clone()).into()],
-            )
-        }) == 1) as i32)
+        (((({ dispatch_0((opt_OPT_FILE as i32), &[(libcc2rs::c_stdout()).into(),]) }) == 1)
+            as i32)
             != 0)
     );
     assert!(
@@ -109,8 +99,8 @@ fn main_0() -> i32 {
             != 0)
     );
     let head: Value<node> = Rc::new(RefCell::new(node {
-        data: Rc::new(RefCell::new(42)),
-        next: Rc::new(RefCell::new(Ptr::<node>::null())),
+        data: 42,
+        next: Ptr::<node>::null(),
     }));
     assert!(
         (((({ dispatch_0((opt_OPT_NODE as i32), &[(head.as_pointer()).into(),]) }) == 42) as i32)

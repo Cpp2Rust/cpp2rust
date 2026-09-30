@@ -5,12 +5,13 @@ use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
 
 use std::{
-    cell::{Ref, RefCell},
+    cell::{Ref, RefCell, RefMut},
     fmt,
     ops::Sub,
     rc::{Rc, Weak},
 };
 
+use crate::field::{Root, upgrade as upgrade_root};
 use crate::reinterpret::{ByteRepr, OriginalAlloc, with_scratch};
 
 pub type Value<T> = Rc<RefCell<T>>;
@@ -34,6 +35,10 @@ pub(crate) enum PtrKind<T> {
     HeapArray(Weak<RefCell<Box<[T]>>>),
     StackVec(Weak<RefCell<Vec<T>>>),
     HeapVec(Weak<RefCell<Vec<T>>>),
+    // A field of a struct: the allocation that holds the struct, and the
+    // byte offset of the field in it. The field is either a T, or an array of
+    // T that the pointer indexes into.
+    Field(Weak<dyn Root>, u32),
     Reinterpreted(Rc<ReinterpretedView>),
 }
 
@@ -45,6 +50,11 @@ pub enum StrongPtr<T> {
     },
     StackArray {
         rc: Rc<RefCell<Box<[T]>>>,
+        offset: usize,
+    },
+    Field {
+        root: Rc<dyn Root>,
+        field: u32,
         offset: usize,
     },
     Reinterpreted {
@@ -65,11 +75,35 @@ impl<T: ByteRepr> StrongPtr<T> {
             StrongPtr::StackSingle(rc) => rc.borrow(),
             StrongPtr::Vec { rc, offset } => Ref::map(rc.borrow(), |v| &v[*offset]),
             StrongPtr::StackArray { rc, offset } => Ref::map(rc.borrow(), |a| &a[*offset]),
+            StrongPtr::Field {
+                root,
+                field,
+                offset,
+            } => Ref::map(Ptr::borrow_field(&**root, *field), |f| &f[*offset]),
             StrongPtr::Reinterpreted {
                 alloc,
                 byte_offset,
                 cell,
             } => Self::deref_reinterpreted(alloc, *byte_offset, cell),
+        }
+    }
+
+    // Writes through reinterpreted pointers must use with_mut instead, as
+    // they are written through to the original allocation.
+    #[inline(always)]
+    pub fn deref_mut(&self) -> RefMut<'_, T> {
+        match self {
+            StrongPtr::StackSingle(rc) => rc.borrow_mut(),
+            StrongPtr::Vec { rc, offset } => RefMut::map(rc.borrow_mut(), |v| &mut v[*offset]),
+            StrongPtr::StackArray { rc, offset } => {
+                RefMut::map(rc.borrow_mut(), |a| &mut a[*offset])
+            }
+            StrongPtr::Field {
+                root,
+                field,
+                offset,
+            } => RefMut::map(Ptr::borrow_field_mut(&**root, *field), |f| &mut f[*offset]),
+            StrongPtr::Reinterpreted { .. } => panic!("mutable reference to reinterpreted memory"),
         }
     }
 
@@ -98,6 +132,7 @@ impl<T> fmt::Debug for PtrKind<T> {
             PtrKind::HeapSingle(w) => write!(f, "HeapSingle({:?})", w.as_ptr()),
             PtrKind::StackArray(w) => write!(f, "StackArray({:?})", w.as_ptr()),
             PtrKind::HeapArray(w) => write!(f, "HeapArray({:?})", w.as_ptr()),
+            PtrKind::Field(root, field) => write!(f, "Field({:?}, {field})", root.as_ptr()),
             PtrKind::Reinterpreted(data) => {
                 write!(f, "Reinterpreted(0x{:x})", data.alloc.address())
             }
@@ -116,6 +151,7 @@ impl<T> Clone for PtrKind<T> {
             PtrKind::HeapSingle(weak) => PtrKind::HeapSingle(weak.clone()),
             PtrKind::StackArray(weak) => PtrKind::StackArray(weak.clone()),
             PtrKind::HeapArray(weak) => PtrKind::HeapArray(weak.clone()),
+            PtrKind::Field(root, field) => PtrKind::Field(root.clone(), *field),
             PtrKind::Reinterpreted(data) => PtrKind::Reinterpreted(Rc::clone(data)),
         }
     }
@@ -128,6 +164,7 @@ impl<T> PtrKind<T> {
             PtrKind::StackSingle(w) | PtrKind::HeapSingle(w) => w.as_ptr() as usize,
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => w.as_ptr() as usize,
             PtrKind::StackArray(w) | PtrKind::HeapArray(w) => w.as_ptr() as usize,
+            PtrKind::Field(root, _) => root.as_ptr() as *const () as usize,
             PtrKind::Reinterpreted(data) => data.alloc.address(),
         }
     }
@@ -274,6 +311,9 @@ impl<T> Ptr<T> {
     fn byte_offset(&self) -> usize {
         match &self.kind {
             PtrKind::Reinterpreted(_) => self.offset,
+            PtrKind::Field(_, field) => {
+                (*field as usize).wrapping_add(self.offset.wrapping_mul(std::mem::size_of::<T>()))
+            }
             _ => self.offset.wrapping_mul(std::mem::size_of::<T>()),
         }
     }
@@ -290,7 +330,10 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> usize
+    where
+        T: 'static,
+    {
         match &self.kind {
             PtrKind::Null => 0,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => 1,
@@ -300,12 +343,16 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 weak.upgrade().expect("ub: dangling pointer").borrow().len()
             }
+            PtrKind::Field(root, field) => Self::field_len(root, *field),
             PtrKind::Reinterpreted(data) => data.alloc.total_byte_len() / data.elem_byte_size,
         }
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool
+    where
+        T: 'static,
+    {
         match &self.kind {
             PtrKind::Null => true,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) => false,
@@ -319,6 +366,7 @@ impl<T> Ptr<T> {
                 .expect("ub: dangling pointer")
                 .borrow()
                 .is_empty(),
+            PtrKind::Field(root, field) => Self::field_len(root, *field) == 0,
             PtrKind::Reinterpreted(data) => self.offset >= data.alloc.total_byte_len(),
         }
     }
@@ -344,7 +392,10 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn to_last(&self) -> Self {
+    pub fn to_last(&self) -> Self
+    where
+        T: 'static,
+    {
         Self {
             kind: self.kind.clone(),
             offset: self.len().wrapping_sub(1).wrapping_mul(self.elem_step()),
@@ -352,7 +403,10 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn to_end(&self) -> Self {
+    pub fn to_end(&self) -> Self
+    where
+        T: 'static,
+    {
         Self {
             kind: self.kind.clone(),
             offset: self.len().wrapping_mul(self.elem_step()),
@@ -372,6 +426,11 @@ impl<T> Ptr<T> {
             },
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => StrongPtr::StackArray {
                 rc: weak.upgrade().unwrap_or_else(|| dangling()),
+                offset: self.offset,
+            },
+            PtrKind::Field(root, field) => StrongPtr::Field {
+                root: upgrade_root(root),
+                field: *field,
                 offset: self.offset,
             },
             PtrKind::Reinterpreted(data) => StrongPtr::Reinterpreted {
@@ -425,6 +484,10 @@ impl<T> Ptr<T> {
                 OriginalAlloc::slice(weak),
                 self.offset.wrapping_mul(T::byte_size()),
             ),
+            PtrKind::Field(root, field) => (
+                OriginalAlloc::field::<T>(root, *field),
+                self.offset.wrapping_mul(T::byte_size()),
+            ),
             PtrKind::Reinterpreted(data) => (data.alloc.clone(), self.offset),
         })
     }
@@ -469,6 +532,10 @@ impl<T> Ptr<T> {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
                 f(&mut borrow[self.offset])
+            }
+            PtrKind::Field(root, field) => {
+                let root = upgrade_root(root);
+                f(&mut Self::borrow_field_mut(&*root, *field)[self.offset])
             }
             PtrKind::Reinterpreted(data) => Self::with_mut_reinterpreted(data, self.offset, f),
             PtrKind::Null => null_deref(),
@@ -515,6 +582,10 @@ impl<T> Ptr<T> {
                 let borrow = rc.borrow();
                 f(&borrow[self.offset])
             }
+            PtrKind::Field(root, field) => {
+                let root = upgrade_root(root);
+                f(&Self::borrow_field(&*root, *field)[self.offset])
+            }
             PtrKind::Reinterpreted(data) => Self::with_reinterpreted(data, self.offset, f),
             PtrKind::Null => null_deref(),
         }
@@ -535,14 +606,14 @@ impl<T> Ptr<T> {
 #[cold]
 #[inline(never)]
 #[track_caller]
-fn null_deref() -> ! {
+pub(crate) fn null_deref() -> ! {
     panic!("ub: null pointer")
 }
 
 #[cold]
 #[inline(never)]
 #[track_caller]
-fn dangling() -> ! {
+pub(crate) fn dangling() -> ! {
     panic!("ub: dangling pointer")
 }
 
@@ -566,6 +637,10 @@ impl Ptr<u8> {
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let mut b = rc.borrow_mut();
                 f(&mut b[off..off + len])
+            }
+            PtrKind::Field(root, field) => {
+                let root = upgrade_root(root);
+                f(&mut Self::borrow_field_mut(&*root, *field)[off..off + len])
             }
             PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
                 data.alloc.read_bytes(off, buf);
@@ -595,6 +670,10 @@ impl Ptr<u8> {
                 let rc = weak.upgrade().expect("ub: dangling pointer");
                 let b = rc.borrow();
                 f(&b[off..off + len])
+            }
+            PtrKind::Field(root, field) => {
+                let root = upgrade_root(root);
+                f(&Self::borrow_field(&*root, *field)[off..off + len])
             }
             PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
                 data.alloc.read_bytes(off, buf);
@@ -628,7 +707,7 @@ impl<T: std::io::Write + ByteRepr> Ptr<T> {
     }
 }
 
-impl<T: std::cmp::Ord> Ptr<T> {
+impl<T: std::cmp::Ord + 'static> Ptr<T> {
     pub fn sort(&self, last: usize) {
         match self.kind {
             PtrKind::Null => panic!("ub: dereference of null pointer"),
@@ -643,6 +722,10 @@ impl<T: std::cmp::Ord> Ptr<T> {
                 let strong = weak.upgrade().expect("ub: dangling pointer");
                 (*strong.borrow_mut())[self.get_offset()..last].sort();
             }
+            PtrKind::Field(ref root, field) => {
+                let root = upgrade_root(root);
+                Self::borrow_field_mut(&*root, field)[self.offset..last].sort();
+            }
             PtrKind::Reinterpreted(_) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
@@ -650,7 +733,7 @@ impl<T: std::cmp::Ord> Ptr<T> {
     }
 }
 
-impl<T: Clone> Ptr<T> {
+impl<T: Clone + 'static> Ptr<T> {
     pub fn sort_with_cmp<F>(&self, last: usize, mut cmp: F)
     where
         F: FnMut(Ptr<T>, Ptr<T>) -> bool,
@@ -688,6 +771,15 @@ impl<T: Clone> Ptr<T> {
                 let mut borrow = strong.borrow_mut();
                 sort(&mut borrow, self.get_offset(), last, &mut cmp);
             }
+            PtrKind::Field(ref root, field) => {
+                let root = upgrade_root(root);
+                sort(
+                    &mut Self::borrow_field_mut(&*root, field),
+                    self.offset,
+                    last,
+                    &mut cmp,
+                );
+            }
             PtrKind::Reinterpreted(_) => {
                 panic!("sorting not supported for reinterpreted pointers")
             }
@@ -697,7 +789,7 @@ impl<T: Clone> Ptr<T> {
 
 impl<T> IntoIterator for &Ptr<T>
 where
-    T: Clone,
+    T: Clone + 'static,
 {
     type Item = Ptr<T>;
     type IntoIter = Ptr<T>;
@@ -707,7 +799,7 @@ where
     }
 }
 
-impl<T> Iterator for Ptr<T> {
+impl<T: 'static> Iterator for Ptr<T> {
     type Item = Ptr<T>;
     fn next(&mut self) -> Option<Self::Item> {
         if self.get_offset() < self.len() {
@@ -960,6 +1052,11 @@ impl<T> Ptr<Vec<T>> {
                 offset: self.offset,
                 kind: PtrKind::HeapVec(weak.clone()),
             },
+            // A vector that is a field.
+            PtrKind::Field(root, field) if self.offset == 0 => Ptr {
+                offset: 0,
+                kind: PtrKind::Field(root.clone(), *field),
+            },
             _ => panic!("ub: invalid decay"),
         }
     }
@@ -977,6 +1074,11 @@ impl<T> Ptr<Box<[T]>> {
             PtrKind::HeapSingle(weak) => Ptr {
                 offset: self.offset,
                 kind: PtrKind::HeapArray(weak.clone()),
+            },
+            // An array that is a field.
+            PtrKind::Field(root, field) if self.offset == 0 => Ptr {
+                offset: 0,
+                kind: PtrKind::Field(root.clone(), *field),
             },
             _ => panic!("ub: invalid decay"),
         }
@@ -1007,6 +1109,7 @@ impl<T> ToOwnedOption<T, T> for Ptr<T> {
                 panic!("Can't own a stack variable")
             }
             PtrKind::StackVec(_) | PtrKind::HeapVec(_) => panic!("Can't own a vector"),
+            PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapArray(_) => panic!("Can't own an array variable as single"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
         }
@@ -1033,6 +1136,7 @@ impl<T> ToOwnedOption<T, Box<[T]>> for Ptr<T> {
                 panic!("Can't own a stack variable")
             }
             PtrKind::StackVec(_) | PtrKind::HeapVec(_) => panic!("Can't own a vector"),
+            PtrKind::Field(..) => panic!("Can't own a field"),
             PtrKind::HeapSingle(_) => panic!("Can't own a single variable as an array"),
             PtrKind::Reinterpreted(_) => panic!("Can't own a reinterpreted pointer"),
         }
@@ -1052,6 +1156,7 @@ impl<T> fmt::Debug for Ptr<T> {
             PtrKind::StackVec(w) | PtrKind::HeapVec(w) => {
                 (Weak::as_ptr(w) as usize).wrapping_add(self.byte_offset())
             }
+            PtrKind::Field(..) => self.kind.address().wrapping_add(self.byte_offset()),
             PtrKind::Reinterpreted(data) => data.alloc.address().wrapping_add(self.byte_offset()),
         };
         write!(f, "0x{:x}", addr)

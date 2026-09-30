@@ -6,33 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub c: Value<u8>,
-    pub x: Value<i64>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            c: Rc::new(RefCell::new((*self.c.borrow()))),
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub c: u8,
+    #[offset(8)]
+    pub x: i64,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.c.borrow()).to_bytes(&mut buf[0..1]);
-        (*self.x.borrow()).to_bytes(&mut buf[8..16]);
+        self.c.to_bytes(&mut buf[0..1]);
+        self.x.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            c: Rc::new(RefCell::new(<u8>::from_bytes(&buf[0..1]))),
-            x: Rc::new(RefCell::new(<i64>::from_bytes(&buf[8..16]))),
+            c: <u8>::from_bytes(&buf[0..1]),
+            x: <i64>::from_bytes(&buf[8..16]),
         }
     }
 }

@@ -12,27 +12,21 @@ pub const anon_0_FIRST_B: anon_0 = 1;
 pub type anon_1 = u32;
 pub const anon_1_SECOND_A: anon_1 = 0;
 pub const anon_1_SECOND_B: anon_1 = 1;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub a: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub a: i32,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        self.a.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            a: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -42,31 +36,25 @@ pub const TdEnum_enum_TD_B: TdEnum_enum = 1;
 pub type anon_2 = u32;
 pub const anon_2_FIELD_A: anon_2 = 0;
 pub const anon_2_FIELD_B: anon_2 = 1;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct WithAnonField {
-    pub a: Value<i32>,
-    pub field: Value<anon_2>,
-}
-impl Clone for WithAnonField {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            field: Rc::new(RefCell::new((*self.field.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub field: anon_2,
 }
 impl ByteRepr for WithAnonField {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.field.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.field.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            field: Rc::new(RefCell::new(<anon_2>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            field: <anon_2>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -83,16 +71,10 @@ fn main_0() -> i32 {
     (*td.borrow_mut()) = TdEnum_enum_TD_B;
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum_TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
-    (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_A;
-    assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2_FIELD_A as i32) as u32)) as i32)
-            != 0)
-    );
-    (*(*w.borrow()).field.borrow_mut()) = anon_2_FIELD_B;
-    assert!(
-        (((((*(*w.borrow()).field.borrow()) as u32) == ((anon_2_FIELD_B as i32) as u32)) as i32)
-            != 0)
-    );
+    (*w.borrow_mut()).field = anon_2_FIELD_A;
+    assert!((((({ (*w.borrow()).field } as u32) == ((anon_2_FIELD_A as i32) as u32)) as i32) != 0));
+    (*w.borrow_mut()).field = anon_2_FIELD_B;
+    assert!((((({ (*w.borrow()).field } as u32) == ((anon_2_FIELD_B as i32) as u32)) as i32) != 0));
     return 0;
 }
 pub type anon_3 = u32;
