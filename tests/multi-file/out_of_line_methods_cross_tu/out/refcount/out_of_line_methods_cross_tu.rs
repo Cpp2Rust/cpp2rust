@@ -20,19 +20,7 @@ impl Clone for S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for S {}
 pub trait Base {
     fn apply(&self, x: i32) -> i32;
 }
@@ -50,19 +38,7 @@ impl Clone for Derived {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Derived {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.factor.borrow()).to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            factor: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-        }
-    }
-}
+impl ByteRepr for Derived {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

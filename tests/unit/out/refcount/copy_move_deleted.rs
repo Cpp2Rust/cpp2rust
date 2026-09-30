@@ -28,19 +28,7 @@ impl NoCopy {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for NoCopy {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for NoCopy {}
 #[derive()]
 pub struct PrivateCopy {
     pub v: Value<i32>,
@@ -67,19 +55,7 @@ impl Default for PrivateCopy {
         { PrivateCopy::new() }
     }
 }
-impl ByteRepr for PrivateCopy {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for PrivateCopy {}
 #[derive()]
 pub struct Immovable {
     pub v: Value<i32>,
@@ -128,21 +104,7 @@ impl Container {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Container {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.inner.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.tag.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: Rc::new(RefCell::new(<NoCopy>::from_bytes(&buf[0..4]))),
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
+impl ByteRepr for Container {}
 pub fn bump_0(p: Ptr<NoCopy>) {
     let p: Value<Ptr<NoCopy>> = Rc::new(RefCell::new(p));
     (*(*(*p.borrow()).upgrade().deref()).v.borrow_mut()).postfix_inc();

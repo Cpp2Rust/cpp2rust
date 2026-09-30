@@ -41,19 +41,7 @@ impl Clone for Chain {
         Chain::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Chain {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Chain {}
 pub fn consume_0(c: Chain) -> i32 {
     let c: Value<Chain> = Rc::new(RefCell::new(c));
     return (*(*c.borrow()).v.borrow());

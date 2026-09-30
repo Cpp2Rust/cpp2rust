@@ -67,25 +67,7 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.c.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.v.borrow()).to_bytes(&mut buf[16..40]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            c: Rc::new(RefCell::new(<Counter>::from_bytes(&buf[4..8]))),
-            arr: Rc::new(RefCell::new(<Box<[Counter]>>::from_bytes(&buf[8..16]))),
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[16..40]))),
-        }
-    }
-}
+impl ByteRepr for S {}
 pub fn run_0(o: Ptr<S>) {
     let o: Value<Ptr<S>> = Rc::new(RefCell::new(o));
     ({ CounterImpl::add(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(), 2) });

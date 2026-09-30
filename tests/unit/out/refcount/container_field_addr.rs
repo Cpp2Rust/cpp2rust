@@ -30,27 +30,7 @@ impl Clone for S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        112
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.v.borrow()).to_bytes(&mut buf[8..32]);
-        (*self.s.borrow()).to_bytes(&mut buf[32..64]);
-        (*self.m.borrow()).to_bytes(&mut buf[64..112]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[8..32]))),
-            s: Rc::new(RefCell::new(<Vec<u8>>::from_bytes(&buf[32..64]))),
-            m: Rc::new(RefCell::new(<BTreeMap<i32, Value<i32>>>::from_bytes(
-                &buf[64..112],
-            ))),
-        }
-    }
-}
+impl ByteRepr for S {}
 pub fn add_0(v: Ptr<Vec<i32>>, k: i32) {
     let v: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(v));
     let k: Value<i32> = Rc::new(RefCell::new(k));

@@ -24,19 +24,7 @@ impl Clone for Defaulted {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Defaulted {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
+impl ByteRepr for Defaulted {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Middle {
     pub s: Value<S>,
@@ -50,19 +38,7 @@ impl Clone for Middle {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Middle {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
+impl ByteRepr for Middle {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub m: Value<Middle>,
@@ -76,19 +52,7 @@ impl Clone for Outer {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.m.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            m: Rc::new(RefCell::new(<Middle>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
+impl ByteRepr for Outer {}
 #[derive(VaArg, FnPtrArg)]
 pub struct ArrayMember {
     pub items: Value<Box<[S]>>,
@@ -113,19 +77,7 @@ impl Default for ArrayMember {
         }
     }
 }
-impl ByteRepr for ArrayMember {
-    fn byte_size() -> usize {
-        3
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.items.borrow()).to_bytes(&mut buf[0..3]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            items: Rc::new(RefCell::new(<Box<[S]>>::from_bytes(&buf[0..3]))),
-        }
-    }
-}
+impl ByteRepr for ArrayMember {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct EmptyBody {
     pub s: Value<S>,
@@ -139,19 +91,7 @@ impl Clone for EmptyBody {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for EmptyBody {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
+impl ByteRepr for EmptyBody {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Templated_char_ {
     pub v: Value<u8>,
@@ -165,19 +105,7 @@ impl Clone for Templated_char_ {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Templated_char_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<u8>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
+impl ByteRepr for Templated_char_ {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Templated_int_ {
     pub v: Value<i32>,
@@ -191,19 +119,7 @@ impl Clone for Templated_int_ {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Templated_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Templated_int_ {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Copied {
     pub v: Value<i32>,
@@ -217,19 +133,7 @@ impl Clone for Copied {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Copied {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Copied {}
 thread_local!(
     pub static order_1: Value<Box<[i32]>> =
         Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>()));
@@ -250,19 +154,7 @@ impl Clone for Tagged {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Tagged {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Tagged {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Ordered {
     pub first: Value<Tagged>,
@@ -284,27 +176,7 @@ impl Clone for Ordered {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Ordered {
-    fn byte_size() -> usize {
-        20
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.dummy1.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.second.borrow()).to_bytes(&mut buf[8..12]);
-        (*self.dummy2.borrow()).to_bytes(&mut buf[12..16]);
-        (*self.third.borrow()).to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            first: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[0..4]))),
-            dummy1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            second: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[8..12]))),
-            dummy2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
-            third: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[16..20]))),
-        }
-    }
-}
+impl ByteRepr for Ordered {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

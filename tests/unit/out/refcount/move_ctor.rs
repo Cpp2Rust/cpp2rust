@@ -28,19 +28,7 @@ impl MoveOnly {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for MoveOnly {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for MoveOnly {}
 #[derive()]
 pub struct ConstMove {
     pub mark: Value<i32>,
@@ -73,19 +61,7 @@ impl Default for ConstMove {
         { ConstMove::new() }
     }
 }
-impl ByteRepr for ConstMove {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for ConstMove {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct ThrowingMove {
     pub v: Value<i32>,
@@ -135,23 +111,7 @@ impl Clone for ThrowingMove {
         ThrowingMove::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for ThrowingMove {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.copies.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.moves.borrow()).to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            copies: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            moves: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-        }
-    }
-}
+impl ByteRepr for ThrowingMove {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct NoexceptMove {
     pub v: Value<i32>,
@@ -201,23 +161,7 @@ impl Clone for NoexceptMove {
         NoexceptMove::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for NoexceptMove {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.copies.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.moves.borrow()).to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            copies: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            moves: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-        }
-    }
-}
+impl ByteRepr for NoexceptMove {}
 pub fn by_value_0(m: MoveOnly) -> i32 {
     let m: Value<MoveOnly> = Rc::new(RefCell::new(m));
     return (*(*m.borrow()).v.borrow());

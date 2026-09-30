@@ -60,23 +60,7 @@ impl Clone for Tracked {
         Tracked::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Tracked {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.copies.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.moves.borrow()).to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            copies: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            moves: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-        }
-    }
-}
+impl ByteRepr for Tracked {}
 pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kLvalueOverload;
 }

@@ -45,21 +45,7 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.n.borrow()).to_bytes(&mut buf[24..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            n: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[24..32]))),
-        }
-    }
-}
+impl ByteRepr for S {}
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return {
         let _lhs = {
