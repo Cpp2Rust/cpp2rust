@@ -92,7 +92,20 @@ impl<T: ByteRepr> ByteRepr for Vec<T> {}
 impl<T: ByteRepr> ByteRepr for Option<T> {}
 impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {}
 impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {}
-impl<T: ByteRepr> ByteRepr for Box<[T]> {}
+impl<T: ByteRepr> ByteRepr for Box<[T]> {
+    fn to_bytes(&self, buf: &mut [u8]) {
+        let elem_size = T::byte_size();
+        for (i, elem) in self.iter().enumerate() {
+            elem.to_bytes(&mut buf[i * elem_size..(i + 1) * elem_size]);
+        }
+    }
+
+    fn from_bytes(buf: &[u8]) -> Self {
+        let elem_size = T::byte_size();
+        assert_eq!(buf.len() % elem_size, 0, "ub: partial array element");
+        buf.chunks(elem_size).map(T::from_bytes).collect()
+    }
+}
 impl<T: ByteRepr> ByteRepr for Box<T> {}
 impl<T: 'static> ByteRepr for *const T {}
 impl<T: 'static> ByteRepr for *mut T {}
