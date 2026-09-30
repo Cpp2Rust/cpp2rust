@@ -90,24 +90,26 @@ impl Default for T {
         T {
             n: Rc::new(RefCell::new(0_i32)),
             cap: Rc::new(RefCell::new(0_i32)),
-            a: Rc::new(RefCell::new(<Value<E>>::default())),
+            a: Rc::new(RefCell::new(
+                (0..1).map(|_| <E>::default()).collect::<Box<[E]>>(),
+            )),
         }
     }
 }
 impl ByteRepr for T {
     fn byte_size() -> usize {
-        8
+        16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.n.borrow()).to_bytes(&mut buf[0..4]);
         (*self.cap.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.a.borrow()).to_bytes(&mut buf[8..8]);
+        (*self.a.borrow()).to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
             cap: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            a: Rc::new(RefCell::new(<Box<[E]>>::from_bytes(&buf[8..8]))),
+            a: Rc::new(RefCell::new(<Box<[E]>>::from_bytes(&buf[8..16]))),
         }
     }
 }
@@ -152,10 +154,8 @@ fn main_0() -> i32 {
     );
     libcc2rs::free_refcount((*s.borrow()).to_any());
     let t: Value<Ptr<T>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(
-            (8usize as usize).wrapping_add(((2_usize).wrapping_mul((8usize as usize)) as usize)),
-        )
-        .reinterpret_cast::<T>(),
+        libcc2rs::malloc_refcount((16usize as usize).wrapping_add((8usize as usize)))
+            .reinterpret_cast::<T>(),
     ));
     assert!((((!((*t.borrow()).is_null())) as i32) != 0));
     (*(*(*t.borrow()).upgrade().deref()).n.borrow_mut()) = 2;
@@ -186,11 +186,11 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _lhs = (*tail.borrow()).clone();
-            _lhs == ((*(*t.borrow()).upgrade().deref()).a.as_pointer() as Ptr<E>)
+            _lhs == (((*(*t.borrow()).upgrade().deref()).a.as_pointer() as Ptr<E>).offset(1))
         }) as i32)
             != 0)
     );
-    (*(*(*tail.borrow()).offset((1) as isize).upgrade().deref())
+    (*(*(*tail.borrow()).offset((0) as isize).upgrade().deref())
         .id
         .borrow_mut()) = 30;
     (*(*(*t.borrow()).upgrade().deref()).cap.borrow_mut()) = 4;

@@ -1,3 +1,4 @@
+// panic: refcount
 #include <assert.h>
 
 struct pair {

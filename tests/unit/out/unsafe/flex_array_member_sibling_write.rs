@@ -31,14 +31,14 @@ pub struct E {
 pub struct T {
     pub n: i32,
     pub cap: i32,
-    pub a: [E],
+    pub a: [E; 1],
 }
 impl Default for T {
     fn default() -> Self {
         T {
             n: 0_i32,
             cap: 0_i32,
-            a: <E>::default(),
+            a: [<E>::default(); 1],
         }
     }
 }
@@ -75,8 +75,7 @@ unsafe fn main_0() -> i32 {
     );
     libcc2rs::free_unsafe((s as *mut ::libc::c_void));
     let mut t: *mut T = (libcc2rs::malloc_unsafe(
-        (::std::mem::size_of::<T>() as usize)
-            .wrapping_add(((2_usize).wrapping_mul((::std::mem::size_of::<E>() as usize)) as usize)),
+        (::std::mem::size_of::<T>() as usize).wrapping_add((::std::mem::size_of::<E>() as usize)),
     ) as *mut T);
     assert!((((!((t).is_null())) as i32) != 0));
     (*t).n = 2;
@@ -91,8 +90,8 @@ unsafe fn main_0() -> i32 {
             != 0)
     );
     let mut tail: *mut E = ((&mut (*t.offset((1) as isize)) as *mut T) as *mut T as *mut E);
-    assert!(((((tail) == ((*t).a.as_mut_ptr())) as i32) != 0));
-    (*tail.offset((1) as isize)).id = 30;
+    assert!(((((tail) == ((*t).a.as_mut_ptr().add((1) as usize))) as i32) != 0));
+    (*tail.offset((0) as isize)).id = 30;
     (*t).cap = 4;
     assert!(
         ((((((((*(*t).a.as_mut_ptr().add((1) as usize)).id) == (30)) as i32) != 0)
