@@ -10,7 +10,7 @@ pub type Mode = u32;
 pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Config {
     pub count: Value<i32>,
     pub mode: Value<Mode>,

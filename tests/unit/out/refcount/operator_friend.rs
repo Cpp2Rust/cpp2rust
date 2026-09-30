@@ -15,7 +15,7 @@ pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
         _lhs == (*(*_a1.upgrade().deref()).b.borrow())
     });
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Defaulted {
     pub a: Value<i32>,
     pub b: Value<i32>,
@@ -82,7 +82,7 @@ pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
         _lhs == (*(*_a1.upgrade().deref()).a.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct DefaultedOrd {
     pub a: Value<i32>,
 }
@@ -154,7 +154,7 @@ pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
         })),
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inline {
     pub a: Value<i32>,
 }
@@ -215,7 +215,7 @@ impl ByteRepr for Inline {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct OutOfLine {
     pub a: Value<i32>,
 }
@@ -283,7 +283,7 @@ pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
         _lhs == (*(*y.upgrade().deref()).v.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Tmpl_int_ {
     pub v: Value<i32>,
 }
@@ -344,7 +344,7 @@ impl ByteRepr for Tmpl_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Tmpl_long_ {
     pub v: Value<i64>,
 }
@@ -376,7 +376,7 @@ pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>
         _lhs == (*(*_a1.upgrade().deref()).v.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct TmplDefaulted_int_ {
     pub v: Value<i32>,
 }

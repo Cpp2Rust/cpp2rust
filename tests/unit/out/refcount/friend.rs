@@ -29,7 +29,7 @@ pub fn scaled_3(v: Ptr<V>, k: f64) -> f64 {
         _lhs * (*k.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct V {
     pub x: Value<i32>,
 }
@@ -69,7 +69,7 @@ impl ByteRepr for V {
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
     return (*(*w.upgrade().deref()).x.borrow());
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct W_int_ {
     pub x: Value<i32>,
 }
@@ -98,7 +98,7 @@ impl ByteRepr for W_int_ {
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
     return (*(*w.upgrade().deref()).x.borrow());
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct W_long_ {
     pub x: Value<i64>,
 }
@@ -124,7 +124,7 @@ impl ByteRepr for W_long_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct D {
     pub x: Value<i32>,
 }

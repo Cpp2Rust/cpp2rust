@@ -583,7 +583,7 @@ protected:
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
 
   virtual std::string
-  GetOverloadedFunctionName(const clang::FunctionDecl *decl);
+  GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);
 
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 
@@ -659,6 +659,8 @@ protected:
                                             std::string_view lhs);
 
   virtual void AddCloneTrait(const clang::RecordDecl *decl);
+
+  virtual bool RecordImplementsClone(const clang::RecordDecl *decl);
 
   virtual void AddDefaultTrait(const clang::RecordDecl *decl);
 

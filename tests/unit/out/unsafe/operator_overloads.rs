@@ -7,18 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub v: i32,
 }
 impl S {
-    pub unsafe fn operator_eq_i32_const(&self, mut o: i32) -> i32 {
+    pub unsafe fn operator_eq_1(&self, mut o: i32) -> i32 {
         return if ((self.v) == (o)) { 1 } else { 0 };
     }
-    pub unsafe fn operator_eq_i64_const(&self, mut o: i64) -> i32 {
+    pub unsafe fn operator_eq_2(&self, mut o: i64) -> i32 {
         return if ((self.v as i64) == (o)) { 2 } else { 0 };
     }
-    pub unsafe fn operator_eq_f64_const(&self, mut o: f64) -> i32 {
+    pub unsafe fn operator_eq_3(&self, mut o: f64) -> i32 {
         return if ((self.v as f64) == (o)) { 3 } else { 0 };
     }
     pub unsafe fn operator_add(&self, o: *const S) -> i32 {
@@ -27,10 +27,10 @@ impl S {
     pub unsafe fn operator_sub(&self, mut o: S) -> i32 {
         return ((self.v) - (o.v));
     }
-    pub unsafe fn operator_mul_pconstS_const(&self, o: *const S) -> i32 {
+    pub unsafe fn operator_mul_6(&self, o: *const S) -> i32 {
         return ((self.v) * ((*o).v));
     }
-    pub unsafe fn operator_mul_i32_const(&self, mut o: i32) -> i32 {
+    pub unsafe fn operator_mul_7(&self, mut o: i32) -> i32 {
         return (((self.v) * (o)) + (1));
     }
 }
@@ -61,14 +61,14 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut s: S = S { v: 6 };
     let mut t: S = S { v: 4 };
-    assert!(((unsafe { S::operator_eq_i32_const(&s, 6,) }) == (1)));
-    assert!(((unsafe { S::operator_eq_i64_const(&s, 6_i64,) }) == (2)));
-    assert!(((unsafe { S::operator_eq_f64_const(&s, 6.0E+0,) }) == (3)));
-    assert!(((unsafe { S::operator_eq_i32_const(&s, 7,) }) == (0)));
+    assert!(((unsafe { S::operator_eq_1(&s, 6,) }) == (1)));
+    assert!(((unsafe { S::operator_eq_2(&s, 6_i64,) }) == (2)));
+    assert!(((unsafe { S::operator_eq_3(&s, 6.0E+0,) }) == (3)));
+    assert!(((unsafe { S::operator_eq_1(&s, 7,) }) == (0)));
     assert!(((unsafe { S::operator_add(&s, &t,) }) == (10)));
     assert!(((unsafe { S::operator_sub(&s, t,) }) == (2)));
-    assert!(((unsafe { S::operator_mul_pconstS_const(&s, &t,) }) == (24)));
-    assert!(((unsafe { S::operator_mul_i32_const(&s, 2,) }) == (13)));
+    assert!(((unsafe { S::operator_mul_6(&s, &t,) }) == (24)));
+    assert!(((unsafe { S::operator_mul_7(&s, 2,) }) == (13)));
     assert!(
         ((unsafe {
             let _a: *const S = &s;

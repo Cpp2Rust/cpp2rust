@@ -74,7 +74,7 @@ pub unsafe fn from_switch_2(mut n: i32) -> i32 {
     panic!("ub: non-void function does not return a value")
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct wrapper {
     pub item: *mut i32,
 }

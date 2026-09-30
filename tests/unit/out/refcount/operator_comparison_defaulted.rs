@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Eq {
     pub a: Value<i32>,
     pub b: Value<i32>,
@@ -55,7 +55,7 @@ impl ByteRepr for Eq {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Cmp {
     pub a: Value<i32>,
     pub b: Value<i32>,
@@ -127,7 +127,7 @@ impl ByteRepr for Cmp {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Both {
     pub a: Value<i32>,
 }
@@ -179,7 +179,7 @@ impl ByteRepr for Both {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct OrdOnly {
     pub a: Value<i32>,
 }
@@ -231,7 +231,7 @@ impl ByteRepr for OrdOnly {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: Value<i32>,
 }
@@ -283,7 +283,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub i: Value<Inner>,
     pub y: Value<i32>,
@@ -355,7 +355,7 @@ impl ByteRepr for Outer {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Secondary {
     pub a: Value<i32>,
 }
@@ -407,7 +407,7 @@ impl ByteRepr for Secondary {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct PtrMember {
     pub p: Value<Ptr<i32>>,
 }

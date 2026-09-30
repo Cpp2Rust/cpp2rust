@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Handler {
     pub tag: Value<i32>,
     pub cb: Value<FnPtr<fn(i32) -> i32>>,
@@ -54,14 +54,14 @@ pub fn negate_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     return -(*x.borrow());
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
-    pub fn pick_i32(x: i32) -> i32 {
+    pub fn pick_1(x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return ((*x.borrow()) + 1);
     }
-    pub fn pick_i64(x: i64) -> i32 {
+    pub fn pick_2(x: i64) -> i32 {
         let x: Value<i64> = Rc::new(RefCell::new(x));
         return (((*x.borrow()) as i32) + 2);
     }
@@ -76,15 +76,15 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p1: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32))));
+        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_1))));
     let p2: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
     assert!((({ (*p1.borrow()).call(5,) }) == 6));
     assert!((({ (*p2.borrow()).call(5,) }) == 8));
-    assert!((({ S::pick_i64(5_i64,) }) == 7));
+    assert!((({ S::pick_2(5_i64,) }) == 7));
     let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: Rc::new(RefCell::new(3)),
-        cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_i32)))),
+        cb: Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_1)))),
     }));
     assert!((({ (*(*h3.borrow()).cb.borrow()).call(1,) }) == 2));
     let h1: Value<Handler> = Rc::new(RefCell::new(Handler {

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_int_ {
     vec_: Vec<i32>,
 }
@@ -18,7 +18,7 @@ impl MyContainer_int_ {
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
-    pub unsafe fn back(&mut self) -> *mut i32 {
+    pub unsafe fn back_4(&mut self) -> *mut i32 {
         return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
@@ -33,7 +33,7 @@ impl MyContainer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_char_ {
     vec_: Vec<libc::c_char>,
 }
@@ -44,7 +44,7 @@ impl MyContainer_char_ {
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
-    pub unsafe fn back(&mut self) -> *mut libc::c_char {
+    pub unsafe fn back_4(&mut self) -> *mut libc::c_char {
         return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
@@ -59,7 +59,7 @@ impl MyContainer_char_ {
     }
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct MyContainer_float_ {
     vec_: Vec<f32>,
 }
@@ -70,7 +70,7 @@ impl MyContainer_float_ {
     pub unsafe fn size(&self) -> usize {
         return self.vec_.len();
     }
-    pub unsafe fn back(&mut self) -> *mut f32 {
+    pub unsafe fn back_4(&mut self) -> *mut f32 {
         return ((self.vec_).last_mut().unwrap());
     }
     pub unsafe fn pop_back(&mut self) {
@@ -85,7 +85,7 @@ impl MyContainer_float_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Boxed_int_ {
     pub value: i32,
 }
@@ -98,7 +98,7 @@ impl Boxed_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Boxed_long_ {
     pub value: i64,
 }
@@ -111,7 +111,7 @@ impl Boxed_long_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_int__Inner_int_ {
     pub t: i32,
     pub u: i32,
@@ -122,7 +122,7 @@ impl Outer_int__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_int_ {
     pub v: i32,
 }
@@ -132,7 +132,7 @@ impl Outer_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long__Inner_int_ {
     pub t: i64,
     pub u: i32,
@@ -143,7 +143,7 @@ impl Outer_long__Inner_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long__Inner_char_ {
     pub t: i64,
     pub u: libc::c_char,
@@ -154,7 +154,7 @@ impl Outer_long__Inner_char_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer_long_ {
     pub v: i64,
 }
@@ -200,7 +200,7 @@ unsafe fn main_0() -> i32 {
     });
     assert!(
         ((unsafe { MyContainer_int_::size(&imc,) }) == (1_usize))
-            && ((*(unsafe { MyContainer_int_::back(&mut imc,) })) == (1))
+            && ((*(unsafe { MyContainer_int_::back_4(&mut imc,) })) == (1))
     );
     (unsafe { MyContainer_int_::pop_back(&mut imc) });
     assert!((unsafe { MyContainer_int_::empty(&imc,) }));
@@ -212,7 +212,7 @@ unsafe fn main_0() -> i32 {
     });
     assert!(
         ((unsafe { MyContainer_char_::size(&cmc,) }) == (1_usize))
-            && (((*(unsafe { MyContainer_char_::back(&mut cmc,) })) as i32)
+            && (((*(unsafe { MyContainer_char_::back_4(&mut cmc,) })) as i32)
                 == (('a' as libc::c_char) as i32))
     );
     (unsafe { MyContainer_char_::pop_back(&mut cmc) });
@@ -225,7 +225,7 @@ unsafe fn main_0() -> i32 {
     });
     assert!(
         ((unsafe { MyContainer_float_::size(&fmc,) }) == (1_usize))
-            && (((*(unsafe { MyContainer_float_::back(&mut fmc,) })) as f64) == (1.0E+0))
+            && (((*(unsafe { MyContainer_float_::back_4(&mut fmc,) })) as f64) == (1.0E+0))
     );
     (unsafe { MyContainer_float_::pop_back(&mut fmc) });
     assert!((unsafe { MyContainer_float_::empty(&fmc,) }));

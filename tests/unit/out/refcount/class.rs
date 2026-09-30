@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub first: Value<i32>,
     pub second: Value<i32>,
@@ -36,7 +36,7 @@ impl ByteRepr for Pair {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Route {
     pub path: Value<Pair>,
     pub cost: Value<f64>,
@@ -66,7 +66,7 @@ impl ByteRepr for Route {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Counter {
     pub v: Value<i32>,
     pub calls: Value<i32>,

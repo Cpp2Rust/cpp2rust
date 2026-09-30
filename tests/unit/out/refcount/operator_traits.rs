@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Lt {
     pub v: Value<i32>,
 }
@@ -70,7 +70,7 @@ impl ByteRepr for Lt {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Eq {
     pub v: Value<i32>,
 }
@@ -107,7 +107,7 @@ impl ByteRepr for Eq {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Cmp {
     pub v: Value<i32>,
 }
@@ -159,7 +159,7 @@ impl ByteRepr for Cmp {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Free {
     pub v: Value<i32>,
 }
@@ -232,7 +232,7 @@ pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
         _lhs == (*(*b.upgrade().deref()).v.borrow())
     };
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Wrapped_int_ {
     pub v: Value<i32>,
 }

@@ -32,13 +32,13 @@ impl ConstMove {
         let mut this = Self { mark: 0 };
         this
     }
-    pub unsafe fn ConstMove_pmutConstMove_rv(o: *mut ConstMove) -> Self {
+    pub unsafe fn new_1(o: *mut ConstMove) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (1)),
         };
         this
     }
-    pub unsafe fn ConstMove_pconstConstMove_rv(o: *const ConstMove) -> Self {
+    pub unsafe fn new_2(o: *const ConstMove) -> Self {
         let mut this = Self {
             mark: (((*o).mark) + (10)),
         };
@@ -51,7 +51,7 @@ impl Default for ConstMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct ThrowingMove {
     pub v: i32,
     pub copies: i32,
@@ -90,7 +90,7 @@ impl Clone for ThrowingMove {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct NoexceptMove {
     pub v: i32,
     pub copies: i32,
@@ -164,9 +164,9 @@ unsafe fn main_0() -> i32 {
     assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
     assert!(((f.v) == (0)));
     let mut m: ConstMove = ConstMove::new();
-    let mut m1: ConstMove = ConstMove::ConstMove_pmutConstMove_rv({ &mut m });
+    let mut m1: ConstMove = ConstMove::new_1({ &mut m });
     let cm: ConstMove = ConstMove::new();
-    let mut m2: ConstMove = ConstMove::ConstMove_pconstConstMove_rv({ &cm });
+    let mut m2: ConstMove = ConstMove::new_2({ &cm });
     assert!(((m1.mark) == (1)));
     assert!(((m2.mark) == (10)));
     let mut t: ThrowingMove = ThrowingMove::new({ 1 });

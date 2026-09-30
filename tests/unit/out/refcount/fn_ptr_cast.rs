@@ -36,7 +36,7 @@ pub fn test_double_cast_2() {
         _lhs == (*fn_.borrow()).clone()
     });
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Command {
     pub data: Value<AnyPtr>,
 }

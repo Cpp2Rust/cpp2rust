@@ -7,18 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Chunk {
     pub data: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Writer {
     pub output: *mut Vec<Chunk>,
     pub chunk: Chunk,
 }
 #[repr(C)]
-#[derive(Clone, Default)]
+#[derive(Clone, VaArg, Default)]
 pub struct JPEGData {
     pub com_data: Vec<Vec<u8>>,
     pub app_data: Vec<Vec<u8>>,
@@ -82,7 +82,7 @@ pub unsafe fn self_ref_push_6(mut comps: *mut Vec<Chunk>) {
     };
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct Pair {
     pub first: i32,
     pub second: i32,

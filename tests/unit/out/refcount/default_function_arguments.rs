@@ -19,7 +19,7 @@ pub fn baz_1(a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
         _lhs == (*b.borrow()).clone()
     };
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Bar {
     pub v: Value<i32>,
 }

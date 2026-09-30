@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub a_: Value<i32>,
     pub self__: Value<Ptr<S>>,
@@ -79,7 +79,7 @@ pub fn bump_0(p: Ptr<S>) {
     let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
     (*(*(*p.borrow()).upgrade().deref()).a_.borrow_mut()).postfix_inc();
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct D {
     pub a_: Value<i32>,
 }

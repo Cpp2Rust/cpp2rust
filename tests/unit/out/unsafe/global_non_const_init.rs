@@ -28,7 +28,7 @@ pub static mut depends_on_call_6: std::cell::LazyCell<i32> = std::cell::LazyCell
     ((*std::cell::LazyCell::force_mut(&mut *&raw mut from_call_5)) + (1))
 });
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct Ctor {
     pub v: i32,
 }
@@ -64,7 +64,7 @@ pub static mut str_9: std::cell::LazyCell<Vec<libc::c_char>> =
 pub static mut inline_member_11: std::cell::LazyCell<Ctor> =
     std::cell::LazyCell::new(|| unsafe { Ctor::new_2({ 5 }) });
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Holder {}
 pub static mut member_10: std::cell::LazyCell<i32> =
     std::cell::LazyCell::new(|| unsafe { (unsafe { next_0() }) });
@@ -77,7 +77,7 @@ pub unsafe fn local_static_12() -> i32 {
         + ((*std::cell::LazyCell::force_mut(&mut *&raw mut local_ctor_14)).v));
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct Singleton {
     pub hits: i32,
 }

@@ -22,15 +22,15 @@ pub unsafe fn bar_4(x: *mut i32) -> i32 {
     return (*x);
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Foo {}
 impl Foo {
-    pub unsafe fn foo_const(&self) {}
-    pub unsafe fn foo(&mut self) {}
-    pub unsafe fn method_i32(&mut self, mut x: i32) {}
-    pub unsafe fn method_i32_const(&self, mut x: i32) {}
-    pub unsafe fn method2_i32_i32_const(&self, mut x: i32, mut y: i32) {}
-    pub unsafe fn method2_f64_f64_const(&self, mut x: f64, mut y: f64) {}
+    pub unsafe fn foo_1(&self) {}
+    pub unsafe fn foo_2(&mut self) {}
+    pub unsafe fn method_3(&mut self, mut x: i32) {}
+    pub unsafe fn method_4(&self, mut x: i32) {}
+    pub unsafe fn method2_5(&self, mut x: i32, mut y: i32) {}
+    pub unsafe fn method2_6(&self, mut x: f64, mut y: f64) {}
 }
 pub unsafe fn func_5(mut x: i32) -> i32 {
     return 1;
@@ -65,10 +65,10 @@ unsafe fn main_0() -> i32 {
     out += (((bar) + (unsafe { foo_0(0) })) + (unsafe { foo_1((&mut x as *mut i32)) }));
     let mut foo1: Foo = <Foo>::default();
     let foo2: Foo = <Foo>::default();
-    (unsafe { Foo::foo(&mut foo1) });
-    (unsafe { Foo::method_i32(&mut foo1, 1) });
-    (unsafe { Foo::foo_const(&foo2) });
-    (unsafe { Foo::method_i32_const(&foo2, 2) });
+    (unsafe { Foo::foo_2(&mut foo1) });
+    (unsafe { Foo::method_3(&mut foo1, 1) });
+    (unsafe { Foo::foo_1(&foo2) });
+    (unsafe { Foo::method_4(&foo2, 2) });
     assert!(((out) == (13)));
     return 0;
 }

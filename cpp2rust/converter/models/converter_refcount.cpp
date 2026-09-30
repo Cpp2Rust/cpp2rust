@@ -473,6 +473,15 @@ std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
   return std::format("{} {{ {} }}", GetRecordName(decl), fields);
 }
 
+bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
+  if (decl->isUnion() || (HasDefaultedCopyConstructor(decl) &&
+                          RecordHasOnlyReferenceFields(decl))) {
+    return true;
+  }
+  return !clang::isa<clang::CXXRecordDecl>(decl) ||
+         HasCallableCopyConstructor(decl);
+}
+
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
   auto record_name = GetRecordName(decl);
 
@@ -505,7 +514,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (!HasCallableCopyConstructor(cxx)) {
+  if (!RecordImplementsClone(decl)) {
     return;
   }
 
@@ -2059,6 +2068,10 @@ bool ConverterRefCount::VisitCXXScalarValueInitExpr(
 }
 
 void ConverterRefCount::ConvertVariadicArg(clang::Expr *arg) {
+  if (arg->getType()->isRecordType()) {
+    StrCat(ConvertFreshRValue(arg));
+    return;
+  }
   if (arg->getType()->isPointerType()) {
     StrCat(ConvertFreshPointer(arg));
     return;
@@ -2164,6 +2177,11 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordDerivesByteRepr(decl)) {
     attrs.emplace_back("ByteRepr");
+  }
+
+  if (RecordImplementsClone(decl)) {
+    attrs.emplace_back("VaArg");
+    attrs.emplace_back("FnPtrArg");
   }
 
   if (RecordDerivesDefault(decl)) {

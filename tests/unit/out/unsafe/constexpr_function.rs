@@ -22,7 +22,7 @@ pub unsafe fn half_3(mut x: f64) -> f64 {
     return ((x) / (2.0E+0));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Flag {
     pub v: i32,
 }
@@ -40,7 +40,7 @@ pub unsafe fn checked_5(mut x: i32) -> i32 {
     return ((x) + (1));
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct P {
     pub v: i32,
 }

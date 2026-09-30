@@ -27,7 +27,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Slot {
     pub tag: Tag_enum,
     pub payload: anon_0,

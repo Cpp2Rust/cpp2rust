@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Table {}
 impl Table {
     pub unsafe fn operator_index(mut i: i32) -> *mut i32 {
@@ -22,16 +22,16 @@ impl Table {
 pub static mut table_0: std::cell::LazyCell<[i32; 3]> =
     std::cell::LazyCell::new(|| unsafe { [7, 8, 9] });
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct S {
     pub data: [i32; 3],
     pub inner: Inner,
 }
 impl S {
-    pub unsafe fn operator_index_i32(&mut self, mut i: i32) -> *mut i32 {
+    pub unsafe fn operator_index_1(&mut self, mut i: i32) -> *mut i32 {
         return &mut self.data[(i) as usize];
     }
-    pub unsafe fn operator_index_i32_const(&self, mut i: i32) -> *const i32 {
+    pub unsafe fn operator_index_2(&self, mut i: i32) -> *const i32 {
         return &self.data[(i) as usize];
     }
     pub unsafe fn operator_deref(&mut self) -> *mut Inner {
@@ -63,11 +63,11 @@ unsafe fn main_0() -> i32 {
         data: [1, 2, 3],
         inner: Inner { x: 9 },
     };
-    assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (2)));
-    (*(unsafe { S::operator_index_i32(&mut s, 1) })) = 20;
-    assert!(((*(unsafe { S::operator_index_i32(&mut s, 1,) })) == (20)));
+    assert!(((*(unsafe { S::operator_index_1(&mut s, 1,) })) == (2)));
+    (*(unsafe { S::operator_index_1(&mut s, 1) })) = 20;
+    assert!(((*(unsafe { S::operator_index_1(&mut s, 1,) })) == (20)));
     let cs: *const S = &s;
-    assert!(((*(unsafe { S::operator_index_i32_const(&(*cs), 2,) })) == (3)));
+    assert!(((*(unsafe { S::operator_index_2(&(*cs), 2,) })) == (3)));
     assert!((((*(unsafe { S::operator_deref(&mut s,) })).x) == (9)));
     (*(unsafe { S::operator_deref(&mut s) })).x = 10;
     assert!((((*(unsafe { S::operator_arrow(&mut s,) })).x) == (10)));

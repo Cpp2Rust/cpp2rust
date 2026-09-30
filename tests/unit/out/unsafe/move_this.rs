@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Default)]
+#[derive(VaArg, Default)]
 pub struct Chain {
     pub v: i32,
 }
@@ -29,11 +29,11 @@ impl Chain {
         (*o).v = 0;
         this
     }
-    pub unsafe fn add_i32_lref(&mut self, mut n: i32) -> *mut Chain {
+    pub unsafe fn add_4(&mut self, mut n: i32) -> *mut Chain {
         self.v += n;
         return &mut (*(self as *mut Chain));
     }
-    pub unsafe fn add_i32_rref(&mut self, mut n: i32) -> *mut Chain {
+    pub unsafe fn add_5(&mut self, mut n: i32) -> *mut Chain {
         self.v += n;
         return &mut (*(self as *mut Chain));
     }
@@ -63,11 +63,11 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a: Chain = Chain::new({ 1 });
-    (unsafe { Chain::add_i32_lref(&mut (*(unsafe { Chain::add_i32_lref(&mut a, 1) })), 1) });
+    (unsafe { Chain::add_4(&mut (*(unsafe { Chain::add_4(&mut a, 1) })), 1) });
     assert!(((a.v) == (3)));
     let mut b0: Chain = Chain::new({ 5 });
     let mut b: Chain = Chain::move_from({
-        (unsafe { Chain::add_i32_rref(&mut (*(unsafe { Chain::add_i32_rref(&mut b0, 1) })), 1) })
+        (unsafe { Chain::add_5(&mut (*(unsafe { Chain::add_5(&mut b0, 1) })), 1) })
     });
     assert!(((b.v) == (8)) && ((b0.v) == (0)));
     let mut c: Chain = (unsafe { Chain::take(&mut Chain::new({ 10 })) });

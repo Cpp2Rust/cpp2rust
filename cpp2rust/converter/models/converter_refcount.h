@@ -49,6 +49,8 @@ public:
                              std::string_view src);
   void AddCloneTrait(const clang::RecordDecl *decl) override;
 
+  bool RecordImplementsClone(const clang::RecordDecl *decl) override;
+
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct container {
     pub p: *mut opaque,
     pub x: i32,
@@ -31,6 +31,6 @@ unsafe fn main_0() -> i32 {
 pub unsafe fn touch_0(mut c: *mut container) {
     &((*c).p);
 }
-#[derive(Clone, Copy, Default, ByteRepr)]
+#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 pub struct opaque;
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -70,7 +70,7 @@ pub fn fill_and_sum_9(a: Ptr<i32>, v: i32, out: Ptr<i32>) {
 pub fn pick_10(s: Ptr<u8>) -> Ptr<u8> {
     return ((s).clone() as Ptr<u8>);
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,

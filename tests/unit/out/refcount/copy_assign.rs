@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Partial {
     pub v: Value<i32>,
     pub keep: Value<i32>,
@@ -58,7 +58,7 @@ impl ByteRepr for Partial {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct NonConstAssign {
     pub mark: Value<i32>,
 }
@@ -98,7 +98,7 @@ impl ByteRepr for NonConstAssign {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct RefQualified {
     pub mark: Value<i32>,
 }
@@ -138,7 +138,7 @@ impl ByteRepr for RefQualified {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Holder {
     pub p: Value<Partial>,
     pub arr: Value<Box<[Partial]>>,
@@ -254,10 +254,8 @@ fn main_0() -> i32 {
     let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
-    ({ NonConstAssignImpl::operator_assign_pmutNonConstAssign(&n1.as_pointer(), n.as_pointer()) });
-    ({
-        NonConstAssignImpl::operator_assign_pconstNonConstAssign(&n2.as_pointer(), cn.as_pointer())
-    });
+    ({ NonConstAssignImpl::operator_assign_2(&n1.as_pointer(), n.as_pointer()) });
+    ({ NonConstAssignImpl::operator_assign_3(&n2.as_pointer(), cn.as_pointer()) });
     assert!(((*(*n1.borrow()).mark.borrow()) == 1));
     assert!(((*(*n2.borrow()).mark.borrow()) == 10));
     let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
@@ -267,16 +265,16 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait NonConstAssignImpl {
-    fn operator_assign_pmutNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
-    fn operator_assign_pconstNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
+    fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
+    fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
 }
 impl NonConstAssignImpl for Ptr<NonConstAssign> {
-    fn operator_assign_pmutNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
+    fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();
     }
-    fn operator_assign_pconstNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
+    fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
         let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
         (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
         return (*self).clone();

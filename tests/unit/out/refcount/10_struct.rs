@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct GraphNode {
     pub dst: Value<u32>,
     pub next: Value<Ptr<GraphNode>>,
@@ -36,7 +36,7 @@ impl ByteRepr for GraphNode {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Graph {
     pub V: Value<u32>,
     pub adj: Value<Ptr<Ptr<GraphNode>>>,
@@ -66,7 +66,7 @@ impl ByteRepr for Graph {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Partial {
     pub p: Value<Ptr<i32>>,
 }
@@ -109,10 +109,10 @@ impl ByteRepr for Partial {
         }
     }
 }
-#[derive(Clone, ByteRepr, Default)]
+#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Declared {}
 impl Declared {}
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub i: Value<i32>,
     pub d: Value<Ptr<Declared>>,
@@ -211,10 +211,10 @@ pub trait PartialImpl {
     fn get(&self) -> Ptr<i32> {
         unimplemented!()
     }
-    fn next(&self) -> Ptr<Partial> {
+    fn next_4(&self) -> Ptr<Partial> {
         unimplemented!()
     }
-    fn next_i32(&self, _a0: i32) -> Partial {
+    fn next_5(&self, _a0: i32) -> Partial {
         unimplemented!()
     }
 }

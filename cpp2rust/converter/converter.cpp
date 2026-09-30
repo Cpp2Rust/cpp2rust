@@ -94,7 +94,7 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
 
 void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "#[derive(Clone, Copy, Default, ByteRepr)]";
+    out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -1113,7 +1113,7 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
         CanUseCopyOrMoveName(decl, name)) {
       return name;
     }
-    return GetOverloadedFunctionName(decl);
+    return std::format("new_{}", GetCtorIndex(decl));
   }
   return GetNumberOfConvertingCtors(decl->getParent()) != 1
              ? std::format("new_{}", GetCtorIndex(decl))
@@ -2182,8 +2182,15 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
   } else if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));
   } else if (IsBuiltinConstantP(callee)) {
-    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_) ? token::kOne
-                                                      : token::kZero);
+    clang::APValue V;
+    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_
+#if CLANG_VERSION_MAJOR >= 24
+                                                ,
+                                                V
+#endif
+                                                )
+               ? token::kOne
+               : token::kZero);
   } else if (Mapper::Contains(ctx_, callee)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
@@ -4052,28 +4059,13 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 }
 
 std::string
-Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
+Converter::GetOverloadedFunctionName(const clang::CXXMethodDecl *decl) {
   auto name = GetFunctionBaseName(decl);
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
     name = GetConversionName(
         conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
   }
-  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
-      ctor && !ctor->getParent()->getIdentifier()) {
-    name = GetRecordName(ctor->getParent());
-  }
-
-  if (decl->getNumParams() != 0U) {
-    name += '_';
-  }
-
-  for (auto *parameter : decl->parameters()) {
-    name += GetUnsafeTypeAsString(parameter->getType());
-    if (parameter->getType()->isRValueReferenceType()) {
-      name += "_rv";
-    }
-    name += '_';
-  }
+  name += std::format("_{}", GetMethodIndex(decl));
 
   if (const auto *targs = decl->getTemplateSpecializationArgs()) {
     std::vector<clang::TemplateArgument> args;
@@ -4099,31 +4091,6 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
         name += "targ";
         break;
       }
-    }
-  }
-
-  auto pred = [](char ch) { return ch != ' ' && ch != '_'; };
-  name.erase(std::find_if(name.rbegin(), name.rend(), pred).base(), name.end());
-
-  if (decl->isVariadic()) {
-    name += "_va";
-  }
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
-    if (method->isConst()) {
-      name += "_const";
-    }
-    if (method->isVolatile()) {
-      name += "_volatile";
-    }
-    switch (method->getRefQualifier()) {
-    case clang::RQ_LValue:
-      name += "_lref";
-      break;
-    case clang::RQ_RValue:
-      name += "_rref";
-      break;
-    case clang::RQ_None:
-      break;
     }
   }
 
@@ -4154,6 +4121,10 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (HasDefaultedCopyConstructor(decl)) {
     struct_attrs.emplace_back("Clone");
+  }
+
+  if (RecordImplementsClone(decl)) {
+    struct_attrs.emplace_back("VaArg");
   }
 
   if (RecordDerivesDefault(decl)) {
@@ -4645,6 +4616,11 @@ void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
                      source.isConstQualified()
                          ? ""
                          : std::format(" as *mut {}", record_name)));
+}
+
+bool Converter::RecordImplementsClone(const clang::RecordDecl *decl) {
+  return HasDefaultedCopyConstructor(decl) ||
+         GetUserDefinedCopyConstructor(decl) != nullptr;
 }
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {

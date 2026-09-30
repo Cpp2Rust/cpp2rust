@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub v: i32,
 }
@@ -18,7 +18,7 @@ impl S {
     pub unsafe fn operator_ne(&self, o: *const S) -> bool {
         return ((self.v) != ((*o).v));
     }
-    pub unsafe fn operator_lt_pconstS_const(&self, o: *const S) -> bool {
+    pub unsafe fn operator_lt_3(&self, o: *const S) -> bool {
         return ((self.v) < ((*o).v));
     }
     pub unsafe fn operator_gt(&self, o: *const S) -> bool {
@@ -30,16 +30,16 @@ impl S {
     pub unsafe fn operator_ge(&self, o: *const S) -> bool {
         return ((self.v) >= ((*o).v));
     }
-    pub unsafe fn operator_lt_i32_const(&self, mut o: i32) -> bool {
+    pub unsafe fn operator_lt_7(&self, mut o: i32) -> bool {
         return ((self.v) < (o));
     }
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         unsafe {
-            if S::operator_lt_pconstS_const(self, other as *const S) {
+            if S::operator_lt_3(self, other as *const S) {
                 std::cmp::Ordering::Less
-            } else if S::operator_lt_pconstS_const(other, self as *const S) {
+            } else if S::operator_lt_3(other, self as *const S) {
                 std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
@@ -70,12 +70,12 @@ unsafe fn main_0() -> i32 {
     let mut c: S = S { v: 1 };
     assert!((unsafe { S::operator_eq(&a, &c,) }));
     assert!((unsafe { S::operator_ne(&a, &b,) }));
-    assert!((unsafe { S::operator_lt_pconstS_const(&a, &b,) }));
+    assert!((unsafe { S::operator_lt_3(&a, &b,) }));
     assert!((unsafe { S::operator_gt(&b, &a,) }));
     assert!((unsafe { S::operator_le(&a, &c,) }));
     assert!((unsafe { S::operator_ge(&a, &c,) }));
-    assert!(!(unsafe { S::operator_lt_pconstS_const(&b, &a,) }));
-    assert!((unsafe { S::operator_lt_i32_const(&a, 5,) }));
+    assert!(!(unsafe { S::operator_lt_3(&b, &a,) }));
+    assert!((unsafe { S::operator_lt_7(&a, 5,) }));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

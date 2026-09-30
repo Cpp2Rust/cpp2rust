@@ -21,7 +21,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Event {
     pub kind: Kind_enum,
     pub handle: *mut ::libc::c_void,

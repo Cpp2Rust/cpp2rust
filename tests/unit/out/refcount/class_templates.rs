@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_int_ {
     vec_: Value<Vec<i32>>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for MyContainer_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_char_ {
     vec_: Value<Vec<u8>>,
 }
@@ -58,7 +58,7 @@ impl ByteRepr for MyContainer_char_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct MyContainer_float_ {
     vec_: Value<Vec<f32>>,
 }
@@ -84,7 +84,7 @@ impl ByteRepr for MyContainer_float_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Boxed_int_ {
     pub value: Value<i32>,
 }
@@ -116,7 +116,7 @@ impl ByteRepr for Boxed_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Boxed_long_ {
     pub value: Value<i64>,
 }
@@ -148,7 +148,7 @@ impl ByteRepr for Boxed_long_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_int__Inner_int_ {
     pub t: Value<i32>,
     pub u: Value<i32>,
@@ -178,7 +178,7 @@ impl ByteRepr for Outer_int__Inner_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_int_ {
     pub v: Value<i32>,
 }
@@ -204,7 +204,7 @@ impl ByteRepr for Outer_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_int_ {
     pub t: Value<i64>,
     pub u: Value<i32>,
@@ -234,7 +234,7 @@ impl ByteRepr for Outer_long__Inner_int_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long__Inner_char_ {
     pub t: Value<i64>,
     pub u: Value<u8>,
@@ -264,7 +264,7 @@ impl ByteRepr for Outer_long__Inner_char_ {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Outer_long_ {
     pub v: Value<i64>,
 }
@@ -346,7 +346,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ MyContainer_int_Impl::size(&imc.as_pointer(),) }) == 1_usize)
-            && ((({ MyContainer_int_Impl::back(&imc.as_pointer(),) }).read()) == 1)
+            && ((({ MyContainer_int_Impl::back_4(&imc.as_pointer(),) }).read()) == 1)
     );
     ({ MyContainer_int_Impl::pop_back(&imc.as_pointer()) });
     assert!(({ MyContainer_int_Impl::empty(&imc.as_pointer(),) }));
@@ -358,7 +358,7 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ MyContainer_char_Impl::size(&cmc.as_pointer(),) }) == 1_usize)
-            && (((({ MyContainer_char_Impl::back(&cmc.as_pointer(),) }).read()) as i32)
+            && (((({ MyContainer_char_Impl::back_4(&cmc.as_pointer(),) }).read()) as i32)
                 == (('a' as u8) as i32))
     );
     ({ MyContainer_char_Impl::pop_back(&cmc.as_pointer()) });
@@ -371,7 +371,8 @@ fn main_0() -> i32 {
     });
     assert!(
         (({ MyContainer_float_Impl::size(&fmc.as_pointer(),) }) == 1_usize)
-            && (((({ MyContainer_float_Impl::back(&fmc.as_pointer(),) }).read()) as f64) == 1.0E+0)
+            && (((({ MyContainer_float_Impl::back_4(&fmc.as_pointer(),) }).read()) as f64)
+                == 1.0E+0)
     );
     ({ MyContainer_float_Impl::pop_back(&fmc.as_pointer()) });
     assert!(({ MyContainer_float_Impl::empty(&fmc.as_pointer(),) }));
@@ -398,10 +399,10 @@ impl Boxed_long_Impl for Ptr<Boxed_long_> {
 pub trait MyContainer_char_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
-    fn back_const(&self) -> Ptr<u8> {
+    fn back_3(&self) -> Ptr<u8> {
         unimplemented!()
     }
-    fn back(&self) -> Ptr<u8>;
+    fn back_4(&self) -> Ptr<u8>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<u8>);
 }
@@ -412,7 +413,7 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn size(&self) -> usize {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
-    fn back(&self) -> Ptr<u8> {
+    fn back_4(&self) -> Ptr<u8> {
         return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<u8>).to_last();
     }
     fn pop_back(&self) {
@@ -429,10 +430,10 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
 pub trait MyContainer_float_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
-    fn back_const(&self) -> Ptr<f32> {
+    fn back_3(&self) -> Ptr<f32> {
         unimplemented!()
     }
-    fn back(&self) -> Ptr<f32>;
+    fn back_4(&self) -> Ptr<f32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<f32>);
 }
@@ -443,7 +444,7 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
     fn size(&self) -> usize {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
-    fn back(&self) -> Ptr<f32> {
+    fn back_4(&self) -> Ptr<f32> {
         return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<f32>).to_last();
     }
     fn pop_back(&self) {
@@ -460,10 +461,10 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
 pub trait MyContainer_int_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
-    fn back_const(&self) -> Ptr<i32> {
+    fn back_3(&self) -> Ptr<i32> {
         unimplemented!()
     }
-    fn back(&self) -> Ptr<i32>;
+    fn back_4(&self) -> Ptr<i32>;
     fn pop_back(&self);
     fn push_back(&self, item: Ptr<i32>);
 }
@@ -474,7 +475,7 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
     fn size(&self) -> usize {
         return (*(*(*self).upgrade().deref()).vec_.borrow()).len();
     }
-    fn back(&self) -> Ptr<i32> {
+    fn back_4(&self) -> Ptr<i32> {
         return ((*(*self).upgrade().deref()).vec_.as_pointer() as Ptr<i32>).to_last();
     }
     fn pop_back(&self) {

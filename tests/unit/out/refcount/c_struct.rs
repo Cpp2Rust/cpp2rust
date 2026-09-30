@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Point {
     pub x: Value<i32>,
     pub y: Value<i32>,
@@ -34,7 +34,7 @@ impl ByteRepr for Point {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Line {
     pub start: Value<Point>,
     pub end: Value<Point>,
@@ -62,7 +62,7 @@ impl ByteRepr for Line {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Node {
     pub value: Value<i32>,
     pub next: Value<Ptr<Node>>,
@@ -94,7 +94,7 @@ pub type Color = u32;
 pub const Color_RED: Color = 0;
 pub const Color_GREEN: Color = 1;
 pub const Color_BLUE: Color = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub a: Value<i32>,
     pub b: Value<i32>,
@@ -122,7 +122,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Container {
     pub inner: Value<Inner>,
     pub color: Value<Color>,

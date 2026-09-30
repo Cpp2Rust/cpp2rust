@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, VaArg)]
 pub struct Handler {
     pub tag: i32,
     pub cb: Option<unsafe fn(i32) -> i32>,
@@ -27,13 +27,13 @@ pub unsafe fn negate_1(mut x: i32) -> i32 {
     return -x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {}
 impl S {
-    pub unsafe fn pick_i32(mut x: i32) -> i32 {
+    pub unsafe fn pick_1(mut x: i32) -> i32 {
         return ((x) + (1));
     }
-    pub unsafe fn pick_i64(mut x: i64) -> i32 {
+    pub unsafe fn pick_2(mut x: i64) -> i32 {
         return ((x as i32) + (2));
     }
     pub unsafe fn solo(mut x: i32) -> i32 {
@@ -47,14 +47,14 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    let mut p1: Option<unsafe fn(i32) -> i32> = (Some(S::pick_i32));
+    let mut p1: Option<unsafe fn(i32) -> i32> = (Some(S::pick_1));
     let mut p2: Option<unsafe fn(i32) -> i32> = Some(S::solo);
     assert!(((unsafe { (p1).unwrap()(5,) }) == (6)));
     assert!(((unsafe { (p2).unwrap()(5,) }) == (8)));
-    assert!(((unsafe { S::pick_i64(5_i64,) }) == (7)));
+    assert!(((unsafe { S::pick_2(5_i64,) }) == (7)));
     let mut h3: Handler = Handler {
         tag: 3,
-        cb: (Some(S::pick_i32)),
+        cb: (Some(S::pick_1)),
     };
     assert!(((unsafe { (h3.cb).unwrap()(1,) }) == (2)));
     let mut h1: Handler = Handler {

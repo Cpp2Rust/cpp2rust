@@ -54,7 +54,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Sink {
     pub width: Value<Width_enum>,
     pub out: Value<anon_0>,

@@ -47,7 +47,7 @@ impl ByteRepr for anon_0 {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Event {
     pub kind: Value<Kind_enum>,
     pub handle: Value<AnyPtr>,

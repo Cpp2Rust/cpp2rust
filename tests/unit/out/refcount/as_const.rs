@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: Value<i32>,
 }
@@ -49,39 +49,39 @@ fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
         v: Rc::new(RefCell::new(7)),
     }));
-    assert!(((({ SImpl::f(&s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
-    assert!(((({ SImpl::f_const(&s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
+    assert!(((({ SImpl::f_1(&s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
+    assert!(((({ SImpl::f_2(&s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
     assert!(((({ g_0(s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!(((({ g_1(s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
-    ({ SImpl::value_ref(&s.as_pointer()) }).write(9);
+    ({ SImpl::value_ref_3(&s.as_pointer()) }).write(9);
     assert!(((*(*s.borrow()).v.borrow()) == 9));
-    assert!(((({ SImpl::value_ref_const(&s.as_pointer(),) }).read()) == 9));
+    assert!(((({ SImpl::value_ref_4(&s.as_pointer(),) }).read()) == 9));
     let cs: Ptr<S> = s.as_pointer();
-    assert!(((({ SImpl::f_const(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
+    assert!(((({ SImpl::f_2(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
     assert!(((*(*cs.upgrade().deref()).v.borrow()) == 9));
     let p: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
     (*(*(*p.borrow()).upgrade().deref()).v.borrow_mut()) = 11;
     assert!(((*(*s.borrow()).v.borrow()) == 11));
-    assert!(((({ SImpl::f(&(*p.borrow()),) }) as i32) == (Overload_kMutableOverload as i32)));
+    assert!(((({ SImpl::f_1(&(*p.borrow()),) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }
 pub trait SImpl {
-    fn f(&self) -> Overload;
-    fn f_const(&self) -> Overload;
-    fn value_ref(&self) -> Ptr<i32>;
-    fn value_ref_const(&self) -> Ptr<i32>;
+    fn f_1(&self) -> Overload;
+    fn f_2(&self) -> Overload;
+    fn value_ref_3(&self) -> Ptr<i32>;
+    fn value_ref_4(&self) -> Ptr<i32>;
 }
 impl SImpl for Ptr<S> {
-    fn f(&self) -> Overload {
+    fn f_1(&self) -> Overload {
         return Overload_kMutableOverload;
     }
-    fn f_const(&self) -> Overload {
+    fn f_2(&self) -> Overload {
         return Overload_kConstOverload;
     }
-    fn value_ref(&self) -> Ptr<i32> {
+    fn value_ref_3(&self) -> Ptr<i32> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
-    fn value_ref_const(&self) -> Ptr<i32> {
+    fn value_ref_4(&self) -> Ptr<i32> {
         return (*(*self).upgrade().deref()).v.as_pointer();
     }
 }

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: Value<i32>,
 }
@@ -32,7 +32,7 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Explicit {
     pub v: Value<i32>,
     pub inner: Value<Inner>,
@@ -91,7 +91,7 @@ impl ByteRepr for Explicit {
         }
     }
 }
-#[derive()]
+#[derive(VaArg, FnPtrArg)]
 pub struct Implicit {
     pub v: Value<i32>,
     pub inner: Value<Inner>,
@@ -136,7 +136,7 @@ impl ByteRepr for Implicit {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct DefaultCopyUserMove {
     pub v: Value<i32>,
 }
@@ -180,7 +180,7 @@ impl ByteRepr for DefaultCopyUserMove {
         }
     }
 }
-#[derive(Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct UserCopyDefaultMove {
     pub v: Value<i32>,
 }
