@@ -42,12 +42,12 @@ fn main_0() -> i32 {
     assert!((((*y.borrow()).read()) == 9));
     (*y.borrow()).delete();
     let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(<Pair>::default())));
-    (*p.borrow()).with_mut(|__s: &mut Pair| __s.x = 1);
-    (*p.borrow()).with_mut(|__s: &mut Pair| __s.y = 2);
+    field!((*p.borrow()), x).write(1);
+    field!((*p.borrow()), y).write(2);
     assert!(
         ({
-            let _lhs = (*p.borrow()).with(|__s: &Pair| __s.x);
-            _lhs + (*p.borrow()).with(|__s: &Pair| __s.y)
+            let _lhs = (*p.borrow()).with(|__s| __s.x);
+            _lhs + (*p.borrow()).with(|__s| __s.y)
         } == 3)
     );
     (*p.borrow()).delete();

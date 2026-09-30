@@ -61,8 +61,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(Pair { x: 1, y: 2 })));
     let out: Value<i32> = Rc::new(RefCell::new({
-        let _lhs = (*p.borrow()).with(|__s: &Pair| __s.x);
-        _lhs + (*p.borrow()).with(|__s: &Pair| __s.y)
+        let _lhs = (*p.borrow()).with(|__s| __s.x);
+        _lhs + (*p.borrow()).with(|__s| __s.y)
     }));
     (*p.borrow()).delete();
     assert!(((*out.borrow()) == 3));
@@ -79,12 +79,9 @@ fn main_0() -> i32 {
         b: 3,
         p: <Pair>::default(),
     })));
-    assert!(((*q.borrow()).with(|__s: &Triple| __s.a) == 2));
-    assert!(((*q.borrow()).with(|__s: &Triple| __s.b) == 3));
-    assert!(
-        ((*q.borrow()).with(|__s: &Triple| __s.p.x) == 0)
-            && ((*q.borrow()).with(|__s: &Triple| __s.p.y) == 0)
-    );
+    assert!(((*q.borrow()).with(|__s| __s.a) == 2));
+    assert!(((*q.borrow()).with(|__s| __s.b) == 3));
+    assert!(((*q.borrow()).with(|__s| __s.p.x) == 0) && ((*q.borrow()).with(|__s| __s.p.y) == 0));
     (*q.borrow()).delete();
     return 0;
 }

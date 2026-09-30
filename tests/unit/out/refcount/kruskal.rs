@@ -45,13 +45,12 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     let i: Value<i32> = Rc::new(RefCell::new(((*start.borrow()) + 1)));
     'loop_: while ((*i.borrow()) <= (*end.borrow())) {
         if {
-            let _lhs = (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*i.borrow()) as usize))
-                .with(|__s: &Edge| __s.weight);
-            _lhs <= pivot.with(|__s: &Edge| __s.weight)
+            let _lhs = {
+                (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*i.borrow()) as usize) as usize]
+                    .weight
+            };
+            _lhs <= pivot.with(|__s| __s.weight)
         } {
             (*count.borrow_mut()).postfix_inc();
         }
@@ -60,54 +59,36 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     let pidx: Value<i32> = Rc::new(RefCell::new(((*start.borrow()) + (*count.borrow()))));
     let tmp: Value<Edge> = Rc::new(RefCell::new(Edge {
         u: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*pidx.borrow()) as usize))
-                .with(|__s: &Edge| __s.u)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*pidx.borrow()) as usize) as usize]
+                .u
         },
         v: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*pidx.borrow()) as usize))
-                .with(|__s: &Edge| __s.v)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*pidx.borrow()) as usize) as usize]
+                .v
         },
         weight: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*pidx.borrow()) as usize))
-                .with(|__s: &Edge| __s.weight)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*pidx.borrow()) as usize) as usize]
+                .weight
         },
     }));
     let __rhs = Edge {
         u: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*start.borrow()) as usize))
-                .with(|__s: &Edge| __s.u)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*start.borrow()) as usize) as usize]
+                .u
         },
         v: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*start.borrow()) as usize))
-                .with(|__s: &Edge| __s.v)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*start.borrow()) as usize) as usize]
+                .v
         },
         weight: {
-            (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*start.borrow()) as usize))
-                .with(|__s: &Edge| __s.weight)
+            (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                [((*start.borrow()) as usize) as usize]
+                .weight
         },
     };
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[((*pidx.borrow()) as usize) as usize] =
@@ -122,78 +103,58 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     let j: Value<i32> = Rc::new(RefCell::new((*end.borrow())));
     'loop_: while ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
         'loop_: while {
-            let _lhs = (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*i.borrow()) as usize))
-                .with(|__s: &Edge| __s.weight);
-            _lhs <= pivot.with(|__s: &Edge| __s.weight)
+            let _lhs = {
+                (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*i.borrow()) as usize) as usize]
+                    .weight
+            };
+            _lhs <= pivot.with(|__s| __s.weight)
         } {
             (*i.borrow_mut()).prefix_inc();
         }
         'loop_: while {
-            let _lhs = (*arr.upgrade().deref())
-                .as_ref()
-                .unwrap()
-                .as_pointer()
-                .offset(((*j.borrow()) as usize))
-                .with(|__s: &Edge| __s.weight);
-            _lhs > pivot.with(|__s: &Edge| __s.weight)
+            let _lhs = {
+                (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                    [((*j.borrow()) as usize) as usize]
+                    .weight
+            };
+            _lhs > pivot.with(|__s| __s.weight)
         } {
             (*j.borrow_mut()).prefix_dec();
         }
         if ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
             (*tmp.borrow_mut()) = Edge {
                 u: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*i.borrow()) as usize))
-                        .with(|__s: &Edge| __s.u)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*i.borrow()) as usize) as usize]
+                        .u
                 },
                 v: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*i.borrow()) as usize))
-                        .with(|__s: &Edge| __s.v)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*i.borrow()) as usize) as usize]
+                        .v
                 },
                 weight: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*i.borrow()) as usize))
-                        .with(|__s: &Edge| __s.weight)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*i.borrow()) as usize) as usize]
+                        .weight
                 },
             };
             let __rhs = Edge {
                 u: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*j.borrow()) as usize))
-                        .with(|__s: &Edge| __s.u)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*j.borrow()) as usize) as usize]
+                        .u
                 },
                 v: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*j.borrow()) as usize))
-                        .with(|__s: &Edge| __s.v)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*j.borrow()) as usize) as usize]
+                        .v
                 },
                 weight: {
-                    (*arr.upgrade().deref())
-                        .as_ref()
-                        .unwrap()
-                        .as_pointer()
-                        .offset(((*j.borrow()) as usize))
-                        .with(|__s: &Edge| __s.weight)
+                    (*arr.upgrade().deref()).as_ref().unwrap().borrow()
+                        [((*j.borrow()) as usize) as usize]
+                        .weight
                 },
             };
             (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()
@@ -249,9 +210,9 @@ pub struct DisjointSet {
 impl DisjointSet {
     pub fn move_from(_a0: Ptr<DisjointSet>) -> Self {
         let __this: Value<DisjointSet> = Rc::new(RefCell::new(Self {
-            rank: { _a0.with_mut(|__s: &mut DisjointSet| __s.rank.take()) },
-            parent: { _a0.with_mut(|__s: &mut DisjointSet| __s.parent.take()) },
-            n: { _a0.with(|__s: &DisjointSet| __s.n) },
+            rank: field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
+            parent: field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
+            n: { (*_a0.upgrade().deref()).n },
         }));
         let this: Ptr<DisjointSet> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -291,9 +252,9 @@ pub struct Graph {
 impl Graph {
     pub fn move_from(_a0: Ptr<Graph>) -> Self {
         let __this: Value<Graph> = Rc::new(RefCell::new(Self {
-            edges: { _a0.with_mut(|__s: &mut Graph| __s.edges.take()) },
-            V: { _a0.with(|__s: &Graph| __s.V) },
-            E: { _a0.with(|__s: &Graph| __s.E) },
+            edges: field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
+            V: { (*_a0.upgrade().deref()).V },
+            E: { (*_a0.upgrade().deref()).E },
         }));
         let this: Ptr<Graph> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -323,42 +284,53 @@ impl ByteRepr for Graph {
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({
         let _arr: Ptr<Option<Value<Box<[Edge]>>>> = field_ptr!(graph, edges);
-        let _end: i32 = (graph.with(|__s: &Graph| __s.E) - 1);
+        let _end: i32 = (graph.with(|__s| __s.E) - 1);
         quicksort_1(_arr, 0, _end)
     });
     let set: Value<DisjointSet> = Rc::new(RefCell::new(DisjointSet {
-        rank: {
-            Some(Rc::new(RefCell::new(
-                (0..(graph.with(|__s: &Graph| __s.V) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[_]>>(),
-            )))
-        },
-        parent: {
-            Some(Rc::new(RefCell::new(
-                (0..(graph.with(|__s: &Graph| __s.V) as usize))
-                    .map(|_| <i32>::default())
-                    .collect::<Box<[_]>>(),
-            )))
-        },
-        n: { graph.with(|__s: &Graph| __s.V) },
+        rank: Some(Rc::new(RefCell::new(
+            (0..(graph.with(|__s| __s.V) as usize))
+                .map(|_| <i32>::default())
+                .collect::<Box<[_]>>(),
+        ))),
+        parent: Some(Rc::new(RefCell::new(
+            (0..(graph.with(|__s| __s.V) as usize))
+                .map(|_| <i32>::default())
+                .collect::<Box<[_]>>(),
+        ))),
+        n: graph.with(|__s| __s.V),
     }));
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
     let total_weight: Value<f64> = Rc::new(RefCell::new(0_f64));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while {
         let _lhs = (*i.borrow());
-        _lhs < graph.with(|__s: &Graph| __s.E)
+        _lhs < graph.with(|__s| __s.E)
     } {
-        let x: Value<i32> = Rc::new(RefCell::new(graph.with(|__s: &Graph| {
-            __s.edges.as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].u
-        })));
-        let y: Value<i32> = Rc::new(RefCell::new(graph.with(|__s: &Graph| {
-            __s.edges.as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].v
-        })));
-        let w: Value<f64> = Rc::new(RefCell::new(graph.with(|__s: &Graph| {
-            __s.edges.as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize].weight
-        })));
+        let x: Value<i32> = Rc::new(RefCell::new({
+            graph
+                .with(|__s| __s.edges.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*i.borrow()) as usize) as usize]
+                .u
+        }));
+        let y: Value<i32> = Rc::new(RefCell::new({
+            graph
+                .with(|__s| __s.edges.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*i.borrow()) as usize) as usize]
+                .v
+        }));
+        let w: Value<f64> = Rc::new(RefCell::new({
+            graph
+                .with(|__s| __s.edges.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*i.borrow()) as usize) as usize]
+                .weight
+        }));
         if (({ DisjointSetImpl::find(&set.as_pointer(), (*x.borrow())) })
             != ({ DisjointSetImpl::find(&set.as_pointer(), (*y.borrow())) }))
         {
@@ -385,27 +357,42 @@ fn main_0() -> i32 {
         V: (*V.borrow()),
         E: (*E.borrow()),
     }));
-    (*graph.borrow()).edges.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = Edge {
+    { (*graph.borrow()).edges.clone() }
+        .as_ref()
+        .unwrap()
+        .borrow_mut()[(0_usize) as usize] = Edge {
         u: 0,
         v: 1,
         weight: 10_f64,
     };
-    (*graph.borrow()).edges.as_ref().unwrap().borrow_mut()[(1_usize) as usize] = Edge {
+    { (*graph.borrow()).edges.clone() }
+        .as_ref()
+        .unwrap()
+        .borrow_mut()[(1_usize) as usize] = Edge {
         u: 1,
         v: 3,
         weight: 15_f64,
     };
-    (*graph.borrow()).edges.as_ref().unwrap().borrow_mut()[(2_usize) as usize] = Edge {
+    { (*graph.borrow()).edges.clone() }
+        .as_ref()
+        .unwrap()
+        .borrow_mut()[(2_usize) as usize] = Edge {
         u: 2,
         v: 3,
         weight: 4_f64,
     };
-    (*graph.borrow()).edges.as_ref().unwrap().borrow_mut()[(3_usize) as usize] = Edge {
+    { (*graph.borrow()).edges.clone() }
+        .as_ref()
+        .unwrap()
+        .borrow_mut()[(3_usize) as usize] = Edge {
         u: 2,
         v: 0,
         weight: 6_f64,
     };
-    (*graph.borrow()).edges.as_ref().unwrap().borrow_mut()[(4_usize) as usize] = Edge {
+    { (*graph.borrow()).edges.clone() }
+        .as_ref()
+        .unwrap()
+        .borrow_mut()[(4_usize) as usize] = Edge {
         u: 0,
         v: 3,
         weight: 5_f64,
@@ -423,36 +410,49 @@ pub trait DisjointSetImpl {
 impl DisjointSetImpl for Ptr<DisjointSet> {
     fn makeSet(&self) {
         let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < (*self).with(|__s: &DisjointSet| __s.n)) {
+        'loop_: while ((*i.borrow()) < (*self).with(|__s| __s.n)) {
             let __rhs = (*i.borrow());
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.parent.as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs
-            });
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.rank.as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1
-            });
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
+            (*self)
+                .with(|__s| __s.rank.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
             (*i.borrow_mut()).postfix_inc();
         }
     }
     fn find(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        if ((*self).with(|__s: &DisjointSet| {
-            __s.parent.as_ref().unwrap().borrow()[((*x.borrow()) as usize) as usize]
-        }) != (*x.borrow()))
+        if ((*self)
+            .with(|__s| __s.parent.clone())
+            .as_ref()
+            .unwrap()
+            .borrow()[((*x.borrow()) as usize) as usize]
+            != (*x.borrow()))
         {
             let __rhs = ({
-                let _x: i32 = (*self).with(|__s: &DisjointSet| {
-                    __s.parent.as_ref().unwrap().borrow()[((*x.borrow()) as usize) as usize]
-                });
+                let _x: i32 = (*self)
+                    .with(|__s| __s.parent.clone())
+                    .as_ref()
+                    .unwrap()
+                    .borrow()[((*x.borrow()) as usize) as usize];
                 DisjointSetImpl::find(self, _x)
             });
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.parent.as_ref().unwrap().borrow_mut()[((*x.borrow()) as usize) as usize] = __rhs
-            });
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*x.borrow()) as usize) as usize] = __rhs;
         }
-        return (*self).with(|__s: &DisjointSet| {
-            __s.parent.as_ref().unwrap().borrow()[((*x.borrow()) as usize) as usize]
-        });
+        return (*self)
+            .with(|__s| __s.parent.clone())
+            .as_ref()
+            .unwrap()
+            .borrow()[((*x.borrow()) as usize) as usize];
     }
     fn merge(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
@@ -466,45 +466,64 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         if ((*xset.borrow()) == (*yset.borrow())) {
             return;
         }
-        if ((*self).with(|__s: &DisjointSet| {
-            __s.rank.as_ref().unwrap().borrow()[((*xset.borrow()) as usize) as usize]
-        }) < (*self).with(|__s: &DisjointSet| {
-            __s.rank.as_ref().unwrap().borrow()[((*yset.borrow()) as usize) as usize]
-        })) {
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.parent.as_ref().unwrap().borrow_mut()[((*xset.borrow()) as usize) as usize] =
-                    (*yset.borrow())
-            });
-        } else if ((*self).with(|__s: &DisjointSet| {
-            __s.rank.as_ref().unwrap().borrow()[((*xset.borrow()) as usize) as usize]
-        }) > (*self).with(|__s: &DisjointSet| {
-            __s.rank.as_ref().unwrap().borrow()[((*yset.borrow()) as usize) as usize]
-        })) {
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.parent.as_ref().unwrap().borrow_mut()[((*yset.borrow()) as usize) as usize] =
-                    (*xset.borrow())
-            });
+        if ((*self)
+            .with(|__s| __s.rank.clone())
+            .as_ref()
+            .unwrap()
+            .borrow()[((*xset.borrow()) as usize) as usize]
+            < (*self)
+                .with(|__s| __s.rank.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*yset.borrow()) as usize) as usize])
+        {
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*xset.borrow()) as usize) as usize] = (*yset.borrow());
+        } else if ((*self)
+            .with(|__s| __s.rank.clone())
+            .as_ref()
+            .unwrap()
+            .borrow()[((*xset.borrow()) as usize) as usize]
+            > (*self)
+                .with(|__s| __s.rank.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*yset.borrow()) as usize) as usize])
+        {
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*yset.borrow()) as usize) as usize] = (*xset.borrow());
         } else {
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.parent.as_ref().unwrap().borrow_mut()[((*yset.borrow()) as usize) as usize] =
-                    (*xset.borrow())
-            });
-            let __rhs = ((*self).with(|__s: &DisjointSet| {
-                __s.rank.as_ref().unwrap().borrow()[((*xset.borrow()) as usize) as usize]
-            }) + 1);
-            (*self).with_mut(|__s: &mut DisjointSet| {
-                __s.rank.as_ref().unwrap().borrow_mut()[((*xset.borrow()) as usize) as usize] =
-                    __rhs
-            });
+            (*self)
+                .with(|__s| __s.parent.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*yset.borrow()) as usize) as usize] = (*xset.borrow());
+            let __rhs = ((*self)
+                .with(|__s| __s.rank.clone())
+                .as_ref()
+                .unwrap()
+                .borrow()[((*xset.borrow()) as usize) as usize]
+                + 1);
+            (*self)
+                .with(|__s| __s.rank.clone())
+                .as_ref()
+                .unwrap()
+                .borrow_mut()[((*xset.borrow()) as usize) as usize] = __rhs;
         }
     }
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
         (field_ptr!((*self), rank) as Ptr<Option<Value<Box<[i32]>>>>)
-            .write(_a0.with_mut(|__s: &mut DisjointSet| __s.rank.take()));
+            .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
         (field_ptr!((*self), parent) as Ptr<Option<Value<Box<[i32]>>>>)
-            .write(_a0.with_mut(|__s: &mut DisjointSet| __s.parent.take()));
-        let __rhs = _a0.with(|__s: &DisjointSet| __s.n);
-        (*self).with_mut(|__s: &mut DisjointSet| __s.n = __rhs);
+            .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
+        let __rhs = { (*_a0.upgrade().deref()).n };
+        field!((*self), n).write(__rhs);
         return (*self).clone();
     }
 }
@@ -514,11 +533,11 @@ pub trait GraphImpl {
 impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
         (field_ptr!((*self), edges) as Ptr<Option<Value<Box<[Edge]>>>>)
-            .write(_a0.with_mut(|__s: &mut Graph| __s.edges.take()));
-        let __rhs = _a0.with(|__s: &Graph| __s.V);
-        (*self).with_mut(|__s: &mut Graph| __s.V = __rhs);
-        let __rhs = _a0.with(|__s: &Graph| __s.E);
-        (*self).with_mut(|__s: &mut Graph| __s.E = __rhs);
+            .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
+        let __rhs = { (*_a0.upgrade().deref()).V };
+        field!((*self), V).write(__rhs);
+        let __rhs = { (*_a0.upgrade().deref()).E };
+        field!((*self), E).write(__rhs);
         return (*self).clone();
     }
 }

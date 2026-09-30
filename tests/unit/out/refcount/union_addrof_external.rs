@@ -155,11 +155,11 @@ fn main_0() -> i32 {
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
     ({
-        let _out: AnyPtr = (field_ptr!(c, view)).to_any();
+        let _out: AnyPtr = (field_ptr!(c.as_pointer(), view)).to_any();
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
-    assert!((((((*c.borrow()).view.h().with(|__s: &record| __s.code) as i32) == 2) as i32) != 0));
+    assert!((((((*c.borrow()).view.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
         (((((((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>())
             .offset((0) as isize)

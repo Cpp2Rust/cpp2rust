@@ -26,8 +26,8 @@ impl ByteRepr for S {
 }
 pub fn operator_div_0(a: Ptr<S>, b: Ptr<S>) -> i32 {
     return {
-        let _lhs = a.with(|__s: &S| __s.v);
-        _lhs / b.with(|__s: &S| __s.v)
+        let _lhs = a.with(|__s| __s.v);
+        _lhs / b.with(|__s| __s.v)
     };
 }
 pub fn operator_div_1(a: S, b: i32) -> i32 {
@@ -43,7 +43,7 @@ pub fn operator_rem_2(a: S, b: S) -> i32 {
 pub fn operator_rem_3(a: Ptr<S>, b: i32) -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     return ({
-        let _lhs = a.with(|__s: &S| __s.v);
+        let _lhs = a.with(|__s| __s.v);
         _lhs % (*b.borrow())
     } + 1);
 }
@@ -60,7 +60,7 @@ pub fn operator_eq_5(a: i64, b: Ptr<S>) -> i32 {
     let a: Value<i64> = Rc::new(RefCell::new(a));
     return if {
         let _lhs = (*a.borrow());
-        _lhs == (b.with(|__s: &S| __s.v) as i64)
+        _lhs == (b.with(|__s| __s.v) as i64)
     } {
         5
     } else {
@@ -122,7 +122,7 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_eq_1(&self, o: i32) -> i32 {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return if ((*self).with(|__s: &S| __s.v) == (*o.borrow())) {
+        return if ((*self).with(|__s| __s.v) == (*o.borrow())) {
             1
         } else {
             0
@@ -130,7 +130,7 @@ impl SImpl for Ptr<S> {
     }
     fn operator_eq_2(&self, o: i64) -> i32 {
         let o: Value<i64> = Rc::new(RefCell::new(o));
-        return if (((*self).with(|__s: &S| __s.v) as i64) == (*o.borrow())) {
+        return if (((*self).with(|__s| __s.v) as i64) == (*o.borrow())) {
             2
         } else {
             0
@@ -138,7 +138,7 @@ impl SImpl for Ptr<S> {
     }
     fn operator_eq_3(&self, o: f64) -> i32 {
         let o: Value<f64> = Rc::new(RefCell::new(o));
-        return if (((*self).with(|__s: &S| __s.v) as f64) == (*o.borrow())) {
+        return if (((*self).with(|__s| __s.v) as f64) == (*o.borrow())) {
             3
         } else {
             0
@@ -146,23 +146,23 @@ impl SImpl for Ptr<S> {
     }
     fn operator_add(&self, o: Ptr<S>) -> i32 {
         return {
-            let _lhs = (*self).with(|__s: &S| __s.v);
-            _lhs + o.with(|__s: &S| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs + o.with(|__s| __s.v)
         };
     }
     fn operator_sub(&self, o: S) -> i32 {
         let o: Value<S> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s: &S| __s.v) - { (*o.borrow()).v });
+        return ((*self).with(|__s| __s.v) - { (*o.borrow()).v });
     }
     fn operator_mul_6(&self, o: Ptr<S>) -> i32 {
         return {
-            let _lhs = (*self).with(|__s: &S| __s.v);
-            _lhs * o.with(|__s: &S| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs * o.with(|__s| __s.v)
         };
     }
     fn operator_mul_7(&self, o: i32) -> i32 {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return (((*self).with(|__s: &S| __s.v) * (*o.borrow())) + 1);
+        return (((*self).with(|__s| __s.v) * (*o.borrow())) + 1);
     }
 }
 pub fn __cpp2rust_init_globals() {}

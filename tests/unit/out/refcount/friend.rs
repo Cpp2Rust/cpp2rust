@@ -7,25 +7,25 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn get_0(v: Ptr<V>) -> i32 {
-    return v.with(|__s: &V| __s.x);
+    return v.with(|__s| __s.x);
 }
 pub fn operator_eq_1(a: Ptr<V>, b: Ptr<V>) -> bool {
     return {
-        let _lhs = a.with(|__s: &V| __s.x);
-        _lhs == b.with(|__s: &V| __s.x)
+        let _lhs = a.with(|__s| __s.x);
+        _lhs == b.with(|__s| __s.x)
     };
 }
 pub fn scaled_2(v: Ptr<V>, k: i32) -> i32 {
     let k: Value<i32> = Rc::new(RefCell::new(k));
     return {
-        let _lhs = v.with(|__s: &V| __s.x);
+        let _lhs = v.with(|__s| __s.x);
         _lhs * (*k.borrow())
     };
 }
 pub fn scaled_3(v: Ptr<V>, k: f64) -> f64 {
     let k: Value<f64> = Rc::new(RefCell::new(k));
     return {
-        let _lhs = (v.with(|__s: &V| __s.x) as f64);
+        let _lhs = (v.with(|__s| __s.x) as f64);
         _lhs * (*k.borrow())
     };
 }
@@ -59,7 +59,7 @@ impl ByteRepr for V {
     }
 }
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
-    return w.with(|__s: &W_int_| __s.x);
+    return w.with(|__s| __s.x);
 }
 #[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct W_int_ {
@@ -80,7 +80,7 @@ impl ByteRepr for W_int_ {
     }
 }
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
-    return w.with(|__s: &W_long_| __s.x);
+    return w.with(|__s| __s.x);
 }
 #[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct W_long_ {
@@ -119,7 +119,7 @@ impl ByteRepr for D {
     }
 }
 pub fn declared_then_defined_6(d: Ptr<D>) -> i32 {
-    return (d.with(|__s: &D| __s.x) + 1);
+    return (d.with(|__s| __s.x) + 1);
 }
 pub fn main() {
     __cpp2rust_init_globals();

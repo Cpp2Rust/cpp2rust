@@ -26,62 +26,77 @@ impl ByteRepr for S {
 }
 pub fn operator_add_assign_0(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     {
-        let rhs_0 = (a.with(|__s: &S| __s.v)).wrapping_add(b.with(|__s: &S| __s.v));
-        a.with_mut(|__s: &mut S| __s.v = rhs_0)
+        let rhs_0 = (a.with(|__s| __s.v)).wrapping_add(b.with(|__s| __s.v));
+        field!(a, v).write(rhs_0)
     };
     return (a).clone();
 }
 pub fn operator_sub_assign_1(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     {
-        let rhs_0 = (a.with(|__s: &S| __s.v)).wrapping_sub(b.with(|__s: &S| __s.v));
-        a.with_mut(|__s: &mut S| __s.v = rhs_0)
+        let rhs_0 = (a.with(|__s| __s.v)).wrapping_sub(b.with(|__s| __s.v));
+        field!(a, v).write(rhs_0)
     };
     return (a).clone();
 }
 pub fn operator_mul_assign_2(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     {
-        let rhs_0 = (a.with(|__s: &S| __s.v)).wrapping_mul(b.with(|__s: &S| __s.v));
-        a.with_mut(|__s: &mut S| __s.v = rhs_0)
+        let rhs_0 = (a.with(|__s| __s.v)).wrapping_mul(b.with(|__s| __s.v));
+        field!(a, v).write(rhs_0)
     };
     return (a).clone();
 }
 pub fn operator_div_assign_3(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     {
-        let rhs_0 = (a.with(|__s: &S| __s.v)).wrapping_div(b.with(|__s: &S| __s.v));
-        a.with_mut(|__s: &mut S| __s.v = rhs_0)
+        let rhs_0 = (a.with(|__s| __s.v)).wrapping_div(b.with(|__s| __s.v));
+        field!(a, v).write(rhs_0)
     };
     return (a).clone();
 }
 pub fn operator_rem_assign_4(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     {
-        let rhs_0 = (a.with(|__s: &S| __s.v)).wrapping_rem(b.with(|__s: &S| __s.v));
-        a.with_mut(|__s: &mut S| __s.v = rhs_0)
+        let rhs_0 = (a.with(|__s| __s.v)).wrapping_rem(b.with(|__s| __s.v));
+        field!(a, v).write(rhs_0)
     };
     return (a).clone();
 }
 pub fn operator_bitand_assign_5(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s: &S| __s.v);
-    a.with_mut(|__s: &mut S| __s.v &= __rhs);
+    let __rhs = b.with(|__s| __s.v);
+    {
+        let _ptr = field!(a, v);
+        _ptr.write(_ptr.read() & __rhs)
+    };
     return (a).clone();
 }
 pub fn operator_bitor_assign_6(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s: &S| __s.v);
-    a.with_mut(|__s: &mut S| __s.v |= __rhs);
+    let __rhs = b.with(|__s| __s.v);
+    {
+        let _ptr = field!(a, v);
+        _ptr.write(_ptr.read() | __rhs)
+    };
     return (a).clone();
 }
 pub fn operator_bitxor_assign_7(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s: &S| __s.v);
-    a.with_mut(|__s: &mut S| __s.v ^= __rhs);
+    let __rhs = b.with(|__s| __s.v);
+    {
+        let _ptr = field!(a, v);
+        _ptr.write(_ptr.read() ^ __rhs)
+    };
     return (a).clone();
 }
 pub fn operator_shl_assign_8(a: Ptr<S>, n: i32) -> Ptr<S> {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    a.with_mut(|__s: &mut S| __s.v <<= (*n.borrow()));
+    {
+        let _ptr = field!(a, v);
+        _ptr.write(_ptr.read() << (*n.borrow()))
+    };
     return (a).clone();
 }
 pub fn operator_shr_assign_9(a: Ptr<S>, n: i32) -> Ptr<S> {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    a.with_mut(|__s: &mut S| __s.v >>= (*n.borrow()));
+    {
+        let _ptr = field!(a, v);
+        _ptr.write(_ptr.read() >> (*n.borrow()))
+    };
     return (a).clone();
 }
 pub fn main() {

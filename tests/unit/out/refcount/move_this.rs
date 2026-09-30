@@ -20,17 +20,17 @@ impl Chain {
     }
     pub fn copy_from(o: Ptr<Chain>) -> Self {
         let __this: Value<Chain> = Rc::new(RefCell::new(Self {
-            v: { (o.with(|__s: &Chain| __s.v) + 100) },
+            v: (o.with(|__s| __s.v) + 100),
         }));
         let this: Ptr<Chain> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<Chain>) -> Self {
         let __this: Value<Chain> = Rc::new(RefCell::new(Self {
-            v: { (o.with(|__s: &Chain| __s.v) + 1) },
+            v: (o.with(|__s| __s.v) + 1),
         }));
         let this: Ptr<Chain> = __this.as_pointer();
-        o.with_mut(|__s: &mut Chain| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -103,12 +103,18 @@ pub trait ChainImpl {
 impl ChainImpl for Ptr<Chain> {
     fn add_4(&self, n: i32) -> Ptr<Chain> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
-        (*self).with_mut(|__s: &mut Chain| __s.v += (*n.borrow()));
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() + (*n.borrow()))
+        };
         return (*self).clone();
     }
     fn add_5(&self, n: i32) -> Ptr<Chain> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
-        (*self).with_mut(|__s: &mut Chain| __s.v += (*n.borrow()));
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() + (*n.borrow()))
+        };
         return (*self).clone();
     }
     fn take(&self) -> Chain {

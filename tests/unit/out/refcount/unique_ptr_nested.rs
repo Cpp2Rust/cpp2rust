@@ -36,7 +36,7 @@ pub struct Outer {
 impl Outer {
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            inner: { _a0.with_mut(|__s: &mut Outer| __s.inner.take()) },
+            inner: field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()),
         }));
         let this: Ptr<Outer> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -70,23 +70,20 @@ fn main_0() -> i32 {
         }));
         Outer::move_from({ __tmp_0.as_pointer() })
     })))));
-    (*(*(*o.borrow()).as_ref().unwrap().borrow())
-        .inner
+    (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
         .as_ref()
         .unwrap()
         .borrow_mut())
     .x += 5;
     let sum: Value<i32> = Rc::new(RefCell::new(
         ({
-            (*(*(*o.borrow()).as_ref().unwrap().borrow())
-                .inner
+            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
                 .as_ref()
                 .unwrap()
                 .borrow())
             .x
         } + {
-            (*(*(*o.borrow()).as_ref().unwrap().borrow())
-                .inner
+            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
                 .as_ref()
                 .unwrap()
                 .borrow())
@@ -106,7 +103,7 @@ pub trait OuterImpl {
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
         (field_ptr!((*self), inner) as Ptr<Option<Value<Inner>>>)
-            .write(_a0.with_mut(|__s: &mut Outer| __s.inner.take()));
+            .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
         return (*self).clone();
     }
 }

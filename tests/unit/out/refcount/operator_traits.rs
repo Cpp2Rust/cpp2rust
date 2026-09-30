@@ -190,14 +190,14 @@ impl ByteRepr for Free {
 }
 pub fn operator_lt_0(a: Ptr<Free>, b: Ptr<Free>) -> bool {
     return {
-        let _lhs = a.with(|__s: &Free| __s.v);
-        _lhs < b.with(|__s: &Free| __s.v)
+        let _lhs = a.with(|__s| __s.v);
+        _lhs < b.with(|__s| __s.v)
     };
 }
 pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
     return {
-        let _lhs = a.with(|__s: &Free| __s.v);
-        _lhs == b.with(|__s: &Free| __s.v)
+        let _lhs = a.with(|__s| __s.v);
+        _lhs == b.with(|__s| __s.v)
     };
 }
 #[derive(Clone, Record, VaArg, FnPtrArg, Default)]
@@ -228,18 +228,27 @@ fn main_0() -> i32 {
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
     (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
-        (((lts.as_pointer() as Ptr<Lt>)
-            .offset(0_usize)
-            .with(|__s: &Lt| __s.v)
-            == 1)
-            && ((lts.as_pointer() as Ptr<Lt>)
-                .offset(1_usize)
-                .with(|__s: &Lt| __s.v)
-                == 2))
-            && ((lts.as_pointer() as Ptr<Lt>)
-                .offset(2_usize)
-                .with(|__s: &Lt| __s.v)
-                == 3)
+        (({
+            (*(lts.as_pointer() as Ptr<Lt>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 1)
+            && ({
+                (*(lts.as_pointer() as Ptr<Lt>)
+                    .offset(1_usize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 2))
+            && ({
+                (*(lts.as_pointer() as Ptr<Lt>)
+                    .offset(2_usize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 3)
     );
     let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]));
     let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
@@ -281,14 +290,20 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
     (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
     assert!(
-        ((cmps.as_pointer() as Ptr<Cmp>)
-            .offset(0_usize)
-            .with(|__s: &Cmp| __s.v)
-            == 1)
-            && ((cmps.as_pointer() as Ptr<Cmp>)
-                .offset(2_usize)
-                .with(|__s: &Cmp| __s.v)
-                == 3)
+        ({
+            (*(cmps.as_pointer() as Ptr<Cmp>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 1)
+            && ({
+                (*(cmps.as_pointer() as Ptr<Cmp>)
+                    .offset(2_usize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 3)
     );
     let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
     assert!(
@@ -313,10 +328,13 @@ fn main_0() -> i32 {
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
     (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
     assert!(
-        ((frees.as_pointer() as Ptr<Free>)
-            .offset(0_usize)
-            .with(|__s: &Free| __s.v)
-            == 1)
+        ({
+            (*(frees.as_pointer() as Ptr<Free>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 1)
     );
     let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
     assert!(
@@ -378,15 +396,12 @@ pub trait CmpImpl {
 }
 impl CmpImpl for Ptr<Cmp> {
     fn operator_cmp(&self, o: Ptr<Cmp>) -> std::cmp::Ordering {
-        return std::cmp::Ord::cmp(
-            &((*self).with(|__s: &Cmp| __s.v)),
-            &(o.with(|__s: &Cmp| __s.v)),
-        );
+        return std::cmp::Ord::cmp(&((*self).with(|__s| __s.v)), &(o.with(|__s| __s.v)));
     }
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool {
         return {
-            let _lhs = (*self).with(|__s: &Cmp| __s.v);
-            _lhs == o.with(|__s: &Cmp| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs == o.with(|__s| __s.v)
         };
     }
 }
@@ -396,8 +411,8 @@ pub trait EqImpl {
 impl EqImpl for Ptr<Eq> {
     fn operator_eq(&self, o: Ptr<Eq>) -> bool {
         return {
-            let _lhs = (*self).with(|__s: &Eq| __s.v);
-            _lhs == o.with(|__s: &Eq| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs == o.with(|__s| __s.v)
         };
     }
 }
@@ -407,8 +422,8 @@ pub trait LtImpl {
 impl LtImpl for Ptr<Lt> {
     fn operator_lt(&self, o: Ptr<Lt>) -> bool {
         return {
-            let _lhs = (*self).with(|__s: &Lt| __s.v);
-            _lhs < o.with(|__s: &Lt| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs < o.with(|__s| __s.v)
         };
     }
 }

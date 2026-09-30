@@ -34,9 +34,9 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
         }),
     ));
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] =
-        ((*pair.borrow()).x1).clone();
+        ({ (*pair.borrow()).x1.clone() }).clone();
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(1_usize) as usize] =
-        ((*pair.borrow()).x2).clone();
+        ({ (*pair.borrow()).x2.clone() }).clone();
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let out: Value<bool> = Rc::new(RefCell::new(false));

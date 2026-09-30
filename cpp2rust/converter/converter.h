@@ -340,9 +340,6 @@ public:
   std::string ConvertFnPtrCallee(clang::Expr *arg);
   virtual std::string ConvertFnPtrPlaceholder(clang::Expr *arg);
 
-  // Moves the value of the lvalue arg out, leaving a default value behind.
-  virtual std::string ConvertTake(clang::Expr *arg);
-
   // Option<fn> implements Copy
   virtual bool FunctionPointerImplementsCopy() const { return true; }
 
@@ -704,7 +701,7 @@ protected:
                                 unsigned num_args = 0,
                                 TempMaterializationCtx *ctx = nullptr);
 
-  virtual std::string
+  std::string
   ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
                     clang::Expr *expr, clang::Expr **args, unsigned num_args,
                     TempMaterializationCtx *ctx);
@@ -768,10 +765,6 @@ protected:
   };
 
   std::string ufcs_receiver_;
-
-  // Expressions that were evaluated into local variables ahead of the
-  // expression that contains them, and the names of these variables.
-  std::unordered_map<const clang::Expr *, std::string> hoisted_exprs_;
   bool in_const_initializer_ = false;
   std::optional<bool> autoref_mut_;
   bool suppress_iterator_clone_ = false;

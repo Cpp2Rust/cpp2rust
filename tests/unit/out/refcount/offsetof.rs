@@ -41,14 +41,10 @@ pub struct Frame {
 }
 impl Clone for Frame {
     fn clone(&self) -> Self {
-        let __this: Value<Frame> = Rc::new(RefCell::new(Self {
-            tag: { self.tag },
-            body: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 64, _>(
-                |__i: usize| (*self.body.borrow())[(__i) as usize],
-            )))),
-        }));
-        let this: Ptr<Frame> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            tag: self.tag.clone(),
+            body: Rc::new(RefCell::new((*self.body.borrow()).clone())),
+        }
     }
 }
 impl Default for Frame {

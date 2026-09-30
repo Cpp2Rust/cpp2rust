@@ -271,8 +271,7 @@ fn main_0() -> i32 {
         ((entries_3.with(|v| v.as_pointer()) as Ptr<Entry>).offset((*idx.borrow()) as isize)),
     ));
     assert!(
-        (((((*pe.borrow()).with(|__s: &Entry| __s.opt) as u32) == ((Option_OPT_A as i32) as u32))
-            as i32)
+        (((((*pe.borrow()).with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
     return 0;

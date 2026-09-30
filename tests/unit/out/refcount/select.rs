@@ -38,7 +38,7 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((tv.as_pointer()) as Ptr<libcc2rs::Timeval>).to_any()
     };
-    (*(*tv.borrow()).tv_sec.borrow_mut()) = 0_i64;
+    (*tv.borrow_mut()).tv_sec = 0_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer());
@@ -91,10 +91,7 @@ fn main_0() -> i32 {
                 let mut __tv = match __tp.is_null() {
                     true => None,
                     false => Some(__tp.with(|__t| {
-                        nix::sys::time::TimeVal::new(
-                            *__t.tv_sec.borrow() as _,
-                            *__t.tv_usec.borrow() as _,
-                        )
+                        nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)
                     })),
                 };
                 match nix::sys::select::select(
@@ -146,8 +143,8 @@ fn main_0() -> i32 {
                         }
                         match (__tp.is_null(), __tv.as_ref()) {
                             (false, Some(__t)) => __tp.with_mut(|__dst| {
-                                *__dst.tv_sec.borrow_mut() = __t.tv_sec() as i64;
-                                *__dst.tv_usec.borrow_mut() = __t.tv_usec() as i64;
+                                __dst.tv_sec = __t.tv_sec() as i64;
+                                __dst.tv_usec = __t.tv_usec() as i64;
                             }),
                             _ => {}
                         }
@@ -187,7 +184,7 @@ fn main_0() -> i32 {
     );
     (rset.as_pointer()).with_mut(|__s| __s.zero());
     (rset.as_pointer()).with_mut(|__s| __s.set((*fds.borrow())[(0) as usize]));
-    (*(*tv.borrow()).tv_sec.borrow_mut()) = 1_i64;
+    (*tv.borrow_mut()).tv_sec = 1_i64;
     assert!(
         ((({
             let __rp = (rset.as_pointer());
@@ -240,10 +237,7 @@ fn main_0() -> i32 {
                 let mut __tv = match __tp.is_null() {
                     true => None,
                     false => Some(__tp.with(|__t| {
-                        nix::sys::time::TimeVal::new(
-                            *__t.tv_sec.borrow() as _,
-                            *__t.tv_usec.borrow() as _,
-                        )
+                        nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)
                     })),
                 };
                 match nix::sys::select::select(
@@ -295,8 +289,8 @@ fn main_0() -> i32 {
                         }
                         match (__tp.is_null(), __tv.as_ref()) {
                             (false, Some(__t)) => __tp.with_mut(|__dst| {
-                                *__dst.tv_sec.borrow_mut() = __t.tv_sec() as i64;
-                                *__dst.tv_usec.borrow_mut() = __t.tv_usec() as i64;
+                                __dst.tv_sec = __t.tv_sec() as i64;
+                                __dst.tv_usec = __t.tv_usec() as i64;
                             }),
                             _ => {}
                         }

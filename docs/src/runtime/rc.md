@@ -94,8 +94,9 @@ let y: Value<Ptr<i32>> = Rc::new(RefCell::new(field_ptr!(p, y)));
 
 `field_ptr!(p, y)` works on a `Value` or a `Ptr` to a struct. The offsets are
 those of the C layout of the struct, which the code generator gets from Clang
-and writes on the fields as `#[offset(N)]` attributes; `#[derive(Record)]` turns
-them into the implementation of the `Record` trait:
+and writes on the fields as `#[offset(N)]` attributes (any constant expression
+works, e.g., `offset_of!` in the [libc shims](./libc-shims.md));
+`#[derive(Record)]` turns them into the implementation of the `Record` trait:
 
 ```rust
 #[derive(Clone, Record, Default)]
@@ -127,8 +128,12 @@ the array or vector as their root. A field pointer hence always points to a
 single object, which is why it needs no element index.
 
 Reading a field through a pointer borrows the struct only for the duration of a
-closure, e.g., `p.with(|s: &point| s.y)`, so that the borrow ends before the
-rest of the statement runs; `p.with_mut(|s: &mut point| s.y = 3)` writes it.
+closure, e.g., `p.with(|s| s.y)`, so that the borrow ends before the rest of the
+statement runs. `field!(p, y)` is the place of the field, which is read and
+written through `p`, projected to the field by a closure, without looking the
+field up: `field!(p, y).write(3)`. It holds a reference to `p`, and takes no
+more room than a pointer. `field_ptr!` is only used where an actual pointer to
+the field is needed.
 
 A field of a reinterpreted struct is itself a reinterpreted pointer, to the
 bytes of the field. Conversely, reinterpreting a field pointer views the bytes
@@ -258,9 +263,8 @@ does: in `p.upgrade().deref().field`, the temporary `StrongPtr` lives until the
 end of the enclosing statement, and so does the borrow. The code generator
 prefers the `with` and `with_mut` closures, and upgrades only where the result
 of an access must borrow the pointee beyond a closure. There is no `deref_mut`;
-writes go through `write` and `with_mut`. A field of a struct reached through a
-pointer, when not written in a `with_mut` closure, is written through a pointer
-to the field: `field_ptr!(p, x).write(v)`.
+writes go through `write` and `with_mut`, including those to a field of a struct
+reached through a pointer: `field!(p, x).write(v)`.
 
 For the `Reinterpreted` variant there is no value to reference, only bytes in
 another allocation. `deref` reads those bytes into a local cell and hands out a

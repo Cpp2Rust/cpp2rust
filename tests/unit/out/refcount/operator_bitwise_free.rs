@@ -26,30 +26,30 @@ impl ByteRepr for S {
 }
 pub fn operator_bitnot_0(a: Ptr<S>) -> S {
     return S {
-        v: { !a.with(|__s: &S| __s.v) },
+        v: !a.with(|__s| __s.v),
     };
 }
 pub fn operator_bitand_1(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs & b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs & b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_bitor_2(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs | b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs | b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_bitxor_3(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs ^ b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs ^ b.with(|__s| __s.v)
         },
     };
 }
@@ -57,7 +57,7 @@ pub fn operator_shl_4(a: Ptr<S>, n: i32) -> S {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
+            let _lhs = a.with(|__s| __s.v);
             _lhs << (*n.borrow())
         },
     };
@@ -66,7 +66,7 @@ pub fn operator_shr_5(a: Ptr<S>, n: i32) -> S {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
+            let _lhs = a.with(|__s| __s.v);
             _lhs >> (*n.borrow())
         },
     };

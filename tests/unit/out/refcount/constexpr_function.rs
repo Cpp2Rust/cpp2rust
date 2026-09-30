@@ -101,7 +101,7 @@ pub trait FlagImpl {
 }
 impl FlagImpl for Ptr<Flag> {
     fn to_bool(&self) -> bool {
-        return ((*self).with(|__s: &Flag| __s.v) != 0);
+        return ((*self).with(|__s| __s.v) != 0);
     }
 }
 pub trait PImpl {
@@ -109,7 +109,7 @@ pub trait PImpl {
 }
 impl PImpl for Ptr<P> {
     fn get(&self) -> i32 {
-        return (*self).with(|__s: &P| __s.v);
+        return (*self).with(|__s| __s.v);
     }
 }
 pub fn __cpp2rust_init_globals() {}

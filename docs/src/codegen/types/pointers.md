@@ -85,20 +85,16 @@ write copies it in. Which form is emitted follows the
 of the dereference:
 
 - An rvalue use copies the value out. A scalar or pointer pointee is `p.read()`,
-  and so is a whole record, `*p`. A field of a record pointee is read in a
+  and so is a whole record, `*p`. A field of a record pointee is copied out in a
   closure that borrows the record for its duration: `p->x` is
-  `p.with(|__s: &S| __s.x)`, and `p->a[i].y` is `p.with(|__s: &S| __s.a[i].y)`.
-  A method called on a field runs in the closure too, together with the rest of
-  its rule: `p->v.size()` is `p.with(|__s: &S| (*__s.v.borrow()).len())`.
-- A write to a field of a record pointee is also done in a closure, which
-  borrows the record mutably: `p->x = v` is
-  `p.with_mut(|__s: &mut S| __s.x = v)`. Operands that may access memory are
-  evaluated before the closure (`let __rhs = ...;`), so that they don't find the
-  record borrowed. Fields that are [`Value`s of their own](boxing.md) only need
-  the record borrowed immutably,
-  `p.with(|__s: &S| (*__s.v.borrow_mut()).push(1))`. The same closures are used
-  for references to records, `r.x`, and for elements of arrays of records,
-  `a[i].x`.
+  `p.with(|__s| __s.x)`, and `p->a.b` is `p.with(|__s| __s.a.b)`; `ReadField`
+  converts the record with `record_ptr_` set, so that its dereference is
+  emitted as `__s`. A field that is a [`Value` of its own](boxing.md), or a
+  `std::unique_ptr`, is copied out as well, i.e., its `Rc`: `p->v.size()` is
+  `(*p.with(|__s| __s.v.clone()).borrow()).len()`. When the record is not
+  reached through a pointer, the copy is in a block, `{ (*s.borrow()).x }`. In
+  all cases the record doesn't stay borrowed for the rest of the statement,
+  which may write to it.
 - An address-of use prints `p` itself.
 - An lvalue use prints nothing at once. The converter records the pointer
   expression as a [pending dereference](../expressions/pending-deref.md), and
@@ -106,7 +102,11 @@ of the dereference:
   `p.write(v)`, or [`with_mut`](../../rules/rewriting.md) for a mutating method
   on a boxed pointee. This is what lets `*p = v` come out as a single `write`
   instead of a borrow followed by an assignment, and `*p += v` as
-  `{ let _ptr = p.clone(); _ptr.write(_ptr.read() + v) }`.
+  `{ let _ptr = p.clone(); _ptr.write(_ptr.read() + v) }`. A field of a record
+  pointee is a pending dereference too, of `field!(p, x)`, which projects the
+  pointer to the field (see
+  [Pointers to fields](../../runtime/rc.md#pointers-to-fields)): `p->x = v` is
+  `field!(p, x).write(v)`, and `p->a.b = v` is `field!(field!(p, a), b).write(v)`.
 
 `with` and `with_mut` work on any pointer, including a
 [reinterpreted](../../runtime/reinterpret.md) one, whose pointee is decoded from

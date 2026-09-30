@@ -45,7 +45,7 @@ fn main_0() -> i32 {
     assert!(
         ({
             let _lhs = (*a.borrow());
-            _lhs + (*p2.borrow()).with(|__s: &Foo| __s.x2)
+            _lhs + (*p2.borrow()).with(|__s| __s.x2)
         } == 5)
     );
     return 0;

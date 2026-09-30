@@ -151,7 +151,7 @@ fn main_0() -> i32 {
         value: 2,
         next: (a.as_pointer()),
     }));
-    assert!(((({ (*b.borrow()).next.clone() }.with(|__s: &Node| __s.value) == 1) as i32) != 0));
+    assert!(((({ (*b.borrow()).next.clone() }.with(|__s| __s.value) == 1) as i32) != 0));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: Inner { a: 5, b: 6 },
         color: Color_GREEN,

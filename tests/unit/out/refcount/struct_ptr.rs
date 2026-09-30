@@ -31,14 +31,14 @@ pub fn main() {
 fn main_0() -> i32 {
     let obj: Value<XX> = Rc::new(RefCell::new(<XX>::default()));
     let ptr: Value<Ptr<XX>> = Rc::new(RefCell::new((obj.as_pointer())));
-    (*ptr.borrow()).with_mut(|__s: &mut XX| __s.x = 2);
+    field!((*ptr.borrow()), x).write(2);
     let c: Value<bool> = Rc::new(RefCell::new(false));
     let r: Value<i32> = Rc::new(RefCell::new(if (*c.borrow()) {
         { (*obj.borrow()).x }
     } else {
-        (*ptr.borrow()).with(|__s: &XX| __s.x)
+        (*ptr.borrow()).with(|__s| __s.x)
     }));
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((field_ptr!(obj, x))));
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new((field_ptr!(obj.as_pointer(), x))));
     assert!(
         ({
             let _lhs = ((*p.borrow()).read());

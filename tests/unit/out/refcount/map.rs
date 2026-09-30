@@ -365,14 +365,15 @@ fn main_0() -> i32 {
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while (((*i.borrow()) as usize) < (*indexes.borrow()).len()) {
         let __rhs = ((*i.borrow()).wrapping_rem(2_u32) != 0);
-        let __idx = ((indexes.as_pointer() as Ptr<i32>)
-            .offset(((*i.borrow()) as usize))
-            .read());
         (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
-                __v.entry(__idx)
-                    .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
-                    .as_pointer()
+                __v.entry(
+                    ((indexes.as_pointer() as Ptr<i32>)
+                        .offset(((*i.borrow()) as usize))
+                        .read()),
+                )
+                .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
+                .as_pointer()
             })
             .write(__rhs);
         (*i.borrow_mut()).prefix_inc();

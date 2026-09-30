@@ -170,9 +170,9 @@ fn main_0() -> i32 {
     assert!(({ (*inline_member_11.with(Value::clone).borrow()).v } == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
-    ({ Singleton::instance() }).with_mut(|__s: &mut Singleton| __s.hits.postfix_inc());
-    ({ Singleton::instance() }).with_mut(|__s: &mut Singleton| __s.hits.postfix_inc());
-    assert!((({ Singleton::instance() }).with(|__s: &Singleton| __s.hits) == 2));
+    field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());
+    field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());
+    assert!((({ Singleton::instance() }).with(|__s| __s.hits) == 2));
     assert!((({ Singleton::instance() }) == ({ Singleton::instance() })));
     return 0;
 }

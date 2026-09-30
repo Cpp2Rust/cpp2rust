@@ -175,19 +175,16 @@ fn main_0() -> i32 {
             .memset((0) as u8, 68usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    (*c.borrow())
-        .u
-        .a()
-        .with_mut(|__s: &mut shape_a| __s.code = 10_u16);
+    field!((*c.borrow_mut()).u.a(), code).write(10_u16);
     (*c.borrow_mut()).len = (28usize as u32);
-    (((*c.borrow()).u.a()).to_any().reinterpret_cast::<shape_b>())
-        .with_mut(|__s: &mut shape_b| __s.tail = 3735928559_u32);
-    assert!(((((*c.borrow()).u.b().with(|__s: &shape_b| __s.tail) == 3735928559_u32) as i32) != 0));
-    assert!((((((*c.borrow()).u.b().with(|__s: &shape_b| __s.code) as i32) == 10) as i32) != 0));
-    (*c.borrow())
-        .u
-        .b()
-        .with_mut(|__s: &mut shape_b| __s.lo = 8080_u16);
+    field!(
+        (((*c.borrow()).u.a()).to_any().reinterpret_cast::<shape_b>()),
+        tail
+    )
+    .write(3735928559_u32);
+    assert!(((((*c.borrow()).u.b().with(|__s| __s.tail) == 3735928559_u32) as i32) != 0));
+    assert!((((((*c.borrow()).u.b().with(|__s| __s.code) as i32) == 10) as i32) != 0));
+    field!((*c.borrow_mut()).u.b(), lo).write(8080_u16);
     assert!(
         ((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()).reinterpret_cast::<u8>())
             .offset((2) as isize)

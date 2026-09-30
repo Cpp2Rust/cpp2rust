@@ -20,10 +20,10 @@ impl MoveOnly {
     }
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &MoveOnly| __s.v) },
+            v: o.with(|__s| __s.v),
         }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
-        o.with_mut(|__s: &mut MoveOnly| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -58,14 +58,14 @@ impl ConstMove {
     }
     pub fn new_1(o: Ptr<ConstMove>) -> Self {
         let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
-            mark: { (o.with(|__s: &ConstMove| __s.mark) + 1) },
+            mark: (o.with(|__s| __s.mark) + 1),
         }));
         let this: Ptr<ConstMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_2(o: Ptr<ConstMove>) -> Self {
         let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
-            mark: { (o.with(|__s: &ConstMove| __s.mark) + 10) },
+            mark: (o.with(|__s| __s.mark) + 10),
         }));
         let this: Ptr<ConstMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -116,21 +116,21 @@ impl ThrowingMove {
     }
     pub fn copy_from(o: Ptr<ThrowingMove>) -> Self {
         let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &ThrowingMove| __s.v) },
-            copies: { (o.with(|__s: &ThrowingMove| __s.copies) + 1) },
-            moves: { o.with(|__s: &ThrowingMove| __s.moves) },
+            v: o.with(|__s| __s.v),
+            copies: (o.with(|__s| __s.copies) + 1),
+            moves: o.with(|__s| __s.moves),
         }));
         let this: Ptr<ThrowingMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<ThrowingMove>) -> Self {
         let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &ThrowingMove| __s.v) },
-            copies: { o.with(|__s: &ThrowingMove| __s.copies) },
-            moves: { (o.with(|__s: &ThrowingMove| __s.moves) + 1) },
+            v: o.with(|__s| __s.v),
+            copies: o.with(|__s| __s.copies),
+            moves: (o.with(|__s| __s.moves) + 1),
         }));
         let this: Ptr<ThrowingMove> = __this.as_pointer();
-        o.with_mut(|__s: &mut ThrowingMove| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -188,21 +188,21 @@ impl NoexceptMove {
     }
     pub fn copy_from(o: Ptr<NoexceptMove>) -> Self {
         let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &NoexceptMove| __s.v) },
-            copies: { (o.with(|__s: &NoexceptMove| __s.copies) + 1) },
-            moves: { o.with(|__s: &NoexceptMove| __s.moves) },
+            v: o.with(|__s| __s.v),
+            copies: (o.with(|__s| __s.copies) + 1),
+            moves: o.with(|__s| __s.moves),
         }));
         let this: Ptr<NoexceptMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<NoexceptMove>) -> Self {
         let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &NoexceptMove| __s.v) },
-            copies: { o.with(|__s: &NoexceptMove| __s.copies) },
-            moves: { (o.with(|__s: &NoexceptMove| __s.moves) + 1) },
+            v: o.with(|__s| __s.v),
+            copies: o.with(|__s| __s.copies),
+            moves: (o.with(|__s| __s.moves) + 1),
         }));
         let this: Ptr<NoexceptMove> = __this.as_pointer();
-        o.with_mut(|__s: &mut NoexceptMove| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -271,14 +271,20 @@ fn main_0() -> i32 {
     let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
     (*vec_.borrow_mut()).push(MoveOnly::move_from({ f.as_pointer() }));
     assert!(
-        ((vec_.as_pointer() as Ptr<MoveOnly>)
-            .offset(0_usize)
-            .with(|__s: &MoveOnly| __s.v)
-            == 7)
-            && ((vec_.as_pointer() as Ptr<MoveOnly>)
-                .offset(1_usize)
-                .with(|__s: &MoveOnly| __s.v)
-                == 8)
+        ({
+            (*(vec_.as_pointer() as Ptr<MoveOnly>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 7)
+            && ({
+                (*(vec_.as_pointer() as Ptr<MoveOnly>)
+                    .offset(1_usize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 8)
     );
     assert!(({ (*f.borrow()).v } == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));

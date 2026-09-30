@@ -2437,6 +2437,7 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_LValueToRValue: {
     PushExprKind push(*this, ExprKind::RValue);
     Convert(sub_expr);
+    // The value may have been copied out already.
     if (!isFresh()) {
       SetValueFreshness(type);
     }
@@ -4838,16 +4839,8 @@ void Converter::PlaceholderCtx::dump() const {
                << ", materialize_idx: " << materialize_idx << '\n';
 }
 
-std::string Converter::ConvertTake(clang::Expr *arg) {
-  return std::format("std::mem::take(&mut {})", ConvertLValue(arg));
-}
-
 std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
                                           const PlaceholderCtx &ph_ctx) {
-  if (auto it = hoisted_exprs_.find(arg); it != hoisted_exprs_.end()) {
-    return it->second;
-  }
-
   if (arg->getType()->isFunctionPointerType()) {
     return ConvertFnPtrPlaceholder(arg);
   }
@@ -4915,9 +4908,9 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
       }
       return ConvertFreshRValue(arg);
     }
-    auto str = ConvertTake(arg);
+    auto lvalue = ConvertLValue(arg);
     SetFresh();
-    return str;
+    return std::format("std::mem::take(&mut {})", std::move(lvalue));
   }
 
   if (ph_ctx.access == TranslationRule::Access::kMove) {

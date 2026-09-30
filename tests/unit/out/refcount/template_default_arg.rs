@@ -162,7 +162,7 @@ pub trait S_NoDefault_Impl {
 impl S_NoDefault_Impl for Ptr<S_NoDefault_> {
     fn get(&self, t: NoDefault) -> i32 {
         let t: Value<NoDefault> = Rc::new(RefCell::new(t));
-        return ((*self).with(|__s: &S_NoDefault_| __s.v) + { (*t.borrow()).v });
+        return ((*self).with(|__s| __s.v) + { (*t.borrow()).v });
     }
 }
 pub fn __cpp2rust_init_globals() {}

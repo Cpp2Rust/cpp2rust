@@ -165,8 +165,8 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    assert!((((((*c.borrow()).view.a().with(|__s: &shape_a| __s.code) as i32) == 0) as i32) != 0));
-    assert!((((((*c.borrow()).view.b().with(|__s: &shape_b| __s.lo) as i32) == 0) as i32) != 0));
+    assert!((((((*c.borrow()).view.a().with(|__s| __s.code) as i32) == 0) as i32) != 0));
+    assert!((((((*c.borrow()).view.b().with(|__s| __s.lo) as i32) == 0) as i32) != 0));
     assert!(
         (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
             .offset((0) as isize)
@@ -203,7 +203,7 @@ fn main_0() -> i32 {
             );
         (((*c.borrow()).view.raw_().reinterpret_cast::<u8>()) as Ptr<u8>).to_any()
     };
-    assert!((((((*c.borrow()).view.b().with(|__s: &shape_b| __s.code) as i32) == 2) as i32) != 0));
+    assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
         (((((((field_ptr!((*c.borrow()).view.b(), lo)).reinterpret_cast::<u8>())
             .offset((0) as isize)
@@ -217,7 +217,7 @@ fn main_0() -> i32 {
             .memset((0) as u8, 256usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    assert!((((((*c.borrow()).view.b().with(|__s: &shape_b| __s.code) as i32) == 0) as i32) != 0));
+    assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

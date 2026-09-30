@@ -61,9 +61,9 @@ fn main_0() -> i32 {
     }));
     let pair: Value<Ptr<Pair>> =
         Rc::new(RefCell::new((pt.as_pointer()).reinterpret_cast::<Pair>()));
-    assert!(((*pair.borrow()).with(|__s: &Pair| __s.first) == 10_u32));
-    assert!(((*pair.borrow()).with(|__s: &Pair| __s.second) == 20_u32));
-    (*pair.borrow()).with_mut(|__s: &mut Pair| __s.first = 42_u32);
+    assert!(((*pair.borrow()).with(|__s| __s.first) == 10_u32));
+    assert!(((*pair.borrow()).with(|__s| __s.second) == 20_u32));
+    field!((*pair.borrow()), first).write(42_u32);
     assert!(({ (*pt.borrow()).x } == 42_u32));
     return 0;
 }

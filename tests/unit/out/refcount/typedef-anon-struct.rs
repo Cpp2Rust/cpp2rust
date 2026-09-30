@@ -35,11 +35,9 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            runs: { Rc::new(RefCell::new((*self.runs.borrow()).clone())) },
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            runs: Rc::new(RefCell::new((*self.runs.borrow()).clone())),
+        }
     }
 }
 <<<<<<< HEAD
@@ -70,11 +68,27 @@ fn main_0() -> i32 {
     (*info.borrow_mut()).num_extra_zero_runs = 2;
     {
         let a0_clone = (*info.borrow()).clone();
-        (*(*o.borrow()).runs.borrow_mut()).push(a0_clone)
+        (*{ (*o.borrow()).runs.clone() }.borrow_mut()).push(a0_clone)
     };
-    assert!(((*(*o.borrow()).runs.borrow()).len() == 1_usize));
-    assert!(({ (*(*o.borrow()).runs.borrow())[(0_usize) as usize].block_idx } == 1));
-    assert!(({ (*(*o.borrow()).runs.borrow())[(0_usize) as usize].num_extra_zero_runs } == 2));
+    assert!(((*{ (*o.borrow()).runs.clone() }.borrow()).len() == 1_usize));
+    assert!(
+        ({
+            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .block_idx
+        } == 1)
+    );
+    assert!(
+        ({
+            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .num_extra_zero_runs
+        } == 2)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -22,8 +22,8 @@ impl StructWithCtor {
             x2_: (*x2.borrow()),
         }));
         let this: Ptr<StructWithCtor> = __this.as_pointer();
-        this.with_mut(|__s: &mut StructWithCtor| __s.x1_.prefix_inc());
-        this.with_mut(|__s: &mut StructWithCtor| __s.x2_.prefix_dec());
+        field!(this, x1_).with_mut(|__v| __v.prefix_inc());
+        field!(this, x2_).with_mut(|__v| __v.prefix_dec());
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }

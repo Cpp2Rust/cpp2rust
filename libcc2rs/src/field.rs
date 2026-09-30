@@ -173,6 +173,95 @@ macro_rules! field_ptr {
     }};
 }
 
+// Something that is read and written in place, like the object a pointer
+// points to.
+pub trait Place: Clone {
+    type Target;
+    fn with<R>(&self, f: impl FnOnce(&Self::Target) -> R) -> R;
+    fn with_mut<R>(&self, f: impl FnOnce(&mut Self::Target) -> R) -> R;
+}
+
+impl<T: ByteRepr> Place for Ptr<T> {
+    type Target = T;
+    #[inline]
+    fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        Ptr::with(self, f)
+    }
+    #[inline]
+    fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        Ptr::with_mut(self, f)
+    }
+}
+
+// A field of the struct in place `base`, which is accessed through `base` and
+// projected to the field, without looking the field up as a pointer to it
+// does. Written by `field!(p, x)`.
+pub struct FieldPlace<'a, B: Place, T> {
+    pub base: &'a B,
+    pub get: fn(&B::Target) -> &T,
+    pub get_mut: fn(&mut B::Target) -> &mut T,
+}
+
+impl<B: Place, T> Clone for FieldPlace<'_, B, T> {
+    #[inline]
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<B: Place, T> Copy for FieldPlace<'_, B, T> {}
+
+impl<B: Place, T> FieldPlace<'_, B, T> {
+    #[inline]
+    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        self.base.with(|s| f((self.get)(s)))
+    }
+
+    #[inline]
+    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        self.base.with_mut(|s| f((self.get_mut)(s)))
+    }
+
+    #[inline]
+    pub fn read(&self) -> T
+    where
+        T: Clone,
+    {
+        self.with(T::clone)
+    }
+
+    #[inline]
+    pub fn write(&self, value: T) {
+        self.with_mut(|v| *v = value)
+    }
+}
+
+impl<B: Place, T> Place for FieldPlace<'_, B, T> {
+    type Target = T;
+    #[inline]
+    fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        FieldPlace::with(self, f)
+    }
+    #[inline]
+    fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        FieldPlace::with_mut(self, f)
+    }
+}
+
+// Field `field` of the struct in the place `base` (a Ptr, or another field),
+// e.g., `field!(p, x).write(1)`. It is a struct expression, so that a
+// temporary base lives as long as the field when bound to a variable.
+#[macro_export]
+macro_rules! field {
+    ($base:expr, $field:ident) => {
+        $crate::FieldPlace {
+            base: &$base,
+            get: |__s| &__s.$field,
+            get_mut: |__s| &mut __s.$field,
+        }
+    };
+}
+
 // Finds the object at a byte offset of a field for Record::locate. The
 // implementation is chosen based on the type of the field, by autoref-based
 // specialization: `(&&Locate(&field)).locate(...)` picks LocateRecord if the
@@ -424,6 +513,19 @@ mod tests {
         view.with_mut(|v| v.a = 0x11223344);
         assert_eq!(raw.read(), 0x44);
         raw.delete();
+    }
+
+    #[test]
+    fn field_place() {
+        let s = outer();
+        let p = s.as_pointer();
+        field!(p, x).write(3);
+        assert_eq!(s.borrow().x, 3);
+        field!(field!(p, inner), b).with_mut(|b| *b += 2);
+        assert_eq!(field!(field!(p, inner), b).read(), 2);
+        let items: Ptr<Inner> = s.borrow().items.as_pointer();
+        field!(items.offset(1), a).write(7);
+        assert_eq!(s.borrow().items.borrow()[1].a, 7);
     }
 
     #[test]

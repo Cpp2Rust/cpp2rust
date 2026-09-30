@@ -31,11 +31,10 @@ impl ByteRepr for context {
 pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
-    if ((*ctx.borrow()).with(|__s: &context| __s.verbose) != 0) {
+    if ((*ctx.borrow()).with(|__s| __s.verbose) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
-        let __rhs = (*ap.borrow_mut()).arg::<i32>();
-        (*ctx.borrow()).with_mut(|__s: &mut context| __s.last_error = __rhs);
+        field!((*ctx.borrow()), last_error).write((*ap.borrow_mut()).arg::<i32>());
     }
 }
 pub fn main() {

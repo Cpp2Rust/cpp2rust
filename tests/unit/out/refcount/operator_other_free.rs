@@ -27,8 +27,8 @@ impl ByteRepr for S {
 pub fn operator_comma_0(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = (a.with(|__s: &S| __s.v) * 10);
-            _lhs + b.with(|__s: &S| __s.v)
+            let _lhs = (a.with(|__s| __s.v) * 10);
+            _lhs + b.with(|__s| __s.v)
         },
     };
 }

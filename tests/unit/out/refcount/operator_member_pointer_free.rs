@@ -33,14 +33,10 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| (*self.data.borrow())[(__i) as usize],
-            )))),
-            inner: { self.inner.clone() },
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            inner: self.inner.clone(),
+        }
     }
 }
 impl Default for S {
@@ -70,7 +66,7 @@ pub fn operator_deref_0(s: Ptr<S>) -> Ptr<Inner> {
     return field_ptr!(s, inner);
 }
 pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
-    return ((s.with(|__s: &S| __s.data.as_pointer()) as Ptr<i32>).offset(0));
+    return ((s.with(|__s| __s.data.clone()).as_pointer() as Ptr<i32>).offset(0));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -86,14 +82,17 @@ fn main_0() -> i32 {
             let _s: Ptr<S> = s.as_pointer();
             operator_deref_0(_s)
         })
-        .with(|__s: &Inner| __s.x)
+        .with(|__s| (__s).x)
             == 9)
     );
-    ({
-        let _s: Ptr<S> = s.as_pointer();
-        operator_deref_0(_s)
-    })
-    .with_mut(|__s: &mut Inner| __s.x = 10);
+    field!(
+        ({
+            let _s: Ptr<S> = s.as_pointer();
+            operator_deref_0(_s)
+        }),
+        x
+    )
+    .write(10);
     assert!(({ (*s.borrow()).inner.x } == 10));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
@@ -103,7 +102,7 @@ fn main_0() -> i32 {
     ));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
+    assert!(((*{ (*s.borrow()).data.clone() }.borrow())[(0) as usize] == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

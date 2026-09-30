@@ -21,19 +21,13 @@ pub struct Pointers {
 }
 impl Clone for Pointers {
     fn clone(&self) -> Self {
-        let __this: Value<Pointers> = Rc::new(RefCell::new(Self {
-            x1: { self.x1.clone() },
-            x2: { self.x2.clone() },
-            x3: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 5, _>(
-                |__i: usize| ((*self.x3.borrow())[(__i) as usize]).clone(),
-            )))),
-            x4: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 10, _>(
-                |__i: usize| ((*self.x4.borrow())[(__i) as usize]).clone(),
-            )))),
-            x5: { self.x5 },
-        }));
-        let this: Ptr<Pointers> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            x1: self.x1.clone(),
+            x2: self.x2.clone(),
+            x3: Rc::new(RefCell::new((*self.x3.borrow()).clone())),
+            x4: Rc::new(RefCell::new((*self.x4.borrow()).clone())),
+            x5: self.x5.clone(),
+        }
     }
 }
 impl Default for Pointers {

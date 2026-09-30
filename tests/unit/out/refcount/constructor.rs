@@ -77,13 +77,19 @@ impl Point {
             ((*v.borrow()) + 1)
         })));
         let this: Ptr<Point> = __this.as_pointer();
-        this.with_mut(|__s: &mut Point| __s.y *= 10);
+        {
+            let _ptr = field!(this, y);
+            _ptr.write(_ptr.read() * 10)
+        };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_3() -> Self {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
-        this.with_mut(|__s: &mut Point| __s.x += 100);
+        {
+            let _ptr = field!(this, x);
+            _ptr.write(_ptr.read() + 100)
+        };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -134,10 +140,13 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn const_method(&self) -> i32 {
-        return ((*self).with(|__s: &S| __s.v) * 2);
+        return ((*self).with(|__s| __s.v) * 2);
     }
     fn mut_method(&self) {
-        (*self).with_mut(|__s: &mut S| __s.v += 1);
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() + 1)
+        };
     }
     fn destructor(&self) {
         ({ SImpl::mut_method(self) });

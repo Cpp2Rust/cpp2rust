@@ -73,8 +73,8 @@ fn main_0() -> i32 {
     );
     let point: Value<Point> = Rc::new(RefCell::new(Point { x: 3, y: 4 }));
     let point_ref: Value<Ptr<Point>> = Rc::new(RefCell::new(point.as_pointer()));
-    (*point_ref.borrow()).with_mut(|__s: &mut Point| __s.x = 30);
-    (*point_ref.borrow()).with_mut(|__s: &mut Point| __s.y = 40);
+    field!((*point_ref.borrow()), x).write(30);
+    field!((*point_ref.borrow()), y).write(40);
     write!(libcc2rs::cout(), "{:} {:}\n", { (*point.borrow()).x }, {
         (*point.borrow()).y
     },);

@@ -36,8 +36,8 @@ fn f2(a0: nix::time::ClockId, a1: Ptr<Timespec>) -> i32 {
     match nix::time::clock_gettime(a0) {
         Ok(__ts) => {
             a1.with_mut(|__t| {
-                *__t.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
-                *__t.tv_nsec.borrow_mut() = __ts.tv_nsec() as i64;
+                __t.tv_sec = __ts.tv_sec() as i64;
+                __t.tv_nsec = __ts.tv_nsec() as i64;
             });
             0
         }
@@ -73,8 +73,8 @@ fn f5(a0: Ptr<::libc::time_t>, a1: Ptr<Tm>) -> Ptr<Tm> {
             let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
             __res.with_mut(|__tm| {
                 *__tm = Tm::from_zoned(&__dt);
-                *__tm.tm_isdst.borrow_mut() = __isdst;
-                *__tm.tm_zone.borrow_mut() = Ptr::alloc_array(__zone.into_boxed_slice());
+                __tm.tm_isdst = __isdst;
+                __tm.tm_zone = Ptr::alloc_array(__zone.into_boxed_slice());
             });
             __res
         }
@@ -108,14 +108,14 @@ fn f7(a0: Ptr<u8>, a1: Ptr<Timeval>) -> i32 {
     let __times = a1;
     let __at = __times.with(|__tv| {
         nix::sys::time::TimeVal::new(
-            *__tv.tv_sec.borrow() as ::libc::time_t,
-            *__tv.tv_usec.borrow() as ::libc::suseconds_t,
+            __tv.tv_sec as ::libc::time_t,
+            __tv.tv_usec as ::libc::suseconds_t,
         )
     });
     let __mt = __times.offset(1).with(|__tv| {
         nix::sys::time::TimeVal::new(
-            *__tv.tv_sec.borrow() as ::libc::time_t,
-            *__tv.tv_usec.borrow() as ::libc::suseconds_t,
+            __tv.tv_sec as ::libc::time_t,
+            __tv.tv_usec as ::libc::suseconds_t,
         )
     });
     match nix::sys::stat::utimes(a0.to_rust_string().as_str(), &__at, &__mt) {
@@ -135,8 +135,8 @@ fn f8(a0: Ptr<Timeval>, a1: Ptr<::libc::timezone>) -> i32 {
     match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
         Ok(__ts) => {
             a0.with_mut(|__tv| {
-                *__tv.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
-                *__tv.tv_usec.borrow_mut() = (__ts.tv_nsec() / 1000) as i64;
+                __tv.tv_sec = __ts.tv_sec() as i64;
+                __tv.tv_usec = (__ts.tv_nsec() / 1000) as i64;
             });
             0
         }
@@ -155,8 +155,8 @@ fn f8(a0: Ptr<Timeval>, a1: AnyPtr) -> i32 {
     match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
         Ok(__ts) => {
             a0.with_mut(|__tv| {
-                *__tv.tv_sec.borrow_mut() = __ts.tv_sec() as i64;
-                *__tv.tv_usec.borrow_mut() = (__ts.tv_nsec() / 1000) as i64;
+                __tv.tv_sec = __ts.tv_sec() as i64;
+                __tv.tv_usec = (__ts.tv_nsec() / 1000) as i64;
             });
             0
         }

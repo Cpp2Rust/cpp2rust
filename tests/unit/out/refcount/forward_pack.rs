@@ -33,21 +33,21 @@ impl Tracked {
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &Tracked| __s.v) },
-            copies: { (o.with(|__s: &Tracked| __s.copies) + 1) },
-            moves: { o.with(|__s: &Tracked| __s.moves) },
+            v: o.with(|__s| __s.v),
+            copies: (o.with(|__s| __s.copies) + 1),
+            moves: o.with(|__s| __s.moves),
         }));
         let this: Ptr<Tracked> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &Tracked| __s.v) },
-            copies: { o.with(|__s: &Tracked| __s.copies) },
-            moves: { (o.with(|__s: &Tracked| __s.moves) + 1) },
+            v: o.with(|__s| __s.v),
+            copies: o.with(|__s| __s.copies),
+            moves: (o.with(|__s| __s.moves) + 1),
         }));
         let this: Ptr<Tracked> = __this.as_pointer();
-        o.with_mut(|__s: &mut Tracked| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }

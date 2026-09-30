@@ -114,14 +114,14 @@ pub trait PairImpl {
 impl PairImpl for Ptr<Pair> {
     fn operator_lt(&self, other: Ptr<Pair>) -> bool {
         return ({
-            let _lhs = (*self).with(|__s: &Pair| __s.x);
-            _lhs < other.with(|__s: &Pair| __s.x)
+            let _lhs = (*self).with(|__s| __s.x);
+            _lhs < other.with(|__s| __s.x)
         }) || (({
-            let _lhs = (*self).with(|__s: &Pair| __s.x);
-            _lhs == other.with(|__s: &Pair| __s.x)
+            let _lhs = (*self).with(|__s| __s.x);
+            _lhs == other.with(|__s| __s.x)
         }) && ({
-            let _lhs = (*self).with(|__s: &Pair| __s.y);
-            _lhs < other.with(|__s: &Pair| __s.y)
+            let _lhs = (*self).with(|__s| __s.y);
+            _lhs < other.with(|__s| __s.y)
         }));
     }
 }

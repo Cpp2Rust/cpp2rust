@@ -86,67 +86,82 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_assign_1(&self, n: u32) -> Ptr<S> {
         let n: Value<u32> = Rc::new(RefCell::new(n));
-        (*self).with_mut(|__s: &mut S| __s.v = (*n.borrow()));
+        field!((*self), v).write((*n.borrow()));
         return (*self).clone();
     }
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let rhs_0 = ((*self).with(|__s: &S| __s.v)).wrapping_add(o.with(|__s: &S| __s.v));
-            (*self).with_mut(|__s: &mut S| __s.v = rhs_0)
+            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_add(o.with(|__s| __s.v));
+            field!((*self), v).write(rhs_0)
         };
         return (*self).clone();
     }
     fn operator_sub_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let rhs_0 = ((*self).with(|__s: &S| __s.v)).wrapping_sub(o.with(|__s: &S| __s.v));
-            (*self).with_mut(|__s: &mut S| __s.v = rhs_0)
+            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_sub(o.with(|__s| __s.v));
+            field!((*self), v).write(rhs_0)
         };
         return (*self).clone();
     }
     fn operator_mul_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let rhs_0 = ((*self).with(|__s: &S| __s.v)).wrapping_mul(o.with(|__s: &S| __s.v));
-            (*self).with_mut(|__s: &mut S| __s.v = rhs_0)
+            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_mul(o.with(|__s| __s.v));
+            field!((*self), v).write(rhs_0)
         };
         return (*self).clone();
     }
     fn operator_div_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let rhs_0 = ((*self).with(|__s: &S| __s.v)).wrapping_div(o.with(|__s: &S| __s.v));
-            (*self).with_mut(|__s: &mut S| __s.v = rhs_0)
+            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_div(o.with(|__s| __s.v));
+            field!((*self), v).write(rhs_0)
         };
         return (*self).clone();
     }
     fn operator_rem_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let rhs_0 = ((*self).with(|__s: &S| __s.v)).wrapping_rem(o.with(|__s: &S| __s.v));
-            (*self).with_mut(|__s: &mut S| __s.v = rhs_0)
+            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_rem(o.with(|__s| __s.v));
+            field!((*self), v).write(rhs_0)
         };
         return (*self).clone();
     }
     fn operator_bitand_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s: &S| __s.v);
-        (*self).with_mut(|__s: &mut S| __s.v &= __rhs);
+        let __rhs = o.with(|__s| __s.v);
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() & __rhs)
+        };
         return (*self).clone();
     }
     fn operator_bitor_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s: &S| __s.v);
-        (*self).with_mut(|__s: &mut S| __s.v |= __rhs);
+        let __rhs = o.with(|__s| __s.v);
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() | __rhs)
+        };
         return (*self).clone();
     }
     fn operator_bitxor_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s: &S| __s.v);
-        (*self).with_mut(|__s: &mut S| __s.v ^= __rhs);
+        let __rhs = o.with(|__s| __s.v);
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() ^ __rhs)
+        };
         return (*self).clone();
     }
     fn operator_shl_assign(&self, n: i32) -> Ptr<S> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
-        (*self).with_mut(|__s: &mut S| __s.v <<= (*n.borrow()));
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() << (*n.borrow()))
+        };
         return (*self).clone();
     }
     fn operator_shr_assign(&self, n: i32) -> Ptr<S> {
         let n: Value<i32> = Rc::new(RefCell::new(n));
-        (*self).with_mut(|__s: &mut S| __s.v >>= (*n.borrow()));
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() >> (*n.borrow()))
+        };
         return (*self).clone();
     }
 }

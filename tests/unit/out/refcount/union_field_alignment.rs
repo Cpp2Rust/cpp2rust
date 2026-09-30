@@ -73,7 +73,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let n: Value<node> = <Value<node>>::default();
     (*n.borrow_mut()).next = Ptr::<node>::null();
-    { ((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>).offset((0) as isize) }
+    ((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>)
+        .offset((0) as isize)
         .write(171_u8);
     assert!(
         (((((((*n.borrow()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>)

@@ -73,11 +73,11 @@ fn main_0() -> i32 {
 }
 pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({
-        let _lhs = x.with(|__s: &S| __s.a);
-        _lhs == y.with(|__s: &S| __s.a)
+        let _lhs = x.with(|__s| __s.a);
+        _lhs == y.with(|__s| __s.a)
     }) && ({
-        let _lhs = x.with(|__s: &S| __s.b);
-        _lhs == y.with(|__s: &S| __s.b)
+        let _lhs = x.with(|__s| __s.b);
+        _lhs == y.with(|__s| __s.b)
     });
 }
 pub fn operator_ne_1(x: Ptr<S>, y: Ptr<S>) -> bool {
@@ -89,14 +89,14 @@ pub fn operator_ne_1(x: Ptr<S>, y: Ptr<S>) -> bool {
 }
 pub fn operator_lt_2(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({
-        let _lhs = x.with(|__s: &S| __s.a);
-        _lhs < y.with(|__s: &S| __s.a)
+        let _lhs = x.with(|__s| __s.a);
+        _lhs < y.with(|__s| __s.a)
     }) || (({
-        let _lhs = x.with(|__s: &S| __s.a);
-        _lhs == y.with(|__s: &S| __s.a)
+        let _lhs = x.with(|__s| __s.a);
+        _lhs == y.with(|__s| __s.a)
     }) && ({
-        let _lhs = x.with(|__s: &S| __s.b);
-        _lhs < y.with(|__s: &S| __s.b)
+        let _lhs = x.with(|__s| __s.b);
+        _lhs < y.with(|__s| __s.b)
     }));
 }
 pub fn compare_3(x: Ptr<S>, y: Ptr<S>) -> i32 {

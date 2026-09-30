@@ -28,48 +28,48 @@ pub fn operator_eq_0(a: i32, b: Ptr<S>) -> bool {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     return {
         let _lhs = (*a.borrow());
-        _lhs == b.with(|__s: &S| __s.v)
+        _lhs == b.with(|__s| __s.v)
     };
 }
 pub fn operator_ne_1(a: i32, b: Ptr<S>) -> bool {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     return {
         let _lhs = (*a.borrow());
-        _lhs != b.with(|__s: &S| __s.v)
+        _lhs != b.with(|__s| __s.v)
     };
 }
 pub fn operator_lt_2(a: i32, b: Ptr<S>) -> bool {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     return {
         let _lhs = (*a.borrow());
-        _lhs < b.with(|__s: &S| __s.v)
+        _lhs < b.with(|__s| __s.v)
     };
 }
 pub fn operator_gt_3(a: f64, b: Ptr<S>) -> bool {
     let a: Value<f64> = Rc::new(RefCell::new(a));
     return {
         let _lhs = (*a.borrow());
-        _lhs > (b.with(|__s: &S| __s.v) as f64)
+        _lhs > (b.with(|__s| __s.v) as f64)
     };
 }
 pub fn operator_le_4(a: i64, b: Ptr<S>) -> bool {
     let a: Value<i64> = Rc::new(RefCell::new(a));
     return {
         let _lhs = (*a.borrow());
-        _lhs <= (b.with(|__s: &S| __s.v) as i64)
+        _lhs <= (b.with(|__s| __s.v) as i64)
     };
 }
 pub fn operator_ge_5(a: Ptr<u8>, b: Ptr<S>) -> bool {
     let a: Value<Ptr<u8>> = Rc::new(RefCell::new(a));
     return {
         let _lhs = ((((*a.borrow()).read()) as i32) - (('0' as u8) as i32));
-        _lhs >= b.with(|__s: &S| __s.v)
+        _lhs >= b.with(|__s| __s.v)
     };
 }
 pub fn operator_lt_6(a: Ptr<S>, b: i32) -> bool {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     return {
-        let _lhs = (a.with(|__s: &S| __s.v) + 1);
+        let _lhs = (a.with(|__s| __s.v) + 1);
         _lhs < (*b.borrow())
     };
 }
@@ -117,28 +117,28 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_eq(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s: &S| __s.v) == (*o.borrow()));
+        return ((*self).with(|__s| __s.v) == (*o.borrow()));
     }
     fn operator_ne(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s: &S| __s.v) != (*o.borrow()));
+        return ((*self).with(|__s| __s.v) != (*o.borrow()));
     }
     fn operator_lt(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s: &S| __s.v) < (*o.borrow()));
+        return ((*self).with(|__s| __s.v) < (*o.borrow()));
     }
     fn operator_gt(&self, o: f64) -> bool {
         let o: Value<f64> = Rc::new(RefCell::new(o));
-        return (((*self).with(|__s: &S| __s.v) as f64) > (*o.borrow()));
+        return (((*self).with(|__s| __s.v) as f64) > (*o.borrow()));
     }
     fn operator_le(&self, o: i64) -> bool {
         let o: Value<i64> = Rc::new(RefCell::new(o));
-        return (((*self).with(|__s: &S| __s.v) as i64) <= (*o.borrow()));
+        return (((*self).with(|__s| __s.v) as i64) <= (*o.borrow()));
     }
     fn operator_ge(&self, o: Ptr<u8>) -> bool {
         let o: Value<Ptr<u8>> = Rc::new(RefCell::new(o));
         return {
-            let _lhs = (*self).with(|__s: &S| __s.v);
+            let _lhs = (*self).with(|__s| __s.v);
             _lhs >= ((((*o.borrow()).read()) as i32) - (('0' as u8) as i32))
         };
     }

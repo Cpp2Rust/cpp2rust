@@ -80,30 +80,24 @@ pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     let s: Value<Ptr<Sink>> = Rc::new(RefCell::new(s));
     let count: Value<i64> = Rc::new(RefCell::new(count));
     'switch: {
-        let __match_cond = ((*s.borrow()).with(|__s: &Sink| __s.width) as u32);
+        let __match_cond = ((*s.borrow()).with(|__s| __s.width) as u32);
         match __match_cond {
             __v if __v == ((Width_enum_W_64 as i32) as u32) => {
-                {
-                    ((*(*s.borrow()).upgrade().deref()).out.handle().read())
-                        .reinterpret_cast::<i64>()
-                }
-                .write((*count.borrow()));
+                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                    .reinterpret_cast::<i64>()
+                    .write((*count.borrow()));
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_32 as i32) as u32) => {
-                {
-                    ((*(*s.borrow()).upgrade().deref()).out.handle().read())
-                        .reinterpret_cast::<i32>()
-                }
-                .write(((*count.borrow()) as i32));
+                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                    .reinterpret_cast::<i32>()
+                    .write(((*count.borrow()) as i32));
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_16 as i32) as u32) => {
-                {
-                    ((*(*s.borrow()).upgrade().deref()).out.handle().read())
-                        .reinterpret_cast::<i16>()
-                }
-                .write(((*count.borrow()) as i16));
+                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                    .reinterpret_cast::<i16>()
+                    .write(((*count.borrow()) as i16));
                 break 'switch;
             }
             _ => {}
@@ -120,15 +114,24 @@ fn main_0() -> i32 {
     let buf16: Value<i16> = Rc::new(RefCell::new(0_i16));
     let s: Value<Sink> = <Value<Sink>>::default();
     (*s.borrow_mut()).width = Width_enum_W_64;
-    { (*s.borrow_mut()).out.handle() }.write(((buf64.as_pointer()) as Ptr<i64>).to_any());
+    (*s.borrow_mut())
+        .out
+        .handle()
+        .write(((buf64.as_pointer()) as Ptr<i64>).to_any());
     ({ write_count_1((s.as_pointer()), 1234605616436508552_i64) });
     assert!(((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_32;
-    { (*s.borrow_mut()).out.handle() }.write(((buf32.as_pointer()) as Ptr<i32>).to_any());
+    (*s.borrow_mut())
+        .out
+        .handle()
+        .write(((buf32.as_pointer()) as Ptr<i32>).to_any());
     ({ write_count_1((s.as_pointer()), 305419896_i64) });
     assert!(((((*buf32.borrow()) == 305419896) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_16;
-    { (*s.borrow_mut()).out.handle() }.write(((buf16.as_pointer()) as Ptr<i16>).to_any());
+    (*s.borrow_mut())
+        .out
+        .handle()
+        .write(((buf16.as_pointer()) as Ptr<i16>).to_any());
     ({ write_count_1((s.as_pointer()), 4660_i64) });
     assert!((((((*buf16.borrow()) as i32) == 4660) as i32) != 0));
     return 0;

@@ -130,17 +130,20 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn get(&self) -> i32 {
-        return (*self).with(|__s: &S| __s.v);
+        return (*self).with(|__s| __s.v);
     }
     fn destructor(&self) {}
     fn set(&self, x: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        (*self).with_mut(|__s: &mut S| __s.v = (*x.borrow()));
+        field!((*self), v).write((*x.borrow()));
     }
     fn add(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        (*self).with_mut(|__s: &mut S| __s.v += (*x.borrow()));
-        return (*self).with(|__s: &S| __s.v);
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() + (*x.borrow()))
+        };
+        return (*self).with(|__s| __s.v);
     }
 }
 pub fn __cpp2rust_init_globals() {}

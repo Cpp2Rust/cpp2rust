@@ -31,8 +31,8 @@ impl ByteRepr for Inner {
 pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
     return {
-        let _lhs = (*i.borrow()).with(|__s: &Inner| __s.a);
-        _lhs + (*i.borrow()).with(|__s: &Inner| __s.b)
+        let _lhs = (*i.borrow()).with(|__s| __s.a);
+        _lhs + (*i.borrow()).with(|__s| __s.b)
     };
 }
 pub struct anon_1 {
@@ -107,14 +107,8 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((outer.as_pointer()) as Ptr<Outer>).to_any()
     };
-    (*outer.borrow())
-        .u
-        .inner()
-        .with_mut(|__s: &mut Inner| __s.a = 3);
-    (*outer.borrow())
-        .u
-        .inner()
-        .with_mut(|__s: &mut Inner| __s.b = 4);
+    field!((*outer.borrow_mut()).u.inner(), a).write(3);
+    field!((*outer.borrow_mut()).u.inner(), b).write(4);
     assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
     assert!(
         ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)

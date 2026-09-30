@@ -28,13 +28,11 @@ impl S {
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: {
-                Rc::new(RefCell::new(
-                    _a0.with(|__s: &S| std::mem::take(&mut (*__s.v.borrow_mut()))),
-                ))
-            },
+            v: Rc::new(RefCell::new(std::mem::take(
+                &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
+            ))),
             n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| (*_a0.with(|__s: &S| __s.n.clone()).borrow())[(__i) as usize],
+                |__i: usize| (*{ (*_a0.upgrade().deref()).n.clone() }.borrow())[(__i) as usize],
             )))),
         }));
         let this: Ptr<S> = __this.as_pointer();
@@ -71,10 +69,10 @@ impl ByteRepr for S {
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return {
         let _lhs = {
-            let _lhs = (s.with(|__s: &S| (*__s.v.borrow()).len()) as i32);
-            _lhs + s.with(|__s: &S| (*__s.n.borrow())[(0) as usize])
+            let _lhs = ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32);
+            _lhs + (*s.with(|__s| __s.n.clone()).borrow())[(0) as usize]
         };
-        _lhs + s.with(|__s: &S| (*__s.n.borrow())[(1) as usize])
+        _lhs + (*s.with(|__s| __s.n.clone()).borrow())[(1) as usize]
     };
 }
 pub fn main() {
@@ -91,10 +89,10 @@ pub fn shuffle_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let a: Value<S> = Rc::new(RefCell::new(S::new({ (*x.borrow()) })));
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
-    assert!((*(*a.borrow()).v.borrow()).is_empty());
+    assert!((*{ (*a.borrow()).v.clone() }.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
-    assert!((*(*b.borrow()).v.borrow()).is_empty());
+    assert!((*{ (*b.borrow()).v.clone() }.borrow()).is_empty());
     return ({ sum_0(c.as_pointer()) });
 }
 pub trait SImpl {
@@ -102,16 +100,17 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        ((*self).with(|__s: &S| __s.v.as_pointer()) as Ptr<Vec<i32>>)
-            .write(_a0.with(|__s: &S| std::mem::take(&mut (*__s.v.borrow_mut()))));
+        ((*self).with(|__s| __s.v.clone()).as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
+            &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
+        ));
         {
-            (((*self).with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>)
+            (((*self).with(|__s| __s.n.clone()).as_pointer()) as Ptr<i32>)
                 .to_any()
                 .memcpy(
-                    &((_a0.with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>).to_any(),
+                    &(({ (*_a0.upgrade().deref()).n.clone() }.as_pointer()) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*self).with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>).to_any()
+            (((*self).with(|__s| __s.n.clone()).as_pointer()) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }

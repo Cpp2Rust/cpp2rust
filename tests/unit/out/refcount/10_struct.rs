@@ -151,36 +151,28 @@ impl GraphImpl for Ptr<Graph> {
         let dst: Value<u32> = Rc::new(RefCell::new(dst));
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*dst.borrow()),
-            next: {
-                ((*self)
-                    .with(|__s: &Graph| (__s.adj).clone())
-                    .offset((*src.borrow()) as isize)
-                    .read())
-                .clone()
-            },
-        });
-        {
-            (*self)
-                .with(|__s: &Graph| (__s.adj).clone())
+            next: ((*self)
+                .with(|__s| __s.adj.clone())
                 .offset((*src.borrow()) as isize)
-        }
-        .write(__rhs);
+                .read())
+            .clone(),
+        });
+        (*self)
+            .with(|__s| __s.adj.clone())
+            .offset((*src.borrow()) as isize)
+            .write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
             dst: (*src.borrow()),
-            next: {
-                ((*self)
-                    .with(|__s: &Graph| (__s.adj).clone())
-                    .offset((*dst.borrow()) as isize)
-                    .read())
-                .clone()
-            },
-        });
-        {
-            (*self)
-                .with(|__s: &Graph| (__s.adj).clone())
+            next: ((*self)
+                .with(|__s| __s.adj.clone())
                 .offset((*dst.borrow()) as isize)
-        }
-        .write(__rhs);
+                .read())
+            .clone(),
+        });
+        (*self)
+            .with(|__s| __s.adj.clone())
+            .offset((*dst.borrow()) as isize)
+            .write(__rhs);
     }
 }
 pub trait PartialImpl {

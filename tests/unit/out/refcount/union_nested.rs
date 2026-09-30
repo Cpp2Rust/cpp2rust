@@ -188,20 +188,15 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).level = 1;
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
-    (*ex.borrow())
+    field!((*ex.borrow_mut()).body.h(), code).write(2_u16);
+    (*(*ex.borrow())
         .body
         .h()
-        .with_mut(|__s: &mut record| __s.code = 2_u16);
-    (*ex.borrow())
-        .body
-        .h()
-        .with(|__s: &record| (*__s.pad.borrow_mut())[(0) as usize] = (('X' as i32) as u8));
-    assert!((((((*ex.borrow()).body.h().with(|__s: &record| __s.code) as i32) == 2) as i32) != 0));
+        .with(|__s| __s.pad.clone())
+        .borrow_mut())[(0) as usize] = (('X' as i32) as u8);
+    assert!((((((*ex.borrow()).body.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
-        (((((*ex.borrow())
-            .body
-            .h()
-            .with(|__s: &record| (*__s.pad.borrow())[(0) as usize]) as i32)
+        (((((*(*ex.borrow()).body.h().with(|__s| __s.pad.clone()).borrow())[(0) as usize] as i32)
             == ('X' as i32)) as i32)
             != 0)
     );
@@ -209,7 +204,7 @@ fn main_0() -> i32 {
         (((((*(*ex.borrow()).body.nested().upgrade().deref())
             .view
             .h()
-            .with(|__s: &record| __s.code) as i32)
+            .with(|__s| __s.code) as i32)
             == 2) as i32)
             != 0)
     );

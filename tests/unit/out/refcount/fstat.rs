@@ -63,7 +63,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    assert!(((((*(*st.borrow()).st_size.borrow()) == 5_i64) as i32) != 0));
+    assert!(((({ (*st.borrow()).st_size } == 5_i64) as i32) != 0));
     assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
     assert!(
         (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {

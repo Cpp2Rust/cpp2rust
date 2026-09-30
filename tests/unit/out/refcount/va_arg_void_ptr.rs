@@ -41,13 +41,11 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
         let __match_cond = ((*field.borrow()) as u32);
         match __match_cond {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
-                let __rhs = (*ap.borrow_mut()).arg::<AnyPtr>();
-                (*r.borrow()).with_mut(|__s: &mut registry| __s.slot = __rhs);
+                field!((*r.borrow()), slot).write((*ap.borrow_mut()).arg::<AnyPtr>());
                 break 'switch;
             }
             __v if __v == ((field_FIELD_LEVEL as i32) as u32) => {
-                let __rhs = (*ap.borrow_mut()).arg::<i64>();
-                (*r.borrow()).with_mut(|__s: &mut registry| __s.level = __rhs);
+                field!((*r.borrow()), level).write((*ap.borrow_mut()).arg::<i64>());
                 break 'switch;
             }
             _ => {

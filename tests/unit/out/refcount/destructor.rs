@@ -91,13 +91,9 @@ pub struct ArrayMember {
 }
 impl Clone for ArrayMember {
     fn clone(&self) -> Self {
-        let __this: Value<ArrayMember> = Rc::new(RefCell::new(Self {
-            items: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| (*self.items.borrow())[(__i) as usize].clone(),
-            )))),
-        }));
-        let this: Ptr<ArrayMember> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
+        }
     }
 }
 impl Default for ArrayMember {
@@ -373,7 +369,7 @@ pub trait ArrayMemberImpl {
 impl ArrayMemberImpl for Ptr<ArrayMember> {
     fn destructor(&self) {
         {
-            let __p: Ptr<S> = self.with(|__s| __s.items.as_pointer());
+            let __p = (*self.upgrade().deref()).items.as_pointer();
             for __i in 0..__p.len() {
                 SImpl::destructor(&__p.offset(__i as isize));
             }
@@ -393,7 +389,7 @@ pub trait DefaultedImpl {
 }
 impl DefaultedImpl for Ptr<Defaulted> {
     fn destructor(&self) {
-        SImpl::destructor(&field_ptr!(self, s));
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait EmptyBodyImpl {
@@ -401,7 +397,7 @@ pub trait EmptyBodyImpl {
 }
 impl EmptyBodyImpl for Ptr<EmptyBody> {
     fn destructor(&self) {
-        SImpl::destructor(&field_ptr!(self, s));
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait MiddleImpl {
@@ -409,7 +405,7 @@ pub trait MiddleImpl {
 }
 impl MiddleImpl for Ptr<Middle> {
     fn destructor(&self) {
-        SImpl::destructor(&field_ptr!(self, s));
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait OrderedImpl {
@@ -417,9 +413,9 @@ pub trait OrderedImpl {
 }
 impl OrderedImpl for Ptr<Ordered> {
     fn destructor(&self) {
-        TaggedImpl::destructor(&field_ptr!(self, third));
-        TaggedImpl::destructor(&field_ptr!(self, second));
-        TaggedImpl::destructor(&field_ptr!(self, first));
+        field_ptr!(self, third).destructor();
+        field_ptr!(self, second).destructor();
+        field_ptr!(self, first).destructor();
     }
 }
 pub trait OuterImpl {
@@ -427,7 +423,7 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn destructor(&self) {
-        MiddleImpl::destructor(&field_ptr!(self, m));
+        field_ptr!(self, m).destructor();
     }
 }
 pub trait SImpl {
@@ -443,9 +439,9 @@ pub trait TaggedImpl {
 }
 impl TaggedImpl for Ptr<Tagged> {
     fn destructor(&self) {
-        let __rhs = (*self).with(|__s: &Tagged| __s.tag);
-        let __idx = (*order_count_2.with(Value::clone).borrow_mut()).postfix_inc();
-        (*order_1.with(Value::clone).borrow_mut())[(__idx) as usize] = __rhs;
+        (*order_1.with(Value::clone).borrow_mut())
+            [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
+            (*self).with(|__s| __s.tag);
     }
 }
 pub trait Templated_char_Impl {

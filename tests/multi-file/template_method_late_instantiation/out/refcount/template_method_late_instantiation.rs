@@ -52,10 +52,10 @@ pub trait S_int_Impl {
 impl S_int_Impl for Ptr<S_int_> {
     fn set(&self, v: i32) {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        (*self).with_mut(|__s: &mut S_int_| __s.x = (*v.borrow()));
+        field!((*self), x).write((*v.borrow()));
     }
     fn get(&self) -> i32 {
-        return (*self).with(|__s: &S_int_| __s.x);
+        return (*self).with(|__s| __s.x);
     }
 }
 pub fn __cpp2rust_init_globals() {}

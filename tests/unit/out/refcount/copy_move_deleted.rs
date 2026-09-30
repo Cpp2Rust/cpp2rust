@@ -20,10 +20,10 @@ impl NoCopy {
     }
     pub fn move_from(o: Ptr<NoCopy>) -> Self {
         let __this: Value<NoCopy> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &NoCopy| __s.v) },
+            v: o.with(|__s| __s.v),
         }));
         let this: Ptr<NoCopy> = __this.as_pointer();
-        o.with_mut(|__s: &mut NoCopy| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -58,10 +58,10 @@ impl PrivateCopy {
     }
     pub fn move_from(o: Ptr<PrivateCopy>) -> Self {
         let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &PrivateCopy| __s.v) },
+            v: o.with(|__s| __s.v),
         }));
         let this: Ptr<PrivateCopy> = __this.as_pointer();
-        o.with_mut(|__s: &mut PrivateCopy| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -128,8 +128,8 @@ pub struct Container {
 impl Container {
     pub fn move_from(_a0: Ptr<Container>) -> Self {
         let __this: Value<Container> = Rc::new(RefCell::new(Self {
-            inner: { NoCopy::move_from({ field_ptr!(_a0, inner) }) },
-            tag: { _a0.with(|__s: &Container| __s.tag) },
+            inner: NoCopy::move_from({ field_ptr!(_a0, inner) }),
+            tag: { (*_a0.upgrade().deref()).tag },
         }));
         let this: Ptr<Container> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -156,10 +156,10 @@ impl ByteRepr for Container {
 >>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn bump_0(p: Ptr<NoCopy>) {
     let p: Value<Ptr<NoCopy>> = Rc::new(RefCell::new(p));
-    (*p.borrow()).with_mut(|__s: &mut NoCopy| __s.v.postfix_inc());
+    field!((*p.borrow()), v).with_mut(|__v| __v.postfix_inc());
 }
 pub fn bump_ref_1(r: Ptr<Immovable>) {
-    r.with_mut(|__s: &mut Immovable| __s.v.postfix_inc());
+    field!(r, v).with_mut(|__v| __v.postfix_inc());
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -183,7 +183,7 @@ fn main_0() -> i32 {
     (*im.borrow_mut()).v = 4;
     ({ bump_ref_1(im.as_pointer()) });
     let pim: Value<Ptr<Immovable>> = Rc::new(RefCell::new((im.as_pointer())));
-    assert!(((*pim.borrow()).with(|__s: &Immovable| __s.v) == 5));
+    assert!(((*pim.borrow()).with(|__s| __s.v) == 5));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: NoCopy::new({ 6 }),
         tag: 7,
@@ -202,10 +202,10 @@ impl ContainerImpl for Ptr<Container> {
     fn move_assign(&self, _a0: Ptr<Container>) -> Ptr<Container> {
         ({
             let _o: Ptr<NoCopy> = field_ptr!(_a0, inner);
-            NoCopyImpl::move_assign(&{ field_ptr!((*self), inner) }, _o)
+            NoCopyImpl::move_assign(&field_ptr!((*self), inner), _o)
         });
-        let __rhs = _a0.with(|__s: &Container| __s.tag);
-        (*self).with_mut(|__s: &mut Container| __s.tag = __rhs);
+        let __rhs = { (*_a0.upgrade().deref()).tag };
+        field!((*self), tag).write(__rhs);
         return (*self).clone();
     }
 }
@@ -214,9 +214,9 @@ pub trait NoCopyImpl {
 }
 impl NoCopyImpl for Ptr<NoCopy> {
     fn move_assign(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy> {
-        let __rhs = o.with(|__s: &NoCopy| __s.v);
-        (*self).with_mut(|__s: &mut NoCopy| __s.v = __rhs);
-        o.with_mut(|__s: &mut NoCopy| __s.v = 0);
+        let __rhs = o.with(|__s| __s.v);
+        field!((*self), v).write(__rhs);
+        field!(o, v).write(0);
         return (*self).clone();
     }
 }
@@ -228,9 +228,9 @@ pub trait PrivateCopyImpl {
 }
 impl PrivateCopyImpl for Ptr<PrivateCopy> {
     fn move_assign(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
-        let __rhs = o.with(|__s: &PrivateCopy| __s.v);
-        (*self).with_mut(|__s: &mut PrivateCopy| __s.v = __rhs);
-        o.with_mut(|__s: &mut PrivateCopy| __s.v = 0);
+        let __rhs = o.with(|__s| __s.v);
+        field!((*self), v).write(__rhs);
+        field!(o, v).write(0);
         return (*self).clone();
     }
 }

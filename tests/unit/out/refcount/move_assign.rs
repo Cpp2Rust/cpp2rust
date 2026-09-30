@@ -20,10 +20,10 @@ impl MoveOnly {
     }
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
         let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &MoveOnly| __s.v) },
+            v: o.with(|__s| __s.v),
         }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
-        o.with_mut(|__s: &mut MoveOnly| __s.v = 0);
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -133,10 +133,13 @@ fn main_0() -> i32 {
         )
     });
     assert!(
-        ((vec_.as_pointer() as Ptr<MoveOnly>)
-            .offset(0_usize)
-            .with(|__s: &MoveOnly| __s.v)
-            == 8)
+        ({
+            (*(vec_.as_pointer() as Ptr<MoveOnly>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 8)
     );
     assert!(({ (*d.borrow()).v } == 0));
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
@@ -155,13 +158,13 @@ pub trait ConstMoveAssignImpl {
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
     fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = (o.with(|__s: &ConstMoveAssign| __s.mark) + 1);
-        (*self).with_mut(|__s: &mut ConstMoveAssign| __s.mark = __rhs);
+        let __rhs = (o.with(|__s| __s.mark) + 1);
+        field!((*self), mark).write(__rhs);
         return (*self).clone();
     }
     fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = (o.with(|__s: &ConstMoveAssign| __s.mark) + 10);
-        (*self).with_mut(|__s: &mut ConstMoveAssign| __s.mark = __rhs);
+        let __rhs = (o.with(|__s| __s.mark) + 10);
+        field!((*self), mark).write(__rhs);
         return (*self).clone();
     }
 }
@@ -173,9 +176,9 @@ impl MoveOnlyImpl for Ptr<MoveOnly> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s: &MoveOnly| __s.v);
-        (*self).with_mut(|__s: &mut MoveOnly| __s.v = __rhs);
-        o.with_mut(|__s: &mut MoveOnly| __s.v = 0);
+        let __rhs = o.with(|__s| __s.v);
+        field!((*self), v).write(__rhs);
+        field!(o, v).write(0);
         return (*self).clone();
     }
 }

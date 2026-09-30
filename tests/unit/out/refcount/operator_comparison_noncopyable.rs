@@ -8,14 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
     return {
-        let _lhs = x.with(|__s: &S| __s.data_);
-        _lhs == y.with(|__s: &S| __s.data_)
+        let _lhs = x.with(|__s| __s.data_);
+        _lhs == y.with(|__s| __s.data_)
     };
 }
 pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
     return {
-        let _lhs = x.with(|__s: &S| __s.data_);
-        _lhs < y.with(|__s: &S| __s.data_)
+        let _lhs = x.with(|__s| __s.data_);
+        _lhs < y.with(|__s| __s.data_)
     };
 }
 #[derive(Record, Default)]
@@ -34,7 +34,7 @@ impl S {
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data_: { _a0.with(|__s: &S| __s.data_) },
+            data_: { (*_a0.upgrade().deref()).data_ },
         }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()

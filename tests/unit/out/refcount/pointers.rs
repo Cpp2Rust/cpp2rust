@@ -30,8 +30,8 @@ pub fn Update_0(t: Ptr<Test>) -> Ptr<Test> {
     let y: Value<i32> = Rc::new(RefCell::new(2));
     (*x.borrow_mut()).prefix_inc();
     ({ TestImpl::update(&(*t.borrow()), (*x.borrow()), (*y.borrow())) });
-    (*x.borrow_mut()) = (*t.borrow()).with(|__s: &Test| __s.x);
-    (*y.borrow_mut()) = (*t.borrow()).with(|__s: &Test| __s.x);
+    (*x.borrow_mut()) = (*t.borrow()).with(|__s| (__s).x);
+    (*y.borrow_mut()) = (*t.borrow()).with(|__s| __s.x);
     ({
         let _x: i32 = (*x.borrow());
         let _y: i32 = (*y.borrow());
@@ -48,7 +48,7 @@ fn main_0() -> i32 {
     let t2: Value<Ptr<Test>> = Rc::new(RefCell::new(({ Update_0((t1.as_pointer())) })));
     let t3: Value<Ptr<Test>> = Rc::new(RefCell::new(Ptr::<Test>::null()));
     (*t3.borrow_mut()) = (*t2.borrow()).clone();
-    (*t3.borrow()).with_mut(|__s: &mut Test| __s.x = 15);
+    field!((*t3.borrow()), x).write(15);
     {
         let _ptr = ({ TestImpl::as_ptr(&(*t3.borrow())) });
         _ptr.write(_ptr.read() + 10)
@@ -56,8 +56,8 @@ fn main_0() -> i32 {
     assert!(
         ({
             let _lhs = {
-                let _lhs = (*t3.borrow()).with(|__s: &Test| __s.x);
-                _lhs + (*t2.borrow()).with(|__s: &Test| __s.x)
+                let _lhs = (*t3.borrow()).with(|__s| __s.x);
+                _lhs + (*t2.borrow()).with(|__s| __s.x)
             };
             _lhs + { (*t1.borrow()).x }
         } == 75)
@@ -72,10 +72,10 @@ pub trait TestImpl {
 }
 impl TestImpl for Ptr<Test> {
     fn inc(&self) {
-        (*self).with_mut(|__s: &mut Test| __s.x.postfix_inc());
+        field!((*self), x).with_mut(|__v| __v.postfix_inc());
     }
     fn dec(&self) {
-        (*self).with_mut(|__s: &mut Test| __s.x.postfix_dec());
+        field!((*self), x).with_mut(|__v| __v.postfix_dec());
     }
     fn as_ptr(&self) -> Ptr<i32> {
         return (field_ptr!((*self), x));
@@ -83,8 +83,7 @@ impl TestImpl for Ptr<Test> {
     fn update(&self, x: i32, y: i32) {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
-        let __rhs = ((*x.borrow()) + (*y.borrow()));
-        (*self).with_mut(|__s: &mut Test| __s.x = __rhs);
+        field!((*self), x).write(((*x.borrow()) + (*y.borrow())));
     }
 }
 pub fn __cpp2rust_init_globals() {}

@@ -39,17 +39,13 @@ pub struct Foo {
 }
 impl Clone for Foo {
     fn clone(&self) -> Self {
-        let __this: Value<Foo> = Rc::new(RefCell::new(Self {
-            x: { self.x },
-            y: { (self.y).clone() },
-            z: { self.z.clone() },
-            a: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| (*self.a.borrow())[(__i) as usize],
-            )))),
-            bar: { self.bar.clone() },
-        }));
-        let this: Ptr<Foo> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            x: self.x.clone(),
+            y: self.y.clone(),
+            z: self.z.clone(),
+            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
+            bar: self.bar.clone(),
+        }
     }
 }
 impl Default for Foo {
@@ -123,7 +119,7 @@ fn main_0() -> i32 {
         bar: Bar { w: 10 },
     }));
     assert!(({ (*f1.borrow()).x } == 1));
-    assert!((((*f1.borrow()).y.read()) == 2));
+    assert!((({ (*f1.borrow()).y.clone() }.read()) == 2));
     assert!({
         let _lhs = { (*f1.borrow()).z.clone() };
         _lhs == (x1.as_pointer())
@@ -133,31 +129,31 @@ fn main_0() -> i32 {
     (*f2.borrow_mut()).x.prefix_inc();
     { (*f2.borrow()).y.clone() }.with_mut(|__v| __v.prefix_inc());
     assert!(({ (*f2.borrow()).x } == 2));
-    assert!((((*f2.borrow()).y.read()) == 3));
+    assert!((({ (*f2.borrow()).y.clone() }.read()) == 3));
     assert!(({ (*f1.borrow()).x } == 1));
-    assert!((((*f1.borrow()).y.read()) == 3));
+    assert!((({ (*f1.borrow()).y.clone() }.read()) == 3));
     { (*f2.borrow()).z.clone() }.with_mut(|__v| __v.prefix_inc());
-    assert!((((*f2.borrow()).y.read()) == 4));
+    assert!((({ (*f2.borrow()).y.clone() }.read()) == 4));
     assert!({
         let _lhs = { (*f2.borrow()).z.clone() };
         _lhs == (x1.as_pointer())
     });
     assert!((({ (*f2.borrow()).z.clone() }.read()) == 4));
-    assert!((((*f1.borrow()).y.read()) == 4));
+    assert!((({ (*f1.borrow()).y.clone() }.read()) == 4));
     assert!({
         let _lhs = { (*f1.borrow()).z.clone() };
         _lhs == (x1.as_pointer())
     });
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
-    (*(*f2.borrow()).a.borrow_mut())[(0) as usize].prefix_inc();
-    (*(*f2.borrow()).a.borrow_mut())[(1) as usize].prefix_inc();
-    (*(*f2.borrow()).a.borrow_mut())[(2) as usize].prefix_inc();
-    assert!(((*(*f2.borrow()).a.borrow())[(0) as usize] == 1));
-    assert!(((*(*f2.borrow()).a.borrow())[(1) as usize] == 2));
-    assert!(((*(*f2.borrow()).a.borrow())[(2) as usize] == 3));
-    assert!(((*(*f1.borrow()).a.borrow())[(0) as usize] == 0));
-    assert!(((*(*f1.borrow()).a.borrow())[(1) as usize] == 1));
-    assert!(((*(*f1.borrow()).a.borrow())[(2) as usize] == 2));
+    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(0) as usize].prefix_inc();
+    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(1) as usize].prefix_inc();
+    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(2) as usize].prefix_inc();
+    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(0) as usize] == 1));
+    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(1) as usize] == 2));
+    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(2) as usize] == 3));
+    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(0) as usize] == 0));
+    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(1) as usize] == 1));
+    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(2) as usize] == 2));
     (*f2.borrow_mut()).bar.w = 20;
     assert!(({ (*f2.borrow()).bar.w } == 20));
     assert!(({ (*f1.borrow()).bar.w } == 10));
@@ -523,8 +519,8 @@ fn main_0() -> i32 {
     { (*r2.borrow()).b.clone() }.with_mut(|__v| __v.prefix_inc());
     assert!(((*ra.borrow()) == 10));
     assert!(((*rb.borrow()) == 3));
-    assert!((((*r1.borrow()).a.read()) == 10));
-    assert!((((*r1.borrow()).b.read()) == 3));
+    assert!((({ (*r1.borrow()).a.clone() }.read()) == 10));
+    assert!((({ (*r1.borrow()).b.clone() }.read()) == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

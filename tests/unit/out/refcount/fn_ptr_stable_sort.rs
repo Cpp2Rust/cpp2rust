@@ -30,8 +30,8 @@ impl ByteRepr for Item {
 }
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
     return {
-        let _lhs = a.with(|__s: &Item| __s.key);
-        _lhs < b.with(|__s: &Item| __s.key)
+        let _lhs = a.with(|__s| __s.key);
+        _lhs < b.with(|__s| __s.key)
     };
 }
 pub fn main() {
@@ -48,22 +48,31 @@ fn main_0() -> i32 {
         |x, y| Compare_0.call(x, y),
     );
     assert!(
-        ((v.as_pointer() as Ptr<Item>)
-            .offset(0_usize)
-            .with(|__s: &Item| __s.key)
-            == 1)
+        ({
+            (*(v.as_pointer() as Ptr<Item>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .key
+        } == 1)
     );
     assert!(
-        ((v.as_pointer() as Ptr<Item>)
-            .offset(1_usize)
-            .with(|__s: &Item| __s.key)
-            == 2)
+        ({
+            (*(v.as_pointer() as Ptr<Item>)
+                .offset(1_usize)
+                .upgrade()
+                .deref())
+            .key
+        } == 2)
     );
     assert!(
-        ((v.as_pointer() as Ptr<Item>)
-            .offset(2_usize)
-            .with(|__s: &Item| __s.key)
-            == 3)
+        ({
+            (*(v.as_pointer() as Ptr<Item>)
+                .offset(2_usize)
+                .upgrade()
+                .deref())
+            .key
+        } == 3)
     );
     return 0;
 }

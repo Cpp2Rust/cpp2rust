@@ -51,10 +51,6 @@ public:
 
   bool RecordImplementsClone(const clang::RecordDecl *decl) override;
 
-  std::string GetDeepCopy(clang::QualType type, std::string_view src);
-
-  // Whether the Clone of a struct copies each field with its own clone(), and
-  // hence can be derived.
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
@@ -149,71 +145,42 @@ public:
 
   bool VisitArraySubscriptExpr(clang::ArraySubscriptExpr *expr) override;
 
-  // Converts the subscript expr with convert, having evaluated its index
-  // first, if the index has side effects that may conflict with the borrow of
-  // the struct that holds base. Returns false if it doesn't do so.
-  bool ConvertWithHoistedIndex(clang::Expr *expr, clang::Expr *base,
-                               clang::Expr *idx,
-                               llvm::function_ref<void()> convert);
-
   bool VisitMemberExpr(clang::MemberExpr *expr) override;
 
   void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
 
-  // Converts an access to a field of a struct translated by us. Fields are
-  // stored inline in the struct.
-  void ConvertFieldAccess(clang::MemberExpr *expr);
+  // Converts an access to a field that is stored inline in its struct.
+  void ConvertInlineField(clang::MemberExpr *expr);
 
-  // The struct whose field `expr` accesses, as a place expression. The struct
-  // is borrowed mutably if `mut` is set, unless it is reached through a
-  // pointer, which is then left in pending_deref_.
-  std::string ConvertRecordPlace(clang::MemberExpr *expr, bool mut);
+  // Copies the value of the field `expr` out of its struct, such that the
+  // struct doesn't stay borrowed.
+  std::string ReadField(clang::MemberExpr *expr);
 
-  // Wraps ptr, the result of converting expr, such that it doesn't keep any
-  // struct borrowed if it is written through.
-  std::string DetachPtr(std::string ptr, bool fresh, const clang::Expr *expr);
-  std::string TakePendingDerefToWrite(const clang::Expr *lvalue);
+  // A field that is read through a pointer to its struct is read in a
+  // closure, `p.with(|__s| __s.x)`. While converting the struct whose field
+  // is read, record_base_, or `*p` for `p->x`, the dereference of a pointer
+  // to it is emitted as `__s`, and the pointer is stored in *record_ptr_.
+  std::string *record_ptr_ = nullptr;
+  const clang::Expr *record_base_ = nullptr;
 
-  // A Ptr to the field accessed by `expr`.
-  std::string ConvertFieldPointer(clang::MemberExpr *expr);
+  // The expression that ConvertFreshRValue copies.
+  const clang::Expr *copied_expr_ = nullptr;
 
-  // The Value held by a Value field (see IsValueField).
-  std::string ConvertValueField(clang::MemberExpr *expr);
+  struct PushRecordPtr {
+    ConverterRefCount &c;
+    std::string *record_ptr;
+    const clang::Expr *record_base;
 
-  // Converts the field `expr` given the place where it is stored.
-  void ConvertFieldPlace(clang::MemberExpr *expr, std::string place);
-
-  // A field of a struct reached through the pointer `ptr`, which a place
-  // expression accesses (e.g., p->x, (*p).x, or r.a[i].x for a reference r).
-  // `nested` if the place is converted inside ConvertInStructPtr already.
-  struct StructPtr {
-    clang::MemberExpr *member;
-    clang::Expr *ptr = nullptr;
-    bool via_reference = false;
-    bool nested = false;
-    // Whether the place is in a Value field, which is borrowed separately
-    // from the struct.
-    bool in_value_field = false;
+    PushRecordPtr(ConverterRefCount &c, std::string *ptr,
+                  const clang::Expr *base)
+        : c(c), record_ptr(std::exchange(c.record_ptr_, ptr)),
+          record_base(std::exchange(
+              c.record_base_, base ? base->IgnoreParenImpCasts() : nullptr)) {}
+    ~PushRecordPtr() {
+      c.record_ptr_ = record_ptr;
+      c.record_base_ = record_base;
+    }
   };
-  // If `mut`, the place is written, and must not borrow the struct.
-  std::optional<StructPtr> FindStructPtr(clang::Expr *place, bool mut = false);
-
-  // If `place` is a field of a struct reached through a pointer, converts
-  // the expression given by `convert`, which accesses `place`, in a closure
-  // that borrows the struct through the pointer, `p.with(|__s: &S| ...)`.
-  std::optional<std::string>
-  ConvertInStructPtr(clang::Expr *place, bool mut,
-                     llvm::function_ref<std::string()> convert);
-
-  std::string ConvertTake(clang::Expr *arg) override {
-    auto take = [&] { return Converter::ConvertTake(arg); };
-    auto str = ConvertInStructPtr(arg, true, take);
-    return str ? *str : take();
-  }
-
-  // The fields converted by ConvertInStructPtr, and their places in the
-  // closure.
-  std::unordered_map<const clang::Expr *, std::string> field_places_;
 
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
@@ -262,26 +229,12 @@ public:
   bool
   Convert(clang::Expr *expr,
           std::optional<clang::QualType> implicit_convert_to = {}) override {
-    if (auto it = hoisted_exprs_.find(expr); it != hoisted_exprs_.end()) {
-      StrCat(it->second);
-      computed_expr_type_ = ComputedExprType::FreshValue;
-      return false;
-    }
-    if (auto it = field_places_.find(expr); it != field_places_.end()) {
-      ConvertFieldPlace(clang::cast<clang::MemberExpr>(expr), it->second);
-      return false;
-    }
-    // Values read from fields of structs reached through pointers.
-    if (isRValue() && TypeIsCopyable(expr->getType())) {
-      if (auto str = ConvertInStructPtr(expr, false, [&] {
-            return ToString(expr, implicit_convert_to);
-          })) {
-        StrCat(*str);
-        SetFreshType(expr->getType());
-        return false;
-      }
+    auto *record_ptr = record_ptr_;
+    if (!expr || expr->IgnoreParenImpCasts() != record_base_) {
+      record_ptr_ = nullptr;
     }
     auto result = Converter::Convert(expr, implicit_convert_to);
+    record_ptr_ = record_ptr;
     if (computed_expr_type_ == ComputedExprType::Pending) {
       assert(!pending_deref_.empty() && "pending_deref_ taken without type");
     }
@@ -330,21 +283,6 @@ public:
   void ConvertGenericBinaryOperator(clang::BinaryOperator *expr) override;
 
   bool IsReferenceType(const clang::Expr *expr) const override;
-
-  // Converts a rule that calls a method on `receiver_ph`, by `convert`, in
-  // a closure if the receiver is a field of a struct reached through a
-  // pointer, or after evaluating the arguments that read fields if it is a
-  // field.
-  std::optional<std::string> ConvertOnFieldReceiver(
-      const std::vector<TranslationRule::BodyFragment> &fragments,
-      const TranslationRule::PlaceholderFragment &receiver_ph,
-      clang::Expr *expr, clang::Expr **args, unsigned num_args,
-      llvm::function_ref<std::string()> convert);
-
-  std::string
-  ConvertIRFragment(const std::vector<TranslationRule::BodyFragment> &fragments,
-                    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-                    TempMaterializationCtx *ctx) override;
 
   std::string
   ConvertMappedMethodCall(clang::Expr *expr,

@@ -49,20 +49,16 @@ pub struct Outer {
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            p1: { self.p1.clone() },
-            p2: { self.p2.clone() },
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
-            )))),
-            cp: { self.cp.clone() },
-            pp: { self.pp.clone() },
-            inner: { self.inner.clone() },
-            x: { self.x },
-            fn_: { self.fn_.clone() },
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            p1: self.p1.clone(),
+            p2: self.p2.clone(),
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+            cp: self.cp.clone(),
+            pp: self.pp.clone(),
+            inner: self.inner.clone(),
+            x: self.x.clone(),
+            fn_: self.fn_.clone(),
+        }
     }
 }
 impl Default for Outer {
@@ -224,7 +220,8 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((*(*static_outer_1.with(Value::clone).borrow()).arr.borrow())[(*i.borrow()) as usize])
+            ((*{ (*static_outer_1.with(Value::clone).borrow()).arr.clone() }.borrow())
+                [(*i.borrow()) as usize])
                 .is_null()
         );
         (*i.borrow_mut()).prefix_inc();

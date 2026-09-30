@@ -1,25 +1,33 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Value};
+use crate::{ByteRepr, Record, Value};
 use std::cell::{Cell, RefCell};
+use std::mem::{offset_of, size_of};
 use std::rc::Rc;
 
+#[derive(Record)]
 pub struct Dirent {
-    pub d_ino: Value<u64>,
-    pub d_off: Value<i64>,
-    pub d_reclen: Value<u16>,
-    pub d_type: Value<u8>,
+    #[offset(offset_of!(::libc::dirent, d_ino))]
+    pub d_ino: u64,
+    #[cfg_attr(target_os = "linux", offset(offset_of!(::libc::dirent, d_off)))]
+    #[cfg_attr(target_os = "macos", offset(offset_of!(::libc::dirent, d_seekoff)))]
+    pub d_off: i64,
+    #[offset(offset_of!(::libc::dirent, d_reclen))]
+    pub d_reclen: u16,
+    #[offset(offset_of!(::libc::dirent, d_type))]
+    pub d_type: u8,
+    #[offset(offset_of!(::libc::dirent, d_name))]
     pub d_name: Value<Box<[u8]>>,
 }
 
 impl Default for Dirent {
     fn default() -> Self {
         Self {
-            d_ino: Rc::new(RefCell::new(0)),
-            d_off: Rc::new(RefCell::new(0)),
-            d_reclen: Rc::new(RefCell::new(0)),
-            d_type: Rc::new(RefCell::new(0)),
+            d_ino: 0,
+            d_off: 0,
+            d_reclen: 0,
+            d_type: 0,
             d_name: Rc::new(RefCell::new(vec![0u8; 256].into_boxed_slice())),
         }
     }
@@ -27,9 +35,11 @@ impl Default for Dirent {
 
 impl Dirent {
     pub fn from_entry(ino: u64, name: &[u8], d_type: u8) -> Self {
-        let de = Dirent::default();
-        *de.d_ino.borrow_mut() = ino;
-        *de.d_type.borrow_mut() = d_type;
+        let de = Dirent {
+            d_ino: ino,
+            d_type,
+            ..Dirent::default()
+        };
         {
             let mut nm = de.d_name.borrow_mut();
             let n = name.len().min(nm.len() - 1);
@@ -43,16 +53,17 @@ impl Dirent {
 impl Clone for Dirent {
     fn clone(&self) -> Self {
         Self {
-            d_ino: Rc::new(RefCell::new(*self.d_ino.borrow())),
-            d_off: Rc::new(RefCell::new(*self.d_off.borrow())),
-            d_reclen: Rc::new(RefCell::new(*self.d_reclen.borrow())),
-            d_type: Rc::new(RefCell::new(*self.d_type.borrow())),
             d_name: Rc::new(RefCell::new(self.d_name.borrow().clone())),
+            ..*self
         }
     }
 }
 
-impl ByteRepr for Dirent {}
+impl ByteRepr for Dirent {
+    fn byte_size() -> usize {
+        size_of::<::libc::dirent>()
+    }
+}
 
 pub struct CDir {
     pub entries: Vec<(u64, Vec<u8>, u8)>,

@@ -90,14 +90,12 @@ fn main_0() -> i32 {
         p: (x.as_pointer()),
     }));
     (*y.borrow_mut()).x.x = 5;
-    ({ YImpl::foo(&y.as_pointer()) }).with_mut(|__s: &mut X| __s.x = 1);
-    { (*y.borrow()).p.clone() }.with_mut(|__s: &mut X| __s.x = 10);
+    field!(({ YImpl::foo(&y.as_pointer(),) }), x).write(1);
+    field!({ (*y.borrow()).p.clone() }, x).write(10);
     let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
-    (*p3.borrow())
-        .with(|__s: &Y| (__s.p).clone())
-        .with_mut(|__s: &mut X| __s.x = 100);
-    ({ YImpl::ptr(&y.as_pointer()) }).with_mut(|__s: &mut X| __s.x = 1);
-    ({ YImpl::ptr(&y.as_pointer()) }).with_mut(|__s: &mut X| __s.x = 50);
+    field!((*p3.borrow()).with(|__s| __s.p.clone()), x).write(100);
+    field!(({ YImpl::ptr(&y.as_pointer(),) }), x).write(1);
+    field!(({ YImpl::ptr(&y.as_pointer(),) }), x).write(50);
     assert!(({ (*x.borrow()).x } == 100));
     return 0;
 }

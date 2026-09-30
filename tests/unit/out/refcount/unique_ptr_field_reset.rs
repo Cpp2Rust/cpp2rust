@@ -34,8 +34,8 @@ pub struct Holder {
 impl Holder {
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
         let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            data: { _a0.with_mut(|__s: &mut Holder| __s.data.take()) },
-            n: { _a0.with(|__s: &Holder| __s.n) },
+            data: field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()),
+            n: { (*_a0.upgrade().deref()).n },
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -65,36 +65,29 @@ fn main_0() -> i32 {
     (*h.borrow_mut()).n = 1;
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     {
-        {
-            let __a1 = Ptr::alloc(Data { v: 3 });
-            {
-                (*hp.borrow()).with_mut(|__s: &mut Holder| {
-                    let _p: Ptr<_> = __a1;
-                    __s.data = _p.to_owned_opt()
-                })
-            }
-        }
+        let _p: Ptr<_> = Ptr::alloc(Data { v: 3 });
+        (field_ptr!((*hp.borrow()), data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
     };
-    assert!(({ (*(*h.borrow()).data.as_ref().unwrap().borrow()).v } == 3));
+    assert!(({ (*{ (*h.borrow()).data.clone() }.as_ref().unwrap().borrow()).v } == 3));
     ({ HolderImpl::set(&h.as_pointer(), Ptr::alloc(Data { v: 4 })) });
     assert!(
         ({
-            (*(*(*hp.borrow()).upgrade().deref())
-                .data
+            (*(*hp.borrow())
+                .with(|__s| __s.data.clone())
                 .as_ref()
                 .unwrap()
                 .borrow())
             .v
         } == 4)
     );
-    let __rhs = (*hp.borrow()).with(|__s: &Holder| __s.n);
-    (*(*(*hp.borrow()).upgrade().deref())
-        .data
+    let __rhs = (*hp.borrow()).with(|__s| __s.n);
+    (*(*hp.borrow())
+        .with(|__s| __s.data.clone())
         .as_ref()
         .unwrap()
         .borrow_mut())
     .v += __rhs;
-    assert!(({ (*(*h.borrow()).data.as_ref().unwrap().borrow()).v } == 5));
+    assert!(({ (*{ (*h.borrow()).data.clone() }.as_ref().unwrap().borrow()).v } == 5));
     return 0;
 }
 pub trait HolderImpl {
@@ -105,17 +98,15 @@ impl HolderImpl for Ptr<Holder> {
     fn set(&self, p: Ptr<Data>) {
         let p: Value<Ptr<Data>> = Rc::new(RefCell::new(p));
         {
-            (*self).with_mut(|__s: &mut Holder| {
-                let _p: Ptr<_> = (*p.borrow()).clone();
-                __s.data = _p.to_owned_opt()
-            })
+            let _p: Ptr<_> = (*p.borrow()).clone();
+            (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>).write(_p.to_owned_opt())
         };
     }
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>)
-            .write(_a0.with_mut(|__s: &mut Holder| __s.data.take()));
-        let __rhs = _a0.with(|__s: &Holder| __s.n);
-        (*self).with_mut(|__s: &mut Holder| __s.n = __rhs);
+            .write(field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()));
+        let __rhs = { (*_a0.upgrade().deref()).n };
+        field!((*self), n).write(__rhs);
         return (*self).clone();
     }
 }

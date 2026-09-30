@@ -88,15 +88,18 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Slot> = <Value<Slot>>::default();
     (*a.borrow_mut()).tag = Tag_enum_T_NUM_S;
-    { (*a.borrow_mut()).payload.signed_n() }.write((-7_i32 as i64));
+    (*a.borrow_mut()).payload.signed_n().write((-7_i32 as i64));
     assert!((((((*a.borrow()).payload.signed_n().read()) == (-7_i32 as i64)) as i32) != 0));
     let b: Value<Slot> = <Value<Slot>>::default();
     (*b.borrow_mut()).tag = Tag_enum_T_NUM_U;
-    { (*b.borrow_mut()).payload.unsigned_n() }.write(3735928559_u64);
+    (*b.borrow_mut()).payload.unsigned_n().write(3735928559_u64);
     assert!((((((*b.borrow()).payload.unsigned_n().read()) == 3735928559_u64) as i32) != 0));
     let c: Value<Slot> = <Value<Slot>>::default();
     (*c.borrow_mut()).tag = Tag_enum_T_TEXT;
-    { (*c.borrow_mut()).payload.text() }.write(Ptr::<u8>::from_string_literal(b"hello"));
+    (*c.borrow_mut())
+        .payload
+        .text()
+        .write(Ptr::<u8>::from_string_literal(b"hello"));
     assert!(
         (((((((*c.borrow()).payload.text().read())
             .offset((0) as isize)
@@ -106,12 +109,15 @@ fn main_0() -> i32 {
     );
     let d: Value<Slot> = <Value<Slot>>::default();
     (*d.borrow_mut()).tag = Tag_enum_T_FLOAT;
-    { (*d.borrow_mut()).payload.f() }.write(1.5E+0);
+    (*d.borrow_mut()).payload.f().write(1.5E+0);
     assert!((((((*d.borrow()).payload.f().read()) == 1.5E+0) as i32) != 0));
     let x: Value<i32> = Rc::new(RefCell::new(0));
     let e: Value<Slot> = <Value<Slot>>::default();
     (*e.borrow_mut()).tag = Tag_enum_T_REF;
-    { (*e.borrow_mut()).payload.handle() }.write(((x.as_pointer()) as Ptr<i32>).to_any());
+    (*e.borrow_mut())
+        .payload
+        .handle()
+        .write(((x.as_pointer()) as Ptr<i32>).to_any());
     assert!(
         ((({
             let _lhs = ((*e.borrow()).payload.handle().read()).clone();

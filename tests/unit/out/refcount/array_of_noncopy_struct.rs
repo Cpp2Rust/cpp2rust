@@ -15,12 +15,10 @@ pub struct NonCopy {
 }
 impl Clone for NonCopy {
     fn clone(&self) -> Self {
-        let __this: Value<NonCopy> = Rc::new(RefCell::new(Self {
-            data: { Rc::new(RefCell::new((*self.data.borrow()).clone())) },
-            tag: { self.tag },
-        }));
-        let this: Ptr<NonCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            tag: self.tag.clone(),
+        }
     }
 }
 impl Default for NonCopy {
@@ -61,12 +59,17 @@ fn main_0() -> i32 {
             .collect::<Box<[NonCopy]>>(),
     ));
     (*arr.borrow_mut())[(0) as usize].tag = 7;
-    (*(*arr.borrow())[(1) as usize].data.borrow_mut()).push(42);
+    (*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow_mut()).push(42);
     assert!(({ (*arr.borrow())[(0) as usize].tag } == 7));
-    assert!(((*(*arr.borrow())[(1) as usize].data.borrow()).len() == 1_usize));
-    assert!(({ (*(*arr.borrow())[(1) as usize].data.borrow())[(0_usize) as usize] } == 42));
+    assert!(((*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow()).len() == 1_usize));
+    assert!(
+        ((({ (*arr.borrow())[(1) as usize].data.clone() }.as_pointer() as Ptr<i32>)
+            .offset(0_usize)
+            .read())
+            == 42)
+    );
     assert!(({ (*arr.borrow())[(2) as usize].tag } == 0));
-    assert!(((*(*arr.borrow())[(2) as usize].data.borrow()).len() == 0_usize));
+    assert!(((*{ (*arr.borrow())[(2) as usize].data.clone() }.borrow()).len() == 0_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

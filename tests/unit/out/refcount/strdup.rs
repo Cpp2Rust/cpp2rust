@@ -127,13 +127,12 @@ fn main_0() -> i32 {
         name: Ptr::<u8>::null(),
     }));
     let r: Value<Ptr<record>> = Rc::new(RefCell::new((rec.as_pointer())));
-    let __rhs = libcc2rs::strdup_refcount((*p.borrow()).clone());
-    (*r.borrow()).with_mut(|__s: &mut record| __s.name = __rhs);
-    assert!((((!(((*r.borrow()).with(|__s: &record| (__s.name).clone())).is_null())) as i32) != 0));
+    field!((*r.borrow()), name).write(libcc2rs::strdup_refcount((*p.borrow()).clone()));
+    assert!((((!(((*r.borrow()).with(|__s| __s.name.clone())).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = (*r.borrow())
-                .with(|__s: &record| (__s.name).clone())
+                .with(|__s| __s.name.clone())
                 .to_c_string_iterator();
             let mut __it2 = (*p.borrow()).to_c_string_iterator();
             loop {
@@ -149,9 +148,7 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    libcc2rs::free_refcount(
-        ((*r.borrow()).with(|__s: &record| (__s.name).clone()) as Ptr<u8>).to_any(),
-    );
+    libcc2rs::free_refcount(((*r.borrow()).with(|__s| __s.name.clone()) as Ptr<u8>).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

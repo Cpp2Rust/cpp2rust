@@ -96,20 +96,24 @@ pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return {
         let _lhs = {
             let _lhs = {
-                let _lhs = (p).offset((0) as isize).with(|__s: &Point| __s.x);
-                _lhs + (p).offset((0) as isize).with(|__s: &Point| __s.y)
+                let _lhs = { (*(p).offset((0) as isize).upgrade().deref()).x };
+                _lhs + { (*(p).offset((0) as isize).upgrade().deref()).y }
             };
-            _lhs + (p).offset((1) as isize).with(|__s: &Point| __s.x)
+            _lhs + { (*(p).offset((1) as isize).upgrade().deref()).x }
         };
-        _lhs + (p).offset((1) as isize).with(|__s: &Point| __s.y)
+        _lhs + { (*(p).offset((1) as isize).upgrade().deref()).y }
     };
 }
 pub fn shift_points_12(p: Ptr<Point>, d: i32) {
     let d: Value<i32> = Rc::new(RefCell::new(d));
-    (p).offset((0) as isize)
-        .with_mut(|__s: &mut Point| __s.x += (*d.borrow()));
-    (p).offset((1) as isize)
-        .with_mut(|__s: &mut Point| __s.y += (*d.borrow()));
+    {
+        let _ptr = field!((p).offset((0) as isize), x);
+        _ptr.write(_ptr.read() + (*d.borrow()))
+    };
+    {
+        let _ptr = field!((p).offset((1) as isize), y);
+        _ptr.write(_ptr.read() + (*d.borrow()))
+    };
 }
 pub fn total_len_13(names: Ptr<Ptr<u8>>) -> i32 {
     return (({ len5_1(((names).offset((0) as isize).read()).clone()) })

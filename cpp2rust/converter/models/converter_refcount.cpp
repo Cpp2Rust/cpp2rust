@@ -55,6 +55,8 @@ static bool IsBoxedType(clang::ASTContext &ctx, clang::QualType type) {
   return IsBoxedType(Mapper::Map(ctx, type.getUnqualifiedType()));
 }
 
+// Virtual methods take &mut self, as the fields of the struct are stored in
+// it.
 static bool NeedsMutAccess(clang::ASTContext &ctx,
                            const clang::CXXMethodDecl *method,
                            clang::QualType base_type) {
@@ -62,67 +64,18 @@ static bool NeedsMutAccess(clang::ASTContext &ctx,
          (IsBoxedType(ctx, base_type) || method->isVirtual());
 }
 
+// Whether a field is stored in a Value of its own, like a variable, instead of
+// inline in its struct. Arrays and vectors are, so that pointers to their
+// elements point into them.
+static bool IsValueField(clang::ASTContext &ctx,
+                         const clang::FieldDecl *field) {
+  auto type = field->getType();
+  return type->isConstantArrayType() || IsBoxedType(ctx, type);
+}
+
 static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
   return type->isPointerType() || GetStrongestIteratorCategory(ctx, type) ==
                                       IteratorCategory::Contiguous;
-}
-
-static bool IsTranslatedStruct(const clang::RecordDecl *decl) {
-  return decl && !decl->isUnion() && IsUserDefinedDecl(decl);
-}
-
-// Whether evaluating expr doesn't access memory other than local variables.
-static bool IsTrivialValue(const clang::Expr *expr) {
-  expr = expr->IgnoreParenImpCasts();
-  if (clang::isa<clang::IntegerLiteral, clang::FloatingLiteral,
-                 clang::CharacterLiteral, clang::CXXBoolLiteralExpr,
-                 clang::CXXNullPtrLiteralExpr, clang::GNUNullExpr>(expr)) {
-    return true;
-  }
-  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
-  auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
-  return (ref && clang::isa<clang::EnumConstantDecl>(ref->getDecl())) ||
-         (var && var->isLocalVarDeclOrParm() &&
-          !var->getType()->isReferenceType());
-}
-
-// Whether expr accesses a field of a struct that is stored in the struct.
-static bool IsFieldAccess(const clang::Expr *expr) {
-  auto *member = clang::dyn_cast<clang::MemberExpr>(expr);
-  auto *field = member
-                    ? clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl())
-                    : nullptr;
-  return field && IsTranslatedStruct(field->getParent()) &&
-         !field->getType()->isReferenceType();
-}
-
-// Whether the field holds a Value of its own, instead of being stored in the
-// struct. Arrays and vectors are, so that pointers to their elements, and to
-// the fields of those, point into the array and not the struct.
-static bool IsValueField(clang::ASTContext &ctx, const clang::ValueDecl *decl) {
-  auto *field = clang::dyn_cast<clang::FieldDecl>(decl);
-  if (!field || !IsTranslatedStruct(field->getParent())) {
-    return false;
-  }
-  auto type = field->getType();
-  return !type->isReferenceType() &&
-         (type->isConstantArrayType() || IsBoxedType(ctx, type));
-}
-
-// Whether evaluating expr reads a field of a struct, and hence borrows the
-// struct until the end of the statement.
-static bool ReadsField(const clang::Stmt *stmt) {
-  if (!stmt) {
-    return false;
-  }
-  if (auto *member = clang::dyn_cast<clang::MemberExpr>(stmt)) {
-    if (auto *field =
-            clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl());
-        field && IsTranslatedStruct(field->getParent())) {
-      return true;
-    }
-  }
-  return std::ranges::any_of(stmt->children(), ReadsField);
 }
 
 bool ConverterRefCount::PendingDeref::compute_inner_boxed(
@@ -416,28 +369,9 @@ std::string ConverterRefCount::ConvertFresh(
 
 std::string ConverterRefCount::ConvertFreshRValue(
     clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
-  if (auto str = ConvertInStructPtr(expr, false, [&] {
-        return ConvertFreshRValue(expr, implicit_convert_to);
-      })) {
-    SetFreshType(expr->getType());
-    return *str;
-  }
-  // A copy of a struct pointed to.
-  if (auto *object = expr->IgnoreParenImpCasts();
-      IsTranslatedStruct(expr->getType()->getAsRecordDecl()) &&
-      ((clang::isa<clang::DeclRefExpr>(object) &&
-        clang::cast<clang::DeclRefExpr>(object)
-            ->getDecl()
-            ->getType()
-            ->isReferenceType()) ||
-       (clang::isa<clang::UnaryOperator>(object) &&
-        clang::cast<clang::UnaryOperator>(object)->getOpcode() ==
-            clang::UO_Deref))) {
-    auto ptr = ConvertPointer(object);
-    SetFreshType(expr->getType());
-    return std::format("{}.read()", ptr);
-  }
+  auto *copied = std::exchange(copied_expr_, expr->IgnoreParenImpCasts());
   auto str = ConvertRValue(expr, implicit_convert_to);
+  copied_expr_ = copied;
   if (!isFresh() && !expr->getType()->isVoidType()) {
     SetFresh();
     return std::format("({}).clone()", std::move(str));
@@ -483,35 +417,9 @@ std::string ConverterRefCount::ConvertPtrType(clang::QualType type) {
   return std::format("Ptr<{}>", std::move(str));
 }
 
-bool ConverterRefCount::ConvertWithHoistedIndex(
-    clang::Expr *expr, clang::Expr *base, clang::Expr *idx,
-    llvm::function_ref<void()> convert) {
-  // The value of the whole block must be fresh.
-  if (isLValue() || (!isAddrOf() && !TypeIsCopyable(expr->getType())) ||
-      hoisted_exprs_.contains(idx) || !idx->HasSideEffects(ctx_) ||
-      !ReadsField(base)) {
-    return false;
-  }
-  auto idx_str = ConvertRValue(idx);
-  hoisted_exprs_.emplace(idx, "__idx");
-  std::string str;
-  {
-    Buffer buf(*this);
-    convert();
-    str = std::move(buf).str();
-  }
-  hoisted_exprs_.erase(idx);
-  StrCat(std::format("({{ let __idx = {}; {} }})", idx_str, str));
-  return true;
-}
-
 bool ConverterRefCount::VisitArraySubscriptExpr(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
-  if (ConvertWithHoistedIndex(expr, base, expr->getIdx(),
-                              [&] { VisitArraySubscriptExpr(expr); })) {
-    return false;
-  }
   if (base->IgnoreCasts()->getType()->isPointerType() ||
       IsUnionArrayMember(base) ||
       (IsReferenceType(base) &&
@@ -569,36 +477,15 @@ ConverterRefCount::GetComparisonReceiver(const clang::CXXMethodDecl *,
   return std::format("&{}.as_pointer()", BoxValue(GetShallowCopy(decl, lhs)));
 }
 
-std::string ConverterRefCount::DetachPtr(std::string ptr, bool fresh,
-                                         const clang::Expr *expr) {
-  if (auto trimmed = Trim(ptr);
-      !ReadsField(expr) ||
-      (fresh && trimmed.starts_with('{') && trimmed.ends_with('}'))) {
-    return ptr;
-  }
-  // The temporaries of the tail expression of a block are dropped at the end
-  // of the block.
-  return std::format("{{ {}{} }}", ptr, fresh ? "" : ".clone()");
-}
-
-std::string
-ConverterRefCount::TakePendingDerefToWrite(const clang::Expr *lvalue) {
-  bool fresh = pending_deref_.is_fresh();
-  return DetachPtr(pending_deref_.take(), fresh, lvalue);
-}
-
-// A copy of `src` that doesn't run the copy constructors of its fields, and
-// hence has no side effects. It stands for `src` itself where a pointer to it
-// is needed, but only a reference is available.
 std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
                                               std::string_view src) {
   std::string fields;
   for (auto *field : decl->fields()) {
     auto name = GetNamedDeclAsString(field);
-    auto type = field->getType();
     auto value = std::format("{}.{}", src, name);
-    // Value fields are shared.
-    if (auto *record = type->getAsRecordDecl(); IsTranslatedStruct(record)) {
+    // Fields are copied without running their copy constructors.
+    if (auto *record = field->getType()->getAsRecordDecl();
+        record && IsUserDefinedDecl(record) && !IsValueField(ctx_, field)) {
       value = GetShallowCopy(record, value);
     } else {
       value += ".clone()";
@@ -606,20 +493,6 @@ std::string ConverterRefCount::GetShallowCopy(const clang::RecordDecl *decl,
     fields += std::format("{}: {},", name, value);
   }
   return std::format("{} {{ {} }}", GetRecordName(decl), fields);
-}
-
-// A copy of `src`, of type `type`, that copies the arrays nested in Values
-// instead of sharing them.
-std::string ConverterRefCount::GetDeepCopy(clang::QualType type,
-                                           std::string_view src) {
-  auto *arr = ctx_.getAsConstantArrayType(type);
-  if (!arr || !arr->getElementType()->isArrayType()) {
-    return std::format("{}.clone()", src);
-  }
-  auto elem = std::format("__e{}", src.size());
-  return std::format(
-      "{}.iter().map(|{}| Rc::new(RefCell::new({}))).collect()", src, elem,
-      GetDeepCopy(arr->getElementType(), std::format("(*{}.borrow())", elem)));
 }
 
 bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
@@ -632,23 +505,20 @@ bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
 }
 
 bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
-  if (decl->isUnion()) {
-    return false;
-  }
   if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
     return true;
   }
-  // A C struct is copied field by field, as is a C++ one with an implicit or
-  // defaulted copy constructor. Nested Values must be copied deeply, though.
-  if (auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-      cxx && (!HasCallableCopyConstructor(cxx) ||
-              GetUserDefinedCopyConstructor(cxx) || cxx->getNumBases() > 0)) {
+  // The copy of a struct copies each field, which a derived Clone does too,
+  // except for Values, which it shares.
+  auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
+  if (decl->isUnion() ||
+      (cxx && (!HasCallableCopyConstructor(cxx) ||
+               GetUserDefinedCopyConstructor(cxx) || cxx->getNumBases() > 0))) {
     return false;
   }
   PushConversionKind push(*this, ConversionKind::Pointee);
   return std::ranges::none_of(decl->fields(), [&](auto *field) {
-    return IsValueField(ctx_, field) ||
-           ToString(field->getType()).contains("Value<");
+    return IsValueField(ctx_, field) || ToString(field->getType()).contains("Value<");
   });
 }
 
@@ -665,12 +535,14 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     return;
   }
 
-  if (RecordDerivesClone(decl)) {
+  if (RecordDerivesClone(decl) || !RecordImplementsClone(decl)) {
     return;
   }
+  // Without a user-defined copy constructor, each field is copied with its
+  // own clone(), and Values are copied deeply.
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (!cxx) {
-    // A C struct with nested Values, which are copied deeply.
+  if (!cxx ||
+      (!GetUserDefinedCopyConstructor(cxx) && cxx->getNumBases() == 0)) {
     StrCat(keyword::kImpl, "Clone for", record_name);
     PushBrace impl_brace(*this);
     StrCat("fn clone(&self) -> Self");
@@ -679,19 +551,13 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
     PushBrace init_brace(*this);
     for (auto *field : decl->fields()) {
       auto name = GetNamedDeclAsString(field);
-      StrCat(std::format(
-          "{}: {},", name,
-          IsValueField(ctx_, field)
-              ? std::format(
-                    "Rc::new(RefCell::new({}))",
-                    GetDeepCopy(field->getType(),
-                                std::format("(*self.{}.borrow())", name)))
-              : GetDeepCopy(field->getType(), "self." + name)));
+      auto value = std::format("self.{}.clone()", name);
+      if (IsValueField(ctx_, field)) {
+        value = std::format("Rc::new(RefCell::new((*self.{}.borrow()).clone()))",
+                            name);
+      }
+      StrCat(std::format("{}: {},", name, value));
     }
-    return;
-  }
-
-  if (!RecordImplementsClone(decl)) {
     return;
   }
 
@@ -719,7 +585,7 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
 }
 
 void ConverterRefCount::AddDefaultTrait(const clang::RecordDecl *decl) {
-  PushConversionKind push(*this, ConversionKind::Pointee);
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
   Converter::AddDefaultTrait(decl);
 }
 
@@ -774,7 +640,7 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
   auto struct_name = GetRecordName(decl);
 
   if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
-    // The size locates the fields of arrays of structs.
+    // The size locates the fields of the elements of arrays of structs.
     StrCat(std::format("impl ByteRepr for {}", struct_name));
     PushBrace brace(*this);
     if (!decl->isUnion()) {
@@ -810,12 +676,12 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     for (auto *field : decl->fields()) {
       auto byte_off = layout.getFieldOffset(idx) / 8;
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      auto name = GetNamedDeclAsString(field);
-      StrCat(std::format("{}.to_bytes(&mut buf[{}..{}]);",
-                         IsValueField(ctx_, field)
-                             ? std::format("(*self.{}.borrow())", name)
-                             : "self." + name,
-                         byte_off, byte_off + byte_size));
+      auto value = "self." + GetNamedDeclAsString(field);
+      if (IsValueField(ctx_, field)) {
+        value = std::format("(*{}.borrow())", value);
+      }
+      StrCat(std::format("{}.to_bytes(&mut buf[{}..{}]);", value, byte_off,
+                         byte_off + byte_size));
       ++idx;
     }
   }
@@ -829,10 +695,11 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
     for (auto *field : decl->fields()) {
       auto byte_off = layout.getFieldOffset(idx) / 8;
       auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      PushConversionKind push(*this, ConversionKind::Pointee);
-      auto value = std::format("<{}>::from_bytes(&buf[{}..{}])",
-                               ToString(field->getType()), byte_off,
-                               byte_off + byte_size);
+      PushConversionKind push(*this, ConversionKind::FullRefCount);
+      std::string storage_ty = ToString(field->getType());
+      Unwrap(storage_ty, "Value<", ">");
+      auto value = std::format("<{}>::from_bytes(&buf[{}..{}])", storage_ty,
+                               byte_off, byte_off + byte_size);
       if (IsValueField(ctx_, field)) {
         value = std::format("Rc::new(RefCell::new({}))", value);
       }
@@ -844,8 +711,6 @@ void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
 
 std::string
 ConverterRefCount::GetSelfMaybeWithMut(const clang::CXXMethodDecl *decl) {
-  // Methods that are not on Ptr, like virtual ones, write to the fields
-  // through self.
   return NeedsMutAccess(ctx_, decl, decl->getThisType()->getPointeeType())
              ? "&mut self"
              : "&self";
@@ -858,36 +723,14 @@ bool ConverterRefCount::VisitCXXConstructorDecl(
 }
 
 bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
-  if (!decl->getParent()->isUnion()) {
-    const auto &layout = ctx_.getASTRecordLayout(decl->getParent());
-    StrCat(std::format("#[offset({})]",
-                       layout.getFieldOffset(decl->getFieldIndex()) / 8));
-  }
+  // The C offset of the field, which locates it for pointers to it.
+  const auto &layout = ctx_.getASTRecordLayout(decl->getParent());
+  StrCat(std::format("#[offset({})]",
+                     layout.getFieldOffset(decl->getFieldIndex()) / 8));
   PushConversionKind push(*this, IsValueField(ctx_, decl)
                                      ? ConversionKind::FullRefCount
                                      : ConversionKind::Pointee);
   return Converter::VisitFieldDecl(decl);
-}
-
-void ConverterRefCount::ConvertFieldInit(const clang::FieldDecl *field,
-                                         clang::Expr *init) {
-  if (!IsValueField(ctx_, field)) {
-    Converter::ConvertFieldInit(field, init);
-    return;
-  }
-  PushConversionKind push(*this, ConversionKind::FullRefCount);
-  if (!init || !ReadsField(init)) {
-    Converter::ConvertFieldInit(field, init);
-    return;
-  }
-  // Like in ConvertVarInit, the initializer must not keep a struct borrowed.
-  std::string str;
-  {
-    Buffer buf(*this);
-    Converter::ConvertFieldInit(field, init);
-    str = std::move(buf).str();
-  }
-  StrCat(std::format("{{ {} }}", str));
 }
 
 void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
@@ -1030,17 +873,9 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
     return false;
   }
 
-  if (auto str = ConvertInStructPtr(sub_expr, true, [&] {
-        return std::format("{}.{}()", ConvertLValue(sub_expr), method);
-      })) {
-    StrCat(*str);
-    SetFreshType(expr->getType());
-    return true;
-  }
   auto str = ConvertLValue(sub_expr);
   if (!pending_deref_.empty()) {
-    StrCat(TakePendingDerefToWrite(sub_expr), ".with_mut(|__v| __v.", method,
-           "())");
+    StrCat(pending_deref_.take(), ".with_mut(|__v| __v.", method, "())");
   } else {
     StrCat(str, '.', method, "()");
   }
@@ -1889,7 +1724,6 @@ bool ConverterRefCount::VisitInitListExpr(clang::InitListExpr *expr) {
     {
       PushBrace brace(*this);
       unsigned i = 0;
-      PushConversionKind push(*this, ConversionKind::Pointee);
       for (const auto *field : record->fields()) {
         StrCat(GetNamedDeclAsString(field), token::kColon);
         ConvertFieldInit(field, i < expr->getNumInits() ? expr->getInit(i++)
@@ -1986,7 +1820,8 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
       SetFreshType(expr->getType());
       return false;
     }
-    // Non-const methods need a mutable borrow
+    // Non-user-defined types (STL) need a mutable borrow for non-const
+    // methods, as do virtual methods.
     auto base_type = expr->getBase()->getType().getNonReferenceType();
     if (base_type->isPointerType()) {
       base_type = base_type->getPointeeType();
@@ -2006,14 +1841,18 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   }
 
   if (auto *field = clang::dyn_cast<clang::FieldDecl>(member);
-      field && !known && IsUserDefinedDecl(field->getParent())) {
-    ConvertFieldAccess(expr);
+      field && !known && !IsValueField(ctx_, field) &&
+      !field->getType()->isReferenceType()) {
+    ConvertInlineField(expr);
     return false;
   }
 
   std::string str;
   if (known) {
     str = GetMappedAsString(expr);
+  } else if (clang::isa<clang::FieldDecl>(member)) {
+    // The Value or the pointer that the field holds.
+    str = ReadField(expr);
   } else {
     Buffer buf(*this);
     PushExprKind push(*this, ExprKind::RValue);
@@ -2047,303 +1886,77 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
   return false;
 }
 
-std::string ConverterRefCount::ConvertRecordPlace(clang::MemberExpr *expr,
-                                                  bool mut) {
+void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
+  auto name = GetNamedDeclAsString(expr->getMemberDecl());
+  auto type = expr->getType();
   auto *base = expr->getBase();
-  if (clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr()) {
-    return std::string(keyword::kSelfValue);
-  }
-  if (expr->isArrow()) {
-    auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(base);
-    if (mut && (!op || IsUserOperatorCall(op))) {
-      pending_deref_.set(ConvertRValue(base), isFresh());
-      return {};
+  if (isAddrOf()) {
+    // A pointer to the struct, offset to the field.
+    std::string ptr;
+    {
+      Buffer buf(*this);
+      PushExprKind push(*this, ExprKind::AddrOf);
+      if (expr->isArrow()) {
+        ConvertArrow(base);
+      } else {
+        Convert(base);
+      }
+      ptr = std::move(buf).str();
     }
+    StrCat(std::format("field_ptr!({}, {})", ptr, name));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return;
+  }
+
+  // Pointers, and unique_ptr, which holds a Value, are copied out too, as is
+  // any field that is copied.
+  if (isRValue() && !record_ptr_ &&
+      (TypeIsCopyable(type) || type->isPointerType() || IsUniquePtr(type) ||
+       expr == copied_expr_)) {
+    StrCat(ReadField(expr));
+    SetFreshType(type);
+    return;
+  }
+
+  // The struct, or a struct that holds it, in the closure of a read.
+  std::string str;
+  {
     Buffer buf(*this);
-    PushExprKind push(*this, mut ? ExprKind::LValue : ExprKind::RValue);
-    ConvertArrow(base);
-    return std::move(buf).str();
+    PushRecordPtr push(*this, record_ptr_, expr->isArrow() ? nullptr : base);
+    Converter::ConvertMemberExpr(expr);
+    str = std::move(buf).str();
   }
-  return mut ? ConvertLValue(base) : ConvertRValue(base);
-}
-
-// Whether expr is (a subobject of) the parameter of a defaulted copy
-// constructor, which is translated as the `self` of Clone::clone.
-static bool IsCloneSource(const clang::Expr *expr) {
-  while (true) {
-    expr = expr->IgnoreParenImpCasts();
-    if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr);
-        member && !member->isArrow()) {
-      expr = member->getBase();
-    } else if (auto *subscript =
-                   clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-      expr = subscript->getBase();
-    } else if (auto *opaque = clang::dyn_cast<clang::OpaqueValueExpr>(expr)) {
-      expr = opaque->getSourceExpr();
-    } else {
-      break;
-    }
-  }
-  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
-  auto *param =
-      ref ? clang::dyn_cast<clang::ParmVarDecl>(ref->getDecl()) : nullptr;
-  auto *ctor =
-      param
-          ? clang::dyn_cast<clang::CXXConstructorDecl>(param->getDeclContext())
-          : nullptr;
-  return ctor && ctor->isCopyConstructor() && ctor->isDefaulted() &&
-         param->getName().empty();
-}
-
-// Whether the object is accessed through a pointer: a reference, an element
-// of an array pointed to, or a union member (whose accessor returns a
-// pointer).
-static bool IsPointee(clang::Expr *object) {
-  if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(object)) {
-    auto *base = subscript->getBase()->IgnoreImpCasts();
-    return base->getType()->isPointerType() ||
-           base->getType()->isReferenceType() ||
-           (clang::isa<clang::DeclRefExpr>(base) &&
-            clang::cast<clang::DeclRefExpr>(base)
-                ->getDecl()
-                ->getType()
-                ->isReferenceType());
-  }
-  if (auto *member = clang::dyn_cast<clang::MemberExpr>(object)) {
-    auto *record = clang::dyn_cast<clang::RecordDecl>(
-        member->getMemberDecl()->getDeclContext());
-    return record && record->isUnion();
-  }
-  return false;
-}
-
-std::optional<ConverterRefCount::StructPtr>
-ConverterRefCount::FindStructPtr(clang::Expr *place, bool mut) {
-  // Indexes are evaluated in the closure, unless hoisted before it.
-  auto unsafe_index = [&](clang::Expr *idx) {
-    return !hoisted_exprs_.contains(idx) &&
-           (idx->HasSideEffects(ctx_) || (mut && ReadsField(idx)));
-  };
-  // An element of a container that is a field, which is indexed in place.
-  auto field_subscript = [&](clang::Expr *e) -> clang::CXXOperatorCallExpr * {
-    auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(e);
-    if (op && op->getOperator() == clang::OO_Subscript &&
-        IsFieldAccess(op->getArg(0)->IgnoreImpCasts()) &&
-        ((IsBoxedType(ctx_, op->getArg(0)->getType()) &&
-          !IsBoxedType(ctx_, op->getType().getNonReferenceType())) ||
-         IsUniquePtr(op->getArg(0)->getType()))) {
-      return op;
-    }
-    return nullptr;
-  };
-  auto *expr = place->IgnoreParenLValueCasts();
-  bool in_value_field = false;
-  while (true) {
-    // Elements of arrays and containers that are fields.
-    if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-      if (!subscript->getBase()->IgnoreImpCasts()->getType()->isArrayType() ||
-          unsafe_index(subscript->getIdx())) {
-        return std::nullopt;
-      }
-      expr = subscript->getBase()->IgnoreParenImpCasts();
-      continue;
-    }
-    if (auto *op = field_subscript(expr)) {
-      if (unsafe_index(op->getArg(1))) {
-        return std::nullopt;
-      }
-      expr = op->getArg(0)->IgnoreImpCasts();
-      continue;
-    }
-
-    auto *member = clang::dyn_cast<clang::MemberExpr>(expr);
-    if (!member || !IsFieldAccess(member)) {
-      return std::nullopt;
-    }
-    in_value_field |= IsValueField(ctx_, member->getMemberDecl());
-    if (field_places_.contains(member)) {
-      return StructPtr{.member = member, .nested = true};
-    }
-    auto *base = member->getBase();
-    auto *object = base->IgnoreParenImpCasts();
-    // In methods that are not on Ptr, and in Clone, the struct is a
-    // reference. Smart pointers own the struct, which is borrowed directly.
-    if ((clang::isa<clang::CXXThisExpr>(object) && !ThisIsRustPtr()) ||
-        IsCloneSource(object) ||
-        (member->isArrow() && clang::isa<clang::CXXOperatorCallExpr>(object))) {
-      return std::nullopt;
-    }
-    if (member->isArrow()) {
-      return StructPtr{
-          .member = member, .ptr = base, .in_value_field = in_value_field};
-    }
-    if (auto *deref = clang::dyn_cast<clang::UnaryOperator>(object);
-        deref && deref->getOpcode() == clang::UO_Deref) {
-      return StructPtr{.member = member,
-                       .ptr = deref->getSubExpr(),
-                       .in_value_field = in_value_field};
-    }
-    if (auto *op = field_subscript(object);
-        op && !unsafe_index(op->getArg(1))) {
-      expr = object;
-      continue;
-    }
-    if (IsReferenceType(object) || IsPointee(object)) {
-      return StructPtr{.member = member,
-                       .ptr = base,
-                       .via_reference = true,
-                       .in_value_field = in_value_field};
-    }
-    expr = object;
-  }
-}
-
-std::optional<std::string> ConverterRefCount::ConvertInStructPtr(
-    clang::Expr *place, bool mut, llvm::function_ref<std::string()> convert) {
-  auto sp = FindStructPtr(place, mut);
-  if (!sp || sp->nested) {
-    return std::nullopt;
-  }
-  auto ptr =
-      sp->via_reference ? ConvertPointer(sp->ptr) : ConvertRValue(sp->ptr);
-  auto *record =
-      clang::cast<clang::FieldDecl>(sp->member->getMemberDecl())->getParent();
-  field_places_.emplace(
-      sp->member,
-      std::format("__s.{}", GetNamedDeclAsString(sp->member->getMemberDecl())));
-  auto body = convert();
-  field_places_.erase(sp->member);
-  // A Value field is written through a Value of its own.
-  mut &= !sp->in_value_field;
-  return std::format("{}.{}(|__s: &{}{}| {})", ptr, mut ? "with_mut" : "with",
-                     mut ? "mut " : "", GetRecordName(record), body);
-}
-
-std::string ConverterRefCount::ConvertFieldPointer(clang::MemberExpr *expr) {
-  auto *base = expr->getBase();
-  auto *object = base->IgnoreParenImpCasts();
-  std::string base_ptr;
-  if (expr->isArrow() && !clang::isa<clang::CXXOperatorCallExpr>(object)) {
-    base_ptr = ConvertRValue(base);
-  } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(object);
-             ref && clang::isa<clang::VarDecl>(ref->getDecl()) &&
-             !IsGlobalVar(ref) && !IsReferenceType(ref)) {
-    // The Value of a local variable.
-    base_ptr = ConvertDeclRef(ref, ref->getDecl());
-  } else {
-    base_ptr = ConvertPointer(base);
-  }
-  return std::format("field_ptr!({}, {})", base_ptr,
-                     GetNamedDeclAsString(expr->getMemberDecl()));
-}
-
-void ConverterRefCount::ConvertFieldAccess(clang::MemberExpr *expr) {
-  auto *member = expr->getMemberDecl();
-  auto field_type = member->getType();
-  auto name = GetNamedDeclAsString(member);
-
-  if (field_type->isReferenceType()) {
-    // The field holds a pointer to the referenced object.
-    auto str =
-        std::format("{}.{}", ConvertRecordPlace(expr, /*mut=*/false), name);
-    if (isAddrOf()) {
-      StrCat(str);
-      computed_expr_type_ = ComputedExprType::Pointer;
-    } else if (isLValue()) {
-      pending_deref_.set(std::move(str), /*fresh=*/false);
-    } else {
-      StrCat(DerefPtrExpr(str, field_type.getNonReferenceType()));
-      SetValueFreshness(expr->getType());
-    }
-    return;
-  }
-
-  if (IsValueField(ctx_, member)) {
-    auto sp = FindStructPtr(expr);
-    if (!sp || sp->nested) {
-      auto *object = expr->getBase()->IgnoreParenImpCasts();
-      bool borrows =
-          !field_places_.contains(expr) && !IsCloneSource(object) &&
-          !(clang::isa<clang::CXXThisExpr>(object) && !ThisIsRustPtr());
-      PushBrace block(*this, borrows && isAddrOf());
-      ConvertFieldPlace(expr, ConvertValueField(expr));
-      return;
-    }
-    // The Value is taken out of the struct, which is borrowed only in the
-    // closure.
-    auto str = *ConvertInStructPtr(expr, false, [&] {
-      return ConvertValueField(expr) +
-             (isAddrOf() ? ".as_pointer()" : ".clone()");
-    });
-    if (isAddrOf()) {
-      StrCat(str);
-      computed_expr_type_ = ComputedExprType::FreshPointer;
-    } else {
-      ConvertFieldPlace(expr, std::move(str));
-    }
-    return;
-  }
-
-  if (isAddrOf()) {
-    StrCat(ConvertFieldPointer(expr));
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-    return;
-  }
-
-  // Reads of values must not keep the struct borrowed after the read, as the
-  // rest of the statement may write to it.
-  bool copyable = TypeIsCopyable(field_type);
-  if (isRValue() && (copyable || field_type->isPointerType())) {
-    auto sp = FindStructPtr(expr);
-    if (sp && !sp->nested) {
-      StrCat(ConvertFreshRValue(expr));
-    } else {
-      auto read = std::format("{}.{}{}", ConvertRecordPlace(expr, false), name,
-                              copyable ? "" : ".clone()");
-      // The temporaries of the tail expression of a block are dropped at
-      // the end of the block.
-      StrCat(sp ? read : std::format("{{ {} }}", read));
-    }
-    SetFreshType(expr->getType());
-    return;
-  }
-  auto place = ConvertRecordPlace(expr, isLValue());
+  // A field of a struct reached through a pointer is written through the
+  // pointer, projected to the field.
   if (!pending_deref_.empty()) {
-    // A struct reached through a pointer is written through a pointer to the
-    // field.
-    auto ptr = pending_deref_.take();
-    pending_deref_.set(std::format("field_ptr!({}, {})", ptr, name),
-                       /*fresh=*/true, expr);
+    pending_deref_.set(
+        std::format("field!({}, {})", pending_deref_.take(), name),
+        /*fresh=*/true);
     return;
   }
-  StrCat(std::format("{}.{}", place, name));
-  SetValueFreshness(expr->getType());
+  StrCat(str);
+  SetValueFreshness(type);
 }
 
-std::string ConverterRefCount::ConvertValueField(clang::MemberExpr *expr) {
-  if (auto it = field_places_.find(expr); it != field_places_.end()) {
-    return it->second;
+std::string ConverterRefCount::ReadField(clang::MemberExpr *expr) {
+  // Unless the struct is reached through a pointer, in which case the field
+  // is read in a closure, the borrow of the struct ends at the end of the
+  // block.
+  std::string ptr;
+  std::string str;
+  {
+    Buffer buf(*this);
+    PushRecordPtr push(*this, &ptr,
+                       expr->isArrow() ? nullptr : expr->getBase());
+    PushExprKind push_kind(*this, ExprKind::RValue);
+    Converter::ConvertMemberExpr(expr);
+    str = std::move(buf).str();
   }
-  return std::format("{}.{}", ConvertRecordPlace(expr, /*mut=*/false),
-                     GetNamedDeclAsString(expr->getMemberDecl()));
-}
-
-void ConverterRefCount::ConvertFieldPlace(clang::MemberExpr *expr,
-                                          std::string place) {
-  if (!IsValueField(ctx_, expr->getMemberDecl())) {
-    StrCat(place);
-    SetValueFreshness(expr->getType());
-    return;
+  if (!TypeIsCopyable(expr->getMemberDecl()->getType())) {
+    str += ".clone()";
   }
-  // Like a local variable.
-  if (isAddrOf()) {
-    StrCat(place, ".as_pointer()");
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-    return;
-  }
-  StrCat(
-      std::format("(*{}.{}())", place, isRValue() ? "borrow" : "borrow_mut"));
-  SetValueFreshness(expr->getType());
+  return ptr.empty() ? std::format("{{ {} }}", str)
+                     : std::format("{}.with(|__s| {})", ptr, str);
 }
 
 bool ConverterRefCount::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
@@ -2539,14 +2152,6 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (ctor->isCopyConstructor() && IsCloneSource(expr->getArg(0))) {
-    // In Clone::clone, the source object is only available as a reference.
-    // Copy its fields with their own clone().
-    StrCat(std::format("{}.clone()", ConvertRValue(expr->getArg(0))));
-    computed_expr_type_ = ComputedExprType::FreshValue;
-    return false;
-  }
-
   if (IsRValueConvertingConstructor(ctor) ||
       (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
@@ -2709,7 +2314,7 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
     attrs.emplace_back("Clone");
   }
 
-  // Gives access to the fields of the struct through pointers to them.
+  // Gives access to the fields through pointers to them.
   attrs.emplace_back("Record");
 
   if (RecordDerivesByteRepr(decl)) {
@@ -2794,19 +2399,19 @@ std::string ConverterRefCount::ConvertFnPtrValue(clang::QualType qual_type,
   return std::format("{}.cast::<{}>()", base, fn_type);
 }
 
+void ConverterRefCount::ConvertFieldInit(const clang::FieldDecl *field,
+                                         clang::Expr *init) {
+  PushConversionKind push(*this, IsValueField(ctx_, field)
+                                     ? ConversionKind::FullRefCount
+                                     : ConversionKind::Pointee);
+  Converter::ConvertFieldInit(field, init);
+}
+
 void ConverterRefCount::ConvertVarInit(clang::QualType qual_type,
                                        clang::Expr *expr) {
-  // The fields of a struct literal are initialized in a single statement.
-  // An initializer must not keep a struct borrowed, as another one may write
-  // to it.
-  bool is_field = getConversionKind() == ConversionKind::Pointee;
   bool is_ref = qual_type->isReferenceType();
   PushConversionKind push(*this, ConversionKind::Unboxed, is_ref);
-  auto value = BoxValue(ConvertVarInitValue(qual_type, expr));
-  if (is_field && ReadsField(expr) && !Trim(value).starts_with('{')) {
-    value = std::format("{{ {} }}", value);
-  }
-  StrCat(value);
+  StrCat(BoxValue(ConvertVarInitValue(qual_type, expr)));
 }
 
 bool ConverterRefCount::EmitGlobalValueAssign(clang::Expr *lhs,
@@ -2831,39 +2436,14 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
     computed_expr_type_ = ComputedExprType::FreshValue;
     return;
   }
-  if (auto str = ConvertInStructPtr(lhs, true, [&] {
-        return std::format("{} = {}", ConvertLValue(lhs), rhs);
-      })) {
-    StrCat(*str);
-    computed_expr_type_ = ComputedExprType::FreshValue;
-    return;
-  }
   auto lhs_str = ConvertLValue(lhs);
   if (!pending_deref_.empty()) {
-    StrCat(TakePendingDerefToWrite(lhs), ".write(", rhs, ')');
+    auto ptr = pending_deref_.take();
+    StrCat(ptr, ".write(", rhs, ')');
   } else {
     StrCat(lhs_str, token::kAssign, rhs);
   }
   computed_expr_type_ = ComputedExprType::FreshValue;
-}
-
-// The index of the subscript expression that the place expr is in, if any.
-static clang::Expr *GetSubscriptIndex(clang::Expr *expr) {
-  expr = expr->IgnoreParenImpCasts();
-  while (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
-    if (member->isArrow()) {
-      return nullptr;
-    }
-    expr = member->getBase()->IgnoreParenImpCasts();
-  }
-  if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
-    return subscript->getIdx();
-  }
-  if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
-      op && op->getOperator() == clang::OO_Subscript) {
-    return op->getArg(1);
-  }
-  return nullptr;
 }
 
 void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
@@ -2872,45 +2452,15 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   PushBrace brace(*this, isRValue());
 
-  // An index that has side effects or reads a field may conflict with the
-  // borrow of the struct that holds the subscripted array. Evaluate it before
-  // borrowing the struct.
-  auto *idx = GetSubscriptIndex(lhs);
-  if (idx && !idx->HasSideEffects(ctx_) && !ReadsField(idx)) {
-    idx = nullptr;
-  }
-
-  // A field is assigned by borrowing its struct mutably, which conflicts
-  // with any struct borrowed by the right-hand side. A field of a struct
-  // reached through a pointer is assigned in a closure, where the right-hand
-  // side must not access memory.
-  if (idx || MayCauseBorrowMutError(lhs, rhs) ||
-      (ReadsField(lhs) && ReadsField(rhs)) ||
-      (FindStructPtr(lhs, true) && !IsTrivialValue(rhs))) {
+  if (MayCauseBorrowMutError(lhs, rhs)) {
     StrCat(keyword::kLet, "__rhs", token::kAssign, rhs_as_string,
            token::kSemiColon);
     rhs_as_string = "__rhs";
   }
-  if (idx) {
-    StrCat(keyword::kLet, "__idx", token::kAssign, ConvertRValue(idx),
-           token::kSemiColon);
-    hoisted_exprs_.emplace(idx, "__idx");
-  }
-  struct EraseHoisted {
-    ConverterRefCount &c;
-    clang::Expr *idx;
-    ~EraseHoisted() { c.hoisted_exprs_.erase(idx); }
-  } erase_hoisted{*this, idx};
 
   if (assign_operator == "=") {
     EmitSetOrAssign(lhs, rhs_as_string);
   } else if (EmitGlobalValueAssign(lhs, assign_operator, rhs_as_string)) {
-    computed_expr_type_ = ComputedExprType::FreshValue;
-  } else if (auto str = ConvertInStructPtr(lhs, true, [&] {
-               return std::format("{} {} {}", ConvertLValue(lhs),
-                                  assign_operator, rhs_as_string);
-             })) {
-    StrCat(*str);
     computed_expr_type_ = ComputedExprType::FreshValue;
   } else {
     auto lhs_str = ConvertLValue(lhs);
@@ -2987,6 +2537,7 @@ void ConverterRefCount::ConvertUniquePtrDeref(
     StrCat(ConvertRValue(expr->getArg(0)), ".as_pointer()");
     computed_expr_type_ = ComputedExprType::FreshPointer;
   } else {
+    // The object is modified through its own Value.
     StrCat(std::format("(*{}.as_ref().unwrap().borrow{}())",
                        ConvertRValue(expr->getArg(0)),
                        isRValue() ? "" : "_mut"));
@@ -3035,11 +2586,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     break;
 
   case clang::OverloadedOperatorKind::OO_Subscript: {
-    if (ConvertWithHoistedIndex(expr, expr->getArg(0), expr->getArg(1),
-                                [&] { ConvertCXXOperatorCallExpr(expr); })) {
-      break;
-    }
-
     if (IsUniquePtr(expr->getArg(0)->getType())) {
       StrCat(
           std::format("{}.as_ref().unwrap()", ConvertRValue(expr->getArg(0))));
@@ -3061,29 +2607,6 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     bool is_inner_boxed =
         IsBoxedType(ctx_, expr->getType().getNonReferenceType()) &&
         IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
-
-    // A container that is a field is indexed in place, instead of through a
-    // pointer to the field. The index must not borrow the struct mutably, nor
-    // at all if the container is borrowed mutably.
-    if (auto *container = expr->getArg(0)->IgnoreImpCasts(),
-        *idx = expr->getArg(1);
-        !isAddrOf() && !is_inner_boxed && IsFieldAccess(container) &&
-        IsBoxedType(ctx_, container->getType()) &&
-        (hoisted_exprs_.contains(idx) ||
-         (!idx->HasSideEffects(ctx_) && (!isLValue() || !ReadsField(idx))))) {
-      auto place =
-          isLValue() ? ConvertLValue(container) : ConvertRValue(container);
-      auto str =
-          std::format("{}[({}) as usize]", place, ConvertSubscriptIndex(idx));
-      if (isRValue() && TypeIsCopyable(expr->getType())) {
-        StrCat(std::format("{{ {} }}", str));
-        SetFreshType(expr->getType());
-      } else {
-        StrCat(str);
-        SetValueFreshness(expr->getType());
-      }
-      break;
-    }
 
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);
@@ -3306,6 +2829,11 @@ void ConverterRefCount::ConvertDeref(clang::Expr *expr) {
     return;
   }
 
+  if (record_ptr_ && pointee_type->isRecordType() && isRValue()) {
+    StrCat(DerefPtrExpr(ToString(expr), pointee_type));
+    return;
+  }
+
   std::string str;
   {
     Buffer buf(*this);
@@ -3340,15 +2868,20 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
       op && op->getOperator() == clang::OverloadedOperatorKind::OO_Arrow;
 
   if (!is_overloaded_arrow || IsUserOperatorCall(op)) {
-    auto ptr = ToString(expr);
     auto pointee_type = expr->getType()->getPointeeType();
     // Virtual methods, which take &mut self, are called through PtrDyn.
     if (auto *record = pointee_type->getAsRecordDecl();
         isLValue() && record && abstract_structs_.contains(GetID(record))) {
-      StrCat(std::format("(*{}.upgrade().deref_mut())", ptr));
-    } else {
-      StrCat(DerefPtrExpr(ptr, pointee_type));
+      StrCat(std::format("(*{}.upgrade().deref_mut())", ToString(expr)));
+      SetValueFreshness(pointee_type);
+      return;
     }
+    if (isLValue() || isAddrOf()) {
+      ConvertDeref(expr);
+      return;
+    }
+    auto ptr = ToString(expr);
+    StrCat(DerefPtrExpr(ptr, pointee_type));
     SetValueFreshness(pointee_type);
     return;
   }
@@ -3405,6 +2938,10 @@ ConverterRefCount::GetPointerDerefPrefix(clang::QualType pointee_type) {
 
 std::string ConverterRefCount::DerefPtrExpr(std::string_view ptr_expr,
                                             clang::QualType pointee_type) {
+  if (record_ptr_ && pointee_type->isRecordType()) {
+    *std::exchange(record_ptr_, nullptr) = ptr_expr;
+    return "__s";
+  }
   return std::format("({}{}{})", GetPointerDerefPrefix(pointee_type), ptr_expr,
                      GetPointerDerefSuffix(pointee_type));
 }
@@ -3420,181 +2957,10 @@ bool ConverterRefCount::IsReferenceType(const clang::Expr *expr) const {
   return false;
 }
 
-// Collects the ways placeholder `n` is accessed in `fragments`.
-static void CollectPlaceholderAccesses(
-    const std::vector<TranslationRule::BodyFragment> &fragments, unsigned n,
-    std::vector<TranslationRule::Access> &accesses) {
-  for (const auto &frag : fragments) {
-    if (auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&frag)) {
-      if (ph->n == n) {
-        accesses.push_back(ph->access);
-      }
-    } else if (auto *mc = std::get_if<
-                   std::unique_ptr<TranslationRule::MethodCallFragment>>(
-                   &frag)) {
-      CollectPlaceholderAccesses((*mc)->receiver, n, accesses);
-      CollectPlaceholderAccesses((*mc)->body, n, accesses);
-    }
-  }
-}
-
-// Whether argument `n` of a mapped call can be evaluated into a local
-// variable ahead of the call: the rule moves it, or only reads it and it can
-// be copied.
-static bool
-CanHoistArg(clang::ASTContext &ctx,
-            const std::vector<TranslationRule::BodyFragment> &fragments,
-            const clang::Expr *callee, unsigned n, const clang::Expr *arg,
-            bool copyable) {
-  using TranslationRule::Access;
-  std::vector<Access> accesses;
-  CollectPlaceholderAccesses(fragments, n, accesses);
-  if (accesses.empty()) {
-    return false;
-  }
-  // Taking a temporary moves it.
-  if (clang::isa<clang::MaterializeTemporaryExpr>(arg) &&
-      std::ranges::all_of(accesses, [](auto a) {
-        return a == Access::kMove || a == Access::kTake;
-      })) {
-    return true;
-  }
-  if (RuleRegistry::ParamIsPointer(ctx, callee, n) ||
-      Mapper::GetParamType(ctx, callee, n).starts_with('&')) {
-    return false;
-  }
-  if (std::ranges::all_of(accesses,
-                          [](auto a) { return a == Access::kMove; })) {
-    return true;
-  }
-  return copyable && std::ranges::all_of(accesses, [](auto a) {
-           return a == Access::kMove || a == Access::kBorrow;
-         });
-}
-
-std::optional<std::string> ConverterRefCount::ConvertOnFieldReceiver(
-    const std::vector<TranslationRule::BodyFragment> &fragments,
-    const TranslationRule::PlaceholderFragment &receiver_ph, clang::Expr *expr,
-    clang::Expr **args, unsigned num_args,
-    llvm::function_ref<std::string()> convert) {
-  auto all_args = BuildUnifiedArgs(expr, args, num_args);
-  auto *receiver = all_args[receiver_ph.n];
-  // A method called on a field of a struct reached through a pointer is
-  // called in a closure, unless the rule takes a pointer to the field.
-  auto sp = receiver_ph.access != TranslationRule::Access::kMove &&
-                    !receiver->getType()->isPointerType() &&
-                    !RuleRegistry::ParamIsPointer(ctx_, GetCalleeOrExpr(expr),
-                                                  receiver_ph.n)
-                ? FindStructPtr(receiver, receiver_ph.access !=
-                                              TranslationRule::Access::kBorrow)
-                : std::nullopt;
-  bool in_closure = sp && !sp->nested;
-
-  // Fields share the borrow of their struct. Evaluate the arguments that
-  // read fields before borrowing the receiver, if it is a field as well. In
-  // a closure, evaluate those that access any memory.
-  if (ReadsField(receiver)) {
-    std::string lets;
-    for (unsigned i = 0; i < all_args.size(); ++i) {
-      auto *arg = all_args[i];
-      // A pointer that is computed, not read from a variable, is a fresh
-      // value, which the closure can take.
-      bool fresh_ptr =
-          in_closure && arg->isPRValue() && arg->getType()->isPointerType();
-      if (arg == receiver ||
-          (in_closure ? IsTrivialValue(arg) : !ReadsField(arg)) ||
-          hoisted_exprs_.contains(arg) ||
-          (!fresh_ptr && !CanHoistArg(ctx_, fragments, GetCalleeOrExpr(expr), i,
-                                      arg, TypeIsCopyable(arg->getType())))) {
-        continue;
-      }
-      auto name = std::format("__a{}", i);
-      lets += std::format("let {} = {};", name, ConvertFreshRValue(arg));
-      hoisted_exprs_.emplace(arg, std::move(name));
-    }
-    if (!lets.empty()) {
-      auto call = convert();
-      for (auto *arg : all_args) {
-        hoisted_exprs_.erase(arg);
-      }
-      return std::format("{{ {} {} }}", lets, call);
-    }
-  }
-
-  if (in_closure) {
-    return ConvertInStructPtr(
-        receiver, receiver_ph.access != TranslationRule::Access::kBorrow,
-        convert);
-  }
-  return std::nullopt;
-}
-
-std::string ConverterRefCount::ConvertIRFragment(
-    const std::vector<TranslationRule::BodyFragment> &fragments,
-    clang::Expr *expr, clang::Expr **args, unsigned num_args,
-    TempMaterializationCtx *ctx) {
-  // A rule that calls methods on the result of a method called on a field,
-  // e.g., `a0.get(a1).unwrap()`, is converted in the closure as a whole, as
-  // the result may borrow the field.
-  using TranslationRule::MethodCallFragment;
-  const TranslationRule::PlaceholderFragment *receiver_ph = nullptr;
-  bool chained = fragments.size() > 1;
-  for (const auto *frags = &fragments; frags->size() >= 1;) {
-    auto *mc =
-        std::get_if<std::unique_ptr<MethodCallFragment>>(&frags->front());
-    if (!mc) {
-      break;
-    }
-    if ((receiver_ph = (*mc)->getReceiverPlaceholder())) {
-      break;
-    }
-    frags = &(*mc)->receiver;
-    chained = true;
-  }
-  // So is a rule that writes a field reached through a pointer, e.g.,
-  // `a0 = a1.to_owned_opt()`.
-  if (!receiver_ph) {
-    auto all_args = BuildUnifiedArgs(expr, args, num_args);
-    for (const auto &frag : fragments) {
-      auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&frag);
-      if (ph && ph->access == TranslationRule::Access::kBorrowMut) {
-        if (auto sp = FindStructPtr(all_args[ph->n], /*mut=*/true);
-            sp && !sp->nested) {
-          receiver_ph = ph;
-          chained = true;
-        }
-        break;
-      }
-    }
-  }
-  if (receiver_ph && chained) {
-    if (auto str = ConvertOnFieldReceiver(
-            fragments, *receiver_ph, expr, args, num_args, [&] {
-              auto str =
-                  ConvertIRFragment(fragments, expr, args, num_args, ctx);
-              // The rule may have statements.
-              return Trim(str).contains(';') ? std::format("{{ {} }}", str)
-                                             : str;
-            })) {
-      return *str;
-    }
-  }
-  return Converter::ConvertIRFragment(fragments, expr, args, num_args, ctx);
-}
-
 std::string ConverterRefCount::ConvertMappedMethodCall(
     clang::Expr *expr, const TranslationRule::MethodCallFragment &mc,
     clang::Expr **args, unsigned num_args, TempMaterializationCtx *ctx) {
   auto receiver_ph = mc.getReceiverPlaceholder();
-  if (receiver_ph) {
-    if (auto str = ConvertOnFieldReceiver(
-            mc.body, *receiver_ph, expr, args, num_args, [&] {
-              return ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
-            })) {
-      return *str;
-    }
-  }
-
   if (!receiver_ph || receiver_ph->access == TranslationRule::Access::kBorrow ||
       receiver_ph->access == TranslationRule::Access::kMove) {
     return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
@@ -3607,10 +2973,6 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
     arg = call->getArg(0);
   }
 
-  if (!arg->getType()->isPointerType() && !IsReferenceType(arg)) {
-    return Converter::ConvertMappedMethodCall(expr, mc, args, num_args, ctx);
-  }
-
   auto param_type = Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), arg_idx);
 
   if (arg->getType()->isPointerType()) {
@@ -3619,11 +2981,14 @@ std::string ConverterRefCount::ConvertMappedMethodCall(
                        ConvertIRFragment(mc.body, expr, args, num_args, ctx));
   }
 
-  ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
-  assert(!pending_deref_.empty());
+  // A receiver reached through a pointer is modified through it.
+  auto receiver = ConvertIRFragment(mc.receiver, expr, args, num_args, ctx);
+  if (pending_deref_.empty()) {
+    return receiver + ConvertIRFragment(mc.body, expr, args, num_args, ctx);
+  }
 
   bool is_boxed = pending_deref_.is_boxed();
-  auto ptr = TakePendingDerefToWrite(arg);
+  auto ptr = pending_deref_.take();
   auto body = ConvertIRFragment(mc.body, expr, args, num_args, ctx);
   SetFreshType(expr->getType());
 
@@ -3709,9 +3074,8 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
         token::kRef + BoxValue(ConvertRValue(base)) + ".as_pointer()";
     return;
   }
-  auto ptr = base_is_pointer ? ConvertRValue(base) : ConvertPointer(base);
-  // The method may write to the struct that holds the receiver.
-  ufcs_receiver_ = token::kRef + DetachPtr(std::move(ptr), isFresh(), base);
+  ufcs_receiver_ = token::kRef + (base_is_pointer ? ConvertRValue(base)
+                                                  : ConvertPointer(base));
 }
 
 std::string
@@ -3840,15 +3204,13 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
       auto *elem =
           field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
       assert(elem);
-      // The array is a Value of its own.
       out += std::format(
-          "{{ let __p: Ptr<{3}> = self.with(|__s| __s.{0}.as_pointer()); for "
-          "__i in 0..__p.len() {{ {2}::{1}(&__p.offset(__i as isize)); }} }}\n",
-          name, kDestructorName, TraitName(elem), GetRecordName(elem));
+          "{{ let __p = (*self.upgrade().deref()).{0}.as_pointer(); for __i in "
+          "0..__p.len() {{ {2}::{1}(&__p.offset(__i as isize)); }} }}\n",
+          name, kDestructorName, TraitName(elem));
     } else {
-      out += std::format("{2}::{1}(&field_ptr!(self, {0}));\n", name,
-                         kDestructorName,
-                         TraitName(field->getType()->getAsCXXRecordDecl()));
+      out += std::format("field_ptr!(self, {0}).{1}();\n", name,
+                         kDestructorName);
     }
   }
   return out;
@@ -3866,7 +3228,6 @@ void ConverterRefCount::ConvertCXXConstructorBody(
   } else {
     StrCat("Self");
     PushBrace this_init(*this);
-    PushConversionKind push(*this, ConversionKind::Pointee);
     EmitConstructorFieldInits(decl);
   }
   StrCat("))", token::kSemiColon);

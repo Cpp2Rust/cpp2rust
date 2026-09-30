@@ -47,8 +47,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let s1: Value<S> = Rc::new(RefCell::new(S::new({ 1 }, { 2 })));
     let s2: Ptr<S> = s1.as_pointer();
-    assert!((s2.with(|__s: &S| __s.a) == 1));
-    assert!((s2.with(|__s: &S| __s.b) == 2));
+    assert!((s2.with(|__s| __s.a) == 1));
+    assert!((s2.with(|__s| __s.b) == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

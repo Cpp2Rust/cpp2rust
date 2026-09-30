@@ -72,7 +72,7 @@ fn main_0() -> i32 {
             let __idx = (0) as usize;
             items_3.with(|rc| rc.borrow()[__idx].clone())
         })
-        .with(|__s: &Inner| __s.value)
+        .with(|__s| __s.value)
             == 1)
     );
     assert!(
@@ -80,12 +80,10 @@ fn main_0() -> i32 {
             let __idx = (1) as usize;
             items_3.with(|rc| rc.borrow()[__idx].clone())
         })
-        .with(|__s: &Inner| __s.value)
+        .with(|__s| __s.value)
             == 2)
     );
-    assert!(
-        ({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s: &Inner| __s.value) == 42)
-    );
+    assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
     thread_local!(
         static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
             (alpha_0.with(|v| v.as_pointer())),
@@ -97,7 +95,7 @@ fn main_0() -> i32 {
             let __idx = (0) as usize;
             cache_5.with(|rc| rc.borrow()[__idx].clone())
         })
-        .with(|__s: &Inner| __s.value)
+        .with(|__s| __s.value)
             == 1)
     );
     assert!(
@@ -105,7 +103,7 @@ fn main_0() -> i32 {
             let __idx = (1) as usize;
             cache_5.with(|rc| rc.borrow()[__idx].clone())
         })
-        .with(|__s: &Inner| __s.value)
+        .with(|__s| __s.value)
             == 2)
     );
     return 0;

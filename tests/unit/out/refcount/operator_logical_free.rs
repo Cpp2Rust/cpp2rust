@@ -25,13 +25,13 @@ impl ByteRepr for S {
     }
 }
 pub fn operator_not_0(a: Ptr<S>) -> bool {
-    return (a.with(|__s: &S| __s.v) == 0);
+    return (a.with(|__s| __s.v) == 0);
 }
 pub fn operator_and_1(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return (a.with(|__s: &S| __s.v) != 0) && (b.with(|__s: &S| __s.v) != 0);
+    return (a.with(|__s| __s.v) != 0) && (b.with(|__s| __s.v) != 0);
 }
 pub fn operator_or_2(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return (a.with(|__s: &S| __s.v) != 0) || (b.with(|__s: &S| __s.v) != 0);
+    return (a.with(|__s| __s.v) != 0) || (b.with(|__s| __s.v) != 0);
 }
 pub fn main() {
     __cpp2rust_init_globals();

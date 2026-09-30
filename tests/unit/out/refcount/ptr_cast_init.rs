@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     let h: Value<header> = Rc::new(RefCell::new(header { tag: 7, size: 32 }));
     let hp: Value<Ptr<header>> = Rc::new(RefCell::new((h.as_pointer())));
     let v: Value<Ptr<view>> = Rc::new(RefCell::new((*hp.borrow()).reinterpret_cast::<view>()));
-    assert!(((((*v.borrow()).with(|__s: &view| __s.tag) == 7) as i32) != 0));
+    assert!(((((*v.borrow()).with(|__s| __s.tag) == 7) as i32) != 0));
     let data: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"hi\0")));
     let vp: Value<AnyPtr> = Rc::new(RefCell::new(
         ((data.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),

@@ -33,9 +33,18 @@ impl ByteRepr for POD {
     }
 }
 pub fn PODIncrement_0(pod: Ptr<POD>) {
-    pod.with_mut(|__s: &mut POD| __s.x1 += 1);
-    pod.with_mut(|__s: &mut POD| __s.x2 += 2);
-    pod.with_mut(|__s: &mut POD| __s.x3 += 3);
+    {
+        let _ptr = field!(pod, x1);
+        _ptr.write(_ptr.read() + 1)
+    };
+    {
+        let _ptr = field!(pod, x2);
+        _ptr.write(_ptr.read() + 2)
+    };
+    {
+        let _ptr = field!(pod, x3);
+        _ptr.write(_ptr.read() + 3)
+    };
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -17,11 +17,9 @@ pub struct NonTrivial {
 }
 impl Clone for NonTrivial {
     fn clone(&self) -> Self {
-        let __this: Value<NonTrivial> = Rc::new(RefCell::new(Self {
-            data: { Rc::new(RefCell::new((*self.data.borrow()).clone())) },
-        }));
-        let this: Ptr<NonTrivial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+        }
     }
 }
 <<<<<<< HEAD
@@ -81,7 +79,7 @@ pub struct NonCopyable {
 impl NonCopyable {
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
-            value: { _a0.with_mut(|__s: &mut NonCopyable| __s.value.take()) },
+            value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
         }));
         let this: Ptr<NonCopyable> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -177,7 +175,7 @@ fn main_0() -> i32 {
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());
     ({ unused_noncopyable_param_5(g.as_pointer()) });
-    assert!(((*(*g.borrow()).value.as_ref().unwrap().borrow()) == 9));
+    assert!(((*{ (*g.borrow()).value.clone() }.as_ref().unwrap().borrow()) == 9));
     return 0;
 }
 pub trait NonCopyableImpl {
@@ -186,7 +184,7 @@ pub trait NonCopyableImpl {
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
         (field_ptr!((*self), value) as Ptr<Option<Value<i32>>>)
-            .write(_a0.with_mut(|__s: &mut NonCopyable| __s.value.take()));
+            .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }
 }

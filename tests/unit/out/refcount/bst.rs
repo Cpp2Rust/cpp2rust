@@ -37,29 +37,29 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let value: Value<i32> = Rc::new(RefCell::new(value));
     if ({
         let _lhs = (*value.borrow());
-        _lhs < (*node.borrow()).with(|__s: &node_t| __s.value)
-    }) && (!(((*node.borrow()).with(|__s: &node_t| (__s.left).clone())).is_null()))
+        _lhs < (*node.borrow()).with(|__s| __s.value)
+    }) && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
     {
         return ({
             find_0(
-                (*node.borrow()).with(|__s: &node_t| (__s.left).clone()),
+                (*node.borrow()).with(|__s| __s.left.clone()),
                 (*value.borrow()),
             )
         });
     } else if ({
         let _lhs = (*value.borrow());
-        _lhs > (*node.borrow()).with(|__s: &node_t| __s.value)
-    }) && (!(((*node.borrow()).with(|__s: &node_t| (__s.right).clone())).is_null()))
+        _lhs > (*node.borrow()).with(|__s| __s.value)
+    }) && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
     {
         return ({
             find_0(
-                (*node.borrow()).with(|__s: &node_t| (__s.right).clone()),
+                (*node.borrow()).with(|__s| __s.right.clone()),
                 (*value.borrow()),
             )
         });
     } else if {
         let _lhs = (*value.borrow());
-        _lhs == (*node.borrow()).with(|__s: &node_t| __s.value)
+        _lhs == (*node.borrow()).with(|__s| __s.value)
     } {
         return (*node.borrow()).clone();
     }
@@ -72,27 +72,27 @@ pub fn insert_1(node: Ptr<node_t>, new_node: Ptr<node_t>) -> Ptr<node_t> {
         return (*new_node.borrow()).clone();
     }
     if {
-        let _lhs = (*new_node.borrow()).with(|__s: &node_t| __s.value);
-        _lhs < (*node.borrow()).with(|__s: &node_t| __s.value)
+        let _lhs = (*new_node.borrow()).with(|__s| __s.value);
+        _lhs < (*node.borrow()).with(|__s| __s.value)
     } {
         let __rhs = ({
             insert_1(
-                (*node.borrow()).with(|__s: &node_t| (__s.left).clone()),
+                (*node.borrow()).with(|__s| __s.left.clone()),
                 (*new_node.borrow()).clone(),
             )
         });
-        (*node.borrow()).with_mut(|__s: &mut node_t| __s.left = __rhs);
+        field!((*node.borrow()), left).write(__rhs);
     } else if {
-        let _lhs = (*new_node.borrow()).with(|__s: &node_t| __s.value);
-        _lhs > (*node.borrow()).with(|__s: &node_t| __s.value)
+        let _lhs = (*new_node.borrow()).with(|__s| __s.value);
+        _lhs > (*node.borrow()).with(|__s| __s.value)
     } {
         let __rhs = ({
             insert_1(
-                (*node.borrow()).with(|__s: &node_t| (__s.right).clone()),
+                (*node.borrow()).with(|__s| __s.right.clone()),
                 (*new_node.borrow()).clone(),
             )
         });
-        (*node.borrow()).with_mut(|__s: &mut node_t| __s.right = __rhs);
+        field!((*node.borrow()), right).write(__rhs);
     }
     return (*node.borrow()).clone();
 }
@@ -141,11 +141,11 @@ fn main_0() -> i32 {
     let __rhs = ({ insert_1((*ptr1.borrow()).clone(), ((*n4.borrow()).as_pointer())) });
     (*ptr1.borrow_mut()) = __rhs;
     assert!(
-        (((((({ find_0((*ptr1.borrow()).clone(), 0,) }).with(|__s: &node_t| __s.value) == 0)
-            && (({ find_0((*ptr1.borrow()).clone(), 1,) }).with(|__s: &node_t| __s.value) == 1))
-            && (({ find_0((*ptr1.borrow()).clone(), 2,) }).with(|__s: &node_t| __s.value) == 2))
-            && (({ find_0((*ptr1.borrow()).clone(), 3,) }).with(|__s: &node_t| __s.value) == 3))
-            && (({ find_0((*ptr1.borrow()).clone(), 4,) }).with(|__s: &node_t| __s.value) == 4))
+        (((((({ find_0((*ptr1.borrow()).clone(), 0,) }).with(|__s| __s.value) == 0)
+            && (({ find_0((*ptr1.borrow()).clone(), 1,) }).with(|__s| __s.value) == 1))
+            && (({ find_0((*ptr1.borrow()).clone(), 2,) }).with(|__s| __s.value) == 2))
+            && (({ find_0((*ptr1.borrow()).clone(), 3,) }).with(|__s| __s.value) == 3))
+            && (({ find_0((*ptr1.borrow()).clone(), 4,) }).with(|__s| __s.value) == 4))
             && (({ find_0((*ptr1.borrow()).clone(), 5,) }).is_null())
     );
     return 0;

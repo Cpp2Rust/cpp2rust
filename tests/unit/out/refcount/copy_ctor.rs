@@ -23,7 +23,7 @@ impl Counted {
     }
     pub fn copy_from(o: Ptr<Counted>) -> Self {
         let __this: Value<Counted> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &Counted| __s.v) },
+            v: o.with(|__s| __s.v),
         }));
         let this: Ptr<Counted> = __this.as_pointer();
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -67,14 +67,14 @@ impl NonConst {
     }
     pub fn new_1(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: { (o.with(|__s: &NonConst| __s.mark) + 1) },
+            mark: (o.with(|__s| __s.mark) + 1),
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_2(o: Ptr<NonConst>) -> Self {
         let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
-            mark: { (o.with(|__s: &NonConst| __s.mark) + 10) },
+            mark: (o.with(|__s| __s.mark) + 10),
         }));
         let this: Ptr<NonConst> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -167,14 +167,10 @@ pub struct Holder {
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            c: { self.c.clone() },
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| (*self.arr.borrow())[(__i) as usize].clone(),
-            )))),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            c: self.c.clone(),
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+        }
     }
 }
 impl Default for Holder {
@@ -252,8 +248,8 @@ fn main_0() -> i32 {
     let hold2: Value<Holder> = Rc::new(RefCell::new((*hold.borrow()).clone()));
     assert!(
         (({ (*hold2.borrow()).c.v } == 8)
-            && ({ (*(*hold2.borrow()).arr.borrow())[(0) as usize].v } == 9))
-            && ({ (*(*hold2.borrow()).arr.borrow())[(1) as usize].v } == 10)
+            && ({ (*{ (*hold2.borrow()).arr.clone() }.borrow())[(0) as usize].v } == 9))
+            && ({ (*{ (*hold2.borrow()).arr.clone() }.borrow())[(1) as usize].v } == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));
@@ -262,10 +258,13 @@ fn main_0() -> i32 {
         (*vec_.borrow_mut()).push(a0_clone)
     };
     assert!(
-        ((vec_.as_pointer() as Ptr<Counted>)
-            .offset(0_usize)
-            .with(|__s: &Counted| __s.v)
-            == 1)
+        ({
+            (*(vec_.as_pointer() as Ptr<Counted>)
+                .offset(0_usize)
+                .upgrade()
+                .deref())
+            .v
+        } == 1)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
     let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));

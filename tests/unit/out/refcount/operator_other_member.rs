@@ -74,30 +74,30 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_call_1(&self) -> i32 {
-        return (*self).with(|__s: &S| __s.v);
+        return (*self).with(|__s| __s.v);
     }
     fn operator_call_2(&self, a: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*self).with(|__s: &S| __s.v) + (*a.borrow()));
+        return ((*self).with(|__s| __s.v) + (*a.borrow()));
     }
     fn operator_call_3(&self, a: i32, b: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
-        return (((*self).with(|__s: &S| __s.v) + (*a.borrow())) + (*b.borrow()));
+        return (((*self).with(|__s| __s.v) + (*a.borrow())) + (*b.borrow()));
     }
     fn operator_comma(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = ((*self).with(|__s: &S| __s.v) * 10);
-                _lhs + o.with(|__s: &S| __s.v)
+                let _lhs = ((*self).with(|__s| __s.v) * 10);
+                _lhs + o.with(|__s| __s.v)
             },
         };
     }
     fn to_i32(&self) -> i32 {
-        return (*self).with(|__s: &S| __s.v);
+        return (*self).with(|__s| __s.v);
     }
     fn to_bool(&self) -> bool {
-        return ((*self).with(|__s: &S| __s.v) != 0);
+        return ((*self).with(|__s| __s.v) != 0);
     }
 }
 pub fn __cpp2rust_init_globals() {}

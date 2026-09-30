@@ -15,12 +15,10 @@ pub struct S {
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: { Rc::new(RefCell::new((*self.v.borrow()).clone())) },
-            a: { self.a },
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
+            a: self.a.clone(),
+        }
     }
 }
 <<<<<<< HEAD
@@ -48,8 +46,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    (*(*s.borrow()).v.borrow_mut()).push(1);
-    'loop_: for mut e in { (*s.borrow()).v.as_pointer() } as Ptr<i32> {
+    (*{ (*s.borrow()).v.clone() }.borrow_mut()).push(1);
+    'loop_: for mut e in { (*s.borrow()).v.clone() }.as_pointer() as Ptr<i32> {
         let e: Value<i32> = Rc::new(RefCell::new(e.read()));
         (*s.borrow_mut()).a.postfix_inc();
     }

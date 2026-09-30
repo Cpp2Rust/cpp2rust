@@ -14,7 +14,7 @@ that owns the type pushes one before printing it:
   result in `Value<...>`.
 - `Pointee`: pushed by field declarations; the bare type is printed. Fields that
   are arrays, or whose type maps to a `Vec` or a `Box` (`std::vector`,
-  `std::string`), push `FullRefCount` instead (see below).
+  `std::string`, `std::array`), push `FullRefCount` instead (see below).
 - `Unboxed`: pushed by parameter lists, return types, and record names; the bare
   type is printed.
 - `Ptr`: pushed by a pointer type for its pointee; also printed bare.

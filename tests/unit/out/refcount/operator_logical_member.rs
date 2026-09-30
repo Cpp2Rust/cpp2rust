@@ -56,13 +56,13 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_not(&self) -> bool {
-        return ((*self).with(|__s: &S| __s.v) == 0);
+        return ((*self).with(|__s| __s.v) == 0);
     }
     fn operator_and(&self, o: Ptr<S>) -> bool {
-        return ((*self).with(|__s: &S| __s.v) != 0) && (o.with(|__s: &S| __s.v) != 0);
+        return ((*self).with(|__s| __s.v) != 0) && (o.with(|__s| __s.v) != 0);
     }
     fn operator_or(&self, o: Ptr<S>) -> bool {
-        return ((*self).with(|__s: &S| __s.v) != 0) || (o.with(|__s: &S| __s.v) != 0);
+        return ((*self).with(|__s| __s.v) != 0) || (o.with(|__s| __s.v) != 0);
     }
 }
 pub fn __cpp2rust_init_globals() {}

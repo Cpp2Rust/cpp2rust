@@ -182,23 +182,16 @@ fn main_0() -> i32 {
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
     (*p_list.borrow_mut()).index = 0;
-    (*p_list.borrow()).v.list().with_mut(|__s: &mut anon_1| {
-        __s.items = (items_4.with(|v| v.as_pointer()) as Ptr<Ptr<u8>>)
-    });
-    (*p_list.borrow())
-        .v
-        .list()
-        .with_mut(|__s: &mut anon_1| __s.count = 3_i64);
-    (*p_list.borrow())
-        .v
-        .list()
-        .with_mut(|__s: &mut anon_1| __s.cursor = 1_i64);
-    assert!(((((*p_list.borrow()).v.list().with(|__s: &anon_1| __s.count) == 3_i64) as i32) != 0));
+    field!((*p_list.borrow_mut()).v.list(), items)
+        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<u8>>));
+    field!((*p_list.borrow_mut()).v.list(), count).write(3_i64);
+    field!((*p_list.borrow_mut()).v.list(), cursor).write(1_i64);
+    assert!(((((*p_list.borrow()).v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));
     assert!(
         (((((((*p_list.borrow())
             .v
             .list()
-            .with(|__s: &anon_1| (__s.items).clone())
+            .with(|__s| __s.items.clone())
             .offset((1) as isize)
             .read())
         .offset((0) as isize)
@@ -209,73 +202,26 @@ fn main_0() -> i32 {
     let p_letters: Value<Branch> = <Value<Branch>>::default();
     (*p_letters.borrow_mut()).choice = Choice_enum_C_LETTERS;
     (*p_letters.borrow_mut()).index = 1;
-    (*p_letters.borrow())
-        .v
-        .letters()
-        .with_mut(|__s: &mut anon_2| __s.lo = ('a' as i32));
-    (*p_letters.borrow())
-        .v
-        .letters()
-        .with_mut(|__s: &mut anon_2| __s.hi = ('z' as i32));
-    (*p_letters.borrow())
-        .v
-        .letters()
-        .with_mut(|__s: &mut anon_2| __s.curr = ('m' as i32));
-    (*p_letters.borrow())
-        .v
-        .letters()
-        .with_mut(|__s: &mut anon_2| __s.step = 1_u8);
+    field!((*p_letters.borrow_mut()).v.letters(), lo).write(('a' as i32));
+    field!((*p_letters.borrow_mut()).v.letters(), hi).write(('z' as i32));
+    field!((*p_letters.borrow_mut()).v.letters(), curr).write(('m' as i32));
+    field!((*p_letters.borrow_mut()).v.letters(), step).write(1_u8);
     assert!(
-        (((((*p_letters.borrow())
-            .v
-            .letters()
-            .with(|__s: &anon_2| __s.hi)
-            - (*p_letters.borrow())
-                .v
-                .letters()
-                .with(|__s: &anon_2| __s.lo))
+        (((((*p_letters.borrow()).v.letters().with(|__s| __s.hi)
+            - (*p_letters.borrow()).v.letters().with(|__s| __s.lo))
             == 25) as i32)
             != 0)
     );
     let p_integers: Value<Branch> = <Value<Branch>>::default();
     (*p_integers.borrow_mut()).choice = Choice_enum_C_INTEGERS;
     (*p_integers.borrow_mut()).index = 2;
-    (*p_integers.borrow())
-        .v
-        .integers()
-        .with_mut(|__s: &mut anon_3| __s.lo = 1_i64);
-    (*p_integers.borrow())
-        .v
-        .integers()
-        .with_mut(|__s: &mut anon_3| __s.hi = 100_i64);
-    (*p_integers.borrow())
-        .v
-        .integers()
-        .with_mut(|__s: &mut anon_3| __s.curr = 1_i64);
-    (*p_integers.borrow())
-        .v
-        .integers()
-        .with_mut(|__s: &mut anon_3| __s.step = 1_i64);
-    (*p_integers.borrow())
-        .v
-        .integers()
-        .with_mut(|__s: &mut anon_3| __s.width = 3);
-    assert!(
-        ((((*p_integers.borrow())
-            .v
-            .integers()
-            .with(|__s: &anon_3| __s.hi)
-            == 100_i64) as i32)
-            != 0)
-    );
-    assert!(
-        ((((*p_integers.borrow())
-            .v
-            .integers()
-            .with(|__s: &anon_3| __s.width)
-            == 3) as i32)
-            != 0)
-    );
+    field!((*p_integers.borrow_mut()).v.integers(), lo).write(1_i64);
+    field!((*p_integers.borrow_mut()).v.integers(), hi).write(100_i64);
+    field!((*p_integers.borrow_mut()).v.integers(), curr).write(1_i64);
+    field!((*p_integers.borrow_mut()).v.integers(), step).write(1_i64);
+    field!((*p_integers.borrow_mut()).v.integers(), width).write(3);
+    assert!(((((*p_integers.borrow()).v.integers().with(|__s| __s.hi) == 100_i64) as i32) != 0));
+    assert!(((((*p_integers.borrow()).v.integers().with(|__s| __s.width) == 3) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

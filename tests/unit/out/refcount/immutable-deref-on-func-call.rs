@@ -34,23 +34,16 @@ fn main_0() -> i32 {
             .map(|_| <Item>::default())
             .collect::<Box<[Item]>>(),
     )));
-    (*arr.borrow())
-        .offset((0) as isize)
-        .with_mut(|__s: &mut Item| __s.value = 1);
-    (*arr.borrow())
-        .offset((1) as isize)
-        .with_mut(|__s: &mut Item| __s.value = 2);
+    field!((*arr.borrow()).offset((0) as isize), value).write(1);
+    field!((*arr.borrow()).offset((1) as isize), value).write(2);
     ({
         let _other: Ptr<Item> = ((*arr.borrow()).offset((1) as isize));
         ItemImpl::foo(&(*arr.borrow()).offset((0) as isize), _other)
     });
     let result: Value<i32> = Rc::new(RefCell::new(
-        ((*arr.borrow())
-            .offset((0) as isize)
-            .with(|__s: &Item| __s.value)
-            + (*arr.borrow())
-                .offset((1) as isize)
-                .with(|__s: &Item| __s.value)),
+        ({ (*(*arr.borrow()).offset((0) as isize).upgrade().deref()).value } + {
+            (*(*arr.borrow()).offset((1) as isize).upgrade().deref()).value
+        }),
     ));
     (*arr.borrow()).delete();
     assert!(((*result.borrow()) == 11));
@@ -62,7 +55,7 @@ pub trait ItemImpl {
 impl ItemImpl for Ptr<Item> {
     fn foo(&self, other: Ptr<Item>) {
         let other: Value<Ptr<Item>> = Rc::new(RefCell::new(other));
-        (*other.borrow()).with_mut(|__s: &mut Item| __s.value = 10);
+        field!((*other.borrow()), value).write(10);
     }
 }
 pub fn __cpp2rust_init_globals() {}

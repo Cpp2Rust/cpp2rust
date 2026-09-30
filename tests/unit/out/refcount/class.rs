@@ -92,15 +92,15 @@ impl ByteRepr for Counter {
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
-    if ((route.with(|__s: &Route| __s.path.first) % 2) != 0) {
+    if ((route.with(|__s| __s.path.first) % 2) != 0) {
         return ({
-            let _new_first: i32 = ({ PairImpl::SetSecond(&{ field_ptr!(route, path) }, 10) });
-            PairImpl::SetFirst(&{ field_ptr!(route, path) }, _new_first)
+            let _new_first: i32 = ({ PairImpl::SetSecond(&field_ptr!(route, path), 10) });
+            PairImpl::SetFirst(&field_ptr!(route, path), _new_first)
         });
     } else {
         return ({
-            let _new_second: i32 = ({ PairImpl::SetFirst(&{ field_ptr!(route, path) }, -10_i32) });
-            PairImpl::SetSecond(&{ field_ptr!(route, path) }, _new_second)
+            let _new_second: i32 = ({ PairImpl::SetFirst(&field_ptr!(route, path), -10_i32) });
+            PairImpl::SetSecond(&field_ptr!(route, path), _new_second)
         });
     }
     panic!("ub: non-void function does not return a value")
@@ -156,14 +156,14 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn Get(&self) -> i32 {
-        (*self).with_mut(|__s: &mut Counter| __s.calls.prefix_inc());
-        return (*self).with(|__s: &Counter| __s.v);
+        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
+        return (*self).with(|__s| __s.v);
     }
     fn operator_eq(&self, o: Ptr<Counter>) -> bool {
-        (*self).with_mut(|__s: &mut Counter| __s.calls.prefix_inc());
+        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return {
-            let _lhs = (*self).with(|__s: &Counter| __s.v);
-            _lhs == o.with(|__s: &Counter| __s.v)
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs == o.with(|__s| __s.v)
         };
     }
 }
@@ -178,10 +178,10 @@ pub trait PairImpl {
 impl PairImpl for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
-        return (*self).with(|__s: &Pair| __s.first);
+        return (*self).with(|__s| __s.first);
     }
     fn GetSecond(&self) -> i32 {
-        return (*self).with(|__s: &Pair| __s.second);
+        return (*self).with(|__s| __s.second);
     }
     fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
@@ -214,8 +214,8 @@ pub trait RouteImpl {
 impl RouteImpl for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> = Rc::new(RefCell::new((*self).with(|__s: &Route| __s.cost)));
-        (*self).with_mut(|__s: &mut Route| __s.cost = (*new_cost.borrow()));
+        let old_cost: Value<f64> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
+        field!((*self), cost).write((*new_cost.borrow()));
         return (*old_cost.borrow());
     }
 }

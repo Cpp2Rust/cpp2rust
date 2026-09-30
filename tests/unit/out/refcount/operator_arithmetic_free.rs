@@ -27,78 +27,78 @@ impl ByteRepr for S {
 pub fn operator_add_0(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs + b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs + b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_sub_1(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs - b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs - b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_mul_2(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs * b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs * b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_div_3(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs / b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs / b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_rem_4(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
-            _lhs % b.with(|__s: &S| __s.v)
+            let _lhs = a.with(|__s| __s.v);
+            _lhs % b.with(|__s| __s.v)
         },
     };
 }
 pub fn operator_pos_5(a: Ptr<S>) -> S {
     return S {
-        v: { a.with(|__s: &S| __s.v) },
+        v: a.with(|__s| __s.v),
     };
 }
 pub fn operator_neg_6(a: Ptr<S>) -> S {
     return S {
-        v: { -a.with(|__s: &S| __s.v) },
+        v: -a.with(|__s| __s.v),
     };
 }
 pub fn operator_inc_7(a: Ptr<S>) -> Ptr<S> {
-    a.with_mut(|__s: &mut S| __s.v.prefix_inc());
+    field!(a, v).with_mut(|__v| __v.prefix_inc());
     return (a).clone();
 }
 pub fn operator_post_inc_8(a: Ptr<S>, _a1: i32) -> S {
     let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
-    let old: Value<S> = Rc::new(RefCell::new(a.read()));
-    a.with_mut(|__s: &mut S| __s.v.prefix_inc());
+    let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
+    field!(a, v).with_mut(|__v| __v.prefix_inc());
     return (*old.borrow()).clone();
 }
 pub fn operator_dec_9(a: Ptr<S>) -> Ptr<S> {
-    a.with_mut(|__s: &mut S| __s.v.prefix_dec());
+    field!(a, v).with_mut(|__v| __v.prefix_dec());
     return (a).clone();
 }
 pub fn operator_post_dec_10(a: Ptr<S>, _a1: i32) -> S {
     let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
-    let old: Value<S> = Rc::new(RefCell::new(a.read()));
-    a.with_mut(|__s: &mut S| __s.v.prefix_dec());
+    let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
+    field!(a, v).with_mut(|__v| __v.prefix_dec());
     return (*old.borrow()).clone();
 }
 pub fn operator_add_11(a: Ptr<S>, b: i32) -> S {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     return S {
         v: {
-            let _lhs = a.with(|__s: &S| __s.v);
+            let _lhs = a.with(|__s| __s.v);
             _lhs + (*b.borrow())
         },
     };
@@ -108,7 +108,7 @@ pub fn operator_add_12(a: i32, b: Ptr<S>) -> S {
     return S {
         v: {
             let _lhs = (*a.borrow());
-            _lhs + b.with(|__s: &S| __s.v)
+            _lhs + b.with(|__s| __s.v)
         },
     };
 }
@@ -187,7 +187,7 @@ fn main_0() -> i32 {
             let _a: Ptr<S> = a.as_pointer();
             operator_inc_7(_a)
         })
-        .with(|__s: &S| __s.v)
+        .with(|__s| (__s).v)
             == 8)
     );
     assert!(
@@ -205,7 +205,7 @@ fn main_0() -> i32 {
             let _a: Ptr<S> = a.as_pointer();
             operator_dec_9(_a)
         })
-        .with(|__s: &S| __s.v)
+        .with(|__s| (__s).v)
             == 8)
     );
     assert!(

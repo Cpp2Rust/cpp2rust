@@ -38,15 +38,15 @@ fn main_0() -> i32 {
     assert!(({ ({ SImpl::operator_rem(&a.as_pointer(), b.as_pointer(),) }).v } == 1));
     assert!(({ ({ SImpl::operator_pos_6(&a.as_pointer(),) }).v } == 7));
     assert!(({ ({ SImpl::operator_neg_7(&a.as_pointer(),) }).v } == -7_i32));
-    assert!((({ SImpl::operator_inc_8(&a.as_pointer(),) }).with(|__s: &S| __s.v) == 8));
+    assert!((({ SImpl::operator_inc_8(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
     assert!(({ ({ SImpl::operator_post_inc_9(&a.as_pointer(), 0,) }).v } == 8));
     assert!(({ (*a.borrow()).v } == 9));
-    assert!((({ SImpl::operator_dec_10(&a.as_pointer(),) }).with(|__s: &S| __s.v) == 8));
+    assert!((({ SImpl::operator_dec_10(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
     assert!(({ ({ SImpl::operator_post_dec_11(&a.as_pointer(), 0,) }).v } == 8));
     assert!(({ (*a.borrow()).v } == 7));
     assert!(
         (({ SImpl::operator_inc_8(&({ SImpl::operator_inc_8(&a.as_pointer(),) }),) })
-            .with(|__s: &S| __s.v)
+            .with(|__s| (__s).v)
             == 9)
     );
     assert!(
@@ -80,71 +80,71 @@ impl SImpl for Ptr<S> {
     fn operator_add_1(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs + o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs + o.with(|__s| __s.v)
             },
         };
     }
     fn operator_sub_2(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs - o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs - o.with(|__s| __s.v)
             },
         };
     }
     fn operator_mul(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs * o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs * o.with(|__s| __s.v)
             },
         };
     }
     fn operator_div(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs / o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs / o.with(|__s| __s.v)
             },
         };
     }
     fn operator_rem(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs % o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs % o.with(|__s| __s.v)
             },
         };
     }
     fn operator_pos_6(&self) -> S {
         return S {
-            v: { (*self).with(|__s: &S| __s.v) },
+            v: (*self).with(|__s| __s.v),
         };
     }
     fn operator_neg_7(&self) -> S {
         return S {
-            v: { -(*self).with(|__s: &S| __s.v) },
+            v: -(*self).with(|__s| __s.v),
         };
     }
     fn operator_inc_8(&self) -> Ptr<S> {
-        (*self).with_mut(|__s: &mut S| __s.v.prefix_inc());
+        field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*self).clone();
     }
     fn operator_post_inc_9(&self, _a0: i32) -> S {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
-        let old: Value<S> = Rc::new(RefCell::new((*self).read()));
-        (*self).with_mut(|__s: &mut S| __s.v.prefix_inc());
+        let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+        field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*old.borrow()).clone();
     }
     fn operator_dec_10(&self) -> Ptr<S> {
-        (*self).with_mut(|__s: &mut S| __s.v.prefix_dec());
+        field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*self).clone();
     }
     fn operator_post_dec_11(&self, _a0: i32) -> S {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
-        let old: Value<S> = Rc::new(RefCell::new((*self).read()));
-        (*self).with_mut(|__s: &mut S| __s.v.prefix_dec());
+        let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+        field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*old.borrow()).clone();
     }
 }

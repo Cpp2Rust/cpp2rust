@@ -50,43 +50,43 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_bitnot(&self) -> S {
         return S {
-            v: { !(*self).with(|__s: &S| __s.v) },
+            v: !(*self).with(|__s| __s.v),
         };
     }
     fn operator_bitand(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs & o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs & o.with(|__s| __s.v)
             },
         };
     }
     fn operator_bitor(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs | o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs | o.with(|__s| __s.v)
             },
         };
     }
     fn operator_bitxor(&self, o: Ptr<S>) -> S {
         return S {
             v: {
-                let _lhs = (*self).with(|__s: &S| __s.v);
-                _lhs ^ o.with(|__s: &S| __s.v)
+                let _lhs = (*self).with(|__s| __s.v);
+                _lhs ^ o.with(|__s| __s.v)
             },
         };
     }
     fn operator_shl(&self, n: i32) -> S {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         return S {
-            v: { ((*self).with(|__s: &S| __s.v) << (*n.borrow())) },
+            v: ((*self).with(|__s| __s.v) << (*n.borrow())),
         };
     }
     fn operator_shr(&self, n: i32) -> S {
         let n: Value<i32> = Rc::new(RefCell::new(n));
         return S {
-            v: { ((*self).with(|__s: &S| __s.v) >> (*n.borrow())) },
+            v: ((*self).with(|__s| __s.v) >> (*n.borrow())),
         };
     }
 }

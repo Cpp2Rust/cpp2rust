@@ -29,8 +29,8 @@ impl Partial {
     }
     pub fn copy_from(o: Ptr<Partial>) -> Self {
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            v: { o.with(|__s: &Partial| __s.v) },
-            keep: { o.with(|__s: &Partial| __s.keep) },
+            v: o.with(|__s| __s.v),
+            keep: o.with(|__s| __s.keep),
         }));
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -148,14 +148,10 @@ pub struct Holder {
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            p: { self.p.clone() },
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| (*self.arr.borrow())[(__i) as usize].clone(),
-            )))),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            p: self.p.clone(),
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+        }
     }
 }
 impl Default for Holder {
@@ -239,17 +235,17 @@ fn main_0() -> i32 {
             Partial::new({ 6 }, { 60 }),
         ]))),
     }));
-    ({ PartialImpl::copy_assign(&{ field_ptr!(h, p) }, b.as_pointer()) });
+    ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
-            &{ ({ (*h.borrow()).arr.as_pointer() } as Ptr<Partial>).offset(1) },
+            &({ (*h.borrow()).arr.clone() }.as_pointer() as Ptr<Partial>).offset(1),
             c.as_pointer(),
         )
     });
     assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
-        ({ (*(*h.borrow()).arr.borrow())[(1) as usize].v } == 2)
-            && ({ (*(*h.borrow()).arr.borrow())[(1) as usize].keep } == 60)
+        ({ (*{ (*h.borrow()).arr.clone() }.borrow())[(1) as usize].v } == 2)
+            && ({ (*{ (*h.borrow()).arr.clone() }.borrow())[(1) as usize].keep } == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
@@ -272,13 +268,13 @@ pub trait NonConstAssignImpl {
 }
 impl NonConstAssignImpl for Ptr<NonConstAssign> {
     fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = (o.with(|__s: &NonConstAssign| __s.mark) + 1);
-        (*self).with_mut(|__s: &mut NonConstAssign| __s.mark = __rhs);
+        let __rhs = (o.with(|__s| __s.mark) + 1);
+        field!((*self), mark).write(__rhs);
         return (*self).clone();
     }
     fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = (o.with(|__s: &NonConstAssign| __s.mark) + 10);
-        (*self).with_mut(|__s: &mut NonConstAssign| __s.mark = __rhs);
+        let __rhs = (o.with(|__s| __s.mark) + 10);
+        field!((*self), mark).write(__rhs);
         return (*self).clone();
     }
 }
@@ -290,8 +286,8 @@ impl PartialImpl for Ptr<Partial> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s: &Partial| __s.v);
-        (*self).with_mut(|__s: &mut Partial| __s.v = __rhs);
+        let __rhs = o.with(|__s| __s.v);
+        field!((*self), v).write(__rhs);
         (*assigns_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
@@ -301,8 +297,8 @@ pub trait RefQualifiedImpl {
 }
 impl RefQualifiedImpl for Ptr<RefQualified> {
     fn copy_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
-        let __rhs = (o.with(|__s: &RefQualified| __s.mark) + 1);
-        (*self).with_mut(|__s: &mut RefQualified| __s.mark = __rhs);
+        let __rhs = (o.with(|__s| __s.mark) + 1);
+        field!((*self), mark).write(__rhs);
         return (*self).clone();
     }
 }
