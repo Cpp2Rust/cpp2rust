@@ -22,27 +22,13 @@ pub fn via_size_t_return_3(b: u64) -> usize {
     let b: Value<u64> = Rc::new(RefCell::new(b));
     return ((*b.borrow()) as usize);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct pair {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub b: i32,
-}
-impl ByteRepr for pair {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn pair_scaled_4(p: pair, n: usize) -> u64 {
     let p: Value<pair> = Rc::new(RefCell::new(p));

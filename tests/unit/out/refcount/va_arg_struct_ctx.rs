@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct context {
     #[offset(0)]
     pub verbose: i32,
     #[offset(4)]
     pub last_error: i32,
-}
-impl ByteRepr for context {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.verbose.to_bytes(&mut buf[0..4]);
-        self.last_error.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            verbose: <i32>::from_bytes(&buf[0..4]),
-            last_error: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));

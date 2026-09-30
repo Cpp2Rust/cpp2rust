@@ -6,29 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct S {
     #[offset(0)]
+    #[byte_size(12)]
     pub data: Value<Box<[i32]>>,
     #[offset(12)]
+    #[byte_size(4)]
     pub inner: Inner,
 }
 impl Clone for S {
@@ -44,21 +35,6 @@ impl Default for S {
         S {
             data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
             inner: <Inner>::default(),
-        }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..12]);
-        self.inner.to_bytes(&mut buf[12..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..12]))),
-            inner: <Inner>::from_bytes(&buf[12..16]),
         }
     }
 }

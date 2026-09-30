@@ -6,27 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct container {
     #[offset(0)]
+    #[byte_size(8)]
     pub p: Ptr<opaque>,
     #[offset(8)]
     pub x: i32,
-}
-impl ByteRepr for container {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.p.to_bytes(&mut buf[0..8]);
-        self.x.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: <Ptr<opaque>>::from_bytes(&buf[0..8]),
-            x: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -41,5 +28,6 @@ fn main_0() -> i32 {
     return ({ (*c.borrow()).x } - 42);
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(1)]
 pub struct opaque;
 pub fn __cpp2rust_init_globals() {}

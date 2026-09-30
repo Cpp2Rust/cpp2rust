@@ -10,27 +10,13 @@ pub type Mode = u32;
 pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Config {
     #[offset(0)]
     pub count: i32,
     #[offset(4)]
     pub mode: Mode,
-}
-impl ByteRepr for Config {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.count.to_bytes(&mut buf[0..4]);
-        self.mode.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            count: <i32>::from_bytes(&buf[0..4]),
-            mode: <Mode>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 thread_local!(
     pub static config_0: Value<Config> = <Value<Config>>::default();

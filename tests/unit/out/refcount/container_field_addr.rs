@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(32)]
 pub struct S {
     #[offset(0)]
     pub tag: i32,
     #[offset(8)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for S {
@@ -19,11 +21,6 @@ impl Clone for S {
             tag: self.tag.clone(),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
         }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
     }
 }
 pub fn add_0(v: Ptr<Vec<i32>>, k: i32) {

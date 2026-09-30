@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Complex {
     #[offset(0)]
     pub re: f64,
     #[offset(8)]
     pub img: f64,
-}
-impl ByteRepr for Complex {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.re.to_bytes(&mut buf[0..8]);
-        self.img.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            re: <f64>::from_bytes(&buf[0..8]),
-            img: <f64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn Product_0(z1: Complex, z2: Complex) -> Complex {
     let z1: Value<Complex> = Rc::new(RefCell::new(z1));

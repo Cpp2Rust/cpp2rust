@@ -15,7 +15,8 @@ pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
         _lhs == _a1.with(|__s| __s.b)
     });
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Defaulted {
     #[offset(0)]
     pub a: i32,
@@ -41,21 +42,6 @@ impl std::cmp::PartialEq for Defaulted {
     }
 }
 impl std::cmp::Eq for Defaulted {}
-impl ByteRepr for Defaulted {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
 pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cmp::Ordering {
     {
         let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
@@ -74,7 +60,8 @@ pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
         _lhs == _a1.with(|__s| __s.a)
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct DefaultedOrd {
     #[offset(0)]
     pub a: i32,
@@ -105,19 +92,6 @@ impl std::cmp::PartialEq for DefaultedOrd {
     }
 }
 impl std::cmp::Eq for DefaultedOrd {}
-impl ByteRepr for DefaultedOrd {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
     return {
         let _lhs = x.with(|__s| __s.a);
@@ -138,7 +112,8 @@ pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
         },
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inline {
     #[offset(0)]
     pub a: i32,
@@ -178,20 +153,8 @@ impl std::cmp::PartialEq for Inline {
     }
 }
 impl std::cmp::Eq for Inline {}
-impl ByteRepr for Inline {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct OutOfLine {
     #[offset(0)]
     pub a: i32,
@@ -207,19 +170,6 @@ impl std::cmp::PartialEq for OutOfLine {
     }
 }
 impl std::cmp::Eq for OutOfLine {}
-impl ByteRepr for OutOfLine {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn operator_eq_6(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     return {
         let _lhs = x.with(|__s| __s.a);
@@ -251,7 +201,8 @@ pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
         _lhs == y.with(|__s| __s.v)
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Tmpl_int_ {
     #[offset(0)]
     pub v: i32,
@@ -291,36 +242,11 @@ impl std::cmp::PartialEq for Tmpl_int_ {
     }
 }
 impl std::cmp::Eq for Tmpl_int_ {}
-impl ByteRepr for Tmpl_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Tmpl_long_ {
     #[offset(0)]
     pub v: i64,
-}
-impl ByteRepr for Tmpl_long_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i64>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
     return {
@@ -328,7 +254,8 @@ pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>
         _lhs == _a1.with(|__s| __s.v)
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct TmplDefaulted_int_ {
     #[offset(0)]
     pub v: i32,
@@ -344,19 +271,6 @@ impl std::cmp::PartialEq for TmplDefaulted_int_ {
     }
 }
 impl std::cmp::Eq for TmplDefaulted_int_ {}
-impl ByteRepr for TmplDefaulted_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

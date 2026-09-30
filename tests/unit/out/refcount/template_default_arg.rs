@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct A {
     #[offset(0)]
     pub v: i32,
@@ -29,20 +30,8 @@ impl Default for A {
         { A::new_1() }
     }
 }
-impl ByteRepr for A {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct B {
     #[offset(0)]
     pub v: i32,
@@ -59,20 +48,8 @@ impl Default for B {
         { B::new() }
     }
 }
-impl ByteRepr for B {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct NoDefault {
     #[offset(0)]
     pub v: i32,
@@ -83,19 +60,6 @@ impl NoDefault {
         let __this: Value<NoDefault> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<NoDefault> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for NoDefault {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
     }
 }
 pub fn used_0(x: Option<A>) -> i32 {
@@ -115,7 +79,8 @@ pub fn always_given_3(x: NoDefault) -> i32 {
     let x: Value<NoDefault> = Rc::new(RefCell::new(x));
     return { (*x.borrow()).v };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S_NoDefault_ {
     #[offset(0)]
     pub v: i32,
@@ -126,19 +91,6 @@ impl S_NoDefault_ {
         let __this: Value<S_NoDefault_> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<S_NoDefault_> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S_NoDefault_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
     }
 }
 pub fn main() {

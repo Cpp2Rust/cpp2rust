@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(152)]
 pub struct S {
     #[offset(0)]
     pub as_: i32,
@@ -84,93 +85,6 @@ pub struct S {
     pub safe_: i32,
     #[offset(148)]
     pub vec_: i32,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        152
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.as_.to_bytes(&mut buf[0..4]);
-        self.async_.to_bytes(&mut buf[4..8]);
-        self.await_.to_bytes(&mut buf[8..12]);
-        self.crate_.to_bytes(&mut buf[12..16]);
-        self.dyn_.to_bytes(&mut buf[16..20]);
-        self.fn_.to_bytes(&mut buf[20..24]);
-        self.impl_.to_bytes(&mut buf[24..28]);
-        self.in_.to_bytes(&mut buf[28..32]);
-        self.let_.to_bytes(&mut buf[32..36]);
-        self.loop_.to_bytes(&mut buf[36..40]);
-        self.match_.to_bytes(&mut buf[40..44]);
-        self.mod_.to_bytes(&mut buf[44..48]);
-        self.move_.to_bytes(&mut buf[48..52]);
-        self.mut_.to_bytes(&mut buf[52..56]);
-        self.pub_.to_bytes(&mut buf[56..60]);
-        self.ref_.to_bytes(&mut buf[60..64]);
-        self.self_.to_bytes(&mut buf[64..68]);
-        self.Self_.to_bytes(&mut buf[68..72]);
-        self.super_.to_bytes(&mut buf[72..76]);
-        self.trait_.to_bytes(&mut buf[76..80]);
-        self.type_.to_bytes(&mut buf[80..84]);
-        self.unsafe_.to_bytes(&mut buf[84..88]);
-        self.use_.to_bytes(&mut buf[88..92]);
-        self.where_.to_bytes(&mut buf[92..96]);
-        self.abstract_.to_bytes(&mut buf[96..100]);
-        self.become_.to_bytes(&mut buf[100..104]);
-        self.box_.to_bytes(&mut buf[104..108]);
-        self.final_.to_bytes(&mut buf[108..112]);
-        self.gen_.to_bytes(&mut buf[112..116]);
-        self.macro_.to_bytes(&mut buf[116..120]);
-        self.override_.to_bytes(&mut buf[120..124]);
-        self.priv_.to_bytes(&mut buf[124..128]);
-        self.unsized_.to_bytes(&mut buf[128..132]);
-        self.yield_.to_bytes(&mut buf[132..136]);
-        self.macro_rules_.to_bytes(&mut buf[136..140]);
-        self.raw_.to_bytes(&mut buf[140..144]);
-        self.safe_.to_bytes(&mut buf[144..148]);
-        self.vec_.to_bytes(&mut buf[148..152]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            as_: <i32>::from_bytes(&buf[0..4]),
-            async_: <i32>::from_bytes(&buf[4..8]),
-            await_: <i32>::from_bytes(&buf[8..12]),
-            crate_: <i32>::from_bytes(&buf[12..16]),
-            dyn_: <i32>::from_bytes(&buf[16..20]),
-            fn_: <i32>::from_bytes(&buf[20..24]),
-            impl_: <i32>::from_bytes(&buf[24..28]),
-            in_: <i32>::from_bytes(&buf[28..32]),
-            let_: <i32>::from_bytes(&buf[32..36]),
-            loop_: <i32>::from_bytes(&buf[36..40]),
-            match_: <i32>::from_bytes(&buf[40..44]),
-            mod_: <i32>::from_bytes(&buf[44..48]),
-            move_: <i32>::from_bytes(&buf[48..52]),
-            mut_: <i32>::from_bytes(&buf[52..56]),
-            pub_: <i32>::from_bytes(&buf[56..60]),
-            ref_: <i32>::from_bytes(&buf[60..64]),
-            self_: <i32>::from_bytes(&buf[64..68]),
-            Self_: <i32>::from_bytes(&buf[68..72]),
-            super_: <i32>::from_bytes(&buf[72..76]),
-            trait_: <i32>::from_bytes(&buf[76..80]),
-            type_: <i32>::from_bytes(&buf[80..84]),
-            unsafe_: <i32>::from_bytes(&buf[84..88]),
-            use_: <i32>::from_bytes(&buf[88..92]),
-            where_: <i32>::from_bytes(&buf[92..96]),
-            abstract_: <i32>::from_bytes(&buf[96..100]),
-            become_: <i32>::from_bytes(&buf[100..104]),
-            box_: <i32>::from_bytes(&buf[104..108]),
-            final_: <i32>::from_bytes(&buf[108..112]),
-            gen_: <i32>::from_bytes(&buf[112..116]),
-            macro_: <i32>::from_bytes(&buf[116..120]),
-            override_: <i32>::from_bytes(&buf[120..124]),
-            priv_: <i32>::from_bytes(&buf[124..128]),
-            unsized_: <i32>::from_bytes(&buf[128..132]),
-            yield_: <i32>::from_bytes(&buf[132..136]),
-            macro_rules_: <i32>::from_bytes(&buf[136..140]),
-            raw_: <i32>::from_bytes(&buf[140..144]),
-            safe_: <i32>::from_bytes(&buf[144..148]),
-            vec_: <i32>::from_bytes(&buf[148..152]),
-        }
-    }
 }
 pub fn foo_0(
     as_: i32,

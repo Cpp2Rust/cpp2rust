@@ -10,8 +10,10 @@ pub trait Animal {
     fn bark(&self) -> bool;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Dog {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Cat {}
 pub fn main() {
     __cpp2rust_init_globals();

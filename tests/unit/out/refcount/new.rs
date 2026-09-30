@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
-}
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

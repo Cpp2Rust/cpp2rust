@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct NonCopy {
     #[offset(0)]
+    #[byte_size(24)]
     pub data: Value<Vec<i32>>,
     #[offset(24)]
     pub tag: i32,
@@ -27,11 +29,6 @@ impl Default for NonCopy {
             data: Rc::new(RefCell::new(Default::default())),
             tag: 0,
         }
-    }
-}
-impl ByteRepr for NonCopy {
-    fn byte_size() -> usize {
-        32
     }
 }
 pub fn main() {

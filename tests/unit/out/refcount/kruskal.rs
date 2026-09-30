@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Edge {
     #[offset(0)]
     pub u: i32,
@@ -14,23 +15,6 @@ pub struct Edge {
     pub v: i32,
     #[offset(8)]
     pub weight: f64,
-}
-impl ByteRepr for Edge {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.u.to_bytes(&mut buf[0..4]);
-        self.v.to_bytes(&mut buf[4..8]);
-        self.weight.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            u: <i32>::from_bytes(&buf[0..4]),
-            v: <i32>::from_bytes(&buf[4..8]),
-            weight: <f64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -> i32 {
     let start: Value<i32> = Rc::new(RefCell::new(start));
@@ -198,11 +182,14 @@ pub fn quicksort_1(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) {
         quicksort_1(_arr, _start, _end)
     });
 }
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(24)]
 pub struct DisjointSet {
     #[offset(0)]
+    #[byte_size(8)]
     pub rank: Option<Value<Box<[i32]>>>,
     #[offset(8)]
+    #[byte_size(8)]
     pub parent: Option<Value<Box<[i32]>>>,
     #[offset(16)]
     pub n: i32,
@@ -218,14 +205,11 @@ impl DisjointSet {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for DisjointSet {
-    fn byte_size() -> usize {
-        24
-    }
-}
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(16)]
 pub struct Graph {
     #[offset(0)]
+    #[byte_size(8)]
     pub edges: Option<Value<Box<[Edge]>>>,
     #[offset(8)]
     pub V: i32,
@@ -241,11 +225,6 @@ impl Graph {
         }));
         let this: Ptr<Graph> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Graph {
-    fn byte_size() -> usize {
-        16
     }
 }
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {

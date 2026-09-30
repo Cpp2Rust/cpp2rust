@@ -10,7 +10,11 @@ pub type Width_enum = u32;
 pub const Width_enum_W_64: Width_enum = 0;
 pub const Width_enum_W_32: Width_enum = 1;
 pub const Width_enum_W_16: Width_enum = 2;
+#[derive(ByteRepr)]
+#[byte_size(8)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(8)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -41,40 +45,14 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Sink {
     #[offset(0)]
     pub width: Width_enum,
     #[offset(8)]
+    #[byte_size(8)]
     pub out: anon_0,
-}
-impl ByteRepr for Sink {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.width.to_bytes(&mut buf[0..4]);
-        self.out.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            width: <Width_enum>::from_bytes(&buf[0..4]),
-            out: <anon_0>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn write_count_1(s: Ptr<Sink>, count: i64) {
     let s: Value<Ptr<Sink>> = Rc::new(RefCell::new(s));

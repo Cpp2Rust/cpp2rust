@@ -42,23 +42,11 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let __rhs = (rx2.read());
     r1.write(__rhs);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Val {
     #[offset(0)]
     pub x: i32,
-}
-impl ByteRepr for Val {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn sum_1(a: Val, b: Val) -> i32 {
     let a: Value<Val> = Rc::new(RefCell::new(a));

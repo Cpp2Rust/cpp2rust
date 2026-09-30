@@ -6,15 +6,18 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 // The fields are at the offsets of the byte representation below.
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(16)]
 pub struct Sockaddr {
     #[offset(0)]
     pub sa_family: u16,
     #[offset(2)]
+    #[byte_size(14)]
     pub sa_data: Value<Box<[u8]>>,
 }
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(16)]
 pub struct SockaddrIn {
     #[offset(0)]
     pub sin_family: u16,
@@ -23,10 +26,12 @@ pub struct SockaddrIn {
     #[offset(4)]
     pub sin_addr: InAddr,
     #[offset(8)]
+    #[byte_size(8)]
     pub sin_zero: Value<Box<[u8]>>,
 }
 
-#[derive(Default, Record)]
+#[derive(Default, Record, ByteRepr)]
+#[byte_size(28)]
 pub struct SockaddrIn6 {
     #[offset(0)]
     pub sin6_family: u16,
@@ -40,19 +45,23 @@ pub struct SockaddrIn6 {
     pub sin6_scope_id: u32,
 }
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(110)]
 pub struct SockaddrUn {
     #[offset(0)]
     pub sun_family: u16,
     #[offset(2)]
+    #[byte_size(108)]
     pub sun_path: Value<Box<[u8]>>,
 }
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(128)]
 pub struct SockaddrStorage {
     #[offset(0)]
     pub ss_family: u16,
     #[offset(2)]
+    #[byte_size(126)]
     pub __pad: Value<Box<[u8]>>,
 }
 
@@ -259,96 +268,6 @@ impl Clone for SockaddrStorage {
         Self {
             ss_family: self.ss_family,
             __pad: Rc::new(RefCell::new(self.__pad.borrow().clone())),
-        }
-    }
-}
-
-impl ByteRepr for Sockaddr {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.sa_family.to_bytes(&mut buf[0..2]);
-        buf[2..16].copy_from_slice(&self.sa_data.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            sa_family: <u16>::from_bytes(&buf[0..2]),
-            sa_data: Rc::new(RefCell::new(buf[2..16].to_vec().into_boxed_slice())),
-        }
-    }
-}
-
-impl ByteRepr for SockaddrIn {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.sin_family.to_bytes(&mut buf[0..2]);
-        self.sin_port.to_bytes(&mut buf[2..4]);
-        self.sin_addr.to_bytes(&mut buf[4..8]);
-        buf[8..16].copy_from_slice(&self.sin_zero.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            sin_family: <u16>::from_bytes(&buf[0..2]),
-            sin_port: <u16>::from_bytes(&buf[2..4]),
-            sin_addr: <InAddr>::from_bytes(&buf[4..8]),
-            sin_zero: Rc::new(RefCell::new(buf[8..16].to_vec().into_boxed_slice())),
-        }
-    }
-}
-
-impl ByteRepr for SockaddrIn6 {
-    fn byte_size() -> usize {
-        28
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.sin6_family.to_bytes(&mut buf[0..2]);
-        self.sin6_port.to_bytes(&mut buf[2..4]);
-        self.sin6_flowinfo.to_bytes(&mut buf[4..8]);
-        self.sin6_addr.to_bytes(&mut buf[8..24]);
-        self.sin6_scope_id.to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            sin6_family: <u16>::from_bytes(&buf[0..2]),
-            sin6_port: <u16>::from_bytes(&buf[2..4]),
-            sin6_flowinfo: <u32>::from_bytes(&buf[4..8]),
-            sin6_addr: <In6Addr>::from_bytes(&buf[8..24]),
-            sin6_scope_id: <u32>::from_bytes(&buf[24..28]),
-        }
-    }
-}
-
-impl ByteRepr for SockaddrUn {
-    fn byte_size() -> usize {
-        110
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.sun_family.to_bytes(&mut buf[0..2]);
-        buf[2..110].copy_from_slice(&self.sun_path.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            sun_family: <u16>::from_bytes(&buf[0..2]),
-            sun_path: Rc::new(RefCell::new(buf[2..110].to_vec().into_boxed_slice())),
-        }
-    }
-}
-
-impl ByteRepr for SockaddrStorage {
-    fn byte_size() -> usize {
-        128
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.ss_family.to_bytes(&mut buf[0..2]);
-        buf[2..128].copy_from_slice(&self.__pad.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            ss_family: <u16>::from_bytes(&buf[0..2]),
-            __pad: Rc::new(RefCell::new(buf[2..128].to_vec().into_boxed_slice())),
         }
     }
 }

@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct S {
     #[offset(0)]
     pub a_: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub self__: Ptr<S>,
 }
 impl S {
@@ -52,26 +54,12 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a_.to_bytes(&mut buf[0..4]);
-        self.self__.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a_: <i32>::from_bytes(&buf[0..4]),
-            self__: <Ptr<S>>::from_bytes(&buf[8..16]),
-        }
-    }
-}
 pub fn bump_0(p: Ptr<S>) {
     let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
     field!((*p.borrow()), a_).with_mut(|__v| __v.postfix_inc());
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct D {
     #[offset(0)]
     pub a_: i32,
@@ -86,19 +74,6 @@ impl D {
             _ptr.write(_ptr.read() * 2)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for D {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a_.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a_: <i32>::from_bytes(&buf[0..4]),
-        }
     }
 }
 pub fn main() {

@@ -85,12 +85,22 @@ pub fn goto(_input: TokenStream) -> TokenStream {
 }
 
 //     #[derive(ByteRepr)]
-//     pub struct S;
+//     #[byte_size(16)]
+//     pub struct S {
+//         #[offset(0)]
+//         pub x: i32,
+//         #[offset(4)]
+//         #[byte_size(12)]
+//         pub a: Value<Box<[i32]>>,
+//         ...
+//     }
 //
-// Adds ByteRepr implementation for S. Currently only empty structs are handled. Non-empty structs
-// panic.
+// Implements libcc2rs::ByteRepr for S, laying out each field at the byte
+// offset given by its offset attribute (see derive(Record)). The byte_size
+// attribute gives the byte size of S in C, and of the fields whose size in C
+// differs from the byte_size() of their type (e.g., arrays and pointers).
 
-#[proc_macro_derive(ByteRepr)]
+#[proc_macro_derive(ByteRepr, attributes(offset, byte_size))]
 pub fn derive_byte_repr(input: TokenStream) -> TokenStream {
     byte_repr::expand(input)
 }

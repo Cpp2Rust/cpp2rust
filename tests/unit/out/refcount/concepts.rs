@@ -12,6 +12,7 @@ const _: () = assert!(
     "sizeof(int) == 4"
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Sized {}
 pub fn is_small_0() -> bool {
     return true;

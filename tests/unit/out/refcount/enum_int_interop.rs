@@ -19,31 +19,16 @@ pub type Tag = u32;
 pub const Tag_TAG_ZERO: Tag = 0;
 pub const Tag_TAG_ONE: Tag = 1;
 pub const Tag_TAG_TWO: Tag = 2;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Entry {
     #[offset(0)]
+    #[byte_size(8)]
     pub name: Ptr<u8>,
     #[offset(8)]
     pub color: Color,
     #[offset(12)]
     pub opt: Option,
-}
-impl ByteRepr for Entry {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.name.to_bytes(&mut buf[0..8]);
-        self.color.to_bytes(&mut buf[8..12]);
-        self.opt.to_bytes(&mut buf[12..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            name: <Ptr<u8>>::from_bytes(&buf[0..8]),
-            color: <Color>::from_bytes(&buf[8..12]),
-            opt: <Option>::from_bytes(&buf[12..16]),
-        }
-    }
 }
 thread_local!(
     pub static global_color_0: Value<Color> = Rc::new(RefCell::new(Color_GREEN));

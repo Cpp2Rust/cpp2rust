@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(12)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
+    #[byte_size(8)]
     pub name: Value<Box<[u8]>>,
 }
 impl Clone for Inner {
@@ -29,56 +31,33 @@ impl Default for Inner {
         }
     }
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        (*self.name.borrow()).to_bytes(&mut buf[4..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            name: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..12]))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Header {
     #[offset(0)]
     pub tag: i32,
     #[offset(4)]
     pub size: i16,
 }
-impl ByteRepr for Header {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tag.to_bytes(&mut buf[0..4]);
-        self.size.to_bytes(&mut buf[4..6]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: <i32>::from_bytes(&buf[0..4]),
-            size: <i16>::from_bytes(&buf[4..6]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
+    #[byte_size(12)]
     pub inner: Inner,
     #[offset(16)]
+    #[byte_size(36)]
     pub items: Value<Box<[Inner]>>,
     #[offset(56)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
     #[offset(80)]
+    #[byte_size(8)]
     pub cursor: Ptr<i32>,
     #[offset(88)]
+    #[byte_size(16)]
     pub buf: Value<Box<[i32]>>,
 }
 impl Clone for Outer {
@@ -105,11 +84,6 @@ impl Default for Outer {
             cursor: Ptr::<i32>::null(),
             buf: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
-    }
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        104
     }
 }
 pub fn set_0(p: Ptr<i32>, value: i32) {

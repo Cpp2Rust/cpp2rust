@@ -36,23 +36,12 @@ pub fn test_double_cast_2() {
         _lhs == (*fn_.borrow()).clone()
     });
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Command {
     #[offset(0)]
+    #[byte_size(8)]
     pub data: AnyPtr,
-}
-impl ByteRepr for Command {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: <AnyPtr>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));

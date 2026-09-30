@@ -36,67 +36,29 @@ pub fn wrap_10(v: i64) -> i32 {
     let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: (*v.borrow()) }));
     return ({ get_6((*l.borrow()).clone()) });
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Local_5 {
     #[offset(0)]
     pub x: i32,
 }
-impl ByteRepr for Local_5 {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Local_7 {
     #[offset(0)]
     pub x: i64,
-}
-impl ByteRepr for Local_7 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i64>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 pub fn other_11() -> i32 {
     let l: Value<Local_1> = Rc::new(RefCell::new(Local_1 { x: 3_i64, y: 4_i64 }));
     return (({ get_0((*l.borrow()).clone()) }) + ({ (*l.borrow()).y } as i32));
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Local_1 {
     #[offset(0)]
     pub x: i64,
     #[offset(8)]
     pub y: i64,
-}
-impl ByteRepr for Local_1 {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..8]);
-        self.y.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i64>::from_bytes(&buf[0..8]),
-            y: <i64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -111,22 +73,10 @@ fn main_0() -> i32 {
     assert!((({ wrap_10(6_i64,) }) == 6));
     return 0;
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Local_3 {
     #[offset(0)]
     pub x: i32,
-}
-impl ByteRepr for Local_3 {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn __cpp2rust_init_globals() {}

@@ -1,0 +1,7 @@
+error: proc-macro derive panicked
+ --> tests/ui/byte_repr_no_byte_size.rs:3:10
+  |
+3 | #[derive(ByteRepr)]
+  |          ^^^^^^^^
+  |
+  = help: message: struct `NoByteSize` has no #[byte_size(...)]

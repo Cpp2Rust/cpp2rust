@@ -6,189 +6,80 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Named {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub b: i32,
 }
-impl ByteRepr for Named {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
     pub c: i32,
     #[offset(4)]
     pub d: i32,
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.c.to_bytes(&mut buf[0..4]);
-        self.d.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            c: <i32>::from_bytes(&buf[0..4]),
-            d: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct anon_1 {
     #[offset(0)]
     pub g: i32,
     #[offset(4)]
     pub h: i32,
 }
-impl ByteRepr for anon_1 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.g.to_bytes(&mut buf[0..4]);
-        self.h.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            g: <i32>::from_bytes(&buf[0..4]),
-            h: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct anon_2 {
     #[offset(0)]
     pub e: i32,
     #[offset(4)]
     pub f: i32,
 }
-impl ByteRepr for anon_2 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.e.to_bytes(&mut buf[0..4]);
-        self.f.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            e: <i32>::from_bytes(&buf[0..4]),
-            f: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct anon_4 {
     #[offset(0)]
     pub j: i32,
 }
-impl ByteRepr for anon_4 {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.j.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            j: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct anon_5 {
     #[offset(0)]
     pub k: i32,
 }
-impl ByteRepr for anon_5 {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.k.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            k: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct anon_3 {
     #[offset(0)]
     pub i: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub inner_named: anon_4,
     #[offset(8)]
+    #[byte_size(4)]
     pub anon_5: anon_5,
 }
-impl ByteRepr for anon_3 {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.i.to_bytes(&mut buf[0..4]);
-        self.inner_named.to_bytes(&mut buf[4..8]);
-        self.anon_5.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            i: <i32>::from_bytes(&buf[0..4]),
-            inner_named: <anon_4>::from_bytes(&buf[4..8]),
-            anon_5: <anon_5>::from_bytes(&buf[8..12]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(44)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(8)]
     pub named: Named,
     #[offset(8)]
+    #[byte_size(8)]
     pub anon0: anon_0,
     #[offset(16)]
+    #[byte_size(8)]
     pub anon1: anon_1,
     #[offset(24)]
+    #[byte_size(8)]
     pub anon_2: anon_2,
     #[offset(32)]
+    #[byte_size(12)]
     pub anon_3: anon_3,
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        44
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.named.to_bytes(&mut buf[0..8]);
-        self.anon0.to_bytes(&mut buf[8..16]);
-        self.anon1.to_bytes(&mut buf[16..24]);
-        self.anon_2.to_bytes(&mut buf[24..32]);
-        self.anon_3.to_bytes(&mut buf[32..44]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            named: <Named>::from_bytes(&buf[0..8]),
-            anon0: <anon_0>::from_bytes(&buf[8..16]),
-            anon1: <anon_1>::from_bytes(&buf[16..24]),
-            anon_2: <anon_2>::from_bytes(&buf[24..32]),
-            anon_3: <anon_3>::from_bytes(&buf[32..44]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -241,26 +132,12 @@ fn main_0() -> i32 {
     );
     return 0;
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct anon_6 {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub z: i32,
-}
-impl ByteRepr for anon_6 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.z.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            z: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn __cpp2rust_init_globals() {}

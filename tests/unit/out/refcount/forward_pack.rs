@@ -11,7 +11,8 @@ pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
 pub const Overload_kIntLvalueOverload: Overload = 3;
 pub const Overload_kIntRvalueOverload: Overload = 4;
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct Tracked {
     #[offset(0)]
     pub v: i32,
@@ -59,11 +60,6 @@ impl Clone for Tracked {
             moves: self.moves.clone(),
         }));
         Tracked::copy_from(__src.as_pointer())
-    }
-}
-impl ByteRepr for Tracked {
-    fn byte_size() -> usize {
-        12
     }
 }
 pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
@@ -146,17 +142,15 @@ impl Pair {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct Pair {
     #[offset(0)]
+    #[byte_size(12)]
     pub a: Tracked,
     #[offset(12)]
+    #[byte_size(12)]
     pub b: Tracked,
-}
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        24
-    }
 }
 pub fn forward_pack_into_ctor_8(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> Pair {
     return Pair::new({ (args_0).clone() }, { (args_1).clone() });

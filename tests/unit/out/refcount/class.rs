@@ -6,51 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
     pub first: i32,
     #[offset(4)]
     pub second: i32,
 }
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.first.to_bytes(&mut buf[0..4]);
-        self.second.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            first: <i32>::from_bytes(&buf[0..4]),
-            second: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Route {
     #[offset(0)]
+    #[byte_size(8)]
     pub path: Pair,
     #[offset(8)]
     pub cost: f64,
 }
-impl ByteRepr for Route {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.path.to_bytes(&mut buf[0..8]);
-        self.cost.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            path: <Pair>::from_bytes(&buf[0..8]),
-            cost: <f64>::from_bytes(&buf[8..16]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Counter {
     #[offset(0)]
     pub v: i32,
@@ -76,21 +50,6 @@ impl std::cmp::PartialEq for Counter {
     }
 }
 impl std::cmp::Eq for Counter {}
-impl ByteRepr for Counter {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.calls.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            calls: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
     if ((route.with(|__s| __s.path.first) % 2) != 0) {
         return ({

@@ -6,45 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct base {
     #[offset(0)]
     pub kind: i32,
 }
-impl ByteRepr for base {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.kind.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            kind: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct derived {
     #[offset(0)]
+    #[byte_size(4)]
     pub head: base,
     #[offset(8)]
     pub value: usize,
-}
-impl ByteRepr for derived {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.head.to_bytes(&mut buf[0..4]);
-        self.value.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            head: <base>::from_bytes(&buf[0..4]),
-            value: <usize>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

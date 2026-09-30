@@ -6,7 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(ByteRepr)]
+#[byte_size(8)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(8)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -31,40 +35,15 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct node {
     #[offset(0)]
+    #[byte_size(8)]
     pub next: Ptr<node>,
     #[offset(8)]
+    #[byte_size(8)]
     pub x: anon_0,
-}
-impl ByteRepr for node {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.next.to_bytes(&mut buf[0..8]);
-        self.x.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            next: <Ptr<node>>::from_bytes(&buf[0..8]),
-            x: <anon_0>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

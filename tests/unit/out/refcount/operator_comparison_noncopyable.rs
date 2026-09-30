@@ -18,7 +18,8 @@ pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
         _lhs < y.with(|__s| __s.data_)
     };
 }
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
 pub struct S {
     #[offset(0)]
     data_: i32,
@@ -93,19 +94,6 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.data_.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data_: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

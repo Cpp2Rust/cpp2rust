@@ -10,6 +10,7 @@ thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct S {}
 impl S {
     pub fn new(x: i32) -> Self {

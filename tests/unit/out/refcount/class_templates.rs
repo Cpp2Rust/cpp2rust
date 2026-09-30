@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct MyContainer_int_ {
     #[offset(0)]
+    #[byte_size(24)]
     vec_: Value<Vec<i32>>,
 }
 impl Clone for MyContainer_int_ {
@@ -18,14 +20,11 @@ impl Clone for MyContainer_int_ {
         }
     }
 }
-impl ByteRepr for MyContainer_int_ {
-    fn byte_size() -> usize {
-        24
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct MyContainer_char_ {
     #[offset(0)]
+    #[byte_size(24)]
     vec_: Value<Vec<u8>>,
 }
 impl Clone for MyContainer_char_ {
@@ -35,14 +34,11 @@ impl Clone for MyContainer_char_ {
         }
     }
 }
-impl ByteRepr for MyContainer_char_ {
-    fn byte_size() -> usize {
-        24
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct MyContainer_float_ {
     #[offset(0)]
+    #[byte_size(24)]
     vec_: Value<Vec<f32>>,
 }
 impl Clone for MyContainer_float_ {
@@ -52,12 +48,8 @@ impl Clone for MyContainer_float_ {
         }
     }
 }
-impl ByteRepr for MyContainer_float_ {
-    fn byte_size() -> usize {
-        24
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Boxed_int_ {
     #[offset(0)]
     pub value: i32,
@@ -68,20 +60,8 @@ impl Boxed_int_ {
         return ((*v.borrow()) + (*v.borrow()));
     }
 }
-impl ByteRepr for Boxed_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.value.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            value: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Boxed_long_ {
     #[offset(0)]
     pub value: i64,
@@ -92,120 +72,41 @@ impl Boxed_long_ {
         return ((*v.borrow()) + (*v.borrow()));
     }
 }
-impl ByteRepr for Boxed_long_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.value.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            value: <i64>::from_bytes(&buf[0..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Outer_int__Inner_int_ {
     #[offset(0)]
     pub t: i32,
     #[offset(4)]
     pub u: i32,
 }
-impl ByteRepr for Outer_int__Inner_int_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.t.to_bytes(&mut buf[0..4]);
-        self.u.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            t: <i32>::from_bytes(&buf[0..4]),
-            u: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Outer_int_ {
     #[offset(0)]
     pub v: i32,
 }
-impl ByteRepr for Outer_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Outer_long__Inner_int_ {
     #[offset(0)]
     pub t: i64,
     #[offset(8)]
     pub u: i32,
 }
-impl ByteRepr for Outer_long__Inner_int_ {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.t.to_bytes(&mut buf[0..8]);
-        self.u.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            t: <i64>::from_bytes(&buf[0..8]),
-            u: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Outer_long__Inner_char_ {
     #[offset(0)]
     pub t: i64,
     #[offset(8)]
     pub u: u8,
 }
-impl ByteRepr for Outer_long__Inner_char_ {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.t.to_bytes(&mut buf[0..8]);
-        self.u.to_bytes(&mut buf[8..9]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            t: <i64>::from_bytes(&buf[0..8]),
-            u: <u8>::from_bytes(&buf[8..9]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Outer_long_ {
     #[offset(0)]
     pub v: i64,
-}
-impl ByteRepr for Outer_long_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i64>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

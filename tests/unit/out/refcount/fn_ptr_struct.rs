@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct Handler {
     #[offset(0)]
     pub tag: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub cb: FnPtr<fn(i32) -> i32>,
 }
 impl Default for Handler {
@@ -18,21 +20,6 @@ impl Default for Handler {
         Handler {
             tag: 0_i32,
             cb: FnPtr::<fn(i32) -> i32>::null(),
-        }
-    }
-}
-impl ByteRepr for Handler {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tag.to_bytes(&mut buf[0..4]);
-        self.cb.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: <i32>::from_bytes(&buf[0..4]),
-            cb: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -45,6 +32,7 @@ pub fn negate_1(x: i32) -> i32 {
     return -(*x.borrow());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct S {}
 impl S {
     pub fn pick_1(x: i32) -> i32 {

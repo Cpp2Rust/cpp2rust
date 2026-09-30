@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
     #[offset(0)]
     pub v: i32,
@@ -46,19 +47,6 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn operator_eq_1(a: Ptr<S>, b: Ptr<S>) -> bool {
     return {
         let _lhs = a.with(|__s| __s.v);
@@ -109,7 +97,8 @@ pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
         _lhs < b.with(|__s| __s.v)
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct V {
     #[offset(0)]
     pub v: i32,
@@ -138,19 +127,6 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
-impl ByteRepr for V {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn operator_eq_9(a: V, b: V) -> bool {
     let a: Value<V> = Rc::new(RefCell::new(a));
     let b: Value<V> = Rc::new(RefCell::new(b));

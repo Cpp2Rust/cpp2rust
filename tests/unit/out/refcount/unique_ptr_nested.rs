@@ -6,31 +6,19 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(8)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(8)]
     pub inner: Option<Value<Inner>>,
 }
 impl Outer {
@@ -40,11 +28,6 @@ impl Outer {
         }));
         let this: Ptr<Outer> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        8
     }
 }
 pub fn main() {

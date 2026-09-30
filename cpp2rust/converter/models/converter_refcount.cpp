@@ -626,7 +626,11 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
       ctx_, ctx_.getCanonicalTagType(decl),
       std::vector<std::string>(attrs.begin(), attrs.end()));
 
-  StrCat(std::format("pub struct {} {{ __bytes: Value<Box<[u8]>> }}", name));
+  auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
+  StrCat(std::format("#[derive(ByteRepr)] #[byte_size({0})] pub struct {1} {{ "
+                     "#[offset(0)] #[byte_size({0})] __bytes: Value<Box<[u8]>> "
+                     "}}",
+                     size.getQuantity(), name));
 
   StrCat("impl", name);
   {
@@ -647,84 +651,12 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
 
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
-  AddByteReprTrait(decl);
 }
 
-void ConverterRefCount::AddByteReprTrait(const clang::RecordDecl *decl) {
-  if (RecordDerivesByteRepr(decl)) {
-    return;
-  }
-
-  auto struct_name = GetRecordName(decl);
-
-  if (!TypeImplementsByteRepr(ctx_.getCanonicalTagType(decl))) {
-    // The size locates the fields of the elements of arrays of structs.
-    StrCat(std::format("impl ByteRepr for {}", struct_name));
-    PushBrace brace(*this);
-    if (!decl->isUnion()) {
-      StrCat(std::format("fn byte_size() -> usize {{ {} }}",
-                         ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
-    }
-    return;
-  }
-
-  StrCat("impl ByteRepr for ", struct_name);
-  PushBrace impl_brace(*this);
-
-  if (decl->isUnion()) {
-    StrCat(std::format("fn byte_size() -> usize {{ {} }}",
-                       ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
-    StrCat("fn to_bytes(&self, buf: &mut [u8]) { "
-           "buf.copy_from_slice(&self.__bytes.borrow()); }");
-    StrCat(std::format("fn from_bytes(buf: &[u8]) -> Self {{ {} {{ __bytes: "
-                       "Rc::new(RefCell::new(Box::from(buf))) }} }}",
-                       struct_name));
-    return;
-  }
-
-  const auto &layout = ctx_.getASTRecordLayout(decl);
-
-  StrCat(std::format("fn byte_size() -> usize {{ {} }}",
-                     ctx_.getTypeSize(ctx_.getCanonicalTagType(decl)) / 8));
-
-  StrCat("fn to_bytes(&self, buf: &mut [u8])");
-  {
-    PushBrace fn_brace(*this);
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
-      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      auto value = "self." + GetNamedDeclAsString(field);
-      if (IsValueField(ctx_, field)) {
-        value = std::format("(*{}.borrow())", value);
-      }
-      StrCat(std::format("{}.to_bytes(&mut buf[{}..{}]);", value, byte_off,
-                         byte_off + byte_size));
-      ++idx;
-    }
-  }
-
-  StrCat("fn from_bytes(buf: &[u8]) -> Self");
-  {
-    PushBrace fn_brace(*this);
-    StrCat("Self");
-    PushBrace lit_brace(*this);
-    unsigned idx = 0;
-    for (auto *field : decl->fields()) {
-      auto byte_off = layout.getFieldOffset(idx) / 8;
-      auto byte_size = ctx_.getTypeSize(field->getType()) / 8;
-      PushConversionKind push(*this, ConversionKind::FullRefCount);
-      std::string storage_ty = ToString(field->getType());
-      Unwrap(storage_ty, "Value<", ">");
-      auto value = std::format("<{}>::from_bytes(&buf[{}..{}])", storage_ty,
-                               byte_off, byte_off + byte_size);
-      if (IsValueField(ctx_, field)) {
-        value = std::format("Rc::new(RefCell::new({}))", value);
-      }
-      StrCat(std::format("{}: {},", GetNamedDeclAsString(field), value));
-      ++idx;
-    }
-  }
+void ConverterRefCount::EmitByteSizeAttr(const clang::RecordDecl *decl) {
+  StrCat(std::format(
+      "#[byte_size({})]",
+      ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl)).getQuantity()));
 }
 
 std::string
@@ -745,6 +677,14 @@ bool ConverterRefCount::VisitFieldDecl(clang::FieldDecl *decl) {
   const auto &layout = ctx_.getASTRecordLayout(decl->getParent());
   StrCat(std::format("#[offset({})]",
                      layout.getFieldOffset(decl->getFieldIndex()) / 8));
+  // Only arithmetic types have the same size in Rust as in C.
+  auto type = decl->getType().getCanonicalType();
+  if (!type->isIntegerType() &&
+      !type->isSpecificBuiltinType(clang::BuiltinType::Float) &&
+      !type->isSpecificBuiltinType(clang::BuiltinType::Double)) {
+    StrCat(std::format("#[byte_size({})]",
+                       ctx_.getTypeSizeInChars(decl->getType()).getQuantity()));
+  }
   PushConversionKind push(*this, IsValueField(ctx_, decl)
                                      ? ConversionKind::FullRefCount
                                      : ConversionKind::Pointee);
@@ -2356,10 +2296,8 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   // Gives access to the fields through pointers to them.
   attrs.emplace_back("Record");
-
-  if (RecordDerivesByteRepr(decl)) {
-    attrs.emplace_back("ByteRepr");
-  }
+  // Gives access to the bytes of the struct, at the offsets of its fields.
+  attrs.emplace_back("ByteRepr");
 
   if (RecordImplementsClone(decl)) {
     attrs.emplace_back("VaArg");

@@ -272,33 +272,6 @@ bool IsMut(clang::QualType qual_type) {
            qual_type->getPointeeType().isConstQualified());
 }
 
-bool TypeImplementsByteRepr(clang::QualType qt) {
-  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
-    return true;
-  }
-  if (qt->isPointerType()) {
-    return true;
-  }
-  if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
-    return TypeImplementsByteRepr(arr->getElementType());
-  }
-  if (const auto *rd = qt->getAsRecordDecl()) {
-    if (rd->isUnion()) {
-      return true;
-    }
-    if (!qt.isTriviallyCopyableType(rd->getASTContext())) {
-      return false;
-    }
-    for (const auto *field : rd->fields()) {
-      if (!TypeImplementsByteRepr(field->getType())) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 bool RustSizeDivergesFromC(clang::QualType qt) {
   qt = qt.getCanonicalType();
   // Records have Rc<RefCell<>> fields that diverge from the C size
@@ -482,10 +455,6 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     }
   }
   return !cxx->defaultedCopyConstructorIsDeleted();
-}
-
-bool RecordDerivesByteRepr(const clang::RecordDecl *decl) {
-  return !decl->isUnion() && decl->field_empty();
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {

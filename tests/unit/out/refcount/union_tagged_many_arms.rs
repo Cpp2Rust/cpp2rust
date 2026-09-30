@@ -12,7 +12,11 @@ pub const Tag_enum_T_NUM_U: Tag_enum = 1;
 pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
+#[derive(ByteRepr)]
+#[byte_size(8)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(8)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -46,40 +50,14 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Slot {
     #[offset(0)]
     pub tag: Tag_enum,
     #[offset(8)]
+    #[byte_size(8)]
     pub payload: anon_0,
-}
-impl ByteRepr for Slot {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tag.to_bytes(&mut buf[0..4]);
-        self.payload.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: <Tag_enum>::from_bytes(&buf[0..4]),
-            payload: <anon_0>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

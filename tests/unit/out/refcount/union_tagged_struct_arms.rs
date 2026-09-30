@@ -10,33 +10,19 @@ pub type Choice_enum = u32;
 pub const Choice_enum_C_LIST: Choice_enum = 1;
 pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct anon_1 {
     #[offset(0)]
+    #[byte_size(8)]
     pub items: Ptr<Ptr<u8>>,
     #[offset(8)]
     pub count: i64,
     #[offset(16)]
     pub cursor: i64,
 }
-impl ByteRepr for anon_1 {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.items.to_bytes(&mut buf[0..8]);
-        self.count.to_bytes(&mut buf[8..16]);
-        self.cursor.to_bytes(&mut buf[16..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            items: <Ptr<Ptr<u8>>>::from_bytes(&buf[0..8]),
-            count: <i64>::from_bytes(&buf[8..16]),
-            cursor: <i64>::from_bytes(&buf[16..24]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct anon_2 {
     #[offset(0)]
     pub lo: i32,
@@ -47,26 +33,8 @@ pub struct anon_2 {
     #[offset(12)]
     pub step: u8,
 }
-impl ByteRepr for anon_2 {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.lo.to_bytes(&mut buf[0..4]);
-        self.hi.to_bytes(&mut buf[4..8]);
-        self.curr.to_bytes(&mut buf[8..12]);
-        self.step.to_bytes(&mut buf[12..13]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            lo: <i32>::from_bytes(&buf[0..4]),
-            hi: <i32>::from_bytes(&buf[4..8]),
-            curr: <i32>::from_bytes(&buf[8..12]),
-            step: <u8>::from_bytes(&buf[12..13]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(40)]
 pub struct anon_3 {
     #[offset(0)]
     pub lo: i64,
@@ -79,28 +47,11 @@ pub struct anon_3 {
     #[offset(32)]
     pub width: i32,
 }
-impl ByteRepr for anon_3 {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.lo.to_bytes(&mut buf[0..8]);
-        self.hi.to_bytes(&mut buf[8..16]);
-        self.curr.to_bytes(&mut buf[16..24]);
-        self.step.to_bytes(&mut buf[24..32]);
-        self.width.to_bytes(&mut buf[32..36]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            lo: <i64>::from_bytes(&buf[0..8]),
-            hi: <i64>::from_bytes(&buf[8..16]),
-            curr: <i64>::from_bytes(&buf[16..24]),
-            step: <i64>::from_bytes(&buf[24..32]),
-            width: <i32>::from_bytes(&buf[32..36]),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(40)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(40)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -128,44 +79,16 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(48)]
 pub struct Branch {
     #[offset(0)]
     pub choice: Choice_enum,
     #[offset(4)]
     pub index: i32,
     #[offset(8)]
+    #[byte_size(40)]
     pub v: anon_0,
-}
-impl ByteRepr for Branch {
-    fn byte_size() -> usize {
-        48
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.choice.to_bytes(&mut buf[0..4]);
-        self.index.to_bytes(&mut buf[4..8]);
-        self.v.to_bytes(&mut buf[8..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            choice: <Choice_enum>::from_bytes(&buf[0..4]),
-            index: <i32>::from_bytes(&buf[4..8]),
-            v: <anon_0>::from_bytes(&buf[8..48]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

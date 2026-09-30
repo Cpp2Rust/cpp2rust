@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
 pub struct MoveOnly {
     #[offset(0)]
     pub v: i32,
@@ -27,12 +28,8 @@ impl MoveOnly {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for MoveOnly {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(4)]
 pub struct ConstMove {
     #[offset(0)]
     pub mark: i32,
@@ -63,12 +60,8 @@ impl Default for ConstMove {
         { ConstMove::new() }
     }
 }
-impl ByteRepr for ConstMove {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct ThrowingMove {
     #[offset(0)]
     pub v: i32,
@@ -118,12 +111,8 @@ impl Clone for ThrowingMove {
         ThrowingMove::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for ThrowingMove {
-    fn byte_size() -> usize {
-        12
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct NoexceptMove {
     #[offset(0)]
     pub v: i32,
@@ -171,11 +160,6 @@ impl Clone for NoexceptMove {
             moves: self.moves.clone(),
         }));
         NoexceptMove::copy_from(__src.as_pointer())
-    }
-}
-impl ByteRepr for NoexceptMove {
-    fn byte_size() -> usize {
-        12
     }
 }
 pub fn by_value_0(m: MoveOnly) -> i32 {

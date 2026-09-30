@@ -6,35 +6,19 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct MinHeapNode {
     #[offset(0)]
     pub data: u8,
     #[offset(4)]
     pub freq: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub left: Ptr<MinHeapNode>,
     #[offset(16)]
+    #[byte_size(8)]
     pub right: Ptr<MinHeapNode>,
-}
-impl ByteRepr for MinHeapNode {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..1]);
-        self.freq.to_bytes(&mut buf[4..8]);
-        self.left.to_bytes(&mut buf[8..16]);
-        self.right.to_bytes(&mut buf[16..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: <u8>::from_bytes(&buf[0..1]),
-            freq: <i32>::from_bytes(&buf[4..8]),
-            left: <Ptr<MinHeapNode>>::from_bytes(&buf[8..16]),
-            right: <Ptr<MinHeapNode>>::from_bytes(&buf[16..24]),
-        }
-    }
 }
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     let t: Value<MinHeapNode> = Rc::new(RefCell::new(MinHeapNode {
@@ -58,17 +42,20 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     };
     b.write(__rhs);
 }
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(32)]
 pub struct MinHeap {
     #[offset(0)]
     pub size: i32,
     #[offset(4)]
     pub capacity: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub arr: Option<Value<Box<[Ptr<MinHeapNode>]>>>,
     #[offset(16)]
     pub next: i32,
     #[offset(24)]
+    #[byte_size(8)]
     pub alloc: Option<Value<Box<[MinHeapNode]>>>,
 }
 impl MinHeap {
@@ -84,11 +71,6 @@ impl MinHeap {
         }));
         let this: Ptr<MinHeap> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for MinHeap {
-    fn byte_size() -> usize {
-        32
     }
 }
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {

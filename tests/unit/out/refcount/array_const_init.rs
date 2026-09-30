@@ -6,13 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(20)]
 pub struct S {
     #[offset(0)]
     pub head: i32,
     #[offset(4)]
+    #[byte_size(12)]
     pub tail: Value<Box<[i32]>>,
     #[offset(16)]
+    #[byte_size(4)]
     pub buf: Value<Box<[u8]>>,
 }
 impl Clone for S {
@@ -30,23 +33,6 @@ impl Default for S {
             head: 0_i32,
             tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
             buf: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
-        }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        20
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.head.to_bytes(&mut buf[0..4]);
-        (*self.tail.borrow()).to_bytes(&mut buf[4..16]);
-        (*self.buf.borrow()).to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            head: <i32>::from_bytes(&buf[0..4]),
-            tail: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[4..16]))),
-            buf: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[16..20]))),
         }
     }
 }

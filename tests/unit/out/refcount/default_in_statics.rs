@@ -6,45 +6,40 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Inner {
     #[offset(0)]
     pub v: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub name: Ptr<u8>,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.name.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            name: <Ptr<u8>>::from_bytes(&buf[8..16]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(88)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(8)]
     pub p1: Ptr<i32>,
     #[offset(8)]
+    #[byte_size(8)]
     pub p2: Ptr<i32>,
     #[offset(16)]
+    #[byte_size(24)]
     pub arr: Value<Box<[Ptr<i32>]>>,
     #[offset(40)]
+    #[byte_size(8)]
     pub cp: Ptr<u8>,
     #[offset(48)]
+    #[byte_size(8)]
     pub pp: Ptr<Ptr<i32>>,
     #[offset(56)]
+    #[byte_size(16)]
     pub inner: Inner,
     #[offset(72)]
     pub x: i32,
     #[offset(80)]
+    #[byte_size(8)]
     pub fn_: FnPtr<fn(i32) -> i32>,
 }
 impl Clone for Outer {
@@ -79,42 +74,20 @@ impl Default for Outer {
         }
     }
 }
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        88
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.p1.to_bytes(&mut buf[0..8]);
-        self.p2.to_bytes(&mut buf[8..16]);
-        (*self.arr.borrow()).to_bytes(&mut buf[16..40]);
-        self.cp.to_bytes(&mut buf[40..48]);
-        self.pp.to_bytes(&mut buf[48..56]);
-        self.inner.to_bytes(&mut buf[56..72]);
-        self.x.to_bytes(&mut buf[72..76]);
-        self.fn_.to_bytes(&mut buf[80..88]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p1: <Ptr<i32>>::from_bytes(&buf[0..8]),
-            p2: <Ptr<i32>>::from_bytes(&buf[8..16]),
-            arr: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[16..40]))),
-            cp: <Ptr<u8>>::from_bytes(&buf[40..48]),
-            pp: <Ptr<Ptr<i32>>>::from_bytes(&buf[48..56]),
-            inner: <Inner>::from_bytes(&buf[56..72]),
-            x: <i32>::from_bytes(&buf[72..76]),
-            fn_: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[80..88]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
+    #[byte_size(8)]
     pub s1: Ptr<u8>,
     #[offset(8)]
+    #[byte_size(8)]
     pub s2: Ptr<u8>,
     #[offset(16)]
+    #[byte_size(8)]
     pub fn1: FnPtr<fn(i32) -> i32>,
     #[offset(24)]
+    #[byte_size(8)]
     pub fn2: FnPtr<fn(i32) -> i32>,
     #[offset(32)]
     pub n: i32,
@@ -127,27 +100,6 @@ impl Default for Foo {
             fn1: FnPtr::<fn(i32) -> i32>::null(),
             fn2: FnPtr::<fn(i32) -> i32>::null(),
             n: 0_i32,
-        }
-    }
-}
-impl ByteRepr for Foo {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.s1.to_bytes(&mut buf[0..8]);
-        self.s2.to_bytes(&mut buf[8..16]);
-        self.fn1.to_bytes(&mut buf[16..24]);
-        self.fn2.to_bytes(&mut buf[24..32]);
-        self.n.to_bytes(&mut buf[32..36]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s1: <Ptr<u8>>::from_bytes(&buf[0..8]),
-            s2: <Ptr<u8>>::from_bytes(&buf[8..16]),
-            fn1: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[16..24]),
-            fn2: <FnPtr<fn(i32) -> i32>>::from_bytes(&buf[24..32]),
-            n: <i32>::from_bytes(&buf[32..36]),
         }
     }
 }

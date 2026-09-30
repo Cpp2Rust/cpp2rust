@@ -29,7 +29,8 @@ pub fn scaled_3(v: Ptr<V>, k: f64) -> f64 {
         _lhs * (*k.borrow())
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct V {
     #[offset(0)]
     pub x: i32,
@@ -45,78 +46,29 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
-impl ByteRepr for V {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn get_4(w: Ptr<W_int_>) -> i32 {
     return w.with(|__s| __s.x);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct W_int_ {
     #[offset(0)]
     pub x: i32,
 }
-impl ByteRepr for W_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn get_5(w: Ptr<W_long_>) -> i64 {
     return w.with(|__s| __s.x);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct W_long_ {
     #[offset(0)]
     pub x: i64,
 }
-impl ByteRepr for W_long_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i64>::from_bytes(&buf[0..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct D {
     #[offset(0)]
     pub x: i32,
-}
-impl ByteRepr for D {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn declared_then_defined_6(d: Ptr<D>) -> i32 {
     return (d.with(|__s| __s.x) + 1);

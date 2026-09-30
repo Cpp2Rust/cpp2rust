@@ -6,31 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct Explicit {
     #[offset(0)]
     pub v: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub inner: Inner,
     #[offset(8)]
+    #[byte_size(8)]
     pub arr: Value<Box<[i32]>>,
 }
 impl Explicit {
@@ -65,18 +56,16 @@ impl Default for Explicit {
         }
     }
 }
-impl ByteRepr for Explicit {
-    fn byte_size() -> usize {
-        16
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct Implicit {
     #[offset(0)]
     pub v: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub inner: Inner,
     #[offset(8)]
+    #[byte_size(8)]
     pub arr: Value<Box<[i32]>>,
 }
 impl Clone for Implicit {
@@ -97,24 +86,8 @@ impl Default for Implicit {
         }
     }
 }
-impl ByteRepr for Implicit {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.inner.to_bytes(&mut buf[4..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            inner: <Inner>::from_bytes(&buf[4..8]),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[8..16]))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct DefaultCopyUserMove {
     #[offset(0)]
     pub v: i32,
@@ -135,12 +108,8 @@ impl DefaultCopyUserMove {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for DefaultCopyUserMove {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct UserCopyDefaultMove {
     #[offset(0)]
     pub v: i32,
@@ -174,20 +143,19 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for UserCopyDefaultMove {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(64)]
 pub struct Buffer {
     #[offset(0)]
+    #[byte_size(24)]
     pub data: Value<Vec<i32>>,
     #[offset(24)]
+    #[byte_size(24)]
     pub rows: Value<Vec<Value<Vec<i32>>>>,
     #[offset(48)]
     pub n: i32,
     #[offset(52)]
+    #[byte_size(8)]
     pub arr: Value<Box<[i32]>>,
 }
 impl Buffer {
@@ -239,20 +207,19 @@ impl Default for Buffer {
         }
     }
 }
-impl ByteRepr for Buffer {
-    fn byte_size() -> usize {
-        64
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(48)]
 pub struct Owner {
     #[offset(0)]
+    #[byte_size(24)]
     pub data: Value<Vec<i32>>,
     #[offset(24)]
     pub n: i32,
     #[offset(28)]
+    #[byte_size(8)]
     pub arr: Value<Box<[i32]>>,
     #[offset(40)]
+    #[byte_size(8)]
     pub p: Option<Value<i32>>,
 }
 impl Owner {
@@ -281,18 +248,17 @@ impl Default for Owner {
         }
     }
 }
-impl ByteRepr for Owner {
-    fn byte_size() -> usize {
-        48
-    }
-}
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(32)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(4)]
     pub inner: Inner,
     #[offset(4)]
+    #[byte_size(16)]
     pub e: Explicit,
     #[offset(24)]
+    #[byte_size(8)]
     pub p: Option<Value<i32>>,
 }
 impl Holder {
@@ -314,11 +280,6 @@ impl Holder {
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        32
     }
 }
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {

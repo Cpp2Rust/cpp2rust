@@ -6,11 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct UserDefined {
     #[offset(0)]
+    #[byte_size(4)]
     pub a: Value<Vec<i32>>,
     #[offset(8)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for UserDefined {
@@ -31,33 +34,17 @@ impl Default for UserDefined {
         }
     }
 }
-impl ByteRepr for UserDefined {
-    fn byte_size() -> usize {
-        32
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct FieldIsLibcType {
     #[offset(0)]
+    #[byte_size(16)]
     pub addr: libcc2rs::Sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         FieldIsLibcType {
             addr: Default::default(),
-        }
-    }
-}
-impl ByteRepr for FieldIsLibcType {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.addr.to_bytes(&mut buf[0..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            addr: <libcc2rs::Sockaddr>::from_bytes(&buf[0..16]),
         }
     }
 }

@@ -6,123 +6,55 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Point {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Line {
     #[offset(0)]
+    #[byte_size(8)]
     pub start: Point,
     #[offset(8)]
+    #[byte_size(8)]
     pub end: Point,
 }
-impl ByteRepr for Line {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.start.to_bytes(&mut buf[0..8]);
-        self.end.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            start: <Point>::from_bytes(&buf[0..8]),
-            end: <Point>::from_bytes(&buf[8..16]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Node {
     #[offset(0)]
     pub value: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub next: Ptr<Node>,
-}
-impl ByteRepr for Node {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.value.to_bytes(&mut buf[0..4]);
-        self.next.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            value: <i32>::from_bytes(&buf[0..4]),
-            next: <Ptr<Node>>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub type Color = u32;
 pub const Color_RED: Color = 0;
 pub const Color_GREEN: Color = 1;
 pub const Color_BLUE: Color = 2;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub b: i32,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Container {
     #[offset(0)]
+    #[byte_size(8)]
     pub inner: Inner,
     #[offset(8)]
     pub color: Color,
     #[offset(12)]
     pub count: i32,
-}
-impl ByteRepr for Container {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.inner.to_bytes(&mut buf[0..8]);
-        self.color.to_bytes(&mut buf[8..12]);
-        self.count.to_bytes(&mut buf[12..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: <Inner>::from_bytes(&buf[0..8]),
-            color: <Color>::from_bytes(&buf[8..12]),
-            count: <i32>::from_bytes(&buf[12..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

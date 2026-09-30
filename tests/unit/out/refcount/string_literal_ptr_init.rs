@@ -6,11 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
 pub struct label {
     #[offset(0)]
+    #[byte_size(8)]
     pub name: Ptr<u8>,
     #[offset(8)]
+    #[byte_size(8)]
     pub probe: FnPtr<fn() -> i32>,
     #[offset(16)]
     pub mask: i32,
@@ -21,23 +24,6 @@ impl Default for label {
             name: Ptr::<u8>::null(),
             probe: FnPtr::<fn() -> i32>::null(),
             mask: 0_i32,
-        }
-    }
-}
-impl ByteRepr for label {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.name.to_bytes(&mut buf[0..8]);
-        self.probe.to_bytes(&mut buf[8..16]);
-        self.mask.to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            name: <Ptr<u8>>::from_bytes(&buf[0..8]),
-            probe: <FnPtr<fn() -> i32>>::from_bytes(&buf[8..16]),
-            mask: <i32>::from_bytes(&buf[16..20]),
         }
     }
 }

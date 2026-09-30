@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct StructWithCtor {
     #[offset(0)]
     x1_: i32,
@@ -27,25 +28,11 @@ impl StructWithCtor {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for StructWithCtor {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x1_.to_bytes(&mut buf[0..4]);
-        self.x2_.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x1_: <i32>::from_bytes(&buf[0..4]),
-            x2_: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
 pub fn foo_0(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Value_ {
     #[offset(0)]
     pub v: i32,
@@ -58,24 +45,14 @@ impl Value_ {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Value_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct Ptr_ {
     #[offset(0)]
+    #[byte_size(4)]
     pub v1: Value_,
     #[offset(4)]
+    #[byte_size(4)]
     pub v2: Value_,
 }
 impl Ptr_ {
@@ -91,21 +68,6 @@ impl Ptr_ {
 impl Default for Ptr_ {
     fn default() -> Self {
         { Ptr_::new() }
-    }
-}
-impl ByteRepr for Ptr_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v1.to_bytes(&mut buf[0..4]);
-        self.v2.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v1: <Value_>::from_bytes(&buf[0..4]),
-            v2: <Value_>::from_bytes(&buf[4..8]),
-        }
     }
 }
 pub fn main() {

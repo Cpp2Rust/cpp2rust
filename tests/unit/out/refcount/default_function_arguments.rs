@@ -19,7 +19,8 @@ pub fn baz_1(a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
         _lhs == (*b.borrow()).clone()
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct Bar {
     #[offset(0)]
     pub v: i32,
@@ -35,19 +36,6 @@ impl Bar {
 impl Default for Bar {
     fn default() -> Self {
         { Bar::new(None) }
-    }
-}
-impl ByteRepr for Bar {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
     }
 }
 pub fn main() {

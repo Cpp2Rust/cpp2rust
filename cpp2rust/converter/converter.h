@@ -673,7 +673,7 @@ protected:
 
   void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
 
-  virtual void AddByteReprTrait(const clang::RecordDecl *decl);
+  virtual void EmitByteSizeAttr(const clang::RecordDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,

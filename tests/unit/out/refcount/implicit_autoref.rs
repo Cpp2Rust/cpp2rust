@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for Holder {
@@ -16,11 +18,6 @@ impl Clone for Holder {
         Self {
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
         }
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        24
     }
 }
 pub fn write_through_0(p: Ptr<i32>) {

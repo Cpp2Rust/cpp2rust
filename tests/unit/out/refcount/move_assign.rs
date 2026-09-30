@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
 pub struct MoveOnly {
     #[offset(0)]
     pub v: i32,
@@ -27,12 +28,8 @@ impl MoveOnly {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for MoveOnly {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(4)]
 pub struct ConstMoveAssign {
     #[offset(0)]
     pub mark: i32,
@@ -47,11 +44,6 @@ impl ConstMoveAssign {
 impl Default for ConstMoveAssign {
     fn default() -> Self {
         { ConstMoveAssign::new() }
-    }
-}
-impl ByteRepr for ConstMoveAssign {
-    fn byte_size() -> usize {
-        4
     }
 }
 pub fn make_0(v: i32) -> MoveOnly {

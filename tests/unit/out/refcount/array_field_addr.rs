@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(12)]
 pub struct S {
     #[offset(0)]
     pub before: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub mask: Value<Box<[u8]>>,
     #[offset(8)]
     pub after: i32,
@@ -30,23 +32,6 @@ impl Default for S {
             before: 0_i32,
             mask: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
             after: 0_i32,
-        }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.before.to_bytes(&mut buf[0..4]);
-        (*self.mask.borrow()).to_bytes(&mut buf[4..8]);
-        self.after.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            before: <i32>::from_bytes(&buf[0..4]),
-            mask: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..8]))),
-            after: <i32>::from_bytes(&buf[8..12]),
         }
     }
 }

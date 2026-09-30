@@ -6,33 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-impl ByteRepr for Counter {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.n.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            n: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(40)]
 pub struct S {
     #[offset(0)]
     pub tag: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub c: Counter,
     #[offset(8)]
+    #[byte_size(8)]
     pub arr: Value<Box<[Counter]>>,
     #[offset(16)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for S {
@@ -57,11 +49,6 @@ impl Default for S {
             )),
             v: Rc::new(RefCell::new(Default::default())),
         }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        40
     }
 }
 pub fn run_0(o: Ptr<S>) {

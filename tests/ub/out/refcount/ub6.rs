@@ -6,17 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Pair {
     #[offset(0)]
+    #[byte_size(8)]
     pub x1: Ptr<i32>,
     #[offset(8)]
+    #[byte_size(8)]
     pub x2: Ptr<i32>,
-}
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        16
-    }
 }
 pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {
     return Pair {

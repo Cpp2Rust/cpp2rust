@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct S {
     #[offset(0)]
     pub a: i32,
@@ -14,23 +15,6 @@ pub struct S {
     pub b: i32,
     #[offset(8)]
     pub c: i32,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-        self.c.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-            c: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
 pub fn bump_0(s: Ptr<S>) -> i32 {
     let s: Value<Ptr<S>> = Rc::new(RefCell::new(s));

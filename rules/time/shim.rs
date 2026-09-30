@@ -4,7 +4,8 @@
 use crate::{ByteRepr, Ptr, Record};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::tm>())]
 pub struct Tm {
     #[offset(offset_of!(::libc::tm, tm_sec))]
     pub tm_sec: i32,
@@ -64,13 +65,8 @@ impl Tm {
     }
 }
 
-impl ByteRepr for Tm {
-    fn byte_size() -> usize {
-        size_of::<::libc::tm>()
-    }
-}
-
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::timeval>())]
 pub struct Timeval {
     #[offset(offset_of!(::libc::timeval, tv_sec))]
     pub tv_sec: i64,
@@ -78,36 +74,13 @@ pub struct Timeval {
     pub tv_usec: i64,
 }
 
-impl ByteRepr for Timeval {
-    fn byte_size() -> usize {
-        16
-    }
-
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tv_sec.to_bytes(&mut buf[0..8]);
-        self.tv_usec.to_bytes(&mut buf[8..16]);
-    }
-
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tv_sec: i64::from_bytes(&buf[0..8]),
-            tv_usec: i64::from_bytes(&buf[8..16]),
-        }
-    }
-}
-
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::timespec>())]
 pub struct Timespec {
     #[offset(offset_of!(::libc::timespec, tv_sec))]
     pub tv_sec: i64,
     #[offset(offset_of!(::libc::timespec, tv_nsec))]
     pub tv_nsec: i64,
-}
-
-impl ByteRepr for Timespec {
-    fn byte_size() -> usize {
-        size_of::<::libc::timespec>()
-    }
 }
 
 impl ByteRepr for ::libc::tm {}

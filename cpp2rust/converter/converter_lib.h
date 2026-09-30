@@ -67,8 +67,6 @@ bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
 bool IsMut(clang::QualType qual_type);
 
-bool TypeImplementsByteRepr(clang::QualType qt);
-
 bool RustSizeDivergesFromC(clang::QualType qt);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
@@ -108,8 +106,6 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
-
-bool RecordDerivesByteRepr(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 

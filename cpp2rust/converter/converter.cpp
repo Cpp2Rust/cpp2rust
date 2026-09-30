@@ -95,6 +95,7 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
 void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
+    out += "#[byte_size(1)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -812,6 +813,7 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     StrCat(attr, ',');
   }
   StrCat(")]");
+  EmitByteSizeAttr(decl);
 
   // Fields
   auto access = clang::dyn_cast<clang::CXXRecordDecl>(decl)
@@ -837,7 +839,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
-  AddByteReprTrait(decl);
 }
 
 void Converter::ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) {
@@ -925,7 +926,6 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   }
 
   AddDefaultTrait(decl);
-  AddByteReprTrait(decl);
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
@@ -4675,7 +4675,7 @@ void Converter::ConvertFieldInit(const clang::FieldDecl *field,
   }
 }
 
-void Converter::AddByteReprTrait(const clang::RecordDecl *decl) {}
+void Converter::EmitByteSizeAttr(const clang::RecordDecl *decl) {}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
                                                    clang::Expr *expr) {

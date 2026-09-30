@@ -6,11 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(32)]
 pub struct S {
     #[offset(0)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
     #[offset(24)]
+    #[byte_size(8)]
     pub n: Value<Box<[i32]>>,
 }
 impl S {
@@ -45,11 +48,6 @@ impl Default for S {
             v: Rc::new(RefCell::new(Default::default())),
             n: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {

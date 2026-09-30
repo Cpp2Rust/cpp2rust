@@ -7,28 +7,16 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Probe {}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Wrapper_Probe_ {
     #[offset(0)]
+    #[byte_size(1)]
     pub base_: Probe,
     #[offset(4)]
     pub tag: i32,
-}
-impl ByteRepr for Wrapper_Probe_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.base_.to_bytes(&mut buf[0..1]);
-        self.tag.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            base_: <Probe>::from_bytes(&buf[0..1]),
-            tag: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(40)]
 pub struct table {
     #[offset(0)]
+    #[byte_size(30)]
     pub rows: Value<Box<[Value<Box<[u8]>>]>>,
     #[offset(32)]
     pub count: usize,
@@ -30,23 +32,6 @@ impl Default for table {
                     .collect::<Box<[Value<Box<[u8]>>]>>(),
             )),
             count: 0_usize,
-        }
-    }
-}
-impl ByteRepr for table {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.rows.borrow()).to_bytes(&mut buf[0..30]);
-        self.count.to_bytes(&mut buf[32..40]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            rows: Rc::new(RefCell::new(<Box<[Value<Box<[u8]>>]>>::from_bytes(
-                &buf[0..30],
-            ))),
-            count: <usize>::from_bytes(&buf[32..40]),
         }
     }
 }

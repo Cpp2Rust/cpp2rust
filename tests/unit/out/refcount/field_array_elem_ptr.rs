@@ -6,35 +6,24 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Point {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(48)]
 pub struct Shape {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
+    #[byte_size(16)]
     pub coords: Value<Box<[i32]>>,
     #[offset(20)]
+    #[byte_size(24)]
     pub points: Value<Box<[Point]>>,
     #[offset(44)]
     pub tail: i32,
@@ -58,25 +47,6 @@ impl Default for Shape {
                 (0..3).map(|_| <Point>::default()).collect::<Box<[Point]>>(),
             )),
             tail: 0_i32,
-        }
-    }
-}
-impl ByteRepr for Shape {
-    fn byte_size() -> usize {
-        48
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.id.to_bytes(&mut buf[0..4]);
-        (*self.coords.borrow()).to_bytes(&mut buf[4..20]);
-        (*self.points.borrow()).to_bytes(&mut buf[20..44]);
-        self.tail.to_bytes(&mut buf[44..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            id: <i32>::from_bytes(&buf[0..4]),
-            coords: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[4..20]))),
-            points: Rc::new(RefCell::new(<Box<[Point]>>::from_bytes(&buf[20..44]))),
-            tail: <i32>::from_bytes(&buf[44..48]),
         }
     }
 }

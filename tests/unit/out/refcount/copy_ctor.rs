@@ -9,7 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static copies_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Counted {
     #[offset(0)]
     pub v: i32,
@@ -36,12 +37,8 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Counted {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct NonConst {
     #[offset(0)]
     pub mark: i32,
@@ -80,12 +77,8 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-impl ByteRepr for NonConst {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Ignored {
     #[offset(0)]
     pub v: i32,
@@ -110,16 +103,14 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Ignored {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(4)]
     pub c: Counted,
     #[offset(4)]
+    #[byte_size(8)]
     pub arr: Value<Box<[Counted]>>,
 }
 impl Clone for Holder {
@@ -140,11 +131,6 @@ impl Default for Holder {
                     .collect::<Box<[Counted]>>(),
             )),
         }
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        12
     }
 }
 pub fn by_value_1(c: Counted) -> i32 {

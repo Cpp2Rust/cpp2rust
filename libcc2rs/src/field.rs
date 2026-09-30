@@ -223,6 +223,20 @@ macro_rules! array_field_ptr {
     }};
 }
 
+// The byte size of field `field` of struct `ty`, like offset_of! gives its
+// offset, e.g., `size_of_field!(::libc::dirent, d_name)`.
+#[macro_export]
+macro_rules! size_of_field {
+    ($ty:ty, $field:ident) => {
+        $crate::__field::size_of_pointee(|__s: &$ty| &__s.$field)
+    };
+}
+
+// The size of the type that `f` gives a reference to.
+pub const fn size_of_pointee<S, T>(_f: fn(&S) -> &T) -> usize {
+    std::mem::size_of::<T>()
+}
+
 // Something that is read and written in place, like the object a pointer
 // points to.
 pub trait Place: Clone {
@@ -429,28 +443,13 @@ mod tests {
     use std::cell::RefCell;
     use std::rc::Rc;
 
-    #[derive(Default, Record)]
+    #[derive(Default, Record, ByteRepr)]
+    #[byte_size(8)]
     struct Inner {
         #[offset(0)]
         a: i32,
         #[offset(4)]
         b: i32,
-    }
-
-    impl ByteRepr for Inner {
-        fn byte_size() -> usize {
-            8
-        }
-        fn to_bytes(&self, buf: &mut [u8]) {
-            self.a.to_bytes(&mut buf[0..4]);
-            self.b.to_bytes(&mut buf[4..8]);
-        }
-        fn from_bytes(buf: &[u8]) -> Self {
-            Self {
-                a: i32::from_bytes(&buf[0..4]),
-                b: i32::from_bytes(&buf[4..8]),
-            }
-        }
     }
 
     #[derive(Default, Record)]
@@ -565,28 +564,20 @@ mod tests {
         raw.delete();
     }
 
-    #[derive(Record)]
+    #[derive(Record, ByteRepr)]
+    #[byte_size(8)]
     struct Masked {
         #[offset(0)]
         n: i32,
         #[offset(4)]
+        #[byte_size(4)]
         mask: Value<Box<[u8]>>,
     }
 
-    impl ByteRepr for Masked {
-        fn byte_size() -> usize {
-            8
-        }
-        fn to_bytes(&self, buf: &mut [u8]) {
-            self.n.to_bytes(&mut buf[0..4]);
-            self.mask.borrow().to_bytes(&mut buf[4..8]);
-        }
-        fn from_bytes(buf: &[u8]) -> Self {
-            Self {
-                n: i32::from_bytes(&buf[0..4]),
-                mask: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..8]))),
-            }
-        }
+    #[test]
+    fn size_of_field() {
+        assert_eq!(size_of_field!(Masked, n), 4);
+        assert_eq!(size_of_field!(Outer, inner), size_of::<Inner>());
     }
 
     #[test]

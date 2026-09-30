@@ -25,23 +25,11 @@ pub fn half_3(x: f64) -> f64 {
     let x: Value<f64> = Rc::new(RefCell::new(x));
     return ((*x.borrow()) / 2.0E+0);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Flag {
     #[offset(0)]
     pub v: i32,
-}
-impl ByteRepr for Flag {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn use_4(f: Flag) -> i32 {
     let f: Value<Flag> = Rc::new(RefCell::new(f));
@@ -53,23 +41,11 @@ pub fn checked_5(x: i32) -> i32 {
     assert!(((*x.borrow()) > 0));
     return ((*x.borrow()) + 1);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct P {
     #[offset(0)]
     pub v: i32,
-}
-impl ByteRepr for P {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

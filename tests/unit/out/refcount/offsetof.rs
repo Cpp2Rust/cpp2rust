@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct Layout {
     #[offset(0)]
     pub a: u8,
@@ -15,28 +16,13 @@ pub struct Layout {
     #[offset(8)]
     pub c: u16,
 }
-impl ByteRepr for Layout {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..1]);
-        self.b.to_bytes(&mut buf[4..8]);
-        self.c.to_bytes(&mut buf[8..10]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <u8>::from_bytes(&buf[0..1]),
-            b: <u32>::from_bytes(&buf[4..8]),
-            c: <u16>::from_bytes(&buf[8..10]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(66)]
 pub struct Frame {
     #[offset(0)]
     pub tag: u16,
     #[offset(2)]
+    #[byte_size(64)]
     pub body: Value<Box<[u8]>>,
 }
 impl Clone for Frame {
@@ -52,21 +38,6 @@ impl Default for Frame {
         Frame {
             tag: 0_u16,
             body: Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>())),
-        }
-    }
-}
-impl ByteRepr for Frame {
-    fn byte_size() -> usize {
-        66
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tag.to_bytes(&mut buf[0..2]);
-        (*self.body.borrow()).to_bytes(&mut buf[2..66]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: <u16>::from_bytes(&buf[0..2]),
-            body: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[2..66]))),
         }
     }
 }

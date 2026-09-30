@@ -15,9 +15,11 @@ thread_local!(
 thread_local!(
     pub static moves_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(20)]
 pub struct Buffer {
     #[offset(0)]
+    #[byte_size(16)]
     pub data: Value<Box<[i32]>>,
     #[offset(16)]
     pub size: i32,
@@ -105,11 +107,6 @@ impl Default for Buffer {
             data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: 0_i32,
         }
-    }
-}
-impl ByteRepr for Buffer {
-    fn byte_size() -> usize {
-        20
     }
 }
 pub fn make_3(size: i32) -> Buffer {

@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
@@ -18,30 +19,18 @@ impl Default for Inner {
         Inner { x: 3, y: 4 }
     }
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
 pub struct S {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub b: u8,
     #[offset(8)]
+    #[byte_size(8)]
     pub c: Inner,
     #[offset(16)]
+    #[byte_size(8)]
     pub d: Inner,
 }
 impl Default for S {
@@ -54,26 +43,8 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..5]);
-        self.c.to_bytes(&mut buf[8..16]);
-        self.d.to_bytes(&mut buf[16..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <u8>::from_bytes(&buf[4..5]),
-            c: <Inner>::from_bytes(&buf[8..16]),
-            d: <Inner>::from_bytes(&buf[16..24]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct Boxed_int_ {
     #[offset(0)]
     pub v: i32,
@@ -97,21 +68,6 @@ impl Default for Boxed_int_ {
         Boxed_int_ {
             v: 0_i32,
             tag: 0_i32,
-        }
-    }
-}
-impl ByteRepr for Boxed_int_ {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.tag.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            tag: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }

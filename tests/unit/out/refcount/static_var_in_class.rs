@@ -10,6 +10,7 @@ thread_local!(
     static inner_const_0: Value<i32> = Rc::new(RefCell::new(1));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct C {}
 thread_local!(
     pub static inner_const_1: Value<i32> = Rc::new(RefCell::new(2));
@@ -17,6 +18,7 @@ thread_local!(
 pub type anon_3 = u32;
 pub const anon_3_kValue: anon_3 = 3;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct S {}
 impl S {
     pub fn f() -> i32 {

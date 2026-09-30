@@ -70,27 +70,13 @@ pub fn fill_and_sum_9(a: Ptr<i32>, v: i32, out: Ptr<i32>) {
 pub fn pick_10(s: Ptr<u8>) -> Ptr<u8> {
     return ((s).clone() as Ptr<u8>);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Point {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
-}
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn sum_points_11(p: Ptr<Point>) -> i32 {
     return {

@@ -4,7 +4,8 @@
 use crate::{ByteRepr, Ptr, Record, Sockaddr};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::addrinfo>())]
 pub struct Addrinfo {
     #[offset(offset_of!(::libc::addrinfo, ai_flags))]
     pub ai_flags: i32,
@@ -22,12 +23,6 @@ pub struct Addrinfo {
     pub ai_canonname: Ptr<u8>,
     #[offset(offset_of!(::libc::addrinfo, ai_next))]
     pub ai_next: Ptr<Addrinfo>,
-}
-
-impl ByteRepr for Addrinfo {
-    fn byte_size() -> usize {
-        size_of::<::libc::addrinfo>()
-    }
 }
 
 impl ByteRepr for ::libc::addrinfo {}

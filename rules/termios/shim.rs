@@ -6,7 +6,8 @@ use std::cell::RefCell;
 use std::mem::{offset_of, size_of};
 use std::rc::Rc;
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(size_of::<::libc::termios>())]
 pub struct Termios {
     #[offset(offset_of!(::libc::termios, c_iflag))]
     pub c_iflag: u32,
@@ -20,6 +21,7 @@ pub struct Termios {
     #[cfg_attr(target_os = "macos", offset(offset_of!(::libc::termios, c_cc)))]
     pub c_line: u8,
     #[offset(offset_of!(::libc::termios, c_cc))]
+    #[byte_size(::libc::NCCS)]
     pub c_cc: Value<Box<[u8]>>,
     #[offset(offset_of!(::libc::termios, c_ispeed))]
     pub c_ispeed: u32,
@@ -48,12 +50,6 @@ impl Clone for Termios {
             c_cc: Rc::new(RefCell::new(self.c_cc.borrow().clone())),
             ..*self
         }
-    }
-}
-
-impl ByteRepr for Termios {
-    fn byte_size() -> usize {
-        size_of::<::libc::termios>()
     }
 }
 
@@ -119,7 +115,8 @@ impl Termios {
     }
 }
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::winsize>())]
 pub struct Winsize {
     #[offset(offset_of!(::libc::winsize, ws_row))]
     pub ws_row: u16,
@@ -129,10 +126,4 @@ pub struct Winsize {
     pub ws_xpixel: u16,
     #[offset(offset_of!(::libc::winsize, ws_ypixel))]
     pub ws_ypixel: u16,
-}
-
-impl ByteRepr for Winsize {
-    fn byte_size() -> usize {
-        size_of::<::libc::winsize>()
-    }
 }

@@ -9,7 +9,8 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
     pub v: i32,
@@ -45,12 +46,8 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Partial {
-    fn byte_size() -> usize {
-        8
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct NonConstAssign {
     #[offset(0)]
     pub mark: i32,
@@ -67,12 +64,8 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-impl ByteRepr for NonConstAssign {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct RefQualified {
     #[offset(0)]
     pub mark: i32,
@@ -89,16 +82,14 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-impl ByteRepr for RefQualified {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(8)]
     pub p: Partial,
     #[offset(8)]
+    #[byte_size(16)]
     pub arr: Value<Box<[Partial]>>,
 }
 impl Clone for Holder {
@@ -119,11 +110,6 @@ impl Default for Holder {
                     .collect::<Box<[Partial]>>(),
             )),
         }
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        24
     }
 }
 pub fn main() {

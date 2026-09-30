@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct S {
     #[offset(0)]
+    #[byte_size(8)]
     pub r: Ptr<i32>,
 }
 impl S {
@@ -16,11 +18,6 @@ impl S {
         let __this: Value<S> = Rc::new(RefCell::new(Self { r: (x).clone() }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        8
     }
 }
 pub fn main() {

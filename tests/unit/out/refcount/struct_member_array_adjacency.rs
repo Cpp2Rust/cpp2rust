@@ -6,11 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct pair {
     #[offset(0)]
+    #[byte_size(16)]
     pub a: Value<Box<[i32]>>,
     #[offset(16)]
+    #[byte_size(16)]
     pub b: Value<Box<[i32]>>,
 }
 impl Clone for pair {
@@ -26,21 +29,6 @@ impl Default for pair {
         pair {
             a: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             b: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-        }
-    }
-}
-impl ByteRepr for pair {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..16]);
-        (*self.b.borrow()).to_bytes(&mut buf[16..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..16]))),
-            b: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[16..32]))),
         }
     }
 }

@@ -11,11 +11,12 @@ pub use rc::*;
 
 mod field;
 pub use field::{FieldPlace, FieldPtr, Place, Record};
-// Used by #[derive(Record)].
+// Used by #[derive(Record)] and size_of_field!.
 #[doc(hidden)]
 pub mod __field {
     pub use crate::field::{
         Locate, LocateLeaf, LocateLeafMut, LocateMut, LocateRecord, LocateRecordMut,
+        size_of_pointee,
     };
 }
 

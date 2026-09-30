@@ -12,23 +12,11 @@ pub const anon_0_FIRST_B: anon_0 = 1;
 pub type anon_1 = u32;
 pub const anon_1_SECOND_A: anon_1 = 0;
 pub const anon_1_SECOND_B: anon_1 = 1;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
     #[offset(0)]
     pub a: i32,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub type TdEnum_enum = u32;
 pub const TdEnum_enum_TD_A: TdEnum_enum = 0;
@@ -36,27 +24,13 @@ pub const TdEnum_enum_TD_B: TdEnum_enum = 1;
 pub type anon_2 = u32;
 pub const anon_2_FIELD_A: anon_2 = 0;
 pub const anon_2_FIELD_B: anon_2 = 1;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct WithAnonField {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub field: anon_2,
-}
-impl ByteRepr for WithAnonField {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.field.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            field: <anon_2>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

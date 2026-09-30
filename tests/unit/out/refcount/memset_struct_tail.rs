@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct S {
     #[offset(0)]
     pub keep: i32,
@@ -15,6 +16,7 @@ pub struct S {
     #[offset(8)]
     pub b: i64,
     #[offset(16)]
+    #[byte_size(5)]
     pub c: Value<Box<[u8]>>,
     #[offset(24)]
     pub last: i32,
@@ -38,27 +40,6 @@ impl Default for S {
             b: 0_i64,
             c: Rc::new(RefCell::new((0..5).map(|_| 0_u8).collect::<Box<[u8]>>())),
             last: 0_i32,
-        }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.keep.to_bytes(&mut buf[0..4]);
-        self.a.to_bytes(&mut buf[4..8]);
-        self.b.to_bytes(&mut buf[8..16]);
-        (*self.c.borrow()).to_bytes(&mut buf[16..21]);
-        self.last.to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            keep: <i32>::from_bytes(&buf[0..4]),
-            a: <i32>::from_bytes(&buf[4..8]),
-            b: <i64>::from_bytes(&buf[8..16]),
-            c: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[16..21]))),
-            last: <i32>::from_bytes(&buf[24..28]),
         }
     }
 }

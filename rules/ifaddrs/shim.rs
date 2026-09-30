@@ -4,7 +4,8 @@
 use crate::{ByteRepr, Ptr, Record, Sockaddr, SockaddrIn, SockaddrIn6, SockaddrStorage};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::ifaddrs>())]
 pub struct Ifaddrs {
     #[offset(offset_of!(::libc::ifaddrs, ifa_next))]
     pub ifa_next: Ptr<Ifaddrs>,
@@ -50,12 +51,6 @@ impl Ifaddrs {
         node.ifa_addr = mk_addr(ifa.address.as_ref());
         node.ifa_netmask = mk_addr(ifa.netmask.as_ref());
         node
-    }
-}
-
-impl ByteRepr for Ifaddrs {
-    fn byte_size() -> usize {
-        size_of::<::libc::ifaddrs>()
     }
 }
 

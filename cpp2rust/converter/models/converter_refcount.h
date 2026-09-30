@@ -53,7 +53,7 @@ public:
 
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
-  void AddByteReprTrait(const clang::RecordDecl *decl) override;
+  void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;

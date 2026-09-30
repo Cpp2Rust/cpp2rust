@@ -6,21 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(72)]
 pub struct Pair {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
     #[offset(8)]
+    #[byte_size(20)]
     pub a: Value<Box<[i32]>>,
     #[offset(32)]
+    #[byte_size(8)]
     pub r: Ptr<i32>,
     #[offset(40)]
+    #[byte_size(8)]
     pub p: Ptr<i32>,
     #[offset(48)]
+    #[byte_size(8)]
     pub pair: Ptr<Pair>,
     #[offset(56)]
+    #[byte_size(16)]
     pub ap: Value<Box<[Ptr<i32>]>>,
 }
 impl Clone for Pair {
@@ -53,15 +59,11 @@ impl Default for Pair {
         }
     }
 }
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        72
-    }
-}
 pub fn zero_0() -> i32 {
     return 0;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct X1 {}
 pub fn foo_1(x1: i32, x2: Ptr<i32>, x3: Ptr<i32>, p2: Ptr<Pair>, p3: Ptr<Pair>) {
     let x1: Value<i32> = Rc::new(RefCell::new(x1));

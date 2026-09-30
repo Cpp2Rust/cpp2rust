@@ -6,37 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct In {
     #[offset(0)]
     pub a: i16,
     #[offset(4)]
     pub b: i32,
 }
-impl ByteRepr for In {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..2]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i16>::from_bytes(&buf[0..2]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(40)]
 pub struct S {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
+    #[byte_size(8)]
     pub in_: In,
     #[offset(12)]
+    #[byte_size(4)]
     pub bytes: Value<Box<[u8]>>,
     #[offset(16)]
+    #[byte_size(12)]
     pub arr: Value<Box<[i32]>>,
     #[offset(32)]
     pub tail: i64,
@@ -60,27 +50,6 @@ impl Default for S {
             bytes: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
             arr: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
             tail: 0_i64,
-        }
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        40
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.in_.to_bytes(&mut buf[4..12]);
-        (*self.bytes.borrow()).to_bytes(&mut buf[12..16]);
-        (*self.arr.borrow()).to_bytes(&mut buf[16..28]);
-        self.tail.to_bytes(&mut buf[32..40]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            in_: <In>::from_bytes(&buf[4..12]),
-            bytes: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[12..16]))),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[16..28]))),
-            tail: <i64>::from_bytes(&buf[32..40]),
         }
     }
 }

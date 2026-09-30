@@ -6,53 +6,24 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct In {
     #[offset(0)]
     pub a: i16,
     #[offset(2)]
     pub b: i16,
 }
-impl ByteRepr for In {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..2]);
-        self.b.to_bytes(&mut buf[2..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i16>::from_bytes(&buf[0..2]),
-            b: <i16>::from_bytes(&buf[2..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct S {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
+    #[byte_size(4)]
     pub in_: In,
     #[offset(8)]
     pub z: i32,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.in_.to_bytes(&mut buf[4..8]);
-        self.z.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            in_: <In>::from_bytes(&buf[4..8]),
-            z: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -1,12 +1,13 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record, Value};
+use crate::{ByteRepr, Record, Value, size_of_field};
 use std::cell::{Cell, RefCell};
 use std::mem::{offset_of, size_of};
 use std::rc::Rc;
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(size_of::<::libc::dirent>())]
 pub struct Dirent {
     #[offset(offset_of!(::libc::dirent, d_ino))]
     pub d_ino: u64,
@@ -18,6 +19,7 @@ pub struct Dirent {
     #[offset(offset_of!(::libc::dirent, d_type))]
     pub d_type: u8,
     #[offset(offset_of!(::libc::dirent, d_name))]
+    #[byte_size(size_of_field!(::libc::dirent, d_name))]
     pub d_name: Value<Box<[u8]>>,
 }
 
@@ -28,7 +30,9 @@ impl Default for Dirent {
             d_off: 0,
             d_reclen: 0,
             d_type: 0,
-            d_name: Rc::new(RefCell::new(vec![0u8; 256].into_boxed_slice())),
+            d_name: Rc::new(RefCell::new(
+                vec![0u8; size_of_field!(::libc::dirent, d_name)].into_boxed_slice(),
+            )),
         }
     }
 }
@@ -56,12 +60,6 @@ impl Clone for Dirent {
             d_name: Rc::new(RefCell::new(self.d_name.borrow().clone())),
             ..*self
         }
-    }
-}
-
-impl ByteRepr for Dirent {
-    fn byte_size() -> usize {
-        size_of::<::libc::dirent>()
     }
 }
 

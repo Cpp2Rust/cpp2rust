@@ -12,27 +12,13 @@ pub fn first_0() -> i32 {
     (*p.borrow_mut()).y = 2;
     return ({ (*p.borrow()).x } + { (*p.borrow()).y });
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct anon_1 {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
-}
-impl ByteRepr for anon_1 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn second_2() -> i32 {
     let q: Value<anon_3> = <Value<anon_3>>::default();
@@ -40,27 +26,13 @@ pub fn second_2() -> i32 {
     (*q.borrow_mut()).b = 20_i64;
     return (({ (*q.borrow()).a } + { (*q.borrow()).b }) as i32);
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct anon_3 {
     #[offset(0)]
     pub a: i64,
     #[offset(8)]
     pub b: i64,
-}
-impl ByteRepr for anon_3 {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..8]);
-        self.b.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i64>::from_bytes(&buf[0..8]),
-            b: <i64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

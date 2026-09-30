@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct S {
     #[offset(0)]
     pub c: u8,
     #[offset(8)]
     pub x: i64,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.c.to_bytes(&mut buf[0..1]);
-        self.x.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            c: <u8>::from_bytes(&buf[0..1]),
-            x: <i64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn pack_size_0() -> u64 {
     return ((0 as usize).wrapping_add((0 as usize)) as u64);

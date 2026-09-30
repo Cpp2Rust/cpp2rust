@@ -6,35 +6,28 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Bar {
     #[offset(0)]
     pub w: i32,
 }
-impl ByteRepr for Bar {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.w.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            w: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
     pub x: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub y: Ptr<i32>,
     #[offset(16)]
+    #[byte_size(8)]
     pub z: Ptr<i32>,
     #[offset(24)]
+    #[byte_size(12)]
     pub a: Value<Box<[i32]>>,
     #[offset(36)]
+    #[byte_size(4)]
     pub bar: Bar,
 }
 impl Clone for Foo {
@@ -59,22 +52,15 @@ impl Default for Foo {
         }
     }
 }
-impl ByteRepr for Foo {
-    fn byte_size() -> usize {
-        40
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Refs {
     #[offset(0)]
+    #[byte_size(8)]
     pub a: Ptr<i32>,
     #[offset(8)]
+    #[byte_size(8)]
     pub b: Ptr<i32>,
-}
-impl ByteRepr for Refs {
-    fn byte_size() -> usize {
-        16
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

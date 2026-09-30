@@ -6,27 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Entry {
     #[offset(0)]
+    #[byte_size(8)]
     pub name: Ptr<u8>,
     #[offset(8)]
+    #[byte_size(8)]
     pub p: Ptr<i32>,
-}
-impl ByteRepr for Entry {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.name.to_bytes(&mut buf[0..8]);
-        self.p.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            name: <Ptr<u8>>::from_bytes(&buf[0..8]),
-            p: <Ptr<i32>>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 thread_local!(
     pub static single_entry_0: Value<Entry> = Rc::new(RefCell::new(Entry {

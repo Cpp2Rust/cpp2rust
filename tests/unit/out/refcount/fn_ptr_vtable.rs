@@ -6,13 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
 pub struct Vtable {
     #[offset(0)]
+    #[byte_size(8)]
     pub create: FnPtr<fn(i32) -> AnyPtr>,
     #[offset(8)]
+    #[byte_size(8)]
     pub get: FnPtr<fn(AnyPtr) -> i32>,
     #[offset(16)]
+    #[byte_size(8)]
     pub destroy: FnPtr<fn(AnyPtr)>,
 }
 impl Default for Vtable {
@@ -21,23 +25,6 @@ impl Default for Vtable {
             create: FnPtr::<fn(i32) -> AnyPtr>::null(),
             get: FnPtr::<fn(AnyPtr) -> i32>::null(),
             destroy: FnPtr::<fn(AnyPtr)>::null(),
-        }
-    }
-}
-impl ByteRepr for Vtable {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.create.to_bytes(&mut buf[0..8]);
-        self.get.to_bytes(&mut buf[8..16]);
-        self.destroy.to_bytes(&mut buf[16..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            create: <FnPtr<fn(i32) -> AnyPtr>>::from_bytes(&buf[0..8]),
-            get: <FnPtr<fn(AnyPtr) -> i32>>::from_bytes(&buf[8..16]),
-            destroy: <FnPtr<fn(AnyPtr)>>::from_bytes(&buf[16..24]),
         }
     }
 }

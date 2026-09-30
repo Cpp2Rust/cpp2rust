@@ -3,7 +3,19 @@
 
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{Data, DeriveInput, Expr, Fields, parse_macro_input};
+use syn::{Data, DeriveInput, Expr, Field, Fields, Ident, parse_macro_input};
+
+// The byte offset of `field` of struct `name`, given by its offset attribute.
+pub fn offset(name: &Ident, field: &Field) -> Expr {
+    let ident = field.ident.as_ref().unwrap();
+    field
+        .attrs
+        .iter()
+        .find(|attr| attr.path().is_ident("offset"))
+        .unwrap_or_else(|| panic!("field `{name}::{ident}` has no #[offset(...)]"))
+        .parse_args()
+        .unwrap()
+}
 
 pub fn expand(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -16,17 +28,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
         Fields::Named(fields) => fields
             .named
             .iter()
-            .map(|field| {
-                let ident = field.ident.clone().unwrap();
-                let offset: Expr = field
-                    .attrs
-                    .iter()
-                    .find(|attr| attr.path().is_ident("offset"))
-                    .unwrap_or_else(|| panic!("field `{name}::{ident}` has no #[offset(...)]"))
-                    .parse_args()
-                    .unwrap();
-                (ident, offset)
-            })
+            .map(|field| (field.ident.clone().unwrap(), offset(name, field)))
             .collect(),
         _ => Vec::new(),
     };

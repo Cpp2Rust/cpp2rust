@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(8)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(8)]
     pub val: Option<Value<i32>>,
 }
 impl Holder {
@@ -18,11 +20,6 @@ impl Holder {
         }));
         let this: Ptr<Holder> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        8
     }
 }
 pub fn read_val_0(h: Ptr<Holder>) -> i32 {

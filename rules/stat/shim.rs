@@ -5,6 +5,12 @@ use crate::{ByteRepr, Record};
 use std::mem::{offset_of, size_of};
 
 #[derive(Clone, Default, Record)]
+// The fields have the sizes of those of libc::stat only in x86-64 Linux.
+#[cfg_attr(
+    all(target_os = "linux", target_arch = "x86_64"),
+    derive(ByteRepr),
+    byte_size(size_of::<::libc::stat>())
+)]
 pub struct Stat {
     #[offset(offset_of!(::libc::stat, st_dev))]
     pub st_dev: u64,
@@ -55,6 +61,7 @@ impl Stat {
     }
 }
 
+#[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
 impl ByteRepr for Stat {
     fn byte_size() -> usize {
         size_of::<::libc::stat>()

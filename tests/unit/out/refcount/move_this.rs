@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Chain {
     #[offset(0)]
     pub v: i32,
@@ -38,11 +39,6 @@ impl Clone for Chain {
     fn clone(&self) -> Self {
         let __src: Value<Chain> = Rc::new(RefCell::new(Chain { v: self.v.clone() }));
         Chain::copy_from(__src.as_pointer())
-    }
-}
-impl ByteRepr for Chain {
-    fn byte_size() -> usize {
-        4
     }
 }
 pub fn consume_0(c: Chain) -> i32 {

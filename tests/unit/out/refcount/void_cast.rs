@@ -10,9 +10,11 @@ pub fn unused_param_0(x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     &(*x.borrow_mut());
 }
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct NonTrivial {
     #[offset(0)]
+    #[byte_size(24)]
     pub data: Value<Vec<i32>>,
 }
 impl Clone for NonTrivial {
@@ -20,11 +22,6 @@ impl Clone for NonTrivial {
         Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
         }
-    }
-}
-impl ByteRepr for NonTrivial {
-    fn byte_size() -> usize {
-        24
     }
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
@@ -41,27 +38,17 @@ pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
     return side_effect_counter_3.with(|rc| *rc.borrow());
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Holder {
     #[offset(0)]
     pub field: i32,
 }
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.field.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            field: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(8)]
 pub struct NonCopyable {
     #[offset(0)]
+    #[byte_size(8)]
     pub value: Option<Value<i32>>,
 }
 impl NonCopyable {
@@ -71,11 +58,6 @@ impl NonCopyable {
         }));
         let this: Ptr<NonCopyable> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for NonCopyable {
-    fn byte_size() -> usize {
-        8
     }
 }
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {

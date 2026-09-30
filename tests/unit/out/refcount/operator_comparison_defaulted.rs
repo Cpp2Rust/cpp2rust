@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Eq {
     #[offset(0)]
     pub a: i32,
@@ -32,22 +33,8 @@ impl std::cmp::PartialEq for Eq {
     }
 }
 impl std::cmp::Eq for Eq {}
-impl ByteRepr for Eq {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Cmp {
     #[offset(0)]
     pub a: i32,
@@ -96,22 +83,8 @@ impl std::cmp::PartialEq for Cmp {
     }
 }
 impl std::cmp::Eq for Cmp {}
-impl ByteRepr for Cmp {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Both {
     #[offset(0)]
     pub a: i32,
@@ -142,20 +115,8 @@ impl std::cmp::PartialEq for Both {
     }
 }
 impl std::cmp::Eq for Both {}
-impl ByteRepr for Both {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct OrdOnly {
     #[offset(0)]
     pub a: i32,
@@ -186,20 +147,8 @@ impl std::cmp::PartialEq for OrdOnly {
     }
 }
 impl std::cmp::Eq for OrdOnly {}
-impl ByteRepr for OrdOnly {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub x: i32,
@@ -230,22 +179,11 @@ impl std::cmp::PartialEq for Inner {
     }
 }
 impl std::cmp::Eq for Inner {}
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(4)]
     pub i: Inner,
     #[offset(4)]
     pub y: i32,
@@ -300,22 +238,8 @@ impl std::cmp::PartialEq for Outer {
     }
 }
 impl std::cmp::Eq for Outer {}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.i.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            i: <Inner>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Secondary {
     #[offset(0)]
     pub a: i32,
@@ -346,22 +270,11 @@ impl std::cmp::PartialEq for Secondary {
     }
 }
 impl std::cmp::Eq for Secondary {}
-impl ByteRepr for Secondary {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct PtrMember {
     #[offset(0)]
+    #[byte_size(8)]
     pub p: Ptr<i32>,
 }
 impl std::cmp::Ord for PtrMember {
@@ -390,19 +303,6 @@ impl std::cmp::PartialEq for PtrMember {
     }
 }
 impl std::cmp::Eq for PtrMember {}
-impl ByteRepr for PtrMember {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.p.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: <Ptr<i32>>::from_bytes(&buf[0..8]),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

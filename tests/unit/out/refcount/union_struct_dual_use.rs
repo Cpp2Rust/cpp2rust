@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
     pub b: i32,
-}
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.b.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: <i32>::from_bytes(&buf[0..4]),
-            b: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
@@ -35,7 +21,11 @@ pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
         _lhs + (*i.borrow()).with(|__s| __s.b)
     };
 }
+#[derive(ByteRepr)]
+#[byte_size(16)]
 pub struct anon_1 {
+    #[offset(0)]
+    #[byte_size(16)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_1 {
@@ -60,36 +50,12 @@ impl Default for anon_1 {
         }
     }
 }
-impl ByteRepr for anon_1 {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_1 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(16)]
     pub u: anon_1,
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.u.to_bytes(&mut buf[0..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            u: <anon_1>::from_bytes(&buf[0..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

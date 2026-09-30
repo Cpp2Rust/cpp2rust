@@ -9,7 +9,8 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct Tracked {
     #[offset(0)]
     pub v: i32,
@@ -59,11 +60,6 @@ impl Clone for Tracked {
         Tracked::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Tracked {
-    fn byte_size() -> usize {
-        12
-    }
-}
 pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kLvalueOverload;
 }
@@ -88,15 +84,12 @@ impl Holder {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(12)]
     pub t: Tracked,
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        12
-    }
 }
 pub fn forward_once_2(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_0((x).clone()) });

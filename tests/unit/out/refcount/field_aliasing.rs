@@ -6,37 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct In {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for In {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct S {
     #[offset(0)]
+    #[byte_size(8)]
     pub in_: In,
     #[offset(8)]
     pub total: i32,
     #[offset(12)]
     pub n: i32,
     #[offset(16)]
+    #[byte_size(16)]
     pub arr: Value<Box<[i32]>>,
 }
 impl Clone for S {
@@ -59,46 +48,14 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.in_.to_bytes(&mut buf[0..8]);
-        self.total.to_bytes(&mut buf[8..12]);
-        self.n.to_bytes(&mut buf[12..16]);
-        (*self.arr.borrow()).to_bytes(&mut buf[16..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            in_: <In>::from_bytes(&buf[0..8]),
-            total: <i32>::from_bytes(&buf[8..12]),
-            n: <i32>::from_bytes(&buf[12..16]),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[16..32]))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Node {
     #[offset(0)]
     pub x: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub self_: Ptr<Node>,
-}
-impl ByteRepr for Node {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.self_.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            self_: <Ptr<Node>>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

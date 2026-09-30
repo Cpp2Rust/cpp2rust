@@ -77,23 +77,12 @@ pub fn from_switch_2(n: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct wrapper {
     #[offset(0)]
+    #[byte_size(8)]
     pub item: Ptr<i32>,
-}
-impl ByteRepr for wrapper {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.item.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            item: <Ptr<i32>>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
     let w: Value<Ptr<wrapper>> = Rc::new(RefCell::new(w));

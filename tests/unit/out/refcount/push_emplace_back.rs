@@ -6,51 +6,30 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Chunk {
     #[offset(0)]
     pub data: i32,
 }
-impl ByteRepr for Chunk {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Writer {
     #[offset(0)]
+    #[byte_size(8)]
     pub output: Ptr<Vec<Chunk>>,
     #[offset(8)]
+    #[byte_size(4)]
     pub chunk: Chunk,
 }
-impl ByteRepr for Writer {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.output.to_bytes(&mut buf[0..8]);
-        self.chunk.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            output: <Ptr<Vec<Chunk>>>::from_bytes(&buf[0..8]),
-            chunk: <Chunk>::from_bytes(&buf[8..12]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(48)]
 pub struct JPEGData {
     #[offset(0)]
+    #[byte_size(24)]
     pub com_data: Value<Vec<Value<Vec<u8>>>>,
     #[offset(24)]
+    #[byte_size(24)]
     pub app_data: Value<Vec<Value<Vec<u8>>>>,
 }
 impl Clone for JPEGData {
@@ -59,11 +38,6 @@ impl Clone for JPEGData {
             com_data: Rc::new(RefCell::new((*self.com_data.borrow()).clone())),
             app_data: Rc::new(RefCell::new((*self.app_data.borrow()).clone())),
         }
-    }
-}
-impl ByteRepr for JPEGData {
-    fn byte_size() -> usize {
-        48
     }
 }
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
@@ -161,7 +135,8 @@ pub fn self_ref_push_6(comps: Ptr<Vec<Chunk>>) {
         (*comps.borrow()).with_mut(|__v: &mut Vec<Chunk>| __v.push(a0_clone))
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct Pair {
     #[offset(0)]
     pub first: i32,
@@ -200,21 +175,6 @@ impl Pair {
 impl Default for Pair {
     fn default() -> Self {
         { Pair::new_1() }
-    }
-}
-impl ByteRepr for Pair {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.first.to_bytes(&mut buf[0..4]);
-        self.second.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            first: <i32>::from_bytes(&buf[0..4]),
-            second: <i32>::from_bytes(&buf[4..8]),
-        }
     }
 }
 pub fn emplace_ctor_args_7(pairs: Ptr<Vec<Pair>>) {

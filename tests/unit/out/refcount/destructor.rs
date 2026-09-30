@@ -10,40 +10,34 @@ thread_local!(
     pub static global_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct S {}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Defaulted {
     #[offset(0)]
+    #[byte_size(1)]
     pub s: S,
 }
-impl ByteRepr for Defaulted {
-    fn byte_size() -> usize {
-        1
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Middle {
     #[offset(0)]
+    #[byte_size(1)]
     pub s: S,
 }
-impl ByteRepr for Middle {
-    fn byte_size() -> usize {
-        1
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(1)]
     pub m: Middle,
 }
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        1
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(3)]
 pub struct ArrayMember {
     #[offset(0)]
+    #[byte_size(3)]
     pub items: Value<Box<[S]>>,
 }
 impl Clone for ArrayMember {
@@ -62,50 +56,30 @@ impl Default for ArrayMember {
         }
     }
 }
-impl ByteRepr for ArrayMember {
-    fn byte_size() -> usize {
-        3
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct EmptyBody {
     #[offset(0)]
+    #[byte_size(1)]
     pub s: S,
 }
-impl ByteRepr for EmptyBody {
-    fn byte_size() -> usize {
-        1
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Templated_char_ {
     #[offset(0)]
     pub v: u8,
 }
-impl ByteRepr for Templated_char_ {
-    fn byte_size() -> usize {
-        1
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Templated_int_ {
     #[offset(0)]
     pub v: i32,
 }
-impl ByteRepr for Templated_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Copied {
     #[offset(0)]
     pub v: i32,
-}
-impl ByteRepr for Copied {
-    fn byte_size() -> usize {
-        4
-    }
 }
 thread_local!(
     pub static order_1: Value<Box<[i32]>> =
@@ -114,33 +88,28 @@ thread_local!(
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Tagged {
     #[offset(0)]
     pub tag: i32,
 }
-impl ByteRepr for Tagged {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(20)]
 pub struct Ordered {
     #[offset(0)]
+    #[byte_size(4)]
     pub first: Tagged,
     #[offset(4)]
     pub dummy1: i32,
     #[offset(8)]
+    #[byte_size(4)]
     pub second: Tagged,
     #[offset(12)]
     pub dummy2: i32,
     #[offset(16)]
+    #[byte_size(4)]
     pub third: Tagged,
-}
-impl ByteRepr for Ordered {
-    fn byte_size() -> usize {
-        20
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

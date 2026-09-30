@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct shape_a {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
+    #[byte_size(14)]
     pub pad: Value<Box<[u8]>>,
 }
 impl Clone for shape_a {
@@ -29,22 +31,8 @@ impl Default for shape_a {
         }
     }
 }
-impl ByteRepr for shape_a {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.code.to_bytes(&mut buf[0..2]);
-        (*self.pad.borrow()).to_bytes(&mut buf[2..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            code: <u16>::from_bytes(&buf[0..2]),
-            pad: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[2..16]))),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(28)]
 pub struct shape_b {
     #[offset(0)]
     pub code: u16,
@@ -53,6 +41,7 @@ pub struct shape_b {
     #[offset(4)]
     pub mid: u32,
     #[offset(8)]
+    #[byte_size(16)]
     pub fill: Value<Box<[u8]>>,
     #[offset(24)]
     pub tail: u32,
@@ -79,28 +68,11 @@ impl Default for shape_b {
         }
     }
 }
-impl ByteRepr for shape_b {
-    fn byte_size() -> usize {
-        28
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.code.to_bytes(&mut buf[0..2]);
-        self.lo.to_bytes(&mut buf[2..4]);
-        self.mid.to_bytes(&mut buf[4..8]);
-        (*self.fill.borrow()).to_bytes(&mut buf[8..24]);
-        self.tail.to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            code: <u16>::from_bytes(&buf[0..2]),
-            lo: <u16>::from_bytes(&buf[2..4]),
-            mid: <u32>::from_bytes(&buf[4..8]),
-            fill: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[8..24]))),
-            tail: <u32>::from_bytes(&buf[24..28]),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(64)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(64)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -128,40 +100,14 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        64
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(68)]
 pub struct Container {
     #[offset(0)]
     pub len: u32,
     #[offset(4)]
+    #[byte_size(64)]
     pub u: anon_0,
-}
-impl ByteRepr for Container {
-    fn byte_size() -> usize {
-        68
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.len.to_bytes(&mut buf[0..4]);
-        self.u.to_bytes(&mut buf[4..68]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            len: <u32>::from_bytes(&buf[0..4]),
-            u: <anon_0>::from_bytes(&buf[4..68]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

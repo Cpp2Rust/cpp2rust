@@ -6,53 +6,29 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct GraphNode {
     #[offset(0)]
     pub dst: u32,
     #[offset(8)]
+    #[byte_size(8)]
     pub next: Ptr<GraphNode>,
 }
-impl ByteRepr for GraphNode {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.dst.to_bytes(&mut buf[0..4]);
-        self.next.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            dst: <u32>::from_bytes(&buf[0..4]),
-            next: <Ptr<GraphNode>>::from_bytes(&buf[8..16]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Graph {
     #[offset(0)]
     pub V: u32,
     #[offset(8)]
+    #[byte_size(8)]
     pub adj: Ptr<Ptr<GraphNode>>,
 }
-impl ByteRepr for Graph {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.V.to_bytes(&mut buf[0..4]);
-        self.adj.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            V: <u32>::from_bytes(&buf[0..4]),
-            adj: <Ptr<Ptr<GraphNode>>>::from_bytes(&buf[8..16]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct Partial {
     #[offset(0)]
+    #[byte_size(8)]
     pub p: Ptr<i32>,
 }
 impl Partial {
@@ -72,43 +48,18 @@ impl Default for Partial {
         }
     }
 }
-impl ByteRepr for Partial {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.p.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: <Ptr<i32>>::from_bytes(&buf[0..8]),
-        }
-    }
-}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Declared {}
 impl Declared {}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct S {
     #[offset(0)]
     pub i: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub d: Ptr<Declared>,
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.i.to_bytes(&mut buf[0..4]);
-        self.d.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            i: <i32>::from_bytes(&buf[0..4]),
-            d: <Ptr<Declared>>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

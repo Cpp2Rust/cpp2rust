@@ -6,33 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Point {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
+    #[byte_size(24)]
     pub values: Value<Vec<i32>>,
     #[offset(24)]
+    #[byte_size(24)]
     pub points: Value<Vec<Point>>,
 }
 impl Clone for Holder {
@@ -41,11 +30,6 @@ impl Clone for Holder {
             values: Rc::new(RefCell::new((*self.values.borrow()).clone())),
             points: Rc::new(RefCell::new((*self.points.borrow()).clone())),
         }
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        48
     }
 }
 pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {

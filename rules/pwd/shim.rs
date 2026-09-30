@@ -4,7 +4,8 @@
 use crate::{ByteRepr, Ptr, Record};
 use std::mem::{offset_of, size_of};
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(size_of::<::libc::passwd>())]
 pub struct Passwd {
     #[offset(offset_of!(::libc::passwd, pw_name))]
     pub pw_name: Ptr<u8>,
@@ -50,12 +51,6 @@ impl Passwd {
             pw_dir: strings[3].clone(),
             pw_shell: strings[4].clone(),
         }
-    }
-}
-
-impl ByteRepr for Passwd {
-    fn byte_size() -> usize {
-        size_of::<::libc::passwd>()
     }
 }
 

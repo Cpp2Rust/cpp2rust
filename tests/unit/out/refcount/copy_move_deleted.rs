@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
 pub struct NoCopy {
     #[offset(0)]
     pub v: i32,
@@ -27,12 +28,8 @@ impl NoCopy {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for NoCopy {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(4)]
 pub struct PrivateCopy {
     #[offset(0)]
     pub v: i32,
@@ -57,12 +54,8 @@ impl Default for PrivateCopy {
         { PrivateCopy::new() }
     }
 }
-impl ByteRepr for PrivateCopy {
-    fn byte_size() -> usize {
-        4
-    }
-}
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(4)]
 pub struct Immovable {
     #[offset(0)]
     pub v: i32,
@@ -79,22 +72,11 @@ impl Default for Immovable {
         { Immovable::new() }
     }
 }
-impl ByteRepr for Immovable {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Record, Default)]
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(8)]
 pub struct Container {
     #[offset(0)]
+    #[byte_size(4)]
     pub inner: NoCopy,
     #[offset(4)]
     pub tag: i32,
@@ -107,11 +89,6 @@ impl Container {
         }));
         let this: Ptr<Container> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Container {
-    fn byte_size() -> usize {
-        8
     }
 }
 pub fn bump_0(p: Ptr<NoCopy>) {

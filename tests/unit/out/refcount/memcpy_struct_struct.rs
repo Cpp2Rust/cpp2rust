@@ -6,27 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Entry {
     #[offset(0)]
     pub bits: u8,
     #[offset(2)]
     pub value: u16,
-}
-impl ByteRepr for Entry {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.bits.to_bytes(&mut buf[0..1]);
-        self.value.to_bytes(&mut buf[2..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            bits: <u8>::from_bytes(&buf[0..1]),
-            value: <u16>::from_bytes(&buf[2..4]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

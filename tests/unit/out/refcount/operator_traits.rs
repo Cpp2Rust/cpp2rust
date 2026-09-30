@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Lt {
     #[offset(0)]
     pub v: i32,
@@ -49,20 +50,8 @@ impl std::cmp::PartialEq for Lt {
     }
 }
 impl std::cmp::Eq for Lt {}
-impl ByteRepr for Lt {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Eq {
     #[offset(0)]
     pub v: i32,
@@ -78,20 +67,8 @@ impl std::cmp::PartialEq for Eq {
     }
 }
 impl std::cmp::Eq for Eq {}
-impl ByteRepr for Eq {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Cmp {
     #[offset(0)]
     pub v: i32,
@@ -122,20 +99,8 @@ impl std::cmp::PartialEq for Cmp {
     }
 }
 impl std::cmp::Eq for Cmp {}
-impl ByteRepr for Cmp {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Free {
     #[offset(0)]
     pub v: i32,
@@ -175,19 +140,6 @@ impl std::cmp::PartialEq for Free {
     }
 }
 impl std::cmp::Eq for Free {}
-impl ByteRepr for Free {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
 pub fn operator_lt_0(a: Ptr<Free>, b: Ptr<Free>) -> bool {
     return {
         let _lhs = a.with(|__s| __s.v);
@@ -200,23 +152,11 @@ pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
         _lhs == b.with(|__s| __s.v)
     };
 }
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Wrapped_int_ {
     #[offset(0)]
     pub v: i32,
-}
-impl ByteRepr for Wrapped_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

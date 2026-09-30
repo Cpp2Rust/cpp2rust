@@ -6,11 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
 pub struct S {
     #[offset(0)]
     pub n: i32,
     #[offset(4)]
+    #[byte_size(1)]
     pub name: Value<Box<[u8]>>,
 }
 impl Clone for S {
@@ -29,50 +31,23 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.n.to_bytes(&mut buf[0..4]);
-        (*self.name.borrow()).to_bytes(&mut buf[4..5]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            n: <i32>::from_bytes(&buf[0..4]),
-            name: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..5]))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct E {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
     pub w: i32,
 }
-impl ByteRepr for E {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.id.to_bytes(&mut buf[0..4]);
-        self.w.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            id: <i32>::from_bytes(&buf[0..4]),
-            w: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Record, VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct T {
     #[offset(0)]
     pub n: i32,
     #[offset(4)]
     pub cap: i32,
     #[offset(8)]
+    #[byte_size(8)]
     pub a: Value<Box<[E]>>,
 }
 impl Clone for T {
@@ -92,23 +67,6 @@ impl Default for T {
             a: Rc::new(RefCell::new(
                 (0..1).map(|_| <E>::default()).collect::<Box<[E]>>(),
             )),
-        }
-    }
-}
-impl ByteRepr for T {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.n.to_bytes(&mut buf[0..4]);
-        self.cap.to_bytes(&mut buf[4..8]);
-        (*self.a.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            n: <i32>::from_bytes(&buf[0..4]),
-            cap: <i32>::from_bytes(&buf[4..8]),
-            a: Rc::new(RefCell::new(<Box<[E]>>::from_bytes(&buf[8..16]))),
         }
     }
 }

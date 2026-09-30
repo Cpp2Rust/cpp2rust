@@ -93,8 +93,35 @@ impl ByteRepr for () {}
 impl ByteRepr for std::fs::File {}
 impl<T: ByteRepr> ByteRepr for Vec<T> {}
 impl<T: ByteRepr> ByteRepr for Option<T> {}
-impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {}
-impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {}
+// The bytes of a Value, like a field stored in one, are those of its value.
+impl<T: ByteRepr> ByteRepr for std::rc::Rc<T> {
+    #[inline]
+    fn byte_size() -> usize {
+        T::byte_size()
+    }
+    #[inline]
+    fn to_bytes(&self, buf: &mut [u8]) {
+        (**self).to_bytes(buf)
+    }
+    #[inline]
+    fn from_bytes(buf: &[u8]) -> Self {
+        Rc::new(T::from_bytes(buf))
+    }
+}
+impl<T: ByteRepr> ByteRepr for std::cell::RefCell<T> {
+    #[inline]
+    fn byte_size() -> usize {
+        T::byte_size()
+    }
+    #[inline]
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.borrow().to_bytes(buf)
+    }
+    #[inline]
+    fn from_bytes(buf: &[u8]) -> Self {
+        RefCell::new(T::from_bytes(buf))
+    }
+}
 impl<T: ByteRepr> ByteRepr for Box<[T]> {
     fn to_bytes(&self, buf: &mut [u8]) {
         let elem_size = T::byte_size();

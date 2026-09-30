@@ -9,7 +9,11 @@ use std::rc::{Rc, Weak};
 pub type Kind_enum = u32;
 pub const Kind_enum_KIND_NONE: Kind_enum = 0;
 pub const Kind_enum_KIND_DONE: Kind_enum = 1;
+#[derive(ByteRepr)]
+#[byte_size(8)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(8)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -34,44 +38,17 @@ impl Default for anon_0 {
         }
     }
 }
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct Event {
     #[offset(0)]
     pub kind: Kind_enum,
     #[offset(8)]
+    #[byte_size(8)]
     pub handle: AnyPtr,
     #[offset(16)]
+    #[byte_size(8)]
     pub payload: anon_0,
-}
-impl ByteRepr for Event {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.kind.to_bytes(&mut buf[0..4]);
-        self.handle.to_bytes(&mut buf[8..16]);
-        self.payload.to_bytes(&mut buf[16..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            kind: <Kind_enum>::from_bytes(&buf[0..4]),
-            handle: <AnyPtr>::from_bytes(&buf[8..16]),
-            payload: <anon_0>::from_bytes(&buf[16..24]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

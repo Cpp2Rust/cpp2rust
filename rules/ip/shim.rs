@@ -5,15 +5,18 @@ use crate::{AsPointer, ByteRepr, Ptr, Record, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
-#[derive(Clone, Default, Record)]
+#[derive(Clone, Default, Record, ByteRepr)]
+#[byte_size(4)]
 pub struct InAddr {
     #[offset(0)]
     pub s_addr: u32,
 }
 
-#[derive(Record)]
+#[derive(Record, ByteRepr)]
+#[byte_size(16)]
 pub struct In6Addr {
     #[offset(0)]
+    #[byte_size(16)]
     pub s6_addr: Value<Box<[u8]>>,
 }
 
@@ -35,34 +38,6 @@ impl Clone for In6Addr {
     fn clone(&self) -> Self {
         Self {
             s6_addr: Rc::new(RefCell::new(self.s6_addr.borrow().clone())),
-        }
-    }
-}
-
-impl ByteRepr for InAddr {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.s_addr.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s_addr: <u32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-
-impl ByteRepr for In6Addr {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf[0..16].copy_from_slice(&self.s6_addr.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s6_addr: Rc::new(RefCell::new(buf[0..16].to_vec().into_boxed_slice())),
         }
     }
 }

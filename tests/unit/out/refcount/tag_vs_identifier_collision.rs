@@ -10,51 +10,27 @@ pub type widget_enum = u32;
 pub const widget_enum_MODE_IDLE: widget_enum = 0;
 pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
 pub const widget_enum_MODE_DONE: widget_enum = 2;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct widget {
     #[offset(0)]
     pub id: i32,
     #[offset(4)]
     pub mode: widget_enum,
 }
-impl ByteRepr for widget {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.id.to_bytes(&mut buf[0..4]);
-        self.mode.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            id: <i32>::from_bytes(&buf[0..4]),
-            mode: <widget_enum>::from_bytes(&buf[4..8]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct point_struct {
     #[offset(0)]
     pub x: i32,
     #[offset(4)]
     pub y: i32,
 }
-impl ByteRepr for point_struct {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.y.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            y: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(4)]
 pub struct point {
+    #[offset(0)]
+    #[byte_size(4)]
     __bytes: Value<Box<[u8]>>,
 }
 impl point {
@@ -79,20 +55,11 @@ impl Default for point {
         }
     }
 }
-impl ByteRepr for point {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        point {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(4)]
 pub struct slot_union {
+    #[offset(0)]
+    #[byte_size(4)]
     __bytes: Value<Box<[u8]>>,
 }
 impl slot_union {
@@ -117,75 +84,27 @@ impl Default for slot_union {
         }
     }
 }
-impl ByteRepr for slot_union {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        slot_union {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
 pub type slot = u32;
 pub const slot_SLOT_A: slot = 0;
 pub const slot_SLOT_B: slot = 1;
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
     #[offset(0)]
     pub tag_field: i32,
 }
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.tag_field.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag_field: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Outer {
     #[offset(0)]
+    #[byte_size(4)]
     pub field: Inner,
 }
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.field.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            field: <Inner>::from_bytes(&buf[0..4]),
-        }
-    }
-}
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner_struct {
     #[offset(0)]
     pub typedef_field: i32,
-}
-impl ByteRepr for Inner_struct {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.typedef_field.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            typedef_field: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 pub fn is_active_0(w: Ptr<widget>) -> i32 {
     let w: Value<Ptr<widget>> = Rc::new(RefCell::new(w));

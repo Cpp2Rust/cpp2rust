@@ -6,31 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct node_t {
     #[offset(0)]
+    #[byte_size(8)]
     pub left: Ptr<node_t>,
     #[offset(8)]
+    #[byte_size(8)]
     pub right: Ptr<node_t>,
     #[offset(16)]
     pub value: i32,
-}
-impl ByteRepr for node_t {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.left.to_bytes(&mut buf[0..8]);
-        self.right.to_bytes(&mut buf[8..16]);
-        self.value.to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            left: <Ptr<node_t>>::from_bytes(&buf[0..8]),
-            right: <Ptr<node_t>>::from_bytes(&buf[8..16]),
-            value: <i32>::from_bytes(&buf[16..20]),
-        }
-    }
 }
 pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));

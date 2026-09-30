@@ -6,27 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct registry {
     #[offset(0)]
+    #[byte_size(8)]
     pub slot: AnyPtr,
     #[offset(8)]
     pub level: i64,
-}
-impl ByteRepr for registry {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.slot.to_bytes(&mut buf[0..8]);
-        self.level.to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            slot: <AnyPtr>::from_bytes(&buf[0..8]),
-            level: <i64>::from_bytes(&buf[8..16]),
-        }
-    }
 }
 pub type field = u32;
 pub const field_FIELD_SLOT: field = 0;
