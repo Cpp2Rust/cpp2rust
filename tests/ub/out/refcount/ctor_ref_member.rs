@@ -6,8 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct S {
+    #[offset(0)]
+    #[byte_size(8)]
     pub r: Ptr<i32>,
 }
 impl S {
@@ -17,7 +20,6 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for S {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -27,7 +29,7 @@ fn main_0() -> i32 {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
         S::new({ __tmp_0.as_pointer() })
     }));
-    assert!((((*s.borrow()).r.read()) == 5));
+    assert!((({ (*s.borrow()).r.clone() }.read()) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -9,12 +9,10 @@ use std::rc::Rc;
 pub unsafe fn nested_0(mut a: i32, mut b: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {
-        let __match_cond = a;
-        match __match_cond {
+        match { a } {
             __v if __v == 1 => {
                 'switch: {
-                    let __match_cond = b;
-                    match __match_cond {
+                    match { b } {
                         __v if __v == 10 => {
                             r = 11;
                             break 'switch;

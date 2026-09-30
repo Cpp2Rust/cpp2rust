@@ -30,8 +30,7 @@ fn main_0() -> i32 {
     let out: Value<i32> = Rc::new(RefCell::new(0));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
     'loop_: while (((*p1.borrow()).read()) >= 0) {
-        let __rhs = ((*p1.borrow()).read());
-        (*out.borrow_mut()) += __rhs;
+        (*out.borrow_mut()) += { ((*p1.borrow()).read()) };
         (*p1.borrow_mut()).prefix_inc();
     }
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));

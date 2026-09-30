@@ -67,17 +67,17 @@ pub fn print_tm_1(t: i64) {
     );
     println!(
         "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
-        (*(*tm.borrow()).tm_year.borrow()),
-        (*(*tm.borrow()).tm_mon.borrow()),
-        (*(*tm.borrow()).tm_mday.borrow()),
-        (*(*tm.borrow()).tm_hour.borrow()),
-        (*(*tm.borrow()).tm_min.borrow()),
-        (*(*tm.borrow()).tm_sec.borrow()),
-        (*(*tm.borrow()).tm_wday.borrow()),
-        (*(*tm.borrow()).tm_yday.borrow()),
-        (*(*tm.borrow()).tm_zone.borrow()),
-        (*(*tm.borrow()).tm_gmtoff.borrow()),
-        (*(*tm.borrow()).tm_isdst.borrow())
+        { (*tm.borrow()).tm_year },
+        { (*tm.borrow()).tm_mon },
+        { (*tm.borrow()).tm_mday },
+        { (*tm.borrow()).tm_hour },
+        { (*tm.borrow()).tm_min },
+        { (*tm.borrow()).tm_sec },
+        { (*tm.borrow()).tm_wday },
+        { (*tm.borrow()).tm_yday },
+        { (*tm.borrow()).tm_zone.clone() },
+        { (*tm.borrow()).tm_gmtoff },
+        { (*tm.borrow()).tm_isdst }
     );
 }
 pub fn test_gmtime_r_2() {
@@ -106,8 +106,8 @@ pub fn print_local_tm_3(t: i64) {
                     let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
                     __res.with_mut(|__tm| {
                         *__tm = Tm::from_zoned(&__dt);
-                        *__tm.tm_isdst.borrow_mut() = __isdst;
-                        *__tm.tm_zone.borrow_mut() = Ptr::alloc_array(__zone.into_boxed_slice());
+                        __tm.tm_isdst = __isdst;
+                        __tm.tm_zone = Ptr::alloc_array(__zone.into_boxed_slice());
                     });
                     __res
                 }
@@ -122,17 +122,17 @@ pub fn print_local_tm_3(t: i64) {
     );
     println!(
         "{}-{}-{} {}:{}:{} wday={} yday={} {} gmtoff={} isdst={}",
-        (*(*tm.borrow()).tm_year.borrow()),
-        (*(*tm.borrow()).tm_mon.borrow()),
-        (*(*tm.borrow()).tm_mday.borrow()),
-        (*(*tm.borrow()).tm_hour.borrow()),
-        (*(*tm.borrow()).tm_min.borrow()),
-        (*(*tm.borrow()).tm_sec.borrow()),
-        (*(*tm.borrow()).tm_wday.borrow()),
-        (*(*tm.borrow()).tm_yday.borrow()),
-        (*(*tm.borrow()).tm_zone.borrow()),
-        (*(*tm.borrow()).tm_gmtoff.borrow()),
-        (*(*tm.borrow()).tm_isdst.borrow())
+        { (*tm.borrow()).tm_year },
+        { (*tm.borrow()).tm_mon },
+        { (*tm.borrow()).tm_mday },
+        { (*tm.borrow()).tm_hour },
+        { (*tm.borrow()).tm_min },
+        { (*tm.borrow()).tm_sec },
+        { (*tm.borrow()).tm_wday },
+        { (*tm.borrow()).tm_yday },
+        { (*tm.borrow()).tm_zone.clone() },
+        { (*tm.borrow()).tm_gmtoff },
+        { (*tm.borrow()).tm_isdst }
     );
 }
 pub fn test_localtime_r_4() {

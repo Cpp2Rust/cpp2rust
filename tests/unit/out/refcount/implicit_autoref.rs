@@ -6,29 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(24)]
 pub struct Holder {
+    #[offset(0)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
         }
     }
 }
@@ -42,8 +30,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(10);
-    (*v.borrow_mut()).push(20);
+    {
+        let __a1 = 10;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 20;
+        (*v.borrow_mut()).push(__a1)
+    };
     let p: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v.as_pointer())));
     let a: Value<i32> = Rc::new(RefCell::new(
         (((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>)
@@ -54,15 +48,21 @@ fn main_0() -> i32 {
         .offset(1_usize)
         .write(30);
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    (*(*h.borrow()).v.borrow_mut()).push(40);
-    (*(*h.borrow()).v.borrow_mut()).push(50);
+    {
+        let __a1 = 40;
+        (*{ (*h.borrow()).v.clone() }.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 50;
+        (*{ (*h.borrow()).v.clone() }.borrow_mut()).push(__a1)
+    };
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     let b: Value<i32> = Rc::new(RefCell::new(
-        (((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+        (((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
             .offset(0_usize)
             .read()),
     ));
-    ((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+    ((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
         .offset(1_usize)
         .write(60);
     assert!(((*a.borrow()) == 10));
@@ -74,7 +74,7 @@ fn main_0() -> i32 {
     );
     assert!(((*b.borrow()) == 40));
     assert!(
-        ((((*(*hp.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+        ((((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
             .offset(1_usize)
             .read())
             == 60)

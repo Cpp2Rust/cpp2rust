@@ -6,19 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
-            if SImpl::operator_lt_pconstS_const(
+            if SImpl::operator_lt_3(
                 &Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
             ) {
                 std::cmp::Ordering::Less
-            } else if SImpl::operator_lt_pconstS_const(
+            } else if SImpl::operator_lt_3(
                 &Rc::new(RefCell::new(S { v: other.v.clone() })).as_pointer(),
                 Rc::new(RefCell::new(S { v: self.v.clone() })).as_pointer(),
             ) {
@@ -45,101 +47,55 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(1)),
-    }));
-    let b: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(2)),
-    }));
-    let c: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(1)),
-    }));
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
+    let c: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
     assert!(({ SImpl::operator_eq(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ne(&a.as_pointer(), b.as_pointer(),) }));
-    assert!(({ SImpl::operator_lt_pconstS_const(&a.as_pointer(), b.as_pointer(),) }));
+    assert!(({ SImpl::operator_lt_3(&a.as_pointer(), b.as_pointer(),) }));
     assert!(({ SImpl::operator_gt(&b.as_pointer(), a.as_pointer(),) }));
     assert!(({ SImpl::operator_le(&a.as_pointer(), c.as_pointer(),) }));
     assert!(({ SImpl::operator_ge(&a.as_pointer(), c.as_pointer(),) }));
-    assert!(!({ SImpl::operator_lt_pconstS_const(&b.as_pointer(), a.as_pointer(),) }));
-    assert!(({ SImpl::operator_lt_i32_const(&a.as_pointer(), 5,) }));
+    assert!(!({ SImpl::operator_lt_3(&b.as_pointer(), a.as_pointer(),) }));
+    assert!(({ SImpl::operator_lt_7(&a.as_pointer(), 5,) }));
     return 0;
 }
 pub trait SImpl {
     fn operator_eq(&self, o: Ptr<S>) -> bool;
     fn operator_ne(&self, o: Ptr<S>) -> bool;
-    fn operator_lt_pconstS_const(&self, o: Ptr<S>) -> bool;
+    fn operator_lt_3(&self, o: Ptr<S>) -> bool;
     fn operator_gt(&self, o: Ptr<S>) -> bool;
     fn operator_le(&self, o: Ptr<S>) -> bool;
     fn operator_ge(&self, o: Ptr<S>) -> bool;
-    fn operator_lt_i32_const(&self, o: i32) -> bool;
+    fn operator_lt_7(&self, o: i32) -> bool;
 }
 impl SImpl for Ptr<S> {
     fn operator_eq(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs == (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
     fn operator_ne(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs != (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } != { o.with(|__s| __s.v) });
     }
-    fn operator_lt_pconstS_const(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs < (*(*o.upgrade().deref()).v.borrow())
-        };
+    fn operator_lt_3(&self, o: Ptr<S>) -> bool {
+        return ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) });
     }
     fn operator_gt(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs > (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } > { o.with(|__s| __s.v) });
     }
     fn operator_le(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs <= (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } <= { o.with(|__s| __s.v) });
     }
     fn operator_ge(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs >= (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } >= { o.with(|__s| __s.v) });
     }
-    fn operator_lt_i32_const(&self, o: i32) -> bool {
+    fn operator_lt_7(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*(*(*self).upgrade().deref()).v.borrow()) < (*o.borrow()));
+        return ((*self).with(|__s| __s.v) < (*o.borrow()));
     }
 }
 pub fn __cpp2rust_init_globals() {}

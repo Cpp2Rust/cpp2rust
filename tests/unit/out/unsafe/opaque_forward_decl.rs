@@ -27,5 +27,6 @@ unsafe fn main_0() -> i32 {
     return ((c.x) - (42));
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(1)]
 pub struct opaque;
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -16,8 +16,7 @@ fn main_0() -> i32 {
     (*b_ptr.borrow()).write(3);
     let b_ptr_ptr: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((b_ptr.as_pointer())));
     ((*b_ptr_ptr.borrow()).read()).write(4);
-    let __rhs = (((*b_ptr_ptr.borrow()).read()).read());
-    (*b_ptr.borrow()).write(__rhs);
+    (*b_ptr.borrow()).write({ (((*b_ptr_ptr.borrow()).read()).read()) });
     let offset: Value<usize> = Rc::new(RefCell::new(
         ((((*b_ptr.borrow()).clone() - (*b_ptr.borrow()).clone()) as i64) as usize),
     ));

@@ -9,99 +9,42 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static global_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct S {}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Defaulted {
-    pub s: Value<S>,
+    #[offset(0)]
+    #[byte_size(1)]
+    pub s: S,
 }
-impl Clone for Defaulted {
-    fn clone(&self) -> Self {
-        let __this: Value<Defaulted> = Rc::new(RefCell::new(Self {
-            s: Rc::new(RefCell::new((*self.s.borrow()).clone())),
-        }));
-        let this: Ptr<Defaulted> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Defaulted {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Middle {
-    pub s: Value<S>,
+    #[offset(0)]
+    #[byte_size(1)]
+    pub s: S,
 }
-impl Clone for Middle {
-    fn clone(&self) -> Self {
-        let __this: Value<Middle> = Rc::new(RefCell::new(Self {
-            s: Rc::new(RefCell::new((*self.s.borrow()).clone())),
-        }));
-        let this: Ptr<Middle> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Middle {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Outer {
-    pub m: Value<Middle>,
+    #[offset(0)]
+    #[byte_size(1)]
+    pub m: Middle,
 }
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            m: Rc::new(RefCell::new((*self.m.borrow()).clone())),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.m.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            m: Rc::new(RefCell::new(<Middle>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(3)]
 pub struct ArrayMember {
+    #[offset(0)]
+    #[byte_size(3)]
     pub items: Value<Box<[S]>>,
 }
 impl Clone for ArrayMember {
     fn clone(&self) -> Self {
-        let __this: Value<ArrayMember> = Rc::new(RefCell::new(Self {
-            items: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| ((*self.items.borrow())[(__i) as usize]).clone(),
-            )))),
-        }));
-        let this: Ptr<ArrayMember> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
+        }
     }
 }
 impl Default for ArrayMember {
@@ -113,122 +56,30 @@ impl Default for ArrayMember {
         }
     }
 }
-impl ByteRepr for ArrayMember {
-    fn byte_size() -> usize {
-        3
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.items.borrow()).to_bytes(&mut buf[0..3]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            items: Rc::new(RefCell::new(<Box<[S]>>::from_bytes(&buf[0..3]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct EmptyBody {
-    pub s: Value<S>,
+    #[offset(0)]
+    #[byte_size(1)]
+    pub s: S,
 }
-impl Clone for EmptyBody {
-    fn clone(&self) -> Self {
-        let __this: Value<EmptyBody> = Rc::new(RefCell::new(Self {
-            s: Rc::new(RefCell::new((*self.s.borrow()).clone())),
-        }));
-        let this: Ptr<EmptyBody> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for EmptyBody {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.s.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            s: Rc::new(RefCell::new(<S>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Templated_char_ {
-    pub v: Value<u8>,
+    #[offset(0)]
+    pub v: u8,
 }
-impl Clone for Templated_char_ {
-    fn clone(&self) -> Self {
-        let __this: Value<Templated_char_> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Templated_char_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Templated_char_ {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..1]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<u8>::from_bytes(&buf[0..1]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Templated_int_ {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
-impl Clone for Templated_int_ {
-    fn clone(&self) -> Self {
-        let __this: Value<Templated_int_> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Templated_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Templated_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Copied {
-    pub v: Value<i32>,
-}
-impl Clone for Copied {
-    fn clone(&self) -> Self {
-        let __this: Value<Copied> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Copied> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Copied {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 thread_local!(
     pub static order_1: Value<Box<[i32]>> =
@@ -237,73 +88,28 @@ thread_local!(
 thread_local!(
     pub static order_count_2: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Tagged {
-    pub tag: Value<i32>,
+    #[offset(0)]
+    pub tag: i32,
 }
-impl Clone for Tagged {
-    fn clone(&self) -> Self {
-        let __this: Value<Tagged> = Rc::new(RefCell::new(Self {
-            tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-        }));
-        let this: Ptr<Tagged> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Tagged {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(20)]
 pub struct Ordered {
-    pub first: Value<Tagged>,
-    pub dummy1: Value<i32>,
-    pub second: Value<Tagged>,
-    pub dummy2: Value<i32>,
-    pub third: Value<Tagged>,
-}
-impl Clone for Ordered {
-    fn clone(&self) -> Self {
-        let __this: Value<Ordered> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new((*self.first.borrow()).clone())),
-            dummy1: Rc::new(RefCell::new((*self.dummy1.borrow()))),
-            second: Rc::new(RefCell::new((*self.second.borrow()).clone())),
-            dummy2: Rc::new(RefCell::new((*self.dummy2.borrow()))),
-            third: Rc::new(RefCell::new((*self.third.borrow()).clone())),
-        }));
-        let this: Ptr<Ordered> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Ordered {
-    fn byte_size() -> usize {
-        20
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.dummy1.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.second.borrow()).to_bytes(&mut buf[8..12]);
-        (*self.dummy2.borrow()).to_bytes(&mut buf[12..16]);
-        (*self.third.borrow()).to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            first: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[0..4]))),
-            dummy1: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-            second: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[8..12]))),
-            dummy2: Rc::new(RefCell::new(<i32>::from_bytes(&buf[12..16]))),
-            third: Rc::new(RefCell::new(<Tagged>::from_bytes(&buf[16..20]))),
-        }
-    }
+    #[offset(0)]
+    #[byte_size(4)]
+    pub first: Tagged,
+    #[offset(4)]
+    pub dummy1: i32,
+    #[offset(8)]
+    #[byte_size(4)]
+    pub second: Tagged,
+    #[offset(12)]
+    pub dummy2: i32,
+    #[offset(16)]
+    #[byte_size(4)]
+    pub third: Tagged,
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -348,28 +154,20 @@ fn main_0() -> i32 {
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 13));
     {
-        let a: Value<Copied> = Rc::new(RefCell::new(Copied {
-            v: Rc::new(RefCell::new(5)),
-        }));
+        let a: Value<Copied> = Rc::new(RefCell::new(Copied { v: 5 }));
         let _dtor_a = ScopedDestructor::new(&a, |__p| __p.destructor());
         let b: Value<Copied> = Rc::new(RefCell::new((*a.borrow()).clone()));
         let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
-        assert!(((*(*b.borrow()).v.borrow()) == 5));
+        assert!(({ (*b.borrow()).v } == 5));
     }
     assert!((global_0.with(|rc| *rc.borrow()) == 15));
     {
         let o: Value<Ordered> = Rc::new(RefCell::new(Ordered {
-            first: Rc::new(RefCell::new(Tagged {
-                tag: Rc::new(RefCell::new(1)),
-            })),
-            dummy1: Rc::new(RefCell::new(0)),
-            second: Rc::new(RefCell::new(Tagged {
-                tag: Rc::new(RefCell::new(2)),
-            })),
-            dummy2: Rc::new(RefCell::new(0)),
-            third: Rc::new(RefCell::new(Tagged {
-                tag: Rc::new(RefCell::new(3)),
-            })),
+            first: Tagged { tag: 1 },
+            dummy1: 0,
+            second: Tagged { tag: 2 },
+            dummy2: 0,
+            third: Tagged { tag: 3 },
         }));
         let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
     }
@@ -420,7 +218,7 @@ pub trait DefaultedImpl {
 }
 impl DefaultedImpl for Ptr<Defaulted> {
     fn destructor(&self) {
-        (*self.upgrade().deref()).s.as_pointer().destructor();
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait EmptyBodyImpl {
@@ -428,7 +226,7 @@ pub trait EmptyBodyImpl {
 }
 impl EmptyBodyImpl for Ptr<EmptyBody> {
     fn destructor(&self) {
-        (*self.upgrade().deref()).s.as_pointer().destructor();
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait MiddleImpl {
@@ -436,7 +234,7 @@ pub trait MiddleImpl {
 }
 impl MiddleImpl for Ptr<Middle> {
     fn destructor(&self) {
-        (*self.upgrade().deref()).s.as_pointer().destructor();
+        field_ptr!(self, s).destructor();
     }
 }
 pub trait OrderedImpl {
@@ -444,9 +242,9 @@ pub trait OrderedImpl {
 }
 impl OrderedImpl for Ptr<Ordered> {
     fn destructor(&self) {
-        (*self.upgrade().deref()).third.as_pointer().destructor();
-        (*self.upgrade().deref()).second.as_pointer().destructor();
-        (*self.upgrade().deref()).first.as_pointer().destructor();
+        field_ptr!(self, third).destructor();
+        field_ptr!(self, second).destructor();
+        field_ptr!(self, first).destructor();
     }
 }
 pub trait OuterImpl {
@@ -454,7 +252,7 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn destructor(&self) {
-        (*self.upgrade().deref()).m.as_pointer().destructor();
+        field_ptr!(self, m).destructor();
     }
 }
 pub trait SImpl {
@@ -472,7 +270,7 @@ impl TaggedImpl for Ptr<Tagged> {
     fn destructor(&self) {
         (*order_1.with(Value::clone).borrow_mut())
             [((*order_count_2.with(Value::clone).borrow_mut()).postfix_inc()) as usize] =
-            (*(*(*self).upgrade().deref()).tag.borrow());
+            (*self).with(|__s| __s.tag);
     }
 }
 pub trait Templated_char_Impl {
@@ -480,12 +278,12 @@ pub trait Templated_char_Impl {
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
-        {
-            let rhs_0 = ((global_0.with(|rc| *rc.borrow()) as usize)
-                .wrapping_add((::std::mem::size_of::<u8>() as usize)))
-                as i32;
-            global_0.with(|rc| *rc.borrow_mut() = rhs_0)
-        };
+        global_0.with(|rc| {
+            *rc.borrow_mut() = {
+                ((global_0.with(|rc| *rc.borrow()) as usize)
+                    .wrapping_add((::std::mem::size_of::<u8>() as usize))) as i32
+            }
+        });
     }
 }
 pub trait Templated_int_Impl {
@@ -493,12 +291,12 @@ pub trait Templated_int_Impl {
 }
 impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
-        {
-            let rhs_0 = ((global_0.with(|rc| *rc.borrow()) as usize)
-                .wrapping_add((::std::mem::size_of::<i32>() as usize)))
-                as i32;
-            global_0.with(|rc| *rc.borrow_mut() = rhs_0)
-        };
+        global_0.with(|rc| {
+            *rc.borrow_mut() = {
+                ((global_0.with(|rc| *rc.borrow()) as usize)
+                    .wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32
+            }
+        });
     }
 }
 pub fn __cpp2rust_init_globals() {

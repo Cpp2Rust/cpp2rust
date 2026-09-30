@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl std::cmp::Ord for S {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -36,39 +38,13 @@ impl std::cmp::PartialEq for S {
     }
 }
 impl std::cmp::Eq for S {}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(1)),
-    }));
-    let b: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(2)),
-    }));
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
     assert!(
         ({ SImpl::operator_cmp(&a.as_pointer(), b.as_pointer(),) }) == std::cmp::Ordering::Less
     );
@@ -93,25 +69,16 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_cmp(&self, o: Ptr<S>) -> std::cmp::Ordering {
-        if {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs < (*(*o.upgrade().deref()).v.borrow())
-        } {
+        if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {
             return std::cmp::Ordering::Less;
         }
-        if {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs > (*(*o.upgrade().deref()).v.borrow())
-        } {
+        if ({ (*self).with(|__s| __s.v) } > { o.with(|__s| __s.v) }) {
             return std::cmp::Ordering::Greater;
         }
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs == (*(*o.upgrade().deref()).v.borrow())
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub fn __cpp2rust_init_globals() {}

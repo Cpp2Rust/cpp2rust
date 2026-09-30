@@ -9,8 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn switch_char_0(c: u8) -> i32 {
     let c: Value<u8> = Rc::new(RefCell::new(c));
     'switch: {
-        let __match_cond = ((*c.borrow()) as i32);
-        match __match_cond {
+        match { ((*c.borrow()) as i32) } {
             __v if __v == (('a' as u8) as i32) => {
                 return 1;
             }

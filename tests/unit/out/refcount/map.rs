@@ -8,12 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn foo_0(x: u32) {
     let x: Value<u32> = Rc::new(RefCell::new(x));
-    let __rhs = (*x.borrow()).wrapping_add(1_u32);
-    (*x.borrow_mut()) = __rhs;
+    (*x.borrow_mut()) = { (*x.borrow()).wrapping_add(1_u32) };
 }
 pub fn bar_1(x: Ptr<u32>) {
-    let __rhs = (x.read()).wrapping_add(1_u32);
-    x.write(__rhs);
+    x.write({ (x.read()).wrapping_add(1_u32) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -349,17 +347,26 @@ fn main_0() -> i32 {
     let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<u32> = Rc::new(RefCell::new(60_u32));
     'loop_: while ((*i.borrow()) > 30_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(100_u32));
     'loop_: while ((*i.borrow()) > 60_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(30_u32));
     'loop_: while ((*i.borrow()) > 0_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
@@ -381,14 +388,8 @@ fn main_0() -> i32 {
     assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));
     let last: Value<i32> = Rc::new(RefCell::new(-1_i32));
     'loop_: for pair in RefcountMapIter::begin(m2.as_pointer()) {
-        assert!({
-            let _lhs = (*pair.first().borrow());
-            _lhs > (*last.borrow())
-        });
-        assert!({
-            let _lhs = ((*pair.second().borrow()) as i32);
-            _lhs == ((*pair.first().borrow()) % 2)
-        });
+        assert!(({ (*pair.first().borrow()) } > { (*last.borrow()) }));
+        assert!(({ ((*pair.second().borrow()) as i32) } == { ((*pair.first().borrow()) % 2) }));
         (*last.borrow_mut()) = (*pair.first().borrow());
     }
     (*k.borrow_mut()) = 0;

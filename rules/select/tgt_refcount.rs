@@ -61,9 +61,9 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
         }
         let mut __tv = match __tp.is_null() {
             true => None,
-            false => Some(__tp.with(|__t| {
-                nix::sys::time::TimeVal::new(*__t.tv_sec.borrow() as _, *__t.tv_usec.borrow() as _)
-            })),
+            false => Some(
+                __tp.with(|__t| nix::sys::time::TimeVal::new(__t.tv_sec as _, __t.tv_usec as _)),
+            ),
         };
         match nix::sys::select::select(
             a0,
@@ -114,8 +114,8 @@ fn f1(a0: i32, a1: Ptr<CFdSet>, a2: Ptr<CFdSet>, a3: Ptr<CFdSet>, a4: Ptr<Timeva
                 }
                 match (__tp.is_null(), __tv.as_ref()) {
                     (false, Some(__t)) => __tp.with_mut(|__dst| {
-                        *__dst.tv_sec.borrow_mut() = __t.tv_sec() as i64;
-                        *__dst.tv_usec.borrow_mut() = __t.tv_usec() as i64;
+                        __dst.tv_sec = __t.tv_sec() as i64;
+                        __dst.tv_usec = __t.tv_usec() as i64;
                     }),
                     _ => {}
                 }

@@ -18,7 +18,11 @@ fn main_0() -> i32 {
     assert!(((((*x.borrow()) == 42_i64) as i32) != 0));
     return 0;
 }
+#[derive(ByteRepr)]
+#[byte_size(8)]
 pub struct anon_0 {
+    #[offset(0)]
+    #[byte_size(8)]
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
@@ -40,19 +44,6 @@ impl Default for anon_0 {
     fn default() -> Self {
         anon_0 {
             __bytes: Rc::new(RefCell::new(Box::from([0u8; 8]))),
-        }
-    }
-}
-impl ByteRepr for anon_0 {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
         }
     }
 }

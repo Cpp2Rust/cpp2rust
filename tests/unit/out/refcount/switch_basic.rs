@@ -11,8 +11,7 @@ pub fn basic_0(x: i32) -> i32 {
     let r: Value<i32> = Rc::new(RefCell::new(0));
     let v: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
+        match { (*x.borrow()) } {
             __v if __v == 0 => {
                 (*r.borrow_mut()) = 10;
                 break 'switch;

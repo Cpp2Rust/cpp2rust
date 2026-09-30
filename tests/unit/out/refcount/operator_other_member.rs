@@ -6,7 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(1)]
 pub struct Static {}
 impl Static {
     pub fn operator_call(a: i32, b: i32) -> i32 {
@@ -15,52 +16,23 @@ impl Static {
         return ((*a.borrow()) * (*b.borrow()));
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
-    pub v: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(3)),
-    }));
-    let t: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(4)),
-    }));
-    assert!((({ SImpl::operator_call_const(&s.as_pointer(),) }) == 3));
-    assert!((({ SImpl::operator_call_i32_const(&s.as_pointer(), 1,) }) == 4));
-    assert!((({ SImpl::operator_call_i32_i32_const(&s.as_pointer(), 1, 2,) }) == 6));
-    assert!(
-        ((*({ SImpl::operator_comma(&s.as_pointer(), t.as_pointer(),) })
-            .v
-            .borrow())
-            == 34)
-    );
+    let s: Value<S> = Rc::new(RefCell::new(S { v: 3 }));
+    let t: Value<S> = Rc::new(RefCell::new(S { v: 4 }));
+    assert!((({ SImpl::operator_call_1(&s.as_pointer(),) }) == 3));
+    assert!((({ SImpl::operator_call_2(&s.as_pointer(), 1,) }) == 4));
+    assert!((({ SImpl::operator_call_3(&s.as_pointer(), 1, 2,) }) == 6));
+    assert!(({ ({ SImpl::operator_comma(&s.as_pointer(), t.as_pointer(),) }).v } == 34));
     let i: Value<i32> = Rc::new(RefCell::new(({ SImpl::to_i32(&s.as_pointer()) })));
     assert!(((*i.borrow()) == 3));
     assert!(((({ SImpl::to_i32(&s.as_pointer(),) }) + 1) == 4));
@@ -69,72 +41,49 @@ fn main_0() -> i32 {
     } else {
         assert!(false);
     }
-    let z: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(0)),
-    }));
+    let z: Value<S> = Rc::new(RefCell::new(S { v: 0 }));
     assert!(({ SImpl::to_bool(&s.as_pointer(),) }));
     assert!(!({ SImpl::to_bool(&z.as_pointer(),) }));
     assert!(({ SImpl::to_bool(&s.as_pointer(),) }) && (!({ SImpl::to_bool(&z.as_pointer(),) })));
     let st: Value<Static> = Rc::new(RefCell::new(<Static>::default()));
     assert!((({ Static::operator_call(6, 7,) }) == 42));
+    assert!((({ SImpl::operator_call_1(&Rc::new(RefCell::new(S { v: 5 })).as_pointer(),) }) == 5));
     assert!(
-        (({
-            SImpl::operator_call_const(
-                &Rc::new(RefCell::new(S {
-                    v: Rc::new(RefCell::new(5)),
-                }))
-                .as_pointer(),
-            )
-        }) == 5)
-    );
-    assert!(
-        (({
-            SImpl::operator_call_i32_i32_const(
-                &Rc::new(RefCell::new(S {
-                    v: Rc::new(RefCell::new(5)),
-                }))
-                .as_pointer(),
-                1,
-                1,
-            )
-        }) == 7)
+        (({ SImpl::operator_call_3(&Rc::new(RefCell::new(S { v: 5 })).as_pointer(), 1, 1,) }) == 7)
     );
     return 0;
 }
 pub trait SImpl {
-    fn operator_call_const(&self) -> i32;
-    fn operator_call_i32_const(&self, a: i32) -> i32;
-    fn operator_call_i32_i32_const(&self, a: i32, b: i32) -> i32;
+    fn operator_call_1(&self) -> i32;
+    fn operator_call_2(&self, a: i32) -> i32;
+    fn operator_call_3(&self, a: i32, b: i32) -> i32;
     fn operator_comma(&self, o: Ptr<S>) -> S;
     fn to_i32(&self) -> i32;
     fn to_bool(&self) -> bool;
 }
 impl SImpl for Ptr<S> {
-    fn operator_call_const(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).v.borrow());
+    fn operator_call_1(&self) -> i32 {
+        return (*self).with(|__s| __s.v);
     }
-    fn operator_call_i32_const(&self, a: i32) -> i32 {
+    fn operator_call_2(&self, a: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*(*(*self).upgrade().deref()).v.borrow()) + (*a.borrow()));
+        return ((*self).with(|__s| __s.v) + (*a.borrow()));
     }
-    fn operator_call_i32_i32_const(&self, a: i32, b: i32) -> i32 {
+    fn operator_call_3(&self, a: i32, b: i32) -> i32 {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
-        return (((*(*(*self).upgrade().deref()).v.borrow()) + (*a.borrow())) + (*b.borrow()));
+        return (((*self).with(|__s| __s.v) + (*a.borrow())) + (*b.borrow()));
     }
     fn operator_comma(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = ((*(*(*self).upgrade().deref()).v.borrow()) * 10);
-                _lhs + (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ ((*self).with(|__s| __s.v) * 10) } + { o.with(|__s| __s.v) }),
         };
     }
     fn to_i32(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).v.borrow());
+        return (*self).with(|__s| __s.v);
     }
     fn to_bool(&self) -> bool {
-        return ((*(*(*self).upgrade().deref()).v.borrow()) != 0);
+        return ((*self).with(|__s| __s.v) != 0);
     }
 }
 pub fn __cpp2rust_init_globals() {}

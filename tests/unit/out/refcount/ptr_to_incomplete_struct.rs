@@ -11,16 +11,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new((libcc2rs::c_stdout()).clone()));
+    let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(libcc2rs::c_stdout()));
     let p: Value<AnyPtr> = Rc::new(RefCell::new((*fp.borrow()).to_any()));
     let fp2: Value<Ptr<CFile>> = Rc::new(RefCell::new((*p.borrow()).reinterpret_cast::<CFile>()));
-    assert!(
-        ((({
-            let _lhs = (*fp.borrow()).clone();
-            _lhs == (*fp2.borrow()).clone()
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*fp.borrow()).clone() } == { (*fp2.borrow()).clone() }) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

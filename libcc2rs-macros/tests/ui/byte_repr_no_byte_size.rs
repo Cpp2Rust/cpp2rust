@@ -1,7 +1,8 @@
 use libcc2rs_macros::ByteRepr;
 
 #[derive(ByteRepr)]
-struct NonEmpty {
+struct NoByteSize {
+    #[offset(0)]
     x: i32,
 }
 

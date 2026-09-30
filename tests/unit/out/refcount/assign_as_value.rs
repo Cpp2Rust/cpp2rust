@@ -19,19 +19,18 @@ fn main_0() -> i32 {
         (*p.borrow()).clone()
     };
     assert!(
-        ((({
-            let _lhs = (*q.borrow()).clone();
-            _lhs == (buf.as_pointer() as Ptr<u8>).offset((1) as isize)
-        }) as i32)
+        ((({ (*q.borrow()).clone() } == { (buf.as_pointer() as Ptr::<u8>).offset((1) as isize) })
+            as i32)
             != 0)
     );
     let out: Value<u8> = Rc::new(RefCell::new(0_u8));
     'switch: {
-        let __match_cond = (({
-            (*out.borrow_mut()) = (('x' as i32) as u8);
-            (*out.borrow())
-        }) as i32);
-        match __match_cond {
+        match {
+            (({
+                (*out.borrow_mut()) = (('x' as i32) as u8);
+                (*out.borrow())
+            }) as i32)
+        } {
             __v if __v == ('x' as i32) => {
                 assert!((1 != 0));
                 break 'switch;

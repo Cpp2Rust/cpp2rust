@@ -26,6 +26,8 @@
 
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
+#include "converter/rules/registry.h"
 
 // https://doc.rust-lang.org/reference/keywords.html
 static const char rust_keywords[][12] = {
@@ -270,30 +272,6 @@ bool IsMut(clang::QualType qual_type) {
            qual_type->getPointeeType().isConstQualified());
 }
 
-bool TypeImplementsByteRepr(clang::QualType qt) {
-  if (qt->isIntegerType() || qt->isFloatingType() || qt->isEnumeralType()) {
-    return true;
-  }
-  if (qt->isPointerType()) {
-    return true;
-  }
-  if (const auto *arr = qt->getAsArrayTypeUnsafe()) {
-    return TypeImplementsByteRepr(arr->getElementType());
-  }
-  if (const auto *rd = qt->getAsRecordDecl()) {
-    if (rd->isUnion()) {
-      return true;
-    }
-    for (const auto *field : rd->fields()) {
-      if (!TypeImplementsByteRepr(field->getType())) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 bool RustSizeDivergesFromC(clang::QualType qt) {
   qt = qt.getCanonicalType();
   // Records have Rc<RefCell<>> fields that diverge from the C size
@@ -350,6 +328,24 @@ bool IsOverloadedMethod(const clang::CXXMethodDecl *decl) {
                        [&method_name](const auto *method) {
                          return method->getNameAsString() == method_name;
                        }) > 1;
+}
+
+unsigned GetMethodIndex(const clang::CXXMethodDecl *decl) {
+  const clang::Decl *key = decl->getCanonicalDecl();
+  if (auto *tmpl = decl->getPrimaryTemplate()) {
+    key = tmpl->getCanonicalDecl();
+  }
+  unsigned index = 0;
+  for (auto *d : decl->getParent()->decls()) {
+    if (clang::isa<clang::CXXMethodDecl, clang::FunctionTemplateDecl>(d)) {
+      ++index;
+      if (d->getCanonicalDecl() == key) {
+        return index;
+      }
+    }
+  }
+  assert(false && "method not found in its record");
+  return 0;
 }
 
 const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method) {
@@ -459,10 +455,6 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
     }
   }
   return !cxx->defaultedCopyConstructorIsDeleted();
-}
-
-bool RecordDerivesByteRepr(const clang::RecordDecl *decl) {
-  return !decl->isUnion() && decl->field_empty();
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
@@ -699,6 +691,7 @@ static std::string GetParamSignature(const clang::Decl *decl) {
 }
 
 static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
+  auto &ctx = decl->getASTContext();
   std::string id;
   if (const auto *var =
           clang::dyn_cast<clang::VarTemplateSpecializationDecl>(decl)) {
@@ -706,18 +699,18 @@ static std::string GetLexicalSpecializationID(const clang::Decl *decl) {
   }
   if (const auto *self =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
-    id += Mapper::ToString(Mapper::GetTypeForDecl(self));
+    id += Printer::ToString(ctx, GetTypeForDecl(ctx, self));
   }
   if (const auto *spec =
           clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
               decl->getLexicalDeclContext());
       spec && decl->getLexicalDeclContext() != decl->getDeclContext()) {
-    id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
+    id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
   }
   for (const auto *dc = decl->getDeclContext(); dc; dc = dc->getParent()) {
     if (const auto *spec =
             clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(dc)) {
-      id += Mapper::ToString(Mapper::GetTypeForDecl(spec));
+      id += Printer::ToString(ctx, GetTypeForDecl(ctx, spec));
     }
     if (const auto *fn = clang::dyn_cast<clang::FunctionDecl>(dc);
         fn && fn->getTemplateSpecializationArgs()) {
@@ -735,6 +728,35 @@ std::string GetID(const clang::Decl *decl) {
 
 std::string GetMethodID(const clang::CXXMethodDecl *decl) {
   return decl->getQualifiedNameAsString() + GetID(decl);
+}
+
+clang::QualType GetTypeForDecl(clang::ASTContext &ctx,
+                               const clang::NamedDecl *decl) {
+  if (const auto *spec =
+          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    llvm::ArrayRef<clang::TemplateArgument> args =
+        spec->getTemplateArgs().asArray();
+    llvm::SmallVector<clang::TemplateArgument, 4> canon(args.begin(),
+                                                        args.end());
+    ctx.canonicalizeTemplateArguments(canon);
+
+    return ctx.getTemplateSpecializationType(
+        clang::ElaboratedTypeKeyword::None,
+        clang::TemplateName(spec->getSpecializedTemplate()), args, canon);
+  }
+
+  const auto *rdecl = llvm::dyn_cast<clang::TagDecl>(decl);
+  assert(rdecl && "Unsupported decl type");
+
+  return ctx.getTagType(clang::ElaboratedTypeKeyword::None,
+                        rdecl->getQualifier(), rdecl, /*OwnsTag*/ false);
+}
+
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl) {
+  if (auto *primary = decl->getPrimaryTemplate()) {
+    decl = primary->getTemplatedDecl();
+  }
+  return decl->getNumParams() && decl->parameters().back()->isParameterPack();
 }
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag) {
@@ -1451,15 +1473,15 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
 }
 
 std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::QualType type) {
+GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type) {
   type = type.getNonReferenceType().getUnqualifiedType();
-  if (!Mapper::Contains(type)) {
+  if (!Mapper::Contains(ctx, type)) {
     return std::nullopt;
   }
-  if (Mapper::MapsToRefcountPointer(type)) {
+  if (RuleRegistry::MapsToRefcountPointer(ctx, type)) {
     return IteratorCategory::Contiguous;
   }
-  auto mapped = Mapper::Map(type);
+  auto mapped = Mapper::Map(ctx, type);
   if (mapped.empty()) {
     return std::nullopt;
   }
@@ -1536,15 +1558,17 @@ bool IsBuiltinVaStart(const clang::CallExpr *expr) {
   return false;
 }
 
-bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to) {
+bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
+                             clang::QualType to) {
   return !from.isNull() && !to.isNull() && from->isIntegerType() &&
          to->isIntegerType() &&
          from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
-         Mapper::Map(from) != Mapper::Map(to);
+         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
 }
 
-bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
+bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
+                         clang::QualType param_type) {
   if (!param_type->isReferenceType()) {
     return false;
   }
@@ -1560,28 +1584,27 @@ bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type) {
   //   void foo(const size_t &) {}     <-- size_t        -> usize
   //   unsigned long x = 1; foo(x);    <-- unsigned long -> u64
   return param_type->getPointeeType().isConstQualified() &&
-         NeedsImplicitScalarCast(arg->IgnoreImplicit()->getType(),
+         NeedsImplicitScalarCast(ctx, arg->IgnoreImplicit()->getType(),
                                  param_type.getNonReferenceType());
 }
 
-bool IsSizeType(clang::QualType type) {
-  auto rust_type = Mapper::Map(type);
+bool IsSizeType(clang::ASTContext &ctx, clang::QualType type) {
+  auto rust_type = Mapper::Map(ctx, type);
   return rust_type == "usize" || rust_type == "isize";
 }
 
-std::optional<clang::QualType>
-GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
-                                   const clang::Expr *operand,
-                                   const clang::Expr *sibling) {
+std::optional<clang::QualType> GetOperandImplicitConversionTarget(
+    clang::ASTContext &ctx, const clang::BinaryOperator *op,
+    const clang::Expr *operand, const clang::Expr *sibling) {
   if (op->isComparisonOp()) {
-    if (NeedsImplicitScalarCast(operand->getType(), sibling->getType()) &&
-        IsSizeType(sibling->getType())) {
+    if (NeedsImplicitScalarCast(ctx, operand->getType(), sibling->getType()) &&
+        IsSizeType(ctx, sibling->getType())) {
       return sibling->getType();
     }
     return std::nullopt;
   }
   if ((op->isAdditiveOp() || op->isMultiplicativeOp() || op->isBitwiseOp()) &&
-      NeedsImplicitScalarCast(operand->getType(), op->getType())) {
+      NeedsImplicitScalarCast(ctx, operand->getType(), op->getType())) {
     return op->getType();
   }
   return std::nullopt;

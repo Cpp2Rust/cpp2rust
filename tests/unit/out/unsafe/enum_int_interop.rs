@@ -56,8 +56,7 @@ pub unsafe fn as_int_4(mut c: Color) -> i32 {
 }
 pub unsafe fn classify_option_5(mut option: i32) -> i32 {
     'switch: {
-        let __match_cond = option;
-        match __match_cond {
+        match { option } {
             __v if __v == (Option_OPT_NONE as i32) => {
                 return -1_i32;
             }
@@ -95,8 +94,7 @@ unsafe fn main_0() -> i32 {
         return 1;
     }
     'switch: {
-        let __match_cond = (c as i32);
-        match __match_cond {
+        match { (c as i32) } {
             __v if __v == 0 => {
                 break 'switch;
             }
@@ -143,8 +141,7 @@ unsafe fn main_0() -> i32 {
     t = ((2) as Tag);
     assert!(((t as i32) == (Tag_TAG_TWO as i32)));
     'switch: {
-        let __match_cond = (t as i32);
-        match __match_cond {
+        match { (t as i32) } {
             __v if __v == (Tag_TAG_ZERO as i32) => {
                 return 90;
             }

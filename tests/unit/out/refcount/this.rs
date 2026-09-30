@@ -6,17 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct S {
-    pub a_: Value<i32>,
-    pub self__: Value<Ptr<S>>,
+    #[offset(0)]
+    pub a_: i32,
+    #[offset(8)]
+    #[byte_size(8)]
+    pub self__: Ptr<S>,
 }
 impl S {
     pub fn new_1(a: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*a.borrow()))),
-            self__: Rc::new(RefCell::new(Ptr::<S>::null())),
+            a_: (*a.borrow()),
+            self__: Ptr::<S>::null(),
         }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -25,14 +29,14 @@ impl S {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*a.borrow()))),
-            self__: Rc::new(RefCell::new(Ptr::<S>::null())),
+            a_: (*a.borrow()),
+            self__: Ptr::<S>::null(),
         }));
         let this: Ptr<S> = __this.as_pointer();
         if (this == (*other.borrow())) {
-            (*(*this.upgrade().deref()).self__.borrow_mut()) = Ptr::<S>::null();
+            field!(this, self__).write(Ptr::<S>::null());
         } else {
-            (*(*this.upgrade().deref()).self__.borrow_mut()) = (*other.borrow()).clone();
+            field!(this, self__).write((*other.borrow()).clone());
         }
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -40,80 +44,36 @@ impl S {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let other: Value<Ptr<S>> = Rc::new(RefCell::new(other));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*a.borrow()))),
-            self__: Rc::new(RefCell::new(Ptr::<S>::null())),
+            a_: (*a.borrow()),
+            self__: Ptr::<S>::null(),
         }));
         let this: Ptr<S> = __this.as_pointer();
         if (this == (*other.borrow())) {
-            (*(*this.upgrade().deref()).self__.borrow_mut()) = Ptr::<S>::null();
+            field!(this, self__).write(Ptr::<S>::null());
         }
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*self.a_.borrow()))),
-            self__: Rc::new(RefCell::new((*self.self__.borrow()).clone())),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a_.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.self__.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            self__: Rc::new(RefCell::new(<Ptr<S>>::from_bytes(&buf[8..16]))),
-        }
     }
 }
 pub fn bump_0(p: Ptr<S>) {
     let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
-    (*(*(*p.borrow()).upgrade().deref()).a_.borrow_mut()).postfix_inc();
+    field!((*p.borrow()), a_).with_mut(|__v| __v.postfix_inc());
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct D {
-    pub a_: Value<i32>,
+    #[offset(0)]
+    pub a_: i32,
 }
 impl D {
     pub fn new(a: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
-        let __this: Value<D> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*a.borrow()))),
-        }));
+        let __this: Value<D> = Rc::new(RefCell::new(Self { a_: (*a.borrow()) }));
         let this: Ptr<D> = __this.as_pointer();
-        (*(*this.upgrade().deref()).a_.borrow_mut()) *= 2;
+        {
+            let _ptr = field!(this, a_);
+            _ptr.write(_ptr.read() * 2)
+        };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for D {
-    fn clone(&self) -> Self {
-        let __this: Value<D> = Rc::new(RefCell::new(Self {
-            a_: Rc::new(RefCell::new((*self.a_.borrow()))),
-        }));
-        let this: Ptr<D> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for D {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a_.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a_: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
     }
 }
 pub fn main() {
@@ -123,34 +83,28 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S::new_1({ 1 })));
     let ref_: Ptr<S> = ({ SImpl::returns_this_reference(&s.as_pointer()) });
-    (*(*ref_.upgrade().deref()).a_.borrow_mut()).postfix_inc();
-    assert!(((*(*s.borrow()).a_.borrow()) == 2));
+    field!(ref_, a_).with_mut(|__v| __v.postfix_inc());
+    assert!(({ (*s.borrow()).a_ } == 2));
     let ptr: Value<Ptr<S>> = Rc::new(RefCell::new(
         ({ SImpl::returns_this_pointer(&s.as_pointer()) }),
     ));
-    (*(*(*ptr.borrow()).upgrade().deref()).a_.borrow_mut()).postfix_inc();
-    assert!(((*(*s.borrow()).a_.borrow()) == 3));
+    field!((*ptr.borrow()), a_).with_mut(|__v| __v.postfix_inc());
+    assert!(({ (*s.borrow()).a_ } == 3));
     ({ SImpl::inc(&({ SImpl::inc(&({ SImpl::inc(&s.as_pointer()) })) })) });
-    assert!(((*(*s.borrow()).a_.borrow()) == 6));
+    assert!(({ (*s.borrow()).a_ } == 6));
     ({ SImpl::set_from_this(&s.as_pointer()) });
-    assert!(((*(*s.borrow()).a_.borrow()) == 7));
+    assert!(({ (*s.borrow()).a_ } == 7));
     assert!((({ SImpl::twice(&s.as_pointer(),) }) == 14));
     ({ SImpl::link(&s.as_pointer()) });
-    assert!({
-        let _lhs = (*(*s.borrow()).self__.borrow()).clone();
-        _lhs == (s.as_pointer())
-    });
-    (*(*(*(*s.borrow()).self__.borrow()).upgrade().deref())
-        .a_
-        .borrow_mut())
-    .postfix_inc();
-    assert!(((*(*s.borrow()).a_.borrow()) == 8));
+    assert!(({ { (*s.borrow()).self__.clone() } } == { (s.as_pointer()) }));
+    field!({ (*s.borrow()).self__.clone() }, a_).with_mut(|__v| __v.postfix_inc());
+    assert!(({ (*s.borrow()).a_ } == 8));
     ({ SImpl::bump_me(&s.as_pointer()) });
-    assert!(((*(*s.borrow()).a_.borrow()) == 9));
+    assert!(({ (*s.borrow()).a_ } == 9));
     let d: Value<D> = Rc::new(RefCell::new(D::new({ 3 })));
-    assert!(((*(*d.borrow()).a_.borrow()) == 6));
+    assert!(({ (*d.borrow()).a_ } == 6));
     let cr: Ptr<S> = ({ SImpl::cref(&s.as_pointer()) });
-    assert!(((*(*cr.upgrade().deref()).a_.borrow()) == 9));
+    assert!((cr.with(|__s| __s.a_) == 9));
     let t: Value<S> = Rc::new(RefCell::new(S::new_1({ 0 })));
     assert!(
         ({
@@ -163,14 +117,14 @@ fn main_0() -> i32 {
     let q: Value<Ptr<S>> = Rc::new(RefCell::new(
         ({ SImpl::returns_this_pointer(&(*p.borrow())) }),
     ));
-    (*(*(*q.borrow()).upgrade().deref()).a_.borrow_mut()).postfix_inc();
-    assert!(((*(*(*p.borrow()).upgrade().deref()).a_.borrow()) == 2));
+    field!((*q.borrow()), a_).with_mut(|__v| __v.postfix_inc());
+    assert!(((*p.borrow()).with(|__s| __s.a_) == 2));
     (*p.borrow()).delete();
     let h: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::alloc(S::new_1({ 5 }))));
     ({ SImpl::destroy(&(*h.borrow())) });
     ({ SImpl::reset(&s.as_pointer()) });
-    assert!(((*(*s.borrow()).a_.borrow()) == 0));
-    assert!((*(*s.borrow()).self__.borrow()).is_null());
+    assert!(({ (*s.borrow()).a_ } == 0));
+    assert!(({ (*s.borrow()).self__.clone() }).is_null());
     assert!(
         ((({
             let _other: Ptr<S> = (s.as_pointer());
@@ -190,19 +144,13 @@ fn main_0() -> i32 {
         ((({ SImpl::copy_if_different(&s.as_pointer(), (other.as_pointer()),) }) as i32)
             == (true as i32))
     );
-    assert!(((*(*s.borrow()).a_.borrow()) == (*(*other.borrow()).a_.borrow())));
-    assert!({
-        let _lhs = (*(*s.borrow()).self__.borrow()).clone();
-        _lhs == (*(*other.borrow()).self__.borrow()).clone()
-    });
+    assert!(({ (*s.borrow()).a_ } == { (*other.borrow()).a_ }));
+    assert!(({ { (*s.borrow()).self__.clone() } } == { { (*other.borrow()).self__.clone() } }));
     let u: Value<S> = Rc::new(RefCell::new(S::new_2({ 1 }, { (s.as_pointer()) })));
-    assert!({
-        let _lhs = (*(*u.borrow()).self__.borrow()).clone();
-        _lhs == (s.as_pointer())
-    });
+    assert!(({ { (*u.borrow()).self__.clone() } } == { (s.as_pointer()) }));
     let s_const: Value<S> = Rc::new(RefCell::new(S::new_1({ 100 })));
     let u1: Value<S> = Rc::new(RefCell::new(S::new_3({ 1 }, { (s_const.as_pointer()) })));
-    assert!((*(*u1.borrow()).self__.borrow()).is_null());
+    assert!(({ (*u1.borrow()).self__.clone() }).is_null());
     return 0;
 }
 pub trait SImpl {
@@ -229,21 +177,20 @@ impl SImpl for Ptr<S> {
         return (*self).clone();
     }
     fn inc(&self) -> Ptr<S> {
-        (*(*(*self).upgrade().deref()).a_.borrow_mut()).postfix_inc();
+        field!((*self), a_).with_mut(|__v| __v.postfix_inc());
         return (*self).clone();
     }
     fn set_from_this(&self) {
-        let __rhs = ((*(*(*self).upgrade().deref()).a_.borrow()) + 1);
-        (*(*(*self).upgrade().deref()).a_.borrow_mut()) = __rhs;
+        field!((*self), a_).write({ ((*self).with(|__s| __s.a_) + 1) });
     }
     fn get(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).a_.borrow());
+        return (*self).with(|__s| __s.a_);
     }
     fn twice(&self) -> i32 {
         return (({ SImpl::get(self) }) * 2);
     }
     fn link(&self) {
-        (*(*(*self).upgrade().deref()).self__.borrow_mut()) = (*self).clone();
+        field!((*self), self__).write((*self).clone());
     }
     fn bump_me(&self) {
         ({ bump_0((*self).clone()) });
@@ -266,10 +213,8 @@ impl SImpl for Ptr<S> {
         if ((*self) == (*other.borrow())) {
             return false;
         }
-        let __rhs = (*(*(*other.borrow()).upgrade().deref()).a_.borrow());
-        (*(*(*self).upgrade().deref()).a_.borrow_mut()) = __rhs;
-        let __rhs = (*(*(*other.borrow()).upgrade().deref()).self__.borrow()).clone();
-        (*(*(*self).upgrade().deref()).self__.borrow_mut()) = __rhs;
+        field!((*self), a_).write({ (*other.borrow()).with(|__s| __s.a_) });
+        field!((*self), self__).write({ (*other.borrow()).with(|__s| __s.self__.clone()) });
         return true;
     }
     fn copy_if_different(&self, other: Ptr<S>) -> bool {
@@ -277,10 +222,8 @@ impl SImpl for Ptr<S> {
         if ((*self) == (*other.borrow())) {
             return false;
         }
-        let __rhs = (*(*(*other.borrow()).upgrade().deref()).a_.borrow());
-        (*(*(*self).upgrade().deref()).a_.borrow_mut()) = __rhs;
-        let __rhs = (*(*(*other.borrow()).upgrade().deref()).self__.borrow()).clone();
-        (*(*(*self).upgrade().deref()).self__.borrow_mut()) = __rhs;
+        field!((*self), a_).write({ (*other.borrow()).with(|__s| __s.a_) });
+        field!((*self), self__).write({ (*other.borrow()).with(|__s| __s.self__.clone()) });
         return true;
     }
 }

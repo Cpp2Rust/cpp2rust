@@ -35,7 +35,7 @@ enum class IteratorCategory {
 };
 
 std::optional<IteratorCategory>
-GetStrongestIteratorCategory(clang::QualType type);
+GetStrongestIteratorCategory(clang::ASTContext &ctx, clang::QualType type);
 bool IsBuiltinConstantP(const clang::Expr *expr);
 
 bool IsGlobalVar(const clang::VarDecl *decl);
@@ -67,8 +67,6 @@ bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
 
 bool IsMut(clang::QualType qual_type);
 
-bool TypeImplementsByteRepr(clang::QualType qt);
-
 bool RustSizeDivergesFromC(clang::QualType qt);
 
 bool IsMutatingCall(const clang::CallExpr *expr);
@@ -80,6 +78,8 @@ void ForEachTemplateInstantiatedMethod(
     llvm::function_ref<void(clang::CXXMethodDecl *)> fn);
 
 bool IsOverloadedMethod(const clang::CXXMethodDecl *decl);
+
+unsigned GetMethodIndex(const clang::CXXMethodDecl *decl);
 
 const char *GetCopyOrMoveName(const clang::CXXMethodDecl *method);
 
@@ -106,8 +106,6 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl);
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl);
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl);
-
-bool RecordDerivesByteRepr(const clang::RecordDecl *decl);
 
 bool HasDefaultedCopyAssignment(const clang::RecordDecl *decl);
 
@@ -166,6 +164,11 @@ std::string GetMethodID(const clang::CXXMethodDecl *decl);
 std::string GetNamedDeclAsString(const clang::NamedDecl *decl);
 
 std::string DisambiguateAnonymousTag(const clang::TagDecl *tag);
+
+clang::QualType GetTypeForDecl(clang::ASTContext &ctx,
+                               const clang::NamedDecl *decl);
+
+bool HasFunctionParameterPack(const clang::FunctionDecl *decl);
 
 const char *AccessSpecifierAsString(clang::AccessSpecifier spec);
 
@@ -270,16 +273,17 @@ std::string GetClassName(clang::QualType type);
 
 bool IsVaListType(clang::QualType type);
 
-bool NeedsImplicitScalarCast(clang::QualType from, clang::QualType to);
+bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
+                             clang::QualType to);
 
-bool NeedsRefBindingTemp(const clang::Expr *arg, clang::QualType param_type);
+bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
+                         clang::QualType param_type);
 
-bool IsSizeType(clang::QualType type);
+bool IsSizeType(clang::ASTContext &ctx, clang::QualType type);
 
-std::optional<clang::QualType>
-GetOperandImplicitConversionTarget(const clang::BinaryOperator *op,
-                                   const clang::Expr *operand,
-                                   const clang::Expr *sibling);
+std::optional<clang::QualType> GetOperandImplicitConversionTarget(
+    clang::ASTContext &ctx, const clang::BinaryOperator *op,
+    const clang::Expr *operand, const clang::Expr *sibling);
 
 bool IsBuiltinVaStart(const clang::CallExpr *expr);
 

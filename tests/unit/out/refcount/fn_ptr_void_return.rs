@@ -8,8 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn negate_0(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
-    let __rhs = -((*x.borrow()).read());
-    (*x.borrow()).write(__rhs);
+    (*x.borrow()).write({ -((*x.borrow()).read()) });
 }
 pub fn zero_out_1(x: Ptr<i32>) {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));

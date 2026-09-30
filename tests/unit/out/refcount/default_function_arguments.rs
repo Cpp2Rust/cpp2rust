@@ -14,30 +14,18 @@ pub fn foo_0(a: i32, b: Option<i32>) -> i32 {
 pub fn baz_1(a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
     let b: Value<Ptr<i32>> = Rc::new(RefCell::new(b.unwrap_or(Ptr::<i32>::null())));
-    return {
-        let _lhs = (*a.borrow()).clone();
-        _lhs == (*b.borrow()).clone()
-    };
+    return ({ (*a.borrow()).clone() } == { (*b.borrow()).clone() });
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct Bar {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl Bar {
     pub fn new(v: Option<i32>) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v.unwrap_or(1)));
-        let __this: Value<Bar> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-        }));
-        let this: Ptr<Bar> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for Bar {
-    fn clone(&self) -> Self {
-        let __this: Value<Bar> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
+        let __this: Value<Bar> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
         let this: Ptr<Bar> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -45,19 +33,6 @@ impl Clone for Bar {
 impl Default for Bar {
     fn default() -> Self {
         { Bar::new(None) }
-    }
-}
-impl ByteRepr for Bar {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
     }
 }
 pub fn main() {
@@ -78,15 +53,15 @@ fn main_0() -> i32 {
             == (true as i32))
     );
     let b: Value<Bar> = Rc::new(RefCell::new(Bar::new(None)));
-    assert!(((*(*b.borrow()).v.borrow()) == 1));
-    assert!(((*Bar::new({ Some(2) },).v.borrow()) == 2));
+    assert!(({ (*b.borrow()).v } == 1));
+    assert!(({ Bar::new({ Some(2) },).v } == 2));
     let arr: Value<Box<[Bar]>> = Rc::new(RefCell::new(Box::new([
         Bar::new(None),
         Bar::new(None),
         Bar::new(None),
     ])));
-    assert!(((*(*arr.borrow())[(0) as usize].v.borrow()) == 1));
-    assert!(((*(*arr.borrow())[(2) as usize].v.borrow()) == 1));
+    assert!(({ (*arr.borrow())[(0) as usize].v } == 1));
+    assert!(({ (*arr.borrow())[(2) as usize].v } == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

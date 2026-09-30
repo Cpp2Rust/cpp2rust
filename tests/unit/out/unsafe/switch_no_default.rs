@@ -9,8 +9,7 @@ use std::rc::Rc;
 pub unsafe fn no_default_0(mut x: i32) -> i32 {
     let mut r: i32 = -1_i32;
     'switch: {
-        let __match_cond = x;
-        match __match_cond {
+        match { x } {
             __v if __v == 7 => {
                 r = 1;
                 break 'switch;

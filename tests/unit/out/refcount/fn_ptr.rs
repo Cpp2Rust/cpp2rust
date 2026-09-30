@@ -23,21 +23,12 @@ fn main_0() -> i32 {
     let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::null()));
     assert!((*fn_.borrow()).is_null());
-    assert!({
-        let _lhs = (*fn_.borrow()).clone();
-        _lhs != FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0)
-    });
+    assert!(({ (*fn_.borrow()).clone() } != { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
     (*fn_.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0);
     assert!(!((*fn_.borrow()).is_null()));
-    assert!({
-        let _lhs = (*fn_.borrow()).clone();
-        _lhs == FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0)
-    });
+    assert!(({ (*fn_.borrow()).clone() } == { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
     let a: Value<i32> = Rc::new(RefCell::new(10));
-    assert!({
-        let _lhs = ({ foo_1((*fn_.borrow()).clone(), (a.as_pointer())) });
-        _lhs == (*a.borrow())
-    });
+    assert!(({ ({ foo_1((*fn_.borrow()).clone(), (a.as_pointer()),) }) } == { (*a.borrow()) }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

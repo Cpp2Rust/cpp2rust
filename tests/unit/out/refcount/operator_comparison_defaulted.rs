@@ -6,10 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Eq {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl std::cmp::PartialEq for Eq {
     fn eq(&self, other: &Self) -> bool {
@@ -30,35 +33,13 @@ impl std::cmp::PartialEq for Eq {
     }
 }
 impl std::cmp::Eq for Eq {}
-impl Clone for Eq {
-    fn clone(&self) -> Self {
-        let __this: Value<Eq> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
-        }));
-        let this: Ptr<Eq> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Eq {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Cmp {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl std::cmp::Ord for Cmp {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -102,34 +83,11 @@ impl std::cmp::PartialEq for Cmp {
     }
 }
 impl std::cmp::Eq for Cmp {}
-impl Clone for Cmp {
-    fn clone(&self) -> Self {
-        let __this: Value<Cmp> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
-        }));
-        let this: Ptr<Cmp> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Cmp {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Both {
-    pub a: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
 }
 impl std::cmp::Ord for Both {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -157,31 +115,11 @@ impl std::cmp::PartialEq for Both {
     }
 }
 impl std::cmp::Eq for Both {}
-impl Clone for Both {
-    fn clone(&self) -> Self {
-        let __this: Value<Both> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-        }));
-        let this: Ptr<Both> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Both {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct OrdOnly {
-    pub a: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
 }
 impl std::cmp::Ord for OrdOnly {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -209,31 +147,11 @@ impl std::cmp::PartialEq for OrdOnly {
     }
 }
 impl std::cmp::Eq for OrdOnly {}
-impl Clone for OrdOnly {
-    fn clone(&self) -> Self {
-        let __this: Value<OrdOnly> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-        }));
-        let this: Ptr<OrdOnly> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for OrdOnly {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
-    pub x: Value<i32>,
+    #[offset(0)]
+    pub x: i32,
 }
 impl std::cmp::Ord for Inner {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -261,44 +179,30 @@ impl std::cmp::PartialEq for Inner {
     }
 }
 impl std::cmp::Eq for Inner {}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Outer {
-    pub i: Value<Inner>,
-    pub y: Value<i32>,
+    #[offset(0)]
+    #[byte_size(4)]
+    pub i: Inner,
+    #[offset(4)]
+    pub y: i32,
 }
 impl std::cmp::Ord for Outer {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         {
             OuterImpl::operator_cmp(
                 &Rc::new(RefCell::new(Outer {
-                    i: self.i.clone(),
+                    i: Inner {
+                        x: self.i.x.clone(),
+                    },
                     y: self.y.clone(),
                 }))
                 .as_pointer(),
                 Rc::new(RefCell::new(Outer {
-                    i: other.i.clone(),
+                    i: Inner {
+                        x: other.i.x.clone(),
+                    },
                     y: other.y.clone(),
                 }))
                 .as_pointer(),
@@ -316,12 +220,16 @@ impl std::cmp::PartialEq for Outer {
         {
             OuterImpl::operator_cmp(
                 &Rc::new(RefCell::new(Outer {
-                    i: self.i.clone(),
+                    i: Inner {
+                        x: self.i.x.clone(),
+                    },
                     y: self.y.clone(),
                 }))
                 .as_pointer(),
                 Rc::new(RefCell::new(Outer {
-                    i: other.i.clone(),
+                    i: Inner {
+                        x: other.i.x.clone(),
+                    },
                     y: other.y.clone(),
                 }))
                 .as_pointer(),
@@ -330,34 +238,11 @@ impl std::cmp::PartialEq for Outer {
     }
 }
 impl std::cmp::Eq for Outer {}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            i: Rc::new(RefCell::new((*self.i.borrow()).clone())),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.i.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            i: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Secondary {
-    pub a: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
 }
 impl std::cmp::Ord for Secondary {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -385,31 +270,12 @@ impl std::cmp::PartialEq for Secondary {
     }
 }
 impl std::cmp::Eq for Secondary {}
-impl Clone for Secondary {
-    fn clone(&self) -> Self {
-        let __this: Value<Secondary> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-        }));
-        let this: Ptr<Secondary> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Secondary {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct PtrMember {
-    pub p: Value<Ptr<i32>>,
+    #[offset(0)]
+    #[byte_size(8)]
+    pub p: Ptr<i32>,
 }
 impl std::cmp::Ord for PtrMember {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -437,63 +303,20 @@ impl std::cmp::PartialEq for PtrMember {
     }
 }
 impl std::cmp::Eq for PtrMember {}
-impl Clone for PtrMember {
-    fn clone(&self) -> Self {
-        let __this: Value<PtrMember> = Rc::new(RefCell::new(Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-        }));
-        let this: Ptr<PtrMember> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for PtrMember {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[0..8]))),
-        }
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let e1: Value<Eq> = Rc::new(RefCell::new(Eq {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2)),
-    }));
-    let e2: Value<Eq> = Rc::new(RefCell::new(Eq {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2)),
-    }));
-    let e3: Value<Eq> = Rc::new(RefCell::new(Eq {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(3)),
-    }));
+    let e1: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 2 }));
+    let e2: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 2 }));
+    let e3: Value<Eq> = Rc::new(RefCell::new(Eq { a: 1, b: 3 }));
     assert!(({ EqImpl::operator_eq(&e1.as_pointer(), e2.as_pointer(),) }));
     assert!(!({ EqImpl::operator_eq(&e1.as_pointer(), e3.as_pointer(),) }));
-    let c1: Value<Cmp> = Rc::new(RefCell::new(Cmp {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2)),
-    }));
-    let c2: Value<Cmp> = Rc::new(RefCell::new(Cmp {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(3)),
-    }));
-    let c3: Value<Cmp> = Rc::new(RefCell::new(Cmp {
-        a: Rc::new(RefCell::new(2)),
-        b: Rc::new(RefCell::new(0)),
-    }));
-    let c4: Value<Cmp> = Rc::new(RefCell::new(Cmp {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(9)),
-    }));
+    let c1: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 2 }));
+    let c2: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 3 }));
+    let c3: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 2, b: 0 }));
+    let c4: Value<Cmp> = Rc::new(RefCell::new(Cmp { a: 1, b: 9 }));
     assert!(
         ({ CmpImpl::operator_cmp(&c1.as_pointer(), c2.as_pointer(),) }) == std::cmp::Ordering::Less
     );
@@ -510,12 +333,8 @@ fn main_0() -> i32 {
     assert!(
         ({ CmpImpl::operator_cmp(&c1.as_pointer(), c2.as_pointer(),) }) == std::cmp::Ordering::Less
     );
-    let b1: Value<Both> = Rc::new(RefCell::new(Both {
-        a: Rc::new(RefCell::new(1)),
-    }));
-    let b2: Value<Both> = Rc::new(RefCell::new(Both {
-        a: Rc::new(RefCell::new(2)),
-    }));
+    let b1: Value<Both> = Rc::new(RefCell::new(Both { a: 1 }));
+    let b2: Value<Both> = Rc::new(RefCell::new(Both { a: 2 }));
     assert!(
         ({ BothImpl::operator_cmp(&b1.as_pointer(), b2.as_pointer(),) })
             == std::cmp::Ordering::Less
@@ -526,12 +345,8 @@ fn main_0() -> i32 {
             BothImpl::operator_eq(&b2.as_pointer(), _arg0)
         })
     );
-    let o1: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly {
-        a: Rc::new(RefCell::new(1)),
-    }));
-    let o2: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly {
-        a: Rc::new(RefCell::new(2)),
-    }));
+    let o1: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly { a: 1 }));
+    let o2: Value<OrdOnly> = Rc::new(RefCell::new(OrdOnly { a: 2 }));
     assert!(
         ({ OrdOnlyImpl::operator_cmp(&o1.as_pointer(), o2.as_pointer(),) })
             == std::cmp::Ordering::Less
@@ -541,22 +356,16 @@ fn main_0() -> i32 {
             == std::cmp::Ordering::Greater
     );
     let x1: Value<Outer> = Rc::new(RefCell::new(Outer {
-        i: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(1)),
-        })),
-        y: Rc::new(RefCell::new(9)),
+        i: Inner { x: 1 },
+        y: 9,
     }));
     let x2: Value<Outer> = Rc::new(RefCell::new(Outer {
-        i: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(2)),
-        })),
-        y: Rc::new(RefCell::new(0)),
+        i: Inner { x: 2 },
+        y: 0,
     }));
     let x3: Value<Outer> = Rc::new(RefCell::new(Outer {
-        i: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(1)),
-        })),
-        y: Rc::new(RefCell::new(9)),
+        i: Inner { x: 1 },
+        y: 9,
     }));
     assert!(
         ({ OuterImpl::operator_cmp(&x1.as_pointer(), x2.as_pointer(),) })
@@ -567,27 +376,21 @@ fn main_0() -> i32 {
         ({ OuterImpl::operator_cmp(&x2.as_pointer(), x1.as_pointer(),) })
             == std::cmp::Ordering::Greater
     );
-    let s1: Value<Secondary> = Rc::new(RefCell::new(Secondary {
-        a: Rc::new(RefCell::new(1)),
-    }));
-    let s2: Value<Secondary> = Rc::new(RefCell::new(Secondary {
-        a: Rc::new(RefCell::new(2)),
-    }));
+    let s1: Value<Secondary> = Rc::new(RefCell::new(Secondary { a: 1 }));
+    let s2: Value<Secondary> = Rc::new(RefCell::new(Secondary { a: 2 }));
     assert!(({ SecondaryImpl::operator_ne(&s1.as_pointer(), s2.as_pointer(),) }));
     assert!(({ SecondaryImpl::operator_lt(&s1.as_pointer(), s2.as_pointer(),) }));
     assert!(({ SecondaryImpl::operator_ge(&s2.as_pointer(), s1.as_pointer(),) }));
     assert!(!({ SecondaryImpl::operator_lt(&s2.as_pointer(), s1.as_pointer(),) }));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 0])));
     let p1: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>))),
+        p: (arr.as_pointer() as Ptr<i32>),
     }));
     let p2: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: Rc::new(RefCell::new(
-            (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
-        )),
+        p: (arr.as_pointer() as Ptr<i32>).offset((1) as isize),
     }));
     let p3: Value<PtrMember> = Rc::new(RefCell::new(PtrMember {
-        p: Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>))),
+        p: (arr.as_pointer() as Ptr<i32>),
     }));
     assert!(
         ({ PtrMemberImpl::operator_cmp(&p1.as_pointer(), p2.as_pointer(),) })
@@ -606,16 +409,13 @@ pub trait BothImpl {
 }
 impl BothImpl for Ptr<Both> {
     fn operator_eq(&self, _a0: Ptr<Both>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
-        };
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
     fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).a.borrow()),
-                &(*(*_a0.upgrade().deref()).a.borrow()),
+                &((*self).with(|__s| __s.a)),
+                &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -632,8 +432,8 @@ impl CmpImpl for Ptr<Cmp> {
     fn operator_cmp(&self, _a0: Ptr<Cmp>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).a.borrow()),
-                &(*(*_a0.upgrade().deref()).a.borrow()),
+                &((*self).with(|__s| __s.a)),
+                &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -641,8 +441,8 @@ impl CmpImpl for Ptr<Cmp> {
         }
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).b.borrow()),
-                &(*(*_a0.upgrade().deref()).b.borrow()),
+                &((*self).with(|__s| __s.b)),
+                &(_a0.with(|__s| __s.b)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -651,13 +451,8 @@ impl CmpImpl for Ptr<Cmp> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool {
-        return ({
-            let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
-        }) && ({
-            let _lhs = (*(*(*self).upgrade().deref()).b.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).b.borrow())
-        });
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
+            && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
     }
 }
 pub trait EqImpl {
@@ -665,13 +460,8 @@ pub trait EqImpl {
 }
 impl EqImpl for Ptr<Eq> {
     fn operator_eq(&self, _a0: Ptr<Eq>) -> bool {
-        return ({
-            let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
-        }) && ({
-            let _lhs = (*(*(*self).upgrade().deref()).b.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).b.borrow())
-        });
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
+            && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
     }
 }
 pub trait InnerImpl {
@@ -682,8 +472,8 @@ impl InnerImpl for Ptr<Inner> {
     fn operator_cmp(&self, _a0: Ptr<Inner>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).x.borrow()),
-                &(*(*_a0.upgrade().deref()).x.borrow()),
+                &((*self).with(|__s| __s.x)),
+                &(_a0.with(|__s| __s.x)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -692,10 +482,7 @@ impl InnerImpl for Ptr<Inner> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<Inner>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).x.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).x.borrow())
-        };
+        return ({ (*self).with(|__s| __s.x) } == { _a0.with(|__s| __s.x) });
     }
 }
 pub trait OrdOnlyImpl {
@@ -705,8 +492,8 @@ impl OrdOnlyImpl for Ptr<OrdOnly> {
     fn operator_cmp(&self, _a0: Ptr<OrdOnly>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).a.borrow()),
-                &(*(*_a0.upgrade().deref()).a.borrow()),
+                &((*self).with(|__s| __s.a)),
+                &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -724,8 +511,8 @@ impl OuterImpl for Ptr<Outer> {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(
                 ({
-                    let _arg0: Ptr<Inner> = (*_a0.upgrade().deref()).i.as_pointer();
-                    InnerImpl::operator_cmp(&(*(*self).upgrade().deref()).i.as_pointer(), _arg0)
+                    let _arg0: Ptr<Inner> = field_ptr!(_a0, i);
+                    InnerImpl::operator_cmp(&field_ptr!((*self), i), _arg0)
                 }),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
@@ -734,8 +521,8 @@ impl OuterImpl for Ptr<Outer> {
         }
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).y.borrow()),
-                &(*(*_a0.upgrade().deref()).y.borrow()),
+                &((*self).with(|__s| __s.y)),
+                &(_a0.with(|__s| __s.y)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -745,12 +532,9 @@ impl OuterImpl for Ptr<Outer> {
     }
     fn operator_eq(&self, _a0: Ptr<Outer>) -> bool {
         return ({
-            let _arg0: Ptr<Inner> = (*_a0.upgrade().deref()).i.as_pointer();
-            InnerImpl::operator_eq(&(*(*self).upgrade().deref()).i.as_pointer(), _arg0)
-        }) && ({
-            let _lhs = (*(*(*self).upgrade().deref()).y.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).y.borrow())
-        });
+            let _arg0: Ptr<Inner> = field_ptr!(_a0, i);
+            InnerImpl::operator_eq(&field_ptr!((*self), i), _arg0)
+        }) && ({ (*self).with(|__s| __s.y) } == { _a0.with(|__s| __s.y) });
     }
 }
 pub trait PtrMemberImpl {
@@ -761,8 +545,8 @@ impl PtrMemberImpl for Ptr<PtrMember> {
     fn operator_cmp(&self, _a0: Ptr<PtrMember>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).p.borrow()),
-                &(*(*_a0.upgrade().deref()).p.borrow()),
+                &((*self).with(|__s| __s.p.clone())),
+                &(_a0.with(|__s| __s.p.clone())),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();
@@ -771,10 +555,7 @@ impl PtrMemberImpl for Ptr<PtrMember> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<PtrMember>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).p.borrow()).clone();
-            _lhs == (*(*_a0.upgrade().deref()).p.borrow()).clone()
-        };
+        return ({ (*self).with(|__s| __s.p.clone()) } == { _a0.with(|__s| __s.p.clone()) });
     }
 }
 pub trait SecondaryImpl {
@@ -786,10 +567,7 @@ pub trait SecondaryImpl {
 }
 impl SecondaryImpl for Ptr<Secondary> {
     fn operator_eq(&self, _a0: Ptr<Secondary>) -> bool {
-        return {
-            let _lhs = (*(*(*self).upgrade().deref()).a.borrow());
-            _lhs == (*(*_a0.upgrade().deref()).a.borrow())
-        };
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
     fn operator_ne(&self, _a0: Ptr<Secondary>) -> bool {
         return !({
@@ -800,8 +578,8 @@ impl SecondaryImpl for Ptr<Secondary> {
     fn operator_cmp(&self, _a0: Ptr<Secondary>) -> std::cmp::Ordering {
         {
             let cmp: Value<std::cmp::Ordering> = Rc::new(RefCell::new(std::cmp::Ord::cmp(
-                &(*(*(*self).upgrade().deref()).a.borrow()),
-                &(*(*_a0.upgrade().deref()).a.borrow()),
+                &((*self).with(|__s| __s.a)),
+                &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
                 return (*cmp.borrow_mut()).clone();

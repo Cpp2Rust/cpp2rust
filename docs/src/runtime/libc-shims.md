@@ -1,22 +1,25 @@
 # libc Shims
 
-In the refcount model every struct member is wrapped in a `Value`, so a libc
-struct cannot be used directly. Even without that wrapping the layouts would not
-meet: libc structs hold raw pointers, which are incompatible with the refcounted
-pointers the model uses. The shim modules therefore define Rust counterparts for
-the libc types translated programs use. A shim struct mirrors its C struct
-member by member, with each field a `Value<T>`, and converts to or from the
-underlying libc or nix type at the call boundary.
+libc structs hold raw pointers, which are incompatible with the refcounted
+pointers the refcount model uses, so a libc struct cannot be used directly. The
+shim modules therefore define Rust counterparts for the libc types translated
+programs use. A shim struct mirrors its C struct member by member, like a
+translated struct: fields are stored inline, except for arrays, which are
+`Value<Box<[T]>>`s of their own (see [Boxing](../codegen/types/boxing.md)). A
+shim converts to or from the underlying libc or nix type at the call boundary.
 
 `Stat` is a typical shim:
 
 ```rust
-#[derive(Default)]
+#[derive(Clone, Default, Record)]
 pub struct Stat {
-    pub st_dev: Value<u64>,
-    pub st_ino: Value<u64>,
+    #[offset(offset_of!(::libc::stat, st_dev))]
+    pub st_dev: u64,
+    #[offset(offset_of!(::libc::stat, st_ino))]
+    pub st_ino: u64,
     // ...
-    pub st_size: Value<i64>,
+    #[offset(offset_of!(::libc::stat, st_size))]
+    pub st_size: i64,
 }
 
 impl Stat {
@@ -27,6 +30,14 @@ impl Stat {
 A `stat` call in the source program becomes a `nix::sys::stat::stat` call. On
 success nix returns a raw `libc::stat`, so the result goes through
 `Stat::from_libc` before it is written into the translated struct.
+
+Like translated structs, shims derive `Record`, so that pointers to their fields
+can be taken (see [Pointers to fields](./rc.md#pointers-to-fields)). The offsets
+of the fields are those of the libc struct, given by `offset_of!`, and their
+`ByteRepr` gives the size of the libc struct, which locates the fields of the
+elements of an array of shims, like an array of `pollfd`. The `sockaddr` family,
+whose byte representation has a layout of its own, uses the offsets of that
+layout.
 
 ## The modules
 

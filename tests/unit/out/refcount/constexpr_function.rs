@@ -25,67 +25,27 @@ pub fn half_3(x: f64) -> f64 {
     let x: Value<f64> = Rc::new(RefCell::new(x));
     return ((*x.borrow()) / 2.0E+0);
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Flag {
-    pub v: Value<i32>,
-}
-impl Clone for Flag {
-    fn clone(&self) -> Self {
-        let __this: Value<Flag> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Flag> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Flag {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 pub fn use_4(f: Flag) -> i32 {
     let f: Value<Flag> = Rc::new(RefCell::new(f));
     assert!(({ FlagImpl::to_bool(&f.as_pointer(),) }));
-    return (*(*f.borrow()).v.borrow());
+    return { (*f.borrow()).v };
 }
 pub fn checked_5(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     assert!(((*x.borrow()) > 0));
     return ((*x.borrow()) + 1);
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct P {
-    pub v: Value<i32>,
-}
-impl Clone for P {
-    fn clone(&self) -> Self {
-        let __this: Value<P> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<P> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for P {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -101,26 +61,12 @@ fn main_0() -> i32 {
     assert!((({ checked_5(1,) }) == 2));
     let c: Value<i32> = Rc::new(RefCell::new(({ checked_5(4) })));
     assert!(((*c.borrow()) == 5));
-    assert!(
-        (({
-            use_4(Flag {
-                v: Rc::new(RefCell::new(2)),
-            })
-        }) == 2)
-    );
-    let u: Value<i32> = Rc::new(RefCell::new(
-        ({
-            use_4(Flag {
-                v: Rc::new(RefCell::new(3)),
-            })
-        }),
-    ));
+    assert!((({ use_4(Flag { v: 2 },) }) == 2));
+    let u: Value<i32> = Rc::new(RefCell::new(({ use_4(Flag { v: 3 }) })));
     assert!(((*u.borrow()) == 3));
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((arr.as_pointer() as Ptr<i32>)));
     assert!(!(*ptr.borrow()).is_null());
-    let p: Value<P> = Rc::new(RefCell::new(P {
-        v: Rc::new(RefCell::new(9)),
-    }));
+    let p: Value<P> = Rc::new(RefCell::new(P { v: 9 }));
     assert!((({ PImpl::get(&p.as_pointer(),) }) == 9));
     let k: Value<i32> = Rc::new(RefCell::new(({ scaled_2(4) })));
     assert!(((*k.borrow()) == 4));
@@ -131,7 +77,7 @@ pub trait FlagImpl {
 }
 impl FlagImpl for Ptr<Flag> {
     fn to_bool(&self) -> bool {
-        return ((*(*(*self).upgrade().deref()).v.borrow()) != 0);
+        return ((*self).with(|__s| __s.v) != 0);
     }
 }
 pub trait PImpl {
@@ -139,7 +85,7 @@ pub trait PImpl {
 }
 impl PImpl for Ptr<P> {
     fn get(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).v.borrow());
+        return (*self).with(|__s| __s.v);
     }
 }
 pub fn __cpp2rust_init_globals() {}

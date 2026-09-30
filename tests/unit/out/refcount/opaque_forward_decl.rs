@@ -6,33 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct container {
-    pub p: Value<Ptr<opaque>>,
-    pub x: Value<i32>,
-}
-impl Clone for container {
-    fn clone(&self) -> Self {
-        Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for container {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.x.borrow()).to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: Rc::new(RefCell::new(<Ptr<opaque>>::from_bytes(&buf[0..8]))),
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[8..12]))),
-        }
-    }
+    #[offset(0)]
+    #[byte_size(8)]
+    pub p: Ptr<opaque>,
+    #[offset(8)]
+    pub x: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -40,12 +21,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<container> = Rc::new(RefCell::new(container {
-        p: Rc::new(RefCell::new(Ptr::<opaque>::null())),
-        x: Rc::new(RefCell::new(42)),
+        p: Ptr::<opaque>::null(),
+        x: 42,
     }));
-    &(*(*c.borrow()).p.borrow());
-    return ((*(*c.borrow()).x.borrow()) - 42);
+    &({ (*c.borrow()).p.clone() });
+    return ({ (*c.borrow()).x } - 42);
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(1)]
 pub struct opaque;
 pub fn __cpp2rust_init_globals() {}

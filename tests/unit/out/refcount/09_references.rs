@@ -17,12 +17,7 @@ fn main_0() -> i32 {
     let h_ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((h_ref1).clone()));
     let h_ref2: Ptr<i32> = (*h_ptr.borrow()).clone();
     h_ref2.write(17);
-    assert!(
-        ({
-            let _lhs = (h_ref1.read());
-            _lhs + (h_ref2.read())
-        } == 34)
-    );
+    assert!((({ (h_ref1.read()) } + { (h_ref2.read()) }) == 34));
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let b: Value<i32> = Rc::new(RefCell::new(2));
     let r: Ptr<i32> = if ((*a.borrow()) < (*b.borrow())) {

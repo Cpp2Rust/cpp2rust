@@ -10,8 +10,7 @@ pub fn while_in_switch_break_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*n.borrow());
-        match __match_cond {
+        match { (*n.borrow()) } {
             __v if __v == 0 => {
                 let i: Value<i32> = Rc::new(RefCell::new(0));
                 'loop_: while ((*i.borrow()) < 10) {

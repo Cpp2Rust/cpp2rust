@@ -6,99 +6,36 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Point {
-    pub x: Value<i32>,
+    #[offset(0)]
+    pub x: i32,
 }
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<Point> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Box_int_ {
-    pub val: Value<i32>,
+    #[offset(0)]
+    pub val: i32,
 }
-impl Clone for Box_int_ {
-    fn clone(&self) -> Self {
-        let __this: Value<Box_int_> = Rc::new(RefCell::new(Self {
-            val: Rc::new(RefCell::new((*self.val.borrow()))),
-        }));
-        let this: Ptr<Box_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Box_int_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.val.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            val: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Box_Point_ {
-    pub val: Value<Point>,
-}
-impl Clone for Box_Point_ {
-    fn clone(&self) -> Self {
-        let __this: Value<Box_Point_> = Rc::new(RefCell::new(Self {
-            val: Rc::new(RefCell::new((*self.val.borrow()).clone())),
-        }));
-        let this: Ptr<Box_Point_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Box_Point_ {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.val.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            val: Rc::new(RefCell::new(<Point>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    #[byte_size(4)]
+    pub val: Point,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let i: Value<Box_int_> = Rc::new(RefCell::new(Box_int_ {
-        val: Rc::new(RefCell::new(3)),
-    }));
+    let i: Value<Box_int_> = Rc::new(RefCell::new(Box_int_ { val: 3 }));
     assert!((({ Box_int_Impl::twice(&i.as_pointer(),) }) == 6));
     let p: Value<Box_Point_> = Rc::new(RefCell::new(Box_Point_ {
-        val: Rc::new(RefCell::new(Point {
-            x: Rc::new(RefCell::new(4)),
-        })),
+        val: Point { x: 4 },
     }));
-    assert!(((*({ Box_Point_Impl::get(&p.as_pointer(),) }).x.borrow()) == 4));
+    assert!(({ ({ Box_Point_Impl::get(&p.as_pointer(),) }).x } == 4));
     return 0;
 }
 pub trait Box_Point_Impl {
@@ -109,7 +46,7 @@ pub trait Box_Point_Impl {
 }
 impl Box_Point_Impl for Ptr<Box_Point_> {
     fn get(&self) -> Point {
-        return (*(*(*self).upgrade().deref()).val.borrow()).clone();
+        return (*self).with(|__s| __s.val.clone());
     }
 }
 pub trait Box_int_Impl {
@@ -120,8 +57,7 @@ pub trait Box_int_Impl {
 }
 impl Box_int_Impl for Ptr<Box_int_> {
     fn twice(&self) -> i32 {
-        return ((*(*(*self).upgrade().deref()).val.borrow())
-            + (*(*(*self).upgrade().deref()).val.borrow()));
+        return ((*self).with(|__s| __s.val) + (*self).with(|__s| __s.val));
     }
 }
 pub fn __cpp2rust_init_globals() {}

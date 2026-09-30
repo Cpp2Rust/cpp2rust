@@ -12,7 +12,7 @@ pub struct S {
     pub v: u32,
 }
 impl S {
-    pub unsafe fn operator_assign_u32(&mut self, mut n: u32) -> *mut S {
+    pub unsafe fn operator_assign_1(&mut self, mut n: u32) -> *mut S {
         self.v = n;
         return &mut (*(self as *mut S));
     }
@@ -82,7 +82,7 @@ unsafe fn main_0() -> i32 {
     assert!(((a.v) == (4_u32)));
     (unsafe { S::operator_bitxor_assign(&mut a, &b) });
     assert!(((a.v) == (0_u32)));
-    (unsafe { S::operator_assign_u32(&mut a, 3_u32) });
+    (unsafe { S::operator_assign_1(&mut a, 3_u32) });
     assert!(((a.v) == (3_u32)));
     (unsafe { S::operator_shl_assign(&mut a, 2) });
     assert!(((a.v) == (12_u32)));
@@ -94,7 +94,7 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((a.v) == (14_u32)));
     let mut c: S = S { v: 0_u32 };
-    c = (*(unsafe { S::operator_assign_u32(&mut a, 1_u32) }));
+    c = (*(unsafe { S::operator_assign_1(&mut a, 1_u32) }));
     assert!(((a.v) == (1_u32)));
     assert!(((c.v) == (1_u32)));
     return 0;

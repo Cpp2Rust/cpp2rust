@@ -6,33 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Point {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for Point {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));

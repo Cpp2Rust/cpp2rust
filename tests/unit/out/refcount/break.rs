@@ -28,8 +28,7 @@ pub fn for_test_0(n: i32) -> i32 {
                 (*i.borrow_mut()) += (*k.borrow())
             };
         }
-        let __rhs = ((*x.borrow()) + 1);
-        (*x.borrow_mut()) = __rhs;
+        (*x.borrow_mut()) = { ((*x.borrow()) + 1) };
         {
             (*j.borrow_mut()) = (*i.borrow());
             (*i.borrow_mut()) += 1

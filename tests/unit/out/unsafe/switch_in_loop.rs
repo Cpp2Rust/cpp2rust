@@ -11,8 +11,7 @@ pub unsafe fn switch_in_loop_0(mut n: i32) -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
         'switch: {
-            let __match_cond = ((i) % (3));
-            match __match_cond {
+            match { ((i) % (3)) } {
                 __v if __v == 0 => {
                     r += 1;
                     break 'switch;

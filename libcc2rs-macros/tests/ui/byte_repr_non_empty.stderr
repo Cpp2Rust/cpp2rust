@@ -1,7 +1,0 @@
-error: proc-macro derive panicked
- --> tests/ui/byte_repr_non_empty.rs:3:10
-  |
-3 | #[derive(ByteRepr)]
-  |          ^^^^^^^^
-  |
-  = help: message: derive(ByteRepr) is only supported on empty structs, `NonEmpty` is not empty

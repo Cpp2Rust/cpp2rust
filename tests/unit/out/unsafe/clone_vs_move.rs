@@ -211,7 +211,10 @@ unsafe fn main_0() -> i32 {
         0.into(),
     );
     let mut pair4: (Vec<i32>, i32) = pair3.clone();
-    pair4.0.push(1);
+    {
+        let __a1 = 1;
+        pair4.0.push(__a1)
+    };
     pair4.1 = 1;
     assert!(((pair4.0.len()) == (1_usize)));
     assert!(((pair4.1) == (1)));

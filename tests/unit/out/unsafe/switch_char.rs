@@ -8,8 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn switch_char_0(mut c: libc::c_char) -> i32 {
     'switch: {
-        let __match_cond = (c as i32);
-        match __match_cond {
+        match { (c as i32) } {
             __v if __v == (('a' as libc::c_char) as i32) => {
                 return 1;
             }

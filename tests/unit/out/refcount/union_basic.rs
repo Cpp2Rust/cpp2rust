@@ -6,7 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+#[derive(ByteRepr)]
+#[byte_size(4)]
 pub struct basic {
+    #[offset(0)]
+    #[byte_size(4)]
     __bytes: Value<Box<[u8]>>,
 }
 impl basic {
@@ -31,20 +35,11 @@ impl Default for basic {
         }
     }
 }
-impl ByteRepr for basic {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        basic {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(1)]
 pub struct empty {
+    #[offset(0)]
+    #[byte_size(1)]
     __bytes: Value<Box<[u8]>>,
 }
 impl empty {}
@@ -59,19 +54,6 @@ impl Default for empty {
     fn default() -> Self {
         empty {
             __bytes: Rc::new(RefCell::new(Box::from([0u8; 1]))),
-        }
-    }
-}
-impl ByteRepr for empty {
-    fn byte_size() -> usize {
-        1
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        empty {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
         }
     }
 }

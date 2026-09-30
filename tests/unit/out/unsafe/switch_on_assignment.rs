@@ -10,11 +10,12 @@ pub unsafe fn switch_on_assignment_0(mut x: i32) -> i32 {
     let mut y: i32 = 0;
     let mut r: i32 = 0;
     'switch: {
-        let __match_cond = {
-            y = ((x) + (1));
-            y
-        };
-        match __match_cond {
+        match {
+            {
+                y = ((x) + (1));
+                y
+            }
+        } {
             __v if __v == 1 => {
                 r = 10;
                 break 'switch;

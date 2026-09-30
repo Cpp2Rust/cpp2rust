@@ -6,19 +6,22 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(32)]
 pub struct UserDefined {
+    #[offset(0)]
+    #[byte_size(4)]
     pub a: Value<Vec<i32>>,
+    #[offset(8)]
+    #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for UserDefined {
     fn clone(&self) -> Self {
-        let __this: Value<UserDefined> = Rc::new(RefCell::new(Self {
+        Self {
             a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }));
-        let this: Ptr<UserDefined> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for UserDefined {
@@ -31,51 +34,17 @@ impl Default for UserDefined {
         }
     }
 }
-impl ByteRepr for UserDefined {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.v.borrow()).to_bytes(&mut buf[8..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..4]))),
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[8..32]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(16)]
 pub struct FieldIsLibcType {
-    pub addr: Value<libcc2rs::Sockaddr>,
-}
-impl Clone for FieldIsLibcType {
-    fn clone(&self) -> Self {
-        let __this: Value<FieldIsLibcType> = Rc::new(RefCell::new(Self {
-            addr: Rc::new(RefCell::new((*self.addr.borrow()).clone())),
-        }));
-        let this: Ptr<FieldIsLibcType> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    #[byte_size(16)]
+    pub addr: libcc2rs::Sockaddr,
 }
 impl Default for FieldIsLibcType {
     fn default() -> Self {
         FieldIsLibcType {
-            addr: Rc::new(RefCell::new(Default::default())),
-        }
-    }
-}
-impl ByteRepr for FieldIsLibcType {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.addr.borrow()).to_bytes(&mut buf[0..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            addr: Rc::new(RefCell::new(<libcc2rs::Sockaddr>::from_bytes(&buf[0..16]))),
+            addr: Default::default(),
         }
     }
 }
@@ -85,35 +54,35 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p: Value<libcc2rs::Pollfd> = Rc::new(RefCell::new(Default::default()));
-    (*(*p.borrow()).fd.borrow_mut()) = -1_i32;
-    (*(*p.borrow()).events.borrow_mut()) = 0_i16;
-    (*(*p.borrow()).revents.borrow_mut()) = 2_i16;
-    assert!(((*(*p.borrow()).fd.borrow()) == -1_i32));
-    assert!((((*(*p.borrow()).events.borrow()) as i32) == 0));
-    assert!((((*(*p.borrow()).revents.borrow()) as i32) == 2));
+    (*p.borrow_mut()).fd = -1_i32;
+    (*p.borrow_mut()).events = 0_i16;
+    (*p.borrow_mut()).revents = 2_i16;
+    assert!(({ (*p.borrow()).fd } == -1_i32));
+    assert!((({ (*p.borrow()).events } as i32) == 0));
+    assert!((({ (*p.borrow()).revents } as i32) == 2));
     let ia: Value<libcc2rs::InAddr> = Rc::new(RefCell::new(Default::default()));
-    (*(*ia.borrow()).s_addr.borrow_mut()) = 1_u32;
-    assert!(((*(*ia.borrow()).s_addr.borrow()) == 1_u32));
+    (*ia.borrow_mut()).s_addr = 1_u32;
+    assert!(({ (*ia.borrow()).s_addr } == 1_u32));
     let t: Value<libcc2rs::Tm> = Rc::new(RefCell::new(Default::default()));
-    (*(*t.borrow()).tm_year.borrow_mut()) = 124;
-    (*(*t.borrow()).tm_mon.borrow_mut()) = 5;
-    (*(*t.borrow()).tm_mday.borrow_mut()) = 15;
-    assert!(((*(*t.borrow()).tm_year.borrow()) == 124));
-    assert!(((*(*t.borrow()).tm_mon.borrow()) == 5));
-    assert!(((*(*t.borrow()).tm_mday.borrow()) == 15));
+    (*t.borrow_mut()).tm_year = 124;
+    (*t.borrow_mut()).tm_mon = 5;
+    (*t.borrow_mut()).tm_mday = 15;
+    assert!(({ (*t.borrow()).tm_year } == 124));
+    assert!(({ (*t.borrow()).tm_mon } == 5));
+    assert!(({ (*t.borrow()).tm_mday } == 15));
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
-    (*(*st.borrow()).st_size.borrow_mut()) = 1024_i64;
-    assert!(((*(*st.borrow()).st_size.borrow()) == 1024_i64));
+    (*st.borrow_mut()).st_size = 1024_i64;
+    assert!(({ (*st.borrow()).st_size } == 1024_i64));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
     assert!(
-        ((((*ud.borrow()).a.as_pointer() as Ptr<i32>)
+        ((({ (*ud.borrow()).a.clone() }.as_pointer() as Ptr<i32>)
             .offset(0_usize)
             .read())
             == 0)
     );
-    assert!(((*(*ud.borrow()).v.borrow()).len() == 0_usize));
+    assert!(((*{ (*ud.borrow()).v.clone() }.borrow()).len() == 0_usize));
     let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::default()));
-    assert!((((*(*(*filt.borrow()).addr.borrow()).sa_family.borrow()) as i32) == 0));
+    assert!((({ (*filt.borrow()).addr.sa_family } as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

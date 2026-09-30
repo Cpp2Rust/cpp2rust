@@ -51,7 +51,9 @@ public:
 
   bool RecordImplementsClone(const clang::RecordDecl *decl) override;
 
-  void AddByteReprTrait(const clang::RecordDecl *decl) override;
+  bool RecordDerivesClone(const clang::RecordDecl *decl);
+
+  void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool
   VisitUnaryExprOrTypeTraitExpr(clang::UnaryExprOrTypeTraitExpr *expr) override;
@@ -132,8 +134,6 @@ public:
 
   bool VisitStmtExpr(clang::StmtExpr *expr) override;
 
-  void EmitStmtExprTail(clang::Expr *tail) override;
-
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
 
   bool VisitCXXStdInitializerListExpr(
@@ -146,6 +146,42 @@ public:
   bool VisitMemberExpr(clang::MemberExpr *expr) override;
 
   void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
+
+  // Converts an access to a field that is stored inline in its struct.
+  void ConvertInlineField(clang::MemberExpr *expr);
+
+  // A pointer to the struct whose field `expr` accesses.
+  std::string ConvertRecordPtr(clang::MemberExpr *expr);
+
+  // Copies the value of the field `expr` out of its struct, such that the
+  // struct doesn't stay borrowed.
+  std::string ReadField(clang::MemberExpr *expr);
+
+  // A field that is read through a pointer to its struct is read in a
+  // closure, `p.with(|__s| __s.x)`. While converting the struct whose field
+  // is read, record_base_, or `*p` for `p->x`, the dereference of a pointer
+  // to it is emitted as `__s`, and the pointer is stored in *record_ptr_.
+  std::string *record_ptr_ = nullptr;
+  const clang::Expr *record_base_ = nullptr;
+
+  // The expression that ConvertFreshRValue copies.
+  const clang::Expr *copied_expr_ = nullptr;
+
+  struct PushRecordPtr {
+    ConverterRefCount &c;
+    std::string *record_ptr;
+    const clang::Expr *record_base;
+
+    PushRecordPtr(ConverterRefCount &c, std::string *ptr,
+                  const clang::Expr *base)
+        : c(c), record_ptr(std::exchange(c.record_ptr_, ptr)),
+          record_base(std::exchange(
+              c.record_base_, base ? base->IgnoreParenImpCasts() : nullptr)) {}
+    ~PushRecordPtr() {
+      c.record_ptr_ = record_ptr;
+      c.record_base_ = record_base;
+    }
+  };
 
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
@@ -194,7 +230,12 @@ public:
   bool
   Convert(clang::Expr *expr,
           std::optional<clang::QualType> implicit_convert_to = {}) override {
+    auto *record_ptr = record_ptr_;
+    if (!expr || expr->IgnoreParenImpCasts() != record_base_) {
+      record_ptr_ = nullptr;
+    }
     auto result = Converter::Convert(expr, implicit_convert_to);
+    record_ptr_ = record_ptr;
     if (computed_expr_type_ == ComputedExprType::Pending) {
       assert(!pending_deref_.empty() && "pending_deref_ taken without type");
     }
@@ -207,6 +248,9 @@ public:
   }
 
   void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) override;
+
+  void ConvertFieldInit(const clang::FieldDecl *field,
+                        clang::Expr *init) override;
 
   std::string ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
 
@@ -288,6 +332,19 @@ private:
   std::string ConvertFnPtrValue(clang::QualType qual_type, clang::Expr *expr);
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
+
+  // Whether an assigned value can be wrapped in braces to release its borrows
+  // before lhs is borrowed, as Rust 2024 drops the temporaries of a block's
+  // tail expression at the end of the block. This requires the value to be
+  // evaluated before lhs (or the order to be unobservable); otherwise it must
+  // be bound to a variable first.
+  bool CanBraceAssignedValue(clang::Expr *lhs, clang::Expr *rhs,
+                             std::string_view assign_operator);
+
+  // Emits `lhs = value`, where value is the result of the compound assignment
+  // `lhs op= rhs` and thus reads lhs.
+  void EmitCompoundSetOrAssign(clang::Expr *lhs, clang::Expr *rhs,
+                               std::string_view value);
 
   // If lhs is a direct reference to a global/static value (not a reference
   // type), emits `var.with(|rc| *rc.borrow_mut() <op> <rhs>)` and returns
@@ -407,7 +464,8 @@ private:
   // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
   // ptr.with_mut(...).
   struct PendingDeref {
-    explicit PendingDeref(ComputedExprType &type) : type(type) {}
+    PendingDeref(ComputedExprType &type, clang::ASTContext &ctx)
+        : type(type), ctx(ctx) {}
     void set(std::string str, bool fresh, clang::Expr *expr = nullptr);
     void set_unchecked(std::string str, bool fresh,
                        clang::Expr *expr = nullptr);
@@ -426,11 +484,12 @@ private:
     }
 
   private:
-    static bool compute_inner_boxed(clang::Expr *expr);
+    bool compute_inner_boxed(clang::Expr *expr) const;
     ComputedExprType &type;
+    clang::ASTContext &ctx;
     std::string value;
     bool pointee_is_boxed = false;
     bool ptr_is_fresh = false;
-  } pending_deref_{computed_expr_type_};
+  } pending_deref_{computed_expr_type_, ctx_};
 };
 } // namespace cpp2rust

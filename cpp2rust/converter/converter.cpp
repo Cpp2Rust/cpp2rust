@@ -22,6 +22,8 @@
 #include "converter/converter_lib.h"
 #include "converter/lex.h"
 #include "converter/mapper.h"
+#include "converter/printer.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust {
 std::unordered_map<std::string, std::string> Converter::inner_structs_;
@@ -93,6 +95,7 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
 void Converter::EmitOpaqueRecords(std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
     out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
+    out += "#[byte_size(1)]";
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -118,7 +121,7 @@ bool Converter::Convert(clang::QualType qual_type) {
     record_decls_.MarkReferenced(GetRecordName(decl));
   }
 
-  auto mapped = Mapper::Map(qual_type);
+  auto mapped = Mapper::Map(ctx_, qual_type);
   if (!mapped.empty() && mapped != token::kIgnoreRule) {
     StrCat(mapped);
     return false;
@@ -129,7 +132,7 @@ bool Converter::Convert(clang::QualType qual_type) {
 }
 
 bool Converter::ConvertMappedType(clang::QualType qual_type) {
-  std::string type_as_string = Mapper::Map(qual_type);
+  std::string type_as_string = Mapper::Map(ctx_, qual_type);
   if (type_as_string == token::kIgnoreRule) {
     return false;
   }
@@ -151,7 +154,7 @@ std::string Converter::ConvertPointeeType(clang::QualType ptr_type) {
 }
 
 bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
-  auto mapped = Mapper::Map(clang::QualType(type, 0));
+  auto mapped = Mapper::Map(ctx_, clang::QualType(type, 0));
   if (mapped.empty()) {
     llvm::report_fatal_error(llvm::Twine("no type rule for builtin type: ") +
                              type->getName(ctx_.getPrintingPolicy()));
@@ -178,7 +181,7 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   }
 
   StrCat(GetRecordName(decl));
-  Mapper::AddRuleForUserDefinedType(decl);
+  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   return false;
 }
 
@@ -658,7 +661,7 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
     }
 
     // Records that contain std::array do not derive Default
-    if (Mapper::ToString(f->getType()).contains("std::array")) {
+    if (Printer::ToString(ctx_, f->getType()).contains("std::array")) {
       return false;
     }
 
@@ -680,14 +683,15 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
 }
 
 bool Converter::IsPassThroughRule(clang::Expr *expr) const {
-  const auto *rule = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  const auto *rule = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   return rule && rule->body.size() == 1 &&
          std::holds_alternative<TranslationRule::PlaceholderFragment>(
              rule->body[0]);
 }
 
 bool Converter::RecordDerivesCopy(const clang::RecordDecl *decl) const {
-  auto *derives = Mapper::MappedDerives(ctx_.getCanonicalTagType(decl));
+  auto *derives =
+      RuleRegistry::MappedDerives(ctx_, ctx_.getCanonicalTagType(decl));
   return derives &&
          std::find(derives->begin(), derives->end(), "Copy") != derives->end();
 }
@@ -700,7 +704,7 @@ bool Converter::RecordHasCopyableFields(const clang::RecordDecl *decl) {
   for (auto f : decl->fields()) {
     // Records that contain std::vector, std::array, std::string or anything
     // that is translated to Vec<>, do not derive Copy
-    auto mapped = Mapper::Map(f->getType());
+    auto mapped = Mapper::Map(ctx_, f->getType());
     if (mapped.starts_with("Vec<")) {
       return false;
     }
@@ -748,7 +752,7 @@ bool Converter::VisitRecordDecl(clang::RecordDecl *decl) {
     return false;
   }
 
-  Mapper::AddRuleForUserDefinedType(decl);
+  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   EmitRustStructOrUnion(decl);
 
   return false;
@@ -810,13 +814,15 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
     EmitReprC(decl);
   }
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
-                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  RuleRegistry::SetDerives(
+      ctx_, ctx_.getCanonicalTagType(decl),
+      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
   }
   StrCat(")]");
+  EmitByteSizeAttr(decl);
 
   // Fields
   auto access = clang::dyn_cast<clang::CXXRecordDecl>(decl)
@@ -842,7 +848,6 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
   }
   AddCloneTrait(decl);
   AddDefaultTrait(decl);
-  AddByteReprTrait(decl);
 }
 
 void Converter::ConvertLateInstantiatedMethods(clang::CXXRecordDecl *decl) {
@@ -909,8 +914,9 @@ void Converter::EmitReprC(clang::RecordDecl *decl) {
 void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   EmitReprC(decl);
   auto attrs = GetStructAttributes(decl);
-  Mapper::SetDerives(ctx_.getCanonicalTagType(decl),
-                     std::vector<std::string>(attrs.begin(), attrs.end()));
+  RuleRegistry::SetDerives(
+      ctx_, ctx_.getCanonicalTagType(decl),
+      std::vector<std::string>(attrs.begin(), attrs.end()));
   StrCat("#[derive(");
   for (auto *attr : attrs) {
     StrCat(attr, ',');
@@ -929,13 +935,12 @@ void Converter::EmitRustUnion(clang::RecordDecl *decl) {
   }
 
   AddDefaultTrait(decl);
-  AddByteReprTrait(decl);
 }
 
 bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
   decl->dump(log());
 
-  Mapper::AddRuleForUserDefinedType(decl);
+  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   if (!IsConvertibleCXXRecordDecl(decl)) {
     return false;
   }
@@ -1117,7 +1122,7 @@ std::string Converter::GetCtorName(clang::CXXConstructorDecl *decl) {
         CanUseCopyOrMoveName(decl, name)) {
       return name;
     }
-    return GetOverloadedFunctionName(decl);
+    return std::format("new_{}", GetCtorIndex(decl));
   }
   return GetNumberOfConvertingCtors(decl->getParent()) != 1
              ? std::format("new_{}", GetCtorIndex(decl))
@@ -1175,7 +1180,6 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
 
   for (const auto *field : record_decl->fields()) {
     auto field_name = GetNamedDeclAsString(field);
-    auto field_type = field->getType();
     const clang::CXXCtorInitializer *ctor_initializer = nullptr;
     for (const auto *init : definition->inits()) {
       if (init->isMemberInitializer() && init->getMember() == field) {
@@ -1184,15 +1188,9 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
       }
     }
 
-    if (ctor_initializer) {
-      StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, ctor_initializer->getInit());
-    } else if (auto *init = field->getInClassInitializer()) {
-      StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, init);
-    } else {
-      StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
-    }
+    StrCat(field_name, token::kColon);
+    ConvertFieldInit(field, ctor_initializer ? ctor_initializer->getInit()
+                                             : field->getInClassInitializer());
     StrCat(token::kComma);
   }
 }
@@ -1469,7 +1467,7 @@ void Converter::ConvertForRangeBody(clang::CXXForRangeStmt *stmt,
 bool Converter::VisitCXXForRangeStmt(clang::CXXForRangeStmt *stmt) {
   auto range_init_type = stmt->getRangeInit()->getType();
 
-  if (!Mapper::Contains(range_init_type.getUnqualifiedType())) {
+  if (!Mapper::Contains(ctx_, range_init_type.getUnqualifiedType())) {
     // FIXME: improve error handling
     log() << "for range stmts only for types in std namespace\n";
   }
@@ -1490,7 +1488,7 @@ bool Converter::VisitCXXForRangeStmtMap(clang::CXXForRangeStmt *stmt) {
   auto loop_var_name = GetNamedDeclAsString(loop_var);
 
   StrCat("'loop_:");
-  auto map_type = Mapper::Map(stmt->getRangeInit()->getType());
+  auto map_type = Mapper::Map(ctx_, stmt->getRangeInit()->getType());
   StrCat(keyword::kFor, loop_var_name, keyword::kIn,
          "UnsafeMapIterator::begin(&");
   Convert(stmt->getRangeInit());
@@ -1566,7 +1564,7 @@ bool Converter::Convert(clang::Expr *expr,
                         std::optional<clang::QualType> implicit_convert_to) {
   bool needs_conversion =
       expr && implicit_convert_to &&
-      NeedsImplicitScalarCast(expr->IgnoreImplicit()->getType(),
+      NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(),
                               *implicit_convert_to);
   PushParen paren(*this, needs_conversion);
   computed_expr_type_ = ComputedExprType::Unknown;
@@ -1599,7 +1597,7 @@ const clang::Expr *Converter::GetParentExpr(const clang::Expr *expr) {
 bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
                           std::string &fmt_args, const char *&fmt_trait,
                           std::string &fmt_width) {
-  std::string arg_str = Mapper::ToString(arg);
+  std::string arg_str = Printer::ToString(ctx_, arg);
   if (auto *str_lit =
           clang::dyn_cast<clang::StringLiteral>(arg->IgnoreImplicit())) {
     if (!IsAsciiStringLiteral(str_lit)) {
@@ -1622,7 +1620,7 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
   } else if (arg_str.contains("Setw")) {
     fmt_width = Trim(ToString(arg));
   } else if (!arg->getType()->isCharType() &&
-             Mapper::Map(arg->getType()) !=
+             Mapper::Map(ctx_, arg->getType()) !=
                  std::format("Vec<{}>", CharRustType())) {
     fmt += ("{:" + fmt_width + fmt_trait + "}");
     fmt_width.clear(); // Reset setw after first usage
@@ -1640,13 +1638,13 @@ bool Converter::GetFmtArg(clang::Expr *arg, std::string &fmt,
 bool Converter::GetRawArg(clang::Expr *arg, std::string &raw_args) {
   if (arg->getType()->isCharType()) {
     raw_args += "(&[" + ToString(arg) + " as u8]";
-  } else if (Mapper::Map(arg->getType()) ==
+  } else if (Mapper::Map(ctx_, arg->getType()) ==
              std::format("Vec<{}>", CharRustType())) {
     PushExprKind push(*this, ExprKind::RValue);
     std::string str = ToString(arg);
     raw_args += "(&(" + str + ").iter().take((" + str +
                 ").len() - 1).map(|&c| c as u8).collect::<Vec<u8>>()[..]";
-  } else if (Mapper::ToString(arg).contains("std::endl")) {
+  } else if (Printer::ToString(ctx_, arg).contains("std::endl")) {
     raw_args += "(&[b'\\n']";
   } else if (clang::isa<clang::StringLiteral>(arg->IgnoreImplicit())) {
     raw_args += "(b" + GetEscapedStringLiteral(arg);
@@ -1733,7 +1731,7 @@ void Converter::ConvertCallToOstream(clang::CallExpr *expr) {
 
 void Converter::ConvertPrintf(clang::CallExpr *expr) {
   bool is_fprintf =
-      Mapper::ToString(expr->getCallee()).starts_with("int fprintf");
+      Printer::ToString(ctx_, expr->getCallee()).starts_with("int fprintf");
 
   StrCat("printf(");
   for (unsigned i = is_fprintf; i < expr->getNumArgs(); ++i) {
@@ -1796,14 +1794,15 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
-  if (IsImplicitAssignmentCall(expr) && !Mapper::Contains(expr->getCallee())) {
+  if (IsImplicitAssignmentCall(expr) &&
+      !Mapper::Contains(ctx_, expr->getCallee())) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
     ConvertAssignment(call->getImplicitObjectArgument(), call->getArg(0), "=");
     return false;
   }
 
-  if (Mapper::Contains(expr->getCallee())) {
-    if (Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr))) {
+  if (Mapper::Contains(ctx_, expr->getCallee())) {
+    if (RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr))) {
       ConvertGenericCallExpr(expr);
       return false;
     }
@@ -1844,7 +1843,7 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
 
   if (auto *opcall = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr);
       opcall && !IsUserOperatorCall(opcall) &&
-      !Mapper::Contains(expr->getCallee())) {
+      !Mapper::Contains(ctx_, expr->getCallee())) {
     return ConvertCXXOperatorCallExpr(opcall);
   }
 
@@ -1886,7 +1885,7 @@ std::string Converter::GetFunctionRefName(const clang::FunctionDecl *fn_decl) {
     return std::format("{}::{}", GetRecordName(method->getParent()),
                        GetMethodName(method));
   }
-  return Mapper::MapFunctionName(fn_decl);
+  return Mapper::MapFunctionName(ctx_, fn_decl);
 }
 
 void Converter::ConvertFunctionToFunctionPointer(
@@ -1942,7 +1941,8 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
   info.is_fn_ptr_call = !function;
-  info.is_libc_passthrough = Mapper::IsLibcPassthrough(GetCalleeOrExpr(expr));
+  info.is_libc_passthrough =
+      RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr));
 
   for (unsigned i = 0; i < num_named_params && i < num_args; ++i) {
     auto *arg = expr->getArg(i + arg_begin);
@@ -2100,7 +2100,8 @@ void Converter::EmitArgList(const CallInfo &info) {
         ConvertParamTy(ca.param_type, ca.expr);
         if (info.is_libc_passthrough) {
           StrCat(std::format(
-              "as {}", Mapper::GetParamType(GetCalleeOrExpr(info.expr), i)));
+              "as {}",
+              Mapper::GetParamType(ctx_, GetCalleeOrExpr(info.expr), i)));
         }
         break;
       }
@@ -2177,15 +2178,22 @@ std::optional<Converter::TempMaterializationCtx>
 Converter::ConvertCallExpr(clang::CallExpr *expr) {
   auto *callee = expr->getCallee();
 
-  if (auto fn = Mapper::ToString(callee);
+  if (auto fn = Printer::ToString(ctx_, callee);
       fn.starts_with("int printf") || fn.starts_with("int fprintf")) {
     ConvertPrintf(expr);
   } else if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));
   } else if (IsBuiltinConstantP(callee)) {
-    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_) ? token::kOne
-                                                      : token::kZero);
-  } else if (Mapper::Contains(callee)) {
+    clang::APValue V;
+    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_
+#if CLANG_VERSION_MAJOR >= 24
+                                                ,
+                                                V
+#endif
+                                                )
+               ? token::kOne
+               : token::kZero);
+  } else if (Mapper::Contains(ctx_, callee)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
     auto ctx = CollectRefBindingTempArgs(expr);
@@ -2227,7 +2235,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
 
   if (ty->isFloatingType() || incl_type) {
     if (expr->getValue().isZero()) {
-      if (auto init = Mapper::MapInitializer(ty); !init.empty()) {
+      if (auto init = Mapper::MapInitializer(ctx_, ty); !init.empty()) {
         return init;
       }
     }
@@ -2243,7 +2251,7 @@ bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
-  StrCat(getIntegerLiteral(expr, Mapper::Map(expr->getType()) != "i32"));
+  StrCat(getIntegerLiteral(expr, Mapper::Map(ctx_, expr->getType()) != "i32"));
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
@@ -2425,7 +2433,7 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
 bool Converter::IsCastRedundantInRust(clang::Expr *expr,
                                       clang::QualType target_type) {
   auto target = GetUnsafeTypeAsString(target_type);
-  if (const auto *rule = Mapper::GetExprRule(expr)) {
+  if (const auto *rule = RuleRegistry::GetExprRule(ctx_, expr)) {
     return rule->return_type.type == target;
   }
   return GetUnsafeTypeAsString(expr->getType()) == target;
@@ -2438,7 +2446,10 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_LValueToRValue: {
     PushExprKind push(*this, ExprKind::RValue);
     Convert(sub_expr);
-    SetValueFreshness(type);
+    // The value may have been copied out already.
+    if (!isFresh()) {
+      SetValueFreshness(type);
+    }
     break;
   }
   case clang::CastKind::CK_ArrayToPointerDecay: {
@@ -2793,14 +2804,14 @@ void Converter::ConvertGenericBinaryOperator(clang::BinaryOperator *expr) {
   PushParen outer(*this);
   {
     PushParen lhs_paren(*this);
-    Convert(lhs, GetOperandImplicitConversionTarget(expr, lhs, rhs));
+    Convert(lhs, GetOperandImplicitConversionTarget(ctx_, expr, lhs, rhs));
   }
 
   StrCat(expr->getOpcodeStr());
 
   {
     PushParen rhs_paren(*this);
-    Convert(rhs, GetOperandImplicitConversionTarget(expr, rhs, lhs));
+    Convert(rhs, GetOperandImplicitConversionTarget(ctx_, expr, rhs, lhs));
   }
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
@@ -2926,23 +2937,17 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
 bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   auto *body = expr->getSubStmt();
   PushBrace brace(*this);
-  auto stmts = body->body();
-  size_t n = static_cast<size_t>(stmts.end() - stmts.begin());
-  size_t i = 0;
-  for (auto *s : stmts) {
-    ++i;
-    if (i == n) {
-      if (auto *tail = clang::dyn_cast<clang::Expr>(s)) {
-        EmitStmtExprTail(tail);
-        continue;
-      }
+  for (auto *s : body->body()) {
+    // The last expression is the value of the block, so it has no semicolon.
+    auto *tail = clang::dyn_cast<clang::Expr>(s);
+    if (tail && s == body->body_back()) {
+      Convert(tail);
+    } else {
+      Convert(s);
     }
-    Convert(s);
   }
   return false;
 }
-
-void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
@@ -3102,7 +3107,7 @@ bool Converter::ConvertCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
   case clang::OverloadedOperatorKind::OO_Arrow:
     if (IsUniquePtr(expr->getArg(0)->getType())) {
       ConvertUniquePtrDeref(expr);
-    } else if (GetStrongestIteratorCategory(expr->getArg(0)->getType()) ==
+    } else if (GetStrongestIteratorCategory(ctx_, expr->getArg(0)->getType()) ==
                IteratorCategory::Bidirectional) {
       Convert(expr->getArg(0));
     } else if (expr->getOperator() == clang::OverloadedOperatorKind::OO_Star) {
@@ -3164,7 +3169,7 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     return false;
   }
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
-      method && IsMethodOnPtr(method) && !Mapper::Contains(expr)) {
+      method && IsMethodOnPtr(method) && !Mapper::Contains(ctx_, expr)) {
     SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
     StrCat(GetRecordName(method->getParent()), token::kDoubleColon,
            GetMethodName(method));
@@ -3286,7 +3291,7 @@ replaceNonUniformLibcField(clang::MemberExpr *expr) {
 
 void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   if (auto mapped = GetMappedAsString(expr); !mapped.empty()) {
-    if (Mapper::ReturnsPointer(expr)) {
+    if (RuleRegistry::ReturnsPointer(ctx_, expr)) {
       StrCat(token::kStar, mapped);
     } else {
       StrCat(mapped);
@@ -3396,7 +3401,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     int i = 0;
     for (const auto *field : record->fields()) {
       StrCat(GetNamedDeclAsString(field), token::kColon);
-      ConvertVarInit(field->getType(), expr->getInit(i++));
+      ConvertFieldInit(field, expr->getInit(i++));
       StrCat(token::kComma);
     }
   } else {
@@ -3744,10 +3749,10 @@ bool Converter::VisitOffsetOfExpr(clang::OffsetOfExpr *expr) {
 
 bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   ENSURE(decl_ids_.insert(GetID(decl)).second);
-  if (Mapper::Contains(ctx_.getCanonicalTagType(decl))) {
+  if (Mapper::Contains(ctx_, ctx_.getCanonicalTagType(decl))) {
     return false;
   }
-  Mapper::AddRuleForUserDefinedType(decl);
+  RuleRegistry::AddRuleForUserDefinedType(ctx_, decl);
   auto name = GetRecordName(decl);
   StrCat(std::format("pub type {} = {};", name,
                      GetUnsafeTypeAsString(decl->getIntegerType())));
@@ -3898,9 +3903,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   if (needs_switch_macro) {
     StrCat("match", ToString(stmt->getCond()));
   } else {
-    StrCat(
-        std::format("let __match_cond = {};", ConvertRValue(stmt->getCond())));
-    StrCat("match __match_cond");
+    StrCat(std::format("match {{ {} }}", ConvertRValue(stmt->getCond())));
   }
 
   PushBrace match_brace(*this);
@@ -3970,7 +3973,7 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
           clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
     return GetDefaultAsString(array_type->getElementType());
   }
-  if (Mapper::ToString(qual_type).contains("std::array")) {
+  if (Printer::ToString(ctx_, qual_type).contains("std::array")) {
     assert(GetTemplateArgs(qual_type).has_value());
     auto template_args = *GetTemplateArgs(qual_type);
     assert(template_args.size() == 2);
@@ -4011,7 +4014,7 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
     return arr;
   }
 
-  if (auto init = Mapper::MapInitializer(qual_type); !init.empty()) {
+  if (auto init = Mapper::MapInitializer(ctx_, qual_type); !init.empty()) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return init;
   }
@@ -4057,28 +4060,13 @@ std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
 }
 
 std::string
-Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
+Converter::GetOverloadedFunctionName(const clang::CXXMethodDecl *decl) {
   auto name = GetFunctionBaseName(decl);
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
     name = GetConversionName(
         conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
   }
-  if (auto *ctor = clang::dyn_cast<clang::CXXConstructorDecl>(decl);
-      ctor && !ctor->getParent()->getIdentifier()) {
-    name = GetRecordName(ctor->getParent());
-  }
-
-  if (decl->getNumParams() != 0U) {
-    name += '_';
-  }
-
-  for (auto *parameter : decl->parameters()) {
-    name += GetUnsafeTypeAsString(parameter->getType());
-    if (parameter->getType()->isRValueReferenceType()) {
-      name += "_rv";
-    }
-    name += '_';
-  }
+  name += std::format("_{}", GetMethodIndex(decl));
 
   if (const auto *targs = decl->getTemplateSpecializationArgs()) {
     std::vector<clang::TemplateArgument> args;
@@ -4093,42 +4081,17 @@ Converter::GetOverloadedFunctionName(const clang::FunctionDecl *decl) {
       name += '_';
       switch (arg.getKind()) {
       case clang::TemplateArgument::Type:
-        name += Mapper::ToRustName(
+        name += Printer::ToRustName(
             arg.getAsType().getCanonicalType().getAsString());
         break;
       case clang::TemplateArgument::Integral:
-        name += Mapper::ToRustName(
+        name += Printer::ToRustName(
             std::string(GetNumAsString(arg.getAsIntegral())));
         break;
       default:
         name += "targ";
         break;
       }
-    }
-  }
-
-  auto pred = [](char ch) { return ch != ' ' && ch != '_'; };
-  name.erase(std::find_if(name.rbegin(), name.rend(), pred).base(), name.end());
-
-  if (decl->isVariadic()) {
-    name += "_va";
-  }
-  if (const auto *method = clang::dyn_cast<clang::CXXMethodDecl>(decl)) {
-    if (method->isConst()) {
-      name += "_const";
-    }
-    if (method->isVolatile()) {
-      name += "_volatile";
-    }
-    switch (method->getRefQualifier()) {
-    case clang::RQ_LValue:
-      name += "_lref";
-      break;
-    case clang::RQ_RValue:
-      name += "_rref";
-      break;
-    case clang::RQ_None:
-      break;
     }
   }
 
@@ -4141,7 +4104,8 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
   if (auto it = inner_structs_.find(ID); it != inner_structs_.end()) {
     return it->second;
   }
-  return Mapper::ToRustName(Mapper::ToString(Mapper::GetTypeForDecl(decl)));
+  return Printer::ToRustName(
+      Printer::ToString(ctx_, GetTypeForDecl(ctx_, decl)));
 }
 
 std::vector<const char *>
@@ -4216,9 +4180,9 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
       ctor && ctor->getNumArgs() != 0 && IsReferenceType(ctor->getArg(0)) &&
       clang::isa<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts()) &&
       !Mapper::Contains(
-          clang::cast<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts())
-              ->getCallee()) &&
-      Mapper::ToString(ctor->getConstructor()->getThisType()) ==
+          ctx_, clang::cast<clang::CallExpr>(ctor->getArg(0)->IgnoreCasts())
+                    ->getCallee()) &&
+      Printer::ToString(ctx_, ctor->getConstructor()->getThisType()) ==
           "std::string") {
     {
       PushParen paren(*this);
@@ -4240,9 +4204,10 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
 
 void Converter::ConvertUnsignedArithOperand(clang::Expr *expr,
                                             clang::QualType type) {
-  bool needs_cast = (expr->isIntegerConstantExpr(ctx_) &&
-                     !clang::isa<clang::ImplicitCastExpr>(expr)) ||
-                    Mapper::Map(expr->getType()) != Mapper::Map(type);
+  bool needs_cast =
+      (expr->isIntegerConstantExpr(ctx_) &&
+       !clang::isa<clang::ImplicitCastExpr>(expr)) ||
+      Mapper::Map(ctx_, expr->getType()) != Mapper::Map(ctx_, type);
   PushParen paren(*this, needs_cast);
   Convert(expr);
   if (needs_cast) {
@@ -4342,7 +4307,7 @@ void Converter::ConvertArraySubscript(clang::Expr *base, clang::Expr *idx,
     Convert(idx);
   }
 
-  if (Mapper::Map(idx->getType()) != "usize") {
+  if (Mapper::Map(ctx_, idx->getType()) != "usize") {
     StrCat(keyword::kAs, "usize");
   }
 }
@@ -4701,16 +4666,21 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
     StrCat(GetNamedDeclAsString(field), token::kColon);
-    if (auto *init = field->getInClassInitializer()) {
-      ConvertVarInit(field->getType(), init);
-    } else {
-      StrCat(GetDefaultAsString(field->getType()));
-    }
+    ConvertFieldInit(field, field->getInClassInitializer());
     StrCat(token::kComma);
   }
 }
 
-void Converter::AddByteReprTrait(const clang::RecordDecl *decl) {}
+void Converter::ConvertFieldInit(const clang::FieldDecl *field,
+                                 clang::Expr *init) {
+  if (init) {
+    ConvertVarInit(field->getType(), init);
+  } else {
+    StrCat(GetDefaultAsString(field->getType()));
+  }
+}
+
+void Converter::EmitByteSizeAttr(const clang::RecordDecl *decl) {}
 
 void Converter::ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *op,
                                                    clang::Expr *expr) {
@@ -4833,7 +4803,7 @@ Converter::CollectRefBindingTempArgs(clang::CallExpr *expr) {
     for (unsigned i = 0; i < expr->getNumArgs() && i < fn->getNumParams();
          ++i) {
       auto param_type = fn->getParamDecl(i)->getType();
-      if (NeedsRefBindingTemp(expr->getArg(i), param_type)) {
+      if (NeedsRefBindingTemp(ctx_, expr->getArg(i), param_type)) {
         ctx.materialized_args[i] = param_type;
       }
     }
@@ -4883,7 +4853,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
   if (ph_ctx.declared_in_rule_as_rust_ptr && arg->getType()->isArrayType()) {
     return std::format(
         "({} as {})", ConvertFreshPointer(arg),
-        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx));
+        Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), ph_ctx.arg_idx));
   }
 
   if (ph_ctx.needs_materialization()) {
@@ -4899,7 +4869,7 @@ std::string Converter::ConvertPlaceholder(clang::Expr *expr, clang::Expr *arg,
 
   if (ph_ctx.needs_pointer_receiver()) {
     auto param_type =
-        Mapper::GetParamType(GetCalleeOrExpr(expr), ph_ctx.arg_idx);
+        Mapper::GetParamType(ctx_, GetCalleeOrExpr(expr), ph_ctx.arg_idx);
     return std::format("({} as {})", ConvertFreshObject(arg, param_type),
                        param_type);
   }
@@ -4965,7 +4935,7 @@ std::string Converter::ConvertMappedMethodCall(
 std::string Converter::GetMappedAsString(clang::Expr *expr, clang::Expr **args,
                                          unsigned num_args,
                                          TempMaterializationCtx *ctx) {
-  auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   if (!tgt_ir)
     return {};
 
@@ -4989,7 +4959,7 @@ std::string Converter::ConvertIRFragment(
     if (auto *t = std::get_if<TextFragment>(&frag)) {
       result += t->text;
     } else if (auto *g = std::get_if<GenericFragment>(&frag)) {
-      result += Mapper::InstantiateTemplate(GetCalleeOrExpr(expr), g->n);
+      result += Mapper::InstantiateTemplate(ctx_, GetCalleeOrExpr(expr), g->n);
     } else if (auto *ph = std::get_if<PlaceholderFragment>(&frag)) {
       auto arg_idx = ph->n;
       assert(arg_idx < all_args.size());
@@ -5005,9 +4975,9 @@ std::string Converter::ConvertIRFragment(
           .access = ph->access,
           .is_receiver = is_receiver,
           .is_cpp_ptr = arg->getType()->isPointerType(),
-          .maps_to_rust_ptr = Mapper::MapsToPointer(arg->getType()),
-          .declared_in_rule_as_rust_ptr =
-              Mapper::ParamIsPointer(GetCalleeOrExpr(expr), arg_idx),
+          .maps_to_rust_ptr = RuleRegistry::MapsToPointer(ctx_, arg->getType()),
+          .declared_in_rule_as_rust_ptr = RuleRegistry::ParamIsPointer(
+              ctx_, GetCalleeOrExpr(expr), arg_idx),
           .is_index_base = ph->is_index_base,
       };
       result += ConvertPlaceholder(expr, arg, ph_ctx);
@@ -5027,7 +4997,7 @@ std::string Converter::ConvertIRFragment(
 std::string
 Converter::ConvertVariadicTail(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   unsigned fixed = tgt_ir ? tgt_ir->params.size() : 0;
 
   Buffer buf(*this);
@@ -5046,7 +5016,7 @@ Converter::ConvertVariadicTail(clang::Expr *expr,
 std::string
 Converter::ConvertInitFragment(clang::Expr *expr,
                                const std::vector<clang::Expr *> &all_args) {
-  const auto *tgt_ir = Mapper::GetExprRule(GetCalleeOrExpr(expr));
+  const auto *tgt_ir = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
   assert(tgt_ir && tgt_ir->init_type.valid());
   auto *callee = clang::cast<clang::CallExpr>(expr)->getDirectCallee();
   assert(callee);
@@ -5086,7 +5056,7 @@ std::string Converter::AccessLValueObject(clang::MemberExpr *member) {
   if (member->isArrow()) {
     auto *op =
         clang::dyn_cast<clang::CXXOperatorCallExpr>(object->IgnoreImplicit());
-    if (op && GetStrongestIteratorCategory(op->getArg(0)->getType()) ==
+    if (op && GetStrongestIteratorCategory(ctx_, op->getArg(0)->getType()) ==
                   IteratorCategory::Bidirectional) {
       return ToString(object);
     }

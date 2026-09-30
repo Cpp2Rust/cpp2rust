@@ -6,12 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Pair {
+    #[offset(0)]
+    #[byte_size(8)]
     pub x1: Ptr<i32>,
+    #[offset(8)]
+    #[byte_size(8)]
     pub x2: Ptr<i32>,
 }
-impl ByteRepr for Pair {}
 pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {
     return Pair {
         x1: (x1).clone(),
@@ -28,17 +32,14 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
         }),
     ));
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] =
-        ((*pair.borrow()).x1).clone();
+        ({ (*pair.borrow()).x1.clone() }).clone();
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(1_usize) as usize] =
-        ((*pair.borrow()).x2).clone();
+        ({ (*pair.borrow()).x2.clone() }).clone();
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let out: Value<bool> = Rc::new(RefCell::new(false));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while {
-        let _lhs = (*i.borrow());
-        _lhs < (n1.read())
-    } {
+    'loop_: while ({ (*i.borrow()) } < { (n1.read()) }) {
         let __rhs = (*out.borrow())
             || (((*arr.upgrade().deref()).as_ref().unwrap().borrow()
                 [((*i.borrow()) as usize) as usize]

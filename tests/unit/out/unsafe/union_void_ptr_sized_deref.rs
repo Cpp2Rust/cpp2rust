@@ -31,8 +31,7 @@ pub struct Sink {
 }
 pub unsafe fn write_count_1(mut s: *mut Sink, mut count: i64) {
     'switch: {
-        let __match_cond = ((*s).width as u32);
-        match __match_cond {
+        match { ((*s).width as u32) } {
             __v if __v == ((Width_enum_W_64 as i32) as u32) => {
                 (*((*s).out.handle as *mut i64)) = count;
                 break 'switch;

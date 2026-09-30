@@ -6,42 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct context {
-    pub verbose: Value<i32>,
-    pub last_error: Value<i32>,
-}
-impl Clone for context {
-    fn clone(&self) -> Self {
-        Self {
-            verbose: Rc::new(RefCell::new((*self.verbose.borrow()).clone())),
-            last_error: Rc::new(RefCell::new((*self.last_error.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for context {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.verbose.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.last_error.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            verbose: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            last_error: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
+    #[offset(0)]
+    pub verbose: i32,
+    #[offset(4)]
+    pub last_error: i32,
 }
 pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
-    if ((*(*(*ctx.borrow()).upgrade().deref()).verbose.borrow()) != 0) {
+    if ((*ctx.borrow()).with(|__s| __s.verbose) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
-        (*(*(*ctx.borrow()).upgrade().deref()).last_error.borrow_mut()) =
-            (*ap.borrow_mut()).arg::<i32>();
+        field!((*ctx.borrow()), last_error).write((*ap.borrow_mut()).arg::<i32>());
     }
 }
 pub fn main() {
@@ -50,8 +29,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let ctx: Value<context> = <Value<context>>::default();
-    (*(*ctx.borrow()).verbose.borrow_mut()) = 1;
-    (*(*ctx.borrow()).last_error.borrow_mut()) = 0;
+    (*ctx.borrow_mut()).verbose = 1;
+    (*ctx.borrow_mut()).last_error = 0;
     ({
         set_error_0(
             (ctx.as_pointer()),
@@ -59,8 +38,8 @@ fn main_0() -> i32 {
             &[(42).into()],
         )
     });
-    assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
-    (*(*ctx.borrow()).verbose.borrow_mut()) = 0;
+    assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
+    (*ctx.borrow_mut()).verbose = 0;
     ({
         set_error_0(
             (ctx.as_pointer()),
@@ -68,7 +47,7 @@ fn main_0() -> i32 {
             &[(99).into()],
         )
     });
-    assert!(((((*(*ctx.borrow()).last_error.borrow()) == 42) as i32) != 0));
+    assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

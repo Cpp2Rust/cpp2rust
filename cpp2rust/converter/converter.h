@@ -402,8 +402,6 @@ public:
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
 
-  virtual void EmitStmtExprTail(clang::Expr *tail);
-
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
   virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);
@@ -583,7 +581,7 @@ protected:
   virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
 
   virtual std::string
-  GetOverloadedFunctionName(const clang::FunctionDecl *decl);
+  GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);
 
   virtual std::string GetRecordName(const clang::NamedDecl *decl) const;
 
@@ -596,6 +594,11 @@ protected:
                         llvm::StringRef name) const;
 
   virtual void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
+
+  // The initial value of a field of a struct: `init`, or the default value
+  // if null.
+  virtual void ConvertFieldInit(const clang::FieldDecl *field,
+                                clang::Expr *init);
 
   virtual void ConvertUnsignedArithOperand(clang::Expr *expr,
                                            clang::QualType type);
@@ -668,7 +671,7 @@ protected:
 
   void EmitDefaultStructLiteral(const clang::RecordDecl *decl);
 
-  virtual void AddByteReprTrait(const clang::RecordDecl *decl);
+  virtual void EmitByteSizeAttr(const clang::RecordDecl *decl);
 
   virtual void
   ConvertUnsignedArithBinaryOperator(clang::BinaryOperator *binary_operator,

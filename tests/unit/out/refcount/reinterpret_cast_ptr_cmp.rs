@@ -16,10 +16,7 @@ fn main_0() -> i32 {
     let ptr2: Value<Ptr<u8>> = Rc::new(RefCell::new((i1.as_pointer()).reinterpret_cast::<u8>()));
     let vptr1: Value<AnyPtr> = Rc::new(RefCell::new((*ptr1.borrow()).to_any()));
     let vptr2: Value<AnyPtr> = Rc::new(RefCell::new((*ptr2.borrow()).to_any()));
-    assert!({
-        let _lhs = (*vptr1.borrow()).clone();
-        _lhs == (*vptr2.borrow()).clone()
-    });
+    assert!(({ (*vptr1.borrow()).clone() } == { (*vptr2.borrow()).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -12,9 +12,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(1);
-    (*v.borrow_mut()).push(2);
-    (*v.borrow_mut()).push(3);
+    {
+        let __a1 = 1;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v.borrow_mut()).push(__a1)
+    };
     let v_begin: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>)));
     let v_end: Value<Ptr<i32>> = Rc::new(RefCell::new((v.as_pointer() as Ptr<i32>).to_end()));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new(

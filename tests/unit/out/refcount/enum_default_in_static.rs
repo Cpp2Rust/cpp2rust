@@ -10,33 +10,13 @@ pub type Mode = u32;
 pub const Mode_MODE_NONE: Mode = 0;
 pub const Mode_MODE_ONE: Mode = 1;
 pub const Mode_MODE_TWO: Mode = 2;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Config {
-    pub count: Value<i32>,
-    pub mode: Value<Mode>,
-}
-impl Clone for Config {
-    fn clone(&self) -> Self {
-        Self {
-            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
-            mode: Rc::new(RefCell::new((*self.mode.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for Config {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.count.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            count: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            mode: Rc::new(RefCell::new(<Mode>::from_bytes(&buf[4..8]))),
-        }
-    }
+    #[offset(0)]
+    pub count: i32,
+    #[offset(4)]
+    pub mode: Mode,
 }
 thread_local!(
     pub static config_0: Value<Config> = <Value<Config>>::default();
@@ -46,9 +26,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((*(*config_0.with(Value::clone).borrow()).count.borrow()) == 0) as i32) != 0));
+    assert!(((({ (*config_0.with(Value::clone).borrow()).count } == 0) as i32) != 0));
     assert!(
-        (((((*(*config_0.with(Value::clone).borrow()).mode.borrow()) as u32)
+        (((({ (*config_0.with(Value::clone).borrow()).mode } as u32)
             == ((Mode_MODE_NONE as i32) as u32)) as i32)
             != 0)
     );

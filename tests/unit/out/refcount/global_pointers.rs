@@ -6,51 +6,31 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(16)]
 pub struct Entry {
-    pub name: Value<Ptr<u8>>,
-    pub p: Value<Ptr<i32>>,
-}
-impl Clone for Entry {
-    fn clone(&self) -> Self {
-        let __this: Value<Entry> = Rc::new(RefCell::new(Self {
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-        }));
-        let this: Ptr<Entry> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Entry {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.name.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.p.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            name: Rc::new(RefCell::new(<Ptr<u8>>::from_bytes(&buf[0..8]))),
-            p: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[8..16]))),
-        }
-    }
+    #[offset(0)]
+    #[byte_size(8)]
+    pub name: Ptr<u8>,
+    #[offset(8)]
+    #[byte_size(8)]
+    pub p: Ptr<i32>,
 }
 thread_local!(
     pub static single_entry_0: Value<Entry> = Rc::new(RefCell::new(Entry {
-        name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"alone"))),
-        p: Rc::new(RefCell::new(Ptr::<i32>::null())),
+        name: Ptr::<u8>::from_string_literal(b"alone"),
+        p: Ptr::<i32>::null(),
     }));
 );
 thread_local!(
     pub static entries_1: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"first"))),
-            p: Rc::new(RefCell::new(Ptr::<i32>::null())),
+            name: Ptr::<u8>::from_string_literal(b"first"),
+            p: Ptr::<i32>::null(),
         },
         Entry {
-            name: Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"second"))),
-            p: Rc::new(RefCell::new(Ptr::<i32>::null())),
+            name: Ptr::<u8>::from_string_literal(b"second"),
+            p: Ptr::<i32>::null(),
         },
     ])));
 );
@@ -66,13 +46,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!((*(*single_entry_0.with(Value::clone).borrow()).p.borrow()).is_null());
+    assert!(({ (*single_entry_0.with(Value::clone).borrow()).p.clone() }).is_null());
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 2) {
         assert!(
-            (*(*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize]
-                .p
-                .borrow())
+            ({
+                (*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                    .p
+                    .clone()
+            })
             .is_null()
         );
         assert!(

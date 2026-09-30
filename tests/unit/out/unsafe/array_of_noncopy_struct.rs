@@ -29,7 +29,10 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut arr: [NonCopy; 3] = std::array::from_fn::<_, 3, _>(|_| <NonCopy>::default());
     arr[(0) as usize].tag = 7;
-    arr[(1) as usize].data.push(42);
+    {
+        let __a1 = 42;
+        arr[(1) as usize].data.push(__a1)
+    };
     assert!(((arr[(0) as usize].tag) == (7)));
     assert!(((arr[(1) as usize].data.len()) == (1_usize)));
     assert!(((arr[(1) as usize].data[(0_usize)]) == (42)));

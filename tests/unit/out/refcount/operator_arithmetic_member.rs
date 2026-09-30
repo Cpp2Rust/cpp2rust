@@ -6,214 +6,118 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct S {
-    pub v: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(7)),
-    }));
-    let b: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(2)),
-    }));
+    let a: Value<S> = Rc::new(RefCell::new(S { v: 7 }));
+    let b: Value<S> = Rc::new(RefCell::new(S { v: 2 }));
+    assert!(({ ({ SImpl::operator_add_1(&a.as_pointer(), b.as_pointer(),) }).v } == 9));
+    assert!(({ ({ SImpl::operator_sub_2(&a.as_pointer(), b.as_pointer(),) }).v } == 5));
+    assert!(({ ({ SImpl::operator_mul(&a.as_pointer(), b.as_pointer(),) }).v } == 14));
+    assert!(({ ({ SImpl::operator_div(&a.as_pointer(), b.as_pointer(),) }).v } == 3));
+    assert!(({ ({ SImpl::operator_rem(&a.as_pointer(), b.as_pointer(),) }).v } == 1));
+    assert!(({ ({ SImpl::operator_pos_6(&a.as_pointer(),) }).v } == 7));
+    assert!(({ ({ SImpl::operator_neg_7(&a.as_pointer(),) }).v } == -7_i32));
+    assert!((({ SImpl::operator_inc_8(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
+    assert!(({ ({ SImpl::operator_post_inc_9(&a.as_pointer(), 0,) }).v } == 8));
+    assert!(({ (*a.borrow()).v } == 9));
+    assert!((({ SImpl::operator_dec_10(&a.as_pointer(),) }).with(|__s| (__s).v) == 8));
+    assert!(({ ({ SImpl::operator_post_dec_11(&a.as_pointer(), 0,) }).v } == 8));
+    assert!(({ (*a.borrow()).v } == 7));
     assert!(
-        ((*({ SImpl::operator_add_pconstS_const(&a.as_pointer(), b.as_pointer(),) })
-            .v
-            .borrow())
+        (({ SImpl::operator_inc_8(&({ SImpl::operator_inc_8(&a.as_pointer(),) }),) })
+            .with(|__s| (__s).v)
             == 9)
     );
     assert!(
-        ((*({ SImpl::operator_sub_pconstS_const(&a.as_pointer(), b.as_pointer(),) })
+        ({
+            ({
+                let _o: Value<S> = Rc::new(RefCell::new(S { v: 4 }));
+                SImpl::operator_add_1(
+                    &Rc::new(RefCell::new(S { v: 3 })).as_pointer(),
+                    _o.as_pointer(),
+                )
+            })
             .v
-            .borrow())
-            == 5)
-    );
-    assert!(
-        ((*({ SImpl::operator_mul(&a.as_pointer(), b.as_pointer(),) })
-            .v
-            .borrow())
-            == 14)
-    );
-    assert!(
-        ((*({ SImpl::operator_div(&a.as_pointer(), b.as_pointer(),) })
-            .v
-            .borrow())
-            == 3)
-    );
-    assert!(
-        ((*({ SImpl::operator_rem(&a.as_pointer(), b.as_pointer(),) })
-            .v
-            .borrow())
-            == 1)
-    );
-    assert!(((*({ SImpl::operator_pos_const(&a.as_pointer(),) }).v.borrow()) == 7));
-    assert!(((*({ SImpl::operator_neg_const(&a.as_pointer(),) }).v.borrow()) == -7_i32));
-    assert!(
-        ((*(*({ SImpl::operator_inc(&a.as_pointer(),) })
-            .upgrade()
-            .deref())
-        .v
-        .borrow())
-            == 8)
-    );
-    assert!(
-        ((*({ SImpl::operator_post_inc_i32(&a.as_pointer(), 0,) })
-            .v
-            .borrow())
-            == 8)
-    );
-    assert!(((*(*a.borrow()).v.borrow()) == 9));
-    assert!(
-        ((*(*({ SImpl::operator_dec(&a.as_pointer(),) })
-            .upgrade()
-            .deref())
-        .v
-        .borrow())
-            == 8)
-    );
-    assert!(
-        ((*({ SImpl::operator_post_dec_i32(&a.as_pointer(), 0,) })
-            .v
-            .borrow())
-            == 8)
-    );
-    assert!(((*(*a.borrow()).v.borrow()) == 7));
-    assert!(
-        ((*(*({ SImpl::operator_inc(&({ SImpl::operator_inc(&a.as_pointer(),) }),) })
-            .upgrade()
-            .deref())
-        .v
-        .borrow())
-            == 9)
-    );
-    assert!(
-        ((*({
-            let _o: Value<S> = Rc::new(RefCell::new(S {
-                v: Rc::new(RefCell::new(4)),
-            }));
-            SImpl::operator_add_pconstS_const(
-                &Rc::new(RefCell::new(S {
-                    v: Rc::new(RefCell::new(3)),
-                }))
-                .as_pointer(),
-                _o.as_pointer(),
-            )
-        })
-        .v
-        .borrow())
-            == 7)
+        } == 7)
     );
     return 0;
 }
 pub trait SImpl {
-    fn operator_add_pconstS_const(&self, o: Ptr<S>) -> S;
-    fn operator_sub_pconstS_const(&self, o: Ptr<S>) -> S;
+    fn operator_add_1(&self, o: Ptr<S>) -> S;
+    fn operator_sub_2(&self, o: Ptr<S>) -> S;
     fn operator_mul(&self, o: Ptr<S>) -> S;
     fn operator_div(&self, o: Ptr<S>) -> S;
     fn operator_rem(&self, o: Ptr<S>) -> S;
-    fn operator_pos_const(&self) -> S;
-    fn operator_neg_const(&self) -> S;
-    fn operator_inc(&self) -> Ptr<S>;
-    fn operator_post_inc_i32(&self, _a0: i32) -> S;
-    fn operator_dec(&self) -> Ptr<S>;
-    fn operator_post_dec_i32(&self, _a0: i32) -> S;
+    fn operator_pos_6(&self) -> S;
+    fn operator_neg_7(&self) -> S;
+    fn operator_inc_8(&self) -> Ptr<S>;
+    fn operator_post_inc_9(&self, _a0: i32) -> S;
+    fn operator_dec_10(&self) -> Ptr<S>;
+    fn operator_post_dec_11(&self, _a0: i32) -> S;
 }
 impl SImpl for Ptr<S> {
-    fn operator_add_pconstS_const(&self, o: Ptr<S>) -> S {
+    fn operator_add_1(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-                _lhs + (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ (*self).with(|__s| __s.v) } + { o.with(|__s| __s.v) }),
         };
     }
-    fn operator_sub_pconstS_const(&self, o: Ptr<S>) -> S {
+    fn operator_sub_2(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-                _lhs - (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
         };
     }
     fn operator_mul(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-                _lhs * (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ (*self).with(|__s| __s.v) } * { o.with(|__s| __s.v) }),
         };
     }
     fn operator_div(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-                _lhs / (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ (*self).with(|__s| __s.v) } / { o.with(|__s| __s.v) }),
         };
     }
     fn operator_rem(&self, o: Ptr<S>) -> S {
         return S {
-            v: Rc::new(RefCell::new({
-                let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-                _lhs % (*(*o.upgrade().deref()).v.borrow())
-            })),
+            v: ({ (*self).with(|__s| __s.v) } % { o.with(|__s| __s.v) }),
         };
     }
-    fn operator_pos_const(&self) -> S {
+    fn operator_pos_6(&self) -> S {
         return S {
-            v: Rc::new(RefCell::new((*(*(*self).upgrade().deref()).v.borrow()))),
+            v: (*self).with(|__s| __s.v),
         };
     }
-    fn operator_neg_const(&self) -> S {
+    fn operator_neg_7(&self) -> S {
         return S {
-            v: Rc::new(RefCell::new(-(*(*(*self).upgrade().deref()).v.borrow()))),
+            v: -(*self).with(|__s| __s.v),
         };
     }
-    fn operator_inc(&self) -> Ptr<S> {
-        (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_inc();
+    fn operator_inc_8(&self) -> Ptr<S> {
+        field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*self).clone();
     }
-    fn operator_post_inc_i32(&self, _a0: i32) -> S {
+    fn operator_post_inc_9(&self, _a0: i32) -> S {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
-        (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_inc();
+        field!((*self), v).with_mut(|__v| __v.prefix_inc());
         return (*old.borrow()).clone();
     }
-    fn operator_dec(&self) -> Ptr<S> {
-        (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
+    fn operator_dec_10(&self) -> Ptr<S> {
+        field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*self).clone();
     }
-    fn operator_post_dec_i32(&self, _a0: i32) -> S {
+    fn operator_post_dec_11(&self, _a0: i32) -> S {
         let _a0: Value<i32> = Rc::new(RefCell::new(_a0));
         let old: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
-        (*(*(*self).upgrade().deref()).v.borrow_mut()).prefix_dec();
+        field!((*self), v).with_mut(|__v| __v.prefix_dec());
         return (*old.borrow()).clone();
     }
 }

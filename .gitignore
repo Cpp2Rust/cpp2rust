@@ -1,6 +1,8 @@
 # CMake
 build/
 _buildconfig.py
+Cargo.lock
+target/
 
 rules/rustls/rustls.h
 rules/brotli/brotli/

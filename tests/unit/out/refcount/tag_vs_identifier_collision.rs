@@ -10,63 +10,27 @@ pub type widget_enum = u32;
 pub const widget_enum_MODE_IDLE: widget_enum = 0;
 pub const widget_enum_MODE_ACTIVE: widget_enum = 1;
 pub const widget_enum_MODE_DONE: widget_enum = 2;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct widget {
-    pub id: Value<i32>,
-    pub mode: Value<widget_enum>,
+    #[offset(0)]
+    pub id: i32,
+    #[offset(4)]
+    pub mode: widget_enum,
 }
-impl Clone for widget {
-    fn clone(&self) -> Self {
-        Self {
-            id: Rc::new(RefCell::new((*self.id.borrow()).clone())),
-            mode: Rc::new(RefCell::new((*self.mode.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for widget {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.id.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.mode.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            id: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            mode: Rc::new(RefCell::new(<widget_enum>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct point_struct {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
-impl Clone for point_struct {
-    fn clone(&self) -> Self {
-        Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()).clone())),
-            y: Rc::new(RefCell::new((*self.y.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for point_struct {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(4)]
 pub struct point {
+    #[offset(0)]
+    #[byte_size(4)]
     __bytes: Value<Box<[u8]>>,
 }
 impl point {
@@ -91,20 +55,11 @@ impl Default for point {
         }
     }
 }
-impl ByteRepr for point {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        point {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
+#[derive(ByteRepr)]
+#[byte_size(4)]
 pub struct slot_union {
+    #[offset(0)]
+    #[byte_size(4)]
     __bytes: Value<Box<[u8]>>,
 }
 impl slot_union {
@@ -129,97 +84,31 @@ impl Default for slot_union {
         }
     }
 }
-impl ByteRepr for slot_union {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        buf.copy_from_slice(&self.__bytes.borrow());
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        slot_union {
-            __bytes: Rc::new(RefCell::new(Box::from(buf))),
-        }
-    }
-}
 pub type slot = u32;
 pub const slot_SLOT_A: slot = 0;
 pub const slot_SLOT_B: slot = 1;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner {
-    pub tag_field: Value<i32>,
+    #[offset(0)]
+    pub tag_field: i32,
 }
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        Self {
-            tag_field: Rc::new(RefCell::new((*self.tag_field.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for Inner {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag_field.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            tag_field: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Outer {
-    pub field: Value<Inner>,
+    #[offset(0)]
+    #[byte_size(4)]
+    pub field: Inner,
 }
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        Self {
-            field: Rc::new(RefCell::new((*self.field.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for Outer {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            field: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
 pub struct Inner_struct {
-    pub typedef_field: Value<i32>,
-}
-impl Clone for Inner_struct {
-    fn clone(&self) -> Self {
-        Self {
-            typedef_field: Rc::new(RefCell::new((*self.typedef_field.borrow()).clone())),
-        }
-    }
-}
-impl ByteRepr for Inner_struct {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.typedef_field.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            typedef_field: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
+    #[offset(0)]
+    pub typedef_field: i32,
 }
 pub fn is_active_0(w: Ptr<widget>) -> i32 {
     let w: Value<Ptr<widget>> = Rc::new(RefCell::new(w));
-    return ((((*(*(*w.borrow()).upgrade().deref()).mode.borrow()) as u32)
+    return ((((*w.borrow()).with(|__s| __s.mode) as u32)
         == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
@@ -228,19 +117,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let w: Value<widget> = <Value<widget>>::default();
-    (*(*w.borrow()).id.borrow_mut()) = 7;
-    (*(*w.borrow()).mode.borrow_mut()) = widget_enum_MODE_ACTIVE;
+    (*w.borrow_mut()).id = 7;
+    (*w.borrow_mut()).mode = widget_enum_MODE_ACTIVE;
     assert!((({ is_active_0((w.as_pointer()),) }) != 0));
-    (*(*w.borrow()).mode.borrow_mut()) = widget_enum_MODE_DONE;
+    (*w.borrow_mut()).mode = widget_enum_MODE_DONE;
     assert!(
-        (((((*(*w.borrow()).mode.borrow()) as u32) == ((widget_enum_MODE_DONE as i32) as u32))
-            as i32)
+        (((({ (*w.borrow()).mode } as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32)
             != 0)
     );
     let p: Value<point_struct> = <Value<point_struct>>::default();
-    (*(*p.borrow()).x.borrow_mut()) = 3;
-    (*(*p.borrow()).y.borrow_mut()) = 4;
-    assert!((((((*(*p.borrow()).x.borrow()) + (*(*p.borrow()).y.borrow())) == 7) as i32) != 0));
+    (*p.borrow_mut()).x = 3;
+    (*p.borrow_mut()).y = 4;
+    assert!((((({ (*p.borrow()).x } + { (*p.borrow()).y }) == 7) as i32) != 0));
     let up: Value<point> = <Value<point>>::default();
     (*up.borrow_mut()).whole().write(5);
     assert!((((((*up.borrow()).whole().read()) == 5) as i32) != 0));
@@ -250,15 +138,15 @@ fn main_0() -> i32 {
     let e: Value<slot> = Rc::new(RefCell::new(slot_SLOT_B));
     assert!((((((*e.borrow()) as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
     let inner_tag: Value<Inner> = <Value<Inner>>::default();
-    (*(*inner_tag.borrow()).tag_field.borrow_mut()) = 11;
-    assert!(((((*(*inner_tag.borrow()).tag_field.borrow()) == 11) as i32) != 0));
+    (*inner_tag.borrow_mut()).tag_field = 11;
+    assert!(((({ (*inner_tag.borrow()).tag_field } == 11) as i32) != 0));
     let inner_typedef: Value<Inner_struct> = <Value<Inner_struct>>::default();
-    (*(*inner_typedef.borrow()).typedef_field.borrow_mut()) = 22;
-    assert!(((((*(*inner_typedef.borrow()).typedef_field.borrow()) == 22) as i32) != 0));
+    (*inner_typedef.borrow_mut()).typedef_field = 22;
+    assert!(((({ (*inner_typedef.borrow()).typedef_field } == 22) as i32) != 0));
     let o: Value<Outer> = <Value<Outer>>::default();
-    (*(*(*o.borrow()).field.borrow()).tag_field.borrow_mut()) = 33;
-    assert!(((((*(*(*o.borrow()).field.borrow()).tag_field.borrow()) == 33) as i32) != 0));
-    assert!(((((*(*w.borrow()).id.borrow()) == 7) as i32) != 0));
+    (*o.borrow_mut()).field.tag_field = 33;
+    assert!(((({ (*o.borrow()).field.tag_field } == 33) as i32) != 0));
+    assert!(((({ (*w.borrow()).id } == 7) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

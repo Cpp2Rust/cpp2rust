@@ -29,9 +29,6 @@ fn main_0() -> i32 {
             __tmp_1.as_pointer()
         }
     });
-    return (({
-        let _lhs = (a.read());
-        _lhs == (b.read())
-    }) as i32);
+    return (({ (a.read()) } == { (b.read()) }) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

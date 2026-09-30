@@ -8,14 +8,14 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_ipv4_literal_0() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
-    (*(*hints.borrow()).ai_flags.borrow_mut()) = 0;
-    (*(*hints.borrow()).ai_protocol.borrow_mut()) = 0;
-    (*(*hints.borrow()).ai_addrlen.borrow_mut()) = 0_u32;
-    (*(*hints.borrow()).ai_addr.borrow_mut()) = Ptr::<libcc2rs::Sockaddr>::null();
-    (*(*hints.borrow()).ai_canonname.borrow_mut()) = Ptr::<u8>::null();
-    (*(*hints.borrow()).ai_next.borrow_mut()) = Ptr::<libcc2rs::Addrinfo>::null();
-    (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET;
-    (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
+    (*hints.borrow_mut()).ai_flags = 0;
+    (*hints.borrow_mut()).ai_protocol = 0;
+    (*hints.borrow_mut()).ai_addrlen = 0_u32;
+    (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
+    (*hints.borrow_mut()).ai_canonname = Ptr::<u8>::null();
+    (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
+    (*hints.borrow_mut()).ai_family = libc::AF_INET;
+    (*hints.borrow_mut()).ai_socktype = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
@@ -27,17 +27,17 @@ pub fn test_ipv4_literal_0() {
             let __family = if __hints.is_null() {
                 ::libc::AF_UNSPEC
             } else {
-                __hints.with(|__h| *__h.ai_family.borrow())
+                __hints.with(|__h| __h.ai_family)
             };
             let __socktype = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_socktype.borrow())
+                __hints.with(|__h| __h.ai_socktype)
             };
             let __protocol = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_protocol.borrow())
+                __hints.with(|__h| __h.ai_protocol)
             };
             let __port: u16 = if __service.is_null() {
                 0
@@ -78,30 +78,28 @@ pub fn test_ipv4_literal_0() {
             } else {
                 let mut __next = Ptr::<Addrinfo>::null();
                 for __ip in __addrs.iter().rev() {
-                    let __ai = Addrinfo::default();
-                    *__ai.ai_socktype.borrow_mut() = __socktype;
-                    *__ai.ai_protocol.borrow_mut() = __protocol;
+                    let mut __ai = Addrinfo::default();
+                    __ai.ai_socktype = __socktype;
+                    __ai.ai_protocol = __protocol;
                     let __storage = Ptr::alloc(SockaddrStorage::default());
                     match __ip {
                         ::std::net::IpAddr::V4(__v4) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
+                            __ai.ai_family = ::libc::AF_INET;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn>()
                                 .write(SockaddrIn::from_ipv4(__v4, __port));
                         }
                         ::std::net::IpAddr::V6(__v6) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET6;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
+                            __ai.ai_family = ::libc::AF_INET6;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn6>()
                                 .write(SockaddrIn6::from_ipv6(__v6, __port));
                         }
                     }
-                    *__ai.ai_addr.borrow_mut() = __storage.reinterpret_cast::<Sockaddr>();
-                    *__ai.ai_next.borrow_mut() = __next.clone();
+                    __ai.ai_addr = __storage.reinterpret_cast::<Sockaddr>();
+                    __ai.ai_next = __next.clone();
                     __next = Ptr::alloc(__ai);
                 }
                 __out.write(__next);
@@ -111,38 +109,22 @@ pub fn test_ipv4_literal_0() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET) as i32)
-            != 0)
-    );
-    assert!(
-        ((((*(*(*res.borrow()).upgrade().deref()).ai_socktype.borrow()) == libc::SOCK_STREAM)
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((((*(*(*res.borrow()).upgrade().deref()).ai_addrlen.borrow()) as usize) == 16usize)
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((!((*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow()).is_null())) as i32) != 0)
-    );
+    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0));
+    assert!(((((*res.borrow()).with(|__s| __s.ai_socktype) == libc::SOCK_STREAM) as i32) != 0));
+    assert!((((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 16usize) as i32) != 0));
+    assert!((((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0));
     let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
-        (*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow())
+        (*res.borrow())
+            .with(|__s| __s.ai_addr.clone())
             .reinterpret_cast::<libcc2rs::SockaddrIn>(),
     ));
-    assert!(
-        (((((*(*(*sin.borrow()).upgrade().deref()).sin_family.borrow()) as i32) == libc::AF_INET)
-            as i32)
-            != 0)
-    );
+    assert!((((((*sin.borrow()).with(|__s| __s.sin_family) as i32) == libc::AF_INET) as i32) != 0));
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((8080 / 256) as u8),
         ((8080 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_port.as_pointer()) as Ptr::<u16>)
+        (((((field_ptr!((*sin.borrow()), sin_port)) as Ptr::<u16>)
             .to_any()
             .memcmp(
                 &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -153,7 +135,7 @@ pub fn test_ipv4_literal_0() {
     );
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        (((((field_ptr!((*sin.borrow()), sin_addr)) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -166,11 +148,10 @@ pub fn test_ipv4_literal_0() {
         let mut __cur = (*res.borrow()).clone();
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
-                let __addr = __ai.ai_addr.borrow();
-                if !__addr.is_null() {
-                    __addr.delete();
+                if !__ai.ai_addr.is_null() {
+                    __ai.ai_addr.delete();
                 }
-                (*__ai.ai_next.borrow()).clone()
+                __ai.ai_next.clone()
             });
             __cur.delete();
             __cur = __next;
@@ -179,14 +160,14 @@ pub fn test_ipv4_literal_0() {
 }
 pub fn test_ipv6_literal_1() {
     let hints: Value<libcc2rs::Addrinfo> = Rc::new(RefCell::new(Default::default()));
-    (*(*hints.borrow()).ai_flags.borrow_mut()) = 0;
-    (*(*hints.borrow()).ai_protocol.borrow_mut()) = 0;
-    (*(*hints.borrow()).ai_addrlen.borrow_mut()) = 0_u32;
-    (*(*hints.borrow()).ai_addr.borrow_mut()) = Ptr::<libcc2rs::Sockaddr>::null();
-    (*(*hints.borrow()).ai_canonname.borrow_mut()) = Ptr::<u8>::null();
-    (*(*hints.borrow()).ai_next.borrow_mut()) = Ptr::<libcc2rs::Addrinfo>::null();
-    (*(*hints.borrow()).ai_family.borrow_mut()) = libc::AF_INET6;
-    (*(*hints.borrow()).ai_socktype.borrow_mut()) = libc::SOCK_STREAM;
+    (*hints.borrow_mut()).ai_flags = 0;
+    (*hints.borrow_mut()).ai_protocol = 0;
+    (*hints.borrow_mut()).ai_addrlen = 0_u32;
+    (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
+    (*hints.borrow_mut()).ai_canonname = Ptr::<u8>::null();
+    (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
+    (*hints.borrow_mut()).ai_family = libc::AF_INET6;
+    (*hints.borrow_mut()).ai_socktype = libc::SOCK_STREAM;
     let res: Value<Ptr<libcc2rs::Addrinfo>> =
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
@@ -198,17 +179,17 @@ pub fn test_ipv6_literal_1() {
             let __family = if __hints.is_null() {
                 ::libc::AF_UNSPEC
             } else {
-                __hints.with(|__h| *__h.ai_family.borrow())
+                __hints.with(|__h| __h.ai_family)
             };
             let __socktype = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_socktype.borrow())
+                __hints.with(|__h| __h.ai_socktype)
             };
             let __protocol = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_protocol.borrow())
+                __hints.with(|__h| __h.ai_protocol)
             };
             let __port: u16 = if __service.is_null() {
                 0
@@ -249,30 +230,28 @@ pub fn test_ipv6_literal_1() {
             } else {
                 let mut __next = Ptr::<Addrinfo>::null();
                 for __ip in __addrs.iter().rev() {
-                    let __ai = Addrinfo::default();
-                    *__ai.ai_socktype.borrow_mut() = __socktype;
-                    *__ai.ai_protocol.borrow_mut() = __protocol;
+                    let mut __ai = Addrinfo::default();
+                    __ai.ai_socktype = __socktype;
+                    __ai.ai_protocol = __protocol;
                     let __storage = Ptr::alloc(SockaddrStorage::default());
                     match __ip {
                         ::std::net::IpAddr::V4(__v4) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
+                            __ai.ai_family = ::libc::AF_INET;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn>()
                                 .write(SockaddrIn::from_ipv4(__v4, __port));
                         }
                         ::std::net::IpAddr::V6(__v6) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET6;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
+                            __ai.ai_family = ::libc::AF_INET6;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn6>()
                                 .write(SockaddrIn6::from_ipv6(__v6, __port));
                         }
                     }
-                    *__ai.ai_addr.borrow_mut() = __storage.reinterpret_cast::<Sockaddr>();
-                    *__ai.ai_next.borrow_mut() = __next.clone();
+                    __ai.ai_addr = __storage.reinterpret_cast::<Sockaddr>();
+                    __ai.ai_next = __next.clone();
                     __next = Ptr::alloc(__ai);
                 }
                 __out.write(__next);
@@ -282,33 +261,23 @@ pub fn test_ipv6_literal_1() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET6) as i32)
-            != 0)
-    );
-    assert!(
-        (((((*(*(*res.borrow()).upgrade().deref()).ai_addrlen.borrow()) as usize) == 28usize)
-            as i32)
-            != 0)
-    );
-    assert!(
-        (((!((*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow()).is_null())) as i32) != 0)
-    );
+    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET6) as i32) != 0));
+    assert!((((((*res.borrow()).with(|__s| __s.ai_addrlen) as usize) == 28usize) as i32) != 0));
+    assert!((((!(((*res.borrow()).with(|__s| __s.ai_addr.clone())).is_null())) as i32) != 0));
     let sin6: Value<Ptr<libcc2rs::SockaddrIn6>> = Rc::new(RefCell::new(
-        (*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow())
+        (*res.borrow())
+            .with(|__s| __s.ai_addr.clone())
             .reinterpret_cast::<libcc2rs::SockaddrIn6>(),
     ));
     assert!(
-        (((((*(*(*sin6.borrow()).upgrade().deref()).sin6_family.borrow()) as i32) == libc::AF_INET6)
-            as i32)
-            != 0)
+        (((((*sin6.borrow()).with(|__s| __s.sin6_family) as i32) == libc::AF_INET6) as i32) != 0)
     );
     let port_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ((443 / 256) as u8),
         ((443 % 256) as u8),
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_port.as_pointer()) as Ptr::<u16>)
+        (((((field_ptr!((*sin6.borrow()), sin6_port)) as Ptr::<u16>)
             .to_any()
             .memcmp(
                 &((port_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -322,8 +291,7 @@ pub fn test_ipv6_literal_1() {
         1_u8,
     ])));
     assert!(
-        ((((((*(*sin6.borrow()).upgrade().deref()).sin6_addr.as_pointer())
-            as Ptr<libcc2rs::In6Addr>)
+        (((((field_ptr!((*sin6.borrow()), sin6_addr)) as Ptr<libcc2rs::In6Addr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -336,11 +304,10 @@ pub fn test_ipv6_literal_1() {
         let mut __cur = (*res.borrow()).clone();
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
-                let __addr = __ai.ai_addr.borrow();
-                if !__addr.is_null() {
-                    __addr.delete();
+                if !__ai.ai_addr.is_null() {
+                    __ai.ai_addr.delete();
                 }
-                (*__ai.ai_next.borrow()).clone()
+                __ai.ai_next.clone()
             });
             __cur.delete();
             __cur = __next;
@@ -359,17 +326,17 @@ pub fn test_null_hints_2() {
             let __family = if __hints.is_null() {
                 ::libc::AF_UNSPEC
             } else {
-                __hints.with(|__h| *__h.ai_family.borrow())
+                __hints.with(|__h| __h.ai_family)
             };
             let __socktype = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_socktype.borrow())
+                __hints.with(|__h| __h.ai_socktype)
             };
             let __protocol = if __hints.is_null() {
                 0
             } else {
-                __hints.with(|__h| *__h.ai_protocol.borrow())
+                __hints.with(|__h| __h.ai_protocol)
             };
             let __port: u16 = if __service.is_null() {
                 0
@@ -410,30 +377,28 @@ pub fn test_null_hints_2() {
             } else {
                 let mut __next = Ptr::<Addrinfo>::null();
                 for __ip in __addrs.iter().rev() {
-                    let __ai = Addrinfo::default();
-                    *__ai.ai_socktype.borrow_mut() = __socktype;
-                    *__ai.ai_protocol.borrow_mut() = __protocol;
+                    let mut __ai = Addrinfo::default();
+                    __ai.ai_socktype = __socktype;
+                    __ai.ai_protocol = __protocol;
                     let __storage = Ptr::alloc(SockaddrStorage::default());
                     match __ip {
                         ::std::net::IpAddr::V4(__v4) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
+                            __ai.ai_family = ::libc::AF_INET;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn>()
                                 .write(SockaddrIn::from_ipv4(__v4, __port));
                         }
                         ::std::net::IpAddr::V6(__v6) => {
-                            *__ai.ai_family.borrow_mut() = ::libc::AF_INET6;
-                            *__ai.ai_addrlen.borrow_mut() =
-                                ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
+                            __ai.ai_family = ::libc::AF_INET6;
+                            __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
                             __storage
                                 .reinterpret_cast::<SockaddrIn6>()
                                 .write(SockaddrIn6::from_ipv6(__v6, __port));
                         }
                     }
-                    *__ai.ai_addr.borrow_mut() = __storage.reinterpret_cast::<Sockaddr>();
-                    *__ai.ai_next.borrow_mut() = __next.clone();
+                    __ai.ai_addr = __storage.reinterpret_cast::<Sockaddr>();
+                    __ai.ai_next = __next.clone();
                     __next = Ptr::alloc(__ai);
                 }
                 __out.write(__next);
@@ -443,17 +408,15 @@ pub fn test_null_hints_2() {
             != 0)
     );
     assert!((((!((*res.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((((*(*(*res.borrow()).upgrade().deref()).ai_family.borrow()) == libc::AF_INET) as i32)
-            != 0)
-    );
+    assert!(((((*res.borrow()).with(|__s| __s.ai_family) == libc::AF_INET) as i32) != 0));
     let sin: Value<Ptr<libcc2rs::SockaddrIn>> = Rc::new(RefCell::new(
-        (*(*(*res.borrow()).upgrade().deref()).ai_addr.borrow())
+        (*res.borrow())
+            .with(|__s| __s.ai_addr.clone())
             .reinterpret_cast::<libcc2rs::SockaddrIn>(),
     ));
     let addr_be: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([127_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
-        ((((((*(*sin.borrow()).upgrade().deref()).sin_addr.as_pointer()) as Ptr<libcc2rs::InAddr>)
+        (((((field_ptr!((*sin.borrow()), sin_addr)) as Ptr<libcc2rs::InAddr>)
             .to_any()
             .memcmp(
                 &((addr_be.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any(),
@@ -466,11 +429,10 @@ pub fn test_null_hints_2() {
         let mut __cur = (*res.borrow()).clone();
         while !__cur.is_null() {
             let __next = __cur.with(|__ai| {
-                let __addr = __ai.ai_addr.borrow();
-                if !__addr.is_null() {
-                    __addr.delete();
+                if !__ai.ai_addr.is_null() {
+                    __ai.ai_addr.delete();
                 }
-                (*__ai.ai_next.borrow()).clone()
+                __ai.ai_next.clone()
             });
             __cur.delete();
             __cur = __next;

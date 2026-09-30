@@ -17,11 +17,8 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
     let mut __wanted = Vec::new();
     let mut __events = Vec::new();
     for __i in 0..(a1 as usize) {
-        let (__fd, __ev) = __p
-            .offset(__i)
-            .with(|__e| (*__e.fd.borrow(), *__e.events.borrow()));
-        __p.offset(__i)
-            .with_mut(|__e| *__e.revents.borrow_mut() = 0);
+        let (__fd, __ev) = __p.offset(__i).with(|__e| (__e.fd, __e.events));
+        __p.offset(__i).with_mut(|__e| __e.revents = 0);
         if __fd >= 0 {
             __idx.push(__i);
             __wanted.push(__fd);
@@ -43,8 +40,7 @@ fn f1(a0: Ptr<Pollfd>, a1: u64, a2: i32) -> i32 {
                         Some(__r) => __r.bits(),
                         None => 0,
                     };
-                    __p.offset(__i)
-                        .with_mut(|__e| *__e.revents.borrow_mut() = __rev);
+                    __p.offset(__i).with_mut(|__e| __e.revents = __rev);
                 }
                 __count
             }

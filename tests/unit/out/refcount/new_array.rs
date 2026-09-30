@@ -12,8 +12,7 @@ pub fn sum_0(p: Ptr<i32>, n: i32) -> i32 {
     let total: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        let __rhs = ((*p.borrow()).offset((*i.borrow()) as isize).read());
-        (*total.borrow_mut()) += __rhs;
+        (*total.borrow_mut()) += { ((*p.borrow()).offset((*i.borrow()) as isize).read()) };
         (*i.borrow_mut()).prefix_inc();
     }
     return (*total.borrow());
@@ -32,10 +31,9 @@ fn main_0() -> i32 {
     )));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 4) {
-        let __rhs = ((*i.borrow()) + 1);
         (*filled.borrow())
             .offset((*i.borrow()) as isize)
-            .write(__rhs);
+            .write({ ((*i.borrow()) + 1) });
         (*i.borrow_mut()).prefix_inc();
     }
     if (({

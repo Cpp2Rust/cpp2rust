@@ -9,26 +9,29 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static assigns_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Partial {
-    pub v: Value<i32>,
-    pub keep: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
+    #[offset(4)]
+    pub keep: i32,
 }
 impl Partial {
     pub fn new(v: i32, keep: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let keep: Value<i32> = Rc::new(RefCell::new(keep));
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-            keep: Rc::new(RefCell::new((*keep.borrow()))),
+            v: (*v.borrow()),
+            keep: (*keep.borrow()),
         }));
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn copy_from(o: Ptr<Partial>) -> Self {
         let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            keep: Rc::new(RefCell::new((*(*o.upgrade().deref()).keep.borrow()))),
+            v: o.with(|__s| __s.v),
+            keep: o.with(|__s| __s.keep),
         }));
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -43,39 +46,15 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Partial {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.keep.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            keep: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct NonConstAssign {
-    pub mark: Value<i32>,
+    #[offset(0)]
+    pub mark: i32,
 }
 impl NonConstAssign {
     pub fn new() -> Self {
-        let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(0)),
-        }));
-        let this: Ptr<NonConstAssign> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for NonConstAssign {
-    fn clone(&self) -> Self {
-        let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new((*self.mark.borrow()))),
-        }));
+        let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self { mark: 0 }));
         let this: Ptr<NonConstAssign> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -85,37 +64,15 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-impl ByteRepr for NonConstAssign {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(4)]
 pub struct RefQualified {
-    pub mark: Value<i32>,
+    #[offset(0)]
+    pub mark: i32,
 }
 impl RefQualified {
     pub fn new() -> Self {
-        let __this: Value<RefQualified> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new(0)),
-        }));
-        let this: Ptr<RefQualified> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for RefQualified {
-    fn clone(&self) -> Self {
-        let __this: Value<RefQualified> = Rc::new(RefCell::new(Self {
-            mark: Rc::new(RefCell::new((*self.mark.borrow()))),
-        }));
+        let __this: Value<RefQualified> = Rc::new(RefCell::new(Self { mark: 0 }));
         let this: Ptr<RefQualified> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -125,62 +82,33 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-impl ByteRepr for RefQualified {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(24)]
 pub struct Holder {
-    pub p: Value<Partial>,
+    #[offset(0)]
+    #[byte_size(8)]
+    pub p: Partial,
+    #[offset(8)]
+    #[byte_size(16)]
     pub arr: Value<Box<[Partial]>>,
 }
 impl Clone for Holder {
     fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            p: Rc::new(RefCell::new(Partial::copy_from({ self.p.as_pointer() }))),
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| {
-                    Partial::copy_from({ (self.arr.as_pointer() as Ptr<Partial>).offset(__i) })
-                },
-            )))),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            p: self.p.clone(),
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+        }
     }
 }
 impl Default for Holder {
     fn default() -> Self {
         Holder {
-            p: <Value<Partial>>::default(),
+            p: <Partial>::default(),
             arr: Rc::new(RefCell::new(
                 (0..2)
                     .map(|_| <Partial>::default())
                     .collect::<Box<[Partial]>>(),
             )),
-        }
-    }
-}
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: Rc::new(RefCell::new(<Partial>::from_bytes(&buf[0..8]))),
-            arr: Rc::new(RefCell::new(<Box<[Partial]>>::from_bytes(&buf[8..24]))),
         }
     }
 }
@@ -193,7 +121,7 @@ fn main_0() -> i32 {
     let b: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 2 }, { 200 })));
     let c: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 3 }, { 300 })));
     ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) });
-    assert!(((*(*a.borrow()).v.borrow()) == 2) && ((*(*a.borrow()).keep.borrow()) == 100));
+    assert!(({ (*a.borrow()).v } == 2) && ({ (*a.borrow()).keep } == 100));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 1));
     ({
         PartialImpl::copy_assign(
@@ -201,7 +129,7 @@ fn main_0() -> i32 {
             ({ PartialImpl::copy_assign(&a.as_pointer(), b.as_pointer()) }),
         )
     });
-    assert!(((*(*c.borrow()).v.borrow()) == 2) && ((*(*c.borrow()).keep.borrow()) == 300));
+    assert!(({ (*c.borrow()).v } == 2) && ({ (*c.borrow()).keep } == 300));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 3));
     ({
         let _o: Ptr<Partial> = a.as_pointer();
@@ -212,73 +140,78 @@ fn main_0() -> i32 {
         let _o: Value<Partial> = Rc::new(RefCell::new(Partial::new({ 9 }, { 900 })));
         PartialImpl::copy_assign(&a.as_pointer(), _o.as_pointer())
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 9) && ((*(*a.borrow()).keep.borrow()) == 100));
+    assert!(({ (*a.borrow()).v } == 9) && ({ (*a.borrow()).keep } == 100));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 4));
     let ra: Ptr<Partial> = a.as_pointer();
     ({
         let _o: Ptr<Partial> = c.as_pointer();
         PartialImpl::copy_assign(&ra, _o)
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 2));
+    assert!(({ (*a.borrow()).v } == 2));
     let pa: Value<Ptr<Partial>> = Rc::new(RefCell::new((a.as_pointer())));
     ({
         let _o: Ptr<Partial> = b.as_pointer();
         PartialImpl::copy_assign(&(*pa.borrow()), _o)
     });
-    assert!(((*(*a.borrow()).v.borrow()) == 2));
+    assert!(({ (*a.borrow()).v } == 2));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        p: Rc::new(RefCell::new(Partial::new({ 4 }, { 40 }))),
+        p: Partial::new({ 4 }, { 40 }),
         arr: Rc::new(RefCell::new(Box::new([
             Partial::new({ 5 }, { 50 }),
             Partial::new({ 6 }, { 60 }),
         ]))),
     }));
-    ({ PartialImpl::copy_assign(&(*h.borrow()).p.as_pointer(), b.as_pointer()) });
+    ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
-            &((*h.borrow()).arr.as_pointer() as Ptr<Partial>).offset(1),
+            &(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>).offset((1) as isize),
             c.as_pointer(),
         )
     });
+    assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
-        ((*(*(*h.borrow()).p.borrow()).v.borrow()) == 2)
-            && ((*(*(*h.borrow()).p.borrow()).keep.borrow()) == 40)
-    );
-    assert!(
-        ((*(*(*h.borrow()).arr.borrow())[(1) as usize].v.borrow()) == 2)
-            && ((*(*(*h.borrow()).arr.borrow())[(1) as usize].keep.borrow()) == 60)
+        ({
+            (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
+                .offset((1) as isize)
+                .upgrade()
+                .deref())
+            .v
+        } == 2)
+            && ({
+                (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
+                    .offset((1) as isize)
+                    .upgrade()
+                    .deref())
+                .keep
+            } == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     let n1: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     let n2: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
     let cn: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
-    ({ NonConstAssignImpl::operator_assign_pmutNonConstAssign(&n1.as_pointer(), n.as_pointer()) });
-    ({
-        NonConstAssignImpl::operator_assign_pconstNonConstAssign(&n2.as_pointer(), cn.as_pointer())
-    });
-    assert!(((*(*n1.borrow()).mark.borrow()) == 1));
-    assert!(((*(*n2.borrow()).mark.borrow()) == 10));
+    ({ NonConstAssignImpl::operator_assign_2(&n1.as_pointer(), n.as_pointer()) });
+    ({ NonConstAssignImpl::operator_assign_3(&n2.as_pointer(), cn.as_pointer()) });
+    assert!(({ (*n1.borrow()).mark } == 1));
+    assert!(({ (*n2.borrow()).mark } == 10));
     let r: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     let r1: Value<RefQualified> = Rc::new(RefCell::new(RefQualified::new()));
     ({ RefQualifiedImpl::copy_assign(&r1.as_pointer(), r.as_pointer()) });
-    assert!(((*(*r1.borrow()).mark.borrow()) == 1));
+    assert!(({ (*r1.borrow()).mark } == 1));
     return 0;
 }
 pub trait NonConstAssignImpl {
-    fn operator_assign_pmutNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
-    fn operator_assign_pconstNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
+    fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
+    fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign>;
 }
 impl NonConstAssignImpl for Ptr<NonConstAssign> {
-    fn operator_assign_pmutNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
+    fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
-    fn operator_assign_pconstNonConstAssign(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 10);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
+    fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 10) });
         return (*self).clone();
     }
 }
@@ -290,8 +223,7 @@ impl PartialImpl for Ptr<Partial> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = (*(*o.upgrade().deref()).v.borrow());
-        (*(*(*self).upgrade().deref()).v.borrow_mut()) = __rhs;
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         (*assigns_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
@@ -301,8 +233,7 @@ pub trait RefQualifiedImpl {
 }
 impl RefQualifiedImpl for Ptr<RefQualified> {
     fn copy_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
-        let __rhs = ((*(*o.upgrade().deref()).mark.borrow()) + 1);
-        (*(*(*self).upgrade().deref()).mark.borrow_mut()) = __rhs;
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
 }

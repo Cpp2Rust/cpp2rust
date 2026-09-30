@@ -10,10 +10,7 @@ pub fn logf_impl_0(fmt: Ptr<u8>, ap: VaList) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
     &(*fmt.borrow());
-    return {
-        let _lhs = (*ap.borrow_mut()).arg::<i32>();
-        _lhs + (*ap.borrow_mut()).arg::<i32>()
-    };
+    return ({ (*ap.borrow_mut()).arg::<i32>() } + { (*ap.borrow_mut()).arg::<i32>() });
 }
 pub fn logf_1(fmt: Ptr<u8>, __args: &[VaArg]) -> i32 {
     let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));

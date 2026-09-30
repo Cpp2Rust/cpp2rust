@@ -10,11 +10,7 @@ pub fn switch_complex_cond_0(p: Ptr<i32>, bias: i32) -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
     let bias: Value<i32> = Rc::new(RefCell::new(bias));
     'switch: {
-        let __match_cond = {
-            let _lhs = ((*p.borrow()).read());
-            _lhs + (*bias.borrow())
-        };
-        match __match_cond {
+        match { ({ ((*p.borrow()).read()) } + { (*bias.borrow()) }) } {
             __v if __v == 0 => {
                 return 1;
             }

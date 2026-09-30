@@ -19,10 +19,7 @@ pub fn test_roundtrip_1() {
     let fn2: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new((*gfn.borrow()).cast::<fn(i32) -> i32>()));
     assert!((({ (*fn2.borrow()).call(5,) }) == 10));
-    assert!({
-        let _lhs = (*fn2.borrow()).clone();
-        _lhs == (*fn_.borrow()).clone()
-    });
+    assert!(({ (*fn2.borrow()).clone() } == { (*fn_.borrow()).clone() }));
 }
 pub fn test_double_cast_2() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
@@ -31,42 +28,20 @@ pub fn test_double_cast_2() {
         (*fn_.borrow()).cast::<fn()>().cast::<fn(i32) -> i32>(),
     ));
     assert!((({ (*fn2.borrow()).call(5,) }) == 10));
-    assert!({
-        let _lhs = (*fn2.borrow()).clone();
-        _lhs == (*fn_.borrow()).clone()
-    });
+    assert!(({ (*fn2.borrow()).clone() } == { (*fn_.borrow()).clone() }));
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
 pub struct Command {
-    pub data: Value<AnyPtr>,
-}
-impl Clone for Command {
-    fn clone(&self) -> Self {
-        let __this: Value<Command> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        }));
-        let this: Ptr<Command> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for Command {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
-        }
-    }
+    #[offset(0)]
+    #[byte_size(8)]
+    pub data: AnyPtr,
 }
 pub fn test_void_ptr_to_fn_3() {
     let cmd: Value<Command> = Rc::new(RefCell::new(<Command>::default()));
-    (*(*cmd.borrow()).data.borrow_mut()) = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
+    (*cmd.borrow_mut()).data = FnPtr::<fn(i32) -> i32>::new(double_it_0).to_any();
     let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
-        (*(*cmd.borrow()).data.borrow())
+        { (*cmd.borrow()).data.clone() }
             .cast_fn::<fn(i32) -> i32>()
             .expect("ub:wrong fn type"),
     ));
@@ -75,10 +50,7 @@ pub fn test_void_ptr_to_fn_3() {
 pub fn add_offset_4(base: Ptr<i32>, offset: i32) -> i32 {
     let base: Value<Ptr<i32>> = Rc::new(RefCell::new(base));
     let offset: Value<i32> = Rc::new(RefCell::new(offset));
-    return {
-        let _lhs = ((*base.borrow()).read());
-        _lhs + (*offset.borrow())
-    };
+    return ({ ((*base.borrow()).read()) } + { (*offset.borrow()) });
 }
 pub fn test_call_through_cast_5() {
     let gfn: Value<FnPtr<fn(AnyPtr, i32) -> i32>> = Rc::new(RefCell::new(

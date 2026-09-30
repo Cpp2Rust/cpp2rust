@@ -1,11 +1,24 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+extern crate self as libcc2rs;
+
 mod reinterpret;
 pub use reinterpret::ByteRepr;
 
 mod rc;
 pub use rc::*;
+
+mod field;
+pub use field::{FieldPlace, FieldPtr, Place, Record};
+// Used by #[derive(Record)] and size_of_field!.
+#[doc(hidden)]
+pub mod __field {
+    pub use crate::field::{
+        Locate, LocateLeaf, LocateLeafMut, LocateMut, LocateRecord, LocateRecordMut,
+        size_of_pointee,
+    };
+}
 
 mod cstr;
 
@@ -56,4 +69,4 @@ pub use fd::*;
 mod format;
 pub use format::*;
 
-pub use libcc2rs_macros::{ByteRepr, FnPtrArg, VaArg, goto, goto_block, switch};
+pub use libcc2rs_macros::{ByteRepr, FnPtrArg, Record, VaArg, goto, goto_block, switch};

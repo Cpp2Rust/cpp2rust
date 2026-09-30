@@ -23,11 +23,12 @@ unsafe fn main_0() -> i32 {
     assert!(((((q) == (buf.as_mut_ptr().offset((1) as isize))) as i32) != 0));
     let mut out: libc::c_char = (0 as libc::c_char);
     'switch: {
-        let __match_cond = (({
-            out = (('x' as i32) as libc::c_char);
-            out
-        }) as i32);
-        match __match_cond {
+        match {
+            (({
+                out = (('x' as i32) as libc::c_char);
+                out
+            }) as i32)
+        } {
             __v if __v == ('x' as i32) => {
                 assert!((1 != 0));
                 break 'switch;

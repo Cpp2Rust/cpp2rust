@@ -10,8 +10,7 @@ pub fn mixed_return_break_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(-1_i32));
     'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
+        match { (*x.borrow()) } {
             __v if __v == 0 => {
                 return 100;
             }

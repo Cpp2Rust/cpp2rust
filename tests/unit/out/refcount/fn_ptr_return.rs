@@ -28,21 +28,12 @@ pub fn main() {
 fn main_0() -> i32 {
     let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(1) })));
     assert!(!((*f.borrow()).is_null()));
-    assert!({
-        let _lhs = (*f.borrow()).clone();
-        _lhs == FnPtr::<fn(i32) -> i32>::new(inc_0)
-    });
+    assert!(({ (*f.borrow()).clone() } == { FnPtr::<fn(i32) -> i32>::new(inc_0) }));
     assert!((({ (*f.borrow()).call(10,) }) == 11));
     let g: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(({ pick_2(0) })));
-    assert!({
-        let _lhs = (*g.borrow()).clone();
-        _lhs == FnPtr::<fn(i32) -> i32>::new(dec_1)
-    });
+    assert!(({ (*g.borrow()).clone() } == { FnPtr::<fn(i32) -> i32>::new(dec_1) }));
     assert!((({ (*g.borrow()).call(10,) }) == 9));
-    assert!({
-        let _lhs = (*f.borrow()).clone();
-        _lhs != (*g.borrow()).clone()
-    });
+    assert!(({ (*f.borrow()).clone() } != { (*g.borrow()).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

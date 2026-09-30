@@ -80,7 +80,8 @@ unsafe fn f13<T1>(a0: &mut Vec<T1>) -> *mut T1 {
     a0.as_mut_ptr()
 }
 unsafe fn f14<T1: Default>(a0: &mut Vec<T1>, a1: &mut T1) {
-    a0.push(std::mem::take(&mut *a1))
+    let __a1 = std::mem::take(&mut *a1);
+    a0.push(__a1)
 }
 unsafe fn f15<T1: Default>(a0: &mut Vec<T1>, a1: usize) {
     let __a0 = a1 as usize;
