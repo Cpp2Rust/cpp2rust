@@ -70,14 +70,14 @@ pub fn run_0(o: Ptr<S>) {
     assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 2));
     ({
         CounterImpl::add(
-            &((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>).offset(1),
+            &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
             5,
         )
     });
     assert!(
         (({
             CounterImpl::get(
-                &((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>).offset(1),
+                &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
             )
         }) == 5)
     );
@@ -89,22 +89,21 @@ pub fn run_0(o: Ptr<S>) {
     });
     ({
         let _other: Ptr<Counter> =
-            (((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>).offset(1));
+            ((array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize));
         CounterImpl::take(
-            &((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>).offset(0),
+            &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((0) as isize),
             _other,
         )
     });
     assert!(
         (({
             CounterImpl::get(
-                &((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>).offset(0),
+                &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((0) as isize),
             )
         }) == 5)
             && (({
                 CounterImpl::get(
-                    &((*o.borrow()).with(|__s| __s.arr.clone()).as_pointer() as Ptr<Counter>)
-                        .offset(1),
+                    &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
                 )
             }) == 0)
     );

@@ -95,7 +95,12 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ SImpl::operator_addr(&s.as_pointer()) })));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(((*{ (*s.borrow()).data.clone() }.borrow())[(0) as usize] == 5));
+    assert!(
+        (((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 5)
+    );
     let t: Value<Table> = Rc::new(RefCell::new(<Table>::default()));
     assert!(((({ Table::operator_index(1,) }).read()) == 8));
     ({ Table::operator_index(1) }).write(80);
@@ -117,13 +122,11 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_index_1(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
-        return ((*self).with(|__s| __s.data.clone()).as_pointer() as Ptr<i32>)
-            .offset((*i.borrow()));
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()) as isize);
     }
     fn operator_index_2(&self, i: i32) -> Ptr<i32> {
         let i: Value<i32> = Rc::new(RefCell::new(i));
-        return ((*self).with(|__s| __s.data.clone()).as_pointer() as Ptr<i32>)
-            .offset((*i.borrow()));
+        return (array_field_ptr!((*self), data) as Ptr<i32>).offset((*i.borrow()) as isize);
     }
     fn operator_deref(&self) -> Ptr<Inner> {
         return field_ptr!((*self), inner);
@@ -132,7 +135,7 @@ impl SImpl for Ptr<S> {
         return (field_ptr!((*self), inner));
     }
     fn operator_addr(&self) -> Ptr<i32> {
-        return (((*self).with(|__s| __s.data.clone()).as_pointer() as Ptr<i32>).offset(0));
+        return ((array_field_ptr!((*self), data) as Ptr<i32>).offset((0) as isize));
     }
 }
 pub fn __cpp2rust_init_globals() {

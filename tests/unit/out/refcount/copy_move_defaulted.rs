@@ -329,11 +329,19 @@ pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
         let _lhs = a.with(|__s| __s.inner.x);
         _lhs == b.with(|__s| __s.inner.x)
     })) && ({
-        let _lhs = (*a.with(|__s| __s.arr.clone()).borrow())[(0) as usize];
-        _lhs == (*b.with(|__s| __s.arr.clone()).borrow())[(0) as usize]
+        let _lhs = ((array_field_ptr!(a, arr) as Ptr<i32>)
+            .offset((0) as isize)
+            .read());
+        _lhs == ((array_field_ptr!(b, arr) as Ptr<i32>)
+            .offset((0) as isize)
+            .read())
     })) && ({
-        let _lhs = (*a.with(|__s| __s.arr.clone()).borrow())[(1) as usize];
-        _lhs == (*b.with(|__s| __s.arr.clone()).borrow())[(1) as usize]
+        let _lhs = ((array_field_ptr!(a, arr) as Ptr<i32>)
+            .offset((1) as isize)
+            .read());
+        _lhs == ((array_field_ptr!(b, arr) as Ptr<i32>)
+            .offset((1) as isize)
+            .read())
     });
 }
 pub fn main() {
@@ -383,7 +391,10 @@ fn main_0() -> i32 {
     let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
     assert!(
         (({ (*j.borrow()).v } == 5) && ({ (*j.borrow()).inner.x } == 50))
-            && ((*{ (*j.borrow()).arr.clone() }.borrow())[(1) as usize] == 6)
+            && (((array_field_ptr!(j.as_pointer(), arr) as Ptr::<i32>)
+                .offset((1) as isize)
+                .read())
+                == 6)
     );
     assert!(({ (*i.borrow()).v } == 5) && ({ (*k.borrow()).v } == 5));
     let l: Value<Implicit> = Rc::new(RefCell::new(Implicit {
@@ -394,7 +405,10 @@ fn main_0() -> i32 {
     (*l.borrow_mut()) = (*j.borrow()).clone();
     assert!(
         (({ (*l.borrow()).v } == 5) && ({ (*l.borrow()).inner.x } == 50))
-            && ((*{ (*l.borrow()).arr.clone() }.borrow())[(0) as usize] == 5)
+            && (((array_field_ptr!(l.as_pointer(), arr) as Ptr::<i32>)
+                .offset((0) as isize)
+                .read())
+                == 5)
     );
     let vec_: Value<Vec<Explicit>> = Rc::new(RefCell::new(Vec::new()));
     {
@@ -468,7 +482,10 @@ fn main_0() -> i32 {
     assert!(
         ((({ (*r.borrow()).n } == 3)
             && ((*{ (*r.borrow()).data.clone() }.borrow()).len() == 3_usize))
-            && ((*{ (*r.borrow()).arr.clone() }.borrow())[(1) as usize] == 4))
+            && (((array_field_ptr!(r.as_pointer(), arr) as Ptr::<i32>)
+                .offset((1) as isize)
+                .read())
+                == 4))
             && ((*{ (*q.borrow()).data.clone() }.borrow()).is_empty())
     );
     assert!(
@@ -529,8 +546,12 @@ fn main_0() -> i32 {
         (*{ (*o1.borrow()).data.clone() }.borrow_mut()).push(__a1)
     };
     (*o1.borrow_mut()).n = 5;
-    (*{ (*o1.borrow()).arr.clone() }.borrow_mut())[(0) as usize] = 5;
-    (*{ (*o1.borrow()).arr.clone() }.borrow_mut())[(1) as usize] = 6;
+    (array_field_ptr!(o1.as_pointer(), arr) as Ptr<i32>)
+        .offset((0) as isize)
+        .write(5);
+    (array_field_ptr!(o1.as_pointer(), arr) as Ptr<i32>)
+        .offset((1) as isize)
+        .write(6);
     {
         let _p: Ptr<_> = Ptr::alloc(7);
         (field_ptr!(o1.as_pointer(), p) as Ptr<Option<Value<i32>>>).write(_p.to_owned_opt())
@@ -539,7 +560,10 @@ fn main_0() -> i32 {
     assert!(
         ((({ (*o2.borrow()).n } == 5)
             && ((*{ (*o2.borrow()).data.clone() }.borrow()).len() == 1_usize))
-            && ((*{ (*o2.borrow()).arr.clone() }.borrow())[(1) as usize] == 6))
+            && (((array_field_ptr!(o2.as_pointer(), arr) as Ptr::<i32>)
+                .offset((1) as isize)
+                .read())
+                == 6))
             && ((*{ (*o2.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 7)
     );
     assert!(
@@ -554,7 +578,10 @@ fn main_0() -> i32 {
                 .offset(0_usize)
                 .read())
                 == 5))
-            && ((*{ (*o3.borrow()).arr.clone() }.borrow())[(0) as usize] == 5))
+            && (((array_field_ptr!(o3.as_pointer(), arr) as Ptr::<i32>)
+                .offset((0) as isize)
+                .read())
+                == 5))
             && ((*{ (*o3.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 7)
     );
     assert!(
@@ -579,7 +606,10 @@ fn main_0() -> i32 {
     ({ HolderImpl::move_assign(&h3.as_pointer(), h2.as_pointer()) });
     assert!(
         ((({ (*h3.borrow()).inner.x } == 4)
-            && ((*{ (*h3.borrow()).e.arr.clone() }.borrow())[(1) as usize] == 5))
+            && (((array_field_ptr!(field_ptr!(h3.as_pointer(), e), arr) as Ptr::<i32>)
+                .offset((1) as isize)
+                .read())
+                == 5))
             && ((*{ (*h3.borrow()).p.clone() }.as_ref().unwrap().borrow()) == 9))
             && (({ (*h2.borrow()).p.clone() }.as_pointer()).is_null())
     );
@@ -599,13 +629,13 @@ impl BufferImpl for Ptr<Buffer> {
         let __rhs = { (*_a0.upgrade().deref()).n };
         field!((*self), n).write(__rhs);
         {
-            (((*self).with(|__s| __s.arr.clone()).as_pointer()) as Ptr<i32>)
+            ((array_field_ptr!((*self), arr)) as Ptr<i32>)
                 .to_any()
                 .memcpy(
-                    &(({ (*_a0.upgrade().deref()).arr.clone() }.as_pointer()) as Ptr<i32>).to_any(),
+                    &((array_field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*self).with(|__s| __s.arr.clone()).as_pointer()) as Ptr<i32>).to_any()
+            ((array_field_ptr!((*self), arr)) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }
@@ -656,13 +686,13 @@ impl OwnerImpl for Ptr<Owner> {
         let __rhs = { (*_a0.upgrade().deref()).n };
         field!((*self), n).write(__rhs);
         {
-            (((*self).with(|__s| __s.arr.clone()).as_pointer()) as Ptr<i32>)
+            ((array_field_ptr!((*self), arr)) as Ptr<i32>)
                 .to_any()
                 .memcpy(
-                    &(({ (*_a0.upgrade().deref()).arr.clone() }.as_pointer()) as Ptr<i32>).to_any(),
+                    &((array_field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*self).with(|__s| __s.arr.clone()).as_pointer()) as Ptr<i32>).to_any()
+            ((array_field_ptr!((*self), arr)) as Ptr<i32>).to_any()
         };
         (field_ptr!((*self), p) as Ptr<Option<Value<i32>>>)
             .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));

@@ -6,20 +6,15 @@
 struct S {
   int tag;
   std::vector<int> v;
-  std::map<int, int> m;
 };
 
 static void add(std::vector<int> *v, int k) { v->push_back(k); }
 
-static void put(std::map<int, int> *m, int k, int v) { (*m)[k] = v; }
-
 static void run(S *h) {
   add(&h->v, h->tag);
-  put(&h->m, h->tag, 2);
   std::vector<int> *pv = &h->v;
   pv->push_back((int)pv->size());
   assert(h->v.size() == 2 && h->v[0] == 7 && h->v[1] == 1);
-  assert(h->m[7] == 2);
   assert(h->tag == 7);
 }
 

@@ -52,7 +52,9 @@ and `&p->field` is `field_ptr!(p, field)`: a pointer to the field of the struct,
 made from the `Value` or the `Ptr` of the struct (see
 [Pointers to fields](../../runtime/rc.md#pointers-to-fields)). An array decays
 with `arr.as_pointer() as Ptr<T>`, a `Ptr` to element 0 of the whole array, and
-`&arr[i]` is that pointer offset by `i`.
+`&arr[i]` is that pointer offset by `i`. An array field decays with
+`array_field_ptr!(p, arr)`, and `p->arr[i]` is read and written through that
+pointer offset by `i`.
 
 Both models push the address down to the innermost place expression:
 `&(cond ? x : y)` becomes `if cond { &mut x } else { &mut y }` in the unsafe

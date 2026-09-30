@@ -125,19 +125,26 @@ fn main_0() -> i32 {
             != 0)
     );
     let __rhs = (*p.borrow()).with(|__s| __s.total);
-    (*(*p.borrow()).with(|__s| __s.arr.clone()).borrow_mut())
-        [((*p.borrow()).with(|__s| __s.n)) as usize] = __rhs;
+    (array_field_ptr!((*p.borrow()), arr) as Ptr<i32>)
+        .offset(((*p.borrow()).with(|__s| __s.n)) as isize)
+        .write(__rhs);
     {
         let _ptr = field!((*p.borrow()), n);
         _ptr.write(_ptr.read() + 1)
     };
-    (*(*p.borrow()).with(|__s| __s.arr.clone()).borrow_mut())
-        [((*p.borrow()).with(|__s| __s.n)) as usize] = (*q.borrow()).with(|__s| __s.in_.x);
+    (array_field_ptr!((*p.borrow()), arr) as Ptr<i32>)
+        .offset(((*p.borrow()).with(|__s| __s.n)) as isize)
+        .write((*q.borrow()).with(|__s| __s.in_.x));
     assert!(
-        ((((((((((*(*q.borrow()).with(|__s| __s.arr.clone()).borrow())[(0) as usize] == 3) as i32)
+        (((((((((((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 3) as i32)
             != 0)
-            && ((((*(*q.borrow()).with(|__s| __s.arr.clone()).borrow())[(1) as usize] == 4)
-                as i32)
+            && (((((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>)
+                .offset((1) as isize)
+                .read())
+                == 4) as i32)
                 != 0)) as i32)
             != 0)
             && ((((*q.borrow()).with(|__s| __s.n) == 1) as i32) != 0)) as i32)

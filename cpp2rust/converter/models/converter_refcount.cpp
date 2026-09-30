@@ -73,6 +73,23 @@ static bool IsValueField(clang::ASTContext &ctx,
   return type->isConstantArrayType() || IsBoxedType(ctx, type);
 }
 
+// Whether `expr` is an array field whose elements are accessed through
+// array_field_ptr!, such that they are found in the memory of the struct when
+// the struct is reinterpreted from other memory.
+static bool IsArrayFieldPtr(clang::ASTContext &ctx, const clang::Expr *expr) {
+  auto *member =
+      clang::dyn_cast<clang::MemberExpr>(expr->IgnoreParenImpCasts());
+  auto *field =
+      member ? clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl())
+             : nullptr;
+  if (!field || field->getParent()->isUnion() ||
+      Mapper::Contains(ctx, member)) {
+    return false;
+  }
+  auto *type = field->getType()->getAsArrayTypeUnsafe();
+  return type && !type->getElementType()->isArrayType();
+}
+
 static bool IsPointerType(clang::ASTContext &ctx, clang::QualType type) {
   return type->isPointerType() || GetStrongestIteratorCategory(ctx, type) ==
                                       IteratorCategory::Contiguous;
@@ -421,7 +438,7 @@ bool ConverterRefCount::VisitArraySubscriptExpr(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
   if (base->IgnoreCasts()->getType()->isPointerType() ||
-      IsUnionArrayMember(base) ||
+      IsUnionArrayMember(base) || IsArrayFieldPtr(ctx_, base) ||
       (IsReferenceType(base) &&
        base->IgnoreCasts()->getType()->isArrayType())) {
     ConvertPointerSubscript(expr);
@@ -1542,8 +1559,23 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     } else if (expr->getSubExpr()->getType()->isPointerType() &&
                !expr->getSubExpr()->isNullPointerConstant(
                    ctx_, clang::Expr::NPC_ValueDependentIsNull)) {
-      StrCat(std::format("{}.reinterpret_cast::<{}>()",
-                         ToString(expr->getSubExpr()),
+      auto sub_expr = expr->getSubExpr();
+      if (auto *array_type =
+              ctx_.getAsArrayType(sub_expr->getType()->getPointeeType())) {
+        // A pointer to an array is a pointer to its first element.
+        auto element_type = array_type->getElementType();
+        PushConversionKind push(*this, ConversionKind::Unboxed);
+        StrCat(std::format("({} as Ptr<{}>)", ToString(sub_expr),
+                           ToString(element_type)));
+        if (!ctx_.hasSameUnqualifiedType(
+                element_type, expr->getType()->getPointeeType())) {
+          StrCat(std::format(".reinterpret_cast::<{}>()",
+                             ConvertPointeeType(expr->getType())));
+        }
+        computed_expr_type_ = ComputedExprType::FreshPointer;
+        return false;
+      }
+      StrCat(std::format("{}.reinterpret_cast::<{}>()", ToString(sub_expr),
                          ConvertPointeeType(expr->getType())));
       computed_expr_type_ = ComputedExprType::FreshPointer;
       return false;
@@ -1848,6 +1880,13 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     return false;
   }
 
+  if (isAddrOf() && IsArrayFieldPtr(ctx_, expr)) {
+    StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
+                       GetNamedDeclAsString(member)));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  }
+
   std::string str;
   if (known) {
     str = GetMappedAsString(expr);
@@ -1893,18 +1932,7 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
   auto *base = expr->getBase();
   if (isAddrOf()) {
     // A pointer to the struct, offset to the field.
-    std::string ptr;
-    {
-      Buffer buf(*this);
-      PushExprKind push(*this, ExprKind::AddrOf);
-      if (expr->isArrow()) {
-        ConvertArrow(base);
-      } else {
-        Convert(base);
-      }
-      ptr = std::move(buf).str();
-    }
-    StrCat(std::format("field_ptr!({}, {})", ptr, name));
+    StrCat(std::format("field_ptr!({}, {})", ConvertRecordPtr(expr), name));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return;
   }
@@ -1937,6 +1965,17 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
   }
   StrCat(str);
   SetValueFreshness(type);
+}
+
+std::string ConverterRefCount::ConvertRecordPtr(clang::MemberExpr *expr) {
+  Buffer buf(*this);
+  PushExprKind push(*this, ExprKind::AddrOf);
+  if (expr->isArrow()) {
+    ConvertArrow(expr->getBase());
+  } else {
+    Convert(expr->getBase());
+  }
+  return std::move(buf).str();
 }
 
 std::string ConverterRefCount::ReadField(clang::MemberExpr *expr) {

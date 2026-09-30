@@ -122,6 +122,18 @@ pub trait FieldPtr<S: Record> {
         field: fn(&S) -> &T,
         offset: fn(&S::Offsets) -> usize,
     ) -> Ptr<T>;
+
+    // A pointer to the first element of the array field `field`, at
+    // `offset(S::OFFSETS)`. The array is in a Value of its own, unless the
+    // struct is reinterpreted memory, in which case the pointer points into
+    // that memory.
+    fn array_field_ptr<T>(
+        &self,
+        field: fn(&S) -> &Value<Box<[T]>>,
+        offset: fn(&S::Offsets) -> usize,
+    ) -> Ptr<T>
+    where
+        T: ByteRepr;
 }
 
 impl<S: Record> FieldPtr<S> for Ptr<S> {
@@ -150,6 +162,22 @@ impl<S: Record> FieldPtr<S> for Ptr<S> {
             kind: PtrKind::Field(root),
         }
     }
+
+    #[inline]
+    fn array_field_ptr<T>(
+        &self,
+        field: fn(&S) -> &Value<Box<[T]>>,
+        offset: fn(&S::Offsets) -> usize,
+    ) -> Ptr<T>
+    where
+        T: ByteRepr,
+    {
+        if let PtrKind::Reinterpreted(_) = &self.kind {
+            let (alloc, byte_offset) = self.original_alloc().unwrap();
+            return Ptr::from_original_alloc(alloc, byte_offset.wrapping_add(offset(&S::OFFSETS)));
+        }
+        self.with(|s| field(s).as_pointer())
+    }
 }
 
 impl<S: Record> FieldPtr<S> for Value<S> {
@@ -161,6 +189,18 @@ impl<S: Record> FieldPtr<S> for Value<S> {
     ) -> Ptr<T> {
         self.as_pointer().field_ptr(field, offset)
     }
+
+    #[inline]
+    fn array_field_ptr<T>(
+        &self,
+        field: fn(&S) -> &Value<Box<[T]>>,
+        _offset: fn(&S::Offsets) -> usize,
+    ) -> Ptr<T>
+    where
+        T: ByteRepr,
+    {
+        field(&self.borrow()).as_pointer()
+    }
 }
 
 // A pointer to field `field` of the struct that a Ptr or a Value holds,
@@ -170,6 +210,16 @@ macro_rules! field_ptr {
     ($base:expr, $field:ident) => {{
         use $crate::FieldPtr as _;
         ($base).field_ptr(|__s| &__s.$field, |__o| __o.$field)
+    }};
+}
+
+// A pointer to the first element of array field `field` of the struct that a
+// Ptr or a Value holds, e.g., `array_field_ptr!(p, arr)`.
+#[macro_export]
+macro_rules! array_field_ptr {
+    ($base:expr, $field:ident) => {{
+        use $crate::FieldPtr as _;
+        ($base).array_field_ptr(|__s| &__s.$field, |__o| __o.$field)
     }};
 }
 
@@ -512,6 +562,51 @@ mod tests {
         assert_eq!(raw.offset(4).read(), 0x0d);
         view.with_mut(|v| v.a = 0x11223344);
         assert_eq!(raw.read(), 0x44);
+        raw.delete();
+    }
+
+    #[derive(Record)]
+    struct Masked {
+        #[offset(0)]
+        n: i32,
+        #[offset(4)]
+        mask: Value<Box<[u8]>>,
+    }
+
+    impl ByteRepr for Masked {
+        fn byte_size() -> usize {
+            8
+        }
+        fn to_bytes(&self, buf: &mut [u8]) {
+            self.n.to_bytes(&mut buf[0..4]);
+            self.mask.borrow().to_bytes(&mut buf[4..8]);
+        }
+        fn from_bytes(buf: &[u8]) -> Self {
+            Self {
+                n: i32::from_bytes(&buf[0..4]),
+                mask: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..8]))),
+            }
+        }
+    }
+
+    #[test]
+    fn array_field() {
+        let s: Value<Masked> = Rc::new(RefCell::new(Masked::from_bytes(&[0; 8])));
+        let m = array_field_ptr!(s, mask);
+        m.offset(2).write(5);
+        assert_eq!(s.borrow().mask.borrow()[2], 5);
+        assert_eq!(array_field_ptr!(s.as_pointer(), mask), m);
+        // The array field of a reinterpreted struct is in its memory, which
+        // the pointer can go past the end of the struct in.
+        let raw: Ptr<u8> = Ptr::alloc_array(vec![0u8; 12].into_boxed_slice());
+        let view: Ptr<Masked> = raw.reinterpret_cast();
+        let m = array_field_ptr!(view, mask);
+        m.offset(1).write(7);
+        assert_eq!(raw.offset(5).read(), 7);
+        m.offset(6).write(9);
+        assert_eq!(raw.offset(10).read(), 9);
+        field_ptr!(view, n).write(3);
+        assert_eq!(m.offset(1).read(), 7);
         raw.delete();
     }
 

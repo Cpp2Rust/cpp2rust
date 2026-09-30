@@ -56,9 +56,13 @@ pub fn sum_0(s: Ptr<S>) -> i32 {
     return {
         let _lhs = {
             let _lhs = ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32);
-            _lhs + (*s.with(|__s| __s.n.clone()).borrow())[(0) as usize]
+            _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+                .offset((0) as isize)
+                .read())
         };
-        _lhs + (*s.with(|__s| __s.n.clone()).borrow())[(1) as usize]
+        _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+            .offset((1) as isize)
+            .read())
     };
 }
 pub fn main() {
@@ -90,13 +94,13 @@ impl SImpl for Ptr<S> {
             &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
         ));
         {
-            (((*self).with(|__s| __s.n.clone()).as_pointer()) as Ptr<i32>)
+            ((array_field_ptr!((*self), n)) as Ptr<i32>)
                 .to_any()
                 .memcpy(
-                    &(({ (*_a0.upgrade().deref()).n.clone() }.as_pointer()) as Ptr<i32>).to_any(),
+                    &((array_field_ptr!(_a0, n)) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*self).with(|__s| __s.n.clone()).as_pointer()) as Ptr<i32>).to_any()
+            ((array_field_ptr!((*self), n)) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }

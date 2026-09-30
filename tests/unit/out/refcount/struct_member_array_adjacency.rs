@@ -51,8 +51,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<pair> = <Value<pair>>::default();
     assert!(
-        (((({ (*s.borrow()).a.clone() }.as_pointer() as Ptr::<i32>).offset((4) as isize)
-            == ({ (*s.borrow()).b.clone() }.as_pointer() as Ptr::<i32>)) as i32)
+        ((((array_field_ptr!(s.as_pointer(), a) as Ptr::<i32>).offset((4) as isize)
+            == (array_field_ptr!(s.as_pointer(), b) as Ptr::<i32>)) as i32)
             != 0)
     );
     return 0;

@@ -66,8 +66,9 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
         assert!(
-            ((((*{ (*s_0.with(Value::clone).borrow()).tail.clone() }.borrow())
-                [(*i.borrow()) as usize]
+            (((((array_field_ptr!(s_0.with(|v| v.as_pointer()), tail) as Ptr::<i32>)
+                .offset((*i.borrow()) as isize)
+                .read())
                 == 0) as i32)
                 != 0)
         );
@@ -76,8 +77,9 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
         assert!(
-            (((((*{ (*s_0.with(Value::clone).borrow()).buf.clone() }.borrow())
-                [(*i.borrow()) as usize] as i32)
+            ((((((array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<u8>)
+                .offset((*i.borrow()) as isize)
+                .read()) as i32)
                 == 0) as i32)
                 != 0)
         );

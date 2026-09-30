@@ -220,9 +220,10 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((*{ (*static_outer_1.with(Value::clone).borrow()).arr.clone() }.borrow())
-                [(*i.borrow()) as usize])
-                .is_null()
+            ((array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr::<i32>>)
+                .offset((*i.borrow()) as isize)
+                .read())
+            .is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }

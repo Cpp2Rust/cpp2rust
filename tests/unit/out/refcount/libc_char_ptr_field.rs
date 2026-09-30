@@ -53,7 +53,7 @@ fn main_0() -> i32 {
         }),
     ));
     let dname: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((*d.borrow()).with(|__s| __s.d_name.clone()).as_pointer() as Ptr<u8>),
+        (array_field_ptr!((*d.borrow()), d_name) as Ptr<u8>),
     ));
     return 0;
 }

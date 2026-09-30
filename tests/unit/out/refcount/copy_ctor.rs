@@ -191,8 +191,20 @@ fn main_0() -> i32 {
     let hold2: Value<Holder> = Rc::new(RefCell::new((*hold.borrow()).clone()));
     assert!(
         (({ (*hold2.borrow()).c.v } == 8)
-            && ({ (*{ (*hold2.borrow()).arr.clone() }.borrow())[(0) as usize].v } == 9))
-            && ({ (*{ (*hold2.borrow()).arr.clone() }.borrow())[(1) as usize].v } == 10)
+            && ({
+                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
+                    .offset((0) as isize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 9))
+            && ({
+                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
+                    .offset((1) as isize)
+                    .upgrade()
+                    .deref())
+                .v
+            } == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));

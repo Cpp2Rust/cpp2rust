@@ -90,8 +90,10 @@ fn main_0() -> i32 {
         (((((((((((((*p.borrow()).with(|__s| __s.a) == 0) as i32) != 0)
             && ((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
             != 0)
-            && (((((*(*p.borrow()).with(|__s| __s.c.clone()).borrow())[(4) as usize] as i32) == 0)
-                as i32)
+            && ((((((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>)
+                .offset((4) as isize)
+                .read()) as i32)
+                == 0) as i32)
                 != 0)) as i32)
             != 0)
             && ((((*p.borrow()).with(|__s| __s.last) == 0) as i32) != 0)) as i32)
@@ -99,7 +101,9 @@ fn main_0() -> i32 {
     );
     field!((*p.borrow()), a).write(1);
     field!((*p.borrow()), b).write(2_i64);
-    (*(*p.borrow()).with(|__s| __s.c.clone()).borrow_mut())[(0) as usize] = (('x' as i32) as u8);
+    (array_field_ptr!((*p.borrow()), c) as Ptr<u8>)
+        .offset((0) as isize)
+        .write((('x' as i32) as u8));
     field!((*p.borrow()), last).write(3);
     {
         ((field_ptr!((*p.borrow()), b)) as Ptr<i64>)
@@ -117,8 +121,10 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)
-            && (((((*(*p.borrow()).with(|__s| __s.c.clone()).borrow())[(0) as usize] as i32) == 0)
-                as i32)
+            && ((((((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>)
+                .offset((0) as isize)
+                .read()) as i32)
+                == 0) as i32)
                 != 0)) as i32)
             != 0)
     );

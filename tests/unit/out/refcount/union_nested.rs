@@ -189,14 +189,14 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
     field!((*ex.borrow_mut()).body.h(), code).write(2_u16);
-    (*(*ex.borrow())
-        .body
-        .h()
-        .with(|__s| __s.pad.clone())
-        .borrow_mut())[(0) as usize] = (('X' as i32) as u8);
+    (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr<u8>)
+        .offset((0) as isize)
+        .write((('X' as i32) as u8));
     assert!((((((*ex.borrow()).body.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
-        (((((*(*ex.borrow()).body.h().with(|__s| __s.pad.clone()).borrow())[(0) as usize] as i32)
+        ((((((array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<u8>)
+            .offset((0) as isize)
+            .read()) as i32)
             == ('X' as i32)) as i32)
             != 0)
     );

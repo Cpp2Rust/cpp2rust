@@ -66,7 +66,7 @@ pub fn operator_deref_0(s: Ptr<S>) -> Ptr<Inner> {
     return field_ptr!(s, inner);
 }
 pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
-    return ((s.with(|__s| __s.data.clone()).as_pointer() as Ptr<i32>).offset(0));
+    return ((array_field_ptr!(s, data) as Ptr<i32>).offset((0) as isize));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -102,7 +102,12 @@ fn main_0() -> i32 {
     ));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(((*{ (*s.borrow()).data.clone() }.borrow())[(0) as usize] == 5));
+    assert!(
+        (((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 5)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

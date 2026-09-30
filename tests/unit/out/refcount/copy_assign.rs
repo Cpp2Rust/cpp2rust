@@ -179,14 +179,26 @@ fn main_0() -> i32 {
     ({ PartialImpl::copy_assign(&field_ptr!(h.as_pointer(), p), b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
-            &({ (*h.borrow()).arr.clone() }.as_pointer() as Ptr<Partial>).offset(1),
+            &(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>).offset((1) as isize),
             c.as_pointer(),
         )
     });
     assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
-        ({ (*{ (*h.borrow()).arr.clone() }.borrow())[(1) as usize].v } == 2)
-            && ({ (*{ (*h.borrow()).arr.clone() }.borrow())[(1) as usize].keep } == 60)
+        ({
+            (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
+                .offset((1) as isize)
+                .upgrade()
+                .deref())
+            .v
+        } == 2)
+            && ({
+                (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
+                    .offset((1) as isize)
+                    .upgrade()
+                    .deref())
+                .keep
+            } == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));

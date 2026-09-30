@@ -145,15 +145,51 @@ fn main_0() -> i32 {
         _lhs == (x1.as_pointer())
     });
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
-    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(0) as usize].prefix_inc();
-    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(1) as usize].prefix_inc();
-    (*{ (*f2.borrow()).a.clone() }.borrow_mut())[(2) as usize].prefix_inc();
-    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(0) as usize] == 1));
-    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(1) as usize] == 2));
-    assert!(((*{ (*f2.borrow()).a.clone() }.borrow())[(2) as usize] == 3));
-    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(0) as usize] == 0));
-    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(1) as usize] == 1));
-    assert!(((*{ (*f1.borrow()).a.clone() }.borrow())[(2) as usize] == 2));
+    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
+        .offset((0) as isize)
+        .with_mut(|__v| __v.prefix_inc());
+    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
+        .offset((1) as isize)
+        .with_mut(|__v| __v.prefix_inc());
+    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
+        .offset((2) as isize)
+        .with_mut(|__v| __v.prefix_inc());
+    assert!(
+        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 1)
+    );
+    assert!(
+        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
+            .offset((1) as isize)
+            .read())
+            == 2)
+    );
+    assert!(
+        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
+            .offset((2) as isize)
+            .read())
+            == 3)
+    );
+    assert!(
+        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 0)
+    );
+    assert!(
+        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
+            .offset((1) as isize)
+            .read())
+            == 1)
+    );
+    assert!(
+        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
+            .offset((2) as isize)
+            .read())
+            == 2)
+    );
     (*f2.borrow_mut()).bar.w = 20;
     assert!(({ (*f2.borrow()).bar.w } == 20));
     assert!(({ (*f1.borrow()).bar.w } == 10));

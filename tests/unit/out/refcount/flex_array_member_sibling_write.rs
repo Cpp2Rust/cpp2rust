@@ -123,20 +123,20 @@ fn main_0() -> i32 {
     ));
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     {
-        (((*s.borrow()).with(|__s| __s.name.clone()).as_pointer() as Ptr<u8>) as Ptr<u8>)
+        ((array_field_ptr!((*s.borrow()), name) as Ptr<u8>) as Ptr<u8>)
             .to_any()
             .memcpy(
                 &Ptr::<u8>::from_string_literal(b"abcdefg").to_any(),
                 8_usize as usize,
             );
-        (((*s.borrow()).with(|__s| __s.name.clone()).as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+        ((array_field_ptr!((*s.borrow()), name) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     field!((*s.borrow()), n).write(5);
     assert!(((((*s.borrow()).with(|__s| __s.n) == 5) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = ((*s.borrow()).with(|__s| __s.name.clone()).as_pointer() as Ptr<u8>)
-                .to_c_string_iterator();
+            let mut __it1 =
+                (array_field_ptr!((*s.borrow()), name) as Ptr<u8>).to_c_string_iterator();
             let mut __it2 = Ptr::<u8>::from_string_literal(b"abcdefg").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
@@ -159,15 +159,33 @@ fn main_0() -> i32 {
     assert!((((!((*t.borrow()).is_null())) as i32) != 0));
     field!((*t.borrow()), n).write(2);
     field!((*t.borrow()), cap).write(2);
-    (*(*t.borrow()).with(|__s| __s.a.clone()).borrow_mut())[(0) as usize].id = 10;
-    (*(*t.borrow()).with(|__s| __s.a.clone()).borrow_mut())[(1) as usize].w = 20;
+    field!(
+        (array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((0) as isize),
+        id
+    )
+    .write(10);
+    field!(
+        (array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((1) as isize),
+        w
+    )
+    .write(20);
     field!((*t.borrow()), n).write(3);
     assert!(
-        (((((({ (*(*t.borrow()).with(|__s| __s.a.clone()).borrow())[(0) as usize].id } == 10)
-            as i32)
+        (((((({
+            (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
+                .offset((0) as isize)
+                .upgrade()
+                .deref())
+            .id
+        } == 10) as i32)
             != 0)
-            && ((({ (*(*t.borrow()).with(|__s| __s.a.clone()).borrow())[(1) as usize].w } == 20)
-                as i32)
+            && ((({
+                (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
+                    .offset((1) as isize)
+                    .upgrade()
+                    .deref())
+                .w
+            } == 20) as i32)
                 != 0)) as i32)
             != 0)
     );
@@ -177,18 +195,28 @@ fn main_0() -> i32 {
     assert!(
         ((({
             let _lhs = (*tail.borrow()).clone();
-            _lhs == (((*t.borrow()).with(|__s| __s.a.clone()).as_pointer() as Ptr<E>).offset(1))
+            _lhs == ((array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((1) as isize))
         }) as i32)
             != 0)
     );
     field!((*tail.borrow()).offset((0) as isize), id).write(30);
     field!((*t.borrow()), cap).write(4);
     assert!(
-        (((((({ (*(*t.borrow()).with(|__s| __s.a.clone()).borrow())[(1) as usize].id } == 30)
-            as i32)
+        (((((({
+            (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
+                .offset((1) as isize)
+                .upgrade()
+                .deref())
+            .id
+        } == 30) as i32)
             != 0)
-            && ((({ (*(*t.borrow()).with(|__s| __s.a.clone()).borrow())[(1) as usize].w } == 20)
-                as i32)
+            && ((({
+                (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
+                    .offset((1) as isize)
+                    .upgrade()
+                    .deref())
+                .w
+            } == 20) as i32)
                 != 0)) as i32)
             != 0)
     );

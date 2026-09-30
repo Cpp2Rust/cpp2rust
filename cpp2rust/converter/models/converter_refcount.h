@@ -152,6 +152,9 @@ public:
   // Converts an access to a field that is stored inline in its struct.
   void ConvertInlineField(clang::MemberExpr *expr);
 
+  // A pointer to the struct whose field `expr` accesses.
+  std::string ConvertRecordPtr(clang::MemberExpr *expr);
+
   // Copies the value of the field `expr` out of its struct, such that the
   // struct doesn't stay borrowed.
   std::string ReadField(clang::MemberExpr *expr);
