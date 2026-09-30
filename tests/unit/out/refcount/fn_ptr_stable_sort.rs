@@ -15,10 +15,7 @@ pub struct Item {
     pub value: i32,
 }
 pub fn Compare_0(a: Ptr<Item>, b: Ptr<Item>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.key);
-        _lhs < b.with(|__s| __s.key)
-    };
+    return ({ a.with(|__s| __s.key) } < { b.with(|__s| __s.key) });
 }
 pub fn main() {
     __cpp2rust_init_globals();

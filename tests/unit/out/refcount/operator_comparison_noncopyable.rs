@@ -7,16 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.data_);
-        _lhs == y.with(|__s| __s.data_)
-    };
+    return ({ x.with(|__s| __s.data_) } == { y.with(|__s| __s.data_) });
 }
 pub fn operator_lt_1(x: Ptr<S>, y: Ptr<S>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.data_);
-        _lhs < y.with(|__s| __s.data_)
-    };
+    return ({ x.with(|__s| __s.data_) } < { y.with(|__s| __s.data_) });
 }
 #[derive(Record, ByteRepr, Default)]
 #[byte_size(4)]

@@ -12,8 +12,7 @@ pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
 pub unsafe fn switch_enum_0(mut c: Color) -> i32 {
     'switch: {
-        let __match_cond = (c as i32);
-        match __match_cond {
+        match { (c as i32) } {
             __v if __v == (Color_kRed as i32) => {
                 return 10;
             }

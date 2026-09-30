@@ -7,10 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn smaller_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Ptr<i32> {
-    return if ({
-        let _lhs = (x1.read());
-        _lhs < (x2.read())
-    }) {
+    return if ({ (x1.read()) } < { (x2.read()) }) {
         (x1).clone()
     } else {
         (x2).clone()

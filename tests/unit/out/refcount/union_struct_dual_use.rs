@@ -16,10 +16,7 @@ pub struct Inner {
 }
 pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
-    return {
-        let _lhs = (*i.borrow()).with(|__s| __s.a);
-        _lhs + (*i.borrow()).with(|__s| __s.b)
-    };
+    return ({ (*i.borrow()).with(|__s| __s.a) } + { (*i.borrow()).with(|__s| __s.b) });
 }
 #[derive(ByteRepr)]
 #[byte_size(16)]

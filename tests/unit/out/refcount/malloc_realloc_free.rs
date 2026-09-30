@@ -28,8 +28,9 @@ fn main_0() -> i32 {
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
-            let __rhs = ((*i.borrow()) * 10);
-            (*arr.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+            (*arr.borrow())
+                .offset((*i.borrow()) as isize)
+                .write({ ((*i.borrow()) * 10) });
             (*i.borrow_mut()).postfix_inc();
         }
         assert!((((((*arr.borrow()).offset((0) as isize).read()) == 0) as i32) != 0));
@@ -102,8 +103,9 @@ fn main_0() -> i32 {
         ));
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
-            let __rhs = ((*i.borrow()) * 10);
-            (*arr.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+            (*arr.borrow())
+                .offset((*i.borrow()) as isize)
+                .write({ ((*i.borrow()) * 10) });
             (*i.borrow_mut()).postfix_inc();
         }
         assert!((((((*arr.borrow()).offset((0) as isize).read()) == 0) as i32) != 0));

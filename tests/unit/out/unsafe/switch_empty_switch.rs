@@ -8,8 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn empty_switch_0(mut x: i32) -> i32 {
     'switch: {
-        let __match_cond = x;
-        match __match_cond {
+        match { x } {
             _ => {}
         }
     };

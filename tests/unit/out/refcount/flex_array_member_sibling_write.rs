@@ -151,9 +151,8 @@ fn main_0() -> i32 {
         ((*t.borrow()).offset((1) as isize)).reinterpret_cast::<E>(),
     ));
     assert!(
-        ((({
-            let _lhs = (*tail.borrow()).clone();
-            _lhs == ((array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((1) as isize))
+        ((({ (*tail.borrow()).clone() } == {
+            ((array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((1) as isize))
         }) as i32)
             != 0)
     );

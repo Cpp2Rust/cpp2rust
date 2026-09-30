@@ -31,10 +31,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(Pair { x: 1, y: 2 })));
-    let out: Value<i32> = Rc::new(RefCell::new({
-        let _lhs = (*p.borrow()).with(|__s| __s.x);
-        _lhs + (*p.borrow()).with(|__s| __s.y)
-    }));
+    let out: Value<i32> = Rc::new(RefCell::new(
+        ({ (*p.borrow()).with(|__s| __s.x) } + { (*p.borrow()).with(|__s| __s.y) }),
+    ));
     (*p.borrow()).delete();
     assert!(((*out.borrow()) == 3));
     let t: Value<Triple> = Rc::new(RefCell::new(Triple {

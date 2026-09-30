@@ -29,21 +29,21 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<
             fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fread_refcount)));
-    assert!({
-        let _lhs = (*fn1.borrow()).clone();
-        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
-            libcc2rs::fread_refcount,
-        )
-    });
+    assert!(
+        ({ (*fn1.borrow()).clone() } == {
+            FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fread_refcount)
+        })
+    );
     assert!(!((*fn1.borrow()).is_null()));
     let fn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fread_refcount)
             .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(),
     ));
-    assert!({
-        let _lhs = (*fn1.borrow()).clone();
-        _lhs == (*fn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>()
-    });
+    assert!(
+        ({ (*fn1.borrow()).clone() } == {
+            (*fn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>()
+        })
+    );
     let f3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> =
         Rc::new(RefCell::new(
             FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fread_0)
@@ -151,21 +151,21 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<
             fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize,
         >::new(libcc2rs::fwrite_refcount)));
-    assert!({
-        let _lhs = (*gn1.borrow()).clone();
-        _lhs == FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(
-            libcc2rs::fwrite_refcount,
-        )
-    });
+    assert!(
+        ({ (*gn1.borrow()).clone() } == {
+            FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fwrite_refcount)
+        })
+    );
     assert!(!((*gn1.borrow()).is_null()));
     let gn2: Value<FnPtr<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>::new(libcc2rs::fwrite_refcount)
             .cast::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>(),
     ));
-    assert!({
-        let _lhs = (*gn1.borrow()).clone();
-        _lhs == (*gn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>()
-    });
+    assert!(
+        ({ (*gn1.borrow()).clone() } == {
+            (*gn2.borrow()).cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>()
+        })
+    );
     let g3: Value<FnPtr<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>> = Rc::new(RefCell::new(
         FnPtr::<fn(Ptr<u8>, usize, usize, AnyPtr) -> usize>::new(my_alternative_fwrite_1)
             .cast::<fn(AnyPtr, usize, usize, Ptr<CFile>) -> usize>(),

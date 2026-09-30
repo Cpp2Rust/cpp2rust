@@ -26,8 +26,7 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     (*ap.borrow_mut()) = VaList::new(__args);
     let result: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*option.borrow());
-        match __match_cond {
+        match { (*option.borrow()) } {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
                 let out: Value<Ptr<Ptr<u8>>> =
                     Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()));

@@ -141,8 +141,7 @@ impl ContainerImpl for Ptr<Container> {
             let _o: Ptr<NoCopy> = field_ptr!(_a0, inner);
             NoCopyImpl::move_assign(&field_ptr!((*self), inner), _o)
         });
-        let __rhs = { (*_a0.upgrade().deref()).tag };
-        field!((*self), tag).write(__rhs);
+        field!((*self), tag).write({ { (*_a0.upgrade().deref()).tag } });
         return (*self).clone();
     }
 }
@@ -151,8 +150,7 @@ pub trait NoCopyImpl {
 }
 impl NoCopyImpl for Ptr<NoCopy> {
     fn move_assign(&self, o: Ptr<NoCopy>) -> Ptr<NoCopy> {
-        let __rhs = o.with(|__s| __s.v);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
         return (*self).clone();
     }
@@ -165,8 +163,7 @@ pub trait PrivateCopyImpl {
 }
 impl PrivateCopyImpl for Ptr<PrivateCopy> {
     fn move_assign(&self, o: Ptr<PrivateCopy>) -> Ptr<PrivateCopy> {
-        let __rhs = o.with(|__s| __s.v);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
         return (*self).clone();
     }

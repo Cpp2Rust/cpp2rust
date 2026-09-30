@@ -34,14 +34,15 @@ impl Buffer {
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = if ((*i.borrow()) < (*size.borrow())) {
-                (*i.borrow())
-            } else {
-                -1_i32
-            };
             (array_field_ptr!(this, data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
-                .write(__rhs);
+                .write({
+                    if ((*i.borrow()) < (*size.borrow())) {
+                        (*i.borrow())
+                    } else {
+                        -1_i32
+                    }
+                });
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -55,12 +56,13 @@ impl Buffer {
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = ((array_field_ptr!(o, data) as Ptr<i32>)
-                .offset((*i.borrow()) as isize)
-                .read());
             (array_field_ptr!(this, data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
-                .write(__rhs);
+                .write({
+                    ((array_field_ptr!(o, data) as Ptr<i32>)
+                        .offset((*i.borrow()) as isize)
+                        .read())
+                });
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -75,12 +77,13 @@ impl Buffer {
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = ((array_field_ptr!(o, data) as Ptr<i32>)
-                .offset((*i.borrow()) as isize)
-                .read());
             (array_field_ptr!(this, data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
-                .write(__rhs);
+                .write({
+                    ((array_field_ptr!(o, data) as Ptr<i32>)
+                        .offset((*i.borrow()) as isize)
+                        .read())
+                });
             (array_field_ptr!(o, data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
                 .write(-1_i32);
@@ -198,16 +201,16 @@ impl BufferImpl for Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s| __s.size);
-        field!((*self), size).write(__rhs);
+        field!((*self), size).write({ o.with(|__s| __s.size) });
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = ((array_field_ptr!(o, data) as Ptr<i32>)
-                .offset((*i.borrow()) as isize)
-                .read());
             (array_field_ptr!((*self), data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
-                .write(__rhs);
+                .write({
+                    ((array_field_ptr!(o, data) as Ptr<i32>)
+                        .offset((*i.borrow()) as isize)
+                        .read())
+                });
             (*i.borrow_mut()).prefix_inc();
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -217,16 +220,16 @@ impl BufferImpl for Ptr<Buffer> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s| __s.size);
-        field!((*self), size).write(__rhs);
+        field!((*self), size).write({ o.with(|__s| __s.size) });
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = ((array_field_ptr!(o, data) as Ptr<i32>)
-                .offset((*i.borrow()) as isize)
-                .read());
             (array_field_ptr!((*self), data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
-                .write(__rhs);
+                .write({
+                    ((array_field_ptr!(o, data) as Ptr<i32>)
+                        .offset((*i.borrow()) as isize)
+                        .read())
+                });
             (array_field_ptr!(o, data) as Ptr<i32>)
                 .offset((*i.borrow()) as isize)
                 .write(-1_i32);

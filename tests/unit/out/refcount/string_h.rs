@@ -18,10 +18,8 @@ pub fn test_memcpy_0() {
         ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     }));
     assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == ((dst.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
-        }) as i32)
+        ((({ (*r.borrow()).clone() } == { ((dst.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any() })
+            as i32)
             != 0)
     );
     assert!(
@@ -52,10 +50,8 @@ pub fn test_memset_1() {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     }));
     assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
-        }) as i32)
+        ((({ (*r.borrow()).clone() } == { ((buf.as_pointer() as Ptr::<u8>) as Ptr::<u8>).to_any() })
+            as i32)
             != 0)
     );
     assert!(
@@ -125,9 +121,8 @@ pub fn test_memmove_3() {
         ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
     }));
     assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
+        ((({ (*r.borrow()).clone() } == {
+            ((buf.as_pointer() as Ptr<u8>).offset((1) as isize) as Ptr<u8>).to_any()
         }) as i32)
             != 0)
     );
@@ -517,9 +512,8 @@ pub fn test_memchr_8() {
         }
     }));
     assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == (((data.as_pointer() as Ptr<u8>).offset(2)) as Ptr<u8>).to_any()
+        ((({ (*r.borrow()).clone() } == {
+            (((data.as_pointer() as Ptr<u8>).offset(2)) as Ptr<u8>).to_any()
         }) as i32)
             != 0)
     );
@@ -549,7 +543,7 @@ pub fn test_memchr_8() {
     let n: Value<usize> = Rc::new(RefCell::new(4_usize));
     assert!(
         ((({
-            let _lhs = {
+            {
                 let mut __p = (*p.borrow()).reinterpret_cast::<u8>();
                 let mut __i: usize = 0;
                 loop {
@@ -562,9 +556,8 @@ pub fn test_memchr_8() {
                     __p += 1;
                     __i += 1;
                 }
-            };
-            _lhs == (*p.borrow()).clone()
-        }) as i32)
+            }
+        } == { (*p.borrow()).clone() }) as i32)
             != 0)
     );
 }
@@ -591,13 +584,7 @@ pub fn test_strrchr_9() {
     }));
     assert!((((!((*r.borrow()).is_null())) as i32) != 0));
     assert!(((((((*r.borrow()).read()) as i32) == ('l' as i32)) as i32) != 0));
-    assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == (*s.borrow()).offset((9) as isize)
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*r.borrow()).clone() } == { (*s.borrow()).offset((9) as isize) }) as i32) != 0));
     assert!(
         (((({
             let __s = (*s.borrow()).reinterpret_cast::<u8>();
@@ -758,13 +745,7 @@ pub fn test_strstr_12() {
         }
     }));
     assert!((((!((*r.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == (*h.borrow()).offset((6) as isize)
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*r.borrow()).clone() } == { (*h.borrow()).offset((6) as isize) }) as i32) != 0));
     assert!(
         (((({
             let __needle = Ptr::<u8>::from_string_literal(b"xyz");
@@ -829,13 +810,7 @@ pub fn test_strpbrk_13() {
         }
     }));
     assert!((((!((*r.borrow()).is_null())) as i32) != 0));
-    assert!(
-        ((({
-            let _lhs = (*r.borrow()).clone();
-            _lhs == (*s.borrow()).offset((4) as isize)
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*r.borrow()).clone() } == { (*s.borrow()).offset((4) as isize) }) as i32) != 0));
     assert!(
         (((({
             let __s = (*s.borrow()).reinterpret_cast::<u8>();

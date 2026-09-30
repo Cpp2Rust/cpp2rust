@@ -7,13 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn operator_eq_0(_a0: Ptr<Defaulted>, _a1: Ptr<Defaulted>) -> bool {
-    return ({
-        let _lhs = _a0.with(|__s| __s.a);
-        _lhs == _a1.with(|__s| __s.a)
-    }) && ({
-        let _lhs = _a0.with(|__s| __s.b);
-        _lhs == _a1.with(|__s| __s.b)
-    });
+    return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) })
+        && ({ _a0.with(|__s| __s.b) } == { _a1.with(|__s| __s.b) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -55,10 +50,7 @@ pub fn operator_cmp_1(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> std::cm
     return std::cmp::Ordering::Equal;
 }
 pub fn operator_eq_2(_a0: Ptr<DefaultedOrd>, _a1: Ptr<DefaultedOrd>) -> bool {
-    return {
-        let _lhs = _a0.with(|__s| __s.a);
-        _lhs == _a1.with(|__s| __s.a)
-    };
+    return ({ _a0.with(|__s| __s.a) } == { _a1.with(|__s| __s.a) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -93,23 +85,14 @@ impl std::cmp::PartialEq for DefaultedOrd {
 }
 impl std::cmp::Eq for DefaultedOrd {}
 pub fn operator_eq_3(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.a);
-        _lhs == y.with(|__s| __s.a)
-    };
+    return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
 pub fn operator_lt_4(x: Ptr<Inline>, y: Ptr<Inline>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.a);
-        _lhs < y.with(|__s| __s.a)
-    };
+    return ({ x.with(|__s| __s.a) } < { y.with(|__s| __s.a) });
 }
 pub fn operator_add_5(x: Ptr<Inline>, y: Ptr<Inline>) -> Inline {
     return Inline {
-        a: {
-            let _lhs = x.with(|__s| __s.a);
-            _lhs + y.with(|__s| __s.a)
-        },
+        a: ({ x.with(|__s| __s.a) } + { y.with(|__s| __s.a) }),
     };
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -171,10 +154,7 @@ impl std::cmp::PartialEq for OutOfLine {
 }
 impl std::cmp::Eq for OutOfLine {}
 pub fn operator_eq_6(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.a);
-        _lhs == y.with(|__s| __s.a)
-    };
+    return ({ x.with(|__s| __s.a) } == { y.with(|__s| __s.a) });
 }
 pub fn operator_ne_7(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     return !({
@@ -184,22 +164,13 @@ pub fn operator_ne_7(x: Ptr<OutOfLine>, y: Ptr<OutOfLine>) -> bool {
     });
 }
 pub fn operator_eq_8(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.v);
-        _lhs == y.with(|__s| __s.v)
-    };
+    return ({ x.with(|__s| __s.v) } == { y.with(|__s| __s.v) });
 }
 pub fn operator_lt_9(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_int_>) -> bool {
-    return {
-        let _lhs = x.with(|__s| __s.v);
-        _lhs < y.with(|__s| __s.v)
-    };
+    return ({ x.with(|__s| __s.v) } < { y.with(|__s| __s.v) });
 }
 pub fn operator_eq_10(x: Ptr<Tmpl_int_>, y: Ptr<Tmpl_long_>) -> bool {
-    return {
-        let _lhs = (x.with(|__s| __s.v) as i64);
-        _lhs == y.with(|__s| __s.v)
-    };
+    return ({ (x.with(|__s| __s.v) as i64) } == { y.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -249,10 +220,7 @@ pub struct Tmpl_long_ {
     pub v: i64,
 }
 pub fn operator_eq_11(_a0: Ptr<TmplDefaulted_int_>, _a1: Ptr<TmplDefaulted_int_>) -> bool {
-    return {
-        let _lhs = _a0.with(|__s| __s.v);
-        _lhs == _a1.with(|__s| __s.v)
-    };
+    return ({ _a0.with(|__s| __s.v) } == { _a1.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]

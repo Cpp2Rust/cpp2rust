@@ -53,8 +53,7 @@ pub unsafe fn from_switch_2(mut n: i32) -> i32 {
         '__entry: {
             ret = 0;
             'switch: {
-                let __match_cond = n;
-                match __match_cond {
+                match { n } {
                     __v if __v == 1 => {
                         ret = 10;
                         goto!('out);

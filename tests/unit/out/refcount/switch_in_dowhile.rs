@@ -14,8 +14,7 @@ pub fn switch_in_dowhile_0(n: i32) -> i32 {
     'loop_: while __do_while || ((*i.borrow()) < (*n.borrow())) {
         __do_while = false;
         'switch: {
-            let __match_cond = (*i.borrow());
-            match __match_cond {
+            match { (*i.borrow()) } {
                 __v if __v == 0 => {
                     (*r.borrow_mut()) += 1;
                     break 'switch;

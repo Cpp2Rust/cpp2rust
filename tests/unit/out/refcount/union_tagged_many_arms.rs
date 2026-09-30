@@ -97,9 +97,8 @@ fn main_0() -> i32 {
         .handle()
         .write(((x.as_pointer()) as Ptr<i32>).to_any());
     assert!(
-        ((({
-            let _lhs = ((*e.borrow()).payload.handle().read()).clone();
-            _lhs == ((x.as_pointer()) as Ptr<i32>).to_any()
+        ((({ ((*e.borrow()).payload.handle().read()).clone() } == {
+            ((x.as_pointer()) as Ptr<i32>).to_any()
         }) as i32)
             != 0)
     );

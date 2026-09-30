@@ -11,11 +11,12 @@ pub fn switch_on_assignment_0(x: i32) -> i32 {
     let y: Value<i32> = Rc::new(RefCell::new(0));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = {
-            (*y.borrow_mut()) = ((*x.borrow()) + 1);
-            (*y.borrow())
-        };
-        match __match_cond {
+        match {
+            {
+                (*y.borrow_mut()) = ((*x.borrow()) + 1);
+                (*y.borrow())
+            }
+        } {
             __v if __v == 1 => {
                 (*r.borrow_mut()) = 10;
                 break 'switch;

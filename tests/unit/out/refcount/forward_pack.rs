@@ -81,19 +81,15 @@ pub fn forward_pack_4() -> i32 {
 }
 pub fn forward_pack_5(args: Ptr<Tracked>) -> i32 {
     let digits: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs = {
-        let _lhs = ((*digits.borrow()) * 10);
-        _lhs + (({ chosen_overload_0((args).clone()) }) as i32)
-    };
+    let __rhs =
+        ({ ((*digits.borrow()) * 10) } + { (({ chosen_overload_0((args).clone()) }) as i32) });
     (*digits.borrow_mut()) = __rhs;
     return (*digits.borrow());
 }
 pub fn forward_pack_6(args: Ptr<Tracked>) -> i32 {
     let digits: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs = {
-        let _lhs = ((*digits.borrow()) * 10);
-        _lhs + (({ chosen_overload_1((args).clone()) }) as i32)
-    };
+    let __rhs =
+        ({ ((*digits.borrow()) * 10) } + { (({ chosen_overload_1((args).clone()) }) as i32) });
     (*digits.borrow_mut()) = __rhs;
     return (*digits.borrow());
 }
@@ -105,27 +101,23 @@ pub fn forward_pack_7(
 ) -> i32 {
     let digits: Value<i32> = Rc::new(RefCell::new(0));
     {
-        let __rhs = {
-            let _lhs = ((*digits.borrow()) * 10);
-            _lhs + (({ chosen_overload_0((args_0).clone()) }) as i32)
-        };
+        let __rhs = ({ ((*digits.borrow()) * 10) } + {
+            (({ chosen_overload_0((args_0).clone()) }) as i32)
+        });
         (*digits.borrow_mut()) = __rhs;
         {
-            let __rhs = {
-                let _lhs = ((*digits.borrow()) * 10);
-                _lhs + (({ chosen_overload_1((args_1).clone()) }) as i32)
-            };
+            let __rhs = ({ ((*digits.borrow()) * 10) } + {
+                (({ chosen_overload_1((args_1).clone()) }) as i32)
+            });
             (*digits.borrow_mut()) = __rhs;
             {
-                let __rhs = {
-                    let _lhs = ((*digits.borrow()) * 10);
-                    _lhs + (({ chosen_overload_2((args_2).clone()) }) as i32)
-                };
+                let __rhs = ({ ((*digits.borrow()) * 10) } + {
+                    (({ chosen_overload_2((args_2).clone()) }) as i32)
+                });
                 (*digits.borrow_mut()) = __rhs;
-                let __rhs = {
-                    let _lhs = ((*digits.borrow()) * 10);
-                    _lhs + (({ chosen_overload_3((args_3).clone()) }) as i32)
-                };
+                let __rhs = ({ ((*digits.borrow()) * 10) } + {
+                    (({ chosen_overload_3((args_3).clone()) }) as i32)
+                });
                 (*digits.borrow_mut()) = __rhs
             }
         }

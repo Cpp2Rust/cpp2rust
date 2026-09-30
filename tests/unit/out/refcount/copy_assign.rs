@@ -207,13 +207,11 @@ pub trait NonConstAssignImpl {
 }
 impl NonConstAssignImpl for Ptr<NonConstAssign> {
     fn operator_assign_2(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = (o.with(|__s| __s.mark) + 1);
-        field!((*self), mark).write(__rhs);
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
     fn operator_assign_3(&self, o: Ptr<NonConstAssign>) -> Ptr<NonConstAssign> {
-        let __rhs = (o.with(|__s| __s.mark) + 10);
-        field!((*self), mark).write(__rhs);
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 10) });
         return (*self).clone();
     }
 }
@@ -225,8 +223,7 @@ impl PartialImpl for Ptr<Partial> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s| __s.v);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         (*assigns_0.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
     }
@@ -236,8 +233,7 @@ pub trait RefQualifiedImpl {
 }
 impl RefQualifiedImpl for Ptr<RefQualified> {
     fn copy_assign(&self, o: Ptr<RefQualified>) -> Ptr<RefQualified> {
-        let __rhs = (o.with(|__s| __s.mark) + 1);
-        field!((*self), mark).write(__rhs);
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
 }

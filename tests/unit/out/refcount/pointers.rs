@@ -42,13 +42,9 @@ fn main_0() -> i32 {
         _ptr.write(_ptr.read() + 10)
     };
     assert!(
-        ({
-            let _lhs = {
-                let _lhs = (*t3.borrow()).with(|__s| __s.x);
-                _lhs + (*t2.borrow()).with(|__s| __s.x)
-            };
-            _lhs + { (*t1.borrow()).x }
-        } == 75)
+        (({ ({ (*t3.borrow()).with(|__s| __s.x) } + { (*t2.borrow()).with(|__s| __s.x) }) } + {
+            { (*t1.borrow()).x }
+        }) == 75)
     );
     return 0;
 }

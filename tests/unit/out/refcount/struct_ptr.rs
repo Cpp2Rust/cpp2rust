@@ -27,12 +27,7 @@ fn main_0() -> i32 {
         (*ptr.borrow()).with(|__s| __s.x)
     }));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new((field_ptr!(obj.as_pointer(), x))));
-    assert!(
-        ({
-            let _lhs = ((*p.borrow()).read());
-            _lhs + (*r.borrow())
-        } == 4)
-    );
+    assert!((({ ((*p.borrow()).read()) } + { (*r.borrow()) }) == 4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

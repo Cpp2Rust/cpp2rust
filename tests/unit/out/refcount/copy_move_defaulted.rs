@@ -283,27 +283,26 @@ impl Holder {
     }
 }
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
-    return ((({
-        let _lhs = a.with(|__s| __s.v);
-        _lhs == b.with(|__s| __s.v)
-    }) && ({
-        let _lhs = a.with(|__s| __s.inner.x);
-        _lhs == b.with(|__s| __s.inner.x)
-    })) && ({
-        let _lhs = ((array_field_ptr!(a, arr) as Ptr<i32>)
-            .offset((0) as isize)
-            .read());
-        _lhs == ((array_field_ptr!(b, arr) as Ptr<i32>)
-            .offset((0) as isize)
-            .read())
-    })) && ({
-        let _lhs = ((array_field_ptr!(a, arr) as Ptr<i32>)
-            .offset((1) as isize)
-            .read());
-        _lhs == ((array_field_ptr!(b, arr) as Ptr<i32>)
-            .offset((1) as isize)
-            .read())
-    });
+    return ((({ a.with(|__s| __s.v) } == { b.with(|__s| __s.v) })
+        && ({ a.with(|__s| __s.inner.x) } == { b.with(|__s| __s.inner.x) }))
+        && ({
+            ((array_field_ptr!(a, arr) as Ptr<i32>)
+                .offset((0) as isize)
+                .read())
+        } == {
+            ((array_field_ptr!(b, arr) as Ptr<i32>)
+                .offset((0) as isize)
+                .read())
+        }))
+        && ({
+            ((array_field_ptr!(a, arr) as Ptr<i32>)
+                .offset((1) as isize)
+                .read())
+        } == {
+            ((array_field_ptr!(b, arr) as Ptr<i32>)
+                .offset((1) as isize)
+                .read())
+        });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -587,8 +586,7 @@ impl BufferImpl for Ptr<Buffer> {
         ((*self).with(|__s| __s.rows.clone()).as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).write(
             std::mem::take(&mut (*{ (*_a0.upgrade().deref()).rows.clone() }.borrow_mut())),
         );
-        let __rhs = { (*_a0.upgrade().deref()).n };
-        field!((*self), n).write(__rhs);
+        field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         {
             ((array_field_ptr!((*self), arr)) as Ptr<i32>)
                 .to_any()
@@ -606,8 +604,7 @@ pub trait DefaultCopyUserMoveImpl {
 }
 impl DefaultCopyUserMoveImpl for Ptr<DefaultCopyUserMove> {
     fn move_assign(&self, o: Ptr<DefaultCopyUserMove>) -> Ptr<DefaultCopyUserMove> {
-        let __rhs = o.with(|__s| __s.v);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
         return (*self).clone();
     }
@@ -624,10 +621,8 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        let __rhs = { (*_a0.upgrade().deref()).inner.clone() };
-        field!((*self), inner).write(__rhs);
-        let __rhs = { (*_a0.upgrade().deref()).e.clone() };
-        field!((*self), e).write(__rhs);
+        field!((*self), inner).write({ { (*_a0.upgrade().deref()).inner.clone() } });
+        field!((*self), e).write({ { (*_a0.upgrade().deref()).e.clone() } });
         (field_ptr!((*self), p) as Ptr<Option<Value<i32>>>)
             .write(field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
@@ -644,8 +639,7 @@ impl OwnerImpl for Ptr<Owner> {
         ((*self).with(|__s| __s.data.clone()).as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*{ (*_a0.upgrade().deref()).data.clone() }.borrow_mut()),
         ));
-        let __rhs = { (*_a0.upgrade().deref()).n };
-        field!((*self), n).write(__rhs);
+        field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         {
             ((array_field_ptr!((*self), arr)) as Ptr<i32>)
                 .to_any()
@@ -666,13 +660,11 @@ pub trait UserCopyDefaultMoveImpl {
 }
 impl UserCopyDefaultMoveImpl for Ptr<UserCopyDefaultMove> {
     fn copy_assign(&self, o: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
-        let __rhs = (o.with(|__s| __s.v) + 100);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ (o.with(|__s| __s.v) + 100) });
         return (*self).clone();
     }
     fn move_assign(&self, _a0: Ptr<UserCopyDefaultMove>) -> Ptr<UserCopyDefaultMove> {
-        let __rhs = { (*_a0.upgrade().deref()).v };
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ { (*_a0.upgrade().deref()).v } });
         return (*self).clone();
     }
 }

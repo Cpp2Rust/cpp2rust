@@ -278,12 +278,12 @@ pub trait Templated_char_Impl {
 }
 impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
-        {
-            let rhs_0 = ((global_0.with(|rc| *rc.borrow()) as usize)
-                .wrapping_add((::std::mem::size_of::<u8>() as usize)))
-                as i32;
-            global_0.with(|rc| *rc.borrow_mut() = rhs_0)
-        };
+        global_0.with(|rc| {
+            *rc.borrow_mut() = {
+                ((global_0.with(|rc| *rc.borrow()) as usize)
+                    .wrapping_add((::std::mem::size_of::<u8>() as usize))) as i32
+            }
+        });
     }
 }
 pub trait Templated_int_Impl {
@@ -291,12 +291,12 @@ pub trait Templated_int_Impl {
 }
 impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
-        {
-            let rhs_0 = ((global_0.with(|rc| *rc.borrow()) as usize)
-                .wrapping_add((::std::mem::size_of::<i32>() as usize)))
-                as i32;
-            global_0.with(|rc| *rc.borrow_mut() = rhs_0)
-        };
+        global_0.with(|rc| {
+            *rc.borrow_mut() = {
+                ((global_0.with(|rc| *rc.borrow()) as usize)
+                    .wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32
+            }
+        });
     }
 }
 pub fn __cpp2rust_init_globals() {

@@ -25,8 +25,7 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     'switch: {
-        let __match_cond = ((*field.borrow()) as u32);
-        match __match_cond {
+        match { ((*field.borrow()) as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
                 field!((*r.borrow()), slot).write((*ap.borrow_mut()).arg::<AnyPtr>());
                 break 'switch;
@@ -69,11 +68,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((({
-            let _lhs = { (*r.borrow()).slot.clone() };
-            _lhs == (payload.as_pointer()).to_any()
-        }) as i32)
-            != 0)
+        ((({ { (*r.borrow()).slot.clone() } } == { (payload.as_pointer()).to_any() }) as i32) != 0)
     );
     assert!(
         (((({ (*r.borrow()).slot.clone() }

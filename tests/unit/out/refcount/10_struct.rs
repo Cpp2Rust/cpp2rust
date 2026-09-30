@@ -74,10 +74,7 @@ fn main_0() -> i32 {
     let it: Value<Partial> = Rc::new(RefCell::new(Partial::new_1({
         (arr.as_pointer() as Ptr<i32>)
     })));
-    if {
-        let _lhs = { (*it.borrow()).p.clone() };
-        _lhs != (arr.as_pointer() as Ptr<i32>)
-    } {
+    if ({ { (*it.borrow()).p.clone() } } != { (arr.as_pointer() as Ptr<i32>) }) {
         return 1;
     }
     let def: Value<Partial> = Rc::new(RefCell::new(<Partial>::default()));

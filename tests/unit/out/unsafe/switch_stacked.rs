@@ -9,8 +9,7 @@ use std::rc::Rc;
 pub unsafe fn stacked_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {
-        let __match_cond = x;
-        match __match_cond {
+        match { x } {
             __v if __v == 1 || __v == 2 || __v == 3 => {
                 r = 100;
                 break 'switch;

@@ -13,10 +13,7 @@ pub struct S {
     pub v: i32,
 }
 pub fn operator_div_0(a: Ptr<S>, b: Ptr<S>) -> i32 {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs / b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } / { b.with(|__s| __s.v) });
 }
 pub fn operator_div_1(a: S, b: i32) -> i32 {
     let a: Value<S> = Rc::new(RefCell::new(a));
@@ -30,10 +27,7 @@ pub fn operator_rem_2(a: S, b: S) -> i32 {
 }
 pub fn operator_rem_3(a: Ptr<S>, b: i32) -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(b));
-    return ({
-        let _lhs = a.with(|__s| __s.v);
-        _lhs % (*b.borrow())
-    } + 1);
+    return (({ a.with(|__s| __s.v) } % { (*b.borrow()) }) + 1);
 }
 pub fn operator_eq_4(a: i32, b: S) -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(a));
@@ -46,10 +40,7 @@ pub fn operator_eq_4(a: i32, b: S) -> i32 {
 }
 pub fn operator_eq_5(a: i64, b: Ptr<S>) -> i32 {
     let a: Value<i64> = Rc::new(RefCell::new(a));
-    return if {
-        let _lhs = (*a.borrow());
-        _lhs == (b.with(|__s| __s.v) as i64)
-    } {
+    return if ({ (*a.borrow()) } == { (b.with(|__s| __s.v) as i64) }) {
         5
     } else {
         0
@@ -133,20 +124,14 @@ impl SImpl for Ptr<S> {
         };
     }
     fn operator_add(&self, o: Ptr<S>) -> i32 {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs + o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } + { o.with(|__s| __s.v) });
     }
     fn operator_sub(&self, o: S) -> i32 {
         let o: Value<S> = Rc::new(RefCell::new(o));
         return ((*self).with(|__s| __s.v) - { (*o.borrow()).v });
     }
     fn operator_mul_6(&self, o: Ptr<S>) -> i32 {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs * o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } * { o.with(|__s| __s.v) });
     }
     fn operator_mul_7(&self, o: i32) -> i32 {
         let o: Value<i32> = Rc::new(RefCell::new(o));

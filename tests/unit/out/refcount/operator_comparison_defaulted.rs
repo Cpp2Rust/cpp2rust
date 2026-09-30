@@ -409,10 +409,7 @@ pub trait BothImpl {
 }
 impl BothImpl for Ptr<Both> {
     fn operator_eq(&self, _a0: Ptr<Both>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.a);
-            _lhs == _a0.with(|__s| __s.a)
-        };
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
     fn operator_cmp(&self, _a0: Ptr<Both>) -> std::cmp::Ordering {
         {
@@ -454,13 +451,8 @@ impl CmpImpl for Ptr<Cmp> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<Cmp>) -> bool {
-        return ({
-            let _lhs = (*self).with(|__s| __s.a);
-            _lhs == _a0.with(|__s| __s.a)
-        }) && ({
-            let _lhs = (*self).with(|__s| __s.b);
-            _lhs == _a0.with(|__s| __s.b)
-        });
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
+            && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
     }
 }
 pub trait EqImpl {
@@ -468,13 +460,8 @@ pub trait EqImpl {
 }
 impl EqImpl for Ptr<Eq> {
     fn operator_eq(&self, _a0: Ptr<Eq>) -> bool {
-        return ({
-            let _lhs = (*self).with(|__s| __s.a);
-            _lhs == _a0.with(|__s| __s.a)
-        }) && ({
-            let _lhs = (*self).with(|__s| __s.b);
-            _lhs == _a0.with(|__s| __s.b)
-        });
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) })
+            && ({ (*self).with(|__s| __s.b) } == { _a0.with(|__s| __s.b) });
     }
 }
 pub trait InnerImpl {
@@ -495,10 +482,7 @@ impl InnerImpl for Ptr<Inner> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<Inner>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.x);
-            _lhs == _a0.with(|__s| __s.x)
-        };
+        return ({ (*self).with(|__s| __s.x) } == { _a0.with(|__s| __s.x) });
     }
 }
 pub trait OrdOnlyImpl {
@@ -550,10 +534,7 @@ impl OuterImpl for Ptr<Outer> {
         return ({
             let _arg0: Ptr<Inner> = field_ptr!(_a0, i);
             InnerImpl::operator_eq(&field_ptr!((*self), i), _arg0)
-        }) && ({
-            let _lhs = (*self).with(|__s| __s.y);
-            _lhs == _a0.with(|__s| __s.y)
-        });
+        }) && ({ (*self).with(|__s| __s.y) } == { _a0.with(|__s| __s.y) });
     }
 }
 pub trait PtrMemberImpl {
@@ -574,10 +555,7 @@ impl PtrMemberImpl for Ptr<PtrMember> {
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, _a0: Ptr<PtrMember>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.p.clone());
-            _lhs == _a0.with(|__s| __s.p.clone())
-        };
+        return ({ (*self).with(|__s| __s.p.clone()) } == { _a0.with(|__s| __s.p.clone()) });
     }
 }
 pub trait SecondaryImpl {
@@ -589,10 +567,7 @@ pub trait SecondaryImpl {
 }
 impl SecondaryImpl for Ptr<Secondary> {
     fn operator_eq(&self, _a0: Ptr<Secondary>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.a);
-            _lhs == _a0.with(|__s| __s.a)
-        };
+        return ({ (*self).with(|__s| __s.a) } == { _a0.with(|__s| __s.a) });
     }
     fn operator_ne(&self, _a0: Ptr<Secondary>) -> bool {
         return !({

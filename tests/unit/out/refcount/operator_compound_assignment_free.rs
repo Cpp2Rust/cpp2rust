@@ -13,61 +13,43 @@ pub struct S {
     pub v: u32,
 }
 pub fn operator_add_assign_0(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    {
-        let rhs_0 = (a.with(|__s| __s.v)).wrapping_add(b.with(|__s| __s.v));
-        field!(a, v).write(rhs_0)
-    };
+    field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_add(b.with(|__s| __s.v)) });
     return (a).clone();
 }
 pub fn operator_sub_assign_1(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    {
-        let rhs_0 = (a.with(|__s| __s.v)).wrapping_sub(b.with(|__s| __s.v));
-        field!(a, v).write(rhs_0)
-    };
+    field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_sub(b.with(|__s| __s.v)) });
     return (a).clone();
 }
 pub fn operator_mul_assign_2(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    {
-        let rhs_0 = (a.with(|__s| __s.v)).wrapping_mul(b.with(|__s| __s.v));
-        field!(a, v).write(rhs_0)
-    };
+    field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_mul(b.with(|__s| __s.v)) });
     return (a).clone();
 }
 pub fn operator_div_assign_3(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    {
-        let rhs_0 = (a.with(|__s| __s.v)).wrapping_div(b.with(|__s| __s.v));
-        field!(a, v).write(rhs_0)
-    };
+    field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_div(b.with(|__s| __s.v)) });
     return (a).clone();
 }
 pub fn operator_rem_assign_4(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    {
-        let rhs_0 = (a.with(|__s| __s.v)).wrapping_rem(b.with(|__s| __s.v));
-        field!(a, v).write(rhs_0)
-    };
+    field!(a, v).write({ (a.with(|__s| __s.v)).wrapping_rem(b.with(|__s| __s.v)) });
     return (a).clone();
 }
 pub fn operator_bitand_assign_5(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s| __s.v);
     {
         let _ptr = field!(a, v);
-        _ptr.write(_ptr.read() & __rhs)
+        _ptr.write(_ptr.read() & { b.with(|__s| __s.v) })
     };
     return (a).clone();
 }
 pub fn operator_bitor_assign_6(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s| __s.v);
     {
         let _ptr = field!(a, v);
-        _ptr.write(_ptr.read() | __rhs)
+        _ptr.write(_ptr.read() | { b.with(|__s| __s.v) })
     };
     return (a).clone();
 }
 pub fn operator_bitxor_assign_7(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
-    let __rhs = b.with(|__s| __s.v);
     {
         let _ptr = field!(a, v);
-        _ptr.write(_ptr.read() ^ __rhs)
+        _ptr.write(_ptr.read() ^ { b.with(|__s| __s.v) })
     };
     return (a).clone();
 }

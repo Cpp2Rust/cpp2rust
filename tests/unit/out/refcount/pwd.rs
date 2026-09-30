@@ -21,10 +21,8 @@ pub fn test_getpwuid_0() {
     ));
     assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
     assert!(
-        ((({
-            let _lhs = (*pw.borrow()).with(|__s| __s.pw_uid);
-            _lhs == nix::unistd::geteuid().as_raw()
-        }) as i32)
+        ((({ (*pw.borrow()).with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() })
+            as i32)
             != 0)
     );
     assert!(
@@ -109,13 +107,7 @@ pub fn test_getpwuid_r_2() {
         } == 0) as i32)
             != 0)
     );
-    assert!(
-        ((({
-            let _lhs = (*result.borrow()).clone();
-            _lhs == (pw.as_pointer())
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*result.borrow()).clone() } == { (pw.as_pointer()) }) as i32) != 0));
     assert!(((({ (*pw.borrow()).pw_uid } == nix::unistd::geteuid().as_raw()) as i32) != 0));
     assert!(
         ((({ (*pw.borrow()).pw_name.clone() }

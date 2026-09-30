@@ -67,42 +67,27 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn operator_add_1(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs + o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } + { o.with(|__s| __s.v) }),
         };
     }
     fn operator_sub_2(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs - o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } - { o.with(|__s| __s.v) }),
         };
     }
     fn operator_mul(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs * o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } * { o.with(|__s| __s.v) }),
         };
     }
     fn operator_div(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs / o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } / { o.with(|__s| __s.v) }),
         };
     }
     fn operator_rem(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs % o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } % { o.with(|__s| __s.v) }),
         };
     }
     fn operator_pos_6(&self) -> S {

@@ -69,10 +69,8 @@ fn main_0() -> i32 {
     let q: Value<Ptr<S>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     field!(field!((*p.borrow()), in_), x).write(1);
     field!(field!((*p.borrow()), in_), y).write(2);
-    field!((*p.borrow()), total).write({
-        let _lhs = (*q.borrow()).with(|__s| __s.in_.x);
-        _lhs + (*q.borrow()).with(|__s| __s.in_.y)
-    });
+    field!((*p.borrow()), total)
+        .write(({ (*q.borrow()).with(|__s| __s.in_.x) } + { (*q.borrow()).with(|__s| __s.in_.y) }));
     assert!(((((*q.borrow()).with(|__s| __s.total) == 3) as i32) != 0));
     let ip: Value<Ptr<In>> = Rc::new(RefCell::new((field_ptr!((*p.borrow()), in_))));
     field!((*ip.borrow()), x).write(((*p.borrow()).with(|__s| __s.total) + 1));
@@ -81,10 +79,9 @@ fn main_0() -> i32 {
             && ((((*q.borrow()).with(|__s| __s.in_.y) == 2) as i32) != 0)) as i32)
             != 0)
     );
-    let __rhs = (*p.borrow()).with(|__s| __s.total);
     (array_field_ptr!((*p.borrow()), arr) as Ptr<i32>)
         .offset(((*p.borrow()).with(|__s| __s.n)) as isize)
-        .write(__rhs);
+        .write({ (*p.borrow()).with(|__s| __s.total) });
     {
         let _ptr = field!((*p.borrow()), n);
         _ptr.write(_ptr.read() + 1)
@@ -110,10 +107,8 @@ fn main_0() -> i32 {
     libcc2rs::free_refcount((*p.borrow()).to_any());
     let s: Value<Node> = <Value<Node>>::default();
     (*s.borrow_mut()).x = 1;
-    let __rhs = (s.as_pointer());
-    (*s.borrow_mut()).self_ = __rhs;
-    let __rhs = ({ (*s.borrow()).x } + 1);
-    field!({ (*s.borrow()).self_.clone() }, x).write(__rhs);
+    (*s.borrow_mut()).self_ = { (s.as_pointer()) };
+    field!({ (*s.borrow()).self_.clone() }, x).write({ ({ (*s.borrow()).x } + 1) });
     assert!(((({ (*s.borrow()).x } == 2) as i32) != 0));
     return 0;
 }

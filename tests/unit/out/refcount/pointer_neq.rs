@@ -14,12 +14,7 @@ fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(5));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    assert!(
-        !({
-            let _lhs = (*p1.borrow()).clone();
-            _lhs != (*p2.borrow()).clone()
-        })
-    );
+    assert!(!({ (*p1.borrow()).clone() } != { (*p2.borrow()).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

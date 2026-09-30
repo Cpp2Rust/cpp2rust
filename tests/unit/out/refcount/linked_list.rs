@@ -21,8 +21,7 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
         (*i.borrow_mut()).postfix_inc();
     }
     return (*curr.borrow()).clone();
@@ -30,8 +29,7 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
 pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
     'loop_: while !(((*curr.borrow()).with(|__s| __s.next.clone())).is_null()) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
     ({ NodeImpl::SetNext(&(*curr.borrow()), (new_node).clone()) });
 }
@@ -41,21 +39,17 @@ pub fn Delete_2(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let prev: Value<Ptr<Node>> = Rc::new(RefCell::new(Ptr::<Node>::null()));
     'loop_: while !((*curr.borrow()).is_null()) {
-        if {
-            let _lhs = (*curr.borrow()).with(|__s| __s.val);
-            _lhs == (*val.borrow())
-        } {
+        if ({ (*curr.borrow()).with(|__s| __s.val) } == { (*val.borrow()) }) {
             if !((*prev.borrow()).is_null()) {
-                let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-                field!((*prev.borrow()), next).write(__rhs);
+                field!((*prev.borrow()), next)
+                    .write({ (*curr.borrow()).with(|__s| __s.next.clone()) });
                 return (*head.borrow()).clone();
             } else {
                 return (*curr.borrow()).with(|__s| __s.next.clone());
             }
         }
         (*prev.borrow_mut()) = (*curr.borrow()).clone();
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
     return (*head.borrow()).clone();
 }

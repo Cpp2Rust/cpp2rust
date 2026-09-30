@@ -10,8 +10,7 @@ pub unsafe fn basic_0(mut x: i32) -> i32 {
     let mut r: i32 = 0;
     let mut v: i32 = 0;
     'switch: {
-        let __match_cond = x;
-        match __match_cond {
+        match { x } {
             __v if __v == 0 => {
                 r = 10;
                 break 'switch;

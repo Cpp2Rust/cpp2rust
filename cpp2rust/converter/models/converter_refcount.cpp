@@ -1558,15 +1558,9 @@ bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
 
 bool ConverterRefCount::VisitStmtExpr(clang::StmtExpr *expr) {
   PushConversionKind push(*this, ConversionKind::FullRefCount);
-  return Converter::VisitStmtExpr(expr);
-}
-
-void ConverterRefCount::EmitStmtExprTail(clang::Expr *tail) {
-  StrCat("let __result = ");
-  Convert(tail);
-  StrCat(token::kSemiColon);
-  StrCat("__result");
-  SetFreshType(tail->getType());
+  Converter::VisitStmtExpr(expr);
+  SetFreshType(expr->getType());
+  return false;
 }
 
 void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
@@ -1580,8 +1574,7 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       assign && GetSafeTypeAsString(lhs_type) !=
                     GetSafeTypeAsString(assign->getComputationResultType())) {
     auto computation_result_type = assign->getComputationResultType();
-    PushBrace brace(*this);
-    StrCat(keyword::kLet, "rhs_0", token::kAssign);
+    std::optional<Buffer> buf(std::in_place, *this);
     if (IsUnsignedArithOp(assign)) {
       PushParen outer(*this);
       {
@@ -1607,15 +1600,16 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     } else {
       ConvertCast(lhs_type);
     }
-    StrCat(token::kSemiColon);
-    EmitSetOrAssign(lhs, "rhs_0");
+    auto value = std::move(*buf).str();
+    buf.reset();
+    EmitCompoundSetOrAssign(lhs, rhs, value);
     return;
   }
 
   if (IsUnsignedArithOp(expr)) {
-    PushBrace brace(*this, expr->isCompoundAssignmentOp());
+    std::optional<Buffer> buf;
     if (expr->isCompoundAssignmentOp()) {
-      StrCat(keyword::kLet, "rhs_0", token::kAssign);
+      buf.emplace(*this);
     }
     {
       PushParen paren(*this);
@@ -1627,8 +1621,9 @@ void ConverterRefCount::ConvertBinaryOperator(clang::BinaryOperator *expr) {
     }
     ConvertUnsignedArithBinaryOperator(expr, rhs);
     if (expr->isCompoundAssignmentOp()) {
-      StrCat(token::kSemiColon);
-      EmitSetOrAssign(lhs, "rhs_0");
+      auto value = std::move(*buf).str();
+      buf.reset();
+      EmitCompoundSetOrAssign(lhs, rhs, value);
     } else {
       computed_expr_type_ = ComputedExprType::FreshValue;
     }
@@ -2424,6 +2419,25 @@ void ConverterRefCount::EmitSetOrAssign(clang::Expr *lhs,
   computed_expr_type_ = ComputedExprType::FreshValue;
 }
 
+bool ConverterRefCount::CanBraceAssignedValue(
+    clang::Expr *lhs, clang::Expr *rhs, std::string_view assign_operator) {
+  return (assign_operator == "=" || lhs->getType()->isArithmeticType()) &&
+         !lhs->HasSideEffects(ctx_) && !rhs->HasSideEffects(ctx_);
+}
+
+void ConverterRefCount::EmitCompoundSetOrAssign(clang::Expr *lhs,
+                                                clang::Expr *rhs,
+                                                std::string_view value) {
+  if (CanBraceAssignedValue(lhs, rhs, "=")) {
+    PushBrace brace(*this, isRValue());
+    EmitSetOrAssign(lhs, std::format("{{ {} }}", value));
+    return;
+  }
+  PushBrace brace(*this);
+  StrCat(keyword::kLet, "rhs_0", token::kAssign, value, token::kSemiColon);
+  EmitSetOrAssign(lhs, "rhs_0");
+}
+
 void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
                                           std::string_view assign_operator) {
   auto rhs_as_string = ConvertFreshRValue(rhs, lhs->getType());
@@ -2431,9 +2445,13 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
   PushBrace brace(*this, isRValue());
 
   if (MayCauseBorrowMutError(lhs, rhs)) {
-    StrCat(keyword::kLet, "__rhs", token::kAssign, rhs_as_string,
-           token::kSemiColon);
-    rhs_as_string = "__rhs";
+    if (CanBraceAssignedValue(lhs, rhs, assign_operator)) {
+      rhs_as_string = std::format("{{ {} }}", rhs_as_string);
+    } else {
+      StrCat(keyword::kLet, "__rhs", token::kAssign, rhs_as_string,
+             token::kSemiColon);
+      rhs_as_string = "__rhs";
+    }
   }
 
   if (assign_operator == "=") {
@@ -2492,7 +2510,7 @@ void ConverterRefCount::ConvertGenericBinaryOperator(
 
   if (may_cause_borrow_mut_err) {
     StrCat(std::format(
-        "{{ let _lhs = {}; _lhs {} {} }}",
+        "({{ {} }} {} {{ {} }})",
         ConvertFreshRValue(
             lhs, GetOperandImplicitConversionTarget(ctx_, expr, lhs, rhs)),
         opcode,

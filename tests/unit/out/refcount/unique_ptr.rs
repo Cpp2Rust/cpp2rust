@@ -58,20 +58,18 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             y: 5,
         })))));
     ({ PairImpl::inc(&((*pair.borrow()).as_pointer()), 10) });
-    let __rhs = {
-        let _lhs = {
-            let _lhs = (*{
+    let __rhs = ({
+        ({
+            (*{
                 (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
                     .ptr
                     .clone()
             }
             .as_ref()
             .unwrap()
-            .borrow());
-            _lhs + { (*(*pair.borrow()).as_ref().unwrap().borrow()).x }
-        };
-        _lhs + { (*(*pair.borrow()).as_ref().unwrap().borrow()).y }
-    };
+            .borrow())
+        } + { { (*(*pair.borrow()).as_ref().unwrap().borrow()).x } })
+    } + { { (*(*pair.borrow()).as_ref().unwrap().borrow()).y } });
     (*{
         (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
             .ptr
@@ -196,10 +194,7 @@ pub fn RndStuff_2() {
         (*i.borrow_mut()).prefix_inc();
     }
     let p3_1: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
-    assert!({
-        let _lhs = (*p3_0.borrow()).clone();
-        _lhs != (*p3_1.borrow()).clone()
-    });
+    assert!(({ (*p3_0.borrow()).clone() } != { (*p3_1.borrow()).clone() }));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
         assert!(

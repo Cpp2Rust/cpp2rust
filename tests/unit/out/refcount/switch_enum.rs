@@ -13,8 +13,7 @@ pub const Color_kBlue: Color = 2;
 pub fn switch_enum_0(c: Color) -> i32 {
     let c: Value<Color> = Rc::new(RefCell::new(c));
     'switch: {
-        let __match_cond = ((*c.borrow()) as i32);
-        match __match_cond {
+        match { ((*c.borrow()) as i32) } {
             __v if __v == (Color_kRed as i32) => {
                 return 10;
             }

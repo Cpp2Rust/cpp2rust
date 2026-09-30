@@ -20,8 +20,7 @@ pub unsafe fn registry_update_0(mut r: *mut registry, mut field: field, __args: 
     let mut ap: VaList = VaList::default();
     ap = VaList::new(__args);
     'switch: {
-        let __match_cond = (field as u32);
-        match __match_cond {
+        match { (field as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
                 (*r).slot = ap.arg::<*mut ::libc::c_void>();
                 break 'switch;

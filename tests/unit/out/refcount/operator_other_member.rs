@@ -76,10 +76,7 @@ impl SImpl for Ptr<S> {
     }
     fn operator_comma(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = ((*self).with(|__s| __s.v) * 10);
-                _lhs + o.with(|__s| __s.v)
-            },
+            v: ({ ((*self).with(|__s| __s.v) * 10) } + { o.with(|__s| __s.v) }),
         };
     }
     fn to_i32(&self) -> i32 {

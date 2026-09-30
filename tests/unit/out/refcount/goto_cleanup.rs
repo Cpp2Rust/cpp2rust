@@ -57,8 +57,7 @@ pub fn from_switch_2(n: i32) -> i32 {
         '__entry: {
             *ret.borrow_mut() = 0;
             'switch: {
-                let __match_cond = (*n.borrow());
-                match __match_cond {
+                match { (*n.borrow()) } {
                     __v if __v == 1 => {
                         (*ret.borrow_mut()) = 10;
                         goto!('out);
@@ -97,8 +96,7 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
             }
-            let __rhs = ((*item.borrow()).read());
-            (*ret.borrow_mut()) = __rhs;
+            (*ret.borrow_mut()) = { ((*item.borrow()).read()) };
         }
         'out: {
             return (*ret.borrow());

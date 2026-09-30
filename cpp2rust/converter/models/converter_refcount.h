@@ -134,8 +134,6 @@ public:
 
   bool VisitStmtExpr(clang::StmtExpr *expr) override;
 
-  void EmitStmtExprTail(clang::Expr *tail) override;
-
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
 
   bool VisitCXXStdInitializerListExpr(
@@ -334,6 +332,19 @@ private:
   std::string ConvertFnPtrValue(clang::QualType qual_type, clang::Expr *expr);
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
+
+  // Whether an assigned value can be wrapped in braces to release its borrows
+  // before lhs is borrowed, as Rust 2024 drops the temporaries of a block's
+  // tail expression at the end of the block. This requires the value to be
+  // evaluated before lhs (or the order to be unobservable); otherwise it must
+  // be bound to a variable first.
+  bool CanBraceAssignedValue(clang::Expr *lhs, clang::Expr *rhs,
+                             std::string_view assign_operator);
+
+  // Emits `lhs = value`, where value is the result of the compound assignment
+  // `lhs op= rhs` and thus reads lhs.
+  void EmitCompoundSetOrAssign(clang::Expr *lhs, clang::Expr *rhs,
+                               std::string_view value);
 
   // If lhs is a direct reference to a global/static value (not a reference
   // type), emits `var.with(|rc| *rc.borrow_mut() <op> <rhs>)` and returns

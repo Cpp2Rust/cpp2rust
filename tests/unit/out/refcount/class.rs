@@ -120,10 +120,7 @@ impl CounterImpl for Ptr<Counter> {
     }
     fn operator_eq(&self, o: Ptr<Counter>) -> bool {
         field!((*self), calls).with_mut(|__v| __v.prefix_inc());
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs == o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub trait PairImpl {
@@ -146,8 +143,7 @@ impl PairImpl for Ptr<Pair> {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
         ({ PairImpl::NOP(self) });
         let old_val: Value<i32> = Rc::new(RefCell::new((field.read())));
-        let __rhs = (*new_val.borrow());
-        field.write(__rhs);
+        field.write({ (*new_val.borrow()) });
         return (*old_val.borrow());
     }
     fn SetFirst(&self, new_first: i32) -> i32 {

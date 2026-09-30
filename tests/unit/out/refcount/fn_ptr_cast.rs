@@ -19,10 +19,7 @@ pub fn test_roundtrip_1() {
     let fn2: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new((*gfn.borrow()).cast::<fn(i32) -> i32>()));
     assert!((({ (*fn2.borrow()).call(5,) }) == 10));
-    assert!({
-        let _lhs = (*fn2.borrow()).clone();
-        _lhs == (*fn_.borrow()).clone()
-    });
+    assert!(({ (*fn2.borrow()).clone() } == { (*fn_.borrow()).clone() }));
 }
 pub fn test_double_cast_2() {
     let fn_: Value<FnPtr<fn(i32) -> i32>> =
@@ -31,10 +28,7 @@ pub fn test_double_cast_2() {
         (*fn_.borrow()).cast::<fn()>().cast::<fn(i32) -> i32>(),
     ));
     assert!((({ (*fn2.borrow()).call(5,) }) == 10));
-    assert!({
-        let _lhs = (*fn2.borrow()).clone();
-        _lhs == (*fn_.borrow()).clone()
-    });
+    assert!(({ (*fn2.borrow()).clone() } == { (*fn_.borrow()).clone() }));
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -56,10 +50,7 @@ pub fn test_void_ptr_to_fn_3() {
 pub fn add_offset_4(base: Ptr<i32>, offset: i32) -> i32 {
     let base: Value<Ptr<i32>> = Rc::new(RefCell::new(base));
     let offset: Value<i32> = Rc::new(RefCell::new(offset));
-    return {
-        let _lhs = ((*base.borrow()).read());
-        _lhs + (*offset.borrow())
-    };
+    return ({ ((*base.borrow()).read()) } + { (*offset.borrow()) });
 }
 pub fn test_call_through_cast_5() {
     let gfn: Value<FnPtr<fn(AnyPtr, i32) -> i32>> = Rc::new(RefCell::new(

@@ -9,8 +9,9 @@ use std::rc::{Rc, Weak};
 pub fn fill_row_0(row: Ptr<u8>, c: u8) {
     let row: Value<Ptr<u8>> = Rc::new(RefCell::new(row));
     let c: Value<u8> = Rc::new(RefCell::new(c));
-    let __rhs = (*c.borrow());
-    (*row.borrow()).offset((0) as isize).write(__rhs);
+    (*row.borrow())
+        .offset((0) as isize)
+        .write({ (*c.borrow()) });
     (*row.borrow())
         .offset((1) as isize)
         .write((('\0' as i32) as u8));

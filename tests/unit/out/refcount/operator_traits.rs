@@ -141,16 +141,10 @@ impl std::cmp::PartialEq for Free {
 }
 impl std::cmp::Eq for Free {}
 pub fn operator_lt_0(a: Ptr<Free>, b: Ptr<Free>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs < b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
 }
 pub fn operator_eq_1(a: Ptr<Free>, b: Ptr<Free>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs == b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } == { b.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -339,10 +333,7 @@ impl CmpImpl for Ptr<Cmp> {
         return std::cmp::Ord::cmp(&((*self).with(|__s| __s.v)), &(o.with(|__s| __s.v)));
     }
     fn operator_eq(&self, o: Ptr<Cmp>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs == o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub trait EqImpl {
@@ -350,10 +341,7 @@ pub trait EqImpl {
 }
 impl EqImpl for Ptr<Eq> {
     fn operator_eq(&self, o: Ptr<Eq>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs == o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub trait LtImpl {
@@ -361,10 +349,7 @@ pub trait LtImpl {
 }
 impl LtImpl for Ptr<Lt> {
     fn operator_lt(&self, o: Ptr<Lt>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs < o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) });
     }
 }
 pub fn __cpp2rust_init_globals() {}

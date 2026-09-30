@@ -9,8 +9,7 @@ use std::rc::Rc;
 pub unsafe fn for_in_switch_break_0(mut n: i32) -> i32 {
     let mut r: i32 = 0;
     'switch: {
-        let __match_cond = n;
-        match __match_cond {
+        match { n } {
             __v if __v == 0 => {
                 let mut i: i32 = 0;
                 'loop_: while ((i) < (10)) {

@@ -36,10 +36,7 @@ fn main_0() -> i32 {
     assert!((((*q2.borrow()).read()) == 11));
     (*q2.borrow_mut()).postfix_dec();
     assert!((((*q2.borrow()).read()) == 10));
-    assert!({
-        let _lhs = (*q2.borrow()).clone();
-        _lhs == (*p.borrow()).clone()
-    });
+    assert!(({ (*q2.borrow()).clone() } == { (*p.borrow()).clone() }));
     let q3: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
     (*q3.borrow_mut()) += 4;
     assert!((((*q3.borrow()).read()) == 14));
@@ -60,12 +57,8 @@ fn main_0() -> i32 {
     let end: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).offset((8) as isize)));
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let it: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
-    'loop_: while {
-        let _lhs = (*it.borrow()).clone();
-        _lhs != (*end.borrow()).clone()
-    } {
-        let __rhs = ((*it.borrow()).read());
-        (*sum.borrow_mut()) += __rhs;
+    'loop_: while ({ (*it.borrow()).clone() } != { (*end.borrow()).clone() }) {
+        (*sum.borrow_mut()) += { ((*it.borrow()).read()) };
         (*it.borrow_mut()).prefix_inc();
     }
     assert!(((*sum.borrow()) == (((((((10 + 11) + 12) + 13) + 14) + 99) + 16) + 17)));
@@ -94,10 +87,7 @@ fn main_0() -> i32 {
     let q6: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ((arr.as_pointer() as Ptr<i32>).offset((*n.borrow()))),
     ));
-    assert!({
-        let _lhs = (*q6.borrow()).clone();
-        _lhs == (*q5.borrow()).clone()
-    });
+    assert!(({ (*q6.borrow()).clone() } == { (*q5.borrow()).clone() }));
     let matrix: Value<Box<[Value<Box<[i32]>>]>> = Rc::new(RefCell::new(Box::new([
         Rc::new(RefCell::new(Box::new([0, 1, 2, 3]))),
         Rc::new(RefCell::new(Box::new([4, 5, 6, 7]))),

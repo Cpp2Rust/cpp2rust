@@ -99,16 +99,9 @@ pub trait PairImpl {
 }
 impl PairImpl for Ptr<Pair> {
     fn operator_lt(&self, other: Ptr<Pair>) -> bool {
-        return ({
-            let _lhs = (*self).with(|__s| __s.x);
-            _lhs < other.with(|__s| __s.x)
-        }) || (({
-            let _lhs = (*self).with(|__s| __s.x);
-            _lhs == other.with(|__s| __s.x)
-        }) && ({
-            let _lhs = (*self).with(|__s| __s.y);
-            _lhs < other.with(|__s| __s.y)
-        }));
+        return ({ (*self).with(|__s| __s.x) } < { other.with(|__s| __s.x) })
+            || (({ (*self).with(|__s| __s.x) } == { other.with(|__s| __s.x) })
+                && ({ (*self).with(|__s| __s.y) } < { other.with(|__s| __s.y) }));
     }
 }
 pub fn __cpp2rust_init_globals() {}

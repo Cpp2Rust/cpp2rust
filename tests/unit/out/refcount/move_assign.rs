@@ -128,13 +128,11 @@ pub trait ConstMoveAssignImpl {
 }
 impl ConstMoveAssignImpl for Ptr<ConstMoveAssign> {
     fn operator_assign_2(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = (o.with(|__s| __s.mark) + 1);
-        field!((*self), mark).write(__rhs);
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 1) });
         return (*self).clone();
     }
     fn operator_assign_3(&self, o: Ptr<ConstMoveAssign>) -> Ptr<ConstMoveAssign> {
-        let __rhs = (o.with(|__s| __s.mark) + 10);
-        field!((*self), mark).write(__rhs);
+        field!((*self), mark).write({ (o.with(|__s| __s.mark) + 10) });
         return (*self).clone();
     }
 }
@@ -146,8 +144,7 @@ impl MoveOnlyImpl for Ptr<MoveOnly> {
         if ((*self) == (o)) {
             return (*self).clone();
         }
-        let __rhs = o.with(|__s| __s.v);
-        field!((*self), v).write(__rhs);
+        field!((*self), v).write({ o.with(|__s| __s.v) });
         field!(o, v).write(0);
         return (*self).clone();
     }

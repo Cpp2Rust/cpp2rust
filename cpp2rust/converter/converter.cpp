@@ -2928,23 +2928,17 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
 bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   auto *body = expr->getSubStmt();
   PushBrace brace(*this);
-  auto stmts = body->body();
-  size_t n = static_cast<size_t>(stmts.end() - stmts.begin());
-  size_t i = 0;
-  for (auto *s : stmts) {
-    ++i;
-    if (i == n) {
-      if (auto *tail = clang::dyn_cast<clang::Expr>(s)) {
-        EmitStmtExprTail(tail);
-        continue;
-      }
+  for (auto *s : body->body()) {
+    // The last expression is the value of the block, so it has no semicolon.
+    auto *tail = clang::dyn_cast<clang::Expr>(s);
+    if (tail && s == body->body_back()) {
+      Convert(tail);
+    } else {
+      Convert(s);
     }
-    Convert(s);
   }
   return false;
 }
-
-void Converter::EmitStmtExprTail(clang::Expr *tail) { Convert(tail); }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kIf);
@@ -3896,9 +3890,7 @@ bool Converter::VisitSwitchStmt(clang::SwitchStmt *stmt) {
   if (needs_switch_macro) {
     StrCat("match", ToString(stmt->getCond()));
   } else {
-    StrCat(
-        std::format("let __match_cond = {};", ConvertRValue(stmt->getCond())));
-    StrCat("match __match_cond");
+    StrCat(std::format("match {{ {} }}", ConvertRValue(stmt->getCond())));
   }
 
   PushBrace match_brace(*this);

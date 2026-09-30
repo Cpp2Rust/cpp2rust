@@ -76,40 +76,22 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_eq(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs == o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
     fn operator_ne(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs != o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } != { o.with(|__s| __s.v) });
     }
     fn operator_lt_3(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs < o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) });
     }
     fn operator_gt(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs > o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } > { o.with(|__s| __s.v) });
     }
     fn operator_le(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs <= o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } <= { o.with(|__s| __s.v) });
     }
     fn operator_ge(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs >= o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } >= { o.with(|__s| __s.v) });
     }
     fn operator_lt_7(&self, o: i32) -> bool {
         let o: Value<i32> = Rc::new(RefCell::new(o));

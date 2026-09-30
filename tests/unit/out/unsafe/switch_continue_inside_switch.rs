@@ -11,8 +11,7 @@ pub unsafe fn continue_inside_switch_0(mut n: i32) -> i32 {
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
         'switch: {
-            let __match_cond = i;
-            match __match_cond {
+            match { i } {
                 __v if __v == 0 || __v == 2 || __v == 4 => {
                     i.prefix_inc();
                     continue 'loop_;

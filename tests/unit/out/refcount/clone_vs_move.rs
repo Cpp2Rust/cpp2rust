@@ -88,15 +88,9 @@ fn main_0() -> i32 {
     assert!((((*pointer.borrow()).read()) == 1));
     assert!(((*x6.borrow()) == 2));
     let other_pointer: Value<Ptr<i32>> = Rc::new(RefCell::new((*pointer.borrow()).clone()));
-    assert!({
-        let _lhs = (*other_pointer.borrow()).clone();
-        _lhs == (*pointer.borrow()).clone()
-    });
+    assert!(({ (*other_pointer.borrow()).clone() } == { (*pointer.borrow()).clone() }));
     (*other_pointer.borrow()).with_mut(|__v| __v.prefix_inc());
-    assert!({
-        let _lhs = ((*other_pointer.borrow()).read());
-        _lhs == ((*pointer.borrow()).read())
-    });
+    assert!(({ ((*other_pointer.borrow()).read()) } == { ((*pointer.borrow()).read()) }));
     let f1: Value<Foo> = Rc::new(RefCell::new(Foo {
         x: 1,
         y: x1.as_pointer(),
@@ -106,10 +100,7 @@ fn main_0() -> i32 {
     }));
     assert!(({ (*f1.borrow()).x } == 1));
     assert!((({ (*f1.borrow()).y.clone() }.read()) == 2));
-    assert!({
-        let _lhs = { (*f1.borrow()).z.clone() };
-        _lhs == (x1.as_pointer())
-    });
+    assert!(({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }));
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 2));
     let f2: Value<Foo> = Rc::new(RefCell::new((*f1.borrow()).clone()));
     (*f2.borrow_mut()).x.prefix_inc();
@@ -120,16 +111,10 @@ fn main_0() -> i32 {
     assert!((({ (*f1.borrow()).y.clone() }.read()) == 3));
     { (*f2.borrow()).z.clone() }.with_mut(|__v| __v.prefix_inc());
     assert!((({ (*f2.borrow()).y.clone() }.read()) == 4));
-    assert!({
-        let _lhs = { (*f2.borrow()).z.clone() };
-        _lhs == (x1.as_pointer())
-    });
+    assert!(({ { (*f2.borrow()).z.clone() } } == { (x1.as_pointer()) }));
     assert!((({ (*f2.borrow()).z.clone() }.read()) == 4));
     assert!((({ (*f1.borrow()).y.clone() }.read()) == 4));
-    assert!({
-        let _lhs = { (*f1.borrow()).z.clone() };
-        _lhs == (x1.as_pointer())
-    });
+    assert!(({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }));
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
     (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
         .offset((0) as isize)
@@ -430,10 +415,8 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*pair1.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*pair1.borrow()).1.borrow().clone())),
     )));
-    let __rhs = ((*(*pair2.borrow()).0.borrow()) * 10);
-    (*(*pair2.borrow()).0.borrow_mut()) = __rhs;
-    let __rhs = ((*(*pair2.borrow()).1.borrow()) * 10);
-    (*(*pair2.borrow()).1.borrow_mut()) = __rhs;
+    (*(*pair2.borrow()).0.borrow_mut()) = { ((*(*pair2.borrow()).0.borrow()) * 10) };
+    (*(*pair2.borrow()).1.borrow_mut()) = { ((*(*pair2.borrow()).1.borrow()) * 10) };
     assert!(((*(*pair2.borrow()).0.borrow()) == 10));
     assert!(((*(*pair2.borrow()).1.borrow()) == 20));
     assert!(((*(*pair1.borrow()).0.borrow()) == 1));

@@ -78,61 +78,43 @@ impl SImpl for Ptr<S> {
         return (*self).clone();
     }
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        {
-            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_add(o.with(|__s| __s.v));
-            field!((*self), v).write(rhs_0)
-        };
+        field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_add(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
     fn operator_sub_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        {
-            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_sub(o.with(|__s| __s.v));
-            field!((*self), v).write(rhs_0)
-        };
+        field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_sub(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
     fn operator_mul_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        {
-            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_mul(o.with(|__s| __s.v));
-            field!((*self), v).write(rhs_0)
-        };
+        field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_mul(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
     fn operator_div_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        {
-            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_div(o.with(|__s| __s.v));
-            field!((*self), v).write(rhs_0)
-        };
+        field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_div(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
     fn operator_rem_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        {
-            let rhs_0 = ((*self).with(|__s| __s.v)).wrapping_rem(o.with(|__s| __s.v));
-            field!((*self), v).write(rhs_0)
-        };
+        field!((*self), v).write({ ((*self).with(|__s| __s.v)).wrapping_rem(o.with(|__s| __s.v)) });
         return (*self).clone();
     }
     fn operator_bitand_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s| __s.v);
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() & __rhs)
+            _ptr.write(_ptr.read() & { o.with(|__s| __s.v) })
         };
         return (*self).clone();
     }
     fn operator_bitor_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s| __s.v);
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() | __rhs)
+            _ptr.write(_ptr.read() | { o.with(|__s| __s.v) })
         };
         return (*self).clone();
     }
     fn operator_bitxor_assign(&self, o: Ptr<S>) -> Ptr<S> {
-        let __rhs = o.with(|__s| __s.v);
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() ^ __rhs)
+            _ptr.write(_ptr.read() ^ { o.with(|__s| __s.v) })
         };
         return (*self).clone();
     }

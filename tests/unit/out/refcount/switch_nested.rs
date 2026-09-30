@@ -11,12 +11,10 @@ pub fn nested_0(a: i32, b: i32) -> i32 {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*a.borrow());
-        match __match_cond {
+        match { (*a.borrow()) } {
             __v if __v == 1 => {
                 'switch: {
-                    let __match_cond = (*b.borrow());
-                    match __match_cond {
+                    match { (*b.borrow()) } {
                         __v if __v == 10 => {
                             (*r.borrow_mut()) = 11;
                             break 'switch;

@@ -21,10 +21,8 @@ pub struct node_t {
 pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
     let node: Value<Ptr<node_t>> = Rc::new(RefCell::new(node));
     let value: Value<i32> = Rc::new(RefCell::new(value));
-    if ({
-        let _lhs = (*value.borrow());
-        _lhs < (*node.borrow()).with(|__s| __s.value)
-    }) && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
+    if ({ (*value.borrow()) } < { (*node.borrow()).with(|__s| __s.value) })
+        && (!(((*node.borrow()).with(|__s| __s.left.clone())).is_null()))
     {
         return ({
             find_0(
@@ -32,10 +30,8 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
                 (*value.borrow()),
             )
         });
-    } else if ({
-        let _lhs = (*value.borrow());
-        _lhs > (*node.borrow()).with(|__s| __s.value)
-    }) && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
+    } else if ({ (*value.borrow()) } > { (*node.borrow()).with(|__s| __s.value) })
+        && (!(((*node.borrow()).with(|__s| __s.right.clone())).is_null()))
     {
         return ({
             find_0(
@@ -43,10 +39,7 @@ pub fn find_0(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
                 (*value.borrow()),
             )
         });
-    } else if {
-        let _lhs = (*value.borrow());
-        _lhs == (*node.borrow()).with(|__s| __s.value)
-    } {
+    } else if ({ (*value.borrow()) } == { (*node.borrow()).with(|__s| __s.value) }) {
         return (*node.borrow()).clone();
     }
     return Ptr::<node_t>::null();
@@ -61,10 +54,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
             value: (*value.borrow()),
         });
     }
-    if {
-        let _lhs = (*value.borrow());
-        _lhs < (*node.borrow()).with(|__s| __s.value)
-    } {
+    if ({ (*value.borrow()) } < { (*node.borrow()).with(|__s| __s.value) }) {
         let __rhs = ({
             insert_1(
                 (*node.borrow()).with(|__s| __s.left.clone()),
@@ -72,10 +62,7 @@ pub fn insert_1(node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
             )
         });
         field!((*node.borrow()), left).write(__rhs);
-    } else if {
-        let _lhs = (*value.borrow());
-        _lhs > (*node.borrow()).with(|__s| __s.value)
-    } {
+    } else if ({ (*value.borrow()) } > { (*node.borrow()).with(|__s| __s.value) }) {
         let __rhs = ({
             insert_1(
                 (*node.borrow()).with(|__s| __s.right.clone()),

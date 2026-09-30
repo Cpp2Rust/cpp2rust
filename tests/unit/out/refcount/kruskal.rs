@@ -28,14 +28,14 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     let count: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(((*start.borrow()) + 1)));
     'loop_: while ((*i.borrow()) <= (*end.borrow())) {
-        if {
-            let _lhs = {
+        if ({
+            {
                 (*arr.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*i.borrow()) as usize) as usize]
                     .weight
-            };
-            _lhs <= pivot.with(|__s| __s.weight)
-        } {
+            }
+        } <= { pivot.with(|__s| __s.weight) })
+        {
             (*count.borrow_mut()).postfix_inc();
         }
         (*i.borrow_mut()).prefix_inc();
@@ -86,24 +86,24 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, start: i32, end: i32) -
     let i: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
     let j: Value<i32> = Rc::new(RefCell::new((*end.borrow())));
     'loop_: while ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
-        'loop_: while {
-            let _lhs = {
+        'loop_: while ({
+            {
                 (*arr.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*i.borrow()) as usize) as usize]
                     .weight
-            };
-            _lhs <= pivot.with(|__s| __s.weight)
-        } {
+            }
+        } <= { pivot.with(|__s| __s.weight) })
+        {
             (*i.borrow_mut()).prefix_inc();
         }
-        'loop_: while {
-            let _lhs = {
+        'loop_: while ({
+            {
                 (*arr.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*j.borrow()) as usize) as usize]
                     .weight
-            };
-            _lhs > pivot.with(|__s| __s.weight)
-        } {
+            }
+        } > { pivot.with(|__s| __s.weight) })
+        {
             (*j.borrow_mut()).prefix_dec();
         }
         if ((*i.borrow()) < (*pidx.borrow())) && ((*j.borrow()) > (*pidx.borrow())) {
@@ -249,10 +249,7 @@ pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {
     ({ DisjointSetImpl::makeSet(&set.as_pointer()) });
     let total_weight: Value<f64> = Rc::new(RefCell::new(0_f64));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while {
-        let _lhs = (*i.borrow());
-        _lhs < graph.with(|__s| __s.E)
-    } {
+    'loop_: while ({ (*i.borrow()) } < { graph.with(|__s| __s.E) }) {
         let x: Value<i32> = Rc::new(RefCell::new({
             graph
                 .with(|__s| __s.edges.clone())
@@ -468,8 +465,7 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
             .write(field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
         (field_ptr!((*self), parent) as Ptr<Option<Value<Box<[i32]>>>>)
             .write(field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()));
-        let __rhs = { (*_a0.upgrade().deref()).n };
-        field!((*self), n).write(__rhs);
+        field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
     }
 }
@@ -480,10 +476,8 @@ impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
         (field_ptr!((*self), edges) as Ptr<Option<Value<Box<[Edge]>>>>)
             .write(field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()));
-        let __rhs = { (*_a0.upgrade().deref()).V };
-        field!((*self), V).write(__rhs);
-        let __rhs = { (*_a0.upgrade().deref()).E };
-        field!((*self), E).write(__rhs);
+        field!((*self), V).write({ { (*_a0.upgrade().deref()).V } });
+        field!((*self), E).write({ { (*_a0.upgrade().deref()).E } });
         return (*self).clone();
     }
 }

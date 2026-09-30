@@ -59,8 +59,9 @@ pub fn set_bytes_0(p: Ptr<u8>, n: usize, v: u8) {
     let v: Value<u8> = Rc::new(RefCell::new(v));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        let __rhs = (*v.borrow());
-        (*p.borrow()).offset((*i.borrow()) as isize).write(__rhs);
+        (*p.borrow())
+            .offset((*i.borrow()) as isize)
+            .write({ (*v.borrow()) });
         (*i.borrow_mut()).postfix_inc();
     }
 }
@@ -70,9 +71,8 @@ pub fn all_bytes_1(p: Ptr<u8>, n: usize, v: u8) -> i32 {
     let v: Value<u8> = Rc::new(RefCell::new(v));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        if ((({
-            let _lhs = (((*p.borrow()).offset((*i.borrow()) as isize).read()) as i32);
-            _lhs != ((*v.borrow()) as i32)
+        if ((({ (((*p.borrow()).offset((*i.borrow()) as isize).read()) as i32) } != {
+            ((*v.borrow()) as i32)
         }) as i32)
             != 0)
         {
@@ -1219,9 +1219,8 @@ pub fn check_struct_3(s: Ptr<S>) {
         .offset((3) as isize)
         .write(115_u8);
     assert!(
-        ((({
-            let _lhs = ((*ib.borrow()).read());
-            _lhs == (((array_field_ptr!((*s.borrow()), bytes)) as Ptr<u8>)
+        ((({ ((*ib.borrow()).read()) } == {
+            (((array_field_ptr!((*s.borrow()), bytes)) as Ptr<u8>)
                 .reinterpret_cast::<i32>()
                 .read())
         }) as i32)

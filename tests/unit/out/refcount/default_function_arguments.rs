@@ -14,10 +14,7 @@ pub fn foo_0(a: i32, b: Option<i32>) -> i32 {
 pub fn baz_1(a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
     let b: Value<Ptr<i32>> = Rc::new(RefCell::new(b.unwrap_or(Ptr::<i32>::null())));
-    return {
-        let _lhs = (*a.borrow()).clone();
-        _lhs == (*b.borrow()).clone()
-    };
+    return ({ (*a.borrow()).clone() } == { (*b.borrow()).clone() });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]

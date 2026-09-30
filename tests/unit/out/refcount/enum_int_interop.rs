@@ -65,8 +65,7 @@ pub fn as_int_4(c: Color) -> i32 {
 pub fn classify_option_5(option: i32) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     'switch: {
-        let __match_cond = (*option.borrow());
-        match __match_cond {
+        match { (*option.borrow()) } {
             __v if __v == (Option_OPT_NONE as i32) => {
                 return -1_i32;
             }
@@ -103,8 +102,7 @@ fn main_0() -> i32 {
         return 1;
     }
     'switch: {
-        let __match_cond = ((*c.borrow()) as i32);
-        match __match_cond {
+        match { ((*c.borrow()) as i32) } {
             __v if __v == 0 => {
                 break 'switch;
             }
@@ -153,8 +151,7 @@ fn main_0() -> i32 {
     (*t.borrow_mut()) = ((2) as Tag);
     assert!((((*t.borrow()) as i32) == (Tag_TAG_TWO as i32)));
     'switch: {
-        let __match_cond = ((*t.borrow()) as i32);
-        match __match_cond {
+        match { ((*t.borrow()) as i32) } {
             __v if __v == (Tag_TAG_ZERO as i32) => {
                 return 90;
             }

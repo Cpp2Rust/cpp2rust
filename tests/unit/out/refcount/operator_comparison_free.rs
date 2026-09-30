@@ -48,54 +48,30 @@ impl std::cmp::PartialEq for S {
 }
 impl std::cmp::Eq for S {}
 pub fn operator_eq_1(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs == b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } == { b.with(|__s| __s.v) });
 }
 pub fn operator_ne_2(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs != b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } != { b.with(|__s| __s.v) });
 }
 pub fn operator_lt_0(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs < b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } < { b.with(|__s| __s.v) });
 }
 pub fn operator_gt_3(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs > b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } > { b.with(|__s| __s.v) });
 }
 pub fn operator_le_4(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs <= b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } <= { b.with(|__s| __s.v) });
 }
 pub fn operator_ge_5(a: Ptr<S>, b: Ptr<S>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs >= b.with(|__s| __s.v)
-    };
+    return ({ a.with(|__s| __s.v) } >= { b.with(|__s| __s.v) });
 }
 pub fn operator_lt_6(a: Ptr<S>, b: i32) -> bool {
     let b: Value<i32> = Rc::new(RefCell::new(b));
-    return {
-        let _lhs = a.with(|__s| __s.v);
-        _lhs < (*b.borrow())
-    };
+    return ({ a.with(|__s| __s.v) } < { (*b.borrow()) });
 }
 pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
     let a: Value<i32> = Rc::new(RefCell::new(a));
-    return {
-        let _lhs = (*a.borrow());
-        _lhs < b.with(|__s| __s.v)
-    };
+    return ({ (*a.borrow()) } < { b.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]

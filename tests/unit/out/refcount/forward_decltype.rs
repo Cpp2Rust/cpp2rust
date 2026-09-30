@@ -79,10 +79,9 @@ pub fn forward_abbreviated_5(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_1((x).clone()) });
 }
 pub fn forward_abbreviated_pack_6(args_0: Ptr<Tracked>, args_1: Ptr<Tracked>) -> i32 {
-    return {
-        let _lhs = (({ chosen_overload_0((args_0).clone()) }) as i32);
-        _lhs + (({ chosen_overload_1((args_1).clone()) }) as i32)
-    };
+    return ({ (({ chosen_overload_0((args_0).clone()) }) as i32) } + {
+        (({ chosen_overload_1((args_1).clone()) }) as i32)
+    });
 }
 pub fn main() {
     __cpp2rust_init_globals();

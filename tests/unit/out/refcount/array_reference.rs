@@ -79,16 +79,13 @@ pub struct Point {
     pub y: i32,
 }
 pub fn sum_points_11(p: Ptr<Point>) -> i32 {
-    return {
-        let _lhs = {
-            let _lhs = {
-                let _lhs = { (*(p).offset((0) as isize).upgrade().deref()).x };
-                _lhs + { (*(p).offset((0) as isize).upgrade().deref()).y }
-            };
-            _lhs + { (*(p).offset((1) as isize).upgrade().deref()).x }
-        };
-        _lhs + { (*(p).offset((1) as isize).upgrade().deref()).y }
-    };
+    return ({
+        ({
+            ({ { (*(p).offset((0) as isize).upgrade().deref()).x } } + {
+                { (*(p).offset((0) as isize).upgrade().deref()).y }
+            })
+        } + { { (*(p).offset((1) as isize).upgrade().deref()).x } })
+    } + { { (*(p).offset((1) as isize).upgrade().deref()).y } });
 }
 pub fn shift_points_12(p: Ptr<Point>, d: i32) {
     let d: Value<i32> = Rc::new(RefCell::new(d));

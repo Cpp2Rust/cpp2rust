@@ -24,8 +24,7 @@ pub fn Find_0(head: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
         (*i.borrow_mut()).postfix_inc();
     }
     return (*curr.borrow()).clone();
@@ -36,8 +35,7 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*tail.borrow()).clone()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*idx.borrow())) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.prev.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.prev.clone()) };
         (*i.borrow_mut()).postfix_inc();
     }
     return (*curr.borrow()).clone();
@@ -45,8 +43,7 @@ pub fn FindBack_1(tail: Ptr<Node>, idx: i32) -> Ptr<Node> {
 pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((head).clone()));
     'loop_: while !(((*curr.borrow()).with(|__s| __s.next.clone())).is_null()) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
     ({ NodeImpl::SetNext(&(*curr.borrow()), (new_node).clone()) });
     ({
@@ -59,10 +56,7 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
     let val: Value<i32> = Rc::new(RefCell::new(val));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     'loop_: while !((*curr.borrow()).is_null()) {
-        if {
-            let _lhs = (*curr.borrow()).with(|__s| __s.val);
-            _lhs == (*val.borrow())
-        } {
+        if ({ (*curr.borrow()).with(|__s| __s.val) } == { (*val.borrow()) }) {
             let prev: Value<Ptr<Node>> =
                 Rc::new(RefCell::new((*curr.borrow()).with(|__s| __s.prev.clone())));
             let next: Value<Ptr<Node>> =
@@ -79,8 +73,7 @@ pub fn Delete_3(head: Ptr<Node>, val: i32) -> Ptr<Node> {
                 return (*next.borrow()).clone();
             }
         }
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
     return (*head.borrow()).clone();
 }
@@ -88,8 +81,7 @@ pub fn Tail_4(head: Ptr<Node>) -> Ptr<Node> {
     let head: Value<Ptr<Node>> = Rc::new(RefCell::new(head));
     let curr: Value<Ptr<Node>> = Rc::new(RefCell::new((*head.borrow()).clone()));
     'loop_: while !(((*curr.borrow()).with(|__s| __s.next.clone())).is_null()) {
-        let __rhs = (*curr.borrow()).with(|__s| __s.next.clone());
-        (*curr.borrow_mut()) = __rhs;
+        (*curr.borrow_mut()) = { (*curr.borrow()).with(|__s| __s.next.clone()) };
     }
     return (*curr.borrow()).clone();
 }
@@ -245,21 +237,22 @@ fn main_0() -> i32 {
     ));
     assert!(((*sum.borrow()) == ((((4 + 30) + 5) + 1) + -1_i32)));
     assert!(
-        ({
-            let _lhs = ({ Find_0((*head.borrow()).clone(), 0) }).with(|__s| __s.val);
-            _lhs + ({ FindBack_1((*tail.borrow()).clone(), 0) }).with(|__s| __s.val)
-        } == (4 + -1_i32))
+        (({ ({ Find_0((*head.borrow()).clone(), 0,) }).with(|__s| __s.val) } + {
+            ({ FindBack_1((*tail.borrow()).clone(), 0) }).with(|__s| __s.val)
+        }) == (4 + -1_i32))
     );
-    assert!({
-        let _lhs = ({ Find_0((*head.borrow()).clone(), 2) })
-            .with(|__s| __s.next.clone())
-            .with(|__s| __s.val);
-        _lhs == ({ FindBack_1((*tail.borrow()).clone(), 1) }).with(|__s| __s.val)
-    });
-    assert!({
-        let _lhs = ({ Find_0((*head.borrow()).clone(), 0) }).with(|__s| __s.prev.clone());
-        _lhs == ({ FindBack_1((*tail.borrow()).clone(), 4) }).with(|__s| __s.prev.clone())
-    });
+    assert!(
+        ({
+            ({ Find_0((*head.borrow()).clone(), 2) })
+                .with(|__s| __s.next.clone())
+                .with(|__s| __s.val)
+        } == { ({ FindBack_1((*tail.borrow()).clone(), 1,) }).with(|__s| __s.val) })
+    );
+    assert!(
+        ({ ({ Find_0((*head.borrow()).clone(), 0,) }).with(|__s| __s.prev.clone()) } == {
+            ({ FindBack_1((*tail.borrow()).clone(), 4) }).with(|__s| __s.prev.clone())
+        })
+    );
     return 0;
 }
 pub trait NodeImpl {

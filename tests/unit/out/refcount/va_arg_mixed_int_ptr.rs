@@ -18,8 +18,7 @@ pub fn mixed_args_0(count: i32, __args: &[VaArg]) -> i32 {
             (*total.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
         } else {
             let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<i32>>()));
-            let __rhs = ((*ptr.borrow()).read());
-            (*total.borrow_mut()) += __rhs;
+            (*total.borrow_mut()) += { ((*ptr.borrow()).read()) };
         }
         (*i.borrow_mut()).postfix_inc();
     }

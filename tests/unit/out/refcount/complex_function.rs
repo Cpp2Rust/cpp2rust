@@ -65,15 +65,13 @@ fn main_0() -> i32 {
     let r1: Ptr<i32> = x1.as_pointer();
     let r2: Ptr<i32> = ({ bar_2(x1.as_pointer()) });
     let r3: Ptr<i32> = ({ bar_2((r1).clone()) });
-    let __rhs = (*x1.borrow());
     {
         let _ptr = r2.clone();
-        _ptr.write(_ptr.read() + __rhs)
+        _ptr.write(_ptr.read() + { (*x1.borrow()) })
     };
-    let __rhs = (r1.read());
     {
         let _ptr = r3.clone();
-        _ptr.write(_ptr.read() + __rhs)
+        _ptr.write(_ptr.read() + { (r1.read()) })
     };
     let x4: Value<i32> = Rc::new(RefCell::new(
         ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))

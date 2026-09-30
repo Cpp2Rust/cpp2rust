@@ -80,8 +80,7 @@ impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
         (field_ptr!((*self), data) as Ptr<Option<Value<Data>>>)
             .write(field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()));
-        let __rhs = { (*_a0.upgrade().deref()).n };
-        field!((*self), n).write(__rhs);
+        field!((*self), n).write({ { (*_a0.upgrade().deref()).n } });
         return (*self).clone();
     }
 }

@@ -12,8 +12,7 @@ pub fn switch_in_loop_0(n: i32) -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
         'switch: {
-            let __match_cond = ((*i.borrow()) % 3);
-            match __match_cond {
+            match { ((*i.borrow()) % 3) } {
                 __v if __v == 0 => {
                     (*r.borrow_mut()) += 1;
                     break 'switch;

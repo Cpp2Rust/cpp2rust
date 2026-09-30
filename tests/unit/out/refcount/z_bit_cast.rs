@@ -26,16 +26,18 @@ fn main_0() -> i32 {
     let ptr: Value<AnyPtr> = Rc::new(RefCell::new(
         ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any(),
     ));
-    assert!({
-        let _lhs = (*ptr.borrow()).clone();
-        _lhs == ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()
-    });
-    assert!({
-        let _lhs = (((*ptr.borrow()).reinterpret_cast::<u32>())
-            .offset((0) as isize)
-            .read());
-        _lhs == (*a1.borrow())[(0) as usize]
-    });
+    assert!(
+        ({ (*ptr.borrow()).clone() } == {
+            ((a1.as_pointer() as Ptr<u32>) as Ptr<u32>).to_any()
+        })
+    );
+    assert!(
+        ({
+            (((*ptr.borrow()).reinterpret_cast::<u32>())
+                .offset((0) as isize)
+                .read())
+        } == { (*a1.borrow())[(0) as usize] })
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

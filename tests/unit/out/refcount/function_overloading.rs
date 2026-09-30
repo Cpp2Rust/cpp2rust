@@ -17,21 +17,12 @@ pub fn foo_1(x: Ptr<i32>) -> i32 {
 pub fn foo_2(x: Ptr<i32>, y: Ptr<i32>) -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     let y: Value<Ptr<i32>> = Rc::new(RefCell::new(y));
-    return {
-        let _lhs = ((*x.borrow()).read());
-        _lhs + ((*y.borrow()).read())
-    };
+    return ({ ((*x.borrow()).read()) } + { ((*y.borrow()).read()) });
 }
 pub fn foo_3(x: Ptr<i32>, y: Ptr<i32>, z: Ptr<i32>) -> i32 {
     let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
     let y: Value<Ptr<i32>> = Rc::new(RefCell::new(y));
-    return {
-        let _lhs = {
-            let _lhs = ((*x.borrow()).read());
-            _lhs + ((*y.borrow()).read())
-        };
-        _lhs + (z.read())
-    };
+    return ({ ({ ((*x.borrow()).read()) } + { ((*y.borrow()).read()) }) } + { (z.read()) });
 }
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());

@@ -31,13 +31,7 @@ fn main_0() -> i32 {
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
-    assert!(
-        ((({
-            let _lhs = (*out.borrow()).to_any();
-            _lhs == (a.as_pointer()).to_any()
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*out.borrow()).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
     return 0;
 }
 #[derive(ByteRepr)]

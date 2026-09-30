@@ -56,8 +56,7 @@ pub fn sum_0(p: Ptr<i32>, n: i32) -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*n.borrow())) {
-        let __rhs = ((*p.borrow()).offset((*i.borrow()) as isize).read());
-        (*s.borrow_mut()) += __rhs;
+        (*s.borrow_mut()) += { ((*p.borrow()).offset((*i.borrow()) as isize).read()) };
         (*i.borrow_mut()).prefix_inc();
     }
     return (*s.borrow());
@@ -168,23 +167,25 @@ fn main_0() -> i32 {
             .read())
             == 41)
     );
-    let __rhs = {
-        let _lhs = ((array_field_ptr!((*sp.borrow()), coords) as Ptr<i32>)
-            .offset((0) as isize)
-            .read());
-        _lhs + {
-            (*(array_field_ptr!((*sp.borrow()), points) as Ptr<Point>)
-                .offset((0) as isize)
-                .upgrade()
-                .deref())
-            .x
-        }
-    };
     field!(
         (array_field_ptr!((*sp.borrow()), points) as Ptr<Point>).offset((1) as isize),
         y
     )
-    .write(__rhs);
+    .write({
+        ({
+            ((array_field_ptr!((*sp.borrow()), coords) as Ptr<i32>)
+                .offset((0) as isize)
+                .read())
+        } + {
+            {
+                (*(array_field_ptr!((*sp.borrow()), points) as Ptr<Point>)
+                    .offset((0) as isize)
+                    .upgrade()
+                    .deref())
+                .x
+            }
+        })
+    });
     assert!(
         ({
             (*(array_field_ptr!(s.as_pointer(), points) as Ptr<Point>)

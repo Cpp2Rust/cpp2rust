@@ -78,10 +78,7 @@ fn main_0() -> i32 {
     assert!((({ { (*h2.borrow()).cb.clone() }.call(7,) }) == -7_i32));
     (*h1.borrow_mut()).cb = FnPtr::<fn(i32) -> i32>::new(negate_1);
     assert!((({ { (*h1.borrow()).cb.clone() }.call(3,) }) == -3_i32));
-    assert!({
-        let _lhs = { (*h1.borrow()).cb.clone() };
-        _lhs == { (*h2.borrow()).cb.clone() }
-    });
+    assert!(({ { (*h1.borrow()).cb.clone() } } == { { (*h2.borrow()).cb.clone() } }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

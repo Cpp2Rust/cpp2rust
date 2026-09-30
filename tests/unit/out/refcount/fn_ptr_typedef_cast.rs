@@ -76,13 +76,7 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*original.borrow()).cast::<fn(u64) -> u64>()));
     let back: Value<FnPtr<fn(usize) -> u64>> =
         Rc::new(RefCell::new((*adapted.borrow()).cast::<fn(usize) -> u64>()));
-    assert!(
-        ((({
-            let _lhs = (*back.borrow()).clone();
-            _lhs == (*original.borrow()).clone()
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*back.borrow()).clone() } == { (*original.borrow()).clone() }) as i32) != 0));
     assert!((((({ (*back.borrow()).call(5_usize,) }) == 5_u64) as i32) != 0));
     let scaled: Value<FnPtr<fn(pair, u64) -> u64>> = Rc::new(RefCell::new(
         FnPtr::<fn(pair, usize) -> u64>::new(pair_scaled_4).cast::<fn(pair, u64) -> u64>(),

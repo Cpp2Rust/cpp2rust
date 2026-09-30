@@ -10,24 +10,15 @@ pub fn get_0(v: Ptr<V>) -> i32 {
     return v.with(|__s| __s.x);
 }
 pub fn operator_eq_1(a: Ptr<V>, b: Ptr<V>) -> bool {
-    return {
-        let _lhs = a.with(|__s| __s.x);
-        _lhs == b.with(|__s| __s.x)
-    };
+    return ({ a.with(|__s| __s.x) } == { b.with(|__s| __s.x) });
 }
 pub fn scaled_2(v: Ptr<V>, k: i32) -> i32 {
     let k: Value<i32> = Rc::new(RefCell::new(k));
-    return {
-        let _lhs = v.with(|__s| __s.x);
-        _lhs * (*k.borrow())
-    };
+    return ({ v.with(|__s| __s.x) } * { (*k.borrow()) });
 }
 pub fn scaled_3(v: Ptr<V>, k: f64) -> f64 {
     let k: Value<f64> = Rc::new(RefCell::new(k));
-    return {
-        let _lhs = (v.with(|__s| __s.x) as f64);
-        _lhs * (*k.borrow())
-    };
+    return ({ (v.with(|__s| __s.x) as f64) } * { (*k.borrow()) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]

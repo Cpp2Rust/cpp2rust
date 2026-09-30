@@ -69,25 +69,16 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn operator_cmp(&self, o: Ptr<S>) -> std::cmp::Ordering {
-        if {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs < o.with(|__s| __s.v)
-        } {
+        if ({ (*self).with(|__s| __s.v) } < { o.with(|__s| __s.v) }) {
             return std::cmp::Ordering::Less;
         }
-        if {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs > o.with(|__s| __s.v)
-        } {
+        if ({ (*self).with(|__s| __s.v) } > { o.with(|__s| __s.v) }) {
             return std::cmp::Ordering::Greater;
         }
         return std::cmp::Ordering::Equal;
     }
     fn operator_eq(&self, o: Ptr<S>) -> bool {
-        return {
-            let _lhs = (*self).with(|__s| __s.v);
-            _lhs == o.with(|__s| __s.v)
-        };
+        return ({ (*self).with(|__s| __s.v) } == { o.with(|__s| __s.v) });
     }
 }
 pub fn __cpp2rust_init_globals() {}

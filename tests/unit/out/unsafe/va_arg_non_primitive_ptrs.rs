@@ -22,8 +22,7 @@ pub unsafe fn dispatch_0(mut option: i32, __args: &[VaArg]) -> i32 {
     ap = VaList::new(__args);
     let mut result: i32 = 0;
     'switch: {
-        let __match_cond = option;
-        match __match_cond {
+        match { option } {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
                 let mut out: *mut *const libc::c_char = ap.arg::<*mut *const libc::c_char>();
                 (*out) = (c"hello".as_ptr().cast_mut()).cast_const();

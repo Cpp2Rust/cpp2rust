@@ -30,12 +30,7 @@ fn main_0() -> i32 {
     let p: Value<Ptr<Pair>> = Rc::new(RefCell::new(Ptr::alloc(<Pair>::default())));
     field!((*p.borrow()), x).write(1);
     field!((*p.borrow()), y).write(2);
-    assert!(
-        ({
-            let _lhs = (*p.borrow()).with(|__s| __s.x);
-            _lhs + (*p.borrow()).with(|__s| __s.y)
-        } == 3)
-    );
+    assert!((({ (*p.borrow()).with(|__s| __s.x) } + { (*p.borrow()).with(|__s| __s.y) }) == 3));
     (*p.borrow()).delete();
     return 0;
 }

@@ -14,17 +14,13 @@ pub fn swap_by_ptr_1(a: Ptr<i32>, b: Ptr<i32>) {
     let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
     let b: Value<Ptr<i32>> = Rc::new(RefCell::new(b));
     let tmp: Value<i32> = Rc::new(RefCell::new(((*a.borrow()).read())));
-    let __rhs = ((*b.borrow()).read());
-    (*a.borrow()).write(__rhs);
-    let __rhs = (*tmp.borrow());
-    (*b.borrow()).write(__rhs);
+    (*a.borrow()).write({ ((*b.borrow()).read()) });
+    (*b.borrow()).write({ (*tmp.borrow()) });
 }
 pub fn swap_by_ref_2(a: Ptr<i32>, b: Ptr<i32>) {
     let tmp: Value<i32> = Rc::new(RefCell::new((a.read())));
-    let __rhs = (b.read());
-    a.write(__rhs);
-    let __rhs = (*tmp.borrow());
-    b.write(__rhs);
+    a.write({ (b.read()) });
+    b.write({ (*tmp.borrow()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();

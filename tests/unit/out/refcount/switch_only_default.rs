@@ -10,8 +10,7 @@ pub fn only_default_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
+        match { (*x.borrow()) } {
             _ => {
                 (*r.borrow_mut()) = 42;
                 break 'switch;

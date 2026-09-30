@@ -96,10 +96,7 @@ fn main_0() -> i32 {
     assert!(({ (*s.borrow()).a_ } == 7));
     assert!((({ SImpl::twice(&s.as_pointer(),) }) == 14));
     ({ SImpl::link(&s.as_pointer()) });
-    assert!({
-        let _lhs = { (*s.borrow()).self__.clone() };
-        _lhs == (s.as_pointer())
-    });
+    assert!(({ { (*s.borrow()).self__.clone() } } == { (s.as_pointer()) }));
     field!({ (*s.borrow()).self__.clone() }, a_).with_mut(|__v| __v.postfix_inc());
     assert!(({ (*s.borrow()).a_ } == 8));
     ({ SImpl::bump_me(&s.as_pointer()) });
@@ -148,15 +145,9 @@ fn main_0() -> i32 {
             == (true as i32))
     );
     assert!(({ (*s.borrow()).a_ } == { (*other.borrow()).a_ }));
-    assert!({
-        let _lhs = { (*s.borrow()).self__.clone() };
-        _lhs == { (*other.borrow()).self__.clone() }
-    });
+    assert!(({ { (*s.borrow()).self__.clone() } } == { { (*other.borrow()).self__.clone() } }));
     let u: Value<S> = Rc::new(RefCell::new(S::new_2({ 1 }, { (s.as_pointer()) })));
-    assert!({
-        let _lhs = { (*u.borrow()).self__.clone() };
-        _lhs == (s.as_pointer())
-    });
+    assert!(({ { (*u.borrow()).self__.clone() } } == { (s.as_pointer()) }));
     let s_const: Value<S> = Rc::new(RefCell::new(S::new_1({ 100 })));
     let u1: Value<S> = Rc::new(RefCell::new(S::new_3({ 1 }, { (s_const.as_pointer()) })));
     assert!(({ (*u1.borrow()).self__.clone() }).is_null());
@@ -190,8 +181,7 @@ impl SImpl for Ptr<S> {
         return (*self).clone();
     }
     fn set_from_this(&self) {
-        let __rhs = ((*self).with(|__s| __s.a_) + 1);
-        field!((*self), a_).write(__rhs);
+        field!((*self), a_).write({ ((*self).with(|__s| __s.a_) + 1) });
     }
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.a_);
@@ -223,10 +213,8 @@ impl SImpl for Ptr<S> {
         if ((*self) == (*other.borrow())) {
             return false;
         }
-        let __rhs = (*other.borrow()).with(|__s| __s.a_);
-        field!((*self), a_).write(__rhs);
-        let __rhs = (*other.borrow()).with(|__s| __s.self__.clone());
-        field!((*self), self__).write(__rhs);
+        field!((*self), a_).write({ (*other.borrow()).with(|__s| __s.a_) });
+        field!((*self), self__).write({ (*other.borrow()).with(|__s| __s.self__.clone()) });
         return true;
     }
     fn copy_if_different(&self, other: Ptr<S>) -> bool {
@@ -234,10 +222,8 @@ impl SImpl for Ptr<S> {
         if ((*self) == (*other.borrow())) {
             return false;
         }
-        let __rhs = (*other.borrow()).with(|__s| __s.a_);
-        field!((*self), a_).write(__rhs);
-        let __rhs = (*other.borrow()).with(|__s| __s.self__.clone());
-        field!((*self), self__).write(__rhs);
+        field!((*self), a_).write({ (*other.borrow()).with(|__s| __s.a_) });
+        field!((*self), self__).write({ (*other.borrow()).with(|__s| __s.self__.clone()) });
         return true;
     }
 }

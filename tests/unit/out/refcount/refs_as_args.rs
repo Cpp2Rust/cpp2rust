@@ -16,31 +16,25 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let rpr1: Ptr<i32> = (*pr1.borrow()).clone();
     let rpr2: Ptr<i32> = (*pr2.borrow()).clone();
     let r: Ptr<i32> = (r1).clone();
-    let __rhs = {
-        let _lhs = {
-            let _lhs = {
-                let _lhs = {
-                    let _lhs = {
-                        let _lhs = {
-                            let _lhs = (1 + (rx1.read()));
-                            _lhs + (rx2.read())
-                        };
-                        _lhs + ((*pr1.borrow()).read())
-                    };
-                    _lhs + ((*pr2.borrow()).read())
-                };
-                _lhs + (rpr1.read())
-            };
-            _lhs + (rpr2.read())
-        };
-        _lhs + (r.read())
-    };
     {
         let _ptr = rx2.clone();
-        _ptr.write(_ptr.read() + __rhs)
+        _ptr.write(
+            _ptr.read() + {
+                ({
+                    ({
+                        ({
+                            ({
+                                ({ ({ (1 + (rx1.read())) } + { (rx2.read()) }) } + {
+                                    ((*pr1.borrow()).read())
+                                })
+                            } + { ((*pr2.borrow()).read()) })
+                        } + { (rpr1.read()) })
+                    } + { (rpr2.read()) })
+                } + { (r.read()) })
+            },
+        )
     };
-    let __rhs = (rx2.read());
-    r1.write(__rhs);
+    r1.write({ (rx2.read()) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]

@@ -42,10 +42,7 @@ pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
 pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
-    'loop_: while {
-        let _lhs = (*i.borrow());
-        _lhs < (*v.upgrade().deref()).len()
-    } {
+    'loop_: while ({ (*i.borrow()) } < { (*v.upgrade().deref()).len() }) {
         (*s.borrow_mut()) += ((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
             .offset((*i.borrow()))
             .read());

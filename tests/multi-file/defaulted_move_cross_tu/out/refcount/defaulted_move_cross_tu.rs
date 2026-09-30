@@ -51,17 +51,17 @@ impl Default for S {
     }
 }
 pub fn sum_0(s: Ptr<S>) -> i32 {
-    return {
-        let _lhs = {
-            let _lhs = ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32);
-            _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+    return ({
+        ({ ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32) } + {
+            ((array_field_ptr!(s, n) as Ptr<i32>)
                 .offset((0) as isize)
                 .read())
-        };
-        _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+        })
+    } + {
+        ((array_field_ptr!(s, n) as Ptr<i32>)
             .offset((1) as isize)
             .read())
-    };
+    });
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -43,26 +43,17 @@ impl SImpl for Ptr<S> {
     }
     fn operator_bitand(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs & o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } & { o.with(|__s| __s.v) }),
         };
     }
     fn operator_bitor(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs | o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } | { o.with(|__s| __s.v) }),
         };
     }
     fn operator_bitxor(&self, o: Ptr<S>) -> S {
         return S {
-            v: {
-                let _lhs = (*self).with(|__s| __s.v);
-                _lhs ^ o.with(|__s| __s.v)
-            },
+            v: ({ (*self).with(|__s| __s.v) } ^ { o.with(|__s| __s.v) }),
         };
     }
     fn operator_shl(&self, n: i32) -> S {

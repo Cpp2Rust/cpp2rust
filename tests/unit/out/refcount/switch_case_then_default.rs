@@ -10,8 +10,7 @@ pub fn case_then_default_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let r: Value<i32> = Rc::new(RefCell::new(0));
     'switch: {
-        let __match_cond = (*x.borrow());
-        match __match_cond {
+        match { (*x.borrow()) } {
             __v if __v == 2 => {
                 (*r.borrow_mut()) = 20;
                 break 'switch;

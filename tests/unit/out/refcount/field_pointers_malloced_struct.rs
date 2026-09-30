@@ -41,29 +41,26 @@ fn main_0() -> i32 {
     field!((*s.borrow()), a).write(1);
     field!((*s.borrow()), b).write(2);
     field!((*s.borrow()), c).write(0);
-    if ({
-        let _lhs = (*s.borrow()).with(|__s| __s.a);
-        _lhs < (*s.borrow()).with(|__s| __s.b)
-    }) && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
+    if ({ (*s.borrow()).with(|__s| __s.a) } < { (*s.borrow()).with(|__s| __s.b) })
+        && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
     {
         field!((*s.borrow()), a).write(5);
     }
     assert!(((*s.borrow()).with(|__s| __s.a) == 5) && ((*s.borrow()).with(|__s| __s.c) == 1));
-    if ({
-        let _lhs = (*s.borrow()).with(|__s| __s.a);
-        _lhs < (*s.borrow()).with(|__s| __s.b)
-    }) && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
+    if ({ (*s.borrow()).with(|__s| __s.a) } < { (*s.borrow()).with(|__s| __s.b) })
+        && (field!((*s.borrow()), c).with_mut(|__v| __v.postfix_inc()) == 0)
     {
         field!((*s.borrow()), a).write(6);
     }
     assert!(((*s.borrow()).with(|__s| __s.a) == 5) && ((*s.borrow()).with(|__s| __s.c) == 1));
-    let x: Value<i32> = Rc::new(RefCell::new({
-        let _lhs = (*s.borrow()).with(|__s| __s.a);
-        _lhs + ({
-            field!((*s.borrow()), b).write(3);
-            (*s.borrow()).with(|__s| __s.b)
-        })
-    }));
+    let x: Value<i32> = Rc::new(RefCell::new(
+        ({ (*s.borrow()).with(|__s| __s.a) } + {
+            ({
+                field!((*s.borrow()), b).write(3);
+                (*s.borrow()).with(|__s| __s.b)
+            })
+        }),
+    ));
     assert!(((*x.borrow()) == 8) && ((*s.borrow()).with(|__s| __s.b) == 3));
     let y: Value<i32> = Rc::new(RefCell::new(0));
     field!((*s.borrow()), c).write(

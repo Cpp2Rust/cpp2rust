@@ -13,8 +13,7 @@ pub unsafe fn switch_in_dowhile_0(mut n: i32) -> i32 {
     'loop_: while __do_while || ((i) < (n)) {
         __do_while = false;
         'switch: {
-            let __match_cond = i;
-            match __match_cond {
+            match { i } {
                 __v if __v == 0 => {
                     r += 1;
                     break 'switch;

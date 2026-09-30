@@ -14,42 +14,27 @@ pub struct S {
 }
 pub fn operator_add_0(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs + b.with(|__s| __s.v)
-        },
+        v: ({ a.with(|__s| __s.v) } + { b.with(|__s| __s.v) }),
     };
 }
 pub fn operator_sub_1(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs - b.with(|__s| __s.v)
-        },
+        v: ({ a.with(|__s| __s.v) } - { b.with(|__s| __s.v) }),
     };
 }
 pub fn operator_mul_2(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs * b.with(|__s| __s.v)
-        },
+        v: ({ a.with(|__s| __s.v) } * { b.with(|__s| __s.v) }),
     };
 }
 pub fn operator_div_3(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs / b.with(|__s| __s.v)
-        },
+        v: ({ a.with(|__s| __s.v) } / { b.with(|__s| __s.v) }),
     };
 }
 pub fn operator_rem_4(a: Ptr<S>, b: Ptr<S>) -> S {
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs % b.with(|__s| __s.v)
-        },
+        v: ({ a.with(|__s| __s.v) } % { b.with(|__s| __s.v) }),
     };
 }
 pub fn operator_pos_5(a: Ptr<S>) -> S {
@@ -85,19 +70,13 @@ pub fn operator_post_dec_10(a: Ptr<S>, _a1: i32) -> S {
 pub fn operator_add_11(a: Ptr<S>, b: i32) -> S {
     let b: Value<i32> = Rc::new(RefCell::new(b));
     return S {
-        v: {
-            let _lhs = a.with(|__s| __s.v);
-            _lhs + (*b.borrow())
-        },
+        v: ({ a.with(|__s| __s.v) } + { (*b.borrow()) }),
     };
 }
 pub fn operator_add_12(a: i32, b: Ptr<S>) -> S {
     let a: Value<i32> = Rc::new(RefCell::new(a));
     return S {
-        v: {
-            let _lhs = (*a.borrow());
-            _lhs + b.with(|__s| __s.v)
-        },
+        v: ({ (*a.borrow()) } + { b.with(|__s| __s.v) }),
     };
 }
 pub fn main() {

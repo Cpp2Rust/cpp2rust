@@ -16,10 +16,7 @@ fn main_0() -> i32 {
     let q: Value<Ptr<i32>> = Rc::new(RefCell::new(
         (<AnyPtr>::from_int((*p.borrow()).to_any().to_int())).reinterpret_cast::<i32>(),
     ));
-    assert!({
-        let _lhs = (*p.borrow()).clone();
-        _lhs == (*q.borrow()).clone()
-    });
+    assert!(({ (*p.borrow()).clone() } == { (*q.borrow()).clone() }));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

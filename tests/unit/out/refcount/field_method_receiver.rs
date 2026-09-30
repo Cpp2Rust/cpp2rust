@@ -70,10 +70,11 @@ pub fn run_0(o: Ptr<S>) {
     );
     ({ CounterImpl::add(&({ CounterImpl::self_(&field_ptr!((*o.borrow()), c)) }), 1) });
     assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 3));
-    assert!({
-        let _lhs = ({ CounterImpl::self_(&field_ptr!((*o.borrow()), c)) });
-        _lhs == (field_ptr!((*o.borrow()), c))
-    });
+    assert!(
+        ({ ({ CounterImpl::self_(&field_ptr!((*o.borrow()), c),) }) } == {
+            (field_ptr!((*o.borrow()), c))
+        })
+    );
     ({
         let _other: Ptr<Counter> =
             ((array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize));
@@ -150,10 +151,9 @@ impl CounterImpl for Ptr<Counter> {
     }
     fn take(&self, other: Ptr<Counter>) {
         let other: Value<Ptr<Counter>> = Rc::new(RefCell::new(other));
-        let __rhs = (*other.borrow()).with(|__s| __s.n);
         {
             let _ptr = field!((*self), n);
-            _ptr.write(_ptr.read() + __rhs)
+            _ptr.write(_ptr.read() + { (*other.borrow()).with(|__s| __s.n) })
         };
         field!((*other.borrow()), n).write(0);
     }

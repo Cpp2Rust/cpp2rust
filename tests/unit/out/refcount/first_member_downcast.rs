@@ -35,13 +35,7 @@ fn main_0() -> i32 {
     let b: Value<Ptr<base>> = Rc::new(RefCell::new((field_ptr!((*d.borrow()), head))));
     let back: Value<Ptr<derived>> =
         Rc::new(RefCell::new((*b.borrow()).reinterpret_cast::<derived>()));
-    assert!(
-        ((({
-            let _lhs = (*back.borrow()).clone();
-            _lhs == (*d.borrow()).clone()
-        }) as i32)
-            != 0)
-    );
+    assert!(((({ (*back.borrow()).clone() } == { (*d.borrow()).clone() }) as i32) != 0));
     assert!(((((*back.borrow()).with(|__s| __s.value) == 7_usize) as i32) != 0));
     assert!(((((*back.borrow()).with(|__s| __s.head.kind) == 3) as i32) != 0));
     field!((*back.borrow()), value).write(8_usize);

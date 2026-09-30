@@ -39,10 +39,7 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let out: Value<bool> = Rc::new(RefCell::new(false));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while {
-        let _lhs = (*i.borrow());
-        _lhs < (n1.read())
-    } {
+    'loop_: while ({ (*i.borrow()) } < { (n1.read()) }) {
         let __rhs = (*out.borrow())
             || (((*arr.upgrade().deref()).as_ref().unwrap().borrow()
                 [((*i.borrow()) as usize) as usize]
