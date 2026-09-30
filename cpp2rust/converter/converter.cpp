@@ -2252,7 +2252,15 @@ static std::string getTypedLiteral(const char *num, std::string_view type) {
 std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
                                          bool incl_type,
                                          const clang::QualType *type) {
-  auto num_as_string = GetNumAsString(expr->getValue());
+  auto value = expr->getValue();
+  bool is_signed = false;
+  if (type && (*type)->isBuiltinType() && (*type)->isIntegerType() &&
+      !(*type)->isBooleanType()) {
+    value = value.zextOrTrunc(ctx_.getIntWidth(*type));
+    is_signed = (*type)->isSignedIntegerType();
+  }
+  llvm::SmallString<16> num_as_string;
+  value.toString(num_as_string, 10, is_signed);
   if (num_as_string[0] != '-' && !incl_type) {
     if (type && (*type)->isFloatingType() &&
         num_as_string.find('.') == llvm::StringRef::npos) {
@@ -2265,7 +2273,7 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
   auto type_as_string = GetUnsafeTypeAsString(ty);
 
   if (ty->isFloatingType() || incl_type) {
-    if (expr->getValue().isZero()) {
+    if (value.isZero()) {
       if (auto init = Mapper::MapInitializer(ctx_, ty); !init.empty()) {
         return init;
       }
