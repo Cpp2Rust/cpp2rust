@@ -1076,8 +1076,20 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
     return GetOverloadedFunctionName(decl);
   }
   if (auto *conversion = clang::dyn_cast<clang::CXXConversionDecl>(decl)) {
-    return GetConversionName(
+    auto name = GetConversionName(
         conversion, GetUnsafeTypeAsString(conversion->getConversionType()));
+    const auto *record = conversion->getParent();
+    bool shared = std::any_of(
+        record->method_begin(), record->method_end(),
+        [&](const clang::CXXMethodDecl *method) {
+          auto *other = clang::dyn_cast<clang::CXXConversionDecl>(method);
+          return other && other != conversion &&
+                 GetConversionName(other, GetUnsafeTypeAsString(
+                                              other->getConversionType())) ==
+                     name;
+        });
+    return shared ? name + std::format("_{}", GetMethodIndex(conversion))
+                  : name;
   }
   return GetNamedDeclAsString(decl);
 }
