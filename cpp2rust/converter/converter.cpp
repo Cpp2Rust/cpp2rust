@@ -2964,6 +2964,15 @@ bool Converter::VisitUnaryOperator(clang::UnaryOperator *expr) {
       computed_expr_type_ = ComputedExprType::FreshValue;
       break;
     }
+    if (expr->getType()->isUnsignedIntegerType()) {
+      {
+        PushParen paren(*this);
+        Convert(sub_expr);
+      }
+      StrCat(".wrapping_neg()");
+      SetFreshType(expr->getType());
+      break;
+    }
     [[fallthrough]];
   default:
     StrCat(expr->getOpcodeStr(opcode));
