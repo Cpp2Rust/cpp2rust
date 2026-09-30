@@ -2174,8 +2174,15 @@ Converter::ConvertCallExpr(clang::CallExpr *expr) {
   } else if (IsTransparentStdCall(expr)) {
     Convert(expr->getArg(0));
   } else if (IsBuiltinConstantP(callee)) {
-    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_) ? token::kOne
-                                                      : token::kZero);
+    clang::APValue V;
+    StrCat(expr->getArg(0)->isCXX11ConstantExpr(ctx_
+#if CLANG_VERSION_MAJOR >= 24
+                                                ,
+                                                V
+#endif
+                                                )
+               ? token::kOne
+               : token::kZero);
   } else if (Mapper::Contains(callee)) {
     auto **args = expr->getArgs();
     auto num_args = expr->getNumArgs();
