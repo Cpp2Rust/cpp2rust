@@ -19,8 +19,7 @@ pub trait ByteRepr: 'static {
 }
 ```
 
-The code generator emits the `ByteRepr` implementation of a C struct next to
-it:
+The code generator emits the `ByteRepr` implementation of a C struct next to it:
 
 ```c
 struct header {
@@ -112,9 +111,9 @@ reference to the original allocation, the size of the target type, and a
 reference to a stateless table of the byte-level operations for the original's
 storage type (a single value, a `Vec`, a boxed slice, or a field of a struct,
 whose bytes are found through the struct's allocation as for a
-[field pointer](./rc.md#pointers-to-fields)). Copying or offsetting
-the resulting `Ptr` only bumps a reference count, so a loop over a `malloc`ed
-array pays for the cast once, not per access.
+[field pointer](./rc.md#pointers-to-fields)). Copying or offsetting the
+resulting `Ptr` only bumps a reference count, so a loop over a `malloc`ed array
+pays for the cast once, not per access.
 
 Accessing memory through a view does not allocate: the bytes of the accessed
 element are staged in a stack buffer (a heap buffer is used only for accesses
@@ -127,13 +126,12 @@ directly instead of serializing the elements one by one.
 Reading a struct through a reinterpreted pointer builds a fresh struct with
 `from_bytes`, which exists only for the duration of the `with` closure, or as
 long as the `StrongPtr` that holds it. Writes to its fields go through
-`with_mut`, which encodes the struct back into the original allocation before
-it returns, so they are visible right away through any other pointer; a pointer
-to one of its fields is a reinterpreted pointer into the original allocation.
-However,
-[union accessors](../codegen/unions.md) return pointers to the union's storage;
-on a reinterpreted union that storage is the temporary, so the returned pointer
-dangles. This is set to be fixed in the near future.
+`with_mut`, which encodes the struct back into the original allocation before it
+returns, so they are visible right away through any other pointer; a pointer to
+one of its fields is a reinterpreted pointer into the original allocation.
+However, [union accessors](../codegen/unions.md) return pointers to the union's
+storage; on a reinterpreted union that storage is the temporary, so the returned
+pointer dangles. This is set to be fixed in the near future.
 
 ## AnyPtr casts
 

@@ -154,13 +154,13 @@ pub struct OriginalAlloc {
 #[derive(Clone)]
 enum Storage {
     Alloc(Weak<dyn Any>),
-    Field(Weak<dyn Root>, u32),
+    Field(Weak<dyn Root>, usize),
 }
 
 // The storage passed to the AllocOps of a field.
 struct FieldStorage {
     root: Rc<dyn Root>,
-    field: u32,
+    field: usize,
 }
 
 impl OriginalAlloc {
@@ -178,8 +178,8 @@ impl OriginalAlloc {
         }
     }
 
-    // A field whose elements are of type T.
-    pub(crate) fn field<T: ByteRepr>(root: &Weak<dyn Root>, field: u32) -> Self {
+    // The field of type T at byte offset `field` of `root`.
+    pub(crate) fn field<T: ByteRepr>(root: &Weak<dyn Root>, field: usize) -> Self {
         Self {
             storage: Storage::Field(root.clone(), field),
             ops: &FieldOps::<T>(PhantomData),
@@ -216,7 +216,7 @@ impl OriginalAlloc {
         match &self.storage {
             Storage::Alloc(weak) => weak.as_ptr() as *const () as usize,
             Storage::Field(root, field) => {
-                (root.as_ptr() as *const () as usize).wrapping_add(*field as usize)
+                (root.as_ptr() as *const () as usize).wrapping_add(*field)
             }
         }
     }
@@ -384,18 +384,17 @@ struct FieldOps<T>(PhantomData<fn() -> T>);
 impl<T: ByteRepr> AllocOps for FieldOps<T> {
     fn read_bytes(&self, storage: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
         let storage = storage.downcast_ref::<FieldStorage>().unwrap();
-        let elems = Ptr::<T>::borrow_field(&*storage.root, storage.field);
-        slice_read_bytes(&elems, byte_offset, buf);
+        let field = Ptr::<T>::borrow_field(&*storage.root, storage.field);
+        slice_read_bytes(std::slice::from_ref(&*field), byte_offset, buf);
     }
 
     fn write_bytes(&self, storage: &dyn Any, byte_offset: usize, data: &[u8]) {
         let storage = storage.downcast_ref::<FieldStorage>().unwrap();
-        let mut elems = Ptr::<T>::borrow_field_mut(&*storage.root, storage.field);
-        slice_write_bytes(&mut elems, byte_offset, data);
+        let mut field = Ptr::<T>::borrow_field_mut(&*storage.root, storage.field);
+        slice_write_bytes(std::slice::from_mut(&mut *field), byte_offset, data);
     }
 
-    fn total_byte_len(&self, storage: &dyn Any) -> usize {
-        let storage = storage.downcast_ref::<FieldStorage>().unwrap();
-        Ptr::<T>::borrow_field(&*storage.root, storage.field).len() * T::byte_size()
+    fn total_byte_len(&self, _storage: &dyn Any) -> usize {
+        T::byte_size()
     }
 }

@@ -42,13 +42,13 @@ impl ByteRepr for UserDefined {
         32
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.a.to_bytes(&mut buf[0..4]);
-        self.v.to_bytes(&mut buf[8..32]);
+        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
+        (*self.v.borrow()).to_bytes(&mut buf[8..32]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: <Value<Vec<i32>>>::from_bytes(&buf[0..4]),
-            v: <Value<Vec<i32>>>::from_bytes(&buf[8..32]),
+            a: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..4]))),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[8..32]))),
         }
     }
 }

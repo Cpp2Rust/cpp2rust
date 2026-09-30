@@ -499,11 +499,9 @@ impl DisjointSetImpl for Ptr<DisjointSet> {
         }
     }
     fn move_assign(&self, _a0: Ptr<DisjointSet>) -> Ptr<DisjointSet> {
-        ((field_ptr!((*self), rank) as Ptr<Option<Value<Box<[i32]>>>>)
-            as Ptr<Option<Value<Box<[i32]>>>>)
+        (field_ptr!((*self), rank) as Ptr<Option<Value<Box<[i32]>>>>)
             .write(_a0.with_mut(|__s: &mut DisjointSet| __s.rank.take()));
-        ((field_ptr!((*self), parent) as Ptr<Option<Value<Box<[i32]>>>>)
-            as Ptr<Option<Value<Box<[i32]>>>>)
+        (field_ptr!((*self), parent) as Ptr<Option<Value<Box<[i32]>>>>)
             .write(_a0.with_mut(|__s: &mut DisjointSet| __s.parent.take()));
         let __rhs = _a0.with(|__s: &DisjointSet| __s.n);
         (*self).with_mut(|__s: &mut DisjointSet| __s.n = __rhs);
@@ -515,8 +513,7 @@ pub trait GraphImpl {
 }
 impl GraphImpl for Ptr<Graph> {
     fn move_assign(&self, _a0: Ptr<Graph>) -> Ptr<Graph> {
-        ((field_ptr!((*self), edges) as Ptr<Option<Value<Box<[Edge]>>>>)
-            as Ptr<Option<Value<Box<[Edge]>>>>)
+        (field_ptr!((*self), edges) as Ptr<Option<Value<Box<[Edge]>>>>)
             .write(_a0.with_mut(|__s: &mut Graph| __s.edges.take()));
         let __rhs = _a0.with(|__s: &Graph| __s.V);
         (*self).with_mut(|__s: &mut Graph| __s.V = __rhs);

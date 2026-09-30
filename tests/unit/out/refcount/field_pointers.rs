@@ -6,18 +6,30 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Inner {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub name: Box<[u8]>,
+    pub name: Value<Box<[u8]>>,
+}
+impl Clone for Inner {
+    fn clone(&self) -> Self {
+        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
+            a: { self.a },
+            name: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 8, _>(
+                |__i: usize| (*self.name.borrow())[(__i) as usize],
+            )))),
+        }));
+        let this: Ptr<Inner> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Inner {
     fn default() -> Self {
         Inner {
             a: 0_i32,
-            name: (0..8).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            name: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -27,12 +39,12 @@ impl ByteRepr for Inner {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.a.to_bytes(&mut buf[0..4]);
-        self.name.to_bytes(&mut buf[4..12]);
+        (*self.name.borrow()).to_bytes(&mut buf[4..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             a: <i32>::from_bytes(&buf[0..4]),
-            name: <Box<[u8]>>::from_bytes(&buf[4..12]),
+            name: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[4..12]))),
         }
     }
 }
@@ -65,27 +77,27 @@ pub struct Outer {
     #[offset(4)]
     pub inner: Inner,
     #[offset(16)]
-    pub items: Box<[Inner]>,
+    pub items: Value<Box<[Inner]>>,
     #[offset(56)]
     pub v: Value<Vec<i32>>,
     #[offset(80)]
     pub cursor: Ptr<i32>,
     #[offset(88)]
-    pub buf: Box<[i32]>,
+    pub buf: Value<Box<[i32]>>,
 }
 impl Clone for Outer {
     fn clone(&self) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
             x: { self.x },
             inner: { self.inner.clone() },
-            items: Box::new(std::array::from_fn::<_, 3, _>(|__i: usize| {
-                self.items[(__i) as usize].clone()
-            })),
+            items: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.items.borrow())[(__i) as usize].clone(),
+            )))),
             v: { Rc::new(RefCell::new((*self.v.borrow()).clone())) },
             cursor: { self.cursor.clone() },
-            buf: Box::new(std::array::from_fn::<_, 4, _>(|__i: usize| {
-                self.buf[(__i) as usize]
-            })),
+            buf: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 4, _>(
+                |__i: usize| (*self.buf.borrow())[(__i) as usize],
+            )))),
         }));
         let this: Ptr<Outer> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -96,10 +108,12 @@ impl Default for Outer {
         Outer {
             x: 0_i32,
             inner: <Inner>::default(),
-            items: (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
+            items: Rc::new(RefCell::new(
+                (0..3).map(|_| <Inner>::default()).collect::<Box<[Inner]>>(),
+            )),
             v: Rc::new(RefCell::new(Default::default())),
             cursor: Ptr::<i32>::null(),
-            buf: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            buf: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
     }
 }
@@ -110,19 +124,19 @@ impl ByteRepr for Outer {
     fn to_bytes(&self, buf: &mut [u8]) {
         self.x.to_bytes(&mut buf[0..4]);
         self.inner.to_bytes(&mut buf[4..16]);
-        self.items.to_bytes(&mut buf[16..52]);
-        self.v.to_bytes(&mut buf[56..80]);
+        (*self.items.borrow()).to_bytes(&mut buf[16..52]);
+        (*self.v.borrow()).to_bytes(&mut buf[56..80]);
         self.cursor.to_bytes(&mut buf[80..88]);
-        self.buf.to_bytes(&mut buf[88..104]);
+        (*self.buf.borrow()).to_bytes(&mut buf[88..104]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             x: <i32>::from_bytes(&buf[0..4]),
             inner: <Inner>::from_bytes(&buf[4..16]),
-            items: <Box<[Inner]>>::from_bytes(&buf[16..52]),
-            v: <Value<Vec<i32>>>::from_bytes(&buf[56..80]),
+            items: Rc::new(RefCell::new(<Box<[Inner]>>::from_bytes(&buf[16..52]))),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[56..80]))),
             cursor: <Ptr<i32>>::from_bytes(&buf[80..88]),
-            buf: <Box<[i32]>>::from_bytes(&buf[88..104]),
+            buf: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[88..104]))),
         }
     }
 }
@@ -154,16 +168,22 @@ fn main_0() -> i32 {
     });
     assert!(({ (*o.borrow()).inner.a } == 3));
     let pi: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(1), a)),
+        (field_ptr!(
+            ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(1),
+            a
+        )),
     ));
     (*pi.borrow()).write(4);
-    assert!(({ (*o.borrow()).items[(1) as usize].a } == 4));
+    assert!(({ (*(*o.borrow()).items.borrow())[(1) as usize].a } == 4));
     assert!({
-        let _lhs = (field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(0), a));
+        let _lhs = (field_ptr!(
+            ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(0),
+            a
+        ));
         _lhs != (*pi.borrow()).clone()
     });
     let name: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (field_ptr!(field_ptr!(o, inner), name) as Ptr<u8>),
+        ({ (*o.borrow()).inner.name.as_pointer() } as Ptr<u8>),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
@@ -172,16 +192,16 @@ fn main_0() -> i32 {
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        ((field_ptr!(field_ptr!(o, inner), name) as Ptr::<u8>)
+        (({ (*o.borrow()).inner.name.as_pointer() } as Ptr::<u8>)
             .to_c_string_iterator()
             .count()
             == 3_usize)
     );
     assert!({
         let _lhs = (*name.borrow()).offset((3) as isize);
-        _lhs == ((field_ptr!(field_ptr!(o, inner), name) as Ptr<u8>).offset(3))
+        _lhs == (({ (*o.borrow()).inner.name.as_pointer() } as Ptr<u8>).offset(3))
     });
-    let __rhs = ((field_ptr!(o, buf) as Ptr<i32>).offset(1));
+    let __rhs = (({ (*o.borrow()).buf.as_pointer() } as Ptr<i32>).offset(1));
     (*o.borrow_mut()).cursor = __rhs;
     { (*o.borrow()).cursor.clone() }.write(5);
     {
@@ -189,10 +209,10 @@ fn main_0() -> i32 {
         _ptr.write(_ptr.read() + 1)
     };
     assert!(
-        ((*o.borrow()).buf[(1) as usize] == 6)
+        ((*(*o.borrow()).buf.borrow())[(1) as usize] == 6)
             && ({
                 let _lhs = { (*o.borrow()).cursor.clone() };
-                _lhs == ((field_ptr!(o, buf) as Ptr<i32>).offset(2))
+                _lhs == (({ (*o.borrow()).buf.as_pointer() } as Ptr<i32>).offset(2))
             })
     );
     (*o.borrow_mut()).x = 0;
@@ -212,18 +232,32 @@ fn main_0() -> i32 {
     assert!((({ OuterImpl::sum(&o.as_pointer(),) }) == 7));
     let y: Value<i32> = Rc::new(RefCell::new(0));
     {
-        ((field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(2), a)) as Ptr<i32>)
+        ((field_ptr!(
+            ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(2),
+            a
+        )) as Ptr<i32>)
             .to_any()
             .memcpy(
-                &((field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(1), a)) as Ptr<i32>)
+                &((field_ptr!(
+                    ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(1),
+                    a
+                )) as Ptr<i32>)
                     .to_any(),
                 ::std::mem::size_of::<i32>() as usize,
             );
-        ((field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(2), a)) as Ptr<i32>).to_any()
+        ((field_ptr!(
+            ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(2),
+            a
+        )) as Ptr<i32>)
+            .to_any()
     };
     {
         ((y.as_pointer()) as Ptr<i32>).to_any().memcpy(
-            &((field_ptr!((field_ptr!(o, items) as Ptr<Inner>).offset(2), a)) as Ptr<i32>).to_any(),
+            &((field_ptr!(
+                ({ (*o.borrow()).items.as_pointer() } as Ptr<Inner>).offset(2),
+                a
+            )) as Ptr<i32>)
+                .to_any(),
             ::std::mem::size_of::<i32>() as usize,
         );
         ((y.as_pointer()) as Ptr<i32>).to_any()
@@ -261,7 +295,7 @@ impl OuterImpl for Ptr<Outer> {
     fn next(&self) -> i32 {
         return ({
             let __idx = (*self).with_mut(|__s: &mut Outer| __s.x.postfix_inc());
-            (*(*self).upgrade().deref()).buf[(__idx) as usize]
+            (*(*self).with(|__s: &Outer| __s.buf.clone()).borrow())[(__idx) as usize]
         });
     }
     fn sum(&self) -> i32 {

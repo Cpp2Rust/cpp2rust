@@ -31,12 +31,12 @@ impl ByteRepr for S {
         32
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..24]);
+        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
         self.a.to_bytes(&mut buf[24..28]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
             a: <i32>::from_bytes(&buf[24..28]),
         }
     }

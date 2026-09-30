@@ -6,30 +6,51 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Pointers {
     #[offset(0)]
     pub x1: Ptr<i32>,
     #[offset(8)]
     pub x2: Ptr<i32>,
     #[offset(16)]
-    pub x3: Box<[Ptr<i32>]>,
+    pub x3: Value<Box<[Ptr<i32>]>>,
     #[offset(56)]
-    pub x4: Box<[Ptr<i32>]>,
+    pub x4: Value<Box<[Ptr<i32>]>>,
     #[offset(136)]
     pub x5: i32,
+}
+impl Clone for Pointers {
+    fn clone(&self) -> Self {
+        let __this: Value<Pointers> = Rc::new(RefCell::new(Self {
+            x1: { self.x1.clone() },
+            x2: { self.x2.clone() },
+            x3: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 5, _>(
+                |__i: usize| ((*self.x3.borrow())[(__i) as usize]).clone(),
+            )))),
+            x4: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 10, _>(
+                |__i: usize| ((*self.x4.borrow())[(__i) as usize]).clone(),
+            )))),
+            x5: { self.x5 },
+        }));
+        let this: Ptr<Pointers> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Pointers {
     fn default() -> Self {
         Pointers {
             x1: Ptr::<i32>::null(),
             x2: Ptr::<i32>::null(),
-            x3: (0..5)
-                .map(|_| Ptr::<i32>::null())
-                .collect::<Box<[Ptr<i32>]>>(),
-            x4: (0..10)
-                .map(|_| Ptr::<i32>::null())
-                .collect::<Box<[Ptr<i32>]>>(),
+            x3: Rc::new(RefCell::new(
+                (0..5)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+            )),
+            x4: Rc::new(RefCell::new(
+                (0..10)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+            )),
             x5: 0_i32,
         }
     }
@@ -41,16 +62,16 @@ impl ByteRepr for Pointers {
     fn to_bytes(&self, buf: &mut [u8]) {
         self.x1.to_bytes(&mut buf[0..8]);
         self.x2.to_bytes(&mut buf[8..16]);
-        self.x3.to_bytes(&mut buf[16..56]);
-        self.x4.to_bytes(&mut buf[56..136]);
+        (*self.x3.borrow()).to_bytes(&mut buf[16..56]);
+        (*self.x4.borrow()).to_bytes(&mut buf[56..136]);
         self.x5.to_bytes(&mut buf[136..140]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             x1: <Ptr<i32>>::from_bytes(&buf[0..8]),
             x2: <Ptr<i32>>::from_bytes(&buf[8..16]),
-            x3: <Box<[Ptr<i32>]>>::from_bytes(&buf[16..56]),
-            x4: <Box<[Ptr<i32>]>>::from_bytes(&buf[56..136]),
+            x3: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[16..56]))),
+            x4: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[56..136]))),
             x5: <i32>::from_bytes(&buf[136..140]),
         }
     }

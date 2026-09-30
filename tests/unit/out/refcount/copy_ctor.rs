@@ -153,21 +153,39 @@ impl ByteRepr for Ignored {
         }
     }
 }
+<<<<<<< HEAD
 #[derive(Clone, Record, VaArg, FnPtrArg)]
 >>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+=======
+#[derive(Record, VaArg, FnPtrArg)]
+>>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Holder {
     #[offset(0)]
     pub c: Counted,
     #[offset(4)]
-    pub arr: Box<[Counted]>,
+    pub arr: Value<Box<[Counted]>>,
+}
+impl Clone for Holder {
+    fn clone(&self) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            c: { self.c.clone() },
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*self.arr.borrow())[(__i) as usize].clone(),
+            )))),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
         Holder {
             c: <Counted>::default(),
-            arr: (0..2)
-                .map(|_| <Counted>::default())
-                .collect::<Box<[Counted]>>(),
+            arr: Rc::new(RefCell::new(
+                (0..2)
+                    .map(|_| <Counted>::default())
+                    .collect::<Box<[Counted]>>(),
+            )),
         }
     }
 }
@@ -180,12 +198,12 @@ impl ByteRepr for Holder {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.c.to_bytes(&mut buf[0..4]);
-        self.arr.to_bytes(&mut buf[4..12]);
+        (*self.arr.borrow()).to_bytes(&mut buf[4..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             c: <Counted>::from_bytes(&buf[0..4]),
-            arr: <Box<[Counted]>>::from_bytes(&buf[4..12]),
+            arr: Rc::new(RefCell::new(<Box<[Counted]>>::from_bytes(&buf[4..12]))),
         }
     }
 }
@@ -226,12 +244,16 @@ fn main_0() -> i32 {
     assert!((copies_0.with(|rc| *rc.borrow()) == 6));
     let hold: Value<Holder> = Rc::new(RefCell::new(Holder {
         c: Counted::new({ 8 }),
-        arr: Box::new([Counted::new({ 9 }), Counted::new({ 10 })]),
+        arr: Rc::new(RefCell::new(Box::new([
+            Counted::new({ 9 }),
+            Counted::new({ 10 }),
+        ]))),
     }));
     let hold2: Value<Holder> = Rc::new(RefCell::new((*hold.borrow()).clone()));
     assert!(
-        (({ (*hold2.borrow()).c.v } == 8) && ({ (*hold2.borrow()).arr[(0) as usize].v } == 9))
-            && ({ (*hold2.borrow()).arr[(1) as usize].v } == 10)
+        (({ (*hold2.borrow()).c.v } == 8)
+            && ({ (*(*hold2.borrow()).arr.borrow())[(0) as usize].v } == 9))
+            && ({ (*(*hold2.borrow()).arr.borrow())[(1) as usize].v } == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
     let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));

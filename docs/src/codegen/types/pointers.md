@@ -47,9 +47,9 @@ pointer type is to `const`. Globals use `&raw mut x` so no reference to the
 an element is `&mut arr[i] as *mut T`.
 
 Refcount model: `&x` becomes `x.as_pointer()`, which produces a `Ptr` holding a
-weak reference to the variable's `Value`. `&s.field` is
-`field_ptr!(s, field)`, and `&p->field` is `field_ptr!(p, field)`: a pointer to
-the field of the struct, made from the `Value` or the `Ptr` of the struct (see
+weak reference to the variable's `Value`. `&s.field` is `field_ptr!(s, field)`,
+and `&p->field` is `field_ptr!(p, field)`: a pointer to the field of the struct,
+made from the `Value` or the `Ptr` of the struct (see
 [Pointers to fields](../../runtime/rc.md#pointers-to-fields)). An array decays
 with `arr.as_pointer() as Ptr<T>`, a `Ptr` to element 0 of the whole array, and
 `&arr[i]` is that pointer offset by `i`.
@@ -87,18 +87,18 @@ of the dereference:
 - An rvalue use copies the value out. A scalar or pointer pointee is `p.read()`,
   and so is a whole record, `*p`. A field of a record pointee is read in a
   closure that borrows the record for its duration: `p->x` is
-  `p.with(|__s: &S| __s.x)`, and `p->a[i].y` is
-  `p.with(|__s: &S| __s.a[i].y)`. A method called on a field runs in the
-  closure too, together with the rest of its rule: `p->v.size()` is
-  `p.with(|__s: &S| (*__s.v.borrow()).len())`.
+  `p.with(|__s: &S| __s.x)`, and `p->a[i].y` is `p.with(|__s: &S| __s.a[i].y)`.
+  A method called on a field runs in the closure too, together with the rest of
+  its rule: `p->v.size()` is `p.with(|__s: &S| (*__s.v.borrow()).len())`.
 - A write to a field of a record pointee is also done in a closure, which
   borrows the record mutably: `p->x = v` is
   `p.with_mut(|__s: &mut S| __s.x = v)`. Operands that may access memory are
   evaluated before the closure (`let __rhs = ...;`), so that they don't find the
   record borrowed. Fields that are [`Value`s of their own](boxing.md) only need
-  the record borrowed immutably, `p.with(|__s: &S| (*__s.v.borrow_mut()).push(1))`.
-  The same closures are used for references to records, `r.x`, and for elements
-  of arrays of records, `a[i].x`.
+  the record borrowed immutably,
+  `p.with(|__s: &S| (*__s.v.borrow_mut()).push(1))`. The same closures are used
+  for references to records, `r.x`, and for elements of arrays of records,
+  `a[i].x`.
 - An address-of use prints `p` itself.
 - An lvalue use prints nothing at once. The converter records the pointer
   expression as a [pending dereference](../expressions/pending-deref.md), and
@@ -110,9 +110,9 @@ of the dereference:
 
 `with` and `with_mut` work on any pointer, including a
 [reinterpreted](../../runtime/reinterpret.md) one, whose pointee is decoded from
-the bytes of the original allocation and, for `with_mut`, encoded back into
-them before the closure returns. A write through a reinterpreted pointer is
-hence visible right away through every other pointer to the same bytes.
+the bytes of the original allocation and, for `with_mut`, encoded back into them
+before the closure returns. A write through a reinterpreted pointer is hence
+visible right away through every other pointer to the same bytes.
 
 ## Arithmetic and comparison
 

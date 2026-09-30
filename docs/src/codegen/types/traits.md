@@ -6,15 +6,15 @@ derived, some are written out; which is which depends on the model. Enums derive
 `Copy, Clone` in the unsafe model regardless of their fields; the table below is
 for structs.
 
-| Trait                                  | Unsafe model                                                          | Refcount model                                      |
-| -------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------- |
-| `Copy`                                 | derived when every field is copyable                                  | never                                               |
-| `Clone`                                | derived                                                               | derived when member-wise, else hand-written         |
-| `Default`                              | derived when possible, else hand-written                              | same                                                |
-| `Drop`                                 | not emitted ([#310](https://github.com/Cpp2Rust/cpp2rust/issues/310)) | hand-written from a user destructor with a body     |
-| `Ord`, `PartialOrd`, `PartialEq`, `Eq` | hand-written from `operator<`                                         | same                                                |
-| `ByteRepr`                             | not needed                                                            | hand-written for every record and enum              |
-| `Record`                               | not needed                                                            | derived for every struct                            |
+| Trait                                  | Unsafe model                                                          | Refcount model                                  |
+| -------------------------------------- | --------------------------------------------------------------------- | ----------------------------------------------- |
+| `Copy`                                 | derived when every field is copyable                                  | never                                           |
+| `Clone`                                | derived                                                               | derived when member-wise, else hand-written     |
+| `Default`                              | derived when possible, else hand-written                              | same                                            |
+| `Drop`                                 | not emitted ([#310](https://github.com/Cpp2Rust/cpp2rust/issues/310)) | hand-written from a user destructor with a body |
+| `Ord`, `PartialOrd`, `PartialEq`, `Eq` | hand-written from `operator<`                                         | same                                            |
+| `ByteRepr`                             | not needed                                                            | hand-written for every record and enum          |
+| `Record`                               | not needed                                                            | derived for every struct                        |
 
 ## Copy and Clone
 
@@ -27,14 +27,14 @@ classes with an implicit or defaulted copy constructor, which copy each field
 with its own `clone`, i.e., its C++ copy constructor. The exceptions are fields
 that are or nest a `Value`, such as `std::vector<int>` (`Value<Vec<i32>>`, see
 [Boxing](boxing.md)) or `std::vector<std::vector<int>>`
-(`Value<Vec<Value<Vec<i32>>>>`), whose derived `clone` would share the
-`Value`s instead of copying them; the generated `Clone` then translates the
-implicit copy constructor, which copies them deeply.
+(`Value<Vec<Value<Vec<i32>>>>`), whose derived `clone` would share the `Value`s
+instead of copying them; the generated `Clone` then translates the implicit copy
+constructor, which copies them deeply.
 
 A user-defined copy constructor takes a `Ptr` to the source, while `clone` only
-has `&self`. `clone` passes it a pointer to a shallow copy of `self`, built field
-by field without running any copy constructor, so that the source is copied
-exactly once.
+has `&self`. `clone` passes it a pointer to a shallow copy of `self`, built
+field by field without running any copy constructor, so that the source is
+copied exactly once.
 
 This is what gives struct assignment and pass-by-value C++'s member-by-member
 copy.

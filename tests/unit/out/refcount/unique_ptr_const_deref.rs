@@ -60,8 +60,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
-    ((field_ptr!(h, val) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
-        .write(Some(Rc::new(RefCell::new(10))).take());
+    (field_ptr!(h, val) as Ptr<Option<Value<i32>>>).write(Some(Rc::new(RefCell::new(10))).take());
     ({ write_val_1((h.as_pointer()), 42) });
     assert!((({ read_val_0((h.as_pointer()),) }) == 42));
     return 0;
@@ -71,7 +70,7 @@ pub trait HolderImpl {
 }
 impl HolderImpl for Ptr<Holder> {
     fn move_assign(&self, _a0: Ptr<Holder>) -> Ptr<Holder> {
-        ((field_ptr!((*self), val) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
+        (field_ptr!((*self), val) as Ptr<Option<Value<i32>>>)
             .write(_a0.with_mut(|__s: &mut Holder| __s.val.take()));
         return (*self).clone();
     }

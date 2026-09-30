@@ -50,13 +50,13 @@ impl ByteRepr for Holder {
         48
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.values.to_bytes(&mut buf[0..24]);
-        self.points.to_bytes(&mut buf[24..48]);
+        (*self.values.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.points.borrow()).to_bytes(&mut buf[24..48]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            values: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
-            points: <Value<Vec<Point>>>::from_bytes(&buf[24..48]),
+            values: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            points: Rc::new(RefCell::new(<Vec<Point>>::from_bytes(&buf[24..48]))),
         }
     }
 }

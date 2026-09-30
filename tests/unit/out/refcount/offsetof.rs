@@ -32,18 +32,30 @@ impl ByteRepr for Layout {
         }
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Frame {
     #[offset(0)]
     pub tag: u16,
     #[offset(2)]
-    pub body: Box<[u8]>,
+    pub body: Value<Box<[u8]>>,
+}
+impl Clone for Frame {
+    fn clone(&self) -> Self {
+        let __this: Value<Frame> = Rc::new(RefCell::new(Self {
+            tag: { self.tag },
+            body: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 64, _>(
+                |__i: usize| (*self.body.borrow())[(__i) as usize],
+            )))),
+        }));
+        let this: Ptr<Frame> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Frame {
     fn default() -> Self {
         Frame {
             tag: 0_u16,
-            body: (0..64).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            body: Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -53,12 +65,12 @@ impl ByteRepr for Frame {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.tag.to_bytes(&mut buf[0..2]);
-        self.body.to_bytes(&mut buf[2..66]);
+        (*self.body.borrow()).to_bytes(&mut buf[2..66]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             tag: <u16>::from_bytes(&buf[0..2]),
-            body: <Box<[u8]>>::from_bytes(&buf[2..66]),
+            body: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[2..66]))),
         }
     }
 }

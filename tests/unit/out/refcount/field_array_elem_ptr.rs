@@ -1,0 +1,200 @@
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::cell::RefCell;
+use std::collections::BTreeMap;
+use std::io::prelude::*;
+use std::io::{Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::rc::{Rc, Weak};
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
+pub struct Point {
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
+}
+impl ByteRepr for Point {
+    fn byte_size() -> usize {
+        8
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
+        }
+    }
+}
+#[derive(Record, VaArg, FnPtrArg)]
+pub struct Shape {
+    #[offset(0)]
+    pub id: i32,
+    #[offset(4)]
+    pub coords: Value<Box<[i32]>>,
+    #[offset(20)]
+    pub points: Value<Box<[Point]>>,
+    #[offset(44)]
+    pub tail: i32,
+}
+impl Clone for Shape {
+    fn clone(&self) -> Self {
+        let __this: Value<Shape> = Rc::new(RefCell::new(Self {
+            id: { self.id },
+            coords: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 4, _>(
+                |__i: usize| (*self.coords.borrow())[(__i) as usize],
+            )))),
+            points: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.points.borrow())[(__i) as usize].clone(),
+            )))),
+            tail: { self.tail },
+        }));
+        let this: Ptr<Shape> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for Shape {
+    fn default() -> Self {
+        Shape {
+            id: 0_i32,
+            coords: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            points: Rc::new(RefCell::new(
+                (0..3).map(|_| <Point>::default()).collect::<Box<[Point]>>(),
+            )),
+            tail: 0_i32,
+        }
+    }
+}
+impl ByteRepr for Shape {
+    fn byte_size() -> usize {
+        48
+    }
+    fn to_bytes(&self, buf: &mut [u8]) {
+        self.id.to_bytes(&mut buf[0..4]);
+        (*self.coords.borrow()).to_bytes(&mut buf[4..20]);
+        (*self.points.borrow()).to_bytes(&mut buf[20..44]);
+        self.tail.to_bytes(&mut buf[44..48]);
+    }
+    fn from_bytes(buf: &[u8]) -> Self {
+        Self {
+            id: <i32>::from_bytes(&buf[0..4]),
+            coords: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[4..20]))),
+            points: Rc::new(RefCell::new(<Box<[Point]>>::from_bytes(&buf[20..44]))),
+            tail: <i32>::from_bytes(&buf[44..48]),
+        }
+    }
+}
+pub fn sum_0(p: Ptr<i32>, n: i32) -> i32 {
+    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
+    let n: Value<i32> = Rc::new(RefCell::new(n));
+    let s: Value<i32> = Rc::new(RefCell::new(0));
+    let i: Value<i32> = Rc::new(RefCell::new(0));
+    'loop_: while ((*i.borrow()) < (*n.borrow())) {
+        let __rhs = ((*p.borrow()).offset((*i.borrow()) as isize).read());
+        (*s.borrow_mut()) += __rhs;
+        (*i.borrow_mut()).prefix_inc();
+    }
+    return (*s.borrow());
+}
+pub fn set_y_1(p: Ptr<Point>, y: i32) {
+    let p: Value<Ptr<Point>> = Rc::new(RefCell::new(p));
+    let y: Value<i32> = Rc::new(RefCell::new(y));
+    (*p.borrow()).with_mut(|__s: &mut Point| __s.y = (*y.borrow()));
+}
+pub fn main() {
+    __cpp2rust_init_globals();
+    std::process::exit(main_0());
+}
+fn main_0() -> i32 {
+    let s: Value<Shape> = Rc::new(RefCell::new(Shape {
+        id: 1,
+        coords: Rc::new(RefCell::new(Box::new([10, 20, 30, 40]))),
+        points: Rc::new(RefCell::new(Box::new([
+            Point { x: 1, y: 2 },
+            Point { x: 3, y: 4 },
+            Point { x: 5, y: 6 },
+        ]))),
+        tail: 99,
+    }));
+    let c: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        (({ (*s.borrow()).coords.as_pointer() } as Ptr<i32>).offset(1)),
+    ));
+    assert!((((*c.borrow()).read()) == 20));
+    (*c.borrow()).write(21);
+    assert!(((*(*s.borrow()).coords.borrow())[(1) as usize] == 21));
+    (*c.borrow_mut()) += 2;
+    assert!((((*c.borrow()).read()) == 40));
+    assert!(
+        (((*c.borrow()).clone() - (({ (*s.borrow()).coords.as_pointer() } as Ptr<i32>).offset(0)))
+            as i64
+            == 3_i64)
+    );
+    assert!((((*c.borrow()).offset((-1_i32) as isize).read()) == 30));
+    assert!((({ sum_0(({ (*s.borrow()).coords.as_pointer() } as Ptr::<i32>), 4,) }) == 101));
+    assert!(
+        (({
+            sum_0(
+                (({ (*s.borrow()).coords.as_pointer() } as Ptr<i32>).offset(2)),
+                2,
+            )
+        }) == 70)
+    );
+    let p: Value<Ptr<Point>> = Rc::new(RefCell::new(
+        (({ (*s.borrow()).points.as_pointer() } as Ptr<Point>).offset(1)),
+    ));
+    assert!(((*p.borrow()).with(|__s: &Point| __s.x) == 3));
+    ({ set_y_1((*p.borrow()).offset((1) as isize), 60) });
+    assert!(({ (*(*s.borrow()).points.borrow())[(2) as usize].y } == 60));
+    let py: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        (field_ptr!(
+            ({ (*s.borrow()).points.as_pointer() } as Ptr<Point>).offset(0),
+            y
+        )),
+    ));
+    (*py.borrow()).write(7);
+    assert!(({ (*(*s.borrow()).points.borrow())[(0) as usize].y } == 7));
+    let px: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        (field_ptr!(((*p.borrow()).offset((1) as isize)), x)),
+    ));
+    {
+        let _ptr = (*px.borrow()).clone();
+        _ptr.write(_ptr.read() + 50)
+    };
+    assert!(({ (*(*s.borrow()).points.borrow())[(2) as usize].x } == 55));
+    let sp: Value<Ptr<Shape>> = Rc::new(RefCell::new((s.as_pointer())));
+    let d: Value<Ptr<i32>> = Rc::new(RefCell::new(
+        ((*sp.borrow()).with(|__s: &Shape| __s.coords.as_pointer()) as Ptr<i32>)
+            .offset((3) as isize),
+    ));
+    (*d.borrow()).write(41);
+    assert!(((*(*s.borrow()).coords.borrow())[(3) as usize] == 41));
+    let __rhs = {
+        let _lhs = (*sp.borrow()).with(|__s: &Shape| (*__s.coords.borrow())[(0) as usize]);
+        _lhs + (*sp.borrow()).with(|__s: &Shape| (*__s.points.borrow())[(0) as usize].x)
+    };
+    (*sp.borrow()).with(|__s: &Shape| (*__s.points.borrow_mut())[(1) as usize].y = __rhs);
+    assert!(({ (*(*s.borrow()).points.borrow())[(1) as usize].y } == 11));
+    let q: Value<Ptr<Point>> = Rc::new(RefCell::new(
+        ((*sp.borrow()).with(|__s: &Shape| __s.points.as_pointer()) as Ptr<Point>),
+    ));
+    (*q.borrow())
+        .offset((2) as isize)
+        .with_mut(|__s: &mut Point| __s.x = 8);
+    assert!(((*sp.borrow()).with(|__s: &Shape| (*__s.points.borrow())[(2) as usize].x) == 8));
+    let t: Value<Shape> = Rc::new(RefCell::new((*s.borrow()).clone()));
+    (*(*t.borrow()).coords.borrow_mut())[(0) as usize] = 0;
+    (*(*t.borrow()).points.borrow_mut())[(0) as usize].x = 0;
+    assert!(
+        ((*(*s.borrow()).coords.borrow())[(0) as usize] == 10)
+            && ({ (*(*s.borrow()).points.borrow())[(0) as usize].x } == 1)
+    );
+    assert!(
+        (((*(*t.borrow()).coords.borrow())[(1) as usize] == 21)
+            && ({ (*(*t.borrow()).points.borrow())[(2) as usize].y } == 60))
+            && ({ (*t.borrow()).tail } == 99)
+    );
+    return 0;
+}
+pub fn __cpp2rust_init_globals() {}

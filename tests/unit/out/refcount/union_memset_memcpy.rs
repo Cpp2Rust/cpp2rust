@@ -6,18 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct shape_a {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
-    pub pad: Box<[u8]>,
+    pub pad: Value<Box<[u8]>>,
+}
+impl Clone for shape_a {
+    fn clone(&self) -> Self {
+        Self {
+            code: self.code.clone(),
+            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
+        }
+    }
 }
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
             code: 0_u16,
-            pad: (0..14).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -27,16 +35,16 @@ impl ByteRepr for shape_a {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.code.to_bytes(&mut buf[0..2]);
-        self.pad.to_bytes(&mut buf[2..16]);
+        (*self.pad.borrow()).to_bytes(&mut buf[2..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             code: <u16>::from_bytes(&buf[0..2]),
-            pad: <Box<[u8]>>::from_bytes(&buf[2..16]),
+            pad: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[2..16]))),
         }
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct shape_b {
     #[offset(0)]
     pub code: u16,
@@ -45,7 +53,17 @@ pub struct shape_b {
     #[offset(4)]
     pub hi: u32,
     #[offset(8)]
-    pub fill: Box<[u8]>,
+    pub fill: Value<Box<[u8]>>,
+}
+impl Clone for shape_b {
+    fn clone(&self) -> Self {
+        Self {
+            code: self.code.clone(),
+            lo: self.lo.clone(),
+            hi: self.hi.clone(),
+            fill: Rc::new(RefCell::new((*self.fill.borrow()).clone())),
+        }
+    }
 }
 impl Default for shape_b {
     fn default() -> Self {
@@ -53,7 +71,7 @@ impl Default for shape_b {
             code: 0_u16,
             lo: 0_u16,
             hi: 0_u32,
-            fill: (0..8).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            fill: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -65,14 +83,14 @@ impl ByteRepr for shape_b {
         self.code.to_bytes(&mut buf[0..2]);
         self.lo.to_bytes(&mut buf[2..4]);
         self.hi.to_bytes(&mut buf[4..8]);
-        self.fill.to_bytes(&mut buf[8..16]);
+        (*self.fill.borrow()).to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             code: <u16>::from_bytes(&buf[0..2]),
             lo: <u16>::from_bytes(&buf[2..4]),
             hi: <u32>::from_bytes(&buf[4..8]),
-            fill: <Box<[u8]>>::from_bytes(&buf[8..16]),
+            fill: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[8..16]))),
         }
     }
 }

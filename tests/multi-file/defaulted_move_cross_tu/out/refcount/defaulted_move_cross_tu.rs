@@ -11,7 +11,7 @@ pub struct S {
     #[offset(0)]
     pub v: Value<Vec<i32>>,
     #[offset(24)]
-    pub n: Box<[i32]>,
+    pub n: Value<Box<[i32]>>,
 }
 impl S {
     pub fn new(x: i32) -> Self {
@@ -21,7 +21,7 @@ impl S {
                 (*x.borrow());
                 ((*x.borrow()) as usize) as usize
             ])),
-            n: Box::new([(*x.borrow()), ((*x.borrow()) + 1)]),
+            n: Rc::new(RefCell::new(Box::new([(*x.borrow()), ((*x.borrow()) + 1)]))),
         }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -33,9 +33,9 @@ impl S {
                     _a0.with(|__s: &S| std::mem::take(&mut (*__s.v.borrow_mut()))),
                 ))
             },
-            n: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).n[(__i) as usize]
-            })),
+            n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*_a0.with(|__s: &S| __s.n.clone()).borrow())[(__i) as usize],
+            )))),
         }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -45,7 +45,7 @@ impl Default for S {
     fn default() -> Self {
         S {
             v: Rc::new(RefCell::new(Default::default())),
-            n: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            n: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
     }
 }
@@ -57,13 +57,13 @@ impl ByteRepr for S {
         32
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..24]);
-        self.n.to_bytes(&mut buf[24..32]);
+        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.n.borrow()).to_bytes(&mut buf[24..32]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
-            n: <Box<[i32]>>::from_bytes(&buf[24..32]),
+            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            n: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[24..32]))),
         }
     }
 }
@@ -72,9 +72,9 @@ pub fn sum_0(s: Ptr<S>) -> i32 {
     return {
         let _lhs = {
             let _lhs = (s.with(|__s: &S| (*__s.v.borrow()).len()) as i32);
-            _lhs + s.with(|__s: &S| __s.n[(0) as usize])
+            _lhs + s.with(|__s: &S| (*__s.n.borrow())[(0) as usize])
         };
-        _lhs + s.with(|__s: &S| __s.n[(1) as usize])
+        _lhs + s.with(|__s: &S| (*__s.n.borrow())[(1) as usize])
     };
 }
 pub fn main() {
@@ -105,11 +105,13 @@ impl SImpl for Ptr<S> {
         ((*self).with(|__s: &S| __s.v.as_pointer()) as Ptr<Vec<i32>>)
             .write(_a0.with(|__s: &S| std::mem::take(&mut (*__s.v.borrow_mut()))));
         {
-            ((field_ptr!((*self), n)) as Ptr<i32>).to_any().memcpy(
-                &((field_ptr!(_a0, n)) as Ptr<i32>).to_any(),
-                8_usize as usize,
-            );
-            ((field_ptr!((*self), n)) as Ptr<i32>).to_any()
+            (((*self).with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &((_a0.with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*self).with(|__s: &S| __s.n.as_pointer())) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }

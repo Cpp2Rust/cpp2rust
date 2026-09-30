@@ -12,9 +12,9 @@ that owns the type pushes one before printing it:
 
 - `FullRefCount`: pushed by variable declarations; `Convert(QualType)` wraps the
   result in `Value<...>`.
-- `Pointee`: pushed by field declarations; the bare type is printed, but arrays
-  are boxed slices, as in a `Value`. Fields whose type maps to a `Vec`
-  (`std::vector`, `std::string`) push `FullRefCount` instead (see below).
+- `Pointee`: pushed by field declarations; the bare type is printed. Fields that
+  are arrays, or whose type maps to a `Vec` or a `Box` (`std::vector`,
+  `std::string`), push `FullRefCount` instead (see below).
 - `Unboxed`: pushed by parameter lists, return types, and record names; the bare
   type is printed.
 - `Ptr`: pushed by a pointer type for its pointee; also printed bare.
@@ -25,8 +25,7 @@ The result by position:
 | ------------------------------------------- | ------------ | ------------- | -------------------- |
 | local variable, global                      | `Value<i32>` | `Value<Item>` | `Value<Box<[i32]>>`  |
 | function parameter, return type             | `i32`        | `Item`        | decays to `Ptr<i32>` |
-| struct field                                | `i32`        | `Item`        | `Box<[i32]>`         |
-| struct field of type `std::vector<int>`     |              |               | `Value<Vec<i32>>`    |
+| struct field                                | `i32`        | `Item`        | `Value<Box<[i32]>>`  |
 | pointee of `Ptr<T>`, element of a container | `i32`        | `Item`        | `Box<[i32]>`         |
 
 Parameters arrive unboxed and are re-boxed by the function preamble; return
@@ -58,10 +57,11 @@ the outer `Value<...>` of the declaration is added.
 
 Struct fields are stored inline, so that a whole struct is a single allocation,
 and a pointer to a field records the struct's allocation and the field's byte
-offset (see [Pointers](pointers.md)). Vectors are the exception: a vector field
-is a `Value<Vec<T>>` of its own. The elements of a vector live outside the
-struct, and their number changes, so a pointer to an element, or to a field of
-an element, has the vector as its allocation instead of the struct:
+offset (see [Pointers](pointers.md)). Arrays and vectors are the exception: an
+array field is a `Value<Box<[T]>>` of its own, and a vector field a
+`Value<Vec<T>>`. A pointer to an element, or to a field of an element, then has
+the array or the vector as its allocation instead of the struct, and pointer
+arithmetic moves between elements as for any other array:
 
 ```cpp
 struct Holder { std::vector<Point> points; int n; };
@@ -78,7 +78,7 @@ pub struct Holder {
 (*(*h.borrow()).points.borrow_mut())[(0_usize) as usize].y = 5;
 ```
 
-A vector field is accessed like a local vector, through its own `borrow()` or
-`borrow_mut()`, and the struct is only borrowed immutably to reach it. As
-`Value` is shared on `clone()`, structs with vector fields implement `Clone` by
-copying the vectors, instead of deriving it.
+An array or vector field is accessed like a local one, through its own
+`borrow()` or `borrow_mut()`, and the struct is only borrowed immutably to reach
+it. As `Value` is shared on `clone()`, structs with such fields implement
+`Clone` by copying the arrays and vectors, instead of deriving it.

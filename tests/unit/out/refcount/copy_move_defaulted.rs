@@ -24,14 +24,14 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Explicit {
     #[offset(0)]
     pub v: i32,
     #[offset(4)]
     pub inner: Inner,
     #[offset(8)]
-    pub arr: Box<[i32]>,
+    pub arr: Value<Box<[i32]>>,
 }
 impl Explicit {
     pub fn new(v: i32) -> Self {
@@ -41,7 +41,20 @@ impl Explicit {
             inner: Inner {
                 x: ((*v.borrow()) * 10),
             },
-            arr: Box::new([(*v.borrow()), ((*v.borrow()) + 1)]),
+            arr: Rc::new(RefCell::new(Box::new([(*v.borrow()), ((*v.borrow()) + 1)]))),
+        }));
+        let this: Ptr<Explicit> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Clone for Explicit {
+    fn clone(&self) -> Self {
+        let __this: Value<Explicit> = Rc::new(RefCell::new(Self {
+            v: { self.v },
+            inner: { self.inner.clone() },
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*self.arr.borrow())[(__i) as usize],
+            )))),
         }));
         let this: Ptr<Explicit> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -52,7 +65,7 @@ impl Default for Explicit {
         Explicit {
             v: 0_i32,
             inner: <Inner>::default(),
-            arr: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
     }
 }
@@ -67,32 +80,49 @@ impl ByteRepr for Explicit {
     fn to_bytes(&self, buf: &mut [u8]) {
         self.v.to_bytes(&mut buf[0..4]);
         self.inner.to_bytes(&mut buf[4..8]);
-        self.arr.to_bytes(&mut buf[8..16]);
+        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             v: <i32>::from_bytes(&buf[0..4]),
             inner: <Inner>::from_bytes(&buf[4..8]),
-            arr: <Box<[i32]>>::from_bytes(&buf[8..16]),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[8..16]))),
         }
     }
 }
+<<<<<<< HEAD
 #[derive(Clone, Record, VaArg, FnPtrArg)]
 >>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+=======
+#[derive(Record, VaArg, FnPtrArg)]
+>>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Implicit {
     #[offset(0)]
     pub v: i32,
     #[offset(4)]
     pub inner: Inner,
     #[offset(8)]
-    pub arr: Box<[i32]>,
+    pub arr: Value<Box<[i32]>>,
+}
+impl Clone for Implicit {
+    fn clone(&self) -> Self {
+        let __this: Value<Implicit> = Rc::new(RefCell::new(Self {
+            v: { self.v },
+            inner: { self.inner.clone() },
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*self.arr.borrow())[(__i) as usize],
+            )))),
+        }));
+        let this: Ptr<Implicit> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Implicit {
     fn default() -> Self {
         Implicit {
             v: 0_i32,
             inner: <Inner>::default(),
-            arr: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
     }
 }
@@ -103,13 +133,13 @@ impl ByteRepr for Implicit {
     fn to_bytes(&self, buf: &mut [u8]) {
         self.v.to_bytes(&mut buf[0..4]);
         self.inner.to_bytes(&mut buf[4..8]);
-        self.arr.to_bytes(&mut buf[8..16]);
+        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             v: <i32>::from_bytes(&buf[0..4]),
             inner: <Inner>::from_bytes(&buf[4..8]),
-            arr: <Box<[i32]>>::from_bytes(&buf[8..16]),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[8..16]))),
         }
     }
 }
@@ -213,7 +243,7 @@ pub struct Buffer {
     #[offset(48)]
     pub n: i32,
     #[offset(52)]
-    pub arr: Box<[i32]>,
+    pub arr: Value<Box<[i32]>>,
 }
 impl Buffer {
     pub fn new(n: i32) -> Self {
@@ -225,7 +255,7 @@ impl Buffer {
             ])),
             rows: Rc::new(RefCell::new(Vec::new())),
             n: (*n.borrow()),
-            arr: Box::new([(*n.borrow()), ((*n.borrow()) + 1)]),
+            arr: Rc::new(RefCell::new(Box::new([(*n.borrow()), ((*n.borrow()) + 1)]))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         {
@@ -248,9 +278,9 @@ impl Buffer {
                 })))
             },
             n: { _a0.with(|__s: &Buffer| __s.n) },
-            arr: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).arr[(__i) as usize]
-            })),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*_a0.with(|__s: &Buffer| __s.arr.clone()).borrow())[(__i) as usize],
+            )))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -262,7 +292,7 @@ impl Default for Buffer {
             data: Rc::new(RefCell::new(Default::default())),
             rows: Rc::new(RefCell::new(Vec::new())),
             n: 0_i32,
-            arr: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
         }
     }
 }
@@ -275,17 +305,19 @@ impl ByteRepr for Buffer {
         64
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..24]);
-        self.rows.to_bytes(&mut buf[24..48]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.rows.borrow()).to_bytes(&mut buf[24..48]);
         self.n.to_bytes(&mut buf[48..52]);
-        self.arr.to_bytes(&mut buf[52..60]);
+        (*self.arr.borrow()).to_bytes(&mut buf[52..60]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
-            rows: <Value<Vec<Value<Vec<i32>>>>>::from_bytes(&buf[24..48]),
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
+            rows: Rc::new(RefCell::new(<Vec<Value<Vec<i32>>>>::from_bytes(
+                &buf[24..48],
+            ))),
             n: <i32>::from_bytes(&buf[48..52]),
-            arr: <Box<[i32]>>::from_bytes(&buf[52..60]),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[52..60]))),
         }
     }
 }
@@ -297,7 +329,7 @@ pub struct Owner {
     #[offset(24)]
     pub n: i32,
     #[offset(28)]
-    pub arr: Box<[i32]>,
+    pub arr: Value<Box<[i32]>>,
     #[offset(40)]
     pub p: Option<Value<i32>>,
 }
@@ -310,9 +342,9 @@ impl Owner {
                 })))
             },
             n: { _a0.with(|__s: &Owner| __s.n) },
-            arr: Box::new(std::array::from_fn::<_, 2, _>(|__i: usize| {
-                (*_a0.upgrade().deref()).arr[(__i) as usize]
-            })),
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*_a0.with(|__s: &Owner| __s.arr.clone()).borrow())[(__i) as usize],
+            )))),
             p: { _a0.with_mut(|__s: &mut Owner| __s.p.take()) },
         }));
         let this: Ptr<Owner> = __this.as_pointer();
@@ -324,7 +356,7 @@ impl Default for Owner {
         Owner {
             data: Rc::new(RefCell::new(Default::default())),
             n: 0_i32,
-            arr: (0..2).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            arr: Rc::new(RefCell::new((0..2).map(|_| 0_i32).collect::<Box<[i32]>>())),
             p: None,
         }
     }
@@ -338,16 +370,16 @@ impl ByteRepr for Owner {
         48
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..24]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
         self.n.to_bytes(&mut buf[24..28]);
-        self.arr.to_bytes(&mut buf[28..36]);
+        (*self.arr.borrow()).to_bytes(&mut buf[28..36]);
         self.p.to_bytes(&mut buf[40..48]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
             n: <i32>::from_bytes(&buf[24..28]),
-            arr: <Box<[i32]>>::from_bytes(&buf[28..36]),
+            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[28..36]))),
             p: <Option<Value<i32>>>::from_bytes(&buf[40..48]),
         }
     }
@@ -412,11 +444,11 @@ pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
         let _lhs = a.with(|__s: &Explicit| __s.inner.x);
         _lhs == b.with(|__s: &Explicit| __s.inner.x)
     })) && ({
-        let _lhs = a.with(|__s: &Explicit| __s.arr[(0) as usize]);
-        _lhs == b.with(|__s: &Explicit| __s.arr[(0) as usize])
+        let _lhs = a.with(|__s: &Explicit| (*__s.arr.borrow())[(0) as usize]);
+        _lhs == b.with(|__s: &Explicit| (*__s.arr.borrow())[(0) as usize])
     })) && ({
-        let _lhs = a.with(|__s: &Explicit| __s.arr[(1) as usize]);
-        _lhs == b.with(|__s: &Explicit| __s.arr[(1) as usize])
+        let _lhs = a.with(|__s: &Explicit| (*__s.arr.borrow())[(1) as usize]);
+        _lhs == b.with(|__s: &Explicit| (*__s.arr.borrow())[(1) as usize])
     });
 }
 pub fn main() {
@@ -460,24 +492,24 @@ fn main_0() -> i32 {
     let i: Value<Implicit> = Rc::new(RefCell::new(Implicit {
         v: 5,
         inner: Inner { x: 50 },
-        arr: Box::new([5, 6]),
+        arr: Rc::new(RefCell::new(Box::new([5, 6]))),
     }));
     let j: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
     let k: Value<Implicit> = Rc::new(RefCell::new((*i.borrow()).clone()));
     assert!(
         (({ (*j.borrow()).v } == 5) && ({ (*j.borrow()).inner.x } == 50))
-            && ((*j.borrow()).arr[(1) as usize] == 6)
+            && ((*(*j.borrow()).arr.borrow())[(1) as usize] == 6)
     );
     assert!(({ (*i.borrow()).v } == 5) && ({ (*k.borrow()).v } == 5));
     let l: Value<Implicit> = Rc::new(RefCell::new(Implicit {
         v: 0,
         inner: Inner { x: 0 },
-        arr: Box::new([0, 0]),
+        arr: Rc::new(RefCell::new(Box::new([0, 0]))),
     }));
     (*l.borrow_mut()) = (*j.borrow()).clone();
     assert!(
         (({ (*l.borrow()).v } == 5) && ({ (*l.borrow()).inner.x } == 50))
-            && ((*l.borrow()).arr[(0) as usize] == 5)
+            && ((*(*l.borrow()).arr.borrow())[(0) as usize] == 5)
     );
     let vec_: Value<Vec<Explicit>> = Rc::new(RefCell::new(Vec::new()));
     {
@@ -537,7 +569,7 @@ fn main_0() -> i32 {
     ({ BufferImpl::move_assign(&r.as_pointer(), q.as_pointer()) });
     assert!(
         ((({ (*r.borrow()).n } == 3) && ((*(*r.borrow()).data.borrow()).len() == 3_usize))
-            && ((*r.borrow()).arr[(1) as usize] == 4))
+            && ((*(*r.borrow()).arr.borrow())[(1) as usize] == 4))
             && ((*(*q.borrow()).data.borrow()).is_empty())
     );
     assert!(
@@ -579,8 +611,8 @@ fn main_0() -> i32 {
     let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     (*(*o1.borrow()).data.borrow_mut()).push(5);
     (*o1.borrow_mut()).n = 5;
-    (*o1.borrow_mut()).arr[(0) as usize] = 5;
-    (*o1.borrow_mut()).arr[(1) as usize] = 6;
+    (*(*o1.borrow()).arr.borrow_mut())[(0) as usize] = 5;
+    (*(*o1.borrow()).arr.borrow_mut())[(1) as usize] = 6;
     {
         let _p: Ptr<_> = Ptr::alloc(7);
         (*o1.borrow_mut()).p = _p.to_owned_opt()
@@ -588,7 +620,7 @@ fn main_0() -> i32 {
     let o2: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o1.as_pointer() })));
     assert!(
         ((({ (*o2.borrow()).n } == 5) && ((*(*o2.borrow()).data.borrow()).len() == 1_usize))
-            && ((*o2.borrow()).arr[(1) as usize] == 6))
+            && ((*(*o2.borrow()).arr.borrow())[(1) as usize] == 6))
             && ((*(*o2.borrow()).p.as_ref().unwrap().borrow()) == 7)
     );
     assert!(
@@ -599,7 +631,7 @@ fn main_0() -> i32 {
     assert!(
         ((({ (*o3.borrow()).n } == 5)
             && ({ (*(*o3.borrow()).data.borrow())[(0_usize) as usize] } == 5))
-            && ((*o3.borrow()).arr[(0) as usize] == 5))
+            && ((*(*o3.borrow()).arr.borrow())[(0) as usize] == 5))
             && ((*(*o3.borrow()).p.as_ref().unwrap().borrow()) == 7)
     );
     assert!(
@@ -622,7 +654,8 @@ fn main_0() -> i32 {
     let _dtor_h3 = ScopedDestructor::new(&h3, |__p| __p.destructor());
     ({ HolderImpl::move_assign(&h3.as_pointer(), h2.as_pointer()) });
     assert!(
-        ((({ (*h3.borrow()).inner.x } == 4) && ((*h3.borrow()).e.arr[(1) as usize] == 5))
+        ((({ (*h3.borrow()).inner.x } == 4)
+            && ((*(*h3.borrow()).e.arr.borrow())[(1) as usize] == 5))
             && ((*(*h3.borrow()).p.as_ref().unwrap().borrow()) == 9))
             && (((*h2.borrow()).p.as_pointer()).is_null())
     );
@@ -640,11 +673,13 @@ impl BufferImpl for Ptr<Buffer> {
         let __rhs = _a0.with(|__s: &Buffer| __s.n);
         (*self).with_mut(|__s: &mut Buffer| __s.n = __rhs);
         {
-            ((field_ptr!((*self), arr)) as Ptr<i32>).to_any().memcpy(
-                &((field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
-                8_usize as usize,
-            );
-            ((field_ptr!((*self), arr)) as Ptr<i32>).to_any()
+            (((*self).with(|__s: &Buffer| __s.arr.as_pointer())) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &((_a0.with(|__s: &Buffer| __s.arr.as_pointer())) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*self).with(|__s: &Buffer| __s.arr.as_pointer())) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }
@@ -676,7 +711,7 @@ impl HolderImpl for Ptr<Holder> {
         (*self).with_mut(|__s: &mut Holder| __s.inner = __rhs);
         let __rhs = _a0.with(|__s: &Holder| (__s.e).clone());
         (*self).with_mut(|__s: &mut Holder| __s.e = __rhs);
-        ((field_ptr!((*self), p) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
+        (field_ptr!((*self), p) as Ptr<Option<Value<i32>>>)
             .write(_a0.with_mut(|__s: &mut Holder| __s.p.take()));
         return (*self).clone();
     }
@@ -694,13 +729,15 @@ impl OwnerImpl for Ptr<Owner> {
         let __rhs = _a0.with(|__s: &Owner| __s.n);
         (*self).with_mut(|__s: &mut Owner| __s.n = __rhs);
         {
-            ((field_ptr!((*self), arr)) as Ptr<i32>).to_any().memcpy(
-                &((field_ptr!(_a0, arr)) as Ptr<i32>).to_any(),
-                8_usize as usize,
-            );
-            ((field_ptr!((*self), arr)) as Ptr<i32>).to_any()
+            (((*self).with(|__s: &Owner| __s.arr.as_pointer())) as Ptr<i32>)
+                .to_any()
+                .memcpy(
+                    &((_a0.with(|__s: &Owner| __s.arr.as_pointer())) as Ptr<i32>).to_any(),
+                    8_usize as usize,
+                );
+            (((*self).with(|__s: &Owner| __s.arr.as_pointer())) as Ptr<i32>).to_any()
         };
-        ((field_ptr!((*self), p) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
+        (field_ptr!((*self), p) as Ptr<Option<Value<i32>>>)
             .write(_a0.with_mut(|__s: &mut Owner| __s.p.take()));
         return (*self).clone();
     }

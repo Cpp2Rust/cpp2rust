@@ -24,7 +24,7 @@ impl ByteRepr for Bar {
         }
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Foo {
     #[offset(0)]
     pub x: i32,
@@ -33,9 +33,24 @@ pub struct Foo {
     #[offset(16)]
     pub z: Ptr<i32>,
     #[offset(24)]
-    pub a: Box<[i32]>,
+    pub a: Value<Box<[i32]>>,
     #[offset(36)]
     pub bar: Bar,
+}
+impl Clone for Foo {
+    fn clone(&self) -> Self {
+        let __this: Value<Foo> = Rc::new(RefCell::new(Self {
+            x: { self.x },
+            y: { (self.y).clone() },
+            z: { self.z.clone() },
+            a: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.a.borrow())[(__i) as usize],
+            )))),
+            bar: { self.bar.clone() },
+        }));
+        let this: Ptr<Foo> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Foo {
     fn default() -> Self {
@@ -43,7 +58,7 @@ impl Default for Foo {
             x: 0_i32,
             y: <Ptr<i32>>::default(),
             z: Ptr::<i32>::null(),
-            a: (0..3).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            a: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
             bar: <Bar>::default(),
         }
     }
@@ -104,7 +119,7 @@ fn main_0() -> i32 {
         x: 1,
         y: x1.as_pointer(),
         z: (x1.as_pointer()),
-        a: Box::new([0, 1, 2]),
+        a: Rc::new(RefCell::new(Box::new([0, 1, 2]))),
         bar: Bar { w: 10 },
     }));
     assert!(({ (*f1.borrow()).x } == 1));
@@ -134,15 +149,15 @@ fn main_0() -> i32 {
         _lhs == (x1.as_pointer())
     });
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
-    (*f2.borrow_mut()).a[(0) as usize].prefix_inc();
-    (*f2.borrow_mut()).a[(1) as usize].prefix_inc();
-    (*f2.borrow_mut()).a[(2) as usize].prefix_inc();
-    assert!(((*f2.borrow()).a[(0) as usize] == 1));
-    assert!(((*f2.borrow()).a[(1) as usize] == 2));
-    assert!(((*f2.borrow()).a[(2) as usize] == 3));
-    assert!(((*f1.borrow()).a[(0) as usize] == 0));
-    assert!(((*f1.borrow()).a[(1) as usize] == 1));
-    assert!(((*f1.borrow()).a[(2) as usize] == 2));
+    (*(*f2.borrow()).a.borrow_mut())[(0) as usize].prefix_inc();
+    (*(*f2.borrow()).a.borrow_mut())[(1) as usize].prefix_inc();
+    (*(*f2.borrow()).a.borrow_mut())[(2) as usize].prefix_inc();
+    assert!(((*(*f2.borrow()).a.borrow())[(0) as usize] == 1));
+    assert!(((*(*f2.borrow()).a.borrow())[(1) as usize] == 2));
+    assert!(((*(*f2.borrow()).a.borrow())[(2) as usize] == 3));
+    assert!(((*(*f1.borrow()).a.borrow())[(0) as usize] == 0));
+    assert!(((*(*f1.borrow()).a.borrow())[(1) as usize] == 1));
+    assert!(((*(*f1.borrow()).a.borrow())[(2) as usize] == 2));
     (*f2.borrow_mut()).bar.w = 20;
     assert!(({ (*f2.borrow()).bar.w } == 20));
     assert!(({ (*f1.borrow()).bar.w } == 10));

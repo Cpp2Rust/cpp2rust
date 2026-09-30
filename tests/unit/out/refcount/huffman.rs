@@ -500,13 +500,11 @@ impl MinHeapImpl for Ptr<MinHeap> {
         (*self).with_mut(|__s: &mut MinHeap| __s.size = __rhs);
         let __rhs = _a0.with(|__s: &MinHeap| __s.capacity);
         (*self).with_mut(|__s: &mut MinHeap| __s.capacity = __rhs);
-        ((field_ptr!((*self), arr) as Ptr<Option<Value<Box<[Ptr<MinHeapNode>]>>>>)
-            as Ptr<Option<Value<Box<[Ptr<MinHeapNode>]>>>>)
+        (field_ptr!((*self), arr) as Ptr<Option<Value<Box<[Ptr<MinHeapNode>]>>>>)
             .write(_a0.with_mut(|__s: &mut MinHeap| __s.arr.take()));
         let __rhs = _a0.with(|__s: &MinHeap| __s.next);
         (*self).with_mut(|__s: &mut MinHeap| __s.next = __rhs);
-        ((field_ptr!((*self), alloc) as Ptr<Option<Value<Box<[MinHeapNode]>>>>)
-            as Ptr<Option<Value<Box<[MinHeapNode]>>>>)
+        (field_ptr!((*self), alloc) as Ptr<Option<Value<Box<[MinHeapNode]>>>>)
             .write(_a0.with_mut(|__s: &mut MinHeap| __s.alloc.take()));
         return (*self).clone();
     }

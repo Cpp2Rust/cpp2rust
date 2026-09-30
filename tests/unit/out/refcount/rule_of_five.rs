@@ -18,7 +18,7 @@ thread_local!(
 #[derive(Record, VaArg, FnPtrArg)]
 pub struct Buffer {
     #[offset(0)]
-    pub data: Box<[i32]>,
+    pub data: Value<Box<[i32]>>,
     #[offset(16)]
     pub size: i32,
 }
@@ -26,7 +26,7 @@ impl Buffer {
     pub fn new(size: i32) -> Self {
         let size: Value<i32> = Rc::new(RefCell::new(size));
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: (*size.borrow()),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
@@ -37,7 +37,7 @@ impl Buffer {
             } else {
                 -1_i32
             };
-            this.with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            this.with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -45,14 +45,14 @@ impl Buffer {
     }
     pub fn copy_from(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: { o.with(|__s: &Buffer| __s.size) },
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = o.with(|__s: &Buffer| __s.data[(*i.borrow()) as usize]);
-            this.with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            let __rhs = o.with(|__s: &Buffer| (*__s.data.borrow())[(*i.borrow()) as usize]);
+            this.with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             (*i.borrow_mut()).prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -61,16 +61,16 @@ impl Buffer {
     }
     pub fn move_from(o: Ptr<Buffer>) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: { o.with(|__s: &Buffer| __s.size) },
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = o.with(|__s: &Buffer| __s.data[(*i.borrow()) as usize]);
-            this.with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            let __rhs = o.with(|__s: &Buffer| (*__s.data.borrow())[(*i.borrow()) as usize]);
+            this.with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             let __rhs = -1_i32;
-            o.with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            o.with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             (*i.borrow_mut()).prefix_inc();
         }
         o.with_mut(|__s: &mut Buffer| __s.size = 0);
@@ -91,7 +91,7 @@ impl Clone for Buffer {
 impl Default for Buffer {
     fn default() -> Self {
         Buffer {
-            data: (0..4).map(|_| 0_i32).collect::<Box<[i32]>>(),
+            data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
             size: 0_i32,
         }
     }
@@ -104,12 +104,12 @@ impl ByteRepr for Buffer {
         20
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..16]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..16]);
         self.size.to_bytes(&mut buf[16..20]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: <Box<[i32]>>::from_bytes(&buf[0..16]),
+            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..16]))),
             size: <i32>::from_bytes(&buf[16..20]),
         }
     }
@@ -135,24 +135,30 @@ fn main_0() -> i32 {
             ((alive_0.with(|rc| *rc.borrow()) == 2) && (copies_1.with(|rc| *rc.borrow()) == 1))
                 && (moves_2.with(|rc| *rc.borrow()) == 0)
         );
-        (*b.borrow_mut()).data[(0) as usize] = 100;
-        assert!(((*a.borrow()).data[(0) as usize] == 0));
+        (*(*b.borrow()).data.borrow_mut())[(0) as usize] = 100;
+        assert!(((*(*a.borrow()).data.borrow())[(0) as usize] == 0));
         let c: Value<Buffer> = Rc::new(RefCell::new(Buffer::move_from({ a.as_pointer() })));
         let _dtor_c = ScopedDestructor::new(&c, |__p| __p.destructor());
         assert!((alive_0.with(|rc| *rc.borrow()) == 3) && (moves_2.with(|rc| *rc.borrow()) == 1));
-        assert!(({ (*a.borrow()).size } == 0) && ((*a.borrow()).data[(0) as usize] == -1_i32));
-        assert!(({ (*c.borrow()).size } == 4) && ((*c.borrow()).data[(3) as usize] == 3));
+        assert!(
+            ({ (*a.borrow()).size } == 0)
+                && ((*(*a.borrow()).data.borrow())[(0) as usize] == -1_i32)
+        );
+        assert!(
+            ({ (*c.borrow()).size } == 4) && ((*(*c.borrow()).data.borrow())[(3) as usize] == 3)
+        );
         let d: Value<Buffer> = Rc::new(RefCell::new(({ make_3(2) })));
         let _dtor_d = ScopedDestructor::new(&d, |__p| __p.destructor());
         assert!(({ (*d.borrow()).size } == 2) && (moves_2.with(|rc| *rc.borrow()) == 2));
         ({ BufferImpl::copy_assign(&d.as_pointer(), b.as_pointer()) });
         assert!(
-            (({ (*d.borrow()).size } == 4) && ((*d.borrow()).data[(0) as usize] == 100))
+            (({ (*d.borrow()).size } == 4)
+                && ((*(*d.borrow()).data.borrow())[(0) as usize] == 100))
                 && (copies_1.with(|rc| *rc.borrow()) == 2)
         );
         ({ BufferImpl::move_assign(&d.as_pointer(), c.as_pointer()) });
         assert!(
-            (((*d.borrow()).data[(0) as usize] == 0) && ({ (*c.borrow()).size } == 0))
+            (((*(*d.borrow()).data.borrow())[(0) as usize] == 0) && ({ (*c.borrow()).size } == 0))
                 && (moves_2.with(|rc| *rc.borrow()) == 3)
         );
         ({
@@ -181,8 +187,8 @@ impl BufferImpl for Ptr<Buffer> {
         (*self).with_mut(|__s: &mut Buffer| __s.size = __rhs);
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = o.with(|__s: &Buffer| __s.data[(*i.borrow()) as usize]);
-            (*self).with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            let __rhs = o.with(|__s: &Buffer| (*__s.data.borrow())[(*i.borrow()) as usize]);
+            (*self).with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             (*i.borrow_mut()).prefix_inc();
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -196,10 +202,10 @@ impl BufferImpl for Ptr<Buffer> {
         (*self).with_mut(|__s: &mut Buffer| __s.size = __rhs);
         let i: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*i.borrow()) < 4) {
-            let __rhs = o.with(|__s: &Buffer| __s.data[(*i.borrow()) as usize]);
-            (*self).with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            let __rhs = o.with(|__s: &Buffer| (*__s.data.borrow())[(*i.borrow()) as usize]);
+            (*self).with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             let __rhs = -1_i32;
-            o.with_mut(|__s: &mut Buffer| __s.data[(*i.borrow()) as usize] = __rhs);
+            o.with(|__s: &Buffer| (*__s.data.borrow_mut())[(*i.borrow()) as usize] = __rhs);
             (*i.borrow_mut()).prefix_inc();
         }
         o.with_mut(|__s: &mut Buffer| __s.size = 0);

@@ -6,18 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct record {
     #[offset(0)]
     pub code: u16,
     #[offset(2)]
-    pub pad: Box<[u8]>,
+    pub pad: Value<Box<[u8]>>,
+}
+impl Clone for record {
+    fn clone(&self) -> Self {
+        Self {
+            code: self.code.clone(),
+            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
+        }
+    }
 }
 impl Default for record {
     fn default() -> Self {
         record {
             code: 0_u16,
-            pad: (0..14).map(|_| 0_u8).collect::<Box<[u8]>>(),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
         }
     }
 }
@@ -27,12 +35,12 @@ impl ByteRepr for record {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.code.to_bytes(&mut buf[0..2]);
-        self.pad.to_bytes(&mut buf[2..16]);
+        (*self.pad.borrow()).to_bytes(&mut buf[2..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             code: <u16>::from_bytes(&buf[0..2]),
-            pad: <Box<[u8]>>::from_bytes(&buf[2..16]),
+            pad: Rc::new(RefCell::new(<Box<[u8]>>::from_bytes(&buf[2..16]))),
         }
     }
 }
@@ -187,13 +195,13 @@ fn main_0() -> i32 {
     (*ex.borrow())
         .body
         .h()
-        .with_mut(|__s: &mut record| __s.pad[(0) as usize] = (('X' as i32) as u8));
+        .with(|__s: &record| (*__s.pad.borrow_mut())[(0) as usize] = (('X' as i32) as u8));
     assert!((((((*ex.borrow()).body.h().with(|__s: &record| __s.code) as i32) == 2) as i32) != 0));
     assert!(
         (((((*ex.borrow())
             .body
             .h()
-            .with(|__s: &record| __s.pad[(0) as usize]) as i32)
+            .with(|__s: &record| (*__s.pad.borrow())[(0) as usize]) as i32)
             == ('X' as i32)) as i32)
             != 0)
     );

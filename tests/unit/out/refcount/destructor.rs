@@ -79,16 +79,33 @@ impl ByteRepr for Outer {
         }
     }
 }
+<<<<<<< HEAD
 #[derive(Clone, Record, VaArg, FnPtrArg)]
 >>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+=======
+#[derive(Record, VaArg, FnPtrArg)]
+>>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct ArrayMember {
     #[offset(0)]
-    pub items: Box<[S]>,
+    pub items: Value<Box<[S]>>,
+}
+impl Clone for ArrayMember {
+    fn clone(&self) -> Self {
+        let __this: Value<ArrayMember> = Rc::new(RefCell::new(Self {
+            items: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| (*self.items.borrow())[(__i) as usize].clone(),
+            )))),
+        }));
+        let this: Ptr<ArrayMember> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for ArrayMember {
     fn default() -> Self {
         ArrayMember {
-            items: (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
+            items: Rc::new(RefCell::new(
+                (0..3).map(|_| <S>::default()).collect::<Box<[S]>>(),
+            )),
         }
     }
 }
@@ -101,11 +118,11 @@ impl ByteRepr for ArrayMember {
         3
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.items.to_bytes(&mut buf[0..3]);
+        (*self.items.borrow()).to_bytes(&mut buf[0..3]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            items: <Box<[S]>>::from_bytes(&buf[0..3]),
+            items: Rc::new(RefCell::new(<Box<[S]>>::from_bytes(&buf[0..3]))),
         }
     }
 }
@@ -356,7 +373,7 @@ pub trait ArrayMemberImpl {
 impl ArrayMemberImpl for Ptr<ArrayMember> {
     fn destructor(&self) {
         {
-            let __p: Ptr<S> = field_ptr!(self, items);
+            let __p: Ptr<S> = self.with(|__s| __s.items.as_pointer());
             for __i in 0..__p.len() {
                 SImpl::destructor(&__p.offset(__i as isize));
             }

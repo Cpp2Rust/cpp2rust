@@ -28,14 +28,14 @@ impl ByteRepr for Inner {
         }
     }
 }
-#[derive(Clone, Record, VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct Outer {
     #[offset(0)]
     pub p1: Ptr<i32>,
     #[offset(8)]
     pub p2: Ptr<i32>,
     #[offset(16)]
-    pub arr: Box<[Ptr<i32>]>,
+    pub arr: Value<Box<[Ptr<i32>]>>,
     #[offset(40)]
     pub cp: Ptr<u8>,
     #[offset(48)]
@@ -47,14 +47,34 @@ pub struct Outer {
     #[offset(80)]
     pub fn_: FnPtr<fn(i32) -> i32>,
 }
+impl Clone for Outer {
+    fn clone(&self) -> Self {
+        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
+            p1: { self.p1.clone() },
+            p2: { self.p2.clone() },
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
+                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
+            )))),
+            cp: { self.cp.clone() },
+            pp: { self.pp.clone() },
+            inner: { self.inner.clone() },
+            x: { self.x },
+            fn_: { self.fn_.clone() },
+        }));
+        let this: Ptr<Outer> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
 impl Default for Outer {
     fn default() -> Self {
         Outer {
             p1: Ptr::<i32>::null(),
             p2: Ptr::<i32>::null(),
-            arr: (0..3)
-                .map(|_| Ptr::<i32>::null())
-                .collect::<Box<[Ptr<i32>]>>(),
+            arr: Rc::new(RefCell::new(
+                (0..3)
+                    .map(|_| Ptr::<i32>::null())
+                    .collect::<Box<[Ptr<i32>]>>(),
+            )),
             cp: Ptr::<u8>::null(),
             pp: Ptr::<Ptr<i32>>::null(),
             inner: <Inner>::default(),
@@ -70,7 +90,7 @@ impl ByteRepr for Outer {
     fn to_bytes(&self, buf: &mut [u8]) {
         self.p1.to_bytes(&mut buf[0..8]);
         self.p2.to_bytes(&mut buf[8..16]);
-        self.arr.to_bytes(&mut buf[16..40]);
+        (*self.arr.borrow()).to_bytes(&mut buf[16..40]);
         self.cp.to_bytes(&mut buf[40..48]);
         self.pp.to_bytes(&mut buf[48..56]);
         self.inner.to_bytes(&mut buf[56..72]);
@@ -81,7 +101,7 @@ impl ByteRepr for Outer {
         Self {
             p1: <Ptr<i32>>::from_bytes(&buf[0..8]),
             p2: <Ptr<i32>>::from_bytes(&buf[8..16]),
-            arr: <Box<[Ptr<i32>]>>::from_bytes(&buf[16..40]),
+            arr: Rc::new(RefCell::new(<Box<[Ptr<i32>]>>::from_bytes(&buf[16..40]))),
             cp: <Ptr<u8>>::from_bytes(&buf[40..48]),
             pp: <Ptr<Ptr<i32>>>::from_bytes(&buf[48..56]),
             inner: <Inner>::from_bytes(&buf[56..72]),
@@ -204,7 +224,8 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((*static_outer_1.with(Value::clone).borrow()).arr[(*i.borrow()) as usize]).is_null()
+            ((*(*static_outer_1.with(Value::clone).borrow()).arr.borrow())[(*i.borrow()) as usize])
+                .is_null()
         );
         (*i.borrow_mut()).prefix_inc();
     }

@@ -50,11 +50,11 @@ impl ByteRepr for Outer {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.runs.to_bytes(&mut buf[0..24]);
+        (*self.runs.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            runs: <Value<Vec<Outer_RunInfo>>>::from_bytes(&buf[0..24]),
+            runs: Rc::new(RefCell::new(<Vec<Outer_RunInfo>>::from_bytes(&buf[0..24]))),
         }
     }
 }

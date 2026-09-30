@@ -39,12 +39,12 @@ impl ByteRepr for NonCopy {
         32
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..24]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
         self.tag.to_bytes(&mut buf[24..28]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
             tag: <i32>::from_bytes(&buf[24..28]),
         }
     }

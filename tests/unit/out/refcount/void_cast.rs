@@ -32,11 +32,11 @@ impl ByteRepr for NonTrivial {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..24]);
+        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
         }
     }
 }
@@ -185,7 +185,7 @@ pub trait NonCopyableImpl {
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        ((field_ptr!((*self), value) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
+        (field_ptr!((*self), value) as Ptr<Option<Value<i32>>>)
             .write(_a0.with_mut(|__s: &mut NonCopyable| __s.value.take()));
         return (*self).clone();
     }

@@ -29,11 +29,11 @@ impl ByteRepr for MyContainer_int_ {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.vec_.to_bytes(&mut buf[0..24]);
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            vec_: <Value<Vec<i32>>>::from_bytes(&buf[0..24]),
+            vec_: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
         }
     }
 }
@@ -61,11 +61,11 @@ impl ByteRepr for MyContainer_char_ {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.vec_.to_bytes(&mut buf[0..24]);
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            vec_: <Value<Vec<u8>>>::from_bytes(&buf[0..24]),
+            vec_: Rc::new(RefCell::new(<Vec<u8>>::from_bytes(&buf[0..24]))),
         }
     }
 }
@@ -93,11 +93,11 @@ impl ByteRepr for MyContainer_float_ {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.vec_.to_bytes(&mut buf[0..24]);
+        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            vec_: <Value<Vec<f32>>>::from_bytes(&buf[0..24]),
+            vec_: Rc::new(RefCell::new(<Vec<f32>>::from_bytes(&buf[0..24]))),
         }
     }
 }

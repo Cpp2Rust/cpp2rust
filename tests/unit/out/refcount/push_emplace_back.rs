@@ -85,13 +85,15 @@ impl ByteRepr for JPEGData {
         48
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        self.com_data.to_bytes(&mut buf[0..24]);
-        self.app_data.to_bytes(&mut buf[24..48]);
+        (*self.com_data.borrow()).to_bytes(&mut buf[0..24]);
+        (*self.app_data.borrow()).to_bytes(&mut buf[24..48]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            com_data: <Value<Vec<Value<Vec<u8>>>>>::from_bytes(&buf[0..24]),
-            app_data: <Value<Vec<Value<Vec<u8>>>>>::from_bytes(&buf[24..48]),
+            com_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(&buf[0..24]))),
+            app_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(
+                &buf[24..48],
+            ))),
         }
     }
 }

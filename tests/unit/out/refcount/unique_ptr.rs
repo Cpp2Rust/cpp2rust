@@ -67,8 +67,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     (x1.as_pointer() as Ptr<Option<Value<i32>>>).write((*x2.borrow_mut()).take());
     let raw_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x1.borrow()).as_pointer())));
     (*raw_ptr1.borrow()).with_mut(|__v| __v.prefix_inc());
-    ((field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr) as Ptr<Option<Value<i32>>>)
-        as Ptr<Option<Value<i32>>>)
+    (field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr) as Ptr<Option<Value<i32>>>)
         .write((*x1.borrow_mut()).take());
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
@@ -291,7 +290,7 @@ impl SafePointerImpl for Ptr<SafePointer> {
         .prefix_inc();
     }
     fn move_assign(&self, _a0: Ptr<SafePointer>) -> Ptr<SafePointer> {
-        ((field_ptr!((*self), ptr) as Ptr<Option<Value<i32>>>) as Ptr<Option<Value<i32>>>)
+        (field_ptr!((*self), ptr) as Ptr<Option<Value<i32>>>)
             .write(_a0.with_mut(|__s: &mut SafePointer| __s.ptr.take()));
         return (*self).clone();
     }

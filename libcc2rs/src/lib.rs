@@ -10,13 +10,12 @@ mod rc;
 pub use rc::*;
 
 mod field;
-pub use field::{Elems, FieldPtr, Record};
+pub use field::{FieldPtr, Record};
 // Used by #[derive(Record)].
 #[doc(hidden)]
 pub mod __field {
     pub use crate::field::{
-        Locate, LocateArray, LocateArrayMut, LocateLeaf, LocateLeafMut, LocateMut, LocateRecord,
-        LocateRecordMut, LocateRecords, LocateRecordsMut,
+        Locate, LocateLeaf, LocateLeafMut, LocateMut, LocateRecord, LocateRecordMut,
     };
 }
 

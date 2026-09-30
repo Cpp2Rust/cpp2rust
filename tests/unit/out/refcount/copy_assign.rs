@@ -134,21 +134,39 @@ impl ByteRepr for RefQualified {
         }
     }
 }
+<<<<<<< HEAD
 #[derive(Clone, Record, VaArg, FnPtrArg)]
 >>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
+=======
+#[derive(Record, VaArg, FnPtrArg)]
+>>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Holder {
     #[offset(0)]
     pub p: Partial,
     #[offset(8)]
-    pub arr: Box<[Partial]>,
+    pub arr: Value<Box<[Partial]>>,
+}
+impl Clone for Holder {
+    fn clone(&self) -> Self {
+        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+            p: { self.p.clone() },
+            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
+                |__i: usize| (*self.arr.borrow())[(__i) as usize].clone(),
+            )))),
+        }));
+        let this: Ptr<Holder> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
 }
 impl Default for Holder {
     fn default() -> Self {
         Holder {
             p: <Partial>::default(),
-            arr: (0..2)
-                .map(|_| <Partial>::default())
-                .collect::<Box<[Partial]>>(),
+            arr: Rc::new(RefCell::new(
+                (0..2)
+                    .map(|_| <Partial>::default())
+                    .collect::<Box<[Partial]>>(),
+            )),
         }
     }
 }
@@ -161,12 +179,12 @@ impl ByteRepr for Holder {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         self.p.to_bytes(&mut buf[0..8]);
-        self.arr.to_bytes(&mut buf[8..24]);
+        (*self.arr.borrow()).to_bytes(&mut buf[8..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             p: <Partial>::from_bytes(&buf[0..8]),
-            arr: <Box<[Partial]>>::from_bytes(&buf[8..24]),
+            arr: Rc::new(RefCell::new(<Box<[Partial]>>::from_bytes(&buf[8..24]))),
         }
     }
 }
@@ -216,19 +234,22 @@ fn main_0() -> i32 {
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));
     let h: Value<Holder> = Rc::new(RefCell::new(Holder {
         p: Partial::new({ 4 }, { 40 }),
-        arr: Box::new([Partial::new({ 5 }, { 50 }), Partial::new({ 6 }, { 60 })]),
+        arr: Rc::new(RefCell::new(Box::new([
+            Partial::new({ 5 }, { 50 }),
+            Partial::new({ 6 }, { 60 }),
+        ]))),
     }));
     ({ PartialImpl::copy_assign(&{ field_ptr!(h, p) }, b.as_pointer()) });
     ({
         PartialImpl::copy_assign(
-            &{ (field_ptr!(h, arr) as Ptr<Partial>).offset(1) },
+            &{ ({ (*h.borrow()).arr.as_pointer() } as Ptr<Partial>).offset(1) },
             c.as_pointer(),
         )
     });
     assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
-        ({ (*h.borrow()).arr[(1) as usize].v } == 2)
-            && ({ (*h.borrow()).arr[(1) as usize].keep } == 60)
+        ({ (*(*h.borrow()).arr.borrow())[(1) as usize].v } == 2)
+            && ({ (*(*h.borrow()).arr.borrow())[(1) as usize].keep } == 60)
     );
     assert!((assigns_0.with(|rc| *rc.borrow()) == 8));
     let n: Value<NonConstAssign> = Rc::new(RefCell::new(NonConstAssign::new()));
