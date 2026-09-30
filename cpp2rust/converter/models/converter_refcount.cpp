@@ -79,9 +79,9 @@ static bool IsValueField(clang::ASTContext &ctx,
 static bool IsArrayFieldPtr(clang::ASTContext &ctx, const clang::Expr *expr) {
   auto *member =
       clang::dyn_cast<clang::MemberExpr>(expr->IgnoreParenImpCasts());
-  auto *field =
-      member ? clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl())
-             : nullptr;
+  auto *field = member
+                    ? clang::dyn_cast<clang::FieldDecl>(member->getMemberDecl())
+                    : nullptr;
   if (!field || field->getParent()->isUnion() ||
       Mapper::Contains(ctx, member)) {
     return false;
@@ -1567,8 +1567,8 @@ bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
         PushConversionKind push(*this, ConversionKind::Unboxed);
         StrCat(std::format("({} as Ptr<{}>)", ToString(sub_expr),
                            ToString(element_type)));
-        if (!ctx_.hasSameUnqualifiedType(
-                element_type, expr->getType()->getPointeeType())) {
+        if (!ctx_.hasSameUnqualifiedType(element_type,
+                                         expr->getType()->getPointeeType())) {
           StrCat(std::format(".reinterpret_cast::<{}>()",
                              ConvertPointeeType(expr->getType())));
         }

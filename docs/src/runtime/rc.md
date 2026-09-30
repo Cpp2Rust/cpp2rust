@@ -129,8 +129,8 @@ single object, which is why it needs no element index.
 
 `array_field_ptr!(p, arr)` is a pointer to element 0 of the array field `arr`,
 and is how the elements of an array field are accessed. It is an ordinary array
-pointer into the array's `Value`, except when `p` is a reinterpreted pointer: the
-array then lives in the bytes of the original allocation, so the result is a
+pointer into the array's `Value`, except when `p` is a reinterpreted pointer:
+the array then lives in the bytes of the original allocation, so the result is a
 reinterpreted pointer to those bytes, at the offset of the field. Writes to the
 elements hence reach the original allocation, and the pointer can go past the
 end of the struct, as C code does with a trailing `char name[1]` in an
