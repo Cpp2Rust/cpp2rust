@@ -286,6 +286,9 @@ bool TypeImplementsByteRepr(clang::QualType qt) {
     if (rd->isUnion()) {
       return true;
     }
+    if (!qt.isTriviallyCopyableType(rd->getASTContext())) {
+      return false;
+    }
     for (const auto *field : rd->fields()) {
       if (!TypeImplementsByteRepr(field->getType())) {
         return false;

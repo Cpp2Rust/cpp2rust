@@ -93,21 +93,7 @@ impl Default for Buffer {
         }
     }
 }
-impl ByteRepr for Buffer {
-    fn byte_size() -> usize {
-        20
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..16]);
-        (*self.size.borrow()).to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..16]))),
-            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[16..20]))),
-        }
-    }
-}
+impl ByteRepr for Buffer {}
 pub fn make_3(size: i32) -> Buffer {
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ (*size.borrow()) })));

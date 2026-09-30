@@ -21,19 +21,7 @@ impl SafePointer {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for SafePointer {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.ptr.borrow()).to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            ptr: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[0..8]))),
-        }
-    }
-}
+impl ByteRepr for SafePointer {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub x: Value<i32>,

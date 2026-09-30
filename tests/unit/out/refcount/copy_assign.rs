@@ -43,21 +43,7 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Partial {
-    fn byte_size() -> usize {
-        8
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.keep.borrow()).to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            keep: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
-        }
-    }
-}
+impl ByteRepr for Partial {}
 #[derive(VaArg, FnPtrArg)]
 pub struct NonConstAssign {
     pub mark: Value<i32>,
@@ -85,19 +71,7 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-impl ByteRepr for NonConstAssign {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for NonConstAssign {}
 #[derive(VaArg, FnPtrArg)]
 pub struct RefQualified {
     pub mark: Value<i32>,
@@ -125,19 +99,7 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-impl ByteRepr for RefQualified {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for RefQualified {}
 #[derive(VaArg, FnPtrArg)]
 pub struct Holder {
     pub p: Value<Partial>,
@@ -169,21 +131,7 @@ impl Default for Holder {
         }
     }
 }
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        24
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: Rc::new(RefCell::new(<Partial>::from_bytes(&buf[0..8]))),
-            arr: Rc::new(RefCell::new(<Box<[Partial]>>::from_bytes(&buf[8..24]))),
-        }
-    }
-}
+impl ByteRepr for Holder {}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

@@ -31,21 +31,7 @@ impl Default for UserDefined {
         }
     }
 }
-impl ByteRepr for UserDefined {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.v.borrow()).to_bytes(&mut buf[8..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            a: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..4]))),
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[8..32]))),
-        }
-    }
-}
+impl ByteRepr for UserDefined {}
 #[derive(VaArg, FnPtrArg)]
 pub struct FieldIsLibcType {
     pub addr: Value<libcc2rs::Sockaddr>,

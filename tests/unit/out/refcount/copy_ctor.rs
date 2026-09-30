@@ -37,19 +37,7 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Counted {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Counted {}
 #[derive(VaArg, FnPtrArg)]
 pub struct NonConst {
     pub mark: Value<i32>,
@@ -90,19 +78,7 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-impl ByteRepr for NonConst {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.mark.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for NonConst {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct Ignored {
     pub v: Value<i32>,
@@ -131,19 +107,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Ignored {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for Ignored {}
 #[derive(VaArg, FnPtrArg)]
 pub struct Holder {
     pub c: Value<Counted>,
@@ -175,21 +139,7 @@ impl Default for Holder {
         }
     }
 }
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        12
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.c.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.arr.borrow()).to_bytes(&mut buf[4..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            c: Rc::new(RefCell::new(<Counted>::from_bytes(&buf[0..4]))),
-            arr: Rc::new(RefCell::new(<Box<[Counted]>>::from_bytes(&buf[4..12]))),
-        }
-    }
-}
+impl ByteRepr for Holder {}
 pub fn by_value_1(c: Counted) -> i32 {
     let c: Value<Counted> = Rc::new(RefCell::new(c));
     return (*(*c.borrow()).v.borrow());

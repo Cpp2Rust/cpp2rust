@@ -74,23 +74,7 @@ impl Default for Explicit {
         }
     }
 }
-impl ByteRepr for Explicit {
-    fn byte_size() -> usize {
-        16
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.inner.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[4..8]))),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[8..16]))),
-        }
-    }
-}
+impl ByteRepr for Explicit {}
 #[derive(VaArg, FnPtrArg)]
 pub struct Implicit {
     pub v: Value<i32>,
@@ -167,19 +151,7 @@ impl Clone for DefaultCopyUserMove {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for DefaultCopyUserMove {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for DefaultCopyUserMove {}
 #[derive(VaArg, FnPtrArg, Default)]
 pub struct UserCopyDefaultMove {
     pub v: Value<i32>,
@@ -215,19 +187,7 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for UserCopyDefaultMove {
-    fn byte_size() -> usize {
-        4
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-        }
-    }
-}
+impl ByteRepr for UserCopyDefaultMove {}
 #[derive()]
 pub struct Buffer {
     pub data: Value<Vec<i32>>,
@@ -284,27 +244,7 @@ impl Default for Buffer {
         }
     }
 }
-impl ByteRepr for Buffer {
-    fn byte_size() -> usize {
-        64
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.rows.borrow()).to_bytes(&mut buf[24..48]);
-        (*self.n.borrow()).to_bytes(&mut buf[48..52]);
-        (*self.arr.borrow()).to_bytes(&mut buf[52..60]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            rows: Rc::new(RefCell::new(<Vec<Value<Vec<i32>>>>::from_bytes(
-                &buf[24..48],
-            ))),
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[48..52]))),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[52..60]))),
-        }
-    }
-}
+impl ByteRepr for Buffer {}
 #[derive()]
 pub struct Owner {
     pub data: Value<Vec<i32>>,
@@ -340,25 +280,7 @@ impl Default for Owner {
         }
     }
 }
-impl ByteRepr for Owner {
-    fn byte_size() -> usize {
-        48
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.n.borrow()).to_bytes(&mut buf[24..28]);
-        (*self.arr.borrow()).to_bytes(&mut buf[28..36]);
-        (*self.p.borrow()).to_bytes(&mut buf[40..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[24..28]))),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[28..36]))),
-            p: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[40..48]))),
-        }
-    }
-}
+impl ByteRepr for Owner {}
 #[derive(Default)]
 pub struct Holder {
     pub inner: Value<Inner>,
@@ -392,23 +314,7 @@ impl Holder {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Holder {
-    fn byte_size() -> usize {
-        32
-    }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.inner.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.e.borrow()).to_bytes(&mut buf[4..20]);
-        (*self.p.borrow()).to_bytes(&mut buf[24..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[0..4]))),
-            e: Rc::new(RefCell::new(<Explicit>::from_bytes(&buf[4..20]))),
-            p: Rc::new(RefCell::new(<Option<Value<i32>>>::from_bytes(&buf[24..32]))),
-        }
-    }
-}
+impl ByteRepr for Holder {}
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
     return ((({
         let _lhs = (*(*a.upgrade().deref()).v.borrow());
