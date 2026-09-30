@@ -88,8 +88,8 @@ of the dereference:
   and so is a whole record, `*p`. A field of a record pointee is copied out in a
   closure that borrows the record for its duration: `p->x` is
   `p.with(|__s| __s.x)`, and `p->a.b` is `p.with(|__s| __s.a.b)`; `ReadField`
-  converts the record with `record_ptr_` set, so that its dereference is
-  emitted as `__s`. A field that is a [`Value` of its own](boxing.md), or a
+  converts the record with `record_ptr_` set, so that its dereference is emitted
+  as `__s`. A field that is a [`Value` of its own](boxing.md), or a
   `std::unique_ptr`, is copied out as well, i.e., its `Rc`: `p->v.size()` is
   `(*p.with(|__s| __s.v.clone()).borrow()).len()`. When the record is not
   reached through a pointer, the copy is in a block, `{ (*s.borrow()).x }`. In
@@ -106,7 +106,8 @@ of the dereference:
   pointee is a pending dereference too, of `field!(p, x)`, which projects the
   pointer to the field (see
   [Pointers to fields](../../runtime/rc.md#pointers-to-fields)): `p->x = v` is
-  `field!(p, x).write(v)`, and `p->a.b = v` is `field!(field!(p, a), b).write(v)`.
+  `field!(p, x).write(v)`, and `p->a.b = v` is
+  `field!(field!(p, a), b).write(v)`.
 
 `with` and `with_mut` work on any pointer, including a
 [reinterpreted](../../runtime/reinterpret.md) one, whose pointee is decoded from

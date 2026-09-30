@@ -518,7 +518,8 @@ bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
   }
   PushConversionKind push(*this, ConversionKind::Pointee);
   return std::ranges::none_of(decl->fields(), [&](auto *field) {
-    return IsValueField(ctx_, field) || ToString(field->getType()).contains("Value<");
+    return IsValueField(ctx_, field) ||
+           ToString(field->getType()).contains("Value<");
   });
 }
 
@@ -553,8 +554,8 @@ void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
       auto name = GetNamedDeclAsString(field);
       auto value = std::format("self.{}.clone()", name);
       if (IsValueField(ctx_, field)) {
-        value = std::format("Rc::new(RefCell::new((*self.{}.borrow()).clone()))",
-                            name);
+        value = std::format(
+            "Rc::new(RefCell::new((*self.{}.borrow()).clone()))", name);
       }
       StrCat(std::format("{}: {},", name, value));
     }
@@ -3209,8 +3210,8 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
           "0..__p.len() {{ {2}::{1}(&__p.offset(__i as isize)); }} }}\n",
           name, kDestructorName, TraitName(elem));
     } else {
-      out += std::format("field_ptr!(self, {0}).{1}();\n", name,
-                         kDestructorName);
+      out +=
+          std::format("field_ptr!(self, {0}).{1}();\n", name, kDestructorName);
     }
   }
   return out;
