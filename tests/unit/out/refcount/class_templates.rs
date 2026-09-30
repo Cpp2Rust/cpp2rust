@@ -18,25 +18,12 @@ impl Clone for MyContainer_int_ {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MyContainer_int_ {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for MyContainer_int_ {
     fn byte_size() -> usize {
         24
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct MyContainer_char_ {
     #[offset(0)]
     vec_: Value<Vec<u8>>,
@@ -48,25 +35,12 @@ impl Clone for MyContainer_char_ {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MyContainer_char_ {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for MyContainer_char_ {
     fn byte_size() -> usize {
         24
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new(<Vec<u8>>::from_bytes(&buf[0..24]))),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct MyContainer_float_ {
     #[offset(0)]
     vec_: Value<Vec<f32>>,
@@ -78,25 +52,12 @@ impl Clone for MyContainer_float_ {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MyContainer_float_ {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for MyContainer_float_ {
     fn byte_size() -> usize {
         24
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.vec_.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new(<Vec<f32>>::from_bytes(&buf[0..24]))),
-        }
-    }
 }
 #[derive(Clone, Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Boxed_int_ {
     #[offset(0)]
     pub value: i32,

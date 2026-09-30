@@ -47,19 +47,12 @@ impl ByteRepr for Holder {
     fn byte_size() -> usize {
         48
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.values.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.points.borrow()).to_bytes(&mut buf[24..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            values: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            points: Rc::new(RefCell::new(<Vec<Point>>::from_bytes(&buf[24..48]))),
-        }
-    }
 }
 pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(42));
+    {
+        let __a1 = 42;
+        v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
     return (((*v.upgrade().deref()).len() as i32) - 1);
 }
 pub fn sum_ref_1(v: Ptr<Vec<i32>>) -> i32 {
@@ -135,7 +128,10 @@ fn main_0() -> i32 {
     ({ (*h.borrow()).values.clone() }.as_pointer() as Ptr<i32>)
         .offset(1_usize)
         .write(6);
-    (*{ (*h.borrow()).points.clone() }.borrow_mut()).push(Point { x: 1, y: 2 });
+    {
+        let __a1 = Point { x: 1, y: 2 };
+        (*{ (*h.borrow()).points.clone() }.borrow_mut()).push(__a1)
+    };
     field!(
         ({ (*h.borrow()).points.clone() }.as_pointer() as Ptr<Point>).offset(0_usize),
         y

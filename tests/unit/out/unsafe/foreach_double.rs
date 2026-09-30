@@ -14,9 +14,18 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    v.push(1);
-    v.push(2);
-    v.push(3);
+    {
+        let __a1 = 1;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v.push(__a1)
+    };
     let mut square: i32 = 0;
     'loop_: for e1 in 0..(v.len()) {
         let mut e1 = v[e1].clone();

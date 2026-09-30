@@ -15,8 +15,14 @@ fn main_0() -> i32 {
     let x2: Value<i16> = Rc::new(RefCell::new(2_i16));
     let x3: Value<u32> = Rc::new(RefCell::new(4_u32));
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(1);
-    (*v.borrow_mut()).push(2);
+    {
+        let __a1 = 1;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v.borrow_mut()).push(__a1)
+    };
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut elem in v.as_pointer() as Ptr<i32> {
         let elem: Value<i32> = Rc::new(RefCell::new(elem.read()));

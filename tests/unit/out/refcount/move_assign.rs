@@ -27,25 +27,12 @@ impl MoveOnly {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MoveOnly {}
-#[derive()]
-=======
 impl ByteRepr for MoveOnly {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct ConstMoveAssign {
     #[offset(0)]
     pub mark: i32,
@@ -62,23 +49,11 @@ impl Default for ConstMoveAssign {
         { ConstMoveAssign::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for ConstMoveAssign {}
-=======
 impl ByteRepr for ConstMoveAssign {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.mark.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn make_0(v: i32) -> MoveOnly {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
@@ -124,7 +99,10 @@ fn main_0() -> i32 {
     });
     assert!(({ (*a.borrow()).v } == 6));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
-    (*vec_.borrow_mut()).push(MoveOnly::new({ 7 }));
+    {
+        let __a1 = MoveOnly::new({ 7 });
+        (*vec_.borrow_mut()).push(__a1)
+    };
     let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
     ({
         MoveOnlyImpl::move_assign(

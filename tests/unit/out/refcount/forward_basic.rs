@@ -59,27 +59,11 @@ impl Clone for Tracked {
         Tracked::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Tracked {}
-=======
 impl ByteRepr for Tracked {
     fn byte_size() -> usize {
         12
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.copies.to_bytes(&mut buf[4..8]);
-        self.moves.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            copies: <i32>::from_bytes(&buf[4..8]),
-            moves: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kLvalueOverload;
 }
@@ -109,23 +93,11 @@ pub struct Holder {
     #[offset(0)]
     pub t: Tracked,
 }
-<<<<<<< HEAD
-impl ByteRepr for Holder {}
-=======
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         12
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.t.to_bytes(&mut buf[0..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            t: <Tracked>::from_bytes(&buf[0..12]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn forward_once_2(x: Ptr<Tracked>) -> Overload {
     return ({ chosen_overload_0((x).clone()) });
 }

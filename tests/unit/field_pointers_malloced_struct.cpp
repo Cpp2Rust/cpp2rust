@@ -1,4 +1,3 @@
-// panic: refcount
 #include <cassert>
 #include <cstdlib>
 

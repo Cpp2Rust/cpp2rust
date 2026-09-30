@@ -21,32 +21,21 @@ impl Clone for S {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for S {}
-=======
 impl ByteRepr for S {
     fn byte_size() -> usize {
         32
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..24]);
-        self.a.to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            a: <i32>::from_bytes(&buf[24..28]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    (*{ (*s.borrow()).v.clone() }.borrow_mut()).push(1);
+    {
+        let __a1 = 1;
+        (*{ (*s.borrow()).v.clone() }.borrow_mut()).push(__a1)
+    };
     'loop_: for mut e in { (*s.borrow()).v.clone() }.as_pointer() as Ptr<i32> {
         let e: Value<i32> = Rc::new(RefCell::new(e.read()));
         (*s.borrow_mut()).a.postfix_inc();

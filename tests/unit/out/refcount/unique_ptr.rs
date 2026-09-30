@@ -20,25 +20,12 @@ impl SafePointer {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for SafePointer {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for SafePointer {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.ptr.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            ptr: <Option<Value<i32>>>::from_bytes(&buf[0..8]),
-        }
-    }
 }
 #[derive(Clone, Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Pair {
     #[offset(0)]
     pub x: i32,

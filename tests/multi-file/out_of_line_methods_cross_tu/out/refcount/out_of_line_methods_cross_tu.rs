@@ -12,32 +12,11 @@ pub struct S {
     pub v: i32,
 }
 impl S {}
-<<<<<<< HEAD
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl ByteRepr for S {}
-=======
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub trait Base {
     fn apply(&mut self, x: i32) -> i32;
 }
@@ -56,23 +35,11 @@ impl Clone for Derived {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Derived {}
-=======
 impl ByteRepr for Derived {
     fn byte_size() -> usize {
         16
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.factor.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            factor: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

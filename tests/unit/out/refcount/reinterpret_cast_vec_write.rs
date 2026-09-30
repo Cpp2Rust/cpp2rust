@@ -12,8 +12,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let vec_: Value<Vec<u32>> = Rc::new(RefCell::new(Vec::new()));
-    (*vec_.borrow_mut()).push(67305985_u32);
-    (*vec_.borrow_mut()).push(134678021_u32);
+    {
+        let __a1 = 67305985_u32;
+        (*vec_.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 134678021_u32;
+        (*vec_.borrow_mut()).push(__a1)
+    };
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (vec_.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>(),
     ));

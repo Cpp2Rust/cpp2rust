@@ -44,7 +44,10 @@ impl Outer {
         return ((self.x) + (self.inner.a));
     }
     pub unsafe fn push(&mut self, mut k: i32) {
-        self.v.push(((k) + (self.x)));
+        {
+            let __a1 = ((k) + (self.x));
+            self.v.push(__a1)
+        };
     }
 }
 impl Default for Outer {

@@ -75,7 +75,10 @@ pub unsafe fn run_0(mut o: *mut S) {
     assert!(((unsafe { Counter::get(&(*o).c,) }) == (0)));
     (unsafe { S::bump(&mut (*o)) });
     assert!(((unsafe { Counter::get(&(*o).c,) }) == (1)));
-    (*o).v.push((unsafe { Counter::get(&(*o).c) }));
+    {
+        let __a1 = (unsafe { Counter::get(&(*o).c) });
+        (*o).v.push(__a1)
+    };
     assert!((((*o).v.len()) == (1_usize)) && (((&mut (*o)).v[(0_usize)]) == (1)));
     assert!((((*o).tag) == (1)));
 }

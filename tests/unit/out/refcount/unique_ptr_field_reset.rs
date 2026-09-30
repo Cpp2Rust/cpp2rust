@@ -45,16 +45,6 @@ impl ByteRepr for Holder {
     fn byte_size() -> usize {
         16
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.data.to_bytes(&mut buf[0..8]);
-        self.n.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: <Option<Value<Data>>>::from_bytes(&buf[0..8]),
-            n: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();

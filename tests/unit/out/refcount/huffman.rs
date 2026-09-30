@@ -86,31 +86,11 @@ impl MinHeap {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MinHeap {}
-=======
 impl ByteRepr for MinHeap {
     fn byte_size() -> usize {
         32
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.size.to_bytes(&mut buf[0..4]);
-        self.capacity.to_bytes(&mut buf[4..8]);
-        self.arr.to_bytes(&mut buf[8..16]);
-        self.next.to_bytes(&mut buf[16..20]);
-        self.alloc.to_bytes(&mut buf[24..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            size: <i32>::from_bytes(&buf[0..4]),
-            capacity: <i32>::from_bytes(&buf[4..8]),
-            arr: <Option<Value<Box<[Ptr<MinHeapNode>]>>>>::from_bytes(&buf[8..16]),
-            next: <i32>::from_bytes(&buf[16..20]),
-            alloc: <Option<Value<Box<[MinHeapNode]>>>>::from_bytes(&buf[24..32]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     let capacity: Value<i32> = Rc::new(RefCell::new(capacity));
     let minHeap: Value<Option<Value<MinHeap>>> =

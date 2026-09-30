@@ -42,23 +42,11 @@ impl Outer {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Outer {}
-=======
 impl ByteRepr for Outer {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.inner.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: <Option<Value<Inner>>>::from_bytes(&buf[0..8]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

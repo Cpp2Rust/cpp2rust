@@ -40,23 +40,11 @@ impl Clone for Chain {
         Chain::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Chain {}
-=======
 impl ByteRepr for Chain {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn consume_0(c: Chain) -> i32 {
     let c: Value<Chain> = Rc::new(RefCell::new(c));
     return { (*c.borrow()).v };

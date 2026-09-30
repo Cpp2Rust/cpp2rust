@@ -29,25 +29,11 @@ impl Default for NonCopy {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NonCopy {}
-=======
 impl ByteRepr for NonCopy {
     fn byte_size() -> usize {
         32
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        self.tag.to_bytes(&mut buf[24..28]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            tag: <i32>::from_bytes(&buf[24..28]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -59,7 +45,10 @@ fn main_0() -> i32 {
             .collect::<Box<[NonCopy]>>(),
     ));
     (*arr.borrow_mut())[(0) as usize].tag = 7;
-    (*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow_mut()).push(42);
+    {
+        let __a1 = 42;
+        (*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow_mut()).push(__a1)
+    };
     assert!(({ (*arr.borrow())[(0) as usize].tag } == 7));
     assert!(((*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow()).len() == 1_usize));
     assert!(

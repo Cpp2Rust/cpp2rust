@@ -61,27 +61,11 @@ impl Clone for JPEGData {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for JPEGData {}
-=======
 impl ByteRepr for JPEGData {
     fn byte_size() -> usize {
         48
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.com_data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.app_data.borrow()).to_bytes(&mut buf[24..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            com_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(&buf[0..24]))),
-            app_data: Rc::new(RefCell::new(<Vec<Value<Vec<u8>>>>::from_bytes(
-                &buf[24..48],
-            ))),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));
     ((*dest.borrow()).clone() as Ptr<Vec<Value<Vec<u8>>>>)
@@ -122,11 +106,12 @@ pub fn shrink_through_ptr_2(comps: Ptr<Vec<Chunk>>) {
 }
 pub fn nested_push_move_3(bw: Ptr<Writer>) {
     let bw: Value<Ptr<Writer>> = Rc::new(RefCell::new(bw));
-    (*bw.borrow())
-        .with(|__s| __s.output.clone())
-        .with_mut(|__v: &mut Vec<Chunk>| {
-            __v.push(((*(*bw.borrow()).upgrade().deref()).chunk).clone())
-        });
+    {
+        let __a1 = ((*(*bw.borrow()).upgrade().deref()).chunk).clone();
+        (*bw.borrow())
+            .with(|__s| __s.output.clone())
+            .with_mut(|__v: &mut Vec<Chunk>| __v.push(__a1))
+    };
 }
 pub fn emplace_local_from_field_4(jpg: Ptr<JPEGData>, cond: bool) {
     let jpg: Value<Ptr<JPEGData>> = Rc::new(RefCell::new(jpg));

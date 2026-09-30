@@ -65,33 +65,12 @@ impl Default for Explicit {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Explicit {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for Explicit {
     fn byte_size() -> usize {
         16
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.inner.to_bytes(&mut buf[4..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..16]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            inner: <Inner>::from_bytes(&buf[4..8]),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[8..16]))),
-        }
-    }
 }
-<<<<<<< HEAD
-#[derive(Clone, Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
-=======
 #[derive(Record, VaArg, FnPtrArg)]
->>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Implicit {
     #[offset(0)]
     pub v: i32,
@@ -156,25 +135,12 @@ impl DefaultCopyUserMove {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for DefaultCopyUserMove {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for DefaultCopyUserMove {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct UserCopyDefaultMove {
     #[offset(0)]
     pub v: i32,
@@ -208,25 +174,12 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for UserCopyDefaultMove {}
-#[derive()]
-=======
 impl ByteRepr for UserCopyDefaultMove {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Buffer {
     #[offset(0)]
     pub data: Value<Vec<i32>>,
@@ -286,33 +239,12 @@ impl Default for Buffer {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Buffer {}
-#[derive()]
-=======
 impl ByteRepr for Buffer {
     fn byte_size() -> usize {
         64
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        (*self.rows.borrow()).to_bytes(&mut buf[24..48]);
-        self.n.to_bytes(&mut buf[48..52]);
-        (*self.arr.borrow()).to_bytes(&mut buf[52..60]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            rows: Rc::new(RefCell::new(<Vec<Value<Vec<i32>>>>::from_bytes(
-                &buf[24..48],
-            ))),
-            n: <i32>::from_bytes(&buf[48..52]),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[52..60]))),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Owner {
     #[offset(0)]
     pub data: Value<Vec<i32>>,
@@ -349,31 +281,12 @@ impl Default for Owner {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Owner {}
-#[derive(Default)]
-=======
 impl ByteRepr for Owner {
     fn byte_size() -> usize {
         48
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-        self.n.to_bytes(&mut buf[24..28]);
-        (*self.arr.borrow()).to_bytes(&mut buf[28..36]);
-        self.p.to_bytes(&mut buf[40..48]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-            n: <i32>::from_bytes(&buf[24..28]),
-            arr: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[28..36]))),
-            p: <Option<Value<i32>>>::from_bytes(&buf[40..48]),
-        }
-    }
 }
 #[derive(Record, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Holder {
     #[offset(0)]
     pub inner: Inner,
@@ -403,27 +316,11 @@ impl Holder {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Holder {}
-=======
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         32
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.inner.to_bytes(&mut buf[0..4]);
-        self.e.to_bytes(&mut buf[4..20]);
-        self.p.to_bytes(&mut buf[24..32]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: <Inner>::from_bytes(&buf[0..4]),
-            e: <Explicit>::from_bytes(&buf[4..20]),
-            p: <Option<Value<i32>>>::from_bytes(&buf[24..32]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {
     return ((({
         let _lhs = a.with(|__s| __s.v);
@@ -504,7 +401,10 @@ fn main_0() -> i32 {
         let a0_clone = (*b.borrow()).clone();
         (*vec_.borrow_mut()).push(a0_clone)
     };
-    (*vec_.borrow_mut()).push(Explicit::new({ 9 }));
+    {
+        let __a1 = Explicit::new({ 9 });
+        (*vec_.borrow_mut()).push(__a1)
+    };
     assert!(
         ({
             (*(vec_.as_pointer() as Ptr<Explicit>)
@@ -585,7 +485,10 @@ fn main_0() -> i32 {
             && ((*{ (*q.borrow()).rows.clone() }.borrow()).is_empty())
     );
     let bufs: Value<Vec<Buffer>> = Rc::new(RefCell::new(Vec::new()));
-    (*bufs.borrow_mut()).push(Buffer::move_from({ r.as_pointer() }));
+    {
+        let __a1 = Buffer::move_from({ r.as_pointer() });
+        (*bufs.borrow_mut()).push(__a1)
+    };
     {
         let __init = Buffer::move_from({ (bufs.as_pointer() as Ptr<Buffer>).offset(0_usize) });
         (*bufs.borrow_mut()).push(__init)
@@ -621,7 +524,10 @@ fn main_0() -> i32 {
             .is_empty())
     );
     let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
-    (*{ (*o1.borrow()).data.clone() }.borrow_mut()).push(5);
+    {
+        let __a1 = 5;
+        (*{ (*o1.borrow()).data.clone() }.borrow_mut()).push(__a1)
+    };
     (*o1.borrow_mut()).n = 5;
     (*{ (*o1.borrow()).arr.clone() }.borrow_mut())[(0) as usize] = 5;
     (*{ (*o1.borrow()).arr.clone() }.borrow_mut())[(1) as usize] = 6;

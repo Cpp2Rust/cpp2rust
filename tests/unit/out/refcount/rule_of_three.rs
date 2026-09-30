@@ -74,25 +74,11 @@ impl Default for Buffer {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Buffer {}
-=======
 impl ByteRepr for Buffer {
     fn byte_size() -> usize {
         20
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..16]);
-        self.size.to_bytes(&mut buf[16..20]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..16]))),
-            size: <i32>::from_bytes(&buf[16..20]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn sum_2(b: Ptr<Buffer>) -> i32 {
     let s: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<i32> = Rc::new(RefCell::new(0));

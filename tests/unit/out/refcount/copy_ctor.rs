@@ -36,25 +36,12 @@ impl Clone for Counted {
         Counted::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Counted {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for Counted {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct NonConst {
     #[offset(0)]
     pub mark: i32,
@@ -93,25 +80,12 @@ impl Default for NonConst {
         { NonConst::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NonConst {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for NonConst {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.mark.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Ignored {
     #[offset(0)]
     pub v: i32,
@@ -136,29 +110,12 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Ignored {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for Ignored {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
-<<<<<<< HEAD
-#[derive(Clone, Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
-=======
 #[derive(Record, VaArg, FnPtrArg)]
->>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Holder {
     #[offset(0)]
     pub c: Counted,
@@ -185,25 +142,11 @@ impl Default for Holder {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Holder {}
-=======
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         12
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.c.to_bytes(&mut buf[0..4]);
-        (*self.arr.borrow()).to_bytes(&mut buf[4..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            c: <Counted>::from_bytes(&buf[0..4]),
-            arr: Rc::new(RefCell::new(<Box<[Counted]>>::from_bytes(&buf[4..12]))),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn by_value_1(c: Counted) -> i32 {
     let c: Value<Counted> = Rc::new(RefCell::new(c));
     return { (*c.borrow()).v };

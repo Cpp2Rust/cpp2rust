@@ -49,7 +49,10 @@ pub unsafe fn run_3(mut h: *mut S) {
         put_2(_m, _k, 2)
     });
     let mut pv: *mut Vec<i32> = (&mut (*h).v as *mut Vec<i32>);
-    (*pv).push(((*(pv).cast_const()).len() as i32));
+    {
+        let __a1 = ((*(pv).cast_const()).len() as i32);
+        (*pv).push(__a1)
+    };
     assert!(
         ((((*h).v.len()) == (2_usize)) && (((&mut (*h)).v[(0_usize)]) == (7)))
             && (((&mut (*h)).v[(1_usize)]) == (1))

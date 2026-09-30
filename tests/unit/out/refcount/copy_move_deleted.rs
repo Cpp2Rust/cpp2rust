@@ -27,25 +27,12 @@ impl NoCopy {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NoCopy {}
-#[derive()]
-=======
 impl ByteRepr for NoCopy {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct PrivateCopy {
     #[offset(0)]
     pub v: i32,
@@ -70,25 +57,12 @@ impl Default for PrivateCopy {
         { PrivateCopy::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for PrivateCopy {}
-#[derive()]
-=======
 impl ByteRepr for PrivateCopy {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct Immovable {
     #[offset(0)]
     pub v: i32,
@@ -135,25 +109,11 @@ impl Container {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Container {}
-=======
 impl ByteRepr for Container {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.inner.to_bytes(&mut buf[0..4]);
-        self.tag.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            inner: <NoCopy>::from_bytes(&buf[0..4]),
-            tag: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn bump_0(p: Ptr<NoCopy>) {
     let p: Value<Ptr<NoCopy>> = Rc::new(RefCell::new(p));
     field!((*p.borrow()), v).with_mut(|__v| __v.postfix_inc());

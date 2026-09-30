@@ -111,24 +111,6 @@ impl ByteRepr for Outer {
     fn byte_size() -> usize {
         104
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.x.to_bytes(&mut buf[0..4]);
-        self.inner.to_bytes(&mut buf[4..16]);
-        (*self.items.borrow()).to_bytes(&mut buf[16..52]);
-        (*self.v.borrow()).to_bytes(&mut buf[56..80]);
-        self.cursor.to_bytes(&mut buf[80..88]);
-        (*self.buf.borrow()).to_bytes(&mut buf[88..104]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            x: <i32>::from_bytes(&buf[0..4]),
-            inner: <Inner>::from_bytes(&buf[4..16]),
-            items: Rc::new(RefCell::new(<Box<[Inner]>>::from_bytes(&buf[16..52]))),
-            v: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[56..80]))),
-            cursor: <Ptr<i32>>::from_bytes(&buf[80..88]),
-            buf: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[88..104]))),
-        }
-    }
 }
 pub fn set_0(p: Ptr<i32>, value: i32) {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
@@ -296,8 +278,10 @@ impl OuterImpl for Ptr<Outer> {
     }
     fn push(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
-        (*(*self).with(|__s| __s.v.clone()).borrow_mut())
-            .push(((*k.borrow()) + (*self).with(|__s| __s.x)));
+        {
+            let __a1 = ((*k.borrow()) + (*self).with(|__s| __s.x));
+            (*(*self).with(|__s| __s.v.clone()).borrow_mut()).push(__a1)
+        };
     }
 }
 pub fn __cpp2rust_init_globals() {}

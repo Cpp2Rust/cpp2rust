@@ -430,7 +430,10 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new((*pair3.borrow()).0.borrow().clone())),
         Rc::new(RefCell::new((*pair3.borrow()).1.borrow().clone())),
     )));
-    (*(*pair4.borrow()).0.borrow_mut()).push(1);
+    {
+        let __a1 = 1;
+        (*(*pair4.borrow()).0.borrow_mut()).push(__a1)
+    };
     (*(*pair4.borrow()).1.borrow_mut()) = 1;
     assert!(((*(*pair4.borrow()).0.borrow()).len() == 1_usize));
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));

@@ -20,23 +20,11 @@ impl Holder {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Holder {}
-=======
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.val.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            val: <Option<Value<i32>>>::from_bytes(&buf[0..8]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn read_val_0(h: Ptr<Holder>) -> i32 {
     let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
     return (*(*h.borrow())

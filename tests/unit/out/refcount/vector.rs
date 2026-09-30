@@ -17,7 +17,10 @@ fn main_0() -> i32 {
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     assert!(((*v1.borrow()).len() == 0_usize));
     assert!((*v1.borrow()).is_empty());
-    (*v1.borrow_mut()).push(1);
+    {
+        let __a1 = 1;
+        (*v1.borrow_mut()).push(__a1)
+    };
     assert!(!((*v1.borrow()).is_empty()));
     (*v1.borrow_mut()).pop();
     assert!((*v1.borrow()).is_empty());
@@ -34,9 +37,18 @@ fn main_0() -> i32 {
     assert!((((v1.as_pointer() as Ptr<i32>).offset(99_usize).read()) == 50));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     assert!(((*v2.borrow()).len() == 0_usize));
-    (*v2.borrow_mut()).push(1);
-    (*v2.borrow_mut()).push(2);
-    (*v2.borrow_mut()).push(3);
+    {
+        let __a1 = 1;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v2.borrow_mut()).push(__a1)
+    };
     assert!(((*v2.borrow()).len() == 3_usize));
     {
         let idx = (v2.as_pointer() as Ptr<i32>).get_offset();

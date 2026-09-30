@@ -22,23 +22,11 @@ impl Clone for NonTrivial {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NonTrivial {}
-=======
 impl ByteRepr for NonTrivial {
     fn byte_size() -> usize {
         24
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            data: Rc::new(RefCell::new(<Vec<i32>>::from_bytes(&buf[0..24]))),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());
 }
@@ -85,23 +73,11 @@ impl NonCopyable {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NonCopyable {}
-=======
 impl ByteRepr for NonCopyable {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.value.to_bytes(&mut buf[0..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            value: <Option<Value<i32>>>::from_bytes(&buf[0..8]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
     &(*x.upgrade().deref());
 }

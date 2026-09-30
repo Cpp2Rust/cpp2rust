@@ -14,16 +14,46 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut v: Vec<i32> = Vec::new();
-    v.push(10);
-    v.push(1);
-    v.push(9);
-    v.push(2);
-    v.push(8);
-    v.push(3);
-    v.push(7);
-    v.push(4);
-    v.push(5);
-    v.push(6);
+    {
+        let __a1 = 10;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 1;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 9;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 8;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 7;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 4;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 5;
+        v.push(__a1)
+    };
+    {
+        let __a1 = 6;
+        v.push(__a1)
+    };
     {
         let len = v.as_mut_ptr().add(v.len()).offset_from(v.as_mut_ptr()) as usize;
         ::std::slice::from_raw_parts_mut(v.as_mut_ptr(), len).sort()

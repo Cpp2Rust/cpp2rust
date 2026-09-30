@@ -45,27 +45,12 @@ impl Clone for Partial {
         Partial::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Partial {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for Partial {
     fn byte_size() -> usize {
         8
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.keep.to_bytes(&mut buf[4..8]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            keep: <i32>::from_bytes(&buf[4..8]),
-        }
-    }
 }
 #[derive(Clone, Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct NonConstAssign {
     #[offset(0)]
     pub mark: i32,
@@ -82,25 +67,12 @@ impl Default for NonConstAssign {
         { NonConstAssign::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NonConstAssign {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for NonConstAssign {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.mark.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Clone, Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct RefQualified {
     #[offset(0)]
     pub mark: i32,
@@ -117,29 +89,12 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for RefQualified {}
-#[derive(VaArg, FnPtrArg)]
-=======
 impl ByteRepr for RefQualified {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.mark.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
-<<<<<<< HEAD
-#[derive(Clone, Record, VaArg, FnPtrArg)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
-=======
 #[derive(Record, VaArg, FnPtrArg)]
->>>>>>> 349ab5a6 (Keep Box fields boxed)
 pub struct Holder {
     #[offset(0)]
     pub p: Partial,
@@ -166,25 +121,11 @@ impl Default for Holder {
         }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for Holder {}
-=======
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         24
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.p.to_bytes(&mut buf[0..8]);
-        (*self.arr.borrow()).to_bytes(&mut buf[8..24]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            p: <Partial>::from_bytes(&buf[0..8]),
-            arr: Rc::new(RefCell::new(<Box<[Partial]>>::from_bytes(&buf[8..24]))),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());

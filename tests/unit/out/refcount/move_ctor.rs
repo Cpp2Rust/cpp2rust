@@ -27,25 +27,12 @@ impl MoveOnly {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for MoveOnly {}
-#[derive()]
-=======
 impl ByteRepr for MoveOnly {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct ConstMove {
     #[offset(0)]
     pub mark: i32,
@@ -76,25 +63,12 @@ impl Default for ConstMove {
         { ConstMove::new() }
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for ConstMove {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for ConstMove {
     fn byte_size() -> usize {
         4
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.mark.to_bytes(&mut buf[0..4]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            mark: <i32>::from_bytes(&buf[0..4]),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct ThrowingMove {
     #[offset(0)]
     pub v: i32,
@@ -144,29 +118,12 @@ impl Clone for ThrowingMove {
         ThrowingMove::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for ThrowingMove {}
-#[derive(VaArg, FnPtrArg, Default)]
-=======
 impl ByteRepr for ThrowingMove {
     fn byte_size() -> usize {
         12
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.copies.to_bytes(&mut buf[4..8]);
-        self.moves.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            copies: <i32>::from_bytes(&buf[4..8]),
-            moves: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
 #[derive(Record, VaArg, FnPtrArg, Default)]
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub struct NoexceptMove {
     #[offset(0)]
     pub v: i32,
@@ -216,27 +173,11 @@ impl Clone for NoexceptMove {
         NoexceptMove::copy_from(__src.as_pointer())
     }
 }
-<<<<<<< HEAD
-impl ByteRepr for NoexceptMove {}
-=======
 impl ByteRepr for NoexceptMove {
     fn byte_size() -> usize {
         12
     }
-    fn to_bytes(&self, buf: &mut [u8]) {
-        self.v.to_bytes(&mut buf[0..4]);
-        self.copies.to_bytes(&mut buf[4..8]);
-        self.moves.to_bytes(&mut buf[8..12]);
-    }
-    fn from_bytes(buf: &[u8]) -> Self {
-        Self {
-            v: <i32>::from_bytes(&buf[0..4]),
-            copies: <i32>::from_bytes(&buf[4..8]),
-            moves: <i32>::from_bytes(&buf[8..12]),
-        }
-    }
 }
->>>>>>> 3ed38b58 (Remove Value<> boxing from struct fields)
 pub fn by_value_0(m: MoveOnly) -> i32 {
     let m: Value<MoveOnly> = Rc::new(RefCell::new(m));
     return { (*m.borrow()).v };
@@ -267,9 +208,15 @@ fn main_0() -> i32 {
     assert!((({ by_value_0(MoveOnly::move_from({ e.as_pointer() },),) }) == 5));
     assert!(({ (*e.borrow()).v } == 0));
     let vec_: Value<Vec<MoveOnly>> = Rc::new(RefCell::new(Vec::new()));
-    (*vec_.borrow_mut()).push(MoveOnly::new({ 7 }));
+    {
+        let __a1 = MoveOnly::new({ 7 });
+        (*vec_.borrow_mut()).push(__a1)
+    };
     let f: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 8 })));
-    (*vec_.borrow_mut()).push(MoveOnly::move_from({ f.as_pointer() }));
+    {
+        let __a1 = MoveOnly::move_from({ f.as_pointer() });
+        (*vec_.borrow_mut()).push(__a1)
+    };
     assert!(
         ({
             (*(vec_.as_pointer() as Ptr<MoveOnly>)
