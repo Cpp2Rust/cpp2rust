@@ -27,8 +27,14 @@ fn main_0() -> i32 {
         println!("{}", ((*c.borrow()) as i32) as u8 as char);
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(Ptr::alloc(2));
-    (*v.borrow_mut()).push(Ptr::alloc(3));
+    {
+        let __a1 = Ptr::alloc(2);
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = Ptr::alloc(3);
+        (*v.borrow_mut()).push(__a1)
+    };
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         println!("{}", ((*p.borrow()).read()));

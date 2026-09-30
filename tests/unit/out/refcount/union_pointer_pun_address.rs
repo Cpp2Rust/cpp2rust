@@ -6,55 +6,43 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct node_a {
-    pub n: Value<i32>,
-}
-impl Clone for node_a {
-    fn clone(&self) -> Self {
-        Self {
-            n: Rc::new(RefCell::new((*self.n.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub n: i32,
 }
 impl ByteRepr for node_a {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.n.borrow()).to_bytes(&mut buf[0..4]);
+        self.n.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            n: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct node_b {
-    pub data: Value<AnyPtr>,
-    pub next: Value<Ptr<node_b>>,
-}
-impl Clone for node_b {
-    fn clone(&self) -> Self {
-        Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-            next: Rc::new(RefCell::new((*self.next.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub data: AnyPtr,
+    #[offset(8)]
+    pub next: Ptr<node_b>,
 }
 impl ByteRepr for node_b {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.data.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.next.borrow()).to_bytes(&mut buf[8..16]);
+        self.data.to_bytes(&mut buf[0..8]);
+        self.next.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            data: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
-            next: Rc::new(RefCell::new(<Ptr<node_b>>::from_bytes(&buf[8..16]))),
+            data: <AnyPtr>::from_bytes(&buf[0..8]),
+            next: <Ptr<node_b>>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -63,9 +51,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<node_a> = Rc::new(RefCell::new(node_a {
-        n: Rc::new(RefCell::new(123)),
-    }));
+    let a: Value<node_a> = Rc::new(RefCell::new(node_a { n: 123 }));
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
     let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));

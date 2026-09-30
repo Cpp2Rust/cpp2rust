@@ -17,7 +17,10 @@ unsafe fn main_0() -> i32 {
     let mut v1: Vec<i32> = Vec::new();
     assert!(((v1.len()) == (0_usize)));
     assert!(v1.is_empty());
-    v1.push(1);
+    {
+        let __a1 = 1;
+        v1.push(__a1)
+    };
     assert!(!(v1.is_empty()));
     v1.pop();
     assert!(v1.is_empty());
@@ -34,9 +37,18 @@ unsafe fn main_0() -> i32 {
     assert!(((v1[(99_usize)]) == (50)));
     let mut v2: Vec<i32> = Vec::new();
     assert!(((v2.len()) == (0_usize)));
-    v2.push(1);
-    v2.push(2);
-    v2.push(3);
+    {
+        let __a1 = 1;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 2;
+        v2.push(__a1)
+    };
+    {
+        let __a1 = 3;
+        v2.push(__a1)
+    };
     assert!(((v2.len()) == (3_usize)));
     {
         let pos = v2.as_mut_ptr().offset_from(v2.as_ptr()) as usize;

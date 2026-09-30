@@ -36,7 +36,7 @@ pub fn foo_3(x: Ptr<i32>, y: Ptr<i32>, z: Ptr<i32>) -> i32 {
 pub fn bar_4(x: Ptr<i32>) -> i32 {
     return (x.read());
 }
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Foo {}
 pub fn func_5(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));

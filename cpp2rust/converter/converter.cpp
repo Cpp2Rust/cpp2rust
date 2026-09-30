@@ -1171,7 +1171,6 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
 
   for (const auto *field : record_decl->fields()) {
     auto field_name = GetNamedDeclAsString(field);
-    auto field_type = field->getType();
     const clang::CXXCtorInitializer *ctor_initializer = nullptr;
     for (const auto *init : definition->inits()) {
       if (init->isMemberInitializer() && init->getMember() == field) {
@@ -1180,15 +1179,9 @@ void Converter::EmitConstructorFieldInits(clang::CXXConstructorDecl *decl) {
       }
     }
 
-    if (ctor_initializer) {
-      StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, ctor_initializer->getInit());
-    } else if (auto *init = field->getInClassInitializer()) {
-      StrCat(field_name, token::kColon);
-      ConvertVarInit(field_type, init);
-    } else {
-      StrCat(field_name, token::kColon, GetDefaultAsString(field_type));
-    }
+    StrCat(field_name, token::kColon);
+    ConvertFieldInit(field, ctor_initializer ? ctor_initializer->getInit()
+                                             : field->getInClassInitializer());
     StrCat(token::kComma);
   }
 }
@@ -2444,7 +2437,10 @@ bool Converter::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
   case clang::CastKind::CK_LValueToRValue: {
     PushExprKind push(*this, ExprKind::RValue);
     Convert(sub_expr);
-    SetValueFreshness(type);
+    // The value may have been copied out already.
+    if (!isFresh()) {
+      SetValueFreshness(type);
+    }
     break;
   }
   case clang::CastKind::CK_ArrayToPointerDecay: {
@@ -3398,7 +3394,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     int i = 0;
     for (const auto *field : record->fields()) {
       StrCat(GetNamedDeclAsString(field), token::kColon);
-      ConvertVarInit(field->getType(), expr->getInit(i++));
+      ConvertFieldInit(field, expr->getInit(i++));
       StrCat(token::kComma);
     }
   } else {
@@ -4665,12 +4661,17 @@ void Converter::EmitDefaultStructLiteral(const clang::RecordDecl *decl) {
   PushBrace brace(*this);
   for (auto *field : decl->fields()) {
     StrCat(GetNamedDeclAsString(field), token::kColon);
-    if (auto *init = field->getInClassInitializer()) {
-      ConvertVarInit(field->getType(), init);
-    } else {
-      StrCat(GetDefaultAsString(field->getType()));
-    }
+    ConvertFieldInit(field, field->getInClassInitializer());
     StrCat(token::kComma);
+  }
+}
+
+void Converter::ConvertFieldInit(const clang::FieldDecl *field,
+                                 clang::Expr *init) {
+  if (init) {
+    ConvertVarInit(field->getType(), init);
+  } else {
+    StrCat(GetDefaultAsString(field->getType()));
   }
 }
 

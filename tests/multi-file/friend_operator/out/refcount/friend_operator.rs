@@ -6,33 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.b.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            b: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -41,18 +33,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s1: Value<S> = Rc::new(RefCell::new(S {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2)),
-    }));
-    let s2: Value<S> = Rc::new(RefCell::new(S {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(2)),
-    }));
-    let s3: Value<S> = Rc::new(RefCell::new(S {
-        a: Rc::new(RefCell::new(1)),
-        b: Rc::new(RefCell::new(3)),
-    }));
+    let s1: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 2 }));
+    let s2: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 2 }));
+    let s3: Value<S> = Rc::new(RefCell::new(S { a: 1, b: 3 }));
     assert!(
         ({
             let _x: Ptr<S> = s1.as_pointer();
@@ -90,11 +73,11 @@ fn main_0() -> i32 {
 }
 pub fn operator_eq_0(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({
-        let _lhs = (*(*x.upgrade().deref()).a.borrow());
-        _lhs == (*(*y.upgrade().deref()).a.borrow())
+        let _lhs = x.with(|__s| __s.a);
+        _lhs == y.with(|__s| __s.a)
     }) && ({
-        let _lhs = (*(*x.upgrade().deref()).b.borrow());
-        _lhs == (*(*y.upgrade().deref()).b.borrow())
+        let _lhs = x.with(|__s| __s.b);
+        _lhs == y.with(|__s| __s.b)
     });
 }
 pub fn operator_ne_1(x: Ptr<S>, y: Ptr<S>) -> bool {
@@ -106,14 +89,14 @@ pub fn operator_ne_1(x: Ptr<S>, y: Ptr<S>) -> bool {
 }
 pub fn operator_lt_2(x: Ptr<S>, y: Ptr<S>) -> bool {
     return ({
-        let _lhs = (*(*x.upgrade().deref()).a.borrow());
-        _lhs < (*(*y.upgrade().deref()).a.borrow())
+        let _lhs = x.with(|__s| __s.a);
+        _lhs < y.with(|__s| __s.a)
     }) || (({
-        let _lhs = (*(*x.upgrade().deref()).a.borrow());
-        _lhs == (*(*y.upgrade().deref()).a.borrow())
+        let _lhs = x.with(|__s| __s.a);
+        _lhs == y.with(|__s| __s.a)
     }) && ({
-        let _lhs = (*(*x.upgrade().deref()).b.borrow());
-        _lhs < (*(*y.upgrade().deref()).b.borrow())
+        let _lhs = x.with(|__s| __s.b);
+        _lhs < y.with(|__s| __s.b)
     }));
 }
 pub fn compare_3(x: Ptr<S>, y: Ptr<S>) -> i32 {

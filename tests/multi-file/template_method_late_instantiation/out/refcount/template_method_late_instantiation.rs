@@ -6,24 +6,14 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct S_int_ {
-    pub x: Value<i32>,
-}
-impl Clone for S_int_ {
-    fn clone(&self) -> Self {
-        let __this: Value<S_int_> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<S_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
 }
 impl Default for S_int_ {
     fn default() -> Self {
-        S_int_ {
-            x: Rc::new(RefCell::new(0)),
-        }
+        S_int_ { x: 0 }
     }
 }
 impl ByteRepr for S_int_ {
@@ -31,11 +21,11 @@ impl ByteRepr for S_int_ {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -62,10 +52,10 @@ pub trait S_int_Impl {
 impl S_int_Impl for Ptr<S_int_> {
     fn set(&self, v: i32) {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        (*(*(*self).upgrade().deref()).x.borrow_mut()) = (*v.borrow());
+        field!((*self), x).write((*v.borrow()));
     }
     fn get(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).x.borrow());
+        return (*self).with(|__s| __s.x);
     }
 }
 pub fn __cpp2rust_init_globals() {}

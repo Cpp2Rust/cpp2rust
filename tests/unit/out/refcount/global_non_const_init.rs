@@ -33,32 +33,20 @@ thread_local!(
     pub static depends_on_call_6: Value<i32> =
         Rc::new(RefCell::new((from_call_5.with(|rc| *rc.borrow()) + 1)));
 );
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Ctor {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl Ctor {
     pub fn new_1() -> Self {
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new(({ next_0() }))),
-        }));
+        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: ({ next_0() }) }));
         let this: Ptr<Ctor> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_2(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*x.borrow()))),
-        }));
-        let this: Ptr<Ctor> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for Ctor {
-    fn clone(&self) -> Self {
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
+        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: (*x.borrow()) }));
         let this: Ptr<Ctor> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -73,11 +61,11 @@ impl ByteRepr for Ctor {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            v: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -97,7 +85,7 @@ thread_local!(
 thread_local!(
     pub static inline_member_11: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 5 })));
 );
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Holder {}
 thread_local!(
     pub static member_10: Value<i32> = Rc::new(RefCell::new(({ next_0() })));
@@ -109,18 +97,16 @@ pub fn local_static_12() -> i32 {
     thread_local!(
         static local_ctor_14: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 3 })));
     );
-    return (once_13.with(|rc| *rc.borrow())
-        + (*(*local_ctor_14.with(Value::clone).borrow()).v.borrow()));
+    return (once_13.with(|rc| *rc.borrow()) + { (*local_ctor_14.with(Value::clone).borrow()).v });
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Singleton {
-    pub hits: Value<i32>,
+    #[offset(0)]
+    pub hits: i32,
 }
 impl Singleton {
     pub fn new() -> Self {
-        let __this: Value<Singleton> = Rc::new(RefCell::new(Self {
-            hits: Rc::new(RefCell::new(0)),
-        }));
+        let __this: Value<Singleton> = Rc::new(RefCell::new(Self { hits: 0 }));
         let this: Ptr<Singleton> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -129,15 +115,6 @@ impl Singleton {
             static s_15: Value<Singleton> = Rc::new(RefCell::new(Singleton::new()));
         );
         return s_15.with(|v| v.as_pointer());
-    }
-}
-impl Clone for Singleton {
-    fn clone(&self) -> Self {
-        let __this: Value<Singleton> = Rc::new(RefCell::new(Self {
-            hits: Rc::new(RefCell::new((*self.hits.borrow()))),
-        }));
-        let this: Ptr<Singleton> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Default for Singleton {
@@ -150,11 +127,11 @@ impl ByteRepr for Singleton {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.hits.borrow()).to_bytes(&mut buf[0..4]);
+        self.hits.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            hits: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            hits: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -180,8 +157,8 @@ fn main_0() -> i32 {
     assert!(((single_4.with(|rc| *rc.borrow()) as i32) == 18));
     assert!((from_call_5.with(|rc| *rc.borrow()) == 1));
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
-    assert!(((*(*default_ctor_7.with(Value::clone).borrow()).v.borrow()) == 2));
-    assert!(((*(*arg_ctor_8.with(Value::clone).borrow()).v.borrow()) == 7));
+    assert!(({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2));
+    assert!(({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7));
     assert!(
         (*str_9.with(Value::clone).borrow())
             .iter()
@@ -190,23 +167,12 @@ fn main_0() -> i32 {
             .eq(Ptr::<u8>::from_string_literal(b"abc").to_c_string_iterator())
     );
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
-    assert!(((*(*inline_member_11.with(Value::clone).borrow()).v.borrow()) == 5));
+    assert!(({ (*inline_member_11.with(Value::clone).borrow()).v } == 5));
     assert!((({ local_static_12() }) == 7));
     assert!((({ local_static_12() }) == 7));
-    (*(*({ Singleton::instance() }).upgrade().deref())
-        .hits
-        .borrow_mut())
-    .postfix_inc();
-    (*(*({ Singleton::instance() }).upgrade().deref())
-        .hits
-        .borrow_mut())
-    .postfix_inc();
-    assert!(
-        ((*(*({ Singleton::instance() }).upgrade().deref())
-            .hits
-            .borrow())
-            == 2)
-    );
+    field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());
+    field!(({ Singleton::instance() }), hits).with_mut(|__v| __v.postfix_inc());
+    assert!((({ Singleton::instance() }).with(|__s| __s.hits) == 2));
     assert!((({ Singleton::instance() }) == ({ Singleton::instance() })));
     return 0;
 }

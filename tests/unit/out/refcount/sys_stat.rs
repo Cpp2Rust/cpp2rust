@@ -49,8 +49,8 @@ pub fn test_stat_0() {
         } == 0) as i32)
             != 0)
     );
-    assert!(((((*(*st.borrow()).st_size.borrow()) == 5_i64) as i32) != 0));
-    assert!(((((*(*st.borrow()).st_mtime.borrow()) > 0_i64) as i32) != 0));
+    assert!(((({ (*st.borrow()).st_size } == 5_i64) as i32) != 0));
+    assert!(((({ (*st.borrow()).st_mtime } > 0_i64) as i32) != 0));
     match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
         Ok(()) => 0,
         Err(__e) => {
@@ -96,8 +96,8 @@ pub fn test_fstat_1() {
         } == 0) as i32)
             != 0)
     );
-    assert!(((((*(*st.borrow()).st_size.borrow()) == 11_i64) as i32) != 0));
-    assert!(((((*(*st.borrow()).st_mtime.borrow()) > 0_i64) as i32) != 0));
+    assert!(((({ (*st.borrow()).st_size } == 11_i64) as i32) != 0));
+    assert!(((({ (*st.borrow()).st_mtime } > 0_i64) as i32) != 0));
     assert!(
         ((({
             let __r = (*fp.borrow()).with(|__f| __f.close());

@@ -9,42 +9,43 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kLvalueOverload: Overload = 1;
 pub const Overload_kRvalueOverload: Overload = 2;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, VaArg, FnPtrArg, Default)]
 pub struct Tracked {
-    pub v: Value<i32>,
-    pub copies: Value<i32>,
-    pub moves: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
+    #[offset(4)]
+    pub copies: i32,
+    #[offset(8)]
+    pub moves: i32,
 }
 impl Tracked {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*v.borrow()))),
-            copies: Rc::new(RefCell::new(0)),
-            moves: Rc::new(RefCell::new(0)),
+            v: (*v.borrow()),
+            copies: 0,
+            moves: 0,
         }));
         let this: Ptr<Tracked> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn copy_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            copies: Rc::new(RefCell::new(
-                ((*(*o.upgrade().deref()).copies.borrow()) + 1),
-            )),
-            moves: Rc::new(RefCell::new((*(*o.upgrade().deref()).moves.borrow()))),
+            v: o.with(|__s| __s.v),
+            copies: (o.with(|__s| __s.copies) + 1),
+            moves: o.with(|__s| __s.moves),
         }));
         let this: Ptr<Tracked> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(o: Ptr<Tracked>) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*(*o.upgrade().deref()).v.borrow()))),
-            copies: Rc::new(RefCell::new((*(*o.upgrade().deref()).copies.borrow()))),
-            moves: Rc::new(RefCell::new(((*(*o.upgrade().deref()).moves.borrow()) + 1))),
+            v: o.with(|__s| __s.v),
+            copies: o.with(|__s| __s.copies),
+            moves: (o.with(|__s| __s.moves) + 1),
         }));
         let this: Ptr<Tracked> = __this.as_pointer();
-        (*(*o.upgrade().deref()).v.borrow_mut()) = 0;
+        field!(o, v).write(0);
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -58,7 +59,11 @@ impl Clone for Tracked {
         Tracked::copy_from(__src.as_pointer())
     }
 }
-impl ByteRepr for Tracked {}
+impl ByteRepr for Tracked {
+    fn byte_size() -> usize {
+        12
+    }
+}
 pub fn chosen_overload_0(_a0: Ptr<Tracked>) -> Overload {
     return Overload_kLvalueOverload;
 }
@@ -93,7 +98,7 @@ fn main_0() -> i32 {
         ((({ forward_by_decltype_2(a.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(((*(*a.borrow()).v.borrow()) == 3));
+    assert!(({ (*a.borrow()).v } == 3));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 4 })));
@@ -106,7 +111,7 @@ fn main_0() -> i32 {
         ((({ forward_abbreviated_4(b.as_pointer(),) }) as i32)
             == (Overload_kLvalueOverload as i32))
     );
-    assert!(((*(*b.borrow()).v.borrow()) == 5));
+    assert!(({ (*b.borrow()).v } == 5));
     assert!(
         ((({
             let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
@@ -121,7 +126,7 @@ fn main_0() -> i32 {
             forward_abbreviated_pack_6(c.as_pointer(), _args_1.as_pointer())
         }) == ((Overload_kLvalueOverload as i32) + (Overload_kRvalueOverload as i32)))
     );
-    assert!(((*(*c.borrow()).v.borrow()) == 7));
+    assert!(({ (*c.borrow()).v } == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

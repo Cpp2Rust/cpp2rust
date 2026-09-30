@@ -310,7 +310,10 @@ unsafe fn main_0() -> i32 {
         let a0_clone = b.clone();
         vec_.push(a0_clone)
     };
-    vec_.push(Explicit::new({ 9 }));
+    {
+        let __a1 = Explicit::new({ 9 });
+        vec_.push(__a1)
+    };
     assert!(((vec_[(0_usize)].v) == (1)) && ((vec_[(1_usize)].v) == (9)));
     let mut m: DefaultCopyUserMove = DefaultCopyUserMove::new({ 7 });
     let mut m1: DefaultCopyUserMove = m;
@@ -347,7 +350,10 @@ unsafe fn main_0() -> i32 {
             && (q.rows.is_empty())
     );
     let mut bufs: Vec<Buffer> = Vec::new();
-    bufs.push(Buffer::move_from({ &mut r }));
+    {
+        let __a1 = Buffer::move_from({ &mut r });
+        bufs.push(__a1)
+    };
     {
         let __init = Buffer::move_from({ &mut bufs[(0_usize)] });
         bufs.push(__init)
@@ -357,7 +363,10 @@ unsafe fn main_0() -> i32 {
             && (bufs[(0_usize)].data.is_empty())
     );
     let mut o1: Owner = <Owner>::default();
-    o1.data.push(5);
+    {
+        let __a1 = 5;
+        o1.data.push(__a1)
+    };
     o1.n = 5;
     o1.arr[(0) as usize] = 5;
     o1.arr[(1) as usize] = 6;

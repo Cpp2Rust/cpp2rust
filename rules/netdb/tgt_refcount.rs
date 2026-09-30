@@ -15,17 +15,17 @@ fn f1(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
     let __family = if __hints.is_null() {
         ::libc::AF_UNSPEC
     } else {
-        __hints.with(|__h| *__h.ai_family.borrow())
+        __hints.with(|__h| __h.ai_family)
     };
     let __socktype = if __hints.is_null() {
         0
     } else {
-        __hints.with(|__h| *__h.ai_socktype.borrow())
+        __hints.with(|__h| __h.ai_socktype)
     };
     let __protocol = if __hints.is_null() {
         0
     } else {
-        __hints.with(|__h| *__h.ai_protocol.borrow())
+        __hints.with(|__h| __h.ai_protocol)
     };
     let __port: u16 = if __service.is_null() {
         0
@@ -66,30 +66,28 @@ fn f1(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<Addrinfo>, a3: Ptr<Ptr<Addrinfo>>) -> i3
     } else {
         let mut __next = Ptr::<Addrinfo>::null();
         for __ip in __addrs.iter().rev() {
-            let __ai = Addrinfo::default();
-            *__ai.ai_socktype.borrow_mut() = __socktype;
-            *__ai.ai_protocol.borrow_mut() = __protocol;
+            let mut __ai = Addrinfo::default();
+            __ai.ai_socktype = __socktype;
+            __ai.ai_protocol = __protocol;
             let __storage = Ptr::alloc(SockaddrStorage::default());
             match __ip {
                 ::std::net::IpAddr::V4(__v4) => {
-                    *__ai.ai_family.borrow_mut() = ::libc::AF_INET;
-                    *__ai.ai_addrlen.borrow_mut() =
-                        ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
+                    __ai.ai_family = ::libc::AF_INET;
+                    __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in>() as u32;
                     __storage
                         .reinterpret_cast::<SockaddrIn>()
                         .write(SockaddrIn::from_ipv4(__v4, __port));
                 }
                 ::std::net::IpAddr::V6(__v6) => {
-                    *__ai.ai_family.borrow_mut() = ::libc::AF_INET6;
-                    *__ai.ai_addrlen.borrow_mut() =
-                        ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
+                    __ai.ai_family = ::libc::AF_INET6;
+                    __ai.ai_addrlen = ::std::mem::size_of::<::libc::sockaddr_in6>() as u32;
                     __storage
                         .reinterpret_cast::<SockaddrIn6>()
                         .write(SockaddrIn6::from_ipv6(__v6, __port));
                 }
             }
-            *__ai.ai_addr.borrow_mut() = __storage.reinterpret_cast::<Sockaddr>();
-            *__ai.ai_next.borrow_mut() = __next.clone();
+            __ai.ai_addr = __storage.reinterpret_cast::<Sockaddr>();
+            __ai.ai_next = __next.clone();
             __next = Ptr::alloc(__ai);
         }
         __out.write(__next);
@@ -101,11 +99,10 @@ fn f2(a0: Ptr<Addrinfo>) {
     let mut __cur = a0;
     while !__cur.is_null() {
         let __next = __cur.with(|__ai| {
-            let __addr = __ai.ai_addr.borrow();
-            if !__addr.is_null() {
-                __addr.delete();
+            if !__ai.ai_addr.is_null() {
+                __ai.ai_addr.delete();
             }
-            (*__ai.ai_next.borrow()).clone()
+            __ai.ai_next.clone()
         });
         __cur.delete();
         __cur = __next;

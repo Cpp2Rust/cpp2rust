@@ -48,12 +48,12 @@ fn main_0() -> i32 {
             .map(|_| Default::default())
             .collect::<Box<[libcc2rs::Pollfd]>>(),
     ));
-    (*(*pfd.borrow())[(0) as usize].fd.borrow_mut()) = (*fds.borrow())[(0) as usize];
-    (*(*pfd.borrow())[(0) as usize].events.borrow_mut()) = 1_i16;
-    (*(*pfd.borrow())[(0) as usize].revents.borrow_mut()) = 0_i16;
-    (*(*pfd.borrow())[(1) as usize].fd.borrow_mut()) = -1_i32;
-    (*(*pfd.borrow())[(1) as usize].events.borrow_mut()) = 1_i16;
-    (*(*pfd.borrow())[(1) as usize].revents.borrow_mut()) = 42_i16;
+    (*pfd.borrow_mut())[(0) as usize].fd = (*fds.borrow())[(0) as usize];
+    (*pfd.borrow_mut())[(0) as usize].events = 1_i16;
+    (*pfd.borrow_mut())[(0) as usize].revents = 0_i16;
+    (*pfd.borrow_mut())[(1) as usize].fd = -1_i32;
+    (*pfd.borrow_mut())[(1) as usize].events = 1_i16;
+    (*pfd.borrow_mut())[(1) as usize].revents = 42_i16;
     assert!(
         ((({
             let __p = (pfd.as_pointer() as Ptr<libcc2rs::Pollfd>);
@@ -65,11 +65,8 @@ fn main_0() -> i32 {
             let mut __wanted = Vec::new();
             let mut __events = Vec::new();
             for __i in 0..((2 as ::libc::nfds_t) as usize) {
-                let (__fd, __ev) = __p
-                    .offset(__i)
-                    .with(|__e| (*__e.fd.borrow(), *__e.events.borrow()));
-                __p.offset(__i)
-                    .with_mut(|__e| *__e.revents.borrow_mut() = 0);
+                let (__fd, __ev) = __p.offset(__i).with(|__e| (__e.fd, __e.events));
+                __p.offset(__i).with_mut(|__e| __e.revents = 0);
                 if __fd >= 0 {
                     __idx.push(__i);
                     __wanted.push(__fd);
@@ -91,8 +88,7 @@ fn main_0() -> i32 {
                                 Some(__r) => __r.bits(),
                                 None => 0,
                             };
-                            __p.offset(__i)
-                                .with_mut(|__e| *__e.revents.borrow_mut() = __rev);
+                            __p.offset(__i).with_mut(|__e| __e.revents = __rev);
                         }
                         __count
                     }
@@ -105,10 +101,8 @@ fn main_0() -> i32 {
         } == 1) as i32)
             != 0)
     );
-    assert!(
-        ((((((*(*pfd.borrow())[(0) as usize].revents.borrow()) as i32) & 1) != 0) as i32) != 0)
-    );
-    assert!((((((*(*pfd.borrow())[(1) as usize].revents.borrow()) as i32) == 0) as i32) != 0));
+    assert!(((((({ (*pfd.borrow())[(0) as usize].revents } as i32) & 1) != 0) as i32) != 0));
+    assert!((((({ (*pfd.borrow())[(1) as usize].revents } as i32) == 0) as i32) != 0));
     let ch: Value<u8> = Rc::new(RefCell::new(0_u8));
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {

@@ -6,70 +6,56 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Pair {
-    pub first: Value<i32>,
-    pub second: Value<i32>,
-}
-impl Clone for Pair {
-    fn clone(&self) -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
-            first: Rc::new(RefCell::new((*self.first.borrow()))),
-            second: Rc::new(RefCell::new((*self.second.borrow()))),
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub first: i32,
+    #[offset(4)]
+    pub second: i32,
 }
 impl ByteRepr for Pair {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.first.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.second.borrow()).to_bytes(&mut buf[4..8]);
+        self.first.to_bytes(&mut buf[0..4]);
+        self.second.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            first: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            second: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            first: <i32>::from_bytes(&buf[0..4]),
+            second: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Route {
-    pub path: Value<Pair>,
-    pub cost: Value<f64>,
-}
-impl Clone for Route {
-    fn clone(&self) -> Self {
-        let __this: Value<Route> = Rc::new(RefCell::new(Self {
-            path: Rc::new(RefCell::new((*self.path.borrow()).clone())),
-            cost: Rc::new(RefCell::new((*self.cost.borrow()))),
-        }));
-        let this: Ptr<Route> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub path: Pair,
+    #[offset(8)]
+    pub cost: f64,
 }
 impl ByteRepr for Route {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.path.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.cost.borrow()).to_bytes(&mut buf[8..16]);
+        self.path.to_bytes(&mut buf[0..8]);
+        self.cost.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            path: Rc::new(RefCell::new(<Pair>::from_bytes(&buf[0..8]))),
-            cost: Rc::new(RefCell::new(<f64>::from_bytes(&buf[8..16]))),
+            path: <Pair>::from_bytes(&buf[0..8]),
+            cost: <f64>::from_bytes(&buf[8..16]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Counter {
-    pub v: Value<i32>,
-    pub calls: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
+    #[offset(4)]
+    pub calls: i32,
 }
 impl std::cmp::PartialEq for Counter {
     fn eq(&self, other: &Self) -> bool {
@@ -90,43 +76,31 @@ impl std::cmp::PartialEq for Counter {
     }
 }
 impl std::cmp::Eq for Counter {}
-impl Clone for Counter {
-    fn clone(&self) -> Self {
-        let __this: Value<Counter> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-            calls: Rc::new(RefCell::new((*self.calls.borrow()))),
-        }));
-        let this: Ptr<Counter> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 impl ByteRepr for Counter {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.calls.borrow()).to_bytes(&mut buf[4..8]);
+        self.v.to_bytes(&mut buf[0..4]);
+        self.calls.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            calls: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            v: <i32>::from_bytes(&buf[0..4]),
+            calls: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
 pub fn RandomRoute_0(route: Ptr<Route>) -> i32 {
-    if (((*(*(*route.upgrade().deref()).path.borrow()).first.borrow()) % 2) != 0) {
+    if ((route.with(|__s| __s.path.first) % 2) != 0) {
         return ({
-            let _new_first: i32 =
-                ({ PairImpl::SetSecond(&(*route.upgrade().deref()).path.as_pointer(), 10) });
-            PairImpl::SetFirst(&(*route.upgrade().deref()).path.as_pointer(), _new_first)
+            let _new_first: i32 = ({ PairImpl::SetSecond(&field_ptr!(route, path), 10) });
+            PairImpl::SetFirst(&field_ptr!(route, path), _new_first)
         });
     } else {
         return ({
-            let _new_second: i32 =
-                ({ PairImpl::SetFirst(&(*route.upgrade().deref()).path.as_pointer(), -10_i32) });
-            PairImpl::SetSecond(&(*route.upgrade().deref()).path.as_pointer(), _new_second)
+            let _new_second: i32 = ({ PairImpl::SetFirst(&field_ptr!(route, path), -10_i32) });
+            PairImpl::SetSecond(&field_ptr!(route, path), _new_second)
         });
     }
     panic!("ub: non-void function does not return a value")
@@ -137,18 +111,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let route1: Value<Route> = Rc::new(RefCell::new(Route {
-        path: Rc::new(RefCell::new(Pair {
-            first: Rc::new(RefCell::new(0)),
-            second: Rc::new(RefCell::new(1)),
-        })),
-        cost: Rc::new(RefCell::new(5_f64)),
+        path: Pair {
+            first: 0,
+            second: 1,
+        },
+        cost: 5_f64,
     }));
     let route2: Value<Route> = Rc::new(RefCell::new(Route {
-        path: Rc::new(RefCell::new(Pair {
-            first: Rc::new(RefCell::new(1)),
-            second: Rc::new(RefCell::new(0)),
-        })),
-        cost: Rc::new(RefCell::new(10_f64)),
+        path: Pair {
+            first: 1,
+            second: 0,
+        },
+        cost: 10_f64,
     }));
     let old_cost: Value<f64> = Rc::new(RefCell::new(
         ({
@@ -164,22 +138,16 @@ fn main_0() -> i32 {
             + (*old_cost.borrow()))
             == 9_f64)
     );
-    let c1: Value<Counter> = Rc::new(RefCell::new(Counter {
-        v: Rc::new(RefCell::new(3)),
-        calls: Rc::new(RefCell::new(0)),
-    }));
-    let c2: Value<Counter> = Rc::new(RefCell::new(Counter {
-        v: Rc::new(RefCell::new(3)),
-        calls: Rc::new(RefCell::new(0)),
-    }));
+    let c1: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
+    let c2: Value<Counter> = Rc::new(RefCell::new(Counter { v: 3, calls: 0 }));
     let pc: Value<Ptr<Counter>> = Rc::new(RefCell::new((c1.as_pointer())));
     assert!((({ CounterImpl::Get(&c1.as_pointer(),) }) == 3));
     assert!((({ CounterImpl::Get(&c2.as_pointer(),) }) == 3));
     assert!((({ CounterImpl::Get(&(*pc.borrow()),) }) == 3));
     assert!(({ CounterImpl::operator_eq(&c1.as_pointer(), c2.as_pointer(),) }));
     assert!(({ CounterImpl::operator_eq(&c2.as_pointer(), c1.as_pointer(),) }));
-    assert!(((*(*c1.borrow()).calls.borrow()) == 3));
-    assert!(((*(*c2.borrow()).calls.borrow()) == 2));
+    assert!(({ (*c1.borrow()).calls } == 3));
+    assert!(({ (*c2.borrow()).calls } == 2));
     return 0;
 }
 pub trait CounterImpl {
@@ -188,14 +156,14 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn Get(&self) -> i32 {
-        (*(*(*self).upgrade().deref()).calls.borrow_mut()).prefix_inc();
-        return (*(*(*self).upgrade().deref()).v.borrow());
+        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
+        return (*self).with(|__s| __s.v);
     }
     fn operator_eq(&self, o: Ptr<Counter>) -> bool {
-        (*(*(*self).upgrade().deref()).calls.borrow_mut()).prefix_inc();
+        field!((*self), calls).with_mut(|__v| __v.prefix_inc());
         return {
-            let _lhs = (*(*(*self).upgrade().deref()).v.borrow());
-            _lhs == (*(*o.upgrade().deref()).v.borrow())
+            let _lhs = (*self).with(|__s| __s.v);
+            _lhs == o.with(|__s| __s.v)
         };
     }
 }
@@ -210,10 +178,10 @@ pub trait PairImpl {
 impl PairImpl for Ptr<Pair> {
     fn NOP(&self) {}
     fn GetFirst(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).first.borrow());
+        return (*self).with(|__s| __s.first);
     }
     fn GetSecond(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).second.borrow());
+        return (*self).with(|__s| __s.second);
     }
     fn Set(&self, field: Ptr<i32>, new_val: i32) -> i32 {
         let new_val: Value<i32> = Rc::new(RefCell::new(new_val));
@@ -227,7 +195,7 @@ impl PairImpl for Ptr<Pair> {
         let new_first: Value<i32> = Rc::new(RefCell::new(new_first));
         return (({ PairImpl::GetFirst(self) })
             + ({
-                let _field: Ptr<i32> = (*(*self).upgrade().deref()).first.as_pointer();
+                let _field: Ptr<i32> = field_ptr!((*self), first);
                 PairImpl::Set(self, _field, (*new_first.borrow()))
             }));
     }
@@ -235,7 +203,7 @@ impl PairImpl for Ptr<Pair> {
         let new_second: Value<i32> = Rc::new(RefCell::new(new_second));
         return (({ PairImpl::GetSecond(self) })
             + ({
-                let _field: Ptr<i32> = (*(*self).upgrade().deref()).second.as_pointer();
+                let _field: Ptr<i32> = field_ptr!((*self), second);
                 PairImpl::Set(self, _field, (*new_second.borrow()))
             }));
     }
@@ -246,9 +214,8 @@ pub trait RouteImpl {
 impl RouteImpl for Ptr<Route> {
     fn SetCost(&self, new_cost: f64) -> f64 {
         let new_cost: Value<f64> = Rc::new(RefCell::new(new_cost));
-        let old_cost: Value<f64> =
-            Rc::new(RefCell::new((*(*(*self).upgrade().deref()).cost.borrow())));
-        (*(*(*self).upgrade().deref()).cost.borrow_mut()) = (*new_cost.borrow());
+        let old_cost: Value<f64> = Rc::new(RefCell::new((*self).with(|__s| __s.cost)));
+        field!((*self), cost).write((*new_cost.borrow()));
         return (*old_cost.borrow());
     }
 }

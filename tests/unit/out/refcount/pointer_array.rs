@@ -6,19 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct StackArray {
+    #[offset(0)]
     pub arr: Value<Box<[Ptr<i32>]>>,
 }
 impl Clone for StackArray {
     fn clone(&self) -> Self {
-        let __this: Value<StackArray> = Rc::new(RefCell::new(Self {
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
-            )))),
-        }));
-        let this: Ptr<StackArray> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
+        }
     }
 }
 impl Default for StackArray {
@@ -49,7 +46,10 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         {
-            let _ptr = (*(*s.upgrade().deref()).arr.borrow())[(*i.borrow()) as usize].clone();
+            let _ptr = ((array_field_ptr!(s, arr) as Ptr<Ptr<i32>>)
+                .offset((*i.borrow()) as isize)
+                .read())
+            .clone();
             _ptr.write(_ptr.read() + 1)
         };
         (*i.borrow_mut()).prefix_inc();

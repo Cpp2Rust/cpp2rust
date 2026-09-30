@@ -6,58 +6,50 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Counter {
-    pub n: Value<i32>,
-}
-impl Clone for Counter {
-    fn clone(&self) -> Self {
-        let __this: Value<Counter> = Rc::new(RefCell::new(Self {
-            n: Rc::new(RefCell::new((*self.n.borrow()))),
-        }));
-        let this: Ptr<Counter> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub n: i32,
 }
 impl ByteRepr for Counter {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.n.borrow()).to_bytes(&mut buf[0..4]);
+        self.n.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            n: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            n: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct S {
-    pub tag: Value<i32>,
-    pub c: Value<Counter>,
+    #[offset(0)]
+    pub tag: i32,
+    #[offset(4)]
+    pub c: Counter,
+    #[offset(8)]
     pub arr: Value<Box<[Counter]>>,
+    #[offset(16)]
     pub v: Value<Vec<i32>>,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            tag: Rc::new(RefCell::new((*self.tag.borrow()))),
-            c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
-            arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| ((*self.arr.borrow())[(__i) as usize]).clone(),
-            )))),
+        Self {
+            tag: self.tag.clone(),
+            c: self.c.clone(),
+            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for S {
     fn default() -> Self {
         S {
-            tag: Rc::new(RefCell::new(0_i32)),
-            c: <Value<Counter>>::default(),
+            tag: 0_i32,
+            c: <Counter>::default(),
             arr: Rc::new(RefCell::new(
                 (0..2)
                     .map(|_| <Counter>::default())
@@ -67,73 +59,73 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn byte_size() -> usize {
+        40
+    }
+}
 pub fn run_0(o: Ptr<S>) {
     let o: Value<Ptr<S>> = Rc::new(RefCell::new(o));
-    ({ CounterImpl::add(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(), 2) });
-    assert!((({ CounterImpl::get(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(),) }) == 2));
+    ({ CounterImpl::add(&field_ptr!((*o.borrow()), c), 2) });
+    assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 2));
     ({
         CounterImpl::add(
-            &((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>).offset(1),
+            &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
             5,
         )
     });
     assert!(
         (({
             CounterImpl::get(
-                &((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>).offset(1),
+                &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
             )
         }) == 5)
     );
-    ({
-        CounterImpl::add(
-            &({ CounterImpl::self_(&(*(*o.borrow()).upgrade().deref()).c.as_pointer()) }),
-            1,
-        )
-    });
-    assert!((({ CounterImpl::get(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(),) }) == 3));
+    ({ CounterImpl::add(&({ CounterImpl::self_(&field_ptr!((*o.borrow()), c)) }), 1) });
+    assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 3));
     assert!({
-        let _lhs = ({ CounterImpl::self_(&(*(*o.borrow()).upgrade().deref()).c.as_pointer()) });
-        _lhs == ((*(*o.borrow()).upgrade().deref()).c.as_pointer())
+        let _lhs = ({ CounterImpl::self_(&field_ptr!((*o.borrow()), c)) });
+        _lhs == (field_ptr!((*o.borrow()), c))
     });
     ({
         let _other: Ptr<Counter> =
-            (((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>).offset(1));
+            ((array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize));
         CounterImpl::take(
-            &((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>).offset(0),
+            &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((0) as isize),
             _other,
         )
     });
     assert!(
         (({
             CounterImpl::get(
-                &((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>).offset(0),
+                &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((0) as isize),
             )
         }) == 5)
             && (({
                 CounterImpl::get(
-                    &((*(*o.borrow()).upgrade().deref()).arr.as_pointer() as Ptr<Counter>)
-                        .offset(1),
+                    &(array_field_ptr!((*o.borrow()), arr) as Ptr<Counter>).offset((1) as isize),
                 )
             }) == 0)
     );
     ({
-        let _other: Ptr<Counter> = ((*(*o.borrow()).upgrade().deref()).c.as_pointer());
-        CounterImpl::take(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(), _other)
+        let _other: Ptr<Counter> = (field_ptr!((*o.borrow()), c));
+        CounterImpl::take(&field_ptr!((*o.borrow()), c), _other)
     });
-    assert!((({ CounterImpl::get(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(),) }) == 0));
+    assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 0));
     ({ SImpl::bump(&(*o.borrow())) });
-    assert!((({ CounterImpl::get(&(*(*o.borrow()).upgrade().deref()).c.as_pointer(),) }) == 1));
-    (*(*(*o.borrow()).upgrade().deref()).v.borrow_mut())
-        .push(({ CounterImpl::get(&(*(*o.borrow()).upgrade().deref()).c.as_pointer()) }));
+    assert!((({ CounterImpl::get(&field_ptr!((*o.borrow()), c),) }) == 1));
+    {
+        let __a1 = ({ CounterImpl::get(&field_ptr!((*o.borrow()), c)) });
+        (*(*o.borrow()).with(|__s| __s.v.clone()).borrow_mut()).push(__a1)
+    };
     assert!(
-        ((*(*(*o.borrow()).upgrade().deref()).v.borrow()).len() == 1_usize)
-            && ((((*(*o.borrow()).upgrade().deref()).v.as_pointer() as Ptr<i32>)
+        ((*(*o.borrow()).with(|__s| __s.v.clone()).borrow()).len() == 1_usize)
+            && ((((*o.borrow()).with(|__s| __s.v.clone()).as_pointer() as Ptr<i32>)
                 .offset(0_usize)
                 .read())
                 == 1)
     );
-    assert!(((*(*(*o.borrow()).upgrade().deref()).tag.borrow()) == 1));
+    assert!(((*o.borrow()).with(|__s| __s.tag) == 1));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -141,10 +133,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let local: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    (*(*local.borrow()).tag.borrow_mut()) = 1;
+    (*local.borrow_mut()).tag = 1;
     ({ run_0((local.as_pointer())) });
     let heap: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::alloc(<S>::default())));
-    (*(*(*heap.borrow()).upgrade().deref()).tag.borrow_mut()) = 1;
+    field!((*heap.borrow()), tag).write(1);
     ({ run_0((*heap.borrow()).clone()) });
     (*heap.borrow()).delete();
     return 0;
@@ -157,20 +149,26 @@ pub trait CounterImpl {
 }
 impl CounterImpl for Ptr<Counter> {
     fn get(&self) -> i32 {
-        return (*(*(*self).upgrade().deref()).n.borrow());
+        return (*self).with(|__s| __s.n);
     }
     fn add(&self, k: i32) {
         let k: Value<i32> = Rc::new(RefCell::new(k));
-        (*(*(*self).upgrade().deref()).n.borrow_mut()) += (*k.borrow());
+        {
+            let _ptr = field!((*self), n);
+            _ptr.write(_ptr.read() + (*k.borrow()))
+        };
     }
     fn self_(&self) -> Ptr<Counter> {
         return (*self).clone();
     }
     fn take(&self, other: Ptr<Counter>) {
         let other: Value<Ptr<Counter>> = Rc::new(RefCell::new(other));
-        let __rhs = (*(*(*other.borrow()).upgrade().deref()).n.borrow());
-        (*(*(*self).upgrade().deref()).n.borrow_mut()) += __rhs;
-        (*(*(*other.borrow()).upgrade().deref()).n.borrow_mut()) = 0;
+        let __rhs = (*other.borrow()).with(|__s| __s.n);
+        {
+            let _ptr = field!((*self), n);
+            _ptr.write(_ptr.read() + __rhs)
+        };
+        field!((*other.borrow()), n).write(0);
     }
 }
 pub trait SImpl {
@@ -179,8 +177,8 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn bump(&self) {
         ({
-            let _k: i32 = (*(*(*self).upgrade().deref()).tag.borrow());
-            CounterImpl::add(&(*(*self).upgrade().deref()).c.as_pointer(), _k)
+            let _k: i32 = (*self).with(|__s| __s.tag);
+            CounterImpl::add(&field_ptr!((*self), c), _k)
         });
     }
 }

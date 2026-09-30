@@ -26,57 +26,41 @@ pub fn twice_2(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return ((*n.borrow()) * 2);
 }
-#[derive(Clone, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 pub struct Access_S_ {}
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub base: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            base: Rc::new(RefCell::new((*self.base.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub base: i32,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.base.borrow()).to_bytes(&mut buf[0..4]);
+        self.base.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            base: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            base: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Box {
-    pub v: Value<i32>,
-}
-impl Clone for Box {
-    fn clone(&self) -> Self {
-        let __this: Value<Box> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<Box> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 impl ByteRepr for Box {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            v: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -85,9 +69,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        base: Rc::new(RefCell::new(100)),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(S { base: 100 }));
     assert!((({ SImpl::width_1_char(&s.as_pointer(), 3,) }) == 103));
     assert!((({ SImpl::width_1_int(&s.as_pointer(), 3,) }) == 112));
     assert!((({ SImpl::scale_2_2(&s.as_pointer(), 5,) }) == 110));
@@ -181,10 +163,8 @@ fn main_0() -> i32 {
             Access_S_Impl::ref_4(&a.as_pointer(), _r)
         }) == 103)
     );
-    let b: Value<Box> = Rc::new(RefCell::new(Box {
-        v: Rc::new(RefCell::new(4)),
-    }));
-    assert!(((*(*b.borrow()).v.borrow()) == 4));
+    let b: Value<Box> = Rc::new(RefCell::new(Box { v: 4 }));
+    assert!(({ (*b.borrow()).v } == 4));
     return 0;
 }
 pub trait Access_S_Impl {
@@ -196,17 +176,17 @@ pub trait Access_S_Impl {
 impl Access_S_Impl for Ptr<Access_S_> {
     fn get_1(&self, p: Ptr<S>) -> i32 {
         let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
-        return (*(*(*p.borrow()).upgrade().deref()).base.borrow());
+        return (*p.borrow()).with(|__s| __s.base);
     }
     fn get_2(&self, p: Ptr<S>) -> i32 {
         let p: Value<Ptr<S>> = Rc::new(RefCell::new(p));
-        return ((*(*(*p.borrow()).upgrade().deref()).base.borrow()) + 1);
+        return ((*p.borrow()).with(|__s| __s.base) + 1);
     }
     fn ref_3(&self, r: Ptr<S>) -> i32 {
-        return ((*(*r.upgrade().deref()).base.borrow()) + 2);
+        return (r.with(|__s| __s.base) + 2);
     }
     fn ref_4(&self, r: Ptr<S>) -> i32 {
-        return ((*(*r.upgrade().deref()).base.borrow()) + 3);
+        return (r.with(|__s| __s.base) + 3);
     }
 }
 pub trait SImpl {
@@ -243,50 +223,49 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn plain_4(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow()));
+        return ((*self).with(|__s| __s.base) + (*x.borrow()));
     }
     fn plain_5(&self, x: i64) -> i32 {
         let x: Value<i64> = Rc::new(RefCell::new(x));
-        return (((*(*(*self).upgrade().deref()).base.borrow()) + ((*x.borrow()) as i32)) + 1);
+        return (((*self).with(|__s| __s.base) + ((*x.borrow()) as i32)) + 1);
     }
     fn take_6(&self, x: Ptr<i32>) -> i32 {
         return ({
-            let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+            let _lhs = (*self).with(|__s| __s.base);
             _lhs + (x.read())
         } + 1);
     }
     fn take_7(&self, x: Ptr<i32>) -> i32 {
         return ({
-            let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+            let _lhs = (*self).with(|__s| __s.base);
             _lhs + (x.read())
         } + 2);
     }
     fn pick_8(&self, p: (Value<i32>, Value<i32>)) -> i32 {
         let p: Value<(Value<i32>, Value<i32>)> = Rc::new(RefCell::new(p));
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + (*(*p.borrow()).0.borrow()));
+        return ((*self).with(|__s| __s.base) + (*(*p.borrow()).0.borrow()));
     }
     fn pick_9(&self, p: (Value<i32>, Value<i64>)) -> i32 {
         let p: Value<(Value<i32>, Value<i64>)> = Rc::new(RefCell::new(p));
-        return ((*(*(*self).upgrade().deref()).base.borrow())
-            + ((*(*p.borrow()).1.borrow()) as i32));
+        return ((*self).with(|__s| __s.base) + ((*(*p.borrow()).1.borrow()) as i32));
     }
     fn apply_10(&self, f: FnPtr<fn(Ptr<i32>)>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(Ptr<i32>)>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ (*f.borrow()).call((x.as_pointer())) });
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow()));
+        return ((*self).with(|__s| __s.base) + (*x.borrow()));
     }
     fn apply_11(&self, f: FnPtr<fn(Ptr<i32>, i32)>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(Ptr<i32>, i32)>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         ({ (*f.borrow()).call((x.as_pointer()), 10) });
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow()));
+        return ((*self).with(|__s| __s.base) + (*x.borrow()));
     }
     fn apply_12(&self, f: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
         let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return {
-            let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+            let _lhs = (*self).with(|__s| __s.base);
             _lhs + ({ (*f.borrow()).call((*x.borrow())) })
         };
     }
@@ -303,7 +282,7 @@ impl SImpl for Ptr<S> {
         return {
             let _lhs = {
                 let _lhs = {
-                    let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+                    let _lhs = (*self).with(|__s| __s.base);
                     _lhs + ((*(*p.upgrade().deref()).1.borrow()) as i32)
                 };
                 _lhs + ({ (*f.borrow()).call(((*q.borrow()).read())) })
@@ -328,7 +307,7 @@ impl SImpl for Ptr<S> {
         });
         return {
             let _lhs = {
-                let _lhs = (*(*(*self).upgrade().deref()).base.borrow());
+                let _lhs = (*self).with(|__s| __s.base);
                 _lhs + (*(*p.upgrade().deref()).0.borrow())
             };
             _lhs + ((*q.borrow()).read())
@@ -336,29 +315,29 @@ impl SImpl for Ptr<S> {
     }
     fn width_1_char(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*(*(*self).upgrade().deref()).base.borrow())
+        return ((*self).with(|__s| __s.base)
             + ((*x.borrow()) * (::std::mem::size_of::<u8>() as i32)));
     }
     fn width_1_int(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*(*(*self).upgrade().deref()).base.borrow())
+        return ((*self).with(|__s| __s.base)
             + ((*x.borrow()) * (::std::mem::size_of::<i32>() as i32)));
     }
     fn scale_2_2(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + ((*x.borrow()) * 2));
+        return ((*self).with(|__s| __s.base) + ((*x.borrow()) * 2));
     }
     fn scale_2_3(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*(*(*self).upgrade().deref()).base.borrow()) + ((*x.borrow()) * 3));
+        return ((*self).with(|__s| __s.base) + ((*x.borrow()) * 3));
     }
     fn count_3(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return (((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow())) + (0 as i32));
+        return (((*self).with(|__s| __s.base) + (*x.borrow())) + (0 as i32));
     }
     fn count_3_int_long(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        return (((*(*(*self).upgrade().deref()).base.borrow()) + (*x.borrow())) + (2 as i32));
+        return (((*self).with(|__s| __s.base) + (*x.borrow())) + (2 as i32));
     }
 }
 pub fn __cpp2rust_init_globals() {}

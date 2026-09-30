@@ -6,6 +6,7 @@ use proc_macro::TokenStream;
 mod byte_repr;
 mod fn_ptr_arg;
 mod goto;
+mod record;
 mod state_machine;
 mod switch;
 mod va_arg;
@@ -102,4 +103,21 @@ pub fn derive_va_arg(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(FnPtrArg)]
 pub fn derive_fn_ptr_arg(input: TokenStream) -> TokenStream {
     fn_ptr_arg::expand(input)
+}
+
+//     #[derive(Record)]
+//     pub struct S {
+//         #[offset(0)]
+//         pub x: i32,
+//         ...
+//     }
+//
+// Implements libcc2rs::Record for S, which lets pointers to the fields of S
+// be created by field_ptr!. The argument of the offset attribute is the byte
+// offset of the field in the C layout of S, as a constant expression (e.g.,
+// `offset_of!(libc::stat, st_size)`).
+
+#[proc_macro_derive(Record, attributes(offset))]
+pub fn derive_record(input: TokenStream) -> TokenStream {
+    record::expand(input)
 }

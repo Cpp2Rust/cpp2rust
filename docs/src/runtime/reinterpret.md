@@ -19,8 +19,7 @@ pub trait ByteRepr: 'static {
 }
 ```
 
-A C struct is translated as a Rust struct whose fields are `Value`s, and the
-code generator emits the `ByteRepr` implementation next to it:
+The code generator emits the `ByteRepr` implementation of a C struct next to it:
 
 ```c
 struct header {
@@ -31,8 +30,8 @@ struct header {
 
 ```rust
 pub struct header {
-    pub tag: Value<i32>,
-    pub size: Value<i32>,
+    pub tag: i32,
+    pub size: i32,
 }
 
 impl ByteRepr for header {
@@ -40,13 +39,13 @@ impl ByteRepr for header {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.tag.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.size.borrow()).to_bytes(&mut buf[4..8]);
+        self.tag.to_bytes(&mut buf[0..4]);
+        self.size.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            size: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            tag: <i32>::from_bytes(&buf[0..4]),
+            size: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -110,9 +109,11 @@ reinterpreted to bytes and the original allocation is deleted.
 A cast allocates exactly one small object, the view, which holds a weak
 reference to the original allocation, the size of the target type, and a
 reference to a stateless table of the byte-level operations for the original's
-storage type (a single value, a `Vec`, or a boxed slice). Copying or offsetting
-the resulting `Ptr` only bumps a reference count, so a loop over a `malloc`ed
-array pays for the cast once, not per access.
+storage type (a single value, a `Vec`, a boxed slice, or a field of a struct,
+whose bytes are found through the struct's allocation as for a
+[field pointer](./rc.md#pointers-to-fields)). Copying or offsetting the
+resulting `Ptr` only bumps a reference count, so a loop over a `malloc`ed array
+pays for the cast once, not per access.
 
 Accessing memory through a view does not allocate: the bytes of the accessed
 element are staged in a stack buffer (a heap buffer is used only for accesses
@@ -123,19 +124,14 @@ directly instead of serializing the elements one by one.
 ## Known limitations
 
 Reading a struct through a reinterpreted pointer builds a fresh struct with
-`from_bytes`, so its fields are new `Value`s that exist only as long as that
-temporary struct. Three C patterns break because of this; all are set to be
-fixed in the near future.
-
-1. Taking the address of a field of a reinterpreted struct yields a pointer into
-   the temporary, which dangles as soon as the temporary is dropped.
-2. Writing to a field of a reinterpreted struct, translated as
-   `p.upgrade().deref().field.borrow_mut()`, mutates the temporary returned by
-   `p.upgrade().deref()` and never writes the bytes back to the original
-   allocation, so the write is lost.
-3. [Union accessors](../codegen/unions.md) return pointers to the union's
-   storage; on a reinterpreted union that storage is the temporary, so the
-   returned pointer dangles.
+`from_bytes`, which exists only for the duration of the `with` closure, or as
+long as the `StrongPtr` that holds it. Writes to its fields go through
+`with_mut`, which encodes the struct back into the original allocation before it
+returns, so they are visible right away through any other pointer; a pointer to
+one of its fields is a reinterpreted pointer into the original allocation.
+However, [union accessors](../codegen/unions.md) return pointers to the union's
+storage; on a reinterpreted union that storage is the temporary, so the returned
+pointer dangles. This is set to be fixed in the near future.
 
 ## AnyPtr casts
 

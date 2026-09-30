@@ -349,17 +349,26 @@ fn main_0() -> i32 {
     let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<u32> = Rc::new(RefCell::new(60_u32));
     'loop_: while ((*i.borrow()) > 30_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(100_u32));
     'loop_: while ((*i.borrow()) > 60_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(30_u32));
     'loop_: while ((*i.borrow()) > 0_u32) {
-        (*indexes.borrow_mut()).push(((*i.borrow()) as i32));
+        {
+            let __a1 = ((*i.borrow()) as i32);
+            (*indexes.borrow_mut()).push(__a1)
+        };
         (*i.borrow_mut()).prefix_dec();
     }
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));

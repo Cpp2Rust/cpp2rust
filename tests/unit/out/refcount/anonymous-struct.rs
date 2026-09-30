@@ -6,251 +6,187 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Outer_Named {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
-}
-impl Clone for Outer_Named {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer_Named> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
-        }));
-        let this: Ptr<Outer_Named> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl ByteRepr for Outer_Named {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.b.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            b: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_0 {
-    pub c: Value<i32>,
-    pub d: Value<i32>,
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_0> = Rc::new(RefCell::new(Self {
-            c: Rc::new(RefCell::new((*self.c.borrow()))),
-            d: Rc::new(RefCell::new((*self.d.borrow()))),
-        }));
-        let this: Ptr<anon_0> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub c: i32,
+    #[offset(4)]
+    pub d: i32,
 }
 impl ByteRepr for anon_0 {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.c.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.d.borrow()).to_bytes(&mut buf[4..8]);
+        self.c.to_bytes(&mut buf[0..4]);
+        self.d.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            c: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            d: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            c: <i32>::from_bytes(&buf[0..4]),
+            d: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
-    pub g: Value<i32>,
-    pub h: Value<i32>,
-}
-impl Clone for anon_1 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_1> = Rc::new(RefCell::new(Self {
-            g: Rc::new(RefCell::new((*self.g.borrow()))),
-            h: Rc::new(RefCell::new((*self.h.borrow()))),
-        }));
-        let this: Ptr<anon_1> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub g: i32,
+    #[offset(4)]
+    pub h: i32,
 }
 impl ByteRepr for anon_1 {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.g.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.h.borrow()).to_bytes(&mut buf[4..8]);
+        self.g.to_bytes(&mut buf[0..4]);
+        self.h.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            g: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            h: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            g: <i32>::from_bytes(&buf[0..4]),
+            h: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_2 {
-    pub e: Value<i32>,
-    pub f: Value<i32>,
-}
-impl Clone for anon_2 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_2> = Rc::new(RefCell::new(Self {
-            e: Rc::new(RefCell::new((*self.e.borrow()))),
-            f: Rc::new(RefCell::new((*self.f.borrow()))),
-        }));
-        let this: Ptr<anon_2> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub e: i32,
+    #[offset(4)]
+    pub f: i32,
 }
 impl ByteRepr for anon_2 {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.e.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.f.borrow()).to_bytes(&mut buf[4..8]);
+        self.e.to_bytes(&mut buf[0..4]);
+        self.f.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            e: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            f: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            e: <i32>::from_bytes(&buf[0..4]),
+            f: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_4 {
-    pub j: Value<i32>,
-}
-impl Clone for anon_4 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_4> = Rc::new(RefCell::new(Self {
-            j: Rc::new(RefCell::new((*self.j.borrow()))),
-        }));
-        let this: Ptr<anon_4> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub j: i32,
 }
 impl ByteRepr for anon_4 {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.j.borrow()).to_bytes(&mut buf[0..4]);
+        self.j.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            j: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            j: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_5 {
-    pub k: Value<i32>,
-}
-impl Clone for anon_5 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_5> = Rc::new(RefCell::new(Self {
-            k: Rc::new(RefCell::new((*self.k.borrow()))),
-        }));
-        let this: Ptr<anon_5> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub k: i32,
 }
 impl ByteRepr for anon_5 {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.k.borrow()).to_bytes(&mut buf[0..4]);
+        self.k.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            k: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            k: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
-    pub i: Value<i32>,
-    pub inner_named: Value<anon_4>,
-    pub anon_5: Value<anon_5>,
-}
-impl Clone for anon_3 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_3> = Rc::new(RefCell::new(Self {
-            i: Rc::new(RefCell::new((*self.i.borrow()))),
-            inner_named: Rc::new(RefCell::new((*self.inner_named.borrow()).clone())),
-            anon_5: Rc::new(RefCell::new((*self.anon_5.borrow()).clone())),
-        }));
-        let this: Ptr<anon_3> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub i: i32,
+    #[offset(4)]
+    pub inner_named: anon_4,
+    #[offset(8)]
+    pub anon_5: anon_5,
 }
 impl ByteRepr for anon_3 {
     fn byte_size() -> usize {
         12
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.i.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.inner_named.borrow()).to_bytes(&mut buf[4..8]);
-        (*self.anon_5.borrow()).to_bytes(&mut buf[8..12]);
+        self.i.to_bytes(&mut buf[0..4]);
+        self.inner_named.to_bytes(&mut buf[4..8]);
+        self.anon_5.to_bytes(&mut buf[8..12]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            i: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            inner_named: Rc::new(RefCell::new(<anon_4>::from_bytes(&buf[4..8]))),
-            anon_5: Rc::new(RefCell::new(<anon_5>::from_bytes(&buf[8..12]))),
+            i: <i32>::from_bytes(&buf[0..4]),
+            inner_named: <anon_4>::from_bytes(&buf[4..8]),
+            anon_5: <anon_5>::from_bytes(&buf[8..12]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Outer {
-    pub named: Value<Outer_Named>,
-    pub anonymous_named_0: Value<anon_0>,
-    pub anonymous_named_1: Value<anon_1>,
-    pub anon_2: Value<anon_2>,
-    pub anon_3: Value<anon_3>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            named: Rc::new(RefCell::new((*self.named.borrow()).clone())),
-            anonymous_named_0: Rc::new(RefCell::new((*self.anonymous_named_0.borrow()).clone())),
-            anonymous_named_1: Rc::new(RefCell::new((*self.anonymous_named_1.borrow()).clone())),
-            anon_2: Rc::new(RefCell::new((*self.anon_2.borrow()).clone())),
-            anon_3: Rc::new(RefCell::new((*self.anon_3.borrow()).clone())),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub named: Outer_Named,
+    #[offset(8)]
+    pub anonymous_named_0: anon_0,
+    #[offset(16)]
+    pub anonymous_named_1: anon_1,
+    #[offset(24)]
+    pub anon_2: anon_2,
+    #[offset(32)]
+    pub anon_3: anon_3,
 }
 impl ByteRepr for Outer {
     fn byte_size() -> usize {
         44
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.named.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.anonymous_named_0.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.anonymous_named_1.borrow()).to_bytes(&mut buf[16..24]);
-        (*self.anon_2.borrow()).to_bytes(&mut buf[24..32]);
-        (*self.anon_3.borrow()).to_bytes(&mut buf[32..44]);
+        self.named.to_bytes(&mut buf[0..8]);
+        self.anonymous_named_0.to_bytes(&mut buf[8..16]);
+        self.anonymous_named_1.to_bytes(&mut buf[16..24]);
+        self.anon_2.to_bytes(&mut buf[24..32]);
+        self.anon_3.to_bytes(&mut buf[32..44]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            named: Rc::new(RefCell::new(<Outer_Named>::from_bytes(&buf[0..8]))),
-            anonymous_named_0: Rc::new(RefCell::new(<anon_0>::from_bytes(&buf[8..16]))),
-            anonymous_named_1: Rc::new(RefCell::new(<anon_1>::from_bytes(&buf[16..24]))),
-            anon_2: Rc::new(RefCell::new(<anon_2>::from_bytes(&buf[24..32]))),
-            anon_3: Rc::new(RefCell::new(<anon_3>::from_bytes(&buf[32..44]))),
+            named: <Outer_Named>::from_bytes(&buf[0..8]),
+            anonymous_named_0: <anon_0>::from_bytes(&buf[8..16]),
+            anonymous_named_1: <anon_1>::from_bytes(&buf[16..24]),
+            anon_2: <anon_2>::from_bytes(&buf[24..32]),
+            anon_3: <anon_3>::from_bytes(&buf[32..44]),
         }
     }
 }
@@ -260,86 +196,64 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
-    (*(*(*o.borrow()).named.borrow()).a.borrow_mut()) = 1;
-    (*(*(*o.borrow()).named.borrow()).b.borrow_mut()) = 2;
-    (*(*(*o.borrow()).anonymous_named_0.borrow()).c.borrow_mut()) = 3;
-    (*(*(*o.borrow()).anonymous_named_0.borrow()).d.borrow_mut()) = 4;
-    (*(*(*o.borrow()).anonymous_named_1.borrow()).g.borrow_mut()) = 5;
-    (*(*(*o.borrow()).anonymous_named_1.borrow()).h.borrow_mut()) = 6;
-    (*(*(*o.borrow()).anon_2.borrow()).e.borrow_mut()) = 7;
-    (*(*(*o.borrow()).anon_2.borrow()).f.borrow_mut()) = 8;
-    (*(*(*o.borrow()).anon_3.borrow()).i.borrow_mut()) = 9;
-    (*(*(*(*o.borrow()).anon_3.borrow()).inner_named.borrow())
-        .j
-        .borrow_mut()) = 10;
-    (*(*(*(*o.borrow()).anon_3.borrow()).anon_5.borrow())
-        .k
-        .borrow_mut()) = 11;
-    assert!(((*(*(*o.borrow()).named.borrow()).a.borrow()) == 1));
-    assert!(((*(*(*o.borrow()).named.borrow()).b.borrow()) == 2));
-    assert!(((*(*(*o.borrow()).anonymous_named_0.borrow()).c.borrow()) == 3));
-    assert!(((*(*(*o.borrow()).anonymous_named_0.borrow()).d.borrow()) == 4));
-    assert!(((*(*(*o.borrow()).anonymous_named_1.borrow()).g.borrow()) == 5));
-    assert!(((*(*(*o.borrow()).anonymous_named_1.borrow()).h.borrow()) == 6));
-    assert!(((*(*(*o.borrow()).anon_2.borrow()).e.borrow()) == 7));
-    assert!(((*(*(*o.borrow()).anon_2.borrow()).f.borrow()) == 8));
-    assert!(((*(*(*o.borrow()).anon_3.borrow()).i.borrow()) == 9));
-    assert!(
-        ((*(*(*(*o.borrow()).anon_3.borrow()).inner_named.borrow())
-            .j
-            .borrow())
-            == 10)
-    );
-    assert!(
-        ((*(*(*(*o.borrow()).anon_3.borrow()).anon_5.borrow())
-            .k
-            .borrow())
-            == 11)
-    );
+    (*o.borrow_mut()).named.a = 1;
+    (*o.borrow_mut()).named.b = 2;
+    (*o.borrow_mut()).anonymous_named_0.c = 3;
+    (*o.borrow_mut()).anonymous_named_0.d = 4;
+    (*o.borrow_mut()).anonymous_named_1.g = 5;
+    (*o.borrow_mut()).anonymous_named_1.h = 6;
+    (*o.borrow_mut()).anon_2.e = 7;
+    (*o.borrow_mut()).anon_2.f = 8;
+    (*o.borrow_mut()).anon_3.i = 9;
+    (*o.borrow_mut()).anon_3.inner_named.j = 10;
+    (*o.borrow_mut()).anon_3.anon_5.k = 11;
+    assert!(({ (*o.borrow()).named.a } == 1));
+    assert!(({ (*o.borrow()).named.b } == 2));
+    assert!(({ (*o.borrow()).anonymous_named_0.c } == 3));
+    assert!(({ (*o.borrow()).anonymous_named_0.d } == 4));
+    assert!(({ (*o.borrow()).anonymous_named_1.g } == 5));
+    assert!(({ (*o.borrow()).anonymous_named_1.h } == 6));
+    assert!(({ (*o.borrow()).anon_2.e } == 7));
+    assert!(({ (*o.borrow()).anon_2.f } == 8));
+    assert!(({ (*o.borrow()).anon_3.i } == 9));
+    assert!(({ (*o.borrow()).anon_3.inner_named.j } == 10));
+    assert!(({ (*o.borrow()).anon_3.anon_5.k } == 11));
     let s: Value<anon_6> = Rc::new(RefCell::new(<anon_6>::default()));
-    (*(*s.borrow()).x.borrow_mut()) = 1;
-    (*(*s.borrow()).z.borrow_mut()) = 2;
+    (*s.borrow_mut()).x = 1;
+    (*s.borrow_mut()).z = 2;
     assert!(
         ({
-            (*(*s.borrow()).x.borrow_mut()) = 1;
-            (*(*s.borrow()).x.borrow())
+            (*s.borrow_mut()).x = 1;
+            { (*s.borrow()).x }
         } != 0)
     );
     assert!(
         ({
-            (*(*s.borrow()).z.borrow_mut()) = 2;
-            (*(*s.borrow()).z.borrow())
+            (*s.borrow_mut()).z = 2;
+            { (*s.borrow()).z }
         } != 0)
     );
     return 0;
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct anon_6 {
-    pub x: Value<i32>,
-    pub z: Value<i32>,
-}
-impl Clone for anon_6 {
-    fn clone(&self) -> Self {
-        let __this: Value<anon_6> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            z: Rc::new(RefCell::new((*self.z.borrow()))),
-        }));
-        let this: Ptr<anon_6> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub z: i32,
 }
 impl ByteRepr for anon_6 {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.z.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.z.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            z: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            z: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }

@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive()]
+#[derive(Record)]
 pub struct S {
+    #[offset(0)]
     pub v: Value<Vec<i32>>,
+    #[offset(24)]
     pub n: Value<Box<[i32]>>,
 }
 impl S {
@@ -27,10 +29,10 @@ impl S {
     pub fn move_from(_a0: Ptr<S>) -> Self {
         let __this: Value<S> = Rc::new(RefCell::new(Self {
             v: Rc::new(RefCell::new(std::mem::take(
-                &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
+                &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
             ))),
             n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                |__i: usize| (*(*_a0.upgrade().deref()).n.borrow())[(__i) as usize],
+                |__i: usize| (*{ (*_a0.upgrade().deref()).n.clone() }.borrow())[(__i) as usize],
             )))),
         }));
         let this: Ptr<S> = __this.as_pointer();
@@ -45,14 +47,22 @@ impl Default for S {
         }
     }
 }
-impl ByteRepr for S {}
+impl ByteRepr for S {
+    fn byte_size() -> usize {
+        32
+    }
+}
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return {
         let _lhs = {
-            let _lhs = ((*(*s.upgrade().deref()).v.borrow()).len() as i32);
-            _lhs + (*(*s.upgrade().deref()).n.borrow())[(0) as usize]
+            let _lhs = ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32);
+            _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+                .offset((0) as isize)
+                .read())
         };
-        _lhs + (*(*s.upgrade().deref()).n.borrow())[(1) as usize]
+        _lhs + ((array_field_ptr!(s, n) as Ptr<i32>)
+            .offset((1) as isize)
+            .read())
     };
 }
 pub fn main() {
@@ -69,10 +79,10 @@ pub fn shuffle_1(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     let a: Value<S> = Rc::new(RefCell::new(S::new({ (*x.borrow()) })));
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
-    assert!((*(*a.borrow()).v.borrow()).is_empty());
+    assert!((*{ (*a.borrow()).v.clone() }.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));
     ({ SImpl::move_assign(&c.as_pointer(), b.as_pointer()) });
-    assert!((*(*b.borrow()).v.borrow()).is_empty());
+    assert!((*{ (*b.borrow()).v.clone() }.borrow()).is_empty());
     return ({ sum_0(c.as_pointer()) });
 }
 pub trait SImpl {
@@ -80,17 +90,17 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        ((*(*self).upgrade().deref()).v.as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
-            &mut (*(*_a0.upgrade().deref()).v.borrow_mut()),
+        ((*self).with(|__s| __s.v.clone()).as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
+            &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
         ));
         {
-            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>)
+            ((array_field_ptr!((*self), n)) as Ptr<i32>)
                 .to_any()
                 .memcpy(
-                    &(((*_a0.upgrade().deref()).n.as_pointer()) as Ptr<i32>).to_any(),
+                    &((array_field_ptr!(_a0, n)) as Ptr<i32>).to_any(),
                     8_usize as usize,
                 );
-            (((*(*self).upgrade().deref()).n.as_pointer()) as Ptr<i32>).to_any()
+            ((array_field_ptr!((*self), n)) as Ptr<i32>).to_any()
         };
         return (*self).clone();
     }

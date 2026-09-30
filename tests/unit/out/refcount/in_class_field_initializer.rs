@@ -6,27 +6,16 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Inner {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl Default for Inner {
     fn default() -> Self {
-        Inner {
-            x: Rc::new(RefCell::new(3)),
-            y: Rc::new(RefCell::new(4)),
-        }
+        Inner { x: 3, y: 4 }
     }
 }
 impl ByteRepr for Inner {
@@ -34,42 +23,34 @@ impl ByteRepr for Inner {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct S {
-    pub a: Value<i32>,
-    pub b: Value<u8>,
-    pub c: Value<Inner>,
-    pub d: Value<Inner>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
-            c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
-            d: Rc::new(RefCell::new((*self.d.borrow()).clone())),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: u8,
+    #[offset(8)]
+    pub c: Inner,
+    #[offset(16)]
+    pub d: Inner,
 }
 impl Default for S {
     fn default() -> Self {
         S {
-            a: Rc::new(RefCell::new(1)),
-            b: Rc::new(RefCell::new(2_u8)),
-            c: Rc::new(RefCell::new(<Inner>::default())),
-            d: <Value<Inner>>::default(),
+            a: 1,
+            b: 2_u8,
+            c: <Inner>::default(),
+            d: <Inner>::default(),
         }
     }
 }
@@ -78,42 +59,34 @@ impl ByteRepr for S {
         24
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..5]);
-        (*self.c.borrow()).to_bytes(&mut buf[8..16]);
-        (*self.d.borrow()).to_bytes(&mut buf[16..24]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.b.to_bytes(&mut buf[4..5]);
+        self.c.to_bytes(&mut buf[8..16]);
+        self.d.to_bytes(&mut buf[16..24]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<u8>::from_bytes(&buf[4..5]))),
-            c: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[8..16]))),
-            d: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[16..24]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            b: <u8>::from_bytes(&buf[4..5]),
+            c: <Inner>::from_bytes(&buf[8..16]),
+            d: <Inner>::from_bytes(&buf[16..24]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Boxed_int_ {
-    pub v: Value<i32>,
-    pub tag: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
+    #[offset(4)]
+    pub tag: i32,
 }
 impl Boxed_int_ {
     pub fn new(x: i32, t: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let t: Value<i32> = Rc::new(RefCell::new(t));
         let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*x.borrow()))),
-            tag: Rc::new(RefCell::new((*t.borrow()))),
-        }));
-        let this: Ptr<Boxed_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for Boxed_int_ {
-    fn clone(&self) -> Self {
-        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-            tag: Rc::new(RefCell::new((*self.tag.borrow()))),
+            v: (*x.borrow()),
+            tag: (*t.borrow()),
         }));
         let this: Ptr<Boxed_int_> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -122,8 +95,8 @@ impl Clone for Boxed_int_ {
 impl Default for Boxed_int_ {
     fn default() -> Self {
         Boxed_int_ {
-            v: Rc::new(RefCell::new(0_i32)),
-            tag: Rc::new(RefCell::new(0_i32)),
+            v: 0_i32,
+            tag: 0_i32,
         }
     }
 }
@@ -132,13 +105,13 @@ impl ByteRepr for Boxed_int_ {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.tag.borrow()).to_bytes(&mut buf[4..8]);
+        self.v.to_bytes(&mut buf[0..4]);
+        self.tag.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            tag: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            v: <i32>::from_bytes(&buf[0..4]),
+            tag: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -148,15 +121,15 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    assert!(((*(*s.borrow()).a.borrow()) == 1));
-    assert!((((*(*s.borrow()).b.borrow()) as i32) == 2));
-    assert!(((*(*(*s.borrow()).c.borrow()).x.borrow()) == 3));
-    assert!(((*(*(*s.borrow()).c.borrow()).y.borrow()) == 4));
-    assert!(((*(*(*s.borrow()).d.borrow()).x.borrow()) == 3));
-    assert!(((*(*(*s.borrow()).d.borrow()).y.borrow()) == 4));
+    assert!(({ (*s.borrow()).a } == 1));
+    assert!((({ (*s.borrow()).b } as i32) == 2));
+    assert!(({ (*s.borrow()).c.x } == 3));
+    assert!(({ (*s.borrow()).c.y } == 4));
+    assert!(({ (*s.borrow()).d.x } == 3));
+    assert!(({ (*s.borrow()).d.y } == 4));
     let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::new({ 5 }, { 9 })));
-    assert!(((*(*boxed.borrow()).v.borrow()) == 5));
-    assert!(((*(*boxed.borrow()).tag.borrow()) == 9));
+    assert!(({ (*boxed.borrow()).v } == 5));
+    assert!(({ (*boxed.borrow()).tag } == 9));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -9,29 +9,21 @@ use std::rc::{Rc, Weak};
 pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: Value<i32>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub v: i32,
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.v.borrow()).to_bytes(&mut buf[0..4]);
+        self.v.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            v: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            v: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
@@ -46,22 +38,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
-        v: Rc::new(RefCell::new(7)),
-    }));
+    let s: Value<S> = Rc::new(RefCell::new(S { v: 7 }));
     assert!(((({ SImpl::f_1(&s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!(((({ SImpl::f_2(&s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
     assert!(((({ g_0(s.as_pointer(),) }) as i32) == (Overload_kMutableOverload as i32)));
     assert!(((({ g_1(s.as_pointer(),) }) as i32) == (Overload_kConstOverload as i32)));
     ({ SImpl::value_ref_3(&s.as_pointer()) }).write(9);
-    assert!(((*(*s.borrow()).v.borrow()) == 9));
+    assert!(({ (*s.borrow()).v } == 9));
     assert!(((({ SImpl::value_ref_4(&s.as_pointer(),) }).read()) == 9));
     let cs: Ptr<S> = s.as_pointer();
     assert!(((({ SImpl::f_2(&cs,) }) as i32) == (Overload_kConstOverload as i32)));
-    assert!(((*(*cs.upgrade().deref()).v.borrow()) == 9));
+    assert!((cs.with(|__s| __s.v) == 9));
     let p: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
-    (*(*(*p.borrow()).upgrade().deref()).v.borrow_mut()) = 11;
-    assert!(((*(*s.borrow()).v.borrow()) == 11));
+    field!((*p.borrow()), v).write(11);
+    assert!(({ (*s.borrow()).v } == 11));
     assert!(((({ SImpl::f_1(&(*p.borrow()),) }) as i32) == (Overload_kMutableOverload as i32)));
     return 0;
 }
@@ -79,10 +69,10 @@ impl SImpl for Ptr<S> {
         return Overload_kConstOverload;
     }
     fn value_ref_3(&self) -> Ptr<i32> {
-        return (*(*self).upgrade().deref()).v.as_pointer();
+        return field_ptr!((*self), v);
     }
     fn value_ref_4(&self) -> Ptr<i32> {
-        return (*(*self).upgrade().deref()).v.as_pointer();
+        return field_ptr!((*self), v);
     }
 }
 pub fn __cpp2rust_init_globals() {}

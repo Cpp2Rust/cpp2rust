@@ -9,15 +9,16 @@ use std::rc::{Rc, Weak};
 thread_local!(
     pub static total_0: Value<i32> = Rc::new(RefCell::new(0));
 );
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub v: Value<i32>,
+    #[offset(0)]
+    pub v: i32,
 }
 impl S {
     pub fn new(init: i32) -> Self {
         let init: Value<i32> = Rc::new(RefCell::new(init));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*init.borrow()))),
+            v: (*init.borrow()),
         }));
         let this: Ptr<S> = __this.as_pointer();
         ({ SImpl::mut_method(&this) });
@@ -25,28 +26,25 @@ impl S {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+impl ByteRepr for S {
+    fn byte_size() -> usize {
+        4
     }
 }
-impl ByteRepr for S {}
-#[derive(VaArg, FnPtrArg)]
+#[derive(Clone, Record, VaArg, FnPtrArg)]
 pub struct Point {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl Point {
     pub fn new_1(x: i32, y: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         let y: Value<i32> = Rc::new(RefCell::new(y));
         let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*x.borrow()))),
-            y: Rc::new(RefCell::new((*y.borrow()))),
+            x: (*x.borrow()),
+            y: (*y.borrow()),
         }));
         let this: Ptr<Point> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -57,23 +55,19 @@ impl Point {
             ((*v.borrow()) + 1)
         })));
         let this: Ptr<Point> = __this.as_pointer();
-        (*(*this.upgrade().deref()).y.borrow_mut()) *= 10;
+        {
+            let _ptr = field!(this, y);
+            _ptr.write(_ptr.read() * 10)
+        };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn new_3() -> Self {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
-        (*(*this.upgrade().deref()).x.borrow_mut()) += 100;
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for Point {
-    fn clone(&self) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Point> = __this.as_pointer();
+        {
+            let _ptr = field!(this, x);
+            _ptr.write(_ptr.read() + 100)
+        };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
@@ -87,13 +81,13 @@ impl ByteRepr for Point {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -105,16 +99,16 @@ fn main_0() -> i32 {
     {
         let s: Value<S> = Rc::new(RefCell::new(S::new({ 3 })));
         let _dtor_s = ScopedDestructor::new(&s, |__p| __p.destructor());
-        assert!(((*(*s.borrow()).v.borrow()) == 4));
+        assert!(({ (*s.borrow()).v } == 4));
         assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }
     assert!((total_0.with(|rc| *rc.borrow()) == 18));
     let p: Value<Point> = Rc::new(RefCell::new(Point::new_3()));
-    assert!(((*(*p.borrow()).x.borrow()) == 104));
-    assert!(((*(*p.borrow()).y.borrow()) == 50));
+    assert!(({ (*p.borrow()).x } == 104));
+    assert!(({ (*p.borrow()).y } == 50));
     let q: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 7 })));
-    assert!(((*(*q.borrow()).x.borrow()) == 7));
-    assert!(((*(*q.borrow()).y.borrow()) == 80));
+    assert!(({ (*q.borrow()).x } == 7));
+    assert!(({ (*q.borrow()).y } == 80));
     return 0;
 }
 pub trait SImpl {
@@ -124,10 +118,13 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn const_method(&self) -> i32 {
-        return ((*(*(*self).upgrade().deref()).v.borrow()) * 2);
+        return ((*self).with(|__s| __s.v) * 2);
     }
     fn mut_method(&self) {
-        (*(*(*self).upgrade().deref()).v.borrow_mut()) += 1;
+        {
+            let _ptr = field!((*self), v);
+            _ptr.write(_ptr.read() + 1)
+        };
     }
     fn destructor(&self) {
         ({ SImpl::mut_method(self) });

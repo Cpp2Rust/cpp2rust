@@ -6,31 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct registry {
-    pub slot: Value<AnyPtr>,
-    pub level: Value<i64>,
-}
-impl Clone for registry {
-    fn clone(&self) -> Self {
-        Self {
-            slot: Rc::new(RefCell::new((*self.slot.borrow()).clone())),
-            level: Rc::new(RefCell::new((*self.level.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub slot: AnyPtr,
+    #[offset(8)]
+    pub level: i64,
 }
 impl ByteRepr for registry {
     fn byte_size() -> usize {
         16
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.slot.borrow()).to_bytes(&mut buf[0..8]);
-        (*self.level.borrow()).to_bytes(&mut buf[8..16]);
+        self.slot.to_bytes(&mut buf[0..8]);
+        self.level.to_bytes(&mut buf[8..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            slot: Rc::new(RefCell::new(<AnyPtr>::from_bytes(&buf[0..8]))),
-            level: Rc::new(RefCell::new(<i64>::from_bytes(&buf[8..16]))),
+            slot: <AnyPtr>::from_bytes(&buf[0..8]),
+            level: <i64>::from_bytes(&buf[8..16]),
         }
     }
 }
@@ -47,13 +41,11 @@ pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i3
         let __match_cond = ((*field.borrow()) as u32);
         match __match_cond {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
-                (*(*(*r.borrow()).upgrade().deref()).slot.borrow_mut()) =
-                    (*ap.borrow_mut()).arg::<AnyPtr>();
+                field!((*r.borrow()), slot).write((*ap.borrow_mut()).arg::<AnyPtr>());
                 break 'switch;
             }
             __v if __v == ((field_FIELD_LEVEL as i32) as u32) => {
-                (*(*(*r.borrow()).upgrade().deref()).level.borrow_mut()) =
-                    (*ap.borrow_mut()).arg::<i64>();
+                field!((*r.borrow()), level).write((*ap.borrow_mut()).arg::<i64>());
                 break 'switch;
             }
             _ => {
@@ -70,8 +62,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let r: Value<registry> = Rc::new(RefCell::new(registry {
-        slot: Rc::new(RefCell::new(AnyPtr::default())),
-        level: Rc::new(RefCell::new(0_i64)),
+        slot: AnyPtr::default(),
+        level: 0_i64,
     }));
     let payload: Value<i32> = Rc::new(RefCell::new(7));
     assert!(
@@ -91,19 +83,19 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let _lhs = (*(*r.borrow()).slot.borrow()).clone();
+            let _lhs = { (*r.borrow()).slot.clone() };
             _lhs == (payload.as_pointer()).to_any()
         }) as i32)
             != 0)
     );
     assert!(
-        (((((*(*r.borrow()).slot.borrow())
+        (((({ (*r.borrow()).slot.clone() }
             .reinterpret_cast::<i32>()
             .read())
             == 7) as i32)
             != 0)
     );
-    assert!(((((*(*r.borrow()).level.borrow()) == 5_i64) as i32) != 0));
+    assert!(((({ (*r.borrow()).level } == 5_i64) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

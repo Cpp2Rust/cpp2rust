@@ -51,6 +51,8 @@ public:
 
   bool RecordImplementsClone(const clang::RecordDecl *decl) override;
 
+  bool RecordDerivesClone(const clang::RecordDecl *decl);
+
   void AddByteReprTrait(const clang::RecordDecl *decl) override;
 
   bool
@@ -147,6 +149,42 @@ public:
 
   void ConvertUnionMemberAccessor(clang::MemberExpr *expr);
 
+  // Converts an access to a field that is stored inline in its struct.
+  void ConvertInlineField(clang::MemberExpr *expr);
+
+  // A pointer to the struct whose field `expr` accesses.
+  std::string ConvertRecordPtr(clang::MemberExpr *expr);
+
+  // Copies the value of the field `expr` out of its struct, such that the
+  // struct doesn't stay borrowed.
+  std::string ReadField(clang::MemberExpr *expr);
+
+  // A field that is read through a pointer to its struct is read in a
+  // closure, `p.with(|__s| __s.x)`. While converting the struct whose field
+  // is read, record_base_, or `*p` for `p->x`, the dereference of a pointer
+  // to it is emitted as `__s`, and the pointer is stored in *record_ptr_.
+  std::string *record_ptr_ = nullptr;
+  const clang::Expr *record_base_ = nullptr;
+
+  // The expression that ConvertFreshRValue copies.
+  const clang::Expr *copied_expr_ = nullptr;
+
+  struct PushRecordPtr {
+    ConverterRefCount &c;
+    std::string *record_ptr;
+    const clang::Expr *record_base;
+
+    PushRecordPtr(ConverterRefCount &c, std::string *ptr,
+                  const clang::Expr *base)
+        : c(c), record_ptr(std::exchange(c.record_ptr_, ptr)),
+          record_base(std::exchange(
+              c.record_base_, base ? base->IgnoreParenImpCasts() : nullptr)) {}
+    ~PushRecordPtr() {
+      c.record_ptr_ = record_ptr;
+      c.record_base_ = record_base;
+    }
+  };
+
   bool VisitCXXNewExpr(clang::CXXNewExpr *expr) override;
 
   bool VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) override;
@@ -194,7 +232,12 @@ public:
   bool
   Convert(clang::Expr *expr,
           std::optional<clang::QualType> implicit_convert_to = {}) override {
+    auto *record_ptr = record_ptr_;
+    if (!expr || expr->IgnoreParenImpCasts() != record_base_) {
+      record_ptr_ = nullptr;
+    }
     auto result = Converter::Convert(expr, implicit_convert_to);
+    record_ptr_ = record_ptr;
     if (computed_expr_type_ == ComputedExprType::Pending) {
       assert(!pending_deref_.empty() && "pending_deref_ taken without type");
     }
@@ -207,6 +250,9 @@ public:
   }
 
   void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) override;
+
+  void ConvertFieldInit(const clang::FieldDecl *field,
+                        clang::Expr *init) override;
 
   std::string ConvertVarInitValue(clang::QualType qual_type, clang::Expr *expr);
 

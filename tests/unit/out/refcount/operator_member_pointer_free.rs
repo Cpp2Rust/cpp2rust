@@ -6,54 +6,44 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub x: Value<i32>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
 }
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
+        self.x.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            x: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct S {
+    #[offset(0)]
     pub data: Value<Box<[i32]>>,
-    pub inner: Value<Inner>,
+    #[offset(12)]
+    pub inner: Inner,
 }
 impl Clone for S {
     fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 3, _>(
-                |__i: usize| (*self.data.borrow())[(__i) as usize],
-            )))),
-            inner: Rc::new(RefCell::new((*self.inner.borrow()).clone())),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {
+            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
+            inner: self.inner.clone(),
+        }
     }
 }
 impl Default for S {
     fn default() -> Self {
         S {
             data: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            inner: <Value<Inner>>::default(),
+            inner: <Inner>::default(),
         }
     }
 }
@@ -63,20 +53,20 @@ impl ByteRepr for S {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.data.borrow()).to_bytes(&mut buf[0..12]);
-        (*self.inner.borrow()).to_bytes(&mut buf[12..16]);
+        self.inner.to_bytes(&mut buf[12..16]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             data: Rc::new(RefCell::new(<Box<[i32]>>::from_bytes(&buf[0..12]))),
-            inner: Rc::new(RefCell::new(<Inner>::from_bytes(&buf[12..16]))),
+            inner: <Inner>::from_bytes(&buf[12..16]),
         }
     }
 }
 pub fn operator_deref_0(s: Ptr<S>) -> Ptr<Inner> {
-    return (*s.upgrade().deref()).inner.as_pointer();
+    return field_ptr!(s, inner);
 }
 pub fn operator_addr_1(s: Ptr<S>) -> Ptr<i32> {
-    return (((*s.upgrade().deref()).data.as_pointer() as Ptr<i32>).offset(0));
+    return ((array_field_ptr!(s, data) as Ptr<i32>).offset((0) as isize));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -85,30 +75,25 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S {
         data: Rc::new(RefCell::new(Box::new([1, 2, 3]))),
-        inner: Rc::new(RefCell::new(Inner {
-            x: Rc::new(RefCell::new(9)),
-        })),
+        inner: Inner { x: 9 },
     }));
     assert!(
-        ((*(*({
+        (({
             let _s: Ptr<S> = s.as_pointer();
             operator_deref_0(_s)
         })
-        .upgrade()
-        .deref())
-        .x
-        .borrow())
+        .with(|__s| (__s).x)
             == 9)
     );
-    (*(*({
-        let _s: Ptr<S> = s.as_pointer();
-        operator_deref_0(_s)
-    })
-    .upgrade()
-    .deref())
-    .x
-    .borrow_mut()) = 10;
-    assert!(((*(*(*s.borrow()).inner.borrow()).x.borrow()) == 10));
+    field!(
+        ({
+            let _s: Ptr<S> = s.as_pointer();
+            operator_deref_0(_s)
+        }),
+        x
+    )
+    .write(10);
+    assert!(({ (*s.borrow()).inner.x } == 10));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
             let _s: Ptr<S> = s.as_pointer();
@@ -117,7 +102,12 @@ fn main_0() -> i32 {
     ));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(((*(*s.borrow()).data.borrow())[(0) as usize] == 5));
+    assert!(
+        (((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>)
+            .offset((0) as isize)
+            .read())
+            == 5)
+    );
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

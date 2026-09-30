@@ -6,28 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct S {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl S {
     pub fn new(a: i32, b: i32) -> Self {
         let a: Value<i32> = Rc::new(RefCell::new(a));
         let b: Value<i32> = Rc::new(RefCell::new(b));
         let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*a.borrow()))),
-            b: Rc::new(RefCell::new((*b.borrow()))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()))),
-            b: Rc::new(RefCell::new((*self.b.borrow()))),
+            a: (*a.borrow()),
+            b: (*b.borrow()),
         }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -38,13 +30,13 @@ impl ByteRepr for S {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.b.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            b: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -55,8 +47,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let s1: Value<S> = Rc::new(RefCell::new(S::new({ 1 }, { 2 })));
     let s2: Ptr<S> = s1.as_pointer();
-    assert!(((*(*s2.upgrade().deref()).a.borrow()) == 1));
-    assert!(((*(*s2.upgrade().deref()).b.borrow()) == 2));
+    assert!((s2.with(|__s| __s.a) == 1));
+    assert!((s2.with(|__s| __s.b) == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

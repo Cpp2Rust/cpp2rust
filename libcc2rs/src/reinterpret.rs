@@ -8,6 +8,9 @@ use std::{
     rc::{Rc, Weak},
 };
 
+use crate::field::{Root, upgrade as upgrade_root};
+use crate::rc::Ptr;
+
 pub trait ByteRepr: 'static {
     fn byte_size() -> usize
     where
@@ -140,61 +143,94 @@ pub(crate) trait AllocOps {
 // It is a plain weak reference plus a reference to the (stateless) operations
 // for the concrete storage type. Hence, it doesn't require any heap
 // allocation on its own.
+// The storage of a field of a struct is the field alone, as if it was a
+// separate allocation.
 #[derive(Clone)]
 pub struct OriginalAlloc {
-    weak: Weak<dyn Any>,
+    storage: Storage,
     ops: &'static dyn AllocOps,
+}
+
+#[derive(Clone)]
+enum Storage {
+    Alloc(Weak<dyn Any>),
+    Field(Weak<dyn Root>, usize),
+}
+
+// The storage passed to the AllocOps of a field.
+struct FieldStorage {
+    root: Rc<dyn Root>,
+    field: usize,
 }
 
 impl OriginalAlloc {
     pub(crate) fn single<T: ByteRepr>(weak: &Weak<RefCell<T>>) -> Self {
         Self {
-            weak: weak.clone(),
+            storage: Storage::Alloc(weak.clone()),
             ops: &SingleOps::<T>(PhantomData),
         }
     }
 
     pub(crate) fn slice<T: AsSlice>(weak: &Weak<RefCell<T>>) -> Self {
         Self {
-            weak: weak.clone(),
+            storage: Storage::Alloc(weak.clone()),
             ops: &SliceOps::<T>(PhantomData),
         }
     }
 
+    // The field of type T at byte offset `field` of `root`.
+    pub(crate) fn field<T: ByteRepr>(root: &Weak<dyn Root>, field: usize) -> Self {
+        Self {
+            storage: Storage::Field(root.clone(), field),
+            ops: &FieldOps::<T>(PhantomData),
+        }
+    }
+
     #[inline]
-    fn upgrade(&self) -> Rc<dyn Any> {
-        self.weak.upgrade().expect("ub: dangling pointer")
+    fn with_storage<R>(&self, f: impl FnOnce(&dyn Any) -> R) -> R {
+        match &self.storage {
+            Storage::Alloc(weak) => f(&*weak.upgrade().expect("ub: dangling pointer")),
+            Storage::Field(root, field) => f(&FieldStorage {
+                root: upgrade_root(root),
+                field: *field,
+            }),
+        }
     }
 
     #[inline]
     pub(crate) fn read_bytes(&self, byte_offset: usize, buf: &mut [u8]) {
-        let rc = self.upgrade();
-        self.ops.read_bytes(&*rc, byte_offset, buf);
+        self.with_storage(|storage| self.ops.read_bytes(storage, byte_offset, buf));
     }
 
     #[inline]
     pub(crate) fn write_bytes(&self, byte_offset: usize, data: &[u8]) {
-        let rc = self.upgrade();
-        self.ops.write_bytes(&*rc, byte_offset, data);
+        self.with_storage(|storage| self.ops.write_bytes(storage, byte_offset, data));
     }
 
     pub(crate) fn total_byte_len(&self) -> usize {
-        let rc = self.upgrade();
-        self.ops.total_byte_len(&*rc)
+        self.with_storage(|storage| self.ops.total_byte_len(storage))
     }
 
     // Stable address used for pointer equality across PtrKind variants.
     pub(crate) fn address(&self) -> usize {
-        self.weak.as_ptr() as *const () as usize
+        match &self.storage {
+            Storage::Alloc(weak) => weak.as_ptr() as *const () as usize,
+            Storage::Field(root, field) => {
+                (root.as_ptr() as *const () as usize).wrapping_add(*field)
+            }
+        }
     }
 
     pub(crate) fn delete(&self) {
-        assert_eq!(Weak::strong_count(&self.weak), 1, "ub: invalid delete");
+        let Storage::Alloc(weak) = &self.storage else {
+            panic!("ub: invalid delete");
+        };
+        assert_eq!(Weak::strong_count(weak), 1, "ub: invalid delete");
         unsafe {
-            let strong = self.upgrade();
+            let strong = weak.upgrade().expect("ub: dangling pointer");
             Rc::from_raw(Rc::as_ptr(&strong));
         }
-        assert_eq!(Weak::strong_count(&self.weak), 0, "ub: double free");
+        assert_eq!(Weak::strong_count(weak), 0, "ub: double free");
     }
 }
 
@@ -340,5 +376,25 @@ impl<T: AsSlice> AllocOps for SliceOps<T> {
     fn total_byte_len(&self, cell: &dyn Any) -> usize {
         let cell = cell.downcast_ref::<RefCell<T>>().unwrap();
         cell.borrow().as_slice().len() * <T::Elem as ByteRepr>::byte_size()
+    }
+}
+
+struct FieldOps<T>(PhantomData<fn() -> T>);
+
+impl<T: ByteRepr> AllocOps for FieldOps<T> {
+    fn read_bytes(&self, storage: &dyn Any, byte_offset: usize, buf: &mut [u8]) {
+        let storage = storage.downcast_ref::<FieldStorage>().unwrap();
+        let field = Ptr::<T>::borrow_field(&*storage.root, storage.field);
+        slice_read_bytes(std::slice::from_ref(&*field), byte_offset, buf);
+    }
+
+    fn write_bytes(&self, storage: &dyn Any, byte_offset: usize, data: &[u8]) {
+        let storage = storage.downcast_ref::<FieldStorage>().unwrap();
+        let mut field = Ptr::<T>::borrow_field_mut(&*storage.root, storage.field);
+        slice_write_bytes(std::slice::from_mut(&mut *field), byte_offset, data);
+    }
+
+    fn total_byte_len(&self, _storage: &dyn Any) -> usize {
+        T::byte_size()
     }
 }

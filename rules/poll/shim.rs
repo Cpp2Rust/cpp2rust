@@ -1,27 +1,23 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Value};
-use std::cell::RefCell;
-use std::rc::Rc;
+use crate::{ByteRepr, Record};
+use std::mem::{offset_of, size_of};
 
-#[derive(Default)]
+#[derive(Clone, Default, Record)]
 pub struct Pollfd {
-    pub fd: Value<i32>,
-    pub events: Value<i16>,
-    pub revents: Value<i16>,
+    #[offset(offset_of!(::libc::pollfd, fd))]
+    pub fd: i32,
+    #[offset(offset_of!(::libc::pollfd, events))]
+    pub events: i16,
+    #[offset(offset_of!(::libc::pollfd, revents))]
+    pub revents: i16,
 }
 
-impl Clone for Pollfd {
-    fn clone(&self) -> Self {
-        Self {
-            fd: Rc::new(RefCell::new(*self.fd.borrow())),
-            events: Rc::new(RefCell::new(*self.events.borrow())),
-            revents: Rc::new(RefCell::new(*self.revents.borrow())),
-        }
+impl ByteRepr for Pollfd {
+    fn byte_size() -> usize {
+        size_of::<::libc::pollfd>()
     }
 }
-
-impl ByteRepr for Pollfd {}
 
 impl ByteRepr for ::libc::pollfd {}

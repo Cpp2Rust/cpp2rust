@@ -10,20 +10,23 @@ pub fn unused_param_0(x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     &(*x.borrow_mut());
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Record, VaArg, FnPtrArg, Default)]
 pub struct NonTrivial {
+    #[offset(0)]
     pub data: Value<Vec<i32>>,
 }
 impl Clone for NonTrivial {
     fn clone(&self) -> Self {
-        let __this: Value<NonTrivial> = Rc::new(RefCell::new(Self {
+        Self {
             data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        }));
-        let this: Ptr<NonTrivial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
-impl ByteRepr for NonTrivial {}
+impl ByteRepr for NonTrivial {
+    fn byte_size() -> usize {
+        24
+    }
+}
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());
 }
@@ -38,48 +41,43 @@ pub fn bump_and_return_4() -> i32 {
     (*side_effect_counter_3.with(Value::clone).borrow_mut()).prefix_inc();
     return side_effect_counter_3.with(|rc| *rc.borrow());
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Holder {
-    pub field: Value<i32>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
-            field: Rc::new(RefCell::new((*self.field.borrow()))),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub field: i32,
 }
 impl ByteRepr for Holder {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.field.borrow()).to_bytes(&mut buf[0..4]);
+        self.field.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            field: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            field: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(Default)]
+#[derive(Record, Default)]
 pub struct NonCopyable {
-    pub value: Value<Option<Value<i32>>>,
+    #[offset(0)]
+    pub value: Option<Value<i32>>,
 }
 impl NonCopyable {
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
         let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
-            value: Rc::new(RefCell::new(
-                (*(*_a0.upgrade().deref()).value.borrow_mut()).take(),
-            )),
+            value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
         }));
         let this: Ptr<NonCopyable> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for NonCopyable {}
+impl ByteRepr for NonCopyable {
+    fn byte_size() -> usize {
+        8
+    }
+}
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {
     &(*x.upgrade().deref());
 }
@@ -140,22 +138,20 @@ fn main_0() -> i32 {
     &(*p.borrow_mut());
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
     &((*arr.borrow_mut())[(1) as usize]);
-    let h: Value<Holder> = Rc::new(RefCell::new(Holder {
-        field: Rc::new(RefCell::new(17)),
-    }));
-    &(*(*h.borrow()).field.borrow_mut());
+    let h: Value<Holder> = Rc::new(RefCell::new(Holder { field: 17 }));
+    &((*h.borrow()).field);
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
-    &(*(*(*hp.borrow()).upgrade().deref()).field.borrow_mut());
+    &((*(*hp.borrow()).upgrade().deref()).field);
     let nt: Value<NonTrivial> = Rc::new(RefCell::new(<NonTrivial>::default()));
     ({ unused_ref_param_1(nt.as_pointer()) });
     ({ unused_ptr_param_2((nt.as_pointer())) });
     let g: Value<NonCopyable> = Rc::new(RefCell::new(NonCopyable {
-        value: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(9))))),
+        value: Some(Rc::new(RefCell::new(9))),
     }));
     (&(*g.borrow_mut()));
     &(*g.borrow_mut());
     ({ unused_noncopyable_param_5(g.as_pointer()) });
-    assert!(((*(*(*g.borrow()).value.borrow()).as_ref().unwrap().borrow()) == 9));
+    assert!(((*{ (*g.borrow()).value.clone() }.as_ref().unwrap().borrow()) == 9));
     return 0;
 }
 pub trait NonCopyableImpl {
@@ -163,8 +159,8 @@ pub trait NonCopyableImpl {
 }
 impl NonCopyableImpl for Ptr<NonCopyable> {
     fn move_assign(&self, _a0: Ptr<NonCopyable>) -> Ptr<NonCopyable> {
-        ((*(*self).upgrade().deref()).value.as_pointer() as Ptr<Option<Value<i32>>>)
-            .write((*(*_a0.upgrade().deref()).value.borrow_mut()).take());
+        (field_ptr!((*self), value) as Ptr<Option<Value<i32>>>)
+            .write(field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()));
         return (*self).clone();
     }
 }

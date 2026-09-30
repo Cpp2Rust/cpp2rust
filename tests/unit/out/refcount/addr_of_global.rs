@@ -6,72 +6,50 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub value: Value<i32>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            value: Rc::new(RefCell::new((*self.value.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub value: i32,
 }
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         4
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.value.borrow()).to_bytes(&mut buf[0..4]);
+        self.value.to_bytes(&mut buf[0..4]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            value: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
+            value: <i32>::from_bytes(&buf[0..4]),
         }
     }
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Outer {
-    pub p: Value<Ptr<Inner>>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            p: Rc::new(RefCell::new((*self.p.borrow()).clone())),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub p: Ptr<Inner>,
 }
 impl ByteRepr for Outer {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.p.borrow()).to_bytes(&mut buf[0..8]);
+        self.p.to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            p: Rc::new(RefCell::new(<Ptr<Inner>>::from_bytes(&buf[0..8]))),
+            p: <Ptr<Inner>>::from_bytes(&buf[0..8]),
         }
     }
 }
 thread_local!(
-    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner {
-        value: Rc::new(RefCell::new(1)),
-    }));
+    pub static alpha_0: Value<Inner> = Rc::new(RefCell::new(Inner { value: 1 }));
 );
 thread_local!(
-    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner {
-        value: Rc::new(RefCell::new(2)),
-    }));
+    pub static beta_1: Value<Inner> = Rc::new(RefCell::new(Inner { value: 2 }));
 );
 thread_local!(
-    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner {
-        value: Rc::new(RefCell::new(42)),
-    }));
+    pub static shared_2: Value<Inner> = Rc::new(RefCell::new(Inner { value: 42 }));
 );
 thread_local!(
     pub static items_3: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
@@ -81,7 +59,7 @@ thread_local!(
 );
 thread_local!(
     pub static obj_4: Value<Outer> = Rc::new(RefCell::new(Outer {
-        p: Rc::new(RefCell::new((shared_2.with(|v| v.as_pointer())))),
+        p: (shared_2.with(|v| v.as_pointer())),
     }));
 );
 pub fn main() {
@@ -90,35 +68,22 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((*(*({
+        (({
             let __idx = (0) as usize;
             items_3.with(|rc| rc.borrow()[__idx].clone())
         })
-        .upgrade()
-        .deref())
-        .value
-        .borrow())
+        .with(|__s| __s.value)
             == 1)
     );
     assert!(
-        ((*(*({
+        (({
             let __idx = (1) as usize;
             items_3.with(|rc| rc.borrow()[__idx].clone())
         })
-        .upgrade()
-        .deref())
-        .value
-        .borrow())
+        .with(|__s| __s.value)
             == 2)
     );
-    assert!(
-        ((*(*(*(*obj_4.with(Value::clone).borrow()).p.borrow())
-            .upgrade()
-            .deref())
-        .value
-        .borrow())
-            == 42)
-    );
+    assert!(({ (*obj_4.with(Value::clone).borrow()).p.clone() }.with(|__s| __s.value) == 42));
     thread_local!(
         static cache_5: Value<Box<[Ptr<Inner>]>> = Rc::new(RefCell::new(Box::new([
             (alpha_0.with(|v| v.as_pointer())),
@@ -126,25 +91,19 @@ fn main_0() -> i32 {
         ])));
     );
     assert!(
-        ((*(*({
+        (({
             let __idx = (0) as usize;
             cache_5.with(|rc| rc.borrow()[__idx].clone())
         })
-        .upgrade()
-        .deref())
-        .value
-        .borrow())
+        .with(|__s| __s.value)
             == 1)
     );
     assert!(
-        ((*(*({
+        (({
             let __idx = (1) as usize;
             cache_5.with(|rc| rc.borrow()[__idx].clone())
         })
-        .upgrade()
-        .deref())
-        .value
-        .borrow())
+        .with(|__s| __s.value)
             == 2)
     );
     return 0;

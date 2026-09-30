@@ -6,31 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct pair {
-    pub a: Value<i32>,
-    pub b: Value<i32>,
-}
-impl Clone for pair {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            b: Rc::new(RefCell::new((*self.b.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub a: i32,
+    #[offset(4)]
+    pub b: i32,
 }
 impl ByteRepr for pair {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.a.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.b.borrow()).to_bytes(&mut buf[4..8]);
+        self.a.to_bytes(&mut buf[0..4]);
+        self.b.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            a: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            b: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            a: <i32>::from_bytes(&buf[0..4]),
+            b: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
@@ -48,7 +42,7 @@ pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
             (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<f64>() as i32);
         } else if ((((*tag.borrow()) == 3) as i32) != 0) {
             let p: Value<pair> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<pair>()));
-            (*total.borrow_mut()) += ((*(*p.borrow()).a.borrow()) * (*(*p.borrow()).b.borrow()));
+            (*total.borrow_mut()) += ({ (*p.borrow()).a } * { (*p.borrow()).b });
         } else {
             let val: Value<i64> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i64>()));
             (*total.borrow_mut()) += ((*val.borrow()) as i32);
@@ -88,10 +82,7 @@ fn main_0() -> i32 {
         }) == 103) as i32)
             != 0)
     );
-    let p: Value<pair> = Rc::new(RefCell::new(pair {
-        a: Rc::new(RefCell::new(7)),
-        b: Rc::new(RefCell::new(8)),
-    }));
+    let p: Value<pair> = Rc::new(RefCell::new(pair { a: 7, b: 8 }));
     assert!(
         (((({
             sum_mixed_0(

@@ -6,16 +6,18 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct table {
+    #[offset(0)]
     pub rows: Value<Box<[Value<Box<[u8]>>]>>,
-    pub count: Value<usize>,
+    #[offset(32)]
+    pub count: usize,
 }
 impl Clone for table {
     fn clone(&self) -> Self {
         Self {
             rows: Rc::new(RefCell::new((*self.rows.borrow()).clone())),
-            count: Rc::new(RefCell::new((*self.count.borrow()).clone())),
+            count: self.count.clone(),
         }
     }
 }
@@ -27,7 +29,7 @@ impl Default for table {
                     .map(|_| Rc::new(RefCell::new((0..10).map(|_| 0_u8).collect::<Box<[u8]>>())))
                     .collect::<Box<[Value<Box<[u8]>>]>>(),
             )),
-            count: Rc::new(RefCell::new(0_usize)),
+            count: 0_usize,
         }
     }
 }
@@ -37,14 +39,14 @@ impl ByteRepr for table {
     }
     fn to_bytes(&self, buf: &mut [u8]) {
         (*self.rows.borrow()).to_bytes(&mut buf[0..30]);
-        (*self.count.borrow()).to_bytes(&mut buf[32..40]);
+        self.count.to_bytes(&mut buf[32..40]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
             rows: Rc::new(RefCell::new(<Box<[Value<Box<[u8]>>]>>::from_bytes(
                 &buf[0..30],
             ))),
-            count: Rc::new(RefCell::new(<usize>::from_bytes(&buf[32..40]))),
+            count: <usize>::from_bytes(&buf[32..40]),
         }
     }
 }
@@ -55,7 +57,7 @@ thread_local!(
             Rc::new(RefCell::new(Box::new([0; 10]))),
             Rc::new(RefCell::new(Box::new([0; 10]))),
         ]))),
-        count: Rc::new(RefCell::new(1_usize)),
+        count: 1_usize,
     }));
 );
 thread_local!(
@@ -65,7 +67,7 @@ thread_local!(
             Rc::new(RefCell::new(Box::from(*b"beta\0\0\0\0\0\0"))),
             Rc::new(RefCell::new(Box::new([0; 10]))),
         ]))),
-        count: Rc::new(RefCell::new(2_usize)),
+        count: 2_usize,
     }));
 );
 pub fn main() {
@@ -73,10 +75,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((*(*T1_0.with(Value::clone).borrow()).count.borrow()) == 1_usize) as i32) != 0));
+    assert!(((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = ((((*T1_0.with(Value::clone).borrow()).rows.as_pointer()
+            let mut __it1 = ((({ (*T1_0.with(Value::clone).borrow()).rows.clone() }.as_pointer()
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
@@ -97,15 +99,15 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*(*T1_0.with(Value::clone).borrow()).rows.borrow())[(1) as usize].borrow()
+        (((((*{ (*T1_0.with(Value::clone).borrow()).rows.clone() }.borrow())[(1) as usize].borrow()
             [(0) as usize] as i32)
             == ('\0' as i32)) as i32)
             != 0)
     );
-    assert!(((((*(*T2_1.with(Value::clone).borrow()).count.borrow()) == 2_usize) as i32) != 0));
+    assert!(((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = ((((*T2_1.with(Value::clone).borrow()).rows.as_pointer()
+            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.clone() }.as_pointer()
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
@@ -127,7 +129,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = ((((*T2_1.with(Value::clone).borrow()).rows.as_pointer()
+            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.clone() }.as_pointer()
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(1)
                 .read()
@@ -148,7 +150,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((((*(*T2_1.with(Value::clone).borrow()).rows.borrow())[(2) as usize].borrow()
+        (((((*{ (*T2_1.with(Value::clone).borrow()).rows.clone() }.borrow())[(2) as usize].borrow()
             [(0) as usize] as i32)
             == ('\0' as i32)) as i32)
             != 0)
@@ -159,11 +161,12 @@ fn main_0() -> i32 {
             Rc::new(RefCell::new(Box::from(*b"two\0\0\0\0\0\0\0"))),
             Rc::new(RefCell::new(Box::from(*b"three\0\0\0\0\0"))),
         ]))),
-        count: Rc::new(RefCell::new(3_usize)),
+        count: 3_usize,
     }));
     assert!(
         ((({
-            let mut __it1 = ((((*local.borrow()).rows.as_pointer() as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
+                as Ptr<Value<Box<[u8]>>>)
                 .offset(2)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -182,11 +185,12 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    (*(*local.borrow()).rows.borrow())[(1) as usize].borrow_mut()[(0) as usize] =
+    (*{ (*local.borrow()).rows.clone() }.borrow())[(1) as usize].borrow_mut()[(0) as usize] =
         (('T' as i32) as u8);
     assert!(
         ((({
-            let mut __it1 = ((((*local.borrow()).rows.as_pointer() as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
+                as Ptr<Value<Box<[u8]>>>)
                 .offset(1)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -207,7 +211,8 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = ((((*local.borrow()).rows.as_pointer() as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
+                as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -227,13 +232,13 @@ fn main_0() -> i32 {
             != 0)
     );
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((((*local.borrow()).rows.as_pointer() as Ptr<Value<Box<[u8]>>>)
+        ((({ (*local.borrow()).rows.clone() }.as_pointer() as Ptr<Value<Box<[u8]>>>)
             .offset(2)
             .read()
             .as_pointer()) as Ptr<u8>),
     ));
     assert!(((((((*p.borrow()).offset((0) as isize).read()) as i32) == ('t' as i32)) as i32) != 0));
-    assert!(((((*(*local.borrow()).count.borrow()) == 3_usize) as i32) != 0));
+    assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

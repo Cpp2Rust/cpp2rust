@@ -6,12 +6,18 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Pair {
+    #[offset(0)]
     pub x1: Ptr<i32>,
+    #[offset(8)]
     pub x2: Ptr<i32>,
 }
-impl ByteRepr for Pair {}
+impl ByteRepr for Pair {
+    fn byte_size() -> usize {
+        16
+    }
+}
 pub fn mkPair_0(x1: Ptr<i32>, x2: Ptr<i32>) -> Pair {
     return Pair {
         x1: (x1).clone(),
@@ -28,9 +34,9 @@ pub fn fill_1(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) {
         }),
     ));
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] =
-        ((*pair.borrow()).x1).clone();
+        ({ (*pair.borrow()).x1.clone() }).clone();
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(1_usize) as usize] =
-        ((*pair.borrow()).x2).clone();
+        ({ (*pair.borrow()).x2.clone() }).clone();
 }
 pub fn any_2(arr: Ptr<Option<Value<Box<[Ptr<i32>]>>>>, n1: Ptr<i32>) -> bool {
     let out: Value<bool> = Rc::new(RefCell::new(false));

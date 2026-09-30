@@ -30,8 +30,14 @@ unsafe fn main_0() -> i32 {
         printf(c"%c\n".as_ptr() as *const i8, (c as i32));
     }
     let mut v: Vec<*mut i32> = Vec::new();
-    v.push((Box::leak(Box::new(2)) as *mut i32));
-    v.push((Box::leak(Box::new(3)) as *mut i32));
+    {
+        let __a1 = (Box::leak(Box::new(2)) as *mut i32);
+        v.push(__a1)
+    };
+    {
+        let __a1 = (Box::leak(Box::new(3)) as *mut i32);
+        v.push(__a1)
+    };
     'loop_: for p in 0..(v.len()) {
         let mut p = v[p].clone();
         printf(c"%d\n".as_ptr() as *const i8, (*p));

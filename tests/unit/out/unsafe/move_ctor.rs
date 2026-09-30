@@ -158,9 +158,15 @@ unsafe fn main_0() -> i32 {
     assert!(((unsafe { by_value_0(MoveOnly::move_from({ &mut e },),) }) == (5)));
     assert!(((e.v) == (0)));
     let mut vec_: Vec<MoveOnly> = Vec::new();
-    vec_.push(MoveOnly::new({ 7 }));
+    {
+        let __a1 = MoveOnly::new({ 7 });
+        vec_.push(__a1)
+    };
     let mut f: MoveOnly = MoveOnly::new({ 8 });
-    vec_.push(MoveOnly::move_from({ &mut f }));
+    {
+        let __a1 = MoveOnly::move_from({ &mut f });
+        vec_.push(__a1)
+    };
     assert!(((vec_[(0_usize)].v) == (7)) && ((vec_[(1_usize)].v) == (8)));
     assert!(((f.v) == (0)));
     let mut m: ConstMove = ConstMove::new();

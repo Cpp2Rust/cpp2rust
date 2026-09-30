@@ -77,27 +77,21 @@ pub fn from_switch_2(n: i32) -> i32 {
     });
     panic!("ub: non-void function does not return a value")
 }
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct wrapper {
-    pub item: Value<Ptr<i32>>,
-}
-impl Clone for wrapper {
-    fn clone(&self) -> Self {
-        Self {
-            item: Rc::new(RefCell::new((*self.item.borrow()).clone())),
-        }
-    }
+    #[offset(0)]
+    pub item: Ptr<i32>,
 }
 impl ByteRepr for wrapper {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.item.borrow()).to_bytes(&mut buf[0..8]);
+        self.item.to_bytes(&mut buf[0..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            item: Rc::new(RefCell::new(<Ptr<i32>>::from_bytes(&buf[0..8]))),
+            item: <Ptr<i32>>::from_bytes(&buf[0..8]),
         }
     }
 }
@@ -109,7 +103,7 @@ pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
-            *item.borrow_mut() = (*(*(*w.borrow()).upgrade().deref()).item.borrow()).clone();
+            *item.borrow_mut() = (*w.borrow()).with(|__s| __s.item.clone());
             if ((*fail.borrow()) != 0) {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);
@@ -163,7 +157,7 @@ fn main_0() -> i32 {
     assert!((((({ from_switch_2(2,) }) == 999) as i32) != 0));
     let value: Value<i32> = Rc::new(RefCell::new(42));
     let w: Value<wrapper> = Rc::new(RefCell::new(wrapper {
-        item: Rc::new(RefCell::new((value.as_pointer()))),
+        item: (value.as_pointer()),
     }));
     assert!((((({ via_pointer_3((w.as_pointer()), 0,) }) == 42) as i32) != 0));
     assert!((((({ via_pointer_3((w.as_pointer()), 1,) }) == -1_i32) as i32) != 0));

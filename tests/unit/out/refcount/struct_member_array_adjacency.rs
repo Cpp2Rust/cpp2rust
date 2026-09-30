@@ -6,9 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg)]
+#[derive(Record, VaArg, FnPtrArg)]
 pub struct pair {
+    #[offset(0)]
     pub a: Value<Box<[i32]>>,
+    #[offset(16)]
     pub b: Value<Box<[i32]>>,
 }
 impl Clone for pair {
@@ -49,8 +51,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let s: Value<pair> = <Value<pair>>::default();
     assert!(
-        (((((*s.borrow()).a.as_pointer() as Ptr::<i32>).offset((4) as isize)
-            == ((*s.borrow()).b.as_pointer() as Ptr::<i32>)) as i32)
+        ((((array_field_ptr!(s.as_pointer(), a) as Ptr::<i32>).offset((4) as isize)
+            == (array_field_ptr!(s.as_pointer(), b) as Ptr::<i32>)) as i32)
             != 0)
     );
     return 0;

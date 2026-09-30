@@ -6,52 +6,47 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, VaArg, FnPtrArg, Default)]
 pub struct Inner {
-    pub x: Value<i32>,
-    pub y: Value<i32>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        let __this: Value<Inner> = Rc::new(RefCell::new(Self {
-            x: Rc::new(RefCell::new((*self.x.borrow()))),
-            y: Rc::new(RefCell::new((*self.y.borrow()))),
-        }));
-        let this: Ptr<Inner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
+    #[offset(0)]
+    pub x: i32,
+    #[offset(4)]
+    pub y: i32,
 }
 impl ByteRepr for Inner {
     fn byte_size() -> usize {
         8
     }
     fn to_bytes(&self, buf: &mut [u8]) {
-        (*self.x.borrow()).to_bytes(&mut buf[0..4]);
-        (*self.y.borrow()).to_bytes(&mut buf[4..8]);
+        self.x.to_bytes(&mut buf[0..4]);
+        self.y.to_bytes(&mut buf[4..8]);
     }
     fn from_bytes(buf: &[u8]) -> Self {
         Self {
-            x: Rc::new(RefCell::new(<i32>::from_bytes(&buf[0..4]))),
-            y: Rc::new(RefCell::new(<i32>::from_bytes(&buf[4..8]))),
+            x: <i32>::from_bytes(&buf[0..4]),
+            y: <i32>::from_bytes(&buf[4..8]),
         }
     }
 }
-#[derive(Default)]
+#[derive(Record, Default)]
 pub struct Outer {
-    pub inner: Value<Option<Value<Inner>>>,
+    #[offset(0)]
+    pub inner: Option<Value<Inner>>,
 }
 impl Outer {
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
         let __this: Value<Outer> = Rc::new(RefCell::new(Self {
-            inner: Rc::new(RefCell::new(
-                (*(*_a0.upgrade().deref()).inner.borrow_mut()).take(),
-            )),
+            inner: field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()),
         }));
         let this: Ptr<Outer> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl ByteRepr for Outer {}
+impl ByteRepr for Outer {
+    fn byte_size() -> usize {
+        8
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -59,37 +54,34 @@ pub fn main() {
 fn main_0() -> i32 {
     let o: Value<Option<Value<Outer>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
         let __tmp_0: Value<Outer> = Rc::new(RefCell::new(Outer {
-            inner: Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Inner {
-                x: Rc::new(RefCell::new(10)),
-                y: Rc::new(RefCell::new(20)),
-            }))))),
+            inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
         }));
         Outer::move_from({ __tmp_0.as_pointer() })
     })))));
-    (*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
+    (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
         .as_ref()
         .unwrap()
-        .borrow())
-    .x
-    .borrow_mut()) += 5;
+        .borrow_mut())
+    .x += 5;
     let sum: Value<i32> = Rc::new(RefCell::new(
-        ((*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
-            .as_ref()
-            .unwrap()
-            .borrow())
-        .x
-        .borrow())
-            + (*(*(*(*(*o.borrow()).as_ref().unwrap().borrow()).inner.borrow())
+        ({
+            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+                .as_ref()
+                .unwrap()
+                .borrow())
+            .x
+        } + {
+            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
                 .as_ref()
                 .unwrap()
                 .borrow())
             .y
-            .borrow())),
+        }),
     ));
     let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(100)))));
     let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let __rhs = (*(*a.borrow()).as_ref().unwrap().borrow());
-    (*(*b.borrow_mut()).as_ref().unwrap().borrow_mut()) = __rhs;
+    (*(*b.borrow()).as_ref().unwrap().borrow_mut()) = __rhs;
     assert!((((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
     return 0;
 }
@@ -98,8 +90,8 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn move_assign(&self, _a0: Ptr<Outer>) -> Ptr<Outer> {
-        ((*(*self).upgrade().deref()).inner.as_pointer() as Ptr<Option<Value<Inner>>>)
-            .write((*(*_a0.upgrade().deref()).inner.borrow_mut()).take());
+        (field_ptr!((*self), inner) as Ptr<Option<Value<Inner>>>)
+            .write(field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()));
         return (*self).clone();
     }
 }

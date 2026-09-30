@@ -12,9 +12,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v1.borrow_mut()).push(1);
-    (*v1.borrow_mut()).push(2);
-    (*v1.borrow_mut()).push(3);
+    {
+        let __a1 = 1;
+        (*v1.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 2;
+        (*v1.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v1.borrow_mut()).push(__a1)
+    };
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
         let x: Value<i32> = Rc::new(RefCell::new(x.read()));
@@ -35,9 +44,18 @@ fn main_0() -> i32 {
         (*sum.borrow_mut()) += __rhs;
     }
     let v2: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(0_usize)));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(1_usize)));
-    (*v2.borrow_mut()).push(((v1.as_pointer() as Ptr<i32>).offset(2_usize)));
+    {
+        let __a1 = ((v1.as_pointer() as Ptr<i32>).offset(0_usize));
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = ((v1.as_pointer() as Ptr<i32>).offset(1_usize));
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = ((v1.as_pointer() as Ptr<i32>).offset(2_usize));
+        (*v2.borrow_mut()).push(__a1)
+    };
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
         {

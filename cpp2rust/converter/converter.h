@@ -597,6 +597,11 @@ protected:
 
   virtual void ConvertVarInit(clang::QualType qual_type, clang::Expr *expr);
 
+  // The initial value of a field of a struct: `init`, or the default value
+  // if null.
+  virtual void ConvertFieldInit(const clang::FieldDecl *field,
+                                clang::Expr *init);
+
   virtual void ConvertUnsignedArithOperand(clang::Expr *expr,
                                            clang::QualType type);
 

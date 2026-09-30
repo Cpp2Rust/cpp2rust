@@ -1,37 +1,33 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Ptr, Sockaddr, Value};
-use std::cell::RefCell;
-use std::rc::Rc;
+use crate::{ByteRepr, Ptr, Record, Sockaddr};
+use std::mem::{offset_of, size_of};
 
-#[derive(Default)]
+#[derive(Clone, Default, Record)]
 pub struct Addrinfo {
-    pub ai_flags: Value<i32>,
-    pub ai_family: Value<i32>,
-    pub ai_socktype: Value<i32>,
-    pub ai_protocol: Value<i32>,
-    pub ai_addrlen: Value<u32>,
-    pub ai_addr: Value<Ptr<Sockaddr>>,
-    pub ai_canonname: Value<Ptr<u8>>,
-    pub ai_next: Value<Ptr<Addrinfo>>,
+    #[offset(offset_of!(::libc::addrinfo, ai_flags))]
+    pub ai_flags: i32,
+    #[offset(offset_of!(::libc::addrinfo, ai_family))]
+    pub ai_family: i32,
+    #[offset(offset_of!(::libc::addrinfo, ai_socktype))]
+    pub ai_socktype: i32,
+    #[offset(offset_of!(::libc::addrinfo, ai_protocol))]
+    pub ai_protocol: i32,
+    #[offset(offset_of!(::libc::addrinfo, ai_addrlen))]
+    pub ai_addrlen: u32,
+    #[offset(offset_of!(::libc::addrinfo, ai_addr))]
+    pub ai_addr: Ptr<Sockaddr>,
+    #[offset(offset_of!(::libc::addrinfo, ai_canonname))]
+    pub ai_canonname: Ptr<u8>,
+    #[offset(offset_of!(::libc::addrinfo, ai_next))]
+    pub ai_next: Ptr<Addrinfo>,
 }
 
-impl Clone for Addrinfo {
-    fn clone(&self) -> Self {
-        Self {
-            ai_flags: Rc::new(RefCell::new(*self.ai_flags.borrow())),
-            ai_family: Rc::new(RefCell::new(*self.ai_family.borrow())),
-            ai_socktype: Rc::new(RefCell::new(*self.ai_socktype.borrow())),
-            ai_protocol: Rc::new(RefCell::new(*self.ai_protocol.borrow())),
-            ai_addrlen: Rc::new(RefCell::new(*self.ai_addrlen.borrow())),
-            ai_addr: Rc::new(RefCell::new(self.ai_addr.borrow().clone())),
-            ai_canonname: Rc::new(RefCell::new(self.ai_canonname.borrow().clone())),
-            ai_next: Rc::new(RefCell::new(self.ai_next.borrow().clone())),
-        }
+impl ByteRepr for Addrinfo {
+    fn byte_size() -> usize {
+        size_of::<::libc::addrinfo>()
     }
 }
-
-impl ByteRepr for Addrinfo {}
 
 impl ByteRepr for ::libc::addrinfo {}

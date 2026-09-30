@@ -8,13 +8,25 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    {
+        let __a1 = 20;
+        v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
     let x: Value<i32> = Rc::new(RefCell::new(0_i32));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let v4: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v3.as_pointer())));
-    (*v2.borrow_mut()).push(0);
-    (*v2.borrow_mut()).push(1);
-    (*v2.borrow_mut()).push(3);
+    {
+        let __a1 = 0;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 1;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 3;
+        (*v2.borrow_mut()).push(__a1)
+    };
     (*x.borrow_mut()) = ((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
         .offset(2_usize)
         .read());
@@ -50,7 +62,10 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!((((v2.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 6));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 7));
     assert!((((v3.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 13));
-    v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
+    {
+        let __a1 = 20;
+        v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
+    };
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -59,11 +74,26 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v.borrow_mut()).push(4);
-    (*v.borrow_mut()).push(5);
-    (*v.borrow_mut()).push(6);
-    (*v2.borrow_mut()).push(8);
-    (*v2.borrow_mut()).push(9);
+    {
+        let __a1 = 4;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 5;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 6;
+        (*v.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 8;
+        (*v2.borrow_mut()).push(__a1)
+    };
+    {
+        let __a1 = 9;
+        (*v2.borrow_mut()).push(__a1)
+    };
     ({ fn_0(v.as_pointer(), (*v2.borrow()).clone()) });
     return 0;
 }

@@ -98,7 +98,10 @@ unsafe fn main_0() -> i32 {
     });
     assert!(((a.v) == (6)));
     let mut vec_: Vec<MoveOnly> = Vec::new();
-    vec_.push(MoveOnly::new({ 7 }));
+    {
+        let __a1 = MoveOnly::new({ 7 });
+        vec_.push(__a1)
+    };
     let mut d: MoveOnly = MoveOnly::new({ 8 });
     (unsafe { MoveOnly::move_assign(&mut vec_[(0_usize)], &mut d) });
     assert!(((vec_[(0_usize)].v) == (8)));
