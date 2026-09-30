@@ -130,6 +130,7 @@ public:
   virtual bool EmitsReprCForRecords() const { return true; }
 
   virtual const char *CharRustType() const { return "libc::c_char"; }
+  virtual bool CharRustTypeIsSigned() const { return true; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
 
