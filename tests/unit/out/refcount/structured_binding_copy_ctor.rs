@@ -18,16 +18,24 @@ pub struct Counted {
     pub y: i32,
 }
 impl Counted {
-    pub fn new(mut x: i32, mut y: i32) -> Self {
-        Self { x: x, y: y }
+    pub fn new(x: i32, y: i32) -> Self {
+        let x: Value<i32> = Rc::new(RefCell::new(x));
+        let y: Value<i32> = Rc::new(RefCell::new(y));
+        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
+            x: (*x.borrow()),
+            y: (*y.borrow()),
+        }));
+        let this: Ptr<Counted> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn copy_from(other: Ptr<Counted>) -> Self {
-        let __this: Counted = Self {
+        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
             x: (other.with(|__s| __s.x) * 2),
             y: (other.with(|__s| __s.y) * 2),
-        };
+        }));
+        let this: Ptr<Counted> = __this.as_pointer();
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        __this
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
 impl Clone for Counted {
@@ -48,10 +56,10 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<Counted> = Rc::new(RefCell::new(Counted::new({ 1 }, { 2 })));
-    let mut __decomp_2: Counted = Counted::copy_from({ s.as_pointer() });
+    let __decomp_2: Value<Counted> = Rc::new(RefCell::new(Counted::copy_from({ s.as_pointer() })));
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
-    assert!((__decomp_2.x == 2));
-    assert!((__decomp_2.y == 4));
+    assert!(({ (*__decomp_2.borrow()).x } == 2));
+    assert!(({ (*__decomp_2.borrow()).y } == 4));
     let __decomp_3: Ptr<Counted> = s.as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
     assert!((__decomp_3.with(|__s| __s.x) == 1));
@@ -59,10 +67,10 @@ fn main_0() -> i32 {
     let __decomp_4: Ptr<Counted> = s.as_pointer();
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
     assert!((__decomp_4.with(|__s| __s.x) == 1));
-    let mut __decomp_5: Counted = ({ make_counted_1() });
+    let __decomp_5: Value<Counted> = Rc::new(RefCell::new(({ make_counted_1() })));
     assert!((copies_0.with(|rc| *rc.borrow()) == 1));
-    assert!((__decomp_5.x == 5));
-    assert!((__decomp_5.y == 6));
+    assert!(({ (*__decomp_5.borrow()).x } == 5));
+    assert!(({ (*__decomp_5.borrow()).y } == 6));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {
