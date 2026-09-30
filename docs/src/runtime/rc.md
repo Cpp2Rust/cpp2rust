@@ -265,8 +265,8 @@ to the field: `field_ptr!(p, x).write(v)`.
 For the `Reinterpreted` variant there is no value to reference, only bytes in
 another allocation. `deref` reads those bytes into a local cell and hands out a
 `Ref` to that copy, refreshing it on every call. `with_mut` writes the bytes
-through to the original allocation before it returns, so that a write is
-visible through every other pointer at once.
+through to the original allocation before it returns, so that a write is visible
+through every other pointer at once.
 
 > [!WARNING]
 >

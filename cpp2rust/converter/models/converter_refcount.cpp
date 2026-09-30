@@ -3504,9 +3504,8 @@ std::optional<std::string> ConverterRefCount::ConvertOnFieldReceiver(
       if (arg == receiver ||
           (in_closure ? IsTrivialValue(arg) : !ReadsField(arg)) ||
           hoisted_exprs_.contains(arg) ||
-          (!fresh_ptr &&
-           !CanHoistArg(ctx_, fragments, GetCalleeOrExpr(expr), i, arg,
-                        TypeIsCopyable(arg->getType())))) {
+          (!fresh_ptr && !CanHoistArg(ctx_, fragments, GetCalleeOrExpr(expr), i,
+                                      arg, TypeIsCopyable(arg->getType())))) {
         continue;
       }
       auto name = std::format("__a{}", i);
