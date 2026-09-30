@@ -5,7 +5,7 @@ use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
 
 use std::{
-    cell::{Ref, RefCell, RefMut},
+    cell::{Ref, RefCell},
     fmt,
     ops::Sub,
     rc::{Rc, Weak},
@@ -77,21 +77,6 @@ impl<T: ByteRepr> StrongPtr<T> {
                 byte_offset,
                 cell,
             } => Self::deref_reinterpreted(alloc, *byte_offset, cell),
-        }
-    }
-
-    // Writes through reinterpreted pointers must use with_mut instead, as
-    // they are written through to the original allocation.
-    #[inline(always)]
-    pub fn deref_mut(&self) -> RefMut<'_, T> {
-        match self {
-            StrongPtr::StackSingle(rc) => rc.borrow_mut(),
-            StrongPtr::Vec { rc, offset } => RefMut::map(rc.borrow_mut(), |v| &mut v[*offset]),
-            StrongPtr::StackArray { rc, offset } => {
-                RefMut::map(rc.borrow_mut(), |a| &mut a[*offset])
-            }
-            StrongPtr::Field { root, offset } => Ptr::borrow_field_mut(&**root, *offset),
-            StrongPtr::Reinterpreted { .. } => panic!("mutable reference to reinterpreted memory"),
         }
     }
 

@@ -101,10 +101,7 @@ fn main_0() -> i32 {
             .x
         } == 10)
     );
-    (*({ SImpl::operator_arrow(&s.as_pointer()) })
-        .upgrade()
-        .deref_mut())
-    .x = 11;
+    { field_ptr!(({ SImpl::operator_arrow(&s.as_pointer(),) }), x) }.write(11);
     assert!(({ (*s.borrow()).inner.x } == 11));
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(({ SImpl::operator_addr(&s.as_pointer()) })));
     assert!((((*p.borrow()).read()) == 1));

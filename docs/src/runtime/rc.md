@@ -252,20 +252,21 @@ pub enum StrongPtr<T> {
 }
 ```
 
-`deref` returns a `Ref<'_, T>` to the pointee, and `deref_mut` a
-`RefMut<'_, T>`. The `Ref` borrows the `StrongPtr`, so the borrow of the
-`RefCell` lasts as long as the strong pointer does: in
-`p.upgrade().deref().field`, the temporary `StrongPtr` lives until the end of
-the enclosing statement, and so does the borrow. The code generator prefers the
-`with` and `with_mut` closures, and upgrades only where the result of an access
-must borrow the pointee beyond a closure.
+`deref` returns a `Ref<'_, T>` to the pointee. The `Ref` borrows the
+`StrongPtr`, so the borrow of the `RefCell` lasts as long as the strong pointer
+does: in `p.upgrade().deref().field`, the temporary `StrongPtr` lives until the
+end of the enclosing statement, and so does the borrow. The code generator
+prefers the `with` and `with_mut` closures, and upgrades only where the result
+of an access must borrow the pointee beyond a closure. There is no `deref_mut`;
+writes go through `write` and `with_mut`. A field of a struct reached through a
+pointer, when not written in a `with_mut` closure, is written through a pointer
+to the field: `field_ptr!(p, x).write(v)`.
 
 For the `Reinterpreted` variant there is no value to reference, only bytes in
 another allocation. `deref` reads those bytes into a local cell and hands out a
-`Ref` to that copy, refreshing it on every call. `deref_mut` panics: a write
-must go through `with_mut`, which writes the bytes through to the original
-allocation before it returns, so that the write is visible through every other
-pointer at once.
+`Ref` to that copy, refreshing it on every call. `with_mut` writes the bytes
+through to the original allocation before it returns, so that a write is
+visible through every other pointer at once.
 
 > [!WARNING]
 >

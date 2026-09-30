@@ -2054,20 +2054,17 @@ std::string ConverterRefCount::ConvertRecordPlace(clang::MemberExpr *expr,
     return std::string(keyword::kSelfValue);
   }
   if (expr->isArrow()) {
+    auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(base);
+    if (mut && (!op || IsUserOperatorCall(op))) {
+      pending_deref_.set(ConvertRValue(base), isFresh());
+      return {};
+    }
     Buffer buf(*this);
     PushExprKind push(*this, mut ? ExprKind::LValue : ExprKind::RValue);
     ConvertArrow(base);
     return std::move(buf).str();
   }
-  if (!mut) {
-    return ConvertRValue(base);
-  }
-  auto str = ConvertLValue(base);
-  if (!pending_deref_.empty()) {
-    return std::format("(*{}.upgrade().deref_mut())",
-                       TakePendingDerefToWrite(base));
-  }
-  return str;
+  return mut ? ConvertLValue(base) : ConvertRValue(base);
 }
 
 // Whether expr is (a subobject of) the parameter of a defaulted copy
@@ -2310,7 +2307,16 @@ void ConverterRefCount::ConvertFieldAccess(clang::MemberExpr *expr) {
     SetFreshType(expr->getType());
     return;
   }
-  StrCat(std::format("{}.{}", ConvertRecordPlace(expr, isLValue()), name));
+  auto place = ConvertRecordPlace(expr, isLValue());
+  if (!pending_deref_.empty()) {
+    // A struct reached through a pointer is written through a pointer to the
+    // field.
+    auto ptr = pending_deref_.take();
+    pending_deref_.set(std::format("field_ptr!({}, {})", ptr, name),
+                       /*fresh=*/true, expr);
+    return;
+  }
+  StrCat(std::format("{}.{}", place, name));
   SetValueFreshness(expr->getType());
 }
 
@@ -3334,14 +3340,16 @@ void ConverterRefCount::ConvertArrow(clang::Expr *expr) {
       op && op->getOperator() == clang::OverloadedOperatorKind::OO_Arrow;
 
   if (!is_overloaded_arrow || IsUserOperatorCall(op)) {
-    if (isLValue()) {
-      auto ptr = ConvertRValue(expr);
-      StrCat(std::format("(*{}.upgrade().deref_mut())",
-                         DetachPtr(std::move(ptr), isFresh(), expr)));
+    auto ptr = ToString(expr);
+    auto pointee_type = expr->getType()->getPointeeType();
+    // Virtual methods, which take &mut self, are called through PtrDyn.
+    if (auto *record = pointee_type->getAsRecordDecl();
+        isLValue() && record && abstract_structs_.contains(GetID(record))) {
+      StrCat(std::format("(*{}.upgrade().deref_mut())", ptr));
     } else {
-      StrCat(DerefPtrExpr(ToString(expr), expr->getType()->getPointeeType()));
+      StrCat(DerefPtrExpr(ptr, pointee_type));
     }
-    SetValueFreshness(expr->getType()->getPointeeType());
+    SetValueFreshness(pointee_type);
     return;
   }
 
@@ -3489,11 +3497,16 @@ std::optional<std::string> ConverterRefCount::ConvertOnFieldReceiver(
     std::string lets;
     for (unsigned i = 0; i < all_args.size(); ++i) {
       auto *arg = all_args[i];
+      // A pointer that is computed, not read from a variable, is a fresh
+      // value, which the closure can take.
+      bool fresh_ptr =
+          in_closure && arg->isPRValue() && arg->getType()->isPointerType();
       if (arg == receiver ||
           (in_closure ? IsTrivialValue(arg) : !ReadsField(arg)) ||
           hoisted_exprs_.contains(arg) ||
-          !CanHoistArg(ctx_, fragments, GetCalleeOrExpr(expr), i, arg,
-                       TypeIsCopyable(arg->getType()))) {
+          (!fresh_ptr &&
+           !CanHoistArg(ctx_, fragments, GetCalleeOrExpr(expr), i, arg,
+                        TypeIsCopyable(arg->getType())))) {
         continue;
       }
       auto name = std::format("__a{}", i);
@@ -3538,6 +3551,22 @@ std::string ConverterRefCount::ConvertIRFragment(
     }
     frags = &(*mc)->receiver;
     chained = true;
+  }
+  // So is a rule that writes a field reached through a pointer, e.g.,
+  // `a0 = a1.to_owned_opt()`.
+  if (!receiver_ph) {
+    auto all_args = BuildUnifiedArgs(expr, args, num_args);
+    for (const auto &frag : fragments) {
+      auto *ph = std::get_if<TranslationRule::PlaceholderFragment>(&frag);
+      if (ph && ph->access == TranslationRule::Access::kBorrowMut) {
+        if (auto sp = FindStructPtr(all_args[ph->n], /*mut=*/true);
+            sp && !sp->nested) {
+          receiver_ph = ph;
+          chained = true;
+        }
+        break;
+      }
+    }
   }
   if (receiver_ph && chained) {
     if (auto str = ConvertOnFieldReceiver(

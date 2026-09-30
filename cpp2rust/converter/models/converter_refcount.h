@@ -165,7 +165,8 @@ public:
   void ConvertFieldAccess(clang::MemberExpr *expr);
 
   // The struct whose field `expr` accesses, as a place expression. The struct
-  // is borrowed mutably if `mut` is set.
+  // is borrowed mutably if `mut` is set, unless it is reached through a
+  // pointer, which is then left in pending_deref_.
   std::string ConvertRecordPlace(clang::MemberExpr *expr, bool mut);
 
   // Wraps ptr, the result of converting expr, such that it doesn't keep any

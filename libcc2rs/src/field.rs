@@ -367,8 +367,6 @@ mod tests {
         a.write(3);
         assert_eq!(s.borrow().inner.a, 3);
         assert_eq!(p.upgrade().deref().a, 3);
-        p.upgrade().deref_mut().a = 4;
-        assert_eq!(a.read(), 4);
         p.with_mut(|p| p.a = 5);
         assert_eq!(a.read(), 5);
         let b = field_ptr!(p, b);
