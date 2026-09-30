@@ -3,15 +3,15 @@
 
 #include "converter/factory.h"
 
-#include "converter/mapper.h"
 #include "converter/models/converter_refcount.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust {
 
 std::unique_ptr<Converter> CreateConverter(std::string &rs_code,
                                            clang::ASTContext &ctx, Model model,
                                            const std::string &rules_dir) {
-  Mapper::LoadTranslationRules(model, ctx, rules_dir);
+  RuleRegistry::Load(model, rules_dir);
   switch (model) {
   case Model::kUnsafe:
     return std::make_unique<Converter>(rs_code, ctx);

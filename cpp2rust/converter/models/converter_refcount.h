@@ -407,7 +407,8 @@ private:
   // emit ptr.write(rhs), or by ConvertMappedMethodCall to emit
   // ptr.with_mut(...).
   struct PendingDeref {
-    explicit PendingDeref(ComputedExprType &type) : type(type) {}
+    PendingDeref(ComputedExprType &type, clang::ASTContext &ctx)
+        : type(type), ctx(ctx) {}
     void set(std::string str, bool fresh, clang::Expr *expr = nullptr);
     void set_unchecked(std::string str, bool fresh,
                        clang::Expr *expr = nullptr);
@@ -426,11 +427,12 @@ private:
     }
 
   private:
-    static bool compute_inner_boxed(clang::Expr *expr);
+    bool compute_inner_boxed(clang::Expr *expr) const;
     ComputedExprType &type;
+    clang::ASTContext &ctx;
     std::string value;
     bool pointee_is_boxed = false;
     bool ptr_is_fresh = false;
-  } pending_deref_{computed_expr_type_};
+  } pending_deref_{computed_expr_type_, ctx_};
 };
 } // namespace cpp2rust
