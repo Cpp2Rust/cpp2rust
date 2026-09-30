@@ -316,10 +316,7 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn len(&self) -> usize
-    where
-        T: 'static,
-    {
+    pub fn len(&self) -> usize {
         match &self.kind {
             PtrKind::Null => 0,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) | PtrKind::Field(_) => 1,
@@ -334,10 +331,7 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool
-    where
-        T: 'static,
-    {
+    pub fn is_empty(&self) -> bool {
         match &self.kind {
             PtrKind::Null => true,
             PtrKind::StackSingle(_) | PtrKind::HeapSingle(_) | PtrKind::Field(_) => false,
@@ -376,10 +370,7 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn to_last(&self) -> Self
-    where
-        T: 'static,
-    {
+    pub fn to_last(&self) -> Self {
         // A field is a single object, whose offset is that of the pointer.
         if let PtrKind::Field(_) = self.kind {
             return self.clone();
@@ -391,10 +382,7 @@ impl<T> Ptr<T> {
     }
 
     #[inline]
-    pub fn to_end(&self) -> Self
-    where
-        T: 'static,
-    {
+    pub fn to_end(&self) -> Self {
         if let PtrKind::Field(_) = self.kind {
             return self.offset(1);
         }
@@ -698,7 +686,7 @@ impl<T: std::io::Write + ByteRepr> Ptr<T> {
     }
 }
 
-impl<T: std::cmp::Ord + 'static> Ptr<T> {
+impl<T: std::cmp::Ord> Ptr<T> {
     pub fn sort(&self, last: usize) {
         match self.kind {
             PtrKind::Null => panic!("ub: dereference of null pointer"),
@@ -720,7 +708,7 @@ impl<T: std::cmp::Ord + 'static> Ptr<T> {
     }
 }
 
-impl<T: Clone + 'static> Ptr<T> {
+impl<T: Clone> Ptr<T> {
     pub fn sort_with_cmp<F>(&self, last: usize, mut cmp: F)
     where
         F: FnMut(Ptr<T>, Ptr<T>) -> bool,
@@ -767,7 +755,7 @@ impl<T: Clone + 'static> Ptr<T> {
 
 impl<T> IntoIterator for &Ptr<T>
 where
-    T: Clone + 'static,
+    T: Clone,
 {
     type Item = Ptr<T>;
     type IntoIter = Ptr<T>;
@@ -777,7 +765,7 @@ where
     }
 }
 
-impl<T: 'static> Iterator for Ptr<T> {
+impl<T> Iterator for Ptr<T> {
     type Item = Ptr<T>;
     fn next(&mut self) -> Option<Self::Item> {
         if self.get_offset() < self.len() {

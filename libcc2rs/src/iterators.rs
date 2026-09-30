@@ -259,7 +259,7 @@ pub struct StringIterator<T> {
     ptr: Ptr<T>,
 }
 
-impl<T: 'static> Iterator for StringIterator<T> {
+impl<T> Iterator for StringIterator<T> {
     type Item = Ptr<T>;
     fn next(&mut self) -> Option<Self::Item> {
         // stop before the null terminator at the last position

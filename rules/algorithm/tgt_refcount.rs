@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::io::Write;
 use std::rc::Rc;
 
-fn f1<T1: Ord + 'static>(a0: Ptr<T1>, a1: Ptr<T1>) {
+fn f1<T1: Ord>(a0: Ptr<T1>, a1: Ptr<T1>) {
     a0.sort(a1.get_offset())
 }
 
@@ -36,7 +36,7 @@ fn f3<T1: PartialEq + Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) -> Ptr
     )
 }
 
-fn f6<T1: Ord + Clone + 'static, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
+fn f6<T1: Ord + Clone, T2>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T2)
 where
     T2: Callable2<Ptr<T1>, Ptr<T1>, bool>,
 {
