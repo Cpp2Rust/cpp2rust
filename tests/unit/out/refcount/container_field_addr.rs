@@ -13,8 +13,6 @@ pub struct S {
     #[offset(8)]
     pub v: Value<Vec<i32>>,
     #[offset(32)]
-    pub s: Value<Vec<u8>>,
-    #[offset(64)]
     pub m: BTreeMap<i32, Value<i32>>,
 }
 impl Clone for S {
@@ -22,14 +20,13 @@ impl Clone for S {
         Self {
             tag: self.tag.clone(),
             v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-            s: Rc::new(RefCell::new((*self.s.borrow()).clone())),
             m: self.m.clone(),
         }
     }
 }
 impl ByteRepr for S {
     fn byte_size() -> usize {
-        112
+        80
     }
 }
 pub fn add_0(v: Ptr<Vec<i32>>, k: i32) {
@@ -40,25 +37,7 @@ pub fn add_0(v: Ptr<Vec<i32>>, k: i32) {
         (*v.borrow()).with_mut(|__v: &mut Vec<i32>| __v.push(a0_clone))
     };
 }
-pub fn append_1(s: Ptr<Vec<u8>>, t: Ptr<u8>, n: usize) {
-    let s: Value<Ptr<Vec<u8>>> = Rc::new(RefCell::new(s));
-    let t: Value<Ptr<u8>> = Rc::new(RefCell::new(t));
-    let n: Value<usize> = Rc::new(RefCell::new(n));
-    {
-        ((*s.borrow()).clone() as Ptr<Vec<u8>>).with_mut(|__v: &mut Vec<u8>| {
-            __v.pop();
-            __v.extend(
-                (*t.borrow())
-                    .clone()
-                    .map(|c| c.read())
-                    .take((*n.borrow()) as usize),
-            );
-            __v.push(0);
-        });
-        ((*s.borrow()).clone() as Ptr<Vec<u8>>)
-    };
-}
-pub fn put_2(m: Ptr<BTreeMap<i32, Value<i32>>>, k: i32, v: i32) {
+pub fn put_1(m: Ptr<BTreeMap<i32, Value<i32>>>, k: i32, v: i32) {
     let m: Value<Ptr<BTreeMap<i32, Value<i32>>>> = Rc::new(RefCell::new(m));
     let k: Value<i32> = Rc::new(RefCell::new(k));
     let v: Value<i32> = Rc::new(RefCell::new(v));
@@ -70,7 +49,7 @@ pub fn put_2(m: Ptr<BTreeMap<i32, Value<i32>>>, k: i32, v: i32) {
         })
         .write((*v.borrow()));
 }
-pub fn run_3(h: Ptr<S>) {
+pub fn run_2(h: Ptr<S>) {
     let h: Value<Ptr<S>> = Rc::new(RefCell::new(h));
     ({
         let _v: Ptr<Vec<i32>> = ((*h.borrow()).with(|__s| __s.v.clone()).as_pointer());
@@ -78,16 +57,9 @@ pub fn run_3(h: Ptr<S>) {
         add_0(_v, _k)
     });
     ({
-        append_1(
-            ((*h.borrow()).with(|__s| __s.s.clone()).as_pointer()),
-            Ptr::<u8>::from_string_literal(b"ab"),
-            2_usize,
-        )
-    });
-    ({
         let _m: Ptr<BTreeMap<i32, Value<i32>>> = (field_ptr!((*h.borrow()), m));
         let _k: i32 = (*h.borrow()).with(|__s| __s.tag);
-        put_2(_m, _k, 2)
+        put_1(_m, _k, 2)
     });
     let pv: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(
         ((*h.borrow()).with(|__s| __s.v.clone()).as_pointer()),
@@ -108,17 +80,6 @@ pub fn run_3(h: Ptr<S>) {
                 == 1)
     );
     assert!(
-        (*(*h.borrow()).with(|__s| __s.s.clone()).borrow())
-            .iter()
-            .copied()
-            .take(
-                (*(*h.borrow()).with(|__s| __s.s.clone()).borrow())
-                    .len()
-                    .saturating_sub(1)
-            )
-            .eq(Ptr::<u8>::from_string_literal(b"ab").to_c_string_iterator())
-    );
-    assert!(
         (((field_ptr!((*h.borrow()), m) as Ptr<BTreeMap<i32, Value<i32>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<i32>>| {
                 __v.entry(7)
@@ -137,10 +98,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let local: Value<S> = Rc::new(RefCell::new(<S>::default()));
     (*local.borrow_mut()).tag = 7;
-    ({ run_3((local.as_pointer())) });
+    ({ run_2((local.as_pointer())) });
     let heap: Value<Ptr<S>> = Rc::new(RefCell::new(Ptr::alloc(<S>::default())));
     field!((*heap.borrow()), tag).write(7);
-    ({ run_3((*heap.borrow()).clone()) });
+    ({ run_2((*heap.borrow()).clone()) });
     (*heap.borrow()).delete();
     return 0;
 }
