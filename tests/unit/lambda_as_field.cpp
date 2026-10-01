@@ -20,7 +20,19 @@ template <typename T> auto wrap(T fn) {
   return [fn](int x) { return fn(x) + 1; };
 }
 
+int count = 0;
+
 int main() {
+  {
+    Guard g{[]() { count++; }};
+    assert(count == 0);
+  }
+  assert(count == 1);
+
+  Holder n{[](int x) { return x + 1; }, 0};
+  assert(n.call(2) == 3);
+  assert(n.calls == 1);
+
   int cleaned = 0;
   {
     Guard g{[&cleaned]() { cleaned++; }};
