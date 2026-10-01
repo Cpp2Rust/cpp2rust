@@ -4,10 +4,11 @@
 #![allow(private_bounds)]
 
 use std::any::{Any, TypeId};
+use std::cell::{RefCell, UnsafeCell};
 use std::rc::Rc;
 
-use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs};
-use crate::rc::Ptr;
+use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs, record_from_repr};
+use crate::rc::{AsPointer, Ptr};
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
 
@@ -70,6 +71,7 @@ pub struct FnPtr<T: FnSig> {
     // The function this pointer was created from, kept type-erased (but
     // still callable, through `Adapted`).
     original: Option<Rc<dyn Adapted>>,
+    lambda: Option<Rc<dyn Fn(T::Args) -> T::Ret>>,
 }
 
 impl<T: FnSig> FnPtr<T> {
@@ -79,6 +81,7 @@ impl<T: FnSig> FnPtr<T> {
             addr: 0,
             current: None,
             original: None,
+            lambda: None,
         }
     }
 
@@ -93,6 +96,7 @@ impl<T: FnSig> FnPtr<T> {
             addr: f.fn_addr(),
             current: Some(f),
             original: None,
+            lambda: None,
         }
     }
 
@@ -102,6 +106,9 @@ impl<T: FnSig> FnPtr<T> {
     fn call_args(&self, args: T::Args) -> T::Ret {
         if self.is_null() {
             panic!("ub: null fn pointer call");
+        }
+        if let Some(lambda) = &self.lambda {
+            return lambda(args);
         }
         if let Some(f) = self.current {
             return f.call_direct(args);
@@ -145,10 +152,17 @@ impl<T: FnSig> FnPtr<T> {
             self.boxed_original()
         };
 
+        let lambda: &dyn Any = &self.lambda;
+        let lambda = lambda
+            .downcast_ref::<Option<Rc<dyn Fn(U::Args) -> U::Ret>>>()
+            .cloned()
+            .flatten();
+
         FnPtr {
             addr: self.addr,
             current: current_as_u.or(original_as_u),
             original,
+            lambda,
         }
     }
 
@@ -175,6 +189,38 @@ macro_rules! impl_fn_ptr_call {
             pub fn call(&self $(, $a: $a)*) -> R {
                 self.call_args(($($a,)*))
             }
+
+            #[allow(non_snake_case)]
+            pub fn with_captures<Captures: 'static>(
+                captures: Captures,
+                body: fn(Ptr<Captures> $(, $a)*) -> R,
+            ) -> Self {
+                let captures = Rc::new(RefCell::new(captures));
+                FnPtr {
+                    addr: body as usize,
+                    current: None,
+                    original: None,
+                    lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
+                        body(captures.as_pointer() $(, $a)*)
+                    })),
+                }
+            }
+
+            #[allow(non_snake_case)]
+            pub fn with_captures_unsafe<Captures: 'static>(
+                captures: Captures,
+                body: fn(&mut Captures $(, $a)*) -> R,
+            ) -> Self {
+                let captures = Rc::new(UnsafeCell::new(captures));
+                FnPtr {
+                    addr: body as usize,
+                    current: None,
+                    original: None,
+                    lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
+                        body(unsafe { &mut *captures.get() } $(, $a)*)
+                    })),
+                }
+            }
         }
         impl_fn_ptr_call!(@peel $($a)*);
     };
@@ -191,6 +237,7 @@ impl<T: FnSig> Clone for FnPtr<T> {
             addr: self.addr,
             current: self.current,
             original: self.original.clone(),
+            lambda: self.lambda.clone(),
         }
     }
 }
@@ -210,6 +257,16 @@ impl<T: FnSig> PartialEq for FnPtr<T> {
 impl<T: FnSig> Eq for FnPtr<T> {}
 
 impl<T: FnSig> ByteRepr for FnPtr<T> {}
+
+impl<T: FnSig> FnPtrArg for FnPtr<T> {
+    #[inline]
+    fn to_repr(&self) -> ArgRepr<'_> {
+        ArgRepr::Record(self)
+    }
+    fn from_repr(r: &ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
 
 impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {

@@ -221,7 +221,7 @@ impl<'a> ArgList<'a> {
     }
 }
 
-pub(crate) trait FnPtrArgs: Sized {
+pub(crate) trait FnPtrArgs: Sized + 'static {
     fn to_list(&self) -> ArgList<'_>;
     fn from_list(l: &ArgList) -> Self;
 }
