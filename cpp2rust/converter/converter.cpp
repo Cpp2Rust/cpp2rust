@@ -3398,7 +3398,7 @@ bool Converter::VisitInitListExpr(clang::InitListExpr *expr) {
     }
     PushBracket bracket(*this);
     for (auto *init : expr->inits()) {
-      ConvertVarInit(init->getType(), init);
+      ConvertVarInit(ctx_.getAsArrayType(qual_type)->getElementType(), init);
       StrCat(token::kComma);
     }
     if (expr->hasArrayFiller()) {
