@@ -18,45 +18,25 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(10));
-    let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(8)]
-        struct Captures {
-            #[offset(0)]
-            #[byte_size(8)]
-            x: Ptr<i32>,
+    let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let x: Ptr<i32> = x.as_pointer();
+        },
+        |y: i32| -> i32 {
+            let y: Value<i32> = Rc::new(RefCell::new(y));
+            let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+                {
+                    let x: Ptr<i32> = (self.x).clone();
+                    let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
+                },
+                |z: i32| -> i32 {
+                    let z: Value<i32> = Rc::new(RefCell::new(z));
+                    return (((self.x.read()) + (*self.y.borrow())) + (*z.borrow()));
+                }
+            )));
+            return ({ (*inner.borrow()).call(1) });
         }
-        FnPtr::<fn(i32) -> i32>::with_captures(
-            Captures { x: x.as_pointer() },
-            (|this: Ptr<Captures>, y: i32| {
-                let y: Value<i32> = Rc::new(RefCell::new(y));
-                let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-                    #[derive(Record, ByteRepr)]
-                    #[byte_size(16)]
-                    struct Captures {
-                        #[offset(0)]
-                        #[byte_size(8)]
-                        x: Ptr<i32>,
-                        #[offset(8)]
-                        y: i32,
-                    }
-                    FnPtr::<fn(i32) -> i32>::with_captures(
-                        Captures {
-                            x: (this.with(|__s| __s.x.clone())).clone(),
-                            y: (*y.borrow()),
-                        },
-                        (|this: Ptr<Captures>, z: i32| {
-                            let z: Value<i32> = Rc::new(RefCell::new(z));
-                            return (((this.with(|__s| __s.x.clone()).read())
-                                + this.with(|__s| __s.y))
-                                + (*z.borrow()));
-                        }),
-                    )
-                }));
-                return ({ (*inner.borrow()).call(1) });
-            }),
-        )
-    }));
+    )));
     assert!((({ (*outer.borrow()).call(20,) }) == 31));
     (*x.borrow_mut()) = 100;
     assert!((({ (*outer.borrow()).call(20,) }) == 121));
@@ -69,47 +49,28 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn nested_this(&self) -> i32 {
-        let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(8)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(8)]
-                this_: Ptr<S>,
+        let outer: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+            {
+                let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
+            },
+            |y: i32| -> i32 {
+                let y: Value<i32> = Rc::new(RefCell::new(y));
+                let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+                    {
+                        let this_: Value<Ptr<S>> =
+                            Rc::new(RefCell::new((*self.this_.borrow()).clone()));
+                        let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
+                    },
+                    |z: i32| -> i32 {
+                        let z: Value<i32> = Rc::new(RefCell::new(z));
+                        return (((*self.this_.borrow()).clone().with(|__s| __s.v)
+                            + (*self.y.borrow()))
+                            + (*z.borrow()));
+                    }
+                )));
+                return ({ (*inner.borrow()).call(1) });
             }
-            FnPtr::<fn(i32) -> i32>::with_captures(
-                Captures {
-                    this_: (*self).clone(),
-                },
-                (|this: Ptr<Captures>, y: i32| {
-                    let y: Value<i32> = Rc::new(RefCell::new(y));
-                    let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-                        #[derive(Record, ByteRepr)]
-                        #[byte_size(16)]
-                        struct Captures {
-                            #[offset(0)]
-                            #[byte_size(8)]
-                            this_: Ptr<S>,
-                            #[offset(8)]
-                            y: i32,
-                        }
-                        FnPtr::<fn(i32) -> i32>::with_captures(
-                            Captures {
-                                this_: this.with(|__s| __s.this_.clone()),
-                                y: (*y.borrow()),
-                            },
-                            (|this: Ptr<Captures>, z: i32| {
-                                let z: Value<i32> = Rc::new(RefCell::new(z));
-                                return ((this.with(|__s| __s.this_.clone()).with(|__s| __s.v)
-                                    + this.with(|__s| __s.y))
-                                    + (*z.borrow()));
-                            }),
-                        )
-                    }));
-                    return ({ (*inner.borrow()).call(1) });
-                }),
-            )
-        }));
+        )));
         return ({ (*outer.borrow()).call(20) });
     }
 }

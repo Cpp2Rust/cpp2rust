@@ -12,48 +12,29 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let start: Value<i32> = Rc::new(RefCell::new(5));
-    let next: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(4)]
-        struct Captures {
-            #[offset(0)]
-            start: i32,
+    let next: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let start: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
+        },
+        || -> i32 {
+            return (*self.start.borrow_mut()).postfix_inc();
         }
-        FnPtr::<fn() -> i32>::with_captures(
-            Captures {
-                start: (*start.borrow()),
-            },
-            (|this: Ptr<Captures>| {
-                return field!(this, start).with_mut(|__v| __v.postfix_inc());
-            }),
-        )
-    }));
+    )));
     assert!((({ (*next.borrow()).call() }) == 5));
     assert!((({ (*next.borrow()).call() }) == 6));
     assert!((({ (*next.borrow()).call() }) == 7));
     assert!(((*start.borrow()) == 5));
     let total: Value<i32> = Rc::new(RefCell::new(0));
-    let accumulate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(4)]
-        struct Captures {
-            #[offset(0)]
-            total: i32,
+    let accumulate: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let total: Value<i32> = Rc::new(RefCell::new((*total.borrow())));
+        },
+        |x: i32| -> i32 {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            (*self.total.borrow_mut()) += (*x.borrow());
+            return (*self.total.borrow());
         }
-        FnPtr::<fn(i32) -> i32>::with_captures(
-            Captures {
-                total: (*total.borrow()),
-            },
-            (|this: Ptr<Captures>, x: i32| {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                {
-                    let _ptr = field!(this, total);
-                    _ptr.write(_ptr.read() + (*x.borrow()))
-                };
-                return this.with(|__s| __s.total);
-            }),
-        )
-    }));
+    )));
     assert!((({ (*accumulate.borrow()).call(1,) }) == 1));
     assert!((({ (*accumulate.borrow()).call(2,) }) == 3));
     assert!(((*total.borrow()) == 0));

@@ -20,14 +20,18 @@ unsafe fn main_0() -> i32 {
             .offset((5) as isize)
             .offset_from(arr1.as_mut_ptr()) as usize;
         ::std::slice::from_raw_parts_mut(arr1.as_mut_ptr(), len).sort_by(|x, y| {
-            if FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| unsafe {
-                return ((x) < (y));
+            if FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| -> bool {
+                unsafe {
+                    return ((x) < (y));
+                }
             })
             .call(*x, *y)
             {
                 std::cmp::Ordering::Less
-            } else if FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| unsafe {
-                return ((x) < (y));
+            } else if FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| -> bool {
+                unsafe {
+                    return ((x) < (y));
+                }
             })
             .call(*y, *x)
             {

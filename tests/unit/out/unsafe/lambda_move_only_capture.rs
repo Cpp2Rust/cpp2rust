@@ -27,20 +27,14 @@ impl Owner {
         ::std::mem::drop(Box::from_raw(self.p));
     }
     pub unsafe fn take(&mut self) -> FnPtr<fn() -> i32> {
-        return {
-            #[repr(C)]
-            struct Captures {
-                self_: Owner,
+        return lambda_unsafe!(
+            {
+                let self_: Owner = Owner::move_from({ &mut (*(self as *mut Owner)) });
+            },
+            || -> i32 {
+                return (*self.self_.p);
             }
-            FnPtr::<fn() -> i32>::with_captures_unsafe(
-                Captures {
-                    self_: Owner::move_from({ &mut (*(self as *mut Owner)) }),
-                },
-                (|this: &mut Captures| unsafe {
-                    return (*this.self_.p);
-                }),
-            )
-        };
+        );
     }
 }
 pub fn main() {
@@ -52,42 +46,29 @@ pub fn main() {
 unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner::new({ 5 });
     let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Owner::destructor);
-    let mut f: FnPtr<fn() -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            h: Owner,
+    let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let h: Owner = Owner::move_from({ &mut o });
+        },
+        || -> i32 {
+            return (*self.h.p);
         }
-        FnPtr::<fn() -> i32>::with_captures_unsafe(
-            Captures {
-                h: Owner::move_from({ &mut o }),
-            },
-            (|this: &mut Captures| unsafe {
-                return (*this.h.p);
-            }),
-        )
-    };
+    );
     assert!((o.p).is_null());
     assert!(((unsafe { f.call() }) == (5)));
     let mut g: FnPtr<fn() -> i32> = f;
     assert!(((unsafe { g.call() }) == (5)));
     let mut total: i32 = 0;
-    let mut consume: FnPtr<fn()> = {
-        #[repr(C)]
-        struct Captures {
-            h: Owner,
-            total: *mut i32,
+    let mut consume: FnPtr<fn()> = lambda_unsafe!(
+        {
+            let h: Owner = Owner::new({ 7 });
+            let total: *mut i32 = &mut total;
+        },
+        || {
+            (*self.total) += (*self.h.p);
+            (*self.h.p) = 0;
         }
-        FnPtr::<fn()>::with_captures_unsafe(
-            Captures {
-                h: Owner::new({ 7 }),
-                total: &mut total,
-            },
-            (|this: &mut Captures| unsafe {
-                (*this.total) += (*this.h.p);
-                (*this.h.p) = 0;
-            }),
-        )
-    };
+    );
     (unsafe { consume.call() });
     (unsafe { consume.call() });
     assert!(((total) == (7)));

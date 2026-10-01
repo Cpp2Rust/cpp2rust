@@ -37,73 +37,44 @@ impl SImpl for Ptr<S> {
         return ((*self).with(|__s| __s.n) * 2);
     }
     fn modify_copy(&self) -> i32 {
-        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(4)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(4)]
-                this_: S,
+        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+            {
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+            },
+            || -> i32 {
+                {
+                    let _ptr = field!(self.this_.as_pointer(), n);
+                    _ptr.write(_ptr.read() + 10)
+                };
+                return self.this_.as_pointer().with(|__s| __s.n);
             }
-            FnPtr::<fn() -> i32>::with_captures(
-                Captures {
-                    this_: (*(*self).upgrade().deref()).clone(),
-                },
-                (|this: Ptr<Captures>| {
-                    {
-                        let _ptr = field!(field_ptr!(this, this_), n);
-                        _ptr.write(_ptr.read() + 10)
-                    };
-                    return field_ptr!(this, this_).with(|__s| __s.n);
-                }),
-            )
-        }));
+        )));
         let r: Value<i32> = Rc::new(RefCell::new(({ (*f.borrow()).call() }).clone()));
         return (((*r.borrow()) * 100) + (*self).with(|__s| __s.n));
     }
     fn snapshot(&self) -> i32 {
-        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(4)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(4)]
-                this_: S,
+        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+            {
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+            },
+            || -> i32 {
+                return ({ SImpl::twice(&self.this_.as_pointer()) });
             }
-            FnPtr::<fn() -> i32>::with_captures(
-                Captures {
-                    this_: (*(*self).upgrade().deref()).clone(),
-                },
-                (|this: Ptr<Captures>| {
-                    return ({ SImpl::twice(&field_ptr!(this, this_)) });
-                }),
-            )
-        }));
+        )));
         field!((*self), n).write(99);
         return ({ (*f.borrow()).call() }).clone();
     }
     fn mixed(&self, k: i32) -> i32 {
         let k: Value<i32> = Rc::new(RefCell::new(k));
-        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(8)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(4)]
-                this_: S,
-                #[offset(4)]
-                k: i32,
+        let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+            {
+                let this_: Value<S> = Rc::new(RefCell::new((*(*self).upgrade().deref()).clone()));
+                let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
+            },
+            || -> i32 {
+                return (self.this_.as_pointer().with(|__s| __s.n) + (*self.k.borrow()));
             }
-            FnPtr::<fn() -> i32>::with_captures(
-                Captures {
-                    this_: (*(*self).upgrade().deref()).clone(),
-                    k: (*k.borrow()),
-                },
-                (|this: Ptr<Captures>| {
-                    return (field_ptr!(this, this_).with(|__s| __s.n) + this.with(|__s| __s.k));
-                }),
-            )
-        }));
+        )));
         field!((*self), n).write(0);
         return ({ (*f.borrow()).call() }).clone();
     }

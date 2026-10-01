@@ -38,53 +38,32 @@ pub fn main() {
 fn main_0() -> i32 {
     let o: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 5 })));
     let _dtor_o = ScopedDestructor::new(&o, |__p| __p.destructor());
-    let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(8)]
-        struct Captures {
-            #[offset(0)]
-            #[byte_size(8)]
-            h: Owner,
+    let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let h: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o.as_pointer() })));
+        },
+        || -> i32 {
+            return ({ (*self.h.borrow()).p.clone() }.read());
         }
-        FnPtr::<fn() -> i32>::with_captures(
-            Captures {
-                h: Owner::move_from({ o.as_pointer() }),
-            },
-            (|this: Ptr<Captures>| {
-                return ({ (*this.upgrade().deref()).h.p.clone() }.read());
-            }),
-        )
-    }));
+    )));
     assert!(({ (*o.borrow()).p.clone() }).is_null());
     assert!((({ (*f.borrow()).call() }) == 5));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow_mut()).clone()));
     assert!((({ (*g.borrow()).call() }) == 5));
     let total: Value<i32> = Rc::new(RefCell::new(0));
-    let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(16)]
-        struct Captures {
-            #[offset(0)]
-            #[byte_size(8)]
-            h: Owner,
-            #[offset(8)]
-            #[byte_size(8)]
-            total: Ptr<i32>,
+    let consume: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+        {
+            let h: Value<Owner> = Rc::new(RefCell::new(Owner::new({ 7 })));
+            let total: Ptr<i32> = total.as_pointer();
+        },
+        || {
+            {
+                let _ptr = self.total.clone();
+                _ptr.write(_ptr.read() + { ({ (*self.h.borrow()).p.clone() }.read()) })
+            };
+            { (*self.h.borrow()).p.clone() }.write(0);
         }
-        FnPtr::<fn()>::with_captures(
-            Captures {
-                h: Owner::new({ 7 }),
-                total: total.as_pointer(),
-            },
-            (|this: Ptr<Captures>| {
-                {
-                    let _ptr = this.with(|__s| __s.total.clone()).clone();
-                    _ptr.write(_ptr.read() + { ({ (*this.upgrade().deref()).h.p.clone() }.read()) })
-                };
-                { (*this.upgrade().deref()).h.p.clone() }.write(0);
-            }),
-        )
-    }));
+    )));
     ({ (*consume.borrow()).call() });
     ({ (*consume.borrow()).call() });
     assert!(((*total.borrow()) == 7));
@@ -105,23 +84,15 @@ impl OwnerImpl for Ptr<Owner> {
         (*self).with(|__s| __s.p.clone()).delete();
     }
     fn take(&self) -> FnPtr<fn() -> i32> {
-        return {
-            #[derive(Record, ByteRepr)]
-            #[byte_size(8)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(8)]
-                self_: Owner,
+        return lambda!(
+            {
+                let self_: Value<Owner> =
+                    Rc::new(RefCell::new(Owner::move_from({ (*self).clone() })));
+            },
+            || -> i32 {
+                return ({ (*self.self_.borrow()).p.clone() }.read());
             }
-            FnPtr::<fn() -> i32>::with_captures(
-                Captures {
-                    self_: Owner::move_from({ (*self).clone() }),
-                },
-                (|this: Ptr<Captures>| {
-                    return ({ (*this.upgrade().deref()).self_.p.clone() }.read());
-                }),
-            )
-        };
+        );
     }
 }
 pub fn __cpp2rust_init_globals() {}

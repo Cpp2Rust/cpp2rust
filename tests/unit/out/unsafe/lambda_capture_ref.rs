@@ -20,101 +20,75 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut base: i32 = 10;
-    let mut add_base: FnPtr<fn(i32) -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            base: *mut i32,
+    let mut add_base: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let base: *mut i32 = &mut base;
+        },
+        |x: i32| -> i32 {
+            return ((x) + (*self.base));
         }
-        FnPtr::<fn(i32) -> i32>::with_captures_unsafe(
-            Captures { base: &mut base },
-            (|this: &mut Captures, x: i32| unsafe {
-                return ((x) + (*this.base));
-            }),
-        )
-    };
+    );
     assert!(((unsafe { add_base.call(5,) }) == (15)));
     base = 100;
     assert!(((unsafe { add_base.call(5,) }) == (105)));
     let mut s: S = S { x: 1, y: 2 };
-    let mut sum: FnPtr<fn() -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            s: *mut S,
+    let mut sum: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let s: *mut S = &mut s;
+        },
+        || -> i32 {
+            return (((*self.s).x) + ((*self.s).y));
         }
-        FnPtr::<fn() -> i32>::with_captures_unsafe(
-            Captures { s: &mut s },
-            (|this: &mut Captures| unsafe {
-                return (((*this.s).x) + ((*this.s).y));
-            }),
-        )
-    };
+    );
     assert!(((unsafe { sum.call() }) == (3)));
     s.x = 50;
     assert!(((unsafe { sum.call() }) == (52)));
     let mut counter: i32 = 0;
-    let mut bump: FnPtr<fn()> = {
-        #[repr(C)]
-        struct Captures {
-            counter: *mut i32,
+    let mut bump: FnPtr<fn()> = lambda_unsafe!(
+        {
+            let counter: *mut i32 = &mut counter;
+        },
+        || {
+            (*self.counter).postfix_inc();
         }
-        FnPtr::<fn()>::with_captures_unsafe(
-            Captures {
-                counter: &mut counter,
-            },
-            (|this: &mut Captures| unsafe {
-                (*this.counter).postfix_inc();
-            }),
-        )
-    };
+    );
     (unsafe { bump.call() });
     (unsafe { bump.call() });
     assert!(((counter) == (2)));
     let mut arr: [u16; 4] = [3_u16, 1_u16, 2_u16, 0_u16];
-    let mut swap: FnPtr<fn(usize, usize)> = {
-        #[repr(C)]
-        struct Captures {
-            arr: *mut [u16; 4],
+    let mut swap: FnPtr<fn(usize, usize)> = lambda_unsafe!(
+        {
+            let arr: *mut [u16; 4] = &mut arr;
+        },
+        |i: usize, j: usize| {
+            let mut t: u16 = (*self.arr)[(j)];
+            (*self.arr)[(j)] = (*self.arr)[(i)];
+            (*self.arr)[(i)] = t;
         }
-        FnPtr::<fn(usize, usize)>::with_captures_unsafe(
-            Captures { arr: &mut arr },
-            (|this: &mut Captures, i: usize, j: usize| unsafe {
-                let mut t: u16 = (*this.arr)[(j)];
-                (*this.arr)[(j)] = (*this.arr)[(i)];
-                (*this.arr)[(i)] = t;
-            }),
-        )
-    };
+    );
     (unsafe { swap.call(0_usize, 3_usize) });
     assert!(((arr[(0) as usize] as i32) == (0)));
     assert!(((arr[(3) as usize] as i32) == (3)));
     let mut total: i32 = 0;
-    let mut add: FnPtr<fn(i32)> = {
-        #[repr(C)]
-        struct Captures {
-            t: *mut i32,
+    let mut add: FnPtr<fn(i32)> = lambda_unsafe!(
+        {
+            let t: *mut i32 = &mut total;
+        },
+        |x: i32| {
+            (*self.t) += x;
         }
-        FnPtr::<fn(i32)>::with_captures_unsafe(
-            Captures { t: &mut total },
-            (|this: &mut Captures, x: i32| unsafe {
-                (*this.t) += x;
-            }),
-        )
-    };
+    );
     (unsafe { add.call(2) });
     (unsafe { add.call(3) });
     assert!(((total) == (5)));
-    let mut set_y: FnPtr<fn(i32)> = {
-        #[repr(C)]
-        struct Captures {
-            y: *mut i32,
+    let mut set_y: FnPtr<fn(i32)> = lambda_unsafe!(
+        {
+            let y: *mut i32 = &mut s.y;
+        },
+        |v: i32| {
+            (*self.y) = v;
         }
-        FnPtr::<fn(i32)>::with_captures_unsafe(
-            Captures { y: &mut s.y },
-            (|this: &mut Captures, v: i32| unsafe {
-                (*this.y) = v;
-            }),
-        )
-    };
+    );
     (unsafe { set_y.call(9) });
     assert!(((s.y) == (9)));
     return 0;

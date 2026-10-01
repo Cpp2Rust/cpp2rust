@@ -1,4 +1,3 @@
-// no-compile: unsafe
 #include <assert.h>
 
 struct S {

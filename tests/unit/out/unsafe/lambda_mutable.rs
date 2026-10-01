@@ -14,36 +14,28 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut start: i32 = 5;
-    let mut next: FnPtr<fn() -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            start: i32,
+    let mut next: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let start: i32 = start;
+        },
+        || -> i32 {
+            return self.start.postfix_inc();
         }
-        FnPtr::<fn() -> i32>::with_captures_unsafe(
-            Captures { start: start },
-            (|this: &mut Captures| unsafe {
-                return this.start.postfix_inc();
-            }),
-        )
-    };
+    );
     assert!(((unsafe { next.call() }) == (5)));
     assert!(((unsafe { next.call() }) == (6)));
     assert!(((unsafe { next.call() }) == (7)));
     assert!(((start) == (5)));
     let mut total: i32 = 0;
-    let mut accumulate: FnPtr<fn(i32) -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            total: i32,
+    let mut accumulate: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let total: i32 = total;
+        },
+        |x: i32| -> i32 {
+            self.total += x;
+            return self.total;
         }
-        FnPtr::<fn(i32) -> i32>::with_captures_unsafe(
-            Captures { total: total },
-            (|this: &mut Captures, x: i32| unsafe {
-                this.total += x;
-                return this.total;
-            }),
-        )
-    };
+    );
     assert!(((unsafe { accumulate.call(1,) }) == (1)));
     assert!(((unsafe { accumulate.call(2,) }) == (3)));
     assert!(((total) == (0)));

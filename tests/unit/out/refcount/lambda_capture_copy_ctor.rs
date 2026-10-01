@@ -94,25 +94,14 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let c: Value<Counted> = Rc::new(RefCell::new(Counted::new()));
-    let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(8)]
-        struct Captures {
-            #[offset(0)]
-            #[byte_size(8)]
-            c: Counted,
+    let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let c: Value<Counted> = Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() })));
+        },
+        || -> i32 {
+            return (({ (*self.c.borrow()).copies } * 10) + { (*self.c.borrow()).moves });
         }
-        FnPtr::<fn() -> i32>::with_captures(
-            Captures {
-                c: Counted::copy_from({ c.as_pointer() }),
-            },
-            (|this: Ptr<Captures>| {
-                return (({ (*this.upgrade().deref()).c.copies } * 10) + {
-                    (*this.upgrade().deref()).c.moves
-                });
-            }),
-        )
-    }));
+    )));
     assert!((({ (*f.borrow()).call() }) == 10));
     let g: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow()).clone()));
     assert!((({ (*g.borrow()).call() }) == 20));
@@ -121,23 +110,15 @@ fn main_0() -> i32 {
     assert!((({ (*h.borrow()).call() }) == 11));
     let returned: Value<i32> = Rc::new(RefCell::new({
         ({
-            {
-                #[derive(Record, ByteRepr)]
-                #[byte_size(8)]
-                struct Captures {
-                    #[offset(0)]
-                    #[byte_size(8)]
-                    c: Counted,
+            lambda!(
+                {
+                    let c: Value<Counted> =
+                        Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() })));
+                },
+                || -> Counted {
+                    return Counted::copy_from({ self.c.as_pointer() });
                 }
-                FnPtr::<fn() -> Counted>::with_captures(
-                    Captures {
-                        c: Counted::copy_from({ c.as_pointer() }),
-                    },
-                    (|this: Ptr<Captures>| {
-                        return Counted::copy_from({ field_ptr!(this, c) });
-                    }),
-                )
-            }
+            )
             .call()
         })
         .copies
@@ -146,57 +127,40 @@ fn main_0() -> i32 {
     let arr: Value<Box<[Counted]>> = Rc::new(RefCell::new(Box::new(
         std::array::from_fn::<_, 2, _>(|_| Counted::new()),
     )));
-    let a: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new({
-        #[derive(Record, ByteRepr)]
-        #[byte_size(16)]
-        struct Captures {
-            #[offset(0)]
-            #[byte_size(16)]
-            arr: Value<Box<[Counted]>>,
+    let a: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let arr: Value<Box<[Counted]>> = Rc::new(RefCell::new(Box::new(
+                std::array::from_fn::<_, 2, _>(|__i: usize| {
+                    Counted::copy_from({ (arr.as_pointer() as Ptr<Counted>).offset(__i) })
+                }),
+            )));
+        },
+        || -> i32 {
+            return ({ (*self.arr.borrow())[(0) as usize].copies } + {
+                (*self.arr.borrow())[(1) as usize].copies
+            });
         }
-        FnPtr::<fn() -> i32>::with_captures(
-            Captures {
-                arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
-                    |__i: usize| {
-                        Counted::copy_from({ (arr.as_pointer() as Ptr<Counted>).offset(__i) })
-                    },
-                )))),
-            },
-            (|this: Ptr<Captures>| {
-                return ({ (*this.with(|__s| __s.arr.clone()).borrow())[(0) as usize].copies } + {
-                    (*this.with(|__s| __s.arr.clone()).borrow())[(1) as usize].copies
-                });
-            }),
-        )
-    }));
+    )));
     assert!((({ (*a.borrow()).call() }) == 2));
     let a2: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*a.borrow()).clone()));
     assert!((({ (*a2.borrow()).call() }) == 4));
     {
-        let m: Value<FnPtr<fn()>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(1)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(1)]
-                d: Dropped,
-            }
-            FnPtr::<fn()>::with_captures(Captures { d: Dropped::new() }, (|this: Ptr<Captures>| {}))
-        }));
+        let m: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
+            },
+            || {}
+        )));
         let m2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*m.borrow_mut()).clone()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 2));
     {
-        let k: Value<FnPtr<fn()>> = Rc::new(RefCell::new({
-            #[derive(Record, ByteRepr)]
-            #[byte_size(1)]
-            struct Captures {
-                #[offset(0)]
-                #[byte_size(1)]
-                d: Dropped,
-            }
-            FnPtr::<fn()>::with_captures(Captures { d: Dropped::new() }, (|this: Ptr<Captures>| {}))
-        }));
+        let k: Value<FnPtr<fn()>> = Rc::new(RefCell::new(lambda!(
+            {
+                let d: Value<Dropped> = Rc::new(RefCell::new(Dropped::new()));
+            },
+            || {}
+        )));
         let k2: Value<FnPtr<fn()>> = Rc::new(RefCell::new((*k.borrow()).clone()));
     }
     assert!((drops_0.with(|rc| *rc.borrow()) == 4));

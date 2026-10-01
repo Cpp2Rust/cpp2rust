@@ -9,15 +9,19 @@ use std::rc::Rc;
 pub static mut counter_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut inc_1: std::cell::LazyCell<FnPtr<fn(i32) -> i32>> =
     std::cell::LazyCell::new(|| unsafe {
-        FnPtr::<fn(i32) -> i32>::new(|x: i32| unsafe {
-            return ((x) + (1));
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            unsafe {
+                return ((x) + (1));
+            }
         })
     });
 pub static mut bump_2: std::cell::LazyCell<FnPtr<fn() -> i32>> =
     std::cell::LazyCell::new(|| unsafe {
-        FnPtr::<fn() -> i32>::new(|| unsafe {
-            (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)).postfix_inc();
-            return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0));
+        FnPtr::<fn() -> i32>::new(|| -> i32 {
+            unsafe {
+                (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0)).postfix_inc();
+                return (*std::cell::LazyCell::force_mut(&mut *&raw mut counter_0));
+            }
         })
     });
 pub unsafe fn apply_3(mut f: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
@@ -47,8 +51,10 @@ unsafe fn main_0() -> i32 {
     let mut copy: FnPtr<fn(i32) -> i32> =
         (*std::cell::LazyCell::force_mut(&mut *&raw mut inc_1)).clone();
     assert!(((unsafe { copy.call(9,) }) == (10)));
-    let mut fp: Option<unsafe fn(i32) -> i32> = Some(|x: i32| unsafe {
-        return ((x) + (1));
+    let mut fp: Option<unsafe fn(i32) -> i32> = Some(|x: i32| -> i32 {
+        unsafe {
+            return ((x) + (1));
+        }
     });
     assert!(((unsafe { (fp).unwrap()(-1_i32,) }) == (0)));
     return 0;

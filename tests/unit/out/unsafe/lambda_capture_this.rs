@@ -20,55 +20,37 @@ impl S {
         return ((self.n) * (self.step));
     }
     pub unsafe fn bump(&mut self, mut by: i32) {
-        let mut inc: FnPtr<fn(i32)> = {
-            #[repr(C)]
-            struct Captures {
-                this_: *mut S,
+        let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
+            {
+                let this_: *mut S = (self as *mut S);
+            },
+            |k: i32| {
+                (*self.this_).n += k;
             }
-            FnPtr::<fn(i32)>::with_captures_unsafe(
-                Captures {
-                    this_: (self as *mut S),
-                },
-                (|this: &mut Captures, k: i32| unsafe {
-                    (*this.this_).n += k;
-                }),
-            )
-        };
+        );
         (unsafe { inc.call(by) });
         (unsafe { inc.call(by) });
     }
     pub unsafe fn bump_via_method(&mut self, mut by: i32) {
-        let mut inc: FnPtr<fn(i32)> = {
-            #[repr(C)]
-            struct Captures {
-                this_: *mut S,
+        let mut inc: FnPtr<fn(i32)> = lambda_unsafe!(
+            {
+                let this_: *mut S = (self as *mut S);
+            },
+            |k: i32| {
+                (unsafe { S::add(&mut (*self.this_), k) });
             }
-            FnPtr::<fn(i32)>::with_captures_unsafe(
-                Captures {
-                    this_: (self as *mut S),
-                },
-                (|this: &mut Captures, k: i32| unsafe {
-                    (unsafe { S::add(&mut (*this.this_), k) });
-                }),
-            )
-        };
+        );
         (unsafe { inc.call(by) });
     }
     pub unsafe fn read_scaled(&self) -> i32 {
-        let mut get: FnPtr<fn() -> i32> = {
-            #[repr(C)]
-            struct Captures {
-                this_: *const S,
+        let mut get: FnPtr<fn() -> i32> = lambda_unsafe!(
+            {
+                let this_: *const S = (self as *const S);
+            },
+            || -> i32 {
+                return (unsafe { S::scaled(&(*self.this_)) });
             }
-            FnPtr::<fn() -> i32>::with_captures_unsafe(
-                Captures {
-                    this_: (self as *const S),
-                },
-                (|this: &mut Captures| unsafe {
-                    return (unsafe { S::scaled(&(*this.this_)) });
-                }),
-            )
-        };
+        );
         return (unsafe { get.call() });
     }
 }

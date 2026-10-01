@@ -16,59 +16,40 @@ impl S {
         return ((self.n) * (2));
     }
     pub unsafe fn modify_copy(&mut self) -> i32 {
-        let mut f: FnPtr<fn() -> i32> = {
-            #[repr(C)]
-            struct Captures {
-                this_: S,
+        let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
+            {
+                let this_: S = (*(self as *mut S));
+            },
+            || -> i32 {
+                (*(&raw mut self.this_)).n += 10;
+                return (*(&raw mut self.this_)).n;
             }
-            FnPtr::<fn() -> i32>::with_captures_unsafe(
-                Captures {
-                    this_: (*(self as *mut S)),
-                },
-                (|this: &mut Captures| unsafe {
-                    (*&this.this_).n += 10;
-                    return (*&this.this_).n;
-                }),
-            )
-        };
+        );
         let mut r: i32 = (unsafe { f.call() });
         return (((r) * (100)) + (self.n));
     }
     pub unsafe fn snapshot(&mut self) -> i32 {
-        let mut f: FnPtr<fn() -> i32> = {
-            #[repr(C)]
-            struct Captures {
-                this_: S,
+        let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
+            {
+                let this_: S = (*(self as *mut S));
+            },
+            || -> i32 {
+                return (unsafe { S::twice(&(*(&raw mut self.this_))) });
             }
-            FnPtr::<fn() -> i32>::with_captures_unsafe(
-                Captures {
-                    this_: (*(self as *mut S)),
-                },
-                (|this: &mut Captures| unsafe {
-                    return (unsafe { S::twice(&(*&this.this_)) });
-                }),
-            )
-        };
+        );
         self.n = 99;
         return (unsafe { f.call() });
     }
     pub unsafe fn mixed(&mut self, mut k: i32) -> i32 {
-        let mut f: FnPtr<fn() -> i32> = {
-            #[repr(C)]
-            struct Captures {
-                this_: S,
-                k: i32,
+        let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
+            {
+                let this_: S = (*(self as *mut S));
+                let k: i32 = k;
+            },
+            || -> i32 {
+                return (((*(&raw mut self.this_)).n) + (self.k));
             }
-            FnPtr::<fn() -> i32>::with_captures_unsafe(
-                Captures {
-                    this_: (*(self as *mut S)),
-                    k: k,
-                },
-                (|this: &mut Captures| unsafe {
-                    return (((*&this.this_).n) + (this.k));
-                }),
-            )
-        };
+        );
         self.n = 0;
         return (unsafe { f.call() });
     }

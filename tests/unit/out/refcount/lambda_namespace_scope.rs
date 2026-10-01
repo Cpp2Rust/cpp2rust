@@ -10,17 +10,22 @@ thread_local!(
     pub static counter_0: Value<i32> = Rc::new(RefCell::new(0));
 );
 thread_local!(
-    pub static inc_1: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + 1);
-        })));
+    pub static inc_1: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                return ((*x.borrow()) + 1);
+            }
+        }),
+    ));
 );
 thread_local!(
     pub static bump_2: Value<FnPtr<fn() -> i32>> =
-        Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| {
-            (*counter_0.with(Value::clone).borrow_mut()).postfix_inc();
-            return counter_0.with(|rc| *rc.borrow());
+        Rc::new(RefCell::new(FnPtr::<fn() -> i32>::new(|| -> i32 {
+            {
+                (*counter_0.with(Value::clone).borrow_mut()).postfix_inc();
+                return counter_0.with(|rc| *rc.borrow());
+            }
         })));
 );
 pub fn apply_3(f: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {

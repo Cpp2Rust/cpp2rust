@@ -20,65 +20,49 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut factor: i32 = 3;
-    let mut scale: FnPtr<fn(i32) -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            factor: i32,
+    let mut scale: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let factor: i32 = factor;
+        },
+        |x: i32| -> i32 {
+            return ((x) * (self.factor));
         }
-        FnPtr::<fn(i32) -> i32>::with_captures_unsafe(
-            Captures { factor: factor },
-            (|this: &mut Captures, x: i32| unsafe {
-                return ((x) * (this.factor));
-            }),
-        )
-    };
+    );
     assert!(((unsafe { scale.call(4,) }) == (12)));
     factor = 100;
     assert!(((unsafe { scale.call(4,) }) == (12)));
     let mut slot: i32 = 7;
     let mut p: *mut i32 = (&mut slot as *mut i32);
-    let mut read_ptr: FnPtr<fn() -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            p: *mut i32,
+    let mut read_ptr: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let p: *mut i32 = p;
+        },
+        || -> i32 {
+            return (*self.p);
         }
-        FnPtr::<fn() -> i32>::with_captures_unsafe(
-            Captures { p: p },
-            (|this: &mut Captures| unsafe {
-                return (*this.p);
-            }),
-        )
-    };
+    );
     slot = 8;
     assert!(((unsafe { read_ptr.call() }) == (8)));
     let mut s: S = S { x: 1, y: 2 };
-    let mut sum: FnPtr<fn() -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            s: S,
+    let mut sum: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let s: S = s;
+        },
+        || -> i32 {
+            return ((self.s.x) + (self.s.y));
         }
-        FnPtr::<fn() -> i32>::with_captures_unsafe(
-            Captures { s: s },
-            (|this: &mut Captures| unsafe {
-                return ((this.s.x) + (this.s.y));
-            }),
-        )
-    };
+    );
     s.x = 50;
     assert!(((unsafe { sum.call() }) == (3)));
     let mut base: i32 = 10;
-    let mut shifted: FnPtr<fn(i32) -> i32> = {
-        #[repr(C)]
-        struct Captures {
-            y: i32,
+    let mut shifted: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let y: i32 = ((base) + (1));
+        },
+        |x: i32| -> i32 {
+            return ((x) + (self.y));
         }
-        FnPtr::<fn(i32) -> i32>::with_captures_unsafe(
-            Captures { y: ((base) + (1)) },
-            (|this: &mut Captures, x: i32| unsafe {
-                return ((x) + (this.y));
-            }),
-        )
-    };
+    );
     assert!(((unsafe { shifted.call(5,) }) == (16)));
     return 0;
 }
