@@ -23,6 +23,42 @@ pub fn twice_in_place_3(x: Ptr<u64>) -> u64 {
     x.write({ (x.read()).wrapping_mul(2_u64) });
     return (x.read());
 }
+pub fn ret_size_4(v: i32) -> usize {
+    let v: Value<i32> = Rc::new(RefCell::new(v));
+    return (((*v.borrow()) + 1) as usize);
+}
+pub fn call_fn_5(f: FnPtr<fn(i32) -> usize>, v: i32) -> usize {
+    let f: Value<FnPtr<fn(i32) -> usize>> = Rc::new(RefCell::new(f));
+    let v: Value<i32> = Rc::new(RefCell::new(v));
+    return ({ (*f.borrow()).call((*v.borrow())) }).wrapping_mul(2_usize);
+}
+pub fn identity_hash_6(v: bool) -> usize {
+    let v: Value<bool> = Rc::new(RefCell::new(v));
+    return ((*v.borrow()) as usize);
+}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(8)]
+pub struct HashHolder_unsigned_long__ptr__bool__ {
+    #[offset(0)]
+    #[byte_size(8)]
+    pub h: FnPtr<fn(bool) -> u64>,
+}
+impl HashHolder_unsigned_long__ptr__bool__ {
+    pub fn new(h: Ptr<FnPtr<fn(bool) -> u64>>) -> Self {
+        let __this: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new(Self {
+            h: (h.read()).clone(),
+        }));
+        let this: Ptr<HashHolder_unsigned_long__ptr__bool__> = __this.as_pointer();
+        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    }
+}
+impl Default for HashHolder_unsigned_long__ptr__bool__ {
+    fn default() -> Self {
+        HashHolder_unsigned_long__ptr__bool__ {
+            h: FnPtr::<fn(bool) -> u64>::null(),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -53,6 +89,14 @@ fn main_0() -> i32 {
     ));
     assert!(((*q.borrow()) == 42_usize));
     assert!(((*m.borrow()) == 42_usize));
+    assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
+    let hh: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new({
+        let __tmp_0: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(
+            (FnPtr::<fn(bool) -> usize>::new(identity_hash_6)).cast::<fn(bool) -> u64>(),
+        ));
+        HashHolder_unsigned_long__ptr__bool__::new({ __tmp_0.as_pointer() })
+    }));
+    assert!((({ { (*hh.borrow()).h.clone() }.call(true,) }) == 1_u64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
