@@ -1573,13 +1573,17 @@ static clang::QualType GetExprPointee(clang::ASTContext &ctx,
   if (type->isPointerType()) {
     return type->getPointeeType();
   }
+  if (type->isFunctionType()) {
+    return type;
+  }
   return {};
 }
 
 static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
                                   clang::QualType to) {
   while (true) {
-    if (from->isPointerType() && to->isPointerType()) {
+    if ((from->isPointerType() && to->isPointerType()) ||
+        (from->isReferenceType() && to->isReferenceType())) {
       from = from->getPointeeType();
       to = to->getPointeeType();
     } else if (auto *from_array = ctx.getAsArrayType(from),
@@ -1590,6 +1594,21 @@ static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
     } else {
       break;
     }
+  }
+  if (auto *from_fn = from->getAs<clang::FunctionProtoType>(),
+      *to_fn = to->getAs<clang::FunctionProtoType>();
+      from_fn && to_fn && from_fn->getNumParams() == to_fn->getNumParams()) {
+    if (PointeeMappingDiffers(ctx, from_fn->getReturnType(),
+                              to_fn->getReturnType())) {
+      return true;
+    }
+    for (unsigned i = 0; i < from_fn->getNumParams(); ++i) {
+      if (PointeeMappingDiffers(ctx, from_fn->getParamType(i),
+                                to_fn->getParamType(i))) {
+        return true;
+      }
+    }
+    return false;
   }
   return from.getCanonicalType().getUnqualifiedType() ==
              to.getCanonicalType().getUnqualifiedType() &&
@@ -1602,7 +1621,8 @@ clang::QualType GetMismatchedExprPointee(clang::ASTContext &ctx,
   if (!slot->isReferenceType() && !slot->isPointerType()) {
     return {};
   }
-  if (clang::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+  if (slot->isReferenceType() &&
+      clang::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
     return {};
   }
   auto pointee = GetExprPointee(ctx, expr, slot);

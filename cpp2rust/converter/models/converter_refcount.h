@@ -118,8 +118,6 @@ public:
 
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
-  bool FunctionPointerCastNeedsTransmute() const override { return false; }
-
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
@@ -323,13 +321,6 @@ private:
 
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
-
-  // Converts `expr` for use where a `qual_type` function pointer is
-  // expected, inserting a `.cast()` if `expr`'s own fn pointer type differs
-  // from `qual_type` -- e.g. because the two describe the same C function
-  // pointer type through different typedefs that the translation maps to
-  // distinct Rust types (`size_t` vs `unsigned long`).
-  std::string ConvertFnPtrValue(clang::QualType qual_type, clang::Expr *expr);
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 

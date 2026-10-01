@@ -1586,6 +1586,11 @@ bool Converter::Convert(clang::Expr *expr,
 std::string Converter::ConvertPointeeCast(std::string str,
                                           clang::QualType pointee,
                                           clang::QualType slot) {
+  if (slot->isFunctionPointerType()) {
+    return std::format("std::mem::transmute::<{}, {}>({})",
+                       ToString(ctx_.getPointerType(pointee)), ToString(slot),
+                       str);
+  }
   auto target = GetUnsafeTypeAsString(slot->getPointeeType());
   if (slot->isReferenceType() && !isAddrOf()) {
     return std::format("*(&raw {} {}).cast::<{}>()",
@@ -2017,12 +2022,6 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   if (param_type->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     ConvertVarInit(param_type, expr);
-  } else if (FunctionPointerCastNeedsTransmute() &&
-             param_type->isFunctionPointerType() &&
-             expr->getType()->isFunctionPointerType() &&
-             !IsCastRedundantInRust(expr, param_type)) {
-    ConvertFunctionPointerTransmute(expr, param_type);
-    return;
   } else {
     ConvertVarInit(param_type, expr);
   }

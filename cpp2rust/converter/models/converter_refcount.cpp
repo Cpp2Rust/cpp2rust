@@ -410,6 +410,13 @@ std::string ConverterRefCount::ConvertFreshPointer(
 std::string ConverterRefCount::ConvertPointeeCast(std::string str,
                                                   clang::QualType,
                                                   clang::QualType slot) {
+  if (slot->isFunctionPointerType()) {
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return std::format(
+        "({}).cast::<{}>()", str,
+        ConvertFunctionPointerType(
+            slot->getPointeeType()->getAs<clang::FunctionProtoType>()));
+  }
   if (slot->isReferenceType() && !isAddrOf()) {
     return str;
   }
@@ -2342,38 +2349,9 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
       return std::format("({} as {})", ConvertFreshPointer(expr),
                          ToString(qual_type));
     }
-    if (qual_type->isFunctionPointerType()) {
-      return ConvertFnPtrValue(qual_type, expr);
-    }
     return ConvertFreshPointer(expr, qual_type);
   }
   return ConvertFreshRValue(expr, qual_type);
-}
-
-std::string ConverterRefCount::ConvertFnPtrValue(clang::QualType qual_type,
-                                                 clang::Expr *expr) {
-  auto base = ConvertFreshPointer(expr);
-
-  // `qual_type` (the expected fn pointer type) and `expr`'s own fn pointer
-  // type may differ in spelling only because the translation maps two
-  // typedefs of the same C type to distinct Rust types (e.g. size_t vs
-  // unsigned long) -- FnPtr::cast handles this (and any other cast)
-  // automatically, so just insert it whenever the two differ.
-  auto target_proto =
-      qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  if (!target_proto || !expr->getType()->isFunctionPointerType()) {
-    return base;
-  }
-  auto src_proto =
-      expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-  if (!src_proto) {
-    return base;
-  }
-  auto fn_type = ConvertFunctionPointerType(target_proto);
-  if (ConvertFunctionPointerType(src_proto) == fn_type) {
-    return base;
-  }
-  return std::format("{}.cast::<{}>()", base, fn_type);
 }
 
 void ConverterRefCount::ConvertFieldInit(const clang::FieldDecl *field,
