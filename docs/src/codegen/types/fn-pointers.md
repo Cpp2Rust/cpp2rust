@@ -70,5 +70,5 @@ is `(*f)(args)`; the null pointer is `FnPtr::null()` and the check is
 in a variable clones it, and equality compares the address of the wrapped
 function, so a pointer stays equal to itself after being cast.
 
-A capture-less lambda assigned to a function pointer becomes
-`FnPtr::new(|...| ...)` with the closure inline (see [Lambdas](./lambdas.md)).
+A lambda is also an `FnPtr`, so a capture-less lambda assigned to a function
+pointer is the lambda itself (see [Lambdas](./lambdas.md)).
