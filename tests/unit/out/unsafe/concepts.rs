@@ -12,7 +12,7 @@ const _: () = assert!(
     "sizeof(int) == 4"
 );
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Sized {}
 impl Sized {
     pub unsafe fn size(&mut self) -> i32 {

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(VaArg)]
+#[derive(VaArg, FnPtrArg)]
 pub struct Counted {
     pub copies: i32,
     pub moves: i32,
@@ -47,7 +47,7 @@ impl Default for Counted {
 }
 pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg)]
+#[derive(VaArg, FnPtrArg)]
 pub struct Dropped {}
 impl Dropped {
     pub unsafe fn new() -> Self {

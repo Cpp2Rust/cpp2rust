@@ -13,7 +13,7 @@ pub unsafe fn first_0() -> i32 {
     return ((p.x) + (p.y));
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_1 {
     pub x: i32,
     pub y: i32,
@@ -25,7 +25,7 @@ pub unsafe fn second_2() -> i32 {
     return (((q.a) + (q.b)) as i32);
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct anon_3 {
     pub a: i64,
     pub b: i64,

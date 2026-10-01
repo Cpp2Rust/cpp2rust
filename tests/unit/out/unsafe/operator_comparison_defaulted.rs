@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Eq {
     pub a: i32,
     pub b: i32,
@@ -25,7 +25,7 @@ impl std::cmp::PartialEq for Eq {
 }
 impl std::cmp::Eq for Eq {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cmp {
     pub a: i32,
     pub b: i32,
@@ -70,7 +70,7 @@ impl std::cmp::PartialEq for Cmp {
 }
 impl std::cmp::Eq for Cmp {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Both {
     pub a: i32,
 }
@@ -106,7 +106,7 @@ impl std::cmp::PartialEq for Both {
 }
 impl std::cmp::Eq for Both {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct OrdOnly {
     pub a: i32,
 }
@@ -139,7 +139,7 @@ impl std::cmp::PartialEq for OrdOnly {
 }
 impl std::cmp::Eq for OrdOnly {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
@@ -175,7 +175,7 @@ impl std::cmp::PartialEq for Inner {
 }
 impl std::cmp::Eq for Inner {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub i: Inner,
     pub y: i32,
@@ -224,7 +224,7 @@ impl std::cmp::PartialEq for Outer {
 }
 impl std::cmp::Eq for Outer {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Secondary {
     pub a: i32,
 }
@@ -278,7 +278,7 @@ impl std::cmp::PartialEq for Secondary {
 }
 impl std::cmp::Eq for Secondary {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct PtrMember {
     pub p: *mut i32,
 }

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct shape_a {
     pub code: u16,
     pub pad: [libc::c_char; 14],
@@ -21,7 +21,7 @@ impl Default for shape_a {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct shape_b {
     pub code: u16,
     pub lo: u16,
@@ -39,7 +39,7 @@ impl Default for shape_b {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg)]
 pub union anon_0 {
     pub a: shape_a,
     pub b: shape_b,
@@ -51,7 +51,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Container {
     pub view: anon_0,
 }

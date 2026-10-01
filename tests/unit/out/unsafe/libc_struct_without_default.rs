@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Clone, VaArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct UserDefined {
     pub a: Vec<i32>,
     pub v: Vec<i32>,
@@ -21,7 +21,7 @@ impl Default for UserDefined {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct FieldIsLibcType {
     pub addr: libc::sockaddr,
 }

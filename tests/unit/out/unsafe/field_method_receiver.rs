@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Counter {
     pub n: i32,
 }
@@ -27,7 +27,7 @@ impl Counter {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct S {
     pub tag: i32,
     pub c: Counter,

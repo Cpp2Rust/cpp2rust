@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut copies_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Counted {
     pub v: i32,
 }
@@ -29,7 +29,7 @@ impl Clone for Counted {
     }
 }
 #[repr(C)]
-#[derive(VaArg)]
+#[derive(VaArg, FnPtrArg)]
 pub struct NonConst {
     pub mark: i32,
 }
@@ -62,7 +62,7 @@ impl Default for NonConst {
     }
 }
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Ignored {
     pub v: i32,
 }
@@ -83,7 +83,7 @@ impl Clone for Ignored {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg)]
+#[derive(Clone, VaArg, FnPtrArg)]
 pub struct Holder {
     pub c: Counted,
     pub arr: [Counted; 2],

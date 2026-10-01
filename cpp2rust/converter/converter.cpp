@@ -4098,7 +4098,7 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
 std::vector<const char *>
 Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
-    return {"Copy", "Clone"};
+    return {"Copy", "Clone", "FnPtrArg"};
   }
 
   std::vector<const char *> struct_attrs;
@@ -4113,6 +4113,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordImplementsClone(decl)) {
     struct_attrs.emplace_back("VaArg");
+    struct_attrs.emplace_back("FnPtrArg");
   }
 
   if (RecordDerivesDefault(decl)) {

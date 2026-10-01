@@ -33,6 +33,15 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((({ (*three.borrow_mut())(1, 2, 3,) }) == 123));
+    let k: Value<i32> = Rc::new(RefCell::new(3));
+    let m: Value<i32> = Rc::new(RefCell::new(4));
+    let constants: Value<_> = Rc::new(RefCell::new(
+        (|x: i32| {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return (((*x.borrow()) + (*k.borrow())) + (*m.borrow()));
+        }),
+    ));
+    assert!((({ (*constants.borrow_mut())(1,) }) == 8));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

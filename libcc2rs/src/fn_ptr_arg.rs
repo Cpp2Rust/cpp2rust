@@ -130,6 +130,49 @@ impl FnPtrArg for AnyPtr {
     }
 }
 
+impl<T: ?Sized + 'static> FnPtrArg for *mut T {
+    #[inline]
+    fn to_repr(&self) -> ArgRepr<'_> {
+        ArgRepr::Record(self)
+    }
+    fn from_repr(r: &ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
+
+impl<T: ?Sized + 'static> FnPtrArg for *const T {
+    #[inline]
+    fn to_repr(&self) -> ArgRepr<'_> {
+        ArgRepr::Record(self)
+    }
+    fn from_repr(r: &ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
+
+macro_rules! impl_fn_ptr_arg_unsafe_fn {
+    () => {
+        impl_fn_ptr_arg_unsafe_fn!(@gen A B C D E F G H I J K L M N O P);
+    };
+    (@gen $($a:ident)*) => {
+        impl<R: 'static $(, $a: 'static)*> FnPtrArg for Option<unsafe fn($($a,)*) -> R> {
+            #[inline]
+            fn to_repr(&self) -> ArgRepr<'_> {
+                ArgRepr::Record(self)
+            }
+            fn from_repr(r: &ArgRepr) -> Self {
+                record_from_repr(r)
+            }
+        }
+        impl_fn_ptr_arg_unsafe_fn!(@peel $($a)*);
+    };
+    (@peel) => {};
+    (@peel $head:ident $($tail:ident)*) => {
+        impl_fn_ptr_arg_unsafe_fn!(@gen $($tail)*);
+    };
+}
+impl_fn_ptr_arg_unsafe_fn!();
+
 pub fn record_from_repr<T: Any + Clone>(r: &ArgRepr) -> T {
     match r {
         ArgRepr::Record(v) => v

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct Handler {
     pub tag: i32,
     pub cb: Option<unsafe fn(i32) -> i32>,
@@ -27,7 +27,7 @@ pub unsafe fn negate_1(mut x: i32) -> i32 {
     return -x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {}
 impl S {
     pub unsafe fn pick_1(mut x: i32) -> i32 {

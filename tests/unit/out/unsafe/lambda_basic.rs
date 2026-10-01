@@ -34,6 +34,15 @@ unsafe fn main_0() -> i32 {
             })(1, 2, 3)
         }) == (123))
     );
+    let k: i32 = 3;
+    let m: i32 = 4;
+    assert!(
+        ((unsafe {
+            (|x: i32| {
+                return (((x) + (k)) + (m));
+            })(1)
+        }) == (8))
+    );
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
