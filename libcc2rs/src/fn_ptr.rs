@@ -60,6 +60,16 @@ impl<T: FnSig> Adapted for T {
     }
 }
 
+struct Closure<T: FnSig>(Box<dyn Fn(T::Args) -> T::Ret>);
+
+impl<T: FnSig> Adapted for Closure<T> {
+    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
+        let converted_args = T::Args::from_list(&args);
+        let result = (self.0)(converted_args);
+        sink(result.to_repr());
+    }
+}
+
 pub struct FnPtr<T: FnSig> {
     // Address of the function this pointer was created from. 0 for null,
     // which is never the address of a function.
@@ -71,7 +81,6 @@ pub struct FnPtr<T: FnSig> {
     // The function this pointer was created from, kept type-erased (but
     // still callable, through `Adapted`).
     original: Option<Rc<dyn Adapted>>,
-    lambda: Option<Rc<dyn Fn(T::Args) -> T::Ret>>,
 }
 
 impl<T: FnSig> FnPtr<T> {
@@ -81,7 +90,6 @@ impl<T: FnSig> FnPtr<T> {
             addr: 0,
             current: None,
             original: None,
-            lambda: None,
         }
     }
 
@@ -96,7 +104,6 @@ impl<T: FnSig> FnPtr<T> {
             addr: f.fn_addr(),
             current: Some(f),
             original: None,
-            lambda: None,
         }
     }
 
@@ -107,13 +114,14 @@ impl<T: FnSig> FnPtr<T> {
         if self.is_null() {
             panic!("ub: null fn pointer call");
         }
-        if let Some(lambda) = &self.lambda {
-            return lambda(args);
-        }
         if let Some(f) = self.current {
             return f.call_direct(args);
         }
         if let Some(original) = &self.original {
+            let closure: &dyn Any = &**original;
+            if let Some(closure) = closure.downcast_ref::<Closure<T>>() {
+                return (closure.0)(args);
+            }
             let mut result = None;
             original.call_adapted(args.to_list(), &mut |repr| {
                 result = Some(T::Ret::from_repr(&repr));
@@ -152,17 +160,10 @@ impl<T: FnSig> FnPtr<T> {
             self.boxed_original()
         };
 
-        let lambda: &dyn Any = &self.lambda;
-        let lambda = lambda
-            .downcast_ref::<Option<Rc<dyn Fn(U::Args) -> U::Ret>>>()
-            .cloned()
-            .flatten();
-
         FnPtr {
             addr: self.addr,
             current: current_as_u.or(original_as_u),
             original,
-            lambda,
         }
     }
 
@@ -195,14 +196,13 @@ macro_rules! impl_fn_ptr_call {
                 lambda: Lambda,
                 call: fn(&Lambda $(, $a)*) -> R,
             ) -> Self {
-                let lambda = Rc::new(lambda);
+                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
+                    Box::new(move |($($a,)*): ($($a,)*)| call(&lambda $(, $a)*)),
+                ));
                 FnPtr {
                     addr: call as usize,
                     current: None,
-                    original: None,
-                    lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
-                        call(&lambda $(, $a)*)
-                    })),
+                    original: Some(closure),
                 }
             }
 
@@ -211,14 +211,16 @@ macro_rules! impl_fn_ptr_call {
                 lambda: Lambda,
                 call: fn(&mut Lambda $(, $a)*) -> R,
             ) -> Self {
-                let lambda = Rc::new(UnsafeCell::new(lambda));
+                let lambda = UnsafeCell::new(lambda);
+                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
+                    Box::new(move |($($a,)*): ($($a,)*)| {
+                        call(unsafe { &mut *lambda.get() } $(, $a)*)
+                    }),
+                ));
                 FnPtr {
                     addr: call as usize,
                     current: None,
-                    original: None,
-                    lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
-                        call(unsafe { &mut *lambda.get() } $(, $a)*)
-                    })),
+                    original: Some(closure),
                 }
             }
         }
@@ -237,7 +239,6 @@ impl<T: FnSig> Clone for FnPtr<T> {
             addr: self.addr,
             current: self.current,
             original: self.original.clone(),
-            lambda: self.lambda.clone(),
         }
     }
 }
