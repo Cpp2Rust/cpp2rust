@@ -1,3 +1,4 @@
+// ADDITIONAL_COMPILE_FLAGS: -std=c++23
 // translation-fail
 #include <assert.h>
 
@@ -14,6 +15,10 @@ int main() {
   auto copy = next;
   assert(copy() == 3);
   assert(next() == 4);
+
+  decltype(next) fresh;
+  assert(fresh() == 5);
+  assert(next() == 6);
 
   auto per_type = [](auto x) {
     static int calls = 0;
