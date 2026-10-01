@@ -1450,11 +1450,12 @@ bool HasReceiver(clang::Expr *expr) {
 
 std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
                                                              unsigned arg_idx) {
-  auto *call = clang::dyn_cast<clang::CallExpr>(expr);
-  if (!call) {
-    return std::nullopt;
+  const clang::FunctionDecl *fn = nullptr;
+  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
+    fn = call->getDirectCallee();
+  } else if (auto *ctor = clang::dyn_cast<clang::CXXConstructExpr>(expr)) {
+    fn = ctor->getConstructor();
   }
-  auto *fn = call->getDirectCallee();
   if (!fn) {
     return std::nullopt;
   }
@@ -1462,7 +1463,7 @@ std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,
   if (param_idx >= fn->getNumParams()) {
     return std::nullopt;
   }
-  return fn->getParamDecl(param_idx)->getType();
+  return fn->getParamDecl(param_idx)->getType().getNonReferenceType();
 }
 
 std::optional<IteratorCategory>
