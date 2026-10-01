@@ -411,7 +411,9 @@ ConverterRefCount::MaterializeTemp(const std::string &binding_name,
                                    clang::QualType param_type,
                                    clang::Expr *expr) {
   auto pointee = param_type.getNonReferenceType();
-  auto value = ConvertRValue(expr, pointee);
+  auto value = pointee->isFunctionPointerType()
+                   ? ConvertFnPtrValue(pointee, expr)
+                   : ConvertRValue(expr, pointee);
   auto type_str = ToStringBase(pointee);
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
 
@@ -2357,11 +2359,15 @@ std::string ConverterRefCount::ConvertFnPtrValue(clang::QualType qual_type,
   // automatically, so just insert it whenever the two differ.
   auto target_proto =
       qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  if (!target_proto || !expr->getType()->isFunctionPointerType()) {
+  auto src_type = expr->IgnoreImplicit()->getType().getNonReferenceType();
+  if (src_type->isFunctionType()) {
+    src_type = ctx_.getPointerType(src_type);
+  }
+  if (!target_proto || !src_type->isFunctionPointerType()) {
     return base;
   }
   auto src_proto =
-      expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
+      src_type->getPointeeType()->getAs<clang::FunctionProtoType>();
   if (!src_proto) {
     return base;
   }

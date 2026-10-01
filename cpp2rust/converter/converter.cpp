@@ -236,6 +236,17 @@ Converter::MaterializeTemp(const std::string &binding_name,
   auto pointee = param_type.getNonReferenceType();
   auto value = ConvertRValue(expr, pointee);
   auto type_str = ToStringBase(pointee);
+  auto src_type = expr->IgnoreImplicit()->getType().getNonReferenceType();
+  if (src_type->isFunctionType()) {
+    src_type = ctx_.getPointerType(src_type);
+  }
+  if (pointee->isFunctionPointerType() && src_type->isFunctionPointerType()) {
+    auto src_str = ToStringBase(src_type);
+    if (src_str != type_str) {
+      value = std::format("std::mem::transmute::<{}, {}>({})", src_str,
+                          type_str, value);
+    }
+  }
   const auto *decl = in_const_initializer_ ? keyword::kStatic : keyword::kLet;
 
   auto binding =
