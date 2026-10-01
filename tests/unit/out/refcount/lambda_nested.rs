@@ -26,12 +26,12 @@ fn main_0() -> i32 {
             let y: Value<i32> = Rc::new(RefCell::new(y));
             let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
                 {
-                    let x: Ptr<i32> = (self.x).clone();
+                    let x: Ptr<i32> = (x).clone();
                     let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
                 },
                 |z: i32| -> i32 {
                     let z: Value<i32> = Rc::new(RefCell::new(z));
-                    return (((self.x.read()) + (*self.y.borrow())) + (*z.borrow()));
+                    return (((x.read()) + (*y.borrow())) + (*z.borrow()));
                 }
             )));
             return ({ (*inner.borrow()).call(1) });
@@ -57,14 +57,12 @@ impl SImpl for Ptr<S> {
                 let y: Value<i32> = Rc::new(RefCell::new(y));
                 let inner: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
                     {
-                        let this_: Value<Ptr<S>> =
-                            Rc::new(RefCell::new((*self.this_.borrow()).clone()));
+                        let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*this_.borrow()).clone()));
                         let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
                     },
                     |z: i32| -> i32 {
                         let z: Value<i32> = Rc::new(RefCell::new(z));
-                        return (((*self.this_.borrow()).clone().with(|__s| __s.v)
-                            + (*self.y.borrow()))
+                        return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow()))
                             + (*z.borrow()));
                     }
                 )));

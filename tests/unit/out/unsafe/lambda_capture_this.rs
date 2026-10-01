@@ -25,7 +25,7 @@ impl S {
                 let this_: *mut S = (self as *mut S);
             },
             |k: i32| {
-                (*self.this_).n += k;
+                (*this_).n += k;
             }
         );
         (unsafe { inc.call(by) });
@@ -37,7 +37,7 @@ impl S {
                 let this_: *mut S = (self as *mut S);
             },
             |k: i32| {
-                (unsafe { S::add(&mut (*self.this_), k) });
+                (unsafe { S::add(&mut (*this_), k) });
             }
         );
         (unsafe { inc.call(by) });
@@ -48,7 +48,7 @@ impl S {
                 let this_: *const S = (self as *const S);
             },
             || -> i32 {
-                return (unsafe { S::scaled(&(*self.this_)) });
+                return (unsafe { S::scaled(&(*this_)) });
             }
         );
         return (unsafe { get.call() });

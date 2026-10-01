@@ -23,7 +23,7 @@ unsafe fn main_0() -> i32 {
             let c: i32 = c;
         },
         |x: i32| -> i32 {
-            return ((((self.a) + (self.b)) + (self.c)) + (x));
+            return ((((a) + (b)) + (c)) + (x));
         }
     );
     assert!(((unsafe { by_value.call(10,) }) == (16)));
@@ -36,7 +36,7 @@ unsafe fn main_0() -> i32 {
             let c: *mut i32 = &mut c;
         },
         |x: i32| -> i32 {
-            return ((((*self.a) + (*self.b)) + (*self.c)) + (x));
+            return ((((*a) + (*b)) + (*c)) + (x));
         }
     );
     assert!(((unsafe { by_ref.call(10,) }) == (115)));
@@ -49,8 +49,8 @@ unsafe fn main_0() -> i32 {
             let b: i32 = b;
         },
         |x: i32| -> i32 {
-            (*self.c) += x;
-            return (((self.a) + (self.b)) + (*self.c));
+            (*c) += x;
+            return (((a) + (b)) + (*c));
         }
     );
     assert!(((unsafe { mixed.call(1,) }) == (((100) + (200)) + (4))));

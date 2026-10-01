@@ -43,7 +43,7 @@ fn main_0() -> i32 {
             let h: Value<Owner> = Rc::new(RefCell::new(Owner::move_from({ o.as_pointer() })));
         },
         || -> i32 {
-            return ({ (*self.h.borrow()).p.clone() }.read());
+            return ({ (*h.borrow()).p.clone() }.read());
         }
     )));
     assert!(({ (*o.borrow()).p.clone() }).is_null());
@@ -58,10 +58,10 @@ fn main_0() -> i32 {
         },
         || {
             {
-                let _ptr = self.total.clone();
-                _ptr.write(_ptr.read() + { ({ (*self.h.borrow()).p.clone() }.read()) })
+                let _ptr = total.clone();
+                _ptr.write(_ptr.read() + { ({ (*h.borrow()).p.clone() }.read()) })
             };
-            { (*self.h.borrow()).p.clone() }.write(0);
+            { (*h.borrow()).p.clone() }.write(0);
         }
     )));
     ({ (*consume.borrow()).call() });
@@ -90,7 +90,7 @@ impl OwnerImpl for Ptr<Owner> {
                     Rc::new(RefCell::new(Owner::move_from({ (*self).clone() })));
             },
             || -> i32 {
-                return ({ (*self.self_.borrow()).p.clone() }.read());
+                return ({ (*self_.borrow()).p.clone() }.read());
             }
         );
     }

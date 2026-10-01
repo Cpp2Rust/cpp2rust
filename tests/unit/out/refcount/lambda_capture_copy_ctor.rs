@@ -99,7 +99,7 @@ fn main_0() -> i32 {
             let c: Value<Counted> = Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() })));
         },
         || -> i32 {
-            return (({ (*self.c.borrow()).copies } * 10) + { (*self.c.borrow()).moves });
+            return (({ (*c.borrow()).copies } * 10) + { (*c.borrow()).moves });
         }
     )));
     assert!((({ (*f.borrow()).call() }) == 10));
@@ -116,7 +116,7 @@ fn main_0() -> i32 {
                         Rc::new(RefCell::new(Counted::copy_from({ c.as_pointer() })));
                 },
                 || -> Counted {
-                    return Counted::copy_from({ self.c.as_pointer() });
+                    return Counted::copy_from({ c.as_pointer() });
                 }
             )
             .call()
@@ -136,8 +136,8 @@ fn main_0() -> i32 {
             )));
         },
         || -> i32 {
-            return ({ (*self.arr.borrow())[(0) as usize].copies } + {
-                (*self.arr.borrow())[(1) as usize].copies
+            return ({ (*arr.borrow())[(0) as usize].copies } + {
+                (*arr.borrow())[(1) as usize].copies
             });
         }
     )));

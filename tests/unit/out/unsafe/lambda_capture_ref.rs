@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
             let base: *mut i32 = &mut base;
         },
         |x: i32| -> i32 {
-            return ((x) + (*self.base));
+            return ((x) + (*base));
         }
     );
     assert!(((unsafe { add_base.call(5,) }) == (15)));
@@ -37,7 +37,7 @@ unsafe fn main_0() -> i32 {
             let s: *mut S = &mut s;
         },
         || -> i32 {
-            return (((*self.s).x) + ((*self.s).y));
+            return (((*s).x) + ((*s).y));
         }
     );
     assert!(((unsafe { sum.call() }) == (3)));
@@ -49,7 +49,7 @@ unsafe fn main_0() -> i32 {
             let counter: *mut i32 = &mut counter;
         },
         || {
-            (*self.counter).postfix_inc();
+            (*counter).postfix_inc();
         }
     );
     (unsafe { bump.call() });
@@ -61,9 +61,9 @@ unsafe fn main_0() -> i32 {
             let arr: *mut [u16; 4] = &mut arr;
         },
         |i: usize, j: usize| {
-            let mut t: u16 = (*self.arr)[(j)];
-            (*self.arr)[(j)] = (*self.arr)[(i)];
-            (*self.arr)[(i)] = t;
+            let mut t: u16 = (*arr)[(j)];
+            (*arr)[(j)] = (*arr)[(i)];
+            (*arr)[(i)] = t;
         }
     );
     (unsafe { swap.call(0_usize, 3_usize) });
@@ -75,7 +75,7 @@ unsafe fn main_0() -> i32 {
             let t: *mut i32 = &mut total;
         },
         |x: i32| {
-            (*self.t) += x;
+            (*t) += x;
         }
     );
     (unsafe { add.call(2) });
@@ -86,7 +86,7 @@ unsafe fn main_0() -> i32 {
             let y: *mut i32 = &mut s.y;
         },
         |v: i32| {
-            (*self.y) = v;
+            (*y) = v;
         }
     );
     (unsafe { set_y.call(9) });

@@ -19,7 +19,7 @@ unsafe fn main_0() -> i32 {
             let start: i32 = start;
         },
         || -> i32 {
-            return self.start.postfix_inc();
+            return start.postfix_inc();
         }
     );
     assert!(((unsafe { next.call() }) == (5)));
@@ -32,8 +32,8 @@ unsafe fn main_0() -> i32 {
             let total: i32 = total;
         },
         |x: i32| -> i32 {
-            self.total += x;
-            return self.total;
+            total += x;
+            return total;
         }
     );
     assert!(((unsafe { accumulate.call(1,) }) == (1)));

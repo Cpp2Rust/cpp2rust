@@ -21,8 +21,8 @@ impl S {
                 let this_: S = (*(self as *mut S));
             },
             || -> i32 {
-                (*(&raw mut self.this_)).n += 10;
-                return (*(&raw mut self.this_)).n;
+                (*(&raw mut this_)).n += 10;
+                return (*(&raw mut this_)).n;
             }
         );
         let mut r: i32 = (unsafe { f.call() });
@@ -34,7 +34,7 @@ impl S {
                 let this_: S = (*(self as *mut S));
             },
             || -> i32 {
-                return (unsafe { S::twice(&(*(&raw mut self.this_))) });
+                return (unsafe { S::twice(&(*(&raw mut this_))) });
             }
         );
         self.n = 99;
@@ -47,7 +47,7 @@ impl S {
                 let k: i32 = k;
             },
             || -> i32 {
-                return (((*(&raw mut self.this_)).n) + (self.k));
+                return (((*(&raw mut this_)).n) + (k));
             }
         );
         self.n = 0;

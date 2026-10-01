@@ -25,7 +25,7 @@ unsafe fn main_0() -> i32 {
             let factor: i32 = factor;
         },
         |x: i32| -> i32 {
-            return ((x) * (self.factor));
+            return ((x) * (factor));
         }
     );
     assert!(((unsafe { scale.call(4,) }) == (12)));
@@ -38,7 +38,7 @@ unsafe fn main_0() -> i32 {
             let p: *mut i32 = p;
         },
         || -> i32 {
-            return (*self.p);
+            return (*p);
         }
     );
     slot = 8;
@@ -49,7 +49,7 @@ unsafe fn main_0() -> i32 {
             let s: S = s;
         },
         || -> i32 {
-            return ((self.s.x) + (self.s.y));
+            return ((s.x) + (s.y));
         }
     );
     s.x = 50;
@@ -60,7 +60,7 @@ unsafe fn main_0() -> i32 {
             let y: i32 = ((base) + (1));
         },
         |x: i32| -> i32 {
-            return ((x) + (self.y));
+            return ((x) + (y));
         }
     );
     assert!(((unsafe { shifted.call(5,) }) == (16)));

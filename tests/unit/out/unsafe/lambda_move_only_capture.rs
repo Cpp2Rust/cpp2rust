@@ -32,7 +32,7 @@ impl Owner {
                 let self_: Owner = Owner::move_from({ &mut (*(self as *mut Owner)) });
             },
             || -> i32 {
-                return (*self.self_.p);
+                return (*self_.p);
             }
         );
     }
@@ -51,7 +51,7 @@ unsafe fn main_0() -> i32 {
             let h: Owner = Owner::move_from({ &mut o });
         },
         || -> i32 {
-            return (*self.h.p);
+            return (*h.p);
         }
     );
     assert!((o.p).is_null());
@@ -65,8 +65,8 @@ unsafe fn main_0() -> i32 {
             let total: *mut i32 = &mut total;
         },
         || {
-            (*self.total) += (*self.h.p);
-            (*self.h.p) = 0;
+            (*total) += (*h.p);
+            (*h.p) = 0;
         }
     );
     (unsafe { consume.call() });

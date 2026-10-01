@@ -20,11 +20,11 @@ impl S {
             |y: i32| -> i32 {
                 let mut inner: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
                     {
-                        let this_: *mut S = self.this_;
+                        let this_: *mut S = this_;
                         let y: i32 = y;
                     },
                     |z: i32| -> i32 {
-                        return ((((*self.this_).v) + (self.y)) + (z));
+                        return ((((*this_).v) + (y)) + (z));
                     }
                 );
                 return (unsafe { inner.call(1) });
@@ -48,11 +48,11 @@ unsafe fn main_0() -> i32 {
         |y: i32| -> i32 {
             let mut inner: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
                 {
-                    let x: *mut i32 = &mut (*self.x);
+                    let x: *mut i32 = &mut (*x);
                     let y: i32 = y;
                 },
                 |z: i32| -> i32 {
-                    return (((*self.x) + (self.y)) + (z));
+                    return (((*x) + (y)) + (z));
                 }
             );
             return (unsafe { inner.call(1) });

@@ -15,5 +15,12 @@ int main() {
   auto constants = [](int x) { return x + k + m; };
   assert(constants(1) == 8);
 
+  const int n = k + m;
+  auto derived = [](int x) { return x + n; };
+  assert(derived(1) == 8);
+
+  auto implicit = [=](int x) { return x + k; };
+  assert(implicit(1) == 4);
+
   return 0;
 }

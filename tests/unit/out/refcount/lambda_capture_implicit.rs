@@ -22,8 +22,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((((*self.a.borrow()) + (*self.b.borrow())) + (*self.c.borrow()))
-                + (*x.borrow()));
+            return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + (*x.borrow()));
         }
     )));
     assert!((({ (*by_value.borrow()).call(10,) }) == 16));
@@ -37,7 +36,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((((self.a.read()) + (self.b.read())) + (self.c.read())) + (*x.borrow()));
+            return ((((a.read()) + (b.read())) + (c.read())) + (*x.borrow()));
         }
     )));
     assert!((({ (*by_ref.borrow()).call(10,) }) == 115));
@@ -52,10 +51,10 @@ fn main_0() -> i32 {
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
             {
-                let _ptr = self.c.clone();
+                let _ptr = c.clone();
                 _ptr.write(_ptr.read() + (*x.borrow()))
             };
-            return (((*self.a.borrow()) + (*self.b.borrow())) + (self.c.read()));
+            return (((*a.borrow()) + (*b.borrow())) + (c.read()));
         }
     )));
     assert!((({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)));

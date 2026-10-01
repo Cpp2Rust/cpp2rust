@@ -17,7 +17,7 @@ fn main_0() -> i32 {
             let start: Value<i32> = Rc::new(RefCell::new((*start.borrow())));
         },
         || -> i32 {
-            return (*self.start.borrow_mut()).postfix_inc();
+            return (*start.borrow_mut()).postfix_inc();
         }
     )));
     assert!((({ (*next.borrow()).call() }) == 5));
@@ -31,8 +31,8 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            (*self.total.borrow_mut()) += (*x.borrow());
-            return (*self.total.borrow());
+            (*total.borrow_mut()) += (*x.borrow());
+            return (*total.borrow());
         }
     )));
     assert!((({ (*accumulate.borrow()).call(1,) }) == 1));

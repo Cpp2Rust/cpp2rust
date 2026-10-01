@@ -26,7 +26,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) * (*self.factor.borrow()));
+            return ((*x.borrow()) * (*factor.borrow()));
         }
     )));
     assert!((({ (*scale.borrow()).call(4,) }) == 12));
@@ -39,7 +39,7 @@ fn main_0() -> i32 {
             let p: Value<Ptr<i32>> = Rc::new(RefCell::new((*p.borrow()).clone()));
         },
         || -> i32 {
-            return ((*self.p.borrow()).read());
+            return ((*p.borrow()).read());
         }
     )));
     (*slot.borrow_mut()) = 8;
@@ -50,7 +50,7 @@ fn main_0() -> i32 {
             let s: Value<S> = Rc::new(RefCell::new((*s.borrow()).clone()));
         },
         || -> i32 {
-            return ({ (*self.s.borrow()).x } + { (*self.s.borrow()).y });
+            return ({ (*s.borrow()).x } + { (*s.borrow()).y });
         }
     )));
     (*s.borrow_mut()).x = 50;
@@ -62,7 +62,7 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + (*self.y.borrow()));
+            return ((*x.borrow()) + (*y.borrow()));
         }
     )));
     assert!((({ (*shifted.borrow()).call(5,) }) == 16));

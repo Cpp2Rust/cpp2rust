@@ -89,7 +89,7 @@ unsafe fn main_0() -> i32 {
             let c: Counted = Counted::copy_from({ &c });
         },
         || -> i32 {
-            return (((self.c.copies) * (10)) + (self.c.moves));
+            return (((c.copies) * (10)) + (c.moves));
         }
     );
     assert!(((unsafe { f.call() }) == (10)));
@@ -104,7 +104,7 @@ unsafe fn main_0() -> i32 {
                 let c: Counted = Counted::copy_from({ &c });
             },
             || -> Counted {
-                return Counted::copy_from({ &self.c });
+                return Counted::copy_from({ &c });
             }
         )
         .call()
@@ -118,7 +118,7 @@ unsafe fn main_0() -> i32 {
                 std::array::from_fn::<_, 2, _>(|__i: usize| Counted::copy_from({ &arr[(__i)] }));
         },
         || -> i32 {
-            return ((self.arr[(0) as usize].copies) + (self.arr[(1) as usize].copies));
+            return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
         }
     );
     assert!(((unsafe { a.call() }) == (2)));

@@ -54,7 +54,7 @@ impl SImpl for Ptr<S> {
             |k: i32| {
                 let k: Value<i32> = Rc::new(RefCell::new(k));
                 {
-                    let _ptr = field!((*self.this_.borrow()).clone(), n);
+                    let _ptr = field!((*this_.borrow()).clone(), n);
                     _ptr.write(_ptr.read() + (*k.borrow()))
                 };
             }
@@ -70,7 +70,7 @@ impl SImpl for Ptr<S> {
             },
             |k: i32| {
                 let k: Value<i32> = Rc::new(RefCell::new(k));
-                ({ SImpl::add(&(*self.this_.borrow()).clone(), (*k.borrow())) });
+                ({ SImpl::add(&(*this_.borrow()).clone(), (*k.borrow())) });
             }
         )));
         ({ (*inc.borrow()).call((*by.borrow())) });
@@ -81,7 +81,7 @@ impl SImpl for Ptr<S> {
                 let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
             },
             || -> i32 {
-                return ({ SImpl::scaled(&(*self.this_.borrow()).clone()) });
+                return ({ SImpl::scaled(&(*this_.borrow()).clone()) });
             }
         )));
         return ({ (*get.borrow()).call() }).clone();
