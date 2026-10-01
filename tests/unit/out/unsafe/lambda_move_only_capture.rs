@@ -1,0 +1,101 @@
+extern crate libc;
+use libc::*;
+extern crate libcc2rs;
+use libcc2rs::*;
+use std::collections::BTreeMap;
+use std::io::{Read, Seek, Write};
+use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
+use std::rc::Rc;
+#[repr(C)]
+#[derive(Default)]
+pub struct Owner {
+    pub p: *mut i32,
+}
+impl Owner {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self {
+            p: (Box::leak(Box::new(v)) as *mut i32),
+        };
+        this
+    }
+    pub unsafe fn move_from(o: *mut Owner) -> Self {
+        let mut this = Self { p: (*o).p };
+        (*o).p = std::ptr::null_mut();
+        this
+    }
+    pub unsafe fn destructor(&mut self) {
+        ::std::mem::drop(Box::from_raw(self.p));
+    }
+    pub unsafe fn take(&mut self) -> FnPtr<fn() -> i32> {
+        return {
+            #[repr(C)]
+            struct Captures {
+                self_: Owner,
+            }
+            FnPtr::<fn() -> i32>::with_captures_unsafe(
+                Captures {
+                    self_: Owner::move_from({ &mut (*(self as *mut Owner)) }),
+                },
+                (|this: &mut Captures| unsafe {
+                    return (*this.self_.p);
+                }),
+            )
+        };
+    }
+}
+pub fn main() {
+    unsafe {
+        __cpp2rust_init_globals();
+        std::process::exit(main_0() as i32);
+    }
+}
+unsafe fn main_0() -> i32 {
+    let mut o: Owner = Owner::new({ 5 });
+    let _dtor_o = ScopedDestructorUnsafe::new(&raw mut o, Owner::destructor);
+    let mut f: FnPtr<fn() -> i32> = {
+        #[repr(C)]
+        struct Captures {
+            h: Owner,
+        }
+        FnPtr::<fn() -> i32>::with_captures_unsafe(
+            Captures {
+                h: Owner::move_from({ &mut o }),
+            },
+            (|this: &mut Captures| unsafe {
+                return (*this.h.p);
+            }),
+        )
+    };
+    assert!((o.p).is_null());
+    assert!(((unsafe { f.call() }) == (5)));
+    let mut g: FnPtr<fn() -> i32> = f;
+    assert!(((unsafe { g.call() }) == (5)));
+    let mut total: i32 = 0;
+    let mut consume: FnPtr<fn()> = {
+        #[repr(C)]
+        struct Captures {
+            h: Owner,
+            total: *mut i32,
+        }
+        FnPtr::<fn()>::with_captures_unsafe(
+            Captures {
+                h: Owner::new({ 7 }),
+                total: &mut total,
+            },
+            (|this: &mut Captures| unsafe {
+                (*this.total) += (*this.h.p);
+                (*this.h.p) = 0;
+            }),
+        )
+    };
+    (unsafe { consume.call() });
+    (unsafe { consume.call() });
+    assert!(((total) == (7)));
+    let mut o2: Owner = Owner::new({ 9 });
+    let _dtor_o2 = ScopedDestructorUnsafe::new(&raw mut o2, Owner::destructor);
+    let mut t: FnPtr<fn() -> i32> = (unsafe { Owner::take(&mut o2) });
+    assert!((o2.p).is_null());
+    assert!(((unsafe { t.call() }) == (9)));
+    return 0;
+}
+pub unsafe fn __cpp2rust_init_globals() {}

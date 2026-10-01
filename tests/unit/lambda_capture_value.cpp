@@ -1,4 +1,3 @@
-// no-compile
 #include <assert.h>
 
 struct S {

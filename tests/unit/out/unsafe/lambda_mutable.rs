@@ -14,45 +14,38 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut start: i32 = 5;
-    assert!(
-        ((unsafe {
-            (|| {
-                return start.postfix_inc();
-            })()
-        }) == (5))
-    );
-    assert!(
-        ((unsafe {
-            (|| {
-                return start.postfix_inc();
-            })()
-        }) == (6))
-    );
-    assert!(
-        ((unsafe {
-            (|| {
-                return start.postfix_inc();
-            })()
-        }) == (7))
-    );
+    let mut next: FnPtr<fn() -> i32> = {
+        #[repr(C)]
+        struct Captures {
+            start: i32,
+        }
+        FnPtr::<fn() -> i32>::with_captures_unsafe(
+            Captures { start: start },
+            (|this: &mut Captures| unsafe {
+                return this.start.postfix_inc();
+            }),
+        )
+    };
+    assert!(((unsafe { next.call() }) == (5)));
+    assert!(((unsafe { next.call() }) == (6)));
+    assert!(((unsafe { next.call() }) == (7)));
     assert!(((start) == (5)));
     let mut total: i32 = 0;
-    assert!(
-        ((unsafe {
-            (|x: i32| {
-                total += x;
-                return total;
-            })(1)
-        }) == (1))
-    );
-    assert!(
-        ((unsafe {
-            (|x: i32| {
-                total += x;
-                return total;
-            })(2)
-        }) == (3))
-    );
+    let mut accumulate: FnPtr<fn(i32) -> i32> = {
+        #[repr(C)]
+        struct Captures {
+            total: i32,
+        }
+        FnPtr::<fn(i32) -> i32>::with_captures_unsafe(
+            Captures { total: total },
+            (|this: &mut Captures, x: i32| unsafe {
+                this.total += x;
+                return this.total;
+            }),
+        )
+    };
+    assert!(((unsafe { accumulate.call(1,) }) == (1)));
+    assert!(((unsafe { accumulate.call(2,) }) == (3)));
     assert!(((total) == (0)));
     return 0;
 }

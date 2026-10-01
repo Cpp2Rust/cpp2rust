@@ -13,36 +13,25 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
-    assert!(
-        ((unsafe {
-            (|| {
-                return 42;
-            })()
-        }) == (42))
-    );
-    assert!(
-        ((unsafe {
-            (|x: i32| {
-                return ((x) + (1));
-            })(1)
-        }) == (2))
-    );
-    assert!(
-        ((unsafe {
-            (|x: i32, y: i32, z: i32| {
-                return ((((x) * (100)) + ((y) * (10))) + (z));
-            })(1, 2, 3)
-        }) == (123))
-    );
+    let mut zero: FnPtr<fn() -> i32> = FnPtr::<fn() -> i32>::new(|| unsafe {
+        return 42;
+    });
+    assert!(((unsafe { zero.call() }) == (42)));
+    let mut one: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| unsafe {
+        return ((x) + (1));
+    });
+    assert!(((unsafe { one.call(1,) }) == (2)));
+    let mut three: FnPtr<fn(i32, i32, i32) -> i32> =
+        FnPtr::<fn(i32, i32, i32) -> i32>::new(|x: i32, y: i32, z: i32| unsafe {
+            return ((((x) * (100)) + ((y) * (10))) + (z));
+        });
+    assert!(((unsafe { three.call(1, 2, 3,) }) == (123)));
     let k: i32 = 3;
     let m: i32 = 4;
-    assert!(
-        ((unsafe {
-            (|x: i32| {
-                return (((x) + (k)) + (m));
-            })(1)
-        }) == (8))
-    );
+    let mut constants: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| unsafe {
+        return (((x) + (3)) + (4));
+    });
+    assert!(((unsafe { constants.call(1,) }) == (8)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

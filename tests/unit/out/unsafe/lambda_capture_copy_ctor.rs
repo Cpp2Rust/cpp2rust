@@ -84,55 +84,91 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: Counted = Counted::new();
-    assert!(
-        ((unsafe {
-            (|| {
-                return (((c.copies) * (10)) + (c.moves));
-            })()
-        }) == (10))
-    );
-    let mut g: _ = (|| {
-        return (((c.copies) * (10)) + (c.moves));
-    })
-    .clone();
-    assert!(((unsafe { g() }) == (20)));
-    assert!(
-        ((unsafe {
-            (|| {
-                return (((c.copies) * (10)) + (c.moves));
-            })()
-        }) == (10))
-    );
-    let mut h: _ = (|| {
-        return (((c.copies) * (10)) + (c.moves));
-    });
-    assert!(((unsafe { h() }) == (11)));
+    let mut f: FnPtr<fn() -> i32> = {
+        #[repr(C)]
+        struct Captures {
+            c: Counted,
+        }
+        FnPtr::<fn() -> i32>::with_captures_unsafe(
+            Captures {
+                c: Counted::copy_from({ &c }),
+            },
+            (|this: &mut Captures| unsafe {
+                return (((this.c.copies) * (10)) + (this.c.moves));
+            }),
+        )
+    };
+    assert!(((unsafe { f.call() }) == (10)));
+    let mut g: FnPtr<fn() -> i32> = f.clone();
+    assert!(((unsafe { g.call() }) == (20)));
+    assert!(((unsafe { f.call() }) == (10)));
+    let mut h: FnPtr<fn() -> i32> = f;
+    assert!(((unsafe { h.call() }) == (11)));
     let mut returned: i32 = (unsafe {
-        (|| {
-            return Counted::copy_from({ &c });
-        })()
+        {
+            #[repr(C)]
+            struct Captures {
+                c: Counted,
+            }
+            FnPtr::<fn() -> Counted>::with_captures_unsafe(
+                Captures {
+                    c: Counted::copy_from({ &c }),
+                },
+                (|this: &mut Captures| unsafe {
+                    return Counted::copy_from({ &this.c });
+                }),
+            )
+        }
+        .call()
     })
     .copies;
     assert!(((returned) == (2)));
     let mut arr: [Counted; 2] = std::array::from_fn::<_, 2, _>(|_| Counted::new());
-    assert!(
-        ((unsafe {
-            (|| {
-                return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-            })()
-        }) == (2))
-    );
-    let mut a2: _ = (|| {
-        return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-    })
-    .clone();
-    assert!(((unsafe { a2() }) == (4)));
+    let mut a: FnPtr<fn() -> i32> = {
+        #[repr(C)]
+        struct Captures {
+            arr: [Counted; 2],
+        }
+        FnPtr::<fn() -> i32>::with_captures_unsafe(
+            Captures {
+                arr: std::array::from_fn::<_, 2, _>(|__i: usize| {
+                    Counted::copy_from({ &arr[(__i)] })
+                }),
+            },
+            (|this: &mut Captures| unsafe {
+                return ((this.arr[(0) as usize].copies) + (this.arr[(1) as usize].copies));
+            }),
+        )
+    };
+    assert!(((unsafe { a.call() }) == (2)));
+    let mut a2: FnPtr<fn() -> i32> = a.clone();
+    assert!(((unsafe { a2.call() }) == (4)));
     {
-        let mut m2: _ = (|| {});
+        let mut m: FnPtr<fn()> = {
+            #[repr(C)]
+            struct Captures {
+                d: Dropped,
+            }
+            FnPtr::<fn()>::with_captures_unsafe(
+                Captures { d: Dropped::new() },
+                (|this: &mut Captures| unsafe {}),
+            )
+        };
+        let mut m2: FnPtr<fn()> = m;
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
-        let mut k2: _ = (|| {}).clone();
+        let mut k: FnPtr<fn()> = {
+            #[repr(C)]
+            struct Captures {
+                d: Dropped,
+            }
+            FnPtr::<fn()>::with_captures_unsafe(
+                Captures { d: Dropped::new() },
+                (|this: &mut Captures| unsafe {}),
+            )
+        };
+        let mut k2: FnPtr<fn()> = k.clone();
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     return 0;
