@@ -44,7 +44,7 @@ unsafe fn main_0() -> i32 {
     let mut ul_ref_fn: Option<unsafe fn(*mut u64) -> u64> = (Some(twice_in_place_3));
     let mut m: usize = 21_usize;
     let mut q: usize =
-        ((unsafe { (ul_ref_fn).unwrap()((&mut m as *mut usize).cast::<u64>()) }) as usize);
+        ((unsafe { (ul_ref_fn).unwrap()(&mut *(&raw mut m).cast::<u64>()) }) as usize);
     assert!(((q) == (42_usize)));
     assert!(((m) == (42_usize)));
     return 0;

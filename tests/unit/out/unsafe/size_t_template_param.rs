@@ -44,9 +44,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut a1: [usize; 3] = [1_usize, 2_usize, 3_usize];
-    assert!(
-        ((unsafe { array_ref_0((&mut a1 as *mut [usize; 3]).cast::<[u64; 3]>(),) }) == (3_u64))
-    );
+    assert!(((unsafe { array_ref_0(&mut *(&raw mut a1).cast::<[u64; 3]>(),) }) == (3_u64)));
     assert!(((a1[(0) as usize]) == (2_usize)));
     let mut a2: [usize; 2] = [4_usize, 5_usize];
     let mut pc: PtrCtor_unsigned_long_ = PtrCtor_unsigned_long_::new({
@@ -55,7 +53,7 @@ unsafe fn main_0() -> i32 {
     assert!(((pc.v) == (5_u64)));
     let mut v1: usize = 6_usize;
     let mut rc: RefCtor_unsigned_long_ =
-        RefCtor_unsigned_long_::new({ (&v1 as *const usize).cast::<u64>() });
+        RefCtor_unsigned_long_::new({ &*(&raw const v1).cast::<u64>() });
     assert!(((rc.v) == (7_u64)));
     return 0;
 }
