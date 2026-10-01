@@ -377,13 +377,17 @@ private:
   std::string ConvertFreshRValue(
       clang::Expr *expr,
       std::optional<clang::QualType> implicit_convert_to = {}) override;
-  std::string ConvertFreshPointer(clang::Expr *expr) override;
+  std::string ConvertFreshPointer(
+      clang::Expr *expr,
+      std::optional<clang::QualType> implicit_convert_to = {}) override;
 
   std::string ConvertPtrType(clang::QualType type);
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
 
-  void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
-                                         clang::Expr *expr) override;
+  void ConvertParamTyConstCast(clang::QualType, clang::Expr *) override {}
+
+  std::string ConvertPointeeCast(std::string str, clang::QualType pointee,
+                                 clang::QualType slot) override;
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 

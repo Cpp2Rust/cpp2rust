@@ -1560,6 +1560,59 @@ bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
          Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
 }
 
+static clang::QualType GetExprPointee(clang::ASTContext &ctx,
+                                      const clang::Expr *expr,
+                                      clang::QualType slot) {
+  auto type = expr->IgnoreImplicit()->getType().getNonReferenceType();
+  if (slot->isReferenceType()) {
+    return type;
+  }
+  if (auto *array = ctx.getAsArrayType(type)) {
+    return array->getElementType();
+  }
+  if (type->isPointerType()) {
+    return type->getPointeeType();
+  }
+  return {};
+}
+
+static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
+                                  clang::QualType to) {
+  while (true) {
+    if (from->isPointerType() && to->isPointerType()) {
+      from = from->getPointeeType();
+      to = to->getPointeeType();
+    } else if (auto *from_array = ctx.getAsArrayType(from),
+               *to_array = ctx.getAsArrayType(to);
+               from_array && to_array) {
+      from = from_array->getElementType();
+      to = to_array->getElementType();
+    } else {
+      break;
+    }
+  }
+  return from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+}
+
+clang::QualType GetMismatchedExprPointee(clang::ASTContext &ctx,
+                                         const clang::Expr *expr,
+                                         clang::QualType slot) {
+  if (!slot->isReferenceType() && !slot->isPointerType()) {
+    return {};
+  }
+  if (clang::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
+    return {};
+  }
+  auto pointee = GetExprPointee(ctx, expr, slot);
+  auto target = slot->getPointeeType();
+  if (pointee.isNull() || !PointeeMappingDiffers(ctx, pointee, target)) {
+    return {};
+  }
+  return target.isConstQualified() ? pointee.withConst() : pointee;
+}
+
 bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
                          clang::QualType param_type) {
   if (!param_type->isReferenceType()) {

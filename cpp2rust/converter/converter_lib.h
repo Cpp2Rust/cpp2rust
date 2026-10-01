@@ -276,6 +276,10 @@ bool IsVaListType(clang::QualType type);
 bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
                              clang::QualType to);
 
+clang::QualType GetMismatchedExprPointee(clang::ASTContext &ctx,
+                                         const clang::Expr *expr,
+                                         clang::QualType slot);
+
 bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
                          clang::QualType param_type);
 

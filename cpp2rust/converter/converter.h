@@ -309,14 +309,12 @@ public:
 
   void ConvertParamTy(clang::QualType param_type, clang::Expr *expr);
 
-  // Emits a pointer-type adjustment (const/mut fixup or reinterpret cast)
-  // after `expr` has been converted, for cases where the argument's Rust
-  // pointee type differs from the parameter's Rust pointee type even though
-  // Clang did not insert an implicit cast node for the call argument (e.g.
-  // when two C types are canonically identical, such as `size_t` and
-  // `unsigned long`, but map to different Rust types).
-  virtual void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
-                                                 clang::Expr *expr);
+  virtual void ConvertParamTyConstCast(clang::QualType param_type,
+                                       clang::Expr *expr);
+
+  virtual std::string ConvertPointeeCast(std::string str,
+                                         clang::QualType pointee,
+                                         clang::QualType slot);
 
   virtual bool FunctionPointerCastNeedsTransmute() const { return true; }
 
@@ -1068,12 +1066,17 @@ protected:
   virtual std::string
   ConvertFreshRValue(clang::Expr *expr,
                      std::optional<clang::QualType> implicit_convert_to = {});
-  virtual std::string ConvertFreshPointer(clang::Expr *expr);
+  virtual std::string
+  ConvertFreshPointer(clang::Expr *expr,
+                      std::optional<clang::QualType> implicit_convert_to = {});
   // target_ptr_type, when known (e.g. a translation rule's parameter type),
   // is the Rust pointer type the result will be used as.
   virtual std::string ConvertFreshObject(clang::Expr *expr,
                                          std::string_view target_ptr_type = {});
-  std::string ConvertPointer(clang::Expr *expr, int line = __builtin_LINE());
+  std::string
+  ConvertPointer(clang::Expr *expr,
+                 std::optional<clang::QualType> implicit_convert_to = {},
+                 int line = __builtin_LINE());
 
   /// Materialize a temporary for a prvalue bound to a reference parameter.
   /// Returns (binding_code, ref_expression).
