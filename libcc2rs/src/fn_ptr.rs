@@ -4,11 +4,11 @@
 #![allow(private_bounds)]
 
 use std::any::{Any, TypeId};
-use std::cell::{RefCell, UnsafeCell};
+use std::cell::UnsafeCell;
 use std::rc::Rc;
 
 use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs, record_from_repr};
-use crate::rc::{AsPointer, Ptr};
+use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
 
@@ -191,33 +191,33 @@ macro_rules! impl_fn_ptr_call {
             }
 
             #[allow(non_snake_case)]
-            pub fn with_captures<Captures: 'static>(
-                captures: Captures,
-                body: fn(Ptr<Captures> $(, $a)*) -> R,
+            pub fn from_lambda<Lambda: 'static>(
+                lambda: Lambda,
+                call: fn(&Lambda $(, $a)*) -> R,
             ) -> Self {
-                let captures = Rc::new(RefCell::new(captures));
+                let lambda = Rc::new(lambda);
                 FnPtr {
-                    addr: body as usize,
+                    addr: call as usize,
                     current: None,
                     original: None,
                     lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
-                        body(captures.as_pointer() $(, $a)*)
+                        call(&lambda $(, $a)*)
                     })),
                 }
             }
 
             #[allow(non_snake_case)]
-            pub fn with_captures_unsafe<Captures: 'static>(
-                captures: Captures,
-                body: fn(&mut Captures $(, $a)*) -> R,
+            pub fn from_lambda_unsafe<Lambda: 'static>(
+                lambda: Lambda,
+                call: fn(&mut Lambda $(, $a)*) -> R,
             ) -> Self {
-                let captures = Rc::new(UnsafeCell::new(captures));
+                let lambda = Rc::new(UnsafeCell::new(lambda));
                 FnPtr {
-                    addr: body as usize,
+                    addr: call as usize,
                     current: None,
                     original: None,
                     lambda: Some(Rc::new(move |($($a,)*): ($($a,)*)| {
-                        body(unsafe { &mut *captures.get() } $(, $a)*)
+                        call(unsafe { &mut *lambda.get() } $(, $a)*)
                     })),
                 }
             }
