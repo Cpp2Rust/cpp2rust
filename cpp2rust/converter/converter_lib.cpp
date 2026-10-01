@@ -1102,11 +1102,12 @@ const clang::FieldDecl *AsLambdaCaptureThis(const clang::FunctionDecl *fn) {
   if (!call) {
     return nullptr;
   }
-  llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> fields;
-  clang::FieldDecl *this_field = nullptr;
-  call->getParent()->getCaptureFields(fields, this_field);
-  assert(this_field && "this used in a lambda that does not capture it");
-  return this_field;
+  for (auto field : call->getParent()->fields()) {
+    if (AsLambdaCapture(field)->capturesThis()) {
+      return field;
+    }
+  }
+  return nullptr;
 }
 
 clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
