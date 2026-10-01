@@ -12,6 +12,9 @@ pub struct S {
     pub x: i32,
     pub y: i32,
 }
+pub unsafe fn read_0(v: *const i32) -> i32 {
+    return (*v);
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -64,6 +67,43 @@ unsafe fn main_0() -> i32 {
         }
     );
     assert!(((unsafe { shifted.call(5,) }) == (16)));
+    let k: i32 = 3;
+    let mut by_copy: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let k: i32 = k;
+        },
+        |x: i32| -> i32 {
+            return ((x) + (3));
+        }
+    );
+    assert!(((unsafe { by_copy.call(1,) }) == (4)));
+    let mut by_copy_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let k: i32 = k;
+        },
+        |x: i32| -> i32 {
+            return ((x) + (unsafe { read_0(&k) }));
+        }
+    );
+    assert!(((unsafe { by_copy_used.call(1,) }) == (4)));
+    let mut implicit_used: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let k: i32 = k;
+        },
+        |x: i32| -> i32 {
+            return ((x) + (unsafe { read_0(&k) }));
+        }
+    );
+    assert!(((unsafe { implicit_used.call(1,) }) == (4)));
+    let mut by_ref: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let k: *const i32 = &k;
+        },
+        |x: i32| -> i32 {
+            return ((x) + (3));
+        }
+    );
+    assert!(((unsafe { by_ref.call(1,) }) == (4)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -40,6 +40,19 @@ unsafe fn main_0() -> i32 {
         }
     });
     assert!(((unsafe { constants.call(1,) }) == (8)));
+    let n: i32 = ((k) + (m));
+    let mut derived: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+        unsafe {
+            return ((x) + ((3) + (4)));
+        }
+    });
+    assert!(((unsafe { derived.call(1,) }) == (8)));
+    let mut implicit: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+        unsafe {
+            return ((x) + (3));
+        }
+    });
+    assert!(((unsafe { implicit.call(1,) }) == (4)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

@@ -50,6 +50,25 @@ fn main_0() -> i32 {
         }),
     ));
     assert!((({ (*constants.borrow()).call(1,) }) == 8));
+    let n: Value<i32> = Rc::new(RefCell::new(((*k.borrow()) + (*m.borrow()))));
+    let derived: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                return ((*x.borrow()) + (3 + 4));
+            }
+        }),
+    ));
+    assert!((({ (*derived.borrow()).call(1,) }) == 8));
+    let implicit: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
+        FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
+            {
+                let x: Value<i32> = Rc::new(RefCell::new(x));
+                return ((*x.borrow()) + 3);
+            }
+        }),
+    ));
+    assert!((({ (*implicit.borrow()).call(1,) }) == 4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

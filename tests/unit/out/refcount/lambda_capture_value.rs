@@ -14,6 +14,9 @@ pub struct S {
     #[offset(4)]
     pub y: i32,
 }
+pub fn read_0(v: Ptr<i32>) -> i32 {
+    return (v.read());
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -66,6 +69,47 @@ fn main_0() -> i32 {
         }
     )));
     assert!((({ (*shifted.borrow()).call(5,) }) == 16));
+    let k: Value<i32> = Rc::new(RefCell::new(3));
+    let by_copy: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
+        },
+        |x: i32| -> i32 {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return ((*x.borrow()) + 3);
+        }
+    )));
+    assert!((({ (*by_copy.borrow()).call(1,) }) == 4));
+    let by_copy_used: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
+        },
+        |x: i32| -> i32 {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return ((*x.borrow()) + ({ read_0(k.as_pointer()) }));
+        }
+    )));
+    assert!((({ (*by_copy_used.borrow()).call(1,) }) == 4));
+    let implicit_used: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
+        },
+        |x: i32| -> i32 {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return ((*x.borrow()) + ({ read_0(k.as_pointer()) }));
+        }
+    )));
+    assert!((({ (*implicit_used.borrow()).call(1,) }) == 4));
+    let by_ref: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let k: Ptr<i32> = k.as_pointer();
+        },
+        |x: i32| -> i32 {
+            let x: Value<i32> = Rc::new(RefCell::new(x));
+            return ((*x.borrow()) + 3);
+        }
+    )));
+    assert!((({ (*by_ref.borrow()).call(1,) }) == 4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
