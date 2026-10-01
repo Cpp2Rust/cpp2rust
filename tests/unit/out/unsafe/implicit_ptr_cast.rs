@@ -17,7 +17,7 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: usize = 0_usize;
-    (unsafe { write_ulong_0(((&mut x as *mut usize) as *mut usize).cast::<u64>() as *mut u64) });
+    (unsafe { write_ulong_0(((&mut x as *mut usize) as *mut usize).cast::<u64>()) });
     assert!(((((x) == (42_usize)) as i32) != 0));
     return 0;
 }
