@@ -192,6 +192,26 @@ std::string GetConversionName(const clang::CXXConversionDecl *decl,
 bool IsImplicitAssignmentCall(const clang::CallExpr *expr);
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr);
 
+const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type);
+
+const clang::CXXMethodDecl *AsLambdaOperatorCall(const clang::FunctionDecl *fn);
+
+const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
+
+clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
+                                        clang::DeclRefExpr *expr);
+
+const clang::FieldDecl *AsLambdaCaptureField(const clang::FunctionDecl *fn,
+                                             const clang::Expr *expr);
+
+const clang::FieldDecl *AsLambdaCaptureThis(const clang::FunctionDecl *fn);
+
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::Expr *expr,
+                               const clang::ValueDecl *decl);
+
+bool HasStaticLocal(const clang::Stmt *stmt);
+
 bool IsSameTypeComparison(const clang::FunctionDecl *fn,
                           const clang::CXXRecordDecl *record);
 
