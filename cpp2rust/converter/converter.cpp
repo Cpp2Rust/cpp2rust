@@ -4032,8 +4032,8 @@ std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
   if (auto lambda = AsLambdaClass(qual_type);
       lambda && lambda->captures().empty()) {
     if (HasStaticLocal(lambda->getLambdaCallOperator()->getBody())) {
-      llvm::report_fatal_error(
-          "default-constructed lambda with a static local is not supported");
+      llvm::report_fatal_error("default-constructed lambda with a static local "
+                               "is not supported yet");
     }
     Buffer buf(*this);
     ConvertCapturelessLambda(lambda);
