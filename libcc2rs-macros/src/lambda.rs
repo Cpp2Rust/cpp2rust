@@ -2,7 +2,9 @@
 // Distributed under the MIT license that can be found in the LICENSE file.
 
 use proc_macro::TokenStream;
+use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 use quote::quote;
+use std::collections::HashSet;
 use syn::parse::{Parse, ParseStream};
 use syn::{Block, Error, ExprClosure, Pat, Result, Stmt, Token, parse_macro_input};
 
@@ -21,6 +23,98 @@ impl Parse for Lambda {
     }
 }
 
+fn is_punct(token: Option<&TokenTree>, ch: char) -> bool {
+    matches!(token, Some(TokenTree::Punct(punct)) if punct.as_char() == ch)
+}
+
+fn is_ident(token: Option<&TokenTree>, name: &str) -> bool {
+    matches!(token, Some(TokenTree::Ident(ident)) if ident == name)
+}
+
+fn is_lambda_macro(name: Option<&TokenTree>, bang: Option<&TokenTree>) -> bool {
+    is_punct(bang, '!') && (is_ident(name, "lambda") || is_ident(name, "lambda_unsafe"))
+}
+
+fn rewrite_nested_lambda(
+    tokens: proc_macro2::TokenStream,
+    names: &HashSet<String>,
+) -> Result<proc_macro2::TokenStream> {
+    let mut tokens = tokens.into_iter();
+    let mut out = Vec::new();
+    if let Some(TokenTree::Group(captures)) = tokens.next() {
+        let mut group = Group::new(
+            captures.delimiter(),
+            rewrite_captures(captures.stream(), names, true)?,
+        );
+        group.set_span(captures.span());
+        out.push(TokenTree::Group(group));
+    }
+    out.extend(tokens);
+    Ok(out.into_iter().collect())
+}
+
+fn rewrite_captures(
+    tokens: proc_macro2::TokenStream,
+    names: &HashSet<String>,
+    in_capture_block: bool,
+) -> Result<proc_macro2::TokenStream> {
+    let tokens: Vec<TokenTree> = tokens.into_iter().collect();
+    let mut out = Vec::new();
+    let mut in_params = false;
+    for (i, token) in tokens.iter().enumerate() {
+        let prev = i.checked_sub(1).map(|j| &tokens[j]);
+        let prev2 = i.checked_sub(2).map(|j| &tokens[j]);
+        let next = tokens.get(i + 1);
+        let next2 = tokens.get(i + 2);
+        match token {
+            TokenTree::Group(group) => {
+                let stream = if is_lambda_macro(prev2, prev) {
+                    rewrite_nested_lambda(group.stream(), names)?
+                } else {
+                    rewrite_captures(group.stream(), names, in_capture_block)?
+                };
+                let mut rewritten = Group::new(group.delimiter(), stream);
+                rewritten.set_span(group.span());
+                out.push(TokenTree::Group(rewritten));
+            }
+            TokenTree::Punct(punct) if punct.as_char() == '|' => {
+                if in_params {
+                    in_params = false;
+                } else if is_punct(next, '|')
+                    || (matches!(next, Some(TokenTree::Ident(_))) && is_punct(next2, ':'))
+                {
+                    in_params = true;
+                }
+                out.push(token.clone());
+            }
+            TokenTree::Ident(ident) if names.contains(&ident.to_string()) => {
+                let before_colon = is_punct(next, ':') && !is_punct(next2, ':');
+                let is_let =
+                    is_ident(prev, "let") || (is_ident(prev, "mut") && is_ident(prev2, "let"));
+                if !in_capture_block && (is_let || (in_params && before_colon)) {
+                    return Err(Error::new(
+                        ident.span(),
+                        format!("`{ident}` shadows a capture of the lambda"),
+                    ));
+                }
+                let is_member = is_punct(prev, '.') && !is_punct(prev2, '.');
+                let is_path = is_punct(prev, ':') && is_punct(prev2, ':');
+                let is_label = is_punct(prev, '\'');
+                let is_macro = is_punct(next, '!') && !is_punct(next2, '=');
+                if is_member || is_path || is_label || is_macro || before_colon {
+                    out.push(token.clone());
+                } else {
+                    out.push(TokenTree::Ident(Ident::new("self", ident.span())));
+                    out.push(TokenTree::Punct(Punct::new('.', Spacing::Alone)));
+                    out.push(token.clone());
+                }
+            }
+            _ => out.push(token.clone()),
+        }
+    }
+    Ok(out.into_iter().collect())
+}
+
 fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenStream> {
     let mut names = Vec::new();
     let mut types = Vec::new();
@@ -35,7 +129,10 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
                 "expected `let <name>: <type> = <init>;` for a capture",
             ));
         };
-        names.push(&pat.pat);
+        let Pat::Ident(name) = &*pat.pat else {
+            return Err(Error::new_spanned(pat, "expected a name for a capture"));
+        };
+        names.push(&name.ident);
         types.push(&pat.ty);
         inits.push(&init.expr);
     }
@@ -52,6 +149,8 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
 
     let output = &lambda.closure.output;
     let body = &lambda.closure.body;
+    let captured = names.iter().map(|name| name.to_string()).collect();
+    let body = rewrite_captures(quote! { #body }, &captured, false)?;
     let (receiver, body, constructor) = if is_unsafe {
         (
             quote! { &mut self },
@@ -59,7 +158,7 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
             quote! { from_lambda_unsafe },
         )
     } else {
-        (quote! { &self }, quote! { #body }, quote! { from_lambda })
+        (quote! { &self }, body, quote! { from_lambda })
     };
 
     Ok(quote! {{

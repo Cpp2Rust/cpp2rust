@@ -2972,11 +2972,6 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
 
 std::string Converter::ConvertDeclRef(clang::Expr *expr,
                                       clang::ValueDecl *decl) {
-  if (auto field = AsLambdaCaptureField(curr_function_, expr)) {
-    return std::format("{}.{}", keyword::kSelfValue,
-                       GetNamedDeclAsString(field));
-  }
-
   if (isAddrOf()) {
     clang::Expr *addrof_op = ToAddrOf(ctx_, expr);
     if (auto str = GetMappedAsString(addrof_op); !str.empty()) {
@@ -3316,8 +3311,8 @@ bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
   if (auto field = AsLambdaCaptureThis(curr_function_)) {
     auto name = GetNamedDeclAsString(field);
     StrCat(field->getType()->isPointerType()
-               ? std::format("{}.{}", keyword::kSelfValue, name)
-               : std::format("(&raw mut {}.{})", keyword::kSelfValue, name));
+               ? name
+               : std::format("(&raw mut {})", name));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }

@@ -201,9 +201,6 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr);
 
-const clang::FieldDecl *AsLambdaCaptureField(const clang::FunctionDecl *fn,
-                                             const clang::Expr *expr);
-
 const clang::FieldDecl *AsLambdaCaptureThis(const clang::FunctionDecl *fn);
 
 clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,

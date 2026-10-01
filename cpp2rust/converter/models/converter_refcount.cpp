@@ -3267,9 +3267,8 @@ bool ConverterRefCount::VisitCXXThisExpr(
   if (auto field = AsLambdaCaptureThis(curr_function_)) {
     auto name = GetNamedDeclAsString(field);
     StrCat(field->getType()->isPointerType()
-               ? std::format("(*{}.{}.borrow()).clone()", keyword::kSelfValue,
-                             name)
-               : std::format("{}.{}.as_pointer()", keyword::kSelfValue, name));
+               ? std::format("(*{}.borrow()).clone()", name)
+               : std::format("{}.as_pointer()", name));
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return false;
   }
