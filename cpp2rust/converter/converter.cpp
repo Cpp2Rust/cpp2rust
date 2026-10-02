@@ -1584,22 +1584,22 @@ bool Converter::Convert(clang::Expr *expr,
 }
 
 std::string Converter::ConvertPointeeCast(std::string str,
-                                          clang::QualType pointee,
-                                          clang::QualType slot) {
-  if (slot->isFunctionPointerType()) {
+                                          clang::QualType from,
+                                          clang::QualType to) {
+  if (to->isFunctionPointerType()) {
     return std::format("std::mem::transmute::<{}, {}>({})",
-                       ToString(ctx_.getPointerType(pointee)), ToString(slot),
+                       ToString(ctx_.getPointerType(from)), ToString(to),
                        str);
   }
-  auto target = GetUnsafeTypeAsString(slot->getPointeeType());
-  if (slot->isReferenceType() && !isAddrOf()) {
+  auto target = GetUnsafeTypeAsString(to->getPointeeType());
+  if (to->isReferenceType() && !isAddrOf()) {
     return std::format("*(&raw {} {}).cast::<{}>()",
-                       pointee.isConstQualified() ? "const" : "mut", str,
+                       from.isConstQualified() ? "const" : "mut", str,
                        target);
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return std::format("({} as {}).cast::<{}>()", str,
-                     GetUnsafeTypeAsString(ctx_.getPointerType(pointee)),
+                     GetUnsafeTypeAsString(ctx_.getPointerType(from)),
                      target);
 }
 

@@ -313,8 +313,8 @@ public:
                                        clang::Expr *expr);
 
   virtual std::string ConvertPointeeCast(std::string str,
-                                         clang::QualType pointee,
-                                         clang::QualType slot);
+                                         clang::QualType from,
+                                         clang::QualType to);
 
   void ConvertFunctionPointerTransmute(clang::Expr *expr, clang::QualType type);
 

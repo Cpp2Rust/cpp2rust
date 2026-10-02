@@ -409,19 +409,19 @@ std::string ConverterRefCount::ConvertFreshPointer(
 
 std::string ConverterRefCount::ConvertPointeeCast(std::string str,
                                                   clang::QualType,
-                                                  clang::QualType slot) {
-  if (slot->isFunctionPointerType()) {
+                                                  clang::QualType to) {
+  if (to->isFunctionPointerType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return std::format(
         "({}).cast::<{}>()", str,
         ConvertFunctionPointerType(
-            slot->getPointeeType()->getAs<clang::FunctionProtoType>()));
+            to->getPointeeType()->getAs<clang::FunctionProtoType>()));
   }
-  if (slot->isReferenceType() && !isAddrOf()) {
+  if (to->isReferenceType() && !isAddrOf()) {
     return str;
   }
   PushConversionKind push(*this, ConversionKind::Unboxed);
-  auto element = ctx_.getBaseElementType(slot->getPointeeType());
+  auto element = ctx_.getBaseElementType(to->getPointeeType());
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return std::format("({}).reinterpret_cast::<{}>()", str,
                      ToString(element.getUnqualifiedType()));
