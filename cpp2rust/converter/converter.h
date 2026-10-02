@@ -730,6 +730,8 @@ protected:
 
   virtual bool RecordDerivesDefault(const clang::RecordDecl *decl);
 
+  virtual bool TypeDerivesDefault(clang::QualType qual_type);
+
   bool RecordDerivesCopy(const clang::RecordDecl *decl) const;
 
   bool IsPassThroughRule(clang::Expr *expr) const;

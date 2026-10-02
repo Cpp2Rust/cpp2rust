@@ -7,36 +7,18 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct shape_a {
     pub code: u16,
     pub pad: [libc::c_char; 14],
 }
-impl Default for shape_a {
-    fn default() -> Self {
-        shape_a {
-            code: 0_u16,
-            pad: [(0 as libc::c_char); 14],
-        }
-    }
-}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct shape_b {
     pub code: u16,
     pub lo: u16,
     pub hi: u32,
     pub fill: [libc::c_char; 8],
-}
-impl Default for shape_b {
-    fn default() -> Self {
-        shape_b {
-            code: 0_u16,
-            lo: 0_u16,
-            hi: 0_u32,
-            fill: [(0 as libc::c_char); 8],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]

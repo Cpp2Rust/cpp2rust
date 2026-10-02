@@ -13,22 +13,12 @@ pub struct In {
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub in_: In,
     pub total: i32,
     pub n: i32,
     pub arr: [i32; 4],
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            in_: <In>::default(),
-            total: 0_i32,
-            n: 0_i32,
-            arr: [0_i32; 4],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]

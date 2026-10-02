@@ -46,7 +46,7 @@ impl Outer {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg)]
+#[derive(Clone, VaArg, Default)]
 pub struct ArrayMember {
     pub items: [S; 3],
 }
@@ -54,13 +54,6 @@ impl ArrayMember {
     pub unsafe fn destructor(&mut self) {
         for __e in self.items.iter_mut() {
             S::destructor(__e);
-        }
-    }
-}
-impl Default for ArrayMember {
-    fn default() -> Self {
-        ArrayMember {
-            items: std::array::from_fn::<_, 3, _>(|_| <S>::default()),
         }
     }
 }

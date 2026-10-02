@@ -7,20 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Vtable {
     pub create: Option<unsafe fn(i32) -> *mut ::libc::c_void>,
     pub get: Option<unsafe fn(*mut ::libc::c_void) -> i32>,
     pub destroy: Option<unsafe fn(*mut ::libc::c_void)>,
-}
-impl Default for Vtable {
-    fn default() -> Self {
-        Vtable {
-            create: None,
-            get: None,
-            destroy: None,
-        }
-    }
 }
 pub static mut storage_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0_i32 });
 pub unsafe fn int_create_1(mut val: i32) -> *mut ::libc::c_void {

@@ -7,18 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub n: i32,
     pub name: [libc::c_char; 1],
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            n: 0_i32,
-            name: [(0 as libc::c_char); 1],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
@@ -27,20 +19,11 @@ pub struct E {
     pub w: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct T {
     pub n: i32,
     pub cap: i32,
     pub a: [E; 1],
-}
-impl Default for T {
-    fn default() -> Self {
-        T {
-            n: 0_i32,
-            cap: 0_i32,
-            a: [<E>::default(); 1],
-        }
-    }
 }
 pub fn main() {
     unsafe {

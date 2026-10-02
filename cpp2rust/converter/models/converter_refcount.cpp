@@ -2311,6 +2311,11 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   return attrs;
 }
 
+bool ConverterRefCount::TypeDerivesDefault(clang::QualType qual_type) {
+  // Arrays are translated to Value<Box<[T]>>, whose Default is empty
+  return !qual_type->isArrayType() && Converter::TypeDerivesDefault(qual_type);
+}
+
 std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
                                                    clang::Expr *expr) {
   if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(

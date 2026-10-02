@@ -43,6 +43,54 @@ impl Default for Pointers {
         }
     }
 }
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(440)]
+pub struct SmallArrays {
+    #[offset(0)]
+    #[byte_size(128)]
+    pub a: Value<Box<[i32]>>,
+    #[offset(128)]
+    #[byte_size(8)]
+    pub f: FnPtr<fn(i32) -> i32>,
+    #[offset(136)]
+    #[byte_size(16)]
+    pub fs: Value<Box<[FnPtr<fn(i32) -> i32>]>>,
+    #[offset(152)]
+    #[byte_size(288)]
+    pub p: Value<Box<[Pointers]>>,
+}
+impl Default for SmallArrays {
+    fn default() -> Self {
+        SmallArrays {
+            a: Rc::new(RefCell::new((0..32).map(|_| 0_i32).collect::<Box<[i32]>>())),
+            f: FnPtr::<fn(i32) -> i32>::null(),
+            fs: Rc::new(RefCell::new(
+                (0..2)
+                    .map(|_| FnPtr::<fn(i32) -> i32>::null())
+                    .collect::<Box<[FnPtr<fn(i32) -> i32>]>>(),
+            )),
+            p: Rc::new(RefCell::new(
+                (0..2)
+                    .map(|_| <Pointers>::default())
+                    .collect::<Box<[Pointers]>>(),
+            )),
+        }
+    }
+}
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[byte_size(132)]
+pub struct BigArray {
+    #[offset(0)]
+    #[byte_size(132)]
+    pub a: Value<Box<[i32]>>,
+}
+impl Default for BigArray {
+    fn default() -> Self {
+        BigArray {
+            a: Rc::new(RefCell::new((0..33).map(|_| 0_i32).collect::<Box<[i32]>>())),
+        }
+    }
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -54,6 +102,18 @@ fn main_0() -> i32 {
             .collect::<Box<[Pointers]>>(),
     )));
     (*default_pointers.borrow()).delete();
+    let small: Value<Ptr<SmallArrays>> = Rc::new(RefCell::new(Ptr::alloc_array(
+        (0..2_usize)
+            .map(|_| <SmallArrays>::default())
+            .collect::<Box<[SmallArrays]>>(),
+    )));
+    (*small.borrow()).delete();
+    let big: Value<Ptr<BigArray>> = Rc::new(RefCell::new(Ptr::alloc_array(
+        (0..2_usize)
+            .map(|_| <BigArray>::default())
+            .collect::<Box<[BigArray]>>(),
+    )));
+    (*big.borrow()).delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

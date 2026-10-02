@@ -36,7 +36,7 @@ pub fn identity_hash_6(v: bool) -> usize {
     let v: Value<bool> = Rc::new(RefCell::new(v));
     return ((*v.borrow()) as usize);
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct HashHolder_unsigned_long__ptr__bool__ {
     #[offset(0)]
@@ -50,13 +50,6 @@ impl HashHolder_unsigned_long__ptr__bool__ {
         }));
         let this: Ptr<HashHolder_unsigned_long__ptr__bool__> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
-impl Default for HashHolder_unsigned_long__ptr__bool__ {
-    fn default() -> Self {
-        HashHolder_unsigned_long__ptr__bool__ {
-            h: FnPtr::<fn(bool) -> u64>::null(),
-        }
     }
 }
 pub fn main() {

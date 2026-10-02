@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct label {
     #[offset(0)]
@@ -17,15 +17,6 @@ pub struct label {
     pub probe: FnPtr<fn() -> i32>,
     #[offset(16)]
     pub mask: i32,
-}
-impl Default for label {
-    fn default() -> Self {
-        label {
-            name: Ptr::<u8>::null(),
-            probe: FnPtr::<fn() -> i32>::null(),
-            mask: 0_i32,
-        }
-    }
 }
 pub fn probe_two_0() -> i32 {
     return 1;

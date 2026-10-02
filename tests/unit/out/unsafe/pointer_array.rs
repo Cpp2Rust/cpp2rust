@@ -7,16 +7,9 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct StackArray {
     pub arr: [*mut i32; 3],
-}
-impl Default for StackArray {
-    fn default() -> Self {
-        StackArray {
-            arr: [std::ptr::null_mut(); 3],
-        }
-    }
 }
 pub unsafe fn IncrementAll_0(s: *mut StackArray) {
     let mut i: i32 = 0;
