@@ -7,20 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct label {
     pub name: *const libc::c_char,
     pub probe: Option<unsafe fn() -> i32>,
     pub mask: i32,
-}
-impl Default for label {
-    fn default() -> Self {
-        label {
-            name: std::ptr::null(),
-            probe: None,
-            mask: 0_i32,
-        }
-    }
 }
 pub unsafe fn probe_two_0() -> i32 {
     return 1;

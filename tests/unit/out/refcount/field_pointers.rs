@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Inner {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct Inner {
     #[offset(4)]
     #[byte_size(8)]
     pub name: Value<Box<[u8]>>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        Self {
-            a: self.a.clone(),
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        }
-    }
 }
 impl Default for Inner {
     fn default() -> Self {
@@ -39,7 +31,7 @@ pub struct Header {
     #[offset(4)]
     pub size: i16,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
@@ -59,18 +51,6 @@ pub struct Outer {
     #[offset(88)]
     #[byte_size(16)]
     pub buf: Value<Box<[i32]>>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            inner: self.inner.clone(),
-            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-            cursor: self.cursor.clone(),
-            buf: Rc::new(RefCell::new((*self.buf.borrow()).clone())),
-        }
-    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -123,8 +103,7 @@ fn main_0() -> i32 {
     (*pi.borrow()).write(4);
     assert!(
         ({
-            (*(array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>)
-                .offset((1) as isize)
+            (*elem!((array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>), 1)
                 .upgrade()
                 .deref())
             .a
@@ -143,8 +122,7 @@ fn main_0() -> i32 {
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
-        (*name.borrow())
-            .offset((*i.borrow()) as isize)
+        elem!((*name.borrow()), (*i.borrow()))
             .write({ (((('a' as u8) as i32) + (*i.borrow())) as u8) });
         (*i.borrow_mut()).prefix_inc();
     }
@@ -168,10 +146,7 @@ fn main_0() -> i32 {
         _ptr.write(_ptr.read() + 1)
     };
     assert!(
-        (((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>)
-            .offset((1) as isize)
-            .read())
-            == 6)
+        ((elem!((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>), 1).read()) == 6)
             && ({ { (*o.borrow()).cursor.clone() } } == {
                 ((array_field_ptr!(o.as_pointer(), buf) as Ptr<i32>).offset((2) as isize))
             })
@@ -188,10 +163,7 @@ fn main_0() -> i32 {
     });
     assert!(
         ((*{ (*o.borrow()).v.clone() }.borrow()).len() == 1_usize)
-            && ((({ (*o.borrow()).v.clone() }.as_pointer() as Ptr<i32>)
-                .offset(0_usize)
-                .read())
-                == 7)
+            && ((elem!(({ (*o.borrow()).v.as_pointer() } as Ptr<i32>), 0_usize).read()) == 7)
     );
     assert!((({ OuterImpl::sum(&o.as_pointer(),) }) == 7));
     let y: Value<i32> = Rc::new(RefCell::new(0));
@@ -257,9 +229,11 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn next(&self) -> i32 {
-        return ((array_field_ptr!((*self), buf) as Ptr<i32>)
-            .offset((field!((*self), x).with_mut(|__v| __v.postfix_inc())) as isize)
-            .read());
+        return (elem!(
+            (array_field_ptr!((*self), buf) as Ptr::<i32>),
+            field!((*self), x).with_mut(|__v| __v.postfix_inc())
+        )
+        .read());
     }
     fn sum(&self) -> i32 {
         return ((*self).with(|__s| __s.x) + (*self).with(|__s| __s.inner.a));

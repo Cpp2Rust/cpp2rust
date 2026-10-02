@@ -13,7 +13,7 @@ pub struct Inner {
     pub name: *const libc::c_char,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer {
     pub p1: *mut i32,
     pub p2: *const i32,
@@ -24,39 +24,14 @@ pub struct Outer {
     pub x: i32,
     pub fn_: Option<unsafe fn(i32) -> i32>,
 }
-impl Default for Outer {
-    fn default() -> Self {
-        Outer {
-            p1: std::ptr::null_mut(),
-            p2: std::ptr::null(),
-            arr: [std::ptr::null_mut(); 3],
-            cp: std::ptr::null(),
-            pp: std::ptr::null_mut(),
-            inner: <Inner>::default(),
-            x: 0_i32,
-            fn_: None,
-        }
-    }
-}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Foo {
     pub s1: *const libc::c_char,
     pub s2: *const libc::c_char,
     pub fn1: Option<unsafe fn(i32) -> i32>,
     pub fn2: Option<unsafe fn(i32) -> i32>,
     pub n: i32,
-}
-impl Default for Foo {
-    fn default() -> Self {
-        Foo {
-            s1: std::ptr::null(),
-            s2: std::ptr::null(),
-            fn1: None,
-            fn2: None,
-            n: 0_i32,
-        }
-    }
 }
 pub static mut static_fn_0: std::cell::LazyCell<Option<unsafe fn(i32) -> i32>> =
     std::cell::LazyCell::new(|| unsafe { None });

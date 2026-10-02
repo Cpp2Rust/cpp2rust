@@ -19,9 +19,7 @@ fn main_0() -> i32 {
         (0..10_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
     let out: Value<i32> = Rc::new(RefCell::new(
-        (({ foo_0(((*p1.borrow()).offset((1) as isize))) })
-            .offset((4) as isize)
-            .read()),
+        (elem!(({ foo_0(((*p1.borrow()).offset((1) as isize)),) }), 4).read()),
     ));
     (*p1.borrow()).delete();
     return 0;

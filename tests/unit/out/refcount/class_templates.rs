@@ -6,47 +6,26 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_int_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Value<Vec<i32>>,
 }
-impl Clone for MyContainer_int_ {
-    fn clone(&self) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        }
-    }
-}
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_char_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Value<Vec<u8>>,
 }
-impl Clone for MyContainer_char_ {
-    fn clone(&self) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        }
-    }
-}
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct MyContainer_float_ {
     #[offset(0)]
     #[byte_size(24)]
     vec_: Value<Vec<f32>>,
-}
-impl Clone for MyContainer_float_ {
-    fn clone(&self) -> Self {
-        Self {
-            vec_: Rc::new(RefCell::new((*self.vec_.borrow()).clone())),
-        }
-    }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -224,7 +203,7 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
         return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
     }
     fn back_4(&self) -> Ptr<u8> {
-        return ((*self).with(|__s| __s.vec_.clone()).as_pointer() as Ptr<u8>).to_last();
+        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<u8>).to_last();
     }
     fn pop_back(&self) {
         (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
@@ -255,7 +234,7 @@ impl MyContainer_float_Impl for Ptr<MyContainer_float_> {
         return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
     }
     fn back_4(&self) -> Ptr<f32> {
-        return ((*self).with(|__s| __s.vec_.clone()).as_pointer() as Ptr<f32>).to_last();
+        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<f32>).to_last();
     }
     fn pop_back(&self) {
         (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
@@ -286,7 +265,7 @@ impl MyContainer_int_Impl for Ptr<MyContainer_int_> {
         return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
     }
     fn back_4(&self) -> Ptr<i32> {
-        return ((*self).with(|__s| __s.vec_.clone()).as_pointer() as Ptr<i32>).to_last();
+        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<i32>).to_last();
     }
     fn pop_back(&self) {
         (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();

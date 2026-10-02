@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive()]
+#[derive(Default)]
 pub struct S {
     pub v: Vec<i32>,
     pub n: [i32; 2],
@@ -40,14 +40,6 @@ impl S {
             ((&mut self.n as *mut [i32; 2]) as *mut ::libc::c_void)
         };
         return &mut (*(self as *mut S));
-    }
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            v: Default::default(),
-            n: [0_i32; 2],
-        }
     }
 }
 pub unsafe fn sum_0(s: *const S) -> i32 {

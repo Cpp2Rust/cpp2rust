@@ -104,8 +104,7 @@ fn main_0() -> i32 {
     });
     assert!(
         ({
-            (*(vec_.as_pointer() as Ptr<MoveOnly>)
-                .offset(0_usize)
+            (*elem!((vec_.as_pointer() as Ptr<MoveOnly>), 0_usize)
                 .upgrade()
                 .deref())
             .v

@@ -161,6 +161,33 @@ unsafe fn main_0() -> i32 {
     a64 -= (c as i64);
     assert!(((a64) == (120_i64)));
     assert!(((((n).wrapping_rem(7_usize)) as i32) == (1)));
+    let mx: usize = 5_usize;
+    let mut mins: [usize; 4] = [
+        0_usize,
+        ({
+            let mut __tmp_0: u64 = 1_u64;
+            let mut __tmp_1: u64 = (mx as u64);
+            (*if *&mut __tmp_0 <= *&mut __tmp_1 {
+                (&mut __tmp_0) as *const _
+            } else {
+                (&mut __tmp_1) as *const _
+            })
+        } as usize),
+        ({
+            let mut __tmp_0: u64 = (mx as u64);
+            let mut __tmp_1: u64 = ((mx).wrapping_sub(3_usize) as u64);
+            (*if *&mut __tmp_0 <= *&mut __tmp_1 {
+                (&mut __tmp_0) as *const _
+            } else {
+                (&mut __tmp_1) as *const _
+            })
+        } as usize),
+        mx,
+    ];
+    assert!(((mins[(1) as usize]) == (1_usize)));
+    assert!(((mins[(2) as usize]) == (2_usize)));
+    let mut pr: (u64, i32) = ((sz as u64).into(), 1.into());
+    assert!(((pr.0) == (21_u64)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

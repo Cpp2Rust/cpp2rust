@@ -13,10 +13,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let val: Value<u32> = Rc::new(RefCell::new(0_u32));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u8>()));
-    (*bytes.borrow()).offset((0) as isize).write(239_u8);
-    (*bytes.borrow()).offset((1) as isize).write(190_u8);
-    (*bytes.borrow()).offset((2) as isize).write(173_u8);
-    (*bytes.borrow()).offset((3) as isize).write(222_u8);
+    elem!((*bytes.borrow()), 0).write(239_u8);
+    elem!((*bytes.borrow()), 1).write(190_u8);
+    elem!((*bytes.borrow()), 2).write(173_u8);
+    elem!((*bytes.borrow()), 3).write(222_u8);
     assert!(((*val.borrow()) == 3735928559_u32));
     return 0;
 }

@@ -18,30 +18,12 @@ fn main_0() -> i32 {
     assert!((((((*arr.borrow())[(6) as usize] as i32) == ('\0' as i32)) as i32) != 0));
     let split_pieces: Value<Ptr<u8>> =
         Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"abcdefghi")));
+    assert!((((((elem!((*split_pieces.borrow()), 0).read()) as i32) == ('a' as i32)) as i32) != 0));
+    assert!((((((elem!((*split_pieces.borrow()), 3).read()) as i32) == ('d' as i32)) as i32) != 0));
+    assert!((((((elem!((*split_pieces.borrow()), 6).read()) as i32) == ('g' as i32)) as i32) != 0));
+    assert!((((((elem!((*split_pieces.borrow()), 8).read()) as i32) == ('i' as i32)) as i32) != 0));
     assert!(
-        ((((((*split_pieces.borrow()).offset((0) as isize).read()) as i32) == ('a' as i32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((*split_pieces.borrow()).offset((3) as isize).read()) as i32) == ('d' as i32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((*split_pieces.borrow()).offset((6) as isize).read()) as i32) == ('g' as i32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((*split_pieces.borrow()).offset((8) as isize).read()) as i32) == ('i' as i32))
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((((*split_pieces.borrow()).offset((9) as isize).read()) as i32) == ('\0' as i32))
-            as i32)
-            != 0)
+        (((((elem!((*split_pieces.borrow()), 9).read()) as i32) == ('\0' as i32)) as i32) != 0)
     );
     return 0;
 }

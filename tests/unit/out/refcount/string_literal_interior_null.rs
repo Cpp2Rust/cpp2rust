@@ -12,7 +12,7 @@ pub fn sum_bytes_0(buf: Ptr<u8>, len: u32) -> i32 {
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < (*len.borrow())) {
-        (*sum.borrow_mut()) += (((*buf.borrow()).offset((*i.borrow()) as isize).read()) as i32);
+        (*sum.borrow_mut()) += ((elem!((*buf.borrow()), (*i.borrow())).read()) as i32);
         (*i.borrow_mut()).postfix_inc();
     }
     return (*sum.borrow());

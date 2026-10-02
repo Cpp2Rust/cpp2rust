@@ -13,9 +13,7 @@ pub fn extract_first_0(buf: Ptr<u8>, size: i32, fmt: Ptr<u8>, __args: &[VaArg]) 
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     let n: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-    (*buf.borrow())
-        .offset((0) as isize)
-        .write({ ((*n.borrow()) as u8) });
+    elem!((*buf.borrow()), 0).write({ ((*n.borrow()) as u8) });
     return (*n.borrow());
 }
 pub fn main() {

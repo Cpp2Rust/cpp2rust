@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub type Kind_enum = u32;
 pub const Kind_enum_KIND_NONE: Kind_enum = 0;
 pub const Kind_enum_KIND_DONE: Kind_enum = 1;
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -22,13 +22,6 @@ impl anon_0 {
     }
     pub fn code(&self) -> Ptr<i32> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_0 {

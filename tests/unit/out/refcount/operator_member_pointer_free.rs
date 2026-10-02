@@ -12,7 +12,7 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
@@ -21,14 +21,6 @@ pub struct S {
     #[offset(12)]
     #[byte_size(4)]
     pub inner: Inner,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-            inner: self.inner.clone(),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -78,12 +70,7 @@ fn main_0() -> i32 {
     ));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(
-        (((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
-            == 5)
-    );
+    assert!(((elem!((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>), 0).read()) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

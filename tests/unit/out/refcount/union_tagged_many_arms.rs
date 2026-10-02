@@ -12,7 +12,7 @@ pub const Tag_enum_T_NUM_U: Tag_enum = 1;
 pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -34,13 +34,6 @@ impl anon_0 {
     }
     pub fn f(&self) -> Ptr<f64> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_0 {
@@ -79,10 +72,8 @@ fn main_0() -> i32 {
         .text()
         .write(Ptr::<u8>::from_string_literal(b"hello"));
     assert!(
-        (((((((*c.borrow()).payload.text().read())
-            .offset((0) as isize)
-            .read()) as i32)
-            == ('h' as i32)) as i32)
+        (((((elem!(((*c.borrow()).payload.text().read()), 0).read()) as i32) == ('h' as i32))
+            as i32)
             != 0)
     );
     let d: Value<Slot> = <Value<Slot>>::default();

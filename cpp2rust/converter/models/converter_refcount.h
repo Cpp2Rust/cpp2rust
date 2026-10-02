@@ -53,6 +53,8 @@ public:
 
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
+  bool RecordDerivesDeepClone(const clang::RecordDecl *decl);
+
   void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool
@@ -155,7 +157,8 @@ public:
 
   // Copies the value of the field `expr` out of its struct, such that the
   // struct doesn't stay borrowed.
-  std::string ReadField(clang::MemberExpr *expr);
+  std::string ReadField(clang::MemberExpr *expr,
+                        std::string_view copy = ".clone()");
 
   // A field that is read through a pointer to its struct is read in a
   // closure, `p.with(|__s| __s.x)`. While converting the struct whose field
@@ -225,6 +228,8 @@ public:
 
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
+
+  bool TypeDerivesDefault(clang::QualType qual_type) override;
 
   bool Convert(clang::QualType qual_type) override;
   bool
@@ -386,6 +391,9 @@ private:
                                          clang::Expr *expr) override;
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);
+
+  // Element `idx` of pointer `base`, accessed without creating a pointer to it.
+  void ConvertPointerElem(clang::Expr *base, clang::Expr *idx);
 
   std::string GetSafeTypeAsString(clang::QualType qual_type) const;
 

@@ -13,22 +13,12 @@ pub struct Point {
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Shape {
     pub id: i32,
     pub coords: [i32; 4],
     pub points: [Point; 3],
     pub tail: i32,
-}
-impl Default for Shape {
-    fn default() -> Self {
-        Shape {
-            id: 0_i32,
-            coords: [0_i32; 4],
-            points: [<Point>::default(); 3],
-            tail: 0_i32,
-        }
-    }
 }
 pub unsafe fn sum_0(mut p: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct label {
     #[offset(0)]
@@ -17,15 +17,6 @@ pub struct label {
     pub probe: FnPtr<fn() -> i32>,
     #[offset(16)]
     pub mask: i32,
-}
-impl Default for label {
-    fn default() -> Self {
-        label {
-            name: Ptr::<u8>::null(),
-            probe: FnPtr::<fn() -> i32>::null(),
-            mask: 0_i32,
-        }
-    }
 }
 pub fn probe_two_0() -> i32 {
     return 1;
@@ -50,23 +41,27 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(
-        ((((({
-            (*table_1.with(Value::clone).borrow())[(0) as usize]
-                .name
-                .clone()
-        }
-        .offset((0) as isize)
+        (((((elem!(
+            {
+                (*table_1.with(Value::clone).borrow())[(0) as usize]
+                    .name
+                    .clone()
+            },
+            0
+        )
         .read()) as i32)
             == ('f' as i32)) as i32)
             != 0)
     );
     assert!(
-        ((((({
-            (*table_1.with(Value::clone).borrow())[(0) as usize]
-                .name
-                .clone()
-        }
-        .offset((4) as isize)
+        (((((elem!(
+            {
+                (*table_1.with(Value::clone).borrow())[(0) as usize]
+                    .name
+                    .clone()
+            },
+            4
+        )
         .read()) as i32)
             == ('t' as i32)) as i32)
             != 0)
@@ -82,12 +77,14 @@ fn main_0() -> i32 {
     );
     assert!(((({ (*table_1.with(Value::clone).borrow())[(0) as usize].mask } == 16) as i32) != 0));
     assert!(
-        ((((({
-            (*table_1.with(Value::clone).borrow())[(1) as usize]
-                .name
-                .clone()
-        }
-        .offset((0) as isize)
+        (((((elem!(
+            {
+                (*table_1.with(Value::clone).borrow())[(1) as usize]
+                    .name
+                    .clone()
+            },
+            0
+        )
         .read()) as i32)
             == ('s' as i32)) as i32)
             != 0)
@@ -107,15 +104,9 @@ fn main_0() -> i32 {
     let tail: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (Ptr::<u8>::from_string_literal(b"ab.cd").offset(2)),
     ));
-    assert!(
-        ((((((*tail.borrow()).offset((0) as isize).read()) as i32) == ('.' as i32)) as i32) != 0)
-    );
-    assert!(
-        ((((((*tail.borrow()).offset((1) as isize).read()) as i32) == ('c' as i32)) as i32) != 0)
-    );
-    assert!(
-        ((((((*tail.borrow()).offset((2) as isize).read()) as i32) == ('d' as i32)) as i32) != 0)
-    );
+    assert!((((((elem!((*tail.borrow()), 0).read()) as i32) == ('.' as i32)) as i32) != 0));
+    assert!((((((elem!((*tail.borrow()), 1).read()) as i32) == ('c' as i32)) as i32) != 0));
+    assert!((((((elem!((*tail.borrow()), 2).read()) as i32) == ('d' as i32)) as i32) != 0));
     let have: Value<i32> = Rc::new(RefCell::new(0));
     let p: Value<AnyPtr> = Rc::new(RefCell::new(if ((*have.borrow()) != 0) {
         ({
@@ -128,10 +119,8 @@ fn main_0() -> i32 {
         Ptr::<u8>::from_string_literal(b"").to_any()
     }));
     assert!(
-        (((((((*p.borrow()).reinterpret_cast::<u8>())
-            .offset((0) as isize)
-            .read()) as i32)
-            == ('\0' as i32)) as i32)
+        (((((elem!(((*p.borrow()).reinterpret_cast::<u8>()), 0).read()) as i32) == ('\0' as i32))
+            as i32)
             != 0)
     );
     (*have.borrow_mut()) = 1;
@@ -146,10 +135,8 @@ fn main_0() -> i32 {
         Ptr::<u8>::from_string_literal(b"").to_any()
     };
     assert!(
-        (((((((*p.borrow()).reinterpret_cast::<u8>())
-            .offset((0) as isize)
-            .read()) as i32)
-            == ('f' as i32)) as i32)
+        (((((elem!(((*p.borrow()).reinterpret_cast::<u8>()), 0).read()) as i32) == ('f' as i32))
+            as i32)
             != 0)
     );
     return 0;

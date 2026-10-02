@@ -14,7 +14,7 @@ pub struct In {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -30,17 +30,6 @@ pub struct S {
     pub arr: Value<Box<[i32]>>,
     #[offset(32)]
     pub tail: i64,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            in_: self.in_.clone(),
-            bytes: Rc::new(RefCell::new((*self.bytes.borrow()).clone())),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-            tail: self.tail.clone(),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -59,9 +48,7 @@ pub fn set_bytes_0(p: Ptr<u8>, n: usize, v: u8) {
     let v: Value<u8> = Rc::new(RefCell::new(v));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        (*p.borrow())
-            .offset((*i.borrow()) as isize)
-            .write({ (*v.borrow()) });
+        elem!((*p.borrow()), (*i.borrow())).write({ (*v.borrow()) });
         (*i.borrow_mut()).postfix_inc();
     }
 }
@@ -71,7 +58,7 @@ pub fn all_bytes_1(p: Ptr<u8>, n: usize, v: u8) -> i32 {
     let v: Value<u8> = Rc::new(RefCell::new(v));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        if ((({ (((*p.borrow()).offset((*i.borrow()) as isize).read()) as i32) } != {
+        if ((({ ((elem!((*p.borrow()), (*i.borrow())).read()) as i32) } != {
             ((*v.borrow()) as i32)
         }) as i32)
             != 0)
@@ -103,50 +90,36 @@ pub fn check_final_2(s: Ptr<S>) {
             != 0)
     );
     assert!(
-        (((((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-            .offset((0) as isize)
-            .read()) as i32)
+        ((((((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).read()) as i32)
             == 67) as i32)
             != 0)
-            && ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((1) as isize)
-                .read()) as i32)
+            && (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).read()) as i32)
                 == 83) as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        (((((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-            .offset((2) as isize)
-            .read()) as i32)
+        ((((((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).read()) as i32)
             == 99) as i32)
             != 0)
-            && ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((3) as isize)
-                .read()) as i32)
+            && (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).read()) as i32)
                 == 115) as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        ((((((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
+        (((((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32))
             as i32)
             != 0)
-            && (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((1) as isize)
-                .read())
+            && ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32))
                 as i32)
                 != 0)) as i32)
             != 0)
     );
     assert!(
-        (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-            .offset((2) as isize)
-            .read())
+        ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32))
             as i32)
             != 0)
@@ -415,9 +388,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((0) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((64) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -428,11 +399,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((0) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 1) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 1) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -453,9 +422,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((0) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((64) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -467,11 +434,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((0) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 3) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((64) + 3) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -504,9 +469,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((1) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((80) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -517,11 +480,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((1) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 1) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 1) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -542,9 +503,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((1) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((80) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -556,11 +515,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((1) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 3) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((80) + 3) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -593,9 +550,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((2) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((96) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -606,11 +561,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((2) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 1) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 1) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -631,9 +584,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((2) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((96) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -645,11 +596,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((2) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 3) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((96) + 3) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -682,9 +631,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((3) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul((((112) as u8) as u64))) as u8)
                     as i32)) as i32)
                 != 0)
@@ -695,11 +642,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((3) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 1) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 1) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -720,9 +665,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
         });
         assert!(
-            ((((((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>)
-                .offset((3) as isize)
-                .read()) as i32)
+            (((((elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).read()) as i32)
                 == ((((72340172838076673_u64 as u64).wrapping_mul(((((112) + 2) as u8) as u64)))
                     as u8) as i32)) as i32)
                 != 0)
@@ -734,11 +677,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-            .offset((3) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 3) as u8) as u64))) as u8),
-            );
+        elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((112) + 3) as u8) as u64))) as u8),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -772,9 +713,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((0) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((128) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -785,12 +724,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((0) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 1) as u8) as u64)))
-                    as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 1) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -811,9 +747,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((0) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -825,12 +759,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((0) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 3) as u8) as u64)))
-                    as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((128) + 3) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -864,9 +795,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((1) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((144) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -877,12 +806,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((1) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 1) as u8) as u64)))
-                    as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 1) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -903,9 +829,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((1) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -917,12 +841,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((1) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 3) as u8) as u64)))
-                    as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((144) + 3) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -956,9 +877,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((2) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((8) as u8) as u64))) as i32))
                 as i32)
                 != 0)
@@ -969,11 +888,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((2) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 1) as u8) as u64))) as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 1) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*fb.borrow()).clone();
@@ -994,9 +911,7 @@ pub fn check_struct_3(s: Ptr<S>) {
             set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
         });
         assert!(
-            (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((2) as isize)
-                .read())
+            ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 2) as u8) as u64)))
                     as i32)) as i32)
                 != 0)
@@ -1008,11 +923,9 @@ pub fn check_struct_3(s: Ptr<S>) {
                 all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
             }) != 0)
         );
-        (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-            .offset((2) as isize)
-            .write(
-                (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 3) as u8) as u64))) as i32),
-            );
+        elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).write(
+            (((72340172838076673_u64 as u64).wrapping_mul(((((8) + 3) as u8) as u64))) as i32),
+        );
         assert!(
             (({
                 let _p: Ptr<u8> = (*sb.borrow()).clone();
@@ -1157,15 +1070,11 @@ pub fn check_struct_3(s: Ptr<S>) {
         set_bytes_0(_p, _n, 133_u8)
     });
     assert!(
-        ((((((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
+        (((((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
             as i32)
             != 0)
-            && (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-                .offset((2) as isize)
-                .read())
+            && ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2).read())
                 == (((72340172838076673_u64 as u64).wrapping_mul((((133) as u8) as u64))) as i32))
                 as i32)
                 != 0)) as i32)
@@ -1178,21 +1087,16 @@ pub fn check_struct_3(s: Ptr<S>) {
         set_bytes_0(_p, _n, 134_u8)
     });
     assert!(
-        (((((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>)
-            .offset((1) as isize)
-            .read())
+        ((((elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((134) as u8) as u64))) as i32))
             as i32)
             != 0)
     );
-    (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-        .offset((0) as isize)
+    elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 0)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((131) as u8) as u64))) as i32));
-    (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-        .offset((1) as isize)
+    elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 1)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((147) as u8) as u64))) as i32));
-    (array_field_ptr!((*s.borrow()), arr) as Ptr<i32>)
-        .offset((2) as isize)
+    elem!((array_field_ptr!((*s.borrow()), arr) as Ptr::<i32>), 2)
         .write((((72340172838076673_u64 as u64).wrapping_mul((((11) as u8) as u64))) as i32));
     let ib: Value<Ptr<i32>> = Rc::new(RefCell::new(
         (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>).reinterpret_cast::<i32>(),
@@ -1206,18 +1110,10 @@ pub fn check_struct_3(s: Ptr<S>) {
             all_bytes_1(_p, _n, 69_u8)
         }) != 0)
     );
-    (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-        .offset((0) as isize)
-        .write(67_u8);
-    (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-        .offset((1) as isize)
-        .write(83_u8);
-    (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-        .offset((2) as isize)
-        .write(99_u8);
-    (array_field_ptr!((*s.borrow()), bytes) as Ptr<u8>)
-        .offset((3) as isize)
-        .write(115_u8);
+    elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 0).write(67_u8);
+    elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 1).write(83_u8);
+    elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 2).write(99_u8);
+    elem!((array_field_ptr!((*s.borrow()), bytes) as Ptr::<u8>), 3).write(115_u8);
     assert!(
         ((({ ((*ib.borrow()).read()) } == {
             (((array_field_ptr!((*s.borrow()), bytes)) as Ptr<u8>)
@@ -1306,26 +1202,20 @@ fn main_0() -> i32 {
     };
     let view: Value<Ptr<S>> = Rc::new(RefCell::new((*raw_.borrow()).reinterpret_cast::<S>()));
     ({ check_struct_3((*view.borrow()).clone()) });
-    assert!(((((((*raw_.borrow()).offset((32_usize) as isize).read()) as i32) == 27) as i32) != 0));
+    assert!((((((elem!((*raw_.borrow()), 32_usize).read()) as i32) == 27) as i32) != 0));
     ({
         let _p: Ptr<u8> = (*raw_.borrow()).offset((16_usize) as isize);
         set_bytes_0(_p, ::std::mem::size_of::<i32>(), 119_u8)
     });
     assert!(
-        (((((array_field_ptr!((*view.borrow()), arr) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
+        ((((elem!((array_field_ptr!((*view.borrow()), arr) as Ptr::<i32>), 0).read())
             == (((72340172838076673_u64 as u64).wrapping_mul((((119) as u8) as u64))) as i32))
             as i32)
             != 0)
     );
-    (array_field_ptr!((*view.borrow()), bytes) as Ptr<u8>)
-        .offset((3) as isize)
-        .write(17_u8);
+    elem!((array_field_ptr!((*view.borrow()), bytes) as Ptr::<u8>), 3).write(17_u8);
     assert!(
-        ((((((*raw_.borrow())
-            .offset(((12_usize as usize).wrapping_add(3_usize)) as isize)
-            .read()) as i32)
+        (((((elem!((*raw_.borrow()), (12_usize as usize).wrapping_add(3_usize)).read()) as i32)
             == 17) as i32)
             != 0)
     );

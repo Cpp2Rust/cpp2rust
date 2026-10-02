@@ -163,22 +163,19 @@ fn main_0() -> i32 {
     (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
         (({
-            (*(lts.as_pointer() as Ptr<Lt>)
-                .offset(0_usize)
+            (*elem!((lts.as_pointer() as Ptr<Lt>), 0_usize)
                 .upgrade()
                 .deref())
             .v
         } == 1)
             && ({
-                (*(lts.as_pointer() as Ptr<Lt>)
-                    .offset(1_usize)
+                (*elem!((lts.as_pointer() as Ptr<Lt>), 1_usize)
                     .upgrade()
                     .deref())
                 .v
             } == 2))
             && ({
-                (*(lts.as_pointer() as Ptr<Lt>)
-                    .offset(2_usize)
+                (*elem!((lts.as_pointer() as Ptr<Lt>), 2_usize)
                     .upgrade()
                     .deref())
                 .v
@@ -225,15 +222,13 @@ fn main_0() -> i32 {
     (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
     assert!(
         ({
-            (*(cmps.as_pointer() as Ptr<Cmp>)
-                .offset(0_usize)
+            (*elem!((cmps.as_pointer() as Ptr<Cmp>), 0_usize)
                 .upgrade()
                 .deref())
             .v
         } == 1)
             && ({
-                (*(cmps.as_pointer() as Ptr<Cmp>)
-                    .offset(2_usize)
+                (*elem!((cmps.as_pointer() as Ptr<Cmp>), 2_usize)
                     .upgrade()
                     .deref())
                 .v
@@ -263,8 +258,7 @@ fn main_0() -> i32 {
     (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
     assert!(
         ({
-            (*(frees.as_pointer() as Ptr<Free>)
-                .offset(0_usize)
+            (*elem!((frees.as_pointer() as Ptr<Free>), 0_usize)
                 .upgrade()
                 .deref())
             .v

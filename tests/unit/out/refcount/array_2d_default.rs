@@ -9,12 +9,8 @@ use std::rc::{Rc, Weak};
 pub fn fill_row_0(row: Ptr<u8>, c: u8) {
     let row: Value<Ptr<u8>> = Rc::new(RefCell::new(row));
     let c: Value<u8> = Rc::new(RefCell::new(c));
-    (*row.borrow())
-        .offset((0) as isize)
-        .write({ (*c.borrow()) });
-    (*row.borrow())
-        .offset((1) as isize)
-        .write((('\0' as i32) as u8));
+    elem!((*row.borrow()), 0).write({ (*c.borrow()) });
+    elem!((*row.borrow()), 1).write((('\0' as i32) as u8));
 }
 pub fn main() {
     __cpp2rust_init_globals();

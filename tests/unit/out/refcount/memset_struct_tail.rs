@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -20,17 +20,6 @@ pub struct S {
     pub c: Value<Box<[u8]>>,
     #[offset(24)]
     pub last: i32,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            keep: self.keep.clone(),
-            a: self.a.clone(),
-            b: self.b.clone(),
-            c: Rc::new(RefCell::new((*self.c.borrow()).clone())),
-            last: self.last.clone(),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -71,9 +60,7 @@ fn main_0() -> i32 {
         (((((((((((((*p.borrow()).with(|__s| __s.a) == 0) as i32) != 0)
             && ((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
             != 0)
-            && ((((((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>)
-                .offset((4) as isize)
-                .read()) as i32)
+            && (((((elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>), 4).read()) as i32)
                 == 0) as i32)
                 != 0)) as i32)
             != 0)
@@ -82,9 +69,7 @@ fn main_0() -> i32 {
     );
     field!((*p.borrow()), a).write(1);
     field!((*p.borrow()), b).write(2_i64);
-    (array_field_ptr!((*p.borrow()), c) as Ptr<u8>)
-        .offset((0) as isize)
-        .write((('x' as i32) as u8));
+    elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>), 0).write((('x' as i32) as u8));
     field!((*p.borrow()), last).write(3);
     {
         ((field_ptr!((*p.borrow()), b)) as Ptr<i64>)
@@ -102,9 +87,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)
-            && ((((((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>)
-                .offset((0) as isize)
-                .read()) as i32)
+            && (((((elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<u8>), 0).read()) as i32)
                 == 0) as i32)
                 != 0)) as i32)
             != 0)

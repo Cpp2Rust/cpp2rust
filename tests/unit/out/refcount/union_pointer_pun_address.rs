@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     assert!(((({ (*out.borrow()).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
     return 0;
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]
@@ -47,13 +47,6 @@ impl anon_0 {
     }
     pub fn to_b(&self) -> Ptr<Ptr<node_b>> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_0 {

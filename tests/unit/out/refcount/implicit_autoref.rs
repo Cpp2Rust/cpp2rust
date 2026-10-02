@@ -6,19 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
     #[byte_size(24)]
     pub v: Value<Vec<i32>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }
-    }
 }
 pub fn write_through_0(p: Ptr<i32>) {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
@@ -40,13 +33,17 @@ fn main_0() -> i32 {
     };
     let p: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v.as_pointer())));
     let a: Value<i32> = Rc::new(RefCell::new(
-        (((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>)
-            .offset(0_usize)
-            .read()),
+        (elem!(
+            ((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>),
+            0_usize
+        )
+        .read()),
     ));
-    ((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>)
-        .offset(1_usize)
-        .write(30);
+    elem!(
+        ((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>),
+        1_usize
+    )
+    .write(30);
     let h: Value<Holder> = Rc::new(RefCell::new(<Holder>::default()));
     {
         let __a1 = 40;
@@ -58,25 +55,33 @@ fn main_0() -> i32 {
     };
     let hp: Value<Ptr<Holder>> = Rc::new(RefCell::new((h.as_pointer())));
     let b: Value<i32> = Rc::new(RefCell::new(
-        (((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read()),
+        (elem!(
+            ((*hp.borrow()).with(|__s| (__s).v.as_pointer()) as Ptr<i32>),
+            0_usize
+        )
+        .read()),
     ));
-    ((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
-        .offset(1_usize)
-        .write(60);
+    elem!(
+        ((*hp.borrow()).with(|__s| (__s).v.as_pointer()) as Ptr<i32>),
+        1_usize
+    )
+    .write(60);
     assert!(((*a.borrow()) == 10));
     assert!(
-        ((((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>)
-            .offset(1_usize)
-            .read())
+        ((elem!(
+            ((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>),
+            1_usize
+        )
+        .read())
             == 30)
     );
     assert!(((*b.borrow()) == 40));
     assert!(
-        ((((*hp.borrow()).with(|__s| (__s).v.clone()).as_pointer() as Ptr<i32>)
-            .offset(1_usize)
-            .read())
+        ((elem!(
+            ((*hp.borrow()).with(|__s| (__s).v.as_pointer()) as Ptr<i32>),
+            1_usize
+        )
+        .read())
             == 60)
     );
     ({
@@ -85,9 +90,11 @@ fn main_0() -> i32 {
         )
     });
     assert!(
-        ((((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>)
-            .offset(0_usize)
-            .read())
+        ((elem!(
+            ((Ptr::<Vec<i32>>::decay(&(*p.borrow()))) as Ptr<i32>),
+            0_usize
+        )
+        .read())
             == 42)
     );
     return 0;

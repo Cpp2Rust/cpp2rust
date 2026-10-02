@@ -18,7 +18,7 @@ pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
     let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
     return ({ (*i.borrow()).with(|__s| __s.a) } + { (*i.borrow()).with(|__s| __s.b) });
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(16)]
 pub struct anon_1 {
     #[offset(0)]
@@ -31,13 +31,6 @@ impl anon_1 {
     }
     pub fn raw_(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_1 {
-    fn clone(&self) -> Self {
-        anon_1 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_1 {
@@ -74,16 +67,20 @@ fn main_0() -> i32 {
     field!((*outer.borrow_mut()).u.inner(), b).write(4);
     assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
-            .read()) as u8) as i32)
+        ((((((elem!(
+            ((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            0
+        )
+        .read()) as u8) as i32)
             == 3) as i32)
             != 0)
     );
     assert!(
-        ((((((((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((4) as isize)
-            .read()) as u8) as i32)
+        ((((((elem!(
+            ((*outer.borrow()).u.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            4
+        )
+        .read()) as u8) as i32)
             == 4) as i32)
             != 0)
     );

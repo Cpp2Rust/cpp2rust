@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{AsPointer, ByteRepr, Ptr, Record, Value};
+use crate::{AsPointer, ByteRepr, DeepClone, Ptr, Record, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -12,7 +12,7 @@ pub struct InAddr {
     pub s_addr: u32,
 }
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(16)]
 pub struct In6Addr {
     #[offset(0)]
@@ -30,14 +30,6 @@ impl Default for In6Addr {
     fn default() -> Self {
         Self {
             s6_addr: Rc::new(RefCell::new(vec![0u8; 16].into_boxed_slice())),
-        }
-    }
-}
-
-impl Clone for In6Addr {
-    fn clone(&self) -> Self {
-        Self {
-            s6_addr: Rc::new(RefCell::new(self.s6_addr.borrow().clone())),
         }
     }
 }

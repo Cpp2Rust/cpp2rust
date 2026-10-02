@@ -7,18 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Inner {
     pub a: i32,
     pub name: [libc::c_char; 8],
-}
-impl Default for Inner {
-    fn default() -> Self {
-        Inner {
-            a: 0_i32,
-            name: [(0 as libc::c_char); 8],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
@@ -27,7 +19,7 @@ pub struct Header {
     pub size: i16,
 }
 #[repr(C)]
-#[derive(Clone, VaArg)]
+#[derive(Clone, VaArg, Default)]
 pub struct Outer {
     pub x: i32,
     pub inner: Inner,
@@ -48,18 +40,6 @@ impl Outer {
             let __a1 = ((k) + (self.x));
             self.v.push(__a1)
         };
-    }
-}
-impl Default for Outer {
-    fn default() -> Self {
-        Outer {
-            x: 0_i32,
-            inner: <Inner>::default(),
-            items: [<Inner>::default(); 3],
-            v: Default::default(),
-            cursor: std::ptr::null_mut(),
-            buf: [0_i32; 4],
-        }
     }
 }
 pub unsafe fn set_0(mut p: *mut i32, mut value: i32) {

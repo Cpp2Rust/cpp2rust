@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Handler {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct Handler {
     #[offset(8)]
     #[byte_size(8)]
     pub cb: FnPtr<fn(i32) -> i32>,
-}
-impl Default for Handler {
-    fn default() -> Self {
-        Handler {
-            tag: 0_i32,
-            cb: FnPtr::<fn(i32) -> i32>::null(),
-        }
-    }
 }
 pub fn double_it_0(x: i32) -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(x));

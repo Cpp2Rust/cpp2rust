@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct NonCopy {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct NonCopy {
     pub data: Value<Vec<i32>>,
     #[offset(24)]
     pub tag: i32,
-}
-impl Clone for NonCopy {
-    fn clone(&self) -> Self {
-        Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-            tag: self.tag.clone(),
-        }
-    }
 }
 impl Default for NonCopy {
     fn default() -> Self {
@@ -49,9 +41,11 @@ fn main_0() -> i32 {
     assert!(({ (*arr.borrow())[(0) as usize].tag } == 7));
     assert!(((*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow()).len() == 1_usize));
     assert!(
-        ((({ (*arr.borrow())[(1) as usize].data.clone() }.as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read())
+        ((elem!(
+            ({ (*arr.borrow())[(1) as usize].data.as_pointer() } as Ptr<i32>),
+            0_usize
+        )
+        .read())
             == 42)
     );
     assert!(({ (*arr.borrow())[(2) as usize].tag } == 0));

@@ -15,9 +15,9 @@ fn main_0() -> i32 {
     let halves: Value<Ptr<i16>> = Rc::new(RefCell::new(
         (original.as_pointer()).reinterpret_cast::<i16>(),
     ));
-    assert!(((((*halves.borrow()).offset((0) as isize).read()) as i32) == 513));
-    assert!(((((*halves.borrow()).offset((1) as isize).read()) as i32) == 1027));
-    (*halves.borrow()).offset((0) as isize).write(4112_i16);
+    assert!((((elem!((*halves.borrow()), 0).read()) as i32) == 513));
+    assert!((((elem!((*halves.borrow()), 1).read()) as i32) == 1027));
+    elem!((*halves.borrow()), 0).write(4112_i16);
     assert!(((*original.borrow()) == 67309584));
     let arr: Value<Box<[i16]>> = Rc::new(RefCell::new(Box::new([513_i16, 1027_i16])));
     let as_int: Value<Ptr<i32>> = Rc::new(RefCell::new(

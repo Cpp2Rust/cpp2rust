@@ -19,25 +19,13 @@ fn main_0() -> i32 {
     )));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (*arr.borrow()).offset((*i.borrow()) as isize).write(0_u32);
+        elem!((*arr.borrow()), (*i.borrow())).write(0_u32);
         (*i.borrow_mut()).postfix_inc();
     }
-    (*arr.borrow())
-        .offset(((*N.borrow()) - 1) as isize)
-        .write(3148519816_u32);
+    elem!((*arr.borrow()), ((*N.borrow()) - 1)).write(3148519816_u32);
     let words: Value<Ptr<u16>> = Rc::new(RefCell::new((*arr.borrow()).reinterpret_cast::<u16>()));
-    assert!(
-        ((((*words.borrow())
-            .offset((((*N.borrow()) * 2) - 1) as isize)
-            .read()) as i32)
-            == 48042)
-    );
-    assert!(
-        ((((*words.borrow())
-            .offset((((*N.borrow()) * 2) - 2) as isize)
-            .read()) as i32)
-            == 39304)
-    );
+    assert!((((elem!((*words.borrow()), (((*N.borrow()) * 2) - 1)).read()) as i32) == 48042));
+    assert!((((elem!((*words.borrow()), (((*N.borrow()) * 2) - 2)).read()) as i32) == 39304));
     (*arr.borrow()).delete();
     return 0;
 }
