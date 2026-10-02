@@ -33,7 +33,7 @@ pub fn fill_3(a: Ptr<i32>, v: i32) {
     }
 }
 pub fn sum_twice_4(a: Ptr<i32>) -> i32 {
-    return (({ sum_2(((a).clone() as Ptr<i32>)) }) + ({ sum_2(((a).clone() as Ptr<i32>)) }));
+    return (({ sum_2((a).clone()) }) + ({ sum_2((a).clone()) }));
 }
 pub fn sum_ptr_5(p: Ptr<i32>) -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
@@ -56,15 +56,15 @@ pub fn bump_decayed_8(a: Ptr<i32>) {
 pub fn fill_and_sum_9(a: Ptr<i32>, v: i32, out: Ptr<i32>) {
     let v: Value<i32> = Rc::new(RefCell::new(v));
     ({
-        let _a: Ptr<i32> = ((a).clone() as Ptr<i32>);
+        let _a: Ptr<i32> = (a).clone();
         let _v: i32 = (*v.borrow());
         fill_3(_a, _v)
     });
-    let __rhs = ({ sum_twice_4(((a).clone() as Ptr<i32>)) });
+    let __rhs = ({ sum_twice_4((a).clone()) });
     out.write(__rhs);
 }
 pub fn pick_10(s: Ptr<u8>) -> Ptr<u8> {
-    return ((s).clone() as Ptr<u8>);
+    return (s).clone();
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -105,43 +105,40 @@ pub fn main() {
 fn main_0() -> i32 {
     assert!((({ len_0(Ptr::<u8>::from_string_literal(b"beta"),) }) == 4));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"abcd\0")));
-    assert!((({ len_0((buf.as_pointer() as Ptr<u8>),) }) == 4));
+    assert!((({ len_0(buf.as_pointer(),) }) == 4));
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2, 3])));
-    assert!((({ sum_2((arr.as_pointer() as Ptr<i32>),) }) == 6));
-    ({ fill_3((arr.as_pointer() as Ptr<i32>), 7) });
-    assert!((({ sum_2((arr.as_pointer() as Ptr<i32>),) }) == 21));
-    assert!((({ sum_twice_4((arr.as_pointer() as Ptr<i32>),) }) == 42));
+    assert!((({ sum_2(arr.as_pointer(),) }) == 6));
+    ({ fill_3(arr.as_pointer(), 7) });
+    assert!((({ sum_2(arr.as_pointer(),) }) == 21));
+    assert!((({ sum_twice_4(arr.as_pointer(),) }) == 42));
     let out: Value<i32> = Rc::new(RefCell::new(0));
-    ({ fill_and_sum_9((arr.as_pointer() as Ptr<i32>), 2, out.as_pointer()) });
+    ({ fill_and_sum_9(arr.as_pointer(), 2, out.as_pointer()) });
     assert!(((*out.borrow()) == 12));
     assert!(((*arr.borrow())[(0) as usize] == 2));
     let lit: Ptr<u8> = Ptr::<u8>::from_string_literal(b"beta");
-    assert!((({ len_0(((lit).clone() as Ptr<u8>),) }) == 4));
+    assert!((({ len_0((lit).clone(),) }) == 4));
     assert!(
         (((elem!(({ pick_10(Ptr::<u8>::from_string_literal(b"beta"),) }), 0).read()) as i32)
             == (('b' as u8) as i32))
     );
-    assert!((({ len_0((({ pick_10((buf.as_pointer() as Ptr<u8>),) }) as Ptr<u8>),) }) == 4));
+    assert!((({ len_0(({ pick_10(buf.as_pointer(),) }),) }) == 4));
     let pts: Value<Box<[Point]>> = Rc::new(RefCell::new(Box::new([
         Point { x: 1, y: 2 },
         Point { x: 3, y: 4 },
     ])));
-    assert!((({ sum_points_11((pts.as_pointer() as Ptr<Point>),) }) == 10));
-    ({ shift_points_12((pts.as_pointer() as Ptr<Point>), 10) });
+    assert!((({ sum_points_11(pts.as_pointer(),) }) == 10));
+    ({ shift_points_12(pts.as_pointer(), 10) });
     assert!(({ (*pts.borrow())[(0) as usize].x } == 11));
     assert!(({ (*pts.borrow())[(1) as usize].y } == 14));
-    assert!((({ sum_points_11((pts.as_pointer() as Ptr<Point>),) }) == 30));
-    assert!(
-        (({ sum_decayed_6((arr.as_pointer() as Ptr<i32>),) })
-            == ({ sum_2((arr.as_pointer() as Ptr<i32>),) }))
-    );
-    ({ bump_decayed_8((arr.as_pointer() as Ptr<i32>)) });
+    assert!((({ sum_points_11(pts.as_pointer(),) }) == 30));
+    assert!((({ sum_decayed_6(arr.as_pointer(),) }) == ({ sum_2(arr.as_pointer(),) })));
+    ({ bump_decayed_8(arr.as_pointer()) });
     assert!(((*arr.borrow())[(0) as usize] == 3));
     let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
         Ptr::<u8>::from_string_literal(b"ab"),
         Ptr::<u8>::from_string_literal(b"cde"),
     ])));
-    assert!((({ total_len_13((names.as_pointer() as Ptr<Ptr::<u8>>),) }) == 5));
+    assert!((({ total_len_13(names.as_pointer(),) }) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

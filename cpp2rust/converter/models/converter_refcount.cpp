@@ -2341,8 +2341,6 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
         return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
-      return std::format("({} as {})", ConvertFreshPointer(expr, qual_type),
-                         ToString(qual_type));
     }
     return ConvertFreshPointer(expr, qual_type);
   }

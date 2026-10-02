@@ -48,9 +48,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let a1: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([1_usize, 2_usize, 3_usize])));
     assert!(
-        (({
-            array_ref_0(((a1.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>() as Ptr<u64>))
-        }) == 3_u64)
+        (({ array_ref_0((a1.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>(),) }) == 3_u64)
     );
     assert!(((*a1.borrow())[(0) as usize] == 2_usize));
     let a2: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([4_usize, 5_usize])));
