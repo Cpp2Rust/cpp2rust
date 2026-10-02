@@ -83,18 +83,10 @@ impl Clone for Ignored {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {
     pub c: Counted,
     pub arr: [Counted; 2],
-}
-impl Default for Holder {
-    fn default() -> Self {
-        Holder {
-            c: <Counted>::default(),
-            arr: std::array::from_fn::<_, 2, _>(|_| <Counted>::default()),
-        }
-    }
 }
 pub unsafe fn by_value_1(mut c: Counted) -> i32 {
     return c.v;

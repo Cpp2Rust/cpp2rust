@@ -27,7 +27,7 @@ impl Counter {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub tag: i32,
     pub c: Counter,
@@ -40,16 +40,6 @@ impl S {
             let _k: i32 = self.tag;
             Counter::add(&mut self.c, _k)
         });
-    }
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            tag: 0_i32,
-            c: <Counter>::default(),
-            arr: [<Counter>::default(); 2],
-            v: Default::default(),
-        }
     }
 }
 pub unsafe fn run_0(mut o: *mut S) {

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct table {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct table {
     pub rows: Value<Box<[Value<Box<[u8]>>]>>,
     #[offset(32)]
     pub count: usize,
-}
-impl Clone for table {
-    fn clone(&self) -> Self {
-        Self {
-            rows: Rc::new(RefCell::new((*self.rows.borrow()).clone())),
-            count: self.count.clone(),
-        }
-    }
 }
 impl Default for table {
     fn default() -> Self {
@@ -63,7 +55,7 @@ fn main_0() -> i32 {
     assert!(((({ (*T1_0.with(Value::clone).borrow()).count } == 1_usize) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = ((({ (*T1_0.with(Value::clone).borrow()).rows.clone() }.as_pointer()
+            let mut __it1 = ((({ (*T1_0.with(Value::clone).borrow()).rows.as_pointer() }
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
@@ -92,7 +84,7 @@ fn main_0() -> i32 {
     assert!(((({ (*T2_1.with(Value::clone).borrow()).count } == 2_usize) as i32) != 0));
     assert!(
         ((({
-            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.clone() }.as_pointer()
+            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.as_pointer() }
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
@@ -114,7 +106,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.clone() }.as_pointer()
+            let mut __it1 = ((({ (*T2_1.with(Value::clone).borrow()).rows.as_pointer() }
                 as Ptr<Value<Box<[u8]>>>)
                 .offset(1)
                 .read()
@@ -150,8 +142,7 @@ fn main_0() -> i32 {
     }));
     assert!(
         ((({
-            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
-                as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[u8]>>>)
                 .offset(2)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -174,8 +165,7 @@ fn main_0() -> i32 {
         (('T' as i32) as u8);
     assert!(
         ((({
-            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
-                as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[u8]>>>)
                 .offset(1)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -196,8 +186,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = ((({ (*local.borrow()).rows.clone() }.as_pointer()
-                as Ptr<Value<Box<[u8]>>>)
+            let mut __it1 = ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[u8]>>>)
                 .offset(0)
                 .read()
                 .as_pointer()) as Ptr<u8>)
@@ -217,12 +206,12 @@ fn main_0() -> i32 {
             != 0)
     );
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        ((({ (*local.borrow()).rows.clone() }.as_pointer() as Ptr<Value<Box<[u8]>>>)
+        ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[u8]>>>)
             .offset(2)
             .read()
             .as_pointer()) as Ptr<u8>),
     ));
-    assert!(((((((*p.borrow()).offset((0) as isize).read()) as i32) == ('t' as i32)) as i32) != 0));
+    assert!((((((elem!((*p.borrow()), 0).read()) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
     return 0;
 }

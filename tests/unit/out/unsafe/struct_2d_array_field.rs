@@ -7,18 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct table {
     pub rows: [[libc::c_char; 10]; 3],
     pub count: usize,
-}
-impl Default for table {
-    fn default() -> Self {
-        table {
-            rows: [[(0 as libc::c_char); 10]; 3],
-            count: 0_usize,
-        }
-    }
 }
 pub static mut T1_0: std::cell::LazyCell<table> = std::cell::LazyCell::new(|| unsafe {
     table {

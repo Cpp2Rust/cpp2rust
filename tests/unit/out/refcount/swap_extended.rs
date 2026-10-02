@@ -48,8 +48,8 @@ fn main_0() -> i32 {
     write!(
         libcc2rs::cout(),
         "{:} {:}\n",
-        ((*i.borrow()).offset((0) as isize).read()),
-        ((*i.borrow()).offset((1) as isize).read()),
+        (elem!((*i.borrow()), 0).read()),
+        (elem!((*i.borrow()), 1).read()),
     );
     (*i.borrow()).delete();
     ({ swap_by_ptr_1(Ptr::alloc(7), Ptr::alloc(8)) });

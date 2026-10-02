@@ -7,24 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub keep: i32,
     pub a: i32,
     pub b: i64,
     pub c: [libc::c_char; 5],
     pub last: i32,
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            keep: 0_i32,
-            a: 0_i32,
-            b: 0_i64,
-            c: [(0 as libc::c_char); 5],
-            last: 0_i32,
-        }
-    }
 }
 pub fn main() {
     unsafe {

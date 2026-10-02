@@ -22,7 +22,7 @@ impl Table {
 pub static mut table_0: std::cell::LazyCell<[i32; 3]> =
     std::cell::LazyCell::new(|| unsafe { [7, 8, 9] });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub data: [i32; 3],
     pub inner: Inner,
@@ -42,14 +42,6 @@ impl S {
     }
     pub unsafe fn operator_addr(&mut self) -> *mut i32 {
         return (&mut self.data[(0) as usize] as *mut i32);
-    }
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            data: [0_i32; 3],
-            inner: <Inner>::default(),
-        }
     }
 }
 pub fn main() {

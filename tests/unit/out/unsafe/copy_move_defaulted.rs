@@ -12,7 +12,7 @@ pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -29,30 +29,12 @@ impl Explicit {
     }
     pub unsafe fn destructor(&mut self) {}
 }
-impl Default for Explicit {
-    fn default() -> Self {
-        Explicit {
-            v: 0_i32,
-            inner: <Inner>::default(),
-            arr: [0_i32; 2],
-        }
-    }
-}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Implicit {
     pub v: i32,
     pub inner: Inner,
     pub arr: [i32; 2],
-}
-impl Default for Implicit {
-    fn default() -> Self {
-        Implicit {
-            v: 0_i32,
-            inner: <Inner>::default(),
-            arr: [0_i32; 2],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -116,7 +98,7 @@ impl Clone for UserCopyDefaultMove {
     }
 }
 #[repr(C)]
-#[derive()]
+#[derive(Default)]
 pub struct Buffer {
     pub data: Vec<i32>,
     pub rows: Vec<Vec<i32>>,
@@ -160,18 +142,8 @@ impl Buffer {
         return &mut (*(self as *mut Buffer));
     }
 }
-impl Default for Buffer {
-    fn default() -> Self {
-        Buffer {
-            data: Default::default(),
-            rows: Vec::new(),
-            n: 0_i32,
-            arr: [0_i32; 2],
-        }
-    }
-}
 #[repr(C)]
-#[derive()]
+#[derive(Default)]
 pub struct Owner {
     pub data: Vec<i32>,
     pub n: i32,
@@ -203,16 +175,6 @@ impl Owner {
         };
         self.p = (*_a0).p.take();
         return &mut (*(self as *mut Owner));
-    }
-}
-impl Default for Owner {
-    fn default() -> Self {
-        Owner {
-            data: Default::default(),
-            n: 0_i32,
-            arr: [0_i32; 2],
-            p: None,
-        }
     }
 }
 #[repr(C)]

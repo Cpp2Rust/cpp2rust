@@ -13,24 +13,13 @@ pub struct In {
     pub b: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub x: i32,
     pub in_: In,
     pub bytes: [u8; 4],
     pub arr: [i32; 3],
     pub tail: i64,
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            x: 0_i32,
-            in_: <In>::default(),
-            bytes: [0_u8; 4],
-            arr: [0_i32; 3],
-            tail: 0_i64,
-        }
-    }
 }
 pub unsafe fn set_bytes_0(mut p: *mut u8, mut n: usize, mut v: u8) {
     let mut i: usize = 0_usize;

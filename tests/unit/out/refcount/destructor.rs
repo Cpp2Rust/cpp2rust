@@ -33,19 +33,12 @@ pub struct Outer {
     #[byte_size(1)]
     pub m: Middle,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(3)]
 pub struct ArrayMember {
     #[offset(0)]
     #[byte_size(3)]
     pub items: Value<Box<[S]>>,
-}
-impl Clone for ArrayMember {
-    fn clone(&self) -> Self {
-        Self {
-            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
-        }
-    }
 }
 impl Default for ArrayMember {
     fn default() -> Self {

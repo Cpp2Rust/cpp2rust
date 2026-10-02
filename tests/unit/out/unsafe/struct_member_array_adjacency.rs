@@ -7,18 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct pair {
     pub a: [i32; 4],
     pub b: [i32; 4],
-}
-impl Default for pair {
-    fn default() -> Self {
-        pair {
-            a: [0_i32; 4],
-            b: [0_i32; 4],
-        }
-    }
 }
 pub fn main() {
     unsafe {

@@ -34,18 +34,10 @@ pub struct nested {
     pub c: libc::c_char,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct array {
     pub name: [libc::c_char; 3],
     pub x: i32,
-}
-impl Default for array {
-    fn default() -> Self {
-        array {
-            name: [(0 as libc::c_char); 3],
-            x: 0_i32,
-        }
-    }
 }
 pub fn main() {
     unsafe {

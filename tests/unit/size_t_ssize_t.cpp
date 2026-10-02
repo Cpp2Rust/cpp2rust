@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <sys/types.h>
+#include <utility>
 
 static size_t add_sizes(size_t a, size_t b) { return a + b; }
 
@@ -97,5 +98,14 @@ int main() {
   assert(a64 == 120);
 
   assert((int)(n % 7) == 1);
+
+  const std::size_t mx = 5;
+  std::size_t mins[] = {0, std::min<std::size_t>(1, mx), std::min(mx, mx - 3),
+                        mx};
+  assert(mins[1] == 1);
+  assert(mins[2] == 2);
+
+  std::pair<std::size_t, int> pr(sz, 1);
+  assert(pr.first == 21);
   return 0;
 }

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct basic {
     #[offset(0)]
@@ -21,13 +21,6 @@ impl basic {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
-impl Clone for basic {
-    fn clone(&self) -> Self {
-        basic {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
-    }
-}
 impl Default for basic {
     fn default() -> Self {
         basic {
@@ -35,7 +28,7 @@ impl Default for basic {
         }
     }
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(1)]
 pub struct empty {
     #[offset(0)]
@@ -43,13 +36,6 @@ pub struct empty {
     __bytes: Value<Box<[u8]>>,
 }
 impl empty {}
-impl Clone for empty {
-    fn clone(&self) -> Self {
-        empty {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
-    }
-}
 impl Default for empty {
     fn default() -> Self {
         empty {

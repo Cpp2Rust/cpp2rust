@@ -84,18 +84,10 @@ impl Default for RefQualified {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, FnPtrArg)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {
     pub p: Partial,
     pub arr: [Partial; 2],
-}
-impl Default for Holder {
-    fn default() -> Self {
-        Holder {
-            p: <Partial>::default(),
-            arr: std::array::from_fn::<_, 2, _>(|_| <Partial>::default()),
-        }
-    }
 }
 pub fn main() {
     unsafe {

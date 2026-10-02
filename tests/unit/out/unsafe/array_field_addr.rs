@@ -7,20 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub before: i32,
     pub mask: [u8; 4],
     pub after: i32,
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            before: 0_i32,
-            mask: [0_u8; 4],
-            after: 0_i32,
-        }
-    }
 }
 pub fn main() {
     unsafe {

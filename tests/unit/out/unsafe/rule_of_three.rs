@@ -9,7 +9,7 @@ use std::rc::Rc;
 pub static mut alive_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 pub static mut copies_1: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, FnPtrArg)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Buffer {
     pub data: [i32; 4],
     pub size: i32,
@@ -62,14 +62,6 @@ impl Buffer {
 impl Clone for Buffer {
     fn clone(&self) -> Self {
         unsafe { Buffer::copy_from(self as *const Buffer) }
-    }
-}
-impl Default for Buffer {
-    fn default() -> Self {
-        Buffer {
-            data: [0_i32; 4],
-            size: 0_i32,
-        }
     }
 }
 pub unsafe fn sum_2(b: *const Buffer) -> i32 {

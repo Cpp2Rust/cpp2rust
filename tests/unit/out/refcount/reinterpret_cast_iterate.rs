@@ -21,7 +21,7 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 8) {
         assert!(
-            ({ (((*words.borrow()).offset((*i.borrow()) as isize).read()) as i32) } == {
+            ({ ((elem!((*words.borrow()), (*i.borrow())).read()) as i32) } == {
                 ((((*i.borrow()) + 1) as u16) as i32)
             })
         );

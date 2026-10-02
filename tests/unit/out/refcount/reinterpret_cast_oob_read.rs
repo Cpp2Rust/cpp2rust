@@ -13,9 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let val: Value<u32> = Rc::new(RefCell::new(67305985_u32));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new((val.as_pointer()).reinterpret_cast::<u8>()));
-    let x: Value<u8> = Rc::new(RefCell::new(
-        ((*bytes.borrow()).offset((4) as isize).read()),
-    ));
+    let x: Value<u8> = Rc::new(RefCell::new((elem!((*bytes.borrow()), 4).read())));
     &(*x.borrow_mut());
     return 0;
 }

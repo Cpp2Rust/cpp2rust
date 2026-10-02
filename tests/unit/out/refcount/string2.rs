@@ -16,9 +16,7 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    (arr.as_pointer() as Ptr<u8>)
-        .offset(1_usize)
-        .write(('b' as u8));
+    elem!((arr.as_pointer() as Ptr<u8>), 1_usize).write(('b' as u8));
     let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u8>).offset((1) as isize),
     ));

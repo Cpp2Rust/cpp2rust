@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pointers {
     pub x1: *mut i32,
     pub x2: *const i32,
@@ -15,15 +15,22 @@ pub struct Pointers {
     pub x4: [*const i32; 10],
     pub x5: i32,
 }
-impl Default for Pointers {
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct SmallArrays {
+    pub a: [i32; 32],
+    pub f: Option<unsafe fn(i32) -> i32>,
+    pub fs: [Option<unsafe fn(i32) -> i32>; 2],
+    pub p: [Pointers; 2],
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
+pub struct BigArray {
+    pub a: [i32; 33],
+}
+impl Default for BigArray {
     fn default() -> Self {
-        Pointers {
-            x1: std::ptr::null_mut(),
-            x2: std::ptr::null(),
-            x3: [std::ptr::null_mut(); 5],
-            x4: [std::ptr::null(); 10],
-            x5: 0_i32,
-        }
+        BigArray { a: [0_i32; 33] }
     }
 }
 pub fn main() {
@@ -44,6 +51,30 @@ unsafe fn main_0() -> i32 {
         default_pointers,
         libcc2rs::malloc_usable_size(default_pointers as *mut ::libc::c_void)
             / ::std::mem::size_of::<Pointers>(),
+    )));
+    let mut small: *mut SmallArrays = Box::leak(
+        (0..2_usize)
+            .map(|_| <SmallArrays>::default())
+            .collect::<Box<[SmallArrays]>>(),
+    )
+    .as_mut_ptr();
+
+    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+        small,
+        libcc2rs::malloc_usable_size(small as *mut ::libc::c_void)
+            / ::std::mem::size_of::<SmallArrays>(),
+    )));
+    let mut big: *mut BigArray = Box::leak(
+        (0..2_usize)
+            .map(|_| <BigArray>::default())
+            .collect::<Box<[BigArray]>>(),
+    )
+    .as_mut_ptr();
+
+    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+        big,
+        libcc2rs::malloc_usable_size(big as *mut ::libc::c_void)
+            / ::std::mem::size_of::<BigArray>(),
     )));
     return 0;
 }

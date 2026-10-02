@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let arr1: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
         (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
     )));
-    (*arr1.borrow()).offset((100) as isize).write(1);
+    elem!((*arr1.borrow()), 100).write(1);
     (*arr1.borrow()).delete();
     return 0;
 }

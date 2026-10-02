@@ -53,15 +53,9 @@ impl Default for S {
 pub fn sum_0(s: Ptr<S>) -> i32 {
     return ({
         ({ ((*s.with(|__s| __s.v.clone()).borrow()).len() as i32) } + {
-            ((array_field_ptr!(s, n) as Ptr<i32>)
-                .offset((0) as isize)
-                .read())
+            (elem!((array_field_ptr!(s, n) as Ptr::<i32>), 0).read())
         })
-    } + {
-        ((array_field_ptr!(s, n) as Ptr<i32>)
-            .offset((1) as isize)
-            .read())
-    });
+    } + { (elem!((array_field_ptr!(s, n) as Ptr::<i32>), 1).read()) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -88,7 +82,7 @@ pub trait SImpl {
 }
 impl SImpl for Ptr<S> {
     fn move_assign(&self, _a0: Ptr<S>) -> Ptr<S> {
-        ((*self).with(|__s| __s.v.clone()).as_pointer() as Ptr<Vec<i32>>).write(std::mem::take(
+        ((*self).with(|__s| __s.v.as_pointer()) as Ptr<Vec<i32>>).write(std::mem::take(
             &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
         ));
         {

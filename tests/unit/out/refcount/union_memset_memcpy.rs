@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct shape_a {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct shape_a {
     #[offset(2)]
     #[byte_size(14)]
     pub pad: Value<Box<[u8]>>,
-}
-impl Clone for shape_a {
-    fn clone(&self) -> Self {
-        Self {
-            code: self.code.clone(),
-            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
-        }
-    }
 }
 impl Default for shape_a {
     fn default() -> Self {
@@ -31,7 +23,7 @@ impl Default for shape_a {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct shape_b {
     #[offset(0)]
@@ -44,16 +36,6 @@ pub struct shape_b {
     #[byte_size(8)]
     pub fill: Value<Box<[u8]>>,
 }
-impl Clone for shape_b {
-    fn clone(&self) -> Self {
-        Self {
-            code: self.code.clone(),
-            lo: self.lo.clone(),
-            hi: self.hi.clone(),
-            fill: Rc::new(RefCell::new((*self.fill.borrow()).clone())),
-        }
-    }
-}
 impl Default for shape_b {
     fn default() -> Self {
         shape_b {
@@ -64,7 +46,7 @@ impl Default for shape_b {
         }
     }
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(256)]
 pub struct anon_0 {
     #[offset(0)]
@@ -80,13 +62,6 @@ impl anon_0 {
     }
     pub fn raw_(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_0 {
@@ -118,16 +93,20 @@ fn main_0() -> i32 {
     assert!((((((*c.borrow()).view.a().with(|__s| __s.code) as i32) == 0) as i32) != 0));
     assert!((((((*c.borrow()).view.b().with(|__s| __s.lo) as i32) == 0) as i32) != 0));
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            0
+        )
+        .read()) as i32)
             == 0) as i32)
             != 0)
     );
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((255) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            255
+        )
+        .read()) as i32)
             == 0) as i32)
             != 0)
     );
@@ -155,9 +134,11 @@ fn main_0() -> i32 {
     };
     assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
-        (((((((field_ptr!((*c.borrow()).view.b(), lo)).reinterpret_cast::<u8>())
-            .offset((0) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((field_ptr!((*c.borrow()).view.b(), lo)).reinterpret_cast::<u8>()),
+            0
+        )
+        .read()) as i32)
             == 80) as i32)
             != 0)
     );

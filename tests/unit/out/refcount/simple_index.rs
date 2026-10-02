@@ -13,8 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let v: Value<Vec<bool>> = Rc::new(RefCell::new(vec![true]));
     assert!(
-        ((*(v.as_pointer() as Ptr<bool>)
-            .offset(0_usize)
+        ((*elem!((v.as_pointer() as Ptr<bool>), 0_usize)
             .upgrade()
             .deref()) as bool)
     );

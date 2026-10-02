@@ -6,19 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct StackArray {
     #[offset(0)]
     #[byte_size(24)]
     pub arr: Value<Box<[Ptr<i32>]>>,
-}
-impl Clone for StackArray {
-    fn clone(&self) -> Self {
-        Self {
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for StackArray {
     fn default() -> Self {
@@ -35,10 +28,8 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         {
-            let _ptr = ((array_field_ptr!(s, arr) as Ptr<Ptr<i32>>)
-                .offset((*i.borrow()) as isize)
-                .read())
-            .clone();
+            let _ptr = (elem!((array_field_ptr!(s, arr) as Ptr<Ptr::<i32>>), (*i.borrow())).read())
+                .clone();
             _ptr.write(_ptr.read() + 1)
         };
         (*i.borrow_mut()).prefix_inc();

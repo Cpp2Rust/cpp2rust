@@ -79,7 +79,7 @@ fn main_0() -> i32 {
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
-        (*bz.borrow()).offset((*i.borrow()) as isize).write(1_u8);
+        elem!((*bz.borrow()), (*i.borrow())).write(1_u8);
         (*i.borrow_mut()).postfix_inc();
     }
     assert!(

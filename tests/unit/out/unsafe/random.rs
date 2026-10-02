@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, FnPtrArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pair {
     pub x: i32,
     pub y: i32,
@@ -35,19 +35,6 @@ impl Pair {
     }
     pub unsafe fn as_ptr(&mut self) -> *mut i32 {
         return (&mut self.x as *mut i32);
-    }
-}
-impl Default for Pair {
-    fn default() -> Self {
-        Pair {
-            x: 0_i32,
-            y: 0_i32,
-            a: [0_i32; 5],
-            r: <*mut i32>::default(),
-            p: std::ptr::null_mut(),
-            pair: std::ptr::null_mut(),
-            ap: [std::ptr::null_mut(); 2],
-        }
     }
 }
 pub unsafe fn zero_0() -> i32 {
