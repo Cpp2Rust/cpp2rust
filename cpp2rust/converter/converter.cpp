@@ -591,7 +591,8 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
 }
 
 bool Converter::VisitVarDecl(clang::VarDecl *decl) {
-  if (clang::isa<clang::VarTemplatePartialSpecializationDecl>(decl)) {
+  if (clang::isa<clang::VarTemplatePartialSpecializationDecl>(decl) ||
+      decl->getDeclContext()->isDependentContext()) {
     return false;
   }
   if (ConvertLambdaVarDecl(decl)) {
@@ -756,6 +757,11 @@ void Converter::EmitRustStructOrUnion(clang::RecordDecl *decl) {
       VisitEnumDecl(enum_decl);
     }
     if (auto *var_decl = clang::dyn_cast<clang::VarDecl>(d)) {
+      if (auto *def = var_decl->getDefinition();
+          def && var_decl->getInstantiatedFromStaticDataMember() &&
+          !var_decl->hasInit()) {
+        var_decl = def;
+      }
       VisitVarDecl(var_decl);
     }
     if (auto *friend_decl = clang::dyn_cast<clang::FriendDecl>(d)) {
