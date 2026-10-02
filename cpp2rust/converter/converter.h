@@ -312,8 +312,10 @@ public:
   virtual void ConvertParamTyConstCast(clang::QualType param_type,
                                        clang::Expr *expr);
 
+  std::string ConvertScalarCast(std::string str, clang::QualType to);
+
   virtual std::string ConvertPointeeCast(std::string str,
-                                         clang::QualType from,
+                                         const clang::Expr *from,
                                          clang::QualType to);
 
   void ConvertFunctionPointerTransmute(clang::Expr *expr, clang::QualType type);

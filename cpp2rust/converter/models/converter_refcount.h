@@ -377,7 +377,7 @@ private:
 
   void ConvertParamTyConstCast(clang::QualType, clang::Expr *) override {}
 
-  std::string ConvertPointeeCast(std::string str, clang::QualType from,
+  std::string ConvertPointeeCast(std::string str, const clang::Expr *from,
                                  clang::QualType to) override;
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);

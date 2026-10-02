@@ -1560,11 +1560,10 @@ bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
          Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
 }
 
-static clang::QualType GetExprPointee(clang::ASTContext &ctx,
-                                      const clang::Expr *expr,
-                                      clang::QualType slot) {
-  auto type = expr->IgnoreImplicit()->getType().getNonReferenceType();
-  if (slot->isReferenceType()) {
+clang::QualType GetExprPointee(clang::ASTContext &ctx, const clang::Expr *from,
+                               clang::QualType to) {
+  auto type = from->IgnoreImplicit()->getType().getNonReferenceType();
+  if (to->isReferenceType()) {
     return type;
   }
   if (auto *array = ctx.getAsArrayType(type)) {
@@ -1615,22 +1614,18 @@ static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
          Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
 }
 
-clang::QualType GetMismatchedExprPointee(clang::ASTContext &ctx,
-                                         const clang::Expr *expr,
-                                         clang::QualType slot) {
-  if (!slot->isReferenceType() && !slot->isPointerType()) {
-    return {};
+bool NeedsImplicitPointeeCast(clang::ASTContext &ctx, const clang::Expr *from,
+                              clang::QualType to) {
+  if (!to->isReferenceType() && !to->isPointerType()) {
+    return false;
   }
-  if (slot->isReferenceType() &&
-      clang::isa<clang::MaterializeTemporaryExpr>(expr->IgnoreImpCasts())) {
-    return {};
+  if (to->isReferenceType() &&
+      clang::isa<clang::MaterializeTemporaryExpr>(from->IgnoreImpCasts())) {
+    return false;
   }
-  auto pointee = GetExprPointee(ctx, expr, slot);
-  auto target = slot->getPointeeType();
-  if (pointee.isNull() || !PointeeMappingDiffers(ctx, pointee, target)) {
-    return {};
-  }
-  return target.isConstQualified() ? pointee.withConst() : pointee;
+  auto pointee = GetExprPointee(ctx, from, to);
+  return !pointee.isNull() &&
+         PointeeMappingDiffers(ctx, pointee, to->getPointeeType());
 }
 
 bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,

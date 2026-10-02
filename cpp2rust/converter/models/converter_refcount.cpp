@@ -408,7 +408,7 @@ std::string ConverterRefCount::ConvertFreshPointer(
 }
 
 std::string ConverterRefCount::ConvertPointeeCast(std::string str,
-                                                  clang::QualType,
+                                                  const clang::Expr *,
                                                   clang::QualType to) {
   if (to->isFunctionPointerType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;

@@ -1558,48 +1558,57 @@ bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
 bool Converter::Convert(clang::Expr *expr,
                         std::optional<clang::QualType> implicit_convert_to) {
   if (expr && implicit_convert_to) {
-    if (auto pointee =
-            GetMismatchedExprPointee(ctx_, expr, *implicit_convert_to);
-        !pointee.isNull()) {
-      StrCat(ConvertPointeeCast(ToString(expr), pointee, *implicit_convert_to));
-      return true;
+    auto to = *implicit_convert_to;
+    if (NeedsImplicitPointeeCast(ctx_, expr, to)) {
+      StrCat(ConvertPointeeCast(ToString(expr), expr, to));
+      return false;
+    }
+    if (NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(), to)) {
+      StrCat(ConvertScalarCast(ToString(expr), to));
+      return false;
     }
   }
-  bool needs_conversion =
-      expr && implicit_convert_to &&
-      NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(),
-                              *implicit_convert_to);
-  PushParen paren(*this, needs_conversion);
   computed_expr_type_ = ComputedExprType::Unknown;
   bool result = TraverseStmt(expr);
   if (expr && computed_expr_type_ == ComputedExprType::Unknown) {
     expr->dump();
     assert(false && "computed_expr_type_ not set");
   }
-  if (needs_conversion) {
-    ConvertCast(*implicit_convert_to);
-    computed_expr_type_ = ComputedExprType::FreshValue;
-  }
   return result;
 }
 
+std::string Converter::ConvertScalarCast(std::string str, clang::QualType to) {
+  Buffer buf(*this);
+  {
+    PushParen paren(*this);
+    StrCat(str);
+    ConvertCast(to);
+  }
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return std::move(buf).str();
+}
+
 std::string Converter::ConvertPointeeCast(std::string str,
-                                          clang::QualType from,
+                                          const clang::Expr *from,
                                           clang::QualType to) {
+  auto pointee = GetExprPointee(ctx_, from, to);
   if (to->isFunctionPointerType()) {
     return std::format("std::mem::transmute::<{}, {}>({})",
-                       ToString(ctx_.getPointerType(from)), ToString(to),
+                       ToString(ctx_.getPointerType(pointee)), ToString(to),
                        str);
+  }
+  if (to->getPointeeType().isConstQualified()) {
+    pointee = pointee.withConst();
   }
   auto target = GetUnsafeTypeAsString(to->getPointeeType());
   if (to->isReferenceType() && !isAddrOf()) {
     return std::format("*(&raw {} {}).cast::<{}>()",
-                       from.isConstQualified() ? "const" : "mut", str,
+                       pointee.isConstQualified() ? "const" : "mut", str,
                        target);
   }
   computed_expr_type_ = ComputedExprType::FreshPointer;
   return std::format("({} as {}).cast::<{}>()", str,
-                     GetUnsafeTypeAsString(ctx_.getPointerType(from)),
+                     GetUnsafeTypeAsString(ctx_.getPointerType(pointee)),
                      target);
 }
 
