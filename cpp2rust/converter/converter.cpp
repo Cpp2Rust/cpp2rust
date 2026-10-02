@@ -2252,19 +2252,9 @@ static std::string getTypedLiteral(const char *num, std::string_view type) {
 std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
                                          bool incl_type,
                                          const clang::QualType *type) {
-  auto value = expr->getValue();
-  bool is_signed = false;
-  if (type && (*type)->isBuiltinType() && (*type)->isIntegerType() &&
-      !(*type)->isBooleanType()) {
-    value = value.zextOrTrunc(ctx_.getIntWidth(*type));
-    is_signed =
-        (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
-                (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_U)
-            ? CharRustTypeIsSigned()
-            : (*type)->isSignedIntegerType();
-  }
+  auto value = GetIntegerLiteralValue(ctx_, expr, type, CharRustTypeIsSigned());
   llvm::SmallString<16> num_as_string;
-  value.toString(num_as_string, 10, is_signed);
+  value.toString(num_as_string, 10);
   if (num_as_string[0] != '-' && !incl_type) {
     if (type && (*type)->isFloatingType() &&
         num_as_string.find('.') == llvm::StringRef::npos) {

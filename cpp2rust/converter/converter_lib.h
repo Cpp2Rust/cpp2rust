@@ -9,6 +9,7 @@
 #include <clang/AST/Expr.h>
 #include <clang/AST/StmtCXX.h>
 #include <clang/AST/Type.h>
+#include <llvm/ADT/APSInt.h>
 #include <llvm/ADT/STLFunctionalExtras.h>
 
 #include <optional>
@@ -64,6 +65,11 @@ bool IsUserDefinedDecl(const clang::Decl *decl);
 bool RefersToUserDefinedDecl(const clang::Expr *expr);
 
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr);
+
+llvm::APSInt GetIntegerLiteralValue(const clang::ASTContext &ctx,
+                                    const clang::IntegerLiteral *expr,
+                                    const clang::QualType *type,
+                                    bool char_is_signed);
 
 bool IsMut(clang::QualType qual_type);
 
