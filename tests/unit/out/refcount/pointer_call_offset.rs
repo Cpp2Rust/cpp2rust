@@ -20,15 +20,11 @@ fn main_0() -> i32 {
     )));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < 10_u32) {
-        (*p1.borrow())
-            .offset((*i.borrow()) as isize)
-            .write({ ((*i.borrow()) as i32) });
+        elem!((*p1.borrow()), (*i.borrow())).write({ ((*i.borrow()) as i32) });
         (*i.borrow_mut()).prefix_inc();
     }
     let out: Value<i32> = Rc::new(RefCell::new(
-        (({ foo_0(((*p1.borrow()).offset((1) as isize))) })
-            .offset((3) as isize)
-            .read()),
+        (elem!(({ foo_0(((*p1.borrow()).offset((1) as isize)),) }), 3).read()),
     ));
     (*p1.borrow()).delete();
     assert!(((*out.borrow()) == 9));

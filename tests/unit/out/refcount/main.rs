@@ -27,7 +27,7 @@ fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
     let argc: Value<i32> = Rc::new(RefCell::new(argc));
     let argv: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(argv));
     let s: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = ((*argv.borrow()).offset((0) as isize).read()).to_c_bytes();
+        let mut __bytes = (elem!((*argv.borrow()), 0).read()).to_c_bytes();
         __bytes.push(0);
         __bytes
     }));

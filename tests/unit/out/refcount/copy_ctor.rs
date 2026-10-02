@@ -103,7 +103,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -112,14 +112,6 @@ pub struct Holder {
     #[offset(4)]
     #[byte_size(8)]
     pub arr: Value<Box<[Counted]>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            c: self.c.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for Holder {
     fn default() -> Self {
@@ -178,17 +170,21 @@ fn main_0() -> i32 {
     assert!(
         (({ (*hold2.borrow()).c.v } == 8)
             && ({
-                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
-                    .offset((0) as isize)
-                    .upgrade()
-                    .deref())
+                (*elem!(
+                    (array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>),
+                    0
+                )
+                .upgrade()
+                .deref())
                 .v
             } == 9))
             && ({
-                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
-                    .offset((1) as isize)
-                    .upgrade()
-                    .deref())
+                (*elem!(
+                    (array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>),
+                    1
+                )
+                .upgrade()
+                .deref())
                 .v
             } == 10)
     );
@@ -200,8 +196,7 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (*(vec_.as_pointer() as Ptr<Counted>)
-                .offset(0_usize)
+            (*elem!((vec_.as_pointer() as Ptr<Counted>), 0_usize)
                 .upgrade()
                 .deref())
             .v

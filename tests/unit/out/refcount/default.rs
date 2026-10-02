@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(144)]
 pub struct Pointers {
     #[offset(0)]
@@ -23,17 +23,6 @@ pub struct Pointers {
     pub x4: Value<Box<[Ptr<i32>]>>,
     #[offset(136)]
     pub x5: i32,
-}
-impl Clone for Pointers {
-    fn clone(&self) -> Self {
-        Self {
-            x1: self.x1.clone(),
-            x2: self.x2.clone(),
-            x3: Rc::new(RefCell::new((*self.x3.borrow()).clone())),
-            x4: Rc::new(RefCell::new((*self.x4.borrow()).clone())),
-            x5: self.x5.clone(),
-        }
-    }
 }
 impl Default for Pointers {
     fn default() -> Self {

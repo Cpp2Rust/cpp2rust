@@ -15,11 +15,11 @@ fn main_0() -> i32 {
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
         (arr.as_pointer() as Ptr<u32>).reinterpret_cast::<u8>(),
     ));
-    assert!(((((*bytes.borrow()).offset((3) as isize).read()) as i32) == 4));
-    assert!(((((*bytes.borrow()).offset((4) as isize).read()) as i32) == 5));
-    (*bytes.borrow()).offset((3) as isize).write(255_u8);
+    assert!((((elem!((*bytes.borrow()), 3).read()) as i32) == 4));
+    assert!((((elem!((*bytes.borrow()), 4).read()) as i32) == 5));
+    elem!((*bytes.borrow()), 3).write(255_u8);
     assert!(((*arr.borrow())[(0) as usize] == 4278387201_u32));
-    (*bytes.borrow()).offset((4) as isize).write(170_u8);
+    elem!((*bytes.borrow()), 4).write(170_u8);
     assert!(((*arr.borrow())[(1) as usize] == 134678186_u32));
     return 0;
 }

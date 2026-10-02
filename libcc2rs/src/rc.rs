@@ -16,6 +16,19 @@ use crate::reinterpret::{ByteRepr, OriginalAlloc, with_scratch};
 
 pub type Value<T> = Rc<RefCell<T>>;
 
+// A copy of a Value that doesn't share the value: unlike clone(), which
+// shares it by incrementing the reference count, it copies the value into a
+// new Value.
+pub trait DeepClone {
+    fn deep_clone(&self) -> Self;
+}
+
+impl<T: Clone> DeepClone for Value<T> {
+    fn deep_clone(&self) -> Self {
+        Rc::new(RefCell::new(self.borrow().clone()))
+    }
+}
+
 pub(crate) struct ReinterpretedView {
     // Pointer to the source of reinterpret
     pub(crate) alloc: OriginalAlloc,
@@ -336,16 +349,9 @@ impl<T> Ptr<T> {
 
     #[inline]
     pub fn offset(&self, offset: impl TryInto<isize>) -> Self {
-        let offset = offset
-            .try_into()
-            .ok()
-            .expect("the offset must fit in a isize");
-        let step = self.elem_step();
         Self {
             kind: self.kind.clone(),
-            offset: self
-                .offset
-                .wrapping_add(offset.wrapping_mul(step as isize) as usize),
+            offset: self.offset_by(offset),
         }
     }
 
@@ -477,6 +483,39 @@ impl<T> Ptr<T> {
     where
         T: ByteRepr,
     {
+        self.with_mut_at_raw(self.offset, f)
+    }
+
+    // Like `self.offset(idx).with_mut(f)`, without the intermediate pointer.
+    #[inline(always)]
+    pub fn with_mut_at<R>(&self, idx: impl TryInto<isize>, f: impl FnOnce(&mut T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
+        self.with_mut_at_raw(self.offset_by(idx), f)
+    }
+
+    #[inline(always)]
+    pub fn write_at(&self, idx: impl TryInto<isize>, value: T)
+    where
+        T: ByteRepr,
+    {
+        self.with_mut_at(idx, |v| *v = value);
+    }
+
+    // The internal offset of `self.offset(idx)`.
+    #[inline(always)]
+    fn offset_by(&self, idx: impl TryInto<isize>) -> usize {
+        let idx = idx.try_into().ok().expect("the offset must fit in a isize");
+        self.offset
+            .wrapping_add(idx.wrapping_mul(self.elem_step() as isize) as usize)
+    }
+
+    #[inline(always)]
+    fn with_mut_at_raw<R>(&self, offset: usize, f: impl FnOnce(&mut T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
         match &self.kind {
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
@@ -486,18 +525,18 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
-                f(&mut borrow[self.offset])
+                f(&mut borrow[offset])
             }
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let mut borrow = rc.borrow_mut();
-                f(&mut borrow[self.offset])
+                f(&mut borrow[offset])
             }
             PtrKind::Field(root) => {
                 let root = upgrade_root(root);
-                f(&mut Self::borrow_field_mut(&*root, self.offset))
+                f(&mut Self::borrow_field_mut(&*root, offset))
             }
-            PtrKind::Reinterpreted(data) => Self::with_mut_reinterpreted(data, self.offset, f),
+            PtrKind::Reinterpreted(data) => Self::with_mut_reinterpreted(data, offset, f),
             PtrKind::Null => null_deref(),
         }
     }
@@ -526,6 +565,23 @@ impl<T> Ptr<T> {
     where
         T: ByteRepr,
     {
+        self.with_at_raw(self.offset, f)
+    }
+
+    // Like `self.offset(idx).with(f)`, without the intermediate pointer.
+    #[inline(always)]
+    pub fn with_at<R>(&self, idx: impl TryInto<isize>, f: impl FnOnce(&T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
+        self.with_at_raw(self.offset_by(idx), f)
+    }
+
+    #[inline(always)]
+    fn with_at_raw<R>(&self, offset: usize, f: impl FnOnce(&T) -> R) -> R
+    where
+        T: ByteRepr,
+    {
         match &self.kind {
             PtrKind::StackSingle(weak) | PtrKind::HeapSingle(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
@@ -535,18 +591,18 @@ impl<T> Ptr<T> {
             PtrKind::StackArray(weak) | PtrKind::HeapArray(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let borrow = rc.borrow();
-                f(&borrow[self.offset])
+                f(&borrow[offset])
             }
             PtrKind::StackVec(weak) | PtrKind::HeapVec(weak) => {
                 let rc = weak.upgrade().unwrap_or_else(|| dangling());
                 let borrow = rc.borrow();
-                f(&borrow[self.offset])
+                f(&borrow[offset])
             }
             PtrKind::Field(root) => {
                 let root = upgrade_root(root);
-                f(&Self::borrow_field(&*root, self.offset))
+                f(&Self::borrow_field(&*root, offset))
             }
-            PtrKind::Reinterpreted(data) => Self::with_reinterpreted(data, self.offset, f),
+            PtrKind::Reinterpreted(data) => Self::with_reinterpreted(data, offset, f),
             PtrKind::Null => null_deref(),
         }
     }
@@ -658,6 +714,12 @@ impl<T: Clone + ByteRepr> Ptr<T> {
     #[inline(always)]
     pub fn read(&self) -> T {
         self.with(|v| v.clone())
+    }
+
+    // Like `self.offset(idx).read()`, without the intermediate pointer.
+    #[inline(always)]
+    pub fn read_at(&self, idx: impl TryInto<isize>) -> T {
+        self.with_at(idx, |v| v.clone())
     }
 }
 

@@ -83,10 +83,11 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, N: i32) -> Option<Value<Box<
             ((((-2_i32 as f64) * 3.141592654E+0) * ((*i.borrow()) as f64))
                 / ((*N.borrow()) as f64)),
         ));
-        (*w.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Complex {
+        let __rhs = Complex {
             re: (*alpha.borrow()).cos(),
             img: (*alpha.borrow()).sin(),
         };
+        (*w.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = __rhs;
         (*i.borrow_mut()).postfix_inc();
     }
     let A0: Value<Option<Value<Box<[Complex]>>>> =

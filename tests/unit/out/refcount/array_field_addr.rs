@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct S {
     #[offset(0)]
@@ -16,15 +16,6 @@ pub struct S {
     pub mask: Value<Box<[u8]>>,
     #[offset(8)]
     pub after: i32,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            before: self.before.clone(),
-            mask: Rc::new(RefCell::new((*self.mask.borrow()).clone())),
-            after: self.after.clone(),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {

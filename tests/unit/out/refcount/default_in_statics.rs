@@ -15,7 +15,7 @@ pub struct Inner {
     #[byte_size(8)]
     pub name: Ptr<u8>,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(88)]
 pub struct Outer {
     #[offset(0)]
@@ -41,20 +41,6 @@ pub struct Outer {
     #[offset(80)]
     #[byte_size(8)]
     pub fn_: FnPtr<fn(i32) -> i32>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        Self {
-            p1: self.p1.clone(),
-            p2: self.p2.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-            cp: self.cp.clone(),
-            pp: self.pp.clone(),
-            inner: self.inner.clone(),
-            x: self.x.clone(),
-            fn_: self.fn_.clone(),
-        }
-    }
 }
 impl Default for Outer {
     fn default() -> Self {
@@ -172,9 +158,11 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         assert!(
-            ((array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr::<i32>>)
-                .offset((*i.borrow()) as isize)
-                .read())
+            (elem!(
+                (array_field_ptr!(static_outer_1.with(|v| v.as_pointer()), arr) as Ptr<Ptr::<i32>>),
+                (*i.borrow())
+            )
+            .read())
             .is_null()
         );
         (*i.borrow_mut()).prefix_inc();

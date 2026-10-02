@@ -32,11 +32,9 @@ fn main_0() -> i32 {
         })
     );
     assert!(
-        ({
-            (((*ptr.borrow()).reinterpret_cast::<u32>())
-                .offset((0) as isize)
-                .read())
-        } == { (*a1.borrow())[(0) as usize] })
+        ({ (elem!(((*ptr.borrow()).reinterpret_cast::<u32>()), 0).read()) } == {
+            (*a1.borrow())[(0) as usize]
+        })
     );
     return 0;
 }

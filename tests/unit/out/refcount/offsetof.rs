@@ -16,7 +16,7 @@ pub struct Layout {
     #[offset(8)]
     pub c: u16,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(66)]
 pub struct Frame {
     #[offset(0)]
@@ -24,14 +24,6 @@ pub struct Frame {
     #[offset(2)]
     #[byte_size(64)]
     pub body: Value<Box<[u8]>>,
-}
-impl Clone for Frame {
-    fn clone(&self) -> Self {
-        Self {
-            tag: self.tag.clone(),
-            body: Rc::new(RefCell::new((*self.body.borrow()).clone())),
-        }
-    }
 }
 impl Default for Frame {
     fn default() -> Self {

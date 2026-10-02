@@ -116,7 +116,8 @@ fn main_0() -> i32 {
         name: Ptr::<u8>::null(),
     }));
     let r: Value<Ptr<record>> = Rc::new(RefCell::new((rec.as_pointer())));
-    field!((*r.borrow()), name).write(libcc2rs::strdup_refcount((*p.borrow()).clone()));
+    let __rhs = libcc2rs::strdup_refcount((*p.borrow()).clone());
+    field!((*r.borrow()), name).write(__rhs);
     assert!((((!(((*r.borrow()).with(|__s| __s.name.clone())).is_null())) as i32) != 0));
     assert!(
         ((({

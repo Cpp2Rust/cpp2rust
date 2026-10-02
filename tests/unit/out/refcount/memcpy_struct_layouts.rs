@@ -45,7 +45,7 @@ pub struct nested {
     #[offset(16)]
     pub c: u8,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct array {
     #[offset(0)]
@@ -53,14 +53,6 @@ pub struct array {
     pub name: Value<Box<[u8]>>,
     #[offset(4)]
     pub x: i32,
-}
-impl Clone for array {
-    fn clone(&self) -> Self {
-        Self {
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-            x: self.x.clone(),
-        }
-    }
 }
 impl Default for array {
     fn default() -> Self {
@@ -254,15 +246,18 @@ fn main_0() -> i32 {
         ((a2.as_pointer() as Ptr<array>) as Ptr<array>).to_any()
     };
     assert!(
-        ((((((((((((array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>)
-            .offset((1) as isize)
-            .read()) as i32)
+        (((((((((((elem!(
+            (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+            1
+        )
+        .read()) as i32)
             == ('d' as i32)) as i32)
             != 0)
-            && ((((((array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name)
-                as Ptr::<u8>)
-                .offset((2) as isize)
-                .read()) as i32)
+            && (((((elem!(
+                (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+                2
+            )
+            .read()) as i32)
                 == 0) as i32)
                 != 0)) as i32)
             != 0)

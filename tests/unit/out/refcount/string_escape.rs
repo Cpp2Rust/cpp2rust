@@ -65,7 +65,7 @@ fn main_0() -> i32 {
             .wrapping_div((::std::mem::size_of::<u8>() as usize))) as i32))
     {
         assert!(
-            ({ (((*special.borrow()).offset((*i.borrow()) as isize).read()) as i32) } == {
+            ({ ((elem!((*special.borrow()), (*i.borrow())).read()) as i32) } == {
                 (({
                     let __idx = (*i.borrow()) as usize;
                     expected_0.with(|rc| rc.borrow()[__idx])

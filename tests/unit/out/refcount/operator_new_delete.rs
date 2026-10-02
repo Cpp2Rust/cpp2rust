@@ -21,13 +21,9 @@ fn main_0() -> i32 {
         libcc2rs::malloc_refcount((::std::mem::size_of::<i32>() as usize).wrapping_mul(2_usize))
             .reinterpret_cast::<i32>(),
     ));
-    (*arr.borrow()).offset((0) as isize).write(0);
-    (*arr.borrow()).offset((1) as isize).write(1);
-    assert!(
-        ((((*arr.borrow()).offset((0) as isize).read())
-            + ((*arr.borrow()).offset((1) as isize).read()))
-            == 1)
-    );
+    elem!((*arr.borrow()), 0).write(0);
+    elem!((*arr.borrow()), 1).write(1);
+    assert!((((elem!((*arr.borrow()), 0).read()) + (elem!((*arr.borrow()), 1).read())) == 1));
     libcc2rs::free_refcount((*arr.borrow()).to_any());
     return 0;
 }

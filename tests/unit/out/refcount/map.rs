@@ -375,9 +375,7 @@ fn main_0() -> i32 {
         (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
                 __v.entry(
-                    ((indexes.as_pointer() as Ptr<i32>)
-                        .offset(((*i.borrow()) as usize))
-                        .read()),
+                    (elem!((indexes.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read()),
                 )
                 .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
                 .as_pointer()

@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record, Value};
+use crate::{ByteRepr, DeepClone, Record, Value};
 use std::cell::RefCell;
 use std::mem::{offset_of, size_of};
 use std::rc::Rc;
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(size_of::<::libc::termios>())]
 pub struct Termios {
     #[offset(offset_of!(::libc::termios, c_iflag))]
@@ -40,15 +40,6 @@ impl Default for Termios {
             c_cc: Rc::new(RefCell::new(vec![0u8; 32].into_boxed_slice())),
             c_ispeed: 0,
             c_ospeed: 0,
-        }
-    }
-}
-
-impl Clone for Termios {
-    fn clone(&self) -> Self {
-        Self {
-            c_cc: Rc::new(RefCell::new(self.c_cc.borrow().clone())),
-            ..*self
         }
     }
 }

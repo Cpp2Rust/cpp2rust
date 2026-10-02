@@ -63,12 +63,11 @@ fn main_0() -> i32 {
     ));
     assert!(((*x.borrow()) == 8) && ((*s.borrow()).with(|__s| __s.b) == 3));
     let y: Value<i32> = Rc::new(RefCell::new(0));
-    field!((*s.borrow()), c).write(
-        ({
-            (*y.borrow_mut()) = 99;
-            (*y.borrow())
-        }),
-    );
+    let __rhs = ({
+        (*y.borrow_mut()) = 99;
+        (*y.borrow())
+    });
+    field!((*s.borrow()), c).write(__rhs);
     assert!(((*s.borrow()).with(|__s| __s.c) == 99) && ((*y.borrow()) == 99));
     let __rhs = ({ bump_0((*s.borrow()).clone()) });
     {

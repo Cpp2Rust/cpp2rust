@@ -14,19 +14,12 @@ pub struct Outer_RunInfo {
     #[offset(4)]
     pub num_extra_zero_runs: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct Outer {
     #[offset(0)]
     #[byte_size(24)]
     pub runs: Value<Vec<Outer_RunInfo>>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        Self {
-            runs: Rc::new(RefCell::new((*self.runs.borrow()).clone())),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -44,19 +37,23 @@ fn main_0() -> i32 {
     assert!(((*{ (*o.borrow()).runs.clone() }.borrow()).len() == 1_usize));
     assert!(
         ({
-            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
-                .offset(0_usize)
-                .upgrade()
-                .deref())
+            (*elem!(
+                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
+                0_usize
+            )
+            .upgrade()
+            .deref())
             .block_idx
         } == 1)
     );
     assert!(
         ({
-            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
-                .offset(0_usize)
-                .upgrade()
-                .deref())
+            (*elem!(
+                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
+                0_usize
+            )
+            .upgrade()
+            .deref())
             .num_extra_zero_runs
         } == 2)
     );

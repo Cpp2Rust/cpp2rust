@@ -14,7 +14,7 @@ pub struct In {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -27,16 +27,6 @@ pub struct S {
     #[offset(16)]
     #[byte_size(16)]
     pub arr: Value<Box<[i32]>>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            in_: self.in_.clone(),
-            total: self.total.clone(),
-            n: self.n.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -79,26 +69,26 @@ fn main_0() -> i32 {
             && ((((*q.borrow()).with(|__s| __s.in_.y) == 2) as i32) != 0)) as i32)
             != 0)
     );
-    (array_field_ptr!((*p.borrow()), arr) as Ptr<i32>)
-        .offset(((*p.borrow()).with(|__s| __s.n)) as isize)
-        .write({ (*p.borrow()).with(|__s| __s.total) });
+    elem!(
+        (array_field_ptr!((*p.borrow()), arr) as Ptr::<i32>),
+        (*p.borrow()).with(|__s| __s.n)
+    )
+    .write({ (*p.borrow()).with(|__s| __s.total) });
     {
         let _ptr = field!((*p.borrow()), n);
         _ptr.write(_ptr.read() + 1)
     };
-    (array_field_ptr!((*p.borrow()), arr) as Ptr<i32>)
-        .offset(((*p.borrow()).with(|__s| __s.n)) as isize)
-        .write((*q.borrow()).with(|__s| __s.in_.x));
+    elem!(
+        (array_field_ptr!((*p.borrow()), arr) as Ptr::<i32>),
+        (*p.borrow()).with(|__s| __s.n)
+    )
+    .write((*q.borrow()).with(|__s| __s.in_.x));
     assert!(
-        (((((((((((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
-            == 3) as i32)
+        ((((((((((elem!((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>), 0).read()) == 3)
+            as i32)
             != 0)
-            && (((((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>)
-                .offset((1) as isize)
-                .read())
-                == 4) as i32)
+            && ((((elem!((array_field_ptr!((*q.borrow()), arr) as Ptr::<i32>), 1).read()) == 4)
+                as i32)
                 != 0)) as i32)
             != 0)
             && ((((*q.borrow()).with(|__s| __s.n) == 1) as i32) != 0)) as i32)

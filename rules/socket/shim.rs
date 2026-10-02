@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, In6Addr, InAddr, Ptr, Record, Value};
+use crate::{ByteRepr, DeepClone, In6Addr, InAddr, Ptr, Record, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
 // The fields are at the offsets of the byte representation below.
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(16)]
 pub struct Sockaddr {
     #[offset(0)]
@@ -16,7 +16,7 @@ pub struct Sockaddr {
     pub sa_data: Value<Box<[u8]>>,
 }
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(16)]
 pub struct SockaddrIn {
     #[offset(0)]
@@ -30,7 +30,7 @@ pub struct SockaddrIn {
     pub sin_zero: Value<Box<[u8]>>,
 }
 
-#[derive(Default, Record, ByteRepr)]
+#[derive(Clone, Default, Record, ByteRepr)]
 #[byte_size(28)]
 pub struct SockaddrIn6 {
     #[offset(0)]
@@ -45,7 +45,7 @@ pub struct SockaddrIn6 {
     pub sin6_scope_id: u32,
 }
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(110)]
 pub struct SockaddrUn {
     #[offset(0)]
@@ -55,7 +55,7 @@ pub struct SockaddrUn {
     pub sun_path: Value<Box<[u8]>>,
 }
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(128)]
 pub struct SockaddrStorage {
     #[offset(0)]
@@ -218,56 +218,6 @@ impl Default for SockaddrStorage {
         Self {
             ss_family: 0,
             __pad: Rc::new(RefCell::new(vec![0u8; 126].into_boxed_slice())),
-        }
-    }
-}
-
-impl Clone for Sockaddr {
-    fn clone(&self) -> Self {
-        Self {
-            sa_family: self.sa_family,
-            sa_data: Rc::new(RefCell::new(self.sa_data.borrow().clone())),
-        }
-    }
-}
-
-impl Clone for SockaddrIn {
-    fn clone(&self) -> Self {
-        Self {
-            sin_family: self.sin_family,
-            sin_port: self.sin_port,
-            sin_addr: self.sin_addr.clone(),
-            sin_zero: Rc::new(RefCell::new(self.sin_zero.borrow().clone())),
-        }
-    }
-}
-
-impl Clone for SockaddrIn6 {
-    fn clone(&self) -> Self {
-        Self {
-            sin6_family: self.sin6_family,
-            sin6_port: self.sin6_port,
-            sin6_flowinfo: self.sin6_flowinfo,
-            sin6_addr: self.sin6_addr.clone(),
-            sin6_scope_id: self.sin6_scope_id,
-        }
-    }
-}
-
-impl Clone for SockaddrUn {
-    fn clone(&self) -> Self {
-        Self {
-            sun_family: self.sun_family,
-            sun_path: Rc::new(RefCell::new(self.sun_path.borrow().clone())),
-        }
-    }
-}
-
-impl Clone for SockaddrStorage {
-    fn clone(&self) -> Self {
-        Self {
-            ss_family: self.ss_family,
-            __pad: Rc::new(RefCell::new(self.__pad.borrow().clone())),
         }
     }
 }

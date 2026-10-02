@@ -242,6 +242,9 @@ GetAllVars(const clang::Stmt *stmt);
 
 bool ReferencesThis(const clang::Stmt *stmt);
 
+// Whether evaluating `stmt` reads a value from memory, e.g., a pointer.
+bool ReadsMemory(const clang::Stmt *stmt);
+
 bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);

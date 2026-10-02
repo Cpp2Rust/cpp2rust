@@ -208,6 +208,43 @@ fn main_0() -> i32 {
     (*a64.borrow_mut()) -= ((*c.borrow()) as i64);
     assert!(((*a64.borrow()) == 120_i64));
     assert!(((((*n.borrow()).wrapping_rem(7_usize)) as i32) == 1));
+    let mx: Value<usize> = Rc::new(RefCell::new(5_usize));
+    let mins: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([
+        0_usize,
+        ({
+            let __tmp_0: Value<u64> = Rc::new(RefCell::new(1_u64));
+            let __tmp_1: Value<u64> = Rc::new(RefCell::new(((*mx.borrow()) as u64)));
+            (if __tmp_0.as_pointer().read() <= __tmp_1.as_pointer().read() {
+                __tmp_0.as_pointer()
+            } else {
+                __tmp_1.as_pointer()
+            }
+            .read())
+        } as usize),
+        ({
+            let __tmp_0: Value<u64> = Rc::new(RefCell::new(((*mx.borrow()) as u64)));
+            let __tmp_1: Value<u64> =
+                Rc::new(RefCell::new(((*mx.borrow()).wrapping_sub(3_usize) as u64)));
+            (if __tmp_0.as_pointer().read() <= __tmp_1.as_pointer().read() {
+                __tmp_0.as_pointer()
+            } else {
+                __tmp_1.as_pointer()
+            }
+            .read())
+        } as usize),
+        (*mx.borrow()),
+    ])));
+    assert!(((*mins.borrow())[(1) as usize] == 1_usize));
+    assert!(((*mins.borrow())[(2) as usize] == 2_usize));
+    let pr: Value<(Value<u64>, Value<i32>)> = Rc::new(RefCell::new((
+        Rc::new(RefCell::new(
+            ((*sz.borrow()) as u64)
+                .try_into()
+                .expect("failed conversion"),
+        )),
+        Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
+    )));
+    assert!(((*(*pr.borrow()).0.borrow()) == 21_u64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
