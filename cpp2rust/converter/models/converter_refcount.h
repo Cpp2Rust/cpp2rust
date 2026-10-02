@@ -229,6 +229,8 @@ public:
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
 
+  bool TypeDerivesDefault(clang::QualType qual_type) override;
+
   bool Convert(clang::QualType qual_type) override;
   bool
   Convert(clang::Expr *expr,

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct Vtable {
     #[offset(0)]
@@ -18,15 +18,6 @@ pub struct Vtable {
     #[offset(16)]
     #[byte_size(8)]
     pub destroy: FnPtr<fn(AnyPtr)>,
-}
-impl Default for Vtable {
-    fn default() -> Self {
-        Vtable {
-            create: FnPtr::<fn(i32) -> AnyPtr>::null(),
-            get: FnPtr::<fn(AnyPtr) -> i32>::null(),
-            destroy: FnPtr::<fn(AnyPtr)>::null(),
-        }
-    }
 }
 thread_local!(
     pub static storage_0: Value<i32> = Rc::new(RefCell::new(0_i32));

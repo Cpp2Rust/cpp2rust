@@ -7,20 +7,11 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct S {
     pub head: i32,
     pub tail: [i32; 3],
     pub buf: [libc::c_char; 4],
-}
-impl Default for S {
-    fn default() -> Self {
-        S {
-            head: 0_i32,
-            tail: [0_i32; 3],
-            buf: [(0 as libc::c_char); 4],
-        }
-    }
 }
 pub static mut s_0: std::cell::LazyCell<S> = std::cell::LazyCell::new(|| unsafe {
     S {

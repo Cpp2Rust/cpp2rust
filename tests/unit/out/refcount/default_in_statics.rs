@@ -60,7 +60,7 @@ impl Default for Outer {
         }
     }
 }
-#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
@@ -77,17 +77,6 @@ pub struct Foo {
     pub fn2: FnPtr<fn(i32) -> i32>,
     #[offset(32)]
     pub n: i32,
-}
-impl Default for Foo {
-    fn default() -> Self {
-        Foo {
-            s1: Ptr::<u8>::null(),
-            s2: Ptr::<u8>::null(),
-            fn1: FnPtr::<fn(i32) -> i32>::null(),
-            fn2: FnPtr::<fn(i32) -> i32>::null(),
-            n: 0_i32,
-        }
-    }
 }
 thread_local!(
     pub static static_fn_0: Value<FnPtr<fn(i32) -> i32>> =

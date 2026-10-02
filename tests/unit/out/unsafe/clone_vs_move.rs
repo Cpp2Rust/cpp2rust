@@ -12,24 +12,13 @@ pub struct Bar {
     pub w: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct Foo {
     pub x: i32,
     pub y: *mut i32,
     pub z: *mut i32,
     pub a: [i32; 3],
     pub bar: Bar,
-}
-impl Default for Foo {
-    fn default() -> Self {
-        Foo {
-            x: 0_i32,
-            y: <*mut i32>::default(),
-            z: std::ptr::null_mut(),
-            a: [0_i32; 3],
-            bar: <Bar>::default(),
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]

@@ -7,22 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, Default)]
 pub struct record {
     pub code: u16,
     pub lo: u16,
     pub hi: u32,
     pub pad: [libc::c_char; 8],
-}
-impl Default for record {
-    fn default() -> Self {
-        record {
-            code: 0_u16,
-            lo: 0_u16,
-            hi: 0_u32,
-            pad: [(0 as libc::c_char); 8],
-        }
-    }
 }
 #[repr(C)]
 #[derive(Copy, Clone)]

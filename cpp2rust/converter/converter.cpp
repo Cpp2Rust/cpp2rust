@@ -641,33 +641,35 @@ bool Converter::RecordDerivesDefault(const clang::RecordDecl *decl) {
   }
 
   for (auto f : decl->fields()) {
-    if (f->hasInClassInitializer()) {
+    if (f->hasInClassInitializer() || !TypeDerivesDefault(f->getType())) {
       return false;
     }
+  }
 
-    // Records that contain function pointer do not derive Default
-    if (auto ptr_ty = f->getType()->getAs<clang::PointerType>()) {
-      if (ptr_ty->getPointeeType()->isFunctionType()) {
-        return false;
-      }
-    }
+  return true;
+}
 
-    // Records that contain std::array do not derive Default
-    if (Printer::ToString(ctx_, f->getType()).contains("std::array")) {
+bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
+  // Rust only implements Default for arrays of up to 32 elements
+  if (auto *array_type = ctx_.getAsConstantArrayType(qual_type)) {
+    return array_type->getSize().ule(32) &&
+           TypeDerivesDefault(array_type->getElementType());
+  }
+  if (qual_type->isArrayType()) {
+    return false;
+  }
+
+  // Types that need a custom array initializer (e.g., std::array, which is
+  // translated to Vec)
+  if (!GetArrayDefaultAsString(qual_type).empty()) {
+    return false;
+  }
+
+  // libc types do not implement Default
+  if (auto record = qual_type->getAsRecordDecl()) {
+    if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
+        qual_type.isPODType(ctx_)) {
       return false;
-    }
-
-    // Records that contain C arrays do not derive Default
-    if (f->getType()->isArrayType()) {
-      return false;
-    }
-
-    // Records that contain libc types do not derive Default
-    if (auto record = f->getType()->getAsRecordDecl()) {
-      if (ctx_.getSourceManager().isInSystemHeader(record->getLocation()) &&
-          f->getType().isPODType(ctx_)) {
-        return false;
-      }
     }
   }
 
