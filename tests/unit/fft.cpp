@@ -1,3 +1,5 @@
+// ADDITIONAL_COMPILE_FLAGS: -fmath-errno
+
 #include <cassert>
 #include <cmath>
 #include <memory>
