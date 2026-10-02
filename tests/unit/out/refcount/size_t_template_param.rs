@@ -7,11 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn array_ref_0(a: Ptr<u64>) -> u64 {
-    (a).offset((0) as isize)
-        .write({ ((a).offset((0) as isize).read()).wrapping_add(1_u64) });
-    return ((a)
-        .offset(((3_u64 as u64).wrapping_sub(1_u64)) as isize)
-        .read());
+    elem!((a), 0).write({ (elem!((a), 0).read()).wrapping_add(1_u64) });
+    return (elem!((a), (3_u64 as u64).wrapping_sub(1_u64)).read());
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -23,7 +20,7 @@ impl PtrCtor_unsigned_long_ {
     pub fn new(p: Ptr<u64>) -> Self {
         let p: Value<Ptr<u64>> = Rc::new(RefCell::new(p));
         let __this: Value<PtrCtor_unsigned_long_> = Rc::new(RefCell::new(Self {
-            v: ((*p.borrow()).offset((1) as isize).read()),
+            v: (elem!((*p.borrow()), 1).read()),
         }));
         let this: Ptr<PtrCtor_unsigned_long_> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
