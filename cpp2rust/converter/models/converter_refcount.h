@@ -120,8 +120,6 @@ public:
 
   // FnPtr does not implement Copy
   bool FunctionPointerImplementsCopy() const override { return false; }
-  bool FunctionPointerCastNeedsTransmute() const override { return false; }
-
   bool VisitCallExpr(clang::CallExpr *expr) override;
 
   bool VisitStringLiteral(clang::StringLiteral *expr) override;
@@ -329,13 +327,6 @@ private:
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
-  // Converts `expr` for use where a `qual_type` function pointer is
-  // expected, inserting a `.cast()` if `expr`'s own fn pointer type differs
-  // from `qual_type` -- e.g. because the two describe the same C function
-  // pointer type through different typedefs that the translation maps to
-  // distinct Rust types (`size_t` vs `unsigned long`).
-  std::string ConvertFnPtrValue(clang::QualType qual_type, clang::Expr *expr);
-
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
 
   // Whether an assigned value can be wrapped in braces to release its borrows
@@ -382,13 +373,17 @@ private:
   std::string ConvertFreshRValue(
       clang::Expr *expr,
       std::optional<clang::QualType> implicit_convert_to = {}) override;
-  std::string ConvertFreshPointer(clang::Expr *expr) override;
+  std::string ConvertFreshPointer(
+      clang::Expr *expr,
+      std::optional<clang::QualType> implicit_convert_to = {}) override;
 
   std::string ConvertPtrType(clang::QualType type);
   std::string ConvertPointeeType(clang::QualType ptr_type) override;
 
-  void ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
-                                         clang::Expr *expr) override;
+  void ConvertParamTyConstCast(clang::QualType, clang::Expr *) override {}
+
+  std::string ConvertPointeeCast(std::string str, const clang::Expr *from,
+                                 clang::QualType to) override;
 
   std::string ConvertSubscriptIndex(clang::Expr *idx);
 

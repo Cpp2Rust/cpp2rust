@@ -1571,6 +1571,74 @@ bool NeedsImplicitScalarCast(clang::ASTContext &ctx, clang::QualType from,
          Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
 }
 
+clang::QualType GetExprPointee(clang::ASTContext &ctx, const clang::Expr *from,
+                               clang::QualType to) {
+  auto type = from->IgnoreImplicit()->getType().getNonReferenceType();
+  if (to->isReferenceType()) {
+    return type;
+  }
+  if (auto *array = ctx.getAsArrayType(type)) {
+    return array->getElementType();
+  }
+  if (type->isPointerType()) {
+    return type->getPointeeType();
+  }
+  if (type->isFunctionType()) {
+    return type;
+  }
+  return {};
+}
+
+static bool PointeeMappingDiffers(clang::ASTContext &ctx, clang::QualType from,
+                                  clang::QualType to) {
+  while (true) {
+    if ((from->isPointerType() && to->isPointerType()) ||
+        (from->isReferenceType() && to->isReferenceType())) {
+      from = from->getPointeeType();
+      to = to->getPointeeType();
+    } else if (auto *from_array = ctx.getAsArrayType(from),
+               *to_array = ctx.getAsArrayType(to);
+               from_array && to_array) {
+      from = from_array->getElementType();
+      to = to_array->getElementType();
+    } else {
+      break;
+    }
+  }
+  if (auto *from_fn = from->getAs<clang::FunctionProtoType>(),
+      *to_fn = to->getAs<clang::FunctionProtoType>();
+      from_fn && to_fn && from_fn->getNumParams() == to_fn->getNumParams()) {
+    if (PointeeMappingDiffers(ctx, from_fn->getReturnType(),
+                              to_fn->getReturnType())) {
+      return true;
+    }
+    for (unsigned i = 0; i < from_fn->getNumParams(); ++i) {
+      if (PointeeMappingDiffers(ctx, from_fn->getParamType(i),
+                                to_fn->getParamType(i))) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return from.getCanonicalType().getUnqualifiedType() ==
+             to.getCanonicalType().getUnqualifiedType() &&
+         Mapper::Map(ctx, from) != Mapper::Map(ctx, to);
+}
+
+bool NeedsImplicitPointeeCast(clang::ASTContext &ctx, const clang::Expr *from,
+                              clang::QualType to) {
+  if (!to->isReferenceType() && !to->isPointerType()) {
+    return false;
+  }
+  if (to->isReferenceType() &&
+      clang::isa<clang::MaterializeTemporaryExpr>(from->IgnoreImpCasts())) {
+    return false;
+  }
+  auto pointee = GetExprPointee(ctx, from, to);
+  return !pointee.isNull() &&
+         PointeeMappingDiffers(ctx, pointee, to->getPointeeType());
+}
+
 bool NeedsRefBindingTemp(clang::ASTContext &ctx, const clang::Expr *arg,
                          clang::QualType param_type) {
   if (!param_type->isReferenceType()) {

@@ -397,13 +397,39 @@ std::string ConverterRefCount::ConvertFreshRValue(
   return str;
 }
 
-std::string ConverterRefCount::ConvertFreshPointer(clang::Expr *expr) {
-  auto str = ConvertPointer(expr);
+std::string ConverterRefCount::ConvertFreshPointer(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  auto str = ConvertPointer(expr, implicit_convert_to);
   if (isFresh()) {
     return str;
   }
   SetFresh();
   return std::format("({}).clone()", std::move(str));
+}
+
+std::string ConverterRefCount::ConvertPointeeCast(std::string str,
+                                                  const clang::Expr *from,
+                                                  clang::QualType to) {
+  if (to->isFunctionPointerType()) {
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return std::format(
+        "({}).cast::<{}>()", str,
+        ConvertFunctionPointerType(
+            to->getPointeeType()->getAs<clang::FunctionProtoType>()));
+  }
+  if (to->isReferenceType() && !isAddrOf()) {
+    return str;
+  }
+  if (auto pointee = GetExprPointee(ctx_, from, to);
+      to->isReferenceType() && pointee->isArrayType()) {
+    str = std::format("{} as {}", str,
+                      ToString(ctx_.getLValueReferenceType(pointee)));
+  }
+  PushConversionKind push(*this, ConversionKind::Unboxed);
+  auto element = ctx_.getBaseElementType(to->getPointeeType());
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+  return std::format("({}).reinterpret_cast::<{}>()", str,
+                     ToString(element.getUnqualifiedType()));
 }
 
 std::pair<std::string, std::string>
@@ -1346,16 +1372,6 @@ bool ConverterRefCount::VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
 
   if (expr->getCastKind() == clang::CastKind::CK_NoOp) {
     Convert(sub_expr);
-
-    if (expr->getType()->isPointerType() &&
-        sub_expr->getType()->isPointerType()) {
-      auto dest_type = ConvertPointeeType(expr->getType());
-      if (dest_type != ConvertPointeeType(sub_expr->getType())) {
-        StrCat(std::format(".reinterpret_cast::<{}>()", dest_type));
-        computed_expr_type_ = ComputedExprType::FreshPointer;
-        return false;
-      }
-    }
     return false;
   }
 
@@ -2330,41 +2346,10 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
         return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
-      return std::format("({} as {})", ConvertFreshPointer(expr),
-                         ToString(qual_type));
     }
-    if (qual_type->isFunctionPointerType()) {
-      return ConvertFnPtrValue(qual_type, expr);
-    }
-    return ConvertFreshPointer(expr);
+    return ConvertFreshPointer(expr, qual_type);
   }
   return ConvertFreshRValue(expr, qual_type);
-}
-
-std::string ConverterRefCount::ConvertFnPtrValue(clang::QualType qual_type,
-                                                 clang::Expr *expr) {
-  auto base = ConvertFreshPointer(expr);
-
-  // `qual_type` (the expected fn pointer type) and `expr`'s own fn pointer
-  // type may differ in spelling only because the translation maps two
-  // typedefs of the same C type to distinct Rust types (e.g. size_t vs
-  // unsigned long) -- FnPtr::cast handles this (and any other cast)
-  // automatically, so just insert it whenever the two differ.
-  auto target_proto =
-      qual_type->getPointeeType()->getAs<clang::FunctionProtoType>();
-  if (!target_proto || !expr->getType()->isFunctionPointerType()) {
-    return base;
-  }
-  auto src_proto =
-      expr->getType()->getPointeeType()->getAs<clang::FunctionProtoType>();
-  if (!src_proto) {
-    return base;
-  }
-  auto fn_type = ConvertFunctionPointerType(target_proto);
-  if (ConvertFunctionPointerType(src_proto) == fn_type) {
-    return base;
-  }
-  return std::format("{}.cast::<{}>()", base, fn_type);
 }
 
 void ConverterRefCount::ConvertFieldInit(const clang::FieldDecl *field,
@@ -3024,18 +3009,6 @@ std::string ConverterRefCount::ConvertPointeeType(clang::QualType ptr_type) {
   Unwrap(str, "PtrDyn<", ">");
   Unwrap(str, "Ptr<", ">");
   return std::string(Trim(str));
-}
-
-void ConverterRefCount::ConvertParamTyPointerCastIfNeeded(
-    clang::QualType param_type, clang::Expr *expr) {
-  if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
-      IsVaListType(param_type) || IsVaListType(expr->getType())) {
-    return;
-  }
-  auto dest_type = ConvertPointeeType(param_type);
-  if (dest_type != ConvertPointeeType(expr->getType())) {
-    StrCat(std::format(".reinterpret_cast::<{}>()", dest_type));
-  }
 }
 
 bool ConverterRefCount::ShouldConvertMethod(const clang::CXXMethodDecl *decl) {

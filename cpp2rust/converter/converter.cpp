@@ -185,14 +185,18 @@ bool Converter::VisitRecordType(clang::RecordType *type) {
   return false;
 }
 
-std::string Converter::ConvertPointer(clang::Expr *expr, int line) {
+std::string
+Converter::ConvertPointer(clang::Expr *expr,
+                          std::optional<clang::QualType> implicit_convert_to,
+                          int line) {
   log() << "ConvertPointer called from line " << line << '\n';
   PushExprKind push(*this, ExprKind::AddrOf);
-  return ToString(expr);
+  return ToString(expr, implicit_convert_to);
 }
 
-std::string Converter::ConvertFreshPointer(clang::Expr *expr) {
-  auto str = ConvertPointer(expr);
+std::string Converter::ConvertFreshPointer(
+    clang::Expr *expr, std::optional<clang::QualType> implicit_convert_to) {
+  auto str = ConvertPointer(expr, implicit_convert_to);
   if (isFresh()) {
     return str;
   }
@@ -1561,22 +1565,59 @@ bool Converter::VisitContinueStmt([[maybe_unused]] clang::ContinueStmt *stmt) {
 
 bool Converter::Convert(clang::Expr *expr,
                         std::optional<clang::QualType> implicit_convert_to) {
-  bool needs_conversion =
-      expr && implicit_convert_to &&
-      NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(),
-                              *implicit_convert_to);
-  PushParen paren(*this, needs_conversion);
+  if (expr && implicit_convert_to) {
+    auto to = *implicit_convert_to;
+    if (NeedsImplicitPointeeCast(ctx_, expr, to)) {
+      StrCat(ConvertPointeeCast(ToString(expr), expr, to));
+      return false;
+    }
+    if (NeedsImplicitScalarCast(ctx_, expr->IgnoreImplicit()->getType(), to)) {
+      StrCat(ConvertScalarCast(ToString(expr), to));
+      return false;
+    }
+  }
   computed_expr_type_ = ComputedExprType::Unknown;
   bool result = TraverseStmt(expr);
   if (expr && computed_expr_type_ == ComputedExprType::Unknown) {
     expr->dump();
     assert(false && "computed_expr_type_ not set");
   }
-  if (needs_conversion) {
-    ConvertCast(*implicit_convert_to);
-    computed_expr_type_ = ComputedExprType::FreshValue;
-  }
   return result;
+}
+
+std::string Converter::ConvertScalarCast(std::string str, clang::QualType to) {
+  Buffer buf(*this);
+  {
+    PushParen paren(*this);
+    StrCat(str);
+    ConvertCast(to);
+  }
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return std::move(buf).str();
+}
+
+std::string Converter::ConvertPointeeCast(std::string str,
+                                          const clang::Expr *from,
+                                          clang::QualType to) {
+  auto pointee = GetExprPointee(ctx_, from, to);
+  if (to->isFunctionPointerType()) {
+    return std::format("std::mem::transmute::<{}, {}>({})",
+                       ToString(ctx_.getPointerType(pointee)), ToString(to),
+                       str);
+  }
+  if (to->getPointeeType().isConstQualified()) {
+    pointee = pointee.withConst();
+  }
+  auto target = GetUnsafeTypeAsString(to->getPointeeType());
+  if (to->isReferenceType() && !isAddrOf()) {
+    return std::format("*(&raw {} {}).cast::<{}>()",
+                       pointee.isConstQualified() ? "const" : "mut", str,
+                       target);
+  }
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+  return std::format("({} as {}).cast::<{}>()", str,
+                     GetUnsafeTypeAsString(ctx_.getPointerType(pointee)),
+                     target);
 }
 
 const clang::Expr *Converter::GetParentExpr(const clang::Expr *expr) {
@@ -1998,16 +2039,10 @@ void Converter::ConvertParamTy(clang::QualType param_type, clang::Expr *expr) {
   if (param_type->isReferenceType()) {
     PushExprKind push(*this, ExprKind::AddrOf);
     ConvertVarInit(param_type, expr);
-  } else if (FunctionPointerCastNeedsTransmute() &&
-             param_type->isFunctionPointerType() &&
-             expr->getType()->isFunctionPointerType() &&
-             !IsCastRedundantInRust(expr, param_type)) {
-    ConvertFunctionPointerTransmute(expr, param_type);
-    return;
   } else {
     ConvertVarInit(param_type, expr);
   }
-  ConvertParamTyPointerCastIfNeeded(param_type, expr);
+  ConvertParamTyConstCast(param_type, expr);
 }
 
 void Converter::ConvertFunctionPointerTransmute(clang::Expr *expr,
@@ -2021,8 +2056,8 @@ void Converter::ConvertFunctionPointerTransmute(clang::Expr *expr,
   StrCat(')');
 }
 
-void Converter::ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
-                                                  clang::Expr *expr) {
+void Converter::ConvertParamTyConstCast(clang::QualType param_type,
+                                        clang::Expr *expr) {
   if (!param_type->isPointerType() || !expr->getType()->isPointerType() ||
       IsVaListType(param_type) || IsVaListType(expr->getType())) {
     return;
@@ -2037,9 +2072,6 @@ void Converter::ConvertParamTyPointerCastIfNeeded(clang::QualType param_type,
     return;
   default:
     break;
-  }
-  if (!IsCastRedundantInRust(expr, param_type)) {
-    ConvertCast(param_type);
   }
 }
 

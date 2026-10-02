@@ -140,8 +140,14 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
       bool builtin_alias = canonical->isBuiltinType() &&
                            (pointee->getAs<clang::TypedefType>() ||
                             pointee->getAs<clang::PredefinedSugarType>());
-      if (!builtin_alias &&
-          Mapper::Map(ctx, pointee) == Mapper::Map(ctx, canonical)) {
+      if (builtin_alias) {
+        return std::format("{}{}{} *",
+                           pointee.isConstQualified() ? "const " : "",
+                           pointee.isVolatileQualified() ? "volatile " : "",
+                           ToString(ctx, pointee.getUnqualifiedType(),
+                                    ScalarSugar::kPreserve));
+      }
+      if (Mapper::Map(ctx, pointee) == Mapper::Map(ctx, canonical)) {
         pointee = canonical;
       }
       std::string out;

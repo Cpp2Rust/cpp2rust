@@ -56,7 +56,7 @@ fn main_0() -> i32 {
     assert!(
         (((({
             call_with_ulong_0(
-                FnPtr::<fn(usize) -> u64>::new(via_size_t_param_2).cast::<fn(u64) -> u64>(),
+                (FnPtr::<fn(usize) -> u64>::new(via_size_t_param_2)).cast::<fn(u64) -> u64>(),
             )
         }) == 4_u64) as i32)
             != 0)
