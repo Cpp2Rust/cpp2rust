@@ -2257,10 +2257,11 @@ std::string Converter::getIntegerLiteral(clang::IntegerLiteral *expr,
   if (type && (*type)->isBuiltinType() && (*type)->isIntegerType() &&
       !(*type)->isBooleanType()) {
     value = value.zextOrTrunc(ctx_.getIntWidth(*type));
-    is_signed = (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
-                        (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_U)
-                    ? CharRustTypeIsSigned()
-                    : (*type)->isSignedIntegerType();
+    is_signed =
+        (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
+                (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_U)
+            ? CharRustTypeIsSigned()
+            : (*type)->isSignedIntegerType();
   }
   llvm::SmallString<16> num_as_string;
   value.toString(num_as_string, 10, is_signed);
