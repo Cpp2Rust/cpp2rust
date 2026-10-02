@@ -41,7 +41,7 @@ fn main_0() -> i32 {
     let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<i32>).offset(0))));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 5) {
-        (*out.borrow_mut()) += { ((*ptr.borrow()).offset((*i.borrow()) as isize).read()) };
+        (*out.borrow_mut()) += { (elem!((*ptr.borrow()), (*i.borrow())).read()) };
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(((*out.borrow()) == 51));

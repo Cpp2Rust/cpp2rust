@@ -111,13 +111,10 @@ fn main_0() -> i32 {
     field!((*p_list.borrow_mut()).v.list(), cursor).write(1_i64);
     assert!(((((*p_list.borrow()).v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));
     assert!(
-        (((((((*p_list.borrow())
-            .v
-            .list()
-            .with(|__s| __s.items.clone())
-            .offset((1) as isize)
-            .read())
-        .offset((0) as isize)
+        (((((elem!(
+            (elem!((*p_list.borrow()).v.list().with(|__s| __s.items.clone()), 1).read()),
+            0
+        )
         .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)

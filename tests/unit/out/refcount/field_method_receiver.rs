@@ -108,9 +108,11 @@ pub fn run_0(o: Ptr<S>) {
     };
     assert!(
         ((*(*o.borrow()).with(|__s| __s.v.clone()).borrow()).len() == 1_usize)
-            && ((((*o.borrow()).with(|__s| __s.v.clone()).as_pointer() as Ptr<i32>)
-                .offset(0_usize)
-                .read())
+            && ((elem!(
+                ((*o.borrow()).with(|__s| __s.v.as_pointer()) as Ptr<i32>),
+                0_usize
+            )
+            .read())
                 == 1)
     );
     assert!(((*o.borrow()).with(|__s| __s.tag) == 1));

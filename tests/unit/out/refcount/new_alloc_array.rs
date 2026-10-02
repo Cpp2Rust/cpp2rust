@@ -21,7 +21,7 @@ fn main_0() -> i32 {
         );
         (*array.borrow()).to_any()
     };
-    (*array.borrow()).offset((99) as isize).write(-1_i32);
+    elem!((*array.borrow()), 99).write(-1_i32);
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
     'loop_: while (((*p1.borrow()).read()) >= 0) {
         (*p1.borrow()).write(1);

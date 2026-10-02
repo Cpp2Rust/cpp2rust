@@ -224,10 +224,8 @@ fn main_0() -> i32 {
     ])));
     let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
     assert!(
-        ((((((*names.borrow())[(*idx.borrow()) as usize]
-            .offset((0) as isize)
-            .read()) as i32)
-            == ('g' as i32)) as i32)
+        (((((elem!((*names.borrow())[(*idx.borrow()) as usize], 0).read()) as i32) == ('g' as i32))
+            as i32)
             != 0)
     );
     assert!(
@@ -236,19 +234,18 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        ((((((*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize]
-            .offset((0) as isize)
-            .read()) as i32)
+        (((((elem!(
+            (*names.borrow())[(global_tag_2.with(|rc| *rc.borrow())) as usize],
+            0
+        )
+        .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)
     );
     let pp: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
         ((names.as_pointer() as Ptr<Ptr<u8>>).offset((*idx.borrow()) as isize)),
     ));
-    assert!(
-        (((((((*pp.borrow()).read()).offset((0) as isize).read()) as i32) == ('g' as i32)) as i32)
-            != 0)
-    );
+    assert!((((((elem!(((*pp.borrow()).read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
     let pe: Value<Ptr<Entry>> = Rc::new(RefCell::new(
         ((entries_3.with(|v| v.as_pointer()) as Ptr<Entry>).offset((*idx.borrow()) as isize)),
     ));

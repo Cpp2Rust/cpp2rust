@@ -116,51 +116,15 @@ fn main_0() -> i32 {
     assert!((({ (*f1.borrow()).y.clone() }.read()) == 4));
     assert!(({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }));
     assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
-    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
-        .offset((0) as isize)
-        .with_mut(|__v| __v.prefix_inc());
-    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
-        .offset((1) as isize)
-        .with_mut(|__v| __v.prefix_inc());
-    (array_field_ptr!(f2.as_pointer(), a) as Ptr<i32>)
-        .offset((2) as isize)
-        .with_mut(|__v| __v.prefix_inc());
-    assert!(
-        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
-            == 1)
-    );
-    assert!(
-        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
-            .offset((1) as isize)
-            .read())
-            == 2)
-    );
-    assert!(
-        (((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>)
-            .offset((2) as isize)
-            .read())
-            == 3)
-    );
-    assert!(
-        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
-            == 0)
-    );
-    assert!(
-        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
-            .offset((1) as isize)
-            .read())
-            == 1)
-    );
-    assert!(
-        (((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>)
-            .offset((2) as isize)
-            .read())
-            == 2)
-    );
+    elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 0).with_mut(|__v| __v.prefix_inc());
+    elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 1).with_mut(|__v| __v.prefix_inc());
+    elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 2).with_mut(|__v| __v.prefix_inc());
+    assert!(((elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 0).read()) == 1));
+    assert!(((elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 1).read()) == 2));
+    assert!(((elem!((array_field_ptr!(f2.as_pointer(), a) as Ptr::<i32>), 2).read()) == 3));
+    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 0).read()) == 0));
+    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 1).read()) == 1));
+    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 2).read()) == 2));
     (*f2.borrow_mut()).bar.w = 20;
     assert!(({ (*f2.borrow()).bar.w } == 20));
     assert!(({ (*f1.borrow()).bar.w } == 10));
@@ -178,32 +142,25 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         assert!(
-            (((v2.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v2.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == (*i.borrow()))
         );
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (v2.as_pointer() as Ptr<i32>)
-            .offset(((*i.borrow()) as usize))
+        elem!((v2.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize))
             .with_mut(|__v| __v.prefix_inc());
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         assert!(
-            (((v2.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v2.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == ((*i.borrow()) + 1))
         );
         assert!(
-            (((v1.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v1.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == (*i.borrow()))
         );
         (*i.borrow_mut()).prefix_inc();
@@ -255,23 +212,27 @@ fn main_0() -> i32 {
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*j.borrow()) < 10) {
             assert!(
-                ((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
-                    .offset(((*i.borrow()) as usize))
-                    .upgrade()
-                    .deref()
-                    .as_pointer() as Ptr<i32>)
-                    .offset(((*j.borrow()) as usize))
-                    .read())
+                ((elem!(
+                    ((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+                        .offset(((*i.borrow()) as usize))
+                        .upgrade()
+                        .deref()
+                        .as_pointer() as Ptr<i32>),
+                    ((*j.borrow()) as usize)
+                )
+                .read())
                     == 0)
             );
             assert!(
-                ((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
-                    .offset(((*i.borrow()) as usize))
-                    .upgrade()
-                    .deref()
-                    .as_pointer() as Ptr<i32>)
-                    .offset(((*j.borrow()) as usize))
-                    .read())
+                ((elem!(
+                    ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                        .offset(((*i.borrow()) as usize))
+                        .upgrade()
+                        .deref()
+                        .as_pointer() as Ptr<i32>),
+                    ((*j.borrow()) as usize)
+                )
+                .read())
                     == 0)
             );
             (*j.borrow_mut()).prefix_inc();
@@ -282,13 +243,15 @@ fn main_0() -> i32 {
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*j.borrow()) < 10) {
-            ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
-                .offset(((*i.borrow()) as usize))
-                .upgrade()
-                .deref()
-                .as_pointer() as Ptr<i32>)
-                .offset(((*j.borrow()) as usize))
-                .with_mut(|__v| __v.postfix_inc());
+            elem!(
+                ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                    .offset(((*i.borrow()) as usize))
+                    .upgrade()
+                    .deref()
+                    .as_pointer() as Ptr<i32>),
+                ((*j.borrow()) as usize)
+            )
+            .with_mut(|__v| __v.postfix_inc());
             (*j.borrow_mut()).prefix_inc();
         }
         (*i.borrow_mut()).prefix_inc();
@@ -320,23 +283,27 @@ fn main_0() -> i32 {
         let j: Value<i32> = Rc::new(RefCell::new(0));
         'loop_: while ((*j.borrow()) < 10) {
             assert!(
-                ((((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
-                    .offset(((*i.borrow()) as usize))
-                    .upgrade()
-                    .deref()
-                    .as_pointer() as Ptr<i32>)
-                    .offset(((*j.borrow()) as usize))
-                    .read())
+                ((elem!(
+                    ((m1.as_pointer() as Ptr<Value<Vec<i32>>>)
+                        .offset(((*i.borrow()) as usize))
+                        .upgrade()
+                        .deref()
+                        .as_pointer() as Ptr<i32>),
+                    ((*j.borrow()) as usize)
+                )
+                .read())
                     == 0)
             );
             assert!(
-                ((((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
-                    .offset(((*i.borrow()) as usize))
-                    .upgrade()
-                    .deref()
-                    .as_pointer() as Ptr<i32>)
-                    .offset(((*j.borrow()) as usize))
-                    .read())
+                ((elem!(
+                    ((m2.as_pointer() as Ptr<Value<Vec<i32>>>)
+                        .offset(((*i.borrow()) as usize))
+                        .upgrade()
+                        .deref()
+                        .as_pointer() as Ptr<i32>),
+                    ((*j.borrow()) as usize)
+                )
+                .read())
                     == 1)
             );
             (*j.borrow_mut()).prefix_inc();
@@ -452,32 +419,26 @@ fn main_0() -> i32 {
             .collect(),
     ));
     let s2: Value<Vec<u8>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
-    (s2.as_pointer() as Ptr<u8>)
-        .offset(0_usize)
-        .write(('b' as u8));
-    (s2.as_pointer() as Ptr<u8>)
-        .offset(1_usize)
-        .write(('b' as u8));
-    (s2.as_pointer() as Ptr<u8>)
-        .offset(2_usize)
-        .write(('b' as u8));
+    elem!((s2.as_pointer() as Ptr<u8>), 0_usize).write(('b' as u8));
+    elem!((s2.as_pointer() as Ptr<u8>), 1_usize).write(('b' as u8));
+    elem!((s2.as_pointer() as Ptr<u8>), 2_usize).write(('b' as u8));
     assert!(
-        ((((s2.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((((s2.as_pointer() as Ptr<u8>).offset(1_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<u8>), 1_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((((s2.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<u8>), 2_usize).read()) as i32) == (('b' as u8) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<u8>).offset(0_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == (('a' as u8) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<u8>).offset(1_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<u8>), 1_usize).read()) as i32) == (('a' as u8) as i32))
     );
     assert!(
-        ((((s1.as_pointer() as Ptr<u8>).offset(2_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<u8>), 2_usize).read()) as i32) == (('a' as u8) as i32))
     );
     let b1: Value<Bar> = Rc::new(RefCell::new(Bar { w: 1 }));
     let b2: Value<Bar> = Rc::new(RefCell::new(Bar { w: 2 }));
@@ -490,28 +451,21 @@ fn main_0() -> i32 {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         assert!(
-            (((v4.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v4.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == ((*i.borrow()) + 1))
         );
-        (v4.as_pointer() as Ptr<i32>)
-            .offset(((*i.borrow()) as usize))
+        elem!((v4.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize))
             .with_mut(|__v| __v.prefix_inc());
         (*i.borrow_mut()).prefix_inc();
     }
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < (*N.borrow())) {
         assert!(
-            (((v4.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v4.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == ((*i.borrow()) + 2))
         );
         assert!(
-            (((v2.as_pointer() as Ptr<i32>)
-                .offset(((*i.borrow()) as usize))
-                .read())
+            ((elem!((v2.as_pointer() as Ptr<i32>), ((*i.borrow()) as usize)).read())
                 == ((*i.borrow()) + 1))
         );
         (*i.borrow_mut()).prefix_inc();

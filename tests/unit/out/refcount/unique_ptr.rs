@@ -112,7 +112,7 @@ pub fn RndStuff_2() {
     let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 200) {
-        assert!((((*p2.borrow()).offset((*i.borrow()) as isize).read()) == 2));
+        assert!(((elem!((*p2.borrow()), (*i.borrow())).read()) == 2));
         (*i.borrow_mut()).prefix_inc();
     }
     let x3: Value<Option<Value<Box<[Pair]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
@@ -129,24 +129,8 @@ pub fn RndStuff_2() {
     let p3_0: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 10) {
-        assert!(
-            ({
-                (*(*p3_0.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .x
-            } == 1)
-        );
-        assert!(
-            ({
-                (*(*p3_0.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .y
-            } == 2)
-        );
+        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).x } == 1));
+        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).y } == 2));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
@@ -157,24 +141,8 @@ pub fn RndStuff_2() {
                 10,
             )
         });
-        assert!(
-            ({
-                (*(*p3_0.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .x
-            } == 11)
-        );
-        assert!(
-            ({
-                (*(*p3_0.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .y
-            } == 12)
-        );
+        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).x } == 11));
+        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).y } == 12));
         (*i.borrow_mut()).prefix_inc();
     }
     (x3.as_pointer() as Ptr<Option<Value<Box<[Pair]>>>>).write(
@@ -197,24 +165,8 @@ pub fn RndStuff_2() {
     assert!(({ (*p3_0.borrow()).clone() } != { (*p3_1.borrow()).clone() }));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 50) {
-        assert!(
-            ({
-                (*(*p3_1.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .x
-            } == -1_i32)
-        );
-        assert!(
-            ({
-                (*(*p3_1.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .y
-            } == -2_i32)
-        );
+        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).x } == -1_i32));
+        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).y } == -2_i32));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
@@ -225,24 +177,8 @@ pub fn RndStuff_2() {
                 -10_i32,
             )
         });
-        assert!(
-            ({
-                (*(*p3_1.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .x
-            } == -11_i32)
-        );
-        assert!(
-            ({
-                (*(*p3_1.borrow())
-                    .offset((*i.borrow()) as isize)
-                    .upgrade()
-                    .deref())
-                .y
-            } == -12_i32)
-        );
+        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).x } == -11_i32));
+        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).y } == -12_i32));
         (*i.borrow_mut()).prefix_inc();
     }
 }

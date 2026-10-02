@@ -22,15 +22,15 @@ fn main_0() -> i32 {
             .map(|_| <Item>::default())
             .collect::<Box<[Item]>>(),
     )));
-    field!((*arr.borrow()).offset((0) as isize), value).write(1);
-    field!((*arr.borrow()).offset((1) as isize), value).write(2);
+    field!(elem!((*arr.borrow()), 0), value).write(1);
+    field!(elem!((*arr.borrow()), 1), value).write(2);
     ({
         let _other: Ptr<Item> = ((*arr.borrow()).offset((1) as isize));
         ItemImpl::foo(&(*arr.borrow()).offset((0) as isize), _other)
     });
     let result: Value<i32> = Rc::new(RefCell::new(
-        ({ (*(*arr.borrow()).offset((0) as isize).upgrade().deref()).value } + {
-            (*(*arr.borrow()).offset((1) as isize).upgrade().deref()).value
+        ({ (*elem!((*arr.borrow()), 0).upgrade().deref()).value } + {
+            (*elem!((*arr.borrow()), 1).upgrade().deref()).value
         }),
     ));
     (*arr.borrow()).delete();

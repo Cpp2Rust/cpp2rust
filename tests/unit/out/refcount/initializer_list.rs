@@ -22,9 +22,9 @@ fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5, 6]));
     assert!(((*v.borrow()).len() == 3_usize));
     assert!(
-        (((((v.as_pointer() as Ptr<i32>).offset(0_usize).read())
-            + ((v.as_pointer() as Ptr<i32>).offset(1_usize).read()))
-            + ((v.as_pointer() as Ptr<i32>).offset(2_usize).read()))
+        ((((elem!((v.as_pointer() as Ptr<i32>), 0_usize).read())
+            + (elem!((v.as_pointer() as Ptr<i32>), 1_usize).read()))
+            + (elem!((v.as_pointer() as Ptr<i32>), 2_usize).read()))
             == 15)
     );
     let l: Value<Vec<i32>> = Rc::new(RefCell::new(vec![7, 8]));

@@ -20,7 +20,8 @@ pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
     if ((*ctx.borrow()).with(|__s| __s.verbose) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
-        field!((*ctx.borrow()), last_error).write((*ap.borrow_mut()).arg::<i32>());
+        let __rhs = (*ap.borrow_mut()).arg::<i32>();
+        field!((*ctx.borrow()), last_error).write(__rhs);
     }
 }
 pub fn main() {

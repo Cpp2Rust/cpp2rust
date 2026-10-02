@@ -61,24 +61,28 @@ fn main_0() -> i32 {
     field!((*n.borrow()), len).write((*tail_size.borrow()));
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
-        ((*(*n.borrow()).upgrade().deref())
-            .x
-            .bytes()
-            .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((*i.borrow()) as isize)
-            .write({ (((*i.borrow()) & 255_usize) as u8) });
+        elem!(
+            ((*(*n.borrow()).upgrade().deref())
+                .x
+                .bytes()
+                .reinterpret_cast::<u8>() as Ptr::<u8>),
+            (*i.borrow())
+        )
+        .write({ (((*i.borrow()) & 255_usize) as u8) });
         (*i.borrow_mut()).postfix_inc();
     }
     let i: Value<usize> = Rc::new(RefCell::new(0_usize));
     'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
         assert!(
             ((({
-                ((((*(*n.borrow()).upgrade().deref())
-                    .x
-                    .bytes()
-                    .reinterpret_cast::<u8>() as Ptr<u8>)
-                    .offset((*i.borrow()) as isize)
-                    .read()) as i32)
+                ((elem!(
+                    ((*(*n.borrow()).upgrade().deref())
+                        .x
+                        .bytes()
+                        .reinterpret_cast::<u8>() as Ptr::<u8>),
+                    (*i.borrow())
+                )
+                .read()) as i32)
             } == { ((((*i.borrow()) & 255_usize) as u8) as i32) }) as i32)
                 != 0)
         );
@@ -94,12 +98,14 @@ fn main_0() -> i32 {
     assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
     (*p.borrow()).write(170_u8);
     assert!(
-        (((((((*(*n.borrow()).upgrade().deref())
-            .x
-            .bytes()
-            .reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((10) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((*(*n.borrow()).upgrade().deref())
+                .x
+                .bytes()
+                .reinterpret_cast::<u8>() as Ptr::<u8>),
+            10
+        )
+        .read()) as i32)
             == 170) as i32)
             != 0)
     );

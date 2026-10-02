@@ -117,29 +117,19 @@ fn main_0() -> i32 {
     assert!((((!((*t.borrow()).is_null())) as i32) != 0));
     field!((*t.borrow()), n).write(2);
     field!((*t.borrow()), cap).write(2);
-    field!(
-        (array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((0) as isize),
-        id
-    )
-    .write(10);
-    field!(
-        (array_field_ptr!((*t.borrow()), a) as Ptr<E>).offset((1) as isize),
-        w
-    )
-    .write(20);
+    field!(elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 0), id).write(10);
+    field!(elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 1), w).write(20);
     field!((*t.borrow()), n).write(3);
     assert!(
         (((((({
-            (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
-                .offset((0) as isize)
+            (*elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 0)
                 .upgrade()
                 .deref())
             .id
         } == 10) as i32)
             != 0)
             && ((({
-                (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
-                    .offset((1) as isize)
+                (*elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 1)
                     .upgrade()
                     .deref())
                 .w
@@ -156,20 +146,18 @@ fn main_0() -> i32 {
         }) as i32)
             != 0)
     );
-    field!((*tail.borrow()).offset((0) as isize), id).write(30);
+    field!(elem!((*tail.borrow()), 0), id).write(30);
     field!((*t.borrow()), cap).write(4);
     assert!(
         (((((({
-            (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
-                .offset((1) as isize)
+            (*elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 1)
                 .upgrade()
                 .deref())
             .id
         } == 30) as i32)
             != 0)
             && ((({
-                (*(array_field_ptr!((*t.borrow()), a) as Ptr<E>)
-                    .offset((1) as isize)
+                (*elem!((array_field_ptr!((*t.borrow()), a) as Ptr<E>), 1)
                     .upgrade()
                     .deref())
                 .w

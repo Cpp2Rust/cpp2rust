@@ -79,10 +79,8 @@ fn main_0() -> i32 {
         .text()
         .write(Ptr::<u8>::from_string_literal(b"hello"));
     assert!(
-        (((((((*c.borrow()).payload.text().read())
-            .offset((0) as isize)
-            .read()) as i32)
-            == ('h' as i32)) as i32)
+        (((((elem!(((*c.borrow()).payload.text().read()), 0).read()) as i32) == ('h' as i32))
+            as i32)
             != 0)
     );
     let d: Value<Slot> = <Value<Slot>>::default();

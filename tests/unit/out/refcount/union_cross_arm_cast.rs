@@ -132,17 +132,21 @@ fn main_0() -> i32 {
     assert!((((((*c.borrow()).u.b().with(|__s| __s.code) as i32) == 10) as i32) != 0));
     field!((*c.borrow_mut()).u.b(), lo).write(8080_u16);
     assert!(
-        (((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
-            .reinterpret_cast::<u8>())
-        .offset((2) as isize)
+        (((((elem!(
+            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+                .reinterpret_cast::<u8>()),
+            2
+        )
         .read()) as i32)
             == 144) as i32)
             != 0)
     );
     assert!(
-        (((((((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
-            .reinterpret_cast::<u8>())
-        .offset((3) as isize)
+        (((((elem!(
+            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+                .reinterpret_cast::<u8>()),
+            3
+        )
         .read()) as i32)
             == 31) as i32)
             != 0)

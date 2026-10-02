@@ -35,10 +35,8 @@ pub fn IncrementAll_0(s: Ptr<StackArray>) {
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         {
-            let _ptr = ((array_field_ptr!(s, arr) as Ptr<Ptr<i32>>)
-                .offset((*i.borrow()) as isize)
-                .read())
-            .clone();
+            let _ptr = (elem!((array_field_ptr!(s, arr) as Ptr<Ptr::<i32>>), (*i.borrow())).read())
+                .clone();
             _ptr.write(_ptr.read() + 1)
         };
         (*i.borrow_mut()).prefix_inc();

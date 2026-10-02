@@ -27,19 +27,19 @@ pub fn get_4(s: Ptr<u32>) -> Ptr<u32> {
     return (*s.borrow()).clone();
 }
 pub fn second_5(s: Ptr<u8>) -> u8 {
-    return ((s).offset((1) as isize).read());
+    return (elem!((s), 1).read());
 }
 pub fn second_6(s: Ptr<i32>) -> i32 {
-    return ((s).offset((1) as isize).read());
+    return (elem!((s), 1).read());
 }
 pub fn second_7(s: Ptr<u8>) -> u8 {
-    return ((s).offset((1) as isize).read());
+    return (elem!((s), 1).read());
 }
 pub fn second_8(s: Ptr<u16>) -> u16 {
-    return ((s).offset((1) as isize).read());
+    return (elem!((s), 1).read());
 }
 pub fn second_9(s: Ptr<u32>) -> u32 {
-    return ((s).offset((1) as isize).read());
+    return (elem!((s), 1).read());
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -59,51 +59,57 @@ fn main_0() -> i32 {
     let l: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::<u32>::from_string_literal(&[
         65 as u32, 258 as u32, 0 as u32,
     ])));
-    assert!(((((*c.borrow()).offset((0) as isize).read()) as i32) == (('A' as u8) as i32)));
+    assert!((((elem!((*c.borrow()), 0).read()) as i32) == (('A' as u8) as i32)));
     assert!(
-        ((((*b.borrow()).offset((0) as isize).read()) as i32) == 196)
-            && ((((*b.borrow()).offset((1) as isize).read()) as i32) == 130)
+        (((elem!((*b.borrow()), 0).read()) as i32) == 196)
+            && (((elem!((*b.borrow()), 1).read()) as i32) == 130)
     );
-    assert!((((*w.borrow()).offset((1) as isize).read()) == 258));
-    assert!(((((*s.borrow()).offset((1) as isize).read()) as i32) == 258));
-    assert!((((*l.borrow()).offset((1) as isize).read()) == 258_u32));
+    assert!(((elem!((*w.borrow()), 1).read()) == 258));
+    assert!((((elem!((*s.borrow()), 1).read()) as i32) == 258));
+    assert!(((elem!((*l.borrow()), 1).read()) == 258_u32));
     assert!(
-        ((((*w.borrow()).offset((2) as isize).read()) == 0)
-            && ((((*s.borrow()).offset((2) as isize).read()) as i32) == 0))
-            && (((*l.borrow()).offset((2) as isize).read()) == 0_u32)
+        (((elem!((*w.borrow()), 2).read()) == 0)
+            && (((elem!((*s.borrow()), 2).read()) as i32) == 0))
+            && ((elem!((*l.borrow()), 2).read()) == 0_u32)
     );
     assert!(
-        (((({ get_0(Ptr::<u8>::from_string_literal(b"A"),) })
-            .offset((0) as isize)
-            .read()) as i32)
+        (((elem!(({ get_0(Ptr::<u8>::from_string_literal(b"A"),) }), 0).read()) as i32)
             == (('A' as u8) as i32))
     );
     assert!(
-        ((({ get_1(Ptr::<i32>::from_string_literal(&[258 as i32, 0 as i32,]),) })
-            .offset((0) as isize)
-            .read())
+        ((elem!(
+            ({ get_1(Ptr::<i32>::from_string_literal(&[258 as i32, 0 as i32,]),) }),
+            0
+        )
+        .read())
             == 258)
     );
     assert!(
-        (((({
-            get_2(Ptr::<u8>::from_string_literal(&[
-                196 as u8, 130 as u8, 0 as u8,
-            ]))
-        })
-        .offset((0) as isize)
+        (((elem!(
+            ({
+                get_2(Ptr::<u8>::from_string_literal(&[
+                    196 as u8, 130 as u8, 0 as u8,
+                ]))
+            }),
+            0
+        )
         .read()) as i32)
             == 196)
     );
     assert!(
-        (((({ get_3(Ptr::<u16>::from_string_literal(&[258 as u16, 0 as u16,]),) })
-            .offset((0) as isize)
-            .read()) as i32)
+        (((elem!(
+            ({ get_3(Ptr::<u16>::from_string_literal(&[258 as u16, 0 as u16,]),) }),
+            0
+        )
+        .read()) as i32)
             == 258)
     );
     assert!(
-        ((({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) })
-            .offset((0) as isize)
-            .read())
+        ((elem!(
+            ({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) }),
+            0
+        )
+        .read())
             == 258_u32)
     );
     assert!(
@@ -197,13 +203,13 @@ fn main_0() -> i32 {
             && (::std::mem::size_of::<u32>() == 4_usize)
     );
     assert!(
-        ((((*w.borrow()).offset((1) as isize).read()) == (258 as i32))
-            && ((((*s.borrow()).offset((1) as isize).read()) as i32) == ((258 as u16) as i32)))
-            && (((*l.borrow()).offset((1) as isize).read()) == (258 as u32))
+        (((elem!((*w.borrow()), 1).read()) == (258 as i32))
+            && (((elem!((*s.borrow()), 1).read()) as i32) == ((258 as u16) as i32)))
+            && ((elem!((*l.borrow()), 1).read()) == (258 as u32))
     );
     assert!(
-        ((((*b.borrow()).offset((0) as isize).read()) as i32) == ((196 as u8) as i32))
-            && ((((*b.borrow()).offset((1) as isize).read()) as i32) == ((130 as u8) as i32))
+        (((elem!((*b.borrow()), 0).read()) as i32) == ((196 as u8) as i32))
+            && (((elem!((*b.borrow()), 1).read()) as i32) == ((130 as u8) as i32))
     );
     assert!(
         (({
@@ -219,13 +225,17 @@ fn main_0() -> i32 {
                 == ((258 as u16) as i32))
     );
     assert!(
-        ((({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) })
-            .offset((0) as isize)
-            .read())
+        ((elem!(
+            ({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) }),
+            0
+        )
+        .read())
             == (258 as u32))
-            && ((({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) })
-                .offset((1) as isize)
-                .read())
+            && ((elem!(
+                ({ get_4(Ptr::<u32>::from_string_literal(&[258 as u32, 0 as u32,]),) }),
+                1
+            )
+            .read())
                 == (0 as u32))
     );
     assert!((((10 as i32) == 10) && (((9 as u16) as i32) == 9)) && ((92 as u32) == 92_u32));

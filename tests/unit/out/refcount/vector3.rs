@@ -20,41 +20,43 @@ fn main_0() -> i32 {
     };
     {
         let __a0 = 2_usize as usize;
-        (v.as_pointer() as Ptr<Value<Vec<i32>>>)
-            .offset(0_usize)
-            .with_mut(|__v: &mut Value<Vec<i32>>| {
-                (*__v.borrow_mut()).resize_with(__a0, || <i32>::default())
-            })
+        elem!((v.as_pointer() as Ptr<Value<Vec<i32>>>), 0_usize).with_mut(
+            |__v: &mut Value<Vec<i32>>| (*__v.borrow_mut()).resize_with(__a0, || <i32>::default()),
+        )
     };
     {
         let __a0 = 1_usize as usize;
-        (v.as_pointer() as Ptr<Value<Vec<i32>>>)
-            .offset(1_usize)
-            .with_mut(|__v: &mut Value<Vec<i32>>| {
-                (*__v.borrow_mut()).resize_with(__a0, || <i32>::default())
-            })
+        elem!((v.as_pointer() as Ptr<Value<Vec<i32>>>), 1_usize).with_mut(
+            |__v: &mut Value<Vec<i32>>| (*__v.borrow_mut()).resize_with(__a0, || <i32>::default()),
+        )
     };
-    ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(0_usize)
-        .upgrade()
-        .deref()
-        .as_pointer() as Ptr<i32>)
-        .offset(0_usize)
-        .write(1);
-    ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(0_usize)
-        .upgrade()
-        .deref()
-        .as_pointer() as Ptr<i32>)
-        .offset(1_usize)
-        .write(5);
-    ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
-        .offset(1_usize)
-        .upgrade()
-        .deref()
-        .as_pointer() as Ptr<i32>)
-        .offset(0_usize)
-        .write(6);
+    elem!(
+        ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
+            .offset(0_usize)
+            .upgrade()
+            .deref()
+            .as_pointer() as Ptr<i32>),
+        0_usize
+    )
+    .write(1);
+    elem!(
+        ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
+            .offset(0_usize)
+            .upgrade()
+            .deref()
+            .as_pointer() as Ptr<i32>),
+        1_usize
+    )
+    .write(5);
+    elem!(
+        ((v.as_pointer() as Ptr<Value<Vec<i32>>>)
+            .offset(1_usize)
+            .upgrade()
+            .deref()
+            .as_pointer() as Ptr<i32>),
+        0_usize
+    )
+    .write(6);
     'loop_: for mut v2 in v.as_pointer() as Ptr<Value<Vec<i32>>> {
         let v2: Ptr<Vec<i32>> = v2.upgrade().deref().as_pointer();
         'loop_: for mut i in Ptr::<Vec<i32>>::decay(&(v2)) as Ptr<i32> {

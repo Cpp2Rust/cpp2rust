@@ -17,7 +17,7 @@ use std::any::{Any, TypeId};
 use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::rc::{Rc, Weak};
 
-use crate::rc::{AsPointer, Ptr, PtrKind, Value, null_deref};
+use crate::rc::{AsPointer, Ptr, PtrKind, StrongPtr, Value, null_deref};
 use crate::reinterpret::ByteRepr;
 
 // A struct whose fields can be pointed to. Implemented by #[derive(Record)],
@@ -322,6 +322,79 @@ macro_rules! field {
             base: &$base,
             get: |__s| &__s.$field,
             get_mut: |__s| &mut __s.$field,
+        }
+    };
+}
+
+// Element `idx` of the sequence that pointer `base` points into, which is
+// accessed through `base` without creating a pointer to it as
+// `base.offset(idx)` does. Written by `elem!(p, i)`.
+pub struct ElemPlace<'a, T> {
+    pub base: &'a Ptr<T>,
+    pub idx: isize,
+}
+
+impl<T> Clone for ElemPlace<'_, T> {
+    #[inline]
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<T> Copy for ElemPlace<'_, T> {}
+
+impl<T: ByteRepr> ElemPlace<'_, T> {
+    #[inline]
+    pub fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        self.base.with_at(self.idx, f)
+    }
+
+    #[inline]
+    pub fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        self.base.with_mut_at(self.idx, f)
+    }
+
+    #[inline]
+    pub fn read(&self) -> T
+    where
+        T: Clone,
+    {
+        self.base.read_at(self.idx)
+    }
+
+    #[inline]
+    pub fn write(&self, value: T) {
+        self.base.write_at(self.idx, value)
+    }
+
+    #[inline]
+    pub fn upgrade(&self) -> StrongPtr<T> {
+        self.base.offset(self.idx).upgrade()
+    }
+}
+
+impl<T: ByteRepr> Place for ElemPlace<'_, T> {
+    type Target = T;
+    #[inline]
+    fn with<R>(&self, f: impl FnOnce(&T) -> R) -> R {
+        ElemPlace::with(self, f)
+    }
+    #[inline]
+    fn with_mut<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        ElemPlace::with_mut(self, f)
+    }
+}
+
+// Element `idx` of the sequence that pointer `base` points into, e.g.,
+// `elem!(p, i).write(1)` for `p[i] = 1`. It is a struct expression, like
+// field!, so that a temporary base lives as long as the element when bound to
+// a variable.
+#[macro_export]
+macro_rules! elem {
+    ($base:expr, $idx:expr) => {
+        $crate::ElemPlace {
+            base: &$base,
+            idx: ($idx) as isize,
         }
     };
 }

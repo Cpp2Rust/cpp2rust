@@ -1822,12 +1822,16 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     return false;
   }
 
+  // A pointer to a Value field is made without copying the Value out.
+  bool value_field_ptr = isAddrOf() && !known &&
+                         clang::isa<clang::FieldDecl>(member) &&
+                         !member->getType()->isReferenceType();
   std::string str;
   if (known) {
     str = GetMappedAsString(expr);
   } else if (clang::isa<clang::FieldDecl>(member)) {
     // The Value or the pointer that the field holds.
-    str = ReadField(expr);
+    str = ReadField(expr, value_field_ptr ? ".as_pointer()" : ".clone()");
   } else {
     Buffer buf(*this);
     PushExprKind push(*this, ExprKind::RValue);
@@ -1840,7 +1844,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     if (member->getType()->isReferenceType()) {
       computed_expr_type_ = ComputedExprType::Pointer;
     } else {
-      StrCat(".as_pointer()");
+      StrCat(value_field_ptr ? "" : ".as_pointer()");
       computed_expr_type_ = ComputedExprType::FreshPointer;
     }
     return false;
@@ -1913,7 +1917,8 @@ std::string ConverterRefCount::ConvertRecordPtr(clang::MemberExpr *expr) {
   return std::move(buf).str();
 }
 
-std::string ConverterRefCount::ReadField(clang::MemberExpr *expr) {
+std::string ConverterRefCount::ReadField(clang::MemberExpr *expr,
+                                         std::string_view copy) {
   // Unless the struct is reached through a pointer, in which case the field
   // is read in a closure, the borrow of the struct ends at the end of the
   // block.
@@ -1928,7 +1933,7 @@ std::string ConverterRefCount::ReadField(clang::MemberExpr *expr) {
     str = std::move(buf).str();
   }
   if (!TypeIsCopyable(expr->getMemberDecl()->getType())) {
-    str += ".clone()";
+    str += copy;
   }
   return ptr.empty() ? std::format("{{ {} }}", str)
                      : std::format("{}.with(|__s| {})", ptr, str);
@@ -2444,7 +2449,10 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
 
   PushBrace brace(*this, isRValue());
 
-  if (MayCauseBorrowMutError(lhs, rhs)) {
+  // C++ evaluates the assigned value first, which may modify what the place
+  // is computed from, like a pointer it is reached through.
+  if (MayCauseBorrowMutError(lhs, rhs) ||
+      (rhs->HasSideEffects(ctx_) && ReadsMemory(lhs))) {
     if (CanBraceAssignedValue(lhs, rhs, assign_operator)) {
       rhs_as_string = std::format("{{ {} }}", rhs_as_string);
     } else {
@@ -2607,7 +2615,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);
       pending_deref_.set(
-          std::format("({} as {}).offset({})",
+          std::format("elem!(({} as {}), {})",
                       ConvertObject(expr->getArg(0), ObjectShape::Element),
                       ConvertPtrType(expr->getArg(0)->getType()),
                       ConvertSubscriptIndex(expr->getArg(1))),
@@ -2627,10 +2635,12 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
       }
 
       PushConversionKind push(*this, ConversionKind::Unboxed);
-      StrCat(std::format("({} as {}).offset({})",
-                         ConvertObject(expr->getArg(0), ObjectShape::Element),
-                         ConvertPtrType(expr->getArg(0)->getType()),
-                         ConvertSubscriptIndex(expr->getArg(1))));
+      auto ptr = std::format(
+          "({} as {})", ConvertObject(expr->getArg(0), ObjectShape::Element),
+          ConvertPtrType(expr->getArg(0)->getType()));
+      auto idx = ConvertSubscriptIndex(expr->getArg(1));
+      StrCat(deref && !is_inner_boxed ? std::format("elem!({}, {})", ptr, idx)
+                                      : std::format("{}.offset({})", ptr, idx));
 
       if (is_inner_boxed) {
         StrCat(GetPointerDerefSuffix(expr->getType()), ".as_pointer()");
@@ -2757,6 +2767,12 @@ void ConverterRefCount::ConvertArraySubscript(clang::Expr *base,
   }
 }
 
+void ConverterRefCount::ConvertPointerElem(clang::Expr *base,
+                                           clang::Expr *idx) {
+  StrCat(std::format("elem!({}, {})", ToString(base), ConvertRValue(idx)));
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+}
+
 void ConverterRefCount::ConvertPointerSubscript(
     clang::ArraySubscriptExpr *expr) {
   auto *base = expr->getBase();
@@ -2765,7 +2781,7 @@ void ConverterRefCount::ConvertPointerSubscript(
   if (isLValue()) {
     pending_deref_.assert_consumed();
     Buffer buf(*this);
-    ConvertPointerOffset(base, idx);
+    ConvertPointerElem(base, idx);
     pending_deref_.set_unchecked(std::move(buf).str(), isFresh(), expr);
     return;
   }
@@ -2774,8 +2790,10 @@ void ConverterRefCount::ConvertPointerSubscript(
   PushParen paren(*this, deref);
   if (deref) {
     StrCat(GetPointerDerefPrefix(expr->getType()));
+    ConvertPointerElem(base, idx);
+  } else {
+    ConvertPointerOffset(base, idx);
   }
-  ConvertPointerOffset(base, idx);
   if (deref) {
     StrCat(GetPointerDerefSuffix(expr->getType()));
     SetValueFreshness(expr->getType());

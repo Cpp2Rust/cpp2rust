@@ -123,8 +123,7 @@ fn main_0() -> i32 {
     (*pi.borrow()).write(4);
     assert!(
         ({
-            (*(array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>)
-                .offset((1) as isize)
+            (*elem!((array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>), 1)
                 .upgrade()
                 .deref())
             .a
@@ -143,8 +142,7 @@ fn main_0() -> i32 {
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
-        (*name.borrow())
-            .offset((*i.borrow()) as isize)
+        elem!((*name.borrow()), (*i.borrow()))
             .write({ (((('a' as u8) as i32) + (*i.borrow())) as u8) });
         (*i.borrow_mut()).prefix_inc();
     }
@@ -168,10 +166,7 @@ fn main_0() -> i32 {
         _ptr.write(_ptr.read() + 1)
     };
     assert!(
-        (((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>)
-            .offset((1) as isize)
-            .read())
-            == 6)
+        ((elem!((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>), 1).read()) == 6)
             && ({ { (*o.borrow()).cursor.clone() } } == {
                 ((array_field_ptr!(o.as_pointer(), buf) as Ptr<i32>).offset((2) as isize))
             })
@@ -188,10 +183,7 @@ fn main_0() -> i32 {
     });
     assert!(
         ((*{ (*o.borrow()).v.clone() }.borrow()).len() == 1_usize)
-            && ((({ (*o.borrow()).v.clone() }.as_pointer() as Ptr<i32>)
-                .offset(0_usize)
-                .read())
-                == 7)
+            && ((elem!(({ (*o.borrow()).v.as_pointer() } as Ptr<i32>), 0_usize).read()) == 7)
     );
     assert!((({ OuterImpl::sum(&o.as_pointer(),) }) == 7));
     let y: Value<i32> = Rc::new(RefCell::new(0));
@@ -257,9 +249,11 @@ pub trait OuterImpl {
 }
 impl OuterImpl for Ptr<Outer> {
     fn next(&self) -> i32 {
-        return ((array_field_ptr!((*self), buf) as Ptr<i32>)
-            .offset((field!((*self), x).with_mut(|__v| __v.postfix_inc())) as isize)
-            .read());
+        return (elem!(
+            (array_field_ptr!((*self), buf) as Ptr::<i32>),
+            field!((*self), x).with_mut(|__v| __v.postfix_inc())
+        )
+        .read());
     }
     fn sum(&self) -> i32 {
         return ((*self).with(|__s| __s.x) + (*self).with(|__s| __s.inner.a));

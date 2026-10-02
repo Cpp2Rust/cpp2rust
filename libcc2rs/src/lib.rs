@@ -10,7 +10,7 @@ mod rc;
 pub use rc::*;
 
 mod field;
-pub use field::{FieldPlace, FieldPtr, Place, Record};
+pub use field::{ElemPlace, FieldPlace, FieldPtr, Place, Record};
 // Used by #[derive(Record)] and size_of_field!.
 #[doc(hidden)]
 pub mod __field {

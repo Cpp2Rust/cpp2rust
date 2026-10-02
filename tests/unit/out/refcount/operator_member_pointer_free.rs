@@ -78,12 +78,7 @@ fn main_0() -> i32 {
     ));
     assert!((((*p.borrow()).read()) == 1));
     (*p.borrow()).write(5);
-    assert!(
-        (((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>)
-            .offset((0) as isize)
-            .read())
-            == 5)
-    );
+    assert!(((elem!((array_field_ptr!(s.as_pointer(), data) as Ptr::<i32>), 0).read()) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

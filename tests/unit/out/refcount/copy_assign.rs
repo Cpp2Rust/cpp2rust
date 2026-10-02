@@ -172,15 +172,13 @@ fn main_0() -> i32 {
     assert!(({ (*h.borrow()).p.v } == 2) && ({ (*h.borrow()).p.keep } == 40));
     assert!(
         ({
-            (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
-                .offset((1) as isize)
+            (*elem!((array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>), 1)
                 .upgrade()
                 .deref())
             .v
         } == 2)
             && ({
-                (*(array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>)
-                    .offset((1) as isize)
+                (*elem!((array_field_ptr!(h.as_pointer(), arr) as Ptr<Partial>), 1)
                     .upgrade()
                     .deref())
                 .keep

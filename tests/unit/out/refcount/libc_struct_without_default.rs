@@ -74,12 +74,7 @@ fn main_0() -> i32 {
     (*st.borrow_mut()).st_size = 1024_i64;
     assert!(({ (*st.borrow()).st_size } == 1024_i64));
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
-    assert!(
-        ((({ (*ud.borrow()).a.clone() }.as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read())
-            == 0)
-    );
+    assert!(((elem!(({ (*ud.borrow()).a.as_pointer() } as Ptr<i32>), 0_usize).read()) == 0));
     assert!(((*{ (*ud.borrow()).v.clone() }.borrow()).len() == 0_usize));
     let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::default()));
     assert!((({ (*filt.borrow()).addr.sa_family } as i32) == 0));

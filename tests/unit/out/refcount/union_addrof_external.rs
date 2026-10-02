@@ -124,30 +124,38 @@ fn main_0() -> i32 {
     });
     assert!((((((*c.borrow()).view.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
-        (((((((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>())
-            .offset((0) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            0
+        )
+        .read()) as i32)
             == 0) as i32)
             != 0)
     );
     assert!(
-        (((((((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>())
-            .offset((1) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            1
+        )
+        .read()) as i32)
             == 80) as i32)
             != 0)
     );
     assert!(
-        (((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((0) as isize)
-            .read()) as i32)
+        (((((elem!(
+            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            0
+        )
+        .read()) as i32)
             == 2) as i32)
             != 0)
     );
     assert!(
-        ((((((((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>)
-            .offset((3) as isize)
-            .read()) as u8) as i32)
+        ((((((elem!(
+            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            3
+        )
+        .read()) as u8) as i32)
             == 80) as i32)
             != 0)
     );

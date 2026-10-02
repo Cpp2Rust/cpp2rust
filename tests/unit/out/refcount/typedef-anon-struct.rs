@@ -44,19 +44,23 @@ fn main_0() -> i32 {
     assert!(((*{ (*o.borrow()).runs.clone() }.borrow()).len() == 1_usize));
     assert!(
         ({
-            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
-                .offset(0_usize)
-                .upgrade()
-                .deref())
+            (*elem!(
+                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
+                0_usize
+            )
+            .upgrade()
+            .deref())
             .block_idx
         } == 1)
     );
     assert!(
         ({
-            (*({ (*o.borrow()).runs.clone() }.as_pointer() as Ptr<Outer_RunInfo>)
-                .offset(0_usize)
-                .upgrade()
-                .deref())
+            (*elem!(
+                ({ (*o.borrow()).runs.as_pointer() } as Ptr<Outer_RunInfo>),
+                0_usize
+            )
+            .upgrade()
+            .deref())
             .num_extra_zero_runs
         } == 2)
     );

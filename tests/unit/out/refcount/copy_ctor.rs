@@ -178,17 +178,21 @@ fn main_0() -> i32 {
     assert!(
         (({ (*hold2.borrow()).c.v } == 8)
             && ({
-                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
-                    .offset((0) as isize)
-                    .upgrade()
-                    .deref())
+                (*elem!(
+                    (array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>),
+                    0
+                )
+                .upgrade()
+                .deref())
                 .v
             } == 9))
             && ({
-                (*(array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>)
-                    .offset((1) as isize)
-                    .upgrade()
-                    .deref())
+                (*elem!(
+                    (array_field_ptr!(hold2.as_pointer(), arr) as Ptr<Counted>),
+                    1
+                )
+                .upgrade()
+                .deref())
                 .v
             } == 10)
     );
@@ -200,8 +204,7 @@ fn main_0() -> i32 {
     };
     assert!(
         ({
-            (*(vec_.as_pointer() as Ptr<Counted>)
-                .offset(0_usize)
+            (*elem!((vec_.as_pointer() as Ptr<Counted>), 0_usize)
                 .upgrade()
                 .deref())
             .v

@@ -254,15 +254,18 @@ fn main_0() -> i32 {
         ((a2.as_pointer() as Ptr<array>) as Ptr<array>).to_any()
     };
     assert!(
-        ((((((((((((array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>)
-            .offset((1) as isize)
-            .read()) as i32)
+        (((((((((((elem!(
+            (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+            1
+        )
+        .read()) as i32)
             == ('d' as i32)) as i32)
             != 0)
-            && ((((((array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name)
-                as Ptr::<u8>)
-                .offset((2) as isize)
-                .read()) as i32)
+            && (((((elem!(
+                (array_field_ptr!((a2.as_pointer() as Ptr<array>).offset(1), name) as Ptr::<u8>),
+                2
+            )
+            .read()) as i32)
                 == 0) as i32)
                 != 0)) as i32)
             != 0)

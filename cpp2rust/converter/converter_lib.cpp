@@ -1338,6 +1338,16 @@ GetAllVars(const clang::Stmt *stmt) {
   return vars;
 }
 
+bool ReadsMemory(const clang::Stmt *stmt) {
+  if (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(stmt);
+      cast && cast->getCastKind() == clang::CK_LValueToRValue) {
+    return true;
+  }
+  return std::ranges::any_of(stmt->children(), [](const clang::Stmt *child) {
+    return child && ReadsMemory(child);
+  });
+}
+
 bool ReferencesThis(const clang::Stmt *stmt) {
   if (!stmt) {
     return false;

@@ -27,41 +27,33 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         let __a1 = 3;
         (*v2.borrow_mut()).push(__a1)
     };
-    (*x.borrow_mut()) = ((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
-        .offset(2_usize)
-        .read());
-    (v2.as_pointer() as Ptr<i32>).offset(0_usize).write(1);
-    ((if true {
-        v3.as_pointer()
-    } else {
-        Ptr::<Vec<i32>>::decay(&(v))
-    }) as Ptr<i32>)
-        .offset(0_usize)
-        .write(7);
+    (*x.borrow_mut()) = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
+    elem!((v2.as_pointer() as Ptr<i32>), 0_usize).write(1);
+    elem!(
+        ((if true {
+            v3.as_pointer()
+        } else {
+            Ptr::<Vec<i32>>::decay(&(v))
+        }) as Ptr<i32>),
+        0_usize
+    )
+    .write(7);
     (v2.as_pointer() as Ptr<Vec<i32>>).write((*v.upgrade().deref()).clone());
-    ((Ptr::<Vec<i32>>::decay(&(*v4.borrow()))) as Ptr<i32>)
-        .offset(1_usize)
-        .write(13);
+    elem!(
+        ((Ptr::<Vec<i32>>::decay(&(*v4.borrow()))) as Ptr<i32>),
+        1_usize
+    )
+    .write(13);
     assert!(((*x.borrow()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
-    assert!(
-        (((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
-            .offset(1_usize)
-            .read())
-            == 5)
-    );
-    assert!(
-        (((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>)
-            .offset(2_usize)
-            .read())
-            == 6)
-    );
+    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
+    assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
-    assert!((((v2.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 4));
-    assert!((((v2.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 5));
-    assert!((((v2.as_pointer() as Ptr<i32>).offset(2_usize).read()) == 6));
-    assert!((((v3.as_pointer() as Ptr<i32>).offset(0_usize).read()) == 7));
-    assert!((((v3.as_pointer() as Ptr<i32>).offset(1_usize).read()) == 13));
+    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 0_usize).read()) == 4));
+    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 1_usize).read()) == 5));
+    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 2_usize).read()) == 6));
+    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 7));
+    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 13));
     {
         let __a1 = 20;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
