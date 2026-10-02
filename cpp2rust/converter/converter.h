@@ -129,7 +129,11 @@ public:
 
   virtual bool EmitsReprCForRecords() const { return true; }
 
+  // CharRustType and CharRustTypeIsSigned should disappear after
+  // https://github.com/Cpp2Rust/cpp2rust/issues/246
   virtual const char *CharRustType() const { return "libc::c_char"; }
+
+  virtual bool CharRustTypeIsSigned() const { return true; }
 
   virtual bool VisitCXXMethodDecl(clang::CXXMethodDecl *decl);
 

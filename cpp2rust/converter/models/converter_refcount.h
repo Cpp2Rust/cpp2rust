@@ -37,6 +37,7 @@ public:
   bool EmitsReprCForRecords() const override { return false; }
 
   const char *CharRustType() const override { return "u8"; }
+  bool CharRustTypeIsSigned() const override { return false; }
 
   std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                                         std::string_view value) override;

@@ -246,6 +246,24 @@ bool RefersToUserDefinedDecl(const clang::Expr *expr) {
   return decl && IsUserDefinedDecl(decl);
 }
 
+llvm::APSInt GetIntegerLiteralValue(const clang::ASTContext &ctx,
+                                    const clang::IntegerLiteral *expr,
+                                    const clang::QualType *type,
+                                    bool char_is_signed) {
+  auto value = expr->getValue();
+  bool is_signed = false;
+  if (type && (*type)->isBuiltinType() && (*type)->isIntegerType() &&
+      !(*type)->isBooleanType()) {
+    value = value.zextOrTrunc(ctx.getIntWidth(*type));
+    is_signed =
+        (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_S) ||
+                (*type)->isSpecificBuiltinType(clang::BuiltinType::Char_U)
+            ? char_is_signed
+            : (*type)->isSignedIntegerType();
+  }
+  return llvm::APSInt(value, !is_signed);
+}
+
 bool IsUnsignedArithOp(const clang::BinaryOperator *expr) {
   clang::QualType lhs_type;
   clang::QualType rhs_type;
