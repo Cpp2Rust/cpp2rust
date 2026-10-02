@@ -61,7 +61,7 @@ impl Clone for Movable {
         Movable::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
@@ -70,14 +70,6 @@ pub struct Holder {
     #[offset(24)]
     #[byte_size(24)]
     pub ys: Value<Vec<i32>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            xs: Rc::new(RefCell::new((*self.xs.borrow()).clone())),
-            ys: Rc::new(RefCell::new((*self.ys.borrow()).clone())),
-        }
-    }
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -101,15 +93,19 @@ fn main_0() -> i32 {
     assert!(((*{ (*__decomp_3.borrow()).xs.clone() }.borrow()).len() == 3_usize));
     assert!(((*{ (*__decomp_3.borrow()).ys.clone() }.borrow()).len() == 2_usize));
     assert!(
-        ((({ (*__decomp_3.borrow()).xs.clone() }.as_pointer() as Ptr<i32>)
-            .offset(2_usize)
-            .read())
+        ((elem!(
+            ({ (*__decomp_3.borrow()).xs.as_pointer() } as Ptr<i32>),
+            2_usize
+        )
+        .read())
             == 3)
     );
     assert!(
-        ((({ (*__decomp_3.borrow()).ys.clone() }.as_pointer() as Ptr<i32>)
-            .offset(0_usize)
-            .read())
+        ((elem!(
+            ({ (*__decomp_3.borrow()).ys.as_pointer() } as Ptr<i32>),
+            0_usize
+        )
+        .read())
             == 4)
     );
     assert!((*{ (*h.borrow()).xs.clone() }.borrow()).is_empty());

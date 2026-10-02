@@ -22,10 +22,10 @@ fn main_0() -> i32 {
     assert!(((*__decomp_0.borrow())[(2) as usize] == 3));
     assert!(((*arr.borrow())[(0) as usize] == 1));
     let __decomp_1: Ptr<i32> = (arr.as_pointer() as Ptr<i32>);
-    (__decomp_1).offset((0) as isize).write(7);
+    elem!((__decomp_1), 0).write(7);
     {
-        let _ptr = (__decomp_1).offset((2) as isize);
-        _ptr.write(_ptr.read() + ((__decomp_1).offset((1) as isize).read()))
+        let _ptr = elem!((__decomp_1), 2);
+        _ptr.write(_ptr.read() + (elem!((__decomp_1), 1).read()))
     };
     assert!(((*arr.borrow())[(0) as usize] == 7));
     assert!(((*arr.borrow())[(2) as usize] == 5));
