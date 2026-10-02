@@ -408,7 +408,7 @@ std::string ConverterRefCount::ConvertFreshPointer(
 }
 
 std::string ConverterRefCount::ConvertPointeeCast(std::string str,
-                                                  const clang::Expr *,
+                                                  const clang::Expr *from,
                                                   clang::QualType to) {
   if (to->isFunctionPointerType()) {
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -419,6 +419,11 @@ std::string ConverterRefCount::ConvertPointeeCast(std::string str,
   }
   if (to->isReferenceType() && !isAddrOf()) {
     return str;
+  }
+  if (auto pointee = GetExprPointee(ctx_, from, to);
+      to->isReferenceType() && pointee->isArrayType()) {
+    str = std::format("{} as {}", str,
+                      ToString(ctx_.getLValueReferenceType(pointee)));
   }
   PushConversionKind push(*this, ConversionKind::Unboxed);
   auto element = ctx_.getBaseElementType(to->getPointeeType());
@@ -2336,7 +2341,7 @@ std::string ConverterRefCount::ConvertVarInitValue(clang::QualType qual_type,
         return std::format("Ptr::<{}>::from_string_literal({})", code_unit,
                            ToString(expr->IgnoreParens()->IgnoreImplicit()));
       }
-      return std::format("({} as {})", ConvertFreshPointer(expr),
+      return std::format("({} as {})", ConvertFreshPointer(expr, qual_type),
                          ToString(qual_type));
     }
     return ConvertFreshPointer(expr, qual_type);
