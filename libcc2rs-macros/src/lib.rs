@@ -4,6 +4,7 @@
 use proc_macro::TokenStream;
 
 mod byte_repr;
+mod deep_clone;
 mod fn_ptr_arg;
 mod goto;
 mod record;
@@ -130,4 +131,19 @@ pub fn derive_fn_ptr_arg(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Record, attributes(offset))]
 pub fn derive_record(input: TokenStream) -> TokenStream {
     record::expand(input)
+}
+
+//     #[derive(DeepClone)]
+//     pub struct S {
+//         pub x: Value<T>,
+//         pub y: U,
+//     }
+//
+// Implements Clone for S, copying the Value fields with
+// libcc2rs::DeepClone, such that the copy of S doesn't share them with S,
+// and the other fields with Clone.
+
+#[proc_macro_derive(DeepClone)]
+pub fn derive_deep_clone(input: TokenStream) -> TokenStream {
+    deep_clone::expand(input)
 }

@@ -12,7 +12,7 @@ pub struct Inner {
     #[offset(0)]
     pub x: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Explicit {
     #[offset(0)]
@@ -38,15 +38,6 @@ impl Explicit {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-impl Clone for Explicit {
-    fn clone(&self) -> Self {
-        Self {
-            v: self.v.clone(),
-            inner: self.inner.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
-}
 impl Default for Explicit {
     fn default() -> Self {
         Explicit {
@@ -56,7 +47,7 @@ impl Default for Explicit {
         }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Implicit {
     #[offset(0)]
@@ -67,15 +58,6 @@ pub struct Implicit {
     #[offset(8)]
     #[byte_size(8)]
     pub arr: Value<Box<[i32]>>,
-}
-impl Clone for Implicit {
-    fn clone(&self) -> Self {
-        Self {
-            v: self.v.clone(),
-            inner: self.inner.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for Implicit {
     fn default() -> Self {

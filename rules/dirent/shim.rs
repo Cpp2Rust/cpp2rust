@@ -1,12 +1,12 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, Record, Value, size_of_field};
+use crate::{ByteRepr, DeepClone, Record, Value, size_of_field};
 use std::cell::{Cell, RefCell};
 use std::mem::{offset_of, size_of};
 use std::rc::Rc;
 
-#[derive(Record, ByteRepr)]
+#[derive(DeepClone, Record, ByteRepr)]
 #[byte_size(size_of::<::libc::dirent>())]
 pub struct Dirent {
     #[offset(offset_of!(::libc::dirent, d_ino))]
@@ -51,15 +51,6 @@ impl Dirent {
             nm[n] = 0;
         }
         de
-    }
-}
-
-impl Clone for Dirent {
-    fn clone(&self) -> Self {
-        Self {
-            d_name: Rc::new(RefCell::new(self.d_name.borrow().clone())),
-            ..*self
-        }
     }
 }
 

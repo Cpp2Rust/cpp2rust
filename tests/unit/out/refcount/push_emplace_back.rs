@@ -22,7 +22,7 @@ pub struct Writer {
     #[byte_size(4)]
     pub chunk: Chunk,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(48)]
 pub struct JPEGData {
     #[offset(0)]
@@ -31,14 +31,6 @@ pub struct JPEGData {
     #[offset(24)]
     #[byte_size(24)]
     pub app_data: Value<Vec<Value<Vec<u8>>>>,
-}
-impl Clone for JPEGData {
-    fn clone(&self) -> Self {
-        Self {
-            com_data: Rc::new(RefCell::new((*self.com_data.borrow()).clone())),
-            app_data: Rc::new(RefCell::new((*self.app_data.borrow()).clone())),
-        }
-    }
 }
 pub fn push_param_0(dest: Ptr<Vec<Value<Vec<u8>>>>) {
     let dest: Value<Ptr<Vec<Value<Vec<u8>>>>> = Rc::new(RefCell::new(dest));

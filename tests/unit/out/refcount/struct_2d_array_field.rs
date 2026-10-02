@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct table {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct table {
     pub rows: Value<Box<[Value<Box<[u8]>>]>>,
     #[offset(32)]
     pub count: usize,
-}
-impl Clone for table {
-    fn clone(&self) -> Self {
-        Self {
-            rows: Rc::new(RefCell::new((*self.rows.borrow()).clone())),
-            count: self.count.clone(),
-        }
-    }
 }
 impl Default for table {
     fn default() -> Self {

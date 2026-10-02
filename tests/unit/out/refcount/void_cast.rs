@@ -10,19 +10,12 @@ pub fn unused_param_0(x: i32) {
     let x: Value<i32> = Rc::new(RefCell::new(x));
     &(*x.borrow_mut());
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
 pub struct NonTrivial {
     #[offset(0)]
     #[byte_size(24)]
     pub data: Value<Vec<i32>>,
-}
-impl Clone for NonTrivial {
-    fn clone(&self) -> Self {
-        Self {
-            data: Rc::new(RefCell::new((*self.data.borrow()).clone())),
-        }
-    }
 }
 pub fn unused_ref_param_1(x: Ptr<NonTrivial>) {
     &(*x.upgrade().deref());

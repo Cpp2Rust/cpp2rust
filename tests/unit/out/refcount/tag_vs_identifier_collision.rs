@@ -26,7 +26,7 @@ pub struct point_struct {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct point {
     #[offset(0)]
@@ -41,13 +41,6 @@ impl point {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
-impl Clone for point {
-    fn clone(&self) -> Self {
-        point {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
-    }
-}
 impl Default for point {
     fn default() -> Self {
         point {
@@ -55,7 +48,7 @@ impl Default for point {
         }
     }
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct slot_union {
     #[offset(0)]
@@ -68,13 +61,6 @@ impl slot_union {
     }
     pub fn u(&self) -> Ptr<u32> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for slot_union {
-    fn clone(&self) -> Self {
-        slot_union {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for slot_union {

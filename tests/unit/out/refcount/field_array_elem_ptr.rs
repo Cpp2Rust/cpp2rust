@@ -14,7 +14,7 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(48)]
 pub struct Shape {
     #[offset(0)]
@@ -27,16 +27,6 @@ pub struct Shape {
     pub points: Value<Box<[Point]>>,
     #[offset(44)]
     pub tail: i32,
-}
-impl Clone for Shape {
-    fn clone(&self) -> Self {
-        Self {
-            id: self.id.clone(),
-            coords: Rc::new(RefCell::new((*self.coords.borrow()).clone())),
-            points: Rc::new(RefCell::new((*self.points.borrow()).clone())),
-            tail: self.tail.clone(),
-        }
-    }
 }
 impl Default for Shape {
     fn default() -> Self {

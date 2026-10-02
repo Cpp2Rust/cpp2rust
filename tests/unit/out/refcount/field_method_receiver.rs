@@ -12,7 +12,7 @@ pub struct Counter {
     #[offset(0)]
     pub n: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -26,16 +26,6 @@ pub struct S {
     #[offset(16)]
     #[byte_size(24)]
     pub v: Value<Vec<i32>>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            tag: self.tag.clone(),
-            c: self.c.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(32)]
 pub struct S {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct S {
     #[offset(8)]
     #[byte_size(24)]
     pub v: Value<Vec<i32>>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            tag: self.tag.clone(),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }
-    }
 }
 pub fn add_0(v: Ptr<Vec<i32>>, k: i32) {
     let v: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new(v));

@@ -16,6 +16,19 @@ use crate::reinterpret::{ByteRepr, OriginalAlloc, with_scratch};
 
 pub type Value<T> = Rc<RefCell<T>>;
 
+// A copy of a Value that doesn't share the value: unlike clone(), which
+// shares it by incrementing the reference count, it copies the value into a
+// new Value.
+pub trait DeepClone {
+    fn deep_clone(&self) -> Self;
+}
+
+impl<T: Clone> DeepClone for Value<T> {
+    fn deep_clone(&self) -> Self {
+        Rc::new(RefCell::new(self.borrow().clone()))
+    }
+}
+
 pub(crate) struct ReinterpretedView {
     // Pointer to the source of reinterpret
     pub(crate) alloc: OriginalAlloc,

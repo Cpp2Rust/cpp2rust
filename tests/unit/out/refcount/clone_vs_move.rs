@@ -12,7 +12,7 @@ pub struct Bar {
     #[offset(0)]
     pub w: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct Foo {
     #[offset(0)]
@@ -29,17 +29,6 @@ pub struct Foo {
     #[offset(36)]
     #[byte_size(4)]
     pub bar: Bar,
-}
-impl Clone for Foo {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            y: self.y.clone(),
-            z: self.z.clone(),
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            bar: self.bar.clone(),
-        }
-    }
 }
 impl Default for Foo {
     fn default() -> Self {

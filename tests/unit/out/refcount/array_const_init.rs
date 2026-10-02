@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(20)]
 pub struct S {
     #[offset(0)]
@@ -17,15 +17,6 @@ pub struct S {
     #[offset(16)]
     #[byte_size(4)]
     pub buf: Value<Box<[u8]>>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            head: self.head.clone(),
-            tail: Rc::new(RefCell::new((*self.tail.borrow()).clone())),
-            buf: Rc::new(RefCell::new((*self.buf.borrow()).clone())),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {

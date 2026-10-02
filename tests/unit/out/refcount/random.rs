@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(72)]
 pub struct Pair {
     #[offset(0)]
@@ -28,19 +28,6 @@ pub struct Pair {
     #[offset(56)]
     #[byte_size(16)]
     pub ap: Value<Box<[Ptr<i32>]>>,
-}
-impl Clone for Pair {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            y: self.y.clone(),
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            r: self.r.clone(),
-            p: self.p.clone(),
-            pair: self.pair.clone(),
-            ap: Rc::new(RefCell::new((*self.ap.borrow()).clone())),
-        }
-    }
 }
 impl Default for Pair {
     fn default() -> Self {

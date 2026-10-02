@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(32)]
 pub struct UserDefined {
     #[offset(0)]
@@ -15,14 +15,6 @@ pub struct UserDefined {
     #[offset(8)]
     #[byte_size(24)]
     pub v: Value<Vec<i32>>,
-}
-impl Clone for UserDefined {
-    fn clone(&self) -> Self {
-        Self {
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-        }
-    }
 }
 impl Default for UserDefined {
     fn default() -> Self {

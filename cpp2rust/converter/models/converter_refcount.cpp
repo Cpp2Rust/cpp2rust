@@ -540,45 +540,28 @@ bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
   });
 }
 
-void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
-  auto record_name = GetRecordName(decl);
-
+bool ConverterRefCount::RecordDerivesDeepClone(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
-    StrCat("impl Clone for", record_name);
-    PushBrace impl_brace(*this);
-    StrCat("fn clone(&self) -> Self");
-    PushBrace fn_brace(*this);
-    StrCat(record_name,
-           "{ __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())) }");
-    return;
+    return true;
   }
-
   if (RecordDerivesClone(decl) || !RecordImplementsClone(decl)) {
-    return;
+    return false;
   }
   // Without a user-defined copy constructor, each field is copied with its
   // own clone(), and Values are copied deeply.
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (!cxx ||
-      (!GetUserDefinedCopyConstructor(cxx) && cxx->getNumBases() == 0)) {
-    StrCat(keyword::kImpl, "Clone for", record_name);
-    PushBrace impl_brace(*this);
-    StrCat("fn clone(&self) -> Self");
-    PushBrace fn_brace(*this);
-    StrCat("Self");
-    PushBrace init_brace(*this);
-    for (auto *field : decl->fields()) {
-      auto name = GetNamedDeclAsString(field);
-      auto value = std::format("self.{}.clone()", name);
-      if (IsValueField(ctx_, field)) {
-        value = std::format(
-            "Rc::new(RefCell::new((*self.{}.borrow()).clone()))", name);
-      }
-      StrCat(std::format("{}: {},", name, value));
-    }
+  return !cxx ||
+         (!GetUserDefinedCopyConstructor(cxx) && cxx->getNumBases() == 0);
+}
+
+void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
+  if (RecordDerivesClone(decl) || RecordDerivesDeepClone(decl) ||
+      !RecordImplementsClone(decl)) {
     return;
   }
 
+  auto record_name = GetRecordName(decl);
+  auto *cxx = clang::cast<clang::CXXRecordDecl>(decl);
   StrCat(keyword::kImpl, "Clone for", record_name, '{');
   StrCat("fn clone(&self) -> Self {");
 
@@ -627,10 +610,10 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
       std::vector<std::string>(attrs.begin(), attrs.end()));
 
   auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
-  StrCat(std::format("#[derive(ByteRepr)] #[byte_size({0})] pub struct {1} {{ "
-                     "#[offset(0)] #[byte_size({0})] __bytes: Value<Box<[u8]>> "
-                     "}}",
-                     size.getQuantity(), name));
+  StrCat(std::format(
+      "#[derive(ByteRepr, DeepClone)] #[byte_size({0})] pub struct {1} {{ "
+      "#[offset(0)] #[byte_size({0})] __bytes: Value<Box<[u8]>> }}",
+      size.getQuantity(), name));
 
   StrCat("impl", name);
   {
@@ -2292,6 +2275,8 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordDerivesClone(decl)) {
     attrs.emplace_back("Clone");
+  } else if (RecordDerivesDeepClone(decl)) {
+    attrs.emplace_back("DeepClone");
   }
 
   // Gives access to the fields through pointers to them.

@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct record {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct record {
     #[offset(2)]
     #[byte_size(14)]
     pub pad: Value<Box<[u8]>>,
-}
-impl Clone for record {
-    fn clone(&self) -> Self {
-        Self {
-            code: self.code.clone(),
-            pad: Rc::new(RefCell::new((*self.pad.borrow()).clone())),
-        }
-    }
 }
 impl Default for record {
     fn default() -> Self {
@@ -31,7 +23,7 @@ impl Default for record {
         }
     }
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]
@@ -44,13 +36,6 @@ impl anon_0 {
     }
     pub fn raw_(&self) -> Ptr<u8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_0 {
-    fn clone(&self) -> Self {
-        anon_0 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_0 {
@@ -67,7 +52,7 @@ pub struct inner {
     #[byte_size(128)]
     pub view: anon_0,
 }
-#[derive(ByteRepr)]
+#[derive(ByteRepr, DeepClone)]
 #[byte_size(128)]
 pub struct anon_1 {
     #[offset(0)]
@@ -80,13 +65,6 @@ impl anon_1 {
     }
     pub fn nested(&self) -> Ptr<inner> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
-    }
-}
-impl Clone for anon_1 {
-    fn clone(&self) -> Self {
-        anon_1 {
-            __bytes: Rc::new(RefCell::new(self.__bytes.borrow().clone())),
-        }
     }
 }
 impl Default for anon_1 {

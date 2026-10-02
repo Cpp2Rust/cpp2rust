@@ -82,7 +82,7 @@ impl Default for RefQualified {
         { RefQualified::new() }
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(24)]
 pub struct Holder {
     #[offset(0)]
@@ -91,14 +91,6 @@ pub struct Holder {
     #[offset(8)]
     #[byte_size(16)]
     pub arr: Value<Box<[Partial]>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            p: self.p.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for Holder {
     fn default() -> Self {

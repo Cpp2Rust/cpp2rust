@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(8)]
 pub struct S {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct S {
     #[offset(4)]
     #[byte_size(1)]
     pub name: Value<Box<[u8]>>,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            n: self.n.clone(),
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
@@ -39,7 +31,7 @@ pub struct E {
     #[offset(4)]
     pub w: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct T {
     #[offset(0)]
@@ -49,15 +41,6 @@ pub struct T {
     #[offset(8)]
     #[byte_size(8)]
     pub a: Value<Box<[E]>>,
-}
-impl Clone for T {
-    fn clone(&self) -> Self {
-        Self {
-            n: self.n.clone(),
-            cap: self.cap.clone(),
-            a: Rc::new(RefCell::new((*self.a.borrow()).clone())),
-        }
-    }
 }
 impl Default for T {
     fn default() -> Self {

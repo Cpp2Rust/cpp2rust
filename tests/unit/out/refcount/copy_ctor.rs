@@ -103,7 +103,7 @@ impl Clone for Ignored {
         Ignored::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Holder {
     #[offset(0)]
@@ -112,14 +112,6 @@ pub struct Holder {
     #[offset(4)]
     #[byte_size(8)]
     pub arr: Value<Box<[Counted]>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            c: self.c.clone(),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-        }
-    }
 }
 impl Default for Holder {
     fn default() -> Self {

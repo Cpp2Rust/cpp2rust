@@ -14,7 +14,7 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(48)]
 pub struct Holder {
     #[offset(0)]
@@ -23,14 +23,6 @@ pub struct Holder {
     #[offset(24)]
     #[byte_size(24)]
     pub points: Value<Vec<Point>>,
-}
-impl Clone for Holder {
-    fn clone(&self) -> Self {
-        Self {
-            values: Rc::new(RefCell::new((*self.values.borrow()).clone())),
-            points: Rc::new(RefCell::new((*self.points.borrow()).clone())),
-        }
-    }
 }
 pub fn push_and_index_0(v: Ptr<Vec<i32>>) -> i32 {
     {

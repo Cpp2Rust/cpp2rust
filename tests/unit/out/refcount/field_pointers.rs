@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(12)]
 pub struct Inner {
     #[offset(0)]
@@ -14,14 +14,6 @@ pub struct Inner {
     #[offset(4)]
     #[byte_size(8)]
     pub name: Value<Box<[u8]>>,
-}
-impl Clone for Inner {
-    fn clone(&self) -> Self {
-        Self {
-            a: self.a.clone(),
-            name: Rc::new(RefCell::new((*self.name.borrow()).clone())),
-        }
-    }
 }
 impl Default for Inner {
     fn default() -> Self {
@@ -39,7 +31,7 @@ pub struct Header {
     #[offset(4)]
     pub size: i16,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(104)]
 pub struct Outer {
     #[offset(0)]
@@ -59,18 +51,6 @@ pub struct Outer {
     #[offset(88)]
     #[byte_size(16)]
     pub buf: Value<Box<[i32]>>,
-}
-impl Clone for Outer {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            inner: self.inner.clone(),
-            items: Rc::new(RefCell::new((*self.items.borrow()).clone())),
-            v: Rc::new(RefCell::new((*self.v.borrow()).clone())),
-            cursor: self.cursor.clone(),
-            buf: Rc::new(RefCell::new((*self.buf.borrow()).clone())),
-        }
-    }
 }
 impl Default for Outer {
     fn default() -> Self {

@@ -53,6 +53,8 @@ public:
 
   bool RecordDerivesClone(const clang::RecordDecl *decl);
 
+  bool RecordDerivesDeepClone(const clang::RecordDecl *decl);
+
   void EmitByteSizeAttr(const clang::RecordDecl *decl) override;
 
   bool

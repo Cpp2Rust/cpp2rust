@@ -14,7 +14,7 @@ pub struct In {
     #[offset(4)]
     pub b: i32,
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(40)]
 pub struct S {
     #[offset(0)]
@@ -30,17 +30,6 @@ pub struct S {
     pub arr: Value<Box<[i32]>>,
     #[offset(32)]
     pub tail: i64,
-}
-impl Clone for S {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x.clone(),
-            in_: self.in_.clone(),
-            bytes: Rc::new(RefCell::new((*self.bytes.borrow()).clone())),
-            arr: Rc::new(RefCell::new((*self.arr.borrow()).clone())),
-            tail: self.tail.clone(),
-        }
-    }
 }
 impl Default for S {
     fn default() -> Self {
