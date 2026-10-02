@@ -1084,9 +1084,9 @@ std::string Converter::GetMethodName(const clang::CXXMethodDecl *decl) {
         [&](const clang::CXXMethodDecl *method) {
           auto *other = clang::dyn_cast<clang::CXXConversionDecl>(method);
           return other && other != conversion &&
-                 GetConversionName(other, GetUnsafeTypeAsString(
-                                              other->getConversionType())) ==
-                     name;
+                 GetConversionName(
+                     other,
+                     GetUnsafeTypeAsString(other->getConversionType())) == name;
         });
     return shared ? name + std::format("_{}", GetMethodIndex(conversion))
                   : name;
