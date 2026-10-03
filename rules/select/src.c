@@ -4,3 +4,13 @@
 #include <sys/select.h>
 
 typedef fd_set t1;
+
+int f1(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+       struct timeval *timeout) {
+  return select(nfds, readfds, writefds, exceptfds, timeout);
+}
+
+void f2(int fd, fd_set *set) { return FD_SET(fd, set); }
+void f3(int fd, fd_set *set) { return FD_CLR(fd, set); }
+int f4(int fd, const fd_set *set) { return FD_ISSET(fd, set); }
+void f5(fd_set *set) { return FD_ZERO(set); }
