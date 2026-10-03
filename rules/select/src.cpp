@@ -3,8 +3,6 @@
 
 #include <sys/select.h>
 
-using t1 = fd_set;
-
 int f1(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
        struct timeval *timeout) {
   return select(nfds, readfds, writefds, exceptfds, timeout);

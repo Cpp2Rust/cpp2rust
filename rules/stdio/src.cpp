@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-using t1 = FILE *;
-
 FILE *f1(const char *pathname, const char *mode) {
   return fopen(pathname, mode);
 }
