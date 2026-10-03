@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Vtable {
     pub create: Option<unsafe fn(i32) -> *mut ::libc::c_void>,
     pub get: Option<unsafe fn(*mut ::libc::c_void) -> i32>,

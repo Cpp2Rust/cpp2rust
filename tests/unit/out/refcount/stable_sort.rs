@@ -14,10 +14,12 @@ fn main_0() -> i32 {
     let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 2, 8, 1, 3])));
     {
         let fun = |x: Ptr<i32>, y: Ptr<i32>| {
-            (|x: i32, y: i32| {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                let y: Value<i32> = Rc::new(RefCell::new(y));
-                return ((*x.borrow()) < (*y.borrow()));
+            FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| -> bool {
+                {
+                    let x: Value<i32> = Rc::new(RefCell::new(x));
+                    let y: Value<i32> = Rc::new(RefCell::new(y));
+                    return ((*x.borrow()) < (*y.borrow()));
+                }
             })
             .call((x.read()).clone(), (y.read()).clone())
         };

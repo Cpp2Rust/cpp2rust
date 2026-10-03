@@ -8,7 +8,7 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut assigns_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct Partial {
     pub v: i32,
     pub keep: i32,
@@ -40,7 +40,7 @@ impl Clone for Partial {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct NonConstAssign {
     pub mark: i32,
 }
@@ -64,7 +64,7 @@ impl Default for NonConstAssign {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct RefQualified {
     pub mark: i32,
 }
@@ -84,7 +84,7 @@ impl Default for RefQualified {
     }
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Holder {
     pub p: Partial,
     pub arr: [Partial; 2],

@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub a: i32,
     pub b: i32,
@@ -16,7 +16,7 @@ pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
     return (((*i).a) + ((*i).b));
 }
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg)]
 pub union anon_1 {
     pub inner: Inner,
     pub raw_: [libc::c_char; 16],
@@ -27,7 +27,7 @@ impl Default for anon_1 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub u: anon_1,
 }

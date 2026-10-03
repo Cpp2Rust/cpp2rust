@@ -10,7 +10,7 @@ pub type Overload = u32;
 pub const Overload_kMutableOverload: Overload = 1;
 pub const Overload_kConstOverload: Overload = 2;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: i32,
 }

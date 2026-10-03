@@ -8,16 +8,16 @@ use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub static mut s_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 55 });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Static_int_ {}
 pub static mut s_1: std::cell::LazyCell<libc::c_char> =
     std::cell::LazyCell::new(|| unsafe { (55 as libc::c_char) });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Static_char_ {}
 pub static mut s_2: std::cell::LazyCell<i64> = std::cell::LazyCell::new(|| unsafe { 55_i64 });
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Static_long_ {}
 pub fn main() {
     unsafe {

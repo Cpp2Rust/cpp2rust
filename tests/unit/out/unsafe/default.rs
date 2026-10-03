@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Pointers {
     pub x1: *mut i32,
     pub x2: *const i32,
@@ -16,7 +16,7 @@ pub struct Pointers {
     pub x5: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct SmallArrays {
     pub a: [i32; 32],
     pub f: Option<unsafe fn(i32) -> i32>,
@@ -24,7 +24,7 @@ pub struct SmallArrays {
     pub p: [Pointers; 2],
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg)]
+#[derive(Copy, Clone, VaArg, FnPtrArg)]
 pub struct BigArray {
     pub a: [i32; 33],
 }

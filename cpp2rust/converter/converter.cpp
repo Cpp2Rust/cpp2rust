@@ -117,7 +117,7 @@ bool Converter::Convert(clang::QualType qual_type) {
   }
 
   if (auto decl = qual_type->getAsRecordDecl();
-      decl && IsUserDefinedDecl(decl)) {
+      decl && IsUserDefinedDecl(decl) && !AsLambdaClass(qual_type)) {
     record_decls_.MarkReferenced(GetRecordName(decl));
   }
 
@@ -165,19 +165,12 @@ bool Converter::VisitBuiltinType(clang::BuiltinType *type) {
 
 bool Converter::VisitRecordType(clang::RecordType *type) {
   auto *decl = type->getDecl();
-  if (auto lambda = clang::dyn_cast<clang::CXXRecordDecl>(decl)) {
-    if (lambda->isLambda()) {
-      if (in_function_formals_) {
-        StrCat(
-            ConvertFunctionPointerType(lambda->getLambdaCallOperator()
-                                           ->getType()
-                                           ->getAs<clang::FunctionProtoType>(),
-                                       FnProtoType::LambdaCallOperator));
-      } else {
-        StrCat('_');
-      }
-      return false;
-    }
+  if (auto lambda = AsLambdaClass(clang::QualType(type, 0))) {
+    auto proto = lambda->getLambdaCallOperator()
+                     ->getType()
+                     ->castAs<clang::FunctionProtoType>();
+    StrCat(std::format("FnPtr<{}>", ConvertFunctionPointerType(proto)));
+    return false;
   }
 
   StrCat(GetRecordName(decl));
@@ -282,10 +275,8 @@ bool Converter::VisitReferenceType(clang::ReferenceType *type) {
 }
 
 std::string
-Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                                      FnProtoType kind) {
-  std::string result =
-      (kind == FnProtoType::LambdaCallOperator ? "impl Fn(" : "fn(");
+Converter::ConvertFunctionPointerType(const clang::FunctionProtoType *proto) {
+  std::string result = "fn(";
   for (auto p_ty : proto->param_types()) {
     result += ToString(p_ty);
     result += ',';
@@ -527,20 +518,6 @@ bool Converter::ConvertVarDeclSkipInit(clang::VarDecl *decl) {
   return true;
 }
 
-bool Converter::ConvertLambdaVarDecl(clang::VarDecl *decl) {
-  if (decl->getType()->isFunctionPointerType()) {
-    return false;
-  }
-  if (decl->hasInit()) {
-    if (clang::isa<clang::LambdaExpr>(
-            decl->getInit()->IgnoreUnlessSpelledInSource())) {
-      // Lambdas are inlined at the call site.
-      return true;
-    }
-  }
-  return false;
-}
-
 void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
   if (decl->hasInit()) {
     ConvertVarInit(decl->getType(), decl->getInit());
@@ -597,9 +574,6 @@ void Converter::ConvertGlobalVarDecl(clang::VarDecl *decl) {
 bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   if (clang::isa<clang::VarTemplatePartialSpecializationDecl>(decl) ||
       decl->getDeclContext()->isDependentContext()) {
-    return false;
-  }
-  if (ConvertLambdaVarDecl(decl)) {
     return false;
   }
 
@@ -675,6 +649,11 @@ bool Converter::TypeDerivesDefault(clang::QualType qual_type) {
         qual_type.isPODType(ctx_)) {
       return false;
     }
+  }
+
+  if (auto lambda = AsLambdaClass(qual_type);
+      lambda && lambda->captures().empty()) {
+    return false;
   }
 
   return true;
@@ -1834,6 +1813,14 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
     return false;
   }
 
+  if (auto conversion = clang::dyn_cast_or_null<clang::CXXConversionDecl>(
+          expr->getCalleeDecl());
+      conversion && conversion->getParent()->isLambda()) {
+    ConvertLambdaToFunctionPointer(clang::cast<clang::CXXMemberCallExpr>(expr)
+                                       ->getImplicitObjectArgument());
+    return false;
+  }
+
   if (IsImplicitAssignmentCall(expr) &&
       !Mapper::Contains(ctx_, expr->getCallee())) {
     auto *call = clang::cast<clang::CXXMemberCallExpr>(expr);
@@ -1911,7 +1898,18 @@ bool Converter::VisitCallExpr(clang::CallExpr *expr) {
   return false;
 }
 
+void Converter::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
+  StrCat("Some");
+  PushParen paren(*this);
+  ConvertLambdaClosure(AsLambdaClass(lambda->getType()));
+  computed_expr_type_ = ComputedExprType::FreshPointer;
+}
+
 void Converter::EmitFnPtrCall(clang::Expr *callee) {
+  if (AsLambdaClass(callee->getType())) {
+    StrCat(ConvertRValue(callee), ".call");
+    return;
+  }
   {
     PushParen paren(*this);
     Convert(callee);
@@ -1980,7 +1978,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
   unsigned num_named_params =
       function ? function->getNumParams() : proto->getNumParams();
   info.is_variadic = function ? function->isVariadic() : proto->isVariadic();
-  info.is_fn_ptr_call = !function;
+  info.is_fn_ptr_call = !function || AsLambdaClass(callee->getType());
   info.is_libc_passthrough =
       RuleRegistry::IsLibcPassthrough(ctx_, GetCalleeOrExpr(expr));
 
@@ -3068,16 +3066,21 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto init = AsLambdaUncapturedConstant(curr_function_, expr)) {
+    Convert(init);
+    return false;
+  }
   ConvertDeclRefValue(expr, expr->getDecl());
   return false;
 }
 
 void Converter::ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) {
   auto str = ConvertDeclRef(expr, decl);
+  auto type = GetDeclRefType(curr_function_, expr, decl);
 
-  if (decl->getType()->getAs<clang::ReferenceType>() && !isAddrOf() &&
+  if (type->getAs<clang::ReferenceType>() && !isAddrOf() &&
       !map_iter_decls_.contains(clang::dyn_cast<clang::VarDecl>(decl))) {
-    EmitDeref(std::move(str), decl->getType().getNonReferenceType());
+    EmitDeref(std::move(str), type.getNonReferenceType());
     SetValueFreshness(expr->getType());
     return;
   }
@@ -3092,23 +3095,8 @@ void Converter::ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) {
     return;
   }
 
-  if (auto var_decl = clang::dyn_cast<clang::VarDecl>(decl)) {
-    if (!var_decl->getType()->isFunctionPointerType()) {
-      if (auto init = var_decl->getInit()) {
-        if (auto lambda = clang::dyn_cast<clang::LambdaExpr>(
-                init->IgnoreUnlessSpelledInSource())) {
-          PushParen paren(*this);
-          VisitLambdaExpr(lambda);
-          computed_expr_type_ = ComputedExprType::FreshValue;
-          return;
-        }
-      }
-    }
-  }
-
-  if (!decl->getType()->getAs<clang::ReferenceType>() && isAddrOf()) {
-    StrCat(token::kRef, decl->getType().isConstQualified() ? "" : keyword_mut_,
-           str);
+  if (!type->getAs<clang::ReferenceType>() && isAddrOf()) {
+    StrCat(token::kRef, type.isConstQualified() ? "" : keyword_mut_, str);
     computed_expr_type_ = ComputedExprType::FreshPointer;
     return;
   }
@@ -3260,7 +3248,8 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
 
 void Converter::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
                                 const clang::CXXMethodDecl *method) {
-  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts())) {
+  if (clang::isa<clang::CXXThisExpr>(base->IgnoreParenImpCasts()) &&
+      !AsLambdaOperatorCall(curr_function_)) {
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     ufcs_receiver_ = in_ctor ? "&mut this" : keyword::kSelfValue;
@@ -3344,8 +3333,8 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
   }
 
   auto *base = expr->getBase();
-  bool base_is_this =
-      clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) && !ThisIsRustPtr();
+  bool base_is_this = clang::isa<clang::CXXThisExpr>(base->IgnoreCasts()) &&
+                      !ThisIsRustPtr() && !AsLambdaOperatorCall(curr_function_);
   PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
   if (base_is_this) {
     StrCat(clang::isa<clang::CXXConstructorDecl>(curr_function_)
@@ -3370,6 +3359,14 @@ void Converter::ConvertMemberExpr(clang::MemberExpr *expr) {
 }
 
 bool Converter::VisitCXXThisExpr(clang::CXXThisExpr *expr) {
+  if (auto field = AsLambdaCaptureThis(curr_function_)) {
+    auto name = GetNamedDeclAsString(field);
+    StrCat(field->getType()->isPointerType()
+               ? name
+               : std::format("(&raw mut {})", name));
+    computed_expr_type_ = ComputedExprType::FreshPointer;
+    return false;
+  }
   if (clang::isa<clang::CXXConstructorDecl>(curr_function_)) {
     StrCat("&raw mut this");
   } else {
@@ -3825,22 +3822,63 @@ bool Converter::VisitConstantExpr(clang::ConstantExpr *expr) {
 }
 
 bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
-  if (isAddrOf() && expr->capture_size() == 0) {
-    StrCat("Some");
+  auto decl = expr->getLambdaClass();
+  if (decl->captures().empty()) {
+    ConvertCapturelessLambda(decl);
+    return false;
   }
+  StrCat(LambdaMacro());
   PushParen paren(*this);
+  {
+    PushBrace captures(*this);
+    auto init = expr->capture_init_begin();
+    for (auto field : decl->fields()) {
+      ConvertLambdaCapture(field, *init++);
+    }
+  }
+  StrCat(token::kComma);
+  ConvertLambdaClosure(decl);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
+void Converter::ConvertCapturelessLambda(const clang::CXXRecordDecl *decl) {
+  auto proto = decl->getLambdaCallOperator()
+                   ->getType()
+                   ->castAs<clang::FunctionProtoType>();
+  StrCat(std::format("FnPtr::<{}>::new", ConvertFunctionPointerType(proto)));
+  PushParen paren(*this);
+  ConvertLambdaClosure(decl);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+}
+
+void Converter::ConvertLambdaCapture(const clang::FieldDecl *field,
+                                     clang::Expr *init) {
+  StrCat(keyword::kLet, GetNamedDeclAsString(field), token::kColon);
+  Convert(field->getType());
+  StrCat(token::kAssign);
+  ConvertVarInit(field->getType(), init);
+  StrCat(token::kSemiColon);
+}
+
+void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl) {
+  auto call_operator = decl->getLambdaCallOperator();
   StrCat('|');
-  for (auto p : expr->getLambdaClass()->getLambdaCallOperator()->parameters()) {
+  for (auto p : call_operator->parameters()) {
     StrCat(GetNamedDeclAsString(p), token::kColon, ToString(p->getType()),
            token::kComma);
   }
-  StrCat("| {");
-  EmitFunctionPreamble(expr->getLambdaClass()->getLambdaCallOperator());
-  PushCurrFunction push_fn(*this,
-                           expr->getLambdaClass()->getLambdaCallOperator());
+  StrCat('|');
+  ConvertFunctionReturnType(call_operator);
+  PushBrace body(*this);
+  std::optional<PushBrace> unsafe_brace;
+  if (decl->captures().empty()) {
+    StrCat(keyword_unsafe_);
+    unsafe_brace.emplace(*this);
+  }
+  EmitFunctionPreamble(call_operator);
+  PushCurrFunction push_fn(*this, call_operator);
   ConvertFunctionBody(curr_function_);
-  StrCat('}');
-  return false;
 }
 
 bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {
@@ -4042,6 +4080,17 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
 }
 
 std::string Converter::GetDefaultAsString(clang::QualType qual_type) {
+  if (auto lambda = AsLambdaClass(qual_type);
+      lambda && lambda->captures().empty()) {
+    if (HasStaticLocal(lambda->getLambdaCallOperator()->getBody())) {
+      llvm::report_fatal_error("default-constructed lambda with a static local "
+                               "is not supported yet");
+    }
+    Buffer buf(*this);
+    ConvertCapturelessLambda(lambda);
+    return std::move(buf).str();
+  }
+
   if (IsVaListType(qual_type)) {
     computed_expr_type_ = ComputedExprType::FreshValue;
     return "VaList::default()";
@@ -4149,7 +4198,7 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
 std::vector<const char *>
 Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
-    return {"Copy", "Clone"};
+    return {"Copy", "Clone", "FnPtrArg"};
   }
 
   std::vector<const char *> struct_attrs;
@@ -4164,6 +4213,7 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordImplementsClone(decl)) {
     struct_attrs.emplace_back("VaArg");
+    struct_attrs.emplace_back("FnPtrArg");
   }
 
   if (RecordDerivesDefault(decl)) {
@@ -4201,15 +4251,6 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     StrCat(token::kRef);
     if (IsMut(qual_type)) {
       StrCat(keyword_mut_);
-    }
-  }
-  if (qual_type->isFunctionPointerType()) {
-    if (auto *lambda = clang::dyn_cast<clang::LambdaExpr>(
-            expr->IgnoreUnlessSpelledInSource())) {
-      PushExprKind push(*this, ExprKind::AddrOf);
-      PushInitType init_type(*this, qual_type);
-      VisitLambdaExpr(lambda);
-      return;
     }
   }
   auto *ignore_casts = expr->IgnoreCasts();

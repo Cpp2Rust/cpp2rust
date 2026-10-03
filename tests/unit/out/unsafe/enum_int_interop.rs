@@ -20,7 +20,7 @@ pub const Tag_TAG_ZERO: Tag = 0;
 pub const Tag_TAG_ONE: Tag = 1;
 pub const Tag_TAG_TWO: Tag = 2;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Entry {
     pub name: *const libc::c_char,
     pub color: Color,

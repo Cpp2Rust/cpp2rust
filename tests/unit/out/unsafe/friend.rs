@@ -19,7 +19,7 @@ pub unsafe fn scaled_3(v: *const V, mut k: f64) -> f64 {
     return (((*v).x as f64) * (k));
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct V {
     pub x: i32,
 }
@@ -33,7 +33,7 @@ pub unsafe fn get_4(w: *const W_int_) -> i32 {
     return (*w).x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct W_int_ {
     pub x: i32,
 }
@@ -41,12 +41,12 @@ pub unsafe fn get_5(w: *const W_long_) -> i64 {
     return (*w).x;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct W_long_ {
     pub x: i64,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct D {
     pub x: i32,
 }
