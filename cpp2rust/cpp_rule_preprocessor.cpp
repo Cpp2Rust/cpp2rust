@@ -117,6 +117,14 @@ public:
       }
       return;
     }
+    if (auto var = R.Nodes.getNodeAs<clang::VarDecl>("fvar")) {
+      out_.try_emplace(
+          var->getQualifiedNameAsString(),
+          Printer::ToString(*R.Context,
+                            R.Nodes.getNodeAs<clang::FunctionDecl>("fn")));
+      return;
+    }
+
     if (auto var = R.Nodes.getNodeAs<clang::TypedefNameDecl>("tvar")) {
       clang::QualType type = var->getUnderlyingType();
       if (auto *alias = llvm::dyn_cast<clang::TypeAliasDecl>(var)) {
@@ -997,6 +1005,13 @@ public:
     finder_.addMatcher(
         typedefNameDecl(matchesName("(^|::)t[0-9]+$"), isExpansionInMainFile())
             .bind("tvar"),
+        &cb_);
+
+    finder_.addMatcher(
+        varDecl(matchesName("(^|::)f[0-9]+$"), isExpansionInMainFile(),
+                hasInitializer(ignoringImplicit(ignoringParenImpCasts(
+                    declRefExpr(to(functionDecl().bind("fn")))))))
+            .bind("fvar"),
         &cb_);
 
     finder_.addMatcher(functionDecl(isDefinition(),

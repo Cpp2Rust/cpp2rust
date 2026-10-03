@@ -3,7 +3,4 @@
 
 #include <sys/ioctl.h>
 
-template <typename... Args>
-int f1(int a0, unsigned long a1, Args... args) {
-  return ioctl(a0, a1, args...);
-}
+int (*f1)(int, unsigned long, ...) = ioctl;
