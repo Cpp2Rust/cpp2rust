@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Probe {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Wrapper_Probe_ {
     pub base_: Probe,
     pub tag: i32,

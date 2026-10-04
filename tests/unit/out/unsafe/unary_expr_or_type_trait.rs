@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C, align(16))]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub c: libc::c_char,
     pub x: i64,

@@ -7,12 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Clone, VaArg, Default)]
+#[derive(Clone, VaArg, FnPtrArg, Default)]
 pub struct Explicit {
     pub v: i32,
     pub inner: Inner,
@@ -30,14 +30,14 @@ impl Explicit {
     pub unsafe fn destructor(&mut self) {}
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Implicit {
     pub v: i32,
     pub inner: Inner,
     pub arr: [i32; 2],
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct DefaultCopyUserMove {
     pub v: i32,
 }
@@ -58,7 +58,7 @@ impl DefaultCopyUserMove {
     }
 }
 #[repr(C)]
-#[derive(VaArg, Default)]
+#[derive(VaArg, FnPtrArg, Default)]
 pub struct UserCopyDefaultMove {
     pub v: i32,
 }

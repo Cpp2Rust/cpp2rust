@@ -1,4 +1,3 @@
-// no-compile
 #include <assert.h>
 
 int counter = 0;

@@ -25,8 +25,7 @@ public:
   bool VisitPointerType(clang::PointerType *type) override;
 
   std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr) override;
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
@@ -102,8 +101,6 @@ public:
 
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
-  bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
-
   void ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) override;
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
@@ -113,6 +110,17 @@ public:
   void ConvertPrintf(clang::CallExpr *expr) override;
 
   void EmitFnPtrCall(clang::Expr *callee) override;
+
+  bool VisitLambdaExpr(clang::LambdaExpr *expr) override;
+
+  void ConvertCapturelessLambda(const clang::CXXRecordDecl *decl) override;
+
+  const char *LambdaMacro() const override { return "lambda!"; }
+
+  void ConvertLambdaCapture(const clang::FieldDecl *field,
+                            clang::Expr *init) override;
+
+  void ConvertLambdaToFunctionPointer(clang::Expr *lambda) override;
 
   void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;

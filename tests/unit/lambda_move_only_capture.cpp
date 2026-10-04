@@ -1,4 +1,4 @@
-// no-compile
+// XFAIL: unsafe
 #include <assert.h>
 #include <utility>
 

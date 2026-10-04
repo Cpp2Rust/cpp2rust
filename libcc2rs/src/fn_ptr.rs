@@ -4,9 +4,10 @@
 #![allow(private_bounds)]
 
 use std::any::{Any, TypeId};
+use std::cell::UnsafeCell;
 use std::rc::Rc;
 
-use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs};
+use crate::fn_ptr_arg::{ArgList, ArgRepr, FnPtrArg, FnPtrArgs, record_from_repr};
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
@@ -59,6 +60,16 @@ impl<T: FnSig> Adapted for T {
     }
 }
 
+struct Closure<T: FnSig>(Box<dyn Fn(T::Args) -> T::Ret>);
+
+impl<T: FnSig> Adapted for Closure<T> {
+    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
+        let converted_args = T::Args::from_list(&args);
+        let result = (self.0)(converted_args);
+        sink(result.to_repr());
+    }
+}
+
 pub struct FnPtr<T: FnSig> {
     // Address of the function this pointer was created from. 0 for null,
     // which is never the address of a function.
@@ -107,6 +118,10 @@ impl<T: FnSig> FnPtr<T> {
             return f.call_direct(args);
         }
         if let Some(original) = &self.original {
+            let closure: &dyn Any = &**original;
+            if let Some(closure) = closure.downcast_ref::<Closure<T>>() {
+                return (closure.0)(args);
+            }
             let mut result = None;
             original.call_adapted(args.to_list(), &mut |repr| {
                 result = Some(T::Ret::from_repr(&repr));
@@ -175,6 +190,39 @@ macro_rules! impl_fn_ptr_call {
             pub fn call(&self $(, $a: $a)*) -> R {
                 self.call_args(($($a,)*))
             }
+
+            #[allow(non_snake_case)]
+            pub fn from_lambda<Lambda: 'static>(
+                lambda: Lambda,
+                call: fn(&Lambda $(, $a)*) -> R,
+            ) -> Self {
+                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
+                    Box::new(move |($($a,)*): ($($a,)*)| call(&lambda $(, $a)*)),
+                ));
+                FnPtr {
+                    addr: call as usize,
+                    current: None,
+                    original: Some(closure),
+                }
+            }
+
+            #[allow(non_snake_case)]
+            pub fn from_lambda_unsafe<Lambda: 'static>(
+                lambda: Lambda,
+                call: fn(&mut Lambda $(, $a)*) -> R,
+            ) -> Self {
+                let lambda = UnsafeCell::new(lambda);
+                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
+                    Box::new(move |($($a,)*): ($($a,)*)| {
+                        call(unsafe { &mut *lambda.get() } $(, $a)*)
+                    }),
+                ));
+                FnPtr {
+                    addr: call as usize,
+                    current: None,
+                    original: Some(closure),
+                }
+            }
         }
         impl_fn_ptr_call!(@peel $($a)*);
     };
@@ -210,6 +258,16 @@ impl<T: FnSig> PartialEq for FnPtr<T> {
 impl<T: FnSig> Eq for FnPtr<T> {}
 
 impl<T: FnSig> ByteRepr for FnPtr<T> {}
+
+impl<T: FnSig> FnPtrArg for FnPtr<T> {
+    #[inline]
+    fn to_repr(&self) -> ArgRepr<'_> {
+        ArgRepr::Record(self)
+    }
+    fn from_repr(r: &ArgRepr) -> Self {
+        record_from_repr(r)
+    }
+}
 
 impl<T: FnSig> ErasedPtr for FnPtr<T> {
     fn as_bytes(&self) -> Ptr<u8> {

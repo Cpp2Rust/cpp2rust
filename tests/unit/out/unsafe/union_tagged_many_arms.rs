@@ -13,7 +13,7 @@ pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
 #[repr(C)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, FnPtrArg)]
 pub union anon_0 {
     pub text: *const libc::c_char,
     pub handle: *mut ::libc::c_void,
@@ -27,7 +27,7 @@ impl Default for anon_0 {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Slot {
     pub tag: Tag_enum,
     pub payload: anon_0,

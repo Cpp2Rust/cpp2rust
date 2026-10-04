@@ -1,5 +1,3 @@
-// no-compile: refcount
-// panic: unsafe
 #include <assert.h>
 
 struct S {

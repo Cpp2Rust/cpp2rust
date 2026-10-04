@@ -1,6 +1,9 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+use crate::fn_ptr::FnPtr;
+use crate::fn_ptr_arg::FnPtrArg;
+
 macro_rules! callable {
     ($name:ident; $($a:ident: $A:ident),*) => {
         pub trait $name<$($A,)* R> {
@@ -21,6 +24,15 @@ macro_rules! callable {
             #[inline]
             fn call(&self, $($a: $A),*) -> R {
                 unsafe { self($($a),*) }
+            }
+        }
+
+        impl<$($A: FnPtrArg,)* R: FnPtrArg> $name<$($A,)* R>
+            for FnPtr<fn($($A),*) -> R>
+        {
+            #[inline]
+            fn call(&self, $($a: $A),*) -> R {
+                self.call($($a),*)
             }
         }
     };

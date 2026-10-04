@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(VaArg)]
+#[derive(VaArg, FnPtrArg)]
 pub struct Counted {
     pub copies: i32,
     pub moves: i32,
@@ -47,7 +47,7 @@ impl Default for Counted {
 }
 pub static mut drops_0: std::cell::LazyCell<i32> = std::cell::LazyCell::new(|| unsafe { 0 });
 #[repr(C)]
-#[derive(VaArg)]
+#[derive(VaArg, FnPtrArg)]
 pub struct Dropped {}
 impl Dropped {
     pub unsafe fn new() -> Self {
@@ -84,55 +84,64 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut c: Counted = Counted::new();
-    assert!(
-        ((unsafe {
-            (|| {
-                return (((c.copies) * (10)) + (c.moves));
-            })()
-        }) == (10))
+    let mut f: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let c: Counted = Counted::copy_from({ &c });
+        },
+        || -> i32 {
+            return (((c.copies) * (10)) + (c.moves));
+        }
     );
-    let mut g: _ = (|| {
-        return (((c.copies) * (10)) + (c.moves));
-    })
-    .clone();
-    assert!(((unsafe { g() }) == (20)));
-    assert!(
-        ((unsafe {
-            (|| {
-                return (((c.copies) * (10)) + (c.moves));
-            })()
-        }) == (10))
-    );
-    let mut h: _ = (|| {
-        return (((c.copies) * (10)) + (c.moves));
-    });
-    assert!(((unsafe { h() }) == (11)));
+    assert!(((unsafe { f.call() }) == (10)));
+    let mut g: FnPtr<fn() -> i32> = f.clone();
+    assert!(((unsafe { g.call() }) == (20)));
+    assert!(((unsafe { f.call() }) == (10)));
+    let mut h: FnPtr<fn() -> i32> = f;
+    assert!(((unsafe { h.call() }) == (11)));
     let mut returned: i32 = (unsafe {
-        (|| {
-            return Counted::copy_from({ &c });
-        })()
+        lambda_unsafe!(
+            {
+                let c: Counted = Counted::copy_from({ &c });
+            },
+            || -> Counted {
+                return Counted::copy_from({ &c });
+            }
+        )
+        .call()
     })
     .copies;
     assert!(((returned) == (2)));
     let mut arr: [Counted; 2] = std::array::from_fn::<_, 2, _>(|_| Counted::new());
-    assert!(
-        ((unsafe {
-            (|| {
-                return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-            })()
-        }) == (2))
+    let mut a: FnPtr<fn() -> i32> = lambda_unsafe!(
+        {
+            let arr: [Counted; 2] =
+                std::array::from_fn::<_, 2, _>(|__i: usize| Counted::copy_from({ &arr[(__i)] }));
+        },
+        || -> i32 {
+            return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
+        }
     );
-    let mut a2: _ = (|| {
-        return ((arr[(0) as usize].copies) + (arr[(1) as usize].copies));
-    })
-    .clone();
-    assert!(((unsafe { a2() }) == (4)));
+    assert!(((unsafe { a.call() }) == (2)));
+    let mut a2: FnPtr<fn() -> i32> = a.clone();
+    assert!(((unsafe { a2.call() }) == (4)));
     {
-        let mut m2: _ = (|| {});
+        let mut m: FnPtr<fn()> = lambda_unsafe!(
+            {
+                let d: Dropped = Dropped::new();
+            },
+            || {}
+        );
+        let mut m2: FnPtr<fn()> = m;
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
-        let mut k2: _ = (|| {}).clone();
+        let mut k: FnPtr<fn()> = lambda_unsafe!(
+            {
+                let d: Dropped = Dropped::new();
+            },
+            || {}
+        );
+        let mut k2: FnPtr<fn()> = k.clone();
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     return 0;

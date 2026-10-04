@@ -30,12 +30,12 @@ pub unsafe fn wrap_10(mut v: i64) -> i32 {
     return (unsafe { get_6(l) });
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Local_5 {
     pub x: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Local_7 {
     pub x: i64,
 }
@@ -44,7 +44,7 @@ pub unsafe fn other_11() -> i32 {
     return ((unsafe { get_0(l) }) + (l.y as i32));
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Local_1 {
     pub x: i64,
     pub y: i64,
@@ -65,7 +65,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Local_3 {
     pub x: i32,
 }
