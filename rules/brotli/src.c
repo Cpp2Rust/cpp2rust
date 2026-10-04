@@ -1,14 +1,14 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include "brotli/decode.h"
-#include "brotli/encode.h"
+#include <brotli/decode.h>
+#include <brotli/encode.h>
 
-using t1 = BrotliDecoderResult;
-using t2 = BrotliEncoderMode;
-using t3 = BrotliDecoderStateStruct *;
-using t4 = const BrotliDecoderStateStruct *;
-using t5 = BrotliDecoderErrorCode;
+typedef BrotliDecoderResult t1;
+typedef BrotliEncoderMode t2;
+typedef struct BrotliDecoderStateStruct *t3;
+typedef const struct BrotliDecoderStateStruct *t4;
+typedef BrotliDecoderErrorCode t5;
 
 BrotliEncoderMode f1() { return BROTLI_MODE_FONT; }
 

@@ -3,7 +3,7 @@
 
 #include <sys/select.h>
 
-using t1 = fd_set;
+typedef fd_set t1;
 
 int f1(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
        struct timeval *timeout) {

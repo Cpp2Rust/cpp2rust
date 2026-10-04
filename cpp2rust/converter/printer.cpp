@@ -128,6 +128,10 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
             clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
       t = decltype_type->getUnderlyingType();
     }
+    if (const auto *typeof_type =
+            clang::dyn_cast<clang::TypeOfExprType>(t.getTypePtr())) {
+      t = typeof_type->getUnderlyingExpr()->getType();
+    }
     if (const auto *typedef_type = t->getAs<clang::TypedefType>()) {
       if (t.getCanonicalType()->isBuiltinType()) {
         return typedef_type->getDecl()->getNameAsString();
