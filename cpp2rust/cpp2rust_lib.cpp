@@ -7,12 +7,17 @@
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
 
+#include <deque>
 #include <filesystem>
+#include <format>
+#include <fstream>
+#include <iterator>
 
 #include "compat/platform_flags.h"
 #include "converter/converter.h"
 #include "converter/models/converter_refcount.h"
 #include "frontend_action.h"
+#include "rules_epilogue.h"
 
 namespace cpp2rust {
 std::string TranspileSrc(std::string_view cc_code, Model model,
@@ -80,6 +85,26 @@ std::string TranspileDir(std::string_view build_dir, Model model,
         result.push_back("-D__FILE__=\"" + basename + "\"");
         return result;
       });
+
+  std::deque<std::string> mapped;
+  for (auto language : {RulesLanguage::kC, RulesLanguage::kCxx}) {
+    Tool.mapVirtualFile(mapped.emplace_back(GetRulesEpiloguePath(language)),
+                        mapped.emplace_back(BuildRulesEpilogue(language)));
+  }
+  for (const auto &compile_command : compile_dbase->getAllCompileCommands()) {
+    std::filesystem::path file_path(compile_command.Filename);
+    if (file_path.is_relative()) {
+      file_path = std::filesystem::path(compile_command.Directory) / file_path;
+    }
+    std::ifstream file(file_path);
+    std::string code{std::istreambuf_iterator<char>(file),
+                     std::istreambuf_iterator<char>()};
+    Tool.mapVirtualFile(
+        mapped.emplace_back(file_path.string()),
+        mapped.emplace_back(std::format(
+            "{}\n#include \"{}\"\n", code,
+            GetRulesEpiloguePath(GetRulesLanguage(file_path.string())))));
+  }
 
   std::string rs_code;
   FrontendActionFactory factory(rs_code, model, rules_dir);
