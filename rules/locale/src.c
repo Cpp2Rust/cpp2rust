@@ -1,8 +1,10 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#ifdef CPP2RUST_USE_INCLUDES
 #include <locale.h>
+#endif
 
-char *f1(int category, const char *locale) {
+char *CPP2RUST_EXPR_RULE(1)(int category, const char *locale) {
   return setlocale(category, locale);
 }

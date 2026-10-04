@@ -1,13 +1,17 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#ifdef CPP2RUST_USE_INCLUDES
 #include <dirent.h>
+#endif
 
-typedef DIR *t1;
-typedef struct dirent t2;
+typedef DIR *CPP2RUST_TYPE_RULE(1);
+typedef struct dirent CPP2RUST_TYPE_RULE(2);
 
-DIR *f1(const char *name) { return opendir(name); }
+DIR *CPP2RUST_EXPR_RULE(1)(const char *name) { return opendir(name); }
 
-struct dirent *f2(DIR *dirp) { return readdir(dirp); }
+struct dirent *CPP2RUST_EXPR_RULE(2)(DIR *dirp) {
+  return readdir(dirp);
+}
 
-int f3(DIR *dirp) { return closedir(dirp); }
+int CPP2RUST_EXPR_RULE(3)(DIR *dirp) { return closedir(dirp); }
