@@ -610,6 +610,15 @@ bool Converter::VisitVarDecl(clang::VarDecl *decl) {
   }
   EmitScopedDestructor(decl);
 
+  if (auto *decomp = clang::dyn_cast<clang::DecompositionDecl>(decl)) {
+    for (auto *binding : decomp->bindings()) {
+      if (auto *holding = binding->getHoldingVar()) {
+        StrCat(token::kSemiColon);
+        VisitVarDecl(holding);
+      }
+    }
+  }
+
   return false;
 }
 
@@ -3068,6 +3077,10 @@ std::string Converter::ConvertDeclRef(clang::Expr *expr,
 }
 
 bool Converter::VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+  if (auto *binding = clang::dyn_cast<clang::BindingDecl>(expr->getDecl())) {
+    Convert(binding->getBinding());
+    return false;
+  }
   ConvertDeclRefValue(expr, expr->getDecl());
   return false;
 }
