@@ -255,8 +255,6 @@ bool MayCauseBorrowMutError(const clang::Expr *lhs, const clang::Expr *rhs);
 
 bool ArgsMayAlias(const clang::Expr *a, const clang::Expr *b);
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr);
-
 bool HasReceiver(clang::Expr *expr);
 
 std::optional<clang::QualType> GetParamImplicitConvertTarget(clang::Expr *expr,

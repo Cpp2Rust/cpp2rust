@@ -1458,13 +1458,6 @@ clang::Expr *GetCallee(clang::CallExpr *expr) {
   return expr->getCallee();
 }
 
-clang::Expr *GetCalleeOrExpr(clang::Expr *expr) {
-  if (auto *call = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return call->getCallee();
-  }
-  return expr;
-}
-
 bool HasReceiver(clang::Expr *expr) {
   if (clang::isa<clang::CXXMemberCallExpr>(expr))
     return true;
