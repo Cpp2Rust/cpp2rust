@@ -43,9 +43,9 @@ RulesLanguage GetRulesLanguage(std::string_view filename) {
 }
 
 std::string GetRulesEpiloguePath(RulesLanguage language) {
-  return std::string(RULES_SOURCE_DIR) +
-         (language == RulesLanguage::kC ? "/cpp2rust_rules_epilogue.c"
-                                        : "/cpp2rust_rules_epilogue.cpp");
+  return std::string(RULES_SOURCE_DIR) + (language == RulesLanguage::kC
+                                              ? "/cpp2rust_rules_epilogue.c"
+                                              : "/cpp2rust_rules_epilogue.cpp");
 }
 
 bool IsRulesEpilogue(std::string_view path) {
