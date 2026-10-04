@@ -2866,7 +2866,8 @@ bool Converter::IsReferenceType(const clang::Expr *expr) const {
            GetReturnTypeOfFunction(call)->isReferenceType();
   }
   if (const auto *decl_ref = clang::dyn_cast<clang::DeclRefExpr>(e)) {
-    return decl_ref->getDecl()->getType()->isReferenceType();
+    return GetDeclRefType(curr_function_, decl_ref, decl_ref->getDecl())
+        ->isReferenceType();
   }
   if (const auto *member = clang::dyn_cast<clang::MemberExpr>(e)) {
     return member->getMemberDecl()->getType()->isReferenceType();

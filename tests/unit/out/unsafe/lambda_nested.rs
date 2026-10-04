@@ -48,7 +48,7 @@ unsafe fn main_0() -> i32 {
         |y: i32| -> i32 {
             let mut inner: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
                 {
-                    let x: *mut i32 = &mut (*x);
+                    let x: *mut i32 = x;
                     let y: i32 = y;
                 },
                 |z: i32| -> i32 {
