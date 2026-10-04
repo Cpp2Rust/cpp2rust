@@ -6,6 +6,8 @@
 #include <clang/AST/ASTConsumer.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
+#include <clang/Lex/PPCallbacks.h>
+#include <clang/Lex/Preprocessor.h>
 #include <clang/Tooling/Tooling.h>
 
 #include <memory>
@@ -13,8 +15,36 @@
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
+#include "rules_epilogue.h"
 
 namespace cpp2rust {
+class SilenceRulesDiagnostics : public clang::PPCallbacks {
+public:
+  explicit SilenceRulesDiagnostics(clang::CompilerInstance &CI) : CI_(CI) {}
+
+  void LexedFileChanged(clang::FileID FID, LexedFileChangeReason Reason,
+                        clang::SrcMgr::CharacteristicKind FileType,
+                        clang::FileID PrevFID,
+                        clang::SourceLocation Loc) override {
+    auto &src_mgr = CI_.getSourceManager();
+    if (Reason == LexedFileChangeReason::EnterFile) {
+      if (auto file = src_mgr.getFileEntryRefForID(FID);
+          file && IsRulesEpilogue(file->getName())) {
+        CI_.getDiagnostics().setSuppressAllDiagnostics(true);
+      }
+    }
+    if (Reason == LexedFileChangeReason::ExitFile) {
+      if (auto file = src_mgr.getFileEntryRefForID(PrevFID);
+          file && IsRulesEpilogue(file->getName())) {
+        CI_.getDiagnostics().setSuppressAllDiagnostics(false);
+      }
+    }
+  }
+
+private:
+  clang::CompilerInstance &CI_;
+};
+
 class FrontendAction : public clang::ASTFrontendAction {
 public:
   explicit FrontendAction(std::string &rs_code, Model model, bool first,
@@ -27,6 +57,12 @@ public:
                     llvm::StringRef InFile) override {
     return std::make_unique<ASTConsumer>(rs_code_, model_, first_, CI,
                                          rules_dir_);
+  }
+
+  bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
+    CI.getPreprocessor().addPPCallbacks(
+        std::make_unique<SilenceRulesDiagnostics>(CI));
+    return true;
   }
 
 private:
