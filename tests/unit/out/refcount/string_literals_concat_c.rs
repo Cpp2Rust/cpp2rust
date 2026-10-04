@@ -11,13 +11,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::from(*b"foobar\0")));
+    let arr: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"foobar\0")));
     assert!((((((*arr.borrow())[(0) as usize] as i32) == ('f' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(3) as usize] as i32) == ('b' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(5) as usize] as i32) == ('r' as i32)) as i32) != 0));
     assert!((((((*arr.borrow())[(6) as usize] as i32) == ('\0' as i32)) as i32) != 0));
-    let split_pieces: Value<Ptr<u8>> =
-        Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"abcdefghi")));
+    let split_pieces: Value<Ptr<i8>> =
+        Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"abcdefghi")));
     assert!((((((elem!((*split_pieces.borrow()), 0).read()) as i32) == ('a' as i32)) as i32) != 0));
     assert!((((((elem!((*split_pieces.borrow()), 3).read()) as i32) == ('d' as i32)) as i32) != 0));
     assert!((((((elem!((*split_pieces.borrow()), 6).read()) as i32) == ('g' as i32)) as i32) != 0));

@@ -16,14 +16,14 @@ pub struct S {
     pub tail: Value<Box<[i32]>>,
     #[offset(16)]
     #[byte_size(4)]
-    pub buf: Value<Box<[u8]>>,
+    pub buf: Value<Box<[i8]>>,
 }
 impl Default for S {
     fn default() -> Self {
         S {
             head: 0_i32,
             tail: Rc::new(RefCell::new((0..3).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            buf: Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            buf: Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -57,7 +57,7 @@ fn main_0() -> i32 {
     'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
         assert!(
             (((((elem!(
-                (array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<u8>),
+                (array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<i8>),
                 (*i.borrow())
             )
             .read()) as i32)

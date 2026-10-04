@@ -8,10 +8,10 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 
 pub fn main() {
-    let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))
+    let argv: Vec<Value<Vec<i8>>> = ::std::env::args()
+        .map(|x| Rc::new(RefCell::new(x.bytes().map(|c| c as i8).collect())))
         .collect();
-    let mut argv: Value<Vec<Ptr<u8>>> = Rc::new(RefCell::new(
+    let mut argv: Value<Vec<Ptr<i8>>> = Rc::new(RefCell::new(
         argv.iter()
             .map(|x| {
                 x.borrow_mut().push(0);
@@ -23,10 +23,10 @@ pub fn main() {
     __cpp2rust_init_globals();
     ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
-fn main_0(argc: i32, argv: Ptr<Ptr<u8>>) -> i32 {
+fn main_0(argc: i32, argv: Ptr<Ptr<i8>>) -> i32 {
     let argc: Value<i32> = Rc::new(RefCell::new(argc));
-    let argv: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(argv));
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
+    let argv: Value<Ptr<Ptr<i8>>> = Rc::new(RefCell::new(argv));
+    let s: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = (elem!((*argv.borrow()), 0).read()).to_c_bytes();
         __bytes.push(0);
         __bytes

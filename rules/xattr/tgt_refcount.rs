@@ -4,7 +4,7 @@
 use libcc2rs::*;
 
 #[cfg(target_os = "linux")]
-fn f1(a0: i32, a1: Ptr<u8>, a2: AnyPtr, a3: usize, a4: i32) -> i32 {
+fn f1(a0: i32, a1: Ptr<i8>, a2: AnyPtr, a3: usize, a4: i32) -> i32 {
     match a4 {
         0 => {}
         __f => panic!("fsetxattr: unsupported flags {}", __f),

@@ -95,8 +95,10 @@ fn f12<T1: Clone + ByteRepr>(a0: Ptr<T1>, a1: Ptr<T1>, a2: T1) {
     }
 }
 
-fn f13(a0: Ptr<u8>, a1: Ptr<u8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
-    a2.write_all(a0.slice_until(&a1).as_slice());
+fn f13(a0: Ptr<i8>, a1: Ptr<i8>, a2: &mut ::std::fs::File) -> ::std::fs::File {
+    a0.with_slice(a1.get_offset() - a0.get_offset(), |__s| {
+        CChar::with_u8_slice(__s, |__b| a2.write_all(__b))
+    });
     a2.try_clone().unwrap()
 }
 

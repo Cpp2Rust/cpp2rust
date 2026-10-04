@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{PostfixDec, PostfixInc, PrefixDec, PrefixInc};
+use crate::{CChar, PostfixDec, PostfixInc, PrefixDec, PrefixInc};
 use std::any::{Any, TypeId};
 
 use std::{
@@ -633,8 +633,8 @@ pub(crate) fn dangling() -> ! {
     panic!("ub: dangling pointer")
 }
 
-impl Ptr<u8> {
-    pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [u8]) -> R) -> R {
+impl<T: CChar> Ptr<T> {
+    pub fn with_slice_mut<R>(&self, len: usize, f: impl FnOnce(&mut [T]) -> R) -> R {
         let off = self.offset;
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
@@ -662,14 +662,14 @@ impl Ptr<u8> {
             }
             PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
                 data.alloc.read_bytes(off, buf);
-                let r = f(buf);
+                let r = T::with_bytes_mut(buf, f);
                 data.alloc.write_bytes(off, buf);
                 r
             }),
         }
     }
 
-    pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[u8]) -> R) -> R {
+    pub fn with_slice<R>(&self, len: usize, f: impl FnOnce(&[T]) -> R) -> R {
         let off = self.offset;
         match &self.kind {
             PtrKind::Null => panic!("ub: null pointer"),
@@ -697,12 +697,12 @@ impl Ptr<u8> {
             }
             PtrKind::Reinterpreted(data) => with_scratch(len, |buf| {
                 data.alloc.read_bytes(off, buf);
-                f(buf)
+                T::with_bytes_mut(buf, |s| f(s))
             }),
         }
     }
 
-    pub fn slice_until(&self, end: &Self) -> Vec<u8> {
+    pub fn slice_until(&self, end: &Self) -> Vec<T> {
         assert!(self.kind == end.kind, "ub: invalid slice");
         assert!(self.offset <= end.offset);
         assert!(end.offset <= self.len());

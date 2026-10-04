@@ -6,9 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fopen_0(path: Ptr<u8>, mode: Ptr<u8>) -> Ptr<CFile> {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(path));
-    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(mode));
+pub fn fopen_0(path: Ptr<i8>, mode: Ptr<i8>) -> Ptr<CFile> {
+    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(path));
+    let mode: Value<Ptr<i8>> = Rc::new(RefCell::new(mode));
     &(*path.borrow());
     &(*mode.borrow());
     return Ptr::null();
@@ -21,8 +21,8 @@ fn main_0() -> i32 {
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         ({
             fopen_0(
-                Ptr::<u8>::from_string_literal(b"irrelevant-file"),
-                Ptr::<u8>::from_string_literal(b"r"),
+                Ptr::<i8>::from_string_literal(b"irrelevant-file"),
+                Ptr::<i8>::from_string_literal(b"r"),
             )
         }),
     ));

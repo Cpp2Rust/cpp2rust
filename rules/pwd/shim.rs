@@ -8,28 +8,24 @@ use std::mem::{offset_of, size_of};
 #[byte_size(size_of::<::libc::passwd>())]
 pub struct Passwd {
     #[offset(offset_of!(::libc::passwd, pw_name))]
-    pub pw_name: Ptr<u8>,
+    pub pw_name: Ptr<i8>,
     #[offset(offset_of!(::libc::passwd, pw_passwd))]
-    pub pw_passwd: Ptr<u8>,
+    pub pw_passwd: Ptr<i8>,
     #[offset(offset_of!(::libc::passwd, pw_uid))]
     pub pw_uid: u32,
     #[offset(offset_of!(::libc::passwd, pw_gid))]
     pub pw_gid: u32,
     #[offset(offset_of!(::libc::passwd, pw_gecos))]
-    pub pw_gecos: Ptr<u8>,
+    pub pw_gecos: Ptr<i8>,
     #[offset(offset_of!(::libc::passwd, pw_dir))]
-    pub pw_dir: Ptr<u8>,
+    pub pw_dir: Ptr<i8>,
     #[offset(offset_of!(::libc::passwd, pw_shell))]
-    pub pw_shell: Ptr<u8>,
+    pub pw_shell: Ptr<i8>,
 }
 
 impl Passwd {
     pub fn from_user(u: &nix::unistd::User) -> Self {
-        let mk = |s: &[u8]| -> Ptr<u8> {
-            let mut v = s.to_vec();
-            v.push(0);
-            Ptr::alloc_array(v.into_boxed_slice())
-        };
+        let mk = |s: &[u8]| -> Ptr<i8> { Ptr::alloc_c_str(s) };
         Self {
             pw_name: mk(u.name.as_bytes()),
             pw_passwd: mk(u.passwd.as_bytes()),
@@ -41,7 +37,7 @@ impl Passwd {
         }
     }
 
-    pub fn from_user_in(u: &nix::unistd::User, strings: &[Ptr<u8>]) -> Self {
+    pub fn from_user_in(u: &nix::unistd::User, strings: &[Ptr<i8>]) -> Self {
         Self {
             pw_name: strings[0].clone(),
             pw_passwd: strings[1].clone(),

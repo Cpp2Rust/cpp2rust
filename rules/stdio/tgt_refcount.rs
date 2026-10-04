@@ -7,7 +7,7 @@ fn t1() -> Ptr<CFile> {
     Ptr::null()
 }
 
-fn f1(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<CFile> {
+fn f1(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<CFile> {
     match CFile::open(&a0.to_rust_string(), &a1.to_rust_string()) {
         Some(__f) => Ptr::alloc(__f),
         None => Ptr::null(),
@@ -71,16 +71,15 @@ fn f11(a0: i32, a1: Ptr<CFile>) -> i32 {
     }
 }
 
-fn f12(a0: Ptr<u8>, a1: Ptr<CFile>) -> i32 {
-    let __bytes = a0.to_c_bytes();
-    match a1.with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
+fn f12(a0: Ptr<i8>, a1: Ptr<CFile>) -> i32 {
+    match a0.with_c_bytes(|__bytes| a1.with_mut(|__f| __f.write(__bytes)) == __bytes.len()) {
         true => 0,
         false => -1,
     }
 }
 
-fn f13(a0: Ptr<u8>) -> i32 {
-    let mut __bytes = a0.to_c_bytes();
+fn f13(a0: Ptr<i8>) -> i32 {
+    let mut __bytes = a0.to_c_u8_bytes();
     __bytes.push(b'\n');
     match libcc2rs::c_stdout().with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
         true => 0,
@@ -100,7 +99,7 @@ fn f16(a0: Ptr<CFile>) -> i32 {
     a0.with(|__f| __f.eof) as i32
 }
 
-fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
+fn f17(a0: Ptr<i8>, a1: i32, a2: Ptr<CFile>) -> Ptr<i8> {
     let __buf = a0;
     let __n = a1;
     if __n <= 0 {
@@ -115,7 +114,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
                 if __c < 0 {
                     break;
                 }
-                __dst.write(__c as u8);
+                __dst.write(__c as i8);
                 __dst += 1;
                 __count += 1;
                 if __c as u8 == b'\n' {
@@ -133,7 +132,7 @@ fn f17(a0: Ptr<u8>, a1: i32, a2: Ptr<CFile>) -> Ptr<u8> {
     }
 }
 
-fn f18(a0: Ptr<u8>, a1: Ptr<u8>, a2: Ptr<CFile>) -> Ptr<CFile> {
+fn f18(a0: Ptr<i8>, a1: Ptr<i8>, a2: Ptr<CFile>) -> Ptr<CFile> {
     let __stream = a2;
     let __old = __stream.with(|__f| __f.fd);
     match __old {
@@ -158,24 +157,22 @@ fn f19(a0: Ptr<CFile>, a1: i64, a2: i32) -> i32 {
     }
 }
 
-fn f20(a0: i32, a1: Ptr<u8>) -> Ptr<CFile> {
+fn f20(a0: i32, a1: Ptr<i8>) -> Ptr<CFile> {
     Ptr::alloc(CFile::new(a0))
 }
 
-fn f21(a0: Ptr<u8>, a1: usize, a2: Ptr<u8>, va: &[VaArg]) -> i32 {
+fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: &[VaArg]) -> i32 {
     let __s = libcc2rs::format_c(&a2.to_rust_string(), va);
     let __b = __s.as_bytes();
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
-        a0.with_slice_mut(__n + 1, |__dst| {
-            __dst[..__n].copy_from_slice(&__b[..__n]);
-            __dst[__n] = 0;
-        });
+        a0.write_c_bytes(&__b[..__n]);
+        a0.offset(__n).write(0);
     }
     __b.len() as i32
 }
 
-fn f22(a0: Ptr<u8>, a1: Ptr<u8>) -> i32 {
+fn f22(a0: Ptr<i8>, a1: Ptr<i8>) -> i32 {
     match ::std::fs::rename(a0.to_rust_string(), a1.to_rust_string()) {
         Ok(()) => 0,
         Err(__e) => {
@@ -189,6 +186,6 @@ fn f23(a0: Ptr<CFile>) -> i32 {
     a0.with_mut(|__f| __f.getc())
 }
 
-fn f24(a0: Ptr<CFile>, a1: Ptr<u8>, a2: i32, a3: usize) -> i32 {
+fn f24(a0: Ptr<CFile>, a1: Ptr<i8>, a2: i32, a3: usize) -> i32 {
     0
 }

@@ -24,13 +24,13 @@ pub fn convert_without_rhs_0() {
         ((*arr.borrow())[(*y.borrow()) as usize] + (*arr.borrow())[(*x.borrow()) as usize]),
     ));
     (*w.borrow_mut()) += (((*z.borrow()) + (*y.borrow())) + (*x.borrow()));
-    let arr2: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        ('a' as u8),
-        ('b' as u8),
-        ('c' as u8),
+    let arr2: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        ('a' as i8),
+        ('b' as i8),
+        ('c' as i8),
     ])));
     let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x.as_pointer())));
-    let c: Value<u8> = Rc::new(RefCell::new(
+    let c: Value<i8> = Rc::new(RefCell::new(
         (*arr2.borrow())[((*p1.borrow()).read()) as usize],
     ));
     (*c.borrow_mut()) = (*arr2.borrow())[((*p1.borrow()).read()) as usize];

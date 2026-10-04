@@ -24,13 +24,13 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S { v: 65 }));
-    let a: Value<u8> = Rc::new(RefCell::new(({ SImpl::to_u8_1(&s.as_pointer()) })));
-    let b: Value<u8> = Rc::new(RefCell::new(({ SImpl::to_u8_2(&s.as_pointer()) })));
-    assert!((((*a.borrow()) as i32) == (('A' as u8) as i32)));
+    let a: Value<i8> = Rc::new(RefCell::new(({ SImpl::to_i8(&s.as_pointer()) })));
+    let b: Value<u8> = Rc::new(RefCell::new(({ SImpl::to_u8(&s.as_pointer()) })));
+    assert!((((*a.borrow()) as i32) == (('A' as i8) as i32)));
     assert!((((*b.borrow()) as i32) == ((66 as u8) as i32)));
     assert!(
-        (((({ SImpl::to_u8_1(&s.as_pointer(),) }) as i32)
-            + (({ SImpl::to_u8_2(&s.as_pointer(),) }) as i32))
+        (((({ SImpl::to_i8(&s.as_pointer(),) }) as i32)
+            + (({ SImpl::to_u8(&s.as_pointer(),) }) as i32))
             == 131)
     );
     let t: Value<T> = Rc::new(RefCell::new(T { v: 3 }));
@@ -41,14 +41,14 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait SImpl {
-    fn to_u8_1(&self) -> u8;
-    fn to_u8_2(&self) -> u8;
+    fn to_i8(&self) -> i8;
+    fn to_u8(&self) -> u8;
 }
 impl SImpl for Ptr<S> {
-    fn to_u8_1(&self) -> u8 {
-        return ((*self).with(|__s| __s.v) as u8);
+    fn to_i8(&self) -> i8 {
+        return ((*self).with(|__s| __s.v) as i8);
     }
-    fn to_u8_2(&self) -> u8 {
+    fn to_u8(&self) -> u8 {
         return (((*self).with(|__s| __s.v) + 1) as u8);
     }
 }

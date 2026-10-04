@@ -7,7 +7,7 @@ fn t1() -> libcc2rs::Passwd {
     Default::default()
 }
 
-fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) -> i32 {
+fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<i8>, a3: usize, a4: Ptr<Ptr<Passwd>>) -> i32 {
     let __pwbuf = a1;
     let __buf = a2;
     let __buflen = a3;
@@ -26,15 +26,13 @@ fn f2(a0: u32, a1: Ptr<Passwd>, a2: Ptr<u8>, a3: usize, a4: Ptr<Ptr<Passwd>>) ->
                 __out.write(Ptr::null());
                 ::libc::ERANGE
             } else {
-                let mut __ptrs: Vec<Ptr<u8>> = Vec::new();
+                let mut __ptrs: Vec<Ptr<i8>> = Vec::new();
                 let mut __off: usize = 0;
                 for __s in &__strs {
                     __ptrs.push(__buf.offset(__off));
                     let __end = __s.len();
-                    __buf.offset(__off).with_slice_mut(__end + 1, |__sl| {
-                        __sl[..__end].copy_from_slice(__s);
-                        __sl[__end] = 0;
-                    });
+                    __buf.offset(__off).write_c_bytes(__s);
+                    __buf.offset(__off + __end).write(0);
                     __off += __end + 1;
                 }
                 __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));

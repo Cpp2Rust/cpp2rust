@@ -13,13 +13,13 @@ pub struct Inner {
     pub a: i32,
     #[offset(4)]
     #[byte_size(8)]
-    pub name: Value<Box<[u8]>>,
+    pub name: Value<Box<[i8]>>,
 }
 impl Default for Inner {
     fn default() -> Self {
         Inner {
             a: 0_i32,
-            name: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            name: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -117,24 +117,24 @@ fn main_0() -> i32 {
             ))
         } != { (*pi.borrow()).clone() })
     );
-    let name: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<u8>),
+    let name: Value<Ptr<i8>> = Rc::new(RefCell::new(
+        (array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<i8>),
     ));
     let i: Value<i32> = Rc::new(RefCell::new(0));
     'loop_: while ((*i.borrow()) < 3) {
         elem!((*name.borrow()), (*i.borrow()))
-            .write({ (((('a' as u8) as i32) + (*i.borrow())) as u8) });
+            .write({ (((('a' as i8) as i32) + (*i.borrow())) as i8) });
         (*i.borrow_mut()).prefix_inc();
     }
     assert!(
-        ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr::<u8>)
+        ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr::<i8>)
             .to_c_string_iterator()
             .count()
             == 3_usize)
     );
     assert!(
         ({ (*name.borrow()).offset((3) as isize) } == {
-            ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<u8>)
+            ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<i8>)
                 .offset((3) as isize))
         })
     );

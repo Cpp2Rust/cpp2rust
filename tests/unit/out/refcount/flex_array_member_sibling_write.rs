@@ -13,13 +13,13 @@ pub struct S {
     pub n: i32,
     #[offset(4)]
     #[byte_size(1)]
-    pub name: Value<Box<[u8]>>,
+    pub name: Value<Box<[i8]>>,
 }
 impl Default for S {
     fn default() -> Self {
         S {
             n: 0_i32,
-            name: Rc::new(RefCell::new((0..1).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            name: Rc::new(RefCell::new((0..1).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -64,26 +64,26 @@ fn main_0() -> i32 {
     ));
     assert!((((!((*s.borrow()).is_null())) as i32) != 0));
     {
-        ((array_field_ptr!((*s.borrow()), name) as Ptr<u8>) as Ptr<u8>)
+        ((array_field_ptr!((*s.borrow()), name) as Ptr<i8>) as Ptr<i8>)
             .to_any()
             .memcpy(
-                &Ptr::<u8>::from_string_literal(b"abcdefg").to_any(),
+                &Ptr::<i8>::from_string_literal(b"abcdefg").to_any(),
                 8_usize as usize,
             );
-        ((array_field_ptr!((*s.borrow()), name) as Ptr<u8>) as Ptr<u8>).to_any()
+        ((array_field_ptr!((*s.borrow()), name) as Ptr<i8>) as Ptr<i8>).to_any()
     };
     field!((*s.borrow()), n).write(5);
     assert!(((((*s.borrow()).with(|__s| __s.n) == 5) as i32) != 0));
     assert!(
         ((({
             let mut __it1 =
-                (array_field_ptr!((*s.borrow()), name) as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::<u8>::from_string_literal(b"abcdefg").to_c_string_iterator();
+                (array_field_ptr!((*s.borrow()), name) as Ptr<i8>).to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"abcdefg").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;

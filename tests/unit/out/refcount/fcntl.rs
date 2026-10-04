@@ -128,10 +128,10 @@ fn main_0() -> i32 {
         }
     };
     assert!((((((*flags.borrow()) & ::libc::O_NONBLOCK) != 0) as i32) != 0));
-    let b: Value<u8> = Rc::new(RefCell::new(0_u8));
+    let b: Value<i8> = Rc::new(RefCell::new(0_i8));
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((b.as_pointer()) as Ptr<u8>)
+            ((b.as_pointer()) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))

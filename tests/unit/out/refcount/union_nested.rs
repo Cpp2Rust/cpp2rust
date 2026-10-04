@@ -13,13 +13,13 @@ pub struct record {
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[u8]>>,
+    pub pad: Value<Box<[i8]>>,
 }
 impl Default for record {
     fn default() -> Self {
         record {
             code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -34,7 +34,7 @@ impl anon_0 {
     pub fn h(&self) -> Ptr<record> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<u8> {
+    pub fn raw_(&self) -> Ptr<i8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
@@ -107,14 +107,14 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).len = (16usize as u32);
     field!((*ex.borrow_mut()).body.h(), code).write(2_u16);
     elem!(
-        (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<u8>),
+        (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<i8>),
         0
     )
-    .write((('X' as i32) as u8));
+    .write((('X' as i32) as i8));
     assert!((((((*ex.borrow()).body.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(
         (((((elem!(
-            (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<u8>),
+            (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<i8>),
             0
         )
         .read()) as i32)

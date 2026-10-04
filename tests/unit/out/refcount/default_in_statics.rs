@@ -13,7 +13,7 @@ pub struct Inner {
     pub v: i32,
     #[offset(8)]
     #[byte_size(8)]
-    pub name: Ptr<u8>,
+    pub name: Ptr<i8>,
 }
 #[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(88)]
@@ -29,7 +29,7 @@ pub struct Outer {
     pub arr: Value<Box<[Ptr<i32>]>>,
     #[offset(40)]
     #[byte_size(8)]
-    pub cp: Ptr<u8>,
+    pub cp: Ptr<i8>,
     #[offset(48)]
     #[byte_size(8)]
     pub pp: Ptr<Ptr<i32>>,
@@ -52,7 +52,7 @@ impl Default for Outer {
                     .map(|_| Ptr::<i32>::null())
                     .collect::<Box<[Ptr<i32>]>>(),
             )),
-            cp: Ptr::<u8>::null(),
+            cp: Ptr::<i8>::null(),
             pp: Ptr::<Ptr<i32>>::null(),
             inner: <Inner>::default(),
             x: 0_i32,
@@ -65,10 +65,10 @@ impl Default for Outer {
 pub struct Foo {
     #[offset(0)]
     #[byte_size(8)]
-    pub s1: Ptr<u8>,
+    pub s1: Ptr<i8>,
     #[offset(8)]
     #[byte_size(8)]
-    pub s2: Ptr<u8>,
+    pub s2: Ptr<i8>,
     #[offset(16)]
     #[byte_size(8)]
     pub fn1: FnPtr<fn(i32) -> i32>,
@@ -92,8 +92,8 @@ thread_local!(
 );
 thread_local!(
     pub static static_foo_3: Value<Foo> = Rc::new(RefCell::new(Foo {
-        s1: Ptr::<u8>::from_string_literal(b"hello"),
-        s2: Ptr::<u8>::null(),
+        s1: Ptr::<i8>::from_string_literal(b"hello"),
+        s2: Ptr::<i8>::null(),
         fn1: FnPtr::<fn(i32) -> i32>::null(),
         fn2: FnPtr::<fn(i32) -> i32>::null(),
         n: 42,
@@ -102,15 +102,15 @@ thread_local!(
 thread_local!(
     pub static static_foo_array_4: Value<Box<[Foo]>> = Rc::new(RefCell::new(Box::new([
         Foo {
-            s1: Ptr::<u8>::from_string_literal(b"first"),
-            s2: Ptr::<u8>::null(),
+            s1: Ptr::<i8>::from_string_literal(b"first"),
+            s2: Ptr::<i8>::null(),
             fn1: FnPtr::<fn(i32) -> i32>::null(),
             fn2: FnPtr::<fn(i32) -> i32>::null(),
             n: 1,
         },
         Foo {
-            s1: Ptr::<u8>::from_string_literal(b"second"),
-            s2: Ptr::<u8>::null(),
+            s1: Ptr::<i8>::from_string_literal(b"second"),
+            s2: Ptr::<i8>::null(),
             fn1: FnPtr::<fn(i32) -> i32>::null(),
             fn2: FnPtr::<fn(i32) -> i32>::null(),
             n: 2,

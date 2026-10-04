@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 #[byte_size(16)]
 pub struct S {
     #[offset(0)]
-    pub c: u8,
+    pub c: i8,
     #[offset(8)]
     pub x: i64,
 }

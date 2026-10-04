@@ -25,7 +25,7 @@ pub struct S {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub b: u8,
+    pub b: i8,
     #[offset(8)]
     #[byte_size(8)]
     pub c: Inner,
@@ -37,7 +37,7 @@ impl Default for S {
     fn default() -> Self {
         S {
             a: 1,
-            b: 2_u8,
+            b: 2_i8,
             c: <Inner>::default(),
             d: <Inner>::default(),
         }

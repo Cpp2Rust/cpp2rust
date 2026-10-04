@@ -28,7 +28,7 @@ pub struct Tm {
     #[offset(offset_of!(::libc::tm, tm_gmtoff))]
     pub tm_gmtoff: i64,
     #[offset(offset_of!(::libc::tm, tm_zone))]
-    pub tm_zone: Ptr<u8>,
+    pub tm_zone: Ptr<i8>,
 }
 
 impl Tm {
@@ -48,7 +48,7 @@ impl Tm {
             tm_yday: dt.day_of_year() as i32 - 1,
             tm_isdst: 0,
             tm_gmtoff: dt.offset().seconds() as i64,
-            tm_zone: Ptr::<u8>::from_string_literal(zone),
+            tm_zone: Ptr::<i8>::from_string_literal(zone),
         }
     }
 

@@ -18,7 +18,7 @@ fn main_0() -> i32 {
     let u1: Value<u32> = Rc::new(RefCell::new(5_u32));
     let u2: Value<u32> = Rc::new(RefCell::new((*u1.borrow()).wrapping_neg()));
     assert!(((((*u2.borrow()) == 4294967291_u32) as i32) != 0));
-    let c1: Value<u8> = Rc::new(RefCell::new(255_u8));
+    let c1: Value<i8> = Rc::new(RefCell::new(-1_i8));
     assert!(((((((*c1.borrow()) as u8) as i32) == 255) as i32) != 0));
     return 0;
 }

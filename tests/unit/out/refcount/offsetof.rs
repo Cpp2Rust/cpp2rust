@@ -23,13 +23,13 @@ pub struct Frame {
     pub tag: u16,
     #[offset(2)]
     #[byte_size(64)]
-    pub body: Value<Box<[u8]>>,
+    pub body: Value<Box<[i8]>>,
 }
 impl Default for Frame {
     fn default() -> Self {
         Frame {
             tag: 0_u16,
-            body: Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            body: Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -56,7 +56,7 @@ fn main_0() -> i32 {
         .reinterpret_cast::<u32>()
         .write(305419896_u32);
     assert!(({ (*v.borrow()).b } == 305419896_u32));
-    let text: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+    let text: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
         b"example-body",
     )));
     let len: Value<usize> = Rc::new(RefCell::new(

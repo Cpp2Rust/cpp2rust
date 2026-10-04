@@ -3,7 +3,7 @@
 
 use libcc2rs::*;
 
-fn f5(a0: i32, a1: Ptr<u8>, a2: AnyPtr) -> i32 {
+fn f5(a0: i32, a1: Ptr<i8>, a2: AnyPtr) -> i32 {
     if a0 == libc::AF_INET {
         match a1.to_rust_string().parse::<std::net::Ipv4Addr>() {
             Ok(__ip) => {
@@ -28,7 +28,7 @@ fn f5(a0: i32, a1: Ptr<u8>, a2: AnyPtr) -> i32 {
     }
 }
 
-fn f6(a0: i32, a1: AnyPtr, a2: Ptr<u8>, a3: u32) -> Ptr<u8> {
+fn f6(a0: i32, a1: AnyPtr, a2: Ptr<i8>, a3: u32) -> Ptr<i8> {
     let __text = if a0 == libc::AF_INET {
         let __b: [u8; 4] = a1
             .reinterpret_cast::<u8>()
@@ -45,10 +45,8 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<u8>, a3: u32) -> Ptr<u8> {
     match __text {
         Some(__s) if (__s.len() as u32) < a3 => {
             let __n = __s.len();
-            a2.with_slice_mut(__n + 1, |__sl| {
-                __sl[..__n].copy_from_slice(__s.as_bytes());
-                __sl[__n] = 0;
-            });
+            a2.write_c_bytes(__s.as_bytes());
+            a2.offset(__n).write(0);
             a2
         }
         Some(_) => {

@@ -60,7 +60,7 @@ pub struct EmptyBody {
 #[byte_size(1)]
 pub struct Templated_char_ {
     #[offset(0)]
-    pub v: u8,
+    pub v: i8,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -274,7 +274,7 @@ impl Templated_char_Impl for Ptr<Templated_char_> {
         global_0.with(|rc| {
             *rc.borrow_mut() = {
                 ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<u8>() as usize))) as i32
+                    .wrapping_add((::std::mem::size_of::<i8>() as usize))) as i32
             }
         });
     }

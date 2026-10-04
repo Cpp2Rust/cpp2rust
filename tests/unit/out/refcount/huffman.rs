@@ -10,7 +10,7 @@ use std::rc::{Rc, Weak};
 #[byte_size(24)]
 pub struct MinHeapNode {
     #[offset(0)]
-    pub data: u8,
+    pub data: i8,
     #[offset(4)]
     pub freq: i32,
     #[offset(8)]
@@ -99,7 +99,7 @@ pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
     return (*minHeap.borrow_mut()).take();
 }
 pub fn Huffman_2(
-    data: Ptr<Option<Value<Box<[u8]>>>>,
+    data: Ptr<Option<Value<Box<[i8]>>>>,
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     size: i32,
 ) -> Option<Value<MinHeap>> {
@@ -107,7 +107,7 @@ pub fn Huffman_2(
     let minHeap: Value<Option<Value<MinHeap>>> =
         Rc::new(RefCell::new(({ AllocMinHeap_1((*size.borrow())) })));
     ({
-        let _data: Ptr<Option<Value<Box<[u8]>>>> = (data).clone();
+        let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
         let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
         let _n: i32 = (*size.borrow());
         MinHeapImpl::Build(&((*minHeap.borrow()).as_pointer()), _data, _freq, _n)
@@ -123,7 +123,7 @@ pub fn Huffman_2(
             ({
                 MinHeapImpl::Alloc(
                     &((*minHeap.borrow()).as_pointer()),
-                    ('$' as u8),
+                    ('$' as i8),
                     ({ (*left.borrow()).with(|__s| __s.freq) } + {
                         (*right.borrow()).with(|__s| __s.freq)
                     }),
@@ -206,14 +206,14 @@ pub fn CollectCodes_4(
     }
 }
 pub fn HuffmanCodes_5(
-    data: Ptr<Option<Value<Box<[u8]>>>>,
+    data: Ptr<Option<Value<Box<[i8]>>>>,
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     size: i32,
 ) -> Option<Value<Box<[i32]>>> {
     let size: Value<i32> = Rc::new(RefCell::new(size));
     let minHeap: Value<Option<Value<MinHeap>>> = Rc::new(RefCell::new(
         ({
-            let _data: Ptr<Option<Value<Box<[u8]>>>> = (data).clone();
+            let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
             let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
             let _size: i32 = (*size.borrow());
             Huffman_2(_data, _freq, _size)
@@ -251,18 +251,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let size: Value<i32> = Rc::new(RefCell::new(6));
-    let arr1: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        ('a' as u8),
-        ('b' as u8),
-        ('c' as u8),
-        ('d' as u8),
-        ('e' as u8),
-        ('f' as u8),
+    let arr1: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        ('a' as i8),
+        ('b' as i8),
+        ('c' as i8),
+        ('d' as i8),
+        ('e' as i8),
+        ('f' as i8),
     ])));
     let arr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([5, 9, 12, 13, 16, 45])));
-    let data: Value<Option<Value<Box<[u8]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
+    let data: Value<Option<Value<Box<[i8]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
         (0..((*size.borrow()) as usize))
-            .map(|_| <u8>::default())
+            .map(|_| <i8>::default())
             .collect::<Box<[_]>>(),
     )))));
     let freq: Value<Option<Value<Box<[i32]>>>> =
@@ -293,21 +293,21 @@ fn main_0() -> i32 {
     return 0;
 }
 pub trait MinHeapImpl {
-    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode>;
+    fn Alloc(&self, data: i8, freq: i32) -> Ptr<MinHeapNode>;
     fn Heapify(&self, idx: i32);
     fn ExtractMin(&self) -> Ptr<MinHeapNode>;
     fn Insert(&self, node: Ptr<MinHeapNode>);
     fn Build(
         &self,
-        data: Ptr<Option<Value<Box<[u8]>>>>,
+        data: Ptr<Option<Value<Box<[i8]>>>>,
         freq: Ptr<Option<Value<Box<[i32]>>>>,
         n: i32,
     );
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
-    fn Alloc(&self, data: u8, freq: i32) -> Ptr<MinHeapNode> {
-        let data: Value<u8> = Rc::new(RefCell::new(data));
+    fn Alloc(&self, data: i8, freq: i32) -> Ptr<MinHeapNode> {
+        let data: Value<i8> = Rc::new(RefCell::new(data));
         let freq: Value<i32> = Rc::new(RefCell::new(freq));
         (*self)
             .with(|__s| __s.alloc.clone())
@@ -442,7 +442,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
     }
     fn Build(
         &self,
-        data: Ptr<Option<Value<Box<[u8]>>>>,
+        data: Ptr<Option<Value<Box<[i8]>>>>,
         freq: Ptr<Option<Value<Box<[i32]>>>>,
         n: i32,
     ) {
@@ -455,7 +455,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
                 .unwrap()
                 .borrow_mut()
                 [(field!((*self), size).with_mut(|__v| __v.postfix_inc()) as usize) as usize] = ({
-                let _data: u8 = (*data.upgrade().deref()).as_ref().unwrap().borrow()
+                let _data: i8 = (*data.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*i.borrow()) as usize) as usize];
                 let _freq: i32 = (*freq.upgrade().deref()).as_ref().unwrap().borrow()
                     [((*i.borrow()) as usize) as usize];

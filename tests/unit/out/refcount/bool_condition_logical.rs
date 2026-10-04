@@ -104,8 +104,8 @@ fn main_0() -> i32 {
     if ((*n.borrow()) != 0) || (((*bits.borrow()) & 256_i64) != 0) {
         assert!(true);
     }
-    let cp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hi")));
-    let cnp: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let cp: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"hi")));
+    let cnp: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
     if ((*x.borrow()) > (*y.borrow())) && (!(*cp.borrow()).is_null()) {
         assert!(true);
     }

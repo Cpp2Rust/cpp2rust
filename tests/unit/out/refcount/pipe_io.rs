@@ -30,7 +30,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::<u8>::from_string_literal(b"ab")
+            Ptr::<i8>::from_string_literal(b"ab")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(2_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -43,19 +43,19 @@ fn main_0() -> i32 {
         } == 2_isize) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
             .to_any()
-            .memset((0) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[i8; 4]>() as usize);
+        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
     };
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 4]>(), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {
@@ -69,13 +69,13 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::<u8>::from_string_literal(b"ab").to_c_string_iterator();
+            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"ab").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;
@@ -87,10 +87,10 @@ fn main_0() -> i32 {
     assert!((((FdRegistry::close((*fds.borrow())[(1) as usize]) == 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 4]>(), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {

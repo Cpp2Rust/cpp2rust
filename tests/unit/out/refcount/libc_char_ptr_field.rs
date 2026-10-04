@@ -26,10 +26,10 @@ fn main_0() -> i32 {
     if !(!(*pw.borrow()).is_null()) {
         return 0;
     }
-    let home: Value<Ptr<u8>> = Rc::new(RefCell::new((*pw.borrow()).with(|__s| __s.pw_dir.clone())));
+    let home: Value<Ptr<i8>> = Rc::new(RefCell::new((*pw.borrow()).with(|__s| __s.pw_dir.clone())));
     let d: Value<Ptr<libcc2rs::Dirent>> = Rc::new(RefCell::new(
         match nix::dir::Dir::open(
-            Ptr::<u8>::from_string_literal(b"/tmp")
+            Ptr::<i8>::from_string_literal(b"/tmp")
                 .to_rust_string()
                 .as_str(),
             nix::fcntl::OFlag::O_RDONLY,
@@ -52,8 +52,8 @@ fn main_0() -> i32 {
             }
         }),
     ));
-    let dname: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (array_field_ptr!((*d.borrow()), d_name) as Ptr<u8>),
+    let dname: Value<Ptr<i8>> = Rc::new(RefCell::new(
+        (array_field_ptr!((*d.borrow()), d_name) as Ptr<i8>),
     ));
     return 0;
 }

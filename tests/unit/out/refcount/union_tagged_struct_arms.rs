@@ -15,7 +15,7 @@ pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 pub struct anon_1 {
     #[offset(0)]
     #[byte_size(8)]
-    pub items: Ptr<Ptr<u8>>,
+    pub items: Ptr<Ptr<i8>>,
     #[offset(8)]
     pub count: i64,
     #[offset(16)]
@@ -89,17 +89,17 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     thread_local!(
-        static items_4: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-            Ptr::<u8>::from_string_literal(b"a"),
-            Ptr::<u8>::from_string_literal(b"b"),
-            Ptr::<u8>::from_string_literal(b"c"),
+        static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+            Ptr::<i8>::from_string_literal(b"a"),
+            Ptr::<i8>::from_string_literal(b"b"),
+            Ptr::<i8>::from_string_literal(b"c"),
         ])));
     );
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
     (*p_list.borrow_mut()).index = 0;
     field!((*p_list.borrow_mut()).v.list(), items)
-        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<u8>>));
+        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
     field!((*p_list.borrow_mut()).v.list(), count).write(3_i64);
     field!((*p_list.borrow_mut()).v.list(), cursor).write(1_i64);
     assert!(((((*p_list.borrow()).v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));

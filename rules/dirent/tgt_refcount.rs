@@ -11,7 +11,7 @@ fn t2() -> libcc2rs::Dirent {
     Default::default()
 }
 
-fn f1(a0: Ptr<u8>) -> Ptr<CDir> {
+fn f1(a0: Ptr<i8>) -> Ptr<CDir> {
     match nix::dir::Dir::open(
         a0.to_rust_string().as_str(),
         nix::fcntl::OFlag::O_RDONLY,

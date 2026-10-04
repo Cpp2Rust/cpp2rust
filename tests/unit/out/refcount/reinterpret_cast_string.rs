@@ -11,18 +11,18 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"ABCD").to_c_bytes();
+    let s: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"ABCD").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
     let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (s.as_pointer() as Ptr<u8>).reinterpret_cast::<u8>(),
+        (s.as_pointer() as Ptr<i8>).reinterpret_cast::<u8>(),
     ));
-    assert!((((elem!((*bytes.borrow()), 0).read()) as i32) == (('A' as u8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 1).read()) as i32) == (('B' as u8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 2).read()) as i32) == (('C' as u8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 3).read()) as i32) == (('D' as u8) as i32)));
+    assert!((((elem!((*bytes.borrow()), 0).read()) as i32) == (('A' as i8) as i32)));
+    assert!((((elem!((*bytes.borrow()), 1).read()) as i32) == (('B' as i8) as i32)));
+    assert!((((elem!((*bytes.borrow()), 2).read()) as i32) == (('C' as i8) as i32)));
+    assert!((((elem!((*bytes.borrow()), 3).read()) as i32) == (('D' as i8) as i32)));
     assert!((((elem!((*bytes.borrow()), 4).read()) as i32) == 0));
     return 0;
 }

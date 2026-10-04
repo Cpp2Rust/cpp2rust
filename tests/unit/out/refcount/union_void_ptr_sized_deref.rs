@@ -18,7 +18,7 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn text(&self) -> Ptr<Ptr<u8>> {
+    pub fn text(&self) -> Ptr<Ptr<i8>> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn handle(&self) -> Ptr<AnyPtr> {

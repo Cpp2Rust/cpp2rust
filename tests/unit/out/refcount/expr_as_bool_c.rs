@@ -10,14 +10,14 @@ pub fn cmp_eq_0(rc: i32) -> i32 {
     let rc: Value<i32> = Rc::new(RefCell::new(rc));
     return (((*rc.borrow()) == -1_i32) as i32);
 }
-pub fn cmp_or_ptr_1(p: Ptr<u8>, q: Ptr<u8>) -> i32 {
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(p));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(q));
+pub fn cmp_or_ptr_1(p: Ptr<i8>, q: Ptr<i8>) -> i32 {
+    let p: Value<Ptr<i8>> = Rc::new(RefCell::new(p));
+    let q: Value<Ptr<i8>> = Rc::new(RefCell::new(q));
     return (((!(*p.borrow()).is_null()) || (!(*q.borrow()).is_null())) as i32);
 }
-pub fn both_null_2(s1: Ptr<u8>, s2: Ptr<u8>) -> i32 {
-    let s1: Value<Ptr<u8>> = Rc::new(RefCell::new(s1));
-    let s2: Value<Ptr<u8>> = Rc::new(RefCell::new(s2));
+pub fn both_null_2(s1: Ptr<i8>, s2: Ptr<i8>) -> i32 {
+    let s1: Value<Ptr<i8>> = Rc::new(RefCell::new(s1));
+    let s2: Value<Ptr<i8>> = Rc::new(RefCell::new(s2));
     return ((((((*s1.borrow()).is_null()) as i32) != 0)
         && ((((*s2.borrow()).is_null()) as i32) != 0)) as i32);
 }
@@ -71,8 +71,8 @@ fn main_0() -> i32 {
     assert!(((((*eq.borrow()) == 1) as i32) != 0));
     assert!(((((*lt.borrow()) == 0) as i32) != 0));
     assert!(((((*neq.borrow()) == 0) as i32) != 0));
-    let p1: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"hi")));
-    let p2: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let p1: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"hi")));
+    let p2: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
     let either: Value<i32> = Rc::new(RefCell::new(
         (((!(*p1.borrow()).is_null()) || (!(*p2.borrow()).is_null())) as i32),
     ));
@@ -86,9 +86,9 @@ fn main_0() -> i32 {
     assert!(
         (((({ cmp_or_ptr_1((*p1.borrow()).clone(), (*p2.borrow()).clone(),) }) == 1) as i32) != 0)
     );
-    assert!((((({ cmp_or_ptr_1(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 0) as i32) != 0));
-    assert!((((({ both_null_2(Ptr::<u8>::null(), Ptr::<u8>::null(),) }) == 1) as i32) != 0));
-    assert!((((({ both_null_2((*p1.borrow()).clone(), Ptr::<u8>::null(),) }) == 0) as i32) != 0));
+    assert!((((({ cmp_or_ptr_1(Ptr::<i8>::null(), Ptr::<i8>::null(),) }) == 0) as i32) != 0));
+    assert!((((({ both_null_2(Ptr::<i8>::null(), Ptr::<i8>::null(),) }) == 1) as i32) != 0));
+    assert!((((({ both_null_2((*p1.borrow()).clone(), Ptr::<i8>::null(),) }) == 0) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

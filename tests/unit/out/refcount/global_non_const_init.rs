@@ -20,7 +20,7 @@ thread_local!(
     pub static signature_3: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ({ marker_2(1_u8) }),
         4_u8,
-        ('B' as u8),
+        (('B' as i8) as u8),
     ])));
 );
 thread_local!(
@@ -64,8 +64,8 @@ thread_local!(
     pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 7 })));
 );
 thread_local!(
-    pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"abc").to_c_bytes();
+    pub static str_9: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"abc").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
@@ -136,13 +136,11 @@ fn main_0() -> i32 {
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
     assert!(({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2));
     assert!(({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7));
-    assert!(
+    assert!(Ptr::<i8>::from_string_literal(b"abc").with_c_str(|__s| {
         (*str_9.with(Value::clone).borrow())
-            .iter()
-            .copied()
-            .take((*str_9.with(Value::clone).borrow()).len().saturating_sub(1))
-            .eq(Ptr::<u8>::from_string_literal(b"abc").to_c_string_iterator())
-    );
+            [..(*str_9.with(Value::clone).borrow()).len().saturating_sub(1)]
+            == *__s
+    }));
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
     assert!(({ (*inline_member_11.with(Value::clone).borrow()).v } == 5));
     assert!((({ local_static_12() }) == 7));

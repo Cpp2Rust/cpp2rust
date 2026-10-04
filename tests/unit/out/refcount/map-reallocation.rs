@@ -29,14 +29,14 @@ fn main_0() -> i32 {
     let p: Value<Ptr<i32>> = Rc::new(RefCell::new(((*it.borrow()).second().as_pointer())));
     assert!(
         ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value before insert"
             ))
             .is_null())
     );
     assert!(
         ({ ((*p.borrow()).read()) } == { (*sentinel.borrow()) })
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"pointer does not have correct value before insert"
             ))
             .is_null())
@@ -67,21 +67,21 @@ fn main_0() -> i32 {
     }
     assert!(
         ((*(*it.borrow()).second().borrow()) != 0)
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"in refcount, iterator points to index 0 instead of sentinel"
             ))
             .is_null())
     );
     assert!(
         ((*(*it.borrow()).second().borrow()) == (*sentinel.borrow()))
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"iterator does not have correct value after insert"
             ))
             .is_null())
     );
     assert!(
         ({ ((*p.borrow()).read()) } == { (*sentinel.borrow()) })
-            && (!(Ptr::<u8>::from_string_literal(
+            && (!(Ptr::<i8>::from_string_literal(
                 b"pointer does not have correct value after insert"
             ))
             .is_null())
