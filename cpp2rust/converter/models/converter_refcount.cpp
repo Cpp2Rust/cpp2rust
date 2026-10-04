@@ -1254,7 +1254,8 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsArrayInitContext()) {
     // The array may have a different element type than the literal, e.g.,
     // unsigned char s[] = "abc".
-    auto elem_ty = ctx_.getAsArrayType(curr_init_type_.back())->getElementType();
+    auto elem_ty =
+        ctx_.getAsArrayType(curr_init_type_.back())->getElementType();
     std::string elem(Trim(ToStringBase(elem_ty.getUnqualifiedType())));
     uint64_t pad = 1;
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
