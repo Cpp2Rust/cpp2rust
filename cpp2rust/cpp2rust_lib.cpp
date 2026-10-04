@@ -20,17 +20,24 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::string &rules_dir,
                          std::string_view filename) {
   auto tool_args = getPlatformClangBeginFlags();
+  tool_args.push_back("-fno-spell-checking");
   tool_args.push_back("-fparse-all-comments");
   tool_args.insert(tool_args.end(), cxx_flags.begin(), cxx_flags.end());
   auto end_flags = getPlatformClangEndFlags();
   tool_args.insert(tool_args.end(), end_flags.begin(), end_flags.end());
 
+  auto language = GetRulesLanguage(filename);
+  auto code = std::format("{}\n#include \"{}\"\n", cc_code,
+                          GetRulesEpiloguePath(language));
+
   std::string rs_code;
   clang::tooling::runToolOnCodeWithArgs(
       std::make_unique<FrontendAction>(rs_code, model, /*first=*/true,
                                        rules_dir),
-      cc_code, tool_args, std::filesystem::path(filename).filename().string(),
-      filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
+      code, tool_args, std::filesystem::path(filename).filename().string(),
+      filename.ends_with(".c") ? CLANG_C_COMPILER : CLANG_CXX_COMPILER,
+      std::make_shared<clang::PCHContainerOperations>(),
+      {{GetRulesEpiloguePath(language), BuildRulesEpilogue(language)}});
   Converter::EmitOpaqueRecords(rs_code);
   Converter::EmitVirtualMethods(rs_code);
   if (model == Model::kRefCount) {
@@ -55,9 +62,10 @@ std::string TranspileDir(std::string_view build_dir, Model model,
   }
 
   clang::tooling::ClangTool Tool(*compile_dbase, files);
+  auto begin_flags = getPlatformClangBeginFlags();
+  begin_flags.push_back("-fno-spell-checking");
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
-      getPlatformClangBeginFlags(),
-      clang::tooling::ArgumentInsertPosition::BEGIN));
+      begin_flags, clang::tooling::ArgumentInsertPosition::BEGIN));
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
       getPlatformClangEndFlags(), clang::tooling::ArgumentInsertPosition::END));
   // Redefine __FILE__ to use just the basename, so the generated code
