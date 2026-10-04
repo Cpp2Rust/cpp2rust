@@ -217,12 +217,28 @@ add_custom_command(
 file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
+set(_cxx_epilogue)
+set(_c_epilogue)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
   if(NOT _cpp_srcs)
     continue()
   endif()
   get_filename_component(_rule_name ${_rule_dir} NAME)
+  string(APPEND _cxx_epilogue "namespace cpp2rust_rules_${_rule_name} {\n")
+  if(EXISTS ${_rule_dir}/src.cpp)
+    string(APPEND _cxx_epilogue "#include \"${_rule_dir}/src.cpp\"\n")
+  endif()
+  if(EXISTS ${_rule_dir}/src.c)
+    string(APPEND _cxx_epilogue "#include \"${_rule_dir}/src.c\"\n")
+    string(APPEND _c_epilogue
+      "#define CPP2RUST_EXPR_RULE(n) cpp2rust_rules_${_rule_name}_f##n\n"
+      "#define CPP2RUST_TYPE_RULE(n) cpp2rust_rules_${_rule_name}_t##n\n"
+      "#include \"${_rule_dir}/src.c\"\n"
+      "#undef CPP2RUST_EXPR_RULE\n"
+      "#undef CPP2RUST_TYPE_RULE\n")
+  endif()
+  string(APPEND _cxx_epilogue "}\n")
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_cpp_out ${_out_dir}/ir_src.json)
   set(_cxxflags)
@@ -270,6 +286,15 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   )
   list(APPEND rust_rules_ir_outputs ${_rust_out})
 endforeach()
+
+file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/cpp2rust_rules_epilogue.h CONTENT
+"#pragma GCC system_header
+#ifdef __cplusplus
+#define CPP2RUST_EXPR_RULE(n) f##n
+#define CPP2RUST_TYPE_RULE(n) t##n
+${_cxx_epilogue}#else
+${_c_epilogue}#endif
+")
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
 

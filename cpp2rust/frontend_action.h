@@ -8,14 +8,15 @@
 #include <clang/Frontend/FrontendAction.h>
 #include <clang/Lex/PPCallbacks.h>
 #include <clang/Lex/Preprocessor.h>
+#include <clang/Lex/PreprocessorOptions.h>
 #include <clang/Tooling/Tooling.h>
+#include <llvm/Support/MemoryBuffer.h>
 
 #include <memory>
 #include <string>
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
-#include "converter/rules/rules_epilogue.h"
 
 namespace cpp2rust {
 class SilenceRulesDiagnostics : public clang::PPCallbacks {
@@ -29,13 +30,13 @@ public:
     auto &src_mgr = CI_.getSourceManager();
     if (Reason == LexedFileChangeReason::EnterFile) {
       if (auto file = src_mgr.getFileEntryRefForID(FID);
-          file && IsRulesEpilogue(file->getName())) {
+          file && file->getName() == RULES_EPILOGUE_PATH) {
         CI_.getDiagnostics().setSuppressAllDiagnostics(true);
       }
     }
     if (Reason == LexedFileChangeReason::ExitFile) {
       if (auto file = src_mgr.getFileEntryRefForID(PrevFID);
-          file && IsRulesEpilogue(file->getName())) {
+          file && file->getName() == RULES_EPILOGUE_PATH) {
         CI_.getDiagnostics().setSuppressAllDiagnostics(false);
       }
     }
@@ -57,6 +58,21 @@ public:
                     llvm::StringRef InFile) override {
     return std::make_unique<ASTConsumer>(rs_code_, model_, first_, CI,
                                          rules_dir_);
+  }
+
+  bool BeginInvocation(clang::CompilerInstance &CI) override {
+    for (const auto &input : CI.getFrontendOpts().Inputs) {
+      auto path = input.getFile();
+      auto buffer = CI.getFileManager().getBufferForFile(path);
+      if (!buffer) {
+        continue;
+      }
+      auto code = (*buffer)->getBuffer().str() + "\n#include \"" +
+                  RULES_EPILOGUE_PATH + "\"\n";
+      CI.getPreprocessorOpts().addRemappedFile(
+          path, llvm::MemoryBuffer::getMemBufferCopy(code, path).release());
+    }
+    return true;
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance &CI) override {

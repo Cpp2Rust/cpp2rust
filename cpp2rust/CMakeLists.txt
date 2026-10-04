@@ -17,7 +17,7 @@ target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_C_COMPILER=\"${CMAKE_C_
 target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_CXX_COMPILER=\"${CMAKE_CXX_COMPILER}\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DCLANG_RESOURCE_DIR=\"${LLVM_LIBRARY_DIR}/clang/${LLVM_VERSION_MAJOR}\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DCOMPAT_INCLUDE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/compat\"")
-target_compile_definitions(cpp2rust_core PUBLIC "-DRULES_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}/rules\"")
+target_compile_definitions(cpp2rust_core PUBLIC "-DRULES_EPILOGUE_PATH=\"${CMAKE_BINARY_DIR}/cpp2rust_rules_epilogue.h\"")
 target_compile_definitions(cpp2rust_core PUBLIC "-DRUST_STABLE_VERSION=\"${RUST_STABLE_VERSION}\"")
 
 if (APPLE)
