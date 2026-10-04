@@ -16,8 +16,8 @@
 #include "compat/platform_flags.h"
 #include "converter/converter.h"
 #include "converter/models/converter_refcount.h"
+#include "converter/rules/rules_epilogue.h"
 #include "frontend_action.h"
-#include "rules_epilogue.h"
 
 namespace cpp2rust {
 std::string TranspileSrc(std::string_view cc_code, Model model,

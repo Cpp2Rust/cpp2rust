@@ -15,7 +15,7 @@
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
-#include "rules_epilogue.h"
+#include "converter/rules/rules_epilogue.h"
 
 namespace cpp2rust {
 class SilenceRulesDiagnostics : public clang::PPCallbacks {

@@ -1070,6 +1070,9 @@ void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
              llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
+  flags.push_back("-DCPP2RUST_USE_INCLUDES");
+  flags.push_back("-DCPP2RUST_EXPR_RULE(n)=f##n");
+  flags.push_back("-DCPP2RUST_TYPE_RULE(n)=t##n");
   flags.push_back("-isystem" + src_path.parent_path().string());
   if (!is_c) {
     flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
