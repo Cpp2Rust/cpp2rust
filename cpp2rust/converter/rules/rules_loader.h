@@ -5,6 +5,8 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
+#include <clang/AST/Expr.h>
+#include <clang/AST/Type.h>
 #include <clang/Basic/SourceLocation.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Lex/Pragma.h>
@@ -19,9 +21,17 @@ inline constexpr const char *kIndexDirName = "index";
 
 std::string IndexPath(bool is_type, const std::string &key);
 
-std::string ClassKey(clang::ASTContext &ctx, const clang::NamedDecl *decl);
+std::string ClassKey(const clang::NamedDecl *decl);
 
 std::string MemberKey(const std::string &class_key, const std::string &name);
+
+std::string FunctionKey(const clang::FunctionDecl *decl);
+
+std::string DeclKey(const clang::NamedDecl *decl);
+
+std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr);
+
+std::string TypeKey(clang::QualType type);
 
 class PragmaHandler : public clang::PragmaHandler {
 public:

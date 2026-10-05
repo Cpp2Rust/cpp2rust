@@ -23,11 +23,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/printer.h"
-#include "converter/rules/matcher.h"
 #include "converter/rules/rules_loader.h"
 #include "rule_preprocessing/rule_preprocessing_lib.h"
 
@@ -47,7 +46,7 @@ struct RuleKey {
   std::string key;
 };
 
-std::string ClassKey(clang::ASTContext &ctx, const fs::path &rule_path) {
+std::string DirClass(clang::ASTContext &ctx, const fs::path &rule_path) {
   if (!ctx.getLangOpts().CPlusPlus) {
     return {};
   }
@@ -59,7 +58,7 @@ std::string ClassKey(clang::ASTContext &ctx, const fs::path &rule_path) {
       if (llvm::isa<clang::ClassTemplateDecl>(decl) ||
           llvm::isa<clang::CXXRecordDecl>(decl) ||
           llvm::isa<clang::TypedefNameDecl>(decl)) {
-        return RulesLoader::ClassKey(ctx, decl);
+        return RulesLoader::ClassKey(decl);
       }
       if (auto found = llvm::dyn_cast<clang::NamespaceDecl>(decl)) {
         ns = found;
@@ -73,7 +72,7 @@ std::string ClassKey(clang::ASTContext &ctx, const fs::path &rule_path) {
   return {};
 }
 
-std::string ClassKey(clang::ASTContext &ctx, clang::QualType type) {
+std::string TemplateClass(clang::QualType type) {
   auto spec =
       type.getNonReferenceType()->getAs<clang::TemplateSpecializationType>();
   if (!spec) {
@@ -83,7 +82,7 @@ std::string ClassKey(clang::ASTContext &ctx, clang::QualType type) {
   if (!decl || !llvm::isa<clang::ClassTemplateDecl>(decl)) {
     return {};
   }
-  return RulesLoader::ClassKey(ctx, decl);
+  return RulesLoader::ClassKey(decl);
 }
 
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
@@ -110,54 +109,53 @@ const clang::Expr *Unwrap(const clang::Expr *expr) {
   return expr;
 }
 
-std::optional<RuleKey> DirKey(const std::string &dir_class) {
-  if (dir_class.empty()) {
+std::optional<RuleKey> MakeKey(bool is_type, std::string key) {
+  if (key.empty()) {
     return std::nullopt;
   }
-  return RuleKey{true, dir_class};
+  return RuleKey{is_type, std::move(key)};
 }
 
-std::optional<RuleKey> DependentExprKey(clang::ASTContext &ctx,
-                                        const clang::Expr *expr,
+std::optional<RuleKey> DependentExprKey(const clang::Expr *expr,
                                         const std::string &dir_class) {
   auto member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(expr);
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
-      return RuleKey{false, Matcher::ExprKey(Printer::ToString(ctx, callee))};
+      return MakeKey(false, RulesLoader::FunctionKey(callee));
     }
     auto callee = call->getCallee()->IgnoreParenImpCasts();
     member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(callee);
     if (auto overloads = llvm::dyn_cast<clang::UnresolvedMemberExpr>(callee);
         overloads && overloads->decls_begin() != overloads->decls_end()) {
-      return RuleKey{
-          false, Matcher::ExprKey(Printer::ToString(
-                     ctx, (*overloads->decls_begin())->getUnderlyingDecl()))};
+      return MakeKey(false,
+                     RulesLoader::DeclKey(
+                         (*overloads->decls_begin())->getUnderlyingDecl()));
     }
     if (auto lookup = llvm::dyn_cast<clang::UnresolvedLookupExpr>(callee);
         lookup && lookup->getQualifier() &&
         !llvm::isa<clang::CXXOperatorCallExpr>(call) &&
         lookup->decls_begin() != lookup->decls_end()) {
-      return RuleKey{false,
-                     Matcher::ExprKey(Printer::ToString(
-                         ctx, (*lookup->decls_begin())->getUnderlyingDecl()))};
+      return MakeKey(false, RulesLoader::DeclKey(
+                                (*lookup->decls_begin())->getUnderlyingDecl()));
     }
   }
   if (member && !member->isArrow()) {
-    if (auto class_key = ClassKey(ctx, member->getBaseType());
+    if (auto class_key = TemplateClass(member->getBaseType());
         !class_key.empty()) {
-      return RuleKey{false, RulesLoader::MemberKey(
-                                class_key, member->getMember().getAsString())};
+      return MakeKey(false, RulesLoader::MemberKey(
+                                class_key, member->getMember().getAsString()));
     }
   }
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
-    if (auto class_key = ClassKey(ctx, construct->getTypeAsWritten());
+    if (auto class_key = TemplateClass(construct->getTypeAsWritten());
         !class_key.empty()) {
-      auto name = class_key.substr(class_key.rfind(':') + 1);
-      return RuleKey{false, RulesLoader::MemberKey(class_key, name)};
+      return MakeKey(
+          false, RulesLoader::MemberKey(
+                     class_key, class_key.substr(class_key.rfind(':') + 1)));
     }
   }
-  return DirKey(dir_class);
+  return MakeKey(true, dir_class);
 }
 
 std::optional<RuleKey> KeyOf(clang::ASTContext &ctx, const clang::Decl *decl,
@@ -168,18 +166,16 @@ std::optional<RuleKey> KeyOf(clang::ASTContext &ctx, const clang::Decl *decl,
   }
   if (alias) {
     auto type = alias->getUnderlyingType();
-    while (type->isPointerType()) {
+    while (type->isPointerType() || type->isReferenceType()) {
       type = type->getPointeeType();
     }
     if (!type->isDependentType()) {
-      return RuleKey{true, Matcher::TypeKey(Printer::ToString(
-                               ctx, type.getUnqualifiedType(),
-                               Printer::ScalarSugar::kPreserve))};
+      return MakeKey(true, RulesLoader::TypeKey(type));
     }
-    if (auto class_key = ClassKey(ctx, type); !class_key.empty()) {
-      return RuleKey{true, class_key};
+    if (auto class_key = TemplateClass(type); !class_key.empty()) {
+      return MakeKey(true, class_key);
     }
-    return DirKey(dir_class);
+    return MakeKey(true, dir_class);
   }
 
   auto expr = RuleExpr(decl);
@@ -188,9 +184,9 @@ std::optional<RuleKey> KeyOf(clang::ASTContext &ctx, const clang::Decl *decl,
   }
   expr = Unwrap(expr);
   if (!expr->isTypeDependent() && !expr->isValueDependent()) {
-    return RuleKey{false, Matcher::ExprKey(Printer::ToString(ctx, expr))};
+    return MakeKey(false, RulesLoader::ExprKey(ctx, expr));
   }
-  return DependentExprKey(ctx, expr, dir_class);
+  return DependentExprKey(expr, dir_class);
 }
 
 std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
@@ -220,7 +216,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
   fs::create_directories(index_dir);
   RemoveFilesNamed(index_dir, file_name);
 
-  auto dir_class = ClassKey(ctx, dir.path);
+  auto dir_class = DirClass(ctx, dir.path);
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
     if (decl->isImplicit() ||

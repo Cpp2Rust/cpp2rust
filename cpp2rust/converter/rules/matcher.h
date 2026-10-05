@@ -23,10 +23,6 @@ template <typename Rule> using Match = std::pair<Rule *, Bindings>;
 std::string Key(const TranslationRule::ExprRule &rule);
 std::string Key(const TranslationRule::TypeRule &rule);
 
-std::string ExprKey(const std::string &str);
-
-std::string TypeKey(const std::string &str);
-
 Match<TranslationRule::ExprRule> Find(clang::ASTContext &ctx,
                                       const clang::Expr *expr);
 Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,

@@ -5,6 +5,7 @@
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Lex/Lexer.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
@@ -17,8 +18,6 @@
 #include <vector>
 
 #include "converter/converter_lib.h"
-#include "converter/printer.h"
-#include "converter/rules/matcher.h"
 #include "logging.h"
 
 namespace cpp2rust::RulesLoader {
@@ -68,8 +67,7 @@ public:
     if (expr->isTypeDependent() || expr->isValueDependent()) {
       return true;
     }
-    paths_.insert(
-        IndexPath(false, Matcher::ExprKey(Printer::ToString(ctx_, expr))));
+    AddKey(false, ExprKey(ctx_, expr));
     AddType(expr->getType());
     return true;
   }
@@ -81,13 +79,6 @@ public:
 
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     AddReferencedDecl(expr->getDecl());
-    if (!expr->isTypeDependent() && !expr->isValueDependent()) {
-      paths_.insert(IndexPath(
-          false, Matcher::ExprKey(std::format(
-                     "{}{}",
-                     clang::UnaryOperator::getOpcodeStr(clang::UO_AddrOf).str(),
-                     Printer::ToString(ctx_, expr)))));
-    }
     return true;
   }
 
@@ -132,6 +123,12 @@ public:
   }
 
 private:
+  void AddKey(bool is_type, const std::string &key) {
+    if (!key.empty()) {
+      paths_.insert(IndexPath(is_type, key));
+    }
+  }
+
   void AddMemberKey(clang::QualType object, const std::string &name) {
     if (object.isNull() || object->isDependentType()) {
       return;
@@ -141,7 +138,7 @@ private:
         !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
       return;
     }
-    paths_.insert(IndexPath(false, MemberKey(ClassKey(ctx_, record), name)));
+    AddKey(false, MemberKey(ClassKey(record), name));
   }
 
   void AddReferencedDecl(const clang::ValueDecl *decl) {
@@ -161,13 +158,7 @@ private:
         !seen_.insert(type.getAsOpaquePtr()).second) {
       return;
     }
-    if (!type->isPointerType()) {
-      paths_.insert(
-          IndexPath(true, Matcher::TypeKey(Printer::ToString(
-                              ctx_, type, Printer::ScalarSugar::kPreserve))));
-      paths_.insert(
-          IndexPath(true, Matcher::TypeKey(Printer::ToString(ctx_, type))));
-    }
+    AddKey(true, TypeKey(type));
     if (const auto *enum_decl = type->getAsEnumDecl()) {
       AddType(enum_decl->getIntegerType());
     }
@@ -213,8 +204,7 @@ private:
           llvm::isa<clang::CXXDestructorDecl>(method) ||
           method->isCopyAssignmentOperator() ||
           method->isMoveAssignmentOperator()) {
-        paths_.insert(IndexPath(
-            false, Matcher::ExprKey(Printer::ToString(ctx_, method))));
+        AddKey(false, FunctionKey(method));
       }
     }
   }
@@ -273,23 +263,105 @@ std::string IndexPath(bool is_type, const std::string &key) {
   return out;
 }
 
-std::string ClassKey(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
+std::string ClassKey(const clang::NamedDecl *decl) {
   if (auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
-    auto record = alias->getUnderlyingType()->getAsCXXRecordDecl();
-    if (!record) {
+    auto tag = alias->getUnderlyingType()->getAsTagDecl();
+    if (!tag) {
       return {};
     }
-    decl = record;
+    decl = tag;
   }
   if (auto spec =
           llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
     decl = spec->getSpecializedTemplate();
   }
-  return Printer::ToString(ctx, decl);
+  if (auto tag = llvm::dyn_cast<clang::TagDecl>(decl);
+      tag && !tag->getIdentifier()) {
+    decl = tag->getTypedefNameForAnonDecl();
+    if (!decl) {
+      return {};
+    }
+  }
+  return decl->getQualifiedNameAsString();
 }
 
 std::string MemberKey(const std::string &class_key, const std::string &name) {
-  return Matcher::ExprKey(std::format("{}::{}", class_key, name));
+  if (class_key.empty()) {
+    return {};
+  }
+  return std::format("{}::{}", class_key, name);
+}
+
+std::string FunctionKey(const clang::FunctionDecl *decl) {
+  if (auto method = llvm::dyn_cast<clang::CXXMethodDecl>(decl)) {
+    auto record = method->getParent();
+    if (llvm::isa<clang::CXXConstructorDecl>(method)) {
+      return MemberKey(ClassKey(record), record->getNameAsString());
+    }
+    return MemberKey(ClassKey(record), method->getNameAsString());
+  }
+  return decl->getQualifiedNameAsString();
+}
+
+std::string DeclKey(const clang::NamedDecl *decl) {
+  if (auto fn = decl->getAsFunction()) {
+    return FunctionKey(fn);
+  }
+  if (auto record = llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
+    return MemberKey(ClassKey(record), decl->getNameAsString());
+  }
+  return decl->getQualifiedNameAsString();
+}
+
+std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
+  expr = expr->IgnoreParenImpCasts();
+  if (llvm::isa<clang::IntegerLiteral>(expr) &&
+      expr->getBeginLoc().isMacroID()) {
+    return clang::Lexer::getImmediateMacroName(
+               expr->getBeginLoc(), ctx.getSourceManager(), ctx.getLangOpts())
+        .str();
+  }
+  if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    if (auto callee = call->getDirectCallee()) {
+      return FunctionKey(callee);
+    }
+    return {};
+  }
+  if (auto construct = llvm::dyn_cast<clang::CXXConstructExpr>(expr)) {
+    return FunctionKey(construct->getConstructor());
+  }
+  if (auto member = llvm::dyn_cast<clang::MemberExpr>(expr)) {
+    return DeclKey(member->getMemberDecl());
+  }
+  if (auto ref = llvm::dyn_cast<clang::DeclRefExpr>(expr)) {
+    return DeclKey(ref->getDecl());
+  }
+  if (auto unary = llvm::dyn_cast<clang::UnaryOperator>(expr)) {
+    return ExprKey(ctx, unary->getSubExpr());
+  }
+  return {};
+}
+
+std::string TypeKey(clang::QualType type) {
+  if (auto decltype_type =
+          llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
+    type = decltype_type->getUnderlyingType();
+  }
+  if (auto typeof_type =
+          llvm::dyn_cast<clang::TypeOfExprType>(type.getTypePtr())) {
+    type = typeof_type->getUnderlyingExpr()->getType();
+  }
+  if (auto alias = type->getAs<clang::TypedefType>();
+      alias && type.getCanonicalType()->isBuiltinType()) {
+    return alias->getDecl()->getQualifiedNameAsString();
+  }
+  if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
+    return sugar->getIdentifier()->getName().str();
+  }
+  if (auto tag = type->getAsTagDecl()) {
+    return ClassKey(tag);
+  }
+  return {};
 }
 
 void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
