@@ -424,8 +424,10 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   }
   ctx.setTraversalScope({ctx.getTranslationUnitDecl()});
 
-  auto text = BuildRulesBuffer(fs::path(rules_dir_) / kIndexDirName, selected,
-                               ctx.getLangOpts().CPlusPlus);
+  auto index_dir =
+      fs::weakly_canonical(rules_dir_).parent_path() / kIndexDirName;
+  auto text =
+      BuildRulesBuffer(index_dir, selected, ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),
