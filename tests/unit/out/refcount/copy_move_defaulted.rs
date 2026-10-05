@@ -25,14 +25,11 @@ pub struct Explicit {
     pub arr: Value<Box<[i32]>>,
 }
 impl Explicit {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         Self {
-            v: (*v.borrow()),
-            inner: Inner {
-                x: ((*v.borrow()) * 10),
-            },
-            arr: Rc::new(RefCell::new(Box::new([(*v.borrow()), ((*v.borrow()) + 1)]))),
+            v: v,
+            inner: Inner { x: (v * 10) },
+            arr: Rc::new(RefCell::new(Box::new([v, (v + 1)]))),
         }
     }
 }
@@ -227,11 +224,10 @@ pub struct Holder {
     pub p: Option<Value<i32>>,
 }
 impl Holder {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         Self {
-            inner: Inner { x: (*v.borrow()) },
-            e: Explicit::new({ (*v.borrow()) }),
+            inner: Inner { x: v },
+            e: Explicit::new({ v }),
             p: None,
         }
     }

@@ -21,14 +21,12 @@ pub fn get_6(mut t: Local_7) -> i32 {
 pub fn twice_8(mut t: Local_3) -> i32 {
     return (t.x * 2);
 }
-pub fn wrap_9(v: i32) -> i32 {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let l: Value<Local_5> = Rc::new(RefCell::new(Local_5 { x: (*v.borrow()) }));
+pub fn wrap_9(mut v: i32) -> i32 {
+    let l: Value<Local_5> = Rc::new(RefCell::new(Local_5 { x: v }));
     return ({ get_4((*l.borrow()).clone()) });
 }
-pub fn wrap_10(v: i64) -> i32 {
-    let v: Value<i64> = Rc::new(RefCell::new(v));
-    let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: (*v.borrow()) }));
+pub fn wrap_10(mut v: i64) -> i32 {
+    let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: v }));
     return ({ get_6((*l.borrow()).clone()) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]

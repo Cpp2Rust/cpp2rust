@@ -41,6 +41,14 @@ public:
 
   bool shouldVisitTemplateInstantiations() const { return true; }
 
+  // Only the semantic form of an initializer list is converted, in which the
+  // values of variables are read through lvalue-to-rvalue conversions.
+  bool TraverseInitListExpr(clang::InitListExpr *expr,
+                            DataRecursionQueue *queue = nullptr) {
+    return TraverseSynOrSemInitListExpr(
+        expr->isSemanticForm() ? expr : expr->getSemanticForm(), queue);
+  }
+
   bool VisitDeclRefExpr(clang::DeclRefExpr *expr) {
     if (!value_uses_.contains(expr)) {
       AddressTaken(expr->getDecl());

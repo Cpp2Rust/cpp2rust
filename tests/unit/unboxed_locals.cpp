@@ -4,6 +4,11 @@ static void set(int *p, int v) { *p = v; }
 
 static void inc(int &r) { ++r; }
 
+struct Pair {
+  int first;
+  int second;
+};
+
 static int sum(const int *arr, int n) {
   int s = 0;
   for (int i = 0; i < n; ++i) {
@@ -94,6 +99,13 @@ int main() {
 
   assert(countdown(10) == 10);
   assert(countdown(10, 3) == 4);
+
+  // Unboxed: read in an initializer list.
+  int init = 3;
+  Pair pair = {init, init + 1};
+  Pair *heap = new Pair{init, init};
+  assert(pair.second == 4 && heap->first == 3);
+  delete heap;
 
   Square square;
   Shape *shape = &square;

@@ -278,11 +278,10 @@ pub trait Outer_int_Impl {
     fn with(&self, n: i32) -> Outer_int__Inner_int_;
 }
 impl Outer_int_Impl for Ptr<Outer_int_> {
-    fn with(&self, n: i32) -> Outer_int__Inner_int_ {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn with(&self, mut n: i32) -> Outer_int__Inner_int_ {
         return Outer_int__Inner_int_ {
             t: (*self).with(|__s| __s.v),
-            u: (*n.borrow()),
+            u: n,
         };
     }
 }
@@ -298,11 +297,10 @@ pub trait Outer_long_Impl {
     fn with(&self, n: i32) -> Outer_long__Inner_int_;
 }
 impl Outer_long_Impl for Ptr<Outer_long_> {
-    fn with(&self, n: i32) -> Outer_long__Inner_int_ {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn with(&self, mut n: i32) -> Outer_long__Inner_int_ {
         return Outer_long__Inner_int_ {
             t: (*self).with(|__s| __s.v),
-            u: (*n.borrow()),
+            u: n,
         };
     }
 }

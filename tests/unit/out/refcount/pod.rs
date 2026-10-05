@@ -32,15 +32,15 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p1: Value<POD> = Rc::new(RefCell::new(POD {
+    let mut p1: POD = POD {
         x1: 10,
         x2: 11,
         x3: 12,
-    }));
+    };
     let p2: Value<POD> = Rc::new(RefCell::new(POD {
-        x1: { (*p1.borrow()).x1 },
-        x2: { (*p1.borrow()).x2 },
-        x3: { (*p1.borrow()).x3 },
+        x1: p1.x1,
+        x2: p1.x2,
+        x3: p1.x3,
     }));
     ({ PODIncrement_0(p2.as_pointer()) });
     assert!(((({ (*p2.borrow()).x1 } + { (*p2.borrow()).x2 }) + { (*p2.borrow()).x3 }) == 39));

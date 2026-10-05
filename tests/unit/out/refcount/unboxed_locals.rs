@@ -12,6 +12,14 @@ pub fn set_0(mut p: Ptr<i32>, mut v: i32) {
 pub fn inc_1(r: Ptr<i32>) {
     r.with_mut(|__v| __v.prefix_inc());
 }
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
+pub struct Pair {
+    #[offset(0)]
+    pub first: i32,
+    #[offset(4)]
+    pub second: i32,
+}
 pub fn sum_2(mut arr: Ptr<i32>, mut n: i32) -> i32 {
     let mut s: i32 = 0;
     let mut i: i32 = 0;
@@ -103,6 +111,17 @@ fn main_0() -> i32 {
     assert!((zeros[(0) as usize] == 0_f64) && (zeros[(15) as usize] == 1.5E+0));
     assert!((({ countdown_3(10, None,) }) == 10));
     assert!((({ countdown_3(10, Some(3),) }) == 4));
+    let mut init: i32 = 3;
+    let mut pair: Pair = Pair {
+        first: init,
+        second: (init + 1),
+    };
+    let mut heap: Ptr<Pair> = Ptr::alloc(Pair {
+        first: init,
+        second: init,
+    });
+    assert!((pair.second == 4) && (heap.with(|__s| __s.first) == 3));
+    heap.delete();
     let square: Value<Square> = Rc::new(RefCell::new(<Square>::default()));
     let mut shape: PtrDyn<dyn Shape> = (square.as_pointer()).to_dyn::<dyn Shape>(|w| w);
     assert!((({ (*shape.upgrade().deref_mut()).scale(3,) }) == 6));

@@ -12,6 +12,12 @@ pub unsafe fn set_0(mut p: *mut i32, mut v: i32) {
 pub unsafe fn inc_1(r: *mut i32) {
     (*r).prefix_inc();
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Pair {
+    pub first: i32,
+    pub second: i32,
+}
 pub unsafe fn sum_2(mut arr: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
     let mut i: i32 = 0;
@@ -104,6 +110,17 @@ unsafe fn main_0() -> i32 {
     assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5E+0)));
     assert!(((unsafe { countdown_3(10, None,) }) == (10)));
     assert!(((unsafe { countdown_3(10, Some(3),) }) == (4)));
+    let mut init: i32 = 3;
+    let mut pair: Pair = Pair {
+        first: init,
+        second: ((init) + (1)),
+    };
+    let mut heap: *mut Pair = (Box::leak(Box::new(Pair {
+        first: init,
+        second: init,
+    })) as *mut Pair);
+    assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
+    ::std::mem::drop(Box::from_raw(heap));
     let mut square: Square = <Square>::default();
     let mut shape: *mut dyn Shape = (&mut square as *mut Square);
     assert!(((unsafe { (*shape).scale(3,) }) == (6)));

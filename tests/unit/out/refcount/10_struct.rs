@@ -87,19 +87,17 @@ pub trait GraphImpl {
     fn push(&self, src: u32, dst: u32);
 }
 impl GraphImpl for Ptr<Graph> {
-    fn push(&self, src: u32, dst: u32) {
-        let src: Value<u32> = Rc::new(RefCell::new(src));
-        let dst: Value<u32> = Rc::new(RefCell::new(dst));
+    fn push(&self, mut src: u32, mut dst: u32) {
         let __rhs = Ptr::alloc(GraphNode {
-            dst: (*dst.borrow()),
-            next: (elem!((*self).with(|__s| __s.adj.clone()), (*src.borrow())).read()).clone(),
+            dst: dst,
+            next: (elem!((*self).with(|__s| __s.adj.clone()), src).read()).clone(),
         });
-        elem!((*self).with(|__s| __s.adj.clone()), (*src.borrow())).write(__rhs);
+        elem!((*self).with(|__s| __s.adj.clone()), src).write(__rhs);
         let __rhs = Ptr::alloc(GraphNode {
-            dst: (*src.borrow()),
-            next: (elem!((*self).with(|__s| __s.adj.clone()), (*dst.borrow())).read()).clone(),
+            dst: src,
+            next: (elem!((*self).with(|__s| __s.adj.clone()), dst).read()).clone(),
         });
-        elem!((*self).with(|__s| __s.adj.clone()), (*dst.borrow())).write(__rhs);
+        elem!((*self).with(|__s| __s.adj.clone()), dst).write(__rhs);
     }
 }
 pub trait PartialImpl {

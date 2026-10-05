@@ -21,12 +21,12 @@ pub struct MinHeapNode {
     pub right: Ptr<MinHeapNode>,
 }
 pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
-    let t: Value<MinHeapNode> = Rc::new(RefCell::new(MinHeapNode {
+    let mut t: MinHeapNode = MinHeapNode {
         data: a.with(|__s| __s.data),
         freq: a.with(|__s| __s.freq),
         left: a.with(|__s| __s.left.clone()),
         right: a.with(|__s| __s.right.clone()),
-    }));
+    };
     a.write({
         MinHeapNode {
             data: b.with(|__s| __s.data),
@@ -37,10 +37,10 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
     });
     b.write({
         MinHeapNode {
-            data: { (*t.borrow()).data },
-            freq: { (*t.borrow()).freq },
-            left: { (*t.borrow()).left.clone() },
-            right: { (*t.borrow()).right.clone() },
+            data: t.data,
+            freq: t.freq,
+            left: (t.left).clone(),
+            right: (t.right).clone(),
         }
     });
 }
@@ -73,15 +73,14 @@ impl MinHeap {
         }
     }
 }
-pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {
-    let capacity: Value<i32> = Rc::new(RefCell::new(capacity));
+pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
     let minHeap: Value<Option<Value<MinHeap>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
             let __tmp_0: Value<MinHeap> = Rc::new(RefCell::new(MinHeap {
                 size: 0,
-                capacity: (*capacity.borrow()),
+                capacity: capacity,
                 arr: Some(Rc::new(RefCell::new(
-                    (0..((*capacity.borrow()) as usize))
+                    (0..(capacity as usize))
                         .map(|_| <Ptr<MinHeapNode>>::default())
                         .collect::<Box<[_]>>(),
                 ))),
@@ -289,16 +288,14 @@ pub trait MinHeapImpl {
     fn move_assign(&self, _a0: Ptr<MinHeap>) -> Ptr<MinHeap>;
 }
 impl MinHeapImpl for Ptr<MinHeap> {
-    fn Alloc(&self, data: i8, freq: i32) -> Ptr<MinHeapNode> {
-        let data: Value<i8> = Rc::new(RefCell::new(data));
-        let freq: Value<i32> = Rc::new(RefCell::new(freq));
+    fn Alloc(&self, mut data: i8, mut freq: i32) -> Ptr<MinHeapNode> {
         (*self)
             .with(|__s| __s.alloc.clone())
             .as_ref()
             .unwrap()
             .borrow_mut()[((*self).with(|__s| __s.next) as usize) as usize] = MinHeapNode {
-            data: (*data.borrow()),
-            freq: (*freq.borrow()),
+            data: data,
+            freq: freq,
             left: Ptr::<MinHeapNode>::null(),
             right: Ptr::<MinHeapNode>::null(),
         };
