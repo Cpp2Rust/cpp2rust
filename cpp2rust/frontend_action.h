@@ -17,33 +17,28 @@
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
+#include "rules_loader.h"
 
 namespace cpp2rust {
 class SilenceRulesDiagnostics : public clang::PPCallbacks {
 public:
-  explicit SilenceRulesDiagnostics(clang::CompilerInstance &CI) : CI_(CI) {}
+  SilenceRulesDiagnostics(clang::CompilerInstance &CI,
+                          const RulesLoader::PragmaHandler &handler)
+      : CI_(CI), handler_(handler) {}
 
   void LexedFileChanged(clang::FileID FID, LexedFileChangeReason Reason,
                         clang::SrcMgr::CharacteristicKind FileType,
                         clang::FileID PrevFID,
                         clang::SourceLocation Loc) override {
-    auto &src_mgr = CI_.getSourceManager();
-    if (Reason == LexedFileChangeReason::EnterFile) {
-      if (auto file = src_mgr.getFileEntryRefForID(FID);
-          file && file->getName() == RULES_EPILOGUE_PATH) {
-        CI_.getDiagnostics().setSuppressAllDiagnostics(true);
-      }
-    }
-    if (Reason == LexedFileChangeReason::ExitFile) {
-      if (auto file = src_mgr.getFileEntryRefForID(PrevFID);
-          file && file->getName() == RULES_EPILOGUE_PATH) {
-        CI_.getDiagnostics().setSuppressAllDiagnostics(false);
-      }
+    if (Reason == LexedFileChangeReason::ExitFile && PrevFID.isValid() &&
+        PrevFID == handler_.rules_file()) {
+      CI_.getDiagnostics().setSuppressAllDiagnostics(false);
     }
   }
 
 private:
   clang::CompilerInstance &CI_;
+  const RulesLoader::PragmaHandler &handler_;
 };
 
 class FrontendAction : public clang::ASTFrontendAction {
@@ -67,8 +62,8 @@ public:
       if (!buffer) {
         continue;
       }
-      auto code = (*buffer)->getBuffer().str() + "\n#include \"" +
-                  RULES_EPILOGUE_PATH + "\"\n";
+      auto code = (*buffer)->getBuffer().str() + "\n;\n#pragma " +
+                  RulesLoader::kPragmaName + "\n";
       CI.getPreprocessorOpts().addRemappedFile(
           path, llvm::MemoryBuffer::getMemBufferCopy(code, path).release());
     }
@@ -76,8 +71,10 @@ public:
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
+    auto *handler = new RulesLoader::PragmaHandler(CI, rules_dir_);
+    CI.getPreprocessor().AddPragmaHandler(handler);
     CI.getPreprocessor().addPPCallbacks(
-        std::make_unique<SilenceRulesDiagnostics>(CI));
+        std::make_unique<SilenceRulesDiagnostics>(CI, *handler));
     return true;
   }
 
