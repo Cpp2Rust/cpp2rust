@@ -17,9 +17,9 @@ fails the build; the notes below call out the ones that are not checked.
 
 Notes:
 
-- Rule numbering is per module, and gaps are currently allowed (e.g. `rules/map`
-  has no `f4`), though this might change in the future. Names must be unique
-  across `src.c` and `src.cpp` combined.
+- Rule numbering is per module, and gaps are currently allowed (e.g.
+  `rules/std/map` has no `f4`), though this might change in the future. Names
+  must be unique across `src.c` and `src.cpp` combined.
 - On the C++ side parameter names are free, but the _order_ defines the
   placeholder indices: the first parameter is `a0` on the Rust side, the second
   is `a1`, and so on. The receiver of a method rule is always the first

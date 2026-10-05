@@ -17,7 +17,7 @@ A clang LibTooling executable
 rule directory:
 
 ```bash
-cpp-rule-preprocessor --dir rules/string --out <build>/rules/string/ir_src.json
+cpp-rule-preprocessor --dir rules/std/string --out <build>/rules/std_string/ir_src.json
 ```
 
 Extra compiler flags can be passed with repeated `--cxxflags` options, though

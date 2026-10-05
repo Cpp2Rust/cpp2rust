@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <memory>
 
-#include "../common/init.h"
+#include "../../common/init.h"
 
 template <typename T1> using t1 = std::unique_ptr<T1>;
 template <typename T1> using t2 = std::unique_ptr<T1[]>;

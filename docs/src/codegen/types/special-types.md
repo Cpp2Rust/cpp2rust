@@ -118,7 +118,7 @@ typedef.
 
 ## `std::array`
 
-`std::array<T, N>` maps to `Vec<T>` (see `rules/array`), so an initializer
+`std::array<T, N>` maps to `Vec<T>` (see `rules/std/array`), so an initializer
 `{1, 2, 3}` becomes `vec![1, 2, 3]`. The converter knows the type by name in
 three places: the default value of an uninitialized `std::array` variable is
 built element by element from `N`, a struct with a `std::array` field does not
