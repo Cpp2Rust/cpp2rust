@@ -135,10 +135,12 @@ private:
         !seen_.insert(type.getAsOpaquePtr()).second) {
       return;
     }
-    AddTypeKeys(type);
-    if (!type->isReferenceType() && !type->isPlaceholderType()) {
-      AddTypeKeys(ctx_.getPointerType(type));
-      AddTypeKeys(ctx_.getPointerType(type.withConst()));
+    if (!type->isPointerType()) {
+      paths_.insert(
+          IndexPath(true, Matcher::TypeKey(Printer::ToString(
+                              ctx_, type, Printer::ScalarSugar::kPreserve))));
+      paths_.insert(
+          IndexPath(true, Matcher::TypeKey(Printer::ToString(ctx_, type))));
     }
     if (const auto *enum_decl = type->getAsEnumDecl()) {
       AddType(enum_decl->getIntegerType());
@@ -189,14 +191,6 @@ private:
             false, Matcher::ExprKey(Printer::ToString(ctx_, method))));
       }
     }
-  }
-
-  void AddTypeKeys(clang::QualType type) {
-    for (const auto &spelling : Printer::ToStringCandidates(ctx_, type)) {
-      paths_.insert(IndexPath(true, Matcher::TypeKey(spelling)));
-    }
-    paths_.insert(
-        IndexPath(true, Matcher::TypeKey(Printer::ToString(ctx_, type))));
   }
 
   void AddTemplateArgs(llvm::ArrayRef<clang::TemplateArgument> args) {

@@ -14,7 +14,6 @@
 #include <regex>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
@@ -120,41 +119,6 @@ std::string ToRustName(std::string name) {
   return name;
 }
 
-static std::string PointerToString(clang::ASTContext &ctx,
-                                   clang::QualType pointee) {
-  std::string out;
-  llvm::raw_string_ostream os(out);
-  ctx.getPointerType(pointee).print(os, getPrintPolicy(ctx));
-  return normalizeTranslationRule(std::move(out));
-}
-
-std::vector<std::string> ToStringCandidates(clang::ASTContext &ctx,
-                                            clang::QualType qual_type) {
-  clang::QualType t = qual_type;
-  if (const auto *decltype_type =
-          clang::dyn_cast<clang::DecltypeType>(t.getTypePtr())) {
-    t = decltype_type->getUnderlyingType();
-  }
-  if (const auto *typeof_type =
-          clang::dyn_cast<clang::TypeOfExprType>(t.getTypePtr())) {
-    t = typeof_type->getUnderlyingExpr()->getType();
-  }
-  if (!t->getAs<clang::TypedefType>() &&
-      !t->getAs<clang::PredefinedSugarType>()) {
-    if (const auto *ptr = t->getAs<clang::PointerType>()) {
-      auto pointee = ptr->getPointeeType();
-      auto canonical = pointee.getCanonicalType().getDesugaredType(ctx);
-      bool builtin_alias = canonical->isBuiltinType() &&
-                           (pointee->getAs<clang::TypedefType>() ||
-                            pointee->getAs<clang::PredefinedSugarType>());
-      if (!builtin_alias) {
-        return {PointerToString(ctx, pointee), PointerToString(ctx, canonical)};
-      }
-    }
-  }
-  return {ToString(ctx, qual_type, ScalarSugar::kPreserve)};
-}
-
 std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
                      ScalarSugar sugar) {
 
@@ -190,7 +154,10 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
       if (Mapper::Map(ctx, pointee) == Mapper::Map(ctx, canonical)) {
         pointee = canonical;
       }
-      return PointerToString(ctx, pointee);
+      std::string out;
+      llvm::raw_string_ostream os(out);
+      ctx.getPointerType(pointee).print(os, getPrintPolicy(ctx));
+      return normalizeTranslationRule(std::move(out));
     }
   }
 

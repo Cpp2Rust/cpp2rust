@@ -36,6 +36,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <map>
 #include <optional>
 #include <set>
 #include <string>
@@ -100,7 +101,9 @@ struct LookupInfo {
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  explicit Callback(llvm::json::Object &out) : out_(out) {}
+  Callback(llvm::json::Object &out,
+           std::map<std::string, std::string> &type_index_keys)
+      : out_(out), type_index_keys_(type_index_keys) {}
 
   void init(clang::Sema &sema) {
     sema_ = &sema;
@@ -147,6 +150,14 @@ public:
       }
       auto src =
           Printer::ToString(*R.Context, type, Printer::ScalarSugar::kPreserve);
+      auto pointee = type;
+      while (pointee->isPointerType()) {
+        pointee = pointee->getPointeeType();
+      }
+      type_index_keys_.try_emplace(var->getQualifiedNameAsString(),
+                                   Matcher::TypeKey(Printer::ToString(
+                                       *R.Context, pointee.getUnqualifiedType(),
+                                       Printer::ScalarSugar::kPreserve)));
       out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
       return;
     }
@@ -241,6 +252,7 @@ public:
 
 private:
   llvm::json::Object &out_;
+  std::map<std::string, std::string> &type_index_keys_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
 
@@ -997,6 +1009,7 @@ struct RuleFileText {
   std::vector<MainFileDecl> decls;
   std::set<unsigned> include_lines;
   std::vector<std::string> common_includes;
+  std::map<std::string, std::string> type_index_keys;
 };
 
 class IncludeLineCollector : public clang::PPCallbacks {
@@ -1038,7 +1051,7 @@ private:
 class ActionFactory : public clang::tooling::FrontendActionFactory {
 public:
   explicit ActionFactory(llvm::json::Object &out, RuleFileText &decls)
-      : cb_(out), decls_(&decls) {
+      : cb_(out, decls.type_index_keys), decls_(&decls) {
     using namespace clang::ast_matchers;
     finder_.addMatcher(
         returnStmt(
@@ -1286,7 +1299,7 @@ void WriteIndex(const std::filesystem::path &src_path,
     }
     bool is_type = name[0] == 't';
     auto key =
-        is_type ? Matcher::TypeKey(src->str()) : Matcher::ExprKey(src->str());
+        is_type ? file.type_index_keys.at(name) : Matcher::ExprKey(src->str());
     append(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
            wrap({name}, text));
   }
