@@ -307,7 +307,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/rules_index
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/rules_index
   COMMAND ${CMAKE_COMMAND} -E touch ${_index_clean_stamp}
-  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources}
+  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
   VERBATIM
 )
 
