@@ -33,7 +33,7 @@ namespace fs = std::filesystem;
 
 namespace cpp2rust {
 
-struct RuleDir {
+struct RuleCtx {
   fs::path path;
   std::string name;
   fs::path index_dir;
@@ -89,7 +89,7 @@ const clang::Expr *RuleExpr(const clang::Decl *decl) {
   return ret ? ret->getRetValue() : nullptr;
 }
 
-const clang::Expr *Unwrap(const clang::Expr *expr) {
+const clang::Expr *IgnoreImplicitAndFunctionalCast(const clang::Expr *expr) {
   expr = expr->IgnoreImplicit();
   if (auto cast = llvm::dyn_cast<clang::CXXFunctionalCastExpr>(expr)) {
     expr = cast->getSubExpr()->IgnoreImplicit();
@@ -123,7 +123,7 @@ std::string DependentExprKey(const clang::Expr *expr) {
           .getNonReferenceType()
           ->getAs<clang::TemplateSpecializationType>()) {
     return RulesLoader::MemberKey(ClassOf(member->getBaseType()),
-                                  member->getMember().getAsString());
+                                  RulesLoader::MemberName(member->getMember()));
   }
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
@@ -139,7 +139,7 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
   if (!expr) {
     return {};
   }
-  expr = Unwrap(expr);
+  expr = IgnoreImplicitAndFunctionalCast(expr);
   if (!expr->isTypeDependent() && !expr->isValueDependent()) {
     return RulesLoader::ExprKey(ctx, expr);
   }
@@ -157,8 +157,8 @@ std::string TypeKey(const clang::TypedefNameDecl *rule) {
   return ClassOf(type);
 }
 
-std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
-                 const std::string &text) {
+std::string CreateIncFile(const RuleCtx &dir, bool is_c,
+                          const std::string &name, const std::string &text) {
   if (is_c) {
     return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
                        name, dir.name, text);
@@ -177,7 +177,7 @@ std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
                      includes, text);
 }
 
-void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
+void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
   auto file_name = dir.name + ".inc";
@@ -216,11 +216,11 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
         '\n';
     auto path = index_dir / RulesLoader::IndexPath(key) / file_name;
     fs::create_directories(path.parent_path());
-    std::ofstream(path, std::ios::app) << Wrap(dir, is_c, name, text);
+    std::ofstream(path, std::ios::app) << CreateIncFile(dir, is_c, name, text);
   }
 }
 
-void Index(const fs::path &src_path, const RuleDir &dir,
+void Index(const fs::path &src_path, const RuleCtx &dir,
            llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
@@ -287,7 +287,7 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  cpp2rust::RuleDir dir;
+  cpp2rust::RuleCtx dir;
   dir.path = RulePath.getValue();
   dir.name = RulePath.getValue();
   std::ranges::replace(dir.name, '/', '_');

@@ -23,6 +23,8 @@ std::string IndexPath(const std::string &key);
 
 std::string ClassKey(const clang::NamedDecl *decl);
 
+std::string MemberName(clang::DeclarationName name);
+
 std::string MemberKey(const std::string &class_key, const std::string &name);
 
 std::string FunctionKey(const clang::FunctionDecl *decl);

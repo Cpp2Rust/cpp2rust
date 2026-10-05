@@ -88,7 +88,7 @@ public:
     if (expr->isArrow()) {
       object = object->getPointeeType();
     }
-    AddMemberKey(object, expr->getMemberDecl()->getNameAsString());
+    AddMemberKey(object, MemberName(expr->getMemberDecl()->getDeclName()));
     return true;
   }
 
@@ -96,7 +96,8 @@ public:
     if (auto method = llvm::dyn_cast_or_null<clang::CXXMethodDecl>(
             expr->getDirectCallee());
         method && expr->getNumArgs() > 0) {
-      AddMemberKey(expr->getArg(0)->getType(), method->getNameAsString());
+      AddMemberKey(expr->getArg(0)->getType(),
+                   MemberName(method->getDeclName()));
     }
     return true;
   }
@@ -285,6 +286,13 @@ std::string ClassKey(const clang::NamedDecl *decl) {
   return decl->getQualifiedNameAsString();
 }
 
+std::string MemberName(clang::DeclarationName name) {
+  if (name.getNameKind() == clang::DeclarationName::CXXConversionFunctionName) {
+    return "operator";
+  }
+  return name.getAsString();
+}
+
 std::string MemberKey(const std::string &class_key, const std::string &name) {
   if (class_key.empty()) {
     return {};
@@ -298,7 +306,7 @@ std::string FunctionKey(const clang::FunctionDecl *decl) {
     if (llvm::isa<clang::CXXConstructorDecl>(method)) {
       return MemberKey(ClassKey(record), record->getNameAsString());
     }
-    return MemberKey(ClassKey(record), method->getNameAsString());
+    return MemberKey(ClassKey(record), MemberName(method->getDeclName()));
   }
   return decl->getQualifiedNameAsString();
 }
@@ -308,7 +316,7 @@ std::string DeclKey(const clang::NamedDecl *decl) {
     return FunctionKey(fn);
   }
   if (auto record = llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
-    return MemberKey(ClassKey(record), decl->getNameAsString());
+    return MemberKey(ClassKey(record), MemberName(decl->getDeclName()));
   }
   return decl->getQualifiedNameAsString();
 }
