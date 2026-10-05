@@ -5,11 +5,8 @@
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
-#include <clang/Basic/SourceManager.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
-#include <clang/Lex/PPCallbacks.h>
-#include <clang/Lex/Preprocessor.h>
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
 #include <llvm/ADT/STLExtras.h>
@@ -30,6 +27,7 @@
 #include <vector>
 
 #include "compat/platform_flags.h"
+#include "converter/converter_lib.h"
 #include "converter/printer.h"
 #include "converter/rules/matcher.h"
 #include "converter/rules/rules_loader.h"
@@ -45,45 +43,7 @@ struct RuleFileDecl {
   std::string pointee_key;
 };
 
-struct RuleFile {
-  std::vector<RuleFileDecl> decls;
-  std::vector<std::string> common_includes;
-};
-
-class IncludeCollector : public clang::PPCallbacks {
-public:
-  IncludeCollector(clang::SourceManager &sm, RuleFile &file)
-      : sm_(sm), file_(file) {}
-
-  void
-  InclusionDirective(clang::SourceLocation HashLoc,
-                     const clang::Token &IncludeTok, llvm::StringRef FileName,
-                     bool IsAngled, clang::CharSourceRange FilenameRange,
-                     clang::OptionalFileEntryRef File,
-                     llvm::StringRef SearchPath, llvm::StringRef RelativePath,
-                     const clang::Module *SuggestedModule, bool ModuleImported,
-                     clang::SrcMgr::CharacteristicKind FileType) override {
-    if (!sm_.isInMainFile(HashLoc)) {
-      return;
-    }
-    if (!File) {
-      return;
-    }
-    auto main_file = sm_.getFileEntryRefForID(sm_.getMainFileID());
-    auto common_dir = fs::weakly_canonical(main_file->getName().str())
-                          .parent_path()
-                          .parent_path() /
-                      "common";
-    auto included = fs::weakly_canonical(File->getName().str());
-    if (included.parent_path() == common_dir) {
-      file_.common_includes.push_back(included.string());
-    }
-  }
-
-private:
-  clang::SourceManager &sm_;
-  RuleFile &file_;
-};
+using RuleFile = std::vector<RuleFileDecl>;
 
 std::string PointeeKey(clang::ASTContext &ctx, const clang::Decl *decl) {
   auto typedef_decl = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
@@ -135,29 +95,30 @@ void CollectRuleFile(clang::ASTContext &ctx, RuleFile &file) {
                     .str() +
                 '\n';
     rule.pointee_key = PointeeKey(ctx, decl);
-    file.decls.push_back(std::move(rule));
+    file.push_back(std::move(rule));
   }
 }
 
 void WriteIndex(const fs::path &index_dir, const std::string &dir_name,
                 bool is_c, const llvm::json::Object &rules,
-                const RuleFile &file) {
+                const RuleFile &file,
+                const std::vector<fs::path> &common_headers) {
   auto file_name = dir_name + ".inc";
   fs::create_directories(index_dir);
   RemoveFilesNamed(index_dir, file_name);
 
   std::string includes;
-  if (!file.common_includes.empty()) {
+  if (!is_c && !common_headers.empty()) {
     includes = std::format("#ifndef CPP2RUST_RULES_{0}_INCLUDES\n"
                            "#define CPP2RUST_RULES_{0}_INCLUDES\n",
                            dir_name);
-    for (const auto &include : file.common_includes) {
-      includes += std::format("#include \"{}\"\n", include);
+    for (const auto &header : common_headers) {
+      includes += std::format("#include \"{}\"\n", header.string());
     }
     includes += "#endif\n";
   }
 
-  for (const auto &decl : file.decls) {
+  for (const auto &decl : file) {
     if (!IsRuleName(decl.name)) {
       llvm::errs() << "ERROR: declaration '" << decl.name << "' in rule dir "
                    << dir_name
@@ -209,12 +170,6 @@ public:
       RuleFile &file_;
     };
     return std::make_unique<Consumer>(CI, file_);
-  }
-
-  bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
-    CI.getPreprocessor().addPPCallbacks(
-        std::make_unique<IncludeCollector>(CI.getSourceManager(), file_));
-    return true;
   }
 
 private:
@@ -293,6 +248,8 @@ int main(int argc, char *argv[]) {
                                                   CXXFlags.end());
   fs::path dir = SrcDir.getValue();
   auto ir_dir = fs::path(IrPath.getValue()).parent_path();
+  auto common_headers =
+      cpp2rust::ListFiles(fs::weakly_canonical(dir).parent_path() / "common");
   for (const char *name : {"src.c", "src.cpp"}) {
     auto path = dir / name;
     if (!fs::exists(path)) {
@@ -306,7 +263,8 @@ int main(int argc, char *argv[]) {
     auto dir_name = ir_dir.filename().string();
     cpp2rust::RuleFile file;
     cpp2rust::Parse(path, file, cxx_flags);
-    cpp2rust::WriteIndex(index_dir, dir_name, is_c, rules, file);
+    cpp2rust::WriteIndex(index_dir, dir_name, is_c, rules, file,
+                         common_headers);
   }
   return EXIT_SUCCESS;
 }
