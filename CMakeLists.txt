@@ -232,6 +232,8 @@ foreach(_header IN LISTS rule_common_headers)
 endforeach()
 set(cpp_rules_ir_outputs)
 set(cpp_rules_index_outputs)
+set(cpp_rules_index_inputs)
+set(_index_clean_stamp ${RULES_IR_DIR}/index/clean.stamp)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
@@ -267,10 +269,11 @@ foreach(_rule_dir IN LISTS rule_subdirs)
       COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
       COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --path ${_rule_path} --index ${RULES_IR_DIR}/index ${_cxxflags} ${_common_headers}
       COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
-      DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
+      DEPENDS ${_index_clean_stamp}
       VERBATIM
     )
     list(APPEND cpp_rules_index_outputs ${_index_stamp})
+    list(APPEND cpp_rules_index_inputs ${_cpp_srcs} ${_cxxflags_file})
   endif()
 
   set(_rust_srcs)
@@ -302,6 +305,15 @@ foreach(_rule_dir IN LISTS rule_subdirs)
 endforeach()
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
+
+add_custom_command(
+  OUTPUT ${_index_clean_stamp}
+  COMMAND ${CMAKE_COMMAND} -E rm -rf ${RULES_IR_DIR}/index
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${RULES_IR_DIR}/index
+  COMMAND ${CMAKE_COMMAND} -E touch ${_index_clean_stamp}
+  DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources}
+  VERBATIM
+)
 
 add_custom_target("index-cpp-rules" ALL DEPENDS ${cpp_rules_index_outputs})
 

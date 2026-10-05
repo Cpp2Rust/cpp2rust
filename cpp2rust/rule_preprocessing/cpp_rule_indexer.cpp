@@ -183,19 +183,6 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
   auto file_name = dir.name + ".inc";
-  fs::create_directories(index_dir);
-  std::vector<fs::path> stale;
-  std::error_code ec;
-  for (fs::recursive_directory_iterator it(index_dir, ec), end;
-       !ec && it != end; it.increment(ec)) {
-    if (it->path().filename() == file_name) {
-      stale.push_back(it->path());
-    }
-  }
-  for (const auto &path : stale) {
-    fs::remove(path, ec);
-  }
-
   auto dir_class = DirClass(ctx, dir.path);
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
