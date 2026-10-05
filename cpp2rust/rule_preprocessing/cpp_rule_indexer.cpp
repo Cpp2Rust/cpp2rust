@@ -205,10 +205,8 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
     if (auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl)) {
       alias = tmpl->getTemplatedDecl();
     }
-    bool is_type = alias != nullptr;
-    auto key = is_type ? TypeKey(alias) : ExprKey(ctx, decl);
+    auto key = alias ? TypeKey(alias) : ExprKey(ctx, decl);
     if (key.empty()) {
-      is_type = true;
       key = dir_class;
     }
     if (key.empty()) {
@@ -220,7 +218,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
                     clang::tooling::getAssociatedRange(*decl, ctx), ctx)
                     .str() +
                 '\n';
-    auto path = index_dir / RulesLoader::IndexPath(is_type, key) / file_name;
+    auto path = index_dir / RulesLoader::IndexPath(key) / file_name;
     fs::create_directories(path.parent_path());
     std::ofstream(path, std::ios::app) << Wrap(dir, is_c, name, text);
   }

@@ -19,7 +19,7 @@ inline constexpr const char *kPragmaName = "cpp2rust_rules";
 
 inline constexpr const char *kIndexDirName = "index";
 
-std::string IndexPath(bool is_type, const std::string &key);
+std::string IndexPath(const std::string &key);
 
 std::string ClassKey(const clang::NamedDecl *decl);
 

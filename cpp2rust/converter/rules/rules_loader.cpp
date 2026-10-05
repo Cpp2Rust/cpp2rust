@@ -67,7 +67,7 @@ public:
     if (expr->isTypeDependent() || expr->isValueDependent()) {
       return true;
     }
-    AddKey(false, ExprKey(ctx_, expr));
+    AddKey(ExprKey(ctx_, expr));
     AddType(expr->getType());
     return true;
   }
@@ -123,9 +123,9 @@ public:
   }
 
 private:
-  void AddKey(bool is_type, const std::string &key) {
+  void AddKey(const std::string &key) {
     if (!key.empty()) {
-      paths_.insert(IndexPath(is_type, key));
+      paths_.insert(IndexPath(key));
     }
   }
 
@@ -138,7 +138,7 @@ private:
         !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
       return;
     }
-    AddKey(false, MemberKey(ClassKey(record), name));
+    AddKey(MemberKey(ClassKey(record), name));
   }
 
   void AddReferencedDecl(const clang::ValueDecl *decl) {
@@ -158,7 +158,7 @@ private:
         !seen_.insert(type.getAsOpaquePtr()).second) {
       return;
     }
-    AddKey(true, TypeKey(type));
+    AddKey(TypeKey(type));
     if (const auto *enum_decl = type->getAsEnumDecl()) {
       AddType(enum_decl->getIntegerType());
     }
@@ -204,7 +204,7 @@ private:
           llvm::isa<clang::CXXDestructorDecl>(method) ||
           method->isCopyAssignmentOperator() ||
           method->isMoveAssignmentOperator()) {
-        AddKey(false, FunctionKey(method));
+        AddKey(FunctionKey(method));
       }
     }
   }
@@ -247,8 +247,8 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
 
 } // namespace
 
-std::string IndexPath(bool is_type, const std::string &key) {
-  std::string out = is_type ? "type/" : "expr/";
+std::string IndexPath(const std::string &key) {
+  std::string out;
   for (size_t i = 0; i < key.size(); ++i) {
     unsigned char c = key[i];
     if (c == ':' && i + 1 < key.size() && key[i + 1] == ':') {
