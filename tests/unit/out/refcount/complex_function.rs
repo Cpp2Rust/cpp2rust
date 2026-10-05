@@ -10,7 +10,7 @@ pub fn foo_0(mut x: i32) -> i32 {
     return x;
 }
 pub fn ptr_1(mut x: Ptr<i32>) -> Ptr<i32> {
-    return (x).clone();
+    return x;
 }
 pub fn bar_2(x: Ptr<i32>) -> Ptr<i32> {
     return (x).clone();
@@ -75,12 +75,10 @@ fn main_0() -> i32 {
         + (({ bar_2(x2.as_pointer()) }).read()));
     let a: Value<X1> = Rc::new(RefCell::new(X1 { v: 0 }));
     let b: Value<X2> = Rc::new(RefCell::new(X2 { v: a.as_pointer() }));
-    let c: Value<X3> = Rc::new(RefCell::new(X3 {
+    let mut c: X3 = X3 {
         v: (b.as_pointer()),
-    }));
-    let d: Value<X4> = Rc::new(RefCell::new(X4 {
-        v: (*c.borrow()).clone(),
-    }));
+    };
+    let d: Value<X4> = Rc::new(RefCell::new(X4 { v: (c).clone() }));
     field!({ (*d.borrow()).v.v.clone() }.with(|__s| __s.v.clone()), v).write(0);
     field!(
         ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),

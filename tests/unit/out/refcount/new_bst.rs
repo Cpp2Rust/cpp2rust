@@ -28,7 +28,7 @@ pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     {
         return ({ find_0(node.with(|__s| __s.right.clone()), value) });
     } else if ({ value } == { node.with(|__s| __s.value) }) {
-        return (node).clone();
+        return node;
     }
     return Ptr::<node_t>::null();
 }
@@ -47,7 +47,7 @@ pub fn insert_1(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
         let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), value) });
         field!(node, right).write(__rhs);
     }
-    return (node).clone();
+    return node;
 }
 pub fn del_2(mut node: Ptr<node_t>) {
     if !((node.with(|__s| __s.left.clone())).is_null()) {

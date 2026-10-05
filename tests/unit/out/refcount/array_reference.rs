@@ -87,8 +87,7 @@ pub fn shift_points_12(p: Ptr<Point>, mut d: i32) {
     };
 }
 pub fn total_len_13(names: Ptr<Ptr<i8>>) -> i32 {
-    return (({ len5_1((elem!((names), 0).read()).clone()) })
-        + ({ len5_1((elem!((names), 1).read()).clone()) }));
+    return (({ len5_1((elem!((names), 0).read())) }) + ({ len5_1((elem!((names), 1).read())) }));
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -11,7 +11,7 @@ pub fn strlen_0(mut s: Ptr<i8>) -> usize {
     'loop_: while ((s.read()) != 0) {
         s.prefix_inc();
     }
-    return ((((s).clone() - (begin).clone()) as i64) as usize);
+    return (((s - begin) as i64) as usize);
 }
 pub fn main() {
     __cpp2rust_init_globals();

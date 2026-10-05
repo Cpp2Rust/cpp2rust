@@ -49,13 +49,13 @@ fn main_0() -> i32 {
         )
     });
     assert!(({ (*a.borrow()).v } == 14_u32));
-    let c: Value<S> = Rc::new(RefCell::new(S { v: 0_u32 }));
-    (*c.borrow_mut()) = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
+    let mut c: S = S { v: 0_u32 };
+    c = (*({ SImpl::operator_assign_1(&a.as_pointer(), 1_u32) })
         .upgrade()
         .deref())
     .clone();
     assert!(({ (*a.borrow()).v } == 1_u32));
-    assert!(({ (*c.borrow()).v } == 1_u32));
+    assert!((c.v == 1_u32));
     return 0;
 }
 pub trait SImpl {

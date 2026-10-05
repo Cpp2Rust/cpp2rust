@@ -70,7 +70,7 @@ pub fn chosen_overload_3(_a0: Ptr<i32>) -> Overload {
 }
 pub fn copy_or_move_into_param_4(t: Tracked) -> Tracked {
     let t: Value<Tracked> = Rc::new(RefCell::new(t));
-    return Tracked::move_from({ (t.as_pointer()).clone() });
+    return Tracked::move_from({ t.as_pointer() });
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -8,7 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn null_0() -> Ptr<i32> {
     let mut p: Ptr<i32> = Ptr::<i32>::null();
-    return (p).clone();
+    return p;
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -31,8 +31,8 @@ fn main_0() -> i32 {
     q = (field_ptr!(xx.as_pointer(), x));
     q = (field_ptr!(zz, x));
     field!(zz, x).write(2);
-    let ww: Value<X> = Rc::new(RefCell::new((*xx.borrow()).clone()));
-    (*ww.borrow_mut()) = (*xx.borrow()).clone();
+    let mut ww: X = (*xx.borrow()).clone();
+    ww = (*xx.borrow()).clone();
     let mut aa: i32 = ({ func_0() });
     aa = ({ func_0() });
     return 0;

@@ -118,37 +118,37 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<V> = Rc::new(RefCell::new(V { v: 1 }));
-    let y: Value<V> = Rc::new(RefCell::new(V { v: 2 }));
-    let z: Value<V> = Rc::new(RefCell::new(V { v: 1 }));
+    let mut x: V = V { v: 1 };
+    let mut y: V = V { v: 2 };
+    let mut z: V = V { v: 1 };
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_eq_9(_a, (*z.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_eq_9(_a, (z).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_ne_10(_a, (*y.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_ne_10(_a, (y).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*x.borrow()).clone();
-            operator_lt_8(_a, (*y.borrow()).clone())
+            let _a: V = (x).clone();
+            operator_lt_8(_a, (y).clone())
         })
     );
     assert!(
         ({
-            let _a: V = (*y.borrow()).clone();
-            operator_gt_11(_a, (*x.borrow()).clone())
+            let _a: V = (y).clone();
+            operator_gt_11(_a, (x).clone())
         })
     );
     assert!(
         !({
-            let _a: V = (*y.borrow()).clone();
-            operator_lt_8(_a, (*x.borrow()).clone())
+            let _a: V = (y).clone();
+            operator_lt_8(_a, (x).clone())
         })
     );
     let a: Value<S> = Rc::new(RefCell::new(S { v: 1 }));

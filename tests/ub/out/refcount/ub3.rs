@@ -9,7 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn dangling_0() -> Ptr<i32> {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let mut p: Ptr<i32> = (x.as_pointer());
-    return (p).clone();
+    return p;
 }
 pub fn main() {
     __cpp2rust_init_globals();

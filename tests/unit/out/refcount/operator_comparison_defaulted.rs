@@ -418,7 +418,7 @@ impl BothImpl for Ptr<Both> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -436,7 +436,7 @@ impl CmpImpl for Ptr<Cmp> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         {
@@ -445,7 +445,7 @@ impl CmpImpl for Ptr<Cmp> {
                 &(_a0.with(|__s| __s.b)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -476,7 +476,7 @@ impl InnerImpl for Ptr<Inner> {
                 &(_a0.with(|__s| __s.x)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -496,7 +496,7 @@ impl OrdOnlyImpl for Ptr<OrdOnly> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -516,7 +516,7 @@ impl OuterImpl for Ptr<Outer> {
                 }),
             ));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         {
@@ -525,7 +525,7 @@ impl OuterImpl for Ptr<Outer> {
                 &(_a0.with(|__s| __s.y)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -549,7 +549,7 @@ impl PtrMemberImpl for Ptr<PtrMember> {
                 &(_a0.with(|__s| __s.p.clone())),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;
@@ -582,7 +582,7 @@ impl SecondaryImpl for Ptr<Secondary> {
                 &(_a0.with(|__s| __s.a)),
             )));
             if !((*cmp.borrow()) == std::cmp::Ordering::Equal) {
-                return (*cmp.borrow_mut()).clone();
+                return (*cmp.borrow_mut());
             }
         }
         return std::cmp::Ordering::Equal;

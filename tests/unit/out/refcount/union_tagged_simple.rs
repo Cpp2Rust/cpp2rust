@@ -62,9 +62,8 @@ fn main_0() -> i32 {
         .obj()
         .write(((dummy.as_pointer()) as Ptr<i32>).to_any());
     assert!(
-        ((({ (m2.payload.obj().read()).clone() } == {
-            ((dummy.as_pointer()) as Ptr<i32>).to_any()
-        }) as i32)
+        ((({ (m2.payload.obj().read()) } == { ((dummy.as_pointer()) as Ptr::<i32>).to_any() })
+            as i32)
             != 0)
     );
     return 0;

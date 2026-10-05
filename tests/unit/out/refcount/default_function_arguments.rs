@@ -12,7 +12,7 @@ pub fn foo_0(mut a: i32, b: Option<i32>) -> i32 {
 }
 pub fn baz_1(mut a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
     let mut b: Ptr<i32> = b.unwrap_or(Ptr::<i32>::null());
-    return ({ (a).clone() } == { (b).clone() });
+    return ({ a } == { b });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]

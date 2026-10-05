@@ -146,6 +146,7 @@ public:
   void ConvertBinaryOperator(clang::BinaryOperator *expr) override;
 
   bool VisitStmtExpr(clang::StmtExpr *expr) override;
+  bool VisitReturnStmt(clang::ReturnStmt *stmt) override;
 
   bool VisitInitListExpr(clang::InitListExpr *expr) override;
 
@@ -180,6 +181,11 @@ public:
 
   // The expression that ConvertFreshRValue copies.
   const clang::Expr *copied_expr_ = nullptr;
+
+  // The reads of unboxed variables in the returned expression being
+  // converted that are moved instead of copied, as the variables die on
+  // return.
+  std::unordered_set<const clang::DeclRefExpr *> moved_reads_;
 
   struct PushRecordPtr {
     ConverterRefCount &c;
@@ -336,7 +342,13 @@ private:
   void ConvertConstructedValue(clang::QualType type,
                                clang::CXXConstructExpr *ctor) override;
 
+  // Whether a pointer to pointee_type is dereferenced with .read(), which
+  // returns a copy of the pointee, rather than a borrow of it.
+  bool DerefReadsValue(clang::QualType pointee_type);
   const char *GetPointerDerefSuffix(clang::QualType pointee_type);
+  // Sets the freshness of the dereference of a pointer to pointee_type: a
+  // copy read with .read() is fresh.
+  void SetDerefFreshness(clang::QualType pointee_type);
   const char *GetPointerDerefPrefix(clang::QualType pointee_type) override;
 
   void EmitSetOrAssign(clang::Expr *lhs, std::string_view rhs);
@@ -413,6 +425,9 @@ private:
   // Whether expr is an unboxed variable or a field of one, which is accessed
   // in place.
   bool IsUnboxedPlace(const clang::Expr *expr) const;
+  // Whether expr is a field of an unboxed variable, or of a field of one,
+  // which is stored in place, even if it is a reference.
+  bool IsFieldOfUnboxedPlace(const clang::MemberExpr *expr) const;
   std::shared_ptr<const BoxedVars> boxed_vars_;
 
   // Set when a constructor's translation refers to `this`, which then needs

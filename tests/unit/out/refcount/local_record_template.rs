@@ -22,12 +22,12 @@ pub fn twice_8(mut t: Local_3) -> i32 {
     return (t.x * 2);
 }
 pub fn wrap_9(mut v: i32) -> i32 {
-    let l: Value<Local_5> = Rc::new(RefCell::new(Local_5 { x: v }));
-    return ({ get_4((*l.borrow()).clone()) });
+    let mut l: Local_5 = Local_5 { x: v };
+    return ({ get_4(l) });
 }
 pub fn wrap_10(mut v: i64) -> i32 {
-    let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: v }));
-    return ({ get_6((*l.borrow()).clone()) });
+    let mut l: Local_7 = Local_7 { x: v };
+    return ({ get_6(l) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
@@ -42,8 +42,8 @@ pub struct Local_7 {
     pub x: i64,
 }
 pub fn other_11() -> i32 {
-    let l: Value<Local_1> = Rc::new(RefCell::new(Local_1 { x: 3_i64, y: 4_i64 }));
-    return (({ get_0((*l.borrow()).clone()) }) + ({ (*l.borrow()).y } as i32));
+    let mut l: Local_1 = Local_1 { x: 3_i64, y: 4_i64 };
+    return (({ get_0((l).clone()) }) + (l.y as i32));
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
@@ -58,9 +58,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let l: Value<Local_3> = Rc::new(RefCell::new(Local_3 { x: 7 }));
-    assert!((({ get_2((*l.borrow()).clone(),) }) == 7));
-    assert!((({ twice_8((*l.borrow()).clone(),) }) == 14));
+    let mut l: Local_3 = Local_3 { x: 7 };
+    assert!((({ get_2((l).clone(),) }) == 7));
+    assert!((({ twice_8((l).clone(),) }) == 14));
     assert!((({ other_11() }) == 7));
     assert!((({ wrap_9(5,) }) == 5));
     assert!((({ wrap_10(6_i64,) }) == 6));

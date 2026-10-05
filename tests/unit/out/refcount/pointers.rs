@@ -24,7 +24,7 @@ pub fn Update_0(mut t: Ptr<Test>) -> Ptr<Test> {
         let _y: i32 = y;
         TestImpl::update(&(t), _x, _y)
     });
-    return (t).clone();
+    return t;
 }
 pub fn main() {
     __cpp2rust_init_globals();
