@@ -113,10 +113,12 @@ impl<T: CChar> fmt::Display for Ptr<T> {
     }
 }
 
+type LiteralCache<K, T> = RefCell<HashMap<&'static [K], Rc<RefCell<Box<[T]>>>>>;
+
 macro_rules! impl_string_literal {
     ($t:ty, $cache:ident) => {
         thread_local! {
-            static $cache: RefCell<HashMap<&'static [$t], Rc<RefCell<Box<[$t]>>>>> =
+            static $cache: LiteralCache<$t, $t> =
                 RefCell::new(HashMap::new());
         }
 
@@ -149,7 +151,7 @@ impl_string_literal!(u32, STRING_LITERALS_U32);
 impl_string_literal!(i32, STRING_LITERALS_I32);
 
 thread_local! {
-    static STRING_LITERALS_I8: RefCell<HashMap<&'static [u8], Rc<RefCell<Box<[i8]>>>>> =
+    static STRING_LITERALS_I8: LiteralCache<u8, i8> =
         RefCell::new(HashMap::new());
 }
 

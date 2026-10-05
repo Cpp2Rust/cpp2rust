@@ -43,12 +43,13 @@ impl Ifaddrs {
                 },
             }
         }
-        let mut node = Ifaddrs::default();
-        node.ifa_name = Ptr::alloc_c_str(ifa.interface_name.as_bytes());
-        node.ifa_flags = ifa.flags.bits() as u32;
-        node.ifa_addr = mk_addr(ifa.address.as_ref());
-        node.ifa_netmask = mk_addr(ifa.netmask.as_ref());
-        node
+        Ifaddrs {
+            ifa_name: Ptr::alloc_c_str(ifa.interface_name.as_bytes()),
+            ifa_flags: ifa.flags.bits() as u32,
+            ifa_addr: mk_addr(ifa.address.as_ref()),
+            ifa_netmask: mk_addr(ifa.netmask.as_ref()),
+            ..Default::default()
+        }
     }
 }
 
