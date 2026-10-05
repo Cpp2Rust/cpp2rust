@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_int_ {}
 impl TestAllocator_int_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut i32 {
@@ -21,7 +21,7 @@ impl TestAllocator_int_ {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct TestAllocator_double_ {}
 impl TestAllocator_double_ {
     pub unsafe fn allocate(&mut self, mut n: usize) -> *mut f64 {

@@ -11,26 +11,26 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(0));
-    let a: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([0, 1, 2])));
-    'loop_: while ((*x.borrow()) < 3) {
-        (*a.borrow_mut())[((*x.borrow_mut()).postfix_inc()) as usize].prefix_inc();
+    let mut x: i32 = 0;
+    let mut a: [i32; 3] = [0, 1, 2];
+    'loop_: while (x < 3) {
+        a[(x.postfix_inc()) as usize].prefix_inc();
     }
-    let out: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*x.borrow()) != 0) {
-        (*out.borrow_mut()) += (*a.borrow())[((*x.borrow_mut()).prefix_dec()) as usize];
+    let mut out: i32 = 0;
+    'loop_: while (x != 0) {
+        out += a[(x.prefix_dec()) as usize];
     }
-    (*out.borrow_mut()).postfix_inc();
-    let x2: Value<i32> = Rc::new(RefCell::new((*out.borrow_mut()).prefix_dec()));
-    (*out.borrow_mut()).prefix_inc();
-    let x3: Value<i32> = Rc::new(RefCell::new((*out.borrow_mut()).postfix_dec()));
-    assert!(((((*out.borrow_mut()).postfix_inc() + (*x2.borrow())) + (*x3.borrow())) == 19));
-    let n: Value<i32> = Rc::new(RefCell::new((*x2.borrow())));
-    let d: Value<f64> = Rc::new(RefCell::new(1.5E+0));
-    assert!(((*n.borrow()) == (*x2.borrow())));
-    assert!(((*d.borrow()) == 1.5E+0));
-    assert!((((*n.borrow()) + (*n.borrow())) == (2 * (*x2.borrow()))));
-    assert!(((*a.borrow())[(0) as usize] == (*a.borrow())[(0) as usize]));
+    out.postfix_inc();
+    let mut x2: i32 = out.prefix_dec();
+    out.prefix_inc();
+    let mut x3: i32 = out.postfix_dec();
+    assert!((((out.postfix_inc() + x2) + x3) == 19));
+    let mut n: i32 = x2;
+    let mut d: f64 = 1.5E+0;
+    assert!((n == x2));
+    assert!((d == 1.5E+0));
+    assert!(((n + n) == (2 * x2)));
+    assert!((a[(0) as usize] == a[(0) as usize]));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

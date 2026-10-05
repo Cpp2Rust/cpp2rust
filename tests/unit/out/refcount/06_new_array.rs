@@ -11,12 +11,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let e: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..2_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
-    elem!((*e.borrow()), 0).write(6);
-    elem!((*e.borrow()), 1).write(7);
-    (*e.borrow()).delete();
+    let mut e: Ptr<i32> = Ptr::alloc_array((0..2_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
+    elem!(e, 0).write(6);
+    elem!(e, 1).write(7);
+    e.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

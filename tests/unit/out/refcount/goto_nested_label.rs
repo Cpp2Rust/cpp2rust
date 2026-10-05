@@ -6,31 +6,30 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn scan_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let total: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-        let j: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn scan_0(mut n: i32) -> i32 {
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (((i < n) as i32) != 0) {
+        let mut j: i32 = 0_i32;
         goto_block!({
             '__entry: {
-                *j.borrow_mut() = 0;
-                'loop_: while ((((*j.borrow()) < 10) as i32) != 0) {
-                    if ((((*j.borrow()) == 5) as i32) != 0) {
+                j = 0;
+                'loop_: while (((j < 10) as i32) != 0) {
+                    if (((j == 5) as i32) != 0) {
                         goto!('next);
                     }
-                    (*total.borrow_mut()) += 1;
-                    (*j.borrow_mut()).postfix_inc();
+                    total += 1;
+                    j.postfix_inc();
                 }
-                (*total.borrow_mut()) += 100;
+                total += 100;
             }
             'next: {
-                (*total.borrow_mut()) += 1000;
+                total += 1000;
             }
         });
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
 pub fn main() {
     __cpp2rust_init_globals();

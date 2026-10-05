@@ -10,7 +10,7 @@ pub struct Ifaddrs {
     #[offset(offset_of!(::libc::ifaddrs, ifa_next))]
     pub ifa_next: Ptr<Ifaddrs>,
     #[offset(offset_of!(::libc::ifaddrs, ifa_name))]
-    pub ifa_name: Ptr<u8>,
+    pub ifa_name: Ptr<i8>,
     #[offset(offset_of!(::libc::ifaddrs, ifa_flags))]
     pub ifa_flags: u32,
     #[offset(offset_of!(::libc::ifaddrs, ifa_addr))]
@@ -43,14 +43,13 @@ impl Ifaddrs {
                 },
             }
         }
-        let mut node = Ifaddrs::default();
-        let mut name = ifa.interface_name.clone().into_bytes();
-        name.push(0);
-        node.ifa_name = Ptr::alloc_array(name.into_boxed_slice());
-        node.ifa_flags = ifa.flags.bits() as u32;
-        node.ifa_addr = mk_addr(ifa.address.as_ref());
-        node.ifa_netmask = mk_addr(ifa.netmask.as_ref());
-        node
+        Ifaddrs {
+            ifa_name: Ptr::alloc_c_str(ifa.interface_name.as_bytes()),
+            ifa_flags: ifa.flags.bits() as u32,
+            ifa_addr: mk_addr(ifa.address.as_ref()),
+            ifa_netmask: mk_addr(ifa.netmask.as_ref()),
+            ..Default::default()
+        }
     }
 }
 

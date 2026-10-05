@@ -15,9 +15,7 @@ pub struct S {
 }
 impl S {
     pub fn new(x: Ptr<i32>) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self { r: (x).clone() }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { r: (x).clone() }
     }
 }
 pub fn main() {

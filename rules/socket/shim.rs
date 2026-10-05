@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-use crate::{ByteRepr, DeepClone, In6Addr, InAddr, Ptr, Record, Value};
+use crate::{ByteRepr, CChar, DeepClone, In6Addr, InAddr, Ptr, Record, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -13,7 +13,7 @@ pub struct Sockaddr {
     pub sa_family: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub sa_data: Value<Box<[u8]>>,
+    pub sa_data: Value<Box<[i8]>>,
 }
 
 #[derive(DeepClone, Record, ByteRepr)]
@@ -52,7 +52,7 @@ pub struct SockaddrUn {
     pub sun_family: u16,
     #[offset(2)]
     #[byte_size(108)]
-    pub sun_path: Value<Box<[u8]>>,
+    pub sun_path: Value<Box<[i8]>>,
 }
 
 #[derive(DeepClone, Record, ByteRepr)]
@@ -188,7 +188,7 @@ impl Default for Sockaddr {
     fn default() -> Self {
         Self {
             sa_family: 0,
-            sa_data: Rc::new(RefCell::new(vec![0u8; 14].into_boxed_slice())),
+            sa_data: Rc::new(RefCell::new(vec![0i8; 14].into_boxed_slice())),
         }
     }
 }
@@ -208,7 +208,7 @@ impl Default for SockaddrUn {
     fn default() -> Self {
         Self {
             sun_family: 0,
-            sun_path: Rc::new(RefCell::new(vec![0u8; 108].into_boxed_slice())),
+            sun_path: Rc::new(RefCell::new(vec![0i8; 108].into_boxed_slice())),
         }
     }
 }
@@ -244,7 +244,7 @@ impl Sockaddr {
             let m = addr.reinterpret_cast::<SockaddrUn>().read();
             let path = m.sun_path.borrow();
             let end = path.iter().position(|&c| c == 0).unwrap_or(path.len());
-            nix::sys::socket::UnixAddr::new(&path[..end])
+            CChar::with_u8_slice(&path[..end], nix::sys::socket::UnixAddr::new)
                 .ok()
                 .map(|u| Box::new(u) as Box<dyn nix::sys::socket::SockaddrLike>)
         } else {

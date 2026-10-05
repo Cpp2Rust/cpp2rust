@@ -6,10 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn mixed_literal_cases_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn mixed_literal_cases_0(mut x: i32) -> i32 {
     'switch: {
-        match { (*x.borrow()) } {
+        match { x } {
             __v if __v == -1_i32 => {
                 return 1;
             }

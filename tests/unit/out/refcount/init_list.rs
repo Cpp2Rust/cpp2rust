@@ -14,10 +14,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let i1: Value<i32> = Rc::new(RefCell::new(3));
-    let i2: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let carr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-    let carr2: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 0_i32, 0_i32])));
+    let mut i1: i32 = 3;
+    let mut i2: i32 = 0_i32;
+    let mut carr1: [i32; 2] = [1, 2];
+    let mut carr2: [i32; 3] = [1, 0_i32, 0_i32];
     let arr: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
     let vec_: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 2, 3]));
     ({ f_0(vec![1, 2, 3, 4]) });

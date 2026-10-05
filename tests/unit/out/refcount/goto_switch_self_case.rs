@@ -6,24 +6,23 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sm_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let steps: Value<i32> = Rc::new(RefCell::new(0));
-    switch!(match (*n.borrow()) {
+pub fn sm_0(mut n: i32) -> i32 {
+    let mut steps: i32 = 0;
+    switch!(match n {
         __v if __v == 0 => 'target: {
-            (*steps.borrow_mut()) += 1;
+            steps += 1;
             break;
         }
         __v if __v == 1 => {
-            (*steps.borrow_mut()) += 10;
+            steps += 10;
             goto!('target);
         }
         _ => {
-            (*steps.borrow_mut()) = -1_i32;
+            steps = -1_i32;
             break;
         }
     });
-    return (*steps.borrow());
+    return steps;
 }
 pub fn main() {
     __cpp2rust_init_globals();

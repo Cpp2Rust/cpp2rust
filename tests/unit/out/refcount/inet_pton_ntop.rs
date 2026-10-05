@@ -14,7 +14,7 @@ fn main_0() -> i32 {
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::<u8>::from_string_literal(b"1.2.3.4")
+            match Ptr::<i8>::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -28,7 +28,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::<u8>::from_string_literal(b"1.2.3.4")
+            match Ptr::<i8>::from_string_literal(b"1.2.3.4")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::<u8>::from_string_literal(b"999.1.1.1")
+            match Ptr::<i8>::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -73,7 +73,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::<u8>::from_string_literal(b"999.1.1.1")
+            match Ptr::<i8>::from_string_literal(b"999.1.1.1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET == libc::AF_INET {
-            match Ptr::<u8>::from_string_literal(b"not an ip")
+            match Ptr::<i8>::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -108,7 +108,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET == libc::AF_INET6 {
-            match Ptr::<u8>::from_string_literal(b"not an ip")
+            match Ptr::<i8>::from_string_literal(b"not an ip")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -129,7 +129,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::<u8>::from_string_literal(b"::1")
+            match Ptr::<i8>::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -143,7 +143,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::<u8>::from_string_literal(b"::1")
+            match Ptr::<i8>::from_string_literal(b"::1")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -169,7 +169,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((if libc::AF_INET6 == libc::AF_INET {
-            match Ptr::<u8>::from_string_literal(b"2001:db8::5")
+            match Ptr::<i8>::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv4Addr>()
             {
@@ -183,7 +183,7 @@ fn main_0() -> i32 {
                 Err(_) => 0,
             }
         } else if libc::AF_INET6 == libc::AF_INET6 {
-            match Ptr::<u8>::from_string_literal(b"2001:db8::5")
+            match Ptr::<i8>::from_string_literal(b"2001:db8::5")
                 .to_rust_string()
                 .parse::<std::net::Ipv6Addr>()
             {
@@ -209,8 +209,8 @@ fn main_0() -> i32 {
             && (((((*buf.borrow())[(15) as usize] as i32) == 5) as i32) != 0)) as i32)
             != 0)
     );
-    let text: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let text: Value<Box<[i8]>> =
+        Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let four: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([10_u8, 0_u8, 0_u8, 1_u8])));
     assert!(
         ((({
@@ -232,14 +232,12 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
+                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
                     {
                         let __n = __s.len();
-                        (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
-                            __sl[..__n].copy_from_slice(__s.as_bytes());
-                            __sl[__n] = 0;
-                        });
-                        (text.as_pointer() as Ptr<u8>)
+                        (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
+                        elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
+                        (text.as_pointer() as Ptr<i8>)
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
@@ -252,12 +250,12 @@ fn main_0() -> i32 {
                 }
             }
             .to_c_string_iterator();
-            let mut __it2 = Ptr::<u8>::from_string_literal(b"10.0.0.1").to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"10.0.0.1").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;
@@ -291,14 +289,12 @@ fn main_0() -> i32 {
                 };
                 match __text {
                     Some(__s)
-                        if (__s.len() as u32) < (::std::mem::size_of::<[u8; 64]>() as u32) =>
+                        if (__s.len() as u32) < (::std::mem::size_of::<[i8; 64]>() as u32) =>
                     {
                         let __n = __s.len();
-                        (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
-                            __sl[..__n].copy_from_slice(__s.as_bytes());
-                            __sl[__n] = 0;
-                        });
-                        (text.as_pointer() as Ptr<u8>)
+                        (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
+                        elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
+                        (text.as_pointer() as Ptr<i8>)
                     }
                     Some(_) => {
                         libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);
@@ -311,12 +307,12 @@ fn main_0() -> i32 {
                 }
             }
             .to_c_string_iterator();
-            let mut __it2 = Ptr::<u8>::from_string_literal(b"::1").to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"::1").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;
@@ -345,11 +341,9 @@ fn main_0() -> i32 {
             match __text {
                 Some(__s) if (__s.len() as u32) < 4_u32 => {
                     let __n = __s.len();
-                    (text.as_pointer() as Ptr<u8>).with_slice_mut(__n + 1, |__sl| {
-                        __sl[..__n].copy_from_slice(__s.as_bytes());
-                        __sl[__n] = 0;
-                    });
-                    (text.as_pointer() as Ptr<u8>)
+                    (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
+                    elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
+                    (text.as_pointer() as Ptr<i8>)
                 }
                 Some(_) => {
                     libcc2rs::cpp2rust_errno().write(::libc::ENOSPC);

@@ -15,13 +15,8 @@ pub struct StructWithCtor {
     x2_: i32,
 }
 impl StructWithCtor {
-    pub fn new(x1: i32, x2: i32) -> Self {
-        let x1: Value<i32> = Rc::new(RefCell::new(x1));
-        let x2: Value<i32> = Rc::new(RefCell::new(x2));
-        let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self {
-            x1_: (*x1.borrow()),
-            x2_: (*x2.borrow()),
-        }));
+    pub fn new(mut x1: i32, mut x2: i32) -> Self {
+        let __this: Value<StructWithCtor> = Rc::new(RefCell::new(Self { x1_: x1, x2_: x2 }));
         let this: Ptr<StructWithCtor> = __this.as_pointer();
         field!(this, x1_).with_mut(|__v| __v.prefix_inc());
         field!(this, x2_).with_mut(|__v| __v.prefix_dec());
@@ -38,11 +33,8 @@ pub struct Value_ {
     pub v: i32,
 }
 impl Value_ {
-    pub fn new(u: i32) -> Self {
-        let u: Value<i32> = Rc::new(RefCell::new(u));
-        let __this: Value<Value_> = Rc::new(RefCell::new(Self { v: (*u.borrow()) }));
-        let this: Ptr<Value_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut u: i32) -> Self {
+        Self { v: u }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
@@ -57,12 +49,10 @@ pub struct Ptr_ {
 }
 impl Ptr_ {
     pub fn new() -> Self {
-        let __this: Value<Ptr_> = Rc::new(RefCell::new(Self {
+        Self {
             v1: Value_::new({ 11 }),
             v2: Value_::new({ 22 }),
-        }));
-        let this: Ptr<Ptr_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Ptr_ {

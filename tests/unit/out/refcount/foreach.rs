@@ -20,12 +20,12 @@ fn main_0() -> i32 {
         };
         (*i.borrow_mut()).prefix_inc();
     }
-    let sum: Value<i32> = Rc::new(RefCell::new(0));
+    let mut sum: i32 = 0;
     'loop_: for mut x in v.as_pointer() as Ptr<i32> {
-        let x: Value<i32> = Rc::new(RefCell::new(x.read()));
-        (*sum.borrow_mut()) += (*x.borrow());
+        let mut x: i32 = x.read();
+        sum += x;
     }
-    assert!(((*sum.borrow()) == 45));
+    assert!((sum == 45));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

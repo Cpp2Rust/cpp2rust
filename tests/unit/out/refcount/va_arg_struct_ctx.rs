@@ -14,14 +14,13 @@ pub struct context {
     #[offset(4)]
     pub last_error: i32,
 }
-pub fn set_error_0(ctx: Ptr<context>, fmt: Ptr<u8>, __args: &[VaArg]) {
-    let ctx: Value<Ptr<context>> = Rc::new(RefCell::new(ctx));
-    let fmt: Value<Ptr<u8>> = Rc::new(RefCell::new(fmt));
-    if ((*ctx.borrow()).with(|__s| __s.verbose) != 0) {
+pub fn set_error_0(mut ctx: Ptr<context>, fmt: Ptr<i8>, __args: &[VaArg]) {
+    let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
+    if (ctx.with(|__s| __s.verbose) != 0) {
         let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
         (*ap.borrow_mut()) = VaList::new(__args);
         let __rhs = (*ap.borrow_mut()).arg::<i32>();
-        field!((*ctx.borrow()), last_error).write(__rhs);
+        field!(ctx, last_error).write(__rhs);
     }
 }
 pub fn main() {
@@ -35,7 +34,7 @@ fn main_0() -> i32 {
     ({
         set_error_0(
             (ctx.as_pointer()),
-            Ptr::<u8>::from_string_literal(b"error %d"),
+            Ptr::<i8>::from_string_literal(b"error %d"),
             &[(42).into()],
         )
     });
@@ -44,7 +43,7 @@ fn main_0() -> i32 {
     ({
         set_error_0(
             (ctx.as_pointer()),
-            Ptr::<u8>::from_string_literal(b"error %d"),
+            Ptr::<i8>::from_string_literal(b"error %d"),
             &[(99).into()],
         )
     });

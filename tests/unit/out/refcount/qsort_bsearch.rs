@@ -6,16 +6,10 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn cmp_int_0(a: AnyPtr, b: AnyPtr) -> i32 {
-    let a: Value<AnyPtr> = Rc::new(RefCell::new(a));
-    let b: Value<AnyPtr> = Rc::new(RefCell::new(b));
-    let x: Value<i32> = Rc::new(RefCell::new(
-        ((*a.borrow()).reinterpret_cast::<i32>().read()),
-    ));
-    let y: Value<i32> = Rc::new(RefCell::new(
-        ((*b.borrow()).reinterpret_cast::<i32>().read()),
-    ));
-    return ((((*x.borrow()) > (*y.borrow())) as i32) - (((*x.borrow()) < (*y.borrow())) as i32));
+pub fn cmp_int_0(mut a: AnyPtr, mut b: AnyPtr) -> i32 {
+    let mut x: i32 = (a.reinterpret_cast::<i32>().read());
+    let mut y: i32 = (b.reinterpret_cast::<i32>().read());
+    return (((x > y) as i32) - ((x < y) as i32));
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -46,84 +40,74 @@ fn main_0() -> i32 {
                     let __y = __base
                         .offset(__min * ::std::mem::size_of::<i32>() + __b)
                         .read();
-                    __base
-                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
-                        .write(__y);
-                    __base
-                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
-                        .write(__x);
+                    elem!(__base, __i * ::std::mem::size_of::<i32>() + __b).write(__y);
+                    elem!(__base, __min * ::std::mem::size_of::<i32>() + __b).write(__x);
                 }
             }
         }
     };
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 7) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < 7) as i32) != 0) {
         assert!(
-            ((((*arr.borrow())[(*i.borrow()) as usize]
-                <= (*arr.borrow())[((*i.borrow()) + 1) as usize]) as i32)
-                != 0)
+            ((((*arr.borrow())[(i) as usize] <= (*arr.borrow())[(i + 1) as usize]) as i32) != 0)
         );
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
     let key: Value<i32> = Rc::new(RefCell::new(7));
-    let hit: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        {
-            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-                .to_any()
-                .reinterpret_cast::<u8>();
-            let mut __lo: isize = 0;
-            let mut __hi: isize = 8_usize as isize - 1;
-            let mut __found = AnyPtr::default();
-            while __lo <= __hi && __found.is_null() {
-                let __mid = __lo + (__hi - __lo) / 2;
-                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0(
-                    ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
-                    __elem.to_any(),
-                );
-                if __r == 0 {
-                    __found = __elem.to_any();
-                } else if __r < 0 {
-                    __hi = __mid - 1;
-                } else {
-                    __lo = __mid + 1;
-                }
+    let mut hit: Ptr<i32> = {
+        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+            .to_any()
+            .reinterpret_cast::<u8>();
+        let mut __lo: isize = 0;
+        let mut __hi: isize = 8_usize as isize - 1;
+        let mut __found = AnyPtr::default();
+        while __lo <= __hi && __found.is_null() {
+            let __mid = __lo + (__hi - __lo) / 2;
+            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+            let __r = cmp_int_0(
+                ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
+                __elem.to_any(),
+            );
+            if __r == 0 {
+                __found = __elem.to_any();
+            } else if __r < 0 {
+                __hi = __mid - 1;
+            } else {
+                __lo = __mid + 1;
             }
-            __found
         }
-        .reinterpret_cast::<i32>(),
-    ));
-    assert!((((!((*hit.borrow()).is_null())) as i32) != 0));
-    assert!((((((*hit.borrow()).read()) == 7) as i32) != 0));
+        __found
+    }
+    .reinterpret_cast::<i32>();
+    assert!((((!((hit).is_null())) as i32) != 0));
+    assert!(((((hit.read()) == 7) as i32) != 0));
     let miss_key: Value<i32> = Rc::new(RefCell::new(42));
-    let miss: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        {
-            let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
-                .to_any()
-                .reinterpret_cast::<u8>();
-            let mut __lo: isize = 0;
-            let mut __hi: isize = 8_usize as isize - 1;
-            let mut __found = AnyPtr::default();
-            while __lo <= __hi && __found.is_null() {
-                let __mid = __lo + (__hi - __lo) / 2;
-                let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
-                let __r = cmp_int_0(
-                    ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
-                    __elem.to_any(),
-                );
-                if __r == 0 {
-                    __found = __elem.to_any();
-                } else if __r < 0 {
-                    __hi = __mid - 1;
-                } else {
-                    __lo = __mid + 1;
-                }
+    let mut miss: Ptr<i32> = {
+        let __base = ((arr.as_pointer() as Ptr<i32>) as Ptr<i32>)
+            .to_any()
+            .reinterpret_cast::<u8>();
+        let mut __lo: isize = 0;
+        let mut __hi: isize = 8_usize as isize - 1;
+        let mut __found = AnyPtr::default();
+        while __lo <= __hi && __found.is_null() {
+            let __mid = __lo + (__hi - __lo) / 2;
+            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+            let __r = cmp_int_0(
+                ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
+                __elem.to_any(),
+            );
+            if __r == 0 {
+                __found = __elem.to_any();
+            } else if __r < 0 {
+                __hi = __mid - 1;
+            } else {
+                __lo = __mid + 1;
             }
-            __found
         }
-        .reinterpret_cast::<i32>(),
-    ));
-    assert!(((((*miss.borrow()).is_null()) as i32) != 0));
+        __found
+    }
+    .reinterpret_cast::<i32>();
+    assert!(((((miss).is_null()) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

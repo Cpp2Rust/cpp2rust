@@ -22,18 +22,15 @@ pub struct Vtable {
 thread_local!(
     pub static storage_0: Value<i32> = Rc::new(RefCell::new(0_i32));
 );
-pub fn int_create_1(val: i32) -> AnyPtr {
-    let val: Value<i32> = Rc::new(RefCell::new(val));
-    storage_0.with(|rc| *rc.borrow_mut() = (*val.borrow()));
+pub fn int_create_1(mut val: i32) -> AnyPtr {
+    storage_0.with(|rc| *rc.borrow_mut() = val);
     return ((storage_0.with(|v| v.as_pointer())) as Ptr<i32>).to_any();
 }
-pub fn int_get_2(p: AnyPtr) -> i32 {
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).reinterpret_cast::<i32>().read());
+pub fn int_get_2(mut p: AnyPtr) -> i32 {
+    return (p.reinterpret_cast::<i32>().read());
 }
-pub fn int_destroy_3(p: AnyPtr) {
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
-    (*p.borrow()).reinterpret_cast::<i32>().write(0);
+pub fn int_destroy_3(mut p: AnyPtr) {
+    p.reinterpret_cast::<i32>().write(0);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -48,11 +45,9 @@ fn main_0() -> i32 {
     assert!(!(({ (*vt.borrow()).create.clone() }).is_null()));
     assert!(!(({ (*vt.borrow()).get.clone() }).is_null()));
     assert!(!(({ (*vt.borrow()).destroy.clone() }).is_null()));
-    let obj: Value<AnyPtr> = Rc::new(RefCell::new(
-        ({ { (*vt.borrow()).create.clone() }.call(42) }),
-    ));
-    assert!((({ { (*vt.borrow()).get.clone() }.call((*obj.borrow()).clone(),) }) == 42));
-    ({ { (*vt.borrow()).destroy.clone() }.call((*obj.borrow()).clone()) });
+    let mut obj: AnyPtr = ({ { (*vt.borrow()).create.clone() }.call(42) });
+    assert!((({ { (*vt.borrow()).get.clone() }.call((obj).clone(),) }) == 42));
+    ({ { (*vt.borrow()).destroy.clone() }.call((obj).clone()) });
     assert!((storage_0.with(|rc| *rc.borrow()) == 0));
     (*vt.borrow_mut()).get = FnPtr::<fn(AnyPtr) -> i32>::null();
     assert!(({ (*vt.borrow()).get.clone() }).is_null());

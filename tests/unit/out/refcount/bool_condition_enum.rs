@@ -15,24 +15,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let code: Value<Code> = Rc::new(RefCell::new(Code_CODE_OK));
-    let err: Value<Code> = Rc::new(RefCell::new(Code_CODE_ERR));
-    if ((*code.borrow()) != 0) {
+    let mut code: Code = Code_CODE_OK;
+    let mut err: Code = Code_CODE_ERR;
+    if (code != 0) {
         assert!(false);
     }
-    if !((*code.borrow()) != 0) {
+    if !(code != 0) {
         assert!(true);
     }
-    if ((*err.borrow()) != 0) {
+    if (err != 0) {
         assert!(true);
     }
-    if !((*err.borrow()) != 0) {
+    if !(err != 0) {
         assert!(false);
     }
-    let t9: Value<i32> = Rc::new(RefCell::new((!((*code.borrow()) != 0) as i32)));
-    assert!(((*t9.borrow()) == 1));
-    let b4: Value<bool> = Rc::new(RefCell::new(((*code.borrow()) != 0)));
-    assert!(!(*b4.borrow()));
+    let mut t9: i32 = (!(code != 0) as i32);
+    assert!((t9 == 1));
+    let mut b4: bool = (code != 0);
+    assert!(!(b4));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

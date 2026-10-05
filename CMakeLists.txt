@@ -94,22 +94,26 @@ file(GLOB_RECURSE ALL_CXX_SOURCES
 
 set(PYTHON_SOURCES ${PROJECT_SOURCE_DIR}/tests/lit/lit/formats/Cpp2RustTest.py)
 
+# `clippy --fix` downgrades -Dwarnings errors back to warnings, and manifest
+# lints (e.g., unused dependencies) ignore it. Make cargo deny all warnings.
+set(CLIPPY_ENV CARGO_BUILD_WARNINGS=deny)
+
 add_custom_target("format"
                   COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCES}
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml
                   COMMAND cargo +${RUST_NIGHTLY_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml
                   COMMAND cargo +${RUST_STABLE_VERSION} fmt --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml
-                  COMMAND ${CARGO_ENV_RULES}
+                  COMMAND ${CARGO_ENV_RULES} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rules/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR}
+                  COMMAND ${CARGO_ENV_RULE_PREPROCESSOR} ${CLIPPY_ENV}
                           cargo +${RUST_NIGHTLY_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/rule-preprocessor/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_LIBCC2RS}
+                  COMMAND ${CARGO_ENV_LIBCC2RS} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs/Cargo.toml -- -Dwarnings
-                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS}
+                  COMMAND ${CARGO_ENV_LIBCC2RS_MACROS} ${CLIPPY_ENV}
                           cargo +${RUST_STABLE_VERSION} clippy --release --fix --allow-dirty --allow-no-vcs --allow-staged --all-targets --all-features
                                 --manifest-path ${PROJECT_SOURCE_DIR}/libcc2rs-macros/Cargo.toml -- -Dwarnings
                   COMMAND ${RUFF} --silent check --fix ${PYTHON_SOURCES}

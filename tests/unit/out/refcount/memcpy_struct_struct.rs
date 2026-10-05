@@ -53,15 +53,15 @@ fn main_0() -> i32 {
             value: 0_u16,
         },
     ])));
-    let table_size: Value<usize> = Rc::new(RefCell::new(4_usize));
+    let mut table_size: usize = 4_usize;
     {
-        (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()))) as Ptr<Entry>)
+        (((table.as_pointer() as Ptr<Entry>).offset(table_size)) as Ptr<Entry>)
             .to_any()
             .memcpy(
                 &(((table.as_pointer() as Ptr<Entry>).offset(0)) as Ptr<Entry>).to_any(),
-                (((*table_size.borrow()) as u64).wrapping_mul((4usize as u64)) as usize) as usize,
+                ((table_size as u64).wrapping_mul((4usize as u64)) as usize) as usize,
             );
-        (((table.as_pointer() as Ptr<Entry>).offset((*table_size.borrow()))) as Ptr<Entry>).to_any()
+        (((table.as_pointer() as Ptr<Entry>).offset(table_size)) as Ptr<Entry>).to_any()
     };
     assert!(
         (({ (*table.borrow())[(4) as usize].bits } as i32) == 1)

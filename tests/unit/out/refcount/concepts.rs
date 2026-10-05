@@ -26,22 +26,19 @@ pub fn has_size_2() -> bool {
 pub fn has_size_3() -> bool {
     return false;
 }
-pub fn pick_4(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn pick_4(mut x: i32) -> i32 {
     if (true) && (true) {
         return 1;
     }
     return 2;
 }
-pub fn pick_5(x: i64) -> i32 {
-    let x: Value<i64> = Rc::new(RefCell::new(x));
+pub fn pick_5(mut x: i64) -> i32 {
     if (true) && (false) {
         return 1;
     }
     return 2;
 }
-pub fn pick_6(x: f32) -> i32 {
-    let x: Value<f32> = Rc::new(RefCell::new(x));
+pub fn pick_6(mut x: f32) -> i32 {
     if (false) && (true) {
         return 1;
     }

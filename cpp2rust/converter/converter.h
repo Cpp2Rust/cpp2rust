@@ -69,11 +69,8 @@ public:
 
   virtual bool VisitPointerType(clang::PointerType *type);
 
-  enum class FnProtoType { LambdaCallOperator, FnPtr };
-
   virtual std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr);
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto);
 
   virtual bool VisitDecayedType(clang::DecayedType *type);
 
@@ -115,8 +112,6 @@ public:
   virtual void ConvertVaListVarDecl(clang::VarDecl *decl);
 
   virtual bool ConvertVarDeclSkipInit(clang::VarDecl *decl);
-
-  virtual bool ConvertLambdaVarDecl(clang::VarDecl *decl);
 
   bool VisitRecordDecl(clang::RecordDecl *decl);
 
@@ -334,6 +329,8 @@ public:
 
   virtual void EmitFnPtrCall(clang::Expr *callee);
 
+  virtual void ConvertLambdaToFunctionPointer(clang::Expr *lambda);
+
   virtual void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl);
 
@@ -465,6 +462,15 @@ public:
 
   virtual bool VisitLambdaExpr(clang::LambdaExpr *expr);
 
+  virtual void ConvertCapturelessLambda(const clang::CXXRecordDecl *decl);
+
+  virtual const char *LambdaMacro() const { return "lambda_unsafe!"; }
+
+  virtual void ConvertLambdaCapture(const clang::FieldDecl *field,
+                                    clang::Expr *init);
+
+  void ConvertLambdaClosure(const clang::CXXRecordDecl *decl);
+
   virtual bool VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr);
   virtual bool VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr);
 
@@ -580,7 +586,7 @@ protected:
 
   virtual std::string GetDefaultAsStringFallback(clang::QualType qual_type);
 
-  virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
+  virtual std::string ConvertVarDefaultInit(const clang::VarDecl *decl);
 
   virtual std::string
   GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);

@@ -30,8 +30,8 @@ fn main_0() -> i32 {
     let a: Value<node_a> = Rc::new(RefCell::new(node_a { n: 123 }));
     let ptr: Value<anon_0> = <Value<anon_0>>::default();
     (*ptr.borrow_mut()).to_a().write((a.as_pointer()));
-    let out: Value<Ptr<node_b>> = Rc::new(RefCell::new(((*ptr.borrow()).to_b().read()).clone()));
-    assert!(((({ (*out.borrow()).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
+    let mut out: Ptr<node_b> = ((*ptr.borrow()).to_b().read()).clone();
+    assert!(((({ (out).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
     return 0;
 }
 #[derive(ByteRepr, DeepClone)]

@@ -11,9 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let d: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc(0)));
-    (*d.borrow()).write(5);
-    (*d.borrow()).delete();
+    let mut d: Ptr<i32> = Ptr::alloc(0);
+    d.write(5);
+    d.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -11,19 +11,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fname: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
-        b"testfile.txt",
-    )));
-    let mode: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"rb")));
-    let file_ptr: Value<Ptr<CFile>> = Rc::new(RefCell::new(
-        match CFile::open(
-            &(*fname.borrow()).to_rust_string(),
-            &(*mode.borrow()).to_rust_string(),
-        ) {
+    let mut fname: Ptr<i8> = Ptr::<i8>::from_string_literal(b"testfile.txt");
+    let mut mode: Ptr<i8> = Ptr::<i8>::from_string_literal(b"rb");
+    let mut file_ptr: Ptr<CFile> =
+        match CFile::open(&fname.to_rust_string(), &mode.to_rust_string()) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
-        },
-    ));
+        };
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

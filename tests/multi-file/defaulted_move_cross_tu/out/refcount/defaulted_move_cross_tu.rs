@@ -19,27 +19,23 @@ pub struct S {
 impl S {
     pub fn new(x: i32) -> Self {
         let x: Value<i32> = Rc::new(RefCell::new(x));
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
+        Self {
             v: Rc::new(RefCell::new(vec![
                 (*x.borrow());
                 ((*x.borrow()) as usize) as usize
             ])),
             n: Rc::new(RefCell::new(Box::new([(*x.borrow()), ((*x.borrow()) + 1)]))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
+        Self {
             v: Rc::new(RefCell::new(std::mem::take(
                 &mut (*{ (*_a0.upgrade().deref()).v.clone() }.borrow_mut()),
             ))),
             n: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| (*{ (*_a0.upgrade().deref()).n.clone() }.borrow())[(__i) as usize],
             )))),
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for S {
@@ -67,9 +63,8 @@ fn main_0() -> i32 {
     assert!((({ shuffle_1(3,) }) == 10));
     return 0;
 }
-pub fn shuffle_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let a: Value<S> = Rc::new(RefCell::new(S::new({ (*x.borrow()) })));
+pub fn shuffle_1(mut x: i32) -> i32 {
+    let a: Value<S> = Rc::new(RefCell::new(S::new({ x })));
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
     assert!((*{ (*a.borrow()).v.clone() }.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));

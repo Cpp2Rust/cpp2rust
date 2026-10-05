@@ -9,18 +9,18 @@ use std::rc::{Rc, Weak};
 pub fn sum_ints_0(first: i32, __args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let args: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    let total: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
+    let mut total: i32 = (*first.borrow());
     (*args.borrow_mut()) = VaList::new(__args);
-    let val: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let mut val: i32 = 0_i32;
     'loop_: while (((({
-        (*val.borrow_mut()) = (*args.borrow_mut()).arg::<i32>();
-        (*val.borrow())
+        val = (*args.borrow_mut()).arg::<i32>();
+        val
     }) != 0) as i32)
         != 0)
     {
-        (*total.borrow_mut()) += (*val.borrow());
+        total += val;
     }
-    return (*total.borrow());
+    return total;
 }
 pub fn main() {
     __cpp2rust_init_globals();

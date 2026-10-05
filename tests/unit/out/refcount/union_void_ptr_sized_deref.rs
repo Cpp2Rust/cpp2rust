@@ -18,7 +18,7 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn text(&self) -> Ptr<Ptr<u8>> {
+    pub fn text(&self) -> Ptr<Ptr<i8>> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
     pub fn handle(&self) -> Ptr<AnyPtr> {
@@ -47,27 +47,25 @@ pub struct Sink {
     #[byte_size(8)]
     pub out: anon_0,
 }
-pub fn write_count_1(s: Ptr<Sink>, count: i64) {
-    let s: Value<Ptr<Sink>> = Rc::new(RefCell::new(s));
-    let count: Value<i64> = Rc::new(RefCell::new(count));
+pub fn write_count_1(mut s: Ptr<Sink>, mut count: i64) {
     'switch: {
-        match { ((*s.borrow()).with(|__s| __s.width) as u32) } {
+        match { (s.with(|__s| __s.width) as u32) } {
             __v if __v == ((Width_enum_W_64 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.upgrade().deref()).out.handle().read())
                     .reinterpret_cast::<i64>()
-                    .write((*count.borrow()));
+                    .write(count);
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_32 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.upgrade().deref()).out.handle().read())
                     .reinterpret_cast::<i32>()
-                    .write(((*count.borrow()) as i32));
+                    .write((count as i32));
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_16 as i32) as u32) => {
-                ((*(*s.borrow()).upgrade().deref()).out.handle().read())
+                ((*s.upgrade().deref()).out.handle().read())
                     .reinterpret_cast::<i16>()
-                    .write(((*count.borrow()) as i16));
+                    .write((count as i16));
                 break 'switch;
             }
             _ => {}

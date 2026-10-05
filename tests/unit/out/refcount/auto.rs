@@ -11,9 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x1: Value<i32> = Rc::new(RefCell::new(1));
-    let x2: Value<i16> = Rc::new(RefCell::new(2_i16));
-    let x3: Value<u32> = Rc::new(RefCell::new(4_u32));
+    let mut x1: i32 = 1;
+    let mut x2: i16 = 2_i16;
+    let mut x3: u32 = 4_u32;
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     {
         let __a1 = 1;
@@ -23,12 +23,12 @@ fn main_0() -> i32 {
         let __a1 = 2;
         (*v.borrow_mut()).push(__a1)
     };
-    let sum: Value<i32> = Rc::new(RefCell::new(0));
+    let mut sum: i32 = 0;
     'loop_: for mut elem in v.as_pointer() as Ptr<i32> {
-        let elem: Value<i32> = Rc::new(RefCell::new(elem.read()));
-        (*sum.borrow_mut()) += (*elem.borrow());
+        let mut elem: i32 = elem.read();
+        sum += elem;
     }
-    assert!(((*sum.borrow()) == 3));
+    assert!((sum == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

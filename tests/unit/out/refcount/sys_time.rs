@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_time_0() {
-    let t1: Value<i64> = Rc::new(RefCell::new({
+    let mut t1: i64 = {
         let __out = Ptr::<i64>::null();
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
@@ -22,9 +22,9 @@ pub fn test_time_0() {
                 -1
             }
         }
-    }));
+    };
     let t2: Value<i64> = Rc::new(RefCell::new(0_i64));
-    let t3: Value<i64> = Rc::new(RefCell::new({
+    let mut t3: i64 = {
         let __out = (t2.as_pointer());
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
@@ -39,10 +39,10 @@ pub fn test_time_0() {
                 -1
             }
         }
-    }));
-    assert!(((((*t1.borrow()) > 1500000000_i64) as i32) != 0));
-    assert!(((((*t2.borrow()) == (*t3.borrow())) as i32) != 0));
-    assert!(((((*t3.borrow()) >= (*t1.borrow())) as i32) != 0));
+    };
+    assert!((((t1 > 1500000000_i64) as i32) != 0));
+    assert!(((((*t2.borrow()) == t3) as i32) != 0));
+    assert!((((t3 >= t1) as i32) != 0));
 }
 pub fn print_tm_1(t: i64) {
     let t: Value<i64> = Rc::new(RefCell::new(t));
@@ -102,12 +102,11 @@ pub fn print_local_tm_3(t: i64) {
                 Ok(__ts) => {
                     let __dt = __ts.to_zoned(jiff::tz::TimeZone::system());
                     let __info = __dt.time_zone().to_offset_info(__ts);
-                    let __zone: Vec<u8> = __info.abbreviation().bytes().chain([0]).collect();
                     let __isdst = if __info.dst().is_dst() { 1 } else { 0 };
                     __res.with_mut(|__tm| {
                         *__tm = Tm::from_zoned(&__dt);
                         __tm.tm_isdst = __isdst;
-                        __tm.tm_zone = Ptr::alloc_array(__zone.into_boxed_slice());
+                        __tm.tm_zone = Ptr::alloc_c_str(__info.abbreviation().as_bytes());
                     });
                     __res
                 }
@@ -163,13 +162,13 @@ pub fn test_strftime_5() {
         .is_null())) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..64).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::<u8>::from_string_literal(b"%Y-%m-%d %H:%M:%S")
+                    Ptr::<i8>::from_string_literal(b"%Y-%m-%d %H:%M:%S")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -177,25 +176,23 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
-                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
-                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
-                    __s[__text.len()] = 0;
-                });
+                (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    println!("{}", (buf.as_pointer() as Ptr::<i8>));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::<u8>::from_string_literal(b"%a, %d %b %Y %T")
+                    Ptr::<i8>::from_string_literal(b"%a, %d %b %Y %T")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -203,25 +200,23 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
-                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
-                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
-                    __s[__text.len()] = 0;
-                });
+                (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    println!("{}", (buf.as_pointer() as Ptr::<i8>));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::<u8>::from_string_literal(b"day %j 100%%")
+                    Ptr::<i8>::from_string_literal(b"day %j 100%%")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -229,25 +224,23 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
-                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
-                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
-                    __s[__text.len()] = 0;
-                });
+                (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
+    println!("{}", (buf.as_pointer() as Ptr::<i8>));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::<u8>::from_string_literal(b"%e")
+                    Ptr::<i8>::from_string_literal(b"%e")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -255,27 +248,25 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 64]>() {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 64]>() {
                 0
             } else {
-                (buf.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
-                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
-                    __s[__text.len()] = 0;
-                });
+                (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
             != 0)
     );
-    println!("{}", (buf.as_pointer() as Ptr::<u8>));
-    let small: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    println!("{}", (buf.as_pointer() as Ptr::<i8>));
+    let small: Value<Box<[i8]>> =
+        Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
     assert!(
         ((({
             let __dt = (tm.as_pointer()).with(|__tm| __tm.to_civil());
             let __text = match __dt {
                 Ok(__d) => jiff::fmt::strtime::format(
-                    Ptr::<u8>::from_string_literal(b"%Y-%m-%d")
+                    Ptr::<i8>::from_string_literal(b"%Y-%m-%d")
                         .to_rust_string()
                         .as_str(),
                     __d,
@@ -283,13 +274,11 @@ pub fn test_strftime_5() {
                 .unwrap_or_default(),
                 Err(_) => String::new(),
             };
-            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[u8; 4]>() {
+            if __text.is_empty() || __text.len() + 1 > ::std::mem::size_of::<[i8; 4]>() {
                 0
             } else {
-                (small.as_pointer() as Ptr<u8>).with_slice_mut(__text.len() + 1, |__s| {
-                    __s[..__text.len()].copy_from_slice(__text.as_bytes());
-                    __s[__text.len()] = 0;
-                });
+                (small.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
+                elem!((small.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } == 0_usize) as i32)

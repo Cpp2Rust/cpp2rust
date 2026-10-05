@@ -65,13 +65,11 @@ pub fn operator_le_4(a: Ptr<S>, b: Ptr<S>) -> bool {
 pub fn operator_ge_5(a: Ptr<S>, b: Ptr<S>) -> bool {
     return ({ a.with(|__s| __s.v) } >= { b.with(|__s| __s.v) });
 }
-pub fn operator_lt_6(a: Ptr<S>, b: i32) -> bool {
-    let b: Value<i32> = Rc::new(RefCell::new(b));
-    return ({ a.with(|__s| __s.v) } < { (*b.borrow()) });
+pub fn operator_lt_6(a: Ptr<S>, mut b: i32) -> bool {
+    return ({ a.with(|__s| __s.v) } < { b });
 }
-pub fn operator_lt_7(a: i32, b: Ptr<S>) -> bool {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } < { b.with(|__s| __s.v) });
+pub fn operator_lt_7(mut a: i32, b: Ptr<S>) -> bool {
+    return ({ a } < { b.with(|__s| __s.v) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]

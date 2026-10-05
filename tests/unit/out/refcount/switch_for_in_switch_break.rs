@@ -6,30 +6,29 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn for_in_switch_break_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn for_in_switch_break_0(mut n: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*n.borrow()) } {
+        match { n } {
             __v if __v == 0 => {
-                let i: Value<i32> = Rc::new(RefCell::new(0));
-                'loop_: while ((*i.borrow()) < 10) {
-                    if ((*i.borrow()) == 3) {
+                let mut i: i32 = 0;
+                'loop_: while (i < 10) {
+                    if (i == 3) {
                         break;
                     }
-                    (*r.borrow_mut()) += (*i.borrow());
-                    (*i.borrow_mut()).prefix_inc();
+                    r += i;
+                    i.prefix_inc();
                 }
-                (*r.borrow_mut()) += 100;
+                r += 100;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = -1_i32;
+                r = -1_i32;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

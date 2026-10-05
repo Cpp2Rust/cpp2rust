@@ -6,16 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn log_0(file: Ptr<u8>, line: i32, func: Ptr<u8>) {
-    let file: Value<Ptr<u8>> = Rc::new(RefCell::new(file));
-    let line: Value<i32> = Rc::new(RefCell::new(line));
-    let func: Value<Ptr<u8>> = Rc::new(RefCell::new(func));
-    println!(
-        "{} {} {}",
-        (*file.borrow()),
-        (*line.borrow()),
-        (*func.borrow())
-    );
+pub fn log_0(mut file: Ptr<i8>, mut line: i32, mut func: Ptr<i8>) {
+    println!("{} {} {}", file, line, func);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -24,15 +16,15 @@ pub fn main() {
 fn main_0() -> i32 {
     println!(
         "{} {} {}",
-        Ptr::<u8>::from_string_literal(b"macros.cpp"),
+        Ptr::<i8>::from_string_literal(b"macros.cpp"),
         8,
-        Ptr::<u8>::from_string_literal(b"main")
+        Ptr::<i8>::from_string_literal(b"main")
     );
     ({
         log_0(
-            Ptr::<u8>::from_string_literal(b"macros.cpp"),
+            Ptr::<i8>::from_string_literal(b"macros.cpp"),
             9,
-            Ptr::<u8>::from_string_literal(b"main"),
+            Ptr::<i8>::from_string_literal(b"main"),
         )
     });
     return 0;

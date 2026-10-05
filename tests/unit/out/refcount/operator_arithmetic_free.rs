@@ -51,8 +51,7 @@ pub fn operator_inc_7(a: Ptr<S>) -> Ptr<S> {
     field!(a, v).with_mut(|__v| __v.prefix_inc());
     return (a).clone();
 }
-pub fn operator_post_inc_8(a: Ptr<S>, _a1: i32) -> S {
-    let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
+pub fn operator_post_inc_8(a: Ptr<S>, mut _a1: i32) -> S {
     let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
     field!(a, v).with_mut(|__v| __v.prefix_inc());
     return (*old.borrow()).clone();
@@ -61,22 +60,19 @@ pub fn operator_dec_9(a: Ptr<S>) -> Ptr<S> {
     field!(a, v).with_mut(|__v| __v.prefix_dec());
     return (a).clone();
 }
-pub fn operator_post_dec_10(a: Ptr<S>, _a1: i32) -> S {
-    let _a1: Value<i32> = Rc::new(RefCell::new(_a1));
+pub fn operator_post_dec_10(a: Ptr<S>, mut _a1: i32) -> S {
     let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
     field!(a, v).with_mut(|__v| __v.prefix_dec());
     return (*old.borrow()).clone();
 }
-pub fn operator_add_11(a: Ptr<S>, b: i32) -> S {
-    let b: Value<i32> = Rc::new(RefCell::new(b));
+pub fn operator_add_11(a: Ptr<S>, mut b: i32) -> S {
     return S {
-        v: ({ a.with(|__s| __s.v) } + { (*b.borrow()) }),
+        v: ({ a.with(|__s| __s.v) } + { b }),
     };
 }
-pub fn operator_add_12(a: i32, b: Ptr<S>) -> S {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
+pub fn operator_add_12(mut a: i32, b: Ptr<S>) -> S {
     return S {
-        v: ({ (*a.borrow()) } + { b.with(|__s| __s.v) }),
+        v: ({ a } + { b.with(|__s| __s.v) }),
     };
 }
 pub fn main() {

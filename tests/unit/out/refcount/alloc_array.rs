@@ -6,46 +6,41 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, N: i32, element: i32) {
-    let N: Value<i32> = Rc::new(RefCell::new(N));
-    let element: Value<i32> = Rc::new(RefCell::new(element));
+pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) {
     let all: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..((*N.borrow()) as usize))
+        (0..(N as usize))
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < (*N.borrow())) {
-        (*all.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
-            (*element.borrow());
-        (*i.borrow_mut()).prefix_inc();
+    let mut i: i32 = 0;
+    'loop_: while (i < N) {
+        (*all.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = element;
+        i.prefix_inc();
     }
     ((arr).clone() as Ptr<Option<Value<Box<[i32]>>>>).write((*all.borrow_mut()).take());
 }
-pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, N: i32) -> i32 {
+pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(arr));
-    let N: Value<i32> = Rc::new(RefCell::new(N));
-    let sum: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(-1_i32));
-    'loop_: while ((*i.borrow_mut()).prefix_inc() < (*N.borrow())) {
-        (*sum.borrow_mut()) +=
-            (*arr.borrow()).as_ref().unwrap().borrow()[((*i.borrow()) as usize) as usize];
+    let mut sum: i32 = 0;
+    let mut i: i32 = -1_i32;
+    'loop_: while (i.prefix_inc() < N) {
+        sum += (*arr.borrow()).as_ref().unwrap().borrow()[(i as usize) as usize];
     }
-    return (*sum.borrow());
+    return sum;
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let N: Value<i32> = Rc::new(RefCell::new(10));
+    let mut N: i32 = 10;
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-        (0..((*N.borrow()) as usize))
+        (0..(N as usize))
             .map(|_| <i32>::default())
             .collect::<Box<[_]>>(),
     )))));
-    ({ All_0(arr.as_pointer(), (*N.borrow()), 1) });
-    assert!((({ Consume_1((*arr.borrow_mut()).take(), (*N.borrow()),) }) == 10));
+    ({ All_0(arr.as_pointer(), N, 1) });
+    assert!((({ Consume_1((*arr.borrow_mut()).take(), N,) }) == 10));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -18,7 +18,7 @@ pub struct MyContainer_int_ {
 pub struct MyContainer_char_ {
     #[offset(0)]
     #[byte_size(24)]
-    vec_: Value<Vec<u8>>,
+    vec_: Value<Vec<i8>>,
 }
 #[derive(DeepClone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
@@ -34,9 +34,8 @@ pub struct Boxed_int_ {
     pub value: i32,
 }
 impl Boxed_int_ {
-    pub fn twice(v: i32) -> i32 {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        return ((*v.borrow()) + (*v.borrow()));
+    pub fn twice(mut v: i32) -> i32 {
+        return (v + v);
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -46,9 +45,8 @@ pub struct Boxed_long_ {
     pub value: i64,
 }
 impl Boxed_long_ {
-    pub fn twice(v: i64) -> i64 {
-        let v: Value<i64> = Rc::new(RefCell::new(v));
-        return ((*v.borrow()) + (*v.borrow()));
+    pub fn twice(mut v: i64) -> i64 {
+        return (v + v);
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -79,7 +77,7 @@ pub struct Outer_long__Inner_char_ {
     #[offset(0)]
     pub t: i64,
     #[offset(8)]
-    pub u: u8,
+    pub u: i8,
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -106,7 +104,7 @@ fn main_0() -> i32 {
     let ol: Value<Outer_long_> = Rc::new(RefCell::new(Outer_long_ { v: 5_i64 }));
     let ic: Value<Outer_long__Inner_char_> = Rc::new(RefCell::new(Outer_long__Inner_char_ {
         t: 6_i64,
-        u: ('a' as u8),
+        u: ('a' as i8),
     }));
     assert!(
         (({
@@ -119,7 +117,7 @@ fn main_0() -> i32 {
         }) == 7)
     );
     assert!(
-        (({ Outer_long__Inner_char_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as u8) as i32)))
+        (({ Outer_long__Inner_char_Impl::sum(&ic.as_pointer(),) }) == (6 + (('a' as i8) as i32)))
     );
     assert!((({ Boxed_int_::twice(3,) }) == 6));
     let bi: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_ { value: 4 }));
@@ -142,13 +140,13 @@ fn main_0() -> i32 {
     let cmc: Value<MyContainer_char_> = Rc::new(RefCell::new(<MyContainer_char_>::default()));
     assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
     ({
-        let _item: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
+        let _item: Value<i8> = Rc::new(RefCell::new(('a' as i8)));
         MyContainer_char_Impl::push_back(&cmc.as_pointer(), _item.as_pointer())
     });
     assert!(
         (({ MyContainer_char_Impl::size(&cmc.as_pointer(),) }) == 1_usize)
             && (((({ MyContainer_char_Impl::back_4(&cmc.as_pointer(),) }).read()) as i32)
-                == (('a' as u8) as i32))
+                == (('a' as i8) as i32))
     );
     ({ MyContainer_char_Impl::pop_back(&cmc.as_pointer()) });
     assert!(({ MyContainer_char_Impl::empty(&cmc.as_pointer(),) }));
@@ -171,29 +169,27 @@ pub trait Boxed_int_Impl {
     fn plus(&self, other: i32) -> i32;
 }
 impl Boxed_int_Impl for Ptr<Boxed_int_> {
-    fn plus(&self, other: i32) -> i32 {
-        let other: Value<i32> = Rc::new(RefCell::new(other));
-        return ((*self).with(|__s| __s.value) + (*other.borrow()));
+    fn plus(&self, mut other: i32) -> i32 {
+        return ((*self).with(|__s| __s.value) + other);
     }
 }
 pub trait Boxed_long_Impl {
     fn plus(&self, other: i64) -> i64;
 }
 impl Boxed_long_Impl for Ptr<Boxed_long_> {
-    fn plus(&self, other: i64) -> i64 {
-        let other: Value<i64> = Rc::new(RefCell::new(other));
-        return ((*self).with(|__s| __s.value) + (*other.borrow()));
+    fn plus(&self, mut other: i64) -> i64 {
+        return ((*self).with(|__s| __s.value) + other);
     }
 }
 pub trait MyContainer_char_Impl {
     fn empty(&self) -> bool;
     fn size(&self) -> usize;
-    fn back_3(&self) -> Ptr<u8> {
+    fn back_3(&self) -> Ptr<i8> {
         unimplemented!()
     }
-    fn back_4(&self) -> Ptr<u8>;
+    fn back_4(&self) -> Ptr<i8>;
     fn pop_back(&self);
-    fn push_back(&self, item: Ptr<u8>);
+    fn push_back(&self, item: Ptr<i8>);
 }
 impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn empty(&self) -> bool {
@@ -202,14 +198,14 @@ impl MyContainer_char_Impl for Ptr<MyContainer_char_> {
     fn size(&self) -> usize {
         return (*(*self).with(|__s| __s.vec_.clone()).borrow()).len();
     }
-    fn back_4(&self) -> Ptr<u8> {
-        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<u8>).to_last();
+    fn back_4(&self) -> Ptr<i8> {
+        return ((*self).with(|__s| __s.vec_.as_pointer()) as Ptr<i8>).to_last();
     }
     fn pop_back(&self) {
         (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).pop();
         return;
     }
-    fn push_back(&self, item: Ptr<u8>) {
+    fn push_back(&self, item: Ptr<i8>) {
         {
             let a0_clone = (item.read()).clone();
             (*(*self).with(|__s| __s.vec_.clone()).borrow_mut()).push(a0_clone)

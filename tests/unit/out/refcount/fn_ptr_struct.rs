@@ -15,29 +15,24 @@ pub struct Handler {
     #[byte_size(8)]
     pub cb: FnPtr<fn(i32) -> i32>,
 }
-pub fn double_it_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) * 2);
+pub fn double_it_0(mut x: i32) -> i32 {
+    return (x * 2);
 }
-pub fn negate_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return -(*x.borrow());
+pub fn negate_1(mut x: i32) -> i32 {
+    return -x;
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct S {}
 impl S {
-    pub fn pick_1(x: i32) -> i32 {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*x.borrow()) + 1);
+    pub fn pick_1(mut x: i32) -> i32 {
+        return (x + 1);
     }
-    pub fn pick_2(x: i64) -> i32 {
-        let x: Value<i64> = Rc::new(RefCell::new(x));
-        return (((*x.borrow()) as i32) + 2);
+    pub fn pick_2(mut x: i64) -> i32 {
+        return ((x as i32) + 2);
     }
-    pub fn solo(x: i32) -> i32 {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        return ((*x.borrow()) + 3);
+    pub fn solo(mut x: i32) -> i32 {
+        return (x + 3);
     }
 }
 pub fn main() {
@@ -45,12 +40,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p1: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new((FnPtr::<fn(i32) -> i32>::new(S::pick_1))));
-    let p2: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(S::solo)));
-    assert!((({ (*p1.borrow()).call(5,) }) == 6));
-    assert!((({ (*p2.borrow()).call(5,) }) == 8));
+    let mut p1: FnPtr<fn(i32) -> i32> = (FnPtr::<fn(i32) -> i32>::new(S::pick_1));
+    let mut p2: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::new(S::solo);
+    assert!((({ p1.call(5,) }) == 6));
+    assert!((({ p2.call(5,) }) == 8));
     assert!((({ S::pick_2(5_i64,) }) == 7));
     let h3: Value<Handler> = Rc::new(RefCell::new(Handler {
         tag: 3,

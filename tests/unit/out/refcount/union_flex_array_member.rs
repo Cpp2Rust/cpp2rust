@@ -44,76 +44,54 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let tail_size: Value<usize> = Rc::new(RefCell::new(32_usize));
-    let n: Value<Ptr<node>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(
-            ((24usize as u64).wrapping_add(((*tail_size.borrow()) as u64)) as usize),
-        )
-        .reinterpret_cast::<node>(),
-    ));
-    field!((*n.borrow()), len).write((*tail_size.borrow()));
-    let i: Value<usize> = Rc::new(RefCell::new(0_usize));
-    'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
+    let mut tail_size: usize = 32_usize;
+    let mut n: Ptr<node> =
+        libcc2rs::malloc_refcount(((24usize as u64).wrapping_add((tail_size as u64)) as usize))
+            .reinterpret_cast::<node>();
+    field!(n, len).write(tail_size);
+    let mut i: usize = 0_usize;
+    'loop_: while (((i < tail_size) as i32) != 0) {
         elem!(
-            ((*(*n.borrow()).upgrade().deref())
-                .x
-                .bytes()
-                .reinterpret_cast::<u8>() as Ptr::<u8>),
-            (*i.borrow())
+            ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
+            i
         )
-        .write({ (((*i.borrow()) & 255_usize) as u8) });
-        (*i.borrow_mut()).postfix_inc();
+        .write({ ((i & 255_usize) as u8) });
+        i.postfix_inc();
     }
-    let i: Value<usize> = Rc::new(RefCell::new(0_usize));
-    'loop_: while ((((*i.borrow()) < (*tail_size.borrow())) as i32) != 0) {
+    let mut i: usize = 0_usize;
+    'loop_: while (((i < tail_size) as i32) != 0) {
         assert!(
             ((({
                 ((elem!(
-                    ((*(*n.borrow()).upgrade().deref())
-                        .x
-                        .bytes()
-                        .reinterpret_cast::<u8>() as Ptr::<u8>),
-                    (*i.borrow())
+                    ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
+                    i
                 )
                 .read()) as i32)
-            } == { ((((*i.borrow()) & 255_usize) as u8) as i32) }) as i32)
+            } == { (((i & 255_usize) as u8) as i32) }) as i32)
                 != 0)
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*(*n.borrow()).upgrade().deref())
-            .x
-            .bytes()
-            .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset((10) as isize)),
-    ));
-    assert!(((((((*p.borrow()).read()) as i32) == 10) as i32) != 0));
-    (*p.borrow()).write(170_u8);
+    let mut p: Ptr<u8> = (((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>)
+        .offset((10) as isize));
+    assert!((((((p.read()) as i32) == 10) as i32) != 0));
+    p.write(170_u8);
     assert!(
         (((((elem!(
-            ((*(*n.borrow()).upgrade().deref())
-                .x
-                .bytes()
-                .reinterpret_cast::<u8>() as Ptr::<u8>),
+            ((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr::<u8>),
             10
         )
         .read()) as i32)
             == 170) as i32)
             != 0)
     );
-    field!((*n.borrow()), pos).write(20_usize);
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (((*(*n.borrow()).upgrade().deref())
-            .x
-            .bytes()
-            .reinterpret_cast::<u8>() as Ptr<u8>)
-            .offset(((*n.borrow()).with(|__s| __s.pos)) as isize)),
-    ));
-    assert!(((((((*q.borrow()).read()) as i32) == 20) as i32) != 0));
-    (*q.borrow()).write(187_u8);
-    assert!(((((((*q.borrow()).read()) as i32) == 187) as i32) != 0));
-    libcc2rs::free_refcount((*n.borrow()).to_any());
+    field!(n, pos).write(20_usize);
+    let mut q: Ptr<u8> = (((*n.upgrade().deref()).x.bytes().reinterpret_cast::<u8>() as Ptr<u8>)
+        .offset((n.with(|__s| __s.pos)) as isize));
+    assert!((((((q.read()) as i32) == 20) as i32) != 0));
+    q.write(187_u8);
+    assert!((((((q.read()) as i32) == 187) as i32) != 0));
+    libcc2rs::free_refcount((n).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

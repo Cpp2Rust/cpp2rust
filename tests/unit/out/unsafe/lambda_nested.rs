@@ -7,21 +7,30 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub v: i32,
 }
 impl S {
     pub unsafe fn nested_this(&mut self) -> i32 {
-        return (unsafe {
-            (|y: i32| {
-                return (unsafe {
-                    (|z: i32| {
-                        return (((self.v) + (y)) + (z));
-                    })(1)
-                });
-            })(20)
-        });
+        let mut outer: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+            {
+                let this_: *mut S = (self as *mut S);
+            },
+            |y: i32| -> i32 {
+                let mut inner: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+                    {
+                        let this_: *mut S = this_;
+                        let y: i32 = y;
+                    },
+                    |z: i32| -> i32 {
+                        return ((((*this_).v) + (y)) + (z));
+                    }
+                );
+                return (unsafe { inner.call(1) });
+            }
+        );
+        return (unsafe { outer.call(20) });
     }
 }
 pub fn main() {
@@ -32,29 +41,26 @@ pub fn main() {
 }
 unsafe fn main_0() -> i32 {
     let mut x: i32 = 10;
-    assert!(
-        ((unsafe {
-            (|y: i32| {
-                return (unsafe {
-                    (|z: i32| {
-                        return (((x) + (y)) + (z));
-                    })(1)
-                });
-            })(20)
-        }) == (31))
+    let mut outer: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+        {
+            let x: *mut i32 = &mut x;
+        },
+        |y: i32| -> i32 {
+            let mut inner: FnPtr<fn(i32) -> i32> = lambda_unsafe!(
+                {
+                    let x: *mut i32 = x;
+                    let y: i32 = y;
+                },
+                |z: i32| -> i32 {
+                    return (((*x) + (y)) + (z));
+                }
+            );
+            return (unsafe { inner.call(1) });
+        }
     );
+    assert!(((unsafe { outer.call(20,) }) == (31)));
     x = 100;
-    assert!(
-        ((unsafe {
-            (|y: i32| {
-                return (unsafe {
-                    (|z: i32| {
-                        return (((x) + (y)) + (z));
-                    })(1)
-                });
-            })(20)
-        }) == (121))
-    );
+    assert!(((unsafe { outer.call(20,) }) == (121)));
     let mut s: S = S { v: 5 };
     assert!(((unsafe { S::nested_this(&mut s,) }) == (26)));
     return 0;

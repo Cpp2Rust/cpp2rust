@@ -11,20 +11,20 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
+    let x: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
+    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
         c.with_mut(|__v| __v.prefix_inc());
     }
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
+    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
         println!("{}", ((c.read()) as i32) as u8 as char);
     }
-    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<u8> {
-        let c: Value<u8> = Rc::new(RefCell::new(c.read().clone()));
-        println!("{}", ((*c.borrow()) as i32) as u8 as char);
+    'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
+        let mut c: i8 = c.read().clone();
+        println!("{}", (c as i32) as u8 as char);
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
@@ -36,8 +36,8 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
-        println!("{}", ((*p.borrow()).read()));
+        let mut p: Ptr<i32> = p.read();
+        println!("{}", (p.read()));
     }
     return 0;
 }

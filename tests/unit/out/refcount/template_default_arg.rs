@@ -14,15 +14,10 @@ pub struct A {
 }
 impl A {
     pub fn new_1() -> Self {
-        let __this: Value<A> = Rc::new(RefCell::new(Self { v: 1 }));
-        let this: Ptr<A> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 1 }
     }
-    pub fn new_2(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<A> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<A> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new_2(mut v: i32) -> Self {
+        Self { v: v }
     }
 }
 impl Default for A {
@@ -38,9 +33,7 @@ pub struct B {
 }
 impl B {
     pub fn new() -> Self {
-        let __this: Value<B> = Rc::new(RefCell::new(Self { v: 2 }));
-        let this: Ptr<B> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 2 }
     }
 }
 impl Default for B {
@@ -55,11 +48,8 @@ pub struct NoDefault {
     pub v: i32,
 }
 impl NoDefault {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<NoDefault> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<NoDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
     }
 }
 pub fn used_0(x: Option<A>) -> i32 {
@@ -72,8 +62,8 @@ pub fn used_1(x: Option<B>) -> i32 {
 }
 pub fn scaled_2(x: A, n: Option<i32>) -> i32 {
     let x: Value<A> = Rc::new(RefCell::new(x));
-    let n: Value<i32> = Rc::new(RefCell::new(n.unwrap_or((4usize as i32))));
-    return ({ (*x.borrow()).v } * (*n.borrow()));
+    let mut n: i32 = n.unwrap_or((4usize as i32));
+    return ({ (*x.borrow()).v } * n);
 }
 pub fn always_given_3(x: NoDefault) -> i32 {
     let x: Value<NoDefault> = Rc::new(RefCell::new(x));
@@ -86,11 +76,8 @@ pub struct S_NoDefault_ {
     pub v: i32,
 }
 impl S_NoDefault_ {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<S_NoDefault_> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<S_NoDefault_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
     }
 }
 pub fn main() {

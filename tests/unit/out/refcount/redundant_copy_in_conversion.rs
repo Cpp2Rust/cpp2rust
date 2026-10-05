@@ -36,18 +36,18 @@ fn main_0() -> i32 {
         &0,
     )));
     let const_it: Value<RefcountMapIter<i32, i32>> = Rc::new(RefCell::new((*it0.borrow()).clone()));
-    let r: Value<i32> = Rc::new(RefCell::new(if (*const_it.borrow()) == (*end.borrow()) {
-        0
-    } else {
-        1
-    }));
-    (*r.borrow_mut()) += ({ sink_0((*it0.borrow()).clone()) });
-    (*r.borrow_mut()) += if (*end.borrow()) == (*end.borrow()) {
+    let mut r: i32 = if (*const_it.borrow()) == (*end.borrow()) {
         0
     } else {
         1
     };
-    assert!(((*r.borrow()) == 2));
+    r += ({ sink_0((*it0.borrow()).clone()) });
+    r += if (*end.borrow()) == (*end.borrow()) {
+        0
+    } else {
+        1
+    };
+    assert!((r == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

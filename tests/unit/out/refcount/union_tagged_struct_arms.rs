@@ -12,10 +12,10 @@ pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
-pub struct anon_0 {
+pub struct anon_1 {
     #[offset(0)]
     #[byte_size(8)]
-    pub items: Ptr<Ptr<u8>>,
+    pub items: Ptr<Ptr<i8>>,
     #[offset(8)]
     pub count: i64,
     #[offset(16)]
@@ -23,7 +23,7 @@ pub struct anon_0 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
-pub struct anon_1 {
+pub struct anon_2 {
     #[offset(0)]
     pub lo: i32,
     #[offset(4)]
@@ -35,7 +35,7 @@ pub struct anon_1 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
-pub struct anon_2 {
+pub struct anon_3 {
     #[offset(0)]
     pub lo: i64,
     #[offset(8)]
@@ -49,25 +49,25 @@ pub struct anon_2 {
 }
 #[derive(ByteRepr, DeepClone)]
 #[byte_size(40)]
-pub struct anon_3 {
+pub struct anon_0 {
     #[offset(0)]
     #[byte_size(40)]
     __bytes: Value<Box<[u8]>>,
 }
-impl anon_3 {
-    pub fn list(&self) -> Ptr<anon_0> {
+impl anon_0 {
+    pub fn list(&self) -> Ptr<anon_1> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn letters(&self) -> Ptr<anon_1> {
+    pub fn letters(&self) -> Ptr<anon_2> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn integers(&self) -> Ptr<anon_2> {
+    pub fn integers(&self) -> Ptr<anon_3> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
-impl Default for anon_3 {
+impl Default for anon_0 {
     fn default() -> Self {
-        anon_3 {
+        anon_0 {
             __bytes: Rc::new(RefCell::new(Box::from([0u8; 40]))),
         }
     }
@@ -81,7 +81,7 @@ pub struct Branch {
     pub index: i32,
     #[offset(8)]
     #[byte_size(40)]
-    pub v: anon_3,
+    pub v: anon_0,
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -89,17 +89,17 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     thread_local!(
-        static items_4: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-            Ptr::<u8>::from_string_literal(b"a"),
-            Ptr::<u8>::from_string_literal(b"b"),
-            Ptr::<u8>::from_string_literal(b"c"),
+        static items_4: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+            Ptr::<i8>::from_string_literal(b"a"),
+            Ptr::<i8>::from_string_literal(b"b"),
+            Ptr::<i8>::from_string_literal(b"c"),
         ])));
     );
     let p_list: Value<Branch> = <Value<Branch>>::default();
     (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
     (*p_list.borrow_mut()).index = 0;
     field!((*p_list.borrow_mut()).v.list(), items)
-        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<u8>>));
+        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
     field!((*p_list.borrow_mut()).v.list(), count).write(3_i64);
     field!((*p_list.borrow_mut()).v.list(), cursor).write(1_i64);
     assert!(((((*p_list.borrow()).v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));

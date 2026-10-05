@@ -822,6 +822,14 @@ std::string GetNamedDeclAsString(const clang::NamedDecl *decl) {
     name = GetFunctionBaseName(fn);
   }
 
+  if (auto field = clang::dyn_cast<clang::FieldDecl>(decl)) {
+    if (auto capture = AsLambdaCapture(field)) {
+      return capture->capturesThis()
+                 ? "this_"
+                 : GetNamedDeclAsString(capture->getCapturedVar());
+    }
+  }
+
   // Anonymous record or enum
   if (name.empty() && (clang::isa<clang::RecordDecl>(decl) ||
                        clang::isa<clang::FieldDecl>(decl) ||
@@ -1050,6 +1058,97 @@ bool IsImplicitAssignmentCall(const clang::CallExpr *expr) {
     return false;
   }
   return !IsConvertibleMoveAssignment(method);
+}
+
+const clang::CXXRecordDecl *AsLambdaClass(clang::QualType type) {
+  auto decl = type->getAsCXXRecordDecl();
+  return decl && decl->isLambda() ? decl : nullptr;
+}
+
+const clang::CXXMethodDecl *
+AsLambdaOperatorCall(const clang::FunctionDecl *fn) {
+  auto method = clang::dyn_cast_or_null<clang::CXXMethodDecl>(fn);
+  if (!method || !method->getParent()->isLambda() ||
+      method->getOverloadedOperator() != clang::OO_Call) {
+    return nullptr;
+  }
+  return method;
+}
+
+const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
+  auto decl = clang::dyn_cast<clang::CXXRecordDecl>(field->getParent());
+  if (!decl || !decl->isLambda()) {
+    return nullptr;
+  }
+  return decl->captures_begin() + field->getFieldIndex();
+}
+
+clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
+                                        clang::DeclRefExpr *expr) {
+  if (!AsLambdaOperatorCall(fn)) {
+    return nullptr;
+  }
+  if (expr->isNonOdrUse() != clang::NOUR_Constant) {
+    return nullptr;
+  }
+  auto var = clang::dyn_cast<clang::VarDecl>(expr->getDecl());
+  if (!var || !var->hasLocalStorage()) {
+    return nullptr;
+  }
+  if (var->getDeclContext() == fn) {
+    return nullptr;
+  }
+  return var->getInit();
+}
+
+static const clang::FieldDecl *
+AsLambdaCaptureField(const clang::FunctionDecl *fn, const clang::Expr *expr) {
+  auto call = AsLambdaOperatorCall(fn);
+  auto ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
+  if (!call || !ref || !ref->refersToEnclosingVariableOrCapture()) {
+    return nullptr;
+  }
+  llvm::DenseMap<const clang::ValueDecl *, clang::FieldDecl *> fields;
+  clang::FieldDecl *this_field = nullptr;
+  call->getParent()->getCaptureFields(fields, this_field);
+  auto field = fields.lookup(ref->getDecl());
+  assert(field && "captured variable without a capture field");
+  return field;
+}
+
+const clang::FieldDecl *AsLambdaCaptureThis(const clang::FunctionDecl *fn) {
+  auto call = AsLambdaOperatorCall(fn);
+  if (!call) {
+    return nullptr;
+  }
+  for (auto field : call->getParent()->fields()) {
+    if (AsLambdaCapture(field)->capturesThis()) {
+      return field;
+    }
+  }
+  return nullptr;
+}
+
+clang::QualType GetDeclRefType(const clang::FunctionDecl *fn,
+                               const clang::Expr *expr,
+                               const clang::ValueDecl *decl) {
+  auto field = AsLambdaCaptureField(fn, expr);
+  return field ? field->getType() : decl->getType();
+}
+
+bool HasStaticLocal(const clang::Stmt *stmt) {
+  if (!stmt) {
+    return false;
+  }
+  if (auto decl_stmt = clang::dyn_cast<clang::DeclStmt>(stmt)) {
+    for (auto decl : decl_stmt->decls()) {
+      if (auto var = clang::dyn_cast<clang::VarDecl>(decl);
+          var && var->isStaticLocal()) {
+        return true;
+      }
+    }
+  }
+  return llvm::any_of(stmt->children(), HasStaticLocal);
 }
 
 bool IsUserOperatorCall(const clang::CXXOperatorCallExpr *expr) {

@@ -29,9 +29,8 @@ fn main_0() -> i32 {
     assert!((((({ (*c.borrow()).p.clone() }).is_null()) as i32) != 0));
     return 0;
 }
-pub fn touch_0(c: Ptr<container>) {
-    let c: Value<Ptr<container>> = Rc::new(RefCell::new(c));
-    &((*c.borrow()).with(|__s| __s.p.clone()));
+pub fn touch_0(mut c: Ptr<container>) {
+    &(c.with(|__s| __s.p.clone()));
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]

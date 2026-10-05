@@ -11,63 +11,59 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(3));
-    let zero: Value<i32> = Rc::new(RefCell::new(0));
-    let u: Value<u32> = Rc::new(RefCell::new(4_u32));
-    let ul: Value<u64> = Rc::new(RefCell::new(5_u64));
-    let ll: Value<i64> = Rc::new(RefCell::new(6_i64));
-    let ch: Value<u8> = Rc::new(RefCell::new(('a' as u8)));
-    if ((*n.borrow()) != 0) {
+    let mut n: i32 = 3;
+    let mut zero: i32 = 0;
+    let mut u: u32 = 4_u32;
+    let mut ul: u64 = 5_u64;
+    let mut ll: i64 = 6_i64;
+    let mut ch: i8 = ('a' as i8);
+    if (n != 0) {
         assert!(true);
     }
-    if !((*n.borrow()) != 0) {
+    if !(n != 0) {
         assert!(false);
     }
-    if ((*zero.borrow()) != 0) {
+    if (zero != 0) {
         assert!(false);
     }
-    if !((*zero.borrow()) != 0) {
+    if !(zero != 0) {
         assert!(true);
     }
-    if ((*u.borrow()) != 0) {
+    if (u != 0) {
         assert!(true);
     }
-    if ((*ul.borrow()) != 0) {
+    if (ul != 0) {
         assert!(true);
     }
-    if ((*ll.borrow()) != 0) {
+    if (ll != 0) {
         assert!(true);
     }
-    if ((*ch.borrow()) != 0) {
+    if (ch != 0) {
         assert!(true);
     }
-    let loop_count: Value<i32> = Rc::new(RefCell::new(0));
-    let counter: Value<i32> = Rc::new(RefCell::new(3));
-    'loop_: while ((*counter.borrow()) != 0) {
-        (*counter.borrow_mut()).prefix_dec();
-        (*loop_count.borrow_mut()).prefix_inc();
+    let mut loop_count: i32 = 0;
+    let mut counter: i32 = 3;
+    'loop_: while (counter != 0) {
+        counter.prefix_dec();
+        loop_count.prefix_inc();
     }
-    assert!(((*loop_count.borrow()) == 3));
-    let i: Value<i32> = Rc::new(RefCell::new(5));
-    'loop_: while ((*i.borrow()) != 0) {
-        (*loop_count.borrow_mut()).prefix_inc();
-        (*i.borrow_mut()).prefix_dec();
+    assert!((loop_count == 3));
+    let mut i: i32 = 5;
+    'loop_: while (i != 0) {
+        loop_count.prefix_inc();
+        i.prefix_dec();
     }
-    assert!(((*loop_count.borrow()) == 8));
-    let t: Value<i32> = Rc::new(RefCell::new(if ((*n.borrow()) != 0) { 100 } else { 200 }));
-    assert!(((*t.borrow()) == 100));
-    let t2: Value<i32> = Rc::new(RefCell::new(if ((*zero.borrow()) != 0) {
-        100
-    } else {
-        200
-    }));
-    assert!(((*t2.borrow()) == 200));
-    let t7: Value<i32> = Rc::new(RefCell::new((!((*n.borrow()) != 0) as i32)));
-    assert!(((*t7.borrow()) == 0));
-    let t8: Value<i32> = Rc::new(RefCell::new((!((*zero.borrow()) != 0) as i32)));
-    assert!(((*t8.borrow()) == 1));
-    let b1: Value<bool> = Rc::new(RefCell::new(((*n.borrow()) != 0)));
-    assert!((*b1.borrow()));
+    assert!((loop_count == 8));
+    let mut t: i32 = if (n != 0) { 100 } else { 200 };
+    assert!((t == 100));
+    let mut t2: i32 = if (zero != 0) { 100 } else { 200 };
+    assert!((t2 == 200));
+    let mut t7: i32 = (!(n != 0) as i32);
+    assert!((t7 == 0));
+    let mut t8: i32 = (!(zero != 0) as i32);
+    assert!((t8 == 1));
+    let mut b1: bool = (n != 0);
+    assert!(b1);
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

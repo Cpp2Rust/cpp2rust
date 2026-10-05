@@ -13,13 +13,13 @@ pub struct shape_a {
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[u8]>>,
+    pub pad: Value<Box<[i8]>>,
 }
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
             code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -34,7 +34,7 @@ pub struct shape_b {
     pub hi: u32,
     #[offset(8)]
     #[byte_size(8)]
-    pub fill: Value<Box<[u8]>>,
+    pub fill: Value<Box<[i8]>>,
 }
 impl Default for shape_b {
     fn default() -> Self {
@@ -42,7 +42,7 @@ impl Default for shape_b {
             code: 0_u16,
             lo: 0_u16,
             hi: 0_u32,
-            fill: Rc::new(RefCell::new((0..8).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            fill: Rc::new(RefCell::new((0..8).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -60,7 +60,7 @@ impl anon_0 {
     pub fn b(&self) -> Ptr<shape_b> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<u8> {
+    pub fn raw_(&self) -> Ptr<i8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
@@ -94,7 +94,7 @@ fn main_0() -> i32 {
     assert!((((((*c.borrow()).view.b().with(|__s| __s.lo) as i32) == 0) as i32) != 0));
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
             0
         )
         .read()) as i32)
@@ -103,7 +103,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<u8>() as Ptr::<u8>),
+            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
             255
         )
         .read()) as i32)
@@ -121,16 +121,16 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let len: Value<usize> = Rc::new(RefCell::new(16_usize));
-    assert!(((((*len.borrow()) <= ::std::mem::size_of::<[u8; 256]>()) as i32) != 0));
+    let mut len: usize = 16_usize;
+    assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
     {
-        (((*c.borrow()).view.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+        (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                (*len.borrow()) as usize,
+                len as usize,
             );
-        (((*c.borrow()).view.raw_().reinterpret_cast::<u8>()) as Ptr<u8>).to_any()
+        (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>).to_any()
     };
     assert!((((((*c.borrow()).view.b().with(|__s| __s.code) as i32) == 2) as i32) != 0));
     assert!(

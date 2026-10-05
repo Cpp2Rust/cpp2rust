@@ -6,29 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn extract_nth_0(n: i32, ap: VaList) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn extract_nth_0(mut n: i32, ap: VaList) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < n) as i32) != 0) {
         (*ap.borrow_mut()).arg::<i32>();
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
     return (*ap.borrow_mut()).arg::<i32>();
 }
-pub fn middle_layer_1(n: i32, ap: VaList) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn middle_layer_1(mut n: i32, ap: VaList) -> i32 {
     let ap: Value<VaList> = Rc::new(RefCell::new(ap));
-    return ({ extract_nth_0((*n.borrow()), (*ap.borrow()).clone()) });
+    return ({ extract_nth_0(n, (*ap.borrow()).clone()) });
 }
 pub fn top_level_2(n: i32, __args: &[VaArg]) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let result: Value<i32> = Rc::new(RefCell::new(
-        ({ middle_layer_1((*n.borrow()), (*ap.borrow()).clone()) }),
-    ));
-    return (*result.borrow());
+    let mut result: i32 = ({ middle_layer_1((*n.borrow()), (*ap.borrow()).clone()) });
+    return result;
 }
 pub fn main() {
     __cpp2rust_init_globals();

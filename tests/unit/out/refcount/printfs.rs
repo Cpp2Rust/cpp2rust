@@ -6,17 +6,17 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fn_0(v: Vec<u8>) -> Vec<u8> {
-    let v: Value<Vec<u8>> = Rc::new(RefCell::new(v));
+pub fn fn_0(v: Vec<i8>) -> Vec<i8> {
+    let v: Value<Vec<i8>> = Rc::new(RefCell::new(v));
     return {
         let mut r = (*v.borrow()).clone();
         r.pop();
-        Ptr::<u8>::from_string_literal(b" str").with_c_str(|__s| r.extend_from_slice(__s));
+        Ptr::<i8>::from_string_literal(b" str").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);
         r
     };
 }
-pub fn fn2_1(v: Ptr<Vec<u8>>) -> Ptr<Vec<u8>> {
+pub fn fn2_1(v: Ptr<Vec<i8>>) -> Ptr<Vec<i8>> {
     return (v).clone();
 }
 pub fn main() {
@@ -24,35 +24,35 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    println!("{}", Ptr::<u8>::from_string_literal(b"fprintf stdout"));
+    println!("{}", Ptr::<i8>::from_string_literal(b"fprintf stdout"));
     println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
-    let in_: Value<Ptr<CFile>> = Rc::new(RefCell::new(libcc2rs::c_stdin()));
-    assert!(!((*in_.borrow()).is_null()));
-    println!("{}", Ptr::<u8>::from_string_literal(b"printf"));
+    let mut in_: Ptr<CFile> = libcc2rs::c_stdin();
+    assert!(!((in_).is_null()));
+    println!("{}", Ptr::<i8>::from_string_literal(b"printf"));
     print!("hello world");
-    let s: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"a string").to_c_bytes();
+    let s: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"a string").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
-    println!("{}", (s.as_pointer() as Ptr<u8>));
+    println!("{}", (s.as_pointer() as Ptr<i8>));
     println!(
         "{}",
         (Rc::new(RefCell::new(
             ({
                 fn_0({
-                    let mut __bytes = Ptr::<u8>::from_string_literal(b"foo").to_c_bytes();
+                    let mut __bytes = Ptr::<i8>::from_string_literal(b"foo").to_c_bytes();
                     __bytes.push(0);
                     __bytes
                 })
             })
         ))
-        .as_pointer() as Ptr<u8>)
+        .as_pointer() as Ptr<i8>)
     );
     println!(
         "{}",
-        (Ptr::<Vec<u8>>::decay(&({ fn2_1(s.as_pointer(),) })) as Ptr<u8>)
+        (Ptr::<Vec<i8>>::decay(&({ fn2_1(s.as_pointer(),) })) as Ptr<i8>)
     );
     return 0;
 }

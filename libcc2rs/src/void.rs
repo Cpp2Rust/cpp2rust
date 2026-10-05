@@ -83,17 +83,32 @@ impl PartialEq for AnyPtr {
 }
 
 impl AnyPtr {
+    // char buffers are Ptr<i8>; access them directly rather than through a
+    // reinterpreted byte view.
+    fn as_chars(&self) -> Option<&Ptr<i8>> {
+        self.ptr.as_any().downcast_ref::<Ptr<i8>>()
+    }
+
     pub fn memcpy(&self, src: &AnyPtr, len: usize) {
+        if let (Some(dst), Some(src)) = (self.as_chars(), src.as_chars()) {
+            return dst.memcpy(src, len);
+        }
         let dst_u8 = self.ptr.as_bytes();
         let src_u8 = src.ptr.as_bytes();
         dst_u8.memcpy(&src_u8, len);
     }
 
     pub fn memset(&self, value: u8, num: usize) {
+        if let Some(dst) = self.as_chars() {
+            return dst.memset(value as i8, num);
+        }
         self.ptr.as_bytes().memset(value, num);
     }
 
     pub fn memcmp(&self, other: &AnyPtr, len: usize) -> i32 {
+        if let (Some(a), Some(b)) = (self.as_chars(), other.as_chars()) {
+            return a.memcmp(b, len);
+        }
         let a = self.ptr.as_bytes();
         let b = other.ptr.as_bytes();
         a.memcmp(&b, len)

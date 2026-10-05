@@ -11,24 +11,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<u32> = Rc::new(RefCell::new(12_u32));
-    let b: Value<u32> = Rc::new(RefCell::new(10_u32));
-    let z: Value<u32> = Rc::new(RefCell::new(0_u32));
-    assert!(!((*z.borrow()) != 0));
-    assert!(((*a.borrow()) != 0) && ((*b.borrow()) != 0));
-    assert!(!(((*a.borrow()) != 0) && ((*z.borrow()) != 0)));
-    assert!(((*a.borrow()) != 0) || ((*z.borrow()) != 0));
-    assert!(((*a.borrow()) != (*b.borrow())));
-    assert!(((!(*a.borrow())) == !12_u32));
-    assert!((((*a.borrow()) & (*b.borrow())) == 8_u32));
-    assert!((((*a.borrow()) | (*b.borrow())) == 14_u32));
-    assert!((((*a.borrow()) ^ (*b.borrow())) == 6_u32));
-    (*a.borrow_mut()) &= (*b.borrow());
-    assert!(((*a.borrow()) == 8_u32));
-    (*a.borrow_mut()) |= (*b.borrow());
-    assert!(((*a.borrow()) == 10_u32));
-    (*a.borrow_mut()) ^= (*b.borrow());
-    assert!(((*a.borrow()) == 0_u32));
+    let mut a: u32 = 12_u32;
+    let mut b: u32 = 10_u32;
+    let mut z: u32 = 0_u32;
+    assert!(!(z != 0));
+    assert!((a != 0) && (b != 0));
+    assert!(!((a != 0) && (z != 0)));
+    assert!((a != 0) || (z != 0));
+    assert!((a != b));
+    assert!(((!a) == !12_u32));
+    assert!(((a & b) == 8_u32));
+    assert!(((a | b) == 14_u32));
+    assert!(((a ^ b) == 6_u32));
+    a &= b;
+    assert!((a == 8_u32));
+    a |= b;
+    assert!((a == 10_u32));
+    a ^= b;
+    assert!((a == 0_u32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -18,31 +18,30 @@ pub struct registry {
 pub type field = u32;
 pub const field_FIELD_SLOT: field = 0;
 pub const field_FIELD_LEVEL: field = 1;
-pub fn registry_update_0(r: Ptr<registry>, field: field, __args: &[VaArg]) -> i32 {
-    let r: Value<Ptr<registry>> = Rc::new(RefCell::new(r));
+pub fn registry_update_0(mut r: Ptr<registry>, field: field, __args: &[VaArg]) -> i32 {
     let field: Value<field> = Rc::new(RefCell::new(field));
-    let result: Value<i32> = Rc::new(RefCell::new(0));
+    let mut result: i32 = 0;
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     'switch: {
         match { ((*field.borrow()) as u32) } {
             __v if __v == ((field_FIELD_SLOT as i32) as u32) => {
                 let __rhs = (*ap.borrow_mut()).arg::<AnyPtr>();
-                field!((*r.borrow()), slot).write(__rhs);
+                field!(r, slot).write(__rhs);
                 break 'switch;
             }
             __v if __v == ((field_FIELD_LEVEL as i32) as u32) => {
                 let __rhs = (*ap.borrow_mut()).arg::<i64>();
-                field!((*r.borrow()), level).write(__rhs);
+                field!(r, level).write(__rhs);
                 break 'switch;
             }
             _ => {
-                (*result.borrow_mut()) = 1;
+                result = 1;
                 break 'switch;
             }
         }
     };
-    return (*result.borrow());
+    return result;
 }
 pub fn main() {
     __cpp2rust_init_globals();

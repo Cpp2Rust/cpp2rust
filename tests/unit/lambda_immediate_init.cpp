@@ -1,4 +1,5 @@
-// no-compile
+// no-compile: refcount
+// translation-fail: unsafe
 #include <assert.h>
 
 int pick(int x = [] { return 237; }()) { return x; }

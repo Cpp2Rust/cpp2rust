@@ -11,6 +11,10 @@ extern crate rustc_middle;
 extern crate rustc_span;
 extern crate rustc_trait_selection;
 
+// Not used directly, but depending on it makes cargo report the artifacts of
+// the rules crate's dependencies, which are needed to type-check rule files.
+extern crate rules as _;
+
 mod ir;
 mod semantic;
 mod syntactic;

@@ -10,10 +10,10 @@ pub unsafe trait Animal {
     unsafe fn bark(&self) -> bool;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Dog {}
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Cat {}
 impl Cat {
     unsafe fn meow(&self) -> bool {

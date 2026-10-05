@@ -13,7 +13,7 @@ thread_local!(
 #[byte_size(1)]
 pub struct Static_int_ {}
 thread_local!(
-    pub static s_1: Value<u8> = Rc::new(RefCell::new(55_u8));
+    pub static s_1: Value<i8> = Rc::new(RefCell::new(55_i8));
 );
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
@@ -30,7 +30,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     s_0.with(|rc| *rc.borrow_mut() = 22);
-    s_1.with(|rc| *rc.borrow_mut() = 33_u8);
+    s_1.with(|rc| *rc.borrow_mut() = 33_i8);
     assert!((s_0.with(|rc| *rc.borrow()) == 22));
     assert!(((s_1.with(|rc| *rc.borrow()) as i32) == 33));
     assert!((s_2.with(|rc| *rc.borrow()) == 55_i64));

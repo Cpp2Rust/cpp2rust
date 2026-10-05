@@ -7,13 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Inner {
     pub v: i32,
     pub name: *const libc::c_char,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Outer {
     pub p1: *mut i32,
     pub p2: *const i32,
@@ -25,7 +25,7 @@ pub struct Outer {
     pub fn_: Option<unsafe fn(i32) -> i32>,
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Foo {
     pub s1: *const libc::c_char,
     pub s2: *const libc::c_char,

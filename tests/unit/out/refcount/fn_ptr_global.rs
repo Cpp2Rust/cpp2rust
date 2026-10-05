@@ -6,28 +6,24 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn double_it_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) * 2);
+pub fn double_it_0(mut x: i32) -> i32 {
+    return (x * 2);
 }
-pub fn triple_it_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) * 3);
+pub fn triple_it_1(mut x: i32) -> i32 {
+    return (x * 3);
 }
 thread_local!(
     pub static g_op_2: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
 );
-pub fn set_op_3(fn_: FnPtr<fn(i32) -> i32>) {
-    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
-    g_op_2.with(|rc| *rc.borrow_mut() = (*fn_.borrow()).clone());
+pub fn set_op_3(mut fn_: FnPtr<fn(i32) -> i32>) {
+    g_op_2.with(|rc| *rc.borrow_mut() = (fn_).clone());
 }
-pub fn call_op_4(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn call_op_4(mut x: i32) -> i32 {
     if !(*g_op_2.with(Value::clone).borrow()).is_null() {
-        return ({ (*g_op_2.with(Value::clone).borrow()).call((*x.borrow())) });
+        return ({ (*g_op_2.with(Value::clone).borrow()).call(x) });
     }
-    return (*x.borrow());
+    return x;
 }
 pub fn main() {
     __cpp2rust_init_globals();

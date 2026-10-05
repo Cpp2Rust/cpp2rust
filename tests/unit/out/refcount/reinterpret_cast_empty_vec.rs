@@ -12,9 +12,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<u32>> = Rc::new(RefCell::new(Vec::new()));
-    let bytes: Value<Ptr<u16>> = Rc::new(RefCell::new(
-        (v.as_pointer() as Ptr<u32>).reinterpret_cast::<u16>(),
-    ));
+    let mut bytes: Ptr<u16> = (v.as_pointer() as Ptr<u32>).reinterpret_cast::<u16>();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

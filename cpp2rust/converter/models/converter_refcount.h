@@ -3,12 +3,17 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <memory>
+
 #include "converter/converter.h"
+#include "converter/models/boxed_vars.h"
 
 namespace cpp2rust {
 class ConverterRefCount final : public Converter {
 public:
   ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx);
+  ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx,
+                    std::shared_ptr<const BoxedVars> boxed_vars);
 
   void EmitFilePreamble() override;
 
@@ -25,8 +30,7 @@ public:
   bool VisitPointerType(clang::PointerType *type) override;
 
   std::string
-  ConvertFunctionPointerType(const clang::FunctionProtoType *proto,
-                             FnProtoType kind = FnProtoType::FnPtr) override;
+  ConvertFunctionPointerType(const clang::FunctionProtoType *proto) override;
 
   bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) override;
 
@@ -36,8 +40,7 @@ public:
 
   bool EmitsReprCForRecords() const override { return false; }
 
-  const char *CharRustType() const override { return "u8"; }
-  bool CharRustTypeIsSigned() const override { return false; }
+  const char *CharRustType() const override { return "i8"; }
 
   std::string GetComparisonReferenceArg(const clang::CXXRecordDecl *decl,
                                         std::string_view value) override;
@@ -102,8 +105,6 @@ public:
 
   void EmitHoistedInArmAssignment(clang::VarDecl *decl) override;
 
-  bool ConvertLambdaVarDecl(clang::VarDecl *decl) override;
-
   void ConvertDeclRefValue(clang::Expr *expr, clang::ValueDecl *decl) override;
 
   bool ConvertIncAndDec(clang::UnaryOperator *expr) override;
@@ -113,6 +114,17 @@ public:
   void ConvertPrintf(clang::CallExpr *expr) override;
 
   void EmitFnPtrCall(clang::Expr *callee) override;
+
+  bool VisitLambdaExpr(clang::LambdaExpr *expr) override;
+
+  void ConvertCapturelessLambda(const clang::CXXRecordDecl *decl) override;
+
+  const char *LambdaMacro() const override { return "lambda!"; }
+
+  void ConvertLambdaCapture(const clang::FieldDecl *field,
+                            clang::Expr *init) override;
+
+  void ConvertLambdaToFunctionPointer(clang::Expr *lambda) override;
 
   void
   ConvertFunctionToFunctionPointer(const clang::FunctionDecl *fn_decl) override;
@@ -195,8 +207,7 @@ public:
 
   bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
 
-  void EmitByValueShadow(const std::string &loop_var_name, clang::QualType type,
-                         std::string box_expr,
+  void EmitByValueShadow(const clang::VarDecl *loop_var, std::string box_expr,
                          const std::string &type_override = "");
 
   std::string ConvertStream(clang::Expr *expr) override;
@@ -223,7 +234,7 @@ public:
 
   std::string GetDefaultAsStringFallback(clang::QualType qual_type) override;
 
-  std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
+  std::string ConvertVarDefaultInit(const clang::VarDecl *decl) override;
 
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
@@ -396,6 +407,15 @@ private:
   bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
                 llvm::StringRef /*name*/) const override;
 
+  // Whether decl is a local variable or a parameter that is stored directly
+  // instead of in a Value, as no pointer to it is ever made.
+  bool IsUnboxedVar(const clang::ValueDecl *decl) const;
+  std::shared_ptr<const BoxedVars> boxed_vars_;
+
+  // Set when a constructor's translation refers to `this`, which then needs
+  // the object being built to be in a Value.
+  bool ctor_uses_this_ = false;
+
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {
     Unboxed,
@@ -419,6 +439,9 @@ private:
   }
 
   ConversionKind getConversionKind() const { return conversion_kind_.back(); }
+
+  // How a variable is stored.
+  ConversionKind VarConversionKind(const clang::VarDecl *decl) const;
 
   struct PushConversionKind {
     ConverterRefCount &c;

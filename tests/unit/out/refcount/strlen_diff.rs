@@ -6,29 +6,28 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<u8>) -> usize {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
-    let begin: Value<Ptr<u8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    'loop_: while (((*s.borrow()).read()) != 0) {
-        (*s.borrow_mut()).prefix_inc();
+pub fn strlen_0(mut s: Ptr<i8>) -> usize {
+    let mut begin: Ptr<i8> = (s).clone();
+    'loop_: while ((s.read()) != 0) {
+        s.prefix_inc();
     }
-    return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as usize);
+    return ((((s).clone() - (begin).clone()) as i64) as usize);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        ('s' as u8),
-        ('t' as u8),
-        ('r' as u8),
-        ('i' as u8),
-        ('n' as u8),
-        ('g' as u8),
-        ('\0' as u8),
+    let s: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        ('s' as i8),
+        ('t' as i8),
+        ('r' as i8),
+        ('i' as i8),
+        ('n' as i8),
+        ('g' as i8),
+        ('\0' as i8),
     ])));
-    assert!((({ strlen_0(((s.as_pointer() as Ptr<u8>).offset(0)),) }) == 6_usize));
+    assert!((({ strlen_0(((s.as_pointer() as Ptr<i8>).offset(0)),) }) == 6_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

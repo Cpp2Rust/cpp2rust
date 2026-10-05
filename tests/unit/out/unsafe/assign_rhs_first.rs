@@ -13,7 +13,7 @@ pub unsafe fn advance_1() -> i32 {
     return 10;
 }
 #[repr(C)]
-#[derive(Copy, Clone, VaArg, Default)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct S {
     pub ptr: *mut i32,
 }

@@ -17,20 +17,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let i1: Value<i32> = Rc::new(RefCell::new(0));
-    let i2: Value<i32> = Rc::new(RefCell::new(1));
+    let mut i1: i32 = 0;
+    let mut i2: i32 = 1;
     write!(libcc2rs::cout(), "{:}\n", (true as u8),);
     write!(libcc2rs::cout(), "{:}\n", (false as u8),);
-    write!(
-        libcc2rs::cout(),
-        "{:}\n",
-        (((*i1.borrow()) != (*i2.borrow())) as u8),
-    );
-    write!(
-        libcc2rs::cout(),
-        "{:}\n",
-        (((*i1.borrow()) == (*i2.borrow())) as u8),
-    );
+    write!(libcc2rs::cout(), "{:}\n", ((i1 != i2) as u8),);
+    write!(libcc2rs::cout(), "{:}\n", ((i1 == i2) as u8),);
     write!(libcc2rs::cout(), "{:}\n", (({ foo_0() }) as u8),);
     write!(libcc2rs::cout(), "{:}\n", (({ bar_1() }) as u8),);
     return 0;

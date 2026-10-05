@@ -32,13 +32,8 @@ pub struct Partial {
     pub p: Ptr<i32>,
 }
 impl Partial {
-    pub fn new_1(q: Ptr<i32>) -> Self {
-        let q: Value<Ptr<i32>> = Rc::new(RefCell::new(q));
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            p: (*q.borrow()).clone(),
-        }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new_1(mut q: Ptr<i32>) -> Self {
+        Self { p: (q).clone() }
     }
 }
 impl Default for Partial {
@@ -116,7 +111,7 @@ pub trait PartialImpl {
     fn next_4(&self) -> Ptr<Partial> {
         unimplemented!()
     }
-    fn next_5(&self, _a0: i32) -> Partial {
+    fn next_5(&self, mut _a0: i32) -> Partial {
         unimplemented!()
     }
 }

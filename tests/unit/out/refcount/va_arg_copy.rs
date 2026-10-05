@@ -12,20 +12,20 @@ pub fn sum_with_copy_0(count: i32, __args: &[VaArg]) -> i32 {
     let aq: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
     (*aq.borrow_mut()) = (*ap.borrow_mut()).clone();
-    let sum1: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        (*sum1.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
-        (*i.borrow_mut()).postfix_inc();
+    let mut sum1: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+        sum1 += (*ap.borrow_mut()).arg::<i32>();
+        i.postfix_inc();
     }
-    let sum2: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        (*sum2.borrow_mut()) += (*aq.borrow_mut()).arg::<i32>();
-        (*i.borrow_mut()).postfix_inc();
+    let mut sum2: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+        sum2 += (*aq.borrow_mut()).arg::<i32>();
+        i.postfix_inc();
     }
-    assert!(((((*sum1.borrow()) == (*sum2.borrow())) as i32) != 0));
-    return ((*sum1.borrow()) + (*sum2.borrow()));
+    assert!((((sum1 == sum2) as i32) != 0));
+    return (sum1 + sum2);
 }
 pub fn main() {
     __cpp2rust_init_globals();

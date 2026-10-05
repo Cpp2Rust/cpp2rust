@@ -13,19 +13,15 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<MoveOnly> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
     }
     pub fn move_from(o: Ptr<MoveOnly>) -> Self {
-        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self {
+        let __this: MoveOnly = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<MoveOnly> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 #[derive(Record, ByteRepr)]
@@ -36,23 +32,17 @@ pub struct ConstMove {
 }
 impl ConstMove {
     pub fn new() -> Self {
-        let __this: Value<ConstMove> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<ConstMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
     pub fn new_1(o: Ptr<ConstMove>) -> Self {
-        let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
+        Self {
             mark: (o.with(|__s| __s.mark) + 1),
-        }));
-        let this: Ptr<ConstMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn new_2(o: Ptr<ConstMove>) -> Self {
-        let __this: Value<ConstMove> = Rc::new(RefCell::new(Self {
+        Self {
             mark: (o.with(|__s| __s.mark) + 10),
-        }));
-        let this: Ptr<ConstMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for ConstMove {
@@ -71,34 +61,28 @@ pub struct ThrowingMove {
     pub moves: i32,
 }
 impl ThrowingMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+    pub fn new(mut v: i32) -> Self {
+        Self {
+            v: v,
             copies: 0,
             moves: 0,
-        }));
-        let this: Ptr<ThrowingMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn copy_from(o: Ptr<ThrowingMove>) -> Self {
-        let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
-        }));
-        let this: Ptr<ThrowingMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<ThrowingMove>) -> Self {
-        let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
+        let __this: ThrowingMove = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
             moves: (o.with(|__s| __s.moves) + 1),
-        }));
-        let this: Ptr<ThrowingMove> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for ThrowingMove {
@@ -122,34 +106,28 @@ pub struct NoexceptMove {
     pub moves: i32,
 }
 impl NoexceptMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+    pub fn new(mut v: i32) -> Self {
+        Self {
+            v: v,
             copies: 0,
             moves: 0,
-        }));
-        let this: Ptr<NoexceptMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn copy_from(o: Ptr<NoexceptMove>) -> Self {
-        let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
-        }));
-        let this: Ptr<NoexceptMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<NoexceptMove>) -> Self {
-        let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
+        let __this: NoexceptMove = Self {
             v: o.with(|__s| __s.v),
             copies: o.with(|__s| __s.copies),
             moves: (o.with(|__s| __s.moves) + 1),
-        }));
-        let this: Ptr<NoexceptMove> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for NoexceptMove {
@@ -166,9 +144,8 @@ pub fn by_value_0(m: MoveOnly) -> i32 {
     let m: Value<MoveOnly> = Rc::new(RefCell::new(m));
     return { (*m.borrow()).v };
 }
-pub fn make_1(v: i32) -> MoveOnly {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
+pub fn make_1(mut v: i32) -> MoveOnly {
+    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ v })));
     return MoveOnly::move_from({ m.as_pointer() });
 }
 pub fn main() {

@@ -25,7 +25,7 @@ pub struct S {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub b: u8,
+    pub b: i8,
     #[offset(8)]
     #[byte_size(8)]
     pub c: Inner,
@@ -37,7 +37,7 @@ impl Default for S {
     fn default() -> Self {
         S {
             a: 1,
-            b: 2_u8,
+            b: 2_i8,
             c: <Inner>::default(),
             d: <Inner>::default(),
         }
@@ -52,15 +52,8 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub fn new(x: i32, t: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let t: Value<i32> = Rc::new(RefCell::new(t));
-        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
-            v: (*x.borrow()),
-            tag: (*t.borrow()),
-        }));
-        let this: Ptr<Boxed_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new(mut x: i32, mut t: i32) -> Self {
+        Self { v: x, tag: t }
     }
 }
 impl Default for Boxed_int_ {

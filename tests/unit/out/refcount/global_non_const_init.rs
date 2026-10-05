@@ -12,15 +12,14 @@ pub fn next_0() -> i32 {
     );
     return (*counter_1.with(Value::clone).borrow_mut()).prefix_inc();
 }
-pub fn marker_2(tag: u8) -> u8 {
-    let tag: Value<u8> = Rc::new(RefCell::new(tag));
-    return (((((*tag.borrow()) as i32) << 3) | 2) as u8);
+pub fn marker_2(mut tag: u8) -> u8 {
+    return ((((tag as i32) << 3) | 2) as u8);
 }
 thread_local!(
     pub static signature_3: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         ({ marker_2(1_u8) }),
         4_u8,
-        ('B' as u8),
+        (('B' as i8) as u8),
     ])));
 );
 thread_local!(
@@ -41,15 +40,10 @@ pub struct Ctor {
 }
 impl Ctor {
     pub fn new_1() -> Self {
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: ({ next_0() }) }));
-        let this: Ptr<Ctor> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: ({ next_0() }) }
     }
-    pub fn new_2(x: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: (*x.borrow()) }));
-        let this: Ptr<Ctor> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+    pub fn new_2(mut x: i32) -> Self {
+        Self { v: x }
     }
 }
 impl Default for Ctor {
@@ -64,8 +58,8 @@ thread_local!(
     pub static arg_ctor_8: Value<Ctor> = Rc::new(RefCell::new(Ctor::new_2({ 7 })));
 );
 thread_local!(
-    pub static str_9: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let mut __bytes = Ptr::<u8>::from_string_literal(b"abc").to_c_bytes();
+    pub static str_9: Value<Vec<i8>> = Rc::new(RefCell::new({
+        let mut __bytes = Ptr::<i8>::from_string_literal(b"abc").to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
@@ -96,9 +90,7 @@ pub struct Singleton {
 }
 impl Singleton {
     pub fn new() -> Self {
-        let __this: Value<Singleton> = Rc::new(RefCell::new(Self { hits: 0 }));
-        let this: Ptr<Singleton> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { hits: 0 }
     }
     pub fn instance() -> Ptr<Singleton> {
         thread_local!(
@@ -136,13 +128,11 @@ fn main_0() -> i32 {
     assert!((depends_on_call_6.with(|rc| *rc.borrow()) == 2));
     assert!(({ (*default_ctor_7.with(Value::clone).borrow()).v } == 2));
     assert!(({ (*arg_ctor_8.with(Value::clone).borrow()).v } == 7));
-    assert!(
+    assert!(Ptr::<i8>::from_string_literal(b"abc").with_c_str(|__s| {
         (*str_9.with(Value::clone).borrow())
-            .iter()
-            .copied()
-            .take((*str_9.with(Value::clone).borrow()).len().saturating_sub(1))
-            .eq(Ptr::<u8>::from_string_literal(b"abc").to_c_string_iterator())
-    );
+            [..(*str_9.with(Value::clone).borrow()).len().saturating_sub(1)]
+            == *__s
+    }));
     assert!((member_10.with(|rc| *rc.borrow()) == 3));
     assert!(({ (*inline_member_11.with(Value::clone).borrow()).v } == 5));
     assert!((({ local_static_12() }) == 7));

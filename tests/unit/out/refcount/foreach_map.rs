@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
-    let k: Value<i32> = Rc::new(RefCell::new(100));
+    let mut k: i32 = 100;
     'loop_: while ((*i.borrow()) < 100) {
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
@@ -21,21 +21,21 @@ fn main_0() -> i32 {
                     .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                     .as_pointer()
             })
-            .write((((*k.borrow()) as f64) / 2.0E+0));
+            .write(((k as f64) / 2.0E+0));
         {
             (*i.borrow_mut()).prefix_inc();
-            (*k.borrow_mut()).prefix_dec()
+            k.prefix_dec()
         };
     }
-    let sum: Value<f64> = Rc::new(RefCell::new(0_f64));
+    let mut sum: f64 = 0_f64;
     'loop_: for i in RefcountMapIter::begin(m.as_pointer()) {
-        (*sum.borrow_mut()) += (*i.second().borrow());
+        sum += (*i.second().borrow());
     }
     'loop_: for i in RefcountMapIter::begin(m.as_pointer()) {
         let i: Value<RefcountMapIter<i32, f64>> = Rc::new(RefCell::new(i));
-        (*sum.borrow_mut()) += ((*(*i.borrow()).first().borrow()) as f64);
+        sum += ((*(*i.borrow()).first().borrow()) as f64);
     }
-    assert!(((*sum.borrow()) == 7475_f64));
+    assert!((sum == 7475_f64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

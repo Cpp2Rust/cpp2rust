@@ -15,11 +15,9 @@ pub struct SafePointer {
 }
 impl SafePointer {
     pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
-        let __this: Value<SafePointer> = Rc::new(RefCell::new(Self {
+        Self {
             ptr: field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<SafePointer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -35,8 +33,8 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     let x2: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     (*(*x2.borrow()).as_ref().unwrap().borrow_mut()) = 1;
     (x1.as_pointer() as Ptr<Option<Value<i32>>>).write((*x2.borrow_mut()).take());
-    let raw_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x1.borrow()).as_pointer())));
-    (*raw_ptr1.borrow()).with_mut(|__v| __v.prefix_inc());
+    let mut raw_ptr1: Ptr<i32> = ((*x1.borrow()).as_pointer());
+    raw_ptr1.with_mut(|__v| __v.prefix_inc());
     (field_ptr!(((*safe_ptr.upgrade().deref()).as_pointer()), ptr) as Ptr<Option<Value<i32>>>)
         .write((*x1.borrow_mut()).take());
     ({ SafePointerImpl::inc(&((*safe_ptr.upgrade().deref()).as_pointer())) });
@@ -47,14 +45,14 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
         + (*(*x4.borrow()).as_ref().unwrap().borrow()));
     (*(*x3.borrow()).as_ref().unwrap().borrow_mut()) = __rhs;
     (x4.as_pointer() as Ptr<Option<Value<i32>>>).write((*x3.borrow_mut()).take());
-    let raw_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*x4.borrow()).as_pointer())));
+    let mut raw_ptr2: Ptr<i32> = ((*x4.borrow()).as_pointer());
     {
-        let _ptr = (*raw_ptr2.borrow()).clone();
+        let _ptr = raw_ptr2.clone();
         _ptr.write(_ptr.read() + 1)
     };
     let pair: Value<Option<Value<Pair>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Pair {
-            x: ((*raw_ptr2.borrow()).read()),
+            x: (raw_ptr2.read()),
             y: 5,
         })))));
     ({ PairImpl::inc(&((*pair.borrow()).as_pointer()), 10) });
@@ -96,54 +94,53 @@ pub fn RndStuff_2() {
     let x2: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     ));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 100) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 1;
-        (*i.borrow_mut()).prefix_inc();
+    let mut i: i32 = 0;
+    'loop_: while (i < 100) {
+        (*x2.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = 1;
+        i.prefix_inc();
     }
     (x2.as_pointer() as Ptr<Option<Value<Box<[i32]>>>>).write(
         Ptr::alloc_array((0..200_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     );
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 200) {
-        (*x2.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = 2;
-        (*i.borrow_mut()).prefix_inc();
+    let mut i: i32 = 0;
+    'loop_: while (i < 200) {
+        (*x2.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = 2;
+        i.prefix_inc();
     }
-    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*x2.borrow()).as_pointer()));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 200) {
-        assert!(((elem!((*p2.borrow()), (*i.borrow())).read()) == 2));
-        (*i.borrow_mut()).prefix_inc();
+    let mut p2: Ptr<i32> = (*x2.borrow()).as_pointer();
+    let mut i: i32 = 0;
+    'loop_: while (i < 200) {
+        assert!(((elem!(p2, i).read()) == 2));
+        i.prefix_inc();
     }
     let x3: Value<Option<Value<Box<[Pair]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
         (0..10_usize)
             .map(|_| <Pair>::default())
             .collect::<Box<[_]>>(),
     )))));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] =
-            Pair { x: 1, y: 2 };
-        (*i.borrow_mut()).prefix_inc();
+    let mut i: i32 = 0;
+    'loop_: while (i < 10) {
+        (*x3.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = Pair { x: 1, y: 2 };
+        i.prefix_inc();
     }
-    let p3_0: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 10) {
-        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).x } == 1));
-        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).y } == 2));
+    let mut p3_0: Ptr<Pair> = (*x3.borrow()).as_pointer();
+    let mut i: i32 = 0;
+    'loop_: while (i < 10) {
+        assert!(({ (*elem!(p3_0, i).upgrade().deref()).x } == 1));
+        assert!(({ (*elem!(p3_0, i).upgrade().deref()).y } == 2));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
                     .as_ref()
                     .unwrap()
                     .as_pointer()
-                    .offset(((*i.borrow()) as usize)),
+                    .offset((i as usize)),
                 10,
             )
         });
-        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).x } == 11));
-        assert!(({ (*elem!((*p3_0.borrow()), (*i.borrow())).upgrade().deref()).y } == 12));
-        (*i.borrow_mut()).prefix_inc();
+        assert!(({ (*elem!(p3_0, i).upgrade().deref()).x } == 11));
+        assert!(({ (*elem!(p3_0, i).upgrade().deref()).y } == 12));
+        i.prefix_inc();
     }
     (x3.as_pointer() as Ptr<Option<Value<Box<[Pair]>>>>).write(
         Ptr::alloc_array(
@@ -153,33 +150,33 @@ pub fn RndStuff_2() {
         )
         .to_owned_opt(),
     );
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 50) {
-        (*x3.borrow()).as_ref().unwrap().borrow_mut()[((*i.borrow()) as usize) as usize] = Pair {
+    let mut i: i32 = 0;
+    'loop_: while (i < 50) {
+        (*x3.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = Pair {
             x: -1_i32,
             y: -2_i32,
         };
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
-    let p3_1: Value<Ptr<Pair>> = Rc::new(RefCell::new((*x3.borrow()).as_pointer()));
-    assert!(({ (*p3_0.borrow()).clone() } != { (*p3_1.borrow()).clone() }));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 50) {
-        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).x } == -1_i32));
-        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).y } == -2_i32));
+    let mut p3_1: Ptr<Pair> = (*x3.borrow()).as_pointer();
+    assert!(({ (p3_0).clone() } != { (p3_1).clone() }));
+    let mut i: i32 = 0;
+    'loop_: while (i < 50) {
+        assert!(({ (*elem!(p3_1, i).upgrade().deref()).x } == -1_i32));
+        assert!(({ (*elem!(p3_1, i).upgrade().deref()).y } == -2_i32));
         ({
             PairImpl::inc(
                 &(*x3.borrow())
                     .as_ref()
                     .unwrap()
                     .as_pointer()
-                    .offset(((*i.borrow()) as usize)),
+                    .offset((i as usize)),
                 -10_i32,
             )
         });
-        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).x } == -11_i32));
-        assert!(({ (*elem!((*p3_1.borrow()), (*i.borrow())).upgrade().deref()).y } == -12_i32));
-        (*i.borrow_mut()).prefix_inc();
+        assert!(({ (*elem!(p3_1, i).upgrade().deref()).x } == -11_i32));
+        assert!(({ (*elem!(p3_1, i).upgrade().deref()).y } == -12_i32));
+        i.prefix_inc();
     }
 }
 pub fn main() {
@@ -203,15 +200,14 @@ pub trait PairImpl {
     fn inc(&self, k: i32);
 }
 impl PairImpl for Ptr<Pair> {
-    fn inc(&self, k: i32) {
-        let k: Value<i32> = Rc::new(RefCell::new(k));
+    fn inc(&self, mut k: i32) {
         {
             let _ptr = field!((*self), x);
-            _ptr.write(_ptr.read() + (*k.borrow()))
+            _ptr.write(_ptr.read() + k)
         };
         {
             let _ptr = field!((*self), y);
-            _ptr.write(_ptr.read() + (*k.borrow()))
+            _ptr.write(_ptr.read() + k)
         };
     }
 }

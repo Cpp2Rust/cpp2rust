@@ -6,15 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn foo_0(a: i32, b: Option<i32>) -> i32 {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    let b: Value<i32> = Rc::new(RefCell::new(b.unwrap_or(10)));
-    return ((*a.borrow()) + (*b.borrow()));
+pub fn foo_0(mut a: i32, b: Option<i32>) -> i32 {
+    let mut b: i32 = b.unwrap_or(10);
+    return (a + b);
 }
-pub fn baz_1(a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
-    let a: Value<Ptr<i32>> = Rc::new(RefCell::new(a));
-    let b: Value<Ptr<i32>> = Rc::new(RefCell::new(b.unwrap_or(Ptr::<i32>::null())));
-    return ({ (*a.borrow()).clone() } == { (*b.borrow()).clone() });
+pub fn baz_1(mut a: Ptr<i32>, b: Option<Ptr<i32>>) -> bool {
+    let mut b: Ptr<i32> = b.unwrap_or(Ptr::<i32>::null());
+    return ({ (a).clone() } == { (b).clone() });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(4)]
@@ -24,10 +22,8 @@ pub struct Bar {
 }
 impl Bar {
     pub fn new(v: Option<i32>) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v.unwrap_or(1)));
-        let __this: Value<Bar> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
-        let this: Ptr<Bar> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        let mut v: i32 = v.unwrap_or(1);
+        Self { v: v }
     }
 }
 impl Default for Bar {

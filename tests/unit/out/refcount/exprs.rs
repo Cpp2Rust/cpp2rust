@@ -29,26 +29,24 @@ pub fn main() {
 fn main_0() -> i32 {
     let x1: Value<i32> = Rc::new(RefCell::new(5));
     let x2: Value<i32> = Rc::new(RefCell::new((*x1.borrow())));
-    let x3: Value<i32> = Rc::new(RefCell::new(((*x1.borrow()) + 5)));
-    let x4: Value<i32> = Rc::new(RefCell::new(((*x3.borrow()) + (*x2.borrow()))));
+    let mut x3: i32 = ((*x1.borrow()) + 5);
+    let mut x4: i32 = (x3 + (*x2.borrow()));
     (*x1.borrow_mut()) = 5;
     (*x2.borrow_mut()) = (*x1.borrow());
-    (*x3.borrow_mut()) = ((*x1.borrow()) + 5);
-    (*x4.borrow_mut()) = ((*x3.borrow()) + (*x2.borrow()));
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((x1.as_pointer())));
-    (*p1.borrow_mut()) = (x2.as_pointer());
-    (*p1.borrow()).write({ (*x1.borrow()) });
-    (*p1.borrow()).write({ (((*x1.borrow()) + (*x4.borrow())) + 1) });
-    let x5: Value<i32> = Rc::new(RefCell::new(((*p1.borrow()).read())));
-    let x6: Value<i32> = Rc::new(RefCell::new(
-        (({ ((*p1.borrow()).read()) } + { (*x3.borrow()) }) + 5),
-    ));
+    x3 = ((*x1.borrow()) + 5);
+    x4 = (x3 + (*x2.borrow()));
+    let mut p1: Ptr<i32> = (x1.as_pointer());
+    p1 = (x2.as_pointer());
+    p1.write({ (*x1.borrow()) });
+    p1.write({ (((*x1.borrow()) + x4) + 1) });
+    let mut x5: i32 = (p1.read());
+    let mut x6: i32 = (({ (p1.read()) } + { x3 }) + 5);
     let r: Ptr<i32> = x1.as_pointer();
     r.write(5);
-    r.write({ (((*p1.borrow()).read()) + 5) });
-    let x7: Value<i32> = Rc::new(RefCell::new((r.read())));
-    let x8: Value<i32> = Rc::new(RefCell::new((({ (r.read()) } + { (*x1.borrow()) }) + 5)));
-    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((r).clone()));
+    r.write({ ((p1.read()) + 5) });
+    let mut x7: i32 = (r.read());
+    let mut x8: i32 = (({ (r.read()) } + { (*x1.borrow()) }) + 5);
+    let mut p2: Ptr<i32> = (r).clone();
     let x: Value<X> = Rc::new(RefCell::new(X { x: 1 }));
     let y: Value<Y> = Rc::new(RefCell::new(Y {
         x: X { x: 0 },
@@ -57,8 +55,8 @@ fn main_0() -> i32 {
     (*y.borrow_mut()).x.x = 5;
     field!(({ YImpl::foo(&y.as_pointer(),) }), x).write(1);
     field!({ (*y.borrow()).p.clone() }, x).write(10);
-    let p3: Value<Ptr<Y>> = Rc::new(RefCell::new((y.as_pointer())));
-    field!((*p3.borrow()).with(|__s| __s.p.clone()), x).write(100);
+    let mut p3: Ptr<Y> = (y.as_pointer());
+    field!(p3.with(|__s| __s.p.clone()), x).write(100);
     field!(({ YImpl::ptr(&y.as_pointer(),) }), x).write(1);
     field!(({ YImpl::ptr(&y.as_pointer(),) }), x).write(50);
     assert!(({ (*x.borrow()).x } == 100));

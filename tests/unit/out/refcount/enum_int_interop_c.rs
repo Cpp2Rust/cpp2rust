@@ -24,7 +24,7 @@ pub const Tag_enum_TAG_TWO: Tag_enum = 2;
 pub struct Entry {
     #[offset(0)]
     #[byte_size(8)]
-    pub name: Ptr<u8>,
+    pub name: Ptr<i8>,
     #[offset(8)]
     pub color: Color,
     #[offset(12)]
@@ -42,30 +42,28 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"first"),
+            name: Ptr::<i8>::from_string_literal(b"first"),
             color: Color_RED,
             opt: Option_OPT_NONE,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"second"),
+            name: Ptr::<i8>::from_string_literal(b"second"),
             color: Color_GREEN,
             opt: Option_OPT_A,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"third"),
+            name: Ptr::<i8>::from_string_literal(b"third"),
             color: Color_BLUE,
             opt: Option_OPT_C,
         },
     ])));
 );
-pub fn as_int_4(c: Color) -> i32 {
-    let c: Value<Color> = Rc::new(RefCell::new(c));
-    return ((*c.borrow()) as i32);
+pub fn as_int_4(mut c: Color) -> i32 {
+    return (c as i32);
 }
-pub fn classify_option_5(option: i32) -> i32 {
-    let option: Value<i32> = Rc::new(RefCell::new(option));
+pub fn classify_option_5(mut option: i32) -> i32 {
     'switch: {
-        match { (*option.borrow()) } {
+        match { option } {
             __v if __v == (Option_OPT_NONE as i32) => {
                 return -1_i32;
             }
@@ -85,24 +83,23 @@ pub fn classify_option_5(option: i32) -> i32 {
     };
     panic!("ub: non-void function does not return a value")
 }
-pub fn make_color_6(n: i32) -> Color {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    return ((*n.borrow()) as Color);
+pub fn make_color_6(mut n: i32) -> Color {
+    return ((n) as Color);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Color> = Rc::new(RefCell::new(Color_RED));
-    assert!((((((*c.borrow()) as u32) == ((Color_RED as i32) as u32)) as i32) != 0));
-    assert!((((((*c.borrow()) as u32) == 0_u32) as i32) != 0));
-    assert!((((((*c.borrow()) as u32) != 1_u32) as i32) != 0));
-    if (((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0) {
+    let mut c: Color = Color_RED;
+    assert!(((((c as u32) == ((Color_RED as i32) as u32)) as i32) != 0));
+    assert!(((((c as u32) == 0_u32) as i32) != 0));
+    assert!(((((c as u32) != 1_u32) as i32) != 0));
+    if ((((c as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0) {
         return 1;
     }
     'switch: {
-        match { ((*c.borrow()) as u32) } {
+        match { (c as u32) } {
             __v if __v == (0 as u32) => {
                 break 'switch;
             }
@@ -117,45 +114,39 @@ fn main_0() -> i32 {
             }
         }
     };
-    let x: Value<i32> = Rc::new(RefCell::new(((*c.borrow()) as i32)));
-    assert!(((((*x.borrow()) == 0) as i32) != 0));
-    let y: Value<i32> = Rc::new(RefCell::new(
-        ((((*c.borrow()) as u32).wrapping_add(1_u32)) as i32),
-    ));
-    assert!(((((*y.borrow()) == 1) as i32) != 0));
-    (*c.borrow_mut()) = ((2) as Color);
-    assert!((((((*c.borrow()) as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
-    assert!((((((*c.borrow()) as u32) == 2_u32) as i32) != 0));
-    (*c.borrow_mut()) = ({ make_color_6(1) });
-    assert!((((((*c.borrow()) as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
-    let cmp: Value<Color> = Rc::new(RefCell::new(
-        ((((*c.borrow()) as u32).wrapping_add(1_u32)) as Color),
-    ));
-    assert!((((((*cmp.borrow()) as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
-    let o: Value<Option> = Rc::new(RefCell::new(Option_OPT_A));
-    assert!((((((*o.borrow()) as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
-    assert!((((((*o.borrow()) as u32) == 10_u32) as i32) != 0));
-    let oi: Value<i32> = Rc::new(RefCell::new(((*o.borrow()) as i32)));
-    assert!(((((*oi.borrow()) == 10) as i32) != 0));
-    (*o.borrow_mut()) = ((20) as Option);
-    assert!((((((*o.borrow()) as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
-    let rc: Value<i32> = Rc::new(RefCell::new(
-        ({ classify_option_5(((*o.borrow()) as i32)) }),
-    ));
-    assert!(((((*rc.borrow()) == 2) as i32) != 0));
-    (*rc.borrow_mut()) = ({ classify_option_5(20) });
-    assert!(((((*rc.borrow()) == 2) as i32) != 0));
-    (*rc.borrow_mut()) = ({ classify_option_5((Option_OPT_C as i32)) });
-    assert!(((((*rc.borrow()) == 3) as i32) != 0));
-    let t: Value<Tag_enum> = Rc::new(RefCell::new(Tag_enum_TAG_ONE));
-    assert!((((((*t.borrow()) as u32) == 1_u32) as i32) != 0));
-    assert!((((((*t.borrow()) as u32) == ((Tag_enum_TAG_ONE as i32) as u32)) as i32) != 0));
-    let ti: Value<i32> = Rc::new(RefCell::new(((*t.borrow()) as i32)));
-    assert!(((((*ti.borrow()) == 1) as i32) != 0));
-    (*t.borrow_mut()) = ((2) as Tag_enum);
-    assert!((((((*t.borrow()) as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
+    let mut x: i32 = (c as i32);
+    assert!((((x == 0) as i32) != 0));
+    let mut y: i32 = (((c as u32).wrapping_add(1_u32)) as i32);
+    assert!((((y == 1) as i32) != 0));
+    c = ((2) as Color);
+    assert!(((((c as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
+    assert!(((((c as u32) == 2_u32) as i32) != 0));
+    c = ({ make_color_6(1) });
+    assert!(((((c as u32) == ((Color_GREEN as i32) as u32)) as i32) != 0));
+    let mut cmp: Color = (((c as u32).wrapping_add(1_u32)) as Color);
+    assert!(((((cmp as u32) == ((Color_BLUE as i32) as u32)) as i32) != 0));
+    let mut o: Option = Option_OPT_A;
+    assert!(((((o as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
+    assert!(((((o as u32) == 10_u32) as i32) != 0));
+    let mut oi: i32 = (o as i32);
+    assert!((((oi == 10) as i32) != 0));
+    o = ((20) as Option);
+    assert!(((((o as u32) == ((Option_OPT_B as i32) as u32)) as i32) != 0));
+    let mut rc: i32 = ({ classify_option_5((o as i32)) });
+    assert!((((rc == 2) as i32) != 0));
+    rc = ({ classify_option_5(20) });
+    assert!((((rc == 2) as i32) != 0));
+    rc = ({ classify_option_5((Option_OPT_C as i32)) });
+    assert!((((rc == 3) as i32) != 0));
+    let mut t: Tag_enum = Tag_enum_TAG_ONE;
+    assert!(((((t as u32) == 1_u32) as i32) != 0));
+    assert!(((((t as u32) == ((Tag_enum_TAG_ONE as i32) as u32)) as i32) != 0));
+    let mut ti: i32 = (t as i32);
+    assert!((((ti == 1) as i32) != 0));
+    t = ((2) as Tag_enum);
+    assert!(((((t as u32) == ((Tag_enum_TAG_TWO as i32) as u32)) as i32) != 0));
     'switch: {
-        match { ((*t.borrow()) as u32) } {
+        match { (t as u32) } {
             __v if __v == ((Tag_enum_TAG_ZERO as i32) as u32) => {
                 return 90;
             }
@@ -168,10 +159,8 @@ fn main_0() -> i32 {
             _ => {}
         }
     };
-    let extra: Value<i32> = Rc::new(RefCell::new(
-        (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32)),
-    ));
-    assert!(((((*extra.borrow()) == ((0 + 1) + 2)) as i32) != 0));
+    let mut extra: i32 = (((Color_RED as i32) + (Color_GREEN as i32)) + (Color_BLUE as i32));
+    assert!((((extra == ((0 + 1) + 2)) as i32) != 0));
     assert!(
         ((((global_color_0.with(|rc| *rc.borrow()) as u32) == ((Color_GREEN as i32) as u32))
             as i32)
@@ -217,19 +206,18 @@ fn main_0() -> i32 {
             == ((Option_OPT_C as i32) as u32)) as i32)
             != 0)
     );
-    let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::<u8>::from_string_literal(b"red"),
-        Ptr::<u8>::from_string_literal(b"green"),
-        Ptr::<u8>::from_string_literal(b"blue"),
+    let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+        Ptr::<i8>::from_string_literal(b"red"),
+        Ptr::<i8>::from_string_literal(b"green"),
+        Ptr::<i8>::from_string_literal(b"blue"),
     ])));
-    let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
+    let mut idx: Color = Color_GREEN;
     assert!(
-        (((((elem!((*names.borrow())[(*idx.borrow()) as usize], 0).read()) as i32) == ('g' as i32))
-            as i32)
+        (((((elem!((*names.borrow())[(idx) as usize], 0).read()) as i32) == ('g' as i32)) as i32)
             != 0)
     );
     assert!(
-        (((({ (*entries_3.with(Value::clone).borrow())[(*idx.borrow()) as usize].opt } as u32)
+        (((({ (*entries_3.with(Value::clone).borrow())[(idx) as usize].opt } as u32)
             == ((Option_OPT_A as i32) as u32)) as i32)
             != 0)
     );
@@ -242,17 +230,11 @@ fn main_0() -> i32 {
             == ('b' as i32)) as i32)
             != 0)
     );
-    let pp: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
-        ((names.as_pointer() as Ptr<Ptr<u8>>).offset((*idx.borrow()) as isize)),
-    ));
-    assert!((((((elem!(((*pp.borrow()).read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
-    let pe: Value<Ptr<Entry>> = Rc::new(RefCell::new(
-        ((entries_3.with(|v| v.as_pointer()) as Ptr<Entry>).offset((*idx.borrow()) as isize)),
-    ));
-    assert!(
-        (((((*pe.borrow()).with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32)
-            != 0)
-    );
+    let mut pp: Ptr<Ptr<i8>> = ((names.as_pointer() as Ptr<Ptr<i8>>).offset((idx) as isize));
+    assert!((((((elem!((pp.read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
+    let mut pe: Ptr<Entry> =
+        ((entries_3.with(|v| v.as_pointer()) as Ptr<Entry>).offset((idx) as isize));
+    assert!(((((pe.with(|__s| __s.opt) as u32) == ((Option_OPT_A as i32) as u32)) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

@@ -14,32 +14,47 @@ fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(1));
     let b: Value<i32> = Rc::new(RefCell::new(2));
     let c: Value<i32> = Rc::new(RefCell::new(3));
-    let by_value: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + (*x.borrow()));
-        }),
-    ));
-    assert!((({ (*by_value.borrow_mut())(10,) }) == 16));
+    let by_value: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let a: Value<i32> = Rc::new(RefCell::new((*a.borrow())));
+            let b: Value<i32> = Rc::new(RefCell::new((*b.borrow())));
+            let c: Value<i32> = Rc::new(RefCell::new((*c.borrow())));
+        },
+        |x: i32| -> i32 {
+            return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + x);
+        }
+    )));
+    assert!((({ (*by_value.borrow()).call(10,) }) == 16));
     (*a.borrow_mut()) = 100;
-    assert!((({ (*by_value.borrow_mut())(10,) }) == 16));
-    let by_ref: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((((*a.borrow()) + (*b.borrow())) + (*c.borrow())) + (*x.borrow()));
-        }),
-    ));
-    assert!((({ (*by_ref.borrow_mut())(10,) }) == 115));
+    assert!((({ (*by_value.borrow()).call(10,) }) == 16));
+    let by_ref: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let a: Ptr<i32> = a.as_pointer();
+            let b: Ptr<i32> = b.as_pointer();
+            let c: Ptr<i32> = c.as_pointer();
+        },
+        |x: i32| -> i32 {
+            return ((((a.read()) + (b.read())) + (c.read())) + x);
+        }
+    )));
+    assert!((({ (*by_ref.borrow()).call(10,) }) == 115));
     (*b.borrow_mut()) = 200;
-    assert!((({ (*by_ref.borrow_mut())(10,) }) == 313));
-    let mixed: Value<_> = Rc::new(RefCell::new(
-        (|x: i32| {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            (*c.borrow_mut()) += (*x.borrow());
-            return (((*a.borrow()) + (*b.borrow())) + (*c.borrow()));
-        }),
-    ));
-    assert!((({ (*mixed.borrow_mut())(1,) }) == ((100 + 200) + 4)));
+    assert!((({ (*by_ref.borrow()).call(10,) }) == 313));
+    let mixed: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
+        {
+            let c: Ptr<i32> = c.as_pointer();
+            let a: Value<i32> = Rc::new(RefCell::new((*a.borrow())));
+            let b: Value<i32> = Rc::new(RefCell::new((*b.borrow())));
+        },
+        |x: i32| -> i32 {
+            {
+                let _ptr = c.clone();
+                _ptr.write(_ptr.read() + x)
+            };
+            return (((*a.borrow()) + (*b.borrow())) + (c.read()));
+        }
+    )));
+    assert!((({ (*mixed.borrow()).call(1,) }) == ((100 + 200) + 4)));
     assert!(((*c.borrow()) == 4));
     return 0;
 }
