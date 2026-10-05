@@ -12,7 +12,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
-#include "rules_loader.h"
+#include "converter/rules/rules_loader.h"
 
 namespace cpp2rust::RuleRegistry {
 

@@ -12,6 +12,7 @@
 #include <llvm/ADT/APSInt.h>
 #include <llvm/ADT/STLFunctionalExtras.h>
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -128,6 +129,8 @@ bool IsConvertibleCXXMethodDecl(const clang::CXXMethodDecl *decl);
 bool IsComparisonOperator(const clang::FunctionDecl *fn);
 
 void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl);
+
+std::vector<std::filesystem::path> ListFiles(const std::filesystem::path &dir);
 
 bool IsEmittableMethod(clang::CXXMethodDecl *method);
 

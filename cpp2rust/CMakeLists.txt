@@ -1,7 +1,8 @@
 file(GLOB_RECURSE CORE_SOURCES "*.cpp")
+file(GLOB RULE_PREPROCESSING_SOURCES "rule_preprocessing/*.cpp")
 list(REMOVE_ITEM CORE_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/cpp2rust.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/cpp_rule_preprocessor.cpp"
+    ${RULE_PREPROCESSING_SOURCES}
 )
 
 add_library(cpp2rust_core STATIC ${CORE_SOURCES})
@@ -34,5 +35,12 @@ target_link_libraries(cpp2rust_core PUBLIC ${llvm_libs})
 add_clang_executable(cpp2rust PARTIAL_SOURCES_INTENDED cpp2rust.cpp)
 target_link_libraries(cpp2rust PRIVATE cpp2rust_core)
 
-add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED cpp_rule_preprocessor.cpp)
+add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED
+    rule_preprocessing/cpp_rule_preprocessor.cpp)
 target_link_libraries(cpp-rule-preprocessor PRIVATE cpp2rust_core)
+
+add_clang_executable(cpp-rule-indexer PARTIAL_SOURCES_INTENDED
+    rule_preprocessing/cpp_rule_indexer.cpp
+    rule_preprocessing/rule_index.cpp
+    rule_preprocessing/rule_preprocessing_lib.cpp)
+target_link_libraries(cpp-rule-indexer PRIVATE cpp2rust_core)

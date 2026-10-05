@@ -11,9 +11,6 @@
 #include <clang/ASTMatchers/ASTMatchers.h>
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Frontend/FrontendActions.h>
-#include <clang/Lex/Lexer.h>
-#include <clang/Lex/PPCallbacks.h>
-#include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Initialization.h>
 #include <clang/Sema/Lookup.h>
 #include <clang/Sema/Overload.h>
@@ -22,9 +19,7 @@
 #include <clang/Tooling/CompilationDatabase.h>
 #include <clang/Tooling/Tooling.h>
 #include <llvm/ADT/ArrayRef.h>
-#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVector.h>
-#include <llvm/ADT/StringExtras.h>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/FormatVariadic.h>
@@ -34,20 +29,11 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <format>
-#include <fstream>
-#include <map>
-#include <optional>
-#include <set>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include "compat/platform_flags.h"
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
-#include "converter/rules/matcher.h"
-#include "rules_loader.h"
 
 namespace fs = std::filesystem;
 
@@ -101,9 +87,7 @@ struct LookupInfo {
 
 class Callback : public clang::ast_matchers::MatchFinder::MatchCallback {
 public:
-  Callback(llvm::json::Object &out,
-           std::map<std::string, std::string> &type_index_keys)
-      : out_(out), type_index_keys_(type_index_keys) {}
+  explicit Callback(llvm::json::Object &out) : out_(out) {}
 
   void init(clang::Sema &sema) {
     sema_ = &sema;
@@ -150,14 +134,6 @@ public:
       }
       auto src =
           Printer::ToString(*R.Context, type, Printer::ScalarSugar::kPreserve);
-      auto pointee = type;
-      while (pointee->isPointerType()) {
-        pointee = pointee->getPointeeType();
-      }
-      type_index_keys_.try_emplace(var->getQualifiedNameAsString(),
-                                   Matcher::TypeKey(Printer::ToString(
-                                       *R.Context, pointee.getUnqualifiedType(),
-                                       Printer::ScalarSugar::kPreserve)));
       out_.try_emplace(var->getQualifiedNameAsString(), std::move(src));
       return;
     }
@@ -252,7 +228,6 @@ public:
 
 private:
   llvm::json::Object &out_;
-  std::map<std::string, std::string> &type_index_keys_;
   clang::Sema *sema_ = nullptr;
   clang::SourceLocation loc_;
 
@@ -999,59 +974,9 @@ private:
   }
 };
 
-struct MainFileDecl {
-  std::string name;
-  std::string text;
-  bool name_from_macro;
-};
-
-struct RuleFileText {
-  std::vector<MainFileDecl> decls;
-  std::set<unsigned> include_lines;
-  std::vector<std::string> common_includes;
-  std::map<std::string, std::string> type_index_keys;
-};
-
-class IncludeLineCollector : public clang::PPCallbacks {
-public:
-  IncludeLineCollector(clang::SourceManager &sm, RuleFileText &file)
-      : sm_(sm), file_(file) {}
-
-  void
-  InclusionDirective(clang::SourceLocation HashLoc,
-                     const clang::Token &IncludeTok, llvm::StringRef FileName,
-                     bool IsAngled, clang::CharSourceRange FilenameRange,
-                     clang::OptionalFileEntryRef File,
-                     llvm::StringRef SearchPath, llvm::StringRef RelativePath,
-                     const clang::Module *SuggestedModule, bool ModuleImported,
-                     clang::SrcMgr::CharacteristicKind FileType) override {
-    if (!sm_.isInMainFile(HashLoc)) {
-      return;
-    }
-    file_.include_lines.insert(sm_.getSpellingLineNumber(HashLoc));
-    if (!File) {
-      return;
-    }
-    auto main_file = sm_.getFileEntryRefForID(sm_.getMainFileID());
-    auto common_dir = fs::weakly_canonical(main_file->getName().str())
-                          .parent_path()
-                          .parent_path() /
-                      "common";
-    auto included = fs::weakly_canonical(File->getName().str());
-    if (included.parent_path() == common_dir) {
-      file_.common_includes.push_back(included.string());
-    }
-  }
-
-private:
-  clang::SourceManager &sm_;
-  RuleFileText &file_;
-};
-
 class ActionFactory : public clang::tooling::FrontendActionFactory {
 public:
-  explicit ActionFactory(llvm::json::Object &out, RuleFileText &decls)
-      : cb_(out, decls.type_index_keys), decls_(&decls) {
+  explicit ActionFactory(llvm::json::Object &out) : cb_(out) {
     using namespace clang::ast_matchers;
     finder_.addMatcher(
         returnStmt(
@@ -1100,9 +1025,8 @@ public:
     class ASTConsumer : public clang::ASTConsumer {
     public:
       explicit ASTConsumer(std::unique_ptr<clang::ASTConsumer> AC,
-                           clang::CompilerInstance &CI, Callback *CB,
-                           RuleFileText *decls)
-          : AC_(std::move(AC)), CI_(&CI), CB_(CB), decls_(decls) {}
+                           clang::CompilerInstance &CI, Callback *CB)
+          : AC_(std::move(AC)), CI_(&CI), CB_(CB) {}
 
       void HandleTranslationUnit(clang::ASTContext &ctx) override {
         auto &DE = CI_->getDiagnostics();
@@ -1111,77 +1035,39 @@ public:
         }
         DE.setSuppressAllDiagnostics(true);
         DE.setClient(new clang::IgnoringDiagConsumer(), true);
-        collectRuleFileText(ctx);
         CB_->init(CI_->getSema());
         AC_->HandleTranslationUnit(ctx);
       }
 
     private:
-      void collectRuleFileText(clang::ASTContext &ctx) {
-        auto &sm = ctx.getSourceManager();
-        for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
-          if (decl->isImplicit() ||
-              !sm.isInMainFile(sm.getExpansionLoc(decl->getLocation()))) {
-            continue;
-          }
-          auto range = decl->getSourceRange();
-          auto text = clang::Lexer::getSourceText(
-              clang::CharSourceRange::getTokenRange(
-                  sm.getExpansionLoc(range.getBegin()),
-                  sm.getExpansionRange(range.getEnd()).getEnd()),
-              sm, ctx.getLangOpts());
-          std::string name;
-          if (auto named = llvm::dyn_cast<clang::NamedDecl>(decl)) {
-            name = named->getQualifiedNameAsString();
-          }
-          auto fn = decl->getAsFunction();
-          bool is_definition = fn && fn->isThisDeclarationADefinition();
-          decls_->decls.push_back({std::move(name),
-                                   text.str() + (is_definition ? "\n" : ";\n"),
-                                   decl->getLocation().isMacroID()});
-        }
-      }
-
       std::unique_ptr<clang::ASTConsumer> AC_;
       clang::CompilerInstance *CI_;
       Callback *CB_;
-      RuleFileText *decls_;
     };
 
     class Wrapped : public clang::ASTFrontendAction {
       clang::ast_matchers::MatchFinder &F_;
       Callback *CB_;
-      RuleFileText *decls_;
 
     public:
-      explicit Wrapped(clang::ast_matchers::MatchFinder &MF, Callback &CB,
-                       RuleFileText *decls)
-          : F_(MF), CB_(&CB), decls_(decls) {}
+      explicit Wrapped(clang::ast_matchers::MatchFinder &MF, Callback &CB)
+          : F_(MF), CB_(&CB) {}
 
       std::unique_ptr<clang::ASTConsumer>
       CreateASTConsumer(clang::CompilerInstance &CI, llvm::StringRef) override {
-        return std::make_unique<ASTConsumer>(F_.newASTConsumer(), CI, CB_,
-                                             decls_);
-      }
-
-      bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
-        CI.getPreprocessor().addPPCallbacks(
-            std::make_unique<IncludeLineCollector>(CI.getSourceManager(),
-                                                   *decls_));
-        return true;
+        return std::make_unique<ASTConsumer>(F_.newASTConsumer(), CI, CB_);
       }
     };
-    return std::make_unique<Wrapped>(finder_, cb_, decls_);
+    return std::make_unique<Wrapped>(finder_, cb_);
   }
 
 private:
   clang::ast_matchers::MatchFinder finder_;
   Callback cb_;
-  RuleFileText *decls_;
 };
 
 void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
-             RuleFileText &decls, llvm::ArrayRef<llvm::StringRef> cxx_flags) {
+             llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
   flags.push_back("-isystem" + src_path.parent_path().string());
@@ -1195,114 +1081,10 @@ void Extract(const std::filesystem::path &src_path, llvm::json::Object &out,
     llvm::errs() << "ERROR: cannot read " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  ActionFactory factory(out, decls);
+  ActionFactory factory(out);
   clang::tooling::runToolOnCodeWithArgs(
       factory.create(), (*code)->getBuffer(), flags, src_path.string(),
       is_c ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
-}
-
-void WriteIndex(const std::filesystem::path &src_path,
-                const std::filesystem::path &index_dir,
-                const std::string &dir_name, const llvm::json::Object &rules,
-                const RuleFileText &file) {
-  auto file_name = dir_name + ".inc";
-  fs::create_directories(index_dir);
-  std::vector<fs::path> stale;
-  std::error_code ec;
-  for (fs::recursive_directory_iterator it(index_dir, ec), end;
-       !ec && it != end; it.increment(ec)) {
-    if (it->path().filename() == file_name) {
-      stale.push_back(it->path());
-    }
-  }
-  for (const auto &path : stale) {
-    fs::remove(path, ec);
-  }
-  auto append = [](const fs::path &path, const std::string &text) {
-    fs::create_directories(path.parent_path());
-    std::error_code ec;
-    llvm::raw_fd_ostream out(path.string(), ec, llvm::sys::fs::OF_Append);
-    if (ec) {
-      llvm::errs() << "ERROR: failed to open " << path.string() << ": "
-                   << ec.message() << '\n';
-      std::exit(EXIT_FAILURE);
-    }
-    out << text;
-  };
-
-  auto is_rule_name = [](llvm::StringRef name) {
-    return (name.consume_front("f") || name.consume_front("t")) &&
-           !name.empty() && llvm::all_of(name, llvm::isDigit);
-  };
-
-  bool is_c = src_path.extension() == ".c";
-  std::string includes;
-  if (!file.common_includes.empty()) {
-    includes = std::format("#ifndef CPP2RUST_RULES_{0}_INCLUDES\n"
-                           "#define CPP2RUST_RULES_{0}_INCLUDES\n",
-                           dir_name);
-    for (const auto &include : file.common_includes) {
-      includes += std::format("#include \"{}\"\n", include);
-    }
-    includes += "#endif\n";
-  }
-  auto wrap = [&](const std::vector<std::string> &names,
-                  const std::string &text) {
-    if (!is_c) {
-      return std::format("namespace cpp2rust_rules_{} {{\n{}{}}}\n", dir_name,
-                         includes, text);
-    }
-    std::string out = includes;
-    for (const auto &name : names) {
-      out +=
-          std::format("#define {0} cpp2rust_rules_{1}_{0}\n", name, dir_name);
-    }
-    out += text;
-    for (const auto &name : names) {
-      out += std::format("#undef {}\n", name);
-    }
-    return out;
-  };
-
-  if (llvm::any_of(file.decls, [&](const MainFileDecl &decl) {
-        return decl.name_from_macro && is_rule_name(decl.name);
-      })) {
-    std::vector<std::string> names;
-    for (const auto &[name, _] : rules) {
-      names.push_back(name.str());
-    }
-    std::ifstream in(src_path);
-    std::string text;
-    unsigned line_number = 0;
-    for (std::string line; std::getline(in, line);) {
-      if (!file.include_lines.contains(++line_number)) {
-        text += line + '\n';
-      }
-    }
-    append(index_dir / RulesLoader::kAllName / file_name, wrap(names, text));
-    return;
-  }
-
-  for (const auto &[name, text, _] : file.decls) {
-    if (!is_rule_name(name)) {
-      llvm::errs() << "ERROR: " << src_path.string() << ": declaration '"
-                   << name << "' is not a rule; move it to an included file\n";
-      std::exit(EXIT_FAILURE);
-    }
-    const auto *value = rules.get(name);
-    if (!value) {
-      continue;
-    }
-    std::optional<llvm::StringRef> src = value->getAsString();
-    if (!src) {
-      src = value->getAsObject()->getString("key");
-    }
-    bool is_type = name[0] == 't';
-    auto key =
-        is_type ? file.type_index_keys.at(name) : Matcher::ExprKey(src->str());
-    append(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
-           wrap({name}, text));
-  }
 }
 
 } // namespace cpp2rust
@@ -1345,14 +1127,7 @@ int main(int argc, char *argv[]) {
     }
     llvm::errs() << "Preprocessing " << path.string() << '\n';
     llvm::json::Object file_root;
-    cpp2rust::RuleFileText decls;
-    cpp2rust::Extract(path, file_root, decls, cxx_flags);
-    auto out_dir = fs::path(OutPath.getValue()).parent_path();
-    cpp2rust::WriteIndex(path,
-                         out_dir.parent_path() /
-                             cpp2rust::RulesLoader::kIndexDirName /
-                             fs::path(name).extension().string().substr(1),
-                         out_dir.filename().string(), file_root, decls);
+    cpp2rust::Extract(path, file_root, cxx_flags);
     for (auto &[k, v] : file_root) {
       if (!root.try_emplace(k, std::move(v)).second) {
         llvm::errs() << "ERROR: rule name " << k.str()

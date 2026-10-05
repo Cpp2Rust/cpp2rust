@@ -16,7 +16,7 @@
 
 #include "ast_consumer.h"
 #include "converter/factory.h"
-#include "rules_loader.h"
+#include "converter/rules/rules_loader.h"
 
 namespace cpp2rust {
 class FrontendAction : public clang::ASTFrontendAction {

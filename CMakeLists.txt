@@ -220,7 +220,11 @@ add_custom_command(
 
 file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
 file(GLOB rule_common_headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/common/*.h)
+file(GLOB rule_indexer_sources CONFIGURE_DEPENDS
+     ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/*
+     ${PROJECT_SOURCE_DIR}/cpp2rust/converter/rules/rules_loader.*)
 set(cpp_rules_ir_outputs)
+set(cpp_rules_index_outputs)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
@@ -243,10 +247,20 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_cpp_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
+
+  set(_index_stamp ${_out_dir}/index.stamp)
+  add_custom_command(
+    OUTPUT ${_index_stamp}
+    COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --ir ${_cpp_out} ${_cxxflags}
+    COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
+    DEPENDS ${_cpp_out} ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
+    VERBATIM
+  )
+  list(APPEND cpp_rules_index_outputs ${_index_stamp})
 
   set(_rust_srcs)
   set(_rust_out)
@@ -277,6 +291,8 @@ foreach(_rule_dir IN LISTS rule_subdirs)
 endforeach()
 
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
+
+add_custom_target("index-cpp-rules" ALL DEPENDS ${cpp_rules_index_outputs})
 
 add_custom_target("preprocess-rust-rules" ALL
                   DEPENDS ${rust_rules_ir_outputs})

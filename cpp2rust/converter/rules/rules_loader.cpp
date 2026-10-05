@@ -1,7 +1,7 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include "rules_loader.h"
+#include "converter/rules/rules_loader.h"
 
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/RecursiveASTVisitor.h>
@@ -210,15 +210,7 @@ private:
 };
 
 void AppendIncludes(const fs::path &dir, std::string &out) {
-  std::set<fs::path> files;
-  std::error_code ec;
-  for (fs::directory_iterator it(dir, ec), end; !ec && it != end;
-       it.increment(ec)) {
-    if (it->is_regular_file()) {
-      files.insert(it->path());
-    }
-  }
-  for (const auto &file : files) {
+  for (const auto &file : ListFiles(dir)) {
     out += std::format("#include \"{}\"\n", file.string());
   }
 }

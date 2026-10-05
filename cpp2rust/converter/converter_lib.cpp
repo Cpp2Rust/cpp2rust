@@ -1317,6 +1317,19 @@ void DefineImplicitMembers(clang::Sema &sema, clang::CXXRecordDecl *decl) {
   sema.TUScope = saved_tu_scope;
 }
 
+std::vector<std::filesystem::path> ListFiles(const std::filesystem::path &dir) {
+  std::vector<std::filesystem::path> files;
+  std::error_code ec;
+  for (std::filesystem::directory_iterator it(dir, ec), end; !ec && it != end;
+       it.increment(ec)) {
+    if (it->is_regular_file()) {
+      files.push_back(it->path());
+    }
+  }
+  std::ranges::sort(files);
+  return files;
+}
+
 bool IsEmittableMethod(clang::CXXMethodDecl *method) {
   if (method->isDeleted()) {
     return false;
