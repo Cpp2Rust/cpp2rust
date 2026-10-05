@@ -5,7 +5,7 @@
 #include <initializer_list>
 #include <vector>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1> using t1 = std::vector<T1>;
 template <typename T1> using t2 = typename std::vector<T1>::iterator;

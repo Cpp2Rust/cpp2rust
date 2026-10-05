@@ -215,6 +215,7 @@ add_custom_command(
 )
 
 file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
+file(GLOB rule_common_headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/common/*.h)
 set(cpp_rules_ir_outputs)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
@@ -238,7 +239,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     OUTPUT ${_cpp_out}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
     COMMAND $<TARGET_FILE:cpp-rule-preprocessor> --dir ${_rule_dir} --out ${_cpp_out} ${_cxxflags}
-    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
+    DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${PROJECT_SOURCE_DIR}/cpp2rust/cpp_rule_preprocessor.cpp ${RUSTLS_HEADER} ${BROTLI_HEADERS}
     VERBATIM
   )
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})

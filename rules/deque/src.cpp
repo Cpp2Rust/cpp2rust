@@ -4,7 +4,7 @@
 #include <deque>
 #include <vector>
 
-template <typename T, typename A> using Init = A;
+#include "../common/init.h"
 
 template <typename T1> using t1 = std::deque<T1>;
 
