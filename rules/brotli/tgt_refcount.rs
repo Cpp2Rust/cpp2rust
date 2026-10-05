@@ -74,25 +74,24 @@ fn f8(
     a4: Ptr<Ptr<u8>>,
     a5: Ptr<usize>,
 ) -> ::brotli_sys::BrotliDecoderResult {
-    unsafe {
-        let _a2: Ptr<*const u8> =
-            Ptr::alloc((&*(*a2.upgrade().deref()).upgrade().deref()) as *const u8);
-
+    let __in = a2.read();
+    let __in_len = a1.read();
+    let __r = __in.with_slice(__in_len, |__s| {
         a1.with_mut(|_v1| {
-            _a2.with_mut(|_v2| {
-                a3.with_mut(|_v3| {
-                    ::brotli_sys::BrotliDecoderDecompressStream(
-                        a0,
-                        _v1 as *mut usize,
-                        _v2 as *mut *const u8,
-                        _v3 as *mut usize,
-                        std::ptr::null_mut(),
-                        std::ptr::null_mut(),
-                    )
-                })
+            a3.with_mut(|_v3| unsafe {
+                ::brotli_sys::BrotliDecoderDecompressStream(
+                    a0,
+                    _v1,
+                    &mut __s.as_ptr(),
+                    _v3,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                )
             })
         })
-    }
+    });
+    a2.write(__in.offset(__in_len - a1.read()));
+    __r
 }
 
 fn f9(a0: *mut ::brotli_sys::BrotliDecoderState, a1: Ptr<usize>) -> Ptr<u8> {
