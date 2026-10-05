@@ -11,6 +11,7 @@
 #include <llvm/ADT/DenseSet.h>
 #include <llvm/Support/MemoryBuffer.h>
 
+#include <algorithm>
 #include <cctype>
 #include <filesystem>
 #include <format>
@@ -226,10 +227,17 @@ private:
   llvm::DenseSet<const void *> seen_;
 };
 
-void AppendIncludes(const fs::path &dir, std::string &out) {
-  for (const auto &file : ListFiles(dir)) {
-    out += std::format("#include \"{}\"\n", file.string());
+std::vector<fs::path> ListFiles(const fs::path &dir) {
+  std::vector<fs::path> files;
+  std::error_code ec;
+  for (fs::directory_iterator it(dir, ec), end; !ec && it != end;
+       it.increment(ec)) {
+    if (it->is_regular_file()) {
+      files.push_back(it->path());
+    }
   }
+  std::ranges::sort(files);
+  return files;
 }
 
 std::string BuildRulesBuffer(const fs::path &index_dir,
@@ -240,7 +248,9 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
       continue;
     }
     for (const auto &path : paths) {
-      AppendIncludes(index_dir / lang / path, out);
+      for (const auto &file : ListFiles(index_dir / lang / path)) {
+        out += std::format("#include \"{}\"\n", file.string());
+      }
     }
   }
   return out;
