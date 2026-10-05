@@ -21,9 +21,7 @@
 #include <filesystem>
 #include <format>
 #include <memory>
-#include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "compat/platform_flags.h"
@@ -39,11 +37,6 @@ struct RuleDir {
   std::string name;
   fs::path index_dir;
   std::vector<std::string> common_headers;
-};
-
-struct RuleKey {
-  bool is_type;
-  std::string key;
 };
 
 std::string DirClass(clang::ASTContext &ctx, const fs::path &rule_path) {
@@ -109,84 +102,61 @@ const clang::Expr *Unwrap(const clang::Expr *expr) {
   return expr;
 }
 
-std::optional<RuleKey> MakeKey(bool is_type, std::string key) {
-  if (key.empty()) {
-    return std::nullopt;
-  }
-  return RuleKey{is_type, std::move(key)};
-}
-
-std::optional<RuleKey> DependentExprKey(const clang::Expr *expr,
-                                        const std::string &dir_class) {
+std::string DependentExprKey(const clang::Expr *expr) {
   auto member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(expr);
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
-      return MakeKey(false, RulesLoader::FunctionKey(callee));
+      return RulesLoader::FunctionKey(callee);
     }
     auto callee = call->getCallee()->IgnoreParenImpCasts();
     member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(callee);
     if (auto overloads = llvm::dyn_cast<clang::UnresolvedMemberExpr>(callee);
         overloads && overloads->decls_begin() != overloads->decls_end()) {
-      return MakeKey(false,
-                     RulesLoader::DeclKey(
-                         (*overloads->decls_begin())->getUnderlyingDecl()));
+      return RulesLoader::DeclKey(
+          (*overloads->decls_begin())->getUnderlyingDecl());
     }
     if (auto lookup = llvm::dyn_cast<clang::UnresolvedLookupExpr>(callee);
         lookup && lookup->getQualifier() &&
         !llvm::isa<clang::CXXOperatorCallExpr>(call) &&
         lookup->decls_begin() != lookup->decls_end()) {
-      return MakeKey(false, RulesLoader::DeclKey(
-                                (*lookup->decls_begin())->getUnderlyingDecl()));
+      return RulesLoader::DeclKey(
+          (*lookup->decls_begin())->getUnderlyingDecl());
     }
   }
   if (member && !member->isArrow()) {
-    if (auto class_key = TemplateClass(member->getBaseType());
-        !class_key.empty()) {
-      return MakeKey(false, RulesLoader::MemberKey(
-                                class_key, member->getMember().getAsString()));
-    }
+    return RulesLoader::MemberKey(TemplateClass(member->getBaseType()),
+                                  member->getMember().getAsString());
   }
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
-    if (auto class_key = TemplateClass(construct->getTypeAsWritten());
-        !class_key.empty()) {
-      return MakeKey(
-          false, RulesLoader::MemberKey(
-                     class_key, class_key.substr(class_key.rfind(':') + 1)));
-    }
+    auto class_key = TemplateClass(construct->getTypeAsWritten());
+    return RulesLoader::MemberKey(class_key,
+                                  class_key.substr(class_key.rfind(':') + 1));
   }
-  return MakeKey(true, dir_class);
+  return {};
 }
 
-std::optional<RuleKey> KeyOf(clang::ASTContext &ctx, const clang::Decl *decl,
-                             const std::string &dir_class) {
-  auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
-  if (auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl)) {
-    alias = tmpl->getTemplatedDecl();
-  }
-  if (alias) {
-    auto type = alias->getUnderlyingType();
-    while (type->isPointerType() || type->isReferenceType()) {
-      type = type->getPointeeType();
-    }
-    if (!type->isDependentType()) {
-      return MakeKey(true, RulesLoader::TypeKey(type));
-    }
-    if (auto class_key = TemplateClass(type); !class_key.empty()) {
-      return MakeKey(true, class_key);
-    }
-    return MakeKey(true, dir_class);
-  }
-
-  auto expr = RuleExpr(decl);
+std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
+  auto expr = RuleExpr(rule);
   if (!expr) {
-    return std::nullopt;
+    return {};
   }
   expr = Unwrap(expr);
   if (!expr->isTypeDependent() && !expr->isValueDependent()) {
-    return MakeKey(false, RulesLoader::ExprKey(ctx, expr));
+    return RulesLoader::ExprKey(ctx, expr);
   }
-  return DependentExprKey(expr, dir_class);
+  return DependentExprKey(expr);
+}
+
+std::string TypeKey(const clang::TypedefNameDecl *rule) {
+  auto type = rule->getUnderlyingType();
+  while (type->isPointerType() || type->isReferenceType()) {
+    type = type->getPointeeType();
+  }
+  if (!type->isDependentType()) {
+    return RulesLoader::TypeKey(type);
+  }
+  return TemplateClass(type);
 }
 
 std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
@@ -233,8 +203,17 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
                    << " is not a rule; move it to an included file\n";
       std::exit(EXIT_FAILURE);
     }
-    auto key = KeyOf(ctx, decl, dir_class);
-    if (!key) {
+    auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
+    if (auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl)) {
+      alias = tmpl->getTemplatedDecl();
+    }
+    bool is_type = alias != nullptr;
+    auto key = is_type ? TypeKey(alias) : ExprKey(ctx, decl);
+    if (key.empty()) {
+      is_type = true;
+      key = dir_class;
+    }
+    if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
                    << "' in rule dir " << dir.path.string() << '\n';
       std::exit(EXIT_FAILURE);
@@ -243,8 +222,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
                     clang::tooling::getAssociatedRange(*decl, ctx), ctx)
                     .str() +
                 '\n';
-    AppendToFile(index_dir / RulesLoader::IndexPath(key->is_type, key->key) /
-                     file_name,
+    AppendToFile(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
                  Wrap(dir, is_c, name, text));
   }
 }
