@@ -40,6 +40,5 @@ add_clang_executable(cpp-rule-preprocessor PARTIAL_SOURCES_INTENDED
 target_link_libraries(cpp-rule-preprocessor PRIVATE cpp2rust_core)
 
 add_clang_executable(cpp-rule-indexer PARTIAL_SOURCES_INTENDED
-    rule_preprocessing/cpp_rule_indexer.cpp
-    rule_preprocessing/rule_preprocessing_lib.cpp)
+    rule_preprocessing/cpp_rule_indexer.cpp)
 target_link_libraries(cpp-rule-indexer PRIVATE cpp2rust_core)

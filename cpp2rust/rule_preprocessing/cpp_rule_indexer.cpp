@@ -8,7 +8,9 @@
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/ADT/StringExtras.h>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/CommandLine.h>
 #include <llvm/Support/MemoryBuffer.h>
@@ -18,13 +20,13 @@
 #include <cstdlib>
 #include <filesystem>
 #include <format>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "compat/platform_flags.h"
 #include "converter/rules/rules_loader.h"
-#include "rule_preprocessing/rule_preprocessing_lib.h"
 
 namespace fs = std::filesystem;
 
@@ -182,7 +184,17 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
   auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
   auto file_name = dir.name + ".inc";
   fs::create_directories(index_dir);
-  RemoveFilesNamed(index_dir, file_name);
+  std::vector<fs::path> stale;
+  std::error_code ec;
+  for (fs::recursive_directory_iterator it(index_dir, ec), end;
+       !ec && it != end; it.increment(ec)) {
+    if (it->path().filename() == file_name) {
+      stale.push_back(it->path());
+    }
+  }
+  for (const auto &path : stale) {
+    fs::remove(path, ec);
+  }
 
   auto dir_class = DirClass(ctx, dir.path);
   auto &sm = ctx.getSourceManager();
@@ -195,10 +207,11 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
     if (auto named = llvm::dyn_cast<clang::NamedDecl>(decl)) {
       name = named->getQualifiedNameAsString();
     }
-    if (!IsRuleName(name)) {
+    llvm::StringRef number = name;
+    if (!(number.consume_front("f") || number.consume_front("t")) ||
+        number.empty() || !llvm::all_of(number, llvm::isDigit)) {
       llvm::errs() << "ERROR: declaration '" << name << "' in rule dir "
-                   << dir.path.string()
-                   << " is not a rule; move it to an included file\n";
+                   << dir.path.string() << " is not a rule\n";
       std::exit(EXIT_FAILURE);
     }
     auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
@@ -220,8 +233,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
                     clang::tooling::getAssociatedRange(*decl, ctx), ctx)
                     .str() +
                 '\n';
-    AppendToFile(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
-                 Wrap(dir, is_c, name, text));
+    auto path = index_dir / RulesLoader::IndexPath(is_type, key) / file_name;
+    fs::create_directories(path.parent_path());
+    std::ofstream(path, std::ios::app) << Wrap(dir, is_c, name, text);
   }
 }
 
