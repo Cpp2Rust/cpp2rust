@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/Decl.h>
 #include <clang/Basic/SourceLocation.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Lex/Pragma.h>
@@ -16,6 +18,10 @@ inline constexpr const char *kPragmaName = "cpp2rust_rules";
 inline constexpr const char *kIndexDirName = "index";
 
 std::string IndexPath(bool is_type, const std::string &key);
+
+std::string ClassKey(clang::ASTContext &ctx, const clang::NamedDecl *decl);
+
+std::string MemberKey(const std::string &class_key, const std::string &name);
 
 class PragmaHandler : public clang::PragmaHandler {
 public:

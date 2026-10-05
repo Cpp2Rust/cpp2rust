@@ -93,6 +93,20 @@ public:
 
   bool VisitMemberExpr(clang::MemberExpr *expr) {
     AddReferencedDecl(expr->getMemberDecl());
+    auto object = expr->getBase()->getType();
+    if (expr->isArrow()) {
+      object = object->getPointeeType();
+    }
+    AddMemberKey(object, expr->getMemberDecl()->getNameAsString());
+    return true;
+  }
+
+  bool VisitCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
+    if (auto method = llvm::dyn_cast_or_null<clang::CXXMethodDecl>(
+            expr->getDirectCallee());
+        method && expr->getNumArgs() > 0) {
+      AddMemberKey(expr->getArg(0)->getType(), method->getNameAsString());
+    }
     return true;
   }
 
@@ -118,6 +132,18 @@ public:
   }
 
 private:
+  void AddMemberKey(clang::QualType object, const std::string &name) {
+    if (object.isNull() || object->isDependentType()) {
+      return;
+    }
+    auto record = object.getNonReferenceType()->getAsCXXRecordDecl();
+    if (!record ||
+        !ctx_.getSourceManager().isInSystemHeader(record->getLocation())) {
+      return;
+    }
+    paths_.insert(IndexPath(false, MemberKey(ClassKey(ctx_, record), name)));
+  }
+
   void AddReferencedDecl(const clang::ValueDecl *decl) {
     AddType(decl->getType());
     if (const auto *fn = llvm::dyn_cast<clang::FunctionDecl>(decl)) {
@@ -245,6 +271,25 @@ std::string IndexPath(bool is_type, const std::string &key) {
     }
   }
   return out;
+}
+
+std::string ClassKey(clang::ASTContext &ctx, const clang::NamedDecl *decl) {
+  if (auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
+    auto record = alias->getUnderlyingType()->getAsCXXRecordDecl();
+    if (!record) {
+      return {};
+    }
+    decl = record;
+  }
+  if (auto spec =
+          llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl)) {
+    decl = spec->getSpecializedTemplate();
+  }
+  return Printer::ToString(ctx, decl);
+}
+
+std::string MemberKey(const std::string &class_key, const std::string &name) {
+  return Matcher::ExprKey(std::format("{}::{}", class_key, name));
 }
 
 void PragmaHandler::HandlePragma(clang::Preprocessor &PP,

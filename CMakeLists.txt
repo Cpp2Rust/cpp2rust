@@ -238,8 +238,8 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   if(NOT _cpp_srcs)
     continue()
   endif()
-  file(RELATIVE_PATH _rule_name ${PROJECT_SOURCE_DIR}/rules ${_rule_dir})
-  string(REPLACE "/" "_" _rule_name ${_rule_name})
+  file(RELATIVE_PATH _rule_path ${PROJECT_SOURCE_DIR}/rules ${_rule_dir})
+  string(REPLACE "/" "_" _rule_name ${_rule_path})
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_cpp_out ${_out_dir}/ir_src.json)
   set(_cxxflags)
@@ -264,9 +264,10 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     set(_index_stamp ${_out_dir}/index.stamp)
     add_custom_command(
       OUTPUT ${_index_stamp}
-      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --ir ${_cpp_out} ${_cxxflags} ${_common_headers}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
+      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --path ${_rule_path} --index ${RULES_IR_DIR}/index ${_cxxflags} ${_common_headers}
       COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
-      DEPENDS ${_cpp_out} ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
+      DEPENDS ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
       VERBATIM
     )
     list(APPEND cpp_rules_index_outputs ${_index_stamp})

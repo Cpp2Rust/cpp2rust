@@ -5,29 +5,27 @@
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
+#include <clang/AST/ExprCXX.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
-#include <llvm/ADT/STLExtras.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/CommandLine.h>
-#include <llvm/Support/JSON.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <format>
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "compat/platform_flags.h"
-#include "converter/converter_lib.h"
 #include "converter/printer.h"
 #include "converter/rules/matcher.h"
 #include "converter/rules/rules_loader.h"
@@ -37,146 +35,254 @@ namespace fs = std::filesystem;
 
 namespace cpp2rust {
 
-struct RuleFileDecl {
+struct RuleDir {
+  fs::path path;
   std::string name;
-  std::string text;
-  std::string pointee_key;
+  fs::path index_dir;
+  std::vector<std::string> common_headers;
 };
 
-using RuleFile = std::vector<RuleFileDecl>;
+struct RuleKey {
+  bool is_type;
+  std::string key;
+};
 
-std::string PointeeKey(clang::ASTContext &ctx, const clang::Decl *decl) {
-  auto typedef_decl = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
-  if (auto alias = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl)) {
-    typedef_decl = alias->getTemplatedDecl();
-  }
-  if (!typedef_decl || !typedef_decl->getUnderlyingType()->isPointerType()) {
+std::string ClassKey(clang::ASTContext &ctx, const fs::path &rule_path) {
+  if (!ctx.getLangOpts().CPlusPlus) {
     return {};
   }
-  auto type = typedef_decl->getUnderlyingType();
-  while (type->isPointerType()) {
-    type = type->getPointeeType();
+  const clang::DeclContext *scope = ctx.getTranslationUnitDecl();
+  for (const auto &component : rule_path) {
+    const clang::NamespaceDecl *ns = nullptr;
+    for (const auto *decl : scope->lookup(
+             clang::DeclarationName(&ctx.Idents.get(component.string())))) {
+      if (llvm::isa<clang::ClassTemplateDecl>(decl) ||
+          llvm::isa<clang::CXXRecordDecl>(decl) ||
+          llvm::isa<clang::TypedefNameDecl>(decl)) {
+        return RulesLoader::ClassKey(ctx, decl);
+      }
+      if (auto found = llvm::dyn_cast<clang::NamespaceDecl>(decl)) {
+        ns = found;
+      }
+    }
+    if (!ns) {
+      return {};
+    }
+    scope = ns;
   }
-  return Matcher::TypeKey(Printer::ToString(ctx, type.getUnqualifiedType(),
-                                            Printer::ScalarSugar::kPreserve));
+  return {};
 }
 
-std::string Wrap(const std::string &dir_name, bool is_c,
-                 const std::vector<std::string> &names,
+std::string ClassKey(clang::ASTContext &ctx, clang::QualType type) {
+  auto spec =
+      type.getNonReferenceType()->getAs<clang::TemplateSpecializationType>();
+  if (!spec) {
+    return {};
+  }
+  auto decl = spec->getTemplateName().getAsTemplateDecl();
+  if (!decl || !llvm::isa<clang::ClassTemplateDecl>(decl)) {
+    return {};
+  }
+  return RulesLoader::ClassKey(ctx, decl);
+}
+
+const clang::Expr *RuleExpr(const clang::Decl *decl) {
+  if (auto var = llvm::dyn_cast<clang::VarDecl>(decl)) {
+    return var->getInit();
+  }
+  auto fn = decl->getAsFunction();
+  if (!fn) {
+    return nullptr;
+  }
+  auto body = llvm::dyn_cast_or_null<clang::CompoundStmt>(fn->getBody());
+  if (!body || body->size() != 1) {
+    return nullptr;
+  }
+  auto ret = llvm::dyn_cast<clang::ReturnStmt>(body->body_front());
+  return ret ? ret->getRetValue() : nullptr;
+}
+
+const clang::Expr *Unwrap(const clang::Expr *expr) {
+  expr = expr->IgnoreImplicit();
+  if (auto cast = llvm::dyn_cast<clang::CXXFunctionalCastExpr>(expr)) {
+    expr = cast->getSubExpr()->IgnoreImplicit();
+  }
+  return expr;
+}
+
+std::optional<RuleKey> DirKey(const std::string &dir_class) {
+  if (dir_class.empty()) {
+    return std::nullopt;
+  }
+  return RuleKey{true, dir_class};
+}
+
+std::optional<RuleKey> DependentExprKey(clang::ASTContext &ctx,
+                                        const clang::Expr *expr,
+                                        const std::string &dir_class) {
+  auto member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(expr);
+  if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
+    if (auto callee = call->getDirectCallee()) {
+      return RuleKey{false, Matcher::ExprKey(Printer::ToString(ctx, callee))};
+    }
+    auto callee = call->getCallee()->IgnoreParenImpCasts();
+    member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(callee);
+    if (auto overloads = llvm::dyn_cast<clang::UnresolvedMemberExpr>(callee);
+        overloads && overloads->decls_begin() != overloads->decls_end()) {
+      return RuleKey{
+          false, Matcher::ExprKey(Printer::ToString(
+                     ctx, (*overloads->decls_begin())->getUnderlyingDecl()))};
+    }
+    if (auto lookup = llvm::dyn_cast<clang::UnresolvedLookupExpr>(callee);
+        lookup && lookup->getQualifier() &&
+        !llvm::isa<clang::CXXOperatorCallExpr>(call) &&
+        lookup->decls_begin() != lookup->decls_end()) {
+      return RuleKey{false,
+                     Matcher::ExprKey(Printer::ToString(
+                         ctx, (*lookup->decls_begin())->getUnderlyingDecl()))};
+    }
+  }
+  if (member && !member->isArrow()) {
+    if (auto class_key = ClassKey(ctx, member->getBaseType());
+        !class_key.empty()) {
+      return RuleKey{false, RulesLoader::MemberKey(
+                                class_key, member->getMember().getAsString())};
+    }
+  }
+  if (auto construct =
+          llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
+    if (auto class_key = ClassKey(ctx, construct->getTypeAsWritten());
+        !class_key.empty()) {
+      auto name = class_key.substr(class_key.rfind(':') + 1);
+      return RuleKey{false, RulesLoader::MemberKey(class_key, name)};
+    }
+  }
+  return DirKey(dir_class);
+}
+
+std::optional<RuleKey> KeyOf(clang::ASTContext &ctx, const clang::Decl *decl,
+                             const std::string &dir_class) {
+  auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
+  if (auto tmpl = llvm::dyn_cast<clang::TypeAliasTemplateDecl>(decl)) {
+    alias = tmpl->getTemplatedDecl();
+  }
+  if (alias) {
+    auto type = alias->getUnderlyingType();
+    while (type->isPointerType()) {
+      type = type->getPointeeType();
+    }
+    if (!type->isDependentType()) {
+      return RuleKey{true, Matcher::TypeKey(Printer::ToString(
+                               ctx, type.getUnqualifiedType(),
+                               Printer::ScalarSugar::kPreserve))};
+    }
+    if (auto class_key = ClassKey(ctx, type); !class_key.empty()) {
+      return RuleKey{true, class_key};
+    }
+    return DirKey(dir_class);
+  }
+
+  auto expr = RuleExpr(decl);
+  if (!expr) {
+    return std::nullopt;
+  }
+  expr = Unwrap(expr);
+  if (!expr->isTypeDependent() && !expr->isValueDependent()) {
+    return RuleKey{false, Matcher::ExprKey(Printer::ToString(ctx, expr))};
+  }
+  return DependentExprKey(ctx, expr, dir_class);
+}
+
+std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
                  const std::string &text) {
-  if (!is_c) {
-    return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir_name,
-                       text);
+  if (is_c) {
+    return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
+                       name, dir.name, text);
   }
-  std::string out;
-  for (const auto &name : names) {
-    out += std::format("#define {0} cpp2rust_rules_{1}_{0}\n", name, dir_name);
+  std::string includes;
+  if (!dir.common_headers.empty()) {
+    includes = std::format("#ifndef CPP2RUST_RULES_{0}_INCLUDES\n"
+                           "#define CPP2RUST_RULES_{0}_INCLUDES\n",
+                           dir.name);
+    for (const auto &header : dir.common_headers) {
+      includes += std::format("#include \"{}\"\n", header);
+    }
+    includes += "#endif\n";
   }
-  out += text;
-  for (const auto &name : names) {
-    out += std::format("#undef {}\n", name);
-  }
-  return out;
+  return std::format("namespace cpp2rust_rules_{} {{\n{}{}}}\n", dir.name,
+                     includes, text);
 }
 
-void CollectRuleFile(clang::ASTContext &ctx, RuleFile &file) {
+void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
+  bool is_c = !ctx.getLangOpts().CPlusPlus;
+  auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
+  auto file_name = dir.name + ".inc";
+  fs::create_directories(index_dir);
+  RemoveFilesNamed(index_dir, file_name);
+
+  auto dir_class = ClassKey(ctx, dir.path);
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
     if (decl->isImplicit() ||
         !sm.isInMainFile(sm.getExpansionLoc(decl->getLocation()))) {
       continue;
     }
-    RuleFileDecl rule;
+    std::string name;
     if (auto named = llvm::dyn_cast<clang::NamedDecl>(decl)) {
-      rule.name = named->getQualifiedNameAsString();
+      name = named->getQualifiedNameAsString();
     }
-    rule.text = clang::tooling::getText(
-                    clang::tooling::getAssociatedRange(*decl, ctx), ctx)
-                    .str() +
-                '\n';
-    rule.pointee_key = PointeeKey(ctx, decl);
-    file.push_back(std::move(rule));
-  }
-}
-
-void WriteIndex(const fs::path &index_dir, const std::string &dir_name,
-                bool is_c, const llvm::json::Object &rules,
-                const RuleFile &file,
-                const std::vector<fs::path> &common_headers) {
-  auto file_name = dir_name + ".inc";
-  fs::create_directories(index_dir);
-  RemoveFilesNamed(index_dir, file_name);
-
-  std::string includes;
-  if (!is_c && !common_headers.empty()) {
-    includes = std::format("#ifndef CPP2RUST_RULES_{0}_INCLUDES\n"
-                           "#define CPP2RUST_RULES_{0}_INCLUDES\n",
-                           dir_name);
-    for (const auto &header : common_headers) {
-      includes += std::format("#include \"{}\"\n", header.string());
-    }
-    includes += "#endif\n";
-  }
-
-  for (const auto &decl : file) {
-    if (!IsRuleName(decl.name)) {
-      llvm::errs() << "ERROR: declaration '" << decl.name << "' in rule dir "
-                   << dir_name
+    if (!IsRuleName(name)) {
+      llvm::errs() << "ERROR: declaration '" << name << "' in rule dir "
+                   << dir.path.string()
                    << " is not a rule; move it to an included file\n";
       std::exit(EXIT_FAILURE);
     }
-    const auto *value = rules.get(decl.name);
-    if (!value) {
-      continue;
+    auto key = KeyOf(ctx, decl, dir_class);
+    if (!key) {
+      llvm::errs() << "ERROR: cannot derive the key of rule '" << name
+                   << "' in rule dir " << dir.path.string() << '\n';
+      std::exit(EXIT_FAILURE);
     }
-    std::optional<llvm::StringRef> src = value->getAsString();
-    if (!src) {
-      src = value->getAsObject()->getString("key");
-    }
-    bool is_type = decl.name[0] == 't';
-    std::string key;
-    if (!is_type) {
-      key = Matcher::ExprKey(src->str());
-    } else if (!decl.pointee_key.empty()) {
-      key = decl.pointee_key;
-    } else {
-      key = Matcher::TypeKey(src->str());
-    }
-    AppendToFile(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
-                 Wrap(dir_name, is_c, {decl.name}, includes + decl.text));
+    auto text = clang::tooling::getText(
+                    clang::tooling::getAssociatedRange(*decl, ctx), ctx)
+                    .str() +
+                '\n';
+    AppendToFile(index_dir / RulesLoader::IndexPath(key->is_type, key->key) /
+                     file_name,
+                 Wrap(dir, is_c, name, text));
   }
 }
 
 class IndexAction : public clang::ASTFrontendAction {
 public:
-  explicit IndexAction(RuleFile &file) : file_(file) {}
+  explicit IndexAction(const RuleDir &dir) : dir_(dir) {}
 
   std::unique_ptr<clang::ASTConsumer>
   CreateASTConsumer(clang::CompilerInstance &CI, llvm::StringRef) override {
     class Consumer : public clang::ASTConsumer {
     public:
-      Consumer(clang::CompilerInstance &CI, RuleFile &file)
-          : CI_(CI), file_(file) {}
+      Consumer(clang::CompilerInstance &CI, const RuleDir &dir)
+          : CI_(CI), dir_(dir) {}
 
       void HandleTranslationUnit(clang::ASTContext &ctx) override {
         if (CI_.getDiagnostics().hasErrorOccurred()) {
           std::exit(EXIT_FAILURE);
         }
-        CollectRuleFile(ctx, file_);
+        IndexRuleFile(ctx, dir_);
       }
 
     private:
       clang::CompilerInstance &CI_;
-      RuleFile &file_;
+      const RuleDir &dir_;
     };
-    return std::make_unique<Consumer>(CI, file_);
+    return std::make_unique<Consumer>(CI, dir_);
   }
 
 private:
-  RuleFile &file_;
+  const RuleDir &dir_;
 };
 
-void Parse(const fs::path &src_path, RuleFile &file,
+void Index(const fs::path &src_path, const RuleDir &dir,
            llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
@@ -192,7 +298,7 @@ void Parse(const fs::path &src_path, RuleFile &file,
     std::exit(EXIT_FAILURE);
   }
   clang::tooling::runToolOnCodeWithArgs(
-      std::make_unique<IndexAction>(file), (*code)->getBuffer(), flags,
+      std::make_unique<IndexAction>(dir), (*code)->getBuffer(), flags,
       src_path.string(), is_c ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
 }
 
@@ -210,11 +316,22 @@ llvm::cl::opt<std::string>
            llvm::cl::cat(cat));
 
 llvm::cl::opt<std::string>
-    IrPath("ir",
-           llvm::cl::desc("Path of the ir_src.json file of the rule "
-                          "directory, written by cpp-rule-preprocessor."),
-           llvm::cl::value_desc("ir_src.json"), llvm::cl::Required,
-           llvm::cl::cat(cat));
+    RulePath("path",
+             llvm::cl::desc("Path of the rule directory relative to the "
+                            "rules root, e.g. std/vector."),
+             llvm::cl::value_desc("rule-path"), llvm::cl::Required,
+             llvm::cl::cat(cat));
+
+llvm::cl::opt<std::string>
+    IndexDir("index", llvm::cl::desc("Directory of the rule index to write."),
+             llvm::cl::value_desc("index-dir"), llvm::cl::Required,
+             llvm::cl::cat(cat));
+
+llvm::cl::list<std::string>
+    CommonHeaders("common-header",
+                  llvm::cl::desc("Header included by every indexed C++ rule"),
+                  llvm::cl::value_desc("header"), llvm::cl::ZeroOrMore,
+                  llvm::cl::cat(cat));
 
 llvm::cl::list<std::string> CXXFlags("cxxflags",
                                      llvm::cl::desc("Additional CXXFLAGS"),
@@ -227,44 +344,22 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  auto ir = llvm::MemoryBuffer::getFile(IrPath.getValue());
-  if (!ir) {
-    llvm::errs() << "ERROR: cannot read " << IrPath.getValue() << '\n';
-    return EXIT_FAILURE;
-  }
-  auto parsed = llvm::json::parse((*ir)->getBuffer());
-  if (!parsed) {
-    llvm::errs() << "ERROR: cannot parse " << IrPath.getValue() << ": "
-                 << llvm::toString(parsed.takeError()) << '\n';
-    return EXIT_FAILURE;
-  }
-  if (!parsed->getAsObject()) {
-    llvm::errs() << "ERROR: " << IrPath.getValue() << " is not an object\n";
-    return EXIT_FAILURE;
-  }
-  const auto &rules = *parsed->getAsObject();
+  cpp2rust::RuleDir dir;
+  dir.path = RulePath.getValue();
+  dir.name = RulePath.getValue();
+  std::ranges::replace(dir.name, '/', '_');
+  dir.index_dir = IndexDir.getValue();
+  dir.common_headers.assign(CommonHeaders.begin(), CommonHeaders.end());
 
   llvm::SmallVector<llvm::StringRef, 4> cxx_flags(CXXFlags.begin(),
                                                   CXXFlags.end());
-  fs::path dir = SrcDir.getValue();
-  auto ir_dir = fs::path(IrPath.getValue()).parent_path();
-  auto common_headers =
-      cpp2rust::ListFiles(fs::weakly_canonical(dir).parent_path() / "common");
   for (const char *name : {"src.c", "src.cpp"}) {
-    auto path = dir / name;
+    auto path = fs::path(SrcDir.getValue()) / name;
     if (!fs::exists(path)) {
       continue;
     }
     llvm::errs() << "Indexing " << path.string() << '\n';
-    bool is_c = path.extension() == ".c";
-    auto index_dir = ir_dir.parent_path() /
-                     cpp2rust::RulesLoader::kIndexDirName /
-                     (is_c ? "c" : "cpp");
-    auto dir_name = ir_dir.filename().string();
-    cpp2rust::RuleFile file;
-    cpp2rust::Parse(path, file, cxx_flags);
-    cpp2rust::WriteIndex(index_dir, dir_name, is_c, rules, file,
-                         common_headers);
+    cpp2rust::Index(path, dir, cxx_flags);
   }
   return EXIT_SUCCESS;
 }
