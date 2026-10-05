@@ -85,8 +85,8 @@ fn f9(a0: AnyPtr, a1: usize, a2: usize, a3: fn(AnyPtr, AnyPtr) -> i32) {
             for __b in 0..a2 {
                 let __x = __base.offset(__i * a2 + __b).read();
                 let __y = __base.offset(__min * a2 + __b).read();
-                __base.offset(__i * a2 + __b).write(__y);
-                __base.offset(__min * a2 + __b).write(__x);
+                elem!(__base, __i * a2 + __b).write(__y);
+                elem!(__base, __min * a2 + __b).write(__x);
             }
         }
     }

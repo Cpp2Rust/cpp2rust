@@ -51,7 +51,7 @@ fn f5(a0: Ptr<i32>) -> i32 {
         Ok((__r, __w)) => {
             let __fds = a0;
             __fds.write(FdRegistry::register(__r));
-            __fds.offset(1).write(FdRegistry::register(__w));
+            elem!(__fds, 1).write(FdRegistry::register(__w));
             0
         }
         Err(__e) => {
@@ -92,7 +92,7 @@ fn f9(a0: Ptr<i8>, a1: usize) -> i32 {
             let __n = __bytes.len().min(a1.saturating_sub(1));
             if a1 > 0 {
                 a0.write_c_bytes(&__bytes[..__n]);
-                a0.offset(__n).write(0);
+                elem!(a0, __n).write(0);
             }
             0
         }

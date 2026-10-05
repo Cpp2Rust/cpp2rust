@@ -236,7 +236,7 @@ fn main_0() -> i32 {
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
-                        (text.as_pointer() as Ptr<i8>).offset(__n).write(0);
+                        elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
                         (text.as_pointer() as Ptr<i8>)
                     }
                     Some(_) => {
@@ -293,7 +293,7 @@ fn main_0() -> i32 {
                     {
                         let __n = __s.len();
                         (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
-                        (text.as_pointer() as Ptr<i8>).offset(__n).write(0);
+                        elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
                         (text.as_pointer() as Ptr<i8>)
                     }
                     Some(_) => {
@@ -342,7 +342,7 @@ fn main_0() -> i32 {
                 Some(__s) if (__s.len() as u32) < 4_u32 => {
                     let __n = __s.len();
                     (text.as_pointer() as Ptr<i8>).write_c_bytes(__s.as_bytes());
-                    (text.as_pointer() as Ptr<i8>).offset(__n).write(0);
+                    elem!((text.as_pointer() as Ptr::<i8>), __n).write(0);
                     (text.as_pointer() as Ptr<i8>)
                 }
                 Some(_) => {

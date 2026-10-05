@@ -40,12 +40,8 @@ fn main_0() -> i32 {
                     let __y = __base
                         .offset(__min * ::std::mem::size_of::<i32>() + __b)
                         .read();
-                    __base
-                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
-                        .write(__y);
-                    __base
-                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
-                        .write(__x);
+                    elem!(__base, __i * ::std::mem::size_of::<i32>() + __b).write(__y);
+                    elem!(__base, __min * ::std::mem::size_of::<i32>() + __b).write(__x);
                 }
             }
         }

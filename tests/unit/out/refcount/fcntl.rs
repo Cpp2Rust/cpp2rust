@@ -18,7 +18,7 @@ fn main_0() -> i32 {
             Ok((__r, __w)) => {
                 let __fds = (fds.as_pointer() as Ptr<i32>);
                 __fds.write(FdRegistry::register(__r));
-                __fds.offset(1).write(FdRegistry::register(__w));
+                elem!(__fds, 1).write(FdRegistry::register(__w));
                 0
             }
             Err(__e) => {

@@ -200,7 +200,7 @@ fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> Ptr<i8> {
         __p += 1;
     }
     if a2 > 0 {
-        a1.offset(__len).write(0);
+        elem!(a1, __len).write(0);
     }
     a1
 }
@@ -215,7 +215,7 @@ fn f28(a0: i32, a1: Ptr<i8>, a2: usize) -> i32 {
         __p += 1;
     }
     if a2 > 0 {
-        a1.offset(__len).write(0);
+        elem!(a1, __len).write(0);
     }
     0
 }

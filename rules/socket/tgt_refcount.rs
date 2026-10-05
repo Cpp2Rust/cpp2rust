@@ -193,7 +193,7 @@ fn f11(a0: i32, a1: i32, a2: i32, a3: Ptr<i32>) -> i32 {
         Ok((__a, __b)) => {
             let __sv = a3;
             __sv.write(FdRegistry::register(__a));
-            __sv.offset(1).write(FdRegistry::register(__b));
+            elem!(__sv, 1).write(FdRegistry::register(__b));
             0
         }
         Err(__e) => {

@@ -46,7 +46,7 @@ fn f6(a0: i32, a1: AnyPtr, a2: Ptr<i8>, a3: u32) -> Ptr<i8> {
         Some(__s) if (__s.len() as u32) < a3 => {
             let __n = __s.len();
             a2.write_c_bytes(__s.as_bytes());
-            a2.offset(__n).write(0);
+            elem!(a2, __n).write(0);
             a2
         }
         Some(_) => {

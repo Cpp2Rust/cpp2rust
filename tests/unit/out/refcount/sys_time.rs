@@ -180,7 +180,7 @@ pub fn test_strftime_5() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
-                (buf.as_pointer() as Ptr<i8>).offset(__text.len()).write(0);
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -204,7 +204,7 @@ pub fn test_strftime_5() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
-                (buf.as_pointer() as Ptr<i8>).offset(__text.len()).write(0);
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -228,7 +228,7 @@ pub fn test_strftime_5() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
-                (buf.as_pointer() as Ptr<i8>).offset(__text.len()).write(0);
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -252,7 +252,7 @@ pub fn test_strftime_5() {
                 0
             } else {
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
-                (buf.as_pointer() as Ptr<i8>).offset(__text.len()).write(0);
+                elem!((buf.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } > 0_usize) as i32)
@@ -278,9 +278,7 @@ pub fn test_strftime_5() {
                 0
             } else {
                 (small.as_pointer() as Ptr<i8>).write_c_bytes(__text.as_bytes());
-                (small.as_pointer() as Ptr<i8>)
-                    .offset(__text.len())
-                    .write(0);
+                elem!((small.as_pointer() as Ptr::<i8>), __text.len()).write(0);
                 __text.len()
             }
         } == 0_usize) as i32)

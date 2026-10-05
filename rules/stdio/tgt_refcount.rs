@@ -167,7 +167,7 @@ fn f21(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, va: &[VaArg]) -> i32 {
     if a1 > 0 {
         let __n = ::std::cmp::min(__b.len(), a1 - 1);
         a0.write_c_bytes(&__b[..__n]);
-        a0.offset(__n).write(0);
+        elem!(a0, __n).write(0);
     }
     __b.len() as i32
 }

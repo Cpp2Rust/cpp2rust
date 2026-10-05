@@ -78,7 +78,7 @@ pub fn test_getpwuid_r_2() {
                             __ptrs.push(__buf.offset(__off));
                             let __end = __s.len();
                             __buf.offset(__off).write_c_bytes(__s);
-                            __buf.offset(__off + __end).write(0);
+                            elem!(__buf, __off + __end).write(0);
                             __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));
@@ -170,7 +170,7 @@ pub fn test_getpwuid_r_erange_3() {
                             __ptrs.push(__buf.offset(__off));
                             let __end = __s.len();
                             __buf.offset(__off).write_c_bytes(__s);
-                            __buf.offset(__off + __end).write(0);
+                            elem!(__buf, __off + __end).write(0);
                             __off += __end + 1;
                         }
                         __pwbuf.with_mut(|__pw| *__pw = Passwd::from_user_in(&__u, &__ptrs));

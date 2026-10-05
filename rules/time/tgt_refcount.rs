@@ -96,7 +96,7 @@ fn f6(a0: Ptr<i8>, a1: usize, a2: Ptr<i8>, a3: Ptr<Tm>) -> usize {
         0
     } else {
         a0.write_c_bytes(__text.as_bytes());
-        a0.offset(__text.len()).write(0);
+        elem!(a0, __text.len()).write(0);
         __text.len()
     }
 }
