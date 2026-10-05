@@ -13,7 +13,9 @@
 typedef decltype(nullptr) t0;
 
 BUILTIN_TYPE(1, bool)
+#if __cplusplus >= 202002L
 BUILTIN_TYPE(5, char8_t)
+#endif
 BUILTIN_TYPE(8, char16_t)
 BUILTIN_TYPE(11, wchar_t)
 BUILTIN_TYPE(12, char32_t)
