@@ -1,13 +1,11 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
-#include <clang/Frontend/CompilerInstance.h>
-#include <clang/Frontend/FrontendAction.h>
+#include <clang/Frontend/ASTUnit.h>
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
 #include <llvm/ADT/SmallVector.h>
@@ -227,35 +225,6 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
   }
 }
 
-class IndexAction : public clang::ASTFrontendAction {
-public:
-  explicit IndexAction(const RuleDir &dir) : dir_(dir) {}
-
-  std::unique_ptr<clang::ASTConsumer>
-  CreateASTConsumer(clang::CompilerInstance &CI, llvm::StringRef) override {
-    class Consumer : public clang::ASTConsumer {
-    public:
-      Consumer(clang::CompilerInstance &CI, const RuleDir &dir)
-          : CI_(CI), dir_(dir) {}
-
-      void HandleTranslationUnit(clang::ASTContext &ctx) override {
-        if (CI_.getDiagnostics().hasErrorOccurred()) {
-          std::exit(EXIT_FAILURE);
-        }
-        IndexRuleFile(ctx, dir_);
-      }
-
-    private:
-      clang::CompilerInstance &CI_;
-      const RuleDir &dir_;
-    };
-    return std::make_unique<Consumer>(CI, dir_);
-  }
-
-private:
-  const RuleDir &dir_;
-};
-
 void Index(const fs::path &src_path, const RuleDir &dir,
            llvm::ArrayRef<llvm::StringRef> cxx_flags) {
   bool is_c = src_path.extension() == ".c";
@@ -271,9 +240,14 @@ void Index(const fs::path &src_path, const RuleDir &dir,
     llvm::errs() << "ERROR: cannot read " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  clang::tooling::runToolOnCodeWithArgs(
-      std::make_unique<IndexAction>(dir), (*code)->getBuffer(), flags,
-      src_path.string(), is_c ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
+  auto ast = clang::tooling::buildASTFromCodeWithArgs(
+      (*code)->getBuffer(), flags, src_path.string(),
+      is_c ? CLANG_C_COMPILER : CLANG_CXX_COMPILER);
+  if (!ast || ast->getDiagnostics().hasErrorOccurred()) {
+    llvm::errs() << "ERROR: cannot parse " << src_path.string() << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+  IndexRuleFile(ast->getASTContext(), dir);
 }
 
 } // namespace cpp2rust
