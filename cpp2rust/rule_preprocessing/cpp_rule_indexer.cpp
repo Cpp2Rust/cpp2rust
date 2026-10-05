@@ -39,43 +39,37 @@ struct RuleDir {
   std::vector<std::string> common_headers;
 };
 
-std::string DirClass(clang::ASTContext &ctx, const fs::path &rule_path) {
-  if (!ctx.getLangOpts().CPlusPlus) {
+std::string ClassOf(clang::QualType type) {
+  while (type->isPointerType() || type->isReferenceType()) {
+    type = type->getPointeeType();
+  }
+  if (auto spec = type->getAs<clang::TemplateSpecializationType>()) {
+    auto decl = spec->getTemplateName().getAsTemplateDecl();
+    if (decl && llvm::isa<clang::ClassTemplateDecl>(decl)) {
+      return RulesLoader::ClassKey(decl);
+    }
     return {};
   }
-  const clang::DeclContext *scope = ctx.getTranslationUnitDecl();
-  for (const auto &component : rule_path) {
-    const clang::NamespaceDecl *ns = nullptr;
-    for (const auto *decl : scope->lookup(
-             clang::DeclarationName(&ctx.Idents.get(component.string())))) {
-      if (llvm::isa<clang::ClassTemplateDecl>(decl) ||
-          llvm::isa<clang::CXXRecordDecl>(decl) ||
-          llvm::isa<clang::TypedefNameDecl>(decl)) {
-        return RulesLoader::ClassKey(decl);
-      }
-      if (auto found = llvm::dyn_cast<clang::NamespaceDecl>(decl)) {
-        ns = found;
-      }
+  if (auto name = type->getAs<clang::DependentNameType>()) {
+    auto qualifier = name->getQualifier();
+    if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
+      return ClassOf(clang::QualType(qualifier.getAsType(), 0));
     }
-    if (!ns) {
-      return {};
-    }
-    scope = ns;
   }
   return {};
 }
 
-std::string TemplateClass(clang::QualType type) {
-  auto spec =
-      type.getNonReferenceType()->getAs<clang::TemplateSpecializationType>();
-  if (!spec) {
+std::string ClassOfParameters(const clang::Decl *rule) {
+  auto fn = rule->getAsFunction();
+  if (!fn) {
     return {};
   }
-  auto decl = spec->getTemplateName().getAsTemplateDecl();
-  if (!decl || !llvm::isa<clang::ClassTemplateDecl>(decl)) {
-    return {};
+  for (const auto *param : fn->parameters()) {
+    if (auto class_key = ClassOf(param->getType()); !class_key.empty()) {
+      return class_key;
+    }
   }
-  return RulesLoader::ClassKey(decl);
+  return {};
 }
 
 const clang::Expr *RuleExpr(const clang::Decl *decl) {
@@ -123,13 +117,16 @@ std::string DependentExprKey(const clang::Expr *expr) {
           (*lookup->decls_begin())->getUnderlyingDecl());
     }
   }
-  if (member && !member->isArrow()) {
-    return RulesLoader::MemberKey(TemplateClass(member->getBaseType()),
+  if (member && !member->isArrow() &&
+      member->getBaseType()
+          .getNonReferenceType()
+          ->getAs<clang::TemplateSpecializationType>()) {
+    return RulesLoader::MemberKey(ClassOf(member->getBaseType()),
                                   member->getMember().getAsString());
   }
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
-    auto class_key = TemplateClass(construct->getTypeAsWritten());
+    auto class_key = ClassOf(construct->getTypeAsWritten());
     return RulesLoader::MemberKey(class_key,
                                   class_key.substr(class_key.rfind(':') + 1));
   }
@@ -156,7 +153,7 @@ std::string TypeKey(const clang::TypedefNameDecl *rule) {
   if (!type->isDependentType()) {
     return RulesLoader::TypeKey(type);
   }
-  return TemplateClass(type);
+  return ClassOf(type);
 }
 
 std::string Wrap(const RuleDir &dir, bool is_c, const std::string &name,
@@ -183,7 +180,6 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
   auto file_name = dir.name + ".inc";
-  auto dir_class = DirClass(ctx, dir.path);
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
     if (decl->isImplicit() ||
@@ -207,7 +203,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
     }
     auto key = alias ? TypeKey(alias) : ExprKey(ctx, decl);
     if (key.empty()) {
-      key = dir_class;
+      key = ClassOfParameters(decl);
     }
     if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
