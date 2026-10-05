@@ -12,9 +12,9 @@
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <algorithm>
-#include <cctype>
 #include <filesystem>
 #include <format>
+#include <ranges>
 #include <set>
 #include <vector>
 
@@ -23,9 +23,9 @@
 
 namespace cpp2rust::RulesLoader {
 
-namespace {
-
 namespace fs = std::filesystem;
+
+namespace {
 
 class ImplicitMemberDefiner
     : public clang::RecursiveASTVisitor<ImplicitMemberDefiner> {
@@ -49,7 +49,7 @@ private:
 
 class KeyCollector : public clang::RecursiveASTVisitor<KeyCollector> {
 public:
-  KeyCollector(clang::Sema &sema, std::set<std::string> &paths)
+  KeyCollector(clang::Sema &sema, std::set<fs::path> &paths)
       : ctx_(sema.Context), sema_(sema), paths_(paths) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
@@ -125,9 +125,9 @@ public:
   }
 
 private:
-  void AddKey(const std::string &key) {
+  void AddKey(const fs::path &key) {
     if (!key.empty()) {
-      paths_.insert(IndexPath(key));
+      paths_.insert(key);
     }
   }
 
@@ -223,7 +223,7 @@ private:
 
   clang::ASTContext &ctx_;
   clang::Sema &sema_;
-  std::set<std::string> &paths_;
+  std::set<fs::path> &paths_;
   llvm::DenseSet<const void *> seen_;
 };
 
@@ -241,7 +241,7 @@ std::vector<fs::path> ListFiles(const fs::path &dir) {
 }
 
 std::string BuildRulesBuffer(const fs::path &index_dir,
-                             const std::set<std::string> &paths, bool is_cxx) {
+                             const std::set<fs::path> &paths, bool is_cxx) {
   std::string out;
   for (const char *lang : {"c", "cpp"}) {
     if (!is_cxx && lang == std::string("cpp")) {
@@ -258,23 +258,33 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
 
 } // namespace
 
-std::string IndexPath(const std::string &key) {
-  std::string out;
-  for (size_t i = 0; i < key.size(); ++i) {
-    unsigned char c = key[i];
-    if (c == ':' && i + 1 < key.size() && key[i + 1] == ':') {
-      out += '/';
-      ++i;
-    } else if (std::isalnum(c) || c == '_') {
-      out += c;
-    } else {
-      out += std::format("-{:02x}", c);
-    }
-  }
-  return out;
+static fs::path Component(std::string name) {
+  std::ranges::replace(name, '/', '_');
+  return name;
 }
 
-std::string ClassKey(const clang::NamedDecl *decl) {
+static fs::path NamePath(const clang::NamedDecl *decl) {
+  std::vector<std::string> scopes;
+  for (auto scope = decl->getDeclContext(); scope; scope = scope->getParent()) {
+    if (auto ns = llvm::dyn_cast<clang::NamespaceDecl>(scope)) {
+      if (!ns->isInline() && !ns->isAnonymousNamespace()) {
+        scopes.push_back(ns->getNameAsString());
+      }
+    } else if (auto record = llvm::dyn_cast<clang::RecordDecl>(scope)) {
+      scopes.push_back(record->getNameAsString());
+    } else if (auto enum_decl = llvm::dyn_cast<clang::EnumDecl>(scope);
+               enum_decl && enum_decl->isScoped()) {
+      scopes.push_back(enum_decl->getNameAsString());
+    }
+  }
+  fs::path path;
+  for (const auto &scope : scopes | std::views::reverse) {
+    path /= Component(scope);
+  }
+  return path / Component(decl->getNameAsString());
+}
+
+fs::path ClassKey(const clang::NamedDecl *decl) {
   if (auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
     auto tag = alias->getUnderlyingType()->getAsTagDecl();
     if (!tag) {
@@ -293,7 +303,7 @@ std::string ClassKey(const clang::NamedDecl *decl) {
       return {};
     }
   }
-  return decl->getQualifiedNameAsString();
+  return NamePath(decl);
 }
 
 std::string MemberName(clang::DeclarationName name) {
@@ -303,41 +313,42 @@ std::string MemberName(clang::DeclarationName name) {
   return name.getAsString();
 }
 
-std::string MemberKey(const std::string &class_key, const std::string &name) {
+fs::path MemberKey(const fs::path &class_key, const std::string &name) {
   if (class_key.empty()) {
     return {};
   }
-  return std::format("{}::{}", class_key, name);
+  return class_key / Component(name);
 }
 
-std::string FunctionKey(const clang::FunctionDecl *decl) {
+fs::path FunctionKey(const clang::FunctionDecl *decl) {
   if (auto method = llvm::dyn_cast<clang::CXXMethodDecl>(decl)) {
-    auto record = method->getParent();
+    auto class_key = ClassKey(method->getParent());
     if (llvm::isa<clang::CXXConstructorDecl>(method)) {
-      return MemberKey(ClassKey(record), record->getNameAsString());
+      return MemberKey(class_key, class_key.filename().string());
     }
-    return MemberKey(ClassKey(record), MemberName(method->getDeclName()));
+    return MemberKey(class_key, MemberName(method->getDeclName()));
   }
-  return decl->getQualifiedNameAsString();
+  return NamePath(decl);
 }
 
-std::string DeclKey(const clang::NamedDecl *decl) {
+fs::path DeclKey(const clang::NamedDecl *decl) {
   if (auto fn = decl->getAsFunction()) {
     return FunctionKey(fn);
   }
   if (auto record = llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
     return MemberKey(ClassKey(record), MemberName(decl->getDeclName()));
   }
-  return decl->getQualifiedNameAsString();
+  return NamePath(decl);
 }
 
-std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
+fs::path ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
       expr->getBeginLoc().isMacroID()) {
-    return clang::Lexer::getImmediateMacroName(
-               expr->getBeginLoc(), ctx.getSourceManager(), ctx.getLangOpts())
-        .str();
+    return Component(clang::Lexer::getImmediateMacroName(expr->getBeginLoc(),
+                                                         ctx.getSourceManager(),
+                                                         ctx.getLangOpts())
+                         .str());
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
@@ -360,7 +371,7 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   return {};
 }
 
-std::string TypeKey(clang::QualType type) {
+fs::path TypeKey(clang::QualType type) {
   if (auto decltype_type =
           llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
     type = decltype_type->getUnderlyingType();
@@ -374,7 +385,7 @@ std::string TypeKey(clang::QualType type) {
     return DeclKey(alias->getDecl());
   }
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
-    return sugar->getIdentifier()->getName().str();
+    return Component(sugar->getIdentifier()->getName().str());
   }
   if (auto tag = type->getAsTagDecl()) {
     return ClassKey(tag);
@@ -401,7 +412,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
     }
   }
   ctx.setTraversalScope(user_decls);
-  std::set<std::string> selected;
+  std::set<fs::path> selected;
   ImplicitMemberDefiner definer(CI_.getSema());
   for (auto *decl : user_decls) {
     definer.TraverseDecl(decl);

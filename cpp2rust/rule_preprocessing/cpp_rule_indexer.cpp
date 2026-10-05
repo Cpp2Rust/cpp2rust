@@ -40,7 +40,7 @@ struct RuleCtx {
   std::vector<std::string> common_headers;
 };
 
-std::string ClassOf(clang::QualType type) {
+fs::path ClassOf(clang::QualType type) {
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
   }
@@ -60,7 +60,7 @@ std::string ClassOf(clang::QualType type) {
   return {};
 }
 
-std::string ClassOfParameters(const clang::Decl *rule) {
+fs::path ClassOfParameters(const clang::Decl *rule) {
   auto fn = rule->getAsFunction();
   if (!fn) {
     return {};
@@ -97,7 +97,7 @@ const clang::Expr *IgnoreImplicitAndFunctionalCast(const clang::Expr *expr) {
   return expr;
 }
 
-std::string DependentExprKey(const clang::Expr *expr) {
+fs::path DependentExprKey(const clang::Expr *expr) {
   auto member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(expr);
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
@@ -128,13 +128,12 @@ std::string DependentExprKey(const clang::Expr *expr) {
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
     auto class_key = ClassOf(construct->getTypeAsWritten());
-    return RulesLoader::MemberKey(class_key,
-                                  class_key.substr(class_key.rfind(':') + 1));
+    return RulesLoader::MemberKey(class_key, class_key.filename().string());
   }
   return {};
 }
 
-std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
+fs::path ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
   auto expr = RuleExpr(rule);
   if (!expr) {
     return {};
@@ -146,7 +145,7 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
   return DependentExprKey(expr);
 }
 
-std::string TypeKey(const clang::TypedefNameDecl *rule) {
+fs::path TypeKey(const clang::TypedefNameDecl *rule) {
   auto type = rule->getUnderlyingType();
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
@@ -214,7 +213,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir) {
     auto text =
         clang::tooling::getExtendedText(*decl, clang::tok::semi, ctx).str() +
         '\n';
-    auto path = index_dir / RulesLoader::IndexPath(key) / file_name;
+    auto path = index_dir / key / file_name;
     fs::create_directories(path.parent_path());
     std::ofstream(path, std::ios::app) << CreateIncFile(dir, is_c, name, text);
   }
