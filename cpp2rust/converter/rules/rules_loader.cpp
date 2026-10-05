@@ -222,10 +222,8 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
     if (!is_cxx && lang == std::string("cpp")) {
       continue;
     }
-    auto root = index_dir / lang;
-    AppendIncludes(root / kAllName, out);
     for (const auto &path : paths) {
-      AppendIncludes(root / path, out);
+      AppendIncludes(index_dir / lang / path, out);
     }
   }
   return out;

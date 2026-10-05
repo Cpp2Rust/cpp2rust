@@ -139,13 +139,13 @@ int main(int argc, char *argv[]) {
       continue;
     }
     llvm::errs() << "Indexing " << path.string() << '\n';
+    bool is_c = path.extension() == ".c";
+    auto index_dir = ir_dir.parent_path() /
+                     cpp2rust::RulesLoader::kIndexDirName / (is_c ? "c" : "cpp");
+    auto dir_name = ir_dir.filename().string();
     cpp2rust::RuleFile file;
     cpp2rust::Parse(path, file, cxx_flags);
-    bool is_c = path.extension() == ".c";
-    cpp2rust::WriteIndex(ir_dir.parent_path() /
-                             cpp2rust::RulesLoader::kIndexDirName /
-                             (is_c ? "c" : "cpp"),
-                         ir_dir.filename().string(), is_c, rules, file);
+    cpp2rust::WriteIndex(index_dir, dir_name, is_c, rules, file);
   }
   return EXIT_SUCCESS;
 }

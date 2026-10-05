@@ -5,7 +5,6 @@
 
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
-#include <clang/Rewrite/Core/Rewriter.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
 #include <llvm/ADT/STLExtras.h>
 #include <llvm/Support/raw_ostream.h>
@@ -42,8 +41,6 @@ public:
     if (!sm_.isInMainFile(HashLoc)) {
       return;
     }
-    file_.includes.push_back(
-        clang::CharSourceRange::getCharRange(HashLoc, FilenameRange.getEnd()));
     if (!File) {
       return;
     }
@@ -79,6 +76,24 @@ std::string PointeeKey(clang::ASTContext &ctx, const clang::Decl *decl) {
                                             Printer::ScalarSugar::kPreserve));
 }
 
+std::string Wrap(const std::string &dir_name, bool is_c,
+                 const std::vector<std::string> &names,
+                 const std::string &text) {
+  if (!is_c) {
+    return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir_name,
+                       text);
+  }
+  std::string out;
+  for (const auto &name : names) {
+    out += std::format("#define {0} cpp2rust_rules_{1}_{0}\n", name, dir_name);
+  }
+  out += text;
+  for (const auto &name : names) {
+    out += std::format("#undef {}\n", name);
+  }
+  return out;
+}
+
 } // namespace
 
 std::unique_ptr<clang::PPCallbacks>
@@ -97,23 +112,13 @@ void CollectRuleFile(clang::ASTContext &ctx, RuleFile &file) {
     if (auto named = llvm::dyn_cast<clang::NamedDecl>(decl)) {
       rule.name = named->getQualifiedNameAsString();
     }
-    rule.name_from_macro = decl->getLocation().isMacroID();
-    if (!rule.name_from_macro) {
-      rule.text = clang::tooling::getText(
-                      clang::tooling::getAssociatedRange(*decl, ctx), ctx)
-                      .str() +
-                  '\n';
-      rule.pointee_key = PointeeKey(ctx, decl);
-    }
+    rule.text = clang::tooling::getText(
+                    clang::tooling::getAssociatedRange(*decl, ctx), ctx)
+                    .str() +
+                '\n';
+    rule.pointee_key = PointeeKey(ctx, decl);
     file.decls.push_back(std::move(rule));
   }
-
-  clang::Rewriter rewriter(sm, ctx.getLangOpts());
-  for (auto include : file.includes) {
-    rewriter.RemoveText(include);
-  }
-  llvm::raw_string_ostream os(file.text_without_includes);
-  rewriter.getEditBuffer(sm.getMainFileID()).write(os);
 }
 
 void WriteIndex(const fs::path &index_dir, const std::string &dir_name,
@@ -132,37 +137,6 @@ void WriteIndex(const fs::path &index_dir, const std::string &dir_name,
       includes += std::format("#include \"{}\"\n", include);
     }
     includes += "#endif\n";
-  }
-  auto wrap = [&](const std::vector<std::string> &names,
-                  const std::string &text) {
-    if (!is_c) {
-      return std::format("namespace cpp2rust_rules_{} {{\n{}{}}}\n", dir_name,
-                         includes, text);
-    }
-    std::string out = includes;
-    for (const auto &name : names) {
-      out +=
-          std::format("#define {0} cpp2rust_rules_{1}_{0}\n", name, dir_name);
-    }
-    out += text;
-    for (const auto &name : names) {
-      out += std::format("#undef {}\n", name);
-    }
-    return out;
-  };
-
-  if (llvm::any_of(file.decls, [](const RuleFileDecl &decl) {
-        return decl.name_from_macro && IsRuleName(decl.name);
-      })) {
-    std::vector<std::string> names;
-    for (const auto &decl : file.decls) {
-      if (IsRuleName(decl.name)) {
-        names.push_back(decl.name);
-      }
-    }
-    AppendToFile(index_dir / RulesLoader::kAllName / file_name,
-                 wrap(names, file.text_without_includes));
-    return;
   }
 
   for (const auto &decl : file.decls) {
@@ -190,7 +164,7 @@ void WriteIndex(const fs::path &index_dir, const std::string &dir_name,
       key = Matcher::TypeKey(src->str());
     }
     AppendToFile(index_dir / RulesLoader::IndexPath(is_type, key) / file_name,
-                 wrap({decl.name}, decl.text));
+                 Wrap(dir_name, is_c, {decl.name}, includes + decl.text));
   }
 }
 

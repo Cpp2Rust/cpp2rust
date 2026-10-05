@@ -15,8 +15,6 @@ inline constexpr const char *kPragmaName = "cpp2rust_rules";
 
 inline constexpr const char *kIndexDirName = "index";
 
-inline constexpr const char *kAllName = "all";
-
 std::string IndexPath(bool is_type, const std::string &key);
 
 class PragmaHandler : public clang::PragmaHandler {

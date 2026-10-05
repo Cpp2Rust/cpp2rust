@@ -252,15 +252,17 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   )
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
 
-  set(_index_stamp ${_out_dir}/index.stamp)
-  add_custom_command(
-    OUTPUT ${_index_stamp}
-    COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --ir ${_cpp_out} ${_cxxflags}
-    COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
-    DEPENDS ${_cpp_out} ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
-    VERBATIM
-  )
-  list(APPEND cpp_rules_index_outputs ${_index_stamp})
+  if(NOT _rule_name STREQUAL "builtin_types")
+    set(_index_stamp ${_out_dir}/index.stamp)
+    add_custom_command(
+      OUTPUT ${_index_stamp}
+      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --ir ${_cpp_out} ${_cxxflags}
+      COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
+      DEPENDS ${_cpp_out} ${_cpp_srcs} ${_cxxflags_file} ${rule_common_headers} ${rule_indexer_sources}
+      VERBATIM
+    )
+    list(APPEND cpp_rules_index_outputs ${_index_stamp})
+  endif()
 
   set(_rust_srcs)
   set(_rust_out)

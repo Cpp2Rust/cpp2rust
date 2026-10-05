@@ -4,7 +4,6 @@
 #pragma once
 
 #include <clang/AST/ASTContext.h>
-#include <clang/Basic/SourceLocation.h>
 #include <clang/Basic/SourceManager.h>
 #include <clang/Lex/PPCallbacks.h>
 #include <llvm/Support/JSON.h>
@@ -20,14 +19,11 @@ struct RuleFileDecl {
   std::string name;
   std::string text;
   std::string pointee_key;
-  bool name_from_macro;
 };
 
 struct RuleFile {
   std::vector<RuleFileDecl> decls;
-  std::vector<clang::CharSourceRange> includes;
   std::vector<std::string> common_includes;
-  std::string text_without_includes;
 };
 
 std::unique_ptr<clang::PPCallbacks>
