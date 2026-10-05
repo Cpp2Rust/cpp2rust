@@ -12,14 +12,14 @@ pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
-pub struct anon_1 {
+pub struct anon_0 {
     pub items: *mut *mut libc::c_char,
     pub count: i64,
     pub cursor: i64,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
-pub struct anon_2 {
+pub struct anon_1 {
     pub lo: i32,
     pub hi: i32,
     pub curr: i32,
@@ -27,7 +27,7 @@ pub struct anon_2 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
-pub struct anon_3 {
+pub struct anon_2 {
     pub lo: i64,
     pub hi: i64,
     pub curr: i64,
@@ -36,12 +36,12 @@ pub struct anon_3 {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union anon_0 {
-    pub list: anon_1,
-    pub letters: anon_2,
-    pub integers: anon_3,
+pub union anon_3 {
+    pub list: anon_0,
+    pub letters: anon_1,
+    pub integers: anon_2,
 }
-impl Default for anon_0 {
+impl Default for anon_3 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -51,7 +51,7 @@ impl Default for anon_0 {
 pub struct Branch {
     pub choice: Choice_enum,
     pub index: i32,
-    pub v: anon_0,
+    pub v: anon_3,
 }
 pub fn main() {
     unsafe {

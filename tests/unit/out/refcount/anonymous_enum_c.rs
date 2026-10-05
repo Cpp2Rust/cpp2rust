@@ -6,12 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub type anon_0 = u32;
-pub const anon_0_FIRST_A: anon_0 = 0;
-pub const anon_0_FIRST_B: anon_0 = 1;
 pub type anon_1 = u32;
-pub const anon_1_SECOND_A: anon_1 = 0;
-pub const anon_1_SECOND_B: anon_1 = 1;
+pub const anon_1_FIRST_A: anon_1 = 0;
+pub const anon_1_FIRST_B: anon_1 = 1;
+pub type anon_2 = u32;
+pub const anon_2_SECOND_A: anon_2 = 0;
+pub const anon_2_SECOND_B: anon_2 = 1;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
 pub struct S {
@@ -21,34 +21,34 @@ pub struct S {
 pub type TdEnum_enum = u32;
 pub const TdEnum_enum_TD_A: TdEnum_enum = 0;
 pub const TdEnum_enum_TD_B: TdEnum_enum = 1;
-pub type anon_2 = u32;
-pub const anon_2_FIELD_A: anon_2 = 0;
-pub const anon_2_FIELD_B: anon_2 = 1;
+pub type anon_0 = u32;
+pub const anon_0_FIELD_A: anon_0 = 0;
+pub const anon_0_FIELD_B: anon_0 = 1;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct WithAnonField {
     #[offset(0)]
     pub a: i32,
     #[offset(4)]
-    pub field: anon_2,
+    pub field: anon_0,
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    assert!(((((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)) as i32) != 0));
-    assert!(((((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)) as i32) != 0));
+    assert!(((((anon_1_FIRST_A as i32) != (anon_1_FIRST_B as i32)) as i32) != 0));
+    assert!(((((anon_2_SECOND_A as i32) != (anon_2_SECOND_B as i32)) as i32) != 0));
     assert!(((((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)) as i32) != 0));
     let td: Value<TdEnum_enum> = Rc::new(RefCell::new(TdEnum_enum_TD_A));
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum_TD_A as i32) as u32)) as i32) != 0));
     (*td.borrow_mut()) = TdEnum_enum_TD_B;
     assert!((((((*td.borrow()) as u32) == ((TdEnum_enum_TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
-    (*w.borrow_mut()).field = anon_2_FIELD_A;
-    assert!((((({ (*w.borrow()).field } as u32) == ((anon_2_FIELD_A as i32) as u32)) as i32) != 0));
-    (*w.borrow_mut()).field = anon_2_FIELD_B;
-    assert!((((({ (*w.borrow()).field } as u32) == ((anon_2_FIELD_B as i32) as u32)) as i32) != 0));
+    (*w.borrow_mut()).field = anon_0_FIELD_A;
+    assert!((((({ (*w.borrow()).field } as u32) == ((anon_0_FIELD_A as i32) as u32)) as i32) != 0));
+    (*w.borrow_mut()).field = anon_0_FIELD_B;
+    assert!((((({ (*w.borrow()).field } as u32) == ((anon_0_FIELD_B as i32) as u32)) as i32) != 0));
     return 0;
 }
 pub type anon_3 = u32;

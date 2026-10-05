@@ -12,16 +12,16 @@ pub struct Inner {
     pub a: i32,
     pub b: i32,
 }
-pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
+pub unsafe fn sum_inner_1(mut i: *mut Inner) -> i32 {
     return (((*i).a) + ((*i).b));
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub union anon_1 {
+pub union anon_0 {
     pub inner: Inner,
     pub raw_: [libc::c_char; 16],
 }
-impl Default for anon_1 {
+impl Default for anon_0 {
     fn default() -> Self {
         unsafe { std::mem::zeroed() }
     }
@@ -29,7 +29,7 @@ impl Default for anon_1 {
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, Default)]
 pub struct Outer {
-    pub u: anon_1,
+    pub u: anon_0,
 }
 pub fn main() {
     unsafe {
@@ -41,7 +41,7 @@ unsafe fn main_0() -> i32 {
     let mut standalone: Inner = <Inner>::default();
     standalone.a = 3;
     standalone.b = 4;
-    assert!(((((unsafe { sum_inner_0((&mut standalone as *mut Inner),) }) == (7)) as i32) != 0));
+    assert!(((((unsafe { sum_inner_1((&mut standalone as *mut Inner),) }) == (7)) as i32) != 0));
     let mut outer: Outer = <Outer>::default();
     {
         let byte_0 = ((&mut outer as *mut Outer) as *mut ::libc::c_void) as *mut u8;
@@ -52,7 +52,7 @@ unsafe fn main_0() -> i32 {
     };
     outer.u.inner.a = 3;
     outer.u.inner.b = 4;
-    assert!(((((unsafe { sum_inner_0((&mut outer.u.inner as *mut Inner),) }) == (7)) as i32) != 0));
+    assert!(((((unsafe { sum_inner_1((&mut outer.u.inner as *mut Inner),) }) == (7)) as i32) != 0));
     assert!((((((outer.u.raw_[(0) as usize] as u8) as i32) == (3)) as i32) != 0));
     assert!((((((outer.u.raw_[(4) as usize] as u8) as i32) == (4)) as i32) != 0));
     return 0;
