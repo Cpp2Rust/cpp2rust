@@ -986,49 +986,7 @@ bool Converter::VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
 }
 
 void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
-  clang::Scope tu_scope(nullptr, clang::Scope::DeclScope,
-                        sema_->getDiagnostics());
-  tu_scope.setEntity(ctx_.getTranslationUnitDecl());
-  auto *saved_tu_scope = std::exchange(sema_->TUScope, &tu_scope);
-  sema_->ForceDeclarationOfImplicitMembers(decl);
-  for (auto ctor : decl->ctors()) {
-    if (ctor->isCopyConstructor() && ctor->isImplicit() &&
-        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted()) {
-      sema_->DefineImplicitCopyConstructor(decl->getLocation(), ctor);
-    }
-    if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
-        !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
-        !HasDefaultedCopyConstructor(decl)) {
-      sema_->DefineImplicitMoveConstructor(decl->getLocation(), ctor);
-    }
-  }
-  for (auto *method : decl->methods()) {
-    if (method->isMoveAssignmentOperator() && !method->isUserProvided() &&
-        !method->doesThisDeclarationHaveABody() && !method->isDeleted() &&
-        !HasDefaultedCopyAssignment(decl)) {
-      sema_->DefineImplicitMoveAssignment(decl->getLocation(), method);
-    }
-  }
-  auto define_defaulted_comparison = [&](clang::FunctionDecl *fn) {
-    if (!fn || !IsComparisonOperator(fn) || !fn->isDefaulted() ||
-        fn->doesThisDeclarationHaveABody()) {
-      return;
-    }
-#if CLANG_VERSION_MAJOR >= 24
-    auto kind = fn->getDefaultedComparisonKind();
-#else
-    auto kind = sema_->getDefaultedComparisonKind(fn);
-#endif
-    sema_->DefineDefaultedComparison(decl->getLocation(), fn, kind);
-  };
-  for (auto *method : decl->methods()) {
-    define_defaulted_comparison(method);
-  }
-  for (auto *friend_decl : decl->friends()) {
-    define_defaulted_comparison(clang::dyn_cast_or_null<clang::FunctionDecl>(
-        friend_decl->getFriendDecl()));
-  }
-  sema_->TUScope = saved_tu_scope;
+  cpp2rust::DefineImplicitMembers(*sema_, decl);
 }
 
 bool Converter::VisitCXXMethodDecl(clang::CXXMethodDecl *decl) {
