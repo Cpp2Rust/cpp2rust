@@ -24,7 +24,7 @@ pub const Tag_TAG_TWO: Tag = 2;
 pub struct Entry {
     #[offset(0)]
     #[byte_size(8)]
-    pub name: Ptr<u8>,
+    pub name: Ptr<i8>,
     #[offset(8)]
     pub color: Color,
     #[offset(12)]
@@ -42,17 +42,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"first"),
+            name: Ptr::<i8>::from_string_literal(b"first"),
             color: Color_RED,
             opt: Option_OPT_NONE,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"second"),
+            name: Ptr::<i8>::from_string_literal(b"second"),
             color: Color_GREEN,
             opt: Option_OPT_A,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"third"),
+            name: Ptr::<i8>::from_string_literal(b"third"),
             color: Color_BLUE,
             opt: Option_OPT_C,
         },

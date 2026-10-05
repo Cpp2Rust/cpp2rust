@@ -400,34 +400,34 @@ fn main_0() -> i32 {
     assert!(((*(*pair4.borrow()).1.borrow()) == 1));
     assert!(((*(*pair3.borrow()).0.borrow()).len() == 0_usize));
     assert!(((*(*pair3.borrow()).1.borrow()) == 0));
-    let s1: Value<Vec<u8>> = Rc::new(RefCell::new(
-        vec![('a' as u8); (3_usize) as usize]
+    let s1: Value<Vec<i8>> = Rc::new(RefCell::new(
+        vec![('a' as i8); (3_usize) as usize]
             .iter()
             .cloned()
             .chain(std::iter::once(0))
             .collect(),
     ));
-    let s2: Value<Vec<u8>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
-    elem!((s2.as_pointer() as Ptr<u8>), 0_usize).write(('b' as u8));
-    elem!((s2.as_pointer() as Ptr<u8>), 1_usize).write(('b' as u8));
-    elem!((s2.as_pointer() as Ptr<u8>), 2_usize).write(('b' as u8));
+    let s2: Value<Vec<i8>> = Rc::new(RefCell::new((*s1.borrow()).clone()));
+    elem!((s2.as_pointer() as Ptr<i8>), 0_usize).write(('b' as i8));
+    elem!((s2.as_pointer() as Ptr<i8>), 1_usize).write(('b' as i8));
+    elem!((s2.as_pointer() as Ptr<i8>), 2_usize).write(('b' as i8));
     assert!(
-        (((elem!((s2.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<i8>), 0_usize).read()) as i32) == (('b' as i8) as i32))
     );
     assert!(
-        (((elem!((s2.as_pointer() as Ptr<u8>), 1_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<i8>), 1_usize).read()) as i32) == (('b' as i8) as i32))
     );
     assert!(
-        (((elem!((s2.as_pointer() as Ptr<u8>), 2_usize).read()) as i32) == (('b' as u8) as i32))
+        (((elem!((s2.as_pointer() as Ptr<i8>), 2_usize).read()) as i32) == (('b' as i8) as i32))
     );
     assert!(
-        (((elem!((s1.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<i8>), 0_usize).read()) as i32) == (('a' as i8) as i32))
     );
     assert!(
-        (((elem!((s1.as_pointer() as Ptr<u8>), 1_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<i8>), 1_usize).read()) as i32) == (('a' as i8) as i32))
     );
     assert!(
-        (((elem!((s1.as_pointer() as Ptr<u8>), 2_usize).read()) as i32) == (('a' as u8) as i32))
+        (((elem!((s1.as_pointer() as Ptr<i8>), 2_usize).read()) as i32) == (('a' as i8) as i32))
     );
     let b1: Value<Bar> = Rc::new(RefCell::new(Bar { w: 1 }));
     let b2: Value<Bar> = Rc::new(RefCell::new(Bar { w: 2 }));

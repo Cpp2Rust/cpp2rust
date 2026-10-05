@@ -23,24 +23,24 @@ fn t14() -> Ptr::<bool> {
     Ptr::<bool>::null()
 }
 
-fn t20() -> u8 {
-    0_u8
+fn t20() -> i8 {
+    0_i8
 }
 
-fn t21() -> Ptr::<u8> {
-    Ptr::<u8>::null()
+fn t21() -> Ptr::<i8> {
+    Ptr::<i8>::null()
 }
 
-fn t22() -> Ptr::<u8> {
-    Ptr::<u8>::null()
+fn t22() -> Ptr::<i8> {
+    Ptr::<i8>::null()
 }
 
-fn t23() -> Ptr::<u8> {
-    Ptr::<u8>::null()
+fn t23() -> Ptr::<i8> {
+    Ptr::<i8>::null()
 }
 
-fn t24() -> Ptr::<u8> {
-    Ptr::<u8>::null()
+fn t24() -> Ptr::<i8> {
+    Ptr::<i8>::null()
 }
 
 fn t31() -> Ptr::<i8> {

@@ -32,9 +32,9 @@ pub fn operator_le_4(a: i64, b: Ptr<S>) -> bool {
     let a: Value<i64> = Rc::new(RefCell::new(a));
     return ({ (*a.borrow()) } <= { (b.with(|__s| __s.v) as i64) });
 }
-pub fn operator_ge_5(a: Ptr<u8>, b: Ptr<S>) -> bool {
-    let a: Value<Ptr<u8>> = Rc::new(RefCell::new(a));
-    return ({ ((((*a.borrow()).read()) as i32) - (('0' as u8) as i32)) } >= {
+pub fn operator_ge_5(a: Ptr<i8>, b: Ptr<S>) -> bool {
+    let a: Value<Ptr<i8>> = Rc::new(RefCell::new(a));
+    return ({ ((((*a.borrow()).read()) as i32) - (('0' as i8) as i32)) } >= {
         b.with(|__s| __s.v)
     });
 }
@@ -54,13 +54,13 @@ fn main_0() -> i32 {
     assert!(({ SImpl::operator_lt(&cs, 6,) }));
     assert!(({ SImpl::operator_gt(&cs, 4.5E+0,) }));
     assert!(({ SImpl::operator_le(&cs, 5_i64,) }));
-    assert!(({ SImpl::operator_ge(&cs, Ptr::<u8>::from_string_literal(b"3"),) }));
+    assert!(({ SImpl::operator_ge(&cs, Ptr::<i8>::from_string_literal(b"3"),) }));
     assert!(({ operator_eq_0(5, s.as_pointer(),) }));
     assert!(({ operator_ne_1(4, s.as_pointer(),) }));
     assert!(({ operator_lt_2(4, s.as_pointer(),) }));
     assert!(({ operator_gt_3(5.5E+0, s.as_pointer(),) }));
     assert!(({ operator_le_4(5_i64, s.as_pointer(),) }));
-    assert!(({ operator_ge_5(Ptr::<u8>::from_string_literal(b"7"), s.as_pointer(),) }));
+    assert!(({ operator_ge_5(Ptr::<i8>::from_string_literal(b"7"), s.as_pointer(),) }));
     assert!(
         ({
             let _a: Ptr<S> = s.as_pointer();
@@ -81,7 +81,7 @@ pub trait SImpl {
     fn operator_lt(&self, o: i32) -> bool;
     fn operator_gt(&self, o: f64) -> bool;
     fn operator_le(&self, o: i64) -> bool;
-    fn operator_ge(&self, o: Ptr<u8>) -> bool;
+    fn operator_ge(&self, o: Ptr<i8>) -> bool;
 }
 impl SImpl for Ptr<S> {
     fn operator_eq(&self, o: i32) -> bool {
@@ -104,10 +104,10 @@ impl SImpl for Ptr<S> {
         let o: Value<i64> = Rc::new(RefCell::new(o));
         return (((*self).with(|__s| __s.v) as i64) <= (*o.borrow()));
     }
-    fn operator_ge(&self, o: Ptr<u8>) -> bool {
-        let o: Value<Ptr<u8>> = Rc::new(RefCell::new(o));
+    fn operator_ge(&self, o: Ptr<i8>) -> bool {
+        let o: Value<Ptr<i8>> = Rc::new(RefCell::new(o));
         return ({ (*self).with(|__s| __s.v) } >= {
-            ((((*o.borrow()).read()) as i32) - (('0' as u8) as i32))
+            ((((*o.borrow()).read()) as i32) - (('0' as i8) as i32))
         });
     }
 }

@@ -30,7 +30,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(1) as usize], |__fd| {
-            Ptr::<u8>::from_string_literal(b"x")
+            Ptr::<i8>::from_string_literal(b"x")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(1_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -103,10 +103,10 @@ fn main_0() -> i32 {
     );
     assert!(((((({ (*pfd.borrow())[(0) as usize].revents } as i32) & 1) != 0) as i32) != 0));
     assert!((((({ (*pfd.borrow())[(1) as usize].revents } as i32) == 0) as i32) != 0));
-    let ch: Value<u8> = Rc::new(RefCell::new(0_u8));
+    let ch: Value<i8> = Rc::new(RefCell::new(0_i8));
     assert!(
         (((match FdRegistry::with_fd((*fds.borrow())[(0) as usize], |__fd| {
-            ((ch.as_pointer()) as Ptr<u8>)
+            ((ch.as_pointer()) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice_mut(1_usize, |__buf| nix::unistd::read(__fd, __buf))

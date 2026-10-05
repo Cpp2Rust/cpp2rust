@@ -16,8 +16,8 @@ pub struct Point {
 }
 pub fn agg_0(n: i32) -> i32 {
     let n: Value<i32> = Rc::new(RefCell::new(n));
-    let buf40: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..40).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf40: Value<Box<[i8]>> =
+        Rc::new(RefCell::new((0..40).map(|_| 0_i8).collect::<Box<[i8]>>()));
     let buf256: Value<Box<[u8]>> =
         Rc::new(RefCell::new((0..256).map(|_| 0_u8).collect::<Box<[u8]>>()));
     let arr64: Value<Box<[i32]>> =

@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
         b"cpp2rust_lseek_ftruncate_test.tmp",
     )));
     let fd: Value<i32> = Rc::new(RefCell::new({
@@ -36,7 +36,7 @@ fn main_0() -> i32 {
     assert!(((((*fd.borrow()) >= 0) as i32) != 0));
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            Ptr::<u8>::from_string_literal(b"hello world")
+            Ptr::<i8>::from_string_literal(b"hello world")
                 .to_any()
                 .reinterpret_cast::<u8>()
                 .with_slice(11_usize, |__buf| nix::unistd::write(__fd, __buf))
@@ -89,19 +89,19 @@ fn main_0() -> i32 {
         } == 6_i64) as i32)
             != 0)
     );
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..16).map(|_| 0_i8).collect::<Box<[i8]>>()));
     {
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
             .to_any()
-            .memset((0) as u8, ::std::mem::size_of::<[u8; 16]>() as usize);
-        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[i8; 16]>() as usize);
+        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
     };
     assert!(
         (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[u8; 16]>(), |__buf| {
+                .with_slice_mut(::std::mem::size_of::<[i8; 16]>(), |__buf| {
                     nix::unistd::read(__fd, __buf)
                 })
         }) {
@@ -115,13 +115,13 @@ fn main_0() -> i32 {
     );
     assert!(
         ((({
-            let mut __it1 = (buf.as_pointer() as Ptr<u8>).to_c_string_iterator();
-            let mut __it2 = Ptr::<u8>::from_string_literal(b"world").to_c_string_iterator();
+            let mut __it1 = (buf.as_pointer() as Ptr<i8>).to_c_string_iterator();
+            let mut __it2 = Ptr::<i8>::from_string_literal(b"world").to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();
                 if __c1 != __c2 {
-                    break (__c1.unwrap_or(0) as i32) - (__c2.unwrap_or(0) as i32);
+                    break (__c1.unwrap_or(0) as u8 as i32) - (__c2.unwrap_or(0) as u8 as i32);
                 }
                 if __c1.is_none() {
                     break 0;

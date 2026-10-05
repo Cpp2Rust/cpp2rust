@@ -11,7 +11,7 @@ use std::rc::{Rc, Weak};
 pub struct label {
     #[offset(0)]
     #[byte_size(8)]
-    pub name: Ptr<u8>,
+    pub name: Ptr<i8>,
     #[offset(8)]
     #[byte_size(8)]
     pub probe: FnPtr<fn() -> i32>,
@@ -24,12 +24,12 @@ pub fn probe_two_0() -> i32 {
 thread_local!(
     pub static table_1: Value<Box<[label]>> = Rc::new(RefCell::new(Box::new([
         label {
-            name: Ptr::<u8>::from_string_literal(b"first"),
+            name: Ptr::<i8>::from_string_literal(b"first"),
             probe: FnPtr::<fn() -> i32>::null(),
             mask: (1 << 4),
         },
         label {
-            name: Ptr::<u8>::from_string_literal(b"second"),
+            name: Ptr::<i8>::from_string_literal(b"second"),
             probe: (FnPtr::<fn() -> i32>::new(probe_two_0)),
             mask: (1 << 5),
         },
@@ -101,8 +101,8 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((({ (*table_1.with(Value::clone).borrow())[(1) as usize].mask } == 32) as i32) != 0));
-    let tail: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (Ptr::<u8>::from_string_literal(b"ab.cd").offset(2)),
+    let tail: Value<Ptr<i8>> = Rc::new(RefCell::new(
+        (Ptr::<i8>::from_string_literal(b"ab.cd").offset(2)),
     ));
     assert!((((((elem!((*tail.borrow()), 0).read()) as i32) == ('.' as i32)) as i32) != 0));
     assert!((((((elem!((*tail.borrow()), 1).read()) as i32) == ('c' as i32)) as i32) != 0));
@@ -116,10 +116,10 @@ fn main_0() -> i32 {
         })
         .to_any()
     } else {
-        Ptr::<u8>::from_string_literal(b"").to_any()
+        Ptr::<i8>::from_string_literal(b"").to_any()
     }));
     assert!(
-        (((((elem!(((*p.borrow()).reinterpret_cast::<u8>()), 0).read()) as i32) == ('\0' as i32))
+        (((((elem!(((*p.borrow()).reinterpret_cast::<i8>()), 0).read()) as i32) == ('\0' as i32))
             as i32)
             != 0)
     );
@@ -132,10 +132,10 @@ fn main_0() -> i32 {
         })
         .to_any()
     } else {
-        Ptr::<u8>::from_string_literal(b"").to_any()
+        Ptr::<i8>::from_string_literal(b"").to_any()
     };
     assert!(
-        (((((elem!(((*p.borrow()).reinterpret_cast::<u8>()), 0).read()) as i32) == ('f' as i32))
+        (((((elem!(((*p.borrow()).reinterpret_cast::<i8>()), 0).read()) as i32) == ('f' as i32))
             as i32)
             != 0)
     );

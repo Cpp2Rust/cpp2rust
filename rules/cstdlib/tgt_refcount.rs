@@ -19,27 +19,25 @@ fn f5(a0: usize, a1: usize) -> AnyPtr {
     libcc2rs::calloc_refcount(a0, a1)
 }
 
-fn f6(a0: Ptr<u8>) -> Ptr<u8> {
+fn f6(a0: Ptr<i8>) -> Ptr<i8> {
     match ::std::env::var(a0.to_rust_string()) {
         Ok(__val) => {
-            let mut __bytes = __val.into_bytes();
-            __bytes.push(0);
-            Ptr::alloc_array(__bytes.into_boxed_slice())
+            Ptr::alloc_c_str(__val.as_bytes())
         }
         Err(_) => Ptr::null(),
     }
 }
 
-fn f10(a0: Ptr<u8>, a1: Ptr<u8>) -> Ptr<u8> {
+fn f10(a0: Ptr<i8>, a1: Ptr<i8>) -> Ptr<i8> {
     let __resolved = a1;
     match ::std::fs::canonicalize(a0.to_rust_string()) {
         Ok(__p) => {
             let mut __bytes = __p.into_os_string().into_encoded_bytes();
             __bytes.push(0);
             if __resolved.is_null() {
-                Ptr::alloc_array(__bytes.into_boxed_slice())
+                Ptr::alloc_array(CChar::from_byte_vec(__bytes).into_boxed_slice())
             } else {
-                __resolved.with_slice_mut(__bytes.len(), |__s| __s.copy_from_slice(&__bytes));
+                __resolved.write_c_bytes(&__bytes);
                 __resolved
             }
         }

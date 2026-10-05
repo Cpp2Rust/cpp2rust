@@ -11,16 +11,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> =
-        Rc::new(RefCell::new(Box::new([1_u8, 2_u8, 3_u8, 4_u8, 5_u8, 6_u8])));
+    let buf: Value<Box<[i8]>> =
+        Rc::new(RefCell::new(Box::new([1_i8, 2_i8, 3_i8, 4_i8, 5_i8, 6_i8])));
     {
-        ((buf.as_pointer() as Ptr<u8>).offset((2) as isize) as Ptr<u8>)
+        ((buf.as_pointer() as Ptr<i8>).offset((2) as isize) as Ptr<i8>)
             .to_any()
             .memcpy(
-                &((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
+                &((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any(),
                 4_usize as usize,
             );
-        ((buf.as_pointer() as Ptr<u8>).offset((2) as isize) as Ptr<u8>).to_any()
+        ((buf.as_pointer() as Ptr<i8>).offset((2) as isize) as Ptr<i8>).to_any()
     };
     assert!((((*buf.borrow())[(0) as usize] as i32) == 1));
     assert!((((*buf.borrow())[(1) as usize] as i32) == 2));

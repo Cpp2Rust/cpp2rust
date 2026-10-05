@@ -14,30 +14,42 @@ fn f2(
     a5: Ptr<usize>,
     a6: Ptr<u8>,
 ) -> libc::c_int {
-    a5.with_mut(|_v5| {
-        a6.with_mut(|_v6| unsafe {
-            ::brotli_sys::BrotliEncoderCompress(
-                a0,
-                a1,
-                a2,
-                a3,
-                &*a4.upgrade().deref() as *const u8,
-                _v5 as *mut usize,
-                _v6,
-            )
-        })
-    })
+    // Compress into a buffer bounded by the input size, as the output buffer
+    // may be much larger and is expensive to borrow if reinterpreted.
+    let mut __out_len = a5.read();
+    let __max = unsafe { ::brotli_sys::BrotliEncoderMaxCompressedSize(a3) };
+    let mut __out = vec![0u8; if __max == 0 { __out_len } else { __out_len.min(__max) }];
+    __out_len = __out.len();
+    let __ok = a4.with_slice(a3, |__in| unsafe {
+        ::brotli_sys::BrotliEncoderCompress(
+            a0,
+            a1,
+            a2,
+            a3,
+            __in.as_ptr(),
+            &mut __out_len,
+            __out.as_mut_ptr(),
+        )
+    });
+    if __ok != 0 {
+        a6.with_slice_mut(__out_len, |__s| __s.copy_from_slice(&__out[..__out_len]));
+        a5.write(__out_len);
+    }
+    __ok
 }
 
 fn f5(a0: usize, a1: Ptr<u8>, a2: Ptr<usize>, a3: Ptr<u8>) -> ::brotli_sys::BrotliDecoderResult {
-    a2.with_mut(|_v2| {
-        a3.with_mut(|_v3| unsafe {
-            ::brotli_sys::BrotliDecoderDecompress(
-                a0,
-                &*a1.upgrade().deref(),
-                _v2 as *mut usize,
-                _v3,
-            )
+    let __out_len = a2.read();
+    a1.with_slice(a0, |__in| {
+        a2.with_mut(|_v2| {
+            a3.with_slice_mut(__out_len, |__out| unsafe {
+                ::brotli_sys::BrotliDecoderDecompress(
+                    a0,
+                    __in.as_ptr(),
+                    _v2 as *mut usize,
+                    __out.as_mut_ptr(),
+                )
+            })
         })
     })
 }
@@ -62,25 +74,24 @@ fn f8(
     a4: Ptr<Ptr<u8>>,
     a5: Ptr<usize>,
 ) -> ::brotli_sys::BrotliDecoderResult {
-    unsafe {
-        let _a2: Ptr<*const u8> =
-            Ptr::alloc((&*(*a2.upgrade().deref()).upgrade().deref()) as *const u8);
-
+    let __in = a2.read();
+    let __in_len = a1.read();
+    let __r = __in.with_slice(__in_len, |__s| {
         a1.with_mut(|_v1| {
-            _a2.with_mut(|_v2| {
-                a3.with_mut(|_v3| {
-                    ::brotli_sys::BrotliDecoderDecompressStream(
-                        a0,
-                        _v1 as *mut usize,
-                        _v2 as *mut *const u8,
-                        _v3 as *mut usize,
-                        std::ptr::null_mut(),
-                        std::ptr::null_mut(),
-                    )
-                })
+            a3.with_mut(|_v3| unsafe {
+                ::brotli_sys::BrotliDecoderDecompressStream(
+                    a0,
+                    _v1,
+                    &mut __s.as_ptr(),
+                    _v3,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                )
             })
         })
-    }
+    });
+    a2.write(__in.offset(__in_len - a1.read()));
+    __r
 }
 
 fn f9(a0: *mut ::brotli_sys::BrotliDecoderState, a1: Ptr<usize>) -> Ptr<u8> {

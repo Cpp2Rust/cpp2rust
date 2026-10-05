@@ -1252,11 +1252,16 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
   }
 
   if (IsArrayInitContext()) {
+    // The array may have a different element type than the literal, e.g.,
+    // unsigned char s[] = "abc".
+    auto elem_ty =
+        ctx_.getAsArrayType(curr_init_type_.back())->getElementType();
+    std::string elem(Trim(ToStringBase(elem_ty.getUnqualifiedType())));
     uint64_t pad = 1;
     if (auto *arr_ty = ctx_.getAsConstantArrayType(curr_init_type_.back())) {
       uint64_t arr_size = arr_ty->getSize().getZExtValue();
       if (expr->getString().empty()) {
-        StrCat(std::format("vec![0u8; {}].into_boxed_slice()", arr_size));
+        StrCat(std::format("vec![0{}; {}].into_boxed_slice()", elem, arr_size));
         computed_expr_type_ = ComputedExprType::FreshValue;
         return false;
       }
@@ -1264,7 +1269,8 @@ bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
                 ? arr_size - expr->getString().size()
                 : 0;
     }
-    StrCat(std::format("Box::from(*b{})", GetEscapedStringLiteral(expr, pad)));
+    StrCat(std::format("{}::array_from_literal(b{})", elem,
+                       GetEscapedStringLiteral(expr, pad)));
     computed_expr_type_ = ComputedExprType::FreshValue;
     return false;
   }
@@ -2669,7 +2675,7 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
 void ConverterRefCount::ConvertFunctionParameters(clang::FunctionDecl *decl) {
   PushConversionKind push(*this, ConversionKind::Unboxed);
   if (decl->isMain() && (decl->getNumParams() != 0U)) {
-    StrCat(std::format("{}: i32, {}: Ptr<Ptr<u8>>",
+    StrCat(std::format("{}: i32, {}: Ptr<Ptr<i8>>",
                        GetNamedDeclAsString(decl->getParamDecl(0)),
                        GetNamedDeclAsString(decl->getParamDecl(1))));
   } else {
@@ -2812,10 +2818,10 @@ void ConverterRefCount::ConvertFunctionMain(
   if (decl->getNumParams() != 0U) {
     StrCat(std::format(R"(
 pub fn main() {{
-    let argv: Vec<Value<Vec<u8>>> = ::std::env::args()
-        .map(|x| Rc::new(RefCell::new(x.as_bytes().to_vec())))
+    let argv: Vec<Value<Vec<i8>>> = ::std::env::args()
+        .map(|x| Rc::new(RefCell::new(x.bytes().map(|c| c as i8).collect())))
         .collect();
-    let mut argv: Value<Vec<Ptr<u8>>> = Rc::new(RefCell::new(
+    let mut argv: Value<Vec<Ptr<i8>>> = Rc::new(RefCell::new(
         argv.iter().map(|x| {{ x.borrow_mut().push(0); x.as_pointer() }}).collect(),
     ));
     (*argv.borrow_mut()).push(Ptr::null());

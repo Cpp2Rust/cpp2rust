@@ -24,7 +24,7 @@ pub const Tag_enum_TAG_TWO: Tag_enum = 2;
 pub struct Entry {
     #[offset(0)]
     #[byte_size(8)]
-    pub name: Ptr<u8>,
+    pub name: Ptr<i8>,
     #[offset(8)]
     pub color: Color,
     #[offset(12)]
@@ -42,17 +42,17 @@ thread_local!(
 thread_local!(
     pub static entries_3: Value<Box<[Entry]>> = Rc::new(RefCell::new(Box::new([
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"first"),
+            name: Ptr::<i8>::from_string_literal(b"first"),
             color: Color_RED,
             opt: Option_OPT_NONE,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"second"),
+            name: Ptr::<i8>::from_string_literal(b"second"),
             color: Color_GREEN,
             opt: Option_OPT_A,
         },
         Entry {
-            name: Ptr::<u8>::from_string_literal(b"third"),
+            name: Ptr::<i8>::from_string_literal(b"third"),
             color: Color_BLUE,
             opt: Option_OPT_C,
         },
@@ -217,10 +217,10 @@ fn main_0() -> i32 {
             == ((Option_OPT_C as i32) as u32)) as i32)
             != 0)
     );
-    let names: Value<Box<[Ptr<u8>]>> = Rc::new(RefCell::new(Box::new([
-        Ptr::<u8>::from_string_literal(b"red"),
-        Ptr::<u8>::from_string_literal(b"green"),
-        Ptr::<u8>::from_string_literal(b"blue"),
+    let names: Value<Box<[Ptr<i8>]>> = Rc::new(RefCell::new(Box::new([
+        Ptr::<i8>::from_string_literal(b"red"),
+        Ptr::<i8>::from_string_literal(b"green"),
+        Ptr::<i8>::from_string_literal(b"blue"),
     ])));
     let idx: Value<Color> = Rc::new(RefCell::new(Color_GREEN));
     assert!(
@@ -242,8 +242,8 @@ fn main_0() -> i32 {
             == ('b' as i32)) as i32)
             != 0)
     );
-    let pp: Value<Ptr<Ptr<u8>>> = Rc::new(RefCell::new(
-        ((names.as_pointer() as Ptr<Ptr<u8>>).offset((*idx.borrow()) as isize)),
+    let pp: Value<Ptr<Ptr<i8>>> = Rc::new(RefCell::new(
+        ((names.as_pointer() as Ptr<Ptr<i8>>).offset((*idx.borrow()) as isize)),
     ));
     assert!((((((elem!(((*pp.borrow()).read()), 0).read()) as i32) == ('g' as i32)) as i32) != 0));
     let pe: Value<Ptr<Entry>> = Rc::new(RefCell::new(

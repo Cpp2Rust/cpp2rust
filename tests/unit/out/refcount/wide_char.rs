@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn get_0(s: Ptr<u8>) -> Ptr<u8> {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
+pub fn get_0(s: Ptr<i8>) -> Ptr<i8> {
+    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
 pub fn get_1(s: Ptr<i32>) -> Ptr<i32> {
@@ -26,7 +26,7 @@ pub fn get_4(s: Ptr<u32>) -> Ptr<u32> {
     let s: Value<Ptr<u32>> = Rc::new(RefCell::new(s));
     return (*s.borrow()).clone();
 }
-pub fn second_5(s: Ptr<u8>) -> u8 {
+pub fn second_5(s: Ptr<i8>) -> i8 {
     return (elem!((s), 1).read());
 }
 pub fn second_6(s: Ptr<i32>) -> i32 {
@@ -46,7 +46,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"A")));
+    let c: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"A")));
     let w: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::from_string_literal(&[
         65 as i32, 258 as i32, 0 as i32,
     ])));
@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     let l: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::<u32>::from_string_literal(&[
         65 as u32, 258 as u32, 0 as u32,
     ])));
-    assert!((((elem!((*c.borrow()), 0).read()) as i32) == (('A' as u8) as i32)));
+    assert!((((elem!((*c.borrow()), 0).read()) as i32) == (('A' as i8) as i32)));
     assert!(
         (((elem!((*b.borrow()), 0).read()) as i32) == 196)
             && (((elem!((*b.borrow()), 1).read()) as i32) == 130)
@@ -73,8 +73,8 @@ fn main_0() -> i32 {
             && ((elem!((*l.borrow()), 2).read()) == 0_u32)
     );
     assert!(
-        (((elem!(({ get_0(Ptr::<u8>::from_string_literal(b"A"),) }), 0).read()) as i32)
-            == (('A' as u8) as i32))
+        (((elem!(({ get_0(Ptr::<i8>::from_string_literal(b"A"),) }), 0).read()) as i32)
+            == (('A' as i8) as i32))
     );
     assert!(
         ((elem!(
@@ -113,7 +113,7 @@ fn main_0() -> i32 {
             == 258_u32)
     );
     assert!(
-        ((({ second_5(Ptr::<u8>::from_string_literal(b"AB"),) }) as i32) == (('B' as u8) as i32))
+        ((({ second_5(Ptr::<i8>::from_string_literal(b"AB"),) }) as i32) == (('B' as i8) as i32))
     );
     assert!(
         (({
@@ -251,7 +251,7 @@ fn main_0() -> i32 {
             && ((*wa.borrow())[(2) as usize] == 0)
     );
     (*wa.borrow_mut())[(0) as usize] = (66 as i32);
-    assert!(((*wa.borrow())[(0) as usize] == (('B' as u8) as i32)));
+    assert!(((*wa.borrow())[(0) as usize] == (('B' as i8) as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

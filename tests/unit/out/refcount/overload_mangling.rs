@@ -275,7 +275,7 @@ impl SImpl for Ptr<S> {
     fn width_1_char(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));
         return ((*self).with(|__s| __s.base)
-            + ((*x.borrow()) * (::std::mem::size_of::<u8>() as i32)));
+            + ((*x.borrow()) * (::std::mem::size_of::<i8>() as i32)));
     }
     fn width_1_int(&self, x: i32) -> i32 {
         let x: Value<i32> = Rc::new(RefCell::new(x));

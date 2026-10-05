@@ -13,7 +13,7 @@ pub fn main() {
 fn main_0() -> i32 {
     let i1: Value<i32> = Rc::new(RefCell::new(42));
     let ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new((i1.as_pointer())));
-    let ptr2: Value<Ptr<u8>> = Rc::new(RefCell::new((i1.as_pointer()).reinterpret_cast::<u8>()));
+    let ptr2: Value<Ptr<i8>> = Rc::new(RefCell::new((i1.as_pointer()).reinterpret_cast::<i8>()));
     let vptr1: Value<AnyPtr> = Rc::new(RefCell::new((*ptr1.borrow()).to_any()));
     let vptr2: Value<AnyPtr> = Rc::new(RefCell::new((*ptr2.borrow()).to_any()));
     assert!(({ (*vptr1.borrow()).clone() } == { (*vptr2.borrow()).clone() }));

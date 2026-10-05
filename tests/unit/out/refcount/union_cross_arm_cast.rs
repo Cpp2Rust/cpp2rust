@@ -13,13 +13,13 @@ pub struct shape_a {
     pub code: u16,
     #[offset(2)]
     #[byte_size(14)]
-    pub pad: Value<Box<[u8]>>,
+    pub pad: Value<Box<[i8]>>,
 }
 impl Default for shape_a {
     fn default() -> Self {
         shape_a {
             code: 0_u16,
-            pad: Rc::new(RefCell::new((0..14).map(|_| 0_u8).collect::<Box<[u8]>>())),
+            pad: Rc::new(RefCell::new((0..14).map(|_| 0_i8).collect::<Box<[i8]>>())),
         }
     }
 }
@@ -63,7 +63,7 @@ impl anon_0 {
     pub fn b(&self) -> Ptr<shape_b> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<u8> {
+    pub fn raw_(&self) -> Ptr<i8> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
@@ -107,7 +107,7 @@ fn main_0() -> i32 {
     field!((*c.borrow_mut()).u.b(), lo).write(8080_u16);
     assert!(
         (((((elem!(
-            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+            ((((*c.borrow()).u.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)
                 .reinterpret_cast::<u8>()),
             2
         )
@@ -117,7 +117,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((((*c.borrow()).u.raw_().reinterpret_cast::<u8>()) as Ptr<u8>)
+            ((((*c.borrow()).u.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)
                 .reinterpret_cast::<u8>()),
             3
         )

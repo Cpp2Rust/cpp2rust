@@ -6,8 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<u8>, n: i32) -> i32 {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(s));
+pub fn strlen_0(s: Ptr<i8>, n: i32) -> i32 {
+    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
     let n: Value<i32> = Rc::new(RefCell::new(n));
     return if (((*s.borrow()).read()) != 0) {
         ({ strlen_0((*s.borrow()).offset((1) as isize), ((*n.borrow()) + 1)) })
@@ -20,13 +20,13 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
-        ('s' as u8),
-        ('t' as u8),
-        ('r' as u8),
-        ('\0' as u8),
+    let s: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
+        ('s' as i8),
+        ('t' as i8),
+        ('r' as i8),
+        ('\0' as i8),
     ])));
-    assert!((({ strlen_0(((s.as_pointer() as Ptr<u8>).offset(0)), 0,) }) == 3));
+    assert!((({ strlen_0(((s.as_pointer() as Ptr<i8>).offset(0)), 0,) }) == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

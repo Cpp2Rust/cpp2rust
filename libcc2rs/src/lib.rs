@@ -21,6 +21,7 @@ pub mod __field {
 }
 
 mod cstr;
+pub use cstr::CChar;
 
 mod void;
 pub use void::*;

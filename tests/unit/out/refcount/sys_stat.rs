@@ -7,25 +7,24 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_stat_0() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
         b"cpp2rust_stat_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
+    match Ptr::<i8>::from_string_literal(b"hello")
+        .with_c_bytes(|__bytes| (*fp.borrow()).with_mut(|__f| __f.write(__bytes)) == __bytes.len())
     {
-        let __bytes = Ptr::<u8>::from_string_literal(b"hello").to_c_bytes();
-        match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
-            true => 0,
-            false => -1,
-        }
+        true => 0,
+        false => -1,
     };
     assert!(
         ((({
@@ -60,25 +59,24 @@ pub fn test_stat_0() {
     };
 }
 pub fn test_fstat_1() {
-    let path: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(
+    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
         b"cpp2rust_fstat_test.tmp",
     )));
     let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
         match CFile::open(
             &(*path.borrow()).to_rust_string(),
-            &Ptr::<u8>::from_string_literal(b"wb").to_rust_string(),
+            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
         ) {
             Some(__f) => Ptr::alloc(__f),
             None => Ptr::null(),
         },
     ));
     assert!((((!((*fp.borrow()).is_null())) as i32) != 0));
+    match Ptr::<i8>::from_string_literal(b"hello world")
+        .with_c_bytes(|__bytes| (*fp.borrow()).with_mut(|__f| __f.write(__bytes)) == __bytes.len())
     {
-        let __bytes = Ptr::<u8>::from_string_literal(b"hello world").to_c_bytes();
-        match (*fp.borrow()).with_mut(|__f| __f.write(&__bytes)) == __bytes.len() {
-            true => 0,
-            false => -1,
-        }
+        true => 0,
+        false => -1,
     };
     0;
     let fd: Value<i32> = Rc::new(RefCell::new((*fp.borrow()).with(|__f| __f.fd)));

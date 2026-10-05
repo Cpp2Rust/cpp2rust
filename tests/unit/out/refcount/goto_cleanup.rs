@@ -109,12 +109,12 @@ pub fn via_arrays_4(fail: i32) -> i32 {
     let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
     let remain: Value<Box<[u8]>> =
         Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    let name: Value<Box<[u8]>> = Rc::new(RefCell::new((0..5).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    let name: Value<Box<[i8]>> = Rc::new(RefCell::new((0..5).map(|_| 0_i8).collect::<Box<[i8]>>()));
     goto_block!({
         '__entry: {
             *ret.borrow_mut() = 0;
             *remain.borrow_mut() = Box::new([0_u8, 0_u8, 0_u8, 0_u8]);
-            *name.borrow_mut() = Box::from(*b"wxyz\0");
+            *name.borrow_mut() = i8::array_from_literal(b"wxyz\0");
             if ((*fail.borrow()) != 0) {
                 (*ret.borrow_mut()) = -1_i32;
                 goto!('out);

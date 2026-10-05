@@ -11,23 +11,23 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..2).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    let p: Value<Ptr<u8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<u8>)));
-    let q: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..2).map(|_| 0_i8).collect::<Box<[i8]>>()));
+    let p: Value<Ptr<i8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<i8>)));
+    let q: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
     (*q.borrow_mut()) = {
         (*p.borrow_mut()) += 1;
         (*p.borrow()).clone()
     };
     assert!(
-        ((({ (*q.borrow()).clone() } == { (buf.as_pointer() as Ptr::<u8>).offset((1) as isize) })
+        ((({ (*q.borrow()).clone() } == { (buf.as_pointer() as Ptr::<i8>).offset((1) as isize) })
             as i32)
             != 0)
     );
-    let out: Value<u8> = Rc::new(RefCell::new(0_u8));
+    let out: Value<i8> = Rc::new(RefCell::new(0_i8));
     'switch: {
         match {
             (({
-                (*out.borrow_mut()) = (('x' as i32) as u8);
+                (*out.borrow_mut()) = (('x' as i32) as i8);
                 (*out.borrow())
             }) as i32)
         } {

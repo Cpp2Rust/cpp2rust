@@ -6,20 +6,20 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn sum_bytes_0(buf: Ptr<u8>, len: u32) -> i32 {
-    let buf: Value<Ptr<u8>> = Rc::new(RefCell::new(buf));
+pub fn sum_bytes_0(buf: Ptr<i8>, len: u32) -> i32 {
+    let buf: Value<Ptr<i8>> = Rc::new(RefCell::new(buf));
     let len: Value<u32> = Rc::new(RefCell::new(len));
     let sum: Value<i32> = Rc::new(RefCell::new(0));
     let i: Value<u32> = Rc::new(RefCell::new(0_u32));
     'loop_: while ((*i.borrow()) < (*len.borrow())) {
-        (*sum.borrow_mut()) += ((elem!((*buf.borrow()), (*i.borrow())).read()) as i32);
+        (*sum.borrow_mut()) += (((elem!((*buf.borrow()), (*i.borrow())).read()) as u8) as i32);
         (*i.borrow_mut()).postfix_inc();
     }
     return (*sum.borrow());
 }
 thread_local!(
-    pub static g_packet_1: Value<Ptr<u8>> =
-        Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(b"\x01\0")));
+    pub static g_packet_1: Value<Ptr<i8>> =
+        Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"\x01\0")));
 );
 pub fn main() {
     __cpp2rust_init_globals();
@@ -27,7 +27,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<i32> = Rc::new(RefCell::new(
-        ({ sum_bytes_0(Ptr::<u8>::from_string_literal(b"\x01\0"), 2_u32) }),
+        ({ sum_bytes_0(Ptr::<i8>::from_string_literal(b"\x01\0"), 2_u32) }),
     ));
     let b: Value<i32> = Rc::new(RefCell::new(
         ({ sum_bytes_0((*g_packet_1.with(Value::clone).borrow()).clone(), 2_u32) }),
@@ -37,10 +37,10 @@ fn main_0() -> i32 {
     let c: Value<i32> = Rc::new(RefCell::new(
         ((b"\r\n.\r\n"[(0) as usize] as i32) + (b"\r\n.\r\n"[(3) as usize] as i32)),
     ));
-    assert!(((*c.borrow()) == ((('\r' as u8) as i32) + (('\r' as u8) as i32))));
+    assert!(((*c.borrow()) == ((('\r' as i8) as i32) + (('\r' as i8) as i32))));
     let idx: Value<i32> = Rc::new(RefCell::new(1));
     let d: Value<i32> = Rc::new(RefCell::new((b"abcd"[(*idx.borrow()) as usize] as i32)));
-    assert!(((*d.borrow()) == (('b' as u8) as i32)));
+    assert!(((*d.borrow()) == (('b' as i8) as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

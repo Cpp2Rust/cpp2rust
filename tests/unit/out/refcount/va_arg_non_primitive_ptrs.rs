@@ -28,9 +28,9 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     'switch: {
         match { (*option.borrow()) } {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
-                let out: Value<Ptr<Ptr<u8>>> =
-                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<u8>>>()));
-                (*out.borrow()).write(Ptr::<u8>::from_string_literal(b"hello"));
+                let out: Value<Ptr<Ptr<i8>>> =
+                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<i8>>>()));
+                (*out.borrow()).write(Ptr::<i8>::from_string_literal(b"hello"));
                 (*result.borrow_mut()) = 1;
                 break 'switch;
             }
@@ -63,7 +63,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::null()));
+    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::null()));
     assert!(
         (((({ dispatch_0((opt_OPT_STRING_OUT as i32), &[(s.as_pointer()).into(),]) }) == 1)
             as i32)

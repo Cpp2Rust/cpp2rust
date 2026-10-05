@@ -12,7 +12,7 @@ pub fn test_ipv4_literal_0() {
     (*hints.borrow_mut()).ai_protocol = 0;
     (*hints.borrow_mut()).ai_addrlen = 0_u32;
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
-    (*hints.borrow_mut()).ai_canonname = Ptr::<u8>::null();
+    (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
     (*hints.borrow_mut()).ai_family = libc::AF_INET;
     (*hints.borrow_mut()).ai_socktype = libc::SOCK_STREAM;
@@ -20,8 +20,8 @@ pub fn test_ipv4_literal_0() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::<u8>::from_string_literal(b"127.0.0.1");
-            let __service = Ptr::<u8>::from_string_literal(b"8080");
+            let __node = Ptr::<i8>::from_string_literal(b"127.0.0.1");
+            let __service = Ptr::<i8>::from_string_literal(b"8080");
             let __hints = (hints.as_pointer());
             let __out = (res.as_pointer());
             let __family = if __hints.is_null() {
@@ -164,7 +164,7 @@ pub fn test_ipv6_literal_1() {
     (*hints.borrow_mut()).ai_protocol = 0;
     (*hints.borrow_mut()).ai_addrlen = 0_u32;
     (*hints.borrow_mut()).ai_addr = Ptr::<libcc2rs::Sockaddr>::null();
-    (*hints.borrow_mut()).ai_canonname = Ptr::<u8>::null();
+    (*hints.borrow_mut()).ai_canonname = Ptr::<i8>::null();
     (*hints.borrow_mut()).ai_next = Ptr::<libcc2rs::Addrinfo>::null();
     (*hints.borrow_mut()).ai_family = libc::AF_INET6;
     (*hints.borrow_mut()).ai_socktype = libc::SOCK_STREAM;
@@ -172,8 +172,8 @@ pub fn test_ipv6_literal_1() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::<u8>::from_string_literal(b"::1");
-            let __service = Ptr::<u8>::from_string_literal(b"443");
+            let __node = Ptr::<i8>::from_string_literal(b"::1");
+            let __service = Ptr::<i8>::from_string_literal(b"443");
             let __hints = (hints.as_pointer());
             let __out = (res.as_pointer());
             let __family = if __hints.is_null() {
@@ -319,8 +319,8 @@ pub fn test_null_hints_2() {
         Rc::new(RefCell::new(Ptr::<libcc2rs::Addrinfo>::null()));
     assert!(
         ((({
-            let __node = Ptr::<u8>::from_string_literal(b"127.0.0.1");
-            let __service = Ptr::<u8>::from_string_literal(b"80");
+            let __node = Ptr::<i8>::from_string_literal(b"127.0.0.1");
+            let __service = Ptr::<i8>::from_string_literal(b"80");
             let __hints = Ptr::<libcc2rs::Addrinfo>::null();
             let __out = (res.as_pointer());
             let __family = if __hints.is_null() {
