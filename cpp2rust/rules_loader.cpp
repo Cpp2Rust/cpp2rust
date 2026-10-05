@@ -297,11 +297,10 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   auto text = BuildRulesBuffer(fs::path(rules_dir_) / kIndexDirName, selected,
                                ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
-  rules_file_ = src_mgr.createFileID(
+  auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),
       clang::SrcMgr::C_System);
-  CI_.getDiagnostics().setSuppressAllDiagnostics(true);
-  PP.EnterSourceFile(rules_file_, nullptr, tok.getLocation());
+  PP.EnterSourceFile(rules_file, nullptr, tok.getLocation());
 }
 
 } // namespace cpp2rust::RulesLoader

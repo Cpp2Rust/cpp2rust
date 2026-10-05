@@ -20,7 +20,6 @@ std::string TranspileSrc(std::string_view cc_code, Model model,
                          const std::string &rules_dir,
                          std::string_view filename) {
   auto tool_args = getPlatformClangBeginFlags();
-  tool_args.push_back("-fno-spell-checking");
   tool_args.push_back("-fparse-all-comments");
   tool_args.insert(tool_args.end(), cxx_flags.begin(), cxx_flags.end());
   auto end_flags = getPlatformClangEndFlags();
@@ -56,10 +55,9 @@ std::string TranspileDir(std::string_view build_dir, Model model,
   }
 
   clang::tooling::ClangTool Tool(*compile_dbase, files);
-  auto begin_flags = getPlatformClangBeginFlags();
-  begin_flags.push_back("-fno-spell-checking");
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
-      begin_flags, clang::tooling::ArgumentInsertPosition::BEGIN));
+      getPlatformClangBeginFlags(),
+      clang::tooling::ArgumentInsertPosition::BEGIN));
   Tool.appendArgumentsAdjuster(clang::tooling::getInsertArgumentAdjuster(
       getPlatformClangEndFlags(), clang::tooling::ArgumentInsertPosition::END));
   // Redefine __FILE__ to use just the basename, so the generated code

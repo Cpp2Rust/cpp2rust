@@ -27,12 +27,9 @@ public:
   void HandlePragma(clang::Preprocessor &PP, clang::PragmaIntroducer introducer,
                     clang::Token &tok) override;
 
-  clang::FileID rules_file() const { return rules_file_; }
-
 private:
   clang::CompilerInstance &CI_;
   const std::string &rules_dir_;
-  clang::FileID rules_file_;
 };
 
 } // namespace cpp2rust::RulesLoader

@@ -6,7 +6,6 @@
 #include <clang/AST/ASTConsumer.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
-#include <clang/Lex/PPCallbacks.h>
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Lex/PreprocessorOptions.h>
 #include <clang/Tooling/Tooling.h>
@@ -20,27 +19,6 @@
 #include "rules_loader.h"
 
 namespace cpp2rust {
-class SilenceRulesDiagnostics : public clang::PPCallbacks {
-public:
-  SilenceRulesDiagnostics(clang::CompilerInstance &CI,
-                          const RulesLoader::PragmaHandler &handler)
-      : CI_(CI), handler_(handler) {}
-
-  void LexedFileChanged(clang::FileID FID, LexedFileChangeReason Reason,
-                        clang::SrcMgr::CharacteristicKind FileType,
-                        clang::FileID PrevFID,
-                        clang::SourceLocation Loc) override {
-    if (Reason == LexedFileChangeReason::ExitFile && PrevFID.isValid() &&
-        PrevFID == handler_.rules_file()) {
-      CI_.getDiagnostics().setSuppressAllDiagnostics(false);
-    }
-  }
-
-private:
-  clang::CompilerInstance &CI_;
-  const RulesLoader::PragmaHandler &handler_;
-};
-
 class FrontendAction : public clang::ASTFrontendAction {
 public:
   explicit FrontendAction(std::string &rs_code, Model model, bool first,
@@ -71,10 +49,8 @@ public:
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
-    auto *handler = new RulesLoader::PragmaHandler(CI, rules_dir_);
-    CI.getPreprocessor().AddPragmaHandler(handler);
-    CI.getPreprocessor().addPPCallbacks(
-        std::make_unique<SilenceRulesDiagnostics>(CI, *handler));
+    CI.getPreprocessor().AddPragmaHandler(
+        new RulesLoader::PragmaHandler(CI, rules_dir_));
     return true;
   }
 
