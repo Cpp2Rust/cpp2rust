@@ -202,8 +202,7 @@ fn main_0() -> i32 {
     );
     let ref1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>).offset((s2).wrapping_sub(1_usize) as isize);
     {
-        let _ptr = ref1.clone();
-        _ptr.write(_ptr.read() + 1.5E+0)
+        ref1.with_mut(|__v| *__v = *__v + 1.5E+0)
     };
     assert!(
         (((v6.as_pointer() as Ptr<f64>)

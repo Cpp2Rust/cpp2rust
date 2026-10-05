@@ -87,20 +87,18 @@ fn main_0() -> i32 {
     );
     assert!(({ (*a.borrow()).v } == 5));
     let b: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
-    let moved: Value<Tracked> = Rc::new(RefCell::new(
-        ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) }),
-    ));
-    assert!(({ (*moved.borrow()).v } == 6));
-    assert!(({ (*moved.borrow()).copies } == 0));
-    assert!(({ (*moved.borrow()).moves } == 2));
+    let mut moved: Tracked =
+        ({ copy_or_move_into_param_4(Tracked::move_from({ b.as_pointer() })) });
+    assert!((moved.v == 6));
+    assert!((moved.copies == 0));
+    assert!((moved.moves == 2));
     assert!(({ (*b.borrow()).v } == 0));
     let c: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
-    let copied: Value<Tracked> = Rc::new(RefCell::new(
-        ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) }),
-    ));
-    assert!(({ (*copied.borrow()).v } == 7));
-    assert!(({ (*copied.borrow()).copies } == 1));
-    assert!(({ (*copied.borrow()).moves } == 1));
+    let mut copied: Tracked =
+        ({ copy_or_move_into_param_4(Tracked::copy_from({ c.as_pointer() })) });
+    assert!((copied.v == 7));
+    assert!((copied.copies == 1));
+    assert!((copied.moves == 1));
     assert!(({ (*c.borrow()).v } == 7));
     let i: Value<i32> = Rc::new(RefCell::new(8));
     assert!(

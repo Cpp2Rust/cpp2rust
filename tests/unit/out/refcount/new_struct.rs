@@ -34,14 +34,14 @@ fn main_0() -> i32 {
     let mut out: i32 = ({ p.with(|__s| __s.x) } + { p.with(|__s| __s.y) });
     p.delete();
     assert!((out == 3));
-    let t: Value<Triple> = Rc::new(RefCell::new(Triple {
+    let mut t: Triple = Triple {
         a: 1,
         b: 0_i32,
         p: <Pair>::default(),
-    }));
-    assert!(({ (*t.borrow()).a } == 1));
-    assert!(({ (*t.borrow()).b } == 0));
-    assert!(({ (*t.borrow()).p.x } == 0) && ({ (*t.borrow()).p.y } == 0));
+    };
+    assert!((t.a == 1));
+    assert!((t.b == 0));
+    assert!((t.p.x == 0) && (t.p.y == 0));
     let mut q: Ptr<Triple> = Ptr::alloc(Triple {
         a: 2,
         b: 3,

@@ -132,8 +132,10 @@ fn main_0() -> i32 {
         { ((array_field_ptr!(o.as_pointer(), buf) as Ptr<i32>).offset((1) as isize)) };
     { (*o.borrow()).cursor.clone() }.write(5);
     {
-        let _ptr = (*o.borrow_mut()).cursor.postfix_inc();
-        _ptr.write(_ptr.read() + 1)
+        (*o.borrow_mut())
+            .cursor
+            .postfix_inc()
+            .with_mut(|__v| *__v = *__v + 1)
     };
     assert!(
         ((elem!((array_field_ptr!(o.as_pointer(), buf) as Ptr::<i32>), 1).read()) == 6)

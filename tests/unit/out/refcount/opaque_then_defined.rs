@@ -33,12 +33,12 @@ fn main_0() -> i32 {
         value: 42,
         next: Ptr::<node>::null(),
     }));
-    let l: Value<list> = Rc::new(RefCell::new(list {
+    let mut l: list = list {
         head: (n.as_pointer()),
         size: 1,
-    }));
-    assert!(((({ (*l.borrow()).head.clone() }.with(|__s| __s.value) == 42) as i32) != 0));
-    assert!(((({ (*l.borrow()).size } == 1) as i32) != 0));
+    };
+    assert!((((l.head.with(|__s| __s.value) == 42) as i32) != 0));
+    assert!((((l.size == 1) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

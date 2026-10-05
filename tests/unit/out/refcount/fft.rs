@@ -14,37 +14,28 @@ pub struct Complex {
     #[offset(8)]
     pub img: f64,
 }
-pub fn Product_0(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let mut ac: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).re });
-    let mut bd: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).img });
-    let mut ad: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).img });
-    let mut bc: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).re });
+pub fn Product_0(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re * z2.re);
+    let mut bd: f64 = (z1.img * z2.img);
+    let mut ad: f64 = (z1.re * z2.img);
+    let mut bc: f64 = (z1.img * z2.re);
     return Complex {
         re: (ac - bd),
         img: (ad + bc),
     };
 }
-pub fn Sum_1(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let ac: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).re } + { (*z2.borrow()).re }),
-    ));
-    let bd: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).img } + { (*z2.borrow()).img }),
-    ));
+pub fn Sum_1(mut z1: Complex, mut z2: Complex) -> Complex {
+    let ac: Value<f64> = Rc::new(RefCell::new((z1.re + z2.re)));
+    let bd: Value<f64> = Rc::new(RefCell::new((z1.img + z2.img)));
     return Complex {
         re: (*ac.borrow()),
         img: (*bd.borrow()),
     };
 }
-pub fn Neg_2(z1: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
+pub fn Neg_2(mut z1: Complex) -> Complex {
     return Complex {
-        re: -{ (*z1.borrow()).re },
-        img: -{ (*z1.borrow()).img },
+        re: -z1.re,
+        img: -z1.img,
     };
 }
 pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {

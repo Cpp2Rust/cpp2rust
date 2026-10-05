@@ -35,8 +35,7 @@ fn main_0() -> i32 {
     }
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
         {
-            let _ptr = x.clone();
-            _ptr.write(_ptr.read() + 10)
+            x.with_mut(|__v| *__v = *__v + 10)
         };
     }
     'loop_: for mut x in v1.as_pointer() as Ptr<i32> {
@@ -58,8 +57,7 @@ fn main_0() -> i32 {
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let mut p: Ptr<i32> = p.read();
         {
-            let _ptr = p.clone();
-            _ptr.write(_ptr.read() + 5)
+            p.with_mut(|__v| *__v = *__v + 5)
         };
     }
     'loop_: for p in v2.as_pointer() as Ptr<Ptr<i32>> {
@@ -69,8 +67,7 @@ fn main_0() -> i32 {
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {
         let mut p: Ptr<i32> = p.read();
         {
-            let _ptr = p.clone();
-            _ptr.write(_ptr.read() + 5)
+            p.with_mut(|__v| *__v = *__v + 5)
         };
     }
     'loop_: for mut p in v2.as_pointer() as Ptr<Ptr<i32>> {

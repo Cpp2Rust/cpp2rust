@@ -7,10 +7,10 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn first_0() -> i32 {
-    let p: Value<anon_1> = <Value<anon_1>>::default();
-    (*p.borrow_mut()).x = 1;
-    (*p.borrow_mut()).y = 2;
-    return ({ (*p.borrow()).x } + { (*p.borrow()).y });
+    let mut p: anon_1 = <anon_1>::default();
+    p.x = 1;
+    p.y = 2;
+    return (p.x + p.y);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -21,10 +21,10 @@ pub struct anon_1 {
     pub y: i32,
 }
 pub fn second_2() -> i32 {
-    let q: Value<anon_3> = <Value<anon_3>>::default();
-    (*q.borrow_mut()).a = 10_i64;
-    (*q.borrow_mut()).b = 20_i64;
-    return (({ (*q.borrow()).a } + { (*q.borrow()).b }) as i32);
+    let mut q: anon_3 = <anon_3>::default();
+    q.a = 10_i64;
+    q.b = 20_i64;
+    return ((q.a + q.b) as i32);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]

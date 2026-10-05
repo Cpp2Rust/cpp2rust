@@ -41,8 +41,7 @@ pub fn sum_decayed_6(a: Ptr<i32>) -> i32 {
 }
 pub fn bump_ptr_7(mut p: Ptr<i32>) {
     {
-        let _ptr = elem!(p, 0);
-        _ptr.write(_ptr.read() + 1)
+        elem!(p, 0).with_mut(|__v| *__v = *__v + 1)
     };
 }
 pub fn bump_decayed_8(a: Ptr<i32>) {
@@ -79,12 +78,12 @@ pub fn sum_points_11(p: Ptr<Point>) -> i32 {
 }
 pub fn shift_points_12(p: Ptr<Point>, mut d: i32) {
     {
-        let _ptr = field!(elem!((p), 0), x);
-        _ptr.write(_ptr.read() + d)
+        let __rhs = d;
+        field!(elem!((p), 0), x).with_mut(|__v| *__v = *__v + __rhs)
     };
     {
-        let _ptr = field!(elem!((p), 1), y);
-        _ptr.write(_ptr.read() + d)
+        let __rhs = d;
+        field!(elem!((p), 1), y).with_mut(|__v| *__v = *__v + __rhs)
     };
 }
 pub fn total_len_13(names: Ptr<Ptr<i8>>) -> i32 {

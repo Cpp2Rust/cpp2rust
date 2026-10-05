@@ -72,8 +72,7 @@ fn main_0() -> i32 {
     )
     .write({ p.with(|__s| __s.total) });
     {
-        let _ptr = field!(p, n);
-        _ptr.write(_ptr.read() + 1)
+        field!(p, n).with_mut(|__v| *__v = *__v + 1)
     };
     elem!(
         (array_field_ptr!(p, arr) as Ptr::<i32>),

@@ -977,11 +977,11 @@ pub fn check_struct_3(mut s: Ptr<S>) {
                 != 0)) as i32)
             != 0)
     );
-    let in_: Value<In> = Rc::new(RefCell::new(In {
+    let mut in_: In = In {
         a: (((72340172838076673_u64 as u64).wrapping_mul((((35) as u8) as u64))) as i16),
         b: (((72340172838076673_u64 as u64).wrapping_mul((((51) as u8) as u64))) as i32),
-    }));
-    field!(s, in_).write((*in_.borrow()).clone());
+    };
+    field!(s, in_).write((in_).clone());
     assert!(
         (({
             all_bytes_1(

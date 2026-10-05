@@ -19,7 +19,7 @@ pub fn agg_0(mut n: i32) -> i32 {
     let mut buf256: [u8; 256] = [0_u8; 256];
     let mut arr64: [i32; 64] = [0_i32; 64];
     let mut longs: [i64; 33] = [0_i64; 33];
-    let p: Value<Point> = <Value<Point>>::default();
+    let mut p: Point = <Point>::default();
     let mut ptr: Ptr<i32> = Ptr::<i32>::null();
     let mut fp: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::null();
     let mut file: Ptr<CFile> = Ptr::null();

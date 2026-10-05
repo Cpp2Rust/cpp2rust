@@ -26,17 +26,15 @@ pub struct pair {
     #[offset(4)]
     pub b: i32,
 }
-pub fn pair_scaled_4(p: pair, mut n: usize) -> u64 {
-    let p: Value<pair> = Rc::new(RefCell::new(p));
-    return ((({ (*p.borrow()).a } as usize).wrapping_mul(n))
-        .wrapping_add(({ (*p.borrow()).b } as usize)) as u64);
+pub fn pair_scaled_4(mut p: pair, mut n: usize) -> u64 {
+    return (((p.a as usize).wrapping_mul(n)).wrapping_add((p.b as usize)) as u64);
 }
 pub fn make_pair_5(mut n: usize) -> pair {
-    let p: Value<pair> = Rc::new(RefCell::new(pair {
+    let mut p: pair = pair {
         a: (n as i32),
         b: ((n as i32) * 2),
-    }));
-    return (*p.borrow()).clone();
+    };
+    return (p).clone();
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -70,13 +68,13 @@ fn main_0() -> i32 {
     assert!((((({ back.call(5_usize,) }) == 5_u64) as i32) != 0));
     let mut scaled: FnPtr<fn(pair, u64) -> u64> =
         FnPtr::<fn(pair, usize) -> u64>::new(pair_scaled_4).cast::<fn(pair, u64) -> u64>();
-    let p: Value<pair> = Rc::new(RefCell::new(pair { a: 3, b: 4 }));
-    assert!((((({ scaled.call((*p.borrow()).clone(), 10_u64,) }) == 34_u64) as i32) != 0));
+    let mut p: pair = pair { a: 3, b: 4 };
+    assert!((((({ scaled.call((p).clone(), 10_u64,) }) == 34_u64) as i32) != 0));
     let mut make: FnPtr<fn(u64) -> pair> =
         FnPtr::<fn(usize) -> pair>::new(make_pair_5).cast::<fn(u64) -> pair>();
-    let q: Value<pair> = Rc::new(RefCell::new(({ make.call(5_u64) })));
-    assert!(((({ (*q.borrow()).a } == 5) as i32) != 0));
-    assert!(((({ (*q.borrow()).b } == 10) as i32) != 0));
+    let mut q: pair = ({ make.call(5_u64) });
+    assert!((((q.a == 5) as i32) != 0));
+    assert!((((q.b == 10) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

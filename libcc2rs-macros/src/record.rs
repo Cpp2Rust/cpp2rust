@@ -72,6 +72,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
             const OFFSETS: #offsets = #offsets { #(#idents: #values,)* };
 
             #[allow(unused_comparisons)]
+            #[inline(always)]
             fn locate(
                 &self,
                 offset: usize,
@@ -85,6 +86,7 @@ pub fn expand(input: TokenStream) -> TokenStream {
             }
 
             #[allow(unused_comparisons)]
+            #[inline(always)]
             fn locate_mut(
                 &mut self,
                 offset: usize,

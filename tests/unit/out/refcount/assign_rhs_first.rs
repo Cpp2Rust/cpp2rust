@@ -23,8 +23,7 @@ pub struct S {
 pub fn by_ref_2(r: Ptr<Ptr<i32>>) {
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!((r.read()), 1);
-        _ptr.write(_ptr.read() + __rhs)
+        elem!((r.read()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
 }
 pub fn main() {
@@ -43,8 +42,7 @@ fn main_0() -> i32 {
     );
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!((*q.borrow()), 1);
-        _ptr.write(_ptr.read() + __rhs)
+        elem!((*q.borrow()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((2) as isize) })
@@ -53,8 +51,7 @@ fn main_0() -> i32 {
     let mut pq: Ptr<Ptr<i32>> = (q.as_pointer());
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!((pq.read()), 1);
-        _ptr.write(_ptr.read() + __rhs)
+        elem!((pq.read()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((3) as isize) })
@@ -77,8 +74,7 @@ fn main_0() -> i32 {
     g_cursor_0.with(|rc| *rc.borrow_mut() = (field_ptr!(s.as_pointer(), ptr)));
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!({ (*s.borrow()).ptr.clone() }, 1);
-        _ptr.write(_ptr.read() + __rhs)
+        elem!({ (*s.borrow()).ptr.clone() }, 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({ { (*s.borrow()).ptr.clone() } } == {
@@ -88,8 +84,7 @@ fn main_0() -> i32 {
     let mut sp: Ptr<S> = (s.as_pointer());
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!(sp.with(|__s| __s.ptr.clone()), 1);
-        _ptr.write(_ptr.read() + __rhs)
+        elem!(sp.with(|__s| __s.ptr.clone()), 1).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ({ { (*s.borrow()).ptr.clone() } } == {

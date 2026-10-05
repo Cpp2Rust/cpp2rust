@@ -43,8 +43,7 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 {
-                    let _ptr = field!(this_.as_pointer(), n);
-                    _ptr.write(_ptr.read() + 10)
+                    field!(this_.as_pointer(), n).with_mut(|__v| *__v = *__v + 10)
                 };
                 return this_.as_pointer().with(|__s| __s.n);
             }

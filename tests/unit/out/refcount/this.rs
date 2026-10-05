@@ -61,8 +61,7 @@ impl D {
         let __this: Value<D> = Rc::new(RefCell::new(Self { a_: a }));
         let this: Ptr<D> = __this.as_pointer();
         {
-            let _ptr = field!(this, a_);
-            _ptr.write(_ptr.read() * 2)
+            field!(this, a_).with_mut(|__v| *__v = *__v * 2)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -90,8 +89,8 @@ fn main_0() -> i32 {
     assert!(({ (*s.borrow()).a_ } == 8));
     ({ SImpl::bump_me(&s.as_pointer()) });
     assert!(({ (*s.borrow()).a_ } == 9));
-    let d: Value<D> = Rc::new(RefCell::new(D::new({ 3 })));
-    assert!(({ (*d.borrow()).a_ } == 6));
+    let mut d: D = D::new({ 3 });
+    assert!((d.a_ == 6));
     let cr: Ptr<S> = ({ SImpl::cref(&s.as_pointer()) });
     assert!((cr.with(|__s| __s.a_) == 9));
     let t: Value<S> = Rc::new(RefCell::new(S::new_1({ 0 })));
@@ -133,11 +132,11 @@ fn main_0() -> i32 {
     );
     assert!(({ (*s.borrow()).a_ } == { (*other.borrow()).a_ }));
     assert!(({ { (*s.borrow()).self__.clone() } } == { { (*other.borrow()).self__.clone() } }));
-    let u: Value<S> = Rc::new(RefCell::new(S::new_2({ 1 }, { (s.as_pointer()) })));
-    assert!(({ { (*u.borrow()).self__.clone() } } == { (s.as_pointer()) }));
+    let mut u: S = S::new_2({ 1 }, { (s.as_pointer()) });
+    assert!(({ (u.self__).clone() } == { (s.as_pointer()) }));
     let s_const: Value<S> = Rc::new(RefCell::new(S::new_1({ 100 })));
-    let u1: Value<S> = Rc::new(RefCell::new(S::new_3({ 1 }, { (s_const.as_pointer()) })));
-    assert!(({ (*u1.borrow()).self__.clone() }).is_null());
+    let mut u1: S = S::new_3({ 1 }, { (s_const.as_pointer()) });
+    assert!((u1.self__).is_null());
     return 0;
 }
 pub trait SImpl {

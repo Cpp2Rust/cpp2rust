@@ -48,16 +48,12 @@ fn main_0() -> i32 {
         }) as i32)
             == (true as i32))
     );
-    let b: Value<Bar> = Rc::new(RefCell::new(Bar::new(None)));
-    assert!(({ (*b.borrow()).v } == 1));
+    let mut b: Bar = Bar::new(None);
+    assert!((b.v == 1));
     assert!(({ Bar::new({ Some(2) },).v } == 2));
-    let arr: Value<Box<[Bar]>> = Rc::new(RefCell::new(Box::new([
-        Bar::new(None),
-        Bar::new(None),
-        Bar::new(None),
-    ])));
-    assert!(({ (*arr.borrow())[(0) as usize].v } == 1));
-    assert!(({ (*arr.borrow())[(2) as usize].v } == 1));
+    let mut arr: [Bar; 3] = [Bar::new(None), Bar::new(None), Bar::new(None)];
+    assert!(({ arr[(0) as usize].v } == 1));
+    assert!(({ arr[(2) as usize].v } == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

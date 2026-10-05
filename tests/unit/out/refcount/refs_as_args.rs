@@ -17,20 +17,17 @@ pub fn more_refs_0(x1: i32, x2: i32, r1: Ptr<i32>, r2: Ptr<i32>) {
     let rpr2: Ptr<i32> = (pr2).clone();
     let r: Ptr<i32> = (r1).clone();
     {
-        let _ptr = rx2.clone();
-        _ptr.write(
-            _ptr.read() + {
+        let __rhs = {
+            ({
                 ({
                     ({
-                        ({
-                            ({
-                                ({ ({ (1 + (rx1.read())) } + { (rx2.read()) }) } + { (pr1.read()) })
-                            } + { (pr2.read()) })
-                        } + { (rpr1.read()) })
-                    } + { (rpr2.read()) })
-                } + { (r.read()) })
-            },
-        )
+                        ({ ({ ({ (1 + (rx1.read())) } + { (rx2.read()) }) } + { (pr1.read()) }) }
+                            + { (pr2.read()) })
+                    } + { (rpr1.read()) })
+                } + { (rpr2.read()) })
+            } + { (r.read()) })
+        };
+        rx2.with_mut(|__v| *__v = *__v + __rhs)
     };
     r1.write({ (rx2.read()) });
 }
@@ -40,10 +37,8 @@ pub struct Val {
     #[offset(0)]
     pub x: i32,
 }
-pub fn sum_1(a: Val, b: Val) -> i32 {
-    let a: Value<Val> = Rc::new(RefCell::new(a));
-    let b: Value<Val> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).x } + { (*b.borrow()).x });
+pub fn sum_1(mut a: Val, mut b: Val) -> i32 {
+    return (a.x + b.x);
 }
 pub fn main() {
     __cpp2rust_init_globals();

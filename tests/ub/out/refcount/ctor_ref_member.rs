@@ -23,11 +23,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new({
+    let mut s: S = {
         let __tmp_0: Value<i32> = Rc::new(RefCell::new(5));
         S::new({ __tmp_0.as_pointer() })
-    }));
-    assert!((({ (*s.borrow()).r.clone() }.read()) == 5));
+    };
+    assert!((({ s.r.clone() }.read()) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

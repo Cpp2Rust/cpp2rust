@@ -10,11 +10,17 @@
 namespace cpp2rust {
 namespace {
 // Whether decl may be stored without a Value, if its address is not taken:
-// scalars and arrays of non-arrays.
+// scalars, arrays of non-arrays, and user-defined structs, unless they have a
+// destructor, which is called with a pointer to them.
 bool CanUnbox(const clang::VarDecl *decl) {
   auto type = decl->getType();
   if (type->isConstantArrayType()) {
     if (type->getAsArrayTypeUnsafe()->getElementType()->isArrayType()) {
+      return false;
+    }
+  } else if (type->isStructureOrClassType()) {
+    if (!IsUserDefinedDecl(type->getAsRecordDecl()) ||
+        TypeNeedsDestruction(type)) {
       return false;
     }
   } else if (!type->isScalarType()) {
@@ -87,10 +93,17 @@ public:
   }
 
 private:
-  // An element of an array is accessed without making a pointer to it.
+  // An element of an array, or a field of a struct, is accessed without
+  // making a pointer to it.
   void AddValueUse(clang::Expr *expr) {
     expr = expr->IgnoreParens();
-    if (auto *subscript = clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
+    if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
+      if (!member->isArrow() &&
+          clang::isa<clang::FieldDecl>(member->getMemberDecl())) {
+        AddValueUse(member->getBase());
+      }
+    } else if (auto *subscript =
+                   clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
       auto *cast =
           clang::dyn_cast<clang::ImplicitCastExpr>(subscript->getBase());
       if (cast && cast->getCastKind() == clang::CK_ArrayToPointerDecay) {

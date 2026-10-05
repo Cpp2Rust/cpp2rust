@@ -8,14 +8,13 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn inc_0(mut p: Ptr<i32>) {
     {
-        let _ptr = p.clone();
-        _ptr.write(_ptr.read() + 1)
+        p.with_mut(|__v| *__v = *__v + 1)
     };
 }
 pub fn add_1(mut p: Ptr<i32>, mut n: i32) {
     {
-        let _ptr = p.clone();
-        _ptr.write(_ptr.read() + { n })
+        let __rhs = { n };
+        p.with_mut(|__v| *__v = *__v + __rhs)
     };
 }
 pub fn twice_2(mut n: i32) -> i32 {
@@ -135,8 +134,8 @@ fn main_0() -> i32 {
             Access_S_Impl::ref_4(&a.as_pointer(), _r)
         }) == 103)
     );
-    let b: Value<Box> = Rc::new(RefCell::new(Box { v: 4 }));
-    assert!(({ (*b.borrow()).v } == 4));
+    let mut b: Box = Box { v: 4 };
+    assert!((b.v == 4));
     return 0;
 }
 pub trait Access_S_Impl {

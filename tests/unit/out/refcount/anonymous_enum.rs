@@ -44,11 +44,11 @@ fn main_0() -> i32 {
     assert!(((td as i32) == (TdEnum_TD_A as i32)));
     td = TdEnum_TD_B;
     assert!(((td as i32) == (TdEnum_TD_B as i32)));
-    let w: Value<WithAnonField> = Rc::new(RefCell::new(<WithAnonField>::default()));
-    (*w.borrow_mut()).field = anon_2_FIELD_A;
-    assert!((({ (*w.borrow()).field } as i32) == (anon_2_FIELD_A as i32)));
-    (*w.borrow_mut()).field = anon_2_FIELD_B;
-    assert!((({ (*w.borrow()).field } as i32) == (anon_2_FIELD_B as i32)));
+    let mut w: WithAnonField = <WithAnonField>::default();
+    w.field = anon_2_FIELD_A;
+    assert!(((w.field as i32) == (anon_2_FIELD_A as i32)));
+    w.field = anon_2_FIELD_B;
+    assert!(((w.field as i32) == (anon_2_FIELD_B as i32)));
     return 0;
 }
 pub type anon_3 = u32;

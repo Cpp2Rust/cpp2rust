@@ -20,12 +20,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<container> = Rc::new(RefCell::new(container {
+    let mut c: container = container {
         p: Ptr::<opaque>::null(),
         x: 42,
-    }));
-    &({ (*c.borrow()).p.clone() });
-    return ({ (*c.borrow()).x } - 42);
+    };
+    &(c.p);
+    return (c.x - 42);
 }
 #[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(1)]

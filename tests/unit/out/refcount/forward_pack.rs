@@ -163,17 +163,15 @@ fn main_0() -> i32 {
     assert!(({ (*a.borrow()).v } == 1));
     assert!(((*i.borrow()) == 3));
     let lhs: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 6 })));
-    let p: Value<Pair> = Rc::new(RefCell::new(
-        ({
-            let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
-            forward_pack_into_ctor_8(lhs.as_pointer(), _args_1.as_pointer())
-        }),
-    ));
-    assert!(({ (*p.borrow()).a.v } == 6));
-    assert!(({ (*p.borrow()).a.copies } == 1));
-    assert!(({ (*p.borrow()).b.v } == 7));
-    assert!(({ (*p.borrow()).b.copies } == 0));
-    assert!(({ (*p.borrow()).b.moves } == 1));
+    let mut p: Pair = ({
+        let _args_1: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 7 })));
+        forward_pack_into_ctor_8(lhs.as_pointer(), _args_1.as_pointer())
+    });
+    assert!((p.a.v == 6));
+    assert!((p.a.copies == 1));
+    assert!((p.b.v == 7));
+    assert!((p.b.copies == 0));
+    assert!((p.b.moves == 1));
     assert!(({ (*lhs.borrow()).v } == 6));
     return 0;
 }

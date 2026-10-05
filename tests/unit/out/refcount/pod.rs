@@ -18,16 +18,13 @@ pub struct POD {
 }
 pub fn PODIncrement_0(pod: Ptr<POD>) {
     {
-        let _ptr = field!(pod, x1);
-        _ptr.write(_ptr.read() + 1)
+        field!(pod, x1).with_mut(|__v| *__v = *__v + 1)
     };
     {
-        let _ptr = field!(pod, x2);
-        _ptr.write(_ptr.read() + 2)
+        field!(pod, x2).with_mut(|__v| *__v = *__v + 2)
     };
     {
-        let _ptr = field!(pod, x3);
-        _ptr.write(_ptr.read() + 3)
+        field!(pod, x3).with_mut(|__v| *__v = *__v + 3)
     };
 }
 pub fn main() {

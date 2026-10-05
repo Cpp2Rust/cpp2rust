@@ -25,8 +25,8 @@ pub fn main() {
 fn main_0() -> i32 {
     let a: Value<Wrapper_Probe_> = Rc::new(RefCell::new(<Wrapper_Probe_>::default()));
     (*a.borrow_mut()).tag = 3;
-    let b: Value<Wrapper_Probe_> = Rc::new(RefCell::new((*a.borrow()).clone()));
-    assert!(({ (*b.borrow()).tag } == 3));
+    let mut b: Wrapper_Probe_ = (*a.borrow()).clone();
+    assert!((b.tag == 3));
     return 0;
 }
 pub trait ProbeImpl {

@@ -115,8 +115,8 @@ impl CounterImpl for Ptr<Counter> {
     }
     fn add(&self, mut k: i32) {
         {
-            let _ptr = field!((*self), n);
-            _ptr.write(_ptr.read() + k)
+            let __rhs = k;
+            field!((*self), n).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
     fn self_(&self) -> Ptr<Counter> {
@@ -124,8 +124,8 @@ impl CounterImpl for Ptr<Counter> {
     }
     fn take(&self, mut other: Ptr<Counter>) {
         {
-            let _ptr = field!((*self), n);
-            _ptr.write(_ptr.read() + { other.with(|__s| __s.n) })
+            let __rhs = { other.with(|__s| __s.n) };
+            field!((*self), n).with_mut(|__v| *__v = *__v + __rhs)
         };
         field!(other, n).write(0);
     }

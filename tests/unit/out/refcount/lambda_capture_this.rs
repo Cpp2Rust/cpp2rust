@@ -37,8 +37,8 @@ pub trait SImpl {
 impl SImpl for Ptr<S> {
     fn add(&self, mut k: i32) {
         {
-            let _ptr = field!((*self), n);
-            _ptr.write(_ptr.read() + k)
+            let __rhs = k;
+            field!((*self), n).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
     fn scaled(&self) -> i32 {
@@ -51,8 +51,8 @@ impl SImpl for Ptr<S> {
             },
             |k: i32| {
                 {
-                    let _ptr = field!((*this_.borrow()).clone(), n);
-                    _ptr.write(_ptr.read() + k)
+                    let __rhs = k;
+                    field!((*this_.borrow()).clone(), n).with_mut(|__v| *__v = *__v + __rhs)
                 };
             }
         )));

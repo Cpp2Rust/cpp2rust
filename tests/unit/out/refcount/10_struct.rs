@@ -61,26 +61,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let g: Value<Graph> = Rc::new(RefCell::new(Graph {
+    let mut g: Graph = Graph {
         V: 5_u32,
         adj: Ptr::<Ptr<GraphNode>>::null(),
-    }));
+    };
     let arr: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([3, 1, 4])));
-    let it: Value<Partial> = Rc::new(RefCell::new(Partial::new_1({
-        (arr.as_pointer() as Ptr<i32>)
-    })));
-    if ({ { (*it.borrow()).p.clone() } } != { (arr.as_pointer() as Ptr<i32>) }) {
+    let mut it: Partial = Partial::new_1({ (arr.as_pointer() as Ptr<i32>) });
+    if ({ (it.p).clone() } != { (arr.as_pointer() as Ptr<i32>) }) {
         return 1;
     }
-    let def: Value<Partial> = Rc::new(RefCell::new(<Partial>::default()));
-    if !(({ (*def.borrow()).p.clone() }).is_null()) {
+    let mut def: Partial = <Partial>::default();
+    if !((def.p).is_null()) {
         return 1;
     }
-    let s: Value<S> = Rc::new(RefCell::new(S {
+    let mut s: S = S {
         i: 7,
         d: Ptr::<Declared>::null(),
-    }));
-    if ({ (*s.borrow()).i } != 7) || (!(({ (*s.borrow()).d.clone() }).is_null())) {
+    };
+    if (s.i != 7) || (!((s.d).is_null())) {
         return 1;
     }
     return 0;

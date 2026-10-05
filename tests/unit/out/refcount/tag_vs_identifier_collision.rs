@@ -109,10 +109,10 @@ fn main_0() -> i32 {
         (((({ (*w.borrow()).mode } as u32) == ((widget_enum_MODE_DONE as i32) as u32)) as i32)
             != 0)
     );
-    let p: Value<point_struct> = <Value<point_struct>>::default();
-    (*p.borrow_mut()).x = 3;
-    (*p.borrow_mut()).y = 4;
-    assert!((((({ (*p.borrow()).x } + { (*p.borrow()).y }) == 7) as i32) != 0));
+    let mut p: point_struct = <point_struct>::default();
+    p.x = 3;
+    p.y = 4;
+    assert!(((((p.x + p.y) == 7) as i32) != 0));
     let up: Value<point> = <Value<point>>::default();
     (*up.borrow_mut()).whole().write(5);
     assert!((((((*up.borrow()).whole().read()) == 5) as i32) != 0));
@@ -121,15 +121,15 @@ fn main_0() -> i32 {
     assert!((((((*b.borrow()).i().read()) == 9) as i32) != 0));
     let mut e: slot = slot_SLOT_B;
     assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
-    let inner_tag: Value<Inner> = <Value<Inner>>::default();
-    (*inner_tag.borrow_mut()).tag_field = 11;
-    assert!(((({ (*inner_tag.borrow()).tag_field } == 11) as i32) != 0));
-    let inner_typedef: Value<Inner_struct> = <Value<Inner_struct>>::default();
-    (*inner_typedef.borrow_mut()).typedef_field = 22;
-    assert!(((({ (*inner_typedef.borrow()).typedef_field } == 22) as i32) != 0));
-    let o: Value<Outer> = <Value<Outer>>::default();
-    (*o.borrow_mut()).field.tag_field = 33;
-    assert!(((({ (*o.borrow()).field.tag_field } == 33) as i32) != 0));
+    let mut inner_tag: Inner = <Inner>::default();
+    inner_tag.tag_field = 11;
+    assert!((((inner_tag.tag_field == 11) as i32) != 0));
+    let mut inner_typedef: Inner_struct = <Inner_struct>::default();
+    inner_typedef.typedef_field = 22;
+    assert!((((inner_typedef.typedef_field == 22) as i32) != 0));
+    let mut o: Outer = <Outer>::default();
+    o.field.tag_field = 33;
+    assert!((((o.field.tag_field == 33) as i32) != 0));
     assert!(((({ (*w.borrow()).id } == 7) as i32) != 0));
     return 0;
 }

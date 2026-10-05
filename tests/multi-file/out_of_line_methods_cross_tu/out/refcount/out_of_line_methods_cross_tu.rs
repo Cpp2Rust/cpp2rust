@@ -77,8 +77,8 @@ impl SImpl for Ptr<S> {
     }
     fn add(&self, mut x: i32) -> i32 {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + x)
+            let __rhs = x;
+            field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).with(|__s| __s.v);
     }

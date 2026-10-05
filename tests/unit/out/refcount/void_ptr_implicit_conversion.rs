@@ -9,8 +9,7 @@ use std::rc::{Rc, Weak};
 pub fn bump_0(mut arg: AnyPtr) -> i32 {
     let mut value: Ptr<i32> = arg.reinterpret_cast::<i32>();
     {
-        let _ptr = value.clone();
-        _ptr.write(_ptr.read() + 1)
+        value.with_mut(|__v| *__v = *__v + 1)
     };
     return (value.read());
 }
