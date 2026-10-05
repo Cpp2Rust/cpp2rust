@@ -114,28 +114,22 @@ pub struct Pair {
 }
 impl Pair {
     pub fn new_1() -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
+        Self {
             first: -1_i32,
             second: -1_i32,
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn new_2(mut a: i32) -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
+        Self {
             first: a,
             second: 0,
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn new_3(mut a: i32, mut b: i32) -> Self {
-        let __this: Value<Pair> = Rc::new(RefCell::new(Self {
+        Self {
             first: a,
             second: (b * 2),
-        }));
-        let this: Ptr<Pair> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Pair {

@@ -23,12 +23,10 @@ pub struct Holder {
 }
 impl Holder {
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             data: field!(_a0, data).with_mut(|__v: &mut Option<Value<Data>>| __v.take()),
             n: { (*_a0.upgrade().deref()).n },
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn main() {

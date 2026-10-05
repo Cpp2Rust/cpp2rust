@@ -23,11 +23,9 @@ pub struct Outer {
 }
 impl Outer {
     pub fn move_from(_a0: Ptr<Outer>) -> Self {
-        let __this: Value<Outer> = Rc::new(RefCell::new(Self {
+        Self {
             inner: field!(_a0, inner).with_mut(|__v: &mut Option<Value<Inner>>| __v.take()),
-        }));
-        let this: Ptr<Outer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn main() {

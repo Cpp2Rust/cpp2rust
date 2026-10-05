@@ -62,7 +62,7 @@ pub struct MinHeap {
 }
 impl MinHeap {
     pub fn move_from(_a0: Ptr<MinHeap>) -> Self {
-        let __this: Value<MinHeap> = Rc::new(RefCell::new(Self {
+        Self {
             size: { (*_a0.upgrade().deref()).size },
             capacity: { (*_a0.upgrade().deref()).capacity },
             arr: field!(_a0, arr)
@@ -70,9 +70,7 @@ impl MinHeap {
             next: { (*_a0.upgrade().deref()).next },
             alloc: field!(_a0, alloc)
                 .with_mut(|__v: &mut Option<Value<Box<[MinHeapNode]>>>| __v.take()),
-        }));
-        let this: Ptr<MinHeap> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn AllocMinHeap_1(capacity: i32) -> Option<Value<MinHeap>> {

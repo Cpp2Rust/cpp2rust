@@ -14,14 +14,10 @@ pub struct A {
 }
 impl A {
     pub fn new_1() -> Self {
-        let __this: Value<A> = Rc::new(RefCell::new(Self { v: 1 }));
-        let this: Ptr<A> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 1 }
     }
     pub fn new_2(mut v: i32) -> Self {
-        let __this: Value<A> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<A> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
 }
 impl Default for A {
@@ -37,9 +33,7 @@ pub struct B {
 }
 impl B {
     pub fn new() -> Self {
-        let __this: Value<B> = Rc::new(RefCell::new(Self { v: 2 }));
-        let this: Ptr<B> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 2 }
     }
 }
 impl Default for B {
@@ -55,9 +49,7 @@ pub struct NoDefault {
 }
 impl NoDefault {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<NoDefault> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<NoDefault> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
 }
 pub fn used_0(x: Option<A>) -> i32 {
@@ -85,9 +77,7 @@ pub struct S_NoDefault_ {
 }
 impl S_NoDefault_ {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<S_NoDefault_> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<S_NoDefault_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
 }
 pub fn main() {

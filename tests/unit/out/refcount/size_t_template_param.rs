@@ -18,11 +18,9 @@ pub struct PtrCtor_unsigned_long_ {
 }
 impl PtrCtor_unsigned_long_ {
     pub fn new(mut p: Ptr<u64>) -> Self {
-        let __this: Value<PtrCtor_unsigned_long_> = Rc::new(RefCell::new(Self {
+        Self {
             v: (elem!(p, 1).read()),
-        }));
-        let this: Ptr<PtrCtor_unsigned_long_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -33,11 +31,9 @@ pub struct RefCtor_unsigned_long_ {
 }
 impl RefCtor_unsigned_long_ {
     pub fn new(x: Ptr<u64>) -> Self {
-        let __this: Value<RefCtor_unsigned_long_> = Rc::new(RefCell::new(Self {
+        Self {
             v: (x.read()).wrapping_add(1_u64),
-        }));
-        let this: Ptr<RefCtor_unsigned_long_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn main() {

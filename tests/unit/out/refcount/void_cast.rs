@@ -44,11 +44,9 @@ pub struct NonCopyable {
 }
 impl NonCopyable {
     pub fn move_from(_a0: Ptr<NonCopyable>) -> Self {
-        let __this: Value<NonCopyable> = Rc::new(RefCell::new(Self {
+        Self {
             value: field!(_a0, value).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<NonCopyable> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn unused_noncopyable_param_5(x: Ptr<NonCopyable>) {

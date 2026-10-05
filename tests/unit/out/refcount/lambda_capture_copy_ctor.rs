@@ -16,28 +16,22 @@ pub struct Counted {
 }
 impl Counted {
     pub fn new() -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
+        Self {
             copies: 0,
             moves: 0,
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn copy_from(o: Ptr<Counted>) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
+        Self {
             copies: (o.with(|__s| __s.copies) + 1),
             moves: o.with(|__s| __s.moves),
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<Counted>) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
+        Self {
             copies: o.with(|__s| __s.copies),
             moves: (o.with(|__s| __s.moves) + 1),
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Clone for Counted {
@@ -62,19 +56,13 @@ thread_local!(
 pub struct Dropped {}
 impl Dropped {
     pub fn new() -> Self {
-        let __this: Value<Dropped> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Dropped> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {}
     }
     pub fn copy_from(_a0: Ptr<Dropped>) -> Self {
-        let __this: Value<Dropped> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Dropped> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {}
     }
     pub fn move_from(_a0: Ptr<Dropped>) -> Self {
-        let __this: Value<Dropped> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<Dropped> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self {}
     }
 }
 impl Clone for Dropped {

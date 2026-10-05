@@ -37,11 +37,9 @@ pub struct HashHolder_unsigned_long__ptr__bool__ {
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
     pub fn new(h: Ptr<FnPtr<fn(bool) -> u64>>) -> Self {
-        let __this: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new(Self {
+        Self {
             h: (h.read()).clone(),
-        }));
-        let this: Ptr<HashHolder_unsigned_long__ptr__bool__> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn main() {

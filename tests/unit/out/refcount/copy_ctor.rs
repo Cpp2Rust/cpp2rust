@@ -17,17 +17,14 @@ pub struct Counted {
 }
 impl Counted {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<Counted> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn copy_from(o: Ptr<Counted>) -> Self {
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self {
+        let __this: Counted = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<Counted> = __this.as_pointer();
+        };
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Counted {
@@ -44,23 +41,17 @@ pub struct NonConst {
 }
 impl NonConst {
     pub fn new() -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<NonConst> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
     pub fn new_1(o: Ptr<NonConst>) -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
+        Self {
             mark: (o.with(|__s| __s.mark) + 1),
-        }));
-        let this: Ptr<NonConst> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn new_2(o: Ptr<NonConst>) -> Self {
-        let __this: Value<NonConst> = Rc::new(RefCell::new(Self {
+        Self {
             mark: (o.with(|__s| __s.mark) + 10),
-        }));
-        let this: Ptr<NonConst> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Clone for NonConst {
@@ -84,15 +75,12 @@ pub struct Ignored {
 }
 impl Ignored {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<Ignored> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn copy_from(_a0: Ptr<Ignored>) -> Self {
-        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: -1_i32 }));
-        let this: Ptr<Ignored> = __this.as_pointer();
+        let __this: Ignored = Self { v: -1_i32 };
         (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Ignored {

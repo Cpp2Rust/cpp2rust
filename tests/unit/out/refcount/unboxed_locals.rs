@@ -33,20 +33,11 @@ pub fn countdown_3(mut n: i32, step: Option<i32>) -> i32 {
 pub trait Shape {
     fn scale(&mut self, factor: i32) -> i32;
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
 #[byte_size(16)]
 pub struct Square {
     #[offset(8)]
     pub side: i32,
-}
-impl Clone for Square {
-    fn clone(&self) -> Self {
-        let __this: Value<Square> = Rc::new(RefCell::new(Self {
-            side: { self.side },
-        }));
-        let this: Ptr<Square> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
 }
 impl Default for Square {
     fn default() -> Self {

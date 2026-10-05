@@ -14,17 +14,14 @@ pub struct NoCopy {
 }
 impl NoCopy {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<NoCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn move_from(o: Ptr<NoCopy>) -> Self {
-        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self {
+        let __this: NoCopy = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<NoCopy> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 #[derive(Record, ByteRepr)]
@@ -35,17 +32,14 @@ pub struct PrivateCopy {
 }
 impl PrivateCopy {
     pub fn new() -> Self {
-        let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self { v: 0 }));
-        let this: Ptr<PrivateCopy> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 0 }
     }
     pub fn move_from(o: Ptr<PrivateCopy>) -> Self {
-        let __this: Value<PrivateCopy> = Rc::new(RefCell::new(Self {
+        let __this: PrivateCopy = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<PrivateCopy> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Default for PrivateCopy {
@@ -61,9 +55,7 @@ pub struct Immovable {
 }
 impl Immovable {
     pub fn new() -> Self {
-        let __this: Value<Immovable> = Rc::new(RefCell::new(Self { v: 0 }));
-        let this: Ptr<Immovable> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: 0 }
     }
 }
 impl Default for Immovable {
@@ -82,12 +74,10 @@ pub struct Container {
 }
 impl Container {
     pub fn move_from(_a0: Ptr<Container>) -> Self {
-        let __this: Value<Container> = Rc::new(RefCell::new(Self {
+        Self {
             inner: NoCopy::move_from({ field_ptr!(_a0, inner) }),
             tag: { (*_a0.upgrade().deref()).tag },
-        }));
-        let this: Ptr<Container> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn bump_0(mut p: Ptr<NoCopy>) {

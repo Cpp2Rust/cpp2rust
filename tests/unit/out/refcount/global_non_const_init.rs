@@ -40,14 +40,10 @@ pub struct Ctor {
 }
 impl Ctor {
     pub fn new_1() -> Self {
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: ({ next_0() }) }));
-        let this: Ptr<Ctor> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: ({ next_0() }) }
     }
     pub fn new_2(mut x: i32) -> Self {
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: x }));
-        let this: Ptr<Ctor> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: x }
     }
 }
 impl Default for Ctor {
@@ -94,9 +90,7 @@ pub struct Singleton {
 }
 impl Singleton {
     pub fn new() -> Self {
-        let __this: Value<Singleton> = Rc::new(RefCell::new(Self { hits: 0 }));
-        let this: Ptr<Singleton> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { hits: 0 }
     }
     pub fn instance() -> Ptr<Singleton> {
         thread_local!(

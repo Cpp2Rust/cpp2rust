@@ -14,10 +14,9 @@ thread_local!(
 pub struct S {}
 impl S {
     pub fn new(mut x: i32) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {}));
-        let this: Ptr<S> = __this.as_pointer();
+        let __this: S = Self {};
         total_0.with(|rc| *rc.borrow_mut() += x);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 thread_local!(

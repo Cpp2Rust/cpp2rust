@@ -19,17 +19,13 @@ pub struct Partial {
 }
 impl Partial {
     pub fn new(mut v: i32, mut keep: i32) -> Self {
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self { v: v, keep: keep }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v, keep: keep }
     }
     pub fn copy_from(o: Ptr<Partial>) -> Self {
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
+        Self {
             v: o.with(|__s| __s.v),
             keep: o.with(|__s| __s.keep),
-        }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Clone for Partial {
@@ -49,9 +45,7 @@ pub struct NonConstAssign {
 }
 impl NonConstAssign {
     pub fn new() -> Self {
-        let __this: Value<NonConstAssign> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<NonConstAssign> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
 }
 impl Default for NonConstAssign {
@@ -67,9 +61,7 @@ pub struct RefQualified {
 }
 impl RefQualified {
     pub fn new() -> Self {
-        let __this: Value<RefQualified> = Rc::new(RefCell::new(Self { mark: 0 }));
-        let this: Ptr<RefQualified> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { mark: 0 }
     }
 }
 impl Default for RefQualified {

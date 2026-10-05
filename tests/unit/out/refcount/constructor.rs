@@ -34,9 +34,7 @@ pub struct Point {
 }
 impl Point {
     pub fn new_1(mut x: i32, mut y: i32) -> Self {
-        let __this: Value<Point> = Rc::new(RefCell::new(Self { x: x, y: y }));
-        let this: Ptr<Point> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { x: x, y: y }
     }
     pub fn new_2(mut v: i32) -> Self {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ v }, { (v + 1) })));

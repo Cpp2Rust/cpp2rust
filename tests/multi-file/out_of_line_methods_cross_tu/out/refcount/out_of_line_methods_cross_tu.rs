@@ -16,22 +16,13 @@ impl S {}
 pub trait Base {
     fn apply(&mut self, x: i32) -> i32;
 }
-#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
 pub struct Derived {
     #[offset(8)]
     pub factor: i32,
 }
 impl Derived {}
-impl Clone for Derived {
-    fn clone(&self) -> Self {
-        let __this: Value<Derived> = Rc::new(RefCell::new(Self {
-            factor: { self.factor },
-        }));
-        let this: Ptr<Derived> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
-    }
-}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -49,16 +40,12 @@ fn main_0() -> i32 {
 }
 impl S {
     pub fn new(mut x: i32) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self { v: x }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: x }
     }
 }
 impl Derived {
     pub fn new(mut factor: i32) -> Self {
-        let __this: Value<Derived> = Rc::new(RefCell::new(Self { factor: factor }));
-        let this: Ptr<Derived> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { factor: factor }
     }
 }
 impl S {}

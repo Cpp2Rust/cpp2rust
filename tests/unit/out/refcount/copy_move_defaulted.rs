@@ -27,15 +27,13 @@ pub struct Explicit {
 impl Explicit {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Explicit> = Rc::new(RefCell::new(Self {
+        Self {
             v: (*v.borrow()),
             inner: Inner {
                 x: ((*v.borrow()) * 10),
             },
             arr: Rc::new(RefCell::new(Box::new([(*v.borrow()), ((*v.borrow()) + 1)]))),
-        }));
-        let this: Ptr<Explicit> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Explicit {
@@ -76,17 +74,14 @@ pub struct DefaultCopyUserMove {
 }
 impl DefaultCopyUserMove {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<DefaultCopyUserMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn move_from(o: Ptr<DefaultCopyUserMove>) -> Self {
-        let __this: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(Self {
+        let __this: DefaultCopyUserMove = Self {
             v: o.with(|__s| __s.v),
-        }));
-        let this: Ptr<DefaultCopyUserMove> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 #[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -97,23 +92,17 @@ pub struct UserCopyDefaultMove {
 }
 impl UserCopyDefaultMove {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn copy_from(o: Ptr<UserCopyDefaultMove>) -> Self {
-        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self {
+        Self {
             v: (o.with(|__s| __s.v) + 100),
-        }));
-        let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(_a0: Ptr<UserCopyDefaultMove>) -> Self {
-        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self {
+        Self {
             v: { (*_a0.upgrade().deref()).v },
-        }));
-        let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Clone for UserCopyDefaultMove {
@@ -161,7 +150,7 @@ impl Buffer {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
     pub fn move_from(_a0: Ptr<Buffer>) -> Self {
-        let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
+        Self {
             data: Rc::new(RefCell::new(std::mem::take(
                 &mut (*{ (*_a0.upgrade().deref()).data.clone() }.borrow_mut()),
             ))),
@@ -172,9 +161,7 @@ impl Buffer {
             arr: Rc::new(RefCell::new(Box::new(std::array::from_fn::<_, 2, _>(
                 |__i: usize| (*{ (*_a0.upgrade().deref()).arr.clone() }.borrow())[(__i) as usize],
             )))),
-        }));
-        let this: Ptr<Buffer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Buffer {
@@ -204,7 +191,7 @@ pub struct Owner {
 }
 impl Owner {
     pub fn move_from(_a0: Ptr<Owner>) -> Self {
-        let __this: Value<Owner> = Rc::new(RefCell::new(Self {
+        Self {
             data: Rc::new(RefCell::new(std::mem::take(
                 &mut (*{ (*_a0.upgrade().deref()).data.clone() }.borrow_mut()),
             ))),
@@ -213,9 +200,7 @@ impl Owner {
                 |__i: usize| (*{ (*_a0.upgrade().deref()).arr.clone() }.borrow())[(__i) as usize],
             )))),
             p: field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<Owner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Owner {
@@ -244,22 +229,18 @@ pub struct Holder {
 impl Holder {
     pub fn new(v: i32) -> Self {
         let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             inner: Inner { x: (*v.borrow()) },
             e: Explicit::new({ (*v.borrow()) }),
             p: None,
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             inner: { (*_a0.upgrade().deref()).inner.clone() },
             e: { (*_a0.upgrade().deref()).e.clone() },
             p: field!(_a0, p).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn same_0(a: Ptr<Explicit>, b: Ptr<Explicit>) -> bool {

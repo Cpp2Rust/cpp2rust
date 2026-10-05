@@ -581,6 +581,16 @@ bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
          HasCallableCopyConstructor(decl);
 }
 
+// Bases are translated to traits, so they hold no state of the struct; they
+// only need to be copied without side effects.
+static bool HasDefaultedBaseCopies(const clang::CXXRecordDecl *decl) {
+  return std::ranges::all_of(decl->bases(), [](auto &base) {
+    auto *record = base.getType()->getAsCXXRecordDecl();
+    return record && HasDefaultedCopyConstructor(record) &&
+           HasDefaultedBaseCopies(record);
+  });
+}
+
 bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
   if (HasDefaultedCopyConstructor(decl) && RecordHasOnlyReferenceFields(decl)) {
     return true;
@@ -588,9 +598,9 @@ bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
   // The copy of a struct copies each field, which a derived Clone does too,
   // except for Values, which it shares.
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (decl->isUnion() ||
-      (cxx && (!HasCallableCopyConstructor(cxx) ||
-               GetUserDefinedCopyConstructor(cxx) || cxx->getNumBases() > 0))) {
+  if (decl->isUnion() || (cxx && (!HasCallableCopyConstructor(cxx) ||
+                                  GetUserDefinedCopyConstructor(cxx) ||
+                                  !HasDefaultedBaseCopies(cxx)))) {
     return false;
   }
   PushConversionKind push(*this, ConversionKind::Pointee);
@@ -611,7 +621,7 @@ bool ConverterRefCount::RecordDerivesDeepClone(const clang::RecordDecl *decl) {
   // own clone(), and Values are copied deeply.
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   return !cxx ||
-         (!GetUserDefinedCopyConstructor(cxx) && cxx->getNumBases() == 0);
+         (!GetUserDefinedCopyConstructor(cxx) && HasDefaultedBaseCopies(cxx));
 }
 
 void ConverterRefCount::AddCloneTrait(const clang::RecordDecl *decl) {
@@ -3146,6 +3156,7 @@ void ConverterRefCount::SetUFCSReceiver(clang::Expr *base, bool is_arrow,
     bool in_ctor =
         curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
     if (in_ctor) {
+      ctor_uses_this_ = true;
       ufcs_receiver_ = "&this";
     } else if (ThisIsRustPtr()) {
       ufcs_receiver_ = keyword::kSelfValue;
@@ -3307,21 +3318,43 @@ void ConverterRefCount::ConvertCXXConstructorBody(
     clang::CXXConstructorDecl *decl) {
   EmitFunctionPreamble(decl);
   auto record_name = GetRecordName(decl->getParent());
+  auto saved_uses_this = std::exchange(ctor_uses_this_, false);
+  std::string init;
+  {
+    Buffer buf(*this);
+    if (decl->isDelegatingConstructor()) {
+      Convert((*decl->init_begin())->getInit());
+    } else {
+      StrCat("Self");
+      PushBrace this_init(*this);
+      EmitConstructorFieldInits(decl);
+    }
+    init = std::move(buf).str();
+  }
+  std::string body;
+  {
+    Buffer buf(*this);
+    ConvertBodyStmts(decl->getBody());
+    body = std::move(buf).str();
+  }
+  bool uses_this = std::exchange(ctor_uses_this_, saved_uses_this);
+
+  if (!uses_this) {
+    if (Trim(body).empty()) {
+      StrCat(init);
+    } else {
+      StrCat(keyword::kLet, "__this", token::kColon, record_name,
+             token::kAssign, init, token::kSemiColon, body, "__this");
+    }
+    return;
+  }
   StrCat(keyword::kLet, "__this", token::kColon,
          std::format("Value<{}>", record_name), token::kAssign,
-         "Rc::new(RefCell::new(");
-  if (decl->isDelegatingConstructor()) {
-    Convert((*decl->init_begin())->getInit());
-  } else {
-    StrCat("Self");
-    PushBrace this_init(*this);
-    EmitConstructorFieldInits(decl);
-  }
-  StrCat("))", token::kSemiColon);
+         std::format("Rc::new(RefCell::new({}))", init), token::kSemiColon);
   StrCat(keyword::kLet, "this", token::kColon,
          std::format("Ptr<{}>", record_name), token::kAssign,
          "__this.as_pointer()", token::kSemiColon);
-  ConvertBodyStmts(decl->getBody());
+  StrCat(body);
   StrCat("Rc::try_unwrap(__this).ok().unwrap().into_inner()");
 }
 
@@ -3338,6 +3371,7 @@ bool ConverterRefCount::VisitCXXThisExpr(
   bool in_ctor =
       curr_function_ && clang::isa<clang::CXXConstructorDecl>(curr_function_);
   if (in_ctor) {
+    ctor_uses_this_ = true;
     StrCat("this");
   } else {
     StrCat("(*", keyword::kSelfValue, ')');

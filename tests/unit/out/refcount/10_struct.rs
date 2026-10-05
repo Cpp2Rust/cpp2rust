@@ -33,9 +33,7 @@ pub struct Partial {
 }
 impl Partial {
     pub fn new_1(mut q: Ptr<i32>) -> Self {
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self { p: (q).clone() }));
-        let this: Ptr<Partial> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { p: (q).clone() }
     }
 }
 impl Default for Partial {

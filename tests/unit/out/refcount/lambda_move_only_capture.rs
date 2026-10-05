@@ -15,17 +15,14 @@ pub struct Owner {
 }
 impl Owner {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<Owner> = Rc::new(RefCell::new(Self { p: Ptr::alloc(v) }));
-        let this: Ptr<Owner> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { p: Ptr::alloc(v) }
     }
     pub fn move_from(o: Ptr<Owner>) -> Self {
-        let __this: Value<Owner> = Rc::new(RefCell::new(Self {
+        let __this: Owner = Self {
             p: o.with(|__s| __s.p.clone()),
-        }));
-        let this: Ptr<Owner> = __this.as_pointer();
+        };
         field!(o, p).write(Ptr::<i32>::null());
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 pub fn main() {

@@ -15,11 +15,9 @@ pub struct Holder {
 }
 impl Holder {
     pub fn move_from(_a0: Ptr<Holder>) -> Self {
-        let __this: Value<Holder> = Rc::new(RefCell::new(Self {
+        Self {
             val: field!(_a0, val).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<Holder> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn read_val_0(mut h: Ptr<Holder>) -> i32 {

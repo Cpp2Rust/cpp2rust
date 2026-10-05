@@ -14,24 +14,19 @@ pub struct Chain {
 }
 impl Chain {
     pub fn new(mut v: i32) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<Chain> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
     pub fn copy_from(o: Ptr<Chain>) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self {
+        Self {
             v: (o.with(|__s| __s.v) + 100),
-        }));
-        let this: Ptr<Chain> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
     pub fn move_from(o: Ptr<Chain>) -> Self {
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self {
+        let __this: Chain = Self {
             v: (o.with(|__s| __s.v) + 1),
-        }));
-        let this: Ptr<Chain> = __this.as_pointer();
+        };
         field!(o, v).write(0);
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        __this
     }
 }
 impl Clone for Chain {

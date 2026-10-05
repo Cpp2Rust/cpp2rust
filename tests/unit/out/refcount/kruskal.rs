@@ -136,13 +136,11 @@ pub struct DisjointSet {
 }
 impl DisjointSet {
     pub fn move_from(_a0: Ptr<DisjointSet>) -> Self {
-        let __this: Value<DisjointSet> = Rc::new(RefCell::new(Self {
+        Self {
             rank: field!(_a0, rank).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
             parent: field!(_a0, parent).with_mut(|__v: &mut Option<Value<Box<[i32]>>>| __v.take()),
             n: { (*_a0.upgrade().deref()).n },
-        }));
-        let this: Ptr<DisjointSet> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 #[derive(Record, ByteRepr, Default)]
@@ -158,13 +156,11 @@ pub struct Graph {
 }
 impl Graph {
     pub fn move_from(_a0: Ptr<Graph>) -> Self {
-        let __this: Value<Graph> = Rc::new(RefCell::new(Self {
+        Self {
             edges: field!(_a0, edges).with_mut(|__v: &mut Option<Value<Box<[Edge]>>>| __v.take()),
             V: { (*_a0.upgrade().deref()).V },
             E: { (*_a0.upgrade().deref()).E },
-        }));
-        let this: Ptr<Graph> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 pub fn MSTKruskal_2(graph: Ptr<Graph>) -> f64 {

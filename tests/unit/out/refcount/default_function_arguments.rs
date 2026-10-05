@@ -23,9 +23,7 @@ pub struct Bar {
 impl Bar {
     pub fn new(v: Option<i32>) -> Self {
         let mut v: i32 = v.unwrap_or(1);
-        let __this: Value<Bar> = Rc::new(RefCell::new(Self { v: v }));
-        let this: Ptr<Bar> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: v }
     }
 }
 impl Default for Bar {

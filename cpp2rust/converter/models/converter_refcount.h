@@ -412,6 +412,10 @@ private:
   bool IsUnboxedVar(const clang::ValueDecl *decl) const;
   std::shared_ptr<const BoxedVars> boxed_vars_;
 
+  // Set when a constructor's translation refers to `this`, which then needs
+  // the object being built to be in a Value.
+  bool ctor_uses_this_ = false;
+
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {
     Unboxed,

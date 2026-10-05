@@ -15,11 +15,9 @@ pub struct SafePointer {
 }
 impl SafePointer {
     pub fn move_from(_a0: Ptr<SafePointer>) -> Self {
-        let __this: Value<SafePointer> = Rc::new(RefCell::new(Self {
+        Self {
             ptr: field!(_a0, ptr).with_mut(|__v: &mut Option<Value<i32>>| __v.take()),
-        }));
-        let this: Ptr<SafePointer> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]

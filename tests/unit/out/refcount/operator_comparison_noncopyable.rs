@@ -20,16 +20,12 @@ pub struct S {
 }
 impl S {
     pub fn new(mut data: i32) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self { data_: data }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { data_: data }
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
+        Self {
             data_: { (*_a0.upgrade().deref()).data_ },
-        }));
-        let this: Ptr<S> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl std::cmp::Ord for S {

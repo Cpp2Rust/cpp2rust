@@ -34,9 +34,7 @@ pub struct Value_ {
 }
 impl Value_ {
     pub fn new(mut u: i32) -> Self {
-        let __this: Value<Value_> = Rc::new(RefCell::new(Self { v: u }));
-        let this: Ptr<Value_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: u }
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg)]
@@ -51,12 +49,10 @@ pub struct Ptr_ {
 }
 impl Ptr_ {
     pub fn new() -> Self {
-        let __this: Value<Ptr_> = Rc::new(RefCell::new(Self {
+        Self {
             v1: Value_::new({ 11 }),
             v2: Value_::new({ 22 }),
-        }));
-        let this: Ptr<Ptr_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        }
     }
 }
 impl Default for Ptr_ {

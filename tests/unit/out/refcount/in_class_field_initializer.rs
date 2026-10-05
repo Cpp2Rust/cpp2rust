@@ -53,9 +53,7 @@ pub struct Boxed_int_ {
 }
 impl Boxed_int_ {
     pub fn new(mut x: i32, mut t: i32) -> Self {
-        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self { v: x, tag: t }));
-        let this: Ptr<Boxed_int_> = __this.as_pointer();
-        Rc::try_unwrap(__this).ok().unwrap().into_inner()
+        Self { v: x, tag: t }
     }
 }
 impl Default for Boxed_int_ {
