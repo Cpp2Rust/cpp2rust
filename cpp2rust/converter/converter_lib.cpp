@@ -3,6 +3,7 @@
 
 #include "converter/converter_lib.h"
 
+#include <clang/AST/DeclFriend.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/ExprConcepts.h>

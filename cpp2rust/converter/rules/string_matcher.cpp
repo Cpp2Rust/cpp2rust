@@ -261,7 +261,60 @@ std::optional<Bindings> matchTemplate(const std::string &template_str,
   return captured;
 }
 
-std::string exprKey(const std::string &str) {
+template <typename Rule, typename Candidates>
+Match<Rule> search(Candidates candidates, const std::string &txt) {
+  Rule *rule = nullptr;
+  Bindings subs;
+
+  for (auto &[_, this_rule] : candidates) {
+    auto this_subs = matchTemplate(this_rule.src, txt);
+    if (!this_subs) {
+      continue;
+    }
+    // tie breaker: prefer more specific rules (usually the longer ones)
+    if (!rule || this_rule.src.size() > rule->src.size()) {
+      rule = &this_rule;
+      subs = *std::move(this_subs);
+    }
+  }
+  return {rule, std::move(subs)};
+}
+
+Match<TranslationRule::ExprRule> searchExpr(const std::string &txt) {
+  return search<TranslationRule::ExprRule>(
+      RuleRegistry::ExprCandidates(ExprKey(txt)), txt);
+}
+
+Match<TranslationRule::TypeRule> searchType(const std::string &txt) {
+  return search<TranslationRule::TypeRule>(
+      RuleRegistry::TypeCandidates(TypeKey(txt)), txt);
+}
+
+std::string mapTypeString(const std::string &cpp_type) {
+  auto [rule, subs] = searchType(cpp_type);
+  if (!rule) {
+    llvm::errs() << "cpp_type: " << cpp_type << '\n';
+    assert(0 && "Type is not present in the registry");
+  }
+  for (auto &ty : subs) {
+    if (ty) {
+      ty = mapTypeString(*ty);
+    }
+  }
+  return InstantiateTgt(subs, rule->type_info.type);
+}
+
+} // namespace
+
+std::string Key(const TranslationRule::ExprRule &rule) {
+  return ExprKey(rule.src);
+}
+
+std::string Key(const TranslationRule::TypeRule &rule) {
+  return TypeKey(rule.src);
+}
+
+std::string ExprKey(const std::string &str) {
   // Extract the function name from something like
   // const T1 & std::foo<T1, T2>::fn_name(args)
   auto n = str.find_first_of('(');
@@ -289,66 +342,13 @@ std::string exprKey(const std::string &str) {
   return result;
 }
 
-std::string typeKey(const std::string &str) {
+std::string TypeKey(const std::string &str) {
   auto n = str.find_first_of("<[");
   if (n == std::string::npos || str[n] == '<') {
     return str.substr(0, n);
   }
   // something like int[][] or T1[] -> []
   return str.substr(n + 1);
-}
-
-template <typename Rule, typename Candidates>
-Match<Rule> search(Candidates candidates, const std::string &txt) {
-  Rule *rule = nullptr;
-  Bindings subs;
-
-  for (auto &[_, this_rule] : candidates) {
-    auto this_subs = matchTemplate(this_rule.src, txt);
-    if (!this_subs) {
-      continue;
-    }
-    // tie breaker: prefer more specific rules (usually the longer ones)
-    if (!rule || this_rule.src.size() > rule->src.size()) {
-      rule = &this_rule;
-      subs = *std::move(this_subs);
-    }
-  }
-  return {rule, std::move(subs)};
-}
-
-Match<TranslationRule::ExprRule> searchExpr(const std::string &txt) {
-  return search<TranslationRule::ExprRule>(
-      RuleRegistry::ExprCandidates(exprKey(txt)), txt);
-}
-
-Match<TranslationRule::TypeRule> searchType(const std::string &txt) {
-  return search<TranslationRule::TypeRule>(
-      RuleRegistry::TypeCandidates(typeKey(txt)), txt);
-}
-
-std::string mapTypeString(const std::string &cpp_type) {
-  auto [rule, subs] = searchType(cpp_type);
-  if (!rule) {
-    llvm::errs() << "cpp_type: " << cpp_type << '\n';
-    assert(0 && "Type is not present in the registry");
-  }
-  for (auto &ty : subs) {
-    if (ty) {
-      ty = mapTypeString(*ty);
-    }
-  }
-  return InstantiateTgt(subs, rule->type_info.type);
-}
-
-} // namespace
-
-std::string Key(const TranslationRule::ExprRule &rule) {
-  return exprKey(rule.src);
-}
-
-std::string Key(const TranslationRule::TypeRule &rule) {
-  return typeKey(rule.src);
 }
 
 Match<TranslationRule::ExprRule> Find(clang::ASTContext &ctx,
@@ -385,7 +385,7 @@ Match<TranslationRule::TypeRule> Find(clang::ASTContext &ctx,
 }
 
 bool HasRuleNamed(clang::ASTContext &ctx, const clang::FunctionDecl *decl) {
-  return !RuleRegistry::ExprCandidates(exprKey(Printer::ToString(ctx, decl)))
+  return !RuleRegistry::ExprCandidates(ExprKey(Printer::ToString(ctx, decl)))
               .empty();
 }
 
