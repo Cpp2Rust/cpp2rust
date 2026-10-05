@@ -50,14 +50,14 @@ takes the receiver as its first parameter and calls the method on it. On the
 Rust side the receiver is `a0`.
 
 ```cpp
-// rules/std/vector/src.cpp
+// rules/vector/src.cpp
 template <typename T1> std::size_t f2(const std::vector<T1> &o) {
   return o.size();
 }
 ```
 
 ```rust
-// rules/std/vector/tgt_unsafe.rs
+// rules/vector/tgt_unsafe.rs
 unsafe fn f2<T1>(a0: Vec<T1>) -> usize {
     a0.len()
 }
@@ -76,12 +76,12 @@ only to name the class. The call site has no receiver argument, so the Rust side
 drops it and numbers the remaining parameters from `a0`; here there are none:
 
 ```cpp
-// rules/std/numeric_limits/src.cpp
+// rules/limits/src.cpp
 template <typename T1> T1 f1(std::numeric_limits<T1> &a0) { return a0.max(); }
 ```
 
 ```rust
-// rules/std/numeric_limits/tgt_unsafe.rs
+// rules/limits/tgt_unsafe.rs
 unsafe fn f1<T1: HasMinMax>() -> T1 {
     <T1>::MAX
 }
@@ -94,14 +94,13 @@ unsafe fn f1<T1: HasMinMax>() -> T1 {
 Constructors are functions returning the type by value, one rule per overload:
 
 ```cpp
-// rules/std/string/src.cpp
+// rules/string/src.cpp
 std::string f7(const char *s, std::size_t n) { return std::string(s, n); }
 std::string f9(std::size_t n, char ch) { return std::string(n, ch); }
 ```
 
-Overloads that differ in value category are distinct rules too:
-`rules/std/vector` has separate rules for `push_back(const T1 &)` and
-`push_back(T1 &&)`.
+Overloads that differ in value category are distinct rules too: `rules/vector`
+has separate rules for `push_back(const T1 &)` and `push_back(T1 &&)`.
 
 No destructor rules exist so far: the STL and libc APIs covered by the current
 rules have not needed any, since their types map to Rust types whose `Drop`
@@ -113,7 +112,7 @@ Write operators with explicit `operator` call syntax, in member form
 (`x.operator@(...)`) or free form (`operator@(a, b)`):
 
 ```cpp
-// rules/std/map/src.cpp
+// rules/map/src.cpp
 template <typename T1, typename T2>
 T2 &f1(std::map<T1, T2> &o, const T1 &key) { return o.operator[](key); }
 
@@ -126,11 +125,11 @@ bool f11(typename std::map<T1, T2>::iterator a,
 
 Post-increment is distinguished from pre-increment by the usual dummy `int`
 parameter: `a0.operator++(a1)` versus `it.operator++()`. Conversion operators
-use the same explicit syntax: `a0.operator T1 &()` in
-`rules/std/reference_wrapper` matches the conversion of a
-`std::reference_wrapper<T1>` back to a reference. Field accesses are rules of
-their own, matched by the field: `it->first` and `it->second` through iterators,
-plain `o.second` on a pair (`rules/std/map`, `rules/std/pair`).
+use the same explicit syntax: `a0.operator T1 &()` in `rules/functional` matches
+the conversion of a `std::reference_wrapper<T1>` back to a reference. Field
+accesses are rules of their own, matched by the field: `it->first` and
+`it->second` through iterators, plain `o.second` on a pair (`rules/map`,
+`rules/pair`).
 
 ## Callable arguments
 
@@ -170,7 +169,7 @@ operation on it its own expression rule (`operator*`, `operator++`,
 with `typename`:
 
 ```cpp
-// rules/std/map/src.cpp
+// rules/map/src.cpp
 template <typename T1, typename T2>
 using t2 = typename std::map<T1, T2>::const_iterator;
 ```
@@ -297,7 +296,7 @@ site from the arguments after the fixed ones. The C++ side spells the pack as
 to build:
 
 ```cpp
-// rules/std/vector/src.cpp
+// rules/vector/src.cpp
 template <typename T1, typename... Args>
 T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
@@ -305,7 +304,7 @@ T1 &f112(std::vector<T1> &o, Init<T1, Args> &&...args) {
 ```
 
 ```rust
-// rules/std/vector/tgt_unsafe.rs
+// rules/vector/tgt_unsafe.rs
 unsafe fn f112<T1>(a0: &mut Vec<T1>, init: T1) {
     let __init = init;
     a0.push(__init)

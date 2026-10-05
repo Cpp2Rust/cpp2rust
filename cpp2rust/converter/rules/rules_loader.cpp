@@ -353,7 +353,7 @@ std::string TypeKey(clang::QualType type) {
   }
   if (auto alias = type->getAs<clang::TypedefType>();
       alias && type.getCanonicalType()->isBuiltinType()) {
-    return alias->getDecl()->getQualifiedNameAsString();
+    return DeclKey(alias->getDecl());
   }
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
     return sugar->getIdentifier()->getName().str();

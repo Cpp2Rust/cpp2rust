@@ -218,10 +218,7 @@ add_custom_command(
   VERBATIM
 )
 
-file(GLOB rule_subdirs CONFIGURE_DEPENDS
-     ${PROJECT_SOURCE_DIR}/rules/*
-     ${PROJECT_SOURCE_DIR}/rules/*/*
-     ${PROJECT_SOURCE_DIR}/rules/*/*/*)
+file(GLOB rule_subdirs CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/*)
 file(GLOB rule_common_headers CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/rules/common/*.h)
 file(GLOB rule_indexer_sources CONFIGURE_DEPENDS
      ${PROJECT_SOURCE_DIR}/cpp2rust/rule_preprocessing/*
@@ -240,8 +237,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   if(NOT _cpp_srcs)
     continue()
   endif()
-  file(RELATIVE_PATH _rule_path ${PROJECT_SOURCE_DIR}/rules ${_rule_dir})
-  string(REPLACE "/" "_" _rule_name ${_rule_path})
+  get_filename_component(_rule_name ${_rule_dir} NAME)
   set(_out_dir ${RULES_IR_DIR}/${_rule_name})
   set(_cpp_out ${_out_dir}/ir_src.json)
   set(_cxxflags)
@@ -267,7 +263,7 @@ foreach(_rule_dir IN LISTS rule_subdirs)
     add_custom_command(
       OUTPUT ${_index_stamp}
       COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --path ${_rule_path} --index ${RULES_IR_DIR}/index ${_cxxflags} ${_common_headers}
+      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --path ${_rule_name} --index ${RULES_IR_DIR}/index ${_cxxflags} ${_common_headers}
       COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
       DEPENDS ${_index_clean_stamp}
       VERBATIM

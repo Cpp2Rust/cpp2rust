@@ -1,8 +1,8 @@
 # Rule Format
 
 A rule module is a directory under `rules/`, usually named after the header or
-library it covers (`rules/unistd`, `rules/std/vector`, `rules/std/string`, ...).
-It contains:
+library it covers (`rules/unistd`, `rules/vector`, `rules/string`, ...). It
+contains:
 
 - `src.cpp` and/or `src.c`: the C++ (or C) side of each rule.
 - `tgt_unsafe.rs`: the Rust targets for the unsafe model.
@@ -63,12 +63,12 @@ side, it is a _zero-argument function_ whose return type is the mapped Rust type
 and whose body is the default initializer for that type:
 
 ```cpp
-// rules/std/vector/src.cpp
+// rules/vector/src.cpp
 template <typename T1> using t1 = std::vector<T1>;
 ```
 
 ```rust
-// rules/std/vector/tgt_unsafe.rs
+// rules/vector/tgt_unsafe.rs
 fn t1<T1>() -> Vec<T1> {
     Vec::new()
 }

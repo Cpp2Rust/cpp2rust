@@ -5,6 +5,7 @@
 #include <clang/AST/Decl.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
+#include <clang/Basic/TokenKinds.h>
 #include <clang/Frontend/ASTUnit.h>
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
@@ -210,10 +211,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleDir &dir) {
                    << "' in rule dir " << dir.path.string() << '\n';
       std::exit(EXIT_FAILURE);
     }
-    auto text = clang::tooling::getText(
-                    clang::tooling::getAssociatedRange(*decl, ctx), ctx)
-                    .str() +
-                '\n';
+    auto text =
+        clang::tooling::getExtendedText(*decl, clang::tok::semi, ctx).str() +
+        '\n';
     auto path = index_dir / RulesLoader::IndexPath(key) / file_name;
     fs::create_directories(path.parent_path());
     std::ofstream(path, std::ios::app) << Wrap(dir, is_c, name, text);

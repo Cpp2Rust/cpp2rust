@@ -16,7 +16,7 @@ them by name.
 ## Source IR (`ir_src.json`)
 
 A flat map from rule name to the canonical signature of the C++ construct the
-rule matches. For `rules/std/vector`:
+rule matches. For `rules/vector`:
 
 ```json
 {
