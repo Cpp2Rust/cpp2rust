@@ -101,25 +101,17 @@ impl std::cmp::PartialEq for V {
     }
 }
 impl std::cmp::Eq for V {}
-pub fn operator_eq_9(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } == { (*b.borrow()).v });
+pub fn operator_eq_9(mut a: V, mut b: V) -> bool {
+    return (a.v == b.v);
 }
-pub fn operator_ne_10(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } != { (*b.borrow()).v });
+pub fn operator_ne_10(mut a: V, mut b: V) -> bool {
+    return (a.v != b.v);
 }
-pub fn operator_lt_8(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } < { (*b.borrow()).v });
+pub fn operator_lt_8(mut a: V, mut b: V) -> bool {
+    return (a.v < b.v);
 }
-pub fn operator_gt_11(a: V, b: V) -> bool {
-    let a: Value<V> = Rc::new(RefCell::new(a));
-    let b: Value<V> = Rc::new(RefCell::new(b));
-    return ({ (*a.borrow()).v } > { (*b.borrow()).v });
+pub fn operator_gt_11(mut a: V, mut b: V) -> bool {
+    return (a.v > b.v);
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -197,6 +197,18 @@ bool ConverterRefCount::IsUnboxedVar(const clang::ValueDecl *decl) const {
   return var && !boxed_vars_->contains(var);
 }
 
+bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {
+  expr = expr->IgnoreParenImpCasts();
+  // Fields of unions and references are accessed through pointers.
+  if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
+    return !member->isArrow() && !member->getBase()->getType()->isUnionType() &&
+           !member->getMemberDecl()->getType()->isReferenceType() &&
+           IsUnboxedPlace(member->getBase());
+  }
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr);
+  return ref && IsUnboxedVar(ref->getDecl());
+}
+
 ConverterRefCount::ConversionKind
 ConverterRefCount::VarConversionKind(const clang::VarDecl *decl) const {
   if (in_function_formals_) {
@@ -1914,7 +1926,7 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     return false;
   }
 
-  if (isAddrOf() && IsArrayFieldPtr(ctx_, expr)) {
+  if (isAddrOf() && IsArrayFieldPtr(ctx_, expr) && !IsUnboxedPlace(expr)) {
     StrCat(std::format("array_field_ptr!({}, {})", ConvertRecordPtr(expr),
                        GetNamedDeclAsString(member)));
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -1980,6 +1992,13 @@ void ConverterRefCount::ConvertInlineField(clang::MemberExpr *expr) {
   if (isRValue() && !record_ptr_ &&
       (TypeIsCopyable(type) || type->isPointerType() || IsUniquePtr(type) ||
        expr == copied_expr_)) {
+    // A pointer in an unboxed struct is used in place, like a pointer
+    // variable, and only copied when needed.
+    if (type->isPointerType() && IsUnboxedPlace(expr)) {
+      StrCat(ReadField(expr, ""));
+      computed_expr_type_ = ComputedExprType::Pointer;
+      return;
+    }
     StrCat(ReadField(expr));
     SetFreshType(type);
     return;
@@ -2033,6 +2052,9 @@ std::string ConverterRefCount::ReadField(clang::MemberExpr *expr,
   }
   if (!TypeIsCopyable(expr->getMemberDecl()->getType())) {
     str += copy;
+  }
+  if (IsUnboxedPlace(expr)) {
+    return str;
   }
   return ptr.empty() ? std::format("{{ {} }}", str)
                      : std::format("{}.with(|__s| {})", ptr, str);
@@ -2567,10 +2589,20 @@ void ConverterRefCount::ConvertAssignment(clang::Expr *lhs, clang::Expr *rhs,
       auto ptr = pending_deref_.take();
       auto op = assign_operator;
       op.remove_suffix(1); // remove '='
-      {
-        PushBrace brace(*this);
+      PushBrace brace(*this);
+      if (lhs->getType()->isPointerType()) {
         StrCat(std::format("let _ptr = {}{};", ptr, fresh ? "" : ".clone()"));
         StrCat(std::format("_ptr.write(_ptr.read() {} {})", op, rhs_as_string));
+      } else {
+        // The place is accessed once, after the assigned value is computed,
+        // which may access it too.
+        if (rhs_as_string != "__rhs" && !rhs->isEvaluatable(ctx_)) {
+          StrCat(keyword::kLet, "__rhs", token::kAssign, rhs_as_string,
+                 token::kSemiColon);
+          rhs_as_string = "__rhs";
+        }
+        StrCat(std::format("{}.with_mut(|__v| *__v = *__v {} {})", ptr, op,
+                           rhs_as_string));
       }
     } else {
       StrCat(lhs_str, assign_operator, rhs_as_string);

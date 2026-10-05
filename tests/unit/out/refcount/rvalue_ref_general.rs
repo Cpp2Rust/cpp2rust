@@ -18,8 +18,7 @@ fn main_0() -> i32 {
     let __tmp_0: Value<i32> = Rc::new(RefCell::new(40));
     let i3: Ptr<i32> = __tmp_0.as_pointer();
     {
-        let _ptr = i3.clone();
-        _ptr.write(_ptr.read() + 2)
+        i3.with_mut(|__v| *__v = *__v + 2)
     };
     assert!(((i3.read()) == 42));
     let __tmp_1: Value<i32> = Rc::new(RefCell::new((2 + 3)));

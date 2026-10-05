@@ -52,8 +52,8 @@ fn main_0() -> i32 {
         },
         || {
             {
-                let _ptr = total.clone();
-                _ptr.write(_ptr.read() + { ({ (*h.borrow()).p.clone() }.read()) })
+                let __rhs = { ({ (*h.borrow()).p.clone() }.read()) };
+                total.with_mut(|__v| *__v = *__v + __rhs)
             };
             { (*h.borrow()).p.clone() }.write(0);
         }

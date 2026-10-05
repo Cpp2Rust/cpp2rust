@@ -49,8 +49,7 @@ fn main_0() -> i32 {
     elem!((v.as_pointer() as Ptr<i32>), 0_usize).write(10);
     assert!(((elem!((v.as_pointer() as Ptr<i32>), 0_usize).read()) == 10));
     {
-        let _ptr = elem!((v.as_pointer() as Ptr<i32>), 1_usize);
-        _ptr.write(_ptr.read() + 5)
+        elem!((v.as_pointer() as Ptr<i32>), 1_usize).with_mut(|__v| *__v = *__v + 5)
     };
     elem!((v.as_pointer() as Ptr<i32>), 2_usize).with_mut(|__v| __v.postfix_inc());
     assert!(
@@ -154,16 +153,14 @@ fn main_0() -> i32 {
                 .x
             } == 7)
     );
-    let q: Value<Point> = Rc::new(RefCell::new(
-        (*elem!(
-            ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
-            0_usize
-        )
-        .upgrade()
-        .deref())
-        .clone(),
-    ));
-    (*q.borrow_mut()).x = 0;
+    let mut q: Point = (*elem!(
+        ({ (*h.borrow()).points.as_pointer() } as Ptr<Point>),
+        0_usize
+    )
+    .upgrade()
+    .deref())
+    .clone();
+    q.x = 0;
     assert!(
         ({
             (*elem!(

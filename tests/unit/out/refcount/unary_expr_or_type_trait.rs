@@ -26,7 +26,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let mut arr: [i64; 4] = [0_i64, 0_i64, 0_i64, 0_i64];
-    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
+    let mut s: S = <S>::default();
     assert!((::std::mem::size_of::<i32>() == 4_usize));
     assert!((::std::mem::size_of::<[i64; 4]>() == 32_usize));
     assert!((16usize == 16_usize));

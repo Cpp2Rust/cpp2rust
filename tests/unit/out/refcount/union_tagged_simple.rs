@@ -49,23 +49,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let dummy: Value<i32> = Rc::new(RefCell::new(0));
-    let m1: Value<Event> = <Value<Event>>::default();
-    (*m1.borrow_mut()).kind = Kind_enum_KIND_DONE;
-    (*m1.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
-    (*m1.borrow_mut()).payload.code().write(42);
-    assert!(
-        (((({ (*m1.borrow()).kind } as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0)
-    );
-    assert!((((((*m1.borrow()).payload.code().read()) == 42) as i32) != 0));
-    let m2: Value<Event> = <Value<Event>>::default();
-    (*m2.borrow_mut()).kind = Kind_enum_KIND_NONE;
-    (*m2.borrow_mut()).handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
-    (*m2.borrow_mut())
-        .payload
+    let mut m1: Event = <Event>::default();
+    m1.kind = Kind_enum_KIND_DONE;
+    m1.handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
+    m1.payload.code().write(42);
+    assert!(((((m1.kind as u32) == ((Kind_enum_KIND_DONE as i32) as u32)) as i32) != 0));
+    assert!(((((m1.payload.code().read()) == 42) as i32) != 0));
+    let mut m2: Event = <Event>::default();
+    m2.kind = Kind_enum_KIND_NONE;
+    m2.handle = ((dummy.as_pointer()) as Ptr<i32>).to_any();
+    m2.payload
         .obj()
         .write(((dummy.as_pointer()) as Ptr<i32>).to_any());
     assert!(
-        ((({ ((*m2.borrow()).payload.obj().read()).clone() } == {
+        ((({ (m2.payload.obj().read()).clone() } == {
             ((dummy.as_pointer()) as Ptr<i32>).to_any()
         }) as i32)
             != 0)

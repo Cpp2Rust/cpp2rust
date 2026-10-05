@@ -32,20 +32,19 @@ pub fn find_0(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     }
     return Ptr::<node_t>::null();
 }
-pub fn insert_1(mut node: Ptr<node_t>, value: i32) -> Ptr<node_t> {
-    let value: Value<i32> = Rc::new(RefCell::new(value));
+pub fn insert_1(mut node: Ptr<node_t>, mut value: i32) -> Ptr<node_t> {
     if (node).is_null() {
         return Ptr::alloc(node_t {
             left: Ptr::<node_t>::null(),
             right: Ptr::<node_t>::null(),
-            value: (*value.borrow()),
+            value: value,
         });
     }
-    if ({ (*value.borrow()) } < { node.with(|__s| __s.value) }) {
-        let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), (*value.borrow())) });
+    if ({ value } < { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.left.clone()), value) });
         field!(node, left).write(__rhs);
-    } else if ({ (*value.borrow()) } > { node.with(|__s| __s.value) }) {
-        let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), (*value.borrow())) });
+    } else if ({ value } > { node.with(|__s| __s.value) }) {
+        let __rhs = ({ insert_1(node.with(|__s| __s.right.clone()), value) });
         field!(node, right).write(__rhs);
     }
     return (node).clone();

@@ -15,8 +15,8 @@ namespace cpp2rust {
 // to a function, or captured by a lambda. Any use that doesn't just read or
 // write the value of a variable is taken to make a pointer to it.
 //
-// Only scalars and arrays are stored directly; other variables are always
-// boxed.
+// Only scalars, arrays and user-defined structs are stored directly; other
+// variables are always boxed.
 class BoxedVars {
 public:
   explicit BoxedVars(clang::ASTContext &ctx);

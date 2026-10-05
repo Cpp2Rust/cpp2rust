@@ -66,13 +66,13 @@ fn main_0() -> i32 {
     assert!((q == 42_usize));
     assert!(((*m.borrow()) == 42_usize));
     assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
-    let hh: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new({
+    let mut hh: HashHolder_unsigned_long__ptr__bool__ = {
         let __tmp_0: Value<FnPtr<fn(bool) -> u64>> = Rc::new(RefCell::new(
             (FnPtr::<fn(bool) -> usize>::new(identity_hash_6)).cast::<fn(bool) -> u64>(),
         ));
         HashHolder_unsigned_long__ptr__bool__::new({ __tmp_0.as_pointer() })
-    }));
-    assert!((({ { (*hh.borrow()).h.clone() }.call(true,) }) == 1_u64));
+    };
+    assert!((({ hh.h.call(true,) }) == 1_u64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

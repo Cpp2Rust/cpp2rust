@@ -76,8 +76,8 @@ fn main_0() -> i32 {
         },
         |x: i32| {
             {
-                let _ptr = t.clone();
-                _ptr.write(_ptr.read() + { x })
+                let __rhs = { x };
+                t.with_mut(|__v| *__v = *__v + __rhs)
             };
         }
     )));

@@ -15,31 +15,29 @@ pub fn fatorial_0(mut n: i32) -> i32 {
 pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     if ((n.read()) == 1) {
         {
-            let _ptr = n.clone();
-            _ptr.write(_ptr.read() * 1)
+            n.with_mut(|__v| *__v = *__v * 1)
         };
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new(((n.read()) - 1)));
     ({ fatorial_by_ref_1(n_1.as_pointer()) });
     {
-        let _ptr = n.clone();
-        _ptr.write(_ptr.read() * { (*n_1.borrow()) })
+        let __rhs = { (*n_1.borrow()) };
+        n.with_mut(|__v| *__v = *__v * __rhs)
     };
 }
 pub fn fatorial_by_ptr_2(mut n: Ptr<i32>) {
     if ((n.read()) == 1) {
         {
-            let _ptr = n.clone();
-            _ptr.write(_ptr.read() * 1)
+            n.with_mut(|__v| *__v = *__v * 1)
         };
         return;
     }
     let n_1: Value<i32> = Rc::new(RefCell::new(((n.read()) - 1)));
     ({ fatorial_by_ptr_2((n_1.as_pointer())) });
     {
-        let _ptr = n.clone();
-        _ptr.write(_ptr.read() * { (*n_1.borrow()) })
+        let __rhs = { (*n_1.borrow()) };
+        n.with_mut(|__v| *__v = *__v * __rhs)
     };
 }
 pub fn main() {

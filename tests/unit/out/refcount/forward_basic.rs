@@ -130,21 +130,18 @@ fn main_0() -> i32 {
             == (Overload_kRvalueOverload as i32))
     );
     let kept: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 11 })));
-    let from_lvalue: Value<Holder> =
-        Rc::new(RefCell::new(({ forward_into_ctor_6(kept.as_pointer()) })));
-    assert!(({ (*from_lvalue.borrow()).t.v } == 11));
-    assert!(({ (*from_lvalue.borrow()).t.copies } == 1));
-    assert!(({ (*from_lvalue.borrow()).t.moves } == 0));
+    let mut from_lvalue: Holder = ({ forward_into_ctor_6(kept.as_pointer()) });
+    assert!((from_lvalue.t.v == 11));
+    assert!((from_lvalue.t.copies == 1));
+    assert!((from_lvalue.t.moves == 0));
     assert!(({ (*kept.borrow()).v } == 11));
-    let from_rvalue: Value<Holder> = Rc::new(RefCell::new(
-        ({
-            let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
-            forward_into_ctor_7(_x.as_pointer())
-        }),
-    ));
-    assert!(({ (*from_rvalue.borrow()).t.v } == 12));
-    assert!(({ (*from_rvalue.borrow()).t.copies } == 0));
-    assert!(({ (*from_rvalue.borrow()).t.moves } == 1));
+    let mut from_rvalue: Holder = ({
+        let _x: Value<Tracked> = Rc::new(RefCell::new(Tracked::new({ 12 })));
+        forward_into_ctor_7(_x.as_pointer())
+    });
+    assert!((from_rvalue.t.v == 12));
+    assert!((from_rvalue.t.copies == 0));
+    assert!((from_rvalue.t.moves == 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

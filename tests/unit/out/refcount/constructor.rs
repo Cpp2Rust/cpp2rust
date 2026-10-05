@@ -40,8 +40,7 @@ impl Point {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_1({ v }, { (v + 1) })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            let _ptr = field!(this, y);
-            _ptr.write(_ptr.read() * 10)
+            field!(this, y).with_mut(|__v| *__v = *__v * 10)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -49,8 +48,7 @@ impl Point {
         let __this: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 4 })));
         let this: Ptr<Point> = __this.as_pointer();
         {
-            let _ptr = field!(this, x);
-            _ptr.write(_ptr.read() + 100)
+            field!(this, x).with_mut(|__v| *__v = *__v + 100)
         };
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -72,12 +70,12 @@ fn main_0() -> i32 {
         assert!((total_0.with(|rc| *rc.borrow()) == 8));
     }
     assert!((total_0.with(|rc| *rc.borrow()) == 18));
-    let p: Value<Point> = Rc::new(RefCell::new(Point::new_3()));
-    assert!(({ (*p.borrow()).x } == 104));
-    assert!(({ (*p.borrow()).y } == 50));
-    let q: Value<Point> = Rc::new(RefCell::new(Point::new_2({ 7 })));
-    assert!(({ (*q.borrow()).x } == 7));
-    assert!(({ (*q.borrow()).y } == 80));
+    let mut p: Point = Point::new_3();
+    assert!((p.x == 104));
+    assert!((p.y == 50));
+    let mut q: Point = Point::new_2({ 7 });
+    assert!((q.x == 7));
+    assert!((q.y == 80));
     return 0;
 }
 pub trait SImpl {
@@ -91,8 +89,7 @@ impl SImpl for Ptr<S> {
     }
     fn mut_method(&self) {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + 1)
+            field!((*self), v).with_mut(|__v| *__v = *__v + 1)
         };
     }
     fn destructor(&self) {

@@ -13,9 +13,9 @@ pub struct widget {
     pub id: i32,
 }
 pub fn a_value_0() -> i32 {
-    let w: Value<widget> = <Value<widget>>::default();
-    (*w.borrow_mut()).id = 11;
-    return { (*w.borrow()).id };
+    let mut w: widget = <widget>::default();
+    w.id = 11;
+    return w.id;
 }
 pub fn main() {
     __cpp2rust_init_globals();

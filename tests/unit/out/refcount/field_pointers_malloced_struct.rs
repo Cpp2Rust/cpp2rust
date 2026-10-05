@@ -18,8 +18,7 @@ pub struct S {
 }
 pub fn bump_0(mut s: Ptr<S>) -> i32 {
     {
-        let _ptr = field!(s, b);
-        _ptr.write(_ptr.read() + 10)
+        field!(s, b).with_mut(|__v| *__v = *__v + 10)
     };
     return s.with(|__s| __s.b);
 }
@@ -66,8 +65,7 @@ fn main_0() -> i32 {
     assert!((s.with(|__s| __s.c) == 99) && (y == 99));
     let __rhs = ({ bump_0((s).clone()) });
     {
-        let _ptr = field!(s, a);
-        _ptr.write(_ptr.read() + __rhs)
+        field!(s, a).with_mut(|__v| *__v = *__v + __rhs)
     };
     assert!(
         ((s.with(|__s| __s.a) == 18) && (s.with(|__s| __s.b) == 13)) && (s.with(|__s| __s.c) == 99)

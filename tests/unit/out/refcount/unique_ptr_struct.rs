@@ -14,9 +14,8 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-pub fn sum_0(p: Point) -> i32 {
-    let p: Value<Point> = Rc::new(RefCell::new(p));
-    return ({ (*p.borrow()).x } + { (*p.borrow()).y });
+pub fn sum_0(mut p: Point) -> i32 {
+    return (p.x + p.y);
 }
 pub fn main() {
     __cpp2rust_init_globals();

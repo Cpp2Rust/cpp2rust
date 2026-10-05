@@ -113,11 +113,8 @@ fn main_0() -> i32 {
         inner: NoCopy::new({ 6 }),
         tag: 7,
     }));
-    let d: Value<Container> = Rc::new(RefCell::new(Container::move_from({ c.as_pointer() })));
-    assert!(
-        (({ (*d.borrow()).inner.v } == 6) && ({ (*d.borrow()).tag } == 7))
-            && ({ (*c.borrow()).inner.v } == 0)
-    );
+    let mut d: Container = Container::move_from({ c.as_pointer() });
+    assert!(((d.inner.v == 6) && (d.tag == 7)) && ({ (*c.borrow()).inner.v } == 0));
     return 0;
 }
 pub trait ContainerImpl {

@@ -64,12 +64,12 @@ fn main_0() -> i32 {
     let r2: Ptr<i32> = ({ bar_2(x1.as_pointer()) });
     let r3: Ptr<i32> = ({ bar_2((r1).clone()) });
     {
-        let _ptr = r2.clone();
-        _ptr.write(_ptr.read() + { (*x1.borrow()) })
+        let __rhs = { (*x1.borrow()) };
+        r2.with_mut(|__v| *__v = *__v + __rhs)
     };
     {
-        let _ptr = r3.clone();
-        _ptr.write(_ptr.read() + { (r1.read()) })
+        let __rhs = { (r1.read()) };
+        r3.with_mut(|__v| *__v = *__v + __rhs)
     };
     let mut x4: i32 = ((({ foo_0((*x3.borrow())) }) + (({ ptr_1((x3.as_pointer())) }).read()))
         + (({ bar_2(x2.as_pointer()) }).read()));
@@ -103,8 +103,7 @@ fn main_0() -> i32 {
     let mut x5: i32 = ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer()) })) })) })
         .with(|__s| __s.v);
     {
-        let _ptr = ({ bar_2(x1.as_pointer()) });
-        _ptr.write(_ptr.read() + 10)
+        ({ bar_2(x1.as_pointer()) }).with_mut(|__v| *__v = *__v + 10)
     };
     ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
     let mut bar_out: i32 = (({
@@ -118,13 +117,13 @@ fn main_0() -> i32 {
     bar_inc = ({ bar_2(x1.as_pointer()) }).with_mut(|__v| __v.postfix_inc());
     bar_inc = (((({ bar_2(x1.as_pointer()) }).read()) + ({ foo_0(x4) })) + 1);
     {
-        let _ptr = ({
+        ({
             bar_2(field_ptr!(
                 ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
                 v
             ))
-        });
-        _ptr.write(_ptr.read() + 10)
+        })
+        .with_mut(|__v| *__v = *__v + 10)
     };
     ({
         bar_2(field_ptr!(
@@ -149,8 +148,7 @@ fn main_0() -> i32 {
     .with_mut(|__v| __v.postfix_inc());
     ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| __v.prefix_inc());
     {
-        let _ptr = ({ ptr_1((x1.as_pointer())) });
-        _ptr.write(_ptr.read() + 1)
+        ({ ptr_1((x1.as_pointer())) }).with_mut(|__v| *__v = *__v + 1)
     };
     ({
         ptr_1(
@@ -162,26 +160,26 @@ fn main_0() -> i32 {
     })
     .with_mut(|__v| __v.prefix_inc());
     {
-        let _ptr = ({
+        ({
             ptr_1(
                 (field_ptr!(
                     ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
                     v
                 )),
             )
-        });
-        _ptr.write(_ptr.read() + 1)
+        })
+        .with_mut(|__v| *__v = *__v + 1)
     };
     {
-        let _ptr = ({
+        ({
             ptr_1(
                 (field_ptr!(
                     ({ X2Impl::get(&({ X3Impl::get(&({ X4Impl::get(&d.as_pointer(),) }),) }),) }),
                     v
                 )),
             )
-        });
-        _ptr.write(_ptr.read() + 1)
+        })
+        .with_mut(|__v| *__v = *__v + 1)
     };
     let mut ptr1: i32 = ({
         ptr_1(

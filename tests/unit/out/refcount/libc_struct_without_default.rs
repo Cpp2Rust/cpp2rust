@@ -68,8 +68,8 @@ fn main_0() -> i32 {
     let ud: Value<UserDefined> = Rc::new(RefCell::new(<UserDefined>::default()));
     assert!(((elem!(({ (*ud.borrow()).a.as_pointer() } as Ptr<i32>), 0_usize).read()) == 0));
     assert!(((*{ (*ud.borrow()).v.clone() }.borrow()).len() == 0_usize));
-    let filt: Value<FieldIsLibcType> = Rc::new(RefCell::new(<FieldIsLibcType>::default()));
-    assert!((({ (*filt.borrow()).addr.sa_family } as i32) == 0));
+    let mut filt: FieldIsLibcType = <FieldIsLibcType>::default();
+    assert!(((filt.addr.sa_family as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

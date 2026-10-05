@@ -37,8 +37,7 @@ fn main_0() -> i32 {
     t3 = (t2).clone();
     field!(t3, x).write(15);
     {
-        let _ptr = ({ TestImpl::as_ptr(&t3) });
-        _ptr.write(_ptr.read() + 10)
+        ({ TestImpl::as_ptr(&t3) }).with_mut(|__v| *__v = *__v + 10)
     };
     assert!(
         (({ ({ t3.with(|__s| __s.x) } + { t2.with(|__s| __s.x) }) } + { { (*t1.borrow()).x } })

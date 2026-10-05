@@ -27,8 +27,8 @@ pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
         } else if (((tag == 1) as i32) != 0) {
             total += ((*ap.borrow_mut()).arg::<f64>() as i32);
         } else if (((tag == 3) as i32) != 0) {
-            let p: Value<pair> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<pair>()));
-            total += ({ (*p.borrow()).a } * { (*p.borrow()).b });
+            let mut p: pair = (*ap.borrow_mut()).arg::<pair>();
+            total += (p.a * p.b);
         } else {
             let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
             total += (val as i32);
@@ -68,17 +68,12 @@ fn main_0() -> i32 {
         }) == 103) as i32)
             != 0)
     );
-    let p: Value<pair> = Rc::new(RefCell::new(pair { a: 7, b: 8 }));
+    let mut p: pair = pair { a: 7, b: 8 };
     assert!(
         (((({
             sum_mixed_0(
                 2,
-                &[
-                    (3).into(),
-                    ((*p.borrow()).clone()).into(),
-                    (0).into(),
-                    (5).into(),
-                ],
+                &[(3).into(), ((p).clone()).into(), (0).into(), (5).into()],
             )
         }) == 61) as i32)
             != 0)

@@ -225,16 +225,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let V: Value<i32> = Rc::new(RefCell::new(4));
-    let E: Value<i32> = Rc::new(RefCell::new(5));
+    let mut V: i32 = 4;
+    let mut E: i32 = 5;
     let graph: Value<Graph> = Rc::new(RefCell::new(Graph {
         edges: Some(Rc::new(RefCell::new(
-            (0..((*E.borrow()) as usize))
+            (0..(E as usize))
                 .map(|_| <Edge>::default())
                 .collect::<Box<[_]>>(),
         ))),
-        V: (*V.borrow()),
-        E: (*E.borrow()),
+        V: V,
+        E: E,
     }));
     { (*graph.borrow()).edges.clone() }
         .as_ref()

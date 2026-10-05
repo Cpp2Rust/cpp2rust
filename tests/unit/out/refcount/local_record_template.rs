@@ -6,34 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn get_0(t: Local_1) -> i32 {
-    let t: Value<Local_1> = Rc::new(RefCell::new(t));
-    return ({ (*t.borrow()).x } as i32);
+pub fn get_0(mut t: Local_1) -> i32 {
+    return (t.x as i32);
 }
-pub fn get_2(t: Local_3) -> i32 {
-    let t: Value<Local_3> = Rc::new(RefCell::new(t));
-    return { (*t.borrow()).x };
+pub fn get_2(mut t: Local_3) -> i32 {
+    return t.x;
 }
-pub fn get_4(t: Local_5) -> i32 {
-    let t: Value<Local_5> = Rc::new(RefCell::new(t));
-    return { (*t.borrow()).x };
+pub fn get_4(mut t: Local_5) -> i32 {
+    return t.x;
 }
-pub fn get_6(t: Local_7) -> i32 {
-    let t: Value<Local_7> = Rc::new(RefCell::new(t));
-    return ({ (*t.borrow()).x } as i32);
+pub fn get_6(mut t: Local_7) -> i32 {
+    return (t.x as i32);
 }
-pub fn twice_8(t: Local_3) -> i32 {
-    let t: Value<Local_3> = Rc::new(RefCell::new(t));
-    return ({ (*t.borrow()).x } * 2);
+pub fn twice_8(mut t: Local_3) -> i32 {
+    return (t.x * 2);
 }
-pub fn wrap_9(v: i32) -> i32 {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let l: Value<Local_5> = Rc::new(RefCell::new(Local_5 { x: (*v.borrow()) }));
+pub fn wrap_9(mut v: i32) -> i32 {
+    let l: Value<Local_5> = Rc::new(RefCell::new(Local_5 { x: v }));
     return ({ get_4((*l.borrow()).clone()) });
 }
-pub fn wrap_10(v: i64) -> i32 {
-    let v: Value<i64> = Rc::new(RefCell::new(v));
-    let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: (*v.borrow()) }));
+pub fn wrap_10(mut v: i64) -> i32 {
+    let l: Value<Local_7> = Rc::new(RefCell::new(Local_7 { x: v }));
     return ({ get_6((*l.borrow()).clone()) });
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]

@@ -73,9 +73,9 @@ fn main_0() -> i32 {
             && ((({ StructWithCtorImpl::x1(&struct_with_ctor.as_pointer(),) }).read()) == 2))
             && ((({ StructWithCtorImpl::x2(&struct_with_ctor.as_pointer(),) }).read()) == 1)
     );
-    let p: Value<Ptr_> = Rc::new(RefCell::new(Ptr_::new()));
-    assert!(({ (*p.borrow()).v1.v } == 11));
-    assert!(({ (*p.borrow()).v2.v } == 22));
+    let mut p: Ptr_ = Ptr_::new();
+    assert!((p.v1.v == 11));
+    assert!((p.v2.v == 22));
     return 0;
 }
 pub trait StructWithCtorImpl {

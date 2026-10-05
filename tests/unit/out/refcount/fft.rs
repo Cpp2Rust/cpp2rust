@@ -14,37 +14,25 @@ pub struct Complex {
     #[offset(8)]
     pub img: f64,
 }
-pub fn Product_0(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let mut ac: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).re });
-    let mut bd: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).img });
-    let mut ad: f64 = ({ (*z1.borrow()).re } * { (*z2.borrow()).img });
-    let mut bc: f64 = ({ (*z1.borrow()).img } * { (*z2.borrow()).re });
+pub fn Product_0(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re * z2.re);
+    let mut bd: f64 = (z1.img * z2.img);
+    let mut ad: f64 = (z1.re * z2.img);
+    let mut bc: f64 = (z1.img * z2.re);
     return Complex {
         re: (ac - bd),
         img: (ad + bc),
     };
 }
-pub fn Sum_1(z1: Complex, z2: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
-    let z2: Value<Complex> = Rc::new(RefCell::new(z2));
-    let ac: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).re } + { (*z2.borrow()).re }),
-    ));
-    let bd: Value<f64> = Rc::new(RefCell::new(
-        ({ (*z1.borrow()).img } + { (*z2.borrow()).img }),
-    ));
-    return Complex {
-        re: (*ac.borrow()),
-        img: (*bd.borrow()),
-    };
+pub fn Sum_1(mut z1: Complex, mut z2: Complex) -> Complex {
+    let mut ac: f64 = (z1.re + z2.re);
+    let mut bd: f64 = (z1.img + z2.img);
+    return Complex { re: ac, img: bd };
 }
-pub fn Neg_2(z1: Complex) -> Complex {
-    let z1: Value<Complex> = Rc::new(RefCell::new(z1));
+pub fn Neg_2(mut z1: Complex) -> Complex {
     return Complex {
-        re: -{ (*z1.borrow()).re },
-        img: -{ (*z1.borrow()).img },
+        re: -z1.re,
+        img: -z1.img,
     };
 }
 pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {
@@ -120,47 +108,43 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
         Rc::new(RefCell::new(({ fft_3(A1.as_pointer(), (N / 2)) })));
     let mut k: i32 = 0;
     'loop_: while (k < (N / 2)) {
-        let yk: Value<Complex> = Rc::new(RefCell::new(
-            ({
+        let mut yk: Complex = ({
+            let _z1: Complex =
+                ((*y0.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+            let _z2: Complex = ({
                 let _z1: Complex =
-                    ((*y0.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
-                let _z2: Complex = ({
-                    let _z1: Complex =
-                        ((*w.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
-                    let _z2: Complex =
-                        ((*y1.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
-                    Product_0(_z1, _z2)
-                });
-                Sum_1(_z1, _z2)
-            }),
-        ));
+                    ((*w.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                let _z2: Complex =
+                    ((*y1.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+                Product_0(_z1, _z2)
+            });
+            Sum_1(_z1, _z2)
+        });
         (*y.borrow()).as_ref().unwrap().borrow_mut()[(k as usize) as usize] = Complex {
-            re: { (*yk.borrow()).re },
-            img: { (*yk.borrow()).img },
+            re: yk.re,
+            img: yk.img,
         };
-        let yk_n2: Value<Complex> = Rc::new(RefCell::new(
-            ({
-                let _z1: Complex =
-                    ((*y0.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
-                let _z2: Complex = ({
-                    Neg_2(
-                        ({
-                            let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
-                                [(k as usize) as usize])
-                                .clone();
-                            let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
-                                [(k as usize) as usize])
-                                .clone();
-                            Product_0(_z1, _z2)
-                        }),
-                    )
-                });
-                Sum_1(_z1, _z2)
-            }),
-        ));
+        let mut yk_n2: Complex = ({
+            let _z1: Complex =
+                ((*y0.borrow()).as_ref().unwrap().borrow()[(k as usize) as usize]).clone();
+            let _z2: Complex = ({
+                Neg_2(
+                    ({
+                        let _z1: Complex = ((*w.borrow()).as_ref().unwrap().borrow()
+                            [(k as usize) as usize])
+                            .clone();
+                        let _z2: Complex = ((*y1.borrow()).as_ref().unwrap().borrow()
+                            [(k as usize) as usize])
+                            .clone();
+                        Product_0(_z1, _z2)
+                    }),
+                )
+            });
+            Sum_1(_z1, _z2)
+        });
         (*y.borrow()).as_ref().unwrap().borrow_mut()[((k + (N / 2)) as usize) as usize] = Complex {
-            re: { (*yk_n2.borrow()).re },
-            img: { (*yk_n2.borrow()).img },
+            re: yk_n2.re,
+            img: yk_n2.img,
         };
         k.postfix_inc();
     }

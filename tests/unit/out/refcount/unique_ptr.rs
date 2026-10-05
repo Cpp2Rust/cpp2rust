@@ -47,8 +47,7 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     (x4.as_pointer() as Ptr<Option<Value<i32>>>).write((*x3.borrow_mut()).take());
     let mut raw_ptr2: Ptr<i32> = ((*x4.borrow()).as_pointer());
     {
-        let _ptr = raw_ptr2.clone();
-        _ptr.write(_ptr.read() + 1)
+        raw_ptr2.with_mut(|__v| *__v = *__v + 1)
     };
     let pair: Value<Option<Value<Pair>>> =
         Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Pair {
@@ -202,12 +201,12 @@ pub trait PairImpl {
 impl PairImpl for Ptr<Pair> {
     fn inc(&self, mut k: i32) {
         {
-            let _ptr = field!((*self), x);
-            _ptr.write(_ptr.read() + k)
+            let __rhs = k;
+            field!((*self), x).with_mut(|__v| *__v = *__v + __rhs)
         };
         {
-            let _ptr = field!((*self), y);
-            _ptr.write(_ptr.read() + k)
+            let __rhs = k;
+            field!((*self), y).with_mut(|__v| *__v = *__v + __rhs)
         };
     }
 }

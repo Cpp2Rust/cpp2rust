@@ -95,46 +95,44 @@ fn main_0() -> i32 {
             Ptr::<i8>::from_string_literal(b"c"),
         ])));
     );
-    let p_list: Value<Branch> = <Value<Branch>>::default();
-    (*p_list.borrow_mut()).choice = Choice_enum_C_LIST;
-    (*p_list.borrow_mut()).index = 0;
-    field!((*p_list.borrow_mut()).v.list(), items)
-        .write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
-    field!((*p_list.borrow_mut()).v.list(), count).write(3_i64);
-    field!((*p_list.borrow_mut()).v.list(), cursor).write(1_i64);
-    assert!(((((*p_list.borrow()).v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));
+    let mut p_list: Branch = <Branch>::default();
+    p_list.choice = Choice_enum_C_LIST;
+    p_list.index = 0;
+    field!(p_list.v.list(), items).write((items_4.with(|v| v.as_pointer()) as Ptr<Ptr<i8>>));
+    field!(p_list.v.list(), count).write(3_i64);
+    field!(p_list.v.list(), cursor).write(1_i64);
+    assert!((((p_list.v.list().with(|__s| __s.count) == 3_i64) as i32) != 0));
     assert!(
         (((((elem!(
-            (elem!((*p_list.borrow()).v.list().with(|__s| __s.items.clone()), 1).read()),
+            (elem!(p_list.v.list().with(|__s| __s.items.clone()), 1).read()),
             0
         )
         .read()) as i32)
             == ('b' as i32)) as i32)
             != 0)
     );
-    let p_letters: Value<Branch> = <Value<Branch>>::default();
-    (*p_letters.borrow_mut()).choice = Choice_enum_C_LETTERS;
-    (*p_letters.borrow_mut()).index = 1;
-    field!((*p_letters.borrow_mut()).v.letters(), lo).write(('a' as i32));
-    field!((*p_letters.borrow_mut()).v.letters(), hi).write(('z' as i32));
-    field!((*p_letters.borrow_mut()).v.letters(), curr).write(('m' as i32));
-    field!((*p_letters.borrow_mut()).v.letters(), step).write(1_u8);
+    let mut p_letters: Branch = <Branch>::default();
+    p_letters.choice = Choice_enum_C_LETTERS;
+    p_letters.index = 1;
+    field!(p_letters.v.letters(), lo).write(('a' as i32));
+    field!(p_letters.v.letters(), hi).write(('z' as i32));
+    field!(p_letters.v.letters(), curr).write(('m' as i32));
+    field!(p_letters.v.letters(), step).write(1_u8);
     assert!(
-        (((((*p_letters.borrow()).v.letters().with(|__s| __s.hi)
-            - (*p_letters.borrow()).v.letters().with(|__s| __s.lo))
+        ((((p_letters.v.letters().with(|__s| __s.hi) - p_letters.v.letters().with(|__s| __s.lo))
             == 25) as i32)
             != 0)
     );
-    let p_integers: Value<Branch> = <Value<Branch>>::default();
-    (*p_integers.borrow_mut()).choice = Choice_enum_C_INTEGERS;
-    (*p_integers.borrow_mut()).index = 2;
-    field!((*p_integers.borrow_mut()).v.integers(), lo).write(1_i64);
-    field!((*p_integers.borrow_mut()).v.integers(), hi).write(100_i64);
-    field!((*p_integers.borrow_mut()).v.integers(), curr).write(1_i64);
-    field!((*p_integers.borrow_mut()).v.integers(), step).write(1_i64);
-    field!((*p_integers.borrow_mut()).v.integers(), width).write(3);
-    assert!(((((*p_integers.borrow()).v.integers().with(|__s| __s.hi) == 100_i64) as i32) != 0));
-    assert!(((((*p_integers.borrow()).v.integers().with(|__s| __s.width) == 3) as i32) != 0));
+    let mut p_integers: Branch = <Branch>::default();
+    p_integers.choice = Choice_enum_C_INTEGERS;
+    p_integers.index = 2;
+    field!(p_integers.v.integers(), lo).write(1_i64);
+    field!(p_integers.v.integers(), hi).write(100_i64);
+    field!(p_integers.v.integers(), curr).write(1_i64);
+    field!(p_integers.v.integers(), step).write(1_i64);
+    field!(p_integers.v.integers(), width).write(3);
+    assert!((((p_integers.v.integers().with(|__s| __s.hi) == 100_i64) as i32) != 0));
+    assert!((((p_integers.v.integers().with(|__s| __s.width) == 3) as i32) != 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

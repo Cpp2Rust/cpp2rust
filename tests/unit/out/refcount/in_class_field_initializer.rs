@@ -69,16 +69,16 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    assert!(({ (*s.borrow()).a } == 1));
-    assert!((({ (*s.borrow()).b } as i32) == 2));
-    assert!(({ (*s.borrow()).c.x } == 3));
-    assert!(({ (*s.borrow()).c.y } == 4));
-    assert!(({ (*s.borrow()).d.x } == 3));
-    assert!(({ (*s.borrow()).d.y } == 4));
-    let boxed: Value<Boxed_int_> = Rc::new(RefCell::new(Boxed_int_::new({ 5 }, { 9 })));
-    assert!(({ (*boxed.borrow()).v } == 5));
-    assert!(({ (*boxed.borrow()).tag } == 9));
+    let mut s: S = <S>::default();
+    assert!((s.a == 1));
+    assert!(((s.b as i32) == 2));
+    assert!((s.c.x == 3));
+    assert!((s.c.y == 4));
+    assert!((s.d.x == 3));
+    assert!((s.d.y == 4));
+    let mut boxed: Boxed_int_ = Boxed_int_::new({ 5 }, { 9 });
+    assert!((boxed.v == 5));
+    assert!((boxed.tag == 9));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

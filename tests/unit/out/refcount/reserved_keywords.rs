@@ -134,7 +134,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let s: Value<S> = Rc::new(RefCell::new(S {
+    let mut s: S = S {
         as_: 0,
         async_: 0,
         await_: 0,
@@ -173,7 +173,7 @@ fn main_0() -> i32 {
         raw_: 0,
         safe_: 0,
         vec_: 0,
-    }));
+    };
     let mut as_: i32 = 0;
     let mut async_: i32 = 0;
     let mut await_: i32 = 0;

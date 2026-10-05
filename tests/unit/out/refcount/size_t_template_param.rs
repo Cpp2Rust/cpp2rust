@@ -47,15 +47,13 @@ fn main_0() -> i32 {
     );
     assert!(((*a1.borrow())[(0) as usize] == 2_usize));
     let a2: Value<Box<[usize]>> = Rc::new(RefCell::new(Box::new([4_usize, 5_usize])));
-    let pc: Value<PtrCtor_unsigned_long_> = Rc::new(RefCell::new(PtrCtor_unsigned_long_::new({
-        (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>()
-    })));
-    assert!(({ (*pc.borrow()).v } == 5_u64));
+    let mut pc: PtrCtor_unsigned_long_ =
+        PtrCtor_unsigned_long_::new({ (a2.as_pointer() as Ptr<usize>).reinterpret_cast::<u64>() });
+    assert!((pc.v == 5_u64));
     let v1: Value<usize> = Rc::new(RefCell::new(6_usize));
-    let rc: Value<RefCtor_unsigned_long_> = Rc::new(RefCell::new(RefCtor_unsigned_long_::new({
-        (v1.as_pointer()).reinterpret_cast::<u64>()
-    })));
-    assert!(({ (*rc.borrow()).v } == 7_u64));
+    let mut rc: RefCtor_unsigned_long_ =
+        RefCtor_unsigned_long_::new({ (v1.as_pointer()).reinterpret_cast::<u64>() });
+    assert!((rc.v == 7_u64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

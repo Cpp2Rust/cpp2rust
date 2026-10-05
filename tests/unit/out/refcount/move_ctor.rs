@@ -140,9 +140,8 @@ impl Clone for NoexceptMove {
         NoexceptMove::copy_from(__src.as_pointer())
     }
 }
-pub fn by_value_0(m: MoveOnly) -> i32 {
-    let m: Value<MoveOnly> = Rc::new(RefCell::new(m));
-    return { (*m.borrow()).v };
+pub fn by_value_0(mut m: MoveOnly) -> i32 {
+    return m.v;
 }
 pub fn make_1(mut v: i32) -> MoveOnly {
     let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ v })));
@@ -160,8 +159,8 @@ fn main_0() -> i32 {
     let c: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::move_from({ b.as_pointer() })));
     assert!(({ (*c.borrow()).v } == 1));
     assert!(({ (*b.borrow()).v } == 0));
-    let d: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::move_from({ c.as_pointer() })));
-    assert!(({ (*d.borrow()).v } == 1));
+    let mut d: MoveOnly = MoveOnly::move_from({ c.as_pointer() });
+    assert!((d.v == 1));
     assert!(({ (*c.borrow()).v } == 0));
     let e: Value<MoveOnly> = Rc::new(RefCell::new(({ make_1(5) })));
     assert!(({ (*e.borrow()).v } == 5));
@@ -194,28 +193,26 @@ fn main_0() -> i32 {
     );
     assert!(({ (*f.borrow()).v } == 0));
     let m: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
-    let m1: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new_1({ m.as_pointer() })));
+    let mut m1: ConstMove = ConstMove::new_1({ m.as_pointer() });
     let cm: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new()));
-    let m2: Value<ConstMove> = Rc::new(RefCell::new(ConstMove::new_2({ cm.as_pointer() })));
-    assert!(({ (*m1.borrow()).mark } == 1));
-    assert!(({ (*m2.borrow()).mark } == 10));
+    let mut m2: ConstMove = ConstMove::new_2({ cm.as_pointer() });
+    assert!((m1.mark == 1));
+    assert!((m2.mark == 10));
     let t: Value<ThrowingMove> = Rc::new(RefCell::new(ThrowingMove::new({ 1 })));
-    let t1: Value<ThrowingMove> =
-        Rc::new(RefCell::new(ThrowingMove::copy_from({ t.as_pointer() })));
-    assert!(({ (*t1.borrow()).v } == 1));
-    assert!(({ (*t1.borrow()).copies } == 1));
-    assert!(({ (*t1.borrow()).moves } == 0));
+    let mut t1: ThrowingMove = ThrowingMove::copy_from({ t.as_pointer() });
+    assert!((t1.v == 1));
+    assert!((t1.copies == 1));
+    assert!((t1.moves == 0));
     assert!(({ (*t.borrow()).v } == 1));
     let n: Value<NoexceptMove> = Rc::new(RefCell::new(NoexceptMove::new({ 2 })));
-    let n1: Value<NoexceptMove> =
-        Rc::new(RefCell::new(NoexceptMove::move_from({ n.as_pointer() })));
-    assert!(({ (*n1.borrow()).v } == 2));
-    assert!(({ (*n1.borrow()).copies } == 0));
-    assert!(({ (*n1.borrow()).moves } == 1));
+    let mut n1: NoexceptMove = NoexceptMove::move_from({ n.as_pointer() });
+    assert!((n1.v == 2));
+    assert!((n1.copies == 0));
+    assert!((n1.moves == 1));
     assert!(({ (*n.borrow()).v } == 0));
     let g: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ 3 })));
-    let g1: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::move_from({ g.as_pointer() })));
-    assert!(({ (*g1.borrow()).v } == 3));
+    let mut g1: MoveOnly = MoveOnly::move_from({ g.as_pointer() });
+    assert!((g1.v == 3));
     assert!(({ (*g.borrow()).v } == 0));
     return 0;
 }

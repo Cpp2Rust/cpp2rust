@@ -8,8 +8,7 @@ use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn double_it_0(mut x: Ptr<i32>) {
     {
-        let _ptr = x.clone();
-        _ptr.write(_ptr.read() * 2)
+        x.with_mut(|__v| *__v = *__v * 2)
     };
 }
 pub fn maybe_call_1(mut cb: FnPtr<fn(Ptr<i32>)>, mut x: Ptr<i32>) {

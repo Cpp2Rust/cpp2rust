@@ -98,36 +98,36 @@ impl SImpl for Ptr<S> {
     }
     fn operator_bitand_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() & { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v & __rhs)
         };
         return (*self).clone();
     }
     fn operator_bitor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() | { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v | __rhs)
         };
         return (*self).clone();
     }
     fn operator_bitxor_assign(&self, o: Ptr<S>) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() ^ { o.with(|__s| __s.v) })
+            let __rhs = { o.with(|__s| __s.v) };
+            field!((*self), v).with_mut(|__v| *__v = *__v ^ __rhs)
         };
         return (*self).clone();
     }
     fn operator_shl_assign(&self, mut n: i32) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() << n)
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v << __rhs)
         };
         return (*self).clone();
     }
     fn operator_shr_assign(&self, mut n: i32) -> Ptr<S> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() >> n)
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v >> __rhs)
         };
         return (*self).clone();
     }

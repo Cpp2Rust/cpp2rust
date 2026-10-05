@@ -35,9 +35,8 @@ impl Clone for Chain {
         Chain::copy_from(__src.as_pointer())
     }
 }
-pub fn consume_0(c: Chain) -> i32 {
-    let c: Value<Chain> = Rc::new(RefCell::new(c));
-    return { (*c.borrow()).v };
+pub fn consume_0(mut c: Chain) -> i32 {
+    return c.v;
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -48,16 +47,16 @@ fn main_0() -> i32 {
     ({ ChainImpl::add_4(&({ ChainImpl::add_4(&a.as_pointer(), 1) }), 1) });
     assert!(({ (*a.borrow()).v } == 3));
     let b0: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 5 })));
-    let b: Value<Chain> = Rc::new(RefCell::new(Chain::move_from({
+    let mut b: Chain = Chain::move_from({
         ({ ChainImpl::add_5(&({ ChainImpl::add_5(&b0.as_pointer(), 1) }), 1) })
-    })));
-    assert!(({ (*b.borrow()).v } == 8) && ({ (*b0.borrow()).v } == 0));
+    });
+    assert!((b.v == 8) && ({ (*b0.borrow()).v } == 0));
     let c: Value<Chain> = Rc::new(RefCell::new(
         ({ ChainImpl::take(&Rc::new(RefCell::new(Chain::new({ 10 }))).as_pointer()) }),
     ));
     assert!(({ (*c.borrow()).v } == 11));
-    let d: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::copy(&c.as_pointer()) })));
-    assert!(({ (*d.borrow()).v } == 111) && ({ (*c.borrow()).v } == 11));
+    let mut d: Chain = ({ ChainImpl::copy(&c.as_pointer()) });
+    assert!((d.v == 111) && ({ (*c.borrow()).v } == 11));
     let g: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 20 })));
     assert!(
         (({
@@ -67,8 +66,8 @@ fn main_0() -> i32 {
         }) == 21)
     );
     let e: Value<Chain> = Rc::new(RefCell::new(Chain::new({ 30 })));
-    let f: Value<Chain> = Rc::new(RefCell::new(({ ChainImpl::take(&e.as_pointer()) })));
-    assert!(({ (*f.borrow()).v } == 31) && ({ (*e.borrow()).v } == 0));
+    let mut f: Chain = ({ ChainImpl::take(&e.as_pointer()) });
+    assert!((f.v == 31) && ({ (*e.borrow()).v } == 0));
     return 0;
 }
 pub trait ChainImpl {
@@ -81,15 +80,15 @@ pub trait ChainImpl {
 impl ChainImpl for Ptr<Chain> {
     fn add_4(&self, mut n: i32) -> Ptr<Chain> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + n)
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).clone();
     }
     fn add_5(&self, mut n: i32) -> Ptr<Chain> {
         {
-            let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + n)
+            let __rhs = n;
+            field!((*self), v).with_mut(|__v| *__v = *__v + __rhs)
         };
         return (*self).clone();
     }

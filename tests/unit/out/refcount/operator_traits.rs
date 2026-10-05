@@ -157,8 +157,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let w: Value<Wrapped_int_> = Rc::new(RefCell::new(Wrapped_int_ { v: 2 }));
-    assert!(({ (*w.borrow()).v } == 2));
+    let mut w: Wrapped_int_ = Wrapped_int_ { v: 2 };
+    assert!((w.v == 2));
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
     (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
