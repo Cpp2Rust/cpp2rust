@@ -12,7 +12,7 @@ pub const Choice_enum_C_LETTERS: Choice_enum = 2;
 pub const Choice_enum_C_INTEGERS: Choice_enum = 3;
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(24)]
-pub struct anon_0 {
+pub struct anon_1 {
     #[offset(0)]
     #[byte_size(8)]
     pub items: Ptr<Ptr<i8>>,
@@ -23,7 +23,7 @@ pub struct anon_0 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(16)]
-pub struct anon_1 {
+pub struct anon_2 {
     #[offset(0)]
     pub lo: i32,
     #[offset(4)]
@@ -35,7 +35,7 @@ pub struct anon_1 {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(40)]
-pub struct anon_2 {
+pub struct anon_3 {
     #[offset(0)]
     pub lo: i64,
     #[offset(8)]
@@ -49,25 +49,25 @@ pub struct anon_2 {
 }
 #[derive(ByteRepr, DeepClone)]
 #[byte_size(40)]
-pub struct anon_3 {
+pub struct anon_0 {
     #[offset(0)]
     #[byte_size(40)]
     __bytes: Value<Box<[u8]>>,
 }
-impl anon_3 {
-    pub fn list(&self) -> Ptr<anon_0> {
+impl anon_0 {
+    pub fn list(&self) -> Ptr<anon_1> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn letters(&self) -> Ptr<anon_1> {
+    pub fn letters(&self) -> Ptr<anon_2> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
-    pub fn integers(&self) -> Ptr<anon_2> {
+    pub fn integers(&self) -> Ptr<anon_3> {
         (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
     }
 }
-impl Default for anon_3 {
+impl Default for anon_0 {
     fn default() -> Self {
-        anon_3 {
+        anon_0 {
             __bytes: Rc::new(RefCell::new(Box::from([0u8; 40]))),
         }
     }
@@ -81,7 +81,7 @@ pub struct Branch {
     pub index: i32,
     #[offset(8)]
     #[byte_size(40)]
-    pub v: anon_3,
+    pub v: anon_0,
 }
 pub fn main() {
     __cpp2rust_init_globals();
