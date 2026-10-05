@@ -23,12 +23,10 @@ fn main_0() -> i32 {
         Foo { x1: 1, x2: 2 },
         Foo { x1: 3, x2: 4 },
     ])));
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!((arr.as_pointer() as Ptr<Foo>).offset(1), x1)),
-    ));
-    let a: Value<i32> = Rc::new(RefCell::new(((*p1.borrow()).read())));
-    let p2: Value<Ptr<Foo>> = Rc::new(RefCell::new(((arr.as_pointer() as Ptr<Foo>).offset(0))));
-    assert!((({ (*a.borrow()) } + { (*p2.borrow()).with(|__s| __s.x2) }) == 5));
+    let mut p1: Ptr<i32> = (field_ptr!((arr.as_pointer() as Ptr<Foo>).offset(1), x1));
+    let mut a: i32 = (p1.read());
+    let mut p2: Ptr<Foo> = ((arr.as_pointer() as Ptr<Foo>).offset(0));
+    assert!((({ a } + { p2.with(|__s| __s.x2) }) == 5));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

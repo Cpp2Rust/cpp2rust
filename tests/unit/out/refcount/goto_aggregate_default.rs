@@ -14,31 +14,26 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-pub fn agg_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let buf40: Value<Box<[i8]>> =
-        Rc::new(RefCell::new((0..40).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let buf256: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..256).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    let arr64: Value<Box<[i32]>> =
-        Rc::new(RefCell::new((0..64).map(|_| 0_i32).collect::<Box<[i32]>>()));
-    let longs: Value<Box<[i64]>> =
-        Rc::new(RefCell::new((0..33).map(|_| 0_i64).collect::<Box<[i64]>>()));
+pub fn agg_0(mut n: i32) -> i32 {
+    let mut buf40: [i8; 40] = [0_i8; 40];
+    let mut buf256: [u8; 256] = [0_u8; 256];
+    let mut arr64: [i32; 64] = [0_i32; 64];
+    let mut longs: [i64; 33] = [0_i64; 33];
     let p: Value<Point> = <Value<Point>>::default();
-    let ptr: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
-    let fp: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::null()));
-    let file: Value<Ptr<CFile>> = Rc::new(RefCell::new(Ptr::null()));
-    let total: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let mut ptr: Ptr<i32> = Ptr::<i32>::null();
+    let mut fp: FnPtr<fn(i32) -> i32> = FnPtr::<fn(i32) -> i32>::null();
+    let mut file: Ptr<CFile> = Ptr::null();
+    let mut total: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *total.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
+            total = 0;
+            if (((n < 0) as i32) != 0) {
                 goto!('out);
             }
-            (*total.borrow_mut()) = 1;
+            total = 1;
         }
         'out: {
-            return (*total.borrow());
+            return total;
         }
     });
     panic!("ub: non-void function does not return a value")

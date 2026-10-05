@@ -32,16 +32,14 @@ pub fn operator_bitxor_3(a: Ptr<S>, b: Ptr<S>) -> S {
         v: ({ a.with(|__s| __s.v) } ^ { b.with(|__s| __s.v) }),
     };
 }
-pub fn operator_shl_4(a: Ptr<S>, n: i32) -> S {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn operator_shl_4(a: Ptr<S>, mut n: i32) -> S {
     return S {
-        v: ({ a.with(|__s| __s.v) } << { (*n.borrow()) }),
+        v: ({ a.with(|__s| __s.v) } << { n }),
     };
 }
-pub fn operator_shr_5(a: Ptr<S>, n: i32) -> S {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn operator_shr_5(a: Ptr<S>, mut n: i32) -> S {
     return S {
-        v: ({ a.with(|__s| __s.v) } >> { (*n.borrow()) }),
+        v: ({ a.with(|__s| __s.v) } >> { n }),
     };
 }
 pub fn main() {

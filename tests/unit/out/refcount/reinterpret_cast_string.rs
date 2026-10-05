@@ -16,14 +16,12 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    let bytes: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (s.as_pointer() as Ptr<i8>).reinterpret_cast::<u8>(),
-    ));
-    assert!((((elem!((*bytes.borrow()), 0).read()) as i32) == (('A' as i8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 1).read()) as i32) == (('B' as i8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 2).read()) as i32) == (('C' as i8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 3).read()) as i32) == (('D' as i8) as i32)));
-    assert!((((elem!((*bytes.borrow()), 4).read()) as i32) == 0));
+    let mut bytes: Ptr<u8> = (s.as_pointer() as Ptr<i8>).reinterpret_cast::<u8>();
+    assert!((((elem!(bytes, 0).read()) as i32) == (('A' as i8) as i32)));
+    assert!((((elem!(bytes, 1).read()) as i32) == (('B' as i8) as i32)));
+    assert!((((elem!(bytes, 2).read()) as i32) == (('C' as i8) as i32)));
+    assert!((((elem!(bytes, 3).read()) as i32) == (('D' as i8) as i32)));
+    assert!((((elem!(bytes, 4).read()) as i32) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

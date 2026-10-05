@@ -66,14 +66,11 @@ impl Default for Outer {
         }
     }
 }
-pub fn set_0(p: Ptr<i32>, value: i32) {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    let value: Value<i32> = Rc::new(RefCell::new(value));
-    (*p.borrow()).write({ (*value.borrow()) });
+pub fn set_0(mut p: Ptr<i32>, mut value: i32) {
+    p.write({ value });
 }
-pub fn bump_1(o: Ptr<Outer>) -> i32 {
-    let o: Value<Ptr<Outer>> = Rc::new(RefCell::new(o));
-    field!((*o.borrow()), x).with_mut(|__v| __v.postfix_inc());
+pub fn bump_1(mut o: Ptr<Outer>) -> i32 {
+    field!(o, x).with_mut(|__v| __v.postfix_inc());
     return 1;
 }
 pub fn main() {
@@ -83,24 +80,20 @@ pub fn main() {
 fn main_0() -> i32 {
     let o: Value<Outer> = Rc::new(RefCell::new(<Outer>::default()));
     (*o.borrow_mut()).x = 1;
-    let px: Value<Ptr<i32>> = Rc::new(RefCell::new((field_ptr!(o.as_pointer(), x))));
-    (*px.borrow()).write(2);
+    let mut px: Ptr<i32> = (field_ptr!(o.as_pointer(), x));
+    px.write(2);
     assert!(({ (*o.borrow()).x } == 2));
-    let pa: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!(field_ptr!(o.as_pointer(), inner), a)),
-    ));
+    let mut pa: Ptr<i32> = (field_ptr!(field_ptr!(o.as_pointer(), inner), a));
     ({
-        let _p: Ptr<i32> = (*pa.borrow()).clone();
+        let _p: Ptr<i32> = (pa).clone();
         set_0(_p, 3)
     });
     assert!(({ (*o.borrow()).inner.a } == 3));
-    let pi: Value<Ptr<i32>> = Rc::new(RefCell::new(
-        (field_ptr!(
-            (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((1) as isize),
-            a
-        )),
+    let mut pi: Ptr<i32> = (field_ptr!(
+        (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((1) as isize),
+        a
     ));
-    (*pi.borrow()).write(4);
+    pi.write(4);
     assert!(
         ({
             (*elem!((array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>), 1)
@@ -115,16 +108,13 @@ fn main_0() -> i32 {
                 (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((0) as isize),
                 a
             ))
-        } != { (*pi.borrow()).clone() })
+        } != { (pi).clone() })
     );
-    let name: Value<Ptr<i8>> = Rc::new(RefCell::new(
-        (array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<i8>),
-    ));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 3) {
-        elem!((*name.borrow()), (*i.borrow()))
-            .write({ (((('a' as i8) as i32) + (*i.borrow())) as i8) });
-        (*i.borrow_mut()).prefix_inc();
+    let mut name: Ptr<i8> = (array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<i8>);
+    let mut i: i32 = 0;
+    'loop_: while (i < 3) {
+        elem!(name, i).write({ (((('a' as i8) as i32) + i) as i8) });
+        i.prefix_inc();
     }
     assert!(
         ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr::<i8>)
@@ -133,7 +123,7 @@ fn main_0() -> i32 {
             == 3_usize)
     );
     assert!(
-        ({ (*name.borrow()).offset((3) as isize) } == {
+        ({ name.offset((3) as isize) } == {
             ((array_field_ptr!(field_ptr!(o.as_pointer(), inner), name) as Ptr<i8>)
                 .offset((3) as isize))
         })
@@ -152,8 +142,8 @@ fn main_0() -> i32 {
             })
     );
     (*o.borrow_mut()).x = 0;
-    let first: Value<i32> = Rc::new(RefCell::new(({ OuterImpl::next(&o.as_pointer()) })));
-    assert!(((*first.borrow()) == 0) && ({ (*o.borrow()).x } == 1));
+    let mut first: i32 = ({ OuterImpl::next(&o.as_pointer()) });
+    assert!((first == 0) && ({ (*o.borrow()).x } == 1));
     let __rhs = ({ (*o.borrow()).inner.a } + ({ bump_1((o.as_pointer())) }));
     (*o.borrow_mut()).x = __rhs;
     assert!(({ (*o.borrow()).x } == 4));
@@ -202,20 +192,18 @@ fn main_0() -> i32 {
     let bytes: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
     ])));
-    let view: Value<Ptr<Header>> = Rc::new(RefCell::new(
-        (bytes.as_pointer() as Ptr<u8>).reinterpret_cast::<Header>(),
-    ));
-    field!((*view.borrow()), tag).write(16909060);
+    let mut view: Ptr<Header> = (bytes.as_pointer() as Ptr<u8>).reinterpret_cast::<Header>();
+    field!(view, tag).write(16909060);
     assert!(
         (((*bytes.borrow())[(0) as usize] as i32) == 4)
             || (((*bytes.borrow())[(3) as usize] as i32) == 4)
     );
-    ({ set_0((field_ptr!((*view.borrow()), tag)), 0) });
+    ({ set_0((field_ptr!(view, tag)), 0) });
     assert!(
         (((*bytes.borrow())[(0) as usize] as i32) == 0)
             && (((*bytes.borrow())[(3) as usize] as i32) == 0)
     );
-    field!((*view.borrow()), size).write(1_i16);
+    field!(view, size).write(1_i16);
     assert!(
         ((((*bytes.borrow())[(4) as usize] as i32) + ((*bytes.borrow())[(5) as usize] as i32))
             == 1)
@@ -238,10 +226,9 @@ impl OuterImpl for Ptr<Outer> {
     fn sum(&self) -> i32 {
         return ((*self).with(|__s| __s.x) + (*self).with(|__s| __s.inner.a));
     }
-    fn push(&self, k: i32) {
-        let k: Value<i32> = Rc::new(RefCell::new(k));
+    fn push(&self, mut k: i32) {
         {
-            let __a1 = ((*k.borrow()) + (*self).with(|__s| __s.x));
+            let __a1 = (k + (*self).with(|__s| __s.x));
             (*(*self).with(|__s| __s.v.clone()).borrow_mut()).push(__a1)
         };
     }

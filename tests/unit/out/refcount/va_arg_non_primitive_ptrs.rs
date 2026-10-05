@@ -24,39 +24,35 @@ pub fn dispatch_0(option: i32, __args: &[VaArg]) -> i32 {
     let option: Value<i32> = Rc::new(RefCell::new(option));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let result: Value<i32> = Rc::new(RefCell::new(0));
+    let mut result: i32 = 0;
     'switch: {
         match { (*option.borrow()) } {
             __v if __v == (opt_OPT_STRING_OUT as i32) => {
-                let out: Value<Ptr<Ptr<i8>>> =
-                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<i8>>>()));
-                (*out.borrow()).write(Ptr::<i8>::from_string_literal(b"hello"));
-                (*result.borrow_mut()) = 1;
+                let mut out: Ptr<Ptr<i8>> = (*ap.borrow_mut()).arg::<Ptr<Ptr<i8>>>();
+                out.write(Ptr::<i8>::from_string_literal(b"hello"));
+                result = 1;
                 break 'switch;
             }
             __v if __v == (opt_OPT_FILE as i32) => {
-                let f: Value<Ptr<CFile>> =
-                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<CFile>>()));
-                (*result.borrow_mut()) = ((!((*f.borrow()).is_null())) as i32);
+                let mut f: Ptr<CFile> = (*ap.borrow_mut()).arg::<Ptr<CFile>>();
+                result = ((!((f).is_null())) as i32);
                 break 'switch;
             }
             __v if __v == (opt_OPT_NODE as i32) => {
-                let n: Value<Ptr<node>> =
-                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<node>>()));
-                (*result.borrow_mut()) = (*n.borrow()).with(|__s| __s.data);
+                let mut n: Ptr<node> = (*ap.borrow_mut()).arg::<Ptr<node>>();
+                result = n.with(|__s| __s.data);
                 break 'switch;
             }
             __v if __v == (opt_OPT_NODE_OUT as i32) => {
-                let out: Value<Ptr<Ptr<node>>> =
-                    Rc::new(RefCell::new((*ap.borrow_mut()).arg::<Ptr<Ptr<node>>>()));
-                (*out.borrow()).write(Ptr::<node>::null());
-                (*result.borrow_mut()) = 2;
+                let mut out: Ptr<Ptr<node>> = (*ap.borrow_mut()).arg::<Ptr<Ptr<node>>>();
+                out.write(Ptr::<node>::null());
+                result = 2;
                 break 'switch;
             }
             _ => {}
         }
     };
-    return (*result.borrow());
+    return result;
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -10,10 +10,9 @@ pub type Color = u32;
 pub const Color_kRed: Color = 0;
 pub const Color_kGreen: Color = 1;
 pub const Color_kBlue: Color = 2;
-pub fn switch_enum_0(c: Color) -> i32 {
-    let c: Value<Color> = Rc::new(RefCell::new(c));
+pub fn switch_enum_0(mut c: Color) -> i32 {
     'switch: {
-        match { ((*c.borrow()) as i32) } {
+        match { (c as i32) } {
             __v if __v == (Color_kRed as i32) => {
                 return 10;
             }

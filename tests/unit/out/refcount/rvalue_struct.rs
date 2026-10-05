@@ -15,13 +15,8 @@ pub struct S {
     pub b: i32,
 }
 impl S {
-    pub fn new(a: i32, b: i32) -> Self {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        let b: Value<i32> = Rc::new(RefCell::new(b));
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            a: (*a.borrow()),
-            b: (*b.borrow()),
-        }));
+    pub fn new(mut a: i32, mut b: i32) -> Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self { a: a, b: b }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

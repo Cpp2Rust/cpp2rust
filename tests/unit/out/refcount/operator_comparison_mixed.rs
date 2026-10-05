@@ -12,35 +12,26 @@ pub struct S {
     #[offset(0)]
     pub v: i32,
 }
-pub fn operator_eq_0(a: i32, b: Ptr<S>) -> bool {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } == { b.with(|__s| __s.v) });
+pub fn operator_eq_0(mut a: i32, b: Ptr<S>) -> bool {
+    return ({ a } == { b.with(|__s| __s.v) });
 }
-pub fn operator_ne_1(a: i32, b: Ptr<S>) -> bool {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } != { b.with(|__s| __s.v) });
+pub fn operator_ne_1(mut a: i32, b: Ptr<S>) -> bool {
+    return ({ a } != { b.with(|__s| __s.v) });
 }
-pub fn operator_lt_2(a: i32, b: Ptr<S>) -> bool {
-    let a: Value<i32> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } < { b.with(|__s| __s.v) });
+pub fn operator_lt_2(mut a: i32, b: Ptr<S>) -> bool {
+    return ({ a } < { b.with(|__s| __s.v) });
 }
-pub fn operator_gt_3(a: f64, b: Ptr<S>) -> bool {
-    let a: Value<f64> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } > { (b.with(|__s| __s.v) as f64) });
+pub fn operator_gt_3(mut a: f64, b: Ptr<S>) -> bool {
+    return ({ a } > { (b.with(|__s| __s.v) as f64) });
 }
-pub fn operator_le_4(a: i64, b: Ptr<S>) -> bool {
-    let a: Value<i64> = Rc::new(RefCell::new(a));
-    return ({ (*a.borrow()) } <= { (b.with(|__s| __s.v) as i64) });
+pub fn operator_le_4(mut a: i64, b: Ptr<S>) -> bool {
+    return ({ a } <= { (b.with(|__s| __s.v) as i64) });
 }
-pub fn operator_ge_5(a: Ptr<i8>, b: Ptr<S>) -> bool {
-    let a: Value<Ptr<i8>> = Rc::new(RefCell::new(a));
-    return ({ ((((*a.borrow()).read()) as i32) - (('0' as i8) as i32)) } >= {
-        b.with(|__s| __s.v)
-    });
+pub fn operator_ge_5(mut a: Ptr<i8>, b: Ptr<S>) -> bool {
+    return ({ (((a.read()) as i32) - (('0' as i8) as i32)) } >= { b.with(|__s| __s.v) });
 }
-pub fn operator_lt_6(a: Ptr<S>, b: i32) -> bool {
-    let b: Value<i32> = Rc::new(RefCell::new(b));
-    return ({ (a.with(|__s| __s.v) + 1) } < { (*b.borrow()) });
+pub fn operator_lt_6(a: Ptr<S>, mut b: i32) -> bool {
+    return ({ (a.with(|__s| __s.v) + 1) } < { b });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -84,31 +75,23 @@ pub trait SImpl {
     fn operator_ge(&self, o: Ptr<i8>) -> bool;
 }
 impl SImpl for Ptr<S> {
-    fn operator_eq(&self, o: i32) -> bool {
-        let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s| __s.v) == (*o.borrow()));
+    fn operator_eq(&self, mut o: i32) -> bool {
+        return ((*self).with(|__s| __s.v) == o);
     }
-    fn operator_ne(&self, o: i32) -> bool {
-        let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s| __s.v) != (*o.borrow()));
+    fn operator_ne(&self, mut o: i32) -> bool {
+        return ((*self).with(|__s| __s.v) != o);
     }
-    fn operator_lt(&self, o: i32) -> bool {
-        let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s| __s.v) < (*o.borrow()));
+    fn operator_lt(&self, mut o: i32) -> bool {
+        return ((*self).with(|__s| __s.v) < o);
     }
-    fn operator_gt(&self, o: f64) -> bool {
-        let o: Value<f64> = Rc::new(RefCell::new(o));
-        return (((*self).with(|__s| __s.v) as f64) > (*o.borrow()));
+    fn operator_gt(&self, mut o: f64) -> bool {
+        return (((*self).with(|__s| __s.v) as f64) > o);
     }
-    fn operator_le(&self, o: i64) -> bool {
-        let o: Value<i64> = Rc::new(RefCell::new(o));
-        return (((*self).with(|__s| __s.v) as i64) <= (*o.borrow()));
+    fn operator_le(&self, mut o: i64) -> bool {
+        return (((*self).with(|__s| __s.v) as i64) <= o);
     }
-    fn operator_ge(&self, o: Ptr<i8>) -> bool {
-        let o: Value<Ptr<i8>> = Rc::new(RefCell::new(o));
-        return ({ (*self).with(|__s| __s.v) } >= {
-            ((((*o.borrow()).read()) as i32) - (('0' as i8) as i32))
-        });
+    fn operator_ge(&self, mut o: Ptr<i8>) -> bool {
+        return ({ (*self).with(|__s| __s.v) } >= { (((o.read()) as i32) - (('0' as i8) as i32)) });
     }
 }
 pub fn __cpp2rust_init_globals() {}

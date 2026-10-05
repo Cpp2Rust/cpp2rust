@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(0));
+    let mut x: i32 = 0;
     assert!((1 != 0));
     assert!(((1 + 2) == 3));
     return 0;

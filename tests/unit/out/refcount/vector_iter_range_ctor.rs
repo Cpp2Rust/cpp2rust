@@ -71,14 +71,11 @@ fn main_0() -> i32 {
     );
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
-    let start: Value<Ptr<u8>> = Rc::new(RefCell::new((buf.as_pointer() as Ptr<u8>)));
-    let len: Value<usize> = Rc::new(RefCell::new(5_usize));
+    let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
+    let mut len: usize = 5_usize;
     let v5: Value<Vec<u8>> = Rc::new(RefCell::new({
-        let __count = (*start.borrow())
-            .offset((*len.borrow()) as isize)
-            .get_offset()
-            - (*start.borrow()).get_offset();
-        PtrValueIter::new(&(*start.borrow()), __count).collect::<Vec<_>>()
+        let __count = start.offset((len) as isize).get_offset() - start.get_offset();
+        PtrValueIter::new(&start, __count).collect::<Vec<_>>()
     }));
     assert!(((*v5.borrow()).len() == 5_usize));
     assert!(

@@ -28,8 +28,7 @@ fn main_0() -> i32 {
             let factor: Value<i32> = Rc::new(RefCell::new((*factor.borrow())));
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) * (*factor.borrow()));
+            return (x * (*factor.borrow()));
         }
     )));
     assert!((({ (*scale.borrow()).call(4,) }) == 12));
@@ -58,14 +57,13 @@ fn main_0() -> i32 {
     )));
     (*s.borrow_mut()).x = 50;
     assert!((({ (*sum.borrow()).call() }) == 3));
-    let base: Value<i32> = Rc::new(RefCell::new(10));
+    let mut base: i32 = 10;
     let shifted: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(lambda!(
         {
-            let y: Value<i32> = Rc::new(RefCell::new(((*base.borrow()) + 1)));
+            let y: Value<i32> = Rc::new(RefCell::new((base + 1)));
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + (*y.borrow()));
+            return (x + (*y.borrow()));
         }
     )));
     assert!((({ (*shifted.borrow()).call(5,) }) == 16));
@@ -75,8 +73,7 @@ fn main_0() -> i32 {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + 3);
+            return (x + 3);
         }
     )));
     assert!((({ (*by_copy.borrow()).call(1,) }) == 4));
@@ -85,8 +82,7 @@ fn main_0() -> i32 {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + ({ read_0(k.as_pointer()) }));
+            return (x + ({ read_0(k.as_pointer()) }));
         }
     )));
     assert!((({ (*by_copy_used.borrow()).call(1,) }) == 4));
@@ -95,8 +91,7 @@ fn main_0() -> i32 {
             let k: Value<i32> = Rc::new(RefCell::new((*k.borrow())));
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + ({ read_0(k.as_pointer()) }));
+            return (x + ({ read_0(k.as_pointer()) }));
         }
     )));
     assert!((({ (*implicit_used.borrow()).call(1,) }) == 4));
@@ -105,8 +100,7 @@ fn main_0() -> i32 {
             let k: Ptr<i32> = k.as_pointer();
         },
         |x: i32| -> i32 {
-            let x: Value<i32> = Rc::new(RefCell::new(x));
-            return ((*x.borrow()) + 3);
+            return (x + 3);
         }
     )));
     assert!((({ (*by_ref.borrow()).call(1,) }) == 4));

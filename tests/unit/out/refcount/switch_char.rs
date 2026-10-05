@@ -6,10 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn switch_char_0(c: i8) -> i32 {
-    let c: Value<i8> = Rc::new(RefCell::new(c));
+pub fn switch_char_0(mut c: i8) -> i32 {
     'switch: {
-        match { ((*c.borrow()) as i32) } {
+        match { (c as i32) } {
             __v if __v == (('a' as i8) as i32) => {
                 return 1;
             }

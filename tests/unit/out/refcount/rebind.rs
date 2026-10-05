@@ -13,9 +13,9 @@ pub fn main() {
 fn main_0() -> i32 {
     let x: Value<i32> = Rc::new(RefCell::new(1));
     let r: Ptr<i32> = x.as_pointer();
-    let y: Value<i32> = Rc::new(RefCell::new(10));
-    r.write({ (*y.borrow()) });
-    (*y.borrow_mut()) += 1;
+    let mut y: i32 = 10;
+    r.write({ y });
+    y += 1;
     assert!(((*x.borrow()) == 10));
     return 0;
 }

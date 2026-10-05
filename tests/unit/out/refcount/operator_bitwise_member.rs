@@ -56,16 +56,14 @@ impl SImpl for Ptr<S> {
             v: ({ (*self).with(|__s| __s.v) } ^ { o.with(|__s| __s.v) }),
         };
     }
-    fn operator_shl(&self, n: i32) -> S {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shl(&self, mut n: i32) -> S {
         return S {
-            v: ((*self).with(|__s| __s.v) << (*n.borrow())),
+            v: ((*self).with(|__s| __s.v) << n),
         };
     }
-    fn operator_shr(&self, n: i32) -> S {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shr(&self, mut n: i32) -> S {
         return S {
-            v: ((*self).with(|__s| __s.v) >> (*n.borrow())),
+            v: ((*self).with(|__s| __s.v) >> n),
         };
     }
 }

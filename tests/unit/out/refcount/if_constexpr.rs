@@ -6,35 +6,31 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn classify_0(x: Ptr<i32>) -> i32 {
-    let x: Value<Ptr<i32>> = Rc::new(RefCell::new(x));
+pub fn classify_0(mut x: Ptr<i32>) -> i32 {
     if true {
-        return ((*x.borrow()).read());
+        return (x.read());
     } else {
     }
     return 1;
 }
-pub fn classify_1(x: i64) -> i32 {
-    let x: Value<i64> = Rc::new(RefCell::new(x));
+pub fn classify_1(mut x: i64) -> i32 {
     if false {
     } else if true {
         return 2;
     }
     return 1;
 }
-pub fn classify_2(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn classify_2(mut x: i32) -> i32 {
     if false {
     } else if false {
     }
     return 1;
 }
-pub fn keep_both_3(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
+pub fn keep_both_3(mut x: i32) -> i32 {
     if true {
-        return ((*x.borrow()) + 1);
+        return (x + 1);
     } else {
-        return ((*x.borrow()) - 1);
+        return (x - 1);
     }
     panic!("ub: non-void function does not return a value")
 }

@@ -12,9 +12,9 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         let __a1 = 20;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
     };
-    let x: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let mut x: i32 = 0_i32;
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    let v4: Value<Ptr<Vec<i32>>> = Rc::new(RefCell::new((v3.as_pointer())));
+    let mut v4: Ptr<Vec<i32>> = (v3.as_pointer());
     {
         let __a1 = 0;
         (*v2.borrow_mut()).push(__a1)
@@ -27,7 +27,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         let __a1 = 3;
         (*v2.borrow_mut()).push(__a1)
     };
-    (*x.borrow_mut()) = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
+    x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
     elem!((v2.as_pointer() as Ptr<i32>), 0_usize).write(1);
     elem!(
         ((if true {
@@ -39,12 +39,8 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     )
     .write(7);
     (v2.as_pointer() as Ptr<Vec<i32>>).write((*v.upgrade().deref()).clone());
-    elem!(
-        ((Ptr::<Vec<i32>>::decay(&(*v4.borrow()))) as Ptr<i32>),
-        1_usize
-    )
-    .write(13);
-    assert!(((*x.borrow()) == 6));
+    elem!(((Ptr::<Vec<i32>>::decay(&(v4))) as Ptr<i32>), 1_usize).write(13);
+    assert!((x == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).read()) == 4));
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));

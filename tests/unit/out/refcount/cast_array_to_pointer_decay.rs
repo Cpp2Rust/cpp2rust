@@ -6,17 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn deref_0(p: Ptr<i32>) -> i32 {
-    let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).read());
+pub fn deref_0(mut p: Ptr<i32>) -> i32 {
+    return (p.read());
 }
-pub fn strlen_1(s: Ptr<i8>) -> i32 {
-    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
-    let c: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while (((*s.borrow_mut()).postfix_inc().read()) != 0) {
-        (*c.borrow_mut()).prefix_inc();
+pub fn strlen_1(mut s: Ptr<i8>) -> i32 {
+    let mut c: i32 = 0;
+    'loop_: while ((s.postfix_inc().read()) != 0) {
+        c.prefix_inc();
     }
-    return (*c.borrow());
+    return c;
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -13,8 +13,7 @@ thread_local!(
     pub static inc_1: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return ((*x.borrow()) + 1);
+                return (x + 1);
             }
         }),
     ));
@@ -28,10 +27,9 @@ thread_local!(
             }
         })));
 );
-pub fn apply_3(f: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
+pub fn apply_3(f: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
     let f: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(f));
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ({ (*f.borrow()).call((*x.borrow())) });
+    return ({ (*f.borrow()).call(x) });
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -46,9 +44,8 @@ fn main_0() -> i32 {
     let copy: Value<FnPtr<fn(i32) -> i32>> =
         Rc::new(RefCell::new((*inc_1.with(Value::clone).borrow()).clone()));
     assert!((({ (*copy.borrow()).call(9,) }) == 10));
-    let fp: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new((*inc_1.with(Value::clone).borrow()).clone()));
-    assert!((({ (*fp.borrow()).call(-1_i32,) }) == 0));
+    let mut fp: FnPtr<fn(i32) -> i32> = (*inc_1.with(Value::clone).borrow()).clone();
+    assert!((({ fp.call(-1_i32,) }) == 0));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {

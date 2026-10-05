@@ -18,24 +18,24 @@ pub fn sum_mixed_0(count: i32, __args: &[VaArg]) -> i32 {
     let count: Value<i32> = Rc::new(RefCell::new(count));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let total: Value<i32> = Rc::new(RefCell::new(0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < (*count.borrow())) as i32) != 0) {
-        let tag: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-        if ((((*tag.borrow()) == 0) as i32) != 0) {
-            (*total.borrow_mut()) += (*ap.borrow_mut()).arg::<i32>();
-        } else if ((((*tag.borrow()) == 1) as i32) != 0) {
-            (*total.borrow_mut()) += ((*ap.borrow_mut()).arg::<f64>() as i32);
-        } else if ((((*tag.borrow()) == 3) as i32) != 0) {
+    let mut total: i32 = 0;
+    let mut i: i32 = 0;
+    'loop_: while (((i < (*count.borrow())) as i32) != 0) {
+        let mut tag: i32 = (*ap.borrow_mut()).arg::<i32>();
+        if (((tag == 0) as i32) != 0) {
+            total += (*ap.borrow_mut()).arg::<i32>();
+        } else if (((tag == 1) as i32) != 0) {
+            total += ((*ap.borrow_mut()).arg::<f64>() as i32);
+        } else if (((tag == 3) as i32) != 0) {
             let p: Value<pair> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<pair>()));
-            (*total.borrow_mut()) += ({ (*p.borrow()).a } * { (*p.borrow()).b });
+            total += ({ (*p.borrow()).a } * { (*p.borrow()).b });
         } else {
-            let val: Value<i64> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i64>()));
-            (*total.borrow_mut()) += ((*val.borrow()) as i32);
+            let mut val: i64 = (*ap.borrow_mut()).arg::<i64>();
+            total += (val as i32);
         }
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    return (*total.borrow());
+    return total;
 }
 pub fn main() {
     __cpp2rust_init_globals();

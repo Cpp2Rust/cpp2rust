@@ -33,10 +33,8 @@ fn main_0() -> i32 {
         (*(*p.borrow()).as_ref().unwrap().borrow()).y
     });
     (*(*p.borrow()).as_ref().unwrap().borrow_mut()).y = __rhs;
-    let s: Value<i32> = Rc::new(RefCell::new(
-        ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) }),
-    ));
-    assert!(((*s.borrow()) == 30));
+    let mut s: i32 = ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) });
+    assert!((s == 30));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

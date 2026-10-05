@@ -37,63 +37,55 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Ptr<S>> = Rc::new(RefCell::new(
-        libcc2rs::malloc_refcount(32usize).reinterpret_cast::<S>(),
-    ));
-    assert!((((!((*p.borrow()).is_null())) as i32) != 0));
+    let mut p: Ptr<S> = libcc2rs::malloc_refcount(32usize).reinterpret_cast::<S>();
+    assert!((((!((p).is_null())) as i32) != 0));
     {
-        (*p.borrow()).to_any().memset((255) as u8, 32usize as usize);
-        (*p.borrow()).to_any()
+        (p).to_any().memset((255) as u8, 32usize as usize);
+        (p).to_any()
     };
-    field!((*p.borrow()), keep).write(7);
+    field!(p, keep).write(7);
     {
-        ((field_ptr!((*p.borrow()), a)) as Ptr<i32>)
-            .to_any()
-            .memset(
-                (0) as u8,
-                (32usize as usize).wrapping_sub((4_usize as usize)) as usize,
-            );
-        ((field_ptr!((*p.borrow()), a)) as Ptr<i32>).to_any()
+        ((field_ptr!(p, a)) as Ptr<i32>).to_any().memset(
+            (0) as u8,
+            (32usize as usize).wrapping_sub((4_usize as usize)) as usize,
+        );
+        ((field_ptr!(p, a)) as Ptr<i32>).to_any()
     };
-    assert!(((((*p.borrow()).with(|__s| __s.keep) == 7) as i32) != 0));
+    assert!((((p.with(|__s| __s.keep) == 7) as i32) != 0));
     assert!(
-        (((((((((((((*p.borrow()).with(|__s| __s.a) == 0) as i32) != 0)
-            && ((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
+        ((((((((((((p.with(|__s| __s.a) == 0) as i32) != 0)
+            && (((p.with(|__s| __s.b) == 0_i64) as i32) != 0)) as i32)
             != 0)
-            && (((((elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<i8>), 4).read()) as i32)
-                == 0) as i32)
+            && (((((elem!((array_field_ptr!(p, c) as Ptr::<i8>), 4).read()) as i32) == 0) as i32)
                 != 0)) as i32)
             != 0)
-            && ((((*p.borrow()).with(|__s| __s.last) == 0) as i32) != 0)) as i32)
+            && (((p.with(|__s| __s.last) == 0) as i32) != 0)) as i32)
             != 0)
     );
-    field!((*p.borrow()), a).write(1);
-    field!((*p.borrow()), b).write(2_i64);
-    elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<i8>), 0).write((('x' as i32) as i8));
-    field!((*p.borrow()), last).write(3);
+    field!(p, a).write(1);
+    field!(p, b).write(2_i64);
+    elem!((array_field_ptr!(p, c) as Ptr::<i8>), 0).write((('x' as i32) as i8));
+    field!(p, last).write(3);
     {
-        ((field_ptr!((*p.borrow()), b)) as Ptr<i64>)
-            .to_any()
-            .memset(
-                (0) as u8,
-                (24_usize as usize).wrapping_sub((8_usize as usize)) as usize,
-            );
-        ((field_ptr!((*p.borrow()), b)) as Ptr<i64>).to_any()
+        ((field_ptr!(p, b)) as Ptr<i64>).to_any().memset(
+            (0) as u8,
+            (24_usize as usize).wrapping_sub((8_usize as usize)) as usize,
+        );
+        ((field_ptr!(p, b)) as Ptr<i64>).to_any()
     };
     assert!(
-        (((((((*p.borrow()).with(|__s| __s.keep) == 7) as i32) != 0)
-            && ((((*p.borrow()).with(|__s| __s.a) == 1) as i32) != 0)) as i32)
+        ((((((p.with(|__s| __s.keep) == 7) as i32) != 0)
+            && (((p.with(|__s| __s.a) == 1) as i32) != 0)) as i32)
             != 0)
     );
     assert!(
-        (((((((*p.borrow()).with(|__s| __s.b) == 0_i64) as i32) != 0)
-            && (((((elem!((array_field_ptr!((*p.borrow()), c) as Ptr::<i8>), 0).read()) as i32)
-                == 0) as i32)
+        ((((((p.with(|__s| __s.b) == 0_i64) as i32) != 0)
+            && (((((elem!((array_field_ptr!(p, c) as Ptr::<i8>), 0).read()) as i32) == 0) as i32)
                 != 0)) as i32)
             != 0)
     );
-    assert!(((((*p.borrow()).with(|__s| __s.last) == 3) as i32) != 0));
-    libcc2rs::free_refcount((*p.borrow()).to_any());
+    assert!((((p.with(|__s| __s.last) == 3) as i32) != 0));
+    libcc2rs::free_refcount((p).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -6,13 +6,12 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<i8>) -> usize {
-    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
-    let begin: Value<Ptr<i8>> = Rc::new(RefCell::new((*s.borrow()).clone()));
-    'loop_: while (((*s.borrow()).read()) != 0) {
-        (*s.borrow_mut()).prefix_inc();
+pub fn strlen_0(mut s: Ptr<i8>) -> usize {
+    let mut begin: Ptr<i8> = (s).clone();
+    'loop_: while ((s.read()) != 0) {
+        s.prefix_inc();
     }
-    return ((((*s.borrow()).clone() - (*begin.borrow()).clone()) as i64) as usize);
+    return ((((s).clone() - (begin).clone()) as i64) as usize);
 }
 pub fn main() {
     __cpp2rust_init_globals();

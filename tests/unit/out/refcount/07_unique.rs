@@ -18,10 +18,10 @@ pub fn main() {
 fn main_0() -> i32 {
     let f: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(8)))));
     (*(*f.borrow()).as_ref().unwrap().borrow_mut()) = 9;
-    let f_ptr1: Value<Ptr<i32>> = Rc::new(RefCell::new((*f.borrow()).as_pointer()));
-    (*f_ptr1.borrow()).write(10);
-    let f_ptr2: Value<Ptr<i32>> = Rc::new(RefCell::new(((*f.borrow()).as_pointer())));
-    (*f_ptr2.borrow()).write(11);
+    let mut f_ptr1: Ptr<i32> = (*f.borrow()).as_pointer();
+    f_ptr1.write(10);
+    let mut f_ptr2: Ptr<i32> = ((*f.borrow()).as_pointer());
+    f_ptr2.write(11);
     (f.as_pointer() as Ptr<Option<Value<i32>>>).write(Some(Rc::new(RefCell::new(9))).take());
     (f.as_pointer() as Ptr<Option<Value<i32>>>).write(({ fn_0((*f.borrow_mut()).take()) }).take());
     assert!(((*(*f.borrow()).as_ref().unwrap().borrow()) == 10));

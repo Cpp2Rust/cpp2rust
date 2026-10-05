@@ -93,9 +93,8 @@ impl SImpl for Ptr<S> {
     fn operator_ge(&self, o: Ptr<S>) -> bool {
         return ({ (*self).with(|__s| __s.v) } >= { o.with(|__s| __s.v) });
     }
-    fn operator_lt_7(&self, o: i32) -> bool {
-        let o: Value<i32> = Rc::new(RefCell::new(o));
-        return ((*self).with(|__s| __s.v) < (*o.borrow()));
+    fn operator_lt_7(&self, mut o: i32) -> bool {
+        return ((*self).with(|__s| __s.v) < o);
     }
 }
 pub fn __cpp2rust_init_globals() {}

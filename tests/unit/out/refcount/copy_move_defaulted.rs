@@ -75,9 +75,8 @@ pub struct DefaultCopyUserMove {
     pub v: i32,
 }
 impl DefaultCopyUserMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<DefaultCopyUserMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -97,9 +96,8 @@ pub struct UserCopyDefaultMove {
     pub v: i32,
 }
 impl UserCopyDefaultMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<UserCopyDefaultMove> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<UserCopyDefaultMove> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

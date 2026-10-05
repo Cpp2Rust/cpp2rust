@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fd: Value<i32> = Rc::new(RefCell::new({
+    let mut fd: i32 = {
         let __mode = match &[].first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
@@ -29,26 +29,24 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    FdRegistry::close((*fd.borrow()));
+    };
+    FdRegistry::close(fd);
     let buf: Value<Box<[i8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_i8).collect::<Box<[i8]>>()));
-    let n: Value<isize> = Rc::new(RefCell::new(
-        match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-            ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
-                .to_any()
-                .reinterpret_cast::<u8>()
-                .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
-                    nix::unistd::read(__fd, __buf)
-                })
-        }) {
-            Ok(__n) => __n as isize,
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                -1
-            }
-        },
-    ));
-    return if ((((*n.borrow()) == (-1_i32 as isize)) as i32) != 0) {
+    let mut n: isize = match FdRegistry::with_fd(fd, |__fd| {
+        ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
+            .to_any()
+            .reinterpret_cast::<u8>()
+            .with_slice_mut(::std::mem::size_of::<[i8; 4]>(), |__buf| {
+                nix::unistd::read(__fd, __buf)
+            })
+    }) {
+        Ok(__n) => __n as isize,
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            -1
+        }
+    };
+    return if (((n == (-1_i32 as isize)) as i32) != 0) {
         0
     } else {
         1

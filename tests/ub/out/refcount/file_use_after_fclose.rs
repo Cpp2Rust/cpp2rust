@@ -11,24 +11,22 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fp: Value<Ptr<CFile>> = Rc::new(RefCell::new(
-        match CFile::open(
-            &Ptr::<i8>::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
-            &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
-        ) {
-            Some(__f) => Ptr::alloc(__f),
-            None => Ptr::null(),
-        },
-    ));
-    assert!(!(*fp.borrow()).is_null());
+    let mut fp: Ptr<CFile> = match CFile::open(
+        &Ptr::<i8>::from_string_literal(b"/tmp/cpp2rust_uafc_test.tmp").to_rust_string(),
+        &Ptr::<i8>::from_string_literal(b"wb").to_rust_string(),
+    ) {
+        Some(__f) => Ptr::alloc(__f),
+        None => Ptr::null(),
+    };
+    assert!(!(fp).is_null());
     {
-        let __r = (*fp.borrow()).with(|__f| __f.close());
-        (*fp.borrow()).delete();
+        let __r = fp.with(|__f| __f.close());
+        fp.delete();
         __r
     };
     return if ((({
         let __c = ('x' as i32) as u8;
-        match (*fp.borrow()).with_mut(|__f| __f.write(&[__c])) {
+        match fp.with_mut(|__f| __f.write(&[__c])) {
             1 => __c as i32,
             _ => -1,
         }

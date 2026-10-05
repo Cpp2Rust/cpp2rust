@@ -34,9 +34,8 @@ pub struct Boxed_int_ {
     pub value: i32,
 }
 impl Boxed_int_ {
-    pub fn twice(v: i32) -> i32 {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        return ((*v.borrow()) + (*v.borrow()));
+    pub fn twice(mut v: i32) -> i32 {
+        return (v + v);
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -46,9 +45,8 @@ pub struct Boxed_long_ {
     pub value: i64,
 }
 impl Boxed_long_ {
-    pub fn twice(v: i64) -> i64 {
-        let v: Value<i64> = Rc::new(RefCell::new(v));
-        return ((*v.borrow()) + (*v.borrow()));
+    pub fn twice(mut v: i64) -> i64 {
+        return (v + v);
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -171,18 +169,16 @@ pub trait Boxed_int_Impl {
     fn plus(&self, other: i32) -> i32;
 }
 impl Boxed_int_Impl for Ptr<Boxed_int_> {
-    fn plus(&self, other: i32) -> i32 {
-        let other: Value<i32> = Rc::new(RefCell::new(other));
-        return ((*self).with(|__s| __s.value) + (*other.borrow()));
+    fn plus(&self, mut other: i32) -> i32 {
+        return ((*self).with(|__s| __s.value) + other);
     }
 }
 pub trait Boxed_long_Impl {
     fn plus(&self, other: i64) -> i64;
 }
 impl Boxed_long_Impl for Ptr<Boxed_long_> {
-    fn plus(&self, other: i64) -> i64 {
-        let other: Value<i64> = Rc::new(RefCell::new(other));
-        return ((*self).with(|__s| __s.value) + (*other.borrow()));
+    fn plus(&self, mut other: i64) -> i64 {
+        return ((*self).with(|__s| __s.value) + other);
     }
 }
 pub trait MyContainer_char_Impl {

@@ -6,43 +6,37 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn to_int_0(c: i8) -> i32 {
-    let c: Value<i8> = Rc::new(RefCell::new(c));
-    return ((*c.borrow()) as i32);
+pub fn to_int_0(mut c: i8) -> i32 {
+    return (c as i32);
 }
-pub fn is_negative_1(s: Ptr<i8>) -> bool {
-    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
-    return (((elem!((*s.borrow()), 0).read()) as i32) < 0);
+pub fn is_negative_1(mut s: Ptr<i8>) -> bool {
+    return (((elem!(s, 0).read()) as i32) < 0);
 }
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<i8> = Rc::new(RefCell::new(-56_i8));
-    let widened: Value<i32> = Rc::new(RefCell::new(((*c.borrow()) as i32)));
-    println!(
-        "{} {}",
-        (*widened.borrow()),
-        ({ to_int_0((b'\xff' as i8),) })
-    );
-    println!("{}", ((((*c.borrow()) as i32) < 0) as i32));
+    let mut c: i8 = -56_i8;
+    let mut widened: i32 = (c as i32);
+    println!("{} {}", widened, ({ to_int_0((b'\xff' as i8),) }));
+    println!("{}", (((c as i32) < 0) as i32));
     let lit: Value<Box<[i8]>> = Rc::new(RefCell::new(i8::array_from_literal(b"\xe9t\xe9\0")));
-    let ulit: Value<Box<[u8]>> = Rc::new(RefCell::new(u8::array_from_literal(b"\xe9t\xe9\0")));
+    let mut ulit: [u8; 4] = b"\xe9t\xe9\0".map(u8::from_byte);
     println!(
         "{} {}",
         ((*lit.borrow())[(0) as usize] as i32),
-        ((*ulit.borrow())[(0) as usize] as i32)
+        (ulit[(0) as usize] as i32)
     );
     println!(
         "{}",
         (({ is_negative_1((lit.as_pointer() as Ptr::<i8>),) }) as i32)
     );
-    let p: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"\x80")));
+    let mut p: Ptr<i8> = Ptr::<i8>::from_string_literal(b"\x80");
     println!(
         "{} {}",
-        ((elem!((*p.borrow()), 0).read()) as i32),
-        (((elem!((*p.borrow()), 0).read()) as u8) as i32)
+        ((elem!(p, 0).read()) as i32),
+        (((elem!(p, 0).read()) as u8) as i32)
     );
     println!(
         "{}",
@@ -71,10 +65,8 @@ fn main_0() -> i32 {
         ((elem!((s.as_pointer() as Ptr<i8>), 0_usize).read()) as i32),
         ((elem!((s.as_pointer() as Ptr<i8>), 1_usize).read()) as i32)
     );
-    let sum: Value<i8> = Rc::new(RefCell::new(
-        ((((*c.borrow()) as i32) + ((*c.borrow()) as i32)) as i8),
-    ));
-    println!("{}", ((*sum.borrow()) as i32));
+    let mut sum: i8 = (((c as i32) + (c as i32)) as i8);
+    println!("{}", (sum as i32));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

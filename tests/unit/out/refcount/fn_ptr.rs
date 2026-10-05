@@ -6,35 +6,27 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn my_foo_0(p: AnyPtr) -> i32 {
-    let p: Value<AnyPtr> = Rc::new(RefCell::new(p));
-    return ((*p.borrow()).reinterpret_cast::<i32>().read());
+pub fn my_foo_0(mut p: AnyPtr) -> i32 {
+    return (p.reinterpret_cast::<i32>().read());
 }
-pub fn foo_1(fn_: FnPtr<fn(AnyPtr) -> i32>, pi: Ptr<i32>) -> i32 {
-    let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> = Rc::new(RefCell::new(fn_));
-    let pi: Value<Ptr<i32>> = Rc::new(RefCell::new(pi));
-    return ({ (*fn_.borrow()).call((*pi.borrow()).to_any()) });
+pub fn foo_1(mut fn_: FnPtr<fn(AnyPtr) -> i32>, mut pi: Ptr<i32>) -> i32 {
+    return ({ fn_.call((pi).to_any()) });
 }
-pub fn twice_2(x: u64) -> u64 {
-    let x: Value<u64> = Rc::new(RefCell::new(x));
-    return (*x.borrow()).wrapping_mul(2_u64);
+pub fn twice_2(mut x: u64) -> u64 {
+    return (x).wrapping_mul(2_u64);
 }
 pub fn twice_in_place_3(x: Ptr<u64>) -> u64 {
     x.write({ (x.read()).wrapping_mul(2_u64) });
     return (x.read());
 }
-pub fn ret_size_4(v: i32) -> usize {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    return (((*v.borrow()) + 1) as usize);
+pub fn ret_size_4(mut v: i32) -> usize {
+    return ((v + 1) as usize);
 }
-pub fn call_fn_5(f: FnPtr<fn(i32) -> usize>, v: i32) -> usize {
-    let f: Value<FnPtr<fn(i32) -> usize>> = Rc::new(RefCell::new(f));
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    return ({ (*f.borrow()).call((*v.borrow())) }).wrapping_mul(2_usize);
+pub fn call_fn_5(mut f: FnPtr<fn(i32) -> usize>, mut v: i32) -> usize {
+    return ({ f.call(v) }).wrapping_mul(2_usize);
 }
-pub fn identity_hash_6(v: bool) -> usize {
-    let v: Value<bool> = Rc::new(RefCell::new(v));
-    return ((*v.borrow()) as usize);
+pub fn identity_hash_6(mut v: bool) -> usize {
+    return (v as usize);
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(8)]
@@ -57,30 +49,23 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let fn_: Value<FnPtr<fn(AnyPtr) -> i32>> =
-        Rc::new(RefCell::new(FnPtr::<fn(AnyPtr) -> i32>::null()));
-    assert!((*fn_.borrow()).is_null());
-    assert!(({ (*fn_.borrow()).clone() } != { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
-    (*fn_.borrow_mut()) = FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0);
-    assert!(!((*fn_.borrow()).is_null()));
-    assert!(({ (*fn_.borrow()).clone() } == { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
+    let mut fn_: FnPtr<fn(AnyPtr) -> i32> = FnPtr::<fn(AnyPtr) -> i32>::null();
+    assert!((fn_).is_null());
+    assert!(({ (fn_).clone() } != { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
+    fn_ = FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0);
+    assert!(!((fn_).is_null()));
+    assert!(({ (fn_).clone() } == { FnPtr::<fn(AnyPtr) -> i32>::new(my_foo_0) }));
     let a: Value<i32> = Rc::new(RefCell::new(10));
-    assert!(({ ({ foo_1((*fn_.borrow()).clone(), (a.as_pointer()),) }) } == { (*a.borrow()) }));
-    let ul_fn: Value<FnPtr<fn(u64) -> u64>> =
-        Rc::new(RefCell::new((FnPtr::<fn(u64) -> u64>::new(twice_2))));
-    let n: Value<usize> = Rc::new(RefCell::new(21_usize));
-    let r: Value<usize> = Rc::new(RefCell::new(
-        (({ (*ul_fn.borrow()).call(((*n.borrow()) as u64)) }) as usize),
-    ));
-    assert!(((*r.borrow()) == 42_usize));
-    let ul_ref_fn: Value<FnPtr<fn(Ptr<u64>) -> u64>> = Rc::new(RefCell::new(
-        (FnPtr::<fn(Ptr<u64>) -> u64>::new(twice_in_place_3)),
-    ));
+    assert!(({ ({ foo_1((fn_).clone(), (a.as_pointer()),) }) } == { (*a.borrow()) }));
+    let mut ul_fn: FnPtr<fn(u64) -> u64> = (FnPtr::<fn(u64) -> u64>::new(twice_2));
+    let mut n: usize = 21_usize;
+    let mut r: usize = (({ ul_fn.call((n as u64)) }) as usize);
+    assert!((r == 42_usize));
+    let mut ul_ref_fn: FnPtr<fn(Ptr<u64>) -> u64> =
+        (FnPtr::<fn(Ptr<u64>) -> u64>::new(twice_in_place_3));
     let m: Value<usize> = Rc::new(RefCell::new(21_usize));
-    let q: Value<usize> = Rc::new(RefCell::new(
-        (({ (*ul_ref_fn.borrow()).call((m.as_pointer()).reinterpret_cast::<u64>()) }) as usize),
-    ));
-    assert!(((*q.borrow()) == 42_usize));
+    let mut q: usize = (({ ul_ref_fn.call((m.as_pointer()).reinterpret_cast::<u64>()) }) as usize);
+    assert!((q == 42_usize));
     assert!(((*m.borrow()) == 42_usize));
     assert!((({ call_fn_5(FnPtr::<fn(i32) -> usize>::new(ret_size_4), 3,) }) == 8_usize));
     let hh: Value<HashHolder_unsigned_long__ptr__bool__> = Rc::new(RefCell::new({

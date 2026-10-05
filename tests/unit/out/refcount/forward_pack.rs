@@ -22,10 +22,9 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+            v: v,
             copies: 0,
             moves: 0,
         }));
@@ -75,23 +74,21 @@ pub fn chosen_overload_3(_a0: Ptr<i32>) -> Overload {
     return Overload_kIntRvalueOverload;
 }
 pub fn forward_pack_4() -> i32 {
-    let digits: Value<i32> = Rc::new(RefCell::new(0));
+    let mut digits: i32 = 0;
     ();
-    return (*digits.borrow());
+    return digits;
 }
 pub fn forward_pack_5(args: Ptr<Tracked>) -> i32 {
-    let digits: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs =
-        ({ ((*digits.borrow()) * 10) } + { (({ chosen_overload_0((args).clone()) }) as i32) });
-    (*digits.borrow_mut()) = __rhs;
-    return (*digits.borrow());
+    let mut digits: i32 = 0;
+    let __rhs = ({ (digits * 10) } + { (({ chosen_overload_0((args).clone()) }) as i32) });
+    digits = __rhs;
+    return digits;
 }
 pub fn forward_pack_6(args: Ptr<Tracked>) -> i32 {
-    let digits: Value<i32> = Rc::new(RefCell::new(0));
-    let __rhs =
-        ({ ((*digits.borrow()) * 10) } + { (({ chosen_overload_1((args).clone()) }) as i32) });
-    (*digits.borrow_mut()) = __rhs;
-    return (*digits.borrow());
+    let mut digits: i32 = 0;
+    let __rhs = ({ (digits * 10) } + { (({ chosen_overload_1((args).clone()) }) as i32) });
+    digits = __rhs;
+    return digits;
 }
 pub fn forward_pack_7(
     args_0: Ptr<Tracked>,
@@ -99,30 +96,25 @@ pub fn forward_pack_7(
     args_2: Ptr<i32>,
     args_3: Ptr<i32>,
 ) -> i32 {
-    let digits: Value<i32> = Rc::new(RefCell::new(0));
+    let mut digits: i32 = 0;
     {
-        let __rhs = ({ ((*digits.borrow()) * 10) } + {
-            (({ chosen_overload_0((args_0).clone()) }) as i32)
-        });
-        (*digits.borrow_mut()) = __rhs;
+        let __rhs = ({ (digits * 10) } + { (({ chosen_overload_0((args_0).clone()) }) as i32) });
+        digits = __rhs;
         {
-            let __rhs = ({ ((*digits.borrow()) * 10) } + {
-                (({ chosen_overload_1((args_1).clone()) }) as i32)
-            });
-            (*digits.borrow_mut()) = __rhs;
+            let __rhs =
+                ({ (digits * 10) } + { (({ chosen_overload_1((args_1).clone()) }) as i32) });
+            digits = __rhs;
             {
-                let __rhs = ({ ((*digits.borrow()) * 10) } + {
-                    (({ chosen_overload_2((args_2).clone()) }) as i32)
-                });
-                (*digits.borrow_mut()) = __rhs;
-                let __rhs = ({ ((*digits.borrow()) * 10) } + {
-                    (({ chosen_overload_3((args_3).clone()) }) as i32)
-                });
-                (*digits.borrow_mut()) = __rhs
+                let __rhs =
+                    ({ (digits * 10) } + { (({ chosen_overload_2((args_2).clone()) }) as i32) });
+                digits = __rhs;
+                let __rhs =
+                    ({ (digits * 10) } + { (({ chosen_overload_3((args_3).clone()) }) as i32) });
+                digits = __rhs
             }
         }
     };
-    return (*digits.borrow());
+    return digits;
 }
 impl Pair {
     pub fn new(x: Ptr<Tracked>, y: Ptr<Tracked>) -> Self {

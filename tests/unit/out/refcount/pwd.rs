@@ -7,38 +7,32 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_getpwuid_0() {
-    let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
-            Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
-            }
-        },
-    ));
-    assert!((((!((*pw.borrow()).is_null())) as i32) != 0));
+    let mut pw: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
+        nix::unistd::Uid::from_raw(nix::unistd::geteuid().as_raw()),
+    ) {
+        Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
+        Ok(None) => Ptr::null(),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            Ptr::null()
+        }
+    };
+    assert!((((!((pw).is_null())) as i32) != 0));
+    assert!(((({ pw.with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() }) as i32) != 0));
     assert!(
-        ((({ (*pw.borrow()).with(|__s| __s.pw_uid) } == { nix::unistd::geteuid().as_raw() })
-            as i32)
-            != 0)
-    );
-    assert!(
-        ((((*pw.borrow())
+        (((pw
             .with(|__s| __s.pw_name.clone())
             .to_c_string_iterator()
             .count()
             > 0_usize) as i32)
             != 0)
     );
-    assert!((((!(((*pw.borrow()).with(|__s| __s.pw_dir.clone())).is_null())) as i32) != 0));
-    println!("{}", (*pw.borrow()).with(|__s| __s.pw_name.clone()));
+    assert!((((!((pw.with(|__s| __s.pw_dir.clone())).is_null())) as i32) != 0));
+    println!("{}", pw.with(|__s| __s.pw_name.clone()));
 }
 pub fn test_getpwuid_missing_1() {
     libcc2rs::cpp2rust_errno().write(0);
-    let pw: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
+    let mut pw: Ptr<libcc2rs::Passwd> =
         match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(2147483646_u32)) {
             Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
             Ok(None) => Ptr::null(),
@@ -46,9 +40,8 @@ pub fn test_getpwuid_missing_1() {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
                 Ptr::null()
             }
-        },
-    ));
-    assert!(((((*pw.borrow()).is_null()) as i32) != 0));
+        };
+    assert!(((((pw).is_null()) as i32) != 0));
     assert!(((((libcc2rs::cpp2rust_errno().read()) == 0) as i32) != 0));
 }
 pub fn test_getpwuid_r_2() {
@@ -114,25 +107,21 @@ pub fn test_getpwuid_r_2() {
             > 0_usize) as i32)
             != 0)
     );
-    let pw2: Value<Ptr<libcc2rs::Passwd>> = Rc::new(RefCell::new(
-        match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(
-            nix::unistd::geteuid().as_raw(),
-        )) {
-            Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
-            Ok(None) => Ptr::null(),
-            Err(__e) => {
-                libcc2rs::cpp2rust_errno().write(__e as i32);
-                Ptr::null()
-            }
-        },
-    ));
-    assert!((((!((*pw2.borrow()).is_null())) as i32) != 0));
+    let mut pw2: Ptr<libcc2rs::Passwd> = match nix::unistd::User::from_uid(
+        nix::unistd::Uid::from_raw(nix::unistd::geteuid().as_raw()),
+    ) {
+        Ok(Some(__u)) => Ptr::alloc(Passwd::from_user(&__u)),
+        Ok(None) => Ptr::null(),
+        Err(__e) => {
+            libcc2rs::cpp2rust_errno().write(__e as i32);
+            Ptr::null()
+        }
+    };
+    assert!((((!((pw2).is_null())) as i32) != 0));
     assert!(
         ((({
             let mut __it1 = { (*pw.borrow()).pw_name.clone() }.to_c_string_iterator();
-            let mut __it2 = (*pw2.borrow())
-                .with(|__s| __s.pw_name.clone())
-                .to_c_string_iterator();
+            let mut __it2 = pw2.with(|__s| __s.pw_name.clone()).to_c_string_iterator();
             loop {
                 let __c1 = __it1.next();
                 let __c2 = __it2.next();

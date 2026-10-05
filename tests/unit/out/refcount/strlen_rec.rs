@@ -6,13 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn strlen_0(s: Ptr<i8>, n: i32) -> i32 {
-    let s: Value<Ptr<i8>> = Rc::new(RefCell::new(s));
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    return if (((*s.borrow()).read()) != 0) {
-        ({ strlen_0((*s.borrow()).offset((1) as isize), ((*n.borrow()) + 1)) })
+pub fn strlen_0(mut s: Ptr<i8>, mut n: i32) -> i32 {
+    return if ((s.read()) != 0) {
+        ({ strlen_0(s.offset((1) as isize), (n + 1)) })
     } else {
-        (*n.borrow())
+        n
     };
 }
 pub fn main() {

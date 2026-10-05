@@ -40,10 +40,10 @@ fn main_0() -> i32 {
     assert!(((((anon_0_FIRST_A as i32) != (anon_0_FIRST_B as i32)) as i32) != 0));
     assert!(((((anon_1_SECOND_A as i32) != (anon_1_SECOND_B as i32)) as i32) != 0));
     assert!(((((anon_3_THIRD_A as i32) != (anon_3_THIRD_B as i32)) as i32) != 0));
-    let td: Value<TdEnum_enum> = Rc::new(RefCell::new(TdEnum_enum_TD_A));
-    assert!((((((*td.borrow()) as u32) == ((TdEnum_enum_TD_A as i32) as u32)) as i32) != 0));
-    (*td.borrow_mut()) = TdEnum_enum_TD_B;
-    assert!((((((*td.borrow()) as u32) == ((TdEnum_enum_TD_B as i32) as u32)) as i32) != 0));
+    let mut td: TdEnum_enum = TdEnum_enum_TD_A;
+    assert!(((((td as u32) == ((TdEnum_enum_TD_A as i32) as u32)) as i32) != 0));
+    td = TdEnum_enum_TD_B;
+    assert!(((((td as u32) == ((TdEnum_enum_TD_B as i32) as u32)) as i32) != 0));
     let w: Value<WithAnonField> = <Value<WithAnonField>>::default();
     (*w.borrow_mut()).field = anon_2_FIELD_A;
     assert!((((({ (*w.borrow()).field } as u32) == ((anon_2_FIELD_A as i32) as u32)) as i32) != 0));

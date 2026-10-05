@@ -22,10 +22,9 @@ pub struct Tracked {
     pub moves: i32,
 }
 impl Tracked {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         let __this: Value<Tracked> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+            v: v,
             copies: 0,
             moves: 0,
         }));

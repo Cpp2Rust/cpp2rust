@@ -53,19 +53,17 @@ pub fn operator_bitxor_assign_7(a: Ptr<S>, b: Ptr<S>) -> Ptr<S> {
     };
     return (a).clone();
 }
-pub fn operator_shl_assign_8(a: Ptr<S>, n: i32) -> Ptr<S> {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn operator_shl_assign_8(a: Ptr<S>, mut n: i32) -> Ptr<S> {
     {
         let _ptr = field!(a, v);
-        _ptr.write(_ptr.read() << (*n.borrow()))
+        _ptr.write(_ptr.read() << n)
     };
     return (a).clone();
 }
-pub fn operator_shr_assign_9(a: Ptr<S>, n: i32) -> Ptr<S> {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
+pub fn operator_shr_assign_9(a: Ptr<S>, mut n: i32) -> Ptr<S> {
     {
         let _ptr = field!(a, v);
-        _ptr.write(_ptr.read() >> (*n.borrow()))
+        _ptr.write(_ptr.read() >> n)
     };
     return (a).clone();
 }

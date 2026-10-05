@@ -381,7 +381,7 @@ void Converter::EmitHoistedDecls(clang::CompoundStmt *body) {
             var && var->isLocalVarDecl() && !IsGlobalVar(var)) {
           hoisted_decls_.insert(var);
           if (ConvertVarDeclSkipInit(var)) {
-            StrCat(token::kAssign, ConvertVarDefaultInit(var->getType()),
+            StrCat(token::kAssign, ConvertVarDefaultInit(var),
                    token::kSemiColon);
           }
         }
@@ -522,7 +522,7 @@ void Converter::ConvertVarDeclInitializer(clang::VarDecl *decl) {
   if (decl->hasInit()) {
     ConvertVarInit(decl->getType(), decl->getInit());
   } else if (!clang::isa<clang::ParmVarDecl>(decl)) {
-    StrCat(ConvertVarDefaultInit(decl->getType()));
+    StrCat(ConvertVarDefaultInit(decl));
   }
 }
 
@@ -4155,8 +4155,8 @@ std::string Converter::GetDefaultAsStringFallback(clang::QualType qual_type) {
   return std::format("<{}>::default()", ToString(qual_type));
 }
 
-std::string Converter::ConvertVarDefaultInit(clang::QualType qual_type) {
-  return GetDefaultAsString(qual_type);
+std::string Converter::ConvertVarDefaultInit(const clang::VarDecl *decl) {
+  return GetDefaultAsString(decl->getType());
 }
 
 std::string

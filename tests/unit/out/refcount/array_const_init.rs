@@ -40,31 +40,31 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(((({ (*s_0.with(Value::clone).borrow()).head } == 5) as i32) != 0));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 3) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < 3) as i32) != 0) {
         assert!(
             ((((elem!(
                 (array_field_ptr!(s_0.with(|v| v.as_pointer()), tail) as Ptr::<i32>),
-                (*i.borrow())
+                i
             )
             .read())
                 == 0) as i32)
                 != 0)
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((((*i.borrow()) < 4) as i32) != 0) {
+    let mut i: i32 = 0;
+    'loop_: while (((i < 4) as i32) != 0) {
         assert!(
             (((((elem!(
                 (array_field_ptr!(s_0.with(|v| v.as_pointer()), buf) as Ptr::<i8>),
-                (*i.borrow())
+                i
             )
             .read()) as i32)
                 == 0) as i32)
                 != 0)
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
     return 0;
 }

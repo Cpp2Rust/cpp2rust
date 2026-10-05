@@ -46,26 +46,24 @@ fn main_0() -> i32 {
         .unwrap()
         .borrow_mut())
     .x += 5;
-    let sum: Value<i32> = Rc::new(RefCell::new(
-        ({
-            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
-                .as_ref()
-                .unwrap()
-                .borrow())
-            .x
-        } + {
-            (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
-                .as_ref()
-                .unwrap()
-                .borrow())
-            .y
-        }),
-    ));
+    let mut sum: i32 = ({
+        (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+            .as_ref()
+            .unwrap()
+            .borrow())
+        .x
+    } + {
+        (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+            .as_ref()
+            .unwrap()
+            .borrow())
+        .y
+    });
     let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(100)))));
     let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
     let __rhs = (*(*a.borrow()).as_ref().unwrap().borrow());
     (*(*b.borrow()).as_ref().unwrap().borrow_mut()) = __rhs;
-    assert!((((*sum.borrow()) + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
+    assert!(((sum + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
     return 0;
 }
 pub trait OuterImpl {

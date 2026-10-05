@@ -59,9 +59,9 @@ fn main_0() -> i32 {
                 .unwrap_or(usize::MAX)
         })
     );
-    let lit: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"xy\0zw")));
+    let mut lit: Ptr<i8> = Ptr::<i8>::from_string_literal(b"xy\0zw");
     let t: Value<Vec<i8>> = Rc::new(RefCell::new({
-        let mut __bytes = (*lit.borrow()).to_c_bytes();
+        let mut __bytes = lit.to_c_bytes();
         __bytes.push(0);
         __bytes
     }));

@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     assert!((({ CImpl::get(&c.as_pointer(),) }) == 1));
     assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
     let s: Value<S> = Rc::new(RefCell::new(<S>::default()));
-    let p: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
+    let mut p: Ptr<S> = (s.as_pointer());
     assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
     assert!((inner_const_1.with(|rc| *rc.borrow()) == 2));
     assert!(((anon_3_kValue as i32) == 3));

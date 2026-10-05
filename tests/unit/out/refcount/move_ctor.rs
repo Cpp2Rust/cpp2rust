@@ -13,9 +13,8 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -71,10 +70,9 @@ pub struct ThrowingMove {
     pub moves: i32,
 }
 impl ThrowingMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         let __this: Value<ThrowingMove> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+            v: v,
             copies: 0,
             moves: 0,
         }));
@@ -122,10 +120,9 @@ pub struct NoexceptMove {
     pub moves: i32,
 }
 impl NoexceptMove {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
+    pub fn new(mut v: i32) -> Self {
         let __this: Value<NoexceptMove> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
+            v: v,
             copies: 0,
             moves: 0,
         }));
@@ -166,9 +163,8 @@ pub fn by_value_0(m: MoveOnly) -> i32 {
     let m: Value<MoveOnly> = Rc::new(RefCell::new(m));
     return { (*m.borrow()).v };
 }
-pub fn make_1(v: i32) -> MoveOnly {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
+pub fn make_1(mut v: i32) -> MoveOnly {
+    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ v })));
     return MoveOnly::move_from({ m.as_pointer() });
 }
 pub fn main() {

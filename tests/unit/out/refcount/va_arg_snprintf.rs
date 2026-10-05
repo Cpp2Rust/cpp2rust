@@ -6,15 +6,13 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn extract_first_0(buf: Ptr<i8>, size: i32, fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
-    let buf: Value<Ptr<i8>> = Rc::new(RefCell::new(buf));
-    let size: Value<i32> = Rc::new(RefCell::new(size));
+pub fn extract_first_0(mut buf: Ptr<i8>, mut size: i32, fmt: Ptr<i8>, __args: &[VaArg]) -> i32 {
     let fmt: Value<Ptr<i8>> = Rc::new(RefCell::new(fmt));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
     (*ap.borrow_mut()) = VaList::new(__args);
-    let n: Value<i32> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<i32>()));
-    elem!((*buf.borrow()), 0).write({ ((*n.borrow()) as i8) });
-    return (*n.borrow());
+    let mut n: i32 = (*ap.borrow_mut()).arg::<i32>();
+    elem!(buf, 0).write({ (n as i8) });
+    return n;
 }
 pub fn main() {
     __cpp2rust_init_globals();

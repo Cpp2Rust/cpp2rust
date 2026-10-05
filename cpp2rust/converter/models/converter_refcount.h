@@ -3,12 +3,17 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
+#include <memory>
+
 #include "converter/converter.h"
+#include "converter/models/boxed_vars.h"
 
 namespace cpp2rust {
 class ConverterRefCount final : public Converter {
 public:
   ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx);
+  ConverterRefCount(std::string &rs_code, clang::ASTContext &ctx,
+                    std::shared_ptr<const BoxedVars> boxed_vars);
 
   void EmitFilePreamble() override;
 
@@ -202,8 +207,7 @@ public:
 
   bool VisitCXXForRangeStmtString(clang::CXXForRangeStmt *stmt) override;
 
-  void EmitByValueShadow(const std::string &loop_var_name, clang::QualType type,
-                         std::string box_expr,
+  void EmitByValueShadow(const clang::VarDecl *loop_var, std::string box_expr,
                          const std::string &type_override = "");
 
   std::string ConvertStream(clang::Expr *expr) override;
@@ -230,7 +234,7 @@ public:
 
   std::string GetDefaultAsStringFallback(clang::QualType qual_type) override;
 
-  std::string ConvertVarDefaultInit(clang::QualType qual_type) override;
+  std::string ConvertVarDefaultInit(const clang::VarDecl *decl) override;
 
   std::vector<const char *>
   GetStructAttributes(const clang::RecordDecl *decl) override;
@@ -403,6 +407,11 @@ private:
   bool NeedsMut(const clang::VarDecl *decl, clang::QualType type,
                 llvm::StringRef /*name*/) const override;
 
+  // Whether decl is a local variable or a parameter that is stored directly
+  // instead of in a Value, as no pointer to it is ever made.
+  bool IsUnboxedVar(const clang::ValueDecl *decl) const;
+  std::shared_ptr<const BoxedVars> boxed_vars_;
+
   /// The kind of conversion that should be performed.
   enum class ConversionKind : uint8_t {
     Unboxed,
@@ -426,6 +435,9 @@ private:
   }
 
   ConversionKind getConversionKind() const { return conversion_kind_.back(); }
+
+  // How a variable is stored.
+  ConversionKind VarConversionKind(const clang::VarDecl *decl) const;
 
   struct PushConversionKind {
     ConverterRefCount &c;

@@ -6,16 +6,8 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn log_0(file: Ptr<i8>, line: i32, func: Ptr<i8>) {
-    let file: Value<Ptr<i8>> = Rc::new(RefCell::new(file));
-    let line: Value<i32> = Rc::new(RefCell::new(line));
-    let func: Value<Ptr<i8>> = Rc::new(RefCell::new(func));
-    println!(
-        "{} {} {}",
-        (*file.borrow()),
-        (*line.borrow()),
-        (*func.borrow())
-    );
+pub fn log_0(mut file: Ptr<i8>, mut line: i32, mut func: Ptr<i8>) {
+    println!("{} {} {}", file, line, func);
 }
 pub fn main() {
     __cpp2rust_init_globals();

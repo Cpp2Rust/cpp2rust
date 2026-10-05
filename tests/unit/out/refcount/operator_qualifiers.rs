@@ -48,41 +48,32 @@ pub trait SImpl {
     fn operator_index_9(&self, i: i32) -> i32;
 }
 impl SImpl for Ptr<S> {
-    fn operator_add_1(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*self).with(|__s| __s.v) + (*a.borrow()));
+    fn operator_add_1(&self, mut a: i32) -> i32 {
+        return ((*self).with(|__s| __s.v) + a);
     }
-    fn operator_add_2(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return (((*self).with(|__s| __s.v) + (*a.borrow())) + 1);
+    fn operator_add_2(&self, mut a: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) + a) + 1);
     }
-    fn operator_add_3(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return (((*self).with(|__s| __s.v) + (*a.borrow())) + 2);
+    fn operator_add_3(&self, mut a: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) + a) + 2);
     }
-    fn operator_sub_4(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*self).with(|__s| __s.v) - (*a.borrow()));
+    fn operator_sub_4(&self, mut a: i32) -> i32 {
+        return ((*self).with(|__s| __s.v) - a);
     }
-    fn operator_sub_5(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return (((*self).with(|__s| __s.v) - (*a.borrow())) - 1);
+    fn operator_sub_5(&self, mut a: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) - a) - 1);
     }
-    fn operator_mul_6(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*self).with(|__s| __s.v) * (*a.borrow()));
+    fn operator_mul_6(&self, mut a: i32) -> i32 {
+        return ((*self).with(|__s| __s.v) * a);
     }
-    fn operator_mul_7(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return (((*self).with(|__s| __s.v) * (*a.borrow())) * 2);
+    fn operator_mul_7(&self, mut a: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) * a) * 2);
     }
-    fn operator_index_8(&self, i: i32) -> i32 {
-        let i: Value<i32> = Rc::new(RefCell::new(i));
-        return ((*self).with(|__s| __s.v) + (*i.borrow()));
+    fn operator_index_8(&self, mut i: i32) -> i32 {
+        return ((*self).with(|__s| __s.v) + i);
     }
-    fn operator_index_9(&self, i: i32) -> i32 {
-        let i: Value<i32> = Rc::new(RefCell::new(i));
-        return (((*self).with(|__s| __s.v) + (*i.borrow())) + 100);
+    fn operator_index_9(&self, mut i: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) + i) + 100);
     }
 }
 pub fn __cpp2rust_init_globals() {}

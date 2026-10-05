@@ -46,31 +46,19 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let c: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(b"A")));
-    let w: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::from_string_literal(&[
-        65 as i32, 258 as i32, 0 as i32,
-    ])));
-    let b: Value<Ptr<u8>> = Rc::new(RefCell::new(Ptr::<u8>::from_string_literal(&[
-        196 as u8, 130 as u8, 0 as u8,
-    ])));
-    let s: Value<Ptr<u16>> = Rc::new(RefCell::new(Ptr::<u16>::from_string_literal(&[
-        65 as u16, 258 as u16, 0 as u16,
-    ])));
-    let l: Value<Ptr<u32>> = Rc::new(RefCell::new(Ptr::<u32>::from_string_literal(&[
-        65 as u32, 258 as u32, 0 as u32,
-    ])));
-    assert!((((elem!((*c.borrow()), 0).read()) as i32) == (('A' as i8) as i32)));
+    let mut c: Ptr<i8> = Ptr::<i8>::from_string_literal(b"A");
+    let mut w: Ptr<i32> = Ptr::<i32>::from_string_literal(&[65 as i32, 258 as i32, 0 as i32]);
+    let mut b: Ptr<u8> = Ptr::<u8>::from_string_literal(&[196 as u8, 130 as u8, 0 as u8]);
+    let mut s: Ptr<u16> = Ptr::<u16>::from_string_literal(&[65 as u16, 258 as u16, 0 as u16]);
+    let mut l: Ptr<u32> = Ptr::<u32>::from_string_literal(&[65 as u32, 258 as u32, 0 as u32]);
+    assert!((((elem!(c, 0).read()) as i32) == (('A' as i8) as i32)));
+    assert!((((elem!(b, 0).read()) as i32) == 196) && (((elem!(b, 1).read()) as i32) == 130));
+    assert!(((elem!(w, 1).read()) == 258));
+    assert!((((elem!(s, 1).read()) as i32) == 258));
+    assert!(((elem!(l, 1).read()) == 258_u32));
     assert!(
-        (((elem!((*b.borrow()), 0).read()) as i32) == 196)
-            && (((elem!((*b.borrow()), 1).read()) as i32) == 130)
-    );
-    assert!(((elem!((*w.borrow()), 1).read()) == 258));
-    assert!((((elem!((*s.borrow()), 1).read()) as i32) == 258));
-    assert!(((elem!((*l.borrow()), 1).read()) == 258_u32));
-    assert!(
-        (((elem!((*w.borrow()), 2).read()) == 0)
-            && (((elem!((*s.borrow()), 2).read()) as i32) == 0))
-            && ((elem!((*l.borrow()), 2).read()) == 0_u32)
+        (((elem!(w, 2).read()) == 0) && (((elem!(s, 2).read()) as i32) == 0))
+            && ((elem!(l, 2).read()) == 0_u32)
     );
     assert!(
         (((elem!(({ get_0(Ptr::<i8>::from_string_literal(b"A"),) }), 0).read()) as i32)
@@ -145,57 +133,33 @@ fn main_0() -> i32 {
             ]))
         }) == 258_u32)
     );
-    let nw: Value<usize> = Rc::new(RefCell::new(
-        ((::std::mem::size_of::<[i32; 4]>() as usize)
-            .wrapping_div((::std::mem::size_of::<i32>() as usize)) as usize)
-            .wrapping_sub(1_usize),
-    ));
-    let nb: Value<usize> = Rc::new(RefCell::new(
-        ((::std::mem::size_of::<[u8; 4]>() as usize)
-            .wrapping_div((::std::mem::size_of::<u8>() as usize)) as usize)
-            .wrapping_sub(1_usize),
-    ));
-    let ns: Value<usize> = Rc::new(RefCell::new(
-        ((::std::mem::size_of::<[u16; 4]>() as usize)
-            .wrapping_div((::std::mem::size_of::<u16>() as usize)) as usize)
-            .wrapping_sub(1_usize),
-    ));
-    let nl: Value<usize> = Rc::new(RefCell::new(
-        ((::std::mem::size_of::<[u32; 4]>() as usize)
-            .wrapping_div((::std::mem::size_of::<u32>() as usize)) as usize)
-            .wrapping_sub(1_usize),
-    ));
+    let mut nw: usize = ((::std::mem::size_of::<[i32; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<i32>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut nb: usize = ((::std::mem::size_of::<[u8; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u8>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut ns: usize = ((::std::mem::size_of::<[u16; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u16>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    let mut nl: usize = ((::std::mem::size_of::<[u32; 4]>() as usize)
+        .wrapping_div((::std::mem::size_of::<u32>() as usize)) as usize)
+        .wrapping_sub(1_usize);
+    assert!((((nw == 3_usize) && (nb == 3_usize)) && (ns == 3_usize)) && (nl == 3_usize));
+    let mut pw: [i32; 4] = [258 as i32, 0 as i32, 0 as i32, 0 as i32];
+    let mut ps: [u16; 4] = [258 as u16, 0 as u16, 0 as u16, 0 as u16];
+    assert!(((pw[(0) as usize] == 258) && (pw[(1) as usize] == 0)) && (pw[(3) as usize] == 0));
     assert!(
-        ((((*nw.borrow()) == 3_usize) && ((*nb.borrow()) == 3_usize))
-            && ((*ns.borrow()) == 3_usize))
-            && ((*nl.borrow()) == 3_usize)
+        (((ps[(0) as usize] as i32) == 258) && ((ps[(1) as usize] as i32) == 0))
+            && ((ps[(3) as usize] as i32) == 0)
     );
-    let pw: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::from([
-        258 as i32, 0 as i32, 0 as i32, 0 as i32,
-    ])));
-    let ps: Value<Box<[u16]>> = Rc::new(RefCell::new(Box::from([
-        258 as u16, 0 as u16, 0 as u16, 0 as u16,
-    ])));
-    assert!(
-        (((*pw.borrow())[(0) as usize] == 258) && ((*pw.borrow())[(1) as usize] == 0))
-            && ((*pw.borrow())[(3) as usize] == 0)
-    );
-    assert!(
-        ((((*ps.borrow())[(0) as usize] as i32) == 258)
-            && (((*ps.borrow())[(1) as usize] as i32) == 0))
-            && (((*ps.borrow())[(3) as usize] as i32) == 0)
-    );
-    let ew: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::from([0 as i32, 0 as i32])));
-    assert!(((*ew.borrow())[(0) as usize] == 0) && ((*ew.borrow())[(1) as usize] == 0));
-    let wc: Value<i32> = Rc::new(RefCell::new((258 as i32)));
-    let bc: Value<u8> = Rc::new(RefCell::new((65 as u8)));
-    let sc: Value<u16> = Rc::new(RefCell::new((258 as u16)));
-    let lc: Value<u32> = Rc::new(RefCell::new((258 as u32)));
-    assert!(
-        ((((*wc.borrow()) == 258) && (((*bc.borrow()) as i32) == 65))
-            && (((*sc.borrow()) as i32) == 258))
-            && ((*lc.borrow()) == 258_u32)
-    );
+    let mut ew: [i32; 2] = [0 as i32, 0 as i32];
+    assert!((ew[(0) as usize] == 0) && (ew[(1) as usize] == 0));
+    let mut wc: i32 = (258 as i32);
+    let mut bc: u8 = (65 as u8);
+    let mut sc: u16 = (258 as u16);
+    let mut lc: u32 = (258 as u32);
+    assert!((((wc == 258) && ((bc as i32) == 65)) && ((sc as i32) == 258)) && (lc == 258_u32));
     assert!(
         (((::std::mem::size_of::<i32>() == ::std::mem::size_of::<i32>())
             && (::std::mem::size_of::<u8>() == 1_usize))
@@ -203,13 +167,13 @@ fn main_0() -> i32 {
             && (::std::mem::size_of::<u32>() == 4_usize)
     );
     assert!(
-        (((elem!((*w.borrow()), 1).read()) == (258 as i32))
-            && (((elem!((*s.borrow()), 1).read()) as i32) == ((258 as u16) as i32)))
-            && ((elem!((*l.borrow()), 1).read()) == (258 as u32))
+        (((elem!(w, 1).read()) == (258 as i32))
+            && (((elem!(s, 1).read()) as i32) == ((258 as u16) as i32)))
+            && ((elem!(l, 1).read()) == (258 as u32))
     );
     assert!(
-        (((elem!((*b.borrow()), 0).read()) as i32) == ((196 as u8) as i32))
-            && (((elem!((*b.borrow()), 1).read()) as i32) == ((130 as u8) as i32))
+        (((elem!(b, 0).read()) as i32) == ((196 as u8) as i32))
+            && (((elem!(b, 1).read()) as i32) == ((130 as u8) as i32))
     );
     assert!(
         (({
@@ -241,17 +205,10 @@ fn main_0() -> i32 {
     assert!((((10 as i32) == 10) && (((9 as u16) as i32) == 9)) && ((92 as u32) == 92_u32));
     assert!((((97 as i32) + 1) == (98 as i32)));
     assert!(((122 as u32).wrapping_sub((97 as u32)) == 25_u32));
-    let wa: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([
-        (65 as i32),
-        (258 as i32),
-        (0 as i32),
-    ])));
-    assert!(
-        (((*wa.borrow())[(0) as usize] == 65) && ((*wa.borrow())[(1) as usize] == 258))
-            && ((*wa.borrow())[(2) as usize] == 0)
-    );
-    (*wa.borrow_mut())[(0) as usize] = (66 as i32);
-    assert!(((*wa.borrow())[(0) as usize] == (('B' as i8) as i32)));
+    let mut wa: [i32; 3] = [(65 as i32), (258 as i32), (0 as i32)];
+    assert!(((wa[(0) as usize] == 65) && (wa[(1) as usize] == 258)) && (wa[(2) as usize] == 0));
+    wa[(0) as usize] = (66 as i32);
+    assert!((wa[(0) as usize] == (('B' as i8) as i32)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

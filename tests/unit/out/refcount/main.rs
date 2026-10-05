@@ -24,16 +24,14 @@ pub fn main() {
     ::std::process::exit(main_0(::std::env::args().len() as i32, argv.as_pointer()));
 }
 fn main_0(argc: i32, argv: Ptr<Ptr<i8>>) -> i32 {
-    let argc: Value<i32> = Rc::new(RefCell::new(argc));
-    let argv: Value<Ptr<Ptr<i8>>> = Rc::new(RefCell::new(argv));
     let s: Value<Vec<i8>> = Rc::new(RefCell::new({
-        let mut __bytes = (elem!((*argv.borrow()), 0).read()).to_c_bytes();
+        let mut __bytes = (elem!(argv, 0).read()).to_c_bytes();
         __bytes.push(0);
         __bytes
     }));
-    assert!(((*argc.borrow()) == 1));
+    assert!((argc == 1));
     assert!((((*s.borrow()).len() - 1) > 0_usize));
-    assert!((((*argc.borrow()) + ((((*s.borrow()).len() - 1) > 0_usize) as i32)) == 2));
+    assert!(((argc + ((((*s.borrow()).len() - 1) > 0_usize) as i32)) == 2));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -13,9 +13,8 @@ pub struct MoveOnly {
     pub v: i32,
 }
 impl MoveOnly {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<MoveOnly> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<MoveOnly> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -46,9 +45,8 @@ impl Default for ConstMoveAssign {
         { ConstMoveAssign::new() }
     }
 }
-pub fn make_0(v: i32) -> MoveOnly {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ (*v.borrow()) })));
+pub fn make_0(mut v: i32) -> MoveOnly {
+    let m: Value<MoveOnly> = Rc::new(RefCell::new(MoveOnly::new({ v })));
     return MoveOnly::move_from({ m.as_pointer() });
 }
 pub fn main() {

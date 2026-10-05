@@ -10,10 +10,8 @@ use std::rc::{Rc, Weak};
 #[byte_size(1)]
 pub struct Static {}
 impl Static {
-    pub fn operator_call(a: i32, b: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        let b: Value<i32> = Rc::new(RefCell::new(b));
-        return ((*a.borrow()) * (*b.borrow()));
+    pub fn operator_call(mut a: i32, mut b: i32) -> i32 {
+        return (a * b);
     }
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
@@ -33,8 +31,8 @@ fn main_0() -> i32 {
     assert!((({ SImpl::operator_call_2(&s.as_pointer(), 1,) }) == 4));
     assert!((({ SImpl::operator_call_3(&s.as_pointer(), 1, 2,) }) == 6));
     assert!(({ ({ SImpl::operator_comma(&s.as_pointer(), t.as_pointer(),) }).v } == 34));
-    let i: Value<i32> = Rc::new(RefCell::new(({ SImpl::to_i32(&s.as_pointer()) })));
-    assert!(((*i.borrow()) == 3));
+    let mut i: i32 = ({ SImpl::to_i32(&s.as_pointer()) });
+    assert!((i == 3));
     assert!(((({ SImpl::to_i32(&s.as_pointer(),) }) + 1) == 4));
     if ({ SImpl::to_bool(&s.as_pointer()) }) {
         assert!(({ SImpl::to_bool(&s.as_pointer(),) }));
@@ -65,14 +63,11 @@ impl SImpl for Ptr<S> {
     fn operator_call_1(&self) -> i32 {
         return (*self).with(|__s| __s.v);
     }
-    fn operator_call_2(&self, a: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        return ((*self).with(|__s| __s.v) + (*a.borrow()));
+    fn operator_call_2(&self, mut a: i32) -> i32 {
+        return ((*self).with(|__s| __s.v) + a);
     }
-    fn operator_call_3(&self, a: i32, b: i32) -> i32 {
-        let a: Value<i32> = Rc::new(RefCell::new(a));
-        let b: Value<i32> = Rc::new(RefCell::new(b));
-        return (((*self).with(|__s| __s.v) + (*a.borrow())) + (*b.borrow()));
+    fn operator_call_3(&self, mut a: i32, mut b: i32) -> i32 {
+        return (((*self).with(|__s| __s.v) + a) + b);
     }
     fn operator_comma(&self, o: Ptr<S>) -> S {
         return S {

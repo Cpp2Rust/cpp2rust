@@ -11,31 +11,30 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let array: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::alloc_array(
-        (0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>(),
-    )));
+    let mut array: Ptr<i32> =
+        Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>());
     {
-        (*array.borrow()).to_any().memset(
+        (array).to_any().memset(
             (0) as u8,
             (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
         );
-        (*array.borrow()).to_any()
+        (array).to_any()
     };
-    elem!((*array.borrow()), 99).write(-1_i32);
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
-    'loop_: while (((*p1.borrow()).read()) >= 0) {
-        (*p1.borrow()).write(1);
-        (*p1.borrow_mut()).prefix_inc();
+    elem!(array, 99).write(-1_i32);
+    let mut p1: Ptr<i32> = (array).clone();
+    'loop_: while ((p1.read()) >= 0) {
+        p1.write(1);
+        p1.prefix_inc();
     }
-    let out: Value<i32> = Rc::new(RefCell::new(0));
-    let p1: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
-    'loop_: while (((*p1.borrow()).read()) >= 0) {
-        (*out.borrow_mut()) += { ((*p1.borrow()).read()) };
-        (*p1.borrow_mut()).prefix_inc();
+    let mut out: i32 = 0;
+    let mut p1: Ptr<i32> = (array).clone();
+    'loop_: while ((p1.read()) >= 0) {
+        out += { (p1.read()) };
+        p1.prefix_inc();
     }
-    let p2: Value<Ptr<i32>> = Rc::new(RefCell::new((*array.borrow()).clone()));
-    (*p2.borrow()).delete();
-    assert!(((*out.borrow()) == 99));
+    let mut p2: Ptr<i32> = (array).clone();
+    p2.delete();
+    assert!((out == 99));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

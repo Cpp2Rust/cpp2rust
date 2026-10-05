@@ -11,16 +11,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
-        b"cpp2rust_lseek_ftruncate_test.tmp",
-    )));
-    let fd: Value<i32> = Rc::new(RefCell::new({
+    let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_lseek_ftruncate_test.tmp");
+    let mut fd: i32 = {
         let __mode = match &[(420).into()].first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
         match nix::fcntl::open(
-            (*path.borrow()).to_rust_string().as_str(),
+            path.to_rust_string().as_str(),
             nix::fcntl::OFlag::from_bits_retain(
                 ((::libc::O_RDWR | ::libc::O_CREAT) | ::libc::O_TRUNC),
             ),
@@ -32,10 +30,10 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    assert!(((((*fd.borrow()) >= 0) as i32) != 0));
+    };
+    assert!((((fd >= 0) as i32) != 0));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+        (((match FdRegistry::with_fd(fd, |__fd| {
             Ptr::<i8>::from_string_literal(b"hello world")
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -57,9 +55,7 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, 0_i64, __whence)
-            }) {
+            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 0_i64, __whence)) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -77,9 +73,7 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, 6_i64, __whence)
-            }) {
+            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 6_i64, __whence)) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -97,7 +91,7 @@ fn main_0() -> i32 {
         ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>).to_any()
     };
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+        (((match FdRegistry::with_fd(fd, |__fd| {
             ((buf.as_pointer() as Ptr<i8>) as Ptr<i8>)
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -131,7 +125,7 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
+        (((match FdRegistry::with_fd(fd, |__fd| nix::unistd::ftruncate(__fd, 5_i64)) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -148,9 +142,7 @@ fn main_0() -> i32 {
                 2 => nix::unistd::Whence::SeekEnd,
                 __w => panic!("lseek: unsupported whence {__w}"),
             };
-            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
-                nix::unistd::lseek(__fd, 0_i64, __whence)
-            }) {
+            match FdRegistry::with_fd(fd, |__fd| nix::unistd::lseek(__fd, 0_i64, __whence)) {
                 Ok(__off) => __off,
                 Err(__e) => {
                     libcc2rs::cpp2rust_errno().write(__e as i32);
@@ -160,9 +152,9 @@ fn main_0() -> i32 {
         } == 5_i64) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
     assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
+        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

@@ -30,8 +30,7 @@ fn main_0() -> i32 {
                     let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
                 },
                 |z: i32| -> i32 {
-                    let z: Value<i32> = Rc::new(RefCell::new(z));
-                    return (((x.read()) + (*y.borrow())) + (*z.borrow()));
+                    return (((x.read()) + (*y.borrow())) + z);
                 }
             )));
             return ({ (*inner.borrow()).call(1) });
@@ -61,9 +60,7 @@ impl SImpl for Ptr<S> {
                         let y: Value<i32> = Rc::new(RefCell::new((*y.borrow())));
                     },
                     |z: i32| -> i32 {
-                        let z: Value<i32> = Rc::new(RefCell::new(z));
-                        return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow()))
-                            + (*z.borrow()));
+                        return (((*this_.borrow()).clone().with(|__s| __s.v) + (*y.borrow())) + z);
                     }
                 )));
                 return ({ (*inner.borrow()).call(1) });

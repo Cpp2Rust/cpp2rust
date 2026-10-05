@@ -11,10 +11,10 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr1: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 2])));
-    (*arr1.borrow_mut())[(0) as usize] = 3;
-    (*arr1.borrow_mut())[(1) as usize] = 4;
-    assert!((((*arr1.borrow())[(0) as usize] + (*arr1.borrow())[(1) as usize]) == 7));
+    let mut arr1: [i32; 2] = [1, 2];
+    arr1[(0) as usize] = 3;
+    arr1[(1) as usize] = 4;
+    assert!(((arr1[(0) as usize] + arr1[(1) as usize]) == 7));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

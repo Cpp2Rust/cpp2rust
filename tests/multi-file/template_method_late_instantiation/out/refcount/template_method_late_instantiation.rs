@@ -27,9 +27,8 @@ fn main_0() -> i32 {
     assert!((({ f_0((p.as_pointer()),) }) == 3));
     return 0;
 }
-pub fn f_0(p: Ptr<S_int_>) -> i32 {
-    let p: Value<Ptr<S_int_>> = Rc::new(RefCell::new(p));
-    return ({ S_int_Impl::get(&(*p.borrow())) });
+pub fn f_0(mut p: Ptr<S_int_>) -> i32 {
+    return ({ S_int_Impl::get(&p) });
 }
 pub trait S_int_Impl {
     fn set(&self, v: i32);
@@ -38,9 +37,8 @@ pub trait S_int_Impl {
     }
 }
 impl S_int_Impl for Ptr<S_int_> {
-    fn set(&self, v: i32) {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        field!((*self), x).write((*v.borrow()));
+    fn set(&self, mut v: i32) {
+        field!((*self), x).write(v);
     }
     fn get(&self) -> i32 {
         return (*self).with(|__s| __s.x);

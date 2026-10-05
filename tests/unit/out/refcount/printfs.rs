@@ -27,8 +27,8 @@ fn main_0() -> i32 {
     println!("{}", Ptr::<i8>::from_string_literal(b"fprintf stdout"));
     println!("{} {} {}", 1, 2_u32, 3_i64);
     print!("hello world");
-    let in_: Value<Ptr<CFile>> = Rc::new(RefCell::new(libcc2rs::c_stdin()));
-    assert!(!((*in_.borrow()).is_null()));
+    let mut in_: Ptr<CFile> = libcc2rs::c_stdin();
+    assert!(!((in_).is_null()));
     println!("{}", Ptr::<i8>::from_string_literal(b"printf"));
     print!("hello world");
     let s: Value<Vec<i8>> = Rc::new(RefCell::new({

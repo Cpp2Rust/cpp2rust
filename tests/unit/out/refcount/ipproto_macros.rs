@@ -11,11 +11,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let tcp: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_TCP));
-    let udp: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_UDP));
-    let ip: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_IP));
-    let ip6: Value<i32> = Rc::new(RefCell::new(libc::IPPROTO_IPV6));
-    assert!((((((*tcp.borrow()) + (*udp.borrow())) + (*ip.borrow())) + (*ip6.borrow())) == 64));
+    let mut tcp: i32 = libc::IPPROTO_TCP;
+    let mut udp: i32 = libc::IPPROTO_UDP;
+    let mut ip: i32 = libc::IPPROTO_IP;
+    let mut ip6: i32 = libc::IPPROTO_IPV6;
+    assert!(((((tcp + udp) + ip) + ip6) == 64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

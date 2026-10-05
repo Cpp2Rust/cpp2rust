@@ -11,14 +11,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let cond: Value<bool> = Rc::new(RefCell::new(true));
-    let os1: Value<Ptr<std::fs::File>> = Rc::new(RefCell::new(if (*cond.borrow()) {
+    let mut cond: bool = true;
+    let mut os1: Ptr<std::fs::File> = if cond {
         libcc2rs::cout()
     } else {
         libcc2rs::cerr()
-    }));
-    write!((*os1.borrow()), "hello\n",);
-    let os2: Ptr<std::fs::File> = if (*cond.borrow()) {
+    };
+    write!(os1, "hello\n",);
+    let os2: Ptr<std::fs::File> = if cond {
         libcc2rs::cout()
     } else {
         libcc2rs::cerr()

@@ -35,45 +35,40 @@ pub trait SImpl {
     fn read_scaled(&self) -> i32;
 }
 impl SImpl for Ptr<S> {
-    fn add(&self, k: i32) {
-        let k: Value<i32> = Rc::new(RefCell::new(k));
+    fn add(&self, mut k: i32) {
         {
             let _ptr = field!((*self), n);
-            _ptr.write(_ptr.read() + (*k.borrow()))
+            _ptr.write(_ptr.read() + k)
         };
     }
     fn scaled(&self) -> i32 {
         return ((*self).with(|__s| __s.n) * (*self).with(|__s| __s.step));
     }
-    fn bump(&self, by: i32) {
-        let by: Value<i32> = Rc::new(RefCell::new(by));
+    fn bump(&self, mut by: i32) {
         let inc: Value<FnPtr<fn(i32)>> = Rc::new(RefCell::new(lambda!(
             {
                 let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
             },
             |k: i32| {
-                let k: Value<i32> = Rc::new(RefCell::new(k));
                 {
                     let _ptr = field!((*this_.borrow()).clone(), n);
-                    _ptr.write(_ptr.read() + (*k.borrow()))
+                    _ptr.write(_ptr.read() + k)
                 };
             }
         )));
-        ({ (*inc.borrow()).call((*by.borrow())) });
-        ({ (*inc.borrow()).call((*by.borrow())) });
+        ({ (*inc.borrow()).call(by) });
+        ({ (*inc.borrow()).call(by) });
     }
-    fn bump_via_method(&self, by: i32) {
-        let by: Value<i32> = Rc::new(RefCell::new(by));
+    fn bump_via_method(&self, mut by: i32) {
         let inc: Value<FnPtr<fn(i32)>> = Rc::new(RefCell::new(lambda!(
             {
                 let this_: Value<Ptr<S>> = Rc::new(RefCell::new((*self).clone()));
             },
             |k: i32| {
-                let k: Value<i32> = Rc::new(RefCell::new(k));
-                ({ SImpl::add(&(*this_.borrow()).clone(), (*k.borrow())) });
+                ({ SImpl::add(&(*this_.borrow()).clone(), k) });
             }
         )));
-        ({ (*inc.borrow()).call((*by.borrow())) });
+        ({ (*inc.borrow()).call(by) });
     }
     fn read_scaled(&self) -> i32 {
         let get: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(

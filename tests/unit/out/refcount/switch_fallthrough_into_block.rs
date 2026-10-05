@@ -6,26 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fallthrough_into_block_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
-    switch!(match (*x.borrow()) {
+pub fn fallthrough_into_block_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
+    switch!(match x {
         __v if __v == 1 => {
-            (*r.borrow_mut()) += 1;
+            r += 1;
         }
         __v if __v == 2 => {
             {
-                let tmp: Value<i32> = Rc::new(RefCell::new(((*r.borrow()) * 10)));
-                (*r.borrow_mut()) = ((*tmp.borrow()) + 5);
+                let mut tmp: i32 = (r * 10);
+                r = (tmp + 5);
                 break;
             }
         }
         _ => {
-            (*r.borrow_mut()) = -1_i32;
+            r = -1_i32;
             break;
         }
     });
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -49,8 +49,8 @@ impl SImpl for Ptr<S> {
                 return this_.as_pointer().with(|__s| __s.n);
             }
         )));
-        let r: Value<i32> = Rc::new(RefCell::new(({ (*f.borrow()).call() }).clone()));
-        return (((*r.borrow()) * 100) + (*self).with(|__s| __s.n));
+        let mut r: i32 = ({ (*f.borrow()).call() }).clone();
+        return ((r * 100) + (*self).with(|__s| __s.n));
     }
     fn snapshot(&self) -> i32 {
         let f: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new(lambda!(

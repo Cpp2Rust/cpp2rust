@@ -58,9 +58,7 @@ pub struct Container {
     #[byte_size(128)]
     pub view: anon_0,
 }
-pub fn fill_1(out: AnyPtr, cap: usize) {
-    let out: Value<AnyPtr> = Rc::new(RefCell::new(out));
-    let cap: Value<usize> = Rc::new(RefCell::new(cap));
+pub fn fill_1(mut out: AnyPtr, mut cap: usize) {
     let src: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
         0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8, 0_u8,
         0_u8,
@@ -73,19 +71,17 @@ pub fn fill_1(out: AnyPtr, cap: usize) {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let n: Value<usize> = Rc::new(RefCell::new(
-        (if (((::std::mem::size_of::<[u8; 16]>() < (*cap.borrow())) as i32) != 0) {
-            (::std::mem::size_of::<[u8; 16]>() as u64)
-        } else {
-            ((*cap.borrow()) as u64)
-        } as usize),
-    ));
+    let mut n: usize = (if (((::std::mem::size_of::<[u8; 16]>() < cap) as i32) != 0) {
+        (::std::mem::size_of::<[u8; 16]>() as u64)
+    } else {
+        (cap as u64)
+    } as usize);
     {
-        (*out.borrow()).memcpy(
+        out.memcpy(
             &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-            (*n.borrow()) as usize,
+            n as usize,
         );
-        (*out.borrow()).clone()
+        (out).clone()
     };
 }
 pub fn main() {

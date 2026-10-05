@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_time_0() {
-    let t1: Value<i64> = Rc::new(RefCell::new({
+    let mut t1: i64 = {
         let __out = Ptr::<i64>::null();
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
@@ -22,9 +22,9 @@ pub fn test_time_0() {
                 -1
             }
         }
-    }));
+    };
     let t2: Value<i64> = Rc::new(RefCell::new(0_i64));
-    let t3: Value<i64> = Rc::new(RefCell::new({
+    let mut t3: i64 = {
         let __out = (t2.as_pointer());
         match nix::time::clock_gettime(nix::time::ClockId::CLOCK_REALTIME) {
             Ok(__ts) => {
@@ -39,10 +39,10 @@ pub fn test_time_0() {
                 -1
             }
         }
-    }));
-    assert!(((((*t1.borrow()) > 1500000000_i64) as i32) != 0));
-    assert!(((((*t2.borrow()) == (*t3.borrow())) as i32) != 0));
-    assert!(((((*t3.borrow()) >= (*t1.borrow())) as i32) != 0));
+    };
+    assert!((((t1 > 1500000000_i64) as i32) != 0));
+    assert!(((((*t2.borrow()) == t3) as i32) != 0));
+    assert!((((t3 >= t1) as i32) != 0));
 }
 pub fn print_tm_1(t: i64) {
     let t: Value<i64> = Rc::new(RefCell::new(t));

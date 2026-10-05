@@ -6,26 +6,25 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn default_then_case_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn default_then_case_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*x.borrow()) } {
+        match { x } {
             __v if __v == 1 => {
-                (*r.borrow_mut()) = 1;
+                r = 1;
                 break 'switch;
             }
             __v if __v == 3 => {
-                (*r.borrow_mut()) = 3;
+                r = 3;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 77;
+                r = 77;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

@@ -21,8 +21,7 @@ fn main_0() -> i32 {
     let one: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(FnPtr::<fn(i32) -> i32>::new(
         |x: i32| -> i32 {
             {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return ((*x.borrow()) + 1);
+                return (x + 1);
             }
         },
     )));
@@ -31,31 +30,26 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(FnPtr::<fn(i32, i32, i32) -> i32>::new(
             |x: i32, y: i32, z: i32| -> i32 {
                 {
-                    let x: Value<i32> = Rc::new(RefCell::new(x));
-                    let y: Value<i32> = Rc::new(RefCell::new(y));
-                    let z: Value<i32> = Rc::new(RefCell::new(z));
-                    return ((((*x.borrow()) * 100) + ((*y.borrow()) * 10)) + (*z.borrow()));
+                    return (((x * 100) + (y * 10)) + z);
                 }
             },
         )));
     assert!((({ (*three.borrow()).call(1, 2, 3,) }) == 123));
-    let k: Value<i32> = Rc::new(RefCell::new(3));
-    let m: Value<i32> = Rc::new(RefCell::new(4));
+    let mut k: i32 = 3;
+    let mut m: i32 = 4;
     let constants: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return (((*x.borrow()) + 3) + 4);
+                return ((x + 3) + 4);
             }
         }),
     ));
     assert!((({ (*constants.borrow()).call(1,) }) == 8));
-    let n: Value<i32> = Rc::new(RefCell::new(((*k.borrow()) + (*m.borrow()))));
+    let mut n: i32 = (k + m);
     let derived: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return ((*x.borrow()) + (3 + 4));
+                return (x + (3 + 4));
             }
         }),
     ));
@@ -63,8 +57,7 @@ fn main_0() -> i32 {
     let implicit: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(
         FnPtr::<fn(i32) -> i32>::new(|x: i32| -> i32 {
             {
-                let x: Value<i32> = Rc::new(RefCell::new(x));
-                return ((*x.borrow()) + 3);
+                return (x + 3);
             }
         }),
     ));

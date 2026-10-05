@@ -16,9 +16,8 @@ pub struct Counted {
     pub v: i32,
 }
 impl Counted {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Counted> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<Counted> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<Counted> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -84,9 +83,8 @@ pub struct Ignored {
     pub v: i32,
 }
 impl Ignored {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<Ignored> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<Ignored> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -129,9 +127,8 @@ pub fn by_value_1(c: Counted) -> i32 {
     let c: Value<Counted> = Rc::new(RefCell::new(c));
     return { (*c.borrow()).v };
 }
-pub fn make_2(v: i32) -> Counted {
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    let c: Value<Counted> = Rc::new(RefCell::new(Counted::new({ (*v.borrow()) })));
+pub fn make_2(mut v: i32) -> Counted {
+    let c: Value<Counted> = Rc::new(RefCell::new(Counted::new({ v })));
     return Counted::copy_from({ c.as_pointer() });
 }
 pub fn main() {

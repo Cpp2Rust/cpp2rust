@@ -6,72 +6,68 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn early_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let intentionally_const_var: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn early_0(mut n: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
+    let mut intentionally_const_var: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            if ((((*n.borrow()) < 0) as i32) != 0) {
-                (*ret.borrow_mut()) = -1_i32;
+            ret = 0;
+            if (((n < 0) as i32) != 0) {
+                ret = -1_i32;
                 goto!('out);
             }
-            (*ret.borrow_mut()) = 100;
-            *intentionally_const_var.borrow_mut() = 22;
+            ret = 100;
+            intentionally_const_var = 22;
         }
         'out: {
-            return (((*ret.borrow()) + (*intentionally_const_var.borrow()))
-                - (*intentionally_const_var.borrow()));
+            return ((ret + intentionally_const_var) - intentionally_const_var);
         }
     });
     panic!("ub: non-void function does not return a value")
 }
-pub fn from_loop_1(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn from_loop_1(mut n: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            let i: Value<i32> = Rc::new(RefCell::new(0));
-            'loop_: while ((((*i.borrow()) < (*n.borrow())) as i32) != 0) {
-                if ((((*i.borrow()) == 3) as i32) != 0) {
-                    (*ret.borrow_mut()) = 7;
+            ret = 0;
+            let mut i: i32 = 0;
+            'loop_: while (((i < n) as i32) != 0) {
+                if (((i == 3) as i32) != 0) {
+                    ret = 7;
                     goto!('out);
                 }
-                (*ret.borrow_mut()) += (*i.borrow());
-                (*i.borrow_mut()).postfix_inc();
+                ret += i;
+                i.postfix_inc();
             }
-            (*ret.borrow_mut()) = 999;
+            ret = 999;
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")
 }
-pub fn from_switch_2(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
+pub fn from_switch_2(mut n: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
+            ret = 0;
             'switch: {
-                match { (*n.borrow()) } {
+                match { n } {
                     __v if __v == 1 => {
-                        (*ret.borrow_mut()) = 10;
+                        ret = 10;
                         goto!('out);
                     }
                     _ => {
-                        (*ret.borrow_mut()) = 20;
+                        ret = 20;
                         break 'switch;
                     }
                 }
             };
-            (*ret.borrow_mut()) = 999;
+            ret = 999;
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")
@@ -83,50 +79,45 @@ pub struct wrapper {
     #[byte_size(8)]
     pub item: Ptr<i32>,
 }
-pub fn via_pointer_3(w: Ptr<wrapper>, fail: i32) -> i32 {
-    let w: Value<Ptr<wrapper>> = Rc::new(RefCell::new(w));
-    let fail: Value<i32> = Rc::new(RefCell::new(fail));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let item: Value<Ptr<i32>> = Rc::new(RefCell::new(Ptr::<i32>::null()));
+pub fn via_pointer_3(mut w: Ptr<wrapper>, mut fail: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
+    let mut item: Ptr<i32> = Ptr::<i32>::null();
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            *item.borrow_mut() = (*w.borrow()).with(|__s| __s.item.clone());
-            if ((*fail.borrow()) != 0) {
-                (*ret.borrow_mut()) = -1_i32;
+            ret = 0;
+            item = w.with(|__s| __s.item.clone());
+            if (fail != 0) {
+                ret = -1_i32;
                 goto!('out);
             }
-            (*ret.borrow_mut()) = { ((*item.borrow()).read()) };
+            ret = { (item.read()) };
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")
 }
-pub fn via_arrays_4(fail: i32) -> i32 {
-    let fail: Value<i32> = Rc::new(RefCell::new(fail));
-    let ret: Value<i32> = Rc::new(RefCell::new(0_i32));
-    let remain: Value<Box<[u8]>> =
-        Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
-    let name: Value<Box<[i8]>> = Rc::new(RefCell::new((0..5).map(|_| 0_i8).collect::<Box<[i8]>>()));
+pub fn via_arrays_4(mut fail: i32) -> i32 {
+    let mut ret: i32 = 0_i32;
+    let mut remain: [u8; 4] = [0_u8; 4];
+    let mut name: [i8; 5] = [0_i8; 5];
     goto_block!({
         '__entry: {
-            *ret.borrow_mut() = 0;
-            *remain.borrow_mut() = Box::new([0_u8, 0_u8, 0_u8, 0_u8]);
-            *name.borrow_mut() = i8::array_from_literal(b"wxyz\0");
-            if ((*fail.borrow()) != 0) {
-                (*ret.borrow_mut()) = -1_i32;
+            ret = 0;
+            remain = [0_u8, 0_u8, 0_u8, 0_u8];
+            name = b"wxyz\0".map(i8::from_byte);
+            if (fail != 0) {
+                ret = -1_i32;
                 goto!('out);
             }
-            (*remain.borrow_mut())[(1) as usize] = 9_u8;
-            (*ret.borrow_mut()) = (((((*remain.borrow())[(0) as usize] as i32)
-                + ((*remain.borrow())[(1) as usize] as i32))
-                + ((((*name.borrow())[(0) as usize] as i32) == ('w' as i32)) as i32))
-                + ((((*name.borrow())[(4) as usize] as i32) == ('\0' as i32)) as i32));
+            remain[(1) as usize] = 9_u8;
+            ret = ((((remain[(0) as usize] as i32) + (remain[(1) as usize] as i32))
+                + (((name[(0) as usize] as i32) == ('w' as i32)) as i32))
+                + (((name[(4) as usize] as i32) == ('\0' as i32)) as i32));
         }
         'out: {
-            return (*ret.borrow());
+            return ret;
         }
     });
     panic!("ub: non-void function does not return a value")

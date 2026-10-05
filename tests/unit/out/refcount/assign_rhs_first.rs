@@ -50,10 +50,10 @@ fn main_0() -> i32 {
         ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((2) as isize) })
             && ((*a.borrow())[(3) as usize] == 14)
     );
-    let pq: Value<Ptr<Ptr<i32>>> = Rc::new(RefCell::new((q.as_pointer())));
+    let mut pq: Ptr<Ptr<i32>> = (q.as_pointer());
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!(((*pq.borrow()).read()), 1);
+        let _ptr = elem!((pq.read()), 1);
         _ptr.write(_ptr.read() + __rhs)
     };
     assert!(
@@ -61,7 +61,7 @@ fn main_0() -> i32 {
             && ((*a.borrow())[(4) as usize] == 15)
     );
     let __rhs = ({ advance_1() });
-    elem!(((*pq.borrow()).read()), 1).write(__rhs);
+    elem!((pq.read()), 1).write(__rhs);
     assert!(
         ({ (*q.borrow()).clone() } == { (a.as_pointer() as Ptr::<i32>).offset((4) as isize) })
             && ((*a.borrow())[(5) as usize] == 10)
@@ -85,10 +85,10 @@ fn main_0() -> i32 {
             (a.as_pointer() as Ptr<i32>).offset((1) as isize)
         }) && ((*a.borrow())[(2) as usize] == 20)
     );
-    let sp: Value<Ptr<S>> = Rc::new(RefCell::new((s.as_pointer())));
+    let mut sp: Ptr<S> = (s.as_pointer());
     let __rhs = ({ advance_1() });
     {
-        let _ptr = elem!((*sp.borrow()).with(|__s| __s.ptr.clone()), 1);
+        let _ptr = elem!(sp.with(|__s| __s.ptr.clone()), 1);
         _ptr.write(_ptr.read() + __rhs)
     };
     assert!(
@@ -96,11 +96,9 @@ fn main_0() -> i32 {
             (a.as_pointer() as Ptr<i32>).offset((2) as isize)
         }) && ((*a.borrow())[(3) as usize] == 24)
     );
-    let b: Value<Ptr<u8>> = Rc::new(RefCell::new(
-        (a.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>(),
-    ));
-    elem!((*b.borrow()), 0).write(7_u8);
-    elem!((*b.borrow()), 4).write({ (((elem!((*b.borrow()), 4).read()) as i32) + 1) as u8 });
+    let mut b: Ptr<u8> = (a.as_pointer() as Ptr<i32>).reinterpret_cast::<u8>();
+    elem!(b, 0).write(7_u8);
+    elem!(b, 4).write({ (((elem!(b, 4).read()) as i32) + 1) as u8 });
     assert!(((*a.borrow())[(0) as usize] == 7) && ((*a.borrow())[(1) as usize] == 3));
     return 0;
 }

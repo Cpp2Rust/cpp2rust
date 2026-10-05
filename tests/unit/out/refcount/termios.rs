@@ -11,16 +11,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
-        b"cpp2rust_termios_test.tmp",
-    )));
-    let fd: Value<i32> = Rc::new(RefCell::new({
+    let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_termios_test.tmp");
+    let mut fd: i32 = {
         let __mode = match &[(420).into()].first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
         match nix::fcntl::open(
-            (*path.borrow()).to_rust_string().as_str(),
+            path.to_rust_string().as_str(),
             nix::fcntl::OFlag::from_bits_retain(
                 ((::libc::O_RDWR | ::libc::O_CREAT) | ::libc::O_TRUNC),
             ),
@@ -32,11 +30,11 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    assert!(((((*fd.borrow()) >= 0) as i32) != 0));
+    };
+    assert!((((fd >= 0) as i32) != 0));
     let tio: Value<libcc2rs::Termios> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::sys::termios::tcgetattr(__fd)) {
+        (((match FdRegistry::with_fd(fd, |__fd| nix::sys::termios::tcgetattr(__fd)) {
             Ok(__t) => {
                 (tio.as_pointer()).with_mut(|__dst| *__dst = Termios::from_libc(&__t.into()));
                 0
@@ -58,7 +56,7 @@ fn main_0() -> i32 {
             };
             let __t =
                 nix::sys::termios::Termios::from((tio.as_pointer()).with(|__src| __src.to_libc()));
-            match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+            match FdRegistry::with_fd(fd, |__fd| {
                 nix::sys::termios::tcsetattr(__fd, __action, &__t)
             }) {
                 Ok(()) => 0,
@@ -70,9 +68,9 @@ fn main_0() -> i32 {
         } == -1_i32) as i32)
             != 0)
     );
-    assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
     assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
+        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

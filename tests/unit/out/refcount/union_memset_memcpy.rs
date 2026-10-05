@@ -121,14 +121,14 @@ fn main_0() -> i32 {
     (*src.borrow_mut())[(5) as usize] = 0_u8;
     (*src.borrow_mut())[(6) as usize] = 0_u8;
     (*src.borrow_mut())[(7) as usize] = 1_u8;
-    let len: Value<usize> = Rc::new(RefCell::new(16_usize));
-    assert!(((((*len.borrow()) <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
+    let mut len: usize = 16_usize;
+    assert!((((len <= ::std::mem::size_of::<[i8; 256]>()) as i32) != 0));
     {
         (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)
             .to_any()
             .memcpy(
                 &((src.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any(),
-                (*len.borrow()) as usize,
+                len as usize,
             );
         (((*c.borrow()).view.raw_().reinterpret_cast::<i8>()) as Ptr<i8>).to_any()
     };

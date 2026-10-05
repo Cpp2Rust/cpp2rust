@@ -16,9 +16,7 @@ fn main_0() -> i32 {
         let fun = |x: Ptr<i32>, y: Ptr<i32>| {
             FnPtr::<fn(i32, i32) -> bool>::new(|x: i32, y: i32| -> bool {
                 {
-                    let x: Value<i32> = Rc::new(RefCell::new(x));
-                    let y: Value<i32> = Rc::new(RefCell::new(y));
-                    return ((*x.borrow()) < (*y.borrow()));
+                    return (x < y);
                 }
             })
             .call((x.read()).clone(), (y.read()).clone())

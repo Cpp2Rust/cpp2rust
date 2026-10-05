@@ -18,13 +18,8 @@ pub struct Partial {
     pub keep: i32,
 }
 impl Partial {
-    pub fn new(v: i32, keep: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let keep: Value<i32> = Rc::new(RefCell::new(keep));
-        let __this: Value<Partial> = Rc::new(RefCell::new(Self {
-            v: (*v.borrow()),
-            keep: (*keep.borrow()),
-        }));
+    pub fn new(mut v: i32, mut keep: i32) -> Self {
+        let __this: Value<Partial> = Rc::new(RefCell::new(Self { v: v, keep: keep }));
         let this: Ptr<Partial> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -140,10 +135,10 @@ fn main_0() -> i32 {
         PartialImpl::copy_assign(&ra, _o)
     });
     assert!(({ (*a.borrow()).v } == 2));
-    let pa: Value<Ptr<Partial>> = Rc::new(RefCell::new((a.as_pointer())));
+    let mut pa: Ptr<Partial> = (a.as_pointer());
     ({
         let _o: Ptr<Partial> = b.as_pointer();
-        PartialImpl::copy_assign(&(*pa.borrow()), _o)
+        PartialImpl::copy_assign(&pa, _o)
     });
     assert!(({ (*a.borrow()).v } == 2));
     assert!((assigns_0.with(|rc| *rc.borrow()) == 6));

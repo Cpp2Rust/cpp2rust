@@ -12,8 +12,8 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let a: Value<u32> = Rc::new(RefCell::new(0_u32));
-    let p: Value<Ptr<u32>> = Rc::new(RefCell::new((a.as_pointer())));
-    (*p.borrow()).write({ ((*p.borrow()).read()).wrapping_add(((*p.borrow()).read())) });
-    return (((*p.borrow()).read()) as i32);
+    let mut p: Ptr<u32> = (a.as_pointer());
+    p.write({ (p.read()).wrapping_add((p.read())) });
+    return ((p.read()) as i32);
 }
 pub fn __cpp2rust_init_globals() {}

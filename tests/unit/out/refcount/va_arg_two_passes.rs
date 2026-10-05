@@ -9,28 +9,28 @@ use std::rc::{Rc, Weak};
 pub fn sum_then_product_0(first: i32, __args: &[VaArg]) -> i32 {
     let first: Value<i32> = Rc::new(RefCell::new(first));
     let ap: Value<VaList> = Rc::new(RefCell::new(VaList::default()));
-    let sum: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
-    let product: Value<i32> = Rc::new(RefCell::new((*first.borrow())));
+    let mut sum: i32 = (*first.borrow());
+    let mut product: i32 = (*first.borrow());
     (*ap.borrow_mut()) = VaList::new(__args);
-    let val: Value<i32> = Rc::new(RefCell::new(0_i32));
+    let mut val: i32 = 0_i32;
     'loop_: while (((({
-        (*val.borrow_mut()) = (*ap.borrow_mut()).arg::<i32>();
-        (*val.borrow())
+        val = (*ap.borrow_mut()).arg::<i32>();
+        val
     }) != 0) as i32)
         != 0)
     {
-        (*sum.borrow_mut()) += (*val.borrow());
+        sum += val;
     }
     (*ap.borrow_mut()) = VaList::new(__args);
     'loop_: while (((({
-        (*val.borrow_mut()) = (*ap.borrow_mut()).arg::<i32>();
-        (*val.borrow())
+        val = (*ap.borrow_mut()).arg::<i32>();
+        val
     }) != 0) as i32)
         != 0)
     {
-        (*product.borrow_mut()) *= (*val.borrow());
+        product *= val;
     }
-    return ((*sum.borrow()) + (*product.borrow()));
+    return (sum + product);
 }
 pub fn main() {
     __cpp2rust_init_globals();

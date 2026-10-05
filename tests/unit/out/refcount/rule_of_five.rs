@@ -25,23 +25,17 @@ pub struct Buffer {
     pub size: i32,
 }
 impl Buffer {
-    pub fn new(size: i32) -> Self {
-        let size: Value<i32> = Rc::new(RefCell::new(size));
+    pub fn new(mut size: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
             data: Rc::new(RefCell::new((0..4).map(|_| 0_i32).collect::<Box<[i32]>>())),
-            size: (*size.borrow()),
+            size: size,
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!((array_field_ptr!(this, data) as Ptr::<i32>), (*i.borrow())).write({
-                if ((*i.borrow()) < (*size.borrow())) {
-                    (*i.borrow())
-                } else {
-                    -1_i32
-                }
-            });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!(this, data) as Ptr::<i32>), i)
+                .write({ if (i < size) { i } else { -1_i32 } });
+            i.prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
@@ -52,12 +46,11 @@ impl Buffer {
             size: o.with(|__s| __s.size),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!((array_field_ptr!(this, data) as Ptr::<i32>), (*i.borrow())).write({
-                (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read())
-            });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!(this, data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            i.prefix_inc();
         }
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
@@ -69,13 +62,12 @@ impl Buffer {
             size: o.with(|__s| __s.size),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!((array_field_ptr!(this, data) as Ptr::<i32>), (*i.borrow())).write({
-                (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read())
-            });
-            elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).write(-1_i32);
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!(this, data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).write(-1_i32);
+            i.prefix_inc();
         }
         field!(o, size).write(0);
         (*alive_0.with(Value::clone).borrow_mut()).prefix_inc();
@@ -100,9 +92,8 @@ impl Default for Buffer {
         }
     }
 }
-pub fn make_3(size: i32) -> Buffer {
-    let size: Value<i32> = Rc::new(RefCell::new(size));
-    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ (*size.borrow()) })));
+pub fn make_3(mut size: i32) -> Buffer {
+    let b: Value<Buffer> = Rc::new(RefCell::new(Buffer::new({ size })));
     let _dtor_b = ScopedDestructor::new(&b, |__p| __p.destructor());
     return Buffer::move_from({ b.as_pointer() });
 }
@@ -173,14 +164,11 @@ impl BufferImpl for Ptr<Buffer> {
             return (*self).clone();
         }
         field!((*self), size).write({ o.with(|__s| __s.size) });
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!(
-                (array_field_ptr!((*self), data) as Ptr::<i32>),
-                (*i.borrow())
-            )
-            .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read()) });
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!((*self), data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            i.prefix_inc();
         }
         (*copies_1.with(Value::clone).borrow_mut()).prefix_inc();
         return (*self).clone();
@@ -190,15 +178,12 @@ impl BufferImpl for Ptr<Buffer> {
             return (*self).clone();
         }
         field!((*self), size).write({ o.with(|__s| __s.size) });
-        let i: Value<i32> = Rc::new(RefCell::new(0));
-        'loop_: while ((*i.borrow()) < 4) {
-            elem!(
-                (array_field_ptr!((*self), data) as Ptr::<i32>),
-                (*i.borrow())
-            )
-            .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).read()) });
-            elem!((array_field_ptr!(o, data) as Ptr::<i32>), (*i.borrow())).write(-1_i32);
-            (*i.borrow_mut()).prefix_inc();
+        let mut i: i32 = 0;
+        'loop_: while (i < 4) {
+            elem!((array_field_ptr!((*self), data) as Ptr::<i32>), i)
+                .write({ (elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).read()) });
+            elem!((array_field_ptr!(o, data) as Ptr::<i32>), i).write(-1_i32);
+            i.prefix_inc();
         }
         field!(o, size).write(0);
         (*moves_2.with(Value::clone).borrow_mut()).prefix_inc();

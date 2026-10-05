@@ -6,22 +6,21 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn cases_and_default_stacked_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let r: Value<i32> = Rc::new(RefCell::new(0));
+pub fn cases_and_default_stacked_0(mut x: i32) -> i32 {
+    let mut r: i32 = 0;
     'switch: {
-        match { (*x.borrow()) } {
+        match { x } {
             __v if __v == 3 => {
-                (*r.borrow_mut()) = 3;
+                r = 3;
                 break 'switch;
             }
             _ => {
-                (*r.borrow_mut()) = 42;
+                r = 42;
                 break 'switch;
             }
         }
     };
-    return (*r.borrow());
+    return r;
 }
 pub fn main() {
     __cpp2rust_init_globals();

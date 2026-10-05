@@ -22,22 +22,11 @@ impl Holder {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub fn read_val_0(h: Ptr<Holder>) -> i32 {
-    let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
-    return (*(*h.borrow())
-        .with(|__s| __s.val.clone())
-        .as_ref()
-        .unwrap()
-        .borrow());
+pub fn read_val_0(mut h: Ptr<Holder>) -> i32 {
+    return (*h.with(|__s| __s.val.clone()).as_ref().unwrap().borrow());
 }
-pub fn write_val_1(h: Ptr<Holder>, v: i32) {
-    let h: Value<Ptr<Holder>> = Rc::new(RefCell::new(h));
-    let v: Value<i32> = Rc::new(RefCell::new(v));
-    (*(*h.borrow())
-        .with(|__s| __s.val.clone())
-        .as_ref()
-        .unwrap()
-        .borrow_mut()) = (*v.borrow());
+pub fn write_val_1(mut h: Ptr<Holder>, mut v: i32) {
+    (*h.with(|__s| __s.val.clone()).as_ref().unwrap().borrow_mut()) = v;
 }
 pub fn main() {
     __cpp2rust_init_globals();

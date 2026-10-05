@@ -16,10 +16,9 @@ fn main_0() -> i32 {
     (*(*p.borrow()).as_ref().unwrap().borrow_mut()) -= 3;
     (*(*p.borrow()).as_ref().unwrap().borrow_mut()) *= 2;
     let q: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(1)))));
-    let sum: Value<i32> = Rc::new(RefCell::new(
-        ((*(*p.borrow()).as_ref().unwrap().borrow()) + (*(*q.borrow()).as_ref().unwrap().borrow())),
-    ));
-    assert!(((*sum.borrow()) == 25));
+    let mut sum: i32 =
+        ((*(*p.borrow()).as_ref().unwrap().borrow()) + (*(*q.borrow()).as_ref().unwrap().borrow()));
+    assert!((sum == 25));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

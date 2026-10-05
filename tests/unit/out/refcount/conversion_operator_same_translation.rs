@@ -24,20 +24,20 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let s: Value<S> = Rc::new(RefCell::new(S { v: 65 }));
-    let a: Value<i8> = Rc::new(RefCell::new(({ SImpl::to_i8(&s.as_pointer()) })));
-    let b: Value<u8> = Rc::new(RefCell::new(({ SImpl::to_u8(&s.as_pointer()) })));
-    assert!((((*a.borrow()) as i32) == (('A' as i8) as i32)));
-    assert!((((*b.borrow()) as i32) == ((66 as u8) as i32)));
+    let mut a: i8 = ({ SImpl::to_i8(&s.as_pointer()) });
+    let mut b: u8 = ({ SImpl::to_u8(&s.as_pointer()) });
+    assert!(((a as i32) == (('A' as i8) as i32)));
+    assert!(((b as i32) == ((66 as u8) as i32)));
     assert!(
         (((({ SImpl::to_i8(&s.as_pointer(),) }) as i32)
             + (({ SImpl::to_u8(&s.as_pointer(),) }) as i32))
             == 131)
     );
     let t: Value<T> = Rc::new(RefCell::new(T { v: 3 }));
-    let c: Value<i64> = Rc::new(RefCell::new(({ TImpl::to_i64_1(&t.as_pointer()) })));
-    let d: Value<i64> = Rc::new(RefCell::new(({ TImpl::to_i64_2(&t.as_pointer()) })));
-    assert!(((*c.borrow()) == 3_i64));
-    assert!(((*d.borrow()) == 4_i64));
+    let mut c: i64 = ({ TImpl::to_i64_1(&t.as_pointer()) });
+    let mut d: i64 = ({ TImpl::to_i64_2(&t.as_pointer()) });
+    assert!((c == 3_i64));
+    assert!((d == 4_i64));
     return 0;
 }
 pub trait SImpl {

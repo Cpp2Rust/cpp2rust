@@ -47,25 +47,17 @@ fn main_0() -> i32 {
         c: 0_u16,
     }));
     (*v.borrow_mut()).b = 3735928559_u32;
-    let base: Value<Ptr<u8>> = Rc::new(RefCell::new((v.as_pointer()).reinterpret_cast::<u8>()));
-    let bp: Value<Ptr<u32>> = Rc::new(RefCell::new(
-        ((*base.borrow()).offset((4_usize) as isize)).reinterpret_cast::<u32>(),
-    ));
-    assert!((((*bp.borrow()).read()) == 3735928559_u32));
-    ((*base.borrow()).offset((4_usize) as isize))
+    let mut base: Ptr<u8> = (v.as_pointer()).reinterpret_cast::<u8>();
+    let mut bp: Ptr<u32> = (base.offset((4_usize) as isize)).reinterpret_cast::<u32>();
+    assert!(((bp.read()) == 3735928559_u32));
+    (base.offset((4_usize) as isize))
         .reinterpret_cast::<u32>()
         .write(305419896_u32);
     assert!(({ (*v.borrow()).b } == 305419896_u32));
-    let text: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
-        b"example-body",
-    )));
-    let len: Value<usize> = Rc::new(RefCell::new(
-        ((*text.borrow()).to_c_string_iterator().count()).wrapping_add(1_usize),
-    ));
-    let total: Value<usize> = Rc::new(RefCell::new(
-        ((2_usize as u64).wrapping_add(((*len.borrow()) as u64)) as usize),
-    ));
-    assert!(((*total.borrow()) == (2_usize).wrapping_add((*len.borrow()))));
+    let mut text: Ptr<i8> = Ptr::<i8>::from_string_literal(b"example-body");
+    let mut len: usize = (text.to_c_string_iterator().count()).wrapping_add(1_usize);
+    let mut total: usize = ((2_usize as u64).wrapping_add((len as u64)) as usize);
+    assert!((total == (2_usize).wrapping_add(len)));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

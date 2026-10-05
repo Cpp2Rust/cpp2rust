@@ -7,8 +7,8 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn test_expect_0() {
-    let x: Value<i32> = Rc::new(RefCell::new(42));
-    assert!((((((*x.borrow()) == 42) as i32) as i64) != 0));
+    let mut x: i32 = 42;
+    assert!(((((x == 42) as i32) as i64) != 0));
 }
 pub fn test_ctz_1() {
     assert!((((8_u32.trailing_zeros() as i32 == 3) as i32) != 0));
@@ -40,16 +40,16 @@ pub fn test_clzl_8() {
     assert!((((9223372036854775808_u64.leading_zeros() as i32 == 0) as i32) != 0));
 }
 pub fn test_inff_9() {
-    let inf: Value<f32> = Rc::new(RefCell::new(f32::INFINITY));
-    assert!(((((*inf.borrow()) > 0.0E+0) as i32) != 0));
-    assert!(((((*inf.borrow()) == ((*inf.borrow()) * 2.0E+0)) as i32) != 0));
-    assert!(((((1.0E+0 / (*inf.borrow())) == 0.0E+0) as i32) != 0));
+    let mut inf: f32 = f32::INFINITY;
+    assert!((((inf > 0.0E+0) as i32) != 0));
+    assert!((((inf == (inf * 2.0E+0)) as i32) != 0));
+    assert!(((((1.0E+0 / inf) == 0.0E+0) as i32) != 0));
 }
 pub fn test_nanf_10() {
-    let nan: Value<f32> = Rc::new(RefCell::new(f32::NAN));
-    assert!(((((*nan.borrow()) != (*nan.borrow())) as i32) != 0));
-    assert!(((!((((*nan.borrow()) < 0.0E+0) as i32) != 0) as i32) != 0));
-    assert!(((!((((*nan.borrow()) > 0.0E+0) as i32) != 0) as i32) != 0));
+    let mut nan: f32 = f32::NAN;
+    assert!((((nan != nan) as i32) != 0));
+    assert!(((!(((nan < 0.0E+0) as i32) != 0) as i32) != 0));
+    assert!(((!(((nan > 0.0E+0) as i32) != 0) as i32) != 0));
 }
 pub fn test_mul_overflow_long_11() {
     let r: Value<i64> = Rc::new(RefCell::new(0_i64));

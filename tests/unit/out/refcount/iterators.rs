@@ -23,8 +23,8 @@ fn main_0() -> i32 {
         println!("{}", ((c.read()) as i32) as u8 as char);
     }
     'loop_: for mut c in x.as_pointer().to_string_iterator() as StringIterator<i8> {
-        let c: Value<i8> = Rc::new(RefCell::new(c.read().clone()));
-        println!("{}", ((*c.borrow()) as i32) as u8 as char);
+        let mut c: i8 = c.read().clone();
+        println!("{}", (c as i32) as u8 as char);
     }
     let v: Value<Vec<Ptr<i32>>> = Rc::new(RefCell::new(Vec::new()));
     {
@@ -36,8 +36,8 @@ fn main_0() -> i32 {
         (*v.borrow_mut()).push(__a1)
     };
     'loop_: for mut p in v.as_pointer() as Ptr<Ptr<i32>> {
-        let p: Value<Ptr<i32>> = Rc::new(RefCell::new(p.read()));
-        println!("{}", ((*p.borrow()).read()));
+        let mut p: Ptr<i32> = p.read();
+        println!("{}", (p.read()));
     }
     return 0;
 }

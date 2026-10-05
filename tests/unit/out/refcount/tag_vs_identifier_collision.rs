@@ -92,10 +92,8 @@ pub struct Inner_struct {
     #[offset(0)]
     pub typedef_field: i32,
 }
-pub fn is_active_0(w: Ptr<widget>) -> i32 {
-    let w: Value<Ptr<widget>> = Rc::new(RefCell::new(w));
-    return ((((*w.borrow()).with(|__s| __s.mode) as u32)
-        == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
+pub fn is_active_0(mut w: Ptr<widget>) -> i32 {
+    return (((w.with(|__s| __s.mode) as u32) == ((widget_enum_MODE_ACTIVE as i32) as u32)) as i32);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -121,8 +119,8 @@ fn main_0() -> i32 {
     let b: Value<slot_union> = <Value<slot_union>>::default();
     (*b.borrow_mut()).i().write(9);
     assert!((((((*b.borrow()).i().read()) == 9) as i32) != 0));
-    let e: Value<slot> = Rc::new(RefCell::new(slot_SLOT_B));
-    assert!((((((*e.borrow()) as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
+    let mut e: slot = slot_SLOT_B;
+    assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
     let inner_tag: Value<Inner> = <Value<Inner>>::default();
     (*inner_tag.borrow_mut()).tag_field = 11;
     assert!(((({ (*inner_tag.borrow()).tag_field } == 11) as i32) != 0));

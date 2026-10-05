@@ -15,9 +15,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(3));
-    let c: Value<Color> = Rc::new(RefCell::new(((*n.borrow()) as Color)));
-    return if (((*c.borrow()) as i32) == (Color_BLUE as i32)) {
+    let mut n: i32 = 3;
+    let mut c: Color = ((n) as Color);
+    return if ((c as i32) == (Color_BLUE as i32)) {
         0
     } else {
         1

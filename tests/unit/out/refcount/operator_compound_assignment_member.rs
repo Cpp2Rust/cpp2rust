@@ -72,9 +72,8 @@ pub trait SImpl {
     fn operator_shr_assign(&self, n: i32) -> Ptr<S>;
 }
 impl SImpl for Ptr<S> {
-    fn operator_assign_1(&self, n: u32) -> Ptr<S> {
-        let n: Value<u32> = Rc::new(RefCell::new(n));
-        field!((*self), v).write((*n.borrow()));
+    fn operator_assign_1(&self, mut n: u32) -> Ptr<S> {
+        field!((*self), v).write(n);
         return (*self).clone();
     }
     fn operator_add_assign(&self, o: Ptr<S>) -> Ptr<S> {
@@ -118,19 +117,17 @@ impl SImpl for Ptr<S> {
         };
         return (*self).clone();
     }
-    fn operator_shl_assign(&self, n: i32) -> Ptr<S> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shl_assign(&self, mut n: i32) -> Ptr<S> {
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() << (*n.borrow()))
+            _ptr.write(_ptr.read() << n)
         };
         return (*self).clone();
     }
-    fn operator_shr_assign(&self, n: i32) -> Ptr<S> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn operator_shr_assign(&self, mut n: i32) -> Ptr<S> {
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() >> (*n.borrow()))
+            _ptr.write(_ptr.read() >> n)
         };
         return (*self).clone();
     }

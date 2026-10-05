@@ -11,9 +11,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let special: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
+    let mut special: Ptr<i8> = Ptr::<i8>::from_string_literal(
         b"\x07\x08\t\n\x0b\x0c\r !\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~\xff",
-    )));
+    );
     thread_local!(
         static expected_0: Value<Box<[i8]>> = Rc::new(RefCell::new(Box::new([
             7_i8,
@@ -59,20 +59,20 @@ fn main_0() -> i32 {
             (b'\xff' as i8),
         ])));
     );
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow())
+    let mut i: i32 = 0;
+    'loop_: while (i
         < (((::std::mem::size_of::<[i8; 41]>() as usize)
             .wrapping_div((::std::mem::size_of::<i8>() as usize))) as i32))
     {
         assert!(
-            ({ ((elem!((*special.borrow()), (*i.borrow())).read()) as i32) } == {
+            ({ ((elem!(special, i).read()) as i32) } == {
                 (({
-                    let __idx = (*i.borrow()) as usize;
+                    let __idx = (i) as usize;
                     expected_0.with(|rc| rc.borrow()[__idx])
                 }) as i32)
             })
         );
-        (*i.borrow_mut()).postfix_inc();
+        i.postfix_inc();
     }
     return 0;
 }

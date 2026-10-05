@@ -108,7 +108,7 @@ fn main_0() -> i32 {
     assert!((({ (*f.borrow()).call() }) == 10));
     let h: Value<FnPtr<fn() -> i32>> = Rc::new(RefCell::new((*f.borrow_mut()).clone()));
     assert!((({ (*h.borrow()).call() }) == 11));
-    let returned: Value<i32> = Rc::new(RefCell::new({
+    let mut returned: i32 = {
         ({
             lambda!(
                 {
@@ -122,8 +122,8 @@ fn main_0() -> i32 {
             .call()
         })
         .copies
-    }));
-    assert!(((*returned.borrow()) == 2));
+    };
+    assert!((returned == 2));
     let arr: Value<Box<[Counted]>> = Rc::new(RefCell::new(Box::new(
         std::array::from_fn::<_, 2, _>(|_| Counted::new()),
     )));

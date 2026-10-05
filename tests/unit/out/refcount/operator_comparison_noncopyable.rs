@@ -19,11 +19,8 @@ pub struct S {
     data_: i32,
 }
 impl S {
-    pub fn new(data: i32) -> Self {
-        let data: Value<i32> = Rc::new(RefCell::new(data));
-        let __this: Value<S> = Rc::new(RefCell::new(Self {
-            data_: (*data.borrow()),
-        }));
+    pub fn new(mut data: i32) -> Self {
+        let __this: Value<S> = Rc::new(RefCell::new(Self { data_: data }));
         let this: Ptr<S> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

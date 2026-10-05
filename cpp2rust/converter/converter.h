@@ -586,7 +586,7 @@ protected:
 
   virtual std::string GetDefaultAsStringFallback(clang::QualType qual_type);
 
-  virtual std::string ConvertVarDefaultInit(clang::QualType qual_type);
+  virtual std::string ConvertVarDefaultInit(const clang::VarDecl *decl);
 
   virtual std::string
   GetOverloadedFunctionName(const clang::CXXMethodDecl *decl);

@@ -67,9 +67,8 @@ fn main_0() -> i32 {
     assert!((({ shuffle_1(3,) }) == 10));
     return 0;
 }
-pub fn shuffle_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let a: Value<S> = Rc::new(RefCell::new(S::new({ (*x.borrow()) })));
+pub fn shuffle_1(mut x: i32) -> i32 {
+    let a: Value<S> = Rc::new(RefCell::new(S::new({ x })));
     let b: Value<S> = Rc::new(RefCell::new(S::move_from({ a.as_pointer() })));
     assert!((*{ (*a.borrow()).v.clone() }.borrow()).is_empty());
     let c: Value<S> = Rc::new(RefCell::new(S::new({ 1 })));

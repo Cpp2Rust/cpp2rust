@@ -13,9 +13,8 @@ pub struct NoCopy {
     pub v: i32,
 }
 impl NoCopy {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<NoCopy> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<NoCopy> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -91,9 +90,8 @@ impl Container {
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
 }
-pub fn bump_0(p: Ptr<NoCopy>) {
-    let p: Value<Ptr<NoCopy>> = Rc::new(RefCell::new(p));
-    field!((*p.borrow()), v).with_mut(|__v| __v.postfix_inc());
+pub fn bump_0(mut p: Ptr<NoCopy>) {
+    field!(p, v).with_mut(|__v| __v.postfix_inc());
 }
 pub fn bump_ref_1(r: Ptr<Immovable>) {
     field!(r, v).with_mut(|__v| __v.postfix_inc());
@@ -119,8 +117,8 @@ fn main_0() -> i32 {
     let im: Value<Immovable> = Rc::new(RefCell::new(Immovable::new()));
     (*im.borrow_mut()).v = 4;
     ({ bump_ref_1(im.as_pointer()) });
-    let pim: Value<Ptr<Immovable>> = Rc::new(RefCell::new((im.as_pointer())));
-    assert!(((*pim.borrow()).with(|__s| __s.v) == 5));
+    let mut pim: Ptr<Immovable> = (im.as_pointer());
+    assert!((pim.with(|__s| __s.v) == 5));
     let c: Value<Container> = Rc::new(RefCell::new(Container {
         inner: NoCopy::new({ 6 }),
         tag: 7,

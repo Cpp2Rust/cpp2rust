@@ -47,11 +47,11 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!(({ (*single_entry_0.with(Value::clone).borrow()).p.clone() }).is_null());
-    let i: Value<i32> = Rc::new(RefCell::new(0));
-    'loop_: while ((*i.borrow()) < 2) {
+    let mut i: i32 = 0;
+    'loop_: while (i < 2) {
         assert!(
             ({
-                (*entries_1.with(Value::clone).borrow())[(*i.borrow()) as usize]
+                (*entries_1.with(Value::clone).borrow())[(i) as usize]
                     .p
                     .clone()
             })
@@ -59,12 +59,12 @@ fn main_0() -> i32 {
         );
         assert!(
             ({
-                let __idx = (*i.borrow()) as usize;
+                let __idx = (i) as usize;
                 arr_of_pointers_2.with(|rc| rc.borrow()[__idx].clone())
             })
             .is_null()
         );
-        (*i.borrow_mut()).prefix_inc();
+        i.prefix_inc();
     }
     return 0;
 }

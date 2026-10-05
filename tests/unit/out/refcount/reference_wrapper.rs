@@ -14,10 +14,9 @@ pub struct Point {
     #[offset(4)]
     pub y: i32,
 }
-pub fn set_0(ref_: Ptr<i32>, val: i32) {
+pub fn set_0(ref_: Ptr<i32>, mut val: i32) {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));
-    let val: Value<i32> = Rc::new(RefCell::new(val));
-    (*ref_.borrow()).write((*val.borrow()));
+    (*ref_.borrow()).write(val);
 }
 pub fn read_1(ref_: Ptr<i32>) -> i32 {
     let ref_: Value<Ptr<i32>> = Rc::new(RefCell::new(ref_));

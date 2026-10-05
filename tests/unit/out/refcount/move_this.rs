@@ -13,9 +13,8 @@ pub struct Chain {
     pub v: i32,
 }
 impl Chain {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Chain> = Rc::new(RefCell::new(Self { v: (*v.borrow()) }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<Chain> = Rc::new(RefCell::new(Self { v: v }));
         let this: Ptr<Chain> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
@@ -85,19 +84,17 @@ pub trait ChainImpl {
     fn self_(&self) -> Ptr<Chain>;
 }
 impl ChainImpl for Ptr<Chain> {
-    fn add_4(&self, n: i32) -> Ptr<Chain> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn add_4(&self, mut n: i32) -> Ptr<Chain> {
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + (*n.borrow()))
+            _ptr.write(_ptr.read() + n)
         };
         return (*self).clone();
     }
-    fn add_5(&self, n: i32) -> Ptr<Chain> {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    fn add_5(&self, mut n: i32) -> Ptr<Chain> {
         {
             let _ptr = field!((*self), v);
-            _ptr.write(_ptr.read() + (*n.borrow()))
+            _ptr.write(_ptr.read() + n)
         };
         return (*self).clone();
     }

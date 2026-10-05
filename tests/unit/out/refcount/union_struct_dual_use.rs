@@ -14,9 +14,8 @@ pub struct Inner {
     #[offset(4)]
     pub b: i32,
 }
-pub fn sum_inner_0(i: Ptr<Inner>) -> i32 {
-    let i: Value<Ptr<Inner>> = Rc::new(RefCell::new(i));
-    return ({ (*i.borrow()).with(|__s| __s.a) } + { (*i.borrow()).with(|__s| __s.b) });
+pub fn sum_inner_0(mut i: Ptr<Inner>) -> i32 {
+    return ({ i.with(|__s| __s.a) } + { i.with(|__s| __s.b) });
 }
 #[derive(ByteRepr, DeepClone)]
 #[byte_size(16)]

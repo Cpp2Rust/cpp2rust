@@ -14,11 +14,8 @@ pub struct Owner {
     pub p: Ptr<i32>,
 }
 impl Owner {
-    pub fn new(v: i32) -> Self {
-        let v: Value<i32> = Rc::new(RefCell::new(v));
-        let __this: Value<Owner> = Rc::new(RefCell::new(Self {
-            p: Ptr::alloc((*v.borrow())),
-        }));
+    pub fn new(mut v: i32) -> Self {
+        let __this: Value<Owner> = Rc::new(RefCell::new(Self { p: Ptr::alloc(v) }));
         let this: Ptr<Owner> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

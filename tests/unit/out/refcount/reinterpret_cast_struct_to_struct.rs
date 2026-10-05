@@ -31,11 +31,10 @@ fn main_0() -> i32 {
         x: 10_u32,
         y: 20_u32,
     }));
-    let pair: Value<Ptr<Pair>> =
-        Rc::new(RefCell::new((pt.as_pointer()).reinterpret_cast::<Pair>()));
-    assert!(((*pair.borrow()).with(|__s| __s.first) == 10_u32));
-    assert!(((*pair.borrow()).with(|__s| __s.second) == 20_u32));
-    field!((*pair.borrow()), first).write(42_u32);
+    let mut pair: Ptr<Pair> = (pt.as_pointer()).reinterpret_cast::<Pair>();
+    assert!((pair.with(|__s| __s.first) == 10_u32));
+    assert!((pair.with(|__s| __s.second) == 20_u32));
+    field!(pair, first).write(42_u32);
     assert!(({ (*pt.borrow()).x } == 42_u32));
     return 0;
 }

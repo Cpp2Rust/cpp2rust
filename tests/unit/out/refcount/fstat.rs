@@ -11,16 +11,14 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let path: Value<Ptr<i8>> = Rc::new(RefCell::new(Ptr::<i8>::from_string_literal(
-        b"cpp2rust_fstat_test.tmp",
-    )));
-    let fd: Value<i32> = Rc::new(RefCell::new({
+    let mut path: Ptr<i8> = Ptr::<i8>::from_string_literal(b"cpp2rust_fstat_test.tmp");
+    let mut fd: i32 = {
         let __mode = match &[(420).into()].first() {
             Some(__m) => nix::sys::stat::Mode::from_bits_truncate(i32::get(__m) as ::libc::mode_t),
             None => nix::sys::stat::Mode::empty(),
         };
         match nix::fcntl::open(
-            (*path.borrow()).to_rust_string().as_str(),
+            path.to_rust_string().as_str(),
             nix::fcntl::OFlag::from_bits_retain(
                 ((::libc::O_RDWR | ::libc::O_CREAT) | ::libc::O_TRUNC),
             ),
@@ -32,10 +30,10 @@ fn main_0() -> i32 {
                 -1
             }
         }
-    }));
-    assert!(((((*fd.borrow()) >= 0) as i32) != 0));
+    };
+    assert!((((fd >= 0) as i32) != 0));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| {
+        (((match FdRegistry::with_fd(fd, |__fd| {
             Ptr::<i8>::from_string_literal(b"hello")
                 .to_any()
                 .reinterpret_cast::<u8>()
@@ -51,7 +49,7 @@ fn main_0() -> i32 {
     );
     let st: Value<libcc2rs::Stat> = Rc::new(RefCell::new(Default::default()));
     assert!(
-        (((match FdRegistry::with_fd((*fd.borrow()), |__fd| nix::sys::stat::fstat(__fd)) {
+        (((match FdRegistry::with_fd(fd, |__fd| nix::sys::stat::fstat(__fd)) {
             Ok(__s) => {
                 (st.as_pointer()).with_mut(|__st| *__st = Stat::from_libc(&__s));
                 0
@@ -64,9 +62,9 @@ fn main_0() -> i32 {
             != 0)
     );
     assert!(((({ (*st.borrow()).st_size } == 5_i64) as i32) != 0));
-    assert!((((FdRegistry::close((*fd.borrow())) == 0) as i32) != 0));
+    assert!((((FdRegistry::close(fd) == 0) as i32) != 0));
     assert!(
-        (((match nix::unistd::unlink((*path.borrow()).to_rust_string().as_str()) {
+        (((match nix::unistd::unlink(path.to_rust_string().as_str()) {
             Ok(()) => 0,
             Err(__e) => {
                 libcc2rs::cpp2rust_errno().write(__e as i32);

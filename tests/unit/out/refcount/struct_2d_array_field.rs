@@ -205,13 +205,11 @@ fn main_0() -> i32 {
         } == 0) as i32)
             != 0)
     );
-    let p: Value<Ptr<i8>> = Rc::new(RefCell::new(
-        ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[i8]>>>)
-            .offset(2)
-            .read()
-            .as_pointer()) as Ptr<i8>),
-    ));
-    assert!((((((elem!((*p.borrow()), 0).read()) as i32) == ('t' as i32)) as i32) != 0));
+    let mut p: Ptr<i8> = ((({ (*local.borrow()).rows.as_pointer() } as Ptr<Value<Box<[i8]>>>)
+        .offset(2)
+        .read()
+        .as_pointer()) as Ptr<i8>);
+    assert!((((((elem!(p, 0).read()) as i32) == ('t' as i32)) as i32) != 0));
     assert!(((({ (*local.borrow()).count } == 3_usize) as i32) != 0));
     return 0;
 }

@@ -6,12 +6,11 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fatorial_0(n: i32) -> i32 {
-    let n: Value<i32> = Rc::new(RefCell::new(n));
-    if ((*n.borrow()) == 0) {
+pub fn fatorial_0(mut n: i32) -> i32 {
+    if (n == 0) {
         return 1;
     }
-    return ((*n.borrow()) * ({ fatorial_0(((*n.borrow()) - 1)) }));
+    return (n * ({ fatorial_0((n - 1)) }));
 }
 pub fn fatorial_by_ref_1(n: Ptr<i32>) {
     if ((n.read()) == 1) {
@@ -28,19 +27,18 @@ pub fn fatorial_by_ref_1(n: Ptr<i32>) {
         _ptr.write(_ptr.read() * { (*n_1.borrow()) })
     };
 }
-pub fn fatorial_by_ptr_2(n: Ptr<i32>) {
-    let n: Value<Ptr<i32>> = Rc::new(RefCell::new(n));
-    if (((*n.borrow()).read()) == 1) {
+pub fn fatorial_by_ptr_2(mut n: Ptr<i32>) {
+    if ((n.read()) == 1) {
         {
-            let _ptr = (*n.borrow()).clone();
+            let _ptr = n.clone();
             _ptr.write(_ptr.read() * 1)
         };
         return;
     }
-    let n_1: Value<i32> = Rc::new(RefCell::new((((*n.borrow()).read()) - 1)));
+    let n_1: Value<i32> = Rc::new(RefCell::new(((n.read()) - 1)));
     ({ fatorial_by_ptr_2((n_1.as_pointer())) });
     {
-        let _ptr = (*n.borrow()).clone();
+        let _ptr = n.clone();
         _ptr.write(_ptr.read() * { (*n_1.borrow()) })
     };
 }

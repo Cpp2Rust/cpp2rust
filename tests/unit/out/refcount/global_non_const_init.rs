@@ -12,9 +12,8 @@ pub fn next_0() -> i32 {
     );
     return (*counter_1.with(Value::clone).borrow_mut()).prefix_inc();
 }
-pub fn marker_2(tag: u8) -> u8 {
-    let tag: Value<u8> = Rc::new(RefCell::new(tag));
-    return (((((*tag.borrow()) as i32) << 3) | 2) as u8);
+pub fn marker_2(mut tag: u8) -> u8 {
+    return ((((tag as i32) << 3) | 2) as u8);
 }
 thread_local!(
     pub static signature_3: Value<Box<[u8]>> = Rc::new(RefCell::new(Box::new([
@@ -45,9 +44,8 @@ impl Ctor {
         let this: Ptr<Ctor> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
-    pub fn new_2(x: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: (*x.borrow()) }));
+    pub fn new_2(mut x: i32) -> Self {
+        let __this: Value<Ctor> = Rc::new(RefCell::new(Self { v: x }));
         let this: Ptr<Ctor> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }

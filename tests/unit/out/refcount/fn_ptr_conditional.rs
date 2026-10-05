@@ -6,40 +6,33 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn inc_0(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) + 1);
+pub fn inc_0(mut x: i32) -> i32 {
+    return (x + 1);
 }
-pub fn dec_1(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return ((*x.borrow()) - 1);
+pub fn dec_1(mut x: i32) -> i32 {
+    return (x - 1);
 }
-pub fn identity_2(x: i32) -> i32 {
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    return (*x.borrow());
+pub fn identity_2(mut x: i32) -> i32 {
+    return x;
 }
-pub fn pick_3(mode: i32) -> FnPtr<fn(i32) -> i32> {
-    let mode: Value<i32> = Rc::new(RefCell::new(mode));
-    return if ((*mode.borrow()) > 0) {
+pub fn pick_3(mut mode: i32) -> FnPtr<fn(i32) -> i32> {
+    return if (mode > 0) {
         FnPtr::<fn(i32) -> i32>::new(inc_0)
     } else {
-        if ((*mode.borrow()) < 0) {
+        if (mode < 0) {
             FnPtr::<fn(i32) -> i32>::new(dec_1)
         } else {
             FnPtr::<fn(i32) -> i32>::new(identity_2)
         }
     };
 }
-pub fn apply_4(fn_: FnPtr<fn(i32) -> i32>, x: i32) -> i32 {
-    let fn_: Value<FnPtr<fn(i32) -> i32>> = Rc::new(RefCell::new(fn_));
-    let x: Value<i32> = Rc::new(RefCell::new(x));
-    let actual: Value<FnPtr<fn(i32) -> i32>> =
-        Rc::new(RefCell::new(if !(*fn_.borrow()).is_null() {
-            (*fn_.borrow()).clone()
-        } else {
-            FnPtr::<fn(i32) -> i32>::new(identity_2)
-        }));
-    return ({ (*actual.borrow()).call((*x.borrow())) });
+pub fn apply_4(mut fn_: FnPtr<fn(i32) -> i32>, mut x: i32) -> i32 {
+    let mut actual: FnPtr<fn(i32) -> i32> = if !(fn_).is_null() {
+        (fn_).clone()
+    } else {
+        FnPtr::<fn(i32) -> i32>::new(identity_2)
+    };
+    return ({ actual.call(x) });
 }
 pub fn main() {
     __cpp2rust_init_globals();

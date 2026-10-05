@@ -52,13 +52,8 @@ pub struct Boxed_int_ {
     pub tag: i32,
 }
 impl Boxed_int_ {
-    pub fn new(x: i32, t: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
-        let t: Value<i32> = Rc::new(RefCell::new(t));
-        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self {
-            v: (*x.borrow()),
-            tag: (*t.borrow()),
-        }));
+    pub fn new(mut x: i32, mut t: i32) -> Self {
+        let __this: Value<Boxed_int_> = Rc::new(RefCell::new(Self { v: x, tag: t }));
         let this: Ptr<Boxed_int_> = __this.as_pointer();
         Rc::try_unwrap(__this).ok().unwrap().into_inner()
     }
