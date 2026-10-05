@@ -8,6 +8,7 @@
 #include <clang/AST/Type.h>
 
 #include <string>
+#include <vector>
 
 namespace cpp2rust::Printer {
 enum class ScalarSugar {
@@ -17,6 +18,8 @@ enum class ScalarSugar {
 
 std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
                      ScalarSugar sugar = ScalarSugar::kDesugar);
+std::vector<std::string> ToStringCandidates(clang::ASTContext &ctx,
+                                            clang::QualType qual_type);
 std::string ToString(clang::ASTContext &ctx, const clang::Expr *expr);
 std::string ToString(clang::ASTContext &ctx, const clang::NamedDecl *decl);
 std::string ToRustName(std::string name);

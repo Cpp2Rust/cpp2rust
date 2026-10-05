@@ -12,6 +12,7 @@
 
 #include "converter/converter_lib.h"
 #include "converter/printer.h"
+#include "rules_loader.h"
 
 namespace cpp2rust::RuleRegistry {
 
@@ -33,6 +34,9 @@ void addRulesFromDirectory(const std::filesystem::path &dir, Model model) {
   namespace fs = std::filesystem;
   for (const auto &entry : fs::directory_iterator(dir)) {
     const auto &path = entry.path();
+    if (path.filename() == RulesLoader::kIndexDirName) {
+      continue;
+    }
     assert(fs::exists(path / "ir_src.json") &&
            (fs::exists(path / "ir_unsafe.json") ||
             fs::exists(path / "ir_refcount.json")));
