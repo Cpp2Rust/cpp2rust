@@ -1,18 +1,16 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#ifdef CPP2RUST_USE_INCLUDES
 #include <cstddef>
-#endif
 
 #define BUILTIN_TYPE(N, T)                                                     \
-  typedef T CPP2RUST_TYPE_RULE(N##0);                                          \
-  typedef T *CPP2RUST_TYPE_RULE(N##1);                                         \
-  typedef const T *CPP2RUST_TYPE_RULE(N##2);                                   \
-  typedef volatile T *CPP2RUST_TYPE_RULE(N##3);                                \
-  typedef const volatile T *CPP2RUST_TYPE_RULE(N##4);
+  typedef T t##N##0;                                                           \
+  typedef T *t##N##1;                                                          \
+  typedef const T *t##N##2;                                                    \
+  typedef volatile T *t##N##3;                                                 \
+  typedef const volatile T *t##N##4;
 
-typedef decltype(nullptr) CPP2RUST_TYPE_RULE(0);
+typedef decltype(nullptr) t0;
 
 BUILTIN_TYPE(1, bool)
 BUILTIN_TYPE(5, char8_t)

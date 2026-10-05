@@ -1,75 +1,57 @@
 // Copyright (c) 2022-present INESC-ID.
 // Distributed under the MIT license that can be found in the LICENSE file.
 
-#ifdef CPP2RUST_USE_INCLUDES
 #include <deque>
 #include <vector>
-#endif
 
 template <typename T, typename A> using Init = A;
 
-template <typename T1> using CPP2RUST_TYPE_RULE(1) = std::deque<T1>;
+template <typename T1> using t1 = std::deque<T1>;
 
-template <typename T1> T1 &CPP2RUST_EXPR_RULE(1)(std::deque<T1> &o) {
-  return o.back();
-}
+template <typename T1> T1 &f1(std::deque<T1> &o) { return o.back(); }
 
-template <typename T1> T1 &CPP2RUST_EXPR_RULE(2)(std::deque<T1> &o) {
-  return o.front();
-}
+template <typename T1> T1 &f2(std::deque<T1> &o) { return o.front(); }
 
-template <typename T1> bool CPP2RUST_EXPR_RULE(3)(const std::deque<T1> &o) {
-  return o.empty();
-}
+template <typename T1> bool f3(const std::deque<T1> &o) { return o.empty(); }
 
-template <typename T1>
-void CPP2RUST_EXPR_RULE(4)(std::deque<T1> &o, T1 &&value) {
+template <typename T1> void f4(std::deque<T1> &o, T1 &&value) {
   return o.push_back(std::move(value));
 }
 
-template <typename T1> void CPP2RUST_EXPR_RULE(5)(std::deque<T1> &o) {
-  return o.pop_front();
-}
+template <typename T1> void f5(std::deque<T1> &o) { return o.pop_front(); }
 
 template <typename T1>
-void CPP2RUST_EXPR_RULE(7)(std::deque<std::vector<T1>> &o,
-                           const std::vector<T1> &value) {
+void f7(std::deque<std::vector<T1>> &o, const std::vector<T1> &value) {
   return o.push_back(value);
 }
 
-template <typename T1>
-std::deque<T1> CPP2RUST_EXPR_RULE(8)(const std::deque<T1> &o) {
+template <typename T1> std::deque<T1> f8(const std::deque<T1> &o) {
   return std::deque<T1>(o);
 }
 
-template <typename T1>
-std::deque<T1> CPP2RUST_EXPR_RULE(9)(std::deque<T1> &&o) {
+template <typename T1> std::deque<T1> f9(std::deque<T1> &&o) {
   return std::deque<T1>(std::move(o));
 }
 
 template <typename T1>
-std::deque<T1> &CPP2RUST_EXPR_RULE(10)(std::deque<T1> &dst,
-                                       const std::deque<T1> &src) {
+std::deque<T1> &f10(std::deque<T1> &dst, const std::deque<T1> &src) {
   return dst.operator=(src);
 }
 
 template <typename T1>
-std::deque<T1> &CPP2RUST_EXPR_RULE(11)(std::deque<T1> &dst,
-                                       std::deque<T1> &&src) {
+std::deque<T1> &f11(std::deque<T1> &dst, std::deque<T1> &&src) {
   return dst.operator=(std::move(src));
 }
 
 template <typename T1, typename... Args>
-T1 &CPP2RUST_EXPR_RULE(12)(std::deque<T1> &o, Init<T1, Args> &&...args) {
+T1 &f12(std::deque<T1> &o, Init<T1, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
 template <typename T1, typename... Args>
-std::vector<T1> &CPP2RUST_EXPR_RULE(13)(std::deque<std::vector<T1>> &o,
-                                        Init<std::vector<T1>, Args> &&...args) {
+std::vector<T1> &f13(std::deque<std::vector<T1>> &o,
+                     Init<std::vector<T1>, Args> &&...args) {
   return o.emplace_back(std::forward<Args>(args)...);
 }
 
-template <typename T1> std::deque<T1> CPP2RUST_EXPR_RULE(14)() {
-  return std::deque<T1>();
-}
+template <typename T1> std::deque<T1> f14() { return std::deque<T1>(); }
