@@ -32,20 +32,20 @@ pub struct anon_2 {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct anon_4 {
+pub struct anon_3 {
     pub j: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct anon_5 {
+pub struct anon_4 {
     pub k: i32,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
-pub struct anon_3 {
+pub struct anon_5 {
     pub i: i32,
-    pub inner_named: anon_4,
-    pub anon_5: anon_5,
+    pub inner_named: anon_3,
+    pub anon_4: anon_4,
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
@@ -54,7 +54,7 @@ pub struct Outer {
     pub anon0: anon_0,
     pub anon1: anon_1,
     pub anon_2: anon_2,
-    pub anon_3: anon_3,
+    pub anon_5: anon_5,
 }
 pub fn main() {
     unsafe {
@@ -68,7 +68,7 @@ unsafe fn main_0() -> i32 {
         anon0: <anon_0>::default(),
         anon1: <anon_1>::default(),
         anon_2: <anon_2>::default(),
-        anon_3: <anon_3>::default(),
+        anon_5: <anon_5>::default(),
     };
     o.named.a = 1;
     o.named.b = 2;
@@ -78,9 +78,9 @@ unsafe fn main_0() -> i32 {
     o.anon1.h = 6;
     o.anon_2.e = 7;
     o.anon_2.f = 8;
-    o.anon_3.i = 9;
-    o.anon_3.inner_named.j = 10;
-    o.anon_3.anon_5.k = 11;
+    o.anon_5.i = 9;
+    o.anon_5.inner_named.j = 10;
+    o.anon_5.anon_4.k = 11;
     assert!(((((o.named.a) == (1)) as i32) != 0));
     assert!(((((o.named.b) == (2)) as i32) != 0));
     assert!(((((o.anon0.c) == (3)) as i32) != 0));
@@ -89,9 +89,9 @@ unsafe fn main_0() -> i32 {
     assert!(((((o.anon1.h) == (6)) as i32) != 0));
     assert!(((((o.anon_2.e) == (7)) as i32) != 0));
     assert!(((((o.anon_2.f) == (8)) as i32) != 0));
-    assert!(((((o.anon_3.i) == (9)) as i32) != 0));
-    assert!(((((o.anon_3.inner_named.j) == (10)) as i32) != 0));
-    assert!(((((o.anon_3.anon_5.k) == (11)) as i32) != 0));
+    assert!(((((o.anon_5.i) == (9)) as i32) != 0));
+    assert!(((((o.anon_5.inner_named.j) == (10)) as i32) != 0));
+    assert!(((((o.anon_5.anon_4.k) == (11)) as i32) != 0));
     let mut s: anon_6 = <anon_6>::default();
     s.x = 1;
     s.z = 2;
