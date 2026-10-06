@@ -31,6 +31,26 @@ impl Box_Point_ {
         return self.val;
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Deduced_int_ {
+    pub val: i32,
+}
+impl Deduced_int_ {
+    pub unsafe fn twice(&mut self) -> i32 {
+        return ((self.val) + (self.val));
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Deduced_Point_ {
+    pub val: Point,
+}
+impl Deduced_Point_ {
+    pub unsafe fn get(&mut self) -> Point {
+        return self.val;
+    }
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -44,6 +64,12 @@ unsafe fn main_0() -> i32 {
         val: Point { x: 4 },
     };
     assert!((((unsafe { Box_Point_::get(&mut p,) }).x) == (4)));
+    let mut d: Deduced_int_ = Deduced_int_ { val: 5 };
+    assert!(((unsafe { Deduced_int_::twice(&mut d,) }) == (10)));
+    let mut dp: Deduced_Point_ = Deduced_Point_ {
+        val: Point { x: 6 },
+    };
+    assert!((((unsafe { Deduced_Point_::get(&mut dp,) }).x) == (6)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
