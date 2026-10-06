@@ -15,6 +15,12 @@ pub unsafe fn take_ulong_1(mut x: u64) -> u64 {
 pub unsafe fn sub_signed_2(mut a: isize, mut b: isize) -> isize {
     return ((a) - (b));
 }
+pub unsafe fn next_size_3(x: *const usize) -> usize {
+    return (*x).wrapping_add(1_usize);
+}
+pub unsafe fn next_ulong_4(x: *const u64) -> u64 {
+    return (*x).wrapping_add(1_u64);
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -188,6 +194,23 @@ unsafe fn main_0() -> i32 {
     assert!(((mins[(2) as usize]) == (2_usize)));
     let mut pr: (u64, i32) = ((sz as u64).into(), 1.into());
     assert!(((pr.0) == (21_u64)));
+    let mut ref_ul: u64 = 5_u64;
+    let mut ref_sz: usize = 7_usize;
+    assert!(
+        ((unsafe {
+            let mut _x: usize = (ref_ul as usize);
+            next_size_3(&mut _x)
+        }) == (6_usize))
+    );
+    assert!(
+        ((unsafe {
+            let mut _x: u64 = (ref_sz as u64);
+            next_ulong_4(&mut _x)
+        }) == (8_u64))
+    );
+    assert!(((unsafe { next_size_3(&ref_sz,) }) == (8_usize)));
+    assert!(((ref_ul) == (5_u64)));
+    assert!(((ref_sz) == (7_usize)));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

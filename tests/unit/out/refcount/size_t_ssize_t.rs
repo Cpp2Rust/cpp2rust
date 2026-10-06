@@ -15,6 +15,12 @@ pub fn take_ulong_1(mut x: u64) -> u64 {
 pub fn sub_signed_2(mut a: isize, mut b: isize) -> isize {
     return (a - b);
 }
+pub fn next_size_3(x: Ptr<usize>) -> usize {
+    return (x.read()).wrapping_add(1_usize);
+}
+pub fn next_ulong_4(x: Ptr<u64>) -> u64 {
+    return (x.read()).wrapping_add(1_u64);
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -202,6 +208,23 @@ fn main_0() -> i32 {
         Rc::new(RefCell::new(1.try_into().expect("failed conversion"))),
     )));
     assert!(((*(*pr.borrow()).0.borrow()) == 21_u64));
+    let ref_ul: Value<u64> = Rc::new(RefCell::new(5_u64));
+    let ref_sz: Value<usize> = Rc::new(RefCell::new(7_usize));
+    assert!(
+        (({
+            let _x: Value<usize> = Rc::new(RefCell::new(((*ref_ul.borrow()) as usize)));
+            next_size_3(_x.as_pointer())
+        }) == 6_usize)
+    );
+    assert!(
+        (({
+            let _x: Value<u64> = Rc::new(RefCell::new(((*ref_sz.borrow()) as u64)));
+            next_ulong_4(_x.as_pointer())
+        }) == 8_u64)
+    );
+    assert!((({ next_size_3(ref_sz.as_pointer(),) }) == 8_usize));
+    assert!(((*ref_ul.borrow()) == 5_u64));
+    assert!(((*ref_sz.borrow()) == 7_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
