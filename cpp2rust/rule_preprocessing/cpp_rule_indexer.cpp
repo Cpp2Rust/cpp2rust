@@ -10,10 +10,10 @@
 #include <clang/Tooling/Tooling.h>
 #include <clang/Tooling/Transformer/SourceCode.h>
 #include <llvm/ADT/STLExtras.h>
-#include <llvm/ADT/SmallVector.h>
 #include <llvm/ADT/StringExtras.h>
 #include <llvm/ADT/StringRef.h>
 #include <llvm/Support/CommandLine.h>
+#include <llvm/Support/JSON.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -36,8 +36,6 @@ namespace cpp2rust {
 struct RuleCtx {
   fs::path path;
   std::string name;
-  fs::path index_dir;
-  std::vector<std::string> common_headers;
 };
 
 fs::path ClassOf(clang::QualType type) {
@@ -162,24 +160,21 @@ std::string CreateIncFile(const RuleCtx &dir, bool is_c,
     return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
                        name, dir.name, text);
   }
-  std::string includes;
-  if (!dir.common_headers.empty()) {
-    includes = std::format("#ifndef CPP2RUST_RULES_{0}_INCLUDES\n"
-                           "#define CPP2RUST_RULES_{0}_INCLUDES\n",
-                           dir.name);
-    for (const auto &header : dir.common_headers) {
-      includes += std::format("#include \"{}\"\n", header);
-    }
-    includes += "#endif\n";
-  }
-  return std::format("namespace cpp2rust_rules_{} {{\n{}{}}}\n", dir.name,
-                     includes, text);
+  return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir.name, text);
 }
 
-void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir) {
+void AddRule(llvm::json::Object &rules, std::string key,
+             llvm::json::Value rule) {
+  auto &slot = rules[llvm::json::ObjectKey(std::move(key))];
+  if (!slot.getAsArray()) {
+    slot = llvm::json::Array();
+  }
+  slot.getAsArray()->push_back(std::move(rule));
+}
+
+void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
+                   const fs::path &src_path, llvm::json::Object &rules) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
-  auto index_dir = dir.index_dir / (is_c ? "c" : "cpp");
-  auto file_name = dir.name + ".inc";
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
     if (decl->isImplicit() ||
@@ -210,17 +205,21 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir) {
                    << "' in rule dir " << dir.path.string() << '\n';
       std::exit(EXIT_FAILURE);
     }
-    auto text =
-        clang::tooling::getExtendedText(*decl, clang::tok::semi, ctx).str() +
-        '\n';
-    auto path = index_dir / key / file_name;
-    fs::create_directories(path.parent_path());
-    std::ofstream(path, std::ios::app) << CreateIncFile(dir, is_c, name, text);
+    auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
+    auto text = std::format(
+        "#line {} \"{}\"\n{}\n", sm.getSpellingLineNumber(range.getBegin()),
+        src_path.string(), clang::tooling::getText(range, ctx).str());
+    llvm::json::Object rule{{"text", CreateIncFile(dir, is_c, name, text)}};
+    if (!is_c) {
+      rule["namespace"] = "cpp2rust_rules_" + dir.name;
+    }
+    AddRule(rules, key.generic_string(), std::move(rule));
   }
 }
 
 void Index(const fs::path &src_path, const RuleCtx &dir,
-           llvm::ArrayRef<llvm::StringRef> cxx_flags) {
+           const std::vector<std::string> &cxx_flags,
+           llvm::json::Object &rules) {
   bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
   flags.push_back("-isystem" + src_path.parent_path().string());
@@ -241,7 +240,66 @@ void Index(const fs::path &src_path, const RuleCtx &dir,
     llvm::errs() << "ERROR: cannot parse " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  IndexRuleFile(ast->getASTContext(), dir);
+  IndexRuleFile(ast->getASTContext(), dir, src_path, rules);
+}
+
+void WriteJson(const fs::path &path, llvm::json::Object object) {
+  std::error_code ec;
+  llvm::raw_fd_ostream os(path.string(), ec);
+  if (ec) {
+    llvm::errs() << "ERROR: cannot write " << path.string() << ": "
+                 << ec.message() << '\n';
+    std::exit(EXIT_FAILURE);
+  }
+  os << llvm::json::Value(std::move(object));
+}
+
+std::vector<std::string> ReadCXXFlags(const fs::path &rule_dir) {
+  std::vector<std::string> flags;
+  std::ifstream file(rule_dir / "cxxflags");
+  for (std::string flag; std::getline(file, flag);) {
+    if (!flag.empty()) {
+      flags.push_back(flag);
+    }
+  }
+  return flags;
+}
+
+void IndexRules(const fs::path &rules_dir, const fs::path &index_dir,
+                const std::vector<std::string> &excluded,
+                const std::vector<std::string> &common_headers) {
+  std::vector<fs::path> rule_dirs;
+  for (const auto &entry : fs::directory_iterator(rules_dir)) {
+    if (entry.is_directory() &&
+        !llvm::is_contained(excluded, entry.path().filename().string())) {
+      rule_dirs.push_back(entry.path());
+    }
+  }
+  std::ranges::sort(rule_dirs);
+  fs::create_directories(index_dir);
+  for (const char *lang : {"c", "cpp"}) {
+    std::string common;
+    if (lang == std::string("cpp")) {
+      for (const auto &header : common_headers) {
+        common += std::format("#include \"{}\"\n", header);
+      }
+    }
+    llvm::json::Object rules;
+    for (const auto &rule_dir : rule_dirs) {
+      auto src_path = rule_dir / (std::string("src.") + lang);
+      if (!fs::exists(src_path)) {
+        continue;
+      }
+      llvm::errs() << "Indexing " << src_path.string() << '\n';
+      RuleCtx dir;
+      dir.path = rule_dir.filename();
+      dir.name = rule_dir.filename().string();
+      Index(src_path, dir, ReadCXXFlags(rule_dir), rules);
+    }
+    WriteJson(index_dir / (std::string(lang) + ".json"),
+              llvm::json::Object{{"common", std::move(common)},
+                                 {"rules", std::move(rules)}});
+  }
 }
 
 } // namespace cpp2rust
@@ -251,17 +309,10 @@ namespace {
 llvm::cl::OptionCategory cat("cpp-rule-indexer options");
 
 llvm::cl::opt<std::string>
-    SrcDir("dir",
-           llvm::cl::desc("Path to a rule directory containing src.c and/or "
-                          "src.cpp."),
-           llvm::cl::value_desc("rule-dir"), llvm::cl::Required,
-           llvm::cl::cat(cat));
-
-llvm::cl::opt<std::string>
-    RulePath("path",
-             llvm::cl::desc("Path of the rule directory relative to the "
-                            "rules root, e.g. std/vector."),
-             llvm::cl::value_desc("rule-path"), llvm::cl::Required,
+    RulesDir("rules",
+             llvm::cl::desc("Path to the rules directory, whose subdirectories "
+                            "contain src.c and/or src.cpp."),
+             llvm::cl::value_desc("rules-dir"), llvm::cl::Required,
              llvm::cl::cat(cat));
 
 llvm::cl::opt<std::string>
@@ -270,15 +321,13 @@ llvm::cl::opt<std::string>
              llvm::cl::cat(cat));
 
 llvm::cl::list<std::string>
-    CommonHeaders("common-header",
-                  llvm::cl::desc("Header included by every indexed C++ rule"),
-                  llvm::cl::value_desc("header"), llvm::cl::ZeroOrMore,
-                  llvm::cl::cat(cat));
+    Excluded("exclude", llvm::cl::desc("Rule directory that is not indexed"),
+             llvm::cl::value_desc("rule-dir"), llvm::cl::ZeroOrMore,
+             llvm::cl::cat(cat));
 
-llvm::cl::list<std::string> CXXFlags("cxxflags",
-                                     llvm::cl::desc("Additional CXXFLAGS"),
-                                     llvm::cl::value_desc("cxxflags"),
-                                     llvm::cl::ZeroOrMore, llvm::cl::cat(cat));
+llvm::cl::list<std::string> CommonHeaders(
+    "common-header", llvm::cl::desc("Header the C++ rules depend on"),
+    llvm::cl::value_desc("header"), llvm::cl::ZeroOrMore, llvm::cl::cat(cat));
 
 } // namespace
 
@@ -286,22 +335,8 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  cpp2rust::RuleCtx dir;
-  dir.path = RulePath.getValue();
-  dir.name = RulePath.getValue();
-  std::ranges::replace(dir.name, '/', '_');
-  dir.index_dir = IndexDir.getValue();
-  dir.common_headers.assign(CommonHeaders.begin(), CommonHeaders.end());
-
-  llvm::SmallVector<llvm::StringRef, 4> cxx_flags(CXXFlags.begin(),
-                                                  CXXFlags.end());
-  for (const char *name : {"src.c", "src.cpp"}) {
-    auto path = fs::path(SrcDir.getValue()) / name;
-    if (!fs::exists(path)) {
-      continue;
-    }
-    llvm::errs() << "Indexing " << path.string() << '\n';
-    cpp2rust::Index(path, dir, cxx_flags);
-  }
+  cpp2rust::IndexRules(RulesDir.getValue(), IndexDir.getValue(),
+                       {Excluded.begin(), Excluded.end()},
+                       {CommonHeaders.begin(), CommonHeaders.end()});
   return EXIT_SUCCESS;
 }

@@ -9,11 +9,14 @@
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
+#include <llvm/Support/Error.h>
+#include <llvm/Support/ErrorHandling.h>
+#include <llvm/Support/JSON.h>
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <algorithm>
 #include <filesystem>
-#include <format>
+#include <map>
 #include <ranges>
 #include <set>
 #include <vector>
@@ -227,17 +230,28 @@ private:
   llvm::DenseSet<const void *> seen_;
 };
 
-std::vector<fs::path> ListFiles(const fs::path &dir) {
-  std::vector<fs::path> files;
-  std::error_code ec;
-  for (fs::directory_iterator it(dir, ec), end; !ec && it != end;
-       it.increment(ec)) {
-    if (it->is_regular_file()) {
-      files.push_back(it->path());
-    }
+const llvm::json::Object &LoadIndex(const fs::path &path) {
+  static std::map<fs::path, llvm::json::Object> indexes;
+  if (auto it = indexes.find(path); it != indexes.end()) {
+    return it->second;
   }
-  std::ranges::sort(files);
-  return files;
+  auto buf = llvm::MemoryBuffer::getFile(path.string());
+  if (!buf) {
+    llvm::errs() << "Missing " << path.string() << ", run cpp-rule-indexer\n";
+    llvm::report_fatal_error("cannot read the rule index");
+  }
+  auto parsed = llvm::json::parse((*buf)->getBuffer());
+  if (!parsed) {
+    llvm::errs() << "Failed to parse rule index: " << path.string() << ": "
+                 << llvm::toString(parsed.takeError()) << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  auto index = parsed->getAsObject();
+  if (!index) {
+    llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
+    llvm::report_fatal_error("cannot parse the rule index");
+  }
+  return indexes.emplace(path, std::move(*index)).first->second;
 }
 
 std::string BuildRulesBuffer(const fs::path &index_dir,
@@ -247,9 +261,22 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
     if (!is_cxx && lang == std::string("cpp")) {
       continue;
     }
+    const auto &index = LoadIndex(index_dir / (std::string(lang) + ".json"));
+    auto common = index.getString("common");
+    auto rules = index.getObject("rules");
+    std::set<std::string> namespaces;
     for (const auto &path : paths) {
-      for (const auto &file : ListFiles(index_dir / lang / path)) {
-        out += std::format("#include \"{}\"\n", file.string());
+      auto entries = rules->getArray(path.generic_string());
+      if (!entries) {
+        continue;
+      }
+      for (const auto &entry : *entries) {
+        auto rule = entry.getAsObject();
+        if (auto ns = rule->getString("namespace");
+            ns && namespaces.insert(ns->str()).second) {
+          out += "namespace " + ns->str() + " {\n" + common->str() + "}\n";
+        }
+        out += *rule->getString("text");
       }
     }
   }

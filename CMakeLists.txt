@@ -228,9 +228,8 @@ foreach(_header IN LISTS rule_common_headers)
   list(APPEND _common_headers --common-header=${_header})
 endforeach()
 set(cpp_rules_ir_outputs)
-set(cpp_rules_index_outputs)
 set(cpp_rules_index_inputs)
-set(_index_clean_stamp ${CMAKE_BINARY_DIR}/rules_index/clean.stamp)
+set(cpp_rules_index_outputs ${CMAKE_BINARY_DIR}/rules_index/c.json ${CMAKE_BINARY_DIR}/rules_index/cpp.json)
 set(rust_rules_ir_outputs)
 foreach(_rule_dir IN LISTS rule_subdirs)
   file(GLOB _cpp_srcs ${_rule_dir}/src.c ${_rule_dir}/src.cpp)
@@ -259,16 +258,6 @@ foreach(_rule_dir IN LISTS rule_subdirs)
   list(APPEND cpp_rules_ir_outputs ${_cpp_out})
 
   if(NOT _rule_name STREQUAL "builtin_types")
-    set(_index_stamp ${_out_dir}/index.stamp)
-    add_custom_command(
-      OUTPUT ${_index_stamp}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${_out_dir}
-      COMMAND $<TARGET_FILE:cpp-rule-indexer> --dir ${_rule_dir} --path ${_rule_name} --index ${CMAKE_BINARY_DIR}/rules_index ${_cxxflags} ${_common_headers}
-      COMMAND ${CMAKE_COMMAND} -E touch ${_index_stamp}
-      DEPENDS ${_index_clean_stamp}
-      VERBATIM
-    )
-    list(APPEND cpp_rules_index_outputs ${_index_stamp})
     list(APPEND cpp_rules_index_inputs ${_cpp_srcs} ${_cxxflags_file})
   endif()
 
@@ -303,10 +292,8 @@ endforeach()
 add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
 
 add_custom_command(
-  OUTPUT ${_index_clean_stamp}
-  COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/rules_index
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/rules_index
-  COMMAND ${CMAKE_COMMAND} -E touch ${_index_clean_stamp}
+  OUTPUT ${cpp_rules_index_outputs}
+  COMMAND $<TARGET_FILE:cpp-rule-indexer> --rules ${PROJECT_SOURCE_DIR}/rules --index ${CMAKE_BINARY_DIR}/rules_index --exclude builtin_types ${_common_headers}
   DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
   VERBATIM
 )
