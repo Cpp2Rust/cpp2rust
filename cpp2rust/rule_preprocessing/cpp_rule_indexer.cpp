@@ -81,9 +81,11 @@ void AddRequiredClasses(clang::QualType type,
     return;
   }
   if (auto alias = type->getAs<clang::TypedefType>()) {
-    auto qualifier = alias->getQualifier();
-    if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
-      AddRequiredClasses(clang::QualType(qualifier.getAsType(), 0), required);
+    if (auto record = llvm::dyn_cast<clang::RecordDecl>(
+            alias->getDecl()->getDeclContext())) {
+      if (auto key = RulesLoader::ClassKey(record); !key.empty()) {
+        required.insert(key);
+      }
     }
   }
   const clang::NamedDecl *decl = type->getAsTagDecl();
