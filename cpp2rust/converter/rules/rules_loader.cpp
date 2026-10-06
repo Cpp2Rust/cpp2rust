@@ -272,7 +272,7 @@ const llvm::json::Object &CxxIndex() {
   return index;
 }
 
-std::string BuildRulesBuffer(const std::unordered_set<std::string> &keys,
+std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
                              bool is_cxx) {
   std::string out;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
@@ -460,8 +460,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto text =
-      BuildRulesBuffer(keys, ctx.getLangOpts().CPlusPlus);
+  auto text = BuildRulesEpilogue(keys, ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),
