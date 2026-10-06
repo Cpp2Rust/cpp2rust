@@ -925,7 +925,7 @@ macro_rules! impl_ptr_add_sub {
         }
     )+ }
 }
-impl_ptr_add_sub!(i32, u32, u64, isize, usize);
+impl_ptr_add_sub!(i32, u32, i64, u64, isize, usize);
 
 impl<T> PostfixInc for Ptr<T> {
     #[inline]

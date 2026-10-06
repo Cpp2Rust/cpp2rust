@@ -59,10 +59,10 @@ macro_rules! prefix_wrap_inc_impl {
     };
 }
 
-prefix_wrap_inc_impl!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize);
+prefix_wrap_inc_impl!(i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize);
 prefix_nowrap_inc_impl!(f32, f64);
 
-postfix_wrap_inc_impl!(i8, u8, i16, u16, i32, u32, i64, u64, isize, usize);
+postfix_wrap_inc_impl!(i8, u8, i16, u16, i32, u32, i64, u64, i128, u128, isize, usize);
 postfix_nowrap_inc_impl!(f32, f64);
 
 pub trait UnsafePostfixInc {
