@@ -141,6 +141,12 @@ std::string ToString(clang::ASTContext &ctx, clang::QualType qual_type,
           return ToString(ctx, ctx.getCanonicalTagType(record)) +
                  "::" + decl->getNameAsString();
         }
+        if (decl->getDeclContext()->getRedeclContext()->isNamespace()) {
+          std::string name;
+          llvm::raw_string_ostream os(name);
+          decl->printQualifiedName(os, getPrintPolicy(ctx));
+          return name;
+        }
         return decl->getNameAsString();
       }
     } else if (const auto *predef = t->getAs<clang::PredefinedSugarType>()) {
