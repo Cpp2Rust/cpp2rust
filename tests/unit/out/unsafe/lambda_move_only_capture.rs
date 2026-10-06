@@ -38,6 +38,9 @@ impl Owner {
             },
             || -> i32 {
                 return (*self_.p);
+            },
+            move_from {
+                self_: Owner::move_from({ &mut self_ },),
             }
         );
     }
@@ -57,11 +60,14 @@ unsafe fn main_0() -> i32 {
         },
         || -> i32 {
             return (*h.p);
+        },
+        move_from {
+            h: Owner::move_from({ &mut h },),
         }
     );
     assert!((o.p).is_null());
     assert!(((unsafe { f.call() }) == (5)));
-    let mut g: FnPtr<fn() -> i32> = f;
+    let mut g: FnPtr<fn() -> i32> = f.move_from();
     assert!(((unsafe { g.call() }) == (5)));
     let mut total: i32 = 0;
     let mut consume: FnPtr<fn()> = lambda_unsafe!(
@@ -72,6 +78,10 @@ unsafe fn main_0() -> i32 {
         || {
             (*total) += (*h.p);
             (*h.p) = 0;
+        },
+        move_from {
+            h: Owner::move_from({ &mut h },),
+            total: total,
         }
     );
     (unsafe { consume.call() });
