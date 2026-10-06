@@ -1193,7 +1193,14 @@ bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {
   auto access_spec = AccessSpecifierAsString(decl->getAccess());
   auto field_name = GetNamedDeclAsString(decl);
   StrCat(access_spec, std::move(field_name), token::kColon);
-  Convert(decl->getType());
+  if (auto *array = ctx_.getAsIncompleteArrayType(decl->getType());
+      array && EmitsReprCForRecords()) {
+    StrCat('[');
+    Convert(array->getElementType());
+    StrCat("; 0]");
+  } else {
+    Convert(decl->getType());
+  }
   StrCat(token::kComma);
   return false;
 }
