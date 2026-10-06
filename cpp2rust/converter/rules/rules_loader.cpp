@@ -171,12 +171,14 @@ private:
     if (type->isBuiltinType() || type->isUndeducedType()) {
       return;
     }
-    if (type->isPointerType() || type->isReferenceType() ||
-        type->isBlockPointerType()) {
+    if (type->isPointerType() || type->isReferenceType()) {
       return AddType(type->getPointeeType());
     }
     if (const auto *array = ctx_.getAsArrayType(type)) {
       return AddType(array->getElementType());
+    }
+    if (const auto *vector = type->getAs<clang::VectorType>()) {
+      return AddType(vector->getElementType());
     }
     if (const auto *fn = type->getAs<clang::FunctionType>()) {
       AddType(fn->getReturnType());
