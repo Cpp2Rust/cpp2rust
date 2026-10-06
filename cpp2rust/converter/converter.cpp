@@ -3580,14 +3580,16 @@ bool Converter::VisitCXXNewExpr(clang::CXXNewExpr *expr) {
 bool Converter::VisitCXXDeleteExpr(clang::CXXDeleteExpr *expr) {
   auto *argument = expr->getArgument();
   auto destroyed_type = expr->getDestroyedType();
-  if (!TypeNeedsDestruction(destroyed_type)) {
-    EmitDeallocation(expr, ToString(argument));
-    return false;
-  }
-  auto record_name = GetRecordName(destroyed_type->getAsCXXRecordDecl());
   PushBrace brace(*this);
   StrCat(keyword::kLet, "__p", token::kAssign, ToString(argument),
          token::kSemiColon);
+  StrCat("if !__p.is_null()");
+  PushBrace not_null(*this);
+  if (!TypeNeedsDestruction(destroyed_type)) {
+    EmitDeallocation(expr, "__p");
+    return false;
+  }
+  auto record_name = GetRecordName(destroyed_type->getAsCXXRecordDecl());
   if (expr->isArrayForm()) {
     StrCat(std::format("for __i in 0..libcc2rs::malloc_usable_size(__p as *mut "
                        "::libc::c_void) / ::std::mem::size_of::<{0}>() {{ "
