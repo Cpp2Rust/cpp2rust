@@ -293,7 +293,7 @@ add_custom_target("preprocess-cpp-rules" ALL DEPENDS ${cpp_rules_ir_outputs})
 
 add_custom_command(
   OUTPUT ${cpp_rules_index_outputs}
-  COMMAND $<TARGET_FILE:cpp-rule-indexer> --rules ${PROJECT_SOURCE_DIR}/rules --index ${CMAKE_BINARY_DIR}/rules_index --exclude builtin_types ${_common_headers}
+  COMMAND $<TARGET_FILE:cpp-rule-indexer> --exclude builtin_types ${_common_headers}
   DEPENDS ${cpp_rules_index_inputs} ${rule_common_headers} ${rule_indexer_sources} ${RUSTLS_HEADER} ${BROTLI_HEADERS}
   VERBATIM
 )

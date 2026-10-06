@@ -308,18 +308,6 @@ namespace {
 
 llvm::cl::OptionCategory cat("cpp-rule-indexer options");
 
-llvm::cl::opt<std::string>
-    RulesDir("rules",
-             llvm::cl::desc("Path to the rules directory, whose subdirectories "
-                            "contain src.c and/or src.cpp."),
-             llvm::cl::value_desc("rules-dir"), llvm::cl::Required,
-             llvm::cl::cat(cat));
-
-llvm::cl::opt<std::string>
-    IndexDir("index", llvm::cl::desc("Directory of the rule index to write."),
-             llvm::cl::value_desc("index-dir"), llvm::cl::Required,
-             llvm::cl::cat(cat));
-
 llvm::cl::list<std::string>
     Excluded("exclude", llvm::cl::desc("Rule directory that is not indexed"),
              llvm::cl::value_desc("rule-dir"), llvm::cl::ZeroOrMore,
@@ -335,7 +323,7 @@ int main(int argc, char *argv[]) {
   llvm::cl::HideUnrelatedOptions(cat);
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
-  cpp2rust::IndexRules(RulesDir.getValue(), IndexDir.getValue(),
+  cpp2rust::IndexRules(RULES_SRC_DIR, RULES_INDEX_DIR,
                        {Excluded.begin(), Excluded.end()},
                        {CommonHeaders.begin(), CommonHeaders.end()});
   return EXIT_SUCCESS;

@@ -17,8 +17,6 @@ namespace cpp2rust::RulesLoader {
 
 inline constexpr const char *kPragmaName = "cpp2rust_rules";
 
-inline constexpr const char *kIndexDirName = "rules_index";
-
 std::string ClassKey(const clang::NamedDecl *decl);
 
 std::string MemberName(clang::DeclarationName name);
@@ -37,15 +35,14 @@ std::string TypeKey(clang::QualType type);
 
 class PragmaHandler : public clang::PragmaHandler {
 public:
-  PragmaHandler(clang::CompilerInstance &CI, const std::string &rules_dir)
-      : clang::PragmaHandler(kPragmaName), CI_(CI), rules_dir_(rules_dir) {}
+  explicit PragmaHandler(clang::CompilerInstance &CI)
+      : clang::PragmaHandler(kPragmaName), CI_(CI) {}
 
   void HandlePragma(clang::Preprocessor &PP, clang::PragmaIntroducer introducer,
                     clang::Token &tok) override;
 
 private:
   clang::CompilerInstance &CI_;
-  const std::string &rules_dir_;
 };
 
 } // namespace cpp2rust::RulesLoader

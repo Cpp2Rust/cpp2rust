@@ -424,9 +424,8 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
-  auto index_dir = std::filesystem::weakly_canonical(rules_dir_).parent_path() /
-                   kIndexDirName;
-  auto text = BuildRulesBuffer(index_dir, keys, ctx.getLangOpts().CPlusPlus);
+  auto text =
+      BuildRulesBuffer(RULES_INDEX_DIR, keys, ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),
