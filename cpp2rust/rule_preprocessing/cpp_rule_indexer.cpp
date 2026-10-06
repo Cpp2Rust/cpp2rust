@@ -22,7 +22,6 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
-#include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -33,11 +32,6 @@
 namespace fs = std::filesystem;
 
 namespace cpp2rust {
-
-struct RuleCtx {
-  fs::path path;
-  std::string name;
-};
 
 std::string ClassOf(clang::QualType type) {
   while (type->isPointerType() || type->isReferenceType()) {
@@ -220,13 +214,13 @@ std::string TypeKey(const clang::TypedefNameDecl *rule) {
   return ClassOf(type);
 }
 
-std::string CreateIncFile(const RuleCtx &dir, bool is_c,
-                          const std::string &name, const std::string &text) {
+std::string WrapRule(const std::string &dir_name, bool is_c,
+                     const std::string &name, const std::string &text) {
   if (is_c) {
     return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
-                       name, dir.name, text);
+                       name, dir_name, text);
   }
-  return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir.name, text);
+  return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir_name, text);
 }
 
 void AddRule(llvm::json::Object &rules, std::string key,
@@ -238,7 +232,7 @@ void AddRule(llvm::json::Object &rules, std::string key,
   slot.getAsArray()->push_back(std::move(rule));
 }
 
-void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
+void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
                    const fs::path &src_path, llvm::json::Object &rules) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto &sm = ctx.getSourceManager();
@@ -255,7 +249,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
     if (!(number.consume_front("f") || number.consume_front("t")) ||
         number.empty() || !llvm::all_of(number, llvm::isDigit)) {
       llvm::errs() << "ERROR: declaration '" << name << "' in rule dir "
-                   << dir.path.string() << " is not a rule\n";
+                   << dir_name << " is not a rule\n";
       std::exit(EXIT_FAILURE);
     }
     auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl);
@@ -268,16 +262,16 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
     }
     if (key.empty()) {
       llvm::errs() << "ERROR: cannot derive the key of rule '" << name
-                   << "' in rule dir " << dir.path.string() << '\n';
+                   << "' in rule dir " << dir_name << '\n';
       std::exit(EXIT_FAILURE);
     }
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = std::format(
         "#line {} \"{}\"\n{}\n", sm.getSpellingLineNumber(range.getBegin()),
         src_path.string(), clang::tooling::getText(range, ctx).str());
-    llvm::json::Object rule{{"text", CreateIncFile(dir, is_c, name, text)}};
+    llvm::json::Object rule{{"text", WrapRule(dir_name, is_c, name, text)}};
     if (!is_c) {
-      rule["namespace"] = "cpp2rust_rules_" + dir.name;
+      rule["namespace"] = "cpp2rust_rules_" + dir_name;
     }
     if (auto required = RequiredClasses(decl, alias); !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
@@ -286,7 +280,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
   }
 }
 
-void Index(const fs::path &src_path, bool is_c, const RuleCtx &dir,
+void Index(const fs::path &src_path, bool is_c, const std::string &dir_name,
            const std::vector<std::string> &cxx_flags,
            llvm::json::Object &rules) {
   auto flags = getPlatformClangBeginFlags();
@@ -309,7 +303,7 @@ void Index(const fs::path &src_path, bool is_c, const RuleCtx &dir,
     llvm::errs() << "ERROR: cannot parse " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  IndexRuleFile(ast->getASTContext(), dir, src_path, rules);
+  IndexRuleFile(ast->getASTContext(), dir_name, src_path, rules);
 }
 
 void WriteJson(const fs::path &path, llvm::json::Object object) {
@@ -363,10 +357,8 @@ void IndexRules(const fs::path &rules_dir, const fs::path &index_dir,
         }
         llvm::errs() << "Indexing " << src_path.string() << " as " << lang
                      << '\n';
-        RuleCtx dir;
-        dir.path = rule_dir.filename();
-        dir.name = rule_dir.filename().string();
-        Index(src_path, is_c, dir, ReadCXXFlags(rule_dir), rules);
+        Index(src_path, is_c, rule_dir.filename().string(),
+              ReadCXXFlags(rule_dir), rules);
       }
     }
     WriteJson(index_dir / (std::string(lang) + ".json"),
