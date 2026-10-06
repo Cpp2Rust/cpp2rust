@@ -53,7 +53,8 @@ std::string ClassOf(clang::QualType type) {
   return {};
 }
 
-void AddRequiredClasses(clang::QualType type, std::unordered_set<std::string> &required) {
+void AddRequiredClasses(clang::QualType type,
+                        std::unordered_set<std::string> &required) {
   if (type.isNull()) {
     return;
   }
@@ -105,8 +106,8 @@ void AddRequiredClasses(clang::QualType type, std::unordered_set<std::string> &r
   }
 }
 
-std::unordered_set<std::string> RequiredClasses(const clang::Decl *rule,
-                                      const clang::TypedefNameDecl *alias) {
+std::unordered_set<std::string>
+RequiredClasses(const clang::Decl *rule, const clang::TypedefNameDecl *alias) {
   std::unordered_set<std::string> required;
   if (alias) {
     AddRequiredClasses(alias->getUnderlyingType(), required);

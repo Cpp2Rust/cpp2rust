@@ -273,7 +273,7 @@ const llvm::json::Object &CxxIndex() {
 }
 
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
-                             bool is_cxx) {
+                               bool is_cxx) {
   std::string out;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
   auto common = index.getString("common");
