@@ -20,12 +20,24 @@ template <typename T> struct Box {
   T twice() { return val + val; }
 };
 
+template <typename T> struct Deduced {
+  T val;
+  auto get() { return val; }
+  auto twice() { return val + val; }
+};
+
 int main() {
   Box<int> i = {3};
   assert(i.twice() == 6);
 
   Box<Point> p = {{4}};
   assert(p.get().x == 4);
+
+  Deduced<int> d = {5};
+  assert(d.twice() == 10);
+
+  Deduced<Point> dp = {{6}};
+  assert(dp.get().x == 6);
 
   return 0;
 }
