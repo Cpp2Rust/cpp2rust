@@ -14,7 +14,6 @@
 #include <llvm/Support/JSON.h>
 #include <llvm/Support/MemoryBuffer.h>
 
-#include <algorithm>
 #include <cassert>
 #include <filesystem>
 #include <map>
@@ -275,11 +274,6 @@ std::string BuildRulesBuffer(const std::filesystem::path &index_dir,
 
 } // namespace
 
-static std::string Component(std::string name) {
-  std::ranges::replace(name, '/', '_');
-  return name;
-}
-
 static std::string NameKey(const clang::NamedDecl *decl) {
   std::vector<std::string> scopes;
   for (auto scope = decl->getDeclContext(); scope; scope = scope->getParent()) {
@@ -296,9 +290,9 @@ static std::string NameKey(const clang::NamedDecl *decl) {
   }
   std::string key;
   for (const auto &scope : scopes | std::views::reverse) {
-    key += Component(scope) + '/';
+    key += scope + '/';
   }
-  return key + Component(decl->getNameAsString());
+  return key + decl->getNameAsString();
 }
 
 std::string ClassKey(const clang::NamedDecl *decl) {
@@ -334,7 +328,7 @@ std::string MemberKey(const std::string &class_key, const std::string &name) {
   if (class_key.empty()) {
     return {};
   }
-  return class_key + '/' + Component(name);
+  return class_key + '/' + name;
 }
 
 std::string ConstructorKey(const std::string &class_key) {
@@ -366,10 +360,10 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
       expr->getBeginLoc().isMacroID()) {
-    return Component(clang::Lexer::getImmediateMacroName(expr->getBeginLoc(),
+    return clang::Lexer::getImmediateMacroName(expr->getBeginLoc(),
                                                          ctx.getSourceManager(),
                                                          ctx.getLangOpts())
-                         .str());
+                         .str();
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
@@ -406,7 +400,7 @@ std::string TypeKey(clang::QualType type) {
     return DeclKey(alias->getDecl());
   }
   if (auto sugar = type->getAs<clang::PredefinedSugarType>()) {
-    return Component(sugar->getIdentifier()->getName().str());
+    return sugar->getIdentifier()->getName().str();
   }
   if (auto tag = type->getAsTagDecl()) {
     return ClassKey(tag);
