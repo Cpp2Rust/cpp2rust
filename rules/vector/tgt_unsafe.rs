@@ -37,6 +37,10 @@ fn t8() -> usize {
     0_usize
 }
 
+fn t9() -> usize {
+    0_usize
+}
+
 unsafe fn f1<T1>(a0: &mut Vec<T1>, a1: *const T1) -> *const T1 {
     let pos = a1.offset_from(a0.as_ptr()) as usize;
     a0.remove(pos);

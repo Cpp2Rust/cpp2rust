@@ -153,6 +153,13 @@ private:
       return;
     }
     AddKey(TypeKey(type));
+    if (const auto *alias =
+            llvm::dyn_cast<clang::TypedefType>(type.getTypePtr())) {
+      if (const auto *record = llvm::dyn_cast<clang::RecordDecl>(
+              alias->getDecl()->getDeclContext())) {
+        AddKey(ClassKey(record));
+      }
+    }
     if (auto desugared = type.getSingleStepDesugaredType(ctx_);
         desugared != type) {
       if (const auto *spec = llvm::dyn_cast<clang::TemplateSpecializationType>(
@@ -453,6 +460,8 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
 
   auto &ctx = CI_.getASTContext();
   auto &src_mgr = ctx.getSourceManager();
+
+  CI_.getSema().PerformPendingInstantiations();
 
   std::unordered_set<std::string> keys;
   RuleUsageCollector collector(CI_.getSema(), keys);
