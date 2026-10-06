@@ -9,6 +9,7 @@
 #include <clang/Lex/Preprocessor.h>
 #include <clang/Sema/Sema.h>
 #include <llvm/ADT/DenseSet.h>
+#include <llvm/ADT/STLExtras.h>
 #include <llvm/Support/Error.h>
 #include <llvm/Support/ErrorHandling.h>
 #include <llvm/Support/JSON.h>
@@ -261,6 +262,13 @@ std::string BuildRulesBuffer(const std::filesystem::path &index_dir,
       }
       for (const auto &entry : *entries) {
         auto rule = entry.getAsObject();
+        if (auto required = rule->getArray("requires");
+            required &&
+            !llvm::all_of(*required, [&](const llvm::json::Value &key) {
+              return keys.contains(key.getAsString()->str());
+            })) {
+          continue;
+        }
         if (auto ns = rule->getString("namespace");
             ns && namespaces.insert(ns->str()).second) {
           out += "namespace " + ns->str() + " {\n" + common->str() + "}\n";

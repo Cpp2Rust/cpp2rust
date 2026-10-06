@@ -23,6 +23,7 @@
 #include <format>
 #include <fstream>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -56,6 +57,71 @@ std::string ClassOf(clang::QualType type) {
     }
   }
   return {};
+}
+
+void AddRequiredClasses(clang::QualType type, std::set<std::string> &required) {
+  if (type.isNull()) {
+    return;
+  }
+  if (type->isPointerType() || type->isReferenceType()) {
+    return AddRequiredClasses(type->getPointeeType(), required);
+  }
+  if (auto array = type->getAsArrayTypeUnsafe()) {
+    return AddRequiredClasses(array->getElementType(), required);
+  }
+  if (auto fn = type->getAs<clang::FunctionType>()) {
+    AddRequiredClasses(fn->getReturnType(), required);
+    if (auto proto = llvm::dyn_cast<clang::FunctionProtoType>(fn)) {
+      for (auto param : proto->param_types()) {
+        AddRequiredClasses(param, required);
+      }
+    }
+    return;
+  }
+  if (auto name = type->getAs<clang::DependentNameType>()) {
+    auto qualifier = name->getQualifier();
+    if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
+      AddRequiredClasses(clang::QualType(qualifier.getAsType(), 0), required);
+    }
+    return;
+  }
+  if (auto alias = type->getAs<clang::TypedefType>()) {
+    auto qualifier = alias->getQualifier();
+    if (qualifier.getKind() == clang::NestedNameSpecifier::Kind::Type) {
+      AddRequiredClasses(clang::QualType(qualifier.getAsType(), 0), required);
+    }
+  }
+  const clang::NamedDecl *decl = type->getAsTagDecl();
+  if (auto spec = type->getAs<clang::TemplateSpecializationType>()) {
+    for (const auto &arg : spec->template_arguments()) {
+      if (arg.getKind() == clang::TemplateArgument::Type) {
+        AddRequiredClasses(arg.getAsType(), required);
+      }
+    }
+    if (auto tmpl = spec->getTemplateName().getAsTemplateDecl();
+        tmpl && llvm::isa<clang::ClassTemplateDecl>(tmpl)) {
+      decl = tmpl;
+    }
+  }
+  if (!decl) {
+    return;
+  }
+  if (auto key = RulesLoader::ClassKey(decl); !key.empty()) {
+    required.insert(key);
+  }
+}
+
+std::set<std::string> RequiredClasses(const clang::Decl *rule,
+                                      const clang::TypedefNameDecl *alias) {
+  std::set<std::string> required;
+  if (alias) {
+    AddRequiredClasses(alias->getUnderlyingType(), required);
+  } else if (auto fn = rule->getAsFunction()) {
+    AddRequiredClasses(fn->getType(), required);
+  } else if (auto var = llvm::dyn_cast<clang::VarDecl>(rule)) {
+    AddRequiredClasses(var->getType(), required);
+  }
+  return required;
 }
 
 std::string ClassOfParameters(const clang::Decl *rule) {
@@ -212,6 +278,9 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
     llvm::json::Object rule{{"text", CreateIncFile(dir, is_c, name, text)}};
     if (!is_c) {
       rule["namespace"] = "cpp2rust_rules_" + dir.name;
+    }
+    if (auto required = RequiredClasses(decl, alias); !required.empty()) {
+      rule["requires"] = llvm::json::Array(required);
     }
     AddRule(rules, key, std::move(rule));
   }
