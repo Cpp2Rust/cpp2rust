@@ -32,6 +32,8 @@ unsafe fn main_0() -> i32 {
     (*p).y = 2;
     assert!(((((*p).x) + ((*p).y)) == (3)));
     ::std::mem::drop(Box::from_raw(p));
+    let mut nullpointer: *mut i32 = std::ptr::null_mut();
+    ::std::mem::drop(Box::from_raw(nullpointer));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
