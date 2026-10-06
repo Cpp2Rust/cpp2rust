@@ -32,6 +32,8 @@ fn main_0() -> i32 {
     field!(p, y).write(2);
     assert!((({ p.with(|__s| __s.x) } + { p.with(|__s| __s.y) }) == 3));
     p.delete();
+    let mut nullpointer: Ptr<i32> = Ptr::<i32>::null();
+    nullpointer.delete();
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

@@ -47,6 +47,13 @@ unsafe fn main_0() -> i32 {
             ::std::mem::drop(Box::from_raw(__p))
         }
     };
+    let mut nullpointer: *mut i32 = std::ptr::null_mut();
+    {
+        let __p = nullpointer;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
