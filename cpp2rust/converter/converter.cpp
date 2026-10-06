@@ -2010,7 +2010,7 @@ Converter::CallInfo Converter::CollectCallInfo(clang::CallExpr *expr) {
                                                              : Kind::Hoisted,
     };
     bool is_materialize = clang::isa<clang::MaterializeTemporaryExpr>(arg);
-    if (is_materialize && ca.param_type->isReferenceType()) {
+    if (NeedsRefBindingTemp(ctx_, arg, ca.param_type)) {
       ca.kind = Kind::Materialized;
     } else if (is_materialize) {
       ca.kind = Kind::Inline;

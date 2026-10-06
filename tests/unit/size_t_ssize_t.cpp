@@ -11,6 +11,10 @@ static unsigned long take_ulong(unsigned long x) { return x; }
 
 static ssize_t sub_signed(ssize_t a, ssize_t b) { return a - b; }
 
+static size_t next_size(const size_t &x) { return x + 1; }
+
+static unsigned long next_ulong(const unsigned long &x) { return x + 1; }
+
 int main() {
   size_t n = sizeof(int) + 4;
   assert(n == sizeof(int) + 4);
@@ -107,5 +111,13 @@ int main() {
 
   std::pair<std::size_t, int> pr(sz, 1);
   assert(pr.first == 21);
+
+  unsigned long ref_ul = 5;
+  size_t ref_sz = 7;
+  assert(next_size(ref_ul) == 6);
+  assert(next_ulong(ref_sz) == 8);
+  assert(next_size(ref_sz) == 8);
+  assert(ref_ul == 5);
+  assert(ref_sz == 7);
   return 0;
 }
