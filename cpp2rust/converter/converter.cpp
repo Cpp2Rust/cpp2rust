@@ -2429,6 +2429,12 @@ bool Converter::VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr) {
   return false;
 }
 
+bool Converter::VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr) {
+  StrCat(expr->getValue() ? keyword::kTrue : keyword::kFalse);
+  computed_expr_type_ = ComputedExprType::FreshValue;
+  return false;
+}
+
 void Converter::ConvertIntegerToEnumeralCast(clang::Expr *to,
                                              clang::Expr *from) {
   // Short circuit `(X as i32) as Enum` to `X`
