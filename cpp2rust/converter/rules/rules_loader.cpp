@@ -225,6 +225,7 @@ private:
       case clang::TemplateArgument::Integral:
       case clang::TemplateArgument::NullPtr:
       case clang::TemplateArgument::Expression:
+      case clang::TemplateArgument::Template:
         break;
       default:
         assert(0 && "template argument kind is not scanned");
