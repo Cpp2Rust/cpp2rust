@@ -3003,14 +3003,20 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
 }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
-  StrCat(keyword::kIf);
-  ConvertCondition(expr->getCond());
   bool branch_is_addr =
       expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
+  bool is_place = branch_is_addr && isLValue();
+  PushParen deref(*this, is_place);
+  if (is_place) {
+    StrCat(token::kStar);
+  }
+  PushParen place(*this, is_place);
+  StrCat(keyword::kIf);
+  ConvertCondition(expr->getCond());
   bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
-    if (branch_is_addr) {
+    if (branch_is_addr && !isAddrOf()) {
       StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
@@ -3018,11 +3024,14 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
     Convert(expr->getTrueExpr(), branch_is_addr
                                      ? std::nullopt
                                      : std::make_optional(expr->getType()));
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
+    }
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    if (branch_is_addr) {
+    if (branch_is_addr && !isAddrOf()) {
       StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
@@ -3030,6 +3039,9 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
     Convert(expr->getFalseExpr(), branch_is_addr
                                       ? std::nullopt
                                       : std::make_optional(expr->getType()));
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
+    }
   }
   return false;
 }
@@ -4255,7 +4267,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
             expr->IgnoreParenImpCasts());
         cond && cond->isLValue()) {
       {
-        PushExprKind push(*this, ExprKind::LValue);
+        PushExprKind push(*this, ExprKind::AddrOf);
         PushInitType init_type(*this, qual_type);
         Convert(cond);
       }

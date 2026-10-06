@@ -923,11 +923,17 @@ bool ConverterRefCount::VisitConditionalOperator(
   {
     PushBrace then_brace(*this);
     StrCat(ConvertFresh(expr->getTrueExpr(), expr->getType()));
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
+    }
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
     StrCat(ConvertFresh(expr->getFalseExpr(), expr->getType()));
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
+    }
   }
   return false;
 }
