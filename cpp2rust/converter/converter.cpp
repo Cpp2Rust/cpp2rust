@@ -2377,6 +2377,25 @@ Converter::GetCodeUnitArrayLiteral(const clang::StringLiteral *expr) {
   return out;
 }
 
+bool Converter::VisitSourceLocExpr(clang::SourceLocExpr *expr) {
+  auto value = expr->EvaluateInContext(ctx_, nullptr);
+  clang::Expr *lowered = nullptr;
+  if (value.isInt()) {
+    lowered = clang::IntegerLiteral::Create(
+        ctx_, value.getInt(), expr->getType(), expr->getBeginLoc());
+  } else {
+    auto *str = clang::dyn_cast_or_null<clang::StringLiteral>(
+        value.getLValueBase().dyn_cast<const clang::Expr *>());
+    assert(str && "unsupported SourceLocExpr");
+    lowered = clang::ImplicitCastExpr::Create(
+        ctx_, expr->getType(), clang::CK_ArrayToPointerDecay,
+        const_cast<clang::StringLiteral *>(str), nullptr, clang::VK_PRValue,
+        clang::FPOptionsOverride());
+  }
+  Convert(lowered);
+  return false;
+}
+
 bool Converter::VisitStringLiteral(clang::StringLiteral *expr) {
   if (IsCodeUnitStringLiteral(expr)) {
     StrCat(GetCodeUnitArrayLiteral(expr));

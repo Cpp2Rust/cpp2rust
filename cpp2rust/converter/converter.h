@@ -380,6 +380,8 @@ public:
                                       uint64_t pad_nulls = 0) const;
   virtual bool VisitStringLiteral(clang::StringLiteral *expr);
 
+  bool VisitSourceLocExpr(clang::SourceLocExpr *expr);
+
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
