@@ -636,7 +636,8 @@ unsigned GetCtorIndex(clang::CXXConstructorDecl *ctor) {
 clang::CXXConstructorDecl *
 GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
   for (auto c : decl->ctors()) {
-    if (c->isUserProvided() && c->isDefaultConstructor() && c->hasBody()) {
+    if (c->isUserProvided() && c->isDefaultConstructor() && c->hasBody() &&
+        std::ranges::all_of(c->parameters(), HasUsableDefaultArg)) {
       return c;
     }
   }
@@ -645,6 +646,15 @@ GetUserDefinedDefaultConstructor(const clang::CXXRecordDecl *decl) {
 
 bool HasUsableDefaultArg(const clang::ParmVarDecl *param) {
   return param->hasDefaultArg() && !param->hasUninstantiatedDefaultArg();
+}
+
+const clang::MaterializeTemporaryExpr *
+GetDefaultArgTemporary(const clang::ParmVarDecl *param) {
+  if (!param->getType()->isReferenceType()) {
+    return nullptr;
+  }
+  return clang::dyn_cast<clang::MaterializeTemporaryExpr>(
+      param->getDefaultArg()->IgnoreParens());
 }
 
 std::string GetMainFileName(const clang::ASTContext &ctx) {

@@ -36,7 +36,7 @@ pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     return s;
 }
 pub unsafe fn countdown_4(mut n: i32, mut step: Option<i32>) -> i32 {
-    let mut step: i32 = step.unwrap_or(1);
+    let mut step: i32 = step.unwrap_or_else(|| unsafe { 1 });
     let mut steps: i32 = 0;
     'loop_: while ((n) > (0)) {
         n -= step;

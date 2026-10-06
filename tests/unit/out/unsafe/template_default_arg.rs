@@ -54,15 +54,15 @@ impl NoDefault {
     }
 }
 pub unsafe fn used_0(mut x: Option<A>) -> i32 {
-    let mut x: A = x.unwrap_or(A::new_1());
+    let mut x: A = x.unwrap_or_else(|| unsafe { A::new_1() });
     return x.v;
 }
 pub unsafe fn used_1(mut x: Option<B>) -> i32 {
-    let mut x: B = x.unwrap_or(B::new());
+    let mut x: B = x.unwrap_or_else(|| unsafe { B::new() });
     return x.v;
 }
 pub unsafe fn scaled_2(mut x: A, mut n: Option<i32>) -> i32 {
-    let mut n: i32 = n.unwrap_or((::std::mem::size_of::<A>() as i32));
+    let mut n: i32 = n.unwrap_or_else(|| unsafe { (::std::mem::size_of::<A>() as i32) });
     return ((x.v) * (n));
 }
 pub unsafe fn always_given_3(mut x: NoDefault) -> i32 {

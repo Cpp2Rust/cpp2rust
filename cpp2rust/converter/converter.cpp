@@ -1206,14 +1206,29 @@ void Converter::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   auto params = decl->getDefinition() ? decl->getDefinition()->parameters()
                                       : decl->parameters();
   for (auto *param : params) {
-    if (HasUsableDefaultArg(param)) {
-      auto name = GetNamedDeclAsString(param);
-      auto type = ToString(param->getType());
-      auto init = std::format("{}.unwrap_or({})", name,
-                              ToString(param->getDefaultArg()));
-      StrCat(std::format("let mut {} : {} = {}", name, type, init),
-             token::kSemiColon);
+    if (!HasUsableDefaultArg(param)) {
+      continue;
     }
+    auto name = GetNamedDeclAsString(param);
+    auto type = ToString(param->getType());
+    std::string value;
+    if (auto *temp = GetDefaultArgTemporary(param)) {
+      auto storage = std::format("__{}_default", name);
+      StrCat(std::format("let mut {} : Option<{}> = None", storage,
+                         ToString(temp->getType().getUnqualifiedType())),
+             token::kSemiColon);
+      value = std::format("{}.insert({}) as {}", storage,
+                          ToString(temp->getSubExpr()), type);
+    } else if (param->getType()->isReferenceType()) {
+      Buffer buf(*this);
+      ConvertVarInit(param->getType(), param->getDefaultArg());
+      value = std::move(buf).str();
+    } else {
+      value = ToString(param->getDefaultArg());
+    }
+    StrCat(std::format("let mut {} : {} = {}.unwrap_or_else(|| {} {{ {} }})",
+                       name, type, name, keyword_unsafe_, value),
+           token::kSemiColon);
   }
 }
 

@@ -778,6 +778,30 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
   auto params = decl->getDefinition() ? decl->getDefinition()->parameters()
                                       : decl->parameters();
   for (auto *param : params) {
+    if (param->getType()->isReferenceType()) {
+      auto name = GetNamedDeclAsString(param);
+      if (name == "_" || !HasUsableDefaultArg(param)) {
+        continue;
+      }
+      auto type = ToString(param->getType());
+      std::string value;
+      if (auto *temp = GetDefaultArgTemporary(param)) {
+        auto storage = std::format("__{}_default", name);
+        StrCat(std::format("let mut {} : Option<{}> = None", storage,
+                           ToString(temp->getType().getUnqualifiedType())),
+               token::kSemiColon);
+        value = std::format("{}.insert(Rc::new(RefCell::new({}))).as_pointer()",
+                            storage, ToString(temp->getSubExpr()));
+      } else {
+        Buffer buf(*this);
+        ConvertVarInit(param->getType(), param->getDefaultArg());
+        value = std::move(buf).str();
+      }
+      StrCat(std::format("let {} : {} = {}.unwrap_or_else(|| {})", name, type,
+                         name, value),
+             token::kSemiColon);
+      continue;
+    }
     if (!param->getType()->isReferenceType()) {
       auto name = GetNamedDeclAsString(param);
       // Skip emitting the preamble for unnamed parameters
@@ -788,7 +812,7 @@ void ConverterRefCount::EmitFunctionPreamble(clang::FunctionDecl *decl) {
       auto init = name;
 
       if (HasUsableDefaultArg(param)) {
-        init = std::format("{}.unwrap_or({})", name,
+        init = std::format("{}.unwrap_or_else(|| {})", name,
                            ToString(param->getDefaultArg()));
       }
 

@@ -10,7 +10,7 @@ pub fn identity_0(mut x: i32) -> i32 {
     return x;
 }
 pub fn apply_1(mut x: i32, fn_: Option<FnPtr<fn(i32) -> i32>>) -> i32 {
-    let mut fn_: FnPtr<fn(i32) -> i32> = fn_.unwrap_or(FnPtr::<fn(i32) -> i32>::null());
+    let mut fn_: FnPtr<fn(i32) -> i32> = fn_.unwrap_or_else(|| FnPtr::<fn(i32) -> i32>::null());
     if !(fn_).is_null() {
         return ({ fn_.call(x) });
     }
