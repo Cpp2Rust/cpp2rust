@@ -46,36 +46,48 @@ unsafe fn main_0() -> i32 {
             .collect::<Box<[Pointers]>>(),
     )
     .as_mut_ptr();
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        default_pointers,
-        libcc2rs::malloc_usable_size(default_pointers as *mut ::libc::c_void)
-            / ::std::mem::size_of::<Pointers>(),
-    )));
+    {
+        let __p = default_pointers;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<Pointers>(),
+            )))
+        }
+    };
     let mut small: *mut SmallArrays = Box::leak(
         (0..2_usize)
             .map(|_| <SmallArrays>::default())
             .collect::<Box<[SmallArrays]>>(),
     )
     .as_mut_ptr();
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        small,
-        libcc2rs::malloc_usable_size(small as *mut ::libc::c_void)
-            / ::std::mem::size_of::<SmallArrays>(),
-    )));
+    {
+        let __p = small;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<SmallArrays>(),
+            )))
+        }
+    };
     let mut big: *mut BigArray = Box::leak(
         (0..2_usize)
             .map(|_| <BigArray>::default())
             .collect::<Box<[BigArray]>>(),
     )
     .as_mut_ptr();
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        big,
-        libcc2rs::malloc_usable_size(big as *mut ::libc::c_void)
-            / ::std::mem::size_of::<BigArray>(),
-    )));
+    {
+        let __p = big;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<BigArray>(),
+            )))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

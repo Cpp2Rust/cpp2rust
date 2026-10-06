@@ -35,11 +35,16 @@ unsafe fn main_0() -> i32 {
         p1.prefix_inc();
     }
     let mut p2: *mut i32 = array;
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        p2,
-        libcc2rs::malloc_usable_size(p2 as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-    )));
+    {
+        let __p = p2;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<i32>(),
+            )))
+        }
+    };
     assert!(((out) == (99)));
     return 0;
 }

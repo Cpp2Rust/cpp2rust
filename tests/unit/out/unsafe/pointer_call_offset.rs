@@ -25,11 +25,16 @@ unsafe fn main_0() -> i32 {
     }
     let mut out: i32 =
         (*(unsafe { foo_0((&mut (*p1.offset((1) as isize)) as *mut i32)) }).offset((3) as isize));
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        p1,
-        libcc2rs::malloc_usable_size(p1 as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-    )));
+    {
+        let __p = p1;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<i32>(),
+            )))
+        }
+    };
     assert!(((out) == (9)));
     return 0;
 }

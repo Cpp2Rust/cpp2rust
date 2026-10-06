@@ -7,7 +7,12 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn escape_0(mut p: *mut i32) {
-    ::std::mem::drop(Box::from_raw(p));
+    {
+        let __p = p;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
 }
 pub fn main() {
     unsafe {
