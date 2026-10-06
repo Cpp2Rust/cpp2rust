@@ -58,6 +58,8 @@ trait Adapted: Any {
     fn move_from(&self) -> Option<Rc<dyn Adapted>> {
         None
     }
+
+    fn destroy(&self) {}
 }
 
 impl<T: FnSig> Adapted for T {
@@ -72,6 +74,7 @@ trait Lambda<T: FnSig> {
     fn call(&self, args: T::Args) -> T::Ret;
     fn copy_from(&self) -> Box<dyn Lambda<T>>;
     fn move_from(&self) -> Box<dyn Lambda<T>>;
+    fn destroy(&self);
 }
 
 struct LambdaSafe<L, C> {
@@ -79,6 +82,7 @@ struct LambdaSafe<L, C> {
     call: C,
     copy_from: fn(&L) -> L,
     move_from: fn(&L) -> L,
+    destroy: fn(&L),
 }
 
 struct LambdaUnsafe<L, C> {
@@ -86,6 +90,7 @@ struct LambdaUnsafe<L, C> {
     call: C,
     copy_from: fn(&mut L) -> L,
     move_from: fn(&mut L) -> L,
+    destroy: fn(&mut L),
 }
 
 struct Closure<T: FnSig>(Box<dyn Lambda<T>>);
@@ -103,6 +108,10 @@ impl<T: FnSig> Adapted for Closure<T> {
 
     fn move_from(&self) -> Option<Rc<dyn Adapted>> {
         Some(Rc::new(Closure::<T>(self.0.move_from())))
+    }
+
+    fn destroy(&self) {
+        self.0.destroy();
     }
 }
 
@@ -225,6 +234,12 @@ impl<T: FnSig> FnPtr<T> {
         }
     }
 
+    pub fn destroy(&self) {
+        if let Some(original) = &self.original {
+            original.destroy();
+        }
+    }
+
     fn boxed_original(&self) -> Option<Rc<dyn Adapted>> {
         match &self.original {
             Some(original) => Some(original.clone()),
@@ -254,8 +269,9 @@ macro_rules! impl_fn_ptr_call {
                 call: fn(&Captures $(, $a)*) -> R,
                 copy_from: fn(&Captures) -> Captures,
                 move_from: fn(&Captures) -> Captures,
+                destroy: fn(&Captures),
             ) -> Self {
-                let lambda = LambdaSafe { captures, call, copy_from, move_from };
+                let lambda = LambdaSafe { captures, call, copy_from, move_from, destroy };
                 FnPtr {
                     addr: call as usize,
                     current: None,
@@ -268,12 +284,14 @@ macro_rules! impl_fn_ptr_call {
                 call: fn(&mut Captures $(, $a)*) -> R,
                 copy_from: fn(&mut Captures) -> Captures,
                 move_from: fn(&mut Captures) -> Captures,
+                destroy: fn(&mut Captures),
             ) -> Self {
                 let lambda = LambdaUnsafe {
                     captures: UnsafeCell::new(captures),
                     call,
                     copy_from,
                     move_from,
+                    destroy,
                 };
                 FnPtr {
                     addr: call as usize,
@@ -297,6 +315,7 @@ macro_rules! impl_fn_ptr_call {
                     call: self.call,
                     copy_from: self.copy_from,
                     move_from: self.move_from,
+                    destroy: self.destroy,
                 })
             }
 
@@ -306,7 +325,12 @@ macro_rules! impl_fn_ptr_call {
                     call: self.call,
                     copy_from: self.copy_from,
                     move_from: self.move_from,
+                    destroy: self.destroy,
                 })
+            }
+
+            fn destroy(&self) {
+                (self.destroy)(&self.captures)
             }
         }
 
@@ -326,6 +350,7 @@ macro_rules! impl_fn_ptr_call {
                     call: self.call,
                     copy_from: self.copy_from,
                     move_from: self.move_from,
+                    destroy: self.destroy,
                 })
             }
 
@@ -337,7 +362,12 @@ macro_rules! impl_fn_ptr_call {
                     call: self.call,
                     copy_from: self.copy_from,
                     move_from: self.move_from,
+                    destroy: self.destroy,
                 })
+            }
+
+            fn destroy(&self) {
+                (self.destroy)(unsafe { &mut *self.captures.get() })
             }
         }
         impl_fn_ptr_call!(@peel $($a)*);

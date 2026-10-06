@@ -18,6 +18,7 @@ struct Lambda {
     closure: ExprClosure,
     copy_from: Option<CaptureInits>,
     move_from: Option<CaptureInits>,
+    destroy: Option<proc_macro2::TokenStream>,
 }
 
 impl Parse for Lambda {
@@ -28,19 +29,24 @@ impl Parse for Lambda {
         input.parse::<Option<Token![,]>>()?;
         let mut copy_from = None;
         let mut move_from = None;
+        let mut destroy = None;
         while !input.is_empty() {
             let name: Ident = input.parse()?;
-            let inits;
-            braced!(inits in input);
-            let inits = inits.parse_terminated(FieldValue::parse, Token![,])?;
+            if name == "destroy" {
+                input.parse::<Token![=]>()?;
+            }
+            let body;
+            braced!(body in input);
             if name == "copy_from" {
-                copy_from = Some(inits);
+                copy_from = Some(body.parse_terminated(FieldValue::parse, Token![,])?);
             } else if name == "move_from" {
-                move_from = Some(inits);
+                move_from = Some(body.parse_terminated(FieldValue::parse, Token![,])?);
+            } else if name == "destroy" {
+                destroy = Some(body.parse()?);
             } else {
                 return Err(Error::new(
                     name.span(),
-                    "expected `copy_from` or `move_from`",
+                    "expected `copy_from`, `move_from` or `destroy`",
                 ));
             }
             input.parse::<Option<Token![,]>>()?;
@@ -50,6 +56,7 @@ impl Parse for Lambda {
             closure,
             copy_from,
             move_from,
+            destroy,
         })
     }
 }
@@ -207,14 +214,21 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
     let body = rewrite_captures(quote! { #body }, &captured, false)?;
     let copy_from = expand_constructor(&lambda.copy_from, &captured, is_unsafe)?;
     let move_from = expand_constructor(&lambda.move_from, &captured, is_unsafe)?;
-    let (receiver, body, constructor) = if is_unsafe {
+    let destroy = &lambda.destroy;
+    let (receiver, body, destroy, constructor) = if is_unsafe {
         (
             quote! { &mut self },
             quote! { unsafe { #body } },
+            quote! { unsafe { #destroy } },
             quote! { from_lambda_unsafe },
         )
     } else {
-        (quote! { &self }, body, quote! { from_lambda })
+        (
+            quote! { &self },
+            body,
+            quote! { #destroy },
+            quote! { from_lambda },
+        )
     };
 
     Ok(quote! {{
@@ -234,12 +248,17 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
             fn move_from(#receiver) -> Self {
                 #move_from
             }
+            #[allow(unused_unsafe)]
+            fn destroy(#receiver) {
+                #destroy
+            }
         }
         ::libcc2rs::FnPtr::<fn(#(#param_types),*) #output>::#constructor(
             __Lambda { #(#names: #inits,)* },
             __Lambda::call,
             __Lambda::copy_from,
             __Lambda::move_from,
+            __Lambda::destroy,
         )
     }})
 }
