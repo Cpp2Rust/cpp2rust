@@ -22,6 +22,8 @@ template <typename T1, typename T2 = std::allocator<T1>>
 using t7 = typename std::vector<T1, T2>::const_iterator;
 #endif
 
+template <typename T1> using t8 = typename std::vector<T1>::size_type;
+
 template <typename T1>
 typename std::vector<T1>::iterator
 f1(std::vector<T1> &o, typename std::vector<T1>::const_iterator it) {
