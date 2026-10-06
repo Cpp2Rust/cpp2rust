@@ -128,7 +128,12 @@ unsafe fn main_0() -> i32 {
         second: init,
     })) as *mut Pair);
     assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
-    ::std::mem::drop(Box::from_raw(heap));
+    {
+        let __p = heap;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
     let mut four: i32 = 4;
     {

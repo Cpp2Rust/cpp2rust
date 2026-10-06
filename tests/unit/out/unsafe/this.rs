@@ -74,7 +74,12 @@ impl S {
         return ((o) == (self as *const S));
     }
     pub unsafe fn destroy(&mut self) {
-        ::std::mem::drop(Box::from_raw((self as *mut S)));
+        {
+            let __p = (self as *mut S);
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(__p))
+            }
+        };
     }
     pub unsafe fn reset(&mut self) {
         (*(self as *mut S)) = S::new_1({ 0 });
@@ -152,7 +157,12 @@ unsafe fn main_0() -> i32 {
     let mut q: *mut S = (unsafe { S::returns_this_pointer(&mut (*p)) });
     (*q).a_.postfix_inc();
     assert!((((*p).a_) == (2)));
-    ::std::mem::drop(Box::from_raw(p));
+    {
+        let __p = p;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     let mut h: *mut S = (Box::leak(Box::new(S::new_1({ 5 }))) as *mut S);
     (unsafe { S::destroy(&mut (*h)) });
     (unsafe { S::reset(&mut s) });

@@ -45,7 +45,12 @@ pub unsafe fn del_2(mut node: *mut node_t) {
     if !(((*node).right).is_null()) {
         (unsafe { del_2((*node).right) });
     }
-    ::std::mem::drop(Box::from_raw(node));
+    {
+        let __p = node;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
 }
 pub fn main() {
     unsafe {

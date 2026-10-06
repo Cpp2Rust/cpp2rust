@@ -24,7 +24,12 @@ impl Owner {
         this
     }
     pub unsafe fn destructor(&mut self) {
-        ::std::mem::drop(Box::from_raw(self.p));
+        {
+            let __p = self.p;
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(__p))
+            }
+        };
     }
     pub unsafe fn take(&mut self) -> FnPtr<fn() -> i32> {
         return lambda_unsafe!(

@@ -14,10 +14,16 @@ impl TestAllocator_int_ {
         return Box::leak((0..n).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut i32, mut _a1: usize) {
-        ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            p,
-            libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-        )));
+        {
+            let __p = p;
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                    __p,
+                    libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                        / ::std::mem::size_of::<i32>(),
+                )))
+            }
+        };
     }
 }
 #[repr(C)]
@@ -28,10 +34,16 @@ impl TestAllocator_double_ {
         return Box::leak((0..n).map(|_| 0_f64).collect::<Box<[f64]>>()).as_mut_ptr();
     }
     pub unsafe fn deallocate(&mut self, mut p: *mut f64, mut _a1: usize) {
-        ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-            p,
-            libcc2rs::malloc_usable_size(p as *mut ::libc::c_void) / ::std::mem::size_of::<f64>(),
-        )));
+        {
+            let __p = p;
+            if !__p.is_null() {
+                ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                    __p,
+                    libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                        / ::std::mem::size_of::<f64>(),
+                )))
+            }
+        };
     }
 }
 pub unsafe fn copy_0(mut copy_vector: Vec<i32>) {}

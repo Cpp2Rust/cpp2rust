@@ -16,19 +16,29 @@ unsafe fn main_0() -> i32 {
     let mut N: i32 = 5;
     let mut A: *mut i32 =
         Box::leak((0..(N as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        A,
-        libcc2rs::malloc_usable_size(A as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-    )));
+    {
+        let __p = A;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<i32>(),
+            )))
+        }
+    };
     let N2: *mut i32 = &mut N;
     let mut A2: *mut i32 =
         Box::leak((0..((*N2) as usize)).map(|_| 0_i32).collect::<Box<[i32]>>()).as_mut_ptr();
-
-    ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
-        A2,
-        libcc2rs::malloc_usable_size(A2 as *mut ::libc::c_void) / ::std::mem::size_of::<i32>(),
-    )));
+    {
+        let __p = A2;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(::std::slice::from_raw_parts_mut(
+                __p,
+                libcc2rs::malloc_usable_size(__p as *mut ::libc::c_void)
+                    / ::std::mem::size_of::<i32>(),
+            )))
+        }
+    };
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
