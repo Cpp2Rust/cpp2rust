@@ -15,6 +15,7 @@
 #include <llvm/Support/MemoryBuffer.h>
 
 #include <algorithm>
+#include <cassert>
 #include <filesystem>
 #include <map>
 #include <ranges>
@@ -158,11 +159,9 @@ private:
       AddType(enum_decl->getIntegerType());
     }
 
-    AddType(type.getUnqualifiedType());
-    AddType(type.getCanonicalType());
+    assert(!type->isMemberPointerType() && "member pointers are not scanned");
     AddType(type.getSingleStepDesugaredType(ctx_));
-    if (type->isAnyPointerType() || type->isReferenceType() ||
-        type->isMemberPointerType()) {
+    if (type->isAnyPointerType() || type->isReferenceType()) {
       AddType(type->getPointeeType());
     }
     if (const auto *array = ctx_.getAsArrayType(type)) {
