@@ -201,6 +201,7 @@ private:
       }
       return;
     }
+    type.dump();
     assert(0 && "type is not scanned");
   }
 
