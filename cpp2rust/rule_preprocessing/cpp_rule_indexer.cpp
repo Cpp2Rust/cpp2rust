@@ -23,8 +23,8 @@
 #include <format>
 #include <fstream>
 #include <memory>
-#include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "compat/platform_flags.h"
@@ -59,7 +59,7 @@ std::string ClassOf(clang::QualType type) {
   return {};
 }
 
-void AddRequiredClasses(clang::QualType type, std::set<std::string> &required) {
+void AddRequiredClasses(clang::QualType type, std::unordered_set<std::string> &required) {
   if (type.isNull()) {
     return;
   }
@@ -111,9 +111,9 @@ void AddRequiredClasses(clang::QualType type, std::set<std::string> &required) {
   }
 }
 
-std::set<std::string> RequiredClasses(const clang::Decl *rule,
+std::unordered_set<std::string> RequiredClasses(const clang::Decl *rule,
                                       const clang::TypedefNameDecl *alias) {
-  std::set<std::string> required;
+  std::unordered_set<std::string> required;
   if (alias) {
     AddRequiredClasses(alias->getUnderlyingType(), required);
   } else if (auto fn = rule->getAsFunction()) {

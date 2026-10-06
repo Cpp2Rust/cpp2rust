@@ -18,7 +18,6 @@
 #include <cassert>
 #include <filesystem>
 #include <ranges>
-#include <set>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -278,7 +277,7 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
   const auto &index = is_cxx ? CxxIndex() : CIndex();
   auto common = index.getString("common");
   auto rules = index.getObject("rules");
-  std::set<std::string> namespaces;
+  std::unordered_set<std::string> namespaces;
   for (const auto &key : keys) {
     auto entries = rules->getArray(key);
     if (!entries) {
