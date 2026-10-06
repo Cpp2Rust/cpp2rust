@@ -30,29 +30,10 @@ namespace fs = std::filesystem;
 
 namespace {
 
-class ImplicitMemberDefiner
-    : public clang::RecursiveASTVisitor<ImplicitMemberDefiner> {
+class RuleUsageCollector
+    : public clang::RecursiveASTVisitor<RuleUsageCollector> {
 public:
-  explicit ImplicitMemberDefiner(clang::Sema &sema) : sema_(sema) {}
-
-  bool shouldVisitTemplateInstantiations() const { return true; }
-
-  bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
-    if (decl->isThisDeclarationADefinition() && !decl->isDependentType() &&
-        IsConvertibleCXXRecordDecl(decl) &&
-        (decl->isStruct() || decl->isClass()) && !decl->isAbstract()) {
-      DefineImplicitMembers(sema_, decl);
-    }
-    return true;
-  }
-
-private:
-  clang::Sema &sema_;
-};
-
-class KeyCollector : public clang::RecursiveASTVisitor<KeyCollector> {
-public:
-  KeyCollector(clang::Sema &sema, std::set<fs::path> &paths)
+  RuleUsageCollector(clang::Sema &sema, std::set<fs::path> &paths)
       : ctx_(sema.Context), sema_(sema), paths_(paths) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
@@ -65,6 +46,15 @@ public:
       return true;
     }
     return RecursiveASTVisitor::TraverseDecl(decl);
+  }
+
+  bool VisitCXXRecordDecl(clang::CXXRecordDecl *decl) {
+    if (decl->isThisDeclarationADefinition() && !decl->isDependentType() &&
+        IsConvertibleCXXRecordDecl(decl) &&
+        (decl->isStruct() || decl->isClass()) && !decl->isAbstract()) {
+      DefineImplicitMembers(sema_, decl);
+    }
+    return true;
   }
 
   bool VisitExpr(clang::Expr *expr) {
@@ -440,12 +430,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   }
   ctx.setTraversalScope(user_decls);
   std::set<fs::path> selected;
-  ImplicitMemberDefiner definer(CI_.getSema());
-  for (auto *decl : user_decls) {
-    definer.TraverseDecl(decl);
-  }
-  CI_.getSema().PerformPendingInstantiations();
-  KeyCollector collector(CI_.getSema(), selected);
+  RuleUsageCollector collector(CI_.getSema(), selected);
   for (auto *decl : user_decls) {
     collector.TraverseDecl(decl);
   }
