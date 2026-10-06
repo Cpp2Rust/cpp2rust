@@ -65,6 +65,18 @@ int main() {
   assert(err == 7);
   assert(chosen == 123);
 
+  (void)(err += 1);
+  assert(err == 8);
+
+  Holder assigned{1};
+  (void)(assigned = Holder{2});
+  assert(assigned.field == 2);
+
+  int target = 0;
+  int *target_ptr = &target;
+  (void)(*target_ptr = 5);
+  assert(target == 5);
+
   (void)bump_and_return;
   assert(side_effect_counter == 2);
 

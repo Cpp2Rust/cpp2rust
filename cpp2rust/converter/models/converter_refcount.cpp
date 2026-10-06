@@ -1568,6 +1568,14 @@ bool ConverterRefCount::VisitFunctionPointerCast(
 
 bool ConverterRefCount::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   if (expr->getTypeAsWritten()->isVoidType()) {
+    if (auto *assign = clang::dyn_cast<clang::BinaryOperator>(
+            expr->getSubExpr()->IgnoreParens());
+        assign && assign->isAssignmentOp()) {
+      PushBrace brace(*this);
+      PushExprKind push(*this, ExprKind::Void);
+      Convert(expr->getSubExpr());
+      return false;
+    }
     StrCat(token::kRef);
     PushParen paren(*this);
     PushExprKind push(*this, ExprKind::Void);

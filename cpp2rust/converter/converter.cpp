@@ -2624,6 +2624,14 @@ bool Converter::VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
   auto type = expr->getTypeAsWritten();
   auto *sub_expr = expr->getSubExpr();
   if (type->isVoidType()) {
+    if (auto *assign =
+            clang::dyn_cast<clang::BinaryOperator>(sub_expr->IgnoreParens());
+        assign && assign->isAssignmentOp()) {
+      PushBrace brace(*this);
+      PushExprKind push(*this, ExprKind::Void);
+      Convert(sub_expr);
+      return false;
+    }
     StrCat(token::kRef);
     PushParen paren(*this);
     PushExprKind push(*this, ExprKind::Void);
