@@ -454,8 +454,6 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   auto &ctx = CI_.getASTContext();
   auto &src_mgr = ctx.getSourceManager();
 
-  CI_.getSema().PerformPendingInstantiations();
-
   std::unordered_set<std::string> keys;
   RuleUsageCollector collector(CI_.getSema(), keys);
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
