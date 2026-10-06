@@ -3806,11 +3806,16 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   auto name = GetRecordName(decl);
   StrCat(std::format("pub type {} = {};", name,
                      GetUnsafeTypeAsString(decl->getIntegerType())));
+  bool is_bool = decl->getIntegerType()->isBooleanType();
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    StrCat(std::format("pub const {}: {} = {};", EnumeratorName(e), name,
-                       std::string_view(init.data(), init.size())));
+    std::string value(init.data(), init.size());
+    if (is_bool) {
+      value = e->getInitVal().getBoolValue() ? "true" : "false";
+    }
+    StrCat(
+        std::format("pub const {}: {} = {};", EnumeratorName(e), name, value));
   }
   return false;
 }

@@ -50,6 +50,8 @@ int classify_option(int option) {
 
 Color make_color(int n) { return (Color)n; }
 
+enum Flag : bool { FLAG_OFF = false, FLAG_ON = true };
+
 int main() {
   Color c = RED;
 
@@ -140,5 +142,10 @@ int main() {
   assert(entries[2].color == BLUE);
   assert(entries[2].opt == OPT_C);
 
+  Flag flag = FLAG_ON;
+  assert(flag);
+  assert(!FLAG_OFF);
+  flag = FLAG_OFF;
+  assert(flag == FLAG_OFF);
   return 0;
 }
