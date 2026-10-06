@@ -90,14 +90,29 @@ unsafe fn main_0() -> i32 {
     (&(0));
     (&(y));
     let mut err: i32 = 0;
-    (&(err = 42));
+    ({ err = 42 });
     assert!(((err) == (42)));
     let mut chosen: i32 = {
-        &(err = 7);
+        {
+            err = 7
+        };
         123
     };
     assert!(((err) == (7)));
     assert!(((chosen) == (123)));
+    {
+        err += 1
+    };
+    assert!(((err) == (8)));
+    let mut assigned: Holder = Holder { field: 1 };
+    &(assigned = Holder { field: 2 });
+    assert!(((assigned.field) == (2)));
+    let mut target: i32 = 0;
+    let mut target_ptr: *mut i32 = (&mut target as *mut i32);
+    {
+        (*target_ptr) = 5
+    };
+    assert!(((target) == (5)));
     &(bump_and_return_4);
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut side_effect_counter_3)) == (2)));
     &(Some(bump_and_return_4));

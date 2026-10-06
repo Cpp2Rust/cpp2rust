@@ -89,14 +89,29 @@ fn main_0() -> i32 {
     (&(0));
     (&(y));
     let mut err: i32 = 0;
-    (&(err = 42));
+    ({ err = 42 });
     assert!((err == 42));
     let mut chosen: i32 = {
-        &(err = 7);
+        {
+            err = 7
+        };
         123
     };
     assert!((err == 7));
     assert!((chosen == 123));
+    {
+        err += 1
+    };
+    assert!((err == 8));
+    let mut assigned: Holder = Holder { field: 1 };
+    &(assigned = Holder { field: 2 });
+    assert!((assigned.field == 2));
+    let target: Value<i32> = Rc::new(RefCell::new(0));
+    let mut target_ptr: Ptr<i32> = (target.as_pointer());
+    {
+        target_ptr.write(5)
+    };
+    assert!(((*target.borrow()) == 5));
     &(bump_and_return_4);
     assert!((side_effect_counter_3.with(|rc| *rc.borrow()) == 2));
     &(FnPtr::<fn() -> i32>::new(bump_and_return_4));
