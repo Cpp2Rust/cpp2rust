@@ -204,6 +204,8 @@ const clang::CXXMethodDecl *AsLambdaOperatorCall(const clang::FunctionDecl *fn);
 
 const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field);
 
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor);
+
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr);
 

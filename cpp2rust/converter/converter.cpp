@@ -977,7 +977,7 @@ void Converter::DefineImplicitMembers(clang::CXXRecordDecl *decl) {
     }
     if (ctor->isMoveConstructor() && !ctor->isUserProvided() &&
         !ctor->doesThisDeclarationHaveABody() && !ctor->isDeleted() &&
-        !HasDefaultedCopyConstructor(decl)) {
+        (decl->isLambda() || !HasDefaultedCopyConstructor(decl))) {
       sema_->DefineImplicitMoveConstructor(decl->getLocation(), ctor);
     }
   }
@@ -3207,6 +3207,11 @@ bool Converter::VisitMemberExpr(clang::MemberExpr *expr) {
     ConvertDeclRefValue(expr, member);
     return false;
   }
+  if (auto field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && AsLambdaCapture(field)) {
+    ConvertDeclRefValue(expr, member);
+    return false;
+  }
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
       method && IsMethodOnPtr(method) && !Mapper::Contains(ctx_, expr)) {
     SetUFCSReceiver(expr->getBase(), expr->isArrow(), method);
@@ -3693,6 +3698,12 @@ bool Converter::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
+  if (IsLambdaCopyOrMoveConstructor(ctor)) {
+    Convert(expr->getArg(0));
+    StrCat(std::format(".{}()", GetCopyOrMoveName(ctor)));
+    SetFreshType(expr->getType());
+    return false;
+  }
   if (IsPassThroughConstructor(ctor)) {
     // Take suppress before recursing into the child.
     bool suppress = PushSuppressIteratorClone::take(*this);
@@ -3853,6 +3864,7 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   }
   StrCat(token::kComma);
   ConvertLambdaClosure(decl);
+  ConvertLambdaCopyAndMove(decl);
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
@@ -3894,6 +3906,25 @@ void Converter::ConvertLambdaClosure(const clang::CXXRecordDecl *decl) {
   EmitFunctionPreamble(call_operator);
   PushCurrFunction push_fn(*this, call_operator);
   ConvertFunctionBody(curr_function_);
+}
+
+void Converter::ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) {
+  DefineImplicitMembers(decl);
+  for (auto ctor : decl->ctors()) {
+    if (!ctor->isCopyOrMoveConstructor() || ctor->isDeleted()) {
+      continue;
+    }
+    StrCat(token::kComma, GetCopyOrMoveName(ctor));
+    PushBrace brace(*this);
+    PushCurrFunction push_fn(*this, ctor);
+    for (auto init : ctor->inits()) {
+      assert(init->isMemberInitializer());
+      auto field = init->getMember();
+      StrCat(GetNamedDeclAsString(field), token::kColon);
+      ConvertVarInit(field->getType(), init->getInit());
+      StrCat(token::kComma);
+    }
+  }
 }
 
 bool Converter::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *expr) {

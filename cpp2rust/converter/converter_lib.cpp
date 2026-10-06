@@ -1082,6 +1082,12 @@ const clang::LambdaCapture *AsLambdaCapture(const clang::FieldDecl *field) {
   return decl->captures_begin() + field->getFieldIndex();
 }
 
+bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
+  auto decl = ctor->getParent();
+  return ctor->isCopyOrMoveConstructor() && decl->isLambda() &&
+         !decl->captures().empty();
+}
+
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr) {
   if (!AsLambdaOperatorCall(fn)) {

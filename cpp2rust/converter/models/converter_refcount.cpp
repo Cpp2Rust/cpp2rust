@@ -1511,6 +1511,11 @@ void ConverterRefCount::ConvertLambdaCapture(const clang::FieldDecl *field,
   Converter::ConvertLambdaCapture(field, init);
 }
 
+void ConverterRefCount::ConvertLambdaCopyAndMove(clang::CXXRecordDecl *decl) {
+  PushConversionKind push(*this, ConversionKind::FullRefCount);
+  Converter::ConvertLambdaCopyAndMove(decl);
+}
+
 void ConverterRefCount::ConvertLambdaToFunctionPointer(clang::Expr *lambda) {
   StrCat(ConvertFreshRValue(lambda));
 }
@@ -1918,6 +1923,11 @@ bool ConverterRefCount::VisitMemberExpr(clang::MemberExpr *expr) {
     ConvertDeclRefValue(expr, member);
     return false;
   }
+  if (auto field = clang::dyn_cast<clang::FieldDecl>(member);
+      field && AsLambdaCapture(field)) {
+    ConvertDeclRefValue(expr, member);
+    return false;
+  }
   bool known = Mapper::Contains(ctx_, expr);
 
   if (auto *method = clang::dyn_cast<clang::CXXMethodDecl>(member);
@@ -2302,6 +2312,13 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   if (IsRValueConvertingConstructor(ctor) ||
       (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
     StrCat(ConvertLValue(expr->getArg(0)));
+    return false;
+  }
+
+  if (IsLambdaCopyOrMoveConstructor(ctor)) {
+    StrCat(ConvertRValue(expr->getArg(0)),
+           std::format(".{}()", GetCopyOrMoveName(ctor)));
+    SetFreshType(expr->getType());
     return false;
   }
 
