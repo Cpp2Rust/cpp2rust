@@ -223,7 +223,9 @@ std::string WrapRule(const std::string &dir_name, bool is_c,
     return std::format("#define {0} cpp2rust_rules_{1}_{0}\n{2}#undef {0}\n",
                        name, dir_name, text);
   }
-  return std::format("namespace cpp2rust_rules_{} {{\n{}}}\n", dir_name, text);
+  return std::format(
+      "namespace cpp2rust_rules {{\nnamespace cpp2rust_rules_{} {{\n{}}}\n}}\n",
+      dir_name, text);
 }
 
 void AddRule(llvm::json::Object &rules, std::string key,
@@ -271,9 +273,6 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
     auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"text", WrapRule(dir_name, is_c, name, text)}};
-    if (!is_c) {
-      rule["namespace"] = "cpp2rust_rules_" + dir_name;
-    }
     if (auto required = RequiredClasses(decl, alias); !required.empty()) {
       rule["requires"] = llvm::json::Array(required);
     }

@@ -283,11 +283,13 @@ const llvm::json::Object &CxxIndex() {
 
 std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
                                bool is_cxx) {
-  std::string out;
   const auto &index = is_cxx ? CxxIndex() : CIndex();
   auto common = index.getString("common");
+  std::string out;
+  if (!common->empty()) {
+    out += "namespace cpp2rust_rules {\n" + common->str() + "}\n";
+  }
   auto rules = index.getObject("rules");
-  std::unordered_set<std::string> namespaces;
   for (const auto &key : keys) {
     auto entries = rules->getArray(key);
     if (!entries) {
@@ -301,10 +303,6 @@ std::string BuildRulesEpilogue(const std::unordered_set<std::string> &keys,
             return keys.contains(key.getAsString()->str());
           })) {
         continue;
-      }
-      if (auto ns = rule->getString("namespace");
-          ns && namespaces.insert(ns->str()).second) {
-        out += "namespace " + ns->str() + " {\n" + common->str() + "}\n";
       }
       out += *rule->getString("text");
     }
