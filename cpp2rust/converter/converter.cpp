@@ -1247,7 +1247,8 @@ bool Converter::VisitStaticAssertDecl(clang::StaticAssertDecl *decl) {
     condition = ToString(assert_expr);
   } else {
     bool value = false;
-    ENSURE(assert_expr->EvaluateAsBooleanCondition(value, ctx_));
+    ENSURE(assert_expr->EvaluateAsBooleanCondition(value, ctx_,
+                                                   /*InConstantContext=*/true));
     condition = value ? keyword::kTrue : keyword::kFalse;
   }
   StrCat(std::format("const _: () = assert!({}{});", condition,

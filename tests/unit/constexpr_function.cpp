@@ -28,6 +28,15 @@ constexpr int checked(int x) {
   return x + 1;
 }
 
+constexpr bool in_constant_context() {
+  if (__builtin_is_constant_evaluated()) {
+    return true;
+  }
+  return runtime_only(1) == 0;
+}
+
+static_assert(in_constant_context());
+
 struct P {
   int v;
   constexpr int get() const { return v; }
