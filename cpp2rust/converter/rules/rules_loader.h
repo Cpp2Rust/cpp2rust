@@ -11,7 +11,6 @@
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Lex/Pragma.h>
 
-#include <filesystem>
 #include <string>
 
 namespace cpp2rust::RulesLoader {
@@ -20,20 +19,21 @@ inline constexpr const char *kPragmaName = "cpp2rust_rules";
 
 inline constexpr const char *kIndexDirName = "rules_index";
 
-std::filesystem::path ClassKey(const clang::NamedDecl *decl);
+std::string ClassKey(const clang::NamedDecl *decl);
 
 std::string MemberName(clang::DeclarationName name);
 
-std::filesystem::path MemberKey(const std::filesystem::path &class_key,
-                                const std::string &name);
+std::string MemberKey(const std::string &class_key, const std::string &name);
 
-std::filesystem::path FunctionKey(const clang::FunctionDecl *decl);
+std::string ConstructorKey(const std::string &class_key);
 
-std::filesystem::path DeclKey(const clang::NamedDecl *decl);
+std::string FunctionKey(const clang::FunctionDecl *decl);
 
-std::filesystem::path ExprKey(clang::ASTContext &ctx, const clang::Expr *expr);
+std::string DeclKey(const clang::NamedDecl *decl);
 
-std::filesystem::path TypeKey(clang::QualType type);
+std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr);
+
+std::string TypeKey(clang::QualType type);
 
 class PragmaHandler : public clang::PragmaHandler {
 public:

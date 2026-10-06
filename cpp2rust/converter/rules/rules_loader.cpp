@@ -19,6 +19,8 @@
 #include <map>
 #include <ranges>
 #include <set>
+#include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "converter/converter_lib.h"
@@ -26,15 +28,13 @@
 
 namespace cpp2rust::RulesLoader {
 
-namespace fs = std::filesystem;
-
 namespace {
 
 class RuleUsageCollector
     : public clang::RecursiveASTVisitor<RuleUsageCollector> {
 public:
-  RuleUsageCollector(clang::Sema &sema, std::set<fs::path> &paths)
-      : ctx_(sema.Context), sema_(sema), paths_(paths) {}
+  RuleUsageCollector(clang::Sema &sema, std::unordered_set<std::string> &keys)
+      : ctx_(sema.Context), sema_(sema), keys_(keys) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
 
@@ -118,9 +118,9 @@ public:
   }
 
 private:
-  void AddKey(const fs::path &key) {
+  void AddKey(const std::string &key) {
     if (!key.empty()) {
-      paths_.insert(key);
+      keys_.insert(key);
     }
   }
 
@@ -216,12 +216,12 @@ private:
 
   clang::ASTContext &ctx_;
   clang::Sema &sema_;
-  std::set<fs::path> &paths_;
+  std::unordered_set<std::string> &keys_;
   llvm::DenseSet<const void *> seen_;
 };
 
-const llvm::json::Object &LoadIndex(const fs::path &path) {
-  static std::map<fs::path, llvm::json::Object> indexes;
+const llvm::json::Object &LoadIndex(const std::filesystem::path &path) {
+  static std::map<std::filesystem::path, llvm::json::Object> indexes;
   if (auto it = indexes.find(path); it != indexes.end()) {
     return it->second;
   }
@@ -244,8 +244,9 @@ const llvm::json::Object &LoadIndex(const fs::path &path) {
   return indexes.emplace(path, std::move(*index)).first->second;
 }
 
-std::string BuildRulesBuffer(const fs::path &index_dir,
-                             const std::set<fs::path> &paths, bool is_cxx) {
+std::string BuildRulesBuffer(const std::filesystem::path &index_dir,
+                             const std::unordered_set<std::string> &keys,
+                             bool is_cxx) {
   std::string out;
   for (const char *lang : {"c", "cpp"}) {
     if (!is_cxx && lang == std::string("cpp")) {
@@ -255,8 +256,8 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
     auto common = index.getString("common");
     auto rules = index.getObject("rules");
     std::set<std::string> namespaces;
-    for (const auto &path : paths) {
-      auto entries = rules->getArray(path.generic_string());
+    for (const auto &key : keys) {
+      auto entries = rules->getArray(key);
       if (!entries) {
         continue;
       }
@@ -275,12 +276,12 @@ std::string BuildRulesBuffer(const fs::path &index_dir,
 
 } // namespace
 
-static fs::path Component(std::string name) {
+static std::string Component(std::string name) {
   std::ranges::replace(name, '/', '_');
   return name;
 }
 
-static fs::path NamePath(const clang::NamedDecl *decl) {
+static std::string NameKey(const clang::NamedDecl *decl) {
   std::vector<std::string> scopes;
   for (auto scope = decl->getDeclContext(); scope; scope = scope->getParent()) {
     if (auto ns = llvm::dyn_cast<clang::NamespaceDecl>(scope)) {
@@ -294,14 +295,14 @@ static fs::path NamePath(const clang::NamedDecl *decl) {
       scopes.push_back(enum_decl->getNameAsString());
     }
   }
-  fs::path path;
+  std::string key;
   for (const auto &scope : scopes | std::views::reverse) {
-    path /= Component(scope);
+    key += Component(scope) + '/';
   }
-  return path / Component(decl->getNameAsString());
+  return key + Component(decl->getNameAsString());
 }
 
-fs::path ClassKey(const clang::NamedDecl *decl) {
+std::string ClassKey(const clang::NamedDecl *decl) {
   if (auto alias = llvm::dyn_cast<clang::TypedefNameDecl>(decl)) {
     auto tag = alias->getUnderlyingType()->getAsTagDecl();
     if (!tag) {
@@ -320,7 +321,7 @@ fs::path ClassKey(const clang::NamedDecl *decl) {
       return {};
     }
   }
-  return NamePath(decl);
+  return NameKey(decl);
 }
 
 std::string MemberName(clang::DeclarationName name) {
@@ -330,35 +331,39 @@ std::string MemberName(clang::DeclarationName name) {
   return name.getAsString();
 }
 
-fs::path MemberKey(const fs::path &class_key, const std::string &name) {
+std::string MemberKey(const std::string &class_key, const std::string &name) {
   if (class_key.empty()) {
     return {};
   }
-  return class_key / Component(name);
+  return class_key + '/' + Component(name);
 }
 
-fs::path FunctionKey(const clang::FunctionDecl *decl) {
+std::string ConstructorKey(const std::string &class_key) {
+  return MemberKey(class_key, class_key.substr(class_key.rfind('/') + 1));
+}
+
+std::string FunctionKey(const clang::FunctionDecl *decl) {
   if (auto method = llvm::dyn_cast<clang::CXXMethodDecl>(decl)) {
     auto class_key = ClassKey(method->getParent());
     if (llvm::isa<clang::CXXConstructorDecl>(method)) {
-      return MemberKey(class_key, class_key.filename().string());
+      return ConstructorKey(class_key);
     }
     return MemberKey(class_key, MemberName(method->getDeclName()));
   }
-  return NamePath(decl);
+  return NameKey(decl);
 }
 
-fs::path DeclKey(const clang::NamedDecl *decl) {
+std::string DeclKey(const clang::NamedDecl *decl) {
   if (auto fn = decl->getAsFunction()) {
     return FunctionKey(fn);
   }
   if (auto record = llvm::dyn_cast<clang::RecordDecl>(decl->getDeclContext())) {
     return MemberKey(ClassKey(record), MemberName(decl->getDeclName()));
   }
-  return NamePath(decl);
+  return NameKey(decl);
 }
 
-fs::path ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
+std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
       expr->getBeginLoc().isMacroID()) {
@@ -388,7 +393,7 @@ fs::path ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   return {};
 }
 
-fs::path TypeKey(clang::QualType type) {
+std::string TypeKey(clang::QualType type) {
   if (auto decltype_type =
           llvm::dyn_cast<clang::DecltypeType>(type.getTypePtr())) {
     type = decltype_type->getUnderlyingType();
@@ -429,17 +434,16 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
     }
   }
   ctx.setTraversalScope(user_decls);
-  std::set<fs::path> selected;
-  RuleUsageCollector collector(CI_.getSema(), selected);
+  std::unordered_set<std::string> keys;
+  RuleUsageCollector collector(CI_.getSema(), keys);
   for (auto *decl : user_decls) {
     collector.TraverseDecl(decl);
   }
   ctx.setTraversalScope({ctx.getTranslationUnitDecl()});
 
-  auto index_dir =
-      fs::weakly_canonical(rules_dir_).parent_path() / kIndexDirName;
-  auto text =
-      BuildRulesBuffer(index_dir, selected, ctx.getLangOpts().CPlusPlus);
+  auto index_dir = std::filesystem::weakly_canonical(rules_dir_).parent_path() /
+                   kIndexDirName;
+  auto text = BuildRulesBuffer(index_dir, keys, ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),

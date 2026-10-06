@@ -38,7 +38,7 @@ struct RuleCtx {
   std::string name;
 };
 
-fs::path ClassOf(clang::QualType type) {
+std::string ClassOf(clang::QualType type) {
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
   }
@@ -58,7 +58,7 @@ fs::path ClassOf(clang::QualType type) {
   return {};
 }
 
-fs::path ClassOfParameters(const clang::Decl *rule) {
+std::string ClassOfParameters(const clang::Decl *rule) {
   auto fn = rule->getAsFunction();
   if (!fn) {
     return {};
@@ -95,7 +95,7 @@ const clang::Expr *IgnoreImplicitAndFunctionalCast(const clang::Expr *expr) {
   return expr;
 }
 
-fs::path DependentExprKey(const clang::Expr *expr) {
+std::string DependentExprKey(const clang::Expr *expr) {
   auto member = llvm::dyn_cast<clang::CXXDependentScopeMemberExpr>(expr);
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {
@@ -126,12 +126,12 @@ fs::path DependentExprKey(const clang::Expr *expr) {
   if (auto construct =
           llvm::dyn_cast<clang::CXXUnresolvedConstructExpr>(expr)) {
     auto class_key = ClassOf(construct->getTypeAsWritten());
-    return RulesLoader::MemberKey(class_key, class_key.filename().string());
+    return RulesLoader::ConstructorKey(class_key);
   }
   return {};
 }
 
-fs::path ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
+std::string ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
   auto expr = RuleExpr(rule);
   if (!expr) {
     return {};
@@ -143,7 +143,7 @@ fs::path ExprKey(clang::ASTContext &ctx, const clang::Decl *rule) {
   return DependentExprKey(expr);
 }
 
-fs::path TypeKey(const clang::TypedefNameDecl *rule) {
+std::string TypeKey(const clang::TypedefNameDecl *rule) {
   auto type = rule->getUnderlyingType();
   while (type->isPointerType() || type->isReferenceType()) {
     type = type->getPointeeType();
@@ -213,7 +213,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
     if (!is_c) {
       rule["namespace"] = "cpp2rust_rules_" + dir.name;
     }
-    AddRule(rules, key.generic_string(), std::move(rule));
+    AddRule(rules, key, std::move(rule));
   }
 }
 
