@@ -592,6 +592,14 @@ void Converter::EmitScopedDestructor(const clang::VarDecl *decl) {
     return;
   }
   auto type = decl->getType();
+  if (auto lambda = AsLambdaClass(type);
+      lambda && LambdaNeedsDestruction(lambda)) {
+    StrCat(token::kSemiColon,
+           std::format("let _dtor_{0} = ScopedDestructorUnsafe::new(&raw mut "
+                       "{0}, |__f| __f.destroy())",
+                       GetNamedDeclAsString(decl)));
+    return;
+  }
   if (type->isReferenceType() || type->isArrayType() ||
       !TypeNeedsDestruction(type)) {
     return;
@@ -3865,6 +3873,11 @@ bool Converter::VisitLambdaExpr(clang::LambdaExpr *expr) {
   StrCat(token::kComma);
   ConvertLambdaClosure(decl);
   ConvertLambdaCopyAndMove(decl);
+  if (LambdaNeedsDestruction(decl)) {
+    StrCat(token::kComma, "destroy", token::kAssign);
+    PushBrace destroy(*this);
+    StrCat(DestroyMembers(decl));
+  }
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }

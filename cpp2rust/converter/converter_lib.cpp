@@ -1088,6 +1088,12 @@ bool IsLambdaCopyOrMoveConstructor(const clang::CXXConstructorDecl *ctor) {
          !decl->captures().empty();
 }
 
+bool LambdaNeedsDestruction(const clang::CXXRecordDecl *decl) {
+  return llvm::any_of(decl->fields(), [](const clang::FieldDecl *field) {
+    return TypeNeedsDestruction(field->getType());
+  });
+}
+
 clang::Expr *AsLambdaUncapturedConstant(const clang::FunctionDecl *fn,
                                         clang::DeclRefExpr *expr) {
   if (!AsLambdaOperatorCall(fn)) {

@@ -873,6 +873,14 @@ void ConverterRefCount::EmitScopedDestructor(const clang::VarDecl *decl) {
     return;
   }
   auto type = decl->getType();
+  if (auto lambda = AsLambdaClass(type);
+      lambda && LambdaNeedsDestruction(lambda)) {
+    StrCat(token::kSemiColon,
+           std::format("let _dtor_{0} = ScopedDestructor::new(&{0}, |__p| "
+                       "__p.with(|__f| __f.destroy()))",
+                       GetNamedDeclAsString(decl)));
+    return;
+  }
   if (type->isReferenceType() || type->isArrayType() ||
       !TypeNeedsDestruction(type)) {
     return;
@@ -3423,6 +3431,12 @@ ConverterRefCount::DestroyMembers(const clang::CXXRecordDecl *decl) {
   std::string out;
   for (auto *field : std::ranges::reverse_view(fields)) {
     auto name = GetNamedDeclAsString(field);
+    if (decl->isLambda()) {
+      assert(!field->getType()->isArrayType());
+      out +=
+          std::format("self.{0}.as_pointer().{1}();\n", name, kDestructorName);
+      continue;
+    }
     if (field->getType()->isArrayType()) {
       auto *elem =
           field->getType()->getBaseElementTypeUnsafe()->getAsCXXRecordDecl();
