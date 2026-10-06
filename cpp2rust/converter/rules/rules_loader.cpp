@@ -155,17 +155,22 @@ private:
       return;
     }
     AddKey(TypeKey(type));
-    if (const auto *enum_decl = type->getAsEnumDecl()) {
-      AddType(enum_decl->getIntegerType());
+    if (auto desugared = type.getSingleStepDesugaredType(ctx_);
+        desugared != type) {
+      if (const auto *spec = llvm::dyn_cast<clang::TemplateSpecializationType>(
+              type.getTypePtr())) {
+        AddTemplateArgs(spec->template_arguments());
+      }
+      return AddType(desugared);
     }
-
-    assert(!type->isMemberPointerType() && "member pointers are not scanned");
-    AddType(type.getSingleStepDesugaredType(ctx_));
-    if (type->isAnyPointerType() || type->isReferenceType()) {
-      AddType(type->getPointeeType());
+    if (type->isBuiltinType()) {
+      return;
+    }
+    if (type->isPointerType() || type->isReferenceType()) {
+      return AddType(type->getPointeeType());
     }
     if (const auto *array = ctx_.getAsArrayType(type)) {
-      AddType(array->getElementType());
+      return AddType(array->getElementType());
     }
     if (const auto *fn = type->getAs<clang::FunctionType>()) {
       AddType(fn->getReturnType());
@@ -174,17 +179,23 @@ private:
           AddType(param);
         }
       }
+      return;
     }
-    if (const auto *spec = type->getAs<clang::TemplateSpecializationType>()) {
-      AddTemplateArgs(spec->template_arguments());
+    if (const auto *enum_decl = type->getAsEnumDecl()) {
+      return AddType(enum_decl->getIntegerType());
     }
-    if (auto *record = type->getAsCXXRecordDecl()) {
-      if (const auto *spec =
-              llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(record)) {
-        AddTemplateArgs(spec->getTemplateArgs().asArray());
+    if (type->isRecordType()) {
+      if (auto *record = type->getAsCXXRecordDecl()) {
+        if (const auto *spec =
+                llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                    record)) {
+          AddTemplateArgs(spec->getTemplateArgs().asArray());
+        }
+        AddSpecialMembers(record);
       }
-      AddSpecialMembers(record);
+      return;
     }
+    assert(0 && "type is not scanned");
   }
 
   void AddSpecialMembers(clang::CXXRecordDecl *record) {
