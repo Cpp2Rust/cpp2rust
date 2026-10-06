@@ -247,34 +247,29 @@ std::string BuildRulesBuffer(const std::filesystem::path &index_dir,
                              const std::unordered_set<std::string> &keys,
                              bool is_cxx) {
   std::string out;
-  for (const char *lang : {"c", "cpp"}) {
-    if (!is_cxx && lang == std::string("cpp")) {
+  const auto &index = LoadIndex(index_dir / (is_cxx ? "cpp.json" : "c.json"));
+  auto common = index.getString("common");
+  auto rules = index.getObject("rules");
+  std::set<std::string> namespaces;
+  for (const auto &key : keys) {
+    auto entries = rules->getArray(key);
+    if (!entries) {
       continue;
     }
-    const auto &index = LoadIndex(index_dir / (std::string(lang) + ".json"));
-    auto common = index.getString("common");
-    auto rules = index.getObject("rules");
-    std::set<std::string> namespaces;
-    for (const auto &key : keys) {
-      auto entries = rules->getArray(key);
-      if (!entries) {
+    for (const auto &entry : *entries) {
+      auto rule = entry.getAsObject();
+      if (auto required = rule->getArray("requires");
+          required &&
+          !llvm::all_of(*required, [&](const llvm::json::Value &key) {
+            return keys.contains(key.getAsString()->str());
+          })) {
         continue;
       }
-      for (const auto &entry : *entries) {
-        auto rule = entry.getAsObject();
-        if (auto required = rule->getArray("requires");
-            required &&
-            !llvm::all_of(*required, [&](const llvm::json::Value &key) {
-              return keys.contains(key.getAsString()->str());
-            })) {
-          continue;
-        }
-        if (auto ns = rule->getString("namespace");
-            ns && namespaces.insert(ns->str()).second) {
-          out += "namespace " + ns->str() + " {\n" + common->str() + "}\n";
-        }
-        out += *rule->getString("text");
+      if (auto ns = rule->getString("namespace");
+          ns && namespaces.insert(ns->str()).second) {
+        out += "namespace " + ns->str() + " {\n" + common->str() + "}\n";
       }
+      out += *rule->getString("text");
     }
   }
   return out;
@@ -374,10 +369,9 @@ std::string ExprKey(clang::ASTContext &ctx, const clang::Expr *expr) {
   expr = expr->IgnoreParenImpCasts();
   if (llvm::isa<clang::IntegerLiteral>(expr) &&
       expr->getBeginLoc().isMacroID()) {
-    return clang::Lexer::getImmediateMacroName(expr->getBeginLoc(),
-                                                         ctx.getSourceManager(),
-                                                         ctx.getLangOpts())
-                         .str();
+    return clang::Lexer::getImmediateMacroName(
+               expr->getBeginLoc(), ctx.getSourceManager(), ctx.getLangOpts())
+        .str();
   }
   if (auto call = llvm::dyn_cast<clang::CallExpr>(expr)) {
     if (auto callee = call->getDirectCallee()) {

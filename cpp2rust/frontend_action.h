@@ -49,8 +49,7 @@ public:
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance &CI) override {
-    CI.getPreprocessor().AddPragmaHandler(
-        new RulesLoader::PragmaHandler(CI));
+    CI.getPreprocessor().AddPragmaHandler(new RulesLoader::PragmaHandler(CI));
     return true;
   }
 

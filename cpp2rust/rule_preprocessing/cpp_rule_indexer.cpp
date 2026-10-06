@@ -286,13 +286,13 @@ void IndexRuleFile(clang::ASTContext &ctx, const RuleCtx &dir,
   }
 }
 
-void Index(const fs::path &src_path, const RuleCtx &dir,
+void Index(const fs::path &src_path, bool is_c, const RuleCtx &dir,
            const std::vector<std::string> &cxx_flags,
            llvm::json::Object &rules) {
-  bool is_c = src_path.extension() == ".c";
   auto flags = getPlatformClangBeginFlags();
   flags.push_back("-isystem" + src_path.parent_path().string());
   if (!is_c) {
+    flags.push_back("-xc++");
     flags.insert(flags.end(), cxx_flags.begin(), cxx_flags.end());
   }
   auto end_flags = getPlatformClangEndFlags();
@@ -353,17 +353,21 @@ void IndexRules(const fs::path &rules_dir, const fs::path &index_dir,
         common += std::format("#include \"{}\"\n", header);
       }
     }
+    bool is_c = lang == std::string("c");
     llvm::json::Object rules;
     for (const auto &rule_dir : rule_dirs) {
-      auto src_path = rule_dir / (std::string("src.") + lang);
-      if (!fs::exists(src_path)) {
-        continue;
+      for (const char *name : {"src.c", "src.cpp"}) {
+        auto src_path = rule_dir / name;
+        if (!fs::exists(src_path) || (is_c && src_path.extension() != ".c")) {
+          continue;
+        }
+        llvm::errs() << "Indexing " << src_path.string() << " as " << lang
+                     << '\n';
+        RuleCtx dir;
+        dir.path = rule_dir.filename();
+        dir.name = rule_dir.filename().string();
+        Index(src_path, is_c, dir, ReadCXXFlags(rule_dir), rules);
       }
-      llvm::errs() << "Indexing " << src_path.string() << '\n';
-      RuleCtx dir;
-      dir.path = rule_dir.filename();
-      dir.name = rule_dir.filename().string();
-      Index(src_path, dir, ReadCXXFlags(rule_dir), rules);
     }
     WriteJson(index_dir / (std::string(lang) + ".json"),
               llvm::json::Object{{"common", std::move(common)},
