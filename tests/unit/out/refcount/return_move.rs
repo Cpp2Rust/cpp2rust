@@ -80,17 +80,16 @@ pub fn ret_struct_param_10(mut p: pair_t) -> pair_t {
 pub fn ret_struct_ref_11(p: Ptr<pair_t>) -> pair_t {
     return (*p.upgrade().deref()).clone();
 }
-pub fn ret_vec_12(v: Vec<i32>) -> Vec<i32> {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(v));
-    return std::mem::take(&mut (*v.borrow_mut()));
+pub fn ret_vec_12(mut v: Vec<i32>) -> Vec<i32> {
+    return std::mem::take(&mut v);
 }
 pub fn ret_vec_local_13() -> Vec<i32> {
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut v: Vec<i32> = Vec::new();
     {
         let __a1 = 1;
-        (*v.borrow_mut()).push(__a1)
+        v.push(__a1)
     };
-    return std::mem::take(&mut (*v.borrow_mut()));
+    return std::mem::take(&mut v);
 }
 pub fn ret_loop_14(mut n: Ptr<node>) -> Ptr<node> {
     'loop_: while !(n.with(|__s| __s.next.clone())).is_null() {

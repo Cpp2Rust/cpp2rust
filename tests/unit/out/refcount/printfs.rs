@@ -6,10 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fn_0(v: Vec<i8>) -> Vec<i8> {
-    let v: Value<Vec<i8>> = Rc::new(RefCell::new(v));
+pub fn fn_0(mut v: Vec<i8>) -> Vec<i8> {
     return {
-        let mut r = (*v.borrow()).clone();
+        let mut r = (v).clone();
         r.pop();
         Ptr::<i8>::from_string_literal(b" str").with_c_str(|__s| r.extend_from_slice(__s));
         r.push(0);

@@ -28,28 +28,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let arr: Value<Box<[NonCopy]>> = Rc::new(RefCell::new(
-        (0..3)
-            .map(|_| <NonCopy>::default())
-            .collect::<Box<[NonCopy]>>(),
-    ));
-    (*arr.borrow_mut())[(0) as usize].tag = 7;
+    let mut arr: [NonCopy; 3] = std::array::from_fn::<_, 3, _>(|_| <NonCopy>::default());
+    arr[(0) as usize].tag = 7;
     {
         let __a1 = 42;
-        (*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow_mut()).push(__a1)
+        (*{ arr[(1) as usize].data.clone() }.borrow_mut()).push(__a1)
     };
-    assert!(({ (*arr.borrow())[(0) as usize].tag } == 7));
-    assert!(((*{ (*arr.borrow())[(1) as usize].data.clone() }.borrow()).len() == 1_usize));
+    assert!(({ arr[(0) as usize].tag } == 7));
+    assert!(((*{ arr[(1) as usize].data.clone() }.borrow()).len() == 1_usize));
     assert!(
         ((elem!(
-            ({ (*arr.borrow())[(1) as usize].data.as_pointer() } as Ptr<i32>),
+            ({ arr[(1) as usize].data.as_pointer() } as Ptr<i32>),
             0_usize
         )
         .read())
             == 42)
     );
-    assert!(({ (*arr.borrow())[(2) as usize].tag } == 0));
-    assert!(((*{ (*arr.borrow())[(2) as usize].data.clone() }.borrow()).len() == 0_usize));
+    assert!(({ arr[(2) as usize].tag } == 0));
+    assert!(((*{ arr[(2) as usize].data.clone() }.borrow()).len() == 0_usize));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

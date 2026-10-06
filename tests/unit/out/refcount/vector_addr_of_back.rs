@@ -12,9 +12,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let outer: Value<Vec<Value<Vec<i32>>>> = Rc::new(RefCell::new(Vec::new()));
-    let inner: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut inner: Vec<i32> = Vec::new();
     (outer.as_pointer() as Ptr<Vec<Value<Vec<i32>>>>).with_mut(|__v: &mut Vec<Value<Vec<i32>>>| {
-        __v.push(Rc::new(RefCell::new((*inner.borrow()).clone())))
+        __v.push(Rc::new(RefCell::new((inner).clone())))
     });
     let mut sink: Ptr<Vec<i32>> = ((*outer.borrow())[(*outer.borrow()).len() - 1].as_pointer());
     assert!(((*sink.upgrade().deref()).len() == 0_usize));

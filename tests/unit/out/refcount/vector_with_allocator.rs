@@ -12,20 +12,18 @@ pub struct TestAllocator_int_ {}
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(1)]
 pub struct TestAllocator_double_ {}
-pub fn copy_0(copy_vector: Vec<i32>) {
-    let copy_vector: Value<Vec<i32>> = Rc::new(RefCell::new(copy_vector));
-}
+pub fn copy_0(mut copy_vector: Vec<i32>) {}
 pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(v3));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
     let mut x: i32 = 0_i32;
     let mut v4: Ptr<Vec<i32>> = (v3.as_pointer());
-    let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    (*v2.borrow_mut()).push(0);
-    (*v2.borrow_mut()).push(1);
-    (*v2.borrow_mut()).push(3);
+    let mut v2: Vec<i32> = Vec::new();
+    v2.push(0);
+    v2.push(1);
+    v2.push(3);
     x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
-    elem!((v2.as_pointer() as Ptr<i32>), 0_usize).write(1);
+    v2[0_usize] = 1;
     elem!(
         ((if true {
             v3.as_pointer()
@@ -41,8 +39,8 @@ pub fn fn_1(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 7));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 13));
+    assert!(({ (*v3.borrow())[0_usize] } == 7));
+    assert!(({ (*v3.borrow())[1_usize] } == 13));
     v.with_mut(|__v: &mut Vec<i32>| __v.push(20));
 }
 pub fn main() {
@@ -50,24 +48,24 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    assert!(((*v1.borrow()).len() == 0_usize));
-    assert!((*v1.borrow()).is_empty());
-    (*v1.borrow_mut()).push(1);
-    assert!(!((*v1.borrow()).is_empty()));
-    (*v1.borrow_mut()).pop();
-    assert!((*v1.borrow()).is_empty());
-    let mut s1: usize = (*v1.borrow()).len();
+    let mut v1: Vec<i32> = Vec::new();
+    assert!((v1.len() == 0_usize));
+    assert!(v1.is_empty());
+    v1.push(1);
+    assert!(!(v1.is_empty()));
+    v1.pop();
+    assert!(v1.is_empty());
+    let mut s1: usize = v1.len();
     {
         let __a0 = 100_usize as usize;
-        (*v1.borrow_mut()).resize_with(__a0, || <i32>::default())
+        v1.resize_with(__a0, || <i32>::default())
     };
-    assert!(((*v1.borrow()).len() == 100_usize));
-    assert!(((elem!((v1.as_pointer() as Ptr<i32>), 99_usize).read()) == 0));
-    elem!((v1.as_pointer() as Ptr<i32>), 0_usize).write(40);
-    elem!((v1.as_pointer() as Ptr<i32>), 99_usize).write(50);
-    assert!(((elem!((v1.as_pointer() as Ptr<i32>), 0_usize).read()) == 40));
-    assert!(((elem!((v1.as_pointer() as Ptr<i32>), 99_usize).read()) == 50));
+    assert!((v1.len() == 100_usize));
+    assert!((v1[99_usize] == 0));
+    v1[0_usize] = 40;
+    v1[99_usize] = 50;
+    assert!((v1[0_usize] == 40));
+    assert!((v1[99_usize] == 50));
     let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     assert!(((*v2.borrow()).len() == 0_usize));
     (*v2.borrow_mut()).push(1);
@@ -80,8 +78,8 @@ fn main_0() -> i32 {
         (v2.as_pointer() as Ptr<Vec<i32>>).decay()
     };
     assert!(((*v2.borrow()).len() == 2_usize));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 0_usize).read()) == 2));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 1_usize).read()) == 3));
+    assert!(({ (*v2.borrow())[0_usize] } == 2));
+    assert!(({ (*v2.borrow())[1_usize] } == 3));
     {
         let __off = (v2.as_pointer() as Ptr<i32>).get_offset();
         (*v2.borrow_mut()).insert(__off, 100);
@@ -89,38 +87,38 @@ fn main_0() -> i32 {
     };
     ({ copy_0((*v2.borrow()).clone()) });
     assert!(((*v2.borrow()).len() == 3_usize));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 0_usize).read()) == 100));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 1_usize).read()) == 2));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 2_usize).read()) == 3));
+    assert!(({ (*v2.borrow())[0_usize] } == 100));
+    assert!(({ (*v2.borrow())[1_usize] } == 2));
+    assert!(({ (*v2.borrow())[2_usize] } == 3));
     let mut s2: usize = (*v2.borrow()).len();
     let v3: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1; 100_usize as usize]));
     assert!(((*v3.borrow()).len() == 100_usize));
     let mut i: i32 = 0;
     'loop_: while (i < 100) {
-        assert!(((elem!((v3.as_pointer() as Ptr<i32>), (i as usize)).read()) == 1));
+        assert!(({ (*v3.borrow())[(i as usize)] } == 1));
         i.prefix_inc();
     }
     let v6: Value<Vec<f64>> = Rc::new(RefCell::new(vec![2.0E+0; s2 as usize]));
     assert!(((*v6.borrow()).len() == s2));
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < s2) {
-        assert!(((elem!((v6.as_pointer() as Ptr<f64>), (i as usize)).read()) == 2.0E+0));
+        assert!(({ (*v6.borrow())[(i as usize)] } == 2.0E+0));
         i.prefix_inc();
     }
     let mut p1: Ptr<f64> = (v6.as_pointer() as Ptr<f64>);
     assert!(((p1.read()) == 2.0E+0));
     let mut p2: Ptr<i32> = (v3.as_pointer() as Ptr<i32>);
     assert!(((p2.read()) == 1));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 1));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 1));
+    assert!(({ (*v3.borrow())[0_usize] } == 1));
+    assert!(({ (*v3.borrow())[1_usize] } == 1));
     p2.write((9.9E+1 as i32));
     assert!(((p2.read()) == 99));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 99));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 1));
+    assert!(({ (*v3.borrow())[0_usize] } == 99));
+    assert!(({ (*v3.borrow())[1_usize] } == 1));
     p2.prefix_inc();
     p2.write(98);
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 99));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 98));
+    assert!(({ (*v3.borrow())[0_usize] } == 99));
+    assert!(({ (*v3.borrow())[1_usize] } == 98));
     assert!(((*v3.borrow()).capacity() == 100_usize));
     assert!(((*v3.borrow()).len() == 100_usize));
     if 200_usize as usize > (*v3.borrow()).capacity() as usize {
@@ -192,15 +190,15 @@ fn main_0() -> i32 {
             == 6.5E+0)
     );
     let v7: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    let v8: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut v8: Vec<i32> = Vec::new();
     (*v7.borrow_mut()).push(4);
     (*v7.borrow_mut()).push(5);
     (*v7.borrow_mut()).push(6);
-    (*v8.borrow_mut()).push(8);
-    (*v8.borrow_mut()).push(9);
-    ({ fn_1(v7.as_pointer(), (*v8.borrow()).clone()) });
+    v8.push(8);
+    v8.push(9);
+    ({ fn_1(v7.as_pointer(), v8.clone()) });
     let src: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let v9: Value<Vec<u32>> = Rc::new(RefCell::new({
+    let mut v9: Vec<u32> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -208,14 +206,10 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| u32::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v9.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v9.as_pointer() as Ptr<u32>), 0_usize).read()) == 1_u32)
-            && ((elem!((v9.as_pointer() as Ptr<u32>), 1_usize).read()) == 2_u32))
-            && ((elem!((v9.as_pointer() as Ptr<u32>), 2_usize).read()) == 3_u32)
-    );
-    let v10: Value<Vec<u64>> = Rc::new(RefCell::new({
+    };
+    assert!((v9.len() == 3_usize));
+    assert!(((v9[0_usize] == 1_u32) && (v9[1_usize] == 2_u32)) && (v9[2_usize] == 3_u32));
+    let mut v10: Vec<u64> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -223,14 +217,10 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| u64::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v10.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v10.as_pointer() as Ptr<u64>), 0_usize).read()) == 1_u64)
-            && ((elem!((v10.as_pointer() as Ptr<u64>), 1_usize).read()) == 2_u64))
-            && ((elem!((v10.as_pointer() as Ptr<u64>), 2_usize).read()) == 3_u64)
-    );
-    let v11: Value<Vec<i32>> = Rc::new(RefCell::new({
+    };
+    assert!((v10.len() == 3_usize));
+    assert!(((v10[0_usize] == 1_u64) && (v10[1_usize] == 2_u64)) && (v10[2_usize] == 3_u64));
+    let mut v11: Vec<i32> = {
         let __count = (src.as_pointer() as Ptr<u32>)
             .offset((3) as isize)
             .get_offset()
@@ -238,38 +228,27 @@ fn main_0() -> i32 {
         PtrValueIter::new(&(src.as_pointer() as Ptr<u32>), __count)
             .map(|item| i32::try_from(item).ok().unwrap())
             .collect::<Vec<_>>()
-    }));
-    assert!(((*v11.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v11.as_pointer() as Ptr<i32>), 0_usize).read()) == 1)
-            && ((elem!((v11.as_pointer() as Ptr<i32>), 1_usize).read()) == 2))
-            && ((elem!((v11.as_pointer() as Ptr<i32>), 2_usize).read()) == 3)
-    );
+    };
+    assert!((v11.len() == 3_usize));
+    assert!(((v11[0_usize] == 1) && (v11[1_usize] == 2)) && (v11[2_usize] == 3));
     let src1: Value<Box<[u32]>> = Rc::new(RefCell::new(Box::new([1_u32, 2_u32, 3_u32])));
-    let v12: Value<Vec<u32>> = Rc::new(RefCell::new({
+    let mut v12: Vec<u32> = {
         let __count = (src1.as_pointer() as Ptr<u32>).to_end().get_offset()
             - (src1.as_pointer() as Ptr<u32>).get_offset();
         PtrValueIter::new(&(src1.as_pointer() as Ptr<u32>), __count).collect::<Vec<_>>()
-    }));
-    assert!(((*v12.borrow()).len() == 3_usize));
-    assert!(
-        (((elem!((v12.as_pointer() as Ptr<u32>), 0_usize).read()) == 1_u32)
-            && ((elem!((v12.as_pointer() as Ptr<u32>), 1_usize).read()) == 2_u32))
-            && ((elem!((v12.as_pointer() as Ptr<u32>), 2_usize).read()) == 3_u32)
-    );
+    };
+    assert!((v12.len() == 3_usize));
+    assert!(((v12[0_usize] == 1_u32) && (v12[1_usize] == 2_u32)) && (v12[2_usize] == 3_u32));
     let buf: Value<Box<[u8]>> =
         Rc::new(RefCell::new(Box::new([10_u8, 20_u8, 30_u8, 40_u8, 50_u8])));
     let mut start: Ptr<u8> = (buf.as_pointer() as Ptr<u8>);
     let mut len: usize = 5_usize;
-    let v13: Value<Vec<u8>> = Rc::new(RefCell::new({
+    let mut v13: Vec<u8> = {
         let __count = start.offset((len) as isize).get_offset() - start.get_offset();
         PtrValueIter::new(&start, __count).collect::<Vec<_>>()
-    }));
-    assert!(((*v13.borrow()).len() == 5_usize));
-    assert!(
-        (((elem!((v13.as_pointer() as Ptr<u8>), 0_usize).read()) as i32) == 10)
-            && (((elem!((v13.as_pointer() as Ptr<u8>), 4_usize).read()) as i32) == 50)
-    );
+    };
+    assert!((v13.len() == 5_usize));
+    assert!(((v13[0_usize] as i32) == 10) && ((v13[4_usize] as i32) == 50));
     assert!(
         (((s1).wrapping_add(s2)).wrapping_add(
             (((v2.as_pointer() as Ptr<i32>)

@@ -249,14 +249,7 @@ fn main_0() -> i32 {
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_push_move_3((w.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 1_usize));
-    assert!(
-        ({
-            (*elem!((chunks.as_pointer() as Ptr<Chunk>), 0_usize)
-                .upgrade()
-                .deref())
-            .data
-        } == 42)
-    );
+    assert!(({ (*chunks.borrow())[0_usize].data } == 42));
     ({ emplace_local_from_field_4((jpg.as_pointer()), false) });
     assert!(((*{ (*jpg.borrow()).app_data.clone() }.borrow()).len() == 1_usize));
     assert!(
@@ -299,68 +292,23 @@ fn main_0() -> i32 {
     (*w.borrow_mut()).output = (chunks.as_pointer());
     ({ nested_emplace_move_5((w.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 2_usize));
-    assert!(
-        ({
-            (*elem!((chunks.as_pointer() as Ptr<Chunk>), 1_usize)
-                .upgrade()
-                .deref())
-            .data
-        } == 99)
-    );
+    assert!(({ (*chunks.borrow())[1_usize].data } == 99));
     ({ self_ref_push_6((chunks.as_pointer())) });
     assert!(((*chunks.borrow()).len() == 3_usize));
-    assert!(
-        ({
-            (*elem!((chunks.as_pointer() as Ptr<Chunk>), 2_usize)
-                .upgrade()
-                .deref())
-            .data
-        } == 42)
-    );
+    assert!(({ (*chunks.borrow())[2_usize].data } == 42));
     let pairs: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_ctor_args_7((pairs.as_pointer())) });
     assert!(((*pairs.borrow()).len() == 3_usize));
     assert!(
-        ({
-            (*elem!((pairs.as_pointer() as Ptr<Pair>), 0_usize)
-                .upgrade()
-                .deref())
-            .first
-        } == -1_i32)
-            && ({
-                (*elem!((pairs.as_pointer() as Ptr<Pair>), 0_usize)
-                    .upgrade()
-                    .deref())
-                .second
-            } == -1_i32)
+        ({ (*pairs.borrow())[0_usize].first } == -1_i32)
+            && ({ (*pairs.borrow())[0_usize].second } == -1_i32)
     );
     assert!(
-        ({
-            (*elem!((pairs.as_pointer() as Ptr<Pair>), 1_usize)
-                .upgrade()
-                .deref())
-            .first
-        } == 3)
-            && ({
-                (*elem!((pairs.as_pointer() as Ptr<Pair>), 1_usize)
-                    .upgrade()
-                    .deref())
-                .second
-            } == 0)
+        ({ (*pairs.borrow())[1_usize].first } == 3) && ({ (*pairs.borrow())[1_usize].second } == 0)
     );
     assert!(
-        ({
-            (*elem!((pairs.as_pointer() as Ptr<Pair>), 2_usize)
-                .upgrade()
-                .deref())
-            .first
-        } == 4)
-            && ({
-                (*elem!((pairs.as_pointer() as Ptr<Pair>), 2_usize)
-                    .upgrade()
-                    .deref())
-                .second
-            } == 10)
+        ({ (*pairs.borrow())[2_usize].first } == 4)
+            && ({ (*pairs.borrow())[2_usize].second } == 10)
     );
     let queue: Value<Vec<Pair>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_deque_8((queue.as_pointer())) });
@@ -381,8 +329,8 @@ fn main_0() -> i32 {
     let values: Value<Vec<i64>> = Rc::new(RefCell::new(Vec::new()));
     ({ emplace_scalar_9((values.as_pointer()), 7) });
     assert!(((*values.borrow()).len() == 2_usize));
-    assert!(((elem!((values.as_pointer() as Ptr<i64>), 0_usize).read()) == 0_i64));
-    assert!(((elem!((values.as_pointer() as Ptr<i64>), 1_usize).read()) == 7_i64));
+    assert!(({ (*values.borrow())[0_usize] } == 0_i64));
+    assert!(({ (*values.borrow())[1_usize] } == 7_i64));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

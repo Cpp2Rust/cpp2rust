@@ -18,7 +18,15 @@ pub struct Pair {
     pub first: i32,
     pub second: i32,
 }
-pub unsafe fn sum_2(mut arr: *const i32, mut n: i32) -> i32 {
+pub unsafe fn total_2(v: *const Vec<i32>) -> i32 {
+    let mut s: i32 = 0;
+    'loop_: for x in 0..((*v).len()) {
+        let mut x = (&(*v))[x].clone();
+        s += x;
+    }
+    return s;
+}
+pub unsafe fn sum_3(mut arr: *const i32, mut n: i32) -> i32 {
     let mut s: i32 = 0;
     let mut i: i32 = 0;
     'loop_: while ((i) < (n)) {
@@ -27,7 +35,7 @@ pub unsafe fn sum_2(mut arr: *const i32, mut n: i32) -> i32 {
     }
     return s;
 }
-pub unsafe fn countdown_3(mut n: i32, mut step: Option<i32>) -> i32 {
+pub unsafe fn countdown_4(mut n: i32, mut step: Option<i32>) -> i32 {
     let mut step: i32 = step.unwrap_or(1);
     let mut steps: i32 = 0;
     'loop_: while ((n) > (0)) {
@@ -88,7 +96,7 @@ unsafe fn main_0() -> i32 {
     (unsafe { set_0((&mut elem[(1) as usize] as *mut i32), 6) });
     assert!(((elem[(1) as usize]) == (6)));
     let mut decayed: [i32; 3] = [1, 2, 3];
-    assert!(((unsafe { sum_2((decayed.as_mut_ptr()).cast_const(), 3,) }) == (6)));
+    assert!(((unsafe { sum_3((decayed.as_mut_ptr()).cast_const(), 3,) }) == (6)));
     let mut elem_ref: [i32; 2] = [1, 1];
     (unsafe { inc_1(&mut elem_ref[(0) as usize]) });
     assert!(((elem_ref[(0) as usize]) == (2)));
@@ -108,8 +116,8 @@ unsafe fn main_0() -> i32 {
     ];
     zeros[(15) as usize] = 1.5E+0;
     assert!(((zeros[(0) as usize]) == (0_f64)) && ((zeros[(15) as usize]) == (1.5E+0)));
-    assert!(((unsafe { countdown_3(10, None,) }) == (10)));
-    assert!(((unsafe { countdown_3(10, Some(3),) }) == (4)));
+    assert!(((unsafe { countdown_4(10, None,) }) == (10)));
+    assert!(((unsafe { countdown_4(10, Some(3),) }) == (4)));
     let mut init: i32 = 3;
     let mut pair: Pair = Pair {
         first: init,
@@ -121,6 +129,35 @@ unsafe fn main_0() -> i32 {
     })) as *mut Pair);
     assert!(((pair.second) == (4)) && (((*heap).first) == (3)));
     ::std::mem::drop(Box::from_raw(heap));
+    let mut vec_: Vec<i32> = vec![1; 3_usize as usize];
+    let mut four: i32 = 4;
+    {
+        let a0_clone = four.clone();
+        vec_.push(a0_clone)
+    };
+    vec_[(0_usize)] = ((vec_[(3_usize)]) + (1));
+    vec_[(1_usize)].postfix_inc();
+    assert!(
+        (((vec_.len()) == (4_usize)) && ((vec_[(0_usize)]) == (5))) && ((vec_[(1_usize)]) == (2))
+    );
+    let mut high: i32 = 3;
+    let mut low: i32 = {
+        let mut __tmp_1: i32 = 2;
+        (*if *&mut high <= *&mut __tmp_1 {
+            (&mut high) as *const _
+        } else {
+            (&mut __tmp_1) as *const _
+        })
+    };
+    assert!(((low) == (2)));
+    let mut by_ref: Vec<i32> = vec![3; 2_usize as usize];
+    assert!(((unsafe { total_2(&by_ref,) }) == (6)));
+    let mut elem_ptr: Vec<i32> = vec![0; 2_usize as usize];
+    (unsafe { set_0((&mut elem_ptr[(1_usize)] as *mut i32), 7) });
+    assert!(((elem_ptr[(1_usize)]) == (7)));
+    let mut data: Vec<i32> = vec![0; 2_usize as usize];
+    (unsafe { set_0(data.as_mut_ptr(), 8) });
+    assert!(((data[(0_usize)]) == (8)));
     let mut square: Square = <Square>::default();
     let mut shape: *mut dyn Shape = (&mut square as *mut Square);
     assert!(((unsafe { (*shape).scale(3,) }) == (6)));

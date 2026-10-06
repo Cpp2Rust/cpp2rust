@@ -28,7 +28,7 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
         (*v2.borrow_mut()).push(__a1)
     };
     x = (elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read());
-    elem!((v2.as_pointer() as Ptr<i32>), 0_usize).write(1);
+    (*v2.borrow_mut())[0_usize] = 1;
     elem!(
         ((if true {
             v3.as_pointer()
@@ -45,11 +45,11 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 1_usize).read()) == 5));
     assert!(((elem!((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>), 2_usize).read()) == 6));
     assert!((((Ptr::<Vec<i32>>::decay(&(v)) as Ptr<i32>).to_last().read()) == 20));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 0_usize).read()) == 4));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 1_usize).read()) == 5));
-    assert!(((elem!((v2.as_pointer() as Ptr<i32>), 2_usize).read()) == 6));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 0_usize).read()) == 7));
-    assert!(((elem!((v3.as_pointer() as Ptr<i32>), 1_usize).read()) == 13));
+    assert!(({ (*v2.borrow())[0_usize] } == 4));
+    assert!(({ (*v2.borrow())[1_usize] } == 5));
+    assert!(({ (*v2.borrow())[2_usize] } == 6));
+    assert!(({ (*v3.borrow())[0_usize] } == 7));
+    assert!(({ (*v3.borrow())[1_usize] } == 13));
     {
         let __a1 = 20;
         v.with_mut(|__v: &mut Vec<i32>| __v.push(__a1))
@@ -61,7 +61,7 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let v: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
-    let v2: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut v2: Vec<i32> = Vec::new();
     {
         let __a1 = 4;
         (*v.borrow_mut()).push(__a1)
@@ -76,13 +76,13 @@ fn main_0() -> i32 {
     };
     {
         let __a1 = 8;
-        (*v2.borrow_mut()).push(__a1)
+        v2.push(__a1)
     };
     {
         let __a1 = 9;
-        (*v2.borrow_mut()).push(__a1)
+        v2.push(__a1)
     };
-    ({ fn_0(v.as_pointer(), (*v2.borrow()).clone()) });
+    ({ fn_0(v.as_pointer(), v2.clone()) });
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

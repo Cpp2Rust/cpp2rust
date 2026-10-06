@@ -5,20 +5,41 @@
 
 #include <clang/AST/RecursiveASTVisitor.h>
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
 
 #include "converter/converter_lib.h"
 #include "converter/mapper.h"
+#include "converter/rules/registry.h"
 
 namespace cpp2rust {
 namespace {
+// Whether type is translated to a Vec whose elements are not in Values:
+// std::vector and std::string of scalars or user-defined structs.
+bool IsFlatVec(clang::QualType type) {
+  auto *record =
+      clang::dyn_cast_or_null<clang::ClassTemplateSpecializationDecl>(
+          type->getAsCXXRecordDecl());
+  if (!record || !record->isInStdNamespace() ||
+      (record->getName() != "vector" && record->getName() != "basic_string")) {
+    return false;
+  }
+  auto element = record->getTemplateArgs()[0].getAsType();
+  return element->isScalarType() ||
+         (element->isStructureOrClassType() &&
+          IsUserDefinedDecl(element->getAsRecordDecl()));
+}
+
 // Whether decl may be stored without a Value, if its address is not taken:
-// scalars, arrays of non-arrays, user-defined structs and unique_ptrs, unless
-// they have a destructor, which is called with a pointer to them.
+// scalars, arrays of non-arrays, user-defined structs, unique_ptrs and
+// vectors, unless they have a destructor, which is called with a pointer to
+// them.
 bool CanUnbox(const clang::VarDecl *decl) {
   auto type = decl->getType();
-  if (type->isConstantArrayType()) {
+  if (IsFlatVec(type)) {
+    // Vectors are flat Vecs.
+  } else if (type->isConstantArrayType()) {
     if (type->getAsArrayTypeUnsafe()->getElementType()->isArrayType()) {
       return false;
     }
@@ -72,8 +93,9 @@ bool IsTrivialAssignment(clang::CXXOperatorCallExpr *expr) {
 class AddressTakenVisitor
     : public clang::RecursiveASTVisitor<AddressTakenVisitor> {
 public:
-  explicit AddressTakenVisitor(std::unordered_set<const clang::VarDecl *> &vars)
-      : address_taken_(vars) {}
+  AddressTakenVisitor(clang::ASTContext &ctx,
+                      std::unordered_set<const clang::VarDecl *> &vars)
+      : ctx_(ctx), address_taken_(vars) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
 
@@ -110,12 +132,18 @@ public:
     if (auto *source = GetTrivialCopySource(expr)) {
       AddValueUse(source);
     }
+    AddRuleArgs(expr, expr->getArgs(), expr->getNumArgs());
+    return true;
+  }
+
+  bool VisitCallExpr(clang::CallExpr *expr) {
+    AddRuleArgs(expr, expr->getArgs(), expr->getNumArgs());
     return true;
   }
 
   bool VisitCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
     if (IsTrivialAssignment(expr)) {
-      AddValueUse(expr->getArg(0));
+      AddValueUse(expr->getArg(0), /*write=*/true);
       AddValueUse(IgnoreNoOpCasts(expr->getArg(1)));
     }
     // Dereferencing a unique_ptr reads the pointer it holds; the object it
@@ -136,14 +164,14 @@ public:
 
   bool VisitBinaryOperator(clang::BinaryOperator *expr) {
     if (expr->isAssignmentOp()) {
-      AddValueUse(expr->getLHS());
+      AddValueUse(expr->getLHS(), /*write=*/true);
     }
     return true;
   }
 
   bool VisitUnaryOperator(clang::UnaryOperator *expr) {
     if (expr->isIncrementDecrementOp()) {
-      AddValueUse(expr->getSubExpr());
+      AddValueUse(expr->getSubExpr(), /*write=*/true);
     }
     return true;
   }
@@ -165,21 +193,48 @@ public:
   }
 
 private:
-  // An element of an array, or a field of a struct, is accessed without
-  // making a pointer to it.
-  void AddValueUse(clang::Expr *expr) {
+  // The arguments of a call translated by a rule are passed by value or
+  // borrowed, unless the rule takes a pointer to them.
+  void AddRuleArgs(clang::Expr *expr, clang::Expr **args, unsigned num_args) {
+    auto *rule = RuleRegistry::GetExprRule(ctx_, GetCalleeOrExpr(expr));
+    if (!rule) {
+      return;
+    }
+    // Variadic arguments are not considered.
+    auto all_args = BuildUnifiedArgs(expr, args, num_args);
+    for (unsigned i = 0; i < all_args.size() && i < rule->params.size(); ++i) {
+      if (!rule->params[i].is_pointer()) {
+        AddValueUse(IgnoreNoOpCasts(all_args[i]));
+      }
+    }
+  }
+
+  // An element of an array or vector, or a field of a struct, is accessed
+  // without making a pointer to it.
+  void AddValueUse(clang::Expr *expr, bool write = false) {
     expr = expr->IgnoreParens();
     if (auto *member = clang::dyn_cast<clang::MemberExpr>(expr)) {
       if (!member->isArrow() &&
           clang::isa<clang::FieldDecl>(member->getMemberDecl())) {
-        AddValueUse(member->getBase());
+        AddValueUse(member->getBase(), write);
       }
     } else if (auto *subscript =
                    clang::dyn_cast<clang::ArraySubscriptExpr>(expr)) {
       auto *cast =
           clang::dyn_cast<clang::ImplicitCastExpr>(subscript->getBase());
       if (cast && cast->getCastKind() == clang::CK_ArrayToPointerDecay) {
-        AddValueUse(cast->getSubExpr());
+        AddValueUse(cast->getSubExpr(), write);
+      }
+    } else if (auto *op = clang::dyn_cast<clang::CXXOperatorCallExpr>(expr)) {
+      // Rust doesn't let the index of an element that is written to read the
+      // vector, as the vector is borrowed mutably first.
+      auto *vec = IgnoreNoOpCasts(op->getArg(0));
+      if (op->getOperator() == clang::OO_Subscript &&
+          IsFlatVec(vec->getType()) &&
+          (!write || std::ranges::none_of(GetAllVars(vec), [&](auto *var) {
+            return GetAllVars(op->getArg(1)).contains(var);
+          }))) {
+        AddValueUse(vec, write);
       }
     } else if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
       value_uses_.insert(ref);
@@ -193,6 +248,7 @@ private:
     }
   }
 
+  clang::ASTContext &ctx_;
   std::unordered_set<const clang::VarDecl *> &address_taken_;
   // The references to variables that only access their value.
   std::unordered_set<const clang::DeclRefExpr *> value_uses_;
@@ -200,7 +256,7 @@ private:
 } // namespace
 
 BoxedVars::BoxedVars(clang::ASTContext &ctx) {
-  AddressTakenVisitor(address_taken_)
+  AddressTakenVisitor(ctx, address_taken_)
       .TraverseDecl(ctx.getTranslationUnitDecl());
 }
 

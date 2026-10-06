@@ -425,6 +425,8 @@ private:
   // Whether expr is an unboxed variable or a field of one, which is accessed
   // in place.
   bool IsUnboxedPlace(const clang::Expr *expr) const;
+  // Whether expr is a local variable or parameter stored in a Value.
+  bool IsValueLocal(const clang::Expr *expr) const;
   // Whether expr is a field of an unboxed variable, or of a field of one,
   // which is stored in place, even if it is a reference.
   bool IsFieldOfUnboxedPlace(const clang::MemberExpr *expr) const;

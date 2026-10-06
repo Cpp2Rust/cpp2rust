@@ -338,12 +338,12 @@ fn main_0() -> i32 {
     );
     let m2: Value<BTreeMap<i32, Value<bool>>> = Rc::new(RefCell::new(BTreeMap::new()));
     assert!(((*m2.borrow()).len() == 0_usize));
-    let indexes: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
+    let mut indexes: Vec<i32> = Vec::new();
     let mut i: u32 = 60_u32;
     'loop_: while (i > 30_u32) {
         {
             let __a1 = (i as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            indexes.push(__a1)
         };
         i.prefix_dec();
     }
@@ -351,7 +351,7 @@ fn main_0() -> i32 {
     'loop_: while (i > 60_u32) {
         {
             let __a1 = (i as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            indexes.push(__a1)
         };
         i.prefix_dec();
     }
@@ -359,23 +359,23 @@ fn main_0() -> i32 {
     'loop_: while (i > 0_u32) {
         {
             let __a1 = (i as i32);
-            (*indexes.borrow_mut()).push(__a1)
+            indexes.push(__a1)
         };
         i.prefix_dec();
     }
     let mut i: u32 = 0_u32;
-    'loop_: while ((i as usize) < (*indexes.borrow()).len()) {
+    'loop_: while ((i as usize) < indexes.len()) {
         let __rhs = ((i).wrapping_rem(2_u32) != 0);
         (m2.as_pointer() as Ptr<BTreeMap<i32, Value<bool>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<bool>>| {
-                __v.entry((elem!((indexes.as_pointer() as Ptr<i32>), (i as usize)).read()))
+                __v.entry(indexes[(i as usize)])
                     .or_insert_with(|| Rc::new(RefCell::new(<bool>::default())))
                     .as_pointer()
             })
             .write(__rhs);
         i.prefix_inc();
     }
-    assert!(((*m2.borrow()).len() == (*indexes.borrow()).len()));
+    assert!(((*m2.borrow()).len() == indexes.len()));
     let mut last: i32 = -1_i32;
     'loop_: for pair in RefcountMapIter::begin(m2.as_pointer()) {
         assert!(({ (*pair.first().borrow()) } > { last }));

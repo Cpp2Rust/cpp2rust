@@ -16,7 +16,7 @@ fn main_0() -> i32 {
         __bytes.push(0);
         __bytes
     }));
-    elem!((arr.as_pointer() as Ptr<i8>), 1_usize).write(('b' as i8));
+    (*arr.borrow_mut())[1_usize] = ('b' as i8);
     let mut p: Ptr<i8> = (arr.as_pointer() as Ptr<i8>).offset((1) as isize);
     assert!((((p.read()) as i32) == (('b' as i8) as i32)));
     assert!(

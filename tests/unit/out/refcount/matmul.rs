@@ -11,20 +11,15 @@ pub fn matalloc_0(
     mut p: i32,
     mut e: i32,
 ) -> Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> {
-    let m: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(n as usize))
-                .map(|_| <Option<Value<Box<[i32]>>>>::default())
-                .collect::<Box<[_]>>(),
-        )))));
+    let mut m: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = Some(Rc::new(RefCell::new(
+        (0..(n as usize))
+            .map(|_| <Option<Value<Box<[i32]>>>>::default())
+            .collect::<Box<[_]>>(),
+    )));
     let mut i: i32 = 0;
     'loop_: while (i < n) {
-        (((*m.borrow())
-            .as_ref()
-            .unwrap()
-            .as_pointer()
-            .offset((i as usize)))
-        .clone() as Ptr<Option<Value<Box<[i32]>>>>)
+        ((m.as_ref().unwrap().as_pointer().offset((i as usize))).clone()
+            as Ptr<Option<Value<Box<[i32]>>>>)
             .write(
                 Some(Rc::new(RefCell::new(
                     (0..(p as usize))
@@ -35,7 +30,7 @@ pub fn matalloc_0(
             );
         let mut j: i32 = 0;
         'loop_: while (j < p) {
-            (*m.borrow()).as_ref().unwrap().borrow()[(i as usize) as usize]
+            m.as_ref().unwrap().borrow()[(i as usize) as usize]
                 .as_ref()
                 .unwrap()
                 .borrow_mut()[(j as usize) as usize] = e;
@@ -43,7 +38,7 @@ pub fn matalloc_0(
         }
         i.prefix_inc();
     }
-    return (*m.borrow_mut()).take();
+    return m.take();
 }
 pub fn matmul_1(
     mut m1: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>,
@@ -53,8 +48,7 @@ pub fn matmul_1(
     mut n2: i32,
     mut p2: i32,
 ) -> Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> {
-    let m3: Value<Option<Value<Box<[Option<Value<Box<[i32]>>>]>>>> =
-        Rc::new(RefCell::new(({ matalloc_0(n1, p2, 0) })));
+    let mut m3: Option<Value<Box<[Option<Value<Box<[i32]>>>]>>> = ({ matalloc_0(n1, p2, 0) });
     let mut i: i32 = 0;
     'loop_: while (i < n1) {
         let mut j: i32 = 0;
@@ -72,7 +66,7 @@ pub fn matmul_1(
                         .borrow()[(j as usize) as usize]);
                 k.prefix_inc();
             }
-            (*m3.borrow()).as_ref().unwrap().borrow()[(i as usize) as usize]
+            m3.as_ref().unwrap().borrow()[(i as usize) as usize]
                 .as_ref()
                 .unwrap()
                 .borrow_mut()[(j as usize) as usize] = sum;
@@ -80,7 +74,7 @@ pub fn matmul_1(
         }
         i.prefix_inc();
     }
-    return (*m3.borrow_mut()).take();
+    return m3.take();
 }
 pub fn main() {
     __cpp2rust_init_globals();

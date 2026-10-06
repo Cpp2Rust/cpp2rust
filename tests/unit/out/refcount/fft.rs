@@ -36,19 +36,18 @@ pub fn Neg_2(mut z1: Complex) -> Complex {
     };
 }
 pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<Box<[Complex]>>> {
-    let y: Value<Option<Value<Box<[Complex]>>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
-            (0..(N as usize))
-                .map(|_| <Complex>::default())
-                .collect::<Box<[_]>>(),
-        )))));
+    let mut y: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
+        (0..(N as usize))
+            .map(|_| <Complex>::default())
+            .collect::<Box<[_]>>(),
+    )));
     if (N == 1) {
         let __rhs = Complex {
             re: { (*a.upgrade().deref()).as_ref().unwrap().borrow()[(0_usize) as usize].re },
             img: { (*a.upgrade().deref()).as_ref().unwrap().borrow()[(0_usize) as usize].img },
         };
-        (*y.borrow()).as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
-        return (*y.borrow_mut()).take();
+        y.as_ref().unwrap().borrow_mut()[(0_usize) as usize] = __rhs;
+        return y.take();
     }
     let mut w: Option<Value<Box<[Complex]>>> = Some(Rc::new(RefCell::new(
         (0..(N as usize))
@@ -114,7 +113,7 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
             });
             Sum_1(_z1, _z2)
         });
-        (*y.borrow()).as_ref().unwrap().borrow_mut()[(k as usize) as usize] = Complex {
+        y.as_ref().unwrap().borrow_mut()[(k as usize) as usize] = Complex {
             re: yk.re,
             img: yk.img,
         };
@@ -133,13 +132,13 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
             });
             Sum_1(_z1, _z2)
         });
-        (*y.borrow()).as_ref().unwrap().borrow_mut()[((k + (N / 2)) as usize) as usize] = Complex {
+        y.as_ref().unwrap().borrow_mut()[((k + (N / 2)) as usize) as usize] = Complex {
             re: yk_n2.re,
             img: yk_n2.img,
         };
         k.postfix_inc();
     }
-    return (*y.borrow_mut()).take();
+    return y.take();
 }
 pub fn main() {
     __cpp2rust_init_globals();

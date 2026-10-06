@@ -55,16 +55,12 @@ fn main_0() -> i32 {
             }
         } > 0) as i32)
     );
-    let s: Value<Vec<i8>> = Rc::new(RefCell::new({
+    let mut s: Vec<i8> = {
         let mut __bytes = Ptr::<i8>::from_string_literal(b"\xfe!").to_c_bytes();
         __bytes.push(0);
         __bytes
-    }));
-    println!(
-        "{} {}",
-        ((elem!((s.as_pointer() as Ptr<i8>), 0_usize).read()) as i32),
-        ((elem!((s.as_pointer() as Ptr<i8>), 1_usize).read()) as i32)
-    );
+    };
+    println!("{} {}", (s[0_usize] as i32), (s[1_usize] as i32));
     let mut sum: i8 = (((c as i32) + (c as i32)) as i8);
     println!("{}", (sum as i32));
     return 0;

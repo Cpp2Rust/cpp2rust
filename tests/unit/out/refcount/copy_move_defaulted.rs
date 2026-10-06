@@ -125,16 +125,12 @@ pub struct Buffer {
     pub arr: Value<Box<[i32]>>,
 }
 impl Buffer {
-    pub fn new(n: i32) -> Self {
-        let n: Value<i32> = Rc::new(RefCell::new(n));
+    pub fn new(mut n: i32) -> Self {
         let __this: Value<Buffer> = Rc::new(RefCell::new(Self {
-            data: Rc::new(RefCell::new(vec![
-                (*n.borrow());
-                ((*n.borrow()) as usize) as usize
-            ])),
+            data: Rc::new(RefCell::new(vec![n; (n as usize) as usize])),
             rows: Rc::new(RefCell::new(Vec::new())),
-            n: (*n.borrow()),
-            arr: Rc::new(RefCell::new(Box::new([(*n.borrow()), ((*n.borrow()) + 1)]))),
+            n: n,
+            arr: Rc::new(RefCell::new(Box::new([n, (n + 1)]))),
         }));
         let this: Ptr<Buffer> = __this.as_pointer();
         (this.with(|__s| __s.rows.as_pointer()) as Ptr<Vec<Value<Vec<i32>>>>).with_mut(
@@ -309,29 +305,16 @@ fn main_0() -> i32 {
         ((l.v == 5) && (l.inner.x == 50))
             && ((elem!((l.arr.as_pointer() as Ptr::<i32>), 0).read()) == 5)
     );
-    let vec_: Value<Vec<Explicit>> = Rc::new(RefCell::new(Vec::new()));
+    let mut vec_: Vec<Explicit> = Vec::new();
     {
         let a0_clone = (*b.borrow()).clone();
-        (*vec_.borrow_mut()).push(a0_clone)
+        vec_.push(a0_clone)
     };
     {
         let __a1 = Explicit::new({ 9 });
-        (*vec_.borrow_mut()).push(__a1)
+        vec_.push(__a1)
     };
-    assert!(
-        ({
-            (*elem!((vec_.as_pointer() as Ptr<Explicit>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-            && ({
-                (*elem!((vec_.as_pointer() as Ptr<Explicit>), 1_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 9)
-    );
+    assert!(({ vec_[0_usize].v } == 1) && ({ vec_[1_usize].v } == 9));
     let m: Value<DefaultCopyUserMove> = Rc::new(RefCell::new(DefaultCopyUserMove::new({ 7 })));
     let m1: Value<DefaultCopyUserMove> = Rc::new(RefCell::new((*m.borrow()).clone()));
     let mut m2: DefaultCopyUserMove = DefaultCopyUserMove::move_from({ m.as_pointer() });
@@ -391,31 +374,9 @@ fn main_0() -> i32 {
         (*bufs.borrow_mut()).push(__init)
     };
     assert!(
-        (({
-            (*elem!((bufs.as_pointer() as Ptr<Buffer>), 1_usize)
-                .upgrade()
-                .deref())
-            .n
-        } == 3)
-            && ((*{
-                (*elem!((bufs.as_pointer() as Ptr<Buffer>), 1_usize)
-                    .upgrade()
-                    .deref())
-                .data
-                .clone()
-            }
-            .borrow())
-            .len()
-                == 3_usize))
-            && ((*{
-                (*elem!((bufs.as_pointer() as Ptr<Buffer>), 0_usize)
-                    .upgrade()
-                    .deref())
-                .data
-                .clone()
-            }
-            .borrow())
-            .is_empty())
+        (({ (*bufs.borrow())[1_usize].n } == 3)
+            && ((*{ (*bufs.borrow())[1_usize].data.clone() }.borrow()).len() == 3_usize))
+            && ((*{ (*bufs.borrow())[0_usize].data.clone() }.borrow()).is_empty())
     );
     let o1: Value<Owner> = Rc::new(RefCell::new(<Owner>::default()));
     {
