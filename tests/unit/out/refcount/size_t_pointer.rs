@@ -7,13 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
 pub fn out_param_0(out: Option<Ptr<usize>>) {
-    let mut out: Ptr<usize> = out.unwrap_or(Ptr::<usize>::null());
+    let mut out: Ptr<usize> = out.unwrap_or_else(|| Ptr::<usize>::null());
     if !(out).is_null() {
         out.write(4_usize);
     }
 }
 pub fn parse_1(mut v: i32, idx: Option<Ptr<usize>>) -> i32 {
-    let mut idx: Ptr<usize> = idx.unwrap_or(Ptr::<usize>::null());
+    let mut idx: Ptr<usize> = idx.unwrap_or_else(|| Ptr::<usize>::null());
     if !(idx).is_null() {
         idx.write(3_usize);
     }

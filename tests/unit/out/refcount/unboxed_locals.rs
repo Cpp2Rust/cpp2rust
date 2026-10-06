@@ -38,7 +38,7 @@ pub fn sum_3(mut arr: Ptr<i32>, mut n: i32) -> i32 {
     return s;
 }
 pub fn countdown_4(mut n: i32, step: Option<i32>) -> i32 {
-    let mut step: i32 = step.unwrap_or(1);
+    let mut step: i32 = step.unwrap_or_else(|| 1);
     let mut steps: i32 = 0;
     'loop_: while (n > 0) {
         n -= step;

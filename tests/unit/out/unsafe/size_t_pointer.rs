@@ -7,13 +7,13 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 pub unsafe fn out_param_0(mut out: Option<*mut usize>) {
-    let mut out: *mut usize = out.unwrap_or(std::ptr::null_mut());
+    let mut out: *mut usize = out.unwrap_or_else(|| unsafe { std::ptr::null_mut() });
     if !(out).is_null() {
         (*out) = 4_usize;
     }
 }
 pub unsafe fn parse_1(mut v: i32, mut idx: Option<*mut usize>) -> i32 {
-    let mut idx: *mut usize = idx.unwrap_or(std::ptr::null_mut());
+    let mut idx: *mut usize = idx.unwrap_or_else(|| unsafe { std::ptr::null_mut() });
     if !(idx).is_null() {
         (*idx) = 3_usize;
     }

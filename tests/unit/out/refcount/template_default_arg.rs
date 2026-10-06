@@ -53,15 +53,15 @@ impl NoDefault {
     }
 }
 pub fn used_0(x: Option<A>) -> i32 {
-    let mut x: A = x.unwrap_or(A::new_1());
+    let mut x: A = x.unwrap_or_else(|| A::new_1());
     return x.v;
 }
 pub fn used_1(x: Option<B>) -> i32 {
-    let mut x: B = x.unwrap_or(B::new());
+    let mut x: B = x.unwrap_or_else(|| B::new());
     return x.v;
 }
 pub fn scaled_2(mut x: A, n: Option<i32>) -> i32 {
-    let mut n: i32 = n.unwrap_or((4usize as i32));
+    let mut n: i32 = n.unwrap_or_else(|| (4usize as i32));
     return (x.v * n);
 }
 pub fn always_given_3(mut x: NoDefault) -> i32 {
