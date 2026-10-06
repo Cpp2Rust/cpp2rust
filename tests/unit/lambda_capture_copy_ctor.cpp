@@ -1,4 +1,3 @@
-// panic
 #include <assert.h>
 #include <utility>
 

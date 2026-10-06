@@ -155,9 +155,14 @@ unsafe fn main_0() -> i32 {
             },
             move_from {
                 d: Dropped::move_from({ &mut d },),
+            },
+            destroy = {
+                Dropped::destructor(&mut self.d);
             }
         );
+        let _dtor_m = ScopedDestructorUnsafe::new(&raw mut m, |__f| __f.destroy());
         let mut m2: FnPtr<fn()> = m.move_from();
+        let _dtor_m2 = ScopedDestructorUnsafe::new(&raw mut m2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (2)));
     {
@@ -171,9 +176,14 @@ unsafe fn main_0() -> i32 {
             },
             move_from {
                 d: Dropped::move_from({ &mut d },),
+            },
+            destroy = {
+                Dropped::destructor(&mut self.d);
             }
         );
+        let _dtor_k = ScopedDestructorUnsafe::new(&raw mut k, |__f| __f.destroy());
         let mut k2: FnPtr<fn()> = k.copy_from();
+        let _dtor_k2 = ScopedDestructorUnsafe::new(&raw mut k2, |__f| __f.destroy());
     }
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut drops_0)) == (4)));
     return 0;
