@@ -50,6 +50,14 @@ impl_fn_sig!();
 // through a different type.
 trait Adapted: Any {
     fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>));
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        None
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        None
+    }
 }
 
 impl<T: FnSig> Adapted for T {
@@ -60,13 +68,41 @@ impl<T: FnSig> Adapted for T {
     }
 }
 
-struct Closure<T: FnSig>(Box<dyn Fn(T::Args) -> T::Ret>);
+trait Lambda<T: FnSig> {
+    fn call(&self, args: T::Args) -> T::Ret;
+    fn copy_from(&self) -> Box<dyn Lambda<T>>;
+    fn move_from(&self) -> Box<dyn Lambda<T>>;
+}
+
+struct LambdaSafe<L, C> {
+    captures: L,
+    call: C,
+    copy_from: fn(&L) -> L,
+    move_from: fn(&L) -> L,
+}
+
+struct LambdaUnsafe<L, C> {
+    captures: UnsafeCell<L>,
+    call: C,
+    copy_from: fn(&mut L) -> L,
+    move_from: fn(&mut L) -> L,
+}
+
+struct Closure<T: FnSig>(Box<dyn Lambda<T>>);
 
 impl<T: FnSig> Adapted for Closure<T> {
     fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
         let converted_args = T::Args::from_list(&args);
-        let result = (self.0)(converted_args);
+        let result = self.0.call(converted_args);
         sink(result.to_repr());
+    }
+
+    fn copy_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(Rc::new(Closure::<T>(self.0.copy_from())))
+    }
+
+    fn move_from(&self) -> Option<Rc<dyn Adapted>> {
+        Some(Rc::new(Closure::<T>(self.0.move_from())))
     }
 }
 
@@ -120,7 +156,7 @@ impl<T: FnSig> FnPtr<T> {
         if let Some(original) = &self.original {
             let closure: &dyn Any = &**original;
             if let Some(closure) = closure.downcast_ref::<Closure<T>>() {
-                return (closure.0)(args);
+                return closure.0.call(args);
             }
             let mut result = None;
             original.call_adapted(args.to_list(), &mut |repr| {
@@ -167,6 +203,28 @@ impl<T: FnSig> FnPtr<T> {
         }
     }
 
+    pub fn copy_from(&self) -> Self {
+        FnPtr {
+            addr: self.addr,
+            current: self.current,
+            original: self
+                .original
+                .as_ref()
+                .map(|original| original.copy_from().unwrap_or_else(|| original.clone())),
+        }
+    }
+
+    pub fn move_from(&self) -> Self {
+        FnPtr {
+            addr: self.addr,
+            current: self.current,
+            original: self
+                .original
+                .as_ref()
+                .map(|original| original.move_from().unwrap_or_else(|| original.clone())),
+        }
+    }
+
     fn boxed_original(&self) -> Option<Rc<dyn Adapted>> {
         match &self.original {
             Some(original) => Some(original.clone()),
@@ -191,37 +249,95 @@ macro_rules! impl_fn_ptr_call {
                 self.call_args(($($a,)*))
             }
 
-            #[allow(non_snake_case)]
-            pub fn from_lambda<Lambda: 'static>(
-                lambda: Lambda,
-                call: fn(&Lambda $(, $a)*) -> R,
+            pub fn from_lambda<Captures: 'static>(
+                captures: Captures,
+                call: fn(&Captures $(, $a)*) -> R,
+                copy_from: fn(&Captures) -> Captures,
+                move_from: fn(&Captures) -> Captures,
             ) -> Self {
-                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
-                    Box::new(move |($($a,)*): ($($a,)*)| call(&lambda $(, $a)*)),
-                ));
+                let lambda = LambdaSafe { captures, call, copy_from, move_from };
                 FnPtr {
                     addr: call as usize,
                     current: None,
-                    original: Some(closure),
+                    original: Some(Rc::new(Closure::<fn($($a,)*) -> R>(Box::new(lambda)))),
                 }
             }
 
-            #[allow(non_snake_case)]
-            pub fn from_lambda_unsafe<Lambda: 'static>(
-                lambda: Lambda,
-                call: fn(&mut Lambda $(, $a)*) -> R,
+            pub fn from_lambda_unsafe<Captures: 'static>(
+                captures: Captures,
+                call: fn(&mut Captures $(, $a)*) -> R,
+                copy_from: fn(&mut Captures) -> Captures,
+                move_from: fn(&mut Captures) -> Captures,
             ) -> Self {
-                let lambda = UnsafeCell::new(lambda);
-                let closure: Rc<dyn Adapted> = Rc::new(Closure::<fn($($a,)*) -> R>(
-                    Box::new(move |($($a,)*): ($($a,)*)| {
-                        call(unsafe { &mut *lambda.get() } $(, $a)*)
-                    }),
-                ));
+                let lambda = LambdaUnsafe {
+                    captures: UnsafeCell::new(captures),
+                    call,
+                    copy_from,
+                    move_from,
+                };
                 FnPtr {
                     addr: call as usize,
                     current: None,
-                    original: Some(closure),
+                    original: Some(Rc::new(Closure::<fn($($a,)*) -> R>(Box::new(lambda)))),
                 }
+            }
+        }
+
+        impl<Captures: 'static, R: FnPtrArg $(, $a: FnPtrArg)*> Lambda<fn($($a,)*) -> R>
+            for LambdaSafe<Captures, fn(&Captures $(, $a)*) -> R>
+        {
+            #[allow(non_snake_case)]
+            fn call(&self, ($($a,)*): ($($a,)*)) -> R {
+                (self.call)(&self.captures $(, $a)*)
+            }
+
+            fn copy_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaSafe {
+                    captures: (self.copy_from)(&self.captures),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                })
+            }
+
+            fn move_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaSafe {
+                    captures: (self.move_from)(&self.captures),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                })
+            }
+        }
+
+        impl<Captures: 'static, R: FnPtrArg $(, $a: FnPtrArg)*> Lambda<fn($($a,)*) -> R>
+            for LambdaUnsafe<Captures, fn(&mut Captures $(, $a)*) -> R>
+        {
+            #[allow(non_snake_case)]
+            fn call(&self, ($($a,)*): ($($a,)*)) -> R {
+                (self.call)(unsafe { &mut *self.captures.get() } $(, $a)*)
+            }
+
+            fn copy_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaUnsafe {
+                    captures: UnsafeCell::new((self.copy_from)(unsafe {
+                        &mut *self.captures.get()
+                    })),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                })
+            }
+
+            fn move_from(&self) -> Box<dyn Lambda<fn($($a,)*) -> R>> {
+                Box::new(LambdaUnsafe {
+                    captures: UnsafeCell::new((self.move_from)(unsafe {
+                        &mut *self.captures.get()
+                    })),
+                    call: self.call,
+                    copy_from: self.copy_from,
+                    move_from: self.move_from,
+                })
             }
         }
         impl_fn_ptr_call!(@peel $($a)*);

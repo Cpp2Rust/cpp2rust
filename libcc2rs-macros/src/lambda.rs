@@ -6,11 +6,18 @@ use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 use quote::quote;
 use std::collections::HashSet;
 use syn::parse::{Parse, ParseStream};
-use syn::{Block, Error, ExprClosure, Pat, Result, Stmt, Token, parse_macro_input};
+use syn::punctuated::Punctuated;
+use syn::{
+    Block, Error, ExprClosure, FieldValue, Pat, Result, Stmt, Token, braced, parse_macro_input,
+};
+
+type CaptureInits = Punctuated<FieldValue, Token![,]>;
 
 struct Lambda {
     captures: Block,
     closure: ExprClosure,
+    copy_from: Option<CaptureInits>,
+    move_from: Option<CaptureInits>,
 }
 
 impl Parse for Lambda {
@@ -19,7 +26,31 @@ impl Parse for Lambda {
         input.parse::<Token![,]>()?;
         let closure = input.parse()?;
         input.parse::<Option<Token![,]>>()?;
-        Ok(Lambda { captures, closure })
+        let mut copy_from = None;
+        let mut move_from = None;
+        while !input.is_empty() {
+            let name: Ident = input.parse()?;
+            let inits;
+            braced!(inits in input);
+            let inits = inits.parse_terminated(FieldValue::parse, Token![,])?;
+            if name == "copy_from" {
+                copy_from = Some(inits);
+            } else if name == "move_from" {
+                move_from = Some(inits);
+            } else {
+                return Err(Error::new(
+                    name.span(),
+                    "expected `copy_from` or `move_from`",
+                ));
+            }
+            input.parse::<Option<Token![,]>>()?;
+        }
+        Ok(Lambda {
+            captures,
+            closure,
+            copy_from,
+            move_from,
+        })
     }
 }
 
@@ -115,6 +146,29 @@ fn rewrite_captures(
     Ok(out.into_iter().collect())
 }
 
+fn expand_constructor(
+    inits: &Option<CaptureInits>,
+    names: &HashSet<String>,
+    is_unsafe: bool,
+) -> Result<proc_macro2::TokenStream> {
+    let Some(inits) = inits else {
+        return Ok(quote! { unreachable!("the lambda has no such constructor") });
+    };
+    let mut fields = Vec::new();
+    for init in inits {
+        let member = &init.member;
+        let expr = &init.expr;
+        let expr = rewrite_captures(quote! { #expr }, names, false)?;
+        fields.push(quote! { #member: #expr });
+    }
+    let body = quote! { __Lambda { #(#fields,)* } };
+    Ok(if is_unsafe {
+        quote! { unsafe { #body } }
+    } else {
+        body
+    })
+}
+
 fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenStream> {
     let mut names = Vec::new();
     let mut types = Vec::new();
@@ -151,6 +205,8 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
     let body = &lambda.closure.body;
     let captured = names.iter().map(|name| name.to_string()).collect();
     let body = rewrite_captures(quote! { #body }, &captured, false)?;
+    let copy_from = expand_constructor(&lambda.copy_from, &captured, is_unsafe)?;
+    let move_from = expand_constructor(&lambda.move_from, &captured, is_unsafe)?;
     let (receiver, body, constructor) = if is_unsafe {
         (
             quote! { &mut self },
@@ -170,10 +226,20 @@ fn expand_lambda(lambda: Lambda, is_unsafe: bool) -> Result<proc_macro2::TokenSt
             fn call(#receiver #(, #params)*) #output {
                 #body
             }
+            #[allow(unused_unsafe)]
+            fn copy_from(#receiver) -> Self {
+                #copy_from
+            }
+            #[allow(unused_unsafe)]
+            fn move_from(#receiver) -> Self {
+                #move_from
+            }
         }
         ::libcc2rs::FnPtr::<fn(#(#param_types),*) #output>::#constructor(
             __Lambda { #(#names: #inits,)* },
             __Lambda::call,
+            __Lambda::copy_from,
+            __Lambda::move_from,
         )
     }})
 }
