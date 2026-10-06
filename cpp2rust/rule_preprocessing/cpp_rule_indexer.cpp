@@ -236,7 +236,7 @@ void AddRule(llvm::json::Object &rules, std::string key,
 }
 
 void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
-                   const fs::path &src_path, llvm::json::Object &rules) {
+                   llvm::json::Object &rules) {
   bool is_c = !ctx.getLangOpts().CPlusPlus;
   auto &sm = ctx.getSourceManager();
   for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
@@ -269,9 +269,7 @@ void IndexRuleFile(clang::ASTContext &ctx, const std::string &dir_name,
       std::exit(EXIT_FAILURE);
     }
     auto range = clang::tooling::getExtendedRange(*decl, clang::tok::semi, ctx);
-    auto text = std::format(
-        "#line {} \"{}\"\n{}\n", sm.getSpellingLineNumber(range.getBegin()),
-        src_path.string(), clang::tooling::getText(range, ctx).str());
+    auto text = clang::tooling::getText(range, ctx).str() + '\n';
     llvm::json::Object rule{{"text", WrapRule(dir_name, is_c, name, text)}};
     if (!is_c) {
       rule["namespace"] = "cpp2rust_rules_" + dir_name;
@@ -306,7 +304,7 @@ void Index(const fs::path &src_path, bool is_c, const std::string &dir_name,
     llvm::errs() << "ERROR: cannot parse " << src_path.string() << '\n';
     std::exit(EXIT_FAILURE);
   }
-  IndexRuleFile(ast->getASTContext(), dir_name, src_path, rules);
+  IndexRuleFile(ast->getASTContext(), dir_name, rules);
 }
 
 void WriteJson(const fs::path &path, llvm::json::Object object) {
