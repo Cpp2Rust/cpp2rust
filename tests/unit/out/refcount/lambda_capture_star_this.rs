@@ -46,6 +46,12 @@ impl SImpl for Ptr<S> {
                     field!(this_.as_pointer(), n).with_mut(|__v| *__v = *__v + 10)
                 };
                 return this_.as_pointer().with(|__s| __s.n);
+            },
+            copy_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+            },
+            move_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
             }
         )));
         let mut r: i32 = ({ (*f.borrow()).call() }).clone();
@@ -58,6 +64,12 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 return ({ SImpl::twice(&this_.as_pointer()) });
+            },
+            copy_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+            },
+            move_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
             }
         )));
         field!((*self), n).write(99);
@@ -72,6 +84,14 @@ impl SImpl for Ptr<S> {
             },
             || -> i32 {
                 return (this_.as_pointer().with(|__s| __s.n) + (*k.borrow()));
+            },
+            copy_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+                k: Rc::new(RefCell::new((*k.borrow()))),
+            },
+            move_from {
+                this_: Rc::new(RefCell::new((*this_.borrow()).clone())),
+                k: Rc::new(RefCell::new((*k.borrow()))),
             }
         )));
         field!((*self), n).write(0);

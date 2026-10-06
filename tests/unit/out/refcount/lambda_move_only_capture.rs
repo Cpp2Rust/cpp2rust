@@ -38,6 +38,9 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*h.borrow()).p.clone() }.read());
+        },
+        move_from {
+            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
         }
     )));
     assert!(({ (*o.borrow()).p.clone() }).is_null());
@@ -56,6 +59,10 @@ fn main_0() -> i32 {
                 total.with_mut(|__v| *__v = *__v + __rhs)
             };
             { (*h.borrow()).p.clone() }.write(0);
+        },
+        move_from {
+            h: Rc::new(RefCell::new(Owner::move_from({ h.as_pointer() },))),
+            total: (total).clone(),
         }
     )));
     ({ (*consume.borrow()).call() });
@@ -85,6 +92,9 @@ impl OwnerImpl for Ptr<Owner> {
             },
             || -> i32 {
                 return ({ (*self_.borrow()).p.clone() }.read());
+            },
+            move_from {
+                self_: Rc::new(RefCell::new(Owner::move_from({ self_.as_pointer() },))),
             }
         );
     }

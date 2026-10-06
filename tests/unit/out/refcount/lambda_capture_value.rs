@@ -29,6 +29,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x * (*factor.borrow()));
+        },
+        copy_from {
+            factor: Rc::new(RefCell::new((*factor.borrow()))),
+        },
+        move_from {
+            factor: Rc::new(RefCell::new((*factor.borrow()))),
         }
     )));
     assert!((({ (*scale.borrow()).call(4,) }) == 12));
@@ -42,6 +48,12 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ((*p.borrow()).read());
+        },
+        copy_from {
+            p: Rc::new(RefCell::new((*p.borrow()).clone())),
+        },
+        move_from {
+            p: Rc::new(RefCell::new((*p.borrow()).clone())),
         }
     )));
     (*slot.borrow_mut()) = 8;
@@ -53,6 +65,12 @@ fn main_0() -> i32 {
         },
         || -> i32 {
             return ({ (*s.borrow()).x } + { (*s.borrow()).y });
+        },
+        copy_from {
+            s: Rc::new(RefCell::new((*s.borrow()).clone())),
+        },
+        move_from {
+            s: Rc::new(RefCell::new((*s.borrow()).clone())),
         }
     )));
     (*s.borrow_mut()).x = 50;
@@ -64,6 +82,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + (*y.borrow()));
+        },
+        copy_from {
+            y: Rc::new(RefCell::new((*y.borrow()))),
+        },
+        move_from {
+            y: Rc::new(RefCell::new((*y.borrow()))),
         }
     )));
     assert!((({ (*shifted.borrow()).call(5,) }) == 16));
@@ -74,6 +98,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + 3);
+        },
+        copy_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
+        },
+        move_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
         }
     )));
     assert!((({ (*by_copy.borrow()).call(1,) }) == 4));
@@ -83,6 +113,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
+        },
+        copy_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
+        },
+        move_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
         }
     )));
     assert!((({ (*by_copy_used.borrow()).call(1,) }) == 4));
@@ -92,6 +128,12 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + ({ read_0(k.as_pointer()) }));
+        },
+        copy_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
+        },
+        move_from {
+            k: Rc::new(RefCell::new((*k.borrow()))),
         }
     )));
     assert!((({ (*implicit_used.borrow()).call(1,) }) == 4));
@@ -101,7 +143,9 @@ fn main_0() -> i32 {
         },
         |x: i32| -> i32 {
             return (x + 3);
-        }
+        },
+        copy_from { k: (k).clone() },
+        move_from { k: (k).clone() }
     )));
     assert!((({ (*by_ref.borrow()).call(1,) }) == 4));
     return 0;

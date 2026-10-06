@@ -9,7 +9,12 @@ use std::rc::Rc;
 pub unsafe fn f_0(mut bytes: Vec<i32>) -> usize {
     let mut buf: *mut Vec<i32> = (Box::leak(Box::new(bytes.clone())) as *mut Vec<i32>);
     let mut n: usize = bytes.len();
-    ::std::mem::drop(Box::from_raw(buf));
+    {
+        let __p = buf;
+        if !__p.is_null() {
+            ::std::mem::drop(Box::from_raw(__p))
+        }
+    };
     return n;
 }
 pub fn main() {
