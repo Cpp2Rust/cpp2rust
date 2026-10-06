@@ -17,7 +17,6 @@
 
 #include <cassert>
 #include <filesystem>
-#include <map>
 #include <ranges>
 #include <set>
 #include <string>
@@ -241,11 +240,7 @@ private:
   llvm::DenseSet<const void *> seen_;
 };
 
-const llvm::json::Object &LoadIndex(const std::filesystem::path &path) {
-  static std::map<std::filesystem::path, llvm::json::Object> indexes;
-  if (auto it = indexes.find(path); it != indexes.end()) {
-    return it->second;
-  }
+llvm::json::Object ReadIndex(const std::filesystem::path &path) {
   auto buf = llvm::MemoryBuffer::getFile(path.string());
   if (!buf) {
     llvm::errs() << "Missing " << path.string() << ", run cpp-rule-indexer\n";
@@ -262,14 +257,25 @@ const llvm::json::Object &LoadIndex(const std::filesystem::path &path) {
     llvm::errs() << "Rule index is not an object: " << path.string() << '\n';
     llvm::report_fatal_error("cannot parse the rule index");
   }
-  return indexes.emplace(path, std::move(*index)).first->second;
+  return std::move(*index);
 }
 
-std::string BuildRulesBuffer(const std::filesystem::path &index_dir,
-                             const std::unordered_set<std::string> &keys,
+const llvm::json::Object &CIndex() {
+  static const llvm::json::Object index =
+      ReadIndex(std::filesystem::path(RULES_INDEX_DIR) / "c.json");
+  return index;
+}
+
+const llvm::json::Object &CxxIndex() {
+  static const llvm::json::Object index =
+      ReadIndex(std::filesystem::path(RULES_INDEX_DIR) / "cpp.json");
+  return index;
+}
+
+std::string BuildRulesBuffer(const std::unordered_set<std::string> &keys,
                              bool is_cxx) {
   std::string out;
-  const auto &index = LoadIndex(index_dir / (is_cxx ? "cpp.json" : "c.json"));
+  const auto &index = is_cxx ? CxxIndex() : CIndex();
   auto common = index.getString("common");
   auto rules = index.getObject("rules");
   std::set<std::string> namespaces;
@@ -455,7 +461,7 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
   collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
   auto text =
-      BuildRulesBuffer(RULES_INDEX_DIR, keys, ctx.getLangOpts().CPlusPlus);
+      BuildRulesBuffer(keys, ctx.getLangOpts().CPlusPlus);
   log() << "rules loaded for this translation unit:\n" << text;
   auto rules_file = src_mgr.createFileID(
       llvm::MemoryBuffer::getMemBufferCopy(text, "<cpp2rust-rules>"),
