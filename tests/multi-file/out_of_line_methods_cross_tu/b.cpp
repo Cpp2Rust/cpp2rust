@@ -14,3 +14,5 @@ int S::add(int x) {
 Derived::Derived(int factor) : factor(factor) {}
 
 int Derived::apply(int x) { return factor * x; }
+
+int pair_sum(const struct Pair *p) { return p->first + p->second; }
