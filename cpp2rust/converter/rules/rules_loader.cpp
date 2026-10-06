@@ -161,7 +161,7 @@ private:
       }
       return AddType(desugared);
     }
-    if (type->isBuiltinType()) {
+    if (type->isBuiltinType() || type->isUndeducedType()) {
       return;
     }
     if (type->isPointerType() || type->isReferenceType()) {
