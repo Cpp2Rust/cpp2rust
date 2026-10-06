@@ -2309,16 +2309,16 @@ bool ConverterRefCount::VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
   }
 
   auto *ctor = expr->getConstructor();
-  if (IsRValueConvertingConstructor(ctor) ||
-      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
-    StrCat(ConvertLValue(expr->getArg(0)));
-    return false;
-  }
-
   if (IsLambdaCopyOrMoveConstructor(ctor)) {
     StrCat(ConvertRValue(expr->getArg(0)),
            std::format(".{}()", GetCopyOrMoveName(ctor)));
     SetFreshType(expr->getType());
+    return false;
+  }
+
+  if (IsRValueConvertingConstructor(ctor) ||
+      (ctor->isMoveConstructor() && !IsUserDefinedDecl(ctor->getParent()))) {
+    StrCat(ConvertLValue(expr->getArg(0)));
     return false;
   }
 
