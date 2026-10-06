@@ -336,6 +336,12 @@ std::string ConstructorKey(const std::string &class_key) {
 }
 
 std::string FunctionKey(const clang::FunctionDecl *decl) {
+  if (const clang::FunctionDecl *definition = nullptr;
+      decl->isDefined(definition) &&
+      !decl->getASTContext().getSourceManager().isInSystemHeader(
+          definition->getLocation())) {
+    return {};
+  }
   if (auto method = llvm::dyn_cast<clang::CXXMethodDecl>(decl)) {
     auto class_key = ClassKey(method->getParent());
     if (llvm::isa<clang::CXXConstructorDecl>(method)) {
