@@ -95,14 +95,7 @@ fn main_0() -> i32 {
             d.as_pointer(),
         )
     });
-    assert!(
-        ({
-            (*elem!((vec_.as_pointer() as Ptr<MoveOnly>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 8)
-    );
+    assert!(({ (*vec_.borrow())[0_usize].v } == 8));
     assert!(({ (*d.borrow()).v } == 0));
     let m: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));
     let m1: Value<ConstMoveAssign> = Rc::new(RefCell::new(ConstMoveAssign::new()));

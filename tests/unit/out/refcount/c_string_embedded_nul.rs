@@ -40,32 +40,31 @@ fn main_0() -> i32 {
             false => -1,
         }
     };
-    let s: Value<Vec<i8>> = Rc::new(RefCell::new({
+    let mut s: Vec<i8> = {
         let mut __bytes = (buf.as_pointer() as Ptr<i8>).to_c_bytes();
         __bytes.push(0);
         __bytes
-    }));
-    println!("{}", ((*s.borrow()).len() - 1));
+    };
+    println!("{}", (s.len() - 1));
     println!(
         "{} {}",
         (buf.as_pointer() as Ptr::<i8>)
             .to_c_string_iterator()
             .count(),
         (buf.as_pointer() as Ptr::<i8>).with_c_str(|__lookup| {
-            (*s.borrow())
-                .iter()
-                .take((*s.borrow()).len().saturating_sub(1))
+            s.iter()
+                .take(s.len().saturating_sub(1))
                 .rposition(|&x| __lookup.contains(&x))
                 .unwrap_or(usize::MAX)
         })
     );
     let mut lit: Ptr<i8> = Ptr::<i8>::from_string_literal(b"xy\0zw");
-    let t: Value<Vec<i8>> = Rc::new(RefCell::new({
+    let mut t: Vec<i8> = {
         let mut __bytes = lit.to_c_bytes();
         __bytes.push(0);
         __bytes
-    }));
-    println!("{}", ((*t.borrow()).len() - 1));
+    };
+    println!("{}", (t.len() - 1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

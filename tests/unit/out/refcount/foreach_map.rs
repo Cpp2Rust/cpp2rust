@@ -12,18 +12,18 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     let m: Value<BTreeMap<i32, Value<f64>>> = Rc::new(RefCell::new(BTreeMap::new()));
-    let i: Value<i32> = Rc::new(RefCell::new(0));
+    let mut i: i32 = 0;
     let mut k: i32 = 100;
-    'loop_: while ((*i.borrow()) < 100) {
+    'loop_: while (i < 100) {
         (m.as_pointer() as Ptr<BTreeMap<i32, Value<f64>>>)
             .with_mut(|__v: &mut BTreeMap<i32, Value<f64>>| {
-                __v.entry((*i.borrow()))
+                __v.entry(i)
                     .or_insert_with(|| Rc::new(RefCell::new(<f64>::default())))
                     .as_pointer()
             })
             .write(((k as f64) / 2.0E+0));
         {
-            (*i.borrow_mut()).prefix_inc();
+            i.prefix_inc();
             k.prefix_dec()
         };
     }

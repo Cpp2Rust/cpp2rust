@@ -74,56 +74,53 @@ impl MinHeap {
     }
 }
 pub fn AllocMinHeap_1(mut capacity: i32) -> Option<Value<MinHeap>> {
-    let minHeap: Value<Option<Value<MinHeap>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
-            let __tmp_0: Value<MinHeap> = Rc::new(RefCell::new(MinHeap {
-                size: 0,
-                capacity: capacity,
-                arr: Some(Rc::new(RefCell::new(
-                    (0..(capacity as usize))
-                        .map(|_| <Ptr<MinHeapNode>>::default())
-                        .collect::<Box<[_]>>(),
-                ))),
-                next: 0,
-                alloc: Some(Rc::new(RefCell::new(
-                    (0..10000_usize)
-                        .map(|_| <MinHeapNode>::default())
-                        .collect::<Box<[_]>>(),
-                ))),
-            }));
-            MinHeap::move_from({ __tmp_0.as_pointer() })
-        })))));
-    return (*minHeap.borrow_mut()).take();
+    let mut minHeap: Option<Value<MinHeap>> = Some(Rc::new(RefCell::new({
+        let __tmp_0: Value<MinHeap> = Rc::new(RefCell::new(MinHeap {
+            size: 0,
+            capacity: capacity,
+            arr: Some(Rc::new(RefCell::new(
+                (0..(capacity as usize))
+                    .map(|_| <Ptr<MinHeapNode>>::default())
+                    .collect::<Box<[_]>>(),
+            ))),
+            next: 0,
+            alloc: Some(Rc::new(RefCell::new(
+                (0..10000_usize)
+                    .map(|_| <MinHeapNode>::default())
+                    .collect::<Box<[_]>>(),
+            ))),
+        }));
+        MinHeap::move_from({ __tmp_0.as_pointer() })
+    })));
+    return minHeap.take();
 }
 pub fn Huffman_2(
     data: Ptr<Option<Value<Box<[i8]>>>>,
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     mut size: i32,
 ) -> Option<Value<MinHeap>> {
-    let minHeap: Value<Option<Value<MinHeap>>> = Rc::new(RefCell::new(({ AllocMinHeap_1(size) })));
+    let mut minHeap: Option<Value<MinHeap>> = ({ AllocMinHeap_1(size) });
     ({
         let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
         let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
         let _n: i32 = size;
-        MinHeapImpl::Build(&((*minHeap.borrow()).as_pointer()), _data, _freq, _n)
+        MinHeapImpl::Build(&(minHeap.as_pointer()), _data, _freq, _n)
     });
-    'loop_: while ({ (*(*minHeap.borrow()).as_ref().unwrap().borrow()).size } != 1) {
-        let mut left: Ptr<MinHeapNode> =
-            ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) });
-        let mut right: Ptr<MinHeapNode> =
-            ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) });
+    'loop_: while ({ (*minHeap.as_ref().unwrap().borrow()).size } != 1) {
+        let mut left: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
+        let mut right: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
         let mut top: Ptr<MinHeapNode> = ({
             MinHeapImpl::Alloc(
-                &((*minHeap.borrow()).as_pointer()),
+                &(minHeap.as_pointer()),
                 ('$' as i8),
                 ({ left.with(|__s| __s.freq) } + { right.with(|__s| __s.freq) }),
             )
         });
         field!(top, left).write((left).clone());
         field!(top, right).write((right).clone());
-        ({ MinHeapImpl::Insert(&((*minHeap.borrow()).as_pointer()), (top).clone()) });
+        ({ MinHeapImpl::Insert(&(minHeap.as_pointer()), (top).clone()) });
     }
-    return (*minHeap.borrow_mut()).take();
+    return minHeap.take();
 }
 pub fn CollectCode_3(
     arr: Ptr<Option<Value<Box<[i32]>>>>,
@@ -194,16 +191,13 @@ pub fn HuffmanCodes_5(
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     mut size: i32,
 ) -> Option<Value<Box<[i32]>>> {
-    let minHeap: Value<Option<Value<MinHeap>>> = Rc::new(RefCell::new(
-        ({
-            let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
-            let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
-            let _size: i32 = size;
-            Huffman_2(_data, _freq, _size)
-        }),
-    ));
-    let mut root: Ptr<MinHeapNode> =
-        ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) });
+    let mut minHeap: Option<Value<MinHeap>> = ({
+        let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
+        let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
+        let _size: i32 = size;
+        Huffman_2(_data, _freq, _size)
+    });
+    let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
         (0..100_usize)
             .map(|_| <i32>::default())
@@ -261,16 +255,15 @@ fn main_0() -> i32 {
         (*freq.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
         i.prefix_inc();
     }
-    let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
-        ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) }),
-    ));
+    let mut out: Option<Value<Box<[i32]>>> =
+        ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) });
     assert!(
-        ((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
+        (((((out.as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
+            && (out.as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
+            && (out.as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
+            && (out.as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
+            && (out.as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
+            && (out.as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
     );
     return 0;
 }

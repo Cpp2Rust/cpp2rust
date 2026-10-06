@@ -208,6 +208,14 @@ bool ConverterRefCount::IsUnboxedPlace(const clang::Expr *expr) const {
   return ref && IsUnboxedVar(ref->getDecl());
 }
 
+bool ConverterRefCount::IsValueLocal(const clang::Expr *expr) const {
+  auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts());
+  auto *var = ref ? clang::dyn_cast<clang::VarDecl>(ref->getDecl()) : nullptr;
+  // Variables captured by reference are accessed through pointers.
+  return var && !IsGlobalVar(var) && !IsUnboxedVar(var) &&
+         !GetDeclRefType(curr_function_, ref, var)->isReferenceType();
+}
+
 bool ConverterRefCount::IsFieldOfUnboxedPlace(
     const clang::MemberExpr *expr) const {
   return !expr->isArrow() && !expr->getBase()->getType()->isUnionType() &&
@@ -2765,6 +2773,37 @@ bool ConverterRefCount::ConvertCXXOperatorCallExpr(
     bool is_inner_boxed =
         IsBoxedType(ctx_, expr->getType().getNonReferenceType()) &&
         IsBoxedType(ctx_, expr->getArg(0)->getType().getNonReferenceType());
+
+    // An element of an unboxed container is accessed directly, as is one of
+    // a container stored in a Value by borrowing the container, unless
+    // computing the index may access the container too, as it stays borrowed
+    // meanwhile.
+    auto *idx = expr->getArg(1);
+    bool is_unboxed =
+        IsUnboxedPlace(expr->getArg(0)) &&
+        clang::isa<clang::DeclRefExpr>(expr->getArg(0)->IgnoreParenImpCasts());
+    if ((isLValue() || isRValue()) && !is_inner_boxed &&
+        (is_unboxed ||
+         (IsValueLocal(expr->getArg(0)) && !idx->HasSideEffects(ctx_) &&
+          std::ranges::none_of(
+              GetAllVars(idx), [&](const clang::ValueDecl *var) {
+                return var->getType()->isPointerType() ||
+                       var->getType()->isReferenceType() ||
+                       GetAllVars(expr->getArg(0)).contains(var);
+              })))) {
+      // The index is a size_t, i.e., a usize.
+      auto str =
+          std::format("{}[{}]", ToString(expr->getArg(0)), ConvertRValue(idx));
+      // A copied element is read in a block, which ends the borrow.
+      if (!is_unboxed && isRValue() && TypeIsCopyable(expr->getType())) {
+        StrCat(std::format("{{ {} }}", str));
+        SetFreshType(expr->getType());
+      } else {
+        StrCat(str);
+        SetValueFreshness(expr->getType());
+      }
+      break;
+    }
 
     if (isLValue()) {
       PushConversionKind push_ck(*this, ConversionKind::Unboxed);

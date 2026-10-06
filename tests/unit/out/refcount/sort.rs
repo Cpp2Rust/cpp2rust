@@ -56,12 +56,9 @@ fn main_0() -> i32 {
     let mut i: u32 = 0_u32;
     'loop_: while ((i as usize) < ((*v.borrow()).len()).wrapping_sub(1_usize)) {
         assert!(
-            ((elem!((v.as_pointer() as Ptr<i32>), (i as usize)).read())
-                < (elem!(
-                    (v.as_pointer() as Ptr<i32>),
-                    (((i).wrapping_add(1_u32)) as usize)
-                )
-                .read()))
+            ({ (*v.borrow())[(i as usize)] } < {
+                (*v.borrow())[(((i).wrapping_add(1_u32)) as usize)]
+            })
         );
         i.prefix_inc();
     }

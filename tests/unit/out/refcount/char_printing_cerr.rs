@@ -11,7 +11,7 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let vec_: Value<Vec<u8>> = Rc::new(RefCell::new(vec![195_u8, 167_u8]));
+    let mut vec_: Vec<u8> = vec![195_u8, 167_u8];
     let mut i: i32 = 27;
     let str: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"bar.").to_c_bytes();
@@ -21,8 +21,8 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "{:} a", i,);
     libcc2rs::cerr().write_all(
         &([
-            (&[(elem!((vec_.as_pointer() as Ptr<u8>), 0_usize).read()) as u8] as &[u8]),
-            (&[(elem!((vec_.as_pointer() as Ptr<u8>), 1_usize).read()) as u8] as &[u8]),
+            (&[vec_[0_usize] as u8] as &[u8]),
+            (&[vec_[1_usize] as u8] as &[u8]),
             (&[('o' as i8) as u8] as &[u8]),
             (&(*str.borrow())
                 .iter()
@@ -46,9 +46,9 @@ fn main_0() -> i32 {
     write!(libcc2rs::cerr(), "Hello, World!\n",);
     libcc2rs::cerr().write_all(
         &([
-            (&[(elem!((vec_.as_pointer() as Ptr<u8>), 0_usize).read()) as u8] as &[u8]),
+            (&[vec_[0_usize] as u8] as &[u8]),
             (&[('\n' as i8) as u8] as &[u8]),
-            (&[(elem!((vec_.as_pointer() as Ptr<u8>), 1_usize).read()) as u8] as &[u8]),
+            (&[vec_[1_usize] as u8] as &[u8]),
             (&[('\n' as i8) as u8] as &[u8]),
         ]
         .concat()),

@@ -15,10 +15,9 @@ pub struct S {
     #[byte_size(24)]
     pub v: Value<Vec<i32>>,
 }
-pub fn add_0(mut v: Ptr<Vec<i32>>, k: i32) {
-    let k: Value<i32> = Rc::new(RefCell::new(k));
+pub fn add_0(mut v: Ptr<Vec<i32>>, mut k: i32) {
     {
-        let a0_clone = (*k.borrow()).clone();
+        let a0_clone = k.clone();
         v.with_mut(|__v: &mut Vec<i32>| __v.push(a0_clone))
     };
 }

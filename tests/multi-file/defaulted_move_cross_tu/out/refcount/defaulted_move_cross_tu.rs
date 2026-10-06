@@ -17,14 +17,10 @@ pub struct S {
     pub n: Value<Box<[i32]>>,
 }
 impl S {
-    pub fn new(x: i32) -> Self {
-        let x: Value<i32> = Rc::new(RefCell::new(x));
+    pub fn new(mut x: i32) -> Self {
         Self {
-            v: Rc::new(RefCell::new(vec![
-                (*x.borrow());
-                ((*x.borrow()) as usize) as usize
-            ])),
-            n: Rc::new(RefCell::new(Box::new([(*x.borrow()), ((*x.borrow()) + 1)]))),
+            v: Rc::new(RefCell::new(vec![x; (x as usize) as usize])),
+            n: Rc::new(RefCell::new(Box::new([x, (x + 1)]))),
         }
     }
     pub fn move_from(_a0: Ptr<S>) -> Self {

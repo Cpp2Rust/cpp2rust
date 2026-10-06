@@ -22,17 +22,11 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Option<Value<Point>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Point {
-            x: 3,
-            y: 4,
-        })))));
-    (*(*p.borrow()).as_ref().unwrap().borrow_mut()).x += 10;
-    let __rhs = ({ (*(*p.borrow()).as_ref().unwrap().borrow()).x } + {
-        (*(*p.borrow()).as_ref().unwrap().borrow()).y
-    });
-    (*(*p.borrow()).as_ref().unwrap().borrow_mut()).y = __rhs;
-    let mut s: i32 = ({ sum_0((*(*p.borrow()).as_ref().unwrap().borrow()).clone()) });
+    let mut p: Option<Value<Point>> = Some(Rc::new(RefCell::new(Point { x: 3, y: 4 })));
+    (*p.as_ref().unwrap().borrow_mut()).x += 10;
+    let __rhs = ({ (*p.as_ref().unwrap().borrow()).x } + { (*p.as_ref().unwrap().borrow()).y });
+    (*p.as_ref().unwrap().borrow_mut()).y = __rhs;
+    let mut s: i32 = ({ sum_0((*p.as_ref().unwrap().borrow()).clone()) });
     assert!((s == 30));
     return 0;
 }

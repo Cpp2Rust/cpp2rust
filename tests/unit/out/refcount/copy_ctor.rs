@@ -165,19 +165,12 @@ fn main_0() -> i32 {
             } == 10)
     );
     assert!((copies_0.with(|rc| *rc.borrow()) == 9));
-    let vec_: Value<Vec<Counted>> = Rc::new(RefCell::new(Vec::new()));
+    let mut vec_: Vec<Counted> = Vec::new();
     {
         let a0_clone = (*a.borrow()).clone();
-        (*vec_.borrow_mut()).push(a0_clone)
+        vec_.push(a0_clone)
     };
-    assert!(
-        ({
-            (*elem!((vec_.as_pointer() as Ptr<Counted>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-    );
+    assert!(({ vec_[0_usize].v } == 1));
     assert!((copies_0.with(|rc| *rc.borrow()) == 10));
     let i1: Value<Ignored> = Rc::new(RefCell::new(Ignored::new({ 1 })));
     let mut i2: Ignored = Ignored::copy_from({ i1.as_pointer() });

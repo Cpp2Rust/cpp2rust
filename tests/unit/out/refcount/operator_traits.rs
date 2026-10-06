@@ -162,28 +162,12 @@ fn main_0() -> i32 {
     let lts: Value<Vec<Lt>> = Rc::new(RefCell::new(vec![Lt { v: 3 }, Lt { v: 1 }, Lt { v: 2 }]));
     (lts.as_pointer() as Ptr<Lt>).sort((lts.as_pointer() as Ptr<Lt>).to_end().get_offset());
     assert!(
-        (({
-            (*elem!((lts.as_pointer() as Ptr<Lt>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-            && ({
-                (*elem!((lts.as_pointer() as Ptr<Lt>), 1_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 2))
-            && ({
-                (*elem!((lts.as_pointer() as Ptr<Lt>), 2_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 3)
+        (({ (*lts.borrow())[0_usize].v } == 1) && ({ (*lts.borrow())[1_usize].v } == 2))
+            && ({ (*lts.borrow())[2_usize].v } == 3)
     );
     let eqs: Value<Vec<Eq>> = Rc::new(RefCell::new(vec![Eq { v: 1 }, Eq { v: 2 }, Eq { v: 3 }]));
-    let two: Value<Eq> = Rc::new(RefCell::new(Eq { v: 2 }));
-    let nine: Value<Eq> = Rc::new(RefCell::new(Eq { v: 9 }));
+    let mut two: Eq = Eq { v: 2 };
+    let mut nine: Eq = Eq { v: 9 };
     assert!(
         ({
             ((eqs.as_pointer() as Ptr<Eq>)
@@ -194,7 +178,7 @@ fn main_0() -> i32 {
                         .enumerate()
                         .position(|(index_0, value_0)| {
                             index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                                && value_0.read() == (*two.borrow())
+                                && value_0.read() == two
                         })
                         .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
                         as isize,
@@ -211,7 +195,7 @@ fn main_0() -> i32 {
                 .enumerate()
                 .position(|(index_0, value_0)| {
                     index_0 < (eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize
-                        && value_0.read() == (*nine.borrow())
+                        && value_0.read() == nine
                 })
                 .unwrap_or((eqs.as_pointer() as Ptr<Eq>).to_end().get_offset() as usize)
                 as isize,
@@ -220,21 +204,8 @@ fn main_0() -> i32 {
     let cmps: Value<Vec<Cmp>> =
         Rc::new(RefCell::new(vec![Cmp { v: 3 }, Cmp { v: 1 }, Cmp { v: 2 }]));
     (cmps.as_pointer() as Ptr<Cmp>).sort((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset());
-    assert!(
-        ({
-            (*elem!((cmps.as_pointer() as Ptr<Cmp>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-            && ({
-                (*elem!((cmps.as_pointer() as Ptr<Cmp>), 2_usize)
-                    .upgrade()
-                    .deref())
-                .v
-            } == 3)
-    );
-    let three: Value<Cmp> = Rc::new(RefCell::new(Cmp { v: 3 }));
+    assert!(({ (*cmps.borrow())[0_usize].v } == 1) && ({ (*cmps.borrow())[2_usize].v } == 3));
+    let mut three: Cmp = Cmp { v: 3 };
     assert!(
         ({
             ((cmps.as_pointer() as Ptr<Cmp>)
@@ -245,7 +216,7 @@ fn main_0() -> i32 {
                         .enumerate()
                         .position(|(index_0, value_0)| {
                             index_0 < (cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize
-                                && value_0.read() == (*three.borrow())
+                                && value_0.read() == three
                         })
                         .unwrap_or((cmps.as_pointer() as Ptr<Cmp>).to_end().get_offset() as usize)
                         as isize,
@@ -256,15 +227,8 @@ fn main_0() -> i32 {
     );
     let frees: Value<Vec<Free>> = Rc::new(RefCell::new(vec![Free { v: 2 }, Free { v: 1 }]));
     (frees.as_pointer() as Ptr<Free>).sort((frees.as_pointer() as Ptr<Free>).to_end().get_offset());
-    assert!(
-        ({
-            (*elem!((frees.as_pointer() as Ptr<Free>), 0_usize)
-                .upgrade()
-                .deref())
-            .v
-        } == 1)
-    );
-    let ftwo: Value<Free> = Rc::new(RefCell::new(Free { v: 2 }));
+    assert!(({ (*frees.borrow())[0_usize].v } == 1));
+    let mut ftwo: Free = Free { v: 2 };
     assert!(
         ({
             ((frees.as_pointer() as Ptr<Free>)
@@ -276,7 +240,7 @@ fn main_0() -> i32 {
                         .position(|(index_0, value_0)| {
                             index_0
                                 < (frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize
-                                && value_0.read() == (*ftwo.borrow())
+                                && value_0.read() == ftwo
                         })
                         .unwrap_or((frees.as_pointer() as Ptr<Free>).to_end().get_offset() as usize)
                         as isize,

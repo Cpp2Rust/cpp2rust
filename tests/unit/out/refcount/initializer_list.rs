@@ -19,14 +19,9 @@ pub fn main() {
 }
 fn main_0() -> i32 {
     assert!((({ f_0(vec![1, 2, 3,],) }) == 3_usize));
-    let v: Value<Vec<i32>> = Rc::new(RefCell::new(vec![4, 5, 6]));
-    assert!(((*v.borrow()).len() == 3_usize));
-    assert!(
-        ((((elem!((v.as_pointer() as Ptr<i32>), 0_usize).read())
-            + (elem!((v.as_pointer() as Ptr<i32>), 1_usize).read()))
-            + (elem!((v.as_pointer() as Ptr<i32>), 2_usize).read()))
-            == 15)
-    );
+    let mut v: Vec<i32> = vec![4, 5, 6];
+    assert!((v.len() == 3_usize));
+    assert!((((v[0_usize] + v[1_usize]) + v[2_usize]) == 15));
     let l: Value<Vec<i32>> = Rc::new(RefCell::new(vec![7, 8]));
     assert!(((*l.borrow()).len() == 2_usize));
     return 0;

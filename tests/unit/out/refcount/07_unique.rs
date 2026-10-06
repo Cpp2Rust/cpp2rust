@@ -6,10 +6,9 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-pub fn fn_0(u: Option<Value<i32>>) -> Option<Value<i32>> {
-    let u: Value<Option<Value<i32>>> = Rc::new(RefCell::new(u));
-    (*(*u.borrow()).as_ref().unwrap().borrow_mut()) = 10;
-    return (*u.borrow_mut()).take();
+pub fn fn_0(mut u: Option<Value<i32>>) -> Option<Value<i32>> {
+    (*u.as_ref().unwrap().borrow_mut()) = 10;
+    return u.take();
 }
 pub fn main() {
     __cpp2rust_init_globals();
