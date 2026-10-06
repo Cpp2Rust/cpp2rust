@@ -10,7 +10,7 @@ pub fn my_foo_0(mut p: AnyPtr) -> i32 {
     return (p.reinterpret_cast::<i32>().read());
 }
 pub fn foo_1(mut fn_: FnPtr<fn(AnyPtr) -> i32>, mut pi: Ptr<i32>) -> i32 {
-    return ({ fn_.call((pi).to_any()) });
+    return ({ fn_.call((pi as Ptr<i32>).to_any()) });
 }
 pub fn twice_2(mut x: u64) -> u64 {
     return (x).wrapping_mul(2_u64);
@@ -37,9 +37,7 @@ pub struct HashHolder_unsigned_long__ptr__bool__ {
 }
 impl HashHolder_unsigned_long__ptr__bool__ {
     pub fn new(h: Ptr<FnPtr<fn(bool) -> u64>>) -> Self {
-        Self {
-            h: (h.read()).clone(),
-        }
+        Self { h: (h.read()) }
     }
 }
 pub fn main() {

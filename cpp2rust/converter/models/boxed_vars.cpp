@@ -5,7 +5,11 @@
 
 #include <clang/AST/RecursiveASTVisitor.h>
 
+#include <unordered_map>
+#include <vector>
+
 #include "converter/converter_lib.h"
+#include "converter/mapper.h"
 
 namespace cpp2rust {
 namespace {
@@ -29,6 +33,38 @@ bool CanUnbox(const clang::VarDecl *decl) {
   return (decl->isLocalVarDecl() || clang::isa<clang::ParmVarDecl>(decl)) &&
          !IsGlobalVar(decl) && !decl->isInitCapture() &&
          !IsVaListType(decl->getType());
+}
+
+clang::Expr *IgnoreNoOpCasts(clang::Expr *expr) {
+  while (auto *cast = clang::dyn_cast<clang::ImplicitCastExpr>(expr)) {
+    if (cast->getCastKind() != clang::CK_NoOp) {
+      break;
+    }
+    expr = cast->getSubExpr();
+  }
+  return expr;
+}
+
+// The object copied by a trivial copy or move constructor, which copies its
+// value, like an lvalue-to-rvalue conversion in C.
+clang::Expr *GetTrivialCopySource(clang::CXXConstructExpr *expr) {
+  auto *ctor = expr->getConstructor();
+  if (!ctor->isCopyOrMoveConstructor() || !ctor->isTrivial()) {
+    return nullptr;
+  }
+  return IgnoreNoOpCasts(expr->getArg(0));
+}
+
+// Whether expr is a call to a trivial copy or move assignment operator, which
+// assigns the value of its right operand, like a built-in assignment, unless
+// it is translated to a call to the operator.
+bool IsTrivialAssignment(clang::CXXOperatorCallExpr *expr) {
+  auto *method =
+      clang::dyn_cast_or_null<clang::CXXMethodDecl>(expr->getDirectCallee());
+  return method &&
+         (method->isCopyAssignmentOperator() ||
+          method->isMoveAssignmentOperator()) &&
+         method->isTrivial() && !IsUserOperatorCall(expr);
 }
 
 // Statements are visited before their children, so the uses of a variable
@@ -66,6 +102,21 @@ public:
   bool VisitExplicitCastExpr(clang::ExplicitCastExpr *expr) {
     if (expr->getCastKind() == clang::CK_ToVoid) {
       AddValueUse(expr->getSubExpr());
+    }
+    return true;
+  }
+
+  bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
+    if (auto *source = GetTrivialCopySource(expr)) {
+      AddValueUse(source);
+    }
+    return true;
+  }
+
+  bool VisitCXXOperatorCallExpr(clang::CXXOperatorCallExpr *expr) {
+    if (IsTrivialAssignment(expr)) {
+      AddValueUse(expr->getArg(0));
+      AddValueUse(IgnoreNoOpCasts(expr->getArg(1)));
     }
     return true;
   }
@@ -142,5 +193,86 @@ BoxedVars::BoxedVars(clang::ASTContext &ctx) {
 
 bool BoxedVars::contains(const clang::VarDecl *decl) const {
   return !CanUnbox(decl) || address_taken_.contains(decl);
+}
+
+namespace {
+class MovableReadsVisitor
+    : public clang::RecursiveASTVisitor<MovableReadsVisitor> {
+public:
+  explicit MovableReadsVisitor(clang::ASTContext &ctx) : ctx_(ctx) {}
+
+  bool shouldVisitTemplateInstantiations() const { return true; }
+
+  std::unordered_set<const clang::DeclRefExpr *> Find(clang::Expr *expr) {
+    TraverseStmt(expr);
+    std::unordered_set<const clang::DeclRefExpr *> movable;
+    for (auto *read : reads_) {
+      if (refs_[read->getDecl()] == 1) {
+        movable.insert(read);
+      }
+    }
+    return movable;
+  }
+
+  bool dataTraverseStmtPre(clang::Stmt *stmt) {
+    excluded_ += IsExcluded(stmt);
+    return true;
+  }
+
+  bool dataTraverseStmtPost(clang::Stmt *stmt) {
+    excluded_ -= IsExcluded(stmt);
+    return true;
+  }
+
+  bool VisitDeclRefExpr(clang::DeclRefExpr *expr) {
+    ++refs_[expr->getDecl()];
+    return true;
+  }
+
+  bool VisitImplicitCastExpr(clang::ImplicitCastExpr *expr) {
+    if (expr->getCastKind() == clang::CK_LValueToRValue) {
+      AddRead(expr->getSubExpr());
+    }
+    return true;
+  }
+
+  bool VisitCXXConstructExpr(clang::CXXConstructExpr *expr) {
+    if (auto *source = GetTrivialCopySource(expr)) {
+      AddRead(source);
+    }
+    return true;
+  }
+
+private:
+  void AddRead(clang::Expr *expr) {
+    if (auto *ref = clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParens());
+        ref && excluded_ == 0) {
+      reads_.push_back(ref);
+    }
+  }
+
+  // Whether the reads in stmt may be translated more than once, or evaluated
+  // more than once, e.g., in a loop or in a closure.
+  bool IsExcluded(clang::Stmt *stmt) const {
+    if (auto *call = clang::dyn_cast<clang::CallExpr>(stmt)) {
+      return Mapper::Contains(ctx_, call->getCallee());
+    }
+    if (auto *construct = clang::dyn_cast<clang::CXXConstructExpr>(stmt)) {
+      return !GetTrivialCopySource(construct);
+    }
+    return clang::isa<clang::CXXNewExpr, clang::StmtExpr, clang::LambdaExpr,
+                      clang::BinaryConditionalOperator>(stmt);
+  }
+
+  clang::ASTContext &ctx_;
+  unsigned excluded_ = 0;
+  std::unordered_map<const clang::ValueDecl *, unsigned> refs_;
+  std::vector<const clang::DeclRefExpr *> reads_;
+};
+} // namespace
+
+std::unordered_set<const clang::DeclRefExpr *>
+FindMovableReads(clang::ASTContext &ctx, clang::Expr *expr) {
+  return MovableReadsVisitor(ctx).Find(expr);
 }
 } // namespace cpp2rust

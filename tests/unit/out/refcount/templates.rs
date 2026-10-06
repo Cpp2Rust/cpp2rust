@@ -13,18 +13,10 @@ pub fn foo_1(mut x: f64) -> f64 {
     return x;
 }
 pub fn bar_2(mut p: Ptr<i32>, mut flag: bool) -> Ptr<i32> {
-    return if flag {
-        (p).clone()
-    } else {
-        Ptr::<i32>::null()
-    };
+    return if flag { p } else { Ptr::<i32>::null() };
 }
 pub fn bar_3(mut p: Ptr<f64>, mut flag: bool) -> Ptr<f64> {
-    return if flag {
-        (p).clone()
-    } else {
-        Ptr::<f64>::null()
-    };
+    return if flag { p } else { Ptr::<f64>::null() };
 }
 pub fn func_4(mut x1: i32, mut x2: i32, mut x3: i32) -> i32 {
     return ((x1 + x2) + x3);

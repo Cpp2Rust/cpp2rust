@@ -52,18 +52,18 @@ pub fn operator_inc_7(a: Ptr<S>) -> Ptr<S> {
     return (a).clone();
 }
 pub fn operator_post_inc_8(a: Ptr<S>, mut _a1: i32) -> S {
-    let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
+    let mut old: S = (*a.upgrade().deref()).clone();
     field!(a, v).with_mut(|__v| __v.prefix_inc());
-    return (*old.borrow()).clone();
+    return old;
 }
 pub fn operator_dec_9(a: Ptr<S>) -> Ptr<S> {
     field!(a, v).with_mut(|__v| __v.prefix_dec());
     return (a).clone();
 }
 pub fn operator_post_dec_10(a: Ptr<S>, mut _a1: i32) -> S {
-    let old: Value<S> = Rc::new(RefCell::new((*a.upgrade().deref()).clone()));
+    let mut old: S = (*a.upgrade().deref()).clone();
     field!(a, v).with_mut(|__v| __v.prefix_dec());
-    return (*old.borrow()).clone();
+    return old;
 }
 pub fn operator_add_11(a: Ptr<S>, mut b: i32) -> S {
     return S {

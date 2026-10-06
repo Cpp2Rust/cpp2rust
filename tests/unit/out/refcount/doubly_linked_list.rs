@@ -25,7 +25,7 @@ pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
         curr = { curr.with(|__s| __s.next.clone()) };
         i.postfix_inc();
     }
-    return (curr).clone();
+    return curr;
 }
 pub fn FindBack_1(mut tail: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
     let mut curr: Ptr<Node> = (tail).clone();
@@ -34,7 +34,7 @@ pub fn FindBack_1(mut tail: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
         curr = { curr.with(|__s| __s.prev.clone()) };
         i.postfix_inc();
     }
-    return (curr).clone();
+    return curr;
 }
 pub fn Append_2(head: Ptr<Node>, new_node: Ptr<Node>) {
     let mut curr: Ptr<Node> = (head).clone();
@@ -60,21 +60,21 @@ pub fn Delete_3(mut head: Ptr<Node>, mut val: i32) -> Ptr<Node> {
                 field!(next, prev).write((prev).clone());
             }
             if !((prev).is_null()) {
-                return (head).clone();
+                return head;
             } else {
-                return (next).clone();
+                return next;
             }
         }
         curr = { curr.with(|__s| __s.next.clone()) };
     }
-    return (head).clone();
+    return head;
 }
 pub fn Tail_4(mut head: Ptr<Node>) -> Ptr<Node> {
     let mut curr: Ptr<Node> = (head).clone();
     'loop_: while !((curr.with(|__s| __s.next.clone())).is_null()) {
         curr = { curr.with(|__s| __s.next.clone()) };
     }
-    return (curr).clone();
+    return curr;
 }
 pub fn main() {
     __cpp2rust_init_globals();

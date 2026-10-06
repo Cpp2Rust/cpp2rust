@@ -22,7 +22,7 @@ pub fn Find_0(mut head: Ptr<Node>, mut idx: i32) -> Ptr<Node> {
         curr = { curr.with(|__s| __s.next.clone()) };
         i.postfix_inc();
     }
-    return (curr).clone();
+    return curr;
 }
 pub fn Append_1(head: Ptr<Node>, new_node: Ptr<Node>) {
     let mut curr: Ptr<Node> = (head).clone();
@@ -38,7 +38,7 @@ pub fn Delete_2(mut head: Ptr<Node>, mut val: i32) -> Ptr<Node> {
         if ({ curr.with(|__s| __s.val) } == { val }) {
             if !((prev).is_null()) {
                 field!(prev, next).write({ curr.with(|__s| __s.next.clone()) });
-                return (head).clone();
+                return head;
             } else {
                 return curr.with(|__s| __s.next.clone());
             }
@@ -46,7 +46,7 @@ pub fn Delete_2(mut head: Ptr<Node>, mut val: i32) -> Ptr<Node> {
         prev = (curr).clone();
         curr = { curr.with(|__s| __s.next.clone()) };
     }
-    return (head).clone();
+    return head;
 }
 pub fn main() {
     __cpp2rust_init_globals();

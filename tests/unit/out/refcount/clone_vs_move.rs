@@ -80,43 +80,43 @@ fn main_0() -> i32 {
     assert!(({ (other_pointer).clone() } == { (pointer).clone() }));
     other_pointer.with_mut(|__v| __v.prefix_inc());
     assert!(({ (other_pointer.read()) } == { (pointer.read()) }));
-    let f1: Value<Foo> = Rc::new(RefCell::new(Foo {
+    let mut f1: Foo = Foo {
         x: 1,
         y: x1.as_pointer(),
         z: (x1.as_pointer()),
         a: Rc::new(RefCell::new(Box::new([0, 1, 2]))),
         bar: Bar { w: 10 },
-    }));
-    assert!(({ (*f1.borrow()).x } == 1));
-    assert!((({ (*f1.borrow()).y.clone() }.read()) == 2));
-    assert!(({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }));
-    assert!((({ (*f1.borrow()).z.clone() }.read()) == 2));
-    let mut f2: Foo = (*f1.borrow()).clone();
+    };
+    assert!((f1.x == 1));
+    assert!(((f1.y.read()) == 2));
+    assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
+    assert!(((f1.z.read()) == 2));
+    let mut f2: Foo = (f1).clone();
     f2.x.prefix_inc();
-    { f2.y.clone() }.with_mut(|__v| __v.prefix_inc());
+    f2.y.with_mut(|__v| __v.prefix_inc());
     assert!((f2.x == 2));
-    assert!((({ f2.y.clone() }.read()) == 3));
-    assert!(({ (*f1.borrow()).x } == 1));
-    assert!((({ (*f1.borrow()).y.clone() }.read()) == 3));
+    assert!(((f2.y.read()) == 3));
+    assert!((f1.x == 1));
+    assert!(((f1.y.read()) == 3));
     f2.z.with_mut(|__v| __v.prefix_inc());
-    assert!((({ f2.y.clone() }.read()) == 4));
+    assert!(((f2.y.read()) == 4));
     assert!(({ (f2.z).clone() } == { (x1.as_pointer()) }));
     assert!(((f2.z.read()) == 4));
-    assert!((({ (*f1.borrow()).y.clone() }.read()) == 4));
-    assert!(({ { (*f1.borrow()).z.clone() } } == { (x1.as_pointer()) }));
-    assert!((({ (*f1.borrow()).z.clone() }.read()) == 4));
+    assert!(((f1.y.read()) == 4));
+    assert!(({ (f1.z).clone() } == { (x1.as_pointer()) }));
+    assert!(((f1.z.read()) == 4));
     elem!((f2.a.as_pointer() as Ptr::<i32>), 0).with_mut(|__v| __v.prefix_inc());
     elem!((f2.a.as_pointer() as Ptr::<i32>), 1).with_mut(|__v| __v.prefix_inc());
     elem!((f2.a.as_pointer() as Ptr::<i32>), 2).with_mut(|__v| __v.prefix_inc());
     assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 0).read()) == 1));
     assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 1).read()) == 2));
     assert!(((elem!((f2.a.as_pointer() as Ptr::<i32>), 2).read()) == 3));
-    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 0).read()) == 0));
-    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 1).read()) == 1));
-    assert!(((elem!((array_field_ptr!(f1.as_pointer(), a) as Ptr::<i32>), 2).read()) == 2));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 0).read()) == 0));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 1).read()) == 1));
+    assert!(((elem!((f1.a.as_pointer() as Ptr::<i32>), 2).read()) == 2));
     f2.bar.w = 20;
     assert!((f2.bar.w == 20));
-    assert!(({ (*f1.borrow()).bar.w } == 10));
+    assert!((f1.bar.w == 10));
     let mut N: i32 = 5;
     let v1: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     let i: Value<i32> = Rc::new(RefCell::new(0));
@@ -419,12 +419,12 @@ fn main_0() -> i32 {
     assert!(
         (((elem!((s1.as_pointer() as Ptr<i8>), 2_usize).read()) as i32) == (('a' as i8) as i32))
     );
-    let b1: Value<Bar> = Rc::new(RefCell::new(Bar { w: 1 }));
-    let b2: Value<Bar> = Rc::new(RefCell::new(Bar { w: 2 }));
-    (*b2.borrow_mut()) = (*b1.borrow()).clone();
-    (*b2.borrow_mut()).w.postfix_inc();
-    assert!(({ (*b1.borrow()).w } == 1));
-    assert!(({ (*b2.borrow()).w } == 2));
+    let mut b1: Bar = Bar { w: 1 };
+    let mut b2: Bar = Bar { w: 2 };
+    b2 = (b1).clone();
+    b2.w.postfix_inc();
+    assert!((b1.w == 1));
+    assert!((b2.w == 2));
     let v4: Value<Vec<i32>> = Rc::new(RefCell::new(Vec::new()));
     (v4.as_pointer() as Ptr<Vec<i32>>).write((*v2.borrow()).clone());
     let mut i: i32 = 0;
@@ -441,17 +441,17 @@ fn main_0() -> i32 {
     }
     let ra: Value<i32> = Rc::new(RefCell::new(1));
     let rb: Value<i32> = Rc::new(RefCell::new(2));
-    let r1: Value<Refs> = Rc::new(RefCell::new(Refs {
+    let mut r1: Refs = Refs {
         a: ra.as_pointer(),
         b: rb.as_pointer(),
-    }));
-    let mut r2: Refs = (*r1.borrow()).clone();
-    { r2.a.clone() }.write(10);
-    { r2.b.clone() }.with_mut(|__v| __v.prefix_inc());
+    };
+    let mut r2: Refs = (r1).clone();
+    r2.a.write(10);
+    r2.b.with_mut(|__v| __v.prefix_inc());
     assert!(((*ra.borrow()) == 10));
     assert!(((*rb.borrow()) == 3));
-    assert!((({ (*r1.borrow()).a.clone() }.read()) == 10));
-    assert!((({ (*r1.borrow()).b.clone() }.read()) == 3));
+    assert!(((r1.a.read()) == 10));
+    assert!(((r1.b.read()) == 3));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

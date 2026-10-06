@@ -23,9 +23,9 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let a: Value<Wrapper_Probe_> = Rc::new(RefCell::new(<Wrapper_Probe_>::default()));
-    (*a.borrow_mut()).tag = 3;
-    let mut b: Wrapper_Probe_ = (*a.borrow()).clone();
+    let mut a: Wrapper_Probe_ = <Wrapper_Probe_>::default();
+    a.tag = 3;
+    let mut b: Wrapper_Probe_ = (a).clone();
     assert!((b.tag == 3));
     return 0;
 }

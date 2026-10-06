@@ -35,13 +35,13 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
         i.prefix_inc();
     }
     let mut pidx: i32 = (start + count);
-    let tmp: Value<Edge> = Rc::new(RefCell::new(Edge {
+    let mut tmp: Edge = Edge {
         u: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(pidx as usize) as usize].u },
         v: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(pidx as usize) as usize].v },
         weight: {
             (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(pidx as usize) as usize].weight
         },
-    }));
+    };
     let __rhs = Edge {
         u: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(start as usize) as usize].u },
         v: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(start as usize) as usize].v },
@@ -51,9 +51,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
     };
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(pidx as usize) as usize] = __rhs;
     (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(start as usize) as usize] = Edge {
-        u: { (*tmp.borrow()).u },
-        v: { (*tmp.borrow()).v },
-        weight: { (*tmp.borrow()).weight },
+        u: tmp.u,
+        v: tmp.v,
+        weight: tmp.weight,
     };
     let mut i: i32 = start;
     let mut j: i32 = end;
@@ -71,7 +71,7 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             j.prefix_dec();
         }
         if (i < pidx) && (j > pidx) {
-            (*tmp.borrow_mut()) = Edge {
+            tmp = Edge {
                 u: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(i as usize) as usize].u },
                 v: { (*arr.upgrade().deref()).as_ref().unwrap().borrow()[(i as usize) as usize].v },
                 weight: {
@@ -89,9 +89,9 @@ pub fn partition_0(arr: Ptr<Option<Value<Box<[Edge]>>>>, mut start: i32, mut end
             };
             (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
             (*arr.upgrade().deref()).as_ref().unwrap().borrow_mut()[(j as usize) as usize] = Edge {
-                u: { (*tmp.borrow()).u },
-                v: { (*tmp.borrow()).v },
-                weight: { (*tmp.borrow()).weight },
+                u: tmp.u,
+                v: tmp.v,
+                weight: tmp.weight,
             };
             i.postfix_inc();
             j.postfix_dec();

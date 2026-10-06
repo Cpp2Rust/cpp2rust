@@ -34,7 +34,7 @@ pub fn make_pair_5(mut n: usize) -> pair {
         a: (n as i32),
         b: ((n as i32) * 2),
     };
-    return (p).clone();
+    return p;
 }
 pub fn main() {
     __cpp2rust_init_globals();

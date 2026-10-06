@@ -382,7 +382,7 @@ impl MinHeapImpl for Ptr<MinHeap> {
             .unwrap()
             .borrow_mut()[(0_usize) as usize] = __rhs;
         ({ MinHeapImpl::Heapify(self, 0) });
-        return (out).clone();
+        return out;
     }
     fn Insert(&self, mut node: Ptr<MinHeapNode>) {
         field!((*self), size).with_mut(|__v| __v.prefix_inc());
