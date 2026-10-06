@@ -14,8 +14,8 @@
 namespace cpp2rust {
 namespace {
 // Whether decl may be stored without a Value, if its address is not taken:
-// scalars, arrays of non-arrays, and user-defined structs, unless they have a
-// destructor, which is called with a pointer to them.
+// scalars, arrays of non-arrays, user-defined structs and unique_ptrs, unless
+// they have a destructor, which is called with a pointer to them.
 bool CanUnbox(const clang::VarDecl *decl) {
   auto type = decl->getType();
   if (type->isConstantArrayType()) {
@@ -23,7 +23,7 @@ bool CanUnbox(const clang::VarDecl *decl) {
       return false;
     }
   } else if (type->isStructureOrClassType()) {
-    if (!IsUserDefinedDecl(type->getAsRecordDecl()) ||
+    if ((!IsUserDefinedDecl(type->getAsRecordDecl()) && !IsUniquePtr(type)) ||
         TypeNeedsDestruction(type)) {
       return false;
     }
@@ -117,6 +117,19 @@ public:
     if (IsTrivialAssignment(expr)) {
       AddValueUse(expr->getArg(0));
       AddValueUse(IgnoreNoOpCasts(expr->getArg(1)));
+    }
+    // Dereferencing a unique_ptr reads the pointer it holds; the object it
+    // points to is not stored in the unique_ptr.
+    switch (expr->getOperator()) {
+    case clang::OO_Subscript:
+    case clang::OO_Star:
+    case clang::OO_Arrow:
+      if (IsUniquePtr(expr->getArg(0)->getType())) {
+        AddValueUse(IgnoreNoOpCasts(expr->getArg(0)));
+      }
+      break;
+    default:
+      break;
     }
     return true;
   }

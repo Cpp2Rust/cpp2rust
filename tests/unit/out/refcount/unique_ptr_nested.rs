@@ -33,35 +33,35 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let o: Value<Option<Value<Outer>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new({
+    let mut o: Option<Value<Outer>> = Some(Rc::new(RefCell::new({
         let __tmp_0: Value<Outer> = Rc::new(RefCell::new(Outer {
             inner: Some(Rc::new(RefCell::new(Inner { x: 10, y: 20 }))),
         }));
         Outer::move_from({ __tmp_0.as_pointer() })
-    })))));
-    (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+    })));
+    (*{ (*o.as_ref().unwrap().borrow()).inner.clone() }
         .as_ref()
         .unwrap()
         .borrow_mut())
     .x += 5;
     let mut sum: i32 = ({
-        (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+        (*{ (*o.as_ref().unwrap().borrow()).inner.clone() }
             .as_ref()
             .unwrap()
             .borrow())
         .x
     } + {
-        (*{ (*(*o.borrow()).as_ref().unwrap().borrow()).inner.clone() }
+        (*{ (*o.as_ref().unwrap().borrow()).inner.clone() }
             .as_ref()
             .unwrap()
             .borrow())
         .y
     });
-    let a: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(100)))));
-    let b: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(0)))));
-    let __rhs = (*(*a.borrow()).as_ref().unwrap().borrow());
-    (*(*b.borrow()).as_ref().unwrap().borrow_mut()) = __rhs;
-    assert!(((sum + (*(*b.borrow()).as_ref().unwrap().borrow())) == 135));
+    let mut a: Option<Value<i32>> = Some(Rc::new(RefCell::new(100)));
+    let mut b: Option<Value<i32>> = Some(Rc::new(RefCell::new(0)));
+    let __rhs = (*a.as_ref().unwrap().borrow());
+    (*b.as_ref().unwrap().borrow_mut()) = __rhs;
+    assert!(((sum + (*b.as_ref().unwrap().borrow())) == 135));
     return 0;
 }
 pub trait OuterImpl {

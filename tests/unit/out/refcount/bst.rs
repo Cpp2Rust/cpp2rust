@@ -50,44 +50,39 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let tree: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 0,
-        })))));
-    let n1: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 1,
-        })))));
-    let n2: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 2,
-        })))));
-    let n3: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 3,
-        })))));
-    let n4: Value<Option<Value<node_t>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(node_t {
-            left: Ptr::<node_t>::null(),
-            right: Ptr::<node_t>::null(),
-            value: 4,
-        })))));
-    let mut ptr1: Ptr<node_t> = ((*tree.borrow()).as_pointer());
-    let __rhs = ({ insert_1((ptr1).clone(), ((*n1.borrow()).as_pointer())) });
+    let mut tree: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 0,
+    })));
+    let mut n1: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 1,
+    })));
+    let mut n2: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 2,
+    })));
+    let mut n3: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 3,
+    })));
+    let mut n4: Option<Value<node_t>> = Some(Rc::new(RefCell::new(node_t {
+        left: Ptr::<node_t>::null(),
+        right: Ptr::<node_t>::null(),
+        value: 4,
+    })));
+    let mut ptr1: Ptr<node_t> = (tree.as_pointer());
+    let __rhs = ({ insert_1((ptr1).clone(), (n1.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), ((*n2.borrow()).as_pointer())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n2.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), ((*n3.borrow()).as_pointer())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n3.as_pointer())) });
     ptr1 = __rhs;
-    let __rhs = ({ insert_1((ptr1).clone(), ((*n4.borrow()).as_pointer())) });
+    let __rhs = ({ insert_1((ptr1).clone(), (n4.as_pointer())) });
     ptr1 = __rhs;
     assert!(
         (((((({ find_0((ptr1).clone(), 0,) }).with(|__s| __s.value) == 0)

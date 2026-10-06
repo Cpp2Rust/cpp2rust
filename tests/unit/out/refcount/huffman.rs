@@ -194,16 +194,13 @@ pub fn HuffmanCodes_5(
     freq: Ptr<Option<Value<Box<[i32]>>>>,
     mut size: i32,
 ) -> Option<Value<Box<[i32]>>> {
-    let minHeap: Value<Option<Value<MinHeap>>> = Rc::new(RefCell::new(
-        ({
-            let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
-            let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
-            let _size: i32 = size;
-            Huffman_2(_data, _freq, _size)
-        }),
-    ));
-    let mut root: Ptr<MinHeapNode> =
-        ({ MinHeapImpl::ExtractMin(&((*minHeap.borrow()).as_pointer())) });
+    let mut minHeap: Option<Value<MinHeap>> = ({
+        let _data: Ptr<Option<Value<Box<[i8]>>>> = (data).clone();
+        let _freq: Ptr<Option<Value<Box<[i32]>>>> = (freq).clone();
+        let _size: i32 = size;
+        Huffman_2(_data, _freq, _size)
+    });
+    let mut root: Ptr<MinHeapNode> = ({ MinHeapImpl::ExtractMin(&(minHeap.as_pointer())) });
     let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(
         (0..100_usize)
             .map(|_| <i32>::default())
@@ -261,16 +258,15 @@ fn main_0() -> i32 {
         (*freq.borrow()).as_ref().unwrap().borrow_mut()[(i as usize) as usize] = __rhs;
         i.prefix_inc();
     }
-    let out: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
-        ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) }),
-    ));
+    let mut out: Option<Value<Box<[i32]>>> =
+        ({ HuffmanCodes_5(data.as_pointer(), freq.as_pointer(), size) });
     assert!(
-        ((((((*out.borrow()).as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
-            && ((*out.borrow()).as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
+        (((((out.as_ref().unwrap().borrow()[(0_usize) as usize] == 0)
+            && (out.as_ref().unwrap().borrow()[(1_usize) as usize] == 100))
+            && (out.as_ref().unwrap().borrow()[(2_usize) as usize] == 101))
+            && (out.as_ref().unwrap().borrow()[(3_usize) as usize] == 1100))
+            && (out.as_ref().unwrap().borrow()[(4_usize) as usize] == 1101))
+            && (out.as_ref().unwrap().borrow()[(5_usize) as usize] == 111)
     );
     return 0;
 }

@@ -49,12 +49,11 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
     {
         raw_ptr2.with_mut(|__v| *__v = *__v + 1)
     };
-    let pair: Value<Option<Value<Pair>>> =
-        Rc::new(RefCell::new(Some(Rc::new(RefCell::new(Pair {
-            x: (raw_ptr2.read()),
-            y: 5,
-        })))));
-    ({ PairImpl::inc(&((*pair.borrow()).as_pointer()), 10) });
+    let mut pair: Option<Value<Pair>> = Some(Rc::new(RefCell::new(Pair {
+        x: (raw_ptr2.read()),
+        y: 5,
+    })));
+    ({ PairImpl::inc(&(pair.as_pointer()), 10) });
     let __rhs = ({
         ({
             (*{
@@ -65,8 +64,8 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
             .as_ref()
             .unwrap()
             .borrow())
-        } + { { (*(*pair.borrow()).as_ref().unwrap().borrow()).x } })
-    } + { { (*(*pair.borrow()).as_ref().unwrap().borrow()).y } });
+        } + { { (*pair.as_ref().unwrap().borrow()).x } })
+    } + { { (*pair.as_ref().unwrap().borrow()).y } });
     (*{
         (*(*safe_ptr.upgrade().deref()).as_ref().unwrap().borrow())
             .ptr
@@ -78,18 +77,16 @@ pub fn DoStuffWithSafePointer_0(safe_ptr: Ptr<Option<Value<SafePointer>>>) {
 }
 pub fn Consume_1(safe_ptr: Option<Value<SafePointer>>) -> i32 {
     let safe_ptr: Value<Option<Value<SafePointer>>> = Rc::new(RefCell::new(safe_ptr));
-    let x: Value<Option<Value<SafePointer>>> =
-        Rc::new(RefCell::new((*safe_ptr.borrow_mut()).take()));
-    let p: Value<Option<Value<Pair>>> =
-        Rc::new(RefCell::new(Ptr::alloc(<Pair>::default()).to_owned_opt()));
-    return ((*{ (*(*x.borrow()).as_ref().unwrap().borrow()).ptr.clone() }
+    let mut x: Option<Value<SafePointer>> = (*safe_ptr.borrow_mut()).take();
+    let mut p: Option<Value<Pair>> = Ptr::alloc(<Pair>::default()).to_owned_opt();
+    return ((*{ (*x.as_ref().unwrap().borrow()).ptr.clone() }
         .as_ref()
         .unwrap()
         .borrow())
-        + { (*(*p.borrow()).as_ref().unwrap().borrow()).x });
+        + { (*p.as_ref().unwrap().borrow()).x });
 }
 pub fn RndStuff_2() {
-    let x1: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(None));
+    let mut x1: Option<Value<Box<[i32]>>> = None;
     let x2: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(
         Ptr::alloc_array((0..100_usize).map(|_| 0_i32).collect::<Box<[i32]>>()).to_owned_opt(),
     ));

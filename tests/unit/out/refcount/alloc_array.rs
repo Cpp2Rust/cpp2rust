@@ -19,12 +19,11 @@ pub fn All_0(arr: Ptr<Option<Value<Box<[i32]>>>>, mut N: i32, mut element: i32) 
     }
     ((arr).clone() as Ptr<Option<Value<Box<[i32]>>>>).write((*all.borrow_mut()).take());
 }
-pub fn Consume_1(arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
-    let arr: Value<Option<Value<Box<[i32]>>>> = Rc::new(RefCell::new(arr));
+pub fn Consume_1(mut arr: Option<Value<Box<[i32]>>>, mut N: i32) -> i32 {
     let mut sum: i32 = 0;
     let mut i: i32 = -1_i32;
     'loop_: while (i.prefix_inc() < N) {
-        sum += (*arr.borrow()).as_ref().unwrap().borrow()[(i as usize) as usize];
+        sum += arr.as_ref().unwrap().borrow()[(i as usize) as usize];
     }
     return sum;
 }

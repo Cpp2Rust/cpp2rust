@@ -11,13 +11,12 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
-    let p: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(10)))));
-    (*(*p.borrow()).as_ref().unwrap().borrow_mut()) += 5;
-    (*(*p.borrow()).as_ref().unwrap().borrow_mut()) -= 3;
-    (*(*p.borrow()).as_ref().unwrap().borrow_mut()) *= 2;
-    let q: Value<Option<Value<i32>>> = Rc::new(RefCell::new(Some(Rc::new(RefCell::new(1)))));
-    let mut sum: i32 =
-        ((*(*p.borrow()).as_ref().unwrap().borrow()) + (*(*q.borrow()).as_ref().unwrap().borrow()));
+    let mut p: Option<Value<i32>> = Some(Rc::new(RefCell::new(10)));
+    (*p.as_ref().unwrap().borrow_mut()) += 5;
+    (*p.as_ref().unwrap().borrow_mut()) -= 3;
+    (*p.as_ref().unwrap().borrow_mut()) *= 2;
+    let mut q: Option<Value<i32>> = Some(Rc::new(RefCell::new(1)));
+    let mut sum: i32 = ((*p.as_ref().unwrap().borrow()) + (*q.as_ref().unwrap().borrow()));
     assert!((sum == 25));
     return 0;
 }
