@@ -703,6 +703,11 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
   RuleRegistry::SetDerives(
       ctx_, ctx_.getCanonicalTagType(decl),
       std::vector<std::string>(attrs.begin(), attrs.end()));
+  StrCat("#[derive(");
+  for (auto *attr : attrs) {
+    StrCat(attr, ',');
+  }
+  StrCat(")]");
 
   auto size = ctx_.getTypeSizeInChars(ctx_.getCanonicalTagType(decl));
   StrCat(std::format(

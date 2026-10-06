@@ -52,7 +52,7 @@ public:
 
   virtual void EmitFilePreamble();
 
-  static void EmitOpaqueRecords(std::string &out);
+  static void EmitOpaqueRecords(Model model, std::string &out);
   static void EmitGlobalInits(Model model, std::string &out);
 
   static void EmitVirtualMethods(std::string &out);
