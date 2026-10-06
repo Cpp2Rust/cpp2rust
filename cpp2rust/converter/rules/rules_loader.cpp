@@ -205,10 +205,21 @@ private:
 
   void AddTemplateArgs(llvm::ArrayRef<clang::TemplateArgument> args) {
     for (const auto &arg : args) {
-      if (arg.getKind() == clang::TemplateArgument::Type) {
+      switch (arg.getKind()) {
+      case clang::TemplateArgument::Type:
         AddType(arg.getAsType());
-      } else if (arg.getKind() == clang::TemplateArgument::Pack) {
+        break;
+      case clang::TemplateArgument::Pack:
         AddTemplateArgs(arg.pack_elements());
+        break;
+      case clang::TemplateArgument::Null:
+      case clang::TemplateArgument::Integral:
+      case clang::TemplateArgument::NullPtr:
+      case clang::TemplateArgument::Expression:
+        break;
+      default:
+        assert(0 && "template argument kind is not scanned");
+        break;
       }
     }
   }
