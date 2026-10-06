@@ -420,19 +420,9 @@ void PragmaHandler::HandlePragma(clang::Preprocessor &PP,
 
   CI_.getSema().PerformPendingInstantiations();
 
-  std::vector<clang::Decl *> user_decls;
-  for (auto *decl : ctx.getTranslationUnitDecl()->decls()) {
-    if (!src_mgr.isInSystemHeader(decl->getLocation())) {
-      user_decls.push_back(decl);
-    }
-  }
-  ctx.setTraversalScope(user_decls);
   std::unordered_set<std::string> keys;
   RuleUsageCollector collector(CI_.getSema(), keys);
-  for (auto *decl : user_decls) {
-    collector.TraverseDecl(decl);
-  }
-  ctx.setTraversalScope({ctx.getTranslationUnitDecl()});
+  collector.TraverseDecl(ctx.getTranslationUnitDecl());
 
   auto index_dir = std::filesystem::weakly_canonical(rules_dir_).parent_path() /
                    kIndexDirName;
