@@ -171,7 +171,8 @@ private:
     if (type->isBuiltinType() || type->isUndeducedType()) {
       return;
     }
-    if (type->isPointerType() || type->isReferenceType()) {
+    if (type->isPointerType() || type->isReferenceType() ||
+        type->isBlockPointerType()) {
       return AddType(type->getPointeeType());
     }
     if (const auto *array = ctx_.getAsArrayType(type)) {
