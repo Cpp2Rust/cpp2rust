@@ -1185,6 +1185,9 @@ std::string GetFunctionBaseName(const clang::FunctionDecl *decl) {
   if (decl->isOverloadedOperator()) {
     return GetOverloadedOperator(decl);
   }
+  if (auto *suffix = decl->getLiteralIdentifier()) {
+    return "operator_literal_" + suffix->getName().str();
+  }
   return decl->getNameAsString();
 }
 
