@@ -31,7 +31,7 @@ pub struct S {
 }
 #[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
 #[byte_size(4)]
-pub struct Box {
+pub struct Box_ {
     #[offset(0)]
     pub v: i32,
 }
@@ -134,7 +134,7 @@ fn main_0() -> i32 {
             Access_S_Impl::ref_4(&a.as_pointer(), _r)
         }) == 103)
     );
-    let mut b: Box = Box { v: 4 };
+    let mut b: Box_ = Box_ { v: 4 };
     assert!((b.v == 4));
     return 0;
 }

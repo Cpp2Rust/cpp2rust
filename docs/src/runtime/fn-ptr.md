@@ -86,8 +86,8 @@ A cast to a different type allocates: the pointer then also keeps the function
 it was created with, type-erased, so that casting back to that type can restore
 it. A call through the adapter moves each pointer or record argument through a
 heap cell, so a value without a copy constructor can be passed too; direct calls
-never allocate. Equality compares the address of the function
-the pointer was created with.
+never allocate. Equality compares the address of the function the pointer was
+created with.
 
 Casting a function pointer to `void *` is `to_any`, and `AnyPtr::cast_fn::<T>`
 recovers it. `reinterpret_cast` on an `AnyPtr` holding a function currently

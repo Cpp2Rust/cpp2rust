@@ -82,10 +82,7 @@ impl_fn_ptr_arg_prim!(f64);
 impl FnPtrArg for bool {
     #[inline]
     fn to_repr(self) -> ArgRepr {
-        ArgRepr::Bytes(
-            [self as u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            1,
-        )
+        ArgRepr::Bytes([self as u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 1)
     }
     #[inline]
     fn from_repr(r: ArgRepr) -> Self {
