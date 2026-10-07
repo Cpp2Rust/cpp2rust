@@ -11,6 +11,8 @@ pub fn main() {
     std::process::exit(main_0());
 }
 fn main_0() -> i32 {
+    let mut empty: Vec<i8> = vec![0];
+    assert!(((empty.len() - 1) == 0_usize));
     let s1: Value<Vec<i8>> = Rc::new(RefCell::new({
         let mut __bytes = Ptr::<i8>::from_string_literal(b"hello").to_c_bytes();
         __bytes.push(0);
