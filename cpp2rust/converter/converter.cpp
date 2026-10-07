@@ -2776,7 +2776,11 @@ void Converter::ConvertBinaryOperator(clang::BinaryOperator *expr) {
       Convert(lhs);
     }
     StrCat(token::kSemiColon);
-    Convert(rhs);
+    if (isRValue()) {
+      StrCat(ConvertFreshRValue(rhs));
+    } else {
+      Convert(rhs);
+    }
   } else if (IsUnsignedArithOp(expr)) {
     if (expr->isCompoundAssignmentOp()) {
       Convert(lhs);
