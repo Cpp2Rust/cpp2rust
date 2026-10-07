@@ -6,6 +6,15 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
+thread_local!(
+    pub static counter_0: Value<i32> = Rc::new(RefCell::new(0));
+);
+pub fn inc_1() {
+    counter_0.with(|rc| *rc.borrow_mut() += 1);
+}
+pub fn dec_2() {
+    counter_0.with(|rc| *rc.borrow_mut() -= 1);
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -54,6 +63,44 @@ fn main_0() -> i32 {
     };
     mp.write(20);
     assert!(((*b.borrow()) == 20));
+    if ((*a.borrow()) < (*b.borrow())) {
+        (a.as_pointer())
+    } else {
+        (b.as_pointer())
+    }
+    .write(30);
+    assert!(((*a.borrow()) == 30));
+    assert!(((*b.borrow()) == 20));
+    {
+        if ((*a.borrow()) < (*b.borrow())) {
+            (a.as_pointer())
+        } else {
+            (b.as_pointer())
+        }
+        .with_mut(|__v| *__v = *__v + 5)
+    };
+    assert!(((*b.borrow()) == 25));
+    let mut ap: Ptr<i32> = (if ((*a.borrow()) > (*b.borrow())) {
+        a.as_pointer()
+    } else {
+        b.as_pointer()
+    });
+    ap.write(40);
+    assert!(((*a.borrow()) == 40));
+    if ((*a.borrow()) < (*b.borrow())) {
+        ({ inc_1() });
+    } else {
+        ({ dec_2() });
+    };
+    assert!((counter_0.with(|rc| *rc.borrow()) == -1_i32));
+    if ((*a.borrow()) > (*b.borrow())) {
+        ({ inc_1() });
+    } else {
+        ({ dec_2() });
+    };
+    assert!((counter_0.with(|rc| *rc.borrow()) == 0));
     return 0;
 }
-pub fn __cpp2rust_init_globals() {}
+pub fn __cpp2rust_init_globals() {
+    let _ = counter_0.with(|_| ());
+}
