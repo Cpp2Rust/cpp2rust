@@ -2482,6 +2482,12 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   auto sub_expr = expr->getSubExpr();
   auto *stripped = sub_expr->IgnoreParenImpCasts();
 
+  if (auto *enum_type = sub_expr->getType()->getAs<clang::EnumType>();
+      enum_type && enum_type->getDecl()->getIntegerType()->isBooleanType()) {
+    Convert(sub_expr);
+    return;
+  }
+
   if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
     // Comparisons and logical ops already produces bool, no wrap needed.
     if ((binop->isComparisonOp() || binop->isLogicalOp()) &&
@@ -3847,11 +3853,16 @@ bool Converter::VisitEnumDecl(clang::EnumDecl *decl) {
   auto name = GetRecordName(decl);
   StrCat(std::format("pub type {} = {};", name,
                      GetUnsafeTypeAsString(decl->getIntegerType())));
+  bool is_bool = decl->getIntegerType()->isBooleanType();
   for (auto e : decl->enumerators()) {
     llvm::SmallVector<char, 32> init;
     e->getInitVal().toString(init, 10);
-    StrCat(std::format("pub const {}: {} = {};", EnumeratorName(e), name,
-                       std::string_view(init.data(), init.size())));
+    std::string value(init.data(), init.size());
+    if (is_bool) {
+      value = e->getInitVal().getBoolValue() ? "true" : "false";
+    }
+    StrCat(
+        std::format("pub const {}: {} = {};", EnumeratorName(e), name, value));
   }
   return false;
 }
