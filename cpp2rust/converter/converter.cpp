@@ -3029,19 +3029,9 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   }
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
-  bool branch_is_addr =
-      expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
-  bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
-    if (branch_is_addr) {
-      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
-    }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
-                                                         : autoref_mut_);
-    Convert(expr->getTrueExpr(), branch_is_addr
-                                     ? std::nullopt
-                                     : std::make_optional(expr->getType()));
+    Convert(expr->getTrueExpr(), expr->getType());
     if (expr->getType()->isVoidType()) {
       StrCat(token::kSemiColon);
     }
@@ -3049,14 +3039,7 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    if (branch_is_addr) {
-      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
-    }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
-                                                         : autoref_mut_);
-    Convert(expr->getFalseExpr(), branch_is_addr
-                                      ? std::nullopt
-                                      : std::make_optional(expr->getType()));
+    Convert(expr->getFalseExpr(), expr->getType());
     if (expr->getType()->isVoidType()) {
       StrCat(token::kSemiColon);
     }
