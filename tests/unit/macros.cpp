@@ -11,7 +11,7 @@ const char *function() { return __builtin_FUNCTION(); }
 int main() {
   printf("%s %d %s\n", __FILE__, __LINE__, __FUNCTION__);
   log(__FILE__, __LINE__, __FUNCTION__);
-  log(__builtin_FILE(), __builtin_LINE(), __builtin_FUNCTION());
+  log(__FILE__, __builtin_LINE(), __builtin_FUNCTION());
   printf("%d %s\n", line(), function());
   return 0;
 }
