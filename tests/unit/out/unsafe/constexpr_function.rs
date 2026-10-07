@@ -63,6 +63,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut runtime_context: bool = (unsafe { in_constant_context_6() });
+    assert!(!(runtime_context));
     let mut arr: [i32; 2] = [7, 8];
     assert!(((unsafe { first_1((arr.as_mut_ptr()).cast_const(),) }) == (7)));
     assert!(((unsafe { first_1((arr.as_mut_ptr().offset((1) as isize)).cast_const(),) }) == (8)));
