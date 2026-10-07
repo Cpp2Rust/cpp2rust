@@ -59,7 +59,7 @@ fn main_0() -> i32 {
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
             .to_any()
-            .memset((0) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+            .memset((0) as u8, 4usize as usize);
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
     let mut ru: Ptr<basic> = (buf.as_pointer() as Ptr<u8>).reinterpret_cast::<basic>();

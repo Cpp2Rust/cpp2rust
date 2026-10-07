@@ -25,23 +25,19 @@ fn main_0() -> i32 {
             let mut __min = __i;
             for __j in (__i + 1)..8_usize {
                 if cmp_int_0(
-                    __base.offset(__j * ::std::mem::size_of::<i32>()).to_any(),
-                    __base.offset(__min * ::std::mem::size_of::<i32>()).to_any(),
+                    __base.offset(__j * 4usize).to_any(),
+                    __base.offset(__min * 4usize).to_any(),
                 ) < 0
                 {
                     __min = __j;
                 }
             }
             if __min != __i {
-                for __b in 0..::std::mem::size_of::<i32>() {
-                    let __x = __base
-                        .offset(__i * ::std::mem::size_of::<i32>() + __b)
-                        .read();
-                    let __y = __base
-                        .offset(__min * ::std::mem::size_of::<i32>() + __b)
-                        .read();
-                    elem!(__base, __i * ::std::mem::size_of::<i32>() + __b).write(__y);
-                    elem!(__base, __min * ::std::mem::size_of::<i32>() + __b).write(__x);
+                for __b in 0..4usize {
+                    let __x = __base.offset(__i * 4usize + __b).read();
+                    let __y = __base.offset(__min * 4usize + __b).read();
+                    elem!(__base, __i * 4usize + __b).write(__y);
+                    elem!(__base, __min * 4usize + __b).write(__x);
                 }
             }
         }
@@ -63,7 +59,7 @@ fn main_0() -> i32 {
         let mut __found = AnyPtr::default();
         while __lo <= __hi && __found.is_null() {
             let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+            let __elem = __base.offset(__mid as usize * 4usize);
             let __r = cmp_int_0(
                 ((key.as_pointer()) as Ptr<i32>).to_any().clone(),
                 __elem.to_any(),
@@ -91,7 +87,7 @@ fn main_0() -> i32 {
         let mut __found = AnyPtr::default();
         while __lo <= __hi && __found.is_null() {
             let __mid = __lo + (__hi - __lo) / 2;
-            let __elem = __base.offset(__mid as usize * ::std::mem::size_of::<i32>());
+            let __elem = __base.offset(__mid as usize * 4usize);
             let __r = cmp_int_0(
                 ((miss_key.as_pointer()) as Ptr<i32>).to_any().clone(),
                 __elem.to_any(),

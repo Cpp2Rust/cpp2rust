@@ -171,7 +171,7 @@ fn main_0() -> i32 {
                     a
                 )) as Ptr<i32>)
                     .to_any(),
-                ::std::mem::size_of::<i32>() as usize,
+                4usize as usize,
             );
         ((field_ptr!(
             (array_field_ptr!(o.as_pointer(), items) as Ptr<Inner>).offset((2) as isize),
@@ -186,7 +186,7 @@ fn main_0() -> i32 {
                 a
             )) as Ptr<i32>)
                 .to_any(),
-            ::std::mem::size_of::<i32>() as usize,
+            4usize as usize,
         );
         ((y.as_pointer()) as Ptr<i32>).to_any()
     };

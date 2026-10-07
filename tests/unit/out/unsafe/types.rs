@@ -6,6 +6,14 @@ use std::collections::BTreeMap;
 use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
+const _: () = assert!(
+    ((::std::mem::size_of::<usize>()) == (::std::mem::size_of::<*mut ::libc::c_void>())),
+    "sizeof(std::size_t) == sizeof(void *)"
+);
+const _: () = assert!(
+    ((::std::mem::size_of::<*mut i32>()) == (8_usize)),
+    "sizeof(int *) == 8"
+);
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -42,6 +50,10 @@ unsafe fn main_0() -> i32 {
             == (352_u64))
     );
     assert!((((xld) * (2_f64)) == (3_f64)));
+    let mut ip: *mut i32 = std::ptr::null_mut();
+    assert!(
+        ((::std::mem::size_of::<*mut i32>()) == (::std::mem::size_of::<*mut ::libc::c_void>()))
+    );
     assert!(((((((xwc) + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32)) == (266_u32)));
     assert!((std::ptr::null_mut::<::libc::c_void>()).is_null());
     return 0;

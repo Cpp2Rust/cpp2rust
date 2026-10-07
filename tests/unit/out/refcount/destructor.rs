@@ -273,8 +273,7 @@ impl Templated_char_Impl for Ptr<Templated_char_> {
     fn destructor(&self) {
         global_0.with(|rc| {
             *rc.borrow_mut() = {
-                ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<i8>() as usize))) as i32
+                ((global_0.with(|rc| *rc.borrow()) as usize).wrapping_add((1usize as usize))) as i32
             }
         });
     }
@@ -286,8 +285,7 @@ impl Templated_int_Impl for Ptr<Templated_int_> {
     fn destructor(&self) {
         global_0.with(|rc| {
             *rc.borrow_mut() = {
-                ((global_0.with(|rc| *rc.borrow()) as usize)
-                    .wrapping_add((::std::mem::size_of::<i32>() as usize))) as i32
+                ((global_0.with(|rc| *rc.borrow()) as usize).wrapping_add((4usize as usize))) as i32
             }
         });
     }

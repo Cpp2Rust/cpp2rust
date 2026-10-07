@@ -19,8 +19,8 @@ fn main_0() -> i32 {
                 &[(-3_i32).into(), (7_u32).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -85,8 +85,8 @@ fn main_0() -> i32 {
                 &[(42).into(), (255).into(), (255).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -118,8 +118,8 @@ fn main_0() -> i32 {
                 &[(3.14159E+0).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -151,8 +151,8 @@ fn main_0() -> i32 {
                 &[(Ptr::<i8>::from_string_literal(b"ab")).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -184,8 +184,8 @@ fn main_0() -> i32 {
                 &[(65).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -217,8 +217,8 @@ fn main_0() -> i32 {
                 &[(5).into(), (5).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -250,8 +250,8 @@ fn main_0() -> i32 {
                 &[(-1_i64).into(), (1_u64).into(), (9 as usize).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -283,8 +283,8 @@ fn main_0() -> i32 {
                 &[(1.2345678E+3).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -316,8 +316,8 @@ fn main_0() -> i32 {
                 &[(1.234567E+6).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }
@@ -374,8 +374,8 @@ fn main_0() -> i32 {
                 &[(3.26E+0).into()],
             );
             let __b = __s.as_bytes();
-            if ::std::mem::size_of::<[i8; 32]>() > 0 {
-                let __n = ::std::cmp::min(__b.len(), ::std::mem::size_of::<[i8; 32]>() - 1);
+            if 32usize > 0 {
+                let __n = ::std::cmp::min(__b.len(), 32usize - 1);
                 (buf.as_pointer() as Ptr<i8>).write_c_bytes(&__b[..__n]);
                 elem!((buf.as_pointer() as Ptr::<i8>), __n).write(0);
             }

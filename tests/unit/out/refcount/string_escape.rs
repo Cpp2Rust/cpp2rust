@@ -60,10 +60,7 @@ fn main_0() -> i32 {
         ])));
     );
     let mut i: i32 = 0;
-    'loop_: while (i
-        < (((::std::mem::size_of::<[i8; 41]>() as usize)
-            .wrapping_div((::std::mem::size_of::<i8>() as usize))) as i32))
-    {
+    'loop_: while (i < (((41usize as usize).wrapping_div((1usize as usize))) as i32)) {
         assert!(
             ({ ((elem!(special, i).read()) as i32) } == {
                 (({

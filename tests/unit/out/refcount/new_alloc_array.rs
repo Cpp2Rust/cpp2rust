@@ -16,7 +16,7 @@ fn main_0() -> i32 {
     {
         (array).to_any().memset(
             (0) as u8,
-            (::std::mem::size_of::<i32>() as usize).wrapping_mul(100_usize) as usize,
+            (4usize as usize).wrapping_mul(100_usize) as usize,
         );
         (array).to_any()
     };

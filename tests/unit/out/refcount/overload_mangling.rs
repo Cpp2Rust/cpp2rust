@@ -254,10 +254,10 @@ impl SImpl for Ptr<S> {
             + { (q.read()) });
     }
     fn width_1_char(&self, mut x: i32) -> i32 {
-        return ((*self).with(|__s| __s.base) + (x * (::std::mem::size_of::<i8>() as i32)));
+        return ((*self).with(|__s| __s.base) + (x * (1usize as i32)));
     }
     fn width_1_int(&self, mut x: i32) -> i32 {
-        return ((*self).with(|__s| __s.base) + (x * (::std::mem::size_of::<i32>() as i32)));
+        return ((*self).with(|__s| __s.base) + (x * (4usize as i32)));
     }
     fn scale_2_2(&self, mut x: i32) -> i32 {
         return ((*self).with(|__s| __s.base) + (x * 2));

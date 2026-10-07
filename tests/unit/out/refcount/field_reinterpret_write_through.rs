@@ -126,7 +126,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset((0_usize) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((16) as u8))
+            set_bytes_0(_p, 4usize, ((16) as u8))
         });
         assert!(
             ((((s).with(|__s| __s.x)
@@ -137,7 +137,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((16) as u8))
+                all_bytes_1(_p, 4usize, ((16) as u8))
             }) != 0)
         );
         field!((s), x).write(
@@ -147,20 +147,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((16) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((16) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((16) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
+            set_bytes_0(_p, 4usize, _v)
         });
         assert!(
             ((((s).with(|__s| __s.x)
@@ -172,7 +172,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((16) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         field!((s), x).write(
@@ -182,14 +182,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((16) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((16) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
     }
@@ -202,7 +202,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((4_usize as usize).wrapping_add((0_usize as usize))) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i16>(), ((32) as u8))
+            set_bytes_0(_p, 2usize, ((32) as u8))
         });
         assert!(
             (((((s).with(|__s| __s.in_.a) as i32)
@@ -213,7 +213,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), ((32) as u8))
+                all_bytes_1(_p, 2usize, ((32) as u8))
             }) != 0)
         );
         field!(field!((s), in_), a).write(
@@ -223,20 +223,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((32) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), _v)
+                all_bytes_1(_p, 2usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((32) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), _v)
+                all_bytes_1(_p, 2usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((32) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i16>(), _v)
+            set_bytes_0(_p, 2usize, _v)
         });
         assert!(
             (((((s).with(|__s| __s.in_.a) as i32)
@@ -248,7 +248,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((32) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), _v)
+                all_bytes_1(_p, 2usize, _v)
             }) != 0)
         );
         field!(field!((s), in_), a).write(
@@ -258,14 +258,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((32) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), _v)
+                all_bytes_1(_p, 2usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((32) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i16>(), _v)
+                all_bytes_1(_p, 2usize, _v)
             }) != 0)
         );
     }
@@ -278,7 +278,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((4_usize as usize).wrapping_add((4_usize as usize))) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((48) as u8))
+            set_bytes_0(_p, 4usize, ((48) as u8))
         });
         assert!(
             ((((s).with(|__s| __s.in_.b)
@@ -289,7 +289,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((48) as u8))
+                all_bytes_1(_p, 4usize, ((48) as u8))
             }) != 0)
         );
         field!(field!((s), in_), b).write(
@@ -299,20 +299,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((48) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((48) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((48) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
+            set_bytes_0(_p, 4usize, _v)
         });
         assert!(
             ((((s).with(|__s| __s.in_.b)
@@ -324,7 +324,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((48) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         field!(field!((s), in_), b).write(
@@ -334,14 +334,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((48) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((48) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
     }
@@ -355,7 +355,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((12_usize as usize).wrapping_add(0_usize)) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
+            set_bytes_0(_p, 1usize, ((64) as u8))
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).read()) as i32)
@@ -366,7 +366,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((64) as u8))
+                all_bytes_1(_p, 1usize, ((64) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).write(
@@ -376,20 +376,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((64) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((64) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((64) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
+            set_bytes_0(_p, 1usize, _v)
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).read()) as i32)
@@ -401,7 +401,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((64) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 0).write(
@@ -411,14 +411,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((64) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((64) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
     }
@@ -432,7 +432,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((12_usize as usize).wrapping_add(1_usize)) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
+            set_bytes_0(_p, 1usize, ((80) as u8))
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).read()) as i32)
@@ -443,7 +443,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((80) as u8))
+                all_bytes_1(_p, 1usize, ((80) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).write(
@@ -453,20 +453,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((80) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((80) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((80) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
+            set_bytes_0(_p, 1usize, _v)
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).read()) as i32)
@@ -478,7 +478,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((80) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 1).write(
@@ -488,14 +488,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((80) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((80) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
     }
@@ -509,7 +509,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((12_usize as usize).wrapping_add(2_usize)) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
+            set_bytes_0(_p, 1usize, ((96) as u8))
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).read()) as i32)
@@ -520,7 +520,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((96) as u8))
+                all_bytes_1(_p, 1usize, ((96) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).write(
@@ -530,20 +530,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((96) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((96) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((96) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
+            set_bytes_0(_p, 1usize, _v)
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).read()) as i32)
@@ -555,7 +555,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((96) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 2).write(
@@ -565,14 +565,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((96) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((96) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
     }
@@ -586,7 +586,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             .offset(((12_usize as usize).wrapping_add(3_usize)) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
+            set_bytes_0(_p, 1usize, ((112) as u8))
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).read()) as i32)
@@ -597,7 +597,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), ((112) as u8))
+                all_bytes_1(_p, 1usize, ((112) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).write(
@@ -607,20 +607,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((112) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((112) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((112) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<u8>(), _v)
+            set_bytes_0(_p, 1usize, _v)
         });
         assert!(
             (((((elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).read()) as i32)
@@ -632,7 +632,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((112) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), bytes) as Ptr::<u8>), 3).write(
@@ -642,14 +642,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((112) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((112) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<u8>(), _v)
+                all_bytes_1(_p, 1usize, _v)
             }) != 0)
         );
     }
@@ -659,13 +659,12 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         let mut fb: Ptr<u8> = ((array_field_ptr!((s), arr) as Ptr<i32>).offset((0) as isize))
             .reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset(
-            ((16_usize as usize).wrapping_add(
-                ((0_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as usize),
-            )) as isize,
+            ((16_usize as usize).wrapping_add(((0_usize).wrapping_mul((4usize as usize)) as usize)))
+                as isize,
         );
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
+            set_bytes_0(_p, 4usize, ((128) as u8))
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).read())
@@ -676,7 +675,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((128) as u8))
+                all_bytes_1(_p, 4usize, ((128) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).write(
@@ -686,20 +685,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((128) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((128) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((128) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
+            set_bytes_0(_p, 4usize, _v)
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).read())
@@ -711,7 +710,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((128) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 0).write(
@@ -721,14 +720,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((128) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((128) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
     }
@@ -738,13 +737,12 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         let mut fb: Ptr<u8> = ((array_field_ptr!((s), arr) as Ptr<i32>).offset((1) as isize))
             .reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset(
-            ((16_usize as usize).wrapping_add(
-                ((1_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as usize),
-            )) as isize,
+            ((16_usize as usize).wrapping_add(((1_usize).wrapping_mul((4usize as usize)) as usize)))
+                as isize,
         );
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
+            set_bytes_0(_p, 4usize, ((144) as u8))
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).read())
@@ -755,7 +753,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((144) as u8))
+                all_bytes_1(_p, 4usize, ((144) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).write(
@@ -765,20 +763,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((144) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((144) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((144) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
+            set_bytes_0(_p, 4usize, _v)
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).read())
@@ -790,7 +788,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((144) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 1).write(
@@ -800,14 +798,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((144) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((144) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
     }
@@ -817,13 +815,12 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         let mut fb: Ptr<u8> = ((array_field_ptr!((s), arr) as Ptr<i32>).offset((2) as isize))
             .reinterpret_cast::<u8>();
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset(
-            ((16_usize as usize).wrapping_add(
-                ((2_usize).wrapping_mul((::std::mem::size_of::<i32>() as usize)) as usize),
-            )) as isize,
+            ((16_usize as usize).wrapping_add(((2_usize).wrapping_mul((4usize as usize)) as usize)))
+                as isize,
         );
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
+            set_bytes_0(_p, 4usize, ((8) as u8))
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).read())
@@ -834,7 +831,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), ((8) as u8))
+                all_bytes_1(_p, 4usize, ((8) as u8))
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).write(
@@ -844,20 +841,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((8) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((8) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((8) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i32>(), _v)
+            set_bytes_0(_p, 4usize, _v)
         });
         assert!(
             ((((elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).read())
@@ -869,7 +866,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((8) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         elem!((array_field_ptr!((s), arr) as Ptr::<i32>), 2).write(
@@ -879,14 +876,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((8) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((8) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i32>(), _v)
+                all_bytes_1(_p, 4usize, _v)
             }) != 0)
         );
     }
@@ -897,7 +894,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         let mut sb: Ptr<u8> = (s).reinterpret_cast::<u8>().offset((32_usize) as isize);
         ({
             let _p: Ptr<u8> = (fb).clone();
-            set_bytes_0(_p, ::std::mem::size_of::<i64>(), ((24) as u8))
+            set_bytes_0(_p, 8usize, ((24) as u8))
         });
         assert!(
             ((((s).with(|__s| __s.tail)
@@ -908,7 +905,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), ((24) as u8))
+                all_bytes_1(_p, 8usize, ((24) as u8))
             }) != 0)
         );
         field!((s), tail).write(
@@ -918,20 +915,20 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((24) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), _v)
+                all_bytes_1(_p, 8usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((24) + 1) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), _v)
+                all_bytes_1(_p, 8usize, _v)
             }) != 0)
         );
         ({
             let _p: Ptr<u8> = (sb).clone();
             let _v: u8 = (((24) + 2) as u8);
-            set_bytes_0(_p, ::std::mem::size_of::<i64>(), _v)
+            set_bytes_0(_p, 8usize, _v)
         });
         assert!(
             ((((s).with(|__s| __s.tail)
@@ -943,7 +940,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((24) + 2) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), _v)
+                all_bytes_1(_p, 8usize, _v)
             }) != 0)
         );
         field!((s), tail).write(
@@ -953,14 +950,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
             (({
                 let _p: Ptr<u8> = (sb).clone();
                 let _v: u8 = (((24) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), _v)
+                all_bytes_1(_p, 8usize, _v)
             }) != 0)
         );
         assert!(
             (({
                 let _p: Ptr<u8> = (fb).clone();
                 let _v: u8 = (((24) + 3) as u8);
-                all_bytes_1(_p, ::std::mem::size_of::<i64>(), _v)
+                all_bytes_1(_p, 8usize, _v)
             }) != 0)
         );
     }
@@ -986,7 +983,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         (({
             all_bytes_1(
                 (field_ptr!(field_ptr!(s, in_), a)).reinterpret_cast::<u8>(),
-                ::std::mem::size_of::<i16>(),
+                2usize,
                 35_u8,
             )
         }) != 0)
@@ -995,14 +992,14 @@ pub fn check_struct_3(mut s: Ptr<S>) {
         (({
             all_bytes_1(
                 (field_ptr!(field_ptr!(s, in_), b)).reinterpret_cast::<u8>(),
-                ::std::mem::size_of::<i32>(),
+                4usize,
                 51_u8,
             )
         }) != 0)
     );
     ({
         let _p: Ptr<u8> = (array_field_ptr!(s, arr) as Ptr<i32>).reinterpret_cast::<u8>();
-        let _n: usize = ::std::mem::size_of::<[i32; 3]>();
+        let _n: usize = 12usize;
         set_bytes_0(_p, _n, 133_u8)
     });
     assert!(
@@ -1018,7 +1015,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     );
     ({
         let _p: Ptr<u8> = ((array_field_ptr!(s, arr)) as Ptr<i32>).reinterpret_cast::<u8>();
-        let _n: usize = ::std::mem::size_of::<[i32; 3]>();
+        let _n: usize = 12usize;
         set_bytes_0(_p, _n, 134_u8)
     });
     assert!(
@@ -1038,7 +1035,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     assert!(
         (({
             let _p: Ptr<u8> = (array_field_ptr!(s, bytes) as Ptr<u8>);
-            let _n: usize = ::std::mem::size_of::<[u8; 4]>();
+            let _n: usize = 4usize;
             all_bytes_1(_p, _n, 69_u8)
         }) != 0)
     );
@@ -1061,7 +1058,7 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     {
         ((field_ptr!(s, x)) as Ptr<i32>).to_any().memcpy(
             &((twelve.as_pointer()) as Ptr<i32>).to_any(),
-            ::std::mem::size_of::<i32>() as usize,
+            4usize as usize,
         );
         ((field_ptr!(s, x)) as Ptr<i32>).to_any()
     };
@@ -1069,13 +1066,13 @@ pub fn check_struct_3(mut s: Ptr<S>) {
     {
         ((field_ptr!(field_ptr!(s, in_), b)) as Ptr<i32>)
             .to_any()
-            .memset((51) as u8, ::std::mem::size_of::<i32>() as usize);
+            .memset((51) as u8, 4usize as usize);
         ((field_ptr!(field_ptr!(s, in_), b)) as Ptr<i32>).to_any()
     };
     {
         ((field_ptr!(s, x)) as Ptr<i32>)
             .to_any()
-            .memset((19) as u8, ::std::mem::size_of::<i32>() as usize);
+            .memset((19) as u8, 4usize as usize);
         ((field_ptr!(s, x)) as Ptr<i32>).to_any()
     };
     ({ check_final_2((s).clone()) });
@@ -1127,7 +1124,7 @@ fn main_0() -> i32 {
     assert!((((((elem!(raw_, 32_usize).read()) as i32) == 27) as i32) != 0));
     ({
         let _p: Ptr<u8> = raw_.offset((16_usize) as isize);
-        set_bytes_0(_p, ::std::mem::size_of::<i32>(), 119_u8)
+        set_bytes_0(_p, 4usize, 119_u8)
     });
     assert!(
         ((((elem!((array_field_ptr!(view, arr) as Ptr::<i32>), 0).read())

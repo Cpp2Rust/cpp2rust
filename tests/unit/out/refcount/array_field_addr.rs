@@ -37,7 +37,7 @@ fn main_0() -> i32 {
     {
         ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>)
             .to_any()
-            .memset((5) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+            .memset((5) as u8, 4usize as usize);
         ((array_field_ptr!(s, mask) as Ptr<u8>) as Ptr<u8>).to_any()
     };
     field!(s, after).write(2);
@@ -46,7 +46,7 @@ fn main_0() -> i32 {
     {
         ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any().memcpy(
             &((array_field_ptr!(s, mask)) as Ptr<u8>).to_any(),
-            ::std::mem::size_of::<[u8; 4]>() as usize,
+            4usize as usize,
         );
         ((out.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
     };
