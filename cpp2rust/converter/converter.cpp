@@ -3002,36 +3002,29 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   return false;
 }
 
-// `c ? a : b` -> `c ? &a : &b`
-clang::ConditionalOperator *
-Converter::MakeConditionalAddrOf(clang::ConditionalOperator *expr) {
-  auto addr_of = [&](clang::Expr *branch) {
-    return clang::UnaryOperator::Create(
-        ctx_, branch, clang::UO_AddrOf, ctx_.getPointerType(branch->getType()),
-        clang::VK_PRValue, clang::OK_Ordinary, branch->getExprLoc(), false,
-        clang::FPOptionsOverride());
-  };
-  return new (ctx_) clang::ConditionalOperator(
-      expr->getCond(), expr->getQuestionLoc(), addr_of(expr->getTrueExpr()),
-      expr->getColonLoc(), addr_of(expr->getFalseExpr()),
-      ctx_.getPointerType(expr->getType()), clang::VK_PRValue,
-      clang::OK_Ordinary);
-}
-
-bool Converter::ConvertConditionalAsDeref(clang::ConditionalOperator *expr) {
-  if (!expr->isLValue() || !isLValue() || expr->getType()->isFunctionType()) {
+bool Converter::ConvertLValueConditional(clang::ConditionalOperator *expr) {
+  if (!expr->isLValue() || expr->getType()->isFunctionType()) {
     return false;
   }
-  // Rewrite `(c ? a : b) = v` as `*(c ? &a : &b) = v`
-  Convert(clang::UnaryOperator::Create(
-      ctx_, MakeConditionalAddrOf(expr), clang::UO_Deref, expr->getType(),
-      clang::VK_LValue, clang::OK_Ordinary, expr->getExprLoc(), false,
-      clang::FPOptionsOverride()));
-  return true;
+  // `&(c ? a : b)` -> `c ? &a : &b`
+  if (isAddrOf()) {
+    PushExprKind push(*this, ExprKind::RValue);
+    Convert(MakeConditionalAddrOf(ctx_, expr));
+    return true;
+  }
+  // `(c ? a : b) = v` -> `*(c ? &a : &b) = v`
+  if (isLValue()) {
+    Convert(clang::UnaryOperator::Create(
+        ctx_, MakeConditionalAddrOf(ctx_, expr), clang::UO_Deref,
+        expr->getType(), clang::VK_LValue, clang::OK_Ordinary,
+        expr->getExprLoc(), false, clang::FPOptionsOverride()));
+    return true;
+  }
+  return false;
 }
 
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
-  if (ConvertConditionalAsDeref(expr)) {
+  if (ConvertLValueConditional(expr)) {
     return false;
   }
   StrCat(keyword::kIf);
@@ -3041,7 +3034,7 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
-    if (branch_is_addr && !isAddrOf()) {
+    if (branch_is_addr) {
       StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
@@ -3056,7 +3049,7 @@ bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    if (branch_is_addr && !isAddrOf()) {
+    if (branch_is_addr) {
       StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
     }
     PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
@@ -4291,8 +4284,8 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
             expr->IgnoreParenImpCasts());
         cond && cond->isLValue()) {
-      PushExprKind push(*this, ExprKind::RValue);
-      Convert(MakeConditionalAddrOf(cond));
+      PushExprKind push(*this, ExprKind::AddrOf);
+      Convert(cond);
       return;
     }
     StrCat(token::kRef);
@@ -4874,16 +4867,10 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
       return;
     }
   }
-  if (auto *cond =
-          clang::dyn_cast<clang::ConditionalOperator>(expr->IgnoreParens());
-      cond && cond->isLValue()) {
-    // `&(c ? a : b)` -> `c ? &a : &b`
-    PushExprKind push(*this, ExprKind::RValue);
-    Convert(MakeConditionalAddrOf(cond));
-    computed_expr_type_ = ComputedExprType::FreshPointer;
-    return;
-  }
-  if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
+  auto *cond =
+      clang::dyn_cast<clang::ConditionalOperator>(expr->IgnoreParens());
+  if (IsReferenceType(expr) || pointer_type->isFunctionPointerType() ||
+      (cond && cond->isLValue())) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
   } else if (IsGlobalVar(expr)) {

@@ -1326,6 +1326,23 @@ bool IsMethodOnPtr(const clang::CXXMethodDecl *method) {
   return true;
 }
 
+// `c ? a : b` -> `c ? &a : &b`
+clang::ConditionalOperator *
+MakeConditionalAddrOf(clang::ASTContext &ctx,
+                      clang::ConditionalOperator *expr) {
+  auto addr_of = [&](clang::Expr *branch) {
+    return clang::UnaryOperator::Create(
+        ctx, branch, clang::UO_AddrOf, ctx.getPointerType(branch->getType()),
+        clang::VK_PRValue, clang::OK_Ordinary, branch->getExprLoc(), false,
+        clang::FPOptionsOverride());
+  };
+  return new (ctx) clang::ConditionalOperator(
+      expr->getCond(), expr->getQuestionLoc(), addr_of(expr->getTrueExpr()),
+      expr->getColonLoc(), addr_of(expr->getFalseExpr()),
+      ctx.getPointerType(expr->getType()), clang::VK_PRValue,
+      clang::OK_Ordinary);
+}
+
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr) {
   return clang::UnaryOperator::Create(
       ctx, expr, clang::UnaryOperatorKind::UO_AddrOf, expr->getType(),

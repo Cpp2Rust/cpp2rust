@@ -401,10 +401,7 @@ public:
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
 
-  clang::ConditionalOperator *
-  MakeConditionalAddrOf(clang::ConditionalOperator *expr);
-
-  bool ConvertConditionalAsDeref(clang::ConditionalOperator *expr);
+  bool ConvertLValueConditional(clang::ConditionalOperator *expr);
 
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
