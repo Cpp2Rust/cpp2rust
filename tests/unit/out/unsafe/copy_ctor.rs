@@ -88,6 +88,26 @@ pub struct Holder {
     pub c: Counted,
     pub arr: [Counted; 2],
 }
+#[repr(C)]
+#[derive(Default)]
+pub struct Box_int_ {
+    pub val: i32,
+}
+impl Box_int_ {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { val: v };
+        this
+    }
+    pub unsafe fn move_from(_a0: *mut Box_int_) -> Self {
+        let mut this = Self { val: (*_a0).val };
+        this
+    }
+}
+#[repr(C)]
+#[derive(Default)]
+pub struct Owner {
+    pub box_: Box_int_,
+}
 pub unsafe fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -141,6 +161,11 @@ unsafe fn main_0() -> i32 {
     let mut i2: Ignored = Ignored::copy_from({ &i1 });
     assert!(((i1.v) == (1)) && ((i2.v) == (-1_i32)));
     assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (11)));
+    let mut o: Owner = Owner {
+        box_: Box_int_::new({ 3 }),
+    };
+    let mut o2: Owner = o.clone();
+    assert!(((o2.box_.val) == (3)));
     let mut n: NonConst = NonConst::new();
     let mut n1: NonConst = NonConst::new_1({ &mut n });
     let cn: NonConst = NonConst::new();

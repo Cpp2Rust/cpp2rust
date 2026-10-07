@@ -111,6 +111,30 @@ impl Default for Holder {
         }
     }
 }
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
+pub struct Box_int_ {
+    #[offset(0)]
+    pub val: i32,
+}
+impl Box_int_ {
+    pub fn new(v: i32) -> Self {
+        let v: Value<i32> = Rc::new(RefCell::new(v));
+        Self { val: (*v.borrow()) }
+    }
+    pub fn move_from(_a0: Ptr<Box_int_>) -> Self {
+        Self {
+            val: { (*_a0.upgrade().deref()).val },
+        }
+    }
+}
+#[derive(Record, ByteRepr, Default)]
+#[byte_size(4)]
+pub struct Owner {
+    #[offset(0)]
+    #[byte_size(4)]
+    pub box_: Box_int_,
+}
 pub fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -176,6 +200,11 @@ fn main_0() -> i32 {
     let mut i2: Ignored = Ignored::copy_from({ i1.as_pointer() });
     assert!(({ (*i1.borrow()).v } == 1) && (i2.v == -1_i32));
     assert!((copies_0.with(|rc| *rc.borrow()) == 11));
+    let o: Value<Owner> = Rc::new(RefCell::new(Owner {
+        box_: Box_int_::new({ 3 }),
+    }));
+    let mut o2: Owner = (*o.borrow()).clone();
+    assert!((o2.box_.val == 3));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
     let mut n1: NonConst = NonConst::new_1({ n.as_pointer() });
     let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
