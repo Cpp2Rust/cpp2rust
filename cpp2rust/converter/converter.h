@@ -503,6 +503,10 @@ public:
     return true;
   }
 
+  bool TraverseExplicitInstantiationDecl(clang::ExplicitInstantiationDecl *) {
+    return true;
+  }
+
   virtual bool
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
 
