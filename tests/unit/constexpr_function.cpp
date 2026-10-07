@@ -43,6 +43,8 @@ struct P {
 };
 
 int main() {
+  bool runtime_context = in_constant_context();
+  assert(!runtime_context);
   int arr[2] = {7, 8};
   assert(first(arr) == 7);
   assert(first(arr + 1) == 8);
