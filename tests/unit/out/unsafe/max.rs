@@ -49,13 +49,13 @@ unsafe fn main_0() -> i32 {
         })
     };
     assert!(((((((r1) + (r2)) + (r3)) + (r4)) + (r5)) == (56)));
-    let mut values: Vec<i32> = vec![1, 7, 7, 3];
-    let mut max: *mut i32 = (unsafe {
-        let ___first: *mut i32 = values.as_mut_ptr();
-        let ___last: *mut i32 = values.as_mut_ptr().add(values.len());
+    let values: Vec<i32> = vec![1, 7, 7, 3];
+    let mut max: *const i32 = (unsafe {
+        let ___first: *const i32 = values.as_ptr();
+        let ___last: *const i32 = values.as_ptr().add(values.len());
         max_element_0(___first, ___last)
     });
-    assert!(max == values.as_mut_ptr().add(1_i64 as usize));
+    assert!(max == values.as_ptr().add(1_i64 as usize));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}
