@@ -3400,7 +3400,7 @@ void ConverterRefCount::ConvertCXXRecordMethods(clang::CXXRecordDecl *decl) {
                         });
 
   auto convert_method = [&](clang::CXXMethodDecl *method) {
-    if (IsMethodOnPtr(method)) {
+    if (IsMethodOnPtr(method) && !method->getReturnType()->isUndeducedType()) {
       ConvertMethodOnPtrTraitDecl(method);
       ConvertMethodOnPtr(method);
     }
