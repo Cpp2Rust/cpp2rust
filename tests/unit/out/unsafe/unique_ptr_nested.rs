@@ -13,7 +13,7 @@ pub struct Inner {
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct Outer {
     pub inner: Option<Box<Inner>>,
 }

@@ -109,7 +109,7 @@ impl Clone for UserCopyDefaultMove {
         UserCopyDefaultMove::copy_from(__src.as_pointer())
     }
 }
-#[derive(Record, ByteRepr)]
+#[derive(Record, ByteRepr, FnPtrArg)]
 #[byte_size(64)]
 pub struct Buffer {
     #[offset(0)]
@@ -167,7 +167,7 @@ impl Default for Buffer {
         }
     }
 }
-#[derive(Record, ByteRepr)]
+#[derive(Record, ByteRepr, FnPtrArg)]
 #[byte_size(48)]
 pub struct Owner {
     #[offset(0)]
@@ -206,7 +206,7 @@ impl Default for Owner {
         }
     }
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, Default)]
 #[byte_size(32)]
 pub struct Holder {
     #[offset(0)]

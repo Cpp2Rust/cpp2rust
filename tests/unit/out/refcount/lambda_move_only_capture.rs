@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, Default)]
 #[byte_size(8)]
 pub struct Owner {
     #[offset(0)]

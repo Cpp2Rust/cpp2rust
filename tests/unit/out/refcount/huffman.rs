@@ -44,7 +44,7 @@ pub fn Swap_0(a: Ptr<MinHeapNode>, b: Ptr<MinHeapNode>) {
         }
     });
 }
-#[derive(Record, ByteRepr, Default)]
+#[derive(Record, ByteRepr, FnPtrArg, Default)]
 #[byte_size(32)]
 pub struct MinHeap {
     #[offset(0)]

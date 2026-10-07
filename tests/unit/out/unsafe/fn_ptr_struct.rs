@@ -33,7 +33,7 @@ impl S {
     }
 }
 #[repr(C)]
-#[derive(Default)]
+#[derive(FnPtrArg, Default)]
 pub struct MoveOnly {
     pub data_: i32,
 }
