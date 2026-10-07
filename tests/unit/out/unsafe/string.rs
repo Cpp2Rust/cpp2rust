@@ -13,6 +13,8 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut empty: Vec<libc::c_char> = vec![0];
+    assert!(((empty.len() - 1) == (0_usize)));
     let mut s1: Vec<libc::c_char> = {
         let s = c"hello".as_ptr();
         std::slice::from_raw_parts(s, (0..).take_while(|&i| *s.add(i) != 0).count() + 1).to_vec()
