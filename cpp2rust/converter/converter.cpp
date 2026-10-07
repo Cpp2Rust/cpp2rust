@@ -1382,13 +1382,15 @@ bool Converter::VisitIfStmt(clang::IfStmt *stmt) {
     stmt->setInit(init);
     return false;
   }
-  StrCat(keyword::kIf);
-  if (auto *cond = clang::dyn_cast<clang::ConstantExpr>(stmt->getCond());
-      cond && stmt->isConstexpr()) {
-    StrCat(cond->getResultAsAPSInt() != 0 ? keyword::kTrue : keyword::kFalse);
-  } else {
-    ConvertCondition(stmt->getCond());
+  if (bool taken = false;
+      !stmt->getConditionVariable() && !stmt->isConsteval() &&
+      !stmt->getCond()->isValueDependent() &&
+      stmt->getCond()->EvaluateAsBooleanCondition(taken, ctx_)) {
+    ConvertBody(taken ? stmt->getThen() : stmt->getElse());
+    return false;
   }
+  StrCat(keyword::kIf);
+  ConvertCondition(stmt->getCond());
   ConvertBody(stmt->getThen());
   if (stmt->hasElseStorage()) {
     StrCat(keyword::kElse);
