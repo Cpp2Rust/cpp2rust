@@ -66,6 +66,30 @@ fn main_0() -> i32 {
             != 0)
     );
     libcc2rs::free_refcount((f).to_any());
+    let mut g: Ptr<F> =
+        libcc2rs::malloc_refcount((4usize as usize).wrapping_add(8_usize)).reinterpret_cast::<F>();
+    assert!((((!((g).is_null())) as i32) != 0));
+    field!(g, n).write(8);
+    {
+        ((array_field_ptr!(g, tail) as Ptr<i8>) as Ptr<i8>)
+            .to_any()
+            .memcpy(
+                &Ptr::<i8>::from_string_literal(b"abcdefg").to_any(),
+                8_usize as usize,
+            );
+        ((array_field_ptr!(g, tail) as Ptr<i8>) as Ptr<i8>).to_any()
+    };
+    assert!(
+        (((((elem!((array_field_ptr!(g, tail) as Ptr::<i8>), 6).read()) as i32) == ('g' as i32))
+            as i32)
+            != 0)
+    );
+    assert!(
+        (((((elem!((array_field_ptr!(g, tail) as Ptr::<i8>), 7).read()) as i32) == ('\0' as i32))
+            as i32)
+            != 0)
+    );
+    libcc2rs::free_refcount((g).to_any());
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
