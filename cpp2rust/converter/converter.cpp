@@ -1338,7 +1338,8 @@ bool Converter::VisitCompoundStmt(clang::CompoundStmt *stmt) {
 
 bool Converter::VisitDeclStmt(clang::DeclStmt *stmt) {
   for (auto *decl : stmt->decls()) {
-    if (clang::isa<clang::TagDecl>(decl)) {
+    auto *var = clang::dyn_cast<clang::VarDecl>(decl);
+    if (clang::isa<clang::TagDecl>(decl) || (var && var->isStaticLocal())) {
       Buffer buf(*this);
       Convert(decl);
       hoisted_records_ += std::move(buf).str();
