@@ -35,7 +35,7 @@ pub struct anon_3 {
     pub width: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub list: anon_1,
     pub letters: anon_2,

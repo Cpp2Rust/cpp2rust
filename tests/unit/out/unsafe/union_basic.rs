@@ -7,7 +7,7 @@ use std::io::{Read, Seek, Write};
 use std::os::fd::{AsFd, FromRawFd, IntoRawFd};
 use std::rc::Rc;
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union basic {
     pub i: i32,
     pub f: f32,
@@ -18,7 +18,7 @@ impl Default for basic {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union empty {
     __empty: u8,
 }

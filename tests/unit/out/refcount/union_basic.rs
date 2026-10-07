@@ -6,7 +6,7 @@ use std::io::prelude::*;
 use std::io::{Read, Seek, Write};
 use std::os::fd::AsFd;
 use std::rc::{Rc, Weak};
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct basic {
     #[offset(0)]
@@ -28,7 +28,7 @@ impl Default for basic {
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(1)]
 pub struct empty {
     #[offset(0)]

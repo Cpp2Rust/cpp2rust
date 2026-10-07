@@ -10,7 +10,7 @@ pub type Width_enum = u32;
 pub const Width_enum_W_64: Width_enum = 0;
 pub const Width_enum_W_32: Width_enum = 1;
 pub const Width_enum_W_16: Width_enum = 2;
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]

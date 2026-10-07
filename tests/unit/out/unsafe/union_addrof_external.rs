@@ -15,7 +15,7 @@ pub struct record {
     pub pad: [libc::c_char; 8],
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub h: record,
     pub raw_: [libc::c_char; 128],

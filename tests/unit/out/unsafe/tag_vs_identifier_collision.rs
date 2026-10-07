@@ -23,7 +23,7 @@ pub struct point_struct {
     pub y: i32,
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union point {
     pub whole: i32,
     pub half: i16,
@@ -34,7 +34,7 @@ impl Default for point {
     }
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union slot_union {
     pub i: i32,
     pub u: u32,

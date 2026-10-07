@@ -12,7 +12,7 @@ pub const Tag_enum_T_NUM_U: Tag_enum = 1;
 pub const Tag_enum_T_TEXT: Tag_enum = 2;
 pub const Tag_enum_T_FLOAT: Tag_enum = 3;
 pub const Tag_enum_T_REF: Tag_enum = 4;
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]

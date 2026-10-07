@@ -46,7 +46,7 @@ impl Default for shape_b {
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(256)]
 pub struct anon_0 {
     #[offset(0)]

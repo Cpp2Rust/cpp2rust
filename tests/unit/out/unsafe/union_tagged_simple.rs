@@ -10,7 +10,7 @@ pub type Kind_enum = u32;
 pub const Kind_enum_KIND_NONE: Kind_enum = 0;
 pub const Kind_enum_KIND_DONE: Kind_enum = 1;
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub obj: *mut ::libc::c_void,
     pub code: i32,

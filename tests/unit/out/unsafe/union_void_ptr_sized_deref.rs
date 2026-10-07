@@ -11,7 +11,7 @@ pub const Width_enum_W_64: Width_enum = 0;
 pub const Width_enum_W_32: Width_enum = 1;
 pub const Width_enum_W_16: Width_enum = 2;
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub text: *const libc::c_char,
     pub handle: *mut ::libc::c_void,
