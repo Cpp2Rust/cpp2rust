@@ -1,4 +1,6 @@
+// no-compile: refcount
 #include <assert.h>
+#include <utility>
 
 typedef int (*handler_t)(int);
 
@@ -15,6 +17,17 @@ struct S {
   static int pick(long x) { return (int)x + 2; }
   static int solo(int x) { return x + 3; }
 };
+
+struct MoveOnly {
+  int data_;
+  MoveOnly(int data) : data_(data) {}
+  MoveOnly(MoveOnly &&x) : data_(x.data_) { x.data_ = 0; }
+  MoveOnly(const MoveOnly &) = delete;
+  int get() const { return data_; }
+};
+
+MoveOnly make_move_only() { return MoveOnly{4}; }
+MoveOnly scale_move_only(MoveOnly x) { return MoveOnly{x.get() * 10}; }
 
 int main() {
   handler_t p1 = &S::pick;
@@ -36,6 +49,15 @@ int main() {
   h1.cb = negate;
   assert(h1.cb(3) == -3);
   assert(h1.cb == h2.cb);
+
+  MoveOnly (*mk)() = make_move_only;
+  MoveOnly m = mk();
+  assert(m.get() == 4);
+
+  MoveOnly (*sc)(MoveOnly) = scale_move_only;
+  MoveOnly n = sc(std::move(m));
+  assert(n.get() == 40);
+  assert(m.get() == 0);
 
   return 0;
 }
