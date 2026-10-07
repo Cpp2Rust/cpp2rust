@@ -1707,9 +1707,8 @@ bool ConverterRefCount::VisitUnaryExprOrTypeTraitExpr(
                                          : expr->getArgumentExpr()->getType();
   switch (expr->getKind()) {
   case clang::UnaryExprOrTypeTrait::UETT_SizeOf:
-    // TODO: Once Values are dropped from fields, precomputation should be gone
-    if (RustSizeDivergesFromC(arg_type)) {
-      StrCat(std::format("{}usize", ctx_.getTypeSize(arg_type) / 8));
+    if (clang::Expr::EvalResult size; expr->EvaluateAsInt(size, ctx_)) {
+      StrCat(std::format("{}usize", size.Val.getInt().getZExtValue()));
       computed_expr_type_ = ComputedExprType::FreshValue;
       return false;
     }
