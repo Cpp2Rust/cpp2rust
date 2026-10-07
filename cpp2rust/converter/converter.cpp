@@ -264,7 +264,7 @@ bool Converter::VisitConstantArrayType(clang::ConstantArrayType *type) {
 bool Converter::VisitIncompleteArrayType(clang::IncompleteArrayType *type) {
   StrCat('[');
   Convert(type->getElementType());
-  StrCat(']');
+  StrCat("; 0]");
   return false;
 }
 
@@ -1193,14 +1193,7 @@ bool Converter::VisitFieldDecl(clang::FieldDecl *decl) {
   auto access_spec = AccessSpecifierAsString(decl->getAccess());
   auto field_name = GetNamedDeclAsString(decl);
   StrCat(access_spec, std::move(field_name), token::kColon);
-  if (auto *array = ctx_.getAsIncompleteArrayType(decl->getType());
-      array && EmitsReprCForRecords()) {
-    StrCat('[');
-    Convert(array->getElementType());
-    StrCat("; 0]");
-  } else {
-    Convert(decl->getType());
-  }
+  Convert(decl->getType());
   StrCat(token::kComma);
   return false;
 }
@@ -4054,10 +4047,6 @@ bool Converter::VisitCXXStdInitializerListExpr(
 }
 
 std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
-  if (clang::isa<clang::IncompleteArrayType>(qual_type) &&
-      EmitsReprCForRecords()) {
-    return "[]";
-  }
   if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
     auto size_as_string = GetNumAsString(array_type->getSize());
     auto element_type = array_type->getElementType();
@@ -4071,9 +4060,8 @@ std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
     return std::format("[{}; {}]", element_type_as_string,
                        size_as_string.c_str());
   }
-  if (auto *array_type =
-          clang::dyn_cast<clang::IncompleteArrayType>(qual_type)) {
-    return GetDefaultAsString(array_type->getElementType());
+  if (clang::isa<clang::IncompleteArrayType>(qual_type)) {
+    return "[]";
   }
   if (Printer::ToString(ctx_, qual_type).contains("std::array")) {
     assert(GetTemplateArgs(qual_type).has_value());
