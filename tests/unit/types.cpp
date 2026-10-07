@@ -1,6 +1,7 @@
 // ADDITIONAL_COMPILE_FLAGS: -std=c++23
 
 #include <cassert>
+#include <cfloat>
 #include <cstddef>
 #include <cstdint>
 #include <inttypes.h>
@@ -25,6 +26,12 @@ int main() {
   std::nullptr_t xnp = nullptr;
   assert(xu8 + xu16 + xu32 + xu64 + xsz1 + xsz2 + xi1 + xi2 + xi3 + xi4 == 352);
   assert(xld * 2 == 3);
+  double pi = 3.14159265358979;
+  assert(pi < 3.141592654);
+  double dmax = -DBL_MAX;
+  assert(dmax < -1e308);
+  long double ldmax = LDBL_MAX;
+  assert(ldmax > DBL_MAX);
   assert(xwc + xc8 + xc16 + xc32 == 266);
   assert(xnp == nullptr);
   return 0;

@@ -2329,7 +2329,19 @@ bool Converter::VisitIntegerLiteral(clang::IntegerLiteral *expr) {
 }
 
 bool Converter::VisitFloatingLiteral(clang::FloatingLiteral *expr) {
-  StrCat(GetNumAsString(expr->getValue()));
+  auto value = expr->getValue();
+  if (&value.getSemantics() != &llvm::APFloat::IEEEsingle()) {
+    bool loses_info = false;
+    value.convert(llvm::APFloat::IEEEdouble(),
+                  llvm::APFloat::rmNearestTiesToEven, &loses_info);
+  }
+  llvm::SmallString<32> str;
+  if (value.isInfinity()) {
+    str = "f64::INFINITY";
+  } else {
+    value.toString(str, /*FormatPrecision=*/0, /*FormatMaxPadding=*/0);
+  }
+  StrCat(str);
   computed_expr_type_ = ComputedExprType::FreshValue;
   return false;
 }
