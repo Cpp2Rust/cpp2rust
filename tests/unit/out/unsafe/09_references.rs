@@ -77,7 +77,11 @@ unsafe fn main_0() -> i32 {
         (&mut b as *mut i32)
     }) += 5;
     assert!(((b) == (25)));
-    let mut ap: *mut i32 = (&mut (if ((a) > (b)) { a } else { b }) as *mut i32);
+    let mut ap: *mut i32 = (if ((a) > (b)) {
+        (&mut a as *mut i32)
+    } else {
+        (&mut b as *mut i32)
+    });
     (*ap) = 40;
     assert!(((a) == (40)));
     if ((a) < (b)) {
