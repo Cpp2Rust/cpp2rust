@@ -5,33 +5,32 @@
 // for any function pointer types T -> U.
 
 use std::any::Any;
+use std::rc::Rc;
 
 use crate::rc::Ptr;
 use crate::reinterpret::ByteRepr;
 use crate::void::{AnyPtr, ErasedPtr};
 
-// A type-erased view of one argument or return value, used only transiently
-// (within a single adapted call) and never allocated.
-pub enum ArgRepr<'a> {
+pub enum ArgRepr {
     Bytes([u8; 16], usize),
-    Ptr(&'a dyn ErasedPtr),
-    Record(&'a dyn Any),
+    Ptr(Rc<dyn ErasedPtr>),
+    Record(Box<dyn Any>),
 }
 
 pub trait FnPtrArg: 'static {
-    fn to_repr(&self) -> ArgRepr<'_>;
+    fn to_repr(self) -> ArgRepr;
     // Panics if `r` describes a value that isn't a meaningful `Self` (wrong
     // kind, or same kind but incompatible size).
-    fn from_repr(r: &ArgRepr) -> Self;
+    fn from_repr(r: ArgRepr) -> Self;
 }
 
 impl FnPtrArg for () {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
+    fn to_repr(self) -> ArgRepr {
         ArgRepr::Bytes([0; 16], 0)
     }
     #[inline]
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         match r {
             ArgRepr::Bytes(_, 0) => (),
             _ => panic!("ub: calling through incompatible fn pointer type"),
@@ -43,17 +42,17 @@ macro_rules! impl_fn_ptr_arg_prim {
     ($ty:ty) => {
         impl FnPtrArg for $ty {
             #[inline]
-            fn to_repr(&self) -> ArgRepr<'_> {
+            fn to_repr(self) -> ArgRepr {
                 let bytes = self.to_ne_bytes();
                 let mut buf = [0u8; 16];
                 buf[..bytes.len()].copy_from_slice(&bytes);
                 ArgRepr::Bytes(buf, bytes.len())
             }
             #[inline]
-            fn from_repr(r: &ArgRepr) -> Self {
+            fn from_repr(r: ArgRepr) -> Self {
                 const N: usize = std::mem::size_of::<$ty>();
                 match r {
-                    ArgRepr::Bytes(buf, len) if *len == N => {
+                    ArgRepr::Bytes(buf, len) if len == N => {
                         let mut a = [0u8; N];
                         a.copy_from_slice(&buf[..N]);
                         <$ty>::from_ne_bytes(a)
@@ -82,14 +81,14 @@ impl_fn_ptr_arg_prim!(f64);
 
 impl FnPtrArg for bool {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
+    fn to_repr(self) -> ArgRepr {
         ArgRepr::Bytes(
-            [*self as u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [self as u8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             1,
         )
     }
     #[inline]
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         match r {
             ArgRepr::Bytes(buf, 1) => buf[0] != 0,
             _ => panic!("ub: calling through incompatible fn pointer type"),
@@ -99,10 +98,10 @@ impl FnPtrArg for bool {
 
 impl<T: ByteRepr> FnPtrArg for Ptr<T> {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
-        ArgRepr::Ptr(self)
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Ptr(Rc::new(self))
     }
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         match r {
             ArgRepr::Ptr(e) => match e.as_any().downcast_ref::<Ptr<T>>() {
                 Some(exact) => exact.clone(),
@@ -117,12 +116,12 @@ impl<T: ByteRepr> FnPtrArg for Ptr<T> {
 
 impl FnPtrArg for AnyPtr {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
-        ArgRepr::Ptr(&*self.ptr)
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Ptr(self.ptr)
     }
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         match r {
-            ArgRepr::Ptr(e) => e.as_bytes().to_any(),
+            ArgRepr::Ptr(e) => AnyPtr { ptr: e },
             ArgRepr::Bytes(..) | ArgRepr::Record(_) => {
                 panic!("ub: calling through incompatible fn pointer type")
             }
@@ -132,20 +131,20 @@ impl FnPtrArg for AnyPtr {
 
 impl<T: ?Sized + 'static> FnPtrArg for *mut T {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
-        ArgRepr::Record(self)
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
     }
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         record_from_repr(r)
     }
 }
 
 impl<T: ?Sized + 'static> FnPtrArg for *const T {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
-        ArgRepr::Record(self)
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
     }
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         record_from_repr(r)
     }
 }
@@ -157,10 +156,10 @@ macro_rules! impl_fn_ptr_arg_unsafe_fn {
     (@gen $($a:ident)*) => {
         impl<R: 'static $(, $a: 'static)*> FnPtrArg for Option<unsafe fn($($a,)*) -> R> {
             #[inline]
-            fn to_repr(&self) -> ArgRepr<'_> {
-                ArgRepr::Record(self)
+            fn to_repr(self) -> ArgRepr {
+                ArgRepr::Record(Box::new(self))
             }
-            fn from_repr(r: &ArgRepr) -> Self {
+            fn from_repr(r: ArgRepr) -> Self {
                 record_from_repr(r)
             }
         }
@@ -173,12 +172,12 @@ macro_rules! impl_fn_ptr_arg_unsafe_fn {
 }
 impl_fn_ptr_arg_unsafe_fn!();
 
-pub fn record_from_repr<T: Any + Clone>(r: &ArgRepr) -> T {
+pub fn record_from_repr<T: Any>(r: ArgRepr) -> T {
     match r {
-        ArgRepr::Record(v) => v
-            .downcast_ref::<T>()
-            .expect("ub: calling through incompatible fn pointer type")
-            .clone(),
+        ArgRepr::Record(v) => match v.downcast::<T>() {
+            Ok(exact) => *exact,
+            Err(_) => panic!("ub: calling through incompatible fn pointer type"),
+        },
         _ => panic!("ub: calling through incompatible fn pointer type"),
     }
 }
@@ -187,12 +186,12 @@ pub fn record_from_repr<T: Any + Clone>(r: &ArgRepr) -> T {
 // (below) converts a tuple of arguments to and from this common
 // intermediate, so that converting between two argument lists never needs to
 // know the other side's arity at compile time.
-pub(crate) struct ArgList<'a> {
-    items: [Option<ArgRepr<'a>>; 16],
+pub(crate) struct ArgList {
+    items: [Option<ArgRepr>; 16],
     len: usize,
 }
 
-impl<'a> ArgList<'a> {
+impl ArgList {
     #[inline]
     fn new() -> Self {
         ArgList {
@@ -202,15 +201,15 @@ impl<'a> ArgList<'a> {
     }
 
     #[inline]
-    fn push(&mut self, r: ArgRepr<'a>) {
+    fn push(&mut self, r: ArgRepr) {
         self.items[self.len] = Some(r);
         self.len += 1;
     }
 
     #[inline]
-    fn get(&self, i: usize) -> &ArgRepr<'a> {
+    fn take(&mut self, i: usize) -> ArgRepr {
         self.items[i]
-            .as_ref()
+            .take()
             .expect("ub: calling through incompatible fn pointer type")
     }
 
@@ -222,8 +221,8 @@ impl<'a> ArgList<'a> {
 }
 
 pub(crate) trait FnPtrArgs: Sized + 'static {
-    fn to_list(&self) -> ArgList<'_>;
-    fn from_list(l: &ArgList) -> Self;
+    fn to_list(self) -> ArgList;
+    fn from_list(l: ArgList) -> Self;
 }
 
 macro_rules! impl_fn_ptr_args {
@@ -242,7 +241,7 @@ macro_rules! impl_fn_ptr_args {
         impl<$($a: FnPtrArg,)*> FnPtrArgs for ($($a,)*) {
             #[inline]
             #[allow(unused_mut)]
-            fn to_list(&self) -> ArgList<'_> {
+            fn to_list(self) -> ArgList {
                 #[allow(non_snake_case)]
                 let ($($a,)*) = self;
                 let mut l = ArgList::new();
@@ -250,11 +249,11 @@ macro_rules! impl_fn_ptr_args {
                 l
             }
             #[allow(unused_assignments, unused_mut, unused_variables, clippy::unused_unit)]
-            fn from_list(l: &ArgList) -> Self {
+            fn from_list(mut l: ArgList) -> Self {
                 l.expect_len(impl_fn_ptr_args!(@count $($a)*));
                 let mut i = 0;
                 ($(
-                    { let v = <$a as FnPtrArg>::from_repr(l.get(i)); i += 1; v },
+                    { let v = <$a as FnPtrArg>::from_repr(l.take(i)); i += 1; v },
                 )*)
             }
         }
@@ -272,7 +271,7 @@ mod tests {
     fn primitive_round_trip_via_repr() {
         let a: u64 = 0xdead_beef;
         let repr = a.to_repr();
-        let b: usize = FnPtrArg::from_repr(&repr);
+        let b: usize = FnPtrArg::from_repr(repr);
         assert_eq!(b, 0xdead_beef);
     }
 
@@ -281,7 +280,7 @@ mod tests {
     fn mismatched_size_panics() {
         let a: u32 = 1;
         let repr = a.to_repr();
-        let _: u64 = FnPtrArg::from_repr(&repr);
+        let _: u64 = FnPtrArg::from_repr(repr);
     }
 
     #[test]
@@ -289,14 +288,14 @@ mod tests {
     fn kind_mismatch_panics() {
         let a: u64 = 1;
         let repr = a.to_repr();
-        let _: Ptr<u8> = FnPtrArg::from_repr(&repr);
+        let _: Ptr<u8> = FnPtrArg::from_repr(repr);
     }
 
     #[test]
     fn pointer_reinterpret_via_repr() {
         let p: Ptr<u32> = Ptr::alloc(0x0102_0304u32);
         let repr = p.to_repr();
-        let bytes: Ptr<u8> = FnPtrArg::from_repr(&repr);
+        let bytes: Ptr<u8> = FnPtrArg::from_repr(repr);
         assert_eq!(
             bytes.read(),
             if cfg!(target_endian = "little") { 4 } else { 1 }
@@ -307,9 +306,9 @@ mod tests {
     fn pointer_via_any_repr() {
         let p: Ptr<i32> = Ptr::alloc(42);
         let repr = p.to_repr();
-        let any: AnyPtr = FnPtrArg::from_repr(&repr);
+        let any: AnyPtr = FnPtrArg::from_repr(repr);
         let repr2 = any.to_repr();
-        let back: Ptr<i32> = FnPtrArg::from_repr(&repr2);
+        let back: Ptr<i32> = FnPtrArg::from_repr(repr2);
         assert_eq!(back.read(), 42);
     }
 
@@ -317,14 +316,14 @@ mod tests {
     #[should_panic(expected = "ub: calling through incompatible fn pointer type")]
     fn args_arity_mismatch_panics_not_compile_error() {
         let list = (1u64,).to_list();
-        let _ = <(u64, u64)>::from_list(&list);
+        let _ = <(u64, u64)>::from_list(list);
     }
 
     #[test]
     fn args_round_trip() {
         let args = (1u64, 2u32);
         let list = args.to_list();
-        let back = <(u64, u32)>::from_list(&list);
+        let back = <(u64, u32)>::from_list(list);
         assert_eq!(back, args);
     }
 }

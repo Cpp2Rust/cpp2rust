@@ -4250,8 +4250,8 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordImplementsClone(decl)) {
     struct_attrs.emplace_back("VaArg");
-    struct_attrs.emplace_back("FnPtrArg");
   }
+  struct_attrs.emplace_back("FnPtrArg");
 
   if (RecordDerivesDefault(decl)) {
     struct_attrs.emplace_back("Default");

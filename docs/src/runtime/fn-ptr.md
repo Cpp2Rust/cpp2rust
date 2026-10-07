@@ -82,9 +82,11 @@ The code generator can build an adapter when the arguments and return type of
 the two function types have the same representation. Otherwise it passes `None`,
 and calling through the cast pointer panics with `ub:`.
 
-A cast to a different type is the only operation that allocates: the pointer
-then also keeps the function it was created with, type-erased, so that casting
-back to that type can restore it. Equality compares the address of the function
+A cast to a different type allocates: the pointer then also keeps the function
+it was created with, type-erased, so that casting back to that type can restore
+it. A call through the adapter moves each pointer or record argument through a
+heap cell, so a value without a copy constructor can be passed too; direct calls
+never allocate. Equality compares the address of the function
 the pointer was created with.
 
 Casting a function pointer to `void *` is `to_any`, and `AnyPtr::cast_fn::<T>`

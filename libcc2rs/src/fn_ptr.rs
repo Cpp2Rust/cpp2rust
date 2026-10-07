@@ -49,24 +49,22 @@ impl_fn_sig!();
 // Build a trampoline adaptor for a function pointer of one type to be called
 // through a different type.
 trait Adapted: Any {
-    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>));
+    fn call_adapted(&self, args: ArgList) -> ArgRepr;
 }
 
 impl<T: FnSig> Adapted for T {
-    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
-        let converted_args = T::Args::from_list(&args);
-        let result = self.call_direct(converted_args);
-        sink(result.to_repr());
+    fn call_adapted(&self, args: ArgList) -> ArgRepr {
+        let converted_args = T::Args::from_list(args);
+        self.call_direct(converted_args).to_repr()
     }
 }
 
 struct Closure<T: FnSig>(Box<dyn Fn(T::Args) -> T::Ret>);
 
 impl<T: FnSig> Adapted for Closure<T> {
-    fn call_adapted(&self, args: ArgList<'_>, sink: &mut dyn FnMut(ArgRepr<'_>)) {
-        let converted_args = T::Args::from_list(&args);
-        let result = (self.0)(converted_args);
-        sink(result.to_repr());
+    fn call_adapted(&self, args: ArgList) -> ArgRepr {
+        let converted_args = T::Args::from_list(args);
+        (self.0)(converted_args).to_repr()
     }
 }
 
@@ -122,11 +120,7 @@ impl<T: FnSig> FnPtr<T> {
             if let Some(closure) = closure.downcast_ref::<Closure<T>>() {
                 return (closure.0)(args);
             }
-            let mut result = None;
-            original.call_adapted(args.to_list(), &mut |repr| {
-                result = Some(T::Ret::from_repr(&repr));
-            });
-            return result.expect("ub: calling through incompatible fn pointer type");
+            return T::Ret::from_repr(original.call_adapted(args.to_list()));
         }
         panic!("ub: calling through incompatible fn pointer type");
     }
@@ -261,10 +255,10 @@ impl<T: FnSig> ByteRepr for FnPtr<T> {}
 
 impl<T: FnSig> FnPtrArg for FnPtr<T> {
     #[inline]
-    fn to_repr(&self) -> ArgRepr<'_> {
-        ArgRepr::Record(self)
+    fn to_repr(self) -> ArgRepr {
+        ArgRepr::Record(Box::new(self))
     }
-    fn from_repr(r: &ArgRepr) -> Self {
+    fn from_repr(r: ArgRepr) -> Self {
         record_from_repr(r)
     }
 }

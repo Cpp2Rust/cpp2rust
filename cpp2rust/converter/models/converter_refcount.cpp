@@ -2527,8 +2527,8 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
 
   if (RecordImplementsClone(decl)) {
     attrs.emplace_back("VaArg");
-    attrs.emplace_back("FnPtrArg");
   }
+  attrs.emplace_back("FnPtrArg");
 
   if (RecordDerivesDefault(decl)) {
     attrs.emplace_back("Default");
