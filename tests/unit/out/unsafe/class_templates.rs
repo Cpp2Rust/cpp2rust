@@ -86,6 +86,19 @@ impl MyContainer_float_ {
 }
 #[repr(C)]
 #[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Boxed_short_ {
+    pub value: i16,
+}
+impl Boxed_short_ {
+    pub unsafe fn twice(mut v: i16) -> i16 {
+        return (((v as i32) + (v as i32)) as i16);
+    }
+    pub unsafe fn plus(&self, mut other: i16) -> i16 {
+        return (((self.value as i32) + (other as i32)) as i16);
+    }
+}
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
 pub struct Boxed_int_ {
     pub value: i32,
 }
@@ -163,6 +176,11 @@ impl Outer_long_ {
         return Outer_long__Inner_int_ { t: self.v, u: n };
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, VaArg, FnPtrArg, Default)]
+pub struct Elem {
+    pub i: i32,
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -170,6 +188,13 @@ pub fn main() {
     }
 }
 unsafe fn main_0() -> i32 {
+    let mut ev: Vec<Elem> = Vec::new();
+    {
+        let __a1 = Elem { i: 2 };
+        ev.push(__a1)
+    };
+    assert!(((ev[(0_usize)].i) == (2)));
+    assert!((((unsafe { Boxed_short_::twice(2_i16,) }) as i32) == (4)));
     let mut oi: Outer_int_ = Outer_int_ { v: 3 };
     assert!(
         ((unsafe { Outer_int__Inner_int_::sum(&(unsafe { Outer_int_::with(&oi, 4,) }),) }) == (7))

@@ -266,7 +266,8 @@ bool IsUserDefinedDecl(const clang::Decl *decl) {
   const auto &ctx = decl->getASTContext();
   const auto &src_mgr = ctx.getSourceManager();
   auto src_loc = decl->getLocation();
-  if (auto *spec = clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
+  if (auto *spec =
+          clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(decl);
       spec && (spec->getSpecializationKind() ==
                    clang::TSK_ExplicitInstantiationDeclaration ||
                spec->getSpecializationKind() ==
