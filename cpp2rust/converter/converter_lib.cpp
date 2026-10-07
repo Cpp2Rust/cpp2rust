@@ -502,6 +502,15 @@ GetUserDefinedCopyConstructor(const clang::RecordDecl *decl) {
   return nullptr;
 }
 
+static bool FieldsHaveCallableCopyConstructors(const clang::RecordDecl *decl) {
+  auto &ctx = decl->getASTContext();
+  return std::ranges::all_of(decl->fields(), [&](const clang::FieldDecl *f) {
+    auto *record = ctx.getBaseElementType(f->getType())->getAsCXXRecordDecl();
+    return !record || !IsUserDefinedDecl(record) ||
+           HasCallableCopyConstructor(record);
+  });
+}
+
 bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
   if (!cxx) {
@@ -509,10 +518,12 @@ bool HasDefaultedCopyConstructor(const clang::RecordDecl *decl) {
   }
   for (const auto *ctor : cxx->ctors()) {
     if (ctor->isCopyConstructor()) {
-      return !ctor->isUserProvided() && !ctor->isDeleted();
+      return !ctor->isUserProvided() && !ctor->isDeleted() &&
+             FieldsHaveCallableCopyConstructors(cxx);
     }
   }
-  return !cxx->defaultedCopyConstructorIsDeleted();
+  return !cxx->defaultedCopyConstructorIsDeleted() &&
+         FieldsHaveCallableCopyConstructors(cxx);
 }
 
 bool RecordHasOnlyReferenceFields(const clang::RecordDecl *decl) {
@@ -543,7 +554,7 @@ bool HasCallableCopyConstructor(const clang::RecordDecl *decl) {
     return true;
   }
   if (!cxx->hasUserDeclaredCopyConstructor()) {
-    return !cxx->defaultedCopyConstructorIsDeleted();
+    return HasDefaultedCopyConstructor(cxx);
   }
   for (const auto *ctor : cxx->ctors()) {
     if (ctor->isCopyConstructor() && !ctor->isDeleted() &&

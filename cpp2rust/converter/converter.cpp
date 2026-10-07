@@ -4271,13 +4271,11 @@ Converter::GetStructAttributes(const clang::RecordDecl *decl) {
 
   std::vector<const char *> struct_attrs;
 
-  bool derives_clone =
-      HasDefaultedCopyConstructor(decl) && RecordImplementsClone(decl);
-  if (derives_clone && RecordHasCopyableFields(decl)) {
+  if (HasDefaultedCopyConstructor(decl) && RecordHasCopyableFields(decl)) {
     struct_attrs.emplace_back("Copy");
   }
 
-  if (derives_clone) {
+  if (HasDefaultedCopyConstructor(decl)) {
     struct_attrs.emplace_back("Clone");
   }
 
@@ -4764,16 +4762,8 @@ void Converter::AddCloneTrait(const clang::RecordDecl *decl) {
 }
 
 bool Converter::RecordImplementsClone(const clang::RecordDecl *decl) {
-  if (GetUserDefinedCopyConstructor(decl)) {
-    return HasCallableCopyConstructor(decl);
-  }
-  return HasDefaultedCopyConstructor(decl) &&
-         std::ranges::all_of(decl->fields(), [&](const clang::FieldDecl *f) {
-           auto *record =
-               ctx_.getBaseElementType(f->getType())->getAsCXXRecordDecl();
-           return !record || !IsUserDefinedDecl(record) ||
-                  RecordImplementsClone(record);
-         });
+  return HasDefaultedCopyConstructor(decl) ||
+         GetUserDefinedCopyConstructor(decl) != nullptr;
 }
 
 void Converter::AddDefaultTraitForUnion(const clang::RecordDecl *decl) {

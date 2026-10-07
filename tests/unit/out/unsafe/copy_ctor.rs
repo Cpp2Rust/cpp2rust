@@ -108,6 +108,14 @@ impl Box_int_ {
 pub struct Owner {
     pub box_: Box_int_,
 }
+impl Owner {
+    pub unsafe fn move_from(_a0: *mut Owner) -> Self {
+        let mut this = Self {
+            box_: Box_int_::move_from({ &mut (*_a0).box_ }),
+        };
+        this
+    }
+}
 pub unsafe fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -164,7 +172,7 @@ unsafe fn main_0() -> i32 {
     let mut o: Owner = Owner {
         box_: Box_int_::new({ 3 }),
     };
-    let mut o2: Owner = o.clone();
+    let mut o2: Owner = Owner::move_from({ &mut o });
     assert!(((o2.box_.val) == (3)));
     let mut n: NonConst = NonConst::new();
     let mut n1: NonConst = NonConst::new_1({ &mut n });

@@ -135,6 +135,13 @@ pub struct Owner {
     #[byte_size(4)]
     pub box_: Box_int_,
 }
+impl Owner {
+    pub fn move_from(_a0: Ptr<Owner>) -> Self {
+        Self {
+            box_: Box_int_::move_from({ field_ptr!(_a0, box_) }),
+        }
+    }
+}
 pub fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -203,7 +210,7 @@ fn main_0() -> i32 {
     let o: Value<Owner> = Rc::new(RefCell::new(Owner {
         box_: Box_int_::new({ 3 }),
     }));
-    let mut o2: Owner = (*o.borrow()).clone();
+    let mut o2: Owner = Owner::move_from({ o.as_pointer() });
     assert!((o2.box_.val == 3));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
     let mut n1: NonConst = NonConst::new_1({ n.as_pointer() });

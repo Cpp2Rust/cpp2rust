@@ -603,13 +603,7 @@ bool ConverterRefCount::RecordImplementsClone(const clang::RecordDecl *decl) {
     return true;
   }
   return !clang::isa<clang::CXXRecordDecl>(decl) ||
-         (HasCallableCopyConstructor(decl) &&
-          std::ranges::all_of(decl->fields(), [&](const clang::FieldDecl *f) {
-            auto *record =
-                ctx_.getBaseElementType(f->getType())->getAsCXXRecordDecl();
-            return !record || !IsUserDefinedDecl(record) ||
-                   RecordImplementsClone(record);
-          }));
+         HasCallableCopyConstructor(decl);
 }
 
 // Bases are translated to traits, so they hold no state of the struct; they
@@ -629,7 +623,7 @@ bool ConverterRefCount::RecordDerivesClone(const clang::RecordDecl *decl) {
   // The copy of a struct copies each field, which a derived Clone does too,
   // except for Values, which it shares.
   auto *cxx = clang::dyn_cast<clang::CXXRecordDecl>(decl);
-  if (decl->isUnion() || (cxx && (!RecordImplementsClone(cxx) ||
+  if (decl->isUnion() || (cxx && (!HasCallableCopyConstructor(cxx) ||
                                   GetUserDefinedCopyConstructor(cxx) ||
                                   !HasDefaultedBaseCopies(cxx)))) {
     return false;
