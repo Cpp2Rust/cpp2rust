@@ -95,7 +95,7 @@ fn main_0() -> i32 {
             .memset((0) as u8, 68usize as usize);
         ((c.as_pointer()) as Ptr<Container>).to_any()
     };
-    field!((*c.borrow_mut()).u.a(), code).write(10_u16);
+    field!((*c.borrow()).u.a(), code).write(10_u16);
     (*c.borrow_mut()).len = (28usize as u32);
     field!(
         (((*c.borrow()).u.a()).to_any().reinterpret_cast::<shape_b>()),
@@ -104,7 +104,7 @@ fn main_0() -> i32 {
     .write(3735928559_u32);
     assert!(((((*c.borrow()).u.b().with(|__s| __s.tail) == 3735928559_u32) as i32) != 0));
     assert!((((((*c.borrow()).u.b().with(|__s| __s.code) as i32) == 10) as i32) != 0));
-    field!((*c.borrow_mut()).u.b(), lo).write(8080_u16);
+    field!((*c.borrow()).u.b(), lo).write(8080_u16);
     assert!(
         (((((elem!(
             ((((*c.borrow()).u.raw_().reinterpret_cast::<i8>()) as Ptr<i8>)

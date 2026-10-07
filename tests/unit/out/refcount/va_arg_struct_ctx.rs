@@ -81,9 +81,9 @@ fn main_0() -> i32 {
     });
     assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
     let v: Value<value> = <Value<value>>::default();
-    (*v.borrow_mut()).l().write((1_i64 << 40));
+    (*v.borrow()).l().write((1_i64 << 40));
     assert!((((({ pick_1(1, &[((*v.borrow()).clone()).into(),]) }) == (1_i64 << 40)) as i32) != 0));
-    (*v.borrow_mut()).i().write(7);
+    (*v.borrow()).i().write(7);
     assert!((((({ pick_1(0, &[((*v.borrow()).clone()).into(),]) }) == 7_i64) as i32) != 0));
     return 0;
 }

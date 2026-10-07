@@ -105,7 +105,7 @@ fn main_0() -> i32 {
     (*ex.borrow_mut()).level = 1;
     (*ex.borrow_mut()).variant = 6;
     (*ex.borrow_mut()).len = (16usize as u32);
-    field!((*ex.borrow_mut()).body.h(), code).write(2_u16);
+    field!((*ex.borrow()).body.h(), code).write(2_u16);
     elem!(
         (array_field_ptr!((*ex.borrow()).body.h(), pad) as Ptr::<i8>),
         0

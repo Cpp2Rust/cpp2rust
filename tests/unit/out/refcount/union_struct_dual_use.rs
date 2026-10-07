@@ -62,8 +62,8 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((outer.as_pointer()) as Ptr<Outer>).to_any()
     };
-    field!((*outer.borrow_mut()).u.inner(), a).write(3);
-    field!((*outer.borrow_mut()).u.inner(), b).write(4);
+    field!((*outer.borrow()).u.inner(), a).write(3);
+    field!((*outer.borrow()).u.inner(), b).write(4);
     assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
     assert!(
         ((((((elem!(

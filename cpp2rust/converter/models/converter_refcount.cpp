@@ -1921,7 +1921,7 @@ void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   std::string str;
   {
     Buffer buf(*this);
-    PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
+    PushExprKind push(*this, ExprKind::RValue);
     Converter::ConvertMemberExpr(expr);
     str = std::move(buf).str();
   }

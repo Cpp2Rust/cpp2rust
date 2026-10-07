@@ -82,21 +82,21 @@ fn main_0() -> i32 {
     let buf16: Value<i16> = Rc::new(RefCell::new(0_i16));
     let s: Value<Sink> = <Value<Sink>>::default();
     (*s.borrow_mut()).width = Width_enum_W_64;
-    (*s.borrow_mut())
+    (*s.borrow())
         .out
         .handle()
         .write(((buf64.as_pointer()) as Ptr<i64>).to_any());
     ({ write_count_1((s.as_pointer()), 1234605616436508552_i64) });
     assert!(((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_32;
-    (*s.borrow_mut())
+    (*s.borrow())
         .out
         .handle()
         .write(((buf32.as_pointer()) as Ptr<i32>).to_any());
     ({ write_count_1((s.as_pointer()), 305419896_i64) });
     assert!(((((*buf32.borrow()) == 305419896) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_16;
-    (*s.borrow_mut())
+    (*s.borrow())
         .out
         .handle()
         .write(((buf16.as_pointer()) as Ptr<i16>).to_any());

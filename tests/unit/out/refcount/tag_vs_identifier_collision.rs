@@ -114,10 +114,10 @@ fn main_0() -> i32 {
     p.y = 4;
     assert!(((((p.x + p.y) == 7) as i32) != 0));
     let up: Value<point> = <Value<point>>::default();
-    (*up.borrow_mut()).whole().write(5);
+    (*up.borrow()).whole().write(5);
     assert!((((((*up.borrow()).whole().read()) == 5) as i32) != 0));
     let b: Value<slot_union> = <Value<slot_union>>::default();
-    (*b.borrow_mut()).i().write(9);
+    (*b.borrow()).i().write(9);
     assert!((((((*b.borrow()).i().read()) == 9) as i32) != 0));
     let mut e: slot = slot_SLOT_B;
     assert!(((((e as u32) == ((slot_SLOT_B as i32) as u32)) as i32) != 0));
