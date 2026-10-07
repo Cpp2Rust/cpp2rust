@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <vector>
 
 int main() {
   int x1 = 1, x2 = 2, x3 = 10, x4 = 20;
@@ -10,5 +11,8 @@ int main() {
   int r4 = std::min(*p2, x3);
   int r5 = std::max(30, 40);
   assert(r1 + r2 + r3 + r4 + r5 == 56);
+  std::vector<int> values{1, 7, 7, 3};
+  auto max = std::max_element(values.begin(), values.end());
+  assert(max == values.begin() + 1);
   return 0;
 }
