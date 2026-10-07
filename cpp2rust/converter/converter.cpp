@@ -4054,6 +4054,10 @@ bool Converter::VisitCXXStdInitializerListExpr(
 }
 
 std::string Converter::GetArrayDefaultAsString(clang::QualType qual_type) {
+  if (clang::isa<clang::IncompleteArrayType>(qual_type) &&
+      EmitsReprCForRecords()) {
+    return "[]";
+  }
   if (auto *array_type = clang::dyn_cast<clang::ConstantArrayType>(qual_type)) {
     auto size_as_string = GetNumAsString(array_type->getSize());
     auto element_type = array_type->getElementType();
