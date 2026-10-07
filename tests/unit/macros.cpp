@@ -1,4 +1,10 @@
 #include <stdio.h>
+#include <string.h>
+
+const char *base_name(const char *path) {
+  const char *slash = strrchr(path, '/');
+  return slash ? slash + 1 : path;
+}
 
 void log(const char *file, int line, const char *func) {
   printf("%s %d %s\n", file, line, func);
@@ -11,7 +17,7 @@ const char *function() { return __builtin_FUNCTION(); }
 int main() {
   printf("%s %d %s\n", __FILE__, __LINE__, __FUNCTION__);
   log(__FILE__, __LINE__, __FUNCTION__);
-  log(__FILE__, __builtin_LINE(), __builtin_FUNCTION());
+  log(base_name(__builtin_FILE()), __builtin_LINE(), __builtin_FUNCTION());
   printf("%d %s\n", line(), function());
   return 0;
 }
