@@ -28,6 +28,19 @@ struct Mixed {
   int operator==(const Mixed &o) const { return v == o.v ? 9 : 0; }
 };
 
+struct MyBool {
+  bool value;
+  explicit MyBool(bool v) : value(v) {}
+  operator bool() const { return value; }
+};
+
+struct Boolish {
+  int v;
+};
+
+MyBool operator==(Boolish a, Boolish b) { return MyBool(a.v == b.v); }
+MyBool operator<(Boolish a, Boolish b) { return MyBool(a.v < b.v); }
+
 int main() {
   X a{1}, b{2}, c{1};
   assert((a == c) == 2);
@@ -53,5 +66,14 @@ int main() {
   std::sort(ms, ms + 3);
   assert(ms[0].v == 4 && ms[1].v == 5 && ms[2].v == 6);
   assert((ms[0] < ms[1]) == 8);
+
+  Boolish b1{1}, b2{2};
+  assert(b1 == Boolish{1});
+  assert(!(b2 < b1));
+  MyBool lt = b1 < b2;
+  assert(lt.value);
+  Boolish bs[] = {{3}, {1}, {2}};
+  std::sort(bs, bs + 3);
+  assert(bs[0].v == 1 && bs[1].v == 2 && bs[2].v == 3);
   return 0;
 }
