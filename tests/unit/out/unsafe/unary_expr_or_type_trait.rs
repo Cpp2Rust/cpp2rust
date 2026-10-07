@@ -18,6 +18,8 @@ pub unsafe fn pack_size_0() -> u64 {
 pub unsafe fn pack_size_1(mut args_0: i32, mut args_1: f64) -> u64 {
     return ((2 as usize).wrapping_add((2 as usize)) as u64);
 }
+pub unsafe fn may_throw_2() {}
+pub unsafe fn no_throw_3() {}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -36,6 +38,10 @@ unsafe fn main_0() -> i32 {
     assert!(((::std::mem::align_of::<S>()) == (16_usize)));
     assert!(((unsafe { pack_size_0() }) == (0_u64)));
     assert!(((unsafe { pack_size_1(1, 2.0E+0,) }) == (4_u64)));
+    assert!(true);
+    assert!(!(false));
+    let mut may: bool = false;
+    assert!(!(may));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

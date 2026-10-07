@@ -382,6 +382,8 @@ public:
 
   virtual bool VisitCXXBoolLiteralExpr(clang::CXXBoolLiteralExpr *expr);
 
+  bool VisitCXXNoexceptExpr(clang::CXXNoexceptExpr *expr);
+
   void ConvertIntegerToEnumeralCast(clang::Expr *to, clang::Expr *from);
 
   void ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr);
