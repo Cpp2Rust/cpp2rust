@@ -2457,6 +2457,12 @@ void Converter::ConvertIntegralToBooleanCast(clang::ImplicitCastExpr *expr) {
   auto sub_expr = expr->getSubExpr();
   auto *stripped = sub_expr->IgnoreParenImpCasts();
 
+  if (auto *enum_type = sub_expr->getType()->getAs<clang::EnumType>();
+      enum_type && enum_type->getDecl()->getIntegerType()->isBooleanType()) {
+    Convert(sub_expr);
+    return;
+  }
+
   if (auto binop = clang::dyn_cast<clang::BinaryOperator>(stripped)) {
     // Comparisons and logical ops already produces bool, no wrap needed.
     if ((binop->isComparisonOp() || binop->isLogicalOp()) &&
