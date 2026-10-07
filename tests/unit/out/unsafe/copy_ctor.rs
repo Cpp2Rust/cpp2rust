@@ -116,6 +116,30 @@ impl Owner {
         this
     }
 }
+#[repr(C)]
+#[derive(VaArg, FnPtrArg, Default)]
+pub struct OutOfLine {
+    pub v: i32,
+}
+impl OutOfLine {
+    pub unsafe fn new(mut v: i32) -> Self {
+        let mut this = Self { v: v };
+        this
+    }
+    pub unsafe fn copy_from(o: *const OutOfLine) -> Self {
+        let mut this = Self {
+            v: (((*o).v) + (100)),
+        };
+        (*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)).prefix_inc();
+        this
+    }
+}
+impl Clone for OutOfLine {
+    fn clone(&self) -> Self {
+        unsafe { OutOfLine::copy_from(self as *const OutOfLine) }
+    }
+}
+impl OutOfLine {}
 pub unsafe fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -174,6 +198,10 @@ unsafe fn main_0() -> i32 {
     };
     let mut o2: Owner = Owner::move_from({ &mut o });
     assert!(((o2.box_.val) == (3)));
+    let mut ol1: OutOfLine = OutOfLine::new({ 5 });
+    let mut ol2: OutOfLine = OutOfLine::copy_from({ &ol1 });
+    assert!(((ol2.v) == (105)));
+    assert!(((*std::cell::LazyCell::force_mut(&mut *&raw mut copies_0)) == (12)));
     let mut n: NonConst = NonConst::new();
     let mut n1: NonConst = NonConst::new_1({ &mut n });
     let cn: NonConst = NonConst::new();

@@ -142,6 +142,31 @@ impl Owner {
         }
     }
 }
+#[derive(Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(4)]
+pub struct OutOfLine {
+    #[offset(0)]
+    pub v: i32,
+}
+impl OutOfLine {
+    pub fn new(mut v: i32) -> Self {
+        Self { v: v }
+    }
+    pub fn copy_from(o: Ptr<OutOfLine>) -> Self {
+        let __this: OutOfLine = Self {
+            v: (o.with(|__s| __s.v) + 100),
+        };
+        (*copies_0.with(Value::clone).borrow_mut()).prefix_inc();
+        __this
+    }
+}
+impl Clone for OutOfLine {
+    fn clone(&self) -> Self {
+        let __src: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine { v: self.v.clone() }));
+        OutOfLine::copy_from(__src.as_pointer())
+    }
+}
+impl OutOfLine {}
 pub fn by_value_1(mut c: Counted) -> i32 {
     return c.v;
 }
@@ -212,6 +237,10 @@ fn main_0() -> i32 {
     }));
     let mut o2: Owner = Owner::move_from({ o.as_pointer() });
     assert!((o2.box_.val == 3));
+    let ol1: Value<OutOfLine> = Rc::new(RefCell::new(OutOfLine::new({ 5 })));
+    let mut ol2: OutOfLine = OutOfLine::copy_from({ ol1.as_pointer() });
+    assert!((ol2.v == 105));
+    assert!((copies_0.with(|rc| *rc.borrow()) == 12));
     let n: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
     let mut n1: NonConst = NonConst::new_1({ n.as_pointer() });
     let cn: Value<NonConst> = Rc::new(RefCell::new(NonConst::new()));
