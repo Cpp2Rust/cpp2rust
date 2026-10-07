@@ -11,7 +11,7 @@ template <class T> struct Range {
   static T hi;
 };
 
-#define DEFINE_RANGE(T, a, b)                                                   \
+#define DEFINE_RANGE(T, a, b)                                                  \
   template <> T Range<T>::lo = a;                                              \
   template <> T Range<T>::hi = b
 
