@@ -52,15 +52,25 @@ fn main_0() -> i32 {
         .read())
     };
     assert!((((((r1 + r2) + r3) + r4) + r5) == 56));
-    let values: Value<Vec<i32>> = Rc::new(RefCell::new(vec![1, 7, 7, 3]));
+    let values: Value<Box<[i32]>> = Rc::new(RefCell::new(Box::new([1, 7, 7, 3])));
     let max: Value<Ptr<i32>> = Rc::new(RefCell::new(
         ({
-            let ___first: Ptr<i32> = (values.as_pointer() as Ptr<i32>);
-            let ___last: Ptr<i32> = (values.as_pointer() as Ptr<i32>).to_end();
-            max_element_0(___first, ___last)
+            let count = ((values.as_pointer() as Ptr<i32>).offset(4)).get_offset()
+                - (values.as_pointer() as Ptr<i32>).get_offset();
+            let max_index = PtrValueIter::new(&(values.as_pointer() as Ptr<i32>), count)
+                .enumerate()
+                .max_by(|(idx_a, val_a), (idx_b, val_b)| {
+                    val_a
+                        .partial_cmp(val_b)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                        .then_with(|| idx_b.cmp(idx_a))
+                })
+                .map(|(idx, _)| idx)
+                .unwrap_or(0);
+            (values.as_pointer() as Ptr<i32>) + max_index
         }),
     ));
-    assert!((*max.borrow()) == (values.as_pointer() as Ptr<i32>).offset(1_i64 as isize));
+    assert!((*max.borrow()) == (values.as_pointer() as Ptr<i32>).offset(1));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}
