@@ -1245,6 +1245,15 @@ bool Converter::VisitNamespaceDecl(clang::NamespaceDecl *decl) {
   return false;
 }
 
+bool Converter::VisitLinkageSpecDecl(clang::LinkageSpecDecl *decl) {
+  for (auto *child : decl->decls()) {
+    if (IsInMainFile(child) || !decl_ids_.contains(GetID(child))) {
+      Convert(child);
+    }
+  }
+  return false;
+}
+
 bool Converter::VisitTypedefDecl([[maybe_unused]] clang::TypedefDecl *decl) {
   return false;
 }

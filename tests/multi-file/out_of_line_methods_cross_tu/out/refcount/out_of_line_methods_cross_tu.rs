@@ -23,6 +23,17 @@ pub struct Derived {
     pub factor: i32,
 }
 impl Derived {}
+#[derive(Clone, Record, ByteRepr, VaArg, FnPtrArg, Default)]
+#[byte_size(8)]
+pub struct Pair {
+    #[offset(0)]
+    pub first: i32,
+    #[offset(4)]
+    pub second: i32,
+}
+pub fn pair_diff_0(mut p: Ptr<Pair>) -> i32 {
+    return ({ p.with(|__s| __s.first) } - { p.with(|__s| __s.second) });
+}
 pub fn main() {
     __cpp2rust_init_globals();
     std::process::exit(main_0());
@@ -36,6 +47,12 @@ fn main_0() -> i32 {
     let derived: Value<Derived> = Rc::new(RefCell::new(Derived::new({ 3 })));
     let mut base: PtrDyn<dyn Base> = (derived.as_pointer()).to_dyn::<dyn Base>(|w| w);
     assert!((({ (*base.upgrade().deref_mut()).apply(5,) }) == 15));
+    let pair: Value<Pair> = Rc::new(RefCell::new(Pair {
+        first: 7,
+        second: 3,
+    }));
+    assert!((({ pair_sum_1((pair.as_pointer()),) }) == 10));
+    assert!((({ pair_diff_0((pair.as_pointer()),) }) == 4));
     return 0;
 }
 impl S {
@@ -50,6 +67,9 @@ impl Derived {
 }
 impl S {}
 impl Derived {}
+pub fn pair_sum_1(mut p: Ptr<Pair>) -> i32 {
+    return ({ p.with(|__s| __s.first) } + { p.with(|__s| __s.second) });
+}
 impl Base for Derived {
     fn apply(&mut self, mut x: i32) -> i32 {
         return ({ self.factor } * x);

@@ -173,6 +173,8 @@ public:
 
   virtual bool VisitNamespaceDecl(clang::NamespaceDecl *decl);
 
+  bool VisitLinkageSpecDecl(clang::LinkageSpecDecl *decl);
+
   virtual bool VisitTypedefDecl(clang::TypedefDecl *decl);
   virtual bool VisitTypeAliasDecl(clang::TypeAliasDecl *decl);
   virtual bool VisitTypeAliasTemplateDecl(clang::TypeAliasTemplateDecl *decl);
@@ -491,6 +493,11 @@ public:
   virtual bool VisitPredefinedExpr(clang::PredefinedExpr *expr);
 
   virtual bool VisitClassTemplateDecl(clang::ClassTemplateDecl *decl);
+
+  bool TraverseClassTemplateSpecializationDecl(
+      clang::ClassTemplateSpecializationDecl *) {
+    return true;
+  }
 
   virtual bool
   VisitCXXStdInitializerListExpr(clang::CXXStdInitializerListExpr *expr);
