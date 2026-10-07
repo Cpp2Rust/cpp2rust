@@ -62,11 +62,7 @@ fn main_0() -> i32 {
     assert!((line!() as u32 > 0_u32));
     assert!(
         (((elem!(
-            ({
-                base_name_0(Ptr::<i8>::from_string_literal(
-                    concat!(file!(), "\0").as_bytes(),
-                ))
-            }),
+            ({ base_name_0(Ptr::<i8>::from_string_literal(file!().as_bytes()),) }),
             0
         )
         .read()) as i32)

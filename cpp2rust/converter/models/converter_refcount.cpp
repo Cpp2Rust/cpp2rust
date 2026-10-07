@@ -1329,9 +1329,8 @@ bool ConverterRefCount::VisitCallExpr(clang::CallExpr *expr) {
 }
 
 std::string ConverterRefCount::GetSourceFileAsString(clang::QualType type) {
-  return std::format(
-      "Ptr::<{}>::from_string_literal(concat!(file!(), \"\\0\").as_bytes())",
-      ToStringBase(type->getPointeeType().getUnqualifiedType()));
+  return std::format("Ptr::<{}>::from_string_literal(file!().as_bytes())",
+                     ToStringBase(type->getPointeeType().getUnqualifiedType()));
 }
 
 bool ConverterRefCount::VisitStringLiteral(clang::StringLiteral *expr) {
