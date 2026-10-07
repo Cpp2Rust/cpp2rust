@@ -3002,17 +3002,38 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   return false;
 }
 
-bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
-  bool branch_is_addr =
-      expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
-  bool is_place = branch_is_addr && isLValue();
-  PushParen deref(*this, is_place);
-  if (is_place) {
-    StrCat(token::kStar);
+bool Converter::ConvertConditionalAsDeref(clang::ConditionalOperator *expr) {
+  if (!expr->isLValue() || !isLValue() || !curr_init_type_.empty() ||
+      expr->getType()->isFunctionType()) {
+    return false;
   }
-  PushParen place(*this, is_place);
+  // Rewrite `(c ? a : b) = v` as `*(c ? &a : &b) = v`
+  auto addr_of = [&](clang::Expr *branch) {
+    return clang::UnaryOperator::Create(
+        ctx_, branch, clang::UO_AddrOf, ctx_.getPointerType(branch->getType()),
+        clang::VK_PRValue, clang::OK_Ordinary, branch->getExprLoc(), false,
+        clang::FPOptionsOverride());
+  };
+  auto *cond = new (ctx_) clang::ConditionalOperator(
+      expr->getCond(), expr->getQuestionLoc(), addr_of(expr->getTrueExpr()),
+      expr->getColonLoc(), addr_of(expr->getFalseExpr()),
+      ctx_.getPointerType(expr->getType()), clang::VK_PRValue,
+      clang::OK_Ordinary);
+  Convert(clang::UnaryOperator::Create(ctx_, cond, clang::UO_Deref,
+                                       expr->getType(), clang::VK_LValue,
+                                       clang::OK_Ordinary, expr->getExprLoc(),
+                                       false, clang::FPOptionsOverride()));
+  return true;
+}
+
+bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
+  if (ConvertConditionalAsDeref(expr)) {
+    return false;
+  }
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
+  bool branch_is_addr =
+      expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
   bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
@@ -4267,7 +4288,7 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
             expr->IgnoreParenImpCasts());
         cond && cond->isLValue()) {
       {
-        PushExprKind push(*this, ExprKind::AddrOf);
+        PushExprKind push(*this, ExprKind::LValue);
         PushInitType init_type(*this, qual_type);
         Convert(cond);
       }

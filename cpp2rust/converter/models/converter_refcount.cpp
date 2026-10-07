@@ -918,6 +918,9 @@ bool ConverterRefCount::ConvertIncAndDec(clang::UnaryOperator *expr) {
 
 bool ConverterRefCount::VisitConditionalOperator(
     clang::ConditionalOperator *expr) {
+  if (ConvertConditionalAsDeref(expr)) {
+    return false;
+  }
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
   {

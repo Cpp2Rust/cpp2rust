@@ -401,6 +401,8 @@ public:
 
   virtual bool VisitStmtExpr(clang::StmtExpr *expr);
 
+  bool ConvertConditionalAsDeref(clang::ConditionalOperator *expr);
+
   virtual bool VisitConditionalOperator(clang::ConditionalOperator *expr);
 
   virtual bool VisitDeclRefExpr(clang::DeclRefExpr *expr);

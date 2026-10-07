@@ -44,6 +44,9 @@ int main() {
   assert(b == 20);
   (a < b ? a : b) += 5;
   assert(b == 25);
+  int *ap = &(a > b ? a : b);
+  *ap = 40;
+  assert(a == 40);
 
   a < b ? inc() : dec();
   assert(counter == -1);
