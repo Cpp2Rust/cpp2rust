@@ -2475,7 +2475,7 @@ ConverterRefCount::GetStructAttributes(const clang::RecordDecl *decl) {
   std::vector<const char *> attrs;
 
   if (decl->isUnion()) {
-    return attrs;
+    return {"VaArg", "FnPtrArg"};
   }
 
   if (RecordDerivesClone(decl)) {
