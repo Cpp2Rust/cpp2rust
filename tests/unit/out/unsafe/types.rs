@@ -42,6 +42,12 @@ unsafe fn main_0() -> i32 {
             == (352_u64))
     );
     assert!((((xld) * (2_f64)) == (3_f64)));
+    let mut pi: f64 = 3.14159265358979E+0;
+    assert!(((pi) < (3.1415926540000001E+0)));
+    let mut dmax: f64 = -1.7976931348623157E+308;
+    assert!(((dmax) < (-1.0E+308)));
+    let mut ldmax: f64 = f64::INFINITY;
+    assert!(((ldmax) > (1.7976931348623157E+308)));
     assert!(((((((xwc) + (xc8 as i32)) + (xc16 as i32)) as u32).wrapping_add(xc32)) == (266_u32)));
     assert!((std::ptr::null_mut::<::libc::c_void>()).is_null());
     return 0;

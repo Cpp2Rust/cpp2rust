@@ -53,7 +53,8 @@ pub unsafe fn fft_3(a: *mut Option<Box<[Complex]>>, mut N: i32) -> Option<Box<[C
     );
     let mut i: i32 = 0;
     'loop_: while ((i) < (N)) {
-        let mut alpha: f64 = ((((-2_i32 as f64) * (3.141592654E+0)) * (i as f64)) / (N as f64));
+        let mut alpha: f64 =
+            ((((-2_i32 as f64) * (3.1415926535897931E+0)) * (i as f64)) / (N as f64));
         w.as_mut().unwrap()[(i as usize)] = Complex {
             re: alpha.cos(),
             img: alpha.sin(),

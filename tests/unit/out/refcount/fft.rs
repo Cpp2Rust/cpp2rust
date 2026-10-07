@@ -56,7 +56,8 @@ pub fn fft_3(a: Ptr<Option<Value<Box<[Complex]>>>>, mut N: i32) -> Option<Value<
     )));
     let mut i: i32 = 0;
     'loop_: while (i < N) {
-        let mut alpha: f64 = ((((-2_i32 as f64) * 3.141592654E+0) * (i as f64)) / (N as f64));
+        let mut alpha: f64 =
+            ((((-2_i32 as f64) * 3.1415926535897931E+0) * (i as f64)) / (N as f64));
         let __rhs = Complex {
             re: alpha.cos(),
             img: alpha.sin(),

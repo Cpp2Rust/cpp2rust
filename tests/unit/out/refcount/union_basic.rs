@@ -53,8 +53,8 @@ fn main_0() -> i32 {
     &(*e.borrow_mut());
     basic::i(u.as_pointer()).write(42);
     assert!(((basic::i(u.as_pointer()).read()) == 42));
-    basic::f(u.as_pointer()).write(3.140000105E+0);
-    assert!(((basic::f(u.as_pointer()).read()) == 3.140000105E+0));
+    basic::f(u.as_pointer()).write(3.1400001E+0);
+    assert!(((basic::f(u.as_pointer()).read()) == 3.1400001E+0));
     let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
     {
         ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
