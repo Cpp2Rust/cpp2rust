@@ -19,6 +19,26 @@ pub unsafe fn set_error_0(mut ctx: *mut context, mut fmt: *const libc::c_char, _
         (*ctx).last_error = ap.arg::<i32>();
     }
 }
+#[repr(C)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
+pub union value {
+    pub i: i32,
+    pub l: i64,
+}
+impl Default for value {
+    fn default() -> Self {
+        unsafe { std::mem::zeroed() }
+    }
+}
+pub unsafe fn pick_1(mut use_long: i32, __args: &[VaArg]) -> i64 {
+    let mut ap: VaList = VaList::default();
+    ap = VaList::new(__args);
+    let mut v: value = ap.arg::<value>();
+    if (use_long != 0) {
+        return v.l;
+    }
+    return (v.i as i64);
+}
 pub fn main() {
     unsafe {
         __cpp2rust_init_globals();
@@ -46,6 +66,11 @@ unsafe fn main_0() -> i32 {
         )
     });
     assert!(((((ctx.last_error) == (42)) as i32) != 0));
+    let mut v: value = <value>::default();
+    v.l = ((1_i64) << (40));
+    assert!(((((unsafe { pick_1(1, &[(v).into(),]) }) == ((1_i64) << (40))) as i32) != 0));
+    v.i = 7;
+    assert!(((((unsafe { pick_1(0, &[(v).into(),]) }) == (7_i64)) as i32) != 0));
     return 0;
 }
 pub unsafe fn __cpp2rust_init_globals() {}

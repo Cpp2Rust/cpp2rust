@@ -29,7 +29,7 @@ impl Default for record {
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(128)]
 pub struct anon_0 {
     #[offset(0)]

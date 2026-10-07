@@ -17,7 +17,7 @@ pub struct Inner {
 pub fn sum_inner_0(mut i: Ptr<Inner>) -> i32 {
     return ({ i.with(|__s| __s.a) } + { i.with(|__s| __s.b) });
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(16)]
 pub struct anon_1 {
     #[offset(0)]

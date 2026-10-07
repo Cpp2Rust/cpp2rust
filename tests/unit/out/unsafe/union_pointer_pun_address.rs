@@ -36,7 +36,7 @@ unsafe fn main_0() -> i32 {
     return 0;
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub to_a: *mut node_a,
     pub to_b: *mut node_b,

@@ -13,7 +13,7 @@ pub struct record {
     pub pad: [libc::c_char; 14],
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_0 {
     pub h: record,
     pub raw_: [libc::c_char; 128],
@@ -29,7 +29,7 @@ pub struct inner {
     pub view: anon_0,
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_1 {
     pub h: record,
     pub nested: inner,

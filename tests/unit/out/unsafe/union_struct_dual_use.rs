@@ -16,7 +16,7 @@ pub unsafe fn sum_inner_0(mut i: *mut Inner) -> i32 {
     return (((*i).a) + ((*i).b));
 }
 #[repr(C)]
-#[derive(Copy, Clone, FnPtrArg)]
+#[derive(Copy, Clone, FnPtrArg, VaArg)]
 pub union anon_1 {
     pub inner: Inner,
     pub raw_: [libc::c_char; 16],

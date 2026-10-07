@@ -34,7 +34,7 @@ fn main_0() -> i32 {
     assert!(((({ (out).to_any() } == { (a.as_pointer()).to_any() }) as i32) != 0));
     return 0;
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(8)]
 pub struct anon_0 {
     #[offset(0)]

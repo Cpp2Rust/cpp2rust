@@ -92,10 +92,14 @@ void Converter::EmitGlobalInits(Model model, std::string &out) {
   out += "}\n";
 }
 
-void Converter::EmitOpaqueRecords(std::string &out) {
+void Converter::EmitOpaqueRecords(Model model, std::string &out) {
   record_decls_.ForEachUndefined([&](const std::string &name) {
-    out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
-    out += "#[byte_size(1)]";
+    if (model == Model::kRefCount) {
+      out += "#[derive(Clone, Copy, Default, ByteRepr, VaArg, FnPtrArg)]";
+      out += "#[byte_size(1)]";
+    } else {
+      out += "#[derive(Clone, Copy, Default, VaArg, FnPtrArg)]";
+    }
     out += "pub struct ";
     out += name;
     out += ";\n";
@@ -4250,7 +4254,7 @@ std::string Converter::GetRecordName(const clang::NamedDecl *decl) const {
 std::vector<const char *>
 Converter::GetStructAttributes(const clang::RecordDecl *decl) {
   if (decl->isUnion()) {
-    return {"Copy", "Clone", "FnPtrArg"};
+    return {"Copy", "Clone", "FnPtrArg", "VaArg"};
   }
 
   std::vector<const char *> struct_attrs;

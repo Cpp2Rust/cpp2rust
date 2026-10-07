@@ -47,7 +47,7 @@ pub struct anon_3 {
     #[offset(32)]
     pub width: i32,
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(40)]
 pub struct anon_0 {
     #[offset(0)]

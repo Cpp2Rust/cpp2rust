@@ -26,7 +26,7 @@ pub struct point_struct {
     #[offset(4)]
     pub y: i32,
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct point {
     #[offset(0)]
@@ -48,7 +48,7 @@ impl Default for point {
         }
     }
 }
-#[derive(ByteRepr, DeepClone)]
+#[derive(VaArg, FnPtrArg, ByteRepr, DeepClone)]
 #[byte_size(4)]
 pub struct slot_union {
     #[offset(0)]
