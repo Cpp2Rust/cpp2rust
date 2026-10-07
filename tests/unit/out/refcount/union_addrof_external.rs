@@ -37,11 +37,11 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn h(&self) -> Ptr<record> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn h(this: Ptr<Self>) -> Ptr<record> {
+        this.reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<i8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn raw_(this: Ptr<Self>) -> Ptr<i8> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -101,10 +101,14 @@ fn main_0() -> i32 {
         let _cap: usize = 128usize;
         fill_1(_out, _cap)
     });
-    assert!((((((*c.borrow()).view.h().with(|__s| __s.code) as i32) == 2) as i32) != 0));
+    assert!(
+        ((((anon_0::h(field_ptr!(c.as_pointer(), view)).with(|__s| __s.code) as i32) == 2) as i32)
+            != 0)
+    );
     assert!(
         (((((elem!(
-            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
+                .reinterpret_cast::<u8>()),
             0
         )
         .read()) as i32)
@@ -113,7 +117,8 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((field_ptr!((*c.borrow()).view.h(), lo)).reinterpret_cast::<u8>()),
+            ((field_ptr!(anon_0::h(field_ptr!(c.as_pointer(), view)), lo))
+                .reinterpret_cast::<u8>()),
             1
         )
         .read()) as i32)
@@ -122,7 +127,7 @@ fn main_0() -> i32 {
     );
     assert!(
         (((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             0
         )
         .read()) as i32)
@@ -131,7 +136,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((((((elem!(
-            ((*c.borrow()).view.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_0::raw_(field_ptr!(c.as_pointer(), view)).reinterpret_cast::<i8>() as Ptr::<i8>),
             3
         )
         .read()) as u8) as i32)

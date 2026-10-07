@@ -25,11 +25,11 @@ pub struct anon_1 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_1 {
-    pub fn inner(&self) -> Ptr<Inner> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn inner(this: Ptr<Self>) -> Ptr<Inner> {
+        this.reinterpret_cast()
     }
-    pub fn raw_(&self) -> Ptr<i8> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn raw_(this: Ptr<Self>) -> Ptr<i8> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_1 {
@@ -62,12 +62,16 @@ fn main_0() -> i32 {
             .memset((0) as u8, 16usize as usize);
         ((outer.as_pointer()) as Ptr<Outer>).to_any()
     };
-    field!((*outer.borrow_mut()).u.inner(), a).write(3);
-    field!((*outer.borrow_mut()).u.inner(), b).write(4);
-    assert!((((({ sum_inner_0(((*outer.borrow()).u.inner()).clone(),) }) == 7) as i32) != 0));
+    field!(anon_1::inner(field_ptr!(outer.as_pointer(), u)), a).write(3);
+    field!(anon_1::inner(field_ptr!(outer.as_pointer(), u)), b).write(4);
+    assert!(
+        (((({ sum_inner_0((anon_1::inner(field_ptr!(outer.as_pointer(), u))).clone(),) }) == 7)
+            as i32)
+            != 0)
+    );
     assert!(
         ((((((elem!(
-            ((*outer.borrow()).u.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_1::raw_(field_ptr!(outer.as_pointer(), u)).reinterpret_cast::<i8>() as Ptr::<i8>),
             0
         )
         .read()) as u8) as i32)
@@ -76,7 +80,7 @@ fn main_0() -> i32 {
     );
     assert!(
         ((((((elem!(
-            ((*outer.borrow()).u.raw_().reinterpret_cast::<i8>() as Ptr::<i8>),
+            (anon_1::raw_(field_ptr!(outer.as_pointer(), u)).reinterpret_cast::<i8>() as Ptr::<i8>),
             4
         )
         .read()) as u8) as i32)

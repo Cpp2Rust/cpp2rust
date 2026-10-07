@@ -18,17 +18,17 @@ pub struct anon_0 {
     __bytes: Value<Box<[u8]>>,
 }
 impl anon_0 {
-    pub fn text(&self) -> Ptr<Ptr<i8>> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn text(this: Ptr<Self>) -> Ptr<Ptr<i8>> {
+        this.reinterpret_cast()
     }
-    pub fn handle(&self) -> Ptr<AnyPtr> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn handle(this: Ptr<Self>) -> Ptr<AnyPtr> {
+        this.reinterpret_cast()
     }
-    pub fn signed_n(&self) -> Ptr<i64> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn signed_n(this: Ptr<Self>) -> Ptr<i64> {
+        this.reinterpret_cast()
     }
-    pub fn f(&self) -> Ptr<f64> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn f(this: Ptr<Self>) -> Ptr<f64> {
+        this.reinterpret_cast()
     }
 }
 impl Default for anon_0 {
@@ -51,19 +51,19 @@ pub fn write_count_1(mut s: Ptr<Sink>, mut count: i64) {
     'switch: {
         match { (s.with(|__s| __s.width) as u32) } {
             __v if __v == ((Width_enum_W_64 as i32) as u32) => {
-                ((*s.upgrade().deref()).out.handle().read())
+                (anon_0::handle(field_ptr!(s, out)).read())
                     .reinterpret_cast::<i64>()
                     .write(count);
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_32 as i32) as u32) => {
-                ((*s.upgrade().deref()).out.handle().read())
+                (anon_0::handle(field_ptr!(s, out)).read())
                     .reinterpret_cast::<i32>()
                     .write((count as i32));
                 break 'switch;
             }
             __v if __v == ((Width_enum_W_16 as i32) as u32) => {
-                ((*s.upgrade().deref()).out.handle().read())
+                (anon_0::handle(field_ptr!(s, out)).read())
                     .reinterpret_cast::<i16>()
                     .write((count as i16));
                 break 'switch;
@@ -82,23 +82,17 @@ fn main_0() -> i32 {
     let buf16: Value<i16> = Rc::new(RefCell::new(0_i16));
     let s: Value<Sink> = <Value<Sink>>::default();
     (*s.borrow_mut()).width = Width_enum_W_64;
-    (*s.borrow_mut())
-        .out
-        .handle()
+    anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf64.as_pointer()) as Ptr<i64>).to_any());
     ({ write_count_1((s.as_pointer()), 1234605616436508552_i64) });
     assert!(((((*buf64.borrow()) == 1234605616436508552_i64) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_32;
-    (*s.borrow_mut())
-        .out
-        .handle()
+    anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf32.as_pointer()) as Ptr<i32>).to_any());
     ({ write_count_1((s.as_pointer()), 305419896_i64) });
     assert!(((((*buf32.borrow()) == 305419896) as i32) != 0));
     (*s.borrow_mut()).width = Width_enum_W_16;
-    (*s.borrow_mut())
-        .out
-        .handle()
+    anon_0::handle(field_ptr!(s.as_pointer(), out))
         .write(((buf16.as_pointer()) as Ptr<i16>).to_any());
     ({ write_count_1((s.as_pointer()), 4660_i64) });
     assert!((((((*buf16.borrow()) as i32) == 4660) as i32) != 0));

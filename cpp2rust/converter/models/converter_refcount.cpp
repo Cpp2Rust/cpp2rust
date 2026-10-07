@@ -726,8 +726,7 @@ void ConverterRefCount::EmitRustUnion(clang::RecordDecl *decl) {
                     field->getType()->getAsArrayTypeUnsafe()->getElementType())
               : ToString(field->getType());
       StrCat(std::format(
-          "pub fn {}(&self) -> Ptr<{}> {{ (self.__bytes.as_pointer() "
-          "as Ptr<u8>).reinterpret_cast() }}",
+          "pub fn {}(this: Ptr<Self>) -> Ptr<{}> {{ this.reinterpret_cast() }}",
           GetNamedDeclAsString(field), ty));
     }
   }
@@ -1918,14 +1917,18 @@ bool ConverterRefCount::VisitCXXStdInitializerListExpr(
 
 void ConverterRefCount::ConvertUnionMemberAccessor(clang::MemberExpr *expr) {
   auto member = expr->getMemberDecl();
-  std::string str;
-  {
-    Buffer buf(*this);
-    PushExprKind push(*this, isLValue() ? ExprKind::LValue : ExprKind::RValue);
-    Converter::ConvertMemberExpr(expr);
-    str = std::move(buf).str();
+  auto *record = clang::cast<clang::RecordDecl>(member->getDeclContext());
+  auto name = GetNamedDeclAsString(member);
+  auto *accessed = expr;
+  if (auto [inner, libc_record, libc_name] = ReplaceNonUniformLibcField(expr);
+      inner) {
+    record = libc_record;
+    name = libc_name;
+    accessed = inner;
   }
-  str += "()";
+  auto ptr = ConvertRecordPtr(accessed);
+  auto str = std::format("{}::{}({}{})", GetRecordName(record), name, ptr,
+                         isFresh() ? "" : ".clone()");
 
   if (isAddrOf()) {
     if (member->getType()->isArrayType()) {

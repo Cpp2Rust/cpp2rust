@@ -14,11 +14,11 @@ pub struct basic {
     __bytes: Value<Box<[u8]>>,
 }
 impl basic {
-    pub fn i(&self) -> Ptr<i32> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn i(this: Ptr<Self>) -> Ptr<i32> {
+        this.reinterpret_cast()
     }
-    pub fn f(&self) -> Ptr<f32> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn f(this: Ptr<Self>) -> Ptr<f32> {
+        this.reinterpret_cast()
     }
 }
 impl Default for basic {
@@ -51,10 +51,26 @@ fn main_0() -> i32 {
     let u: Value<basic> = Rc::new(RefCell::new(<basic>::default()));
     let e: Value<empty> = Rc::new(RefCell::new(<empty>::default()));
     &(*e.borrow_mut());
-    (*u.borrow_mut()).i().write(42);
-    assert!((((*u.borrow()).i().read()) == 42));
-    (*u.borrow_mut()).f().write(3.140000105E+0);
-    assert!((((*u.borrow()).f().read()) == 3.140000105E+0));
+    basic::i(u.as_pointer()).write(42);
+    assert!(((basic::i(u.as_pointer()).read()) == 42));
+    basic::f(u.as_pointer()).write(3.140000105E+0);
+    assert!(((basic::f(u.as_pointer()).read()) == 3.140000105E+0));
+    let buf: Value<Box<[u8]>> = Rc::new(RefCell::new((0..4).map(|_| 0_u8).collect::<Box<[u8]>>()));
+    {
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>)
+            .to_any()
+            .memset((0) as u8, ::std::mem::size_of::<[u8; 4]>() as usize);
+        ((buf.as_pointer() as Ptr<u8>) as Ptr<u8>).to_any()
+    };
+    let mut ru: Ptr<basic> = (buf.as_pointer() as Ptr<u8>).reinterpret_cast::<basic>();
+    let mut pi: Ptr<i32> = (basic::i(ru.clone())).clone();
+    let mut pf: Ptr<f32> = (basic::f(ru.clone())).clone();
+    basic::i(ru.clone()).write(7);
+    assert!(((pi.read()) == 7));
+    pi.write(1065353216);
+    assert!(((basic::i(ru.clone()).read()) == 1065353216));
+    assert!(((pf.read()) == 1.0E+0));
+    assert!((((*buf.borrow())[(3) as usize] as i32) == 63));
     return 0;
 }
 pub fn __cpp2rust_init_globals() {}

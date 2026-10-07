@@ -31,11 +31,11 @@ pub struct value {
     __bytes: Value<Box<[u8]>>,
 }
 impl value {
-    pub fn i(&self) -> Ptr<i32> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn i(this: Ptr<Self>) -> Ptr<i32> {
+        this.reinterpret_cast()
     }
-    pub fn l(&self) -> Ptr<i64> {
-        (self.__bytes.as_pointer() as Ptr<u8>).reinterpret_cast()
+    pub fn l(this: Ptr<Self>) -> Ptr<i64> {
+        this.reinterpret_cast()
     }
 }
 impl Default for value {
@@ -51,9 +51,9 @@ pub fn pick_1(use_long: i32, __args: &[VaArg]) -> i64 {
     (*ap.borrow_mut()) = VaList::new(__args);
     let v: Value<value> = Rc::new(RefCell::new((*ap.borrow_mut()).arg::<value>()));
     if ((*use_long.borrow()) != 0) {
-        return ((*v.borrow()).l().read());
+        return (value::l(v.as_pointer()).read());
     }
-    return (((*v.borrow()).i().read()) as i64);
+    return ((value::i(v.as_pointer()).read()) as i64);
 }
 pub fn main() {
     __cpp2rust_init_globals();
@@ -81,9 +81,9 @@ fn main_0() -> i32 {
     });
     assert!(((({ (*ctx.borrow()).last_error } == 42) as i32) != 0));
     let v: Value<value> = <Value<value>>::default();
-    (*v.borrow_mut()).l().write((1_i64 << 40));
+    value::l(v.as_pointer()).write((1_i64 << 40));
     assert!((((({ pick_1(1, &[((*v.borrow()).clone()).into(),]) }) == (1_i64 << 40)) as i32) != 0));
-    (*v.borrow_mut()).i().write(7);
+    value::i(v.as_pointer()).write(7);
     assert!((((({ pick_1(0, &[((*v.borrow()).clone()).into(),]) }) == 7_i64) as i32) != 0));
     return 0;
 }

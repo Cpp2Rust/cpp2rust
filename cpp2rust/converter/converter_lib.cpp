@@ -211,6 +211,46 @@ bool IsUnionArrayMember(const clang::Expr *base) {
   return false;
 }
 
+// TODO: this will be gone when the AST matcher lands
+std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
+ReplaceNonUniformLibcField(clang::MemberExpr *expr) {
+  // Example: ::struct stat::st_mtim::tv_sec -> ::libc::stat::st_mtime
+  struct Mapping {
+    const char *record;
+    const char *inner_field;
+    const char *leaf_field;
+    const char *replacement;
+  };
+  static constexpr Mapping kFields[] = {
+      {"stat", "st_mtim", "tv_sec", "st_mtime"},      // Linux
+      {"stat", "st_mtimespec", "tv_sec", "st_mtime"}, // macOS
+      {"in6_addr", "__in6_u", "__u6_addr8", "s6_addr"},
+  };
+
+  auto getNamedIdentifierOrNull = [](auto *decl) {
+    return decl && decl->getDeclName().isIdentifier() ? decl : nullptr;
+  };
+
+  if (auto leaf = getNamedIdentifierOrNull(expr->getMemberDecl())) {
+    if (auto inner = clang::dyn_cast<clang::MemberExpr>(
+            expr->getBase()->IgnoreParenImpCasts())) {
+      if (auto field = getNamedIdentifierOrNull(
+              clang::dyn_cast<clang::FieldDecl>(inner->getMemberDecl()))) {
+        if (getNamedIdentifierOrNull(field->getParent())) {
+          for (const auto &m : kFields) {
+            if (field->getParent()->getName() == m.record &&
+                field->getName() == m.inner_field &&
+                leaf->getName() == m.leaf_field) {
+              return {inner, field->getParent(), m.replacement};
+            }
+          }
+        }
+      }
+    }
+  }
+  return {nullptr, nullptr, ""};
+}
+
 bool IsStringLiteralExpr(const clang::Expr *expr) {
   const auto *stripped = expr->IgnoreParens()->IgnoreImplicit();
   return clang::isa<clang::StringLiteral>(stripped) ||

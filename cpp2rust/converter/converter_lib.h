@@ -15,6 +15,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_set>
 #include <vector>
 
@@ -55,6 +56,9 @@ bool IsComparisonWithNullOp(const clang::BinaryOperator *expr);
 bool IsInMainFile(const clang::Decl *decl);
 
 bool IsUnionArrayMember(const clang::Expr *base);
+
+std::tuple<clang::MemberExpr *, clang::RecordDecl *, std::string>
+ReplaceNonUniformLibcField(clang::MemberExpr *expr);
 
 bool IsStringLiteralExpr(const clang::Expr *expr);
 
