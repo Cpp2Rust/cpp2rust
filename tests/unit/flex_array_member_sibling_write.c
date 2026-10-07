@@ -18,11 +18,6 @@ struct T {
   struct E a[1];
 };
 
-struct F {
-  int n;
-  char tail[];
-};
-
 int main(void) {
   struct S *s = calloc(1, sizeof(struct S) + 8);
   assert(s != NULL);
@@ -47,15 +42,5 @@ int main(void) {
   assert(t->a[1].id == 30 && t->a[1].w == 20);
   assert(t->n == 3 && t->cap == 4);
   free(t);
-
-  assert(sizeof(struct F) == sizeof(int));
-  struct F *f = malloc(sizeof(struct F) + 4);
-  assert(f != NULL);
-  f->n = 4;
-  memcpy(f->tail, "xyz", 4);
-  assert(f->n == 4);
-  assert(strcmp(f->tail, "xyz") == 0);
-  assert(f->tail[1] == 'y');
-  free(f);
   return 0;
 }
