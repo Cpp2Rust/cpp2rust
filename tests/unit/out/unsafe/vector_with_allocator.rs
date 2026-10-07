@@ -57,7 +57,11 @@ pub unsafe fn fn_1(v: *mut Vec<i32>, mut v3: Vec<i32>) {
     v2.push(3);
     x = (&mut (*v))[(2_usize)];
     v2[(0_usize)] = 1;
-    (if true { &mut v3 } else { &mut (*v) })[(0_usize)] = 7;
+    (&mut (*if true {
+        (&mut v3 as *mut Vec<i32>)
+    } else {
+        (v)
+    }))[(0_usize)] = 7;
     (&mut (*v4))[(1_usize)] = 13;
     assert!(((x) == (6)));
     assert!(((*((*v).first_mut().unwrap())) == (4)));

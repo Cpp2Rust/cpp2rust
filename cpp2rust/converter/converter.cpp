@@ -3027,34 +3027,46 @@ bool Converter::VisitStmtExpr(clang::StmtExpr *expr) {
   return false;
 }
 
+bool Converter::ConvertLValueConditional(clang::ConditionalOperator *expr) {
+  if (!expr->isLValue() || expr->getType()->isFunctionType()) {
+    return false;
+  }
+  // `&(c ? a : b)` -> `c ? &a : &b`
+  if (isAddrOf()) {
+    Convert(MakeConditionalAddrOf(ctx_, expr));
+    return true;
+  }
+  // `(c ? a : b) = v` -> `*(c ? &a : &b) = v`
+  if (isLValue()) {
+    Convert(clang::UnaryOperator::Create(
+        ctx_, MakeConditionalAddrOf(ctx_, expr), clang::UO_Deref,
+        expr->getType(), clang::VK_LValue, clang::OK_Ordinary,
+        expr->getExprLoc(), false, clang::FPOptionsOverride()));
+    return true;
+  }
+  return false;
+}
+
 bool Converter::VisitConditionalOperator(clang::ConditionalOperator *expr) {
+  if (ConvertLValueConditional(expr)) {
+    return false;
+  }
   StrCat(keyword::kIf);
   ConvertCondition(expr->getCond());
-  bool branch_is_addr =
-      expr->isLValue() && !isRValue() && !expr->getType()->isFunctionType();
-  bool branch_is_mut = curr_init_type_.empty() || IsMut(curr_init_type_.back());
   {
     PushBrace then_brace(*this);
-    if (branch_is_addr) {
-      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
+    Convert(expr->getTrueExpr(), expr->getType());
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
     }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
-                                                         : autoref_mut_);
-    Convert(expr->getTrueExpr(), branch_is_addr
-                                     ? std::nullopt
-                                     : std::make_optional(expr->getType()));
   }
   StrCat(keyword::kElse);
   {
     PushBrace else_brace(*this);
-    if (branch_is_addr) {
-      StrCat(token::kRef, branch_is_mut ? keyword_mut_ : "");
+    Convert(expr->getFalseExpr(), expr->getType());
+    if (expr->getType()->isVoidType()) {
+      StrCat(token::kSemiColon);
     }
-    PushExplicitAutoref no_autoref(*this, branch_is_addr ? std::nullopt
-                                                         : autoref_mut_);
-    Convert(expr->getFalseExpr(), branch_is_addr
-                                      ? std::nullopt
-                                      : std::make_optional(expr->getType()));
   }
   return false;
 }
@@ -4279,13 +4291,8 @@ void Converter::ConvertVarInit(clang::QualType qual_type, clang::Expr *expr) {
     if (auto *cond = clang::dyn_cast<clang::ConditionalOperator>(
             expr->IgnoreParenImpCasts());
         cond && cond->isLValue()) {
-      {
-        PushExprKind push(*this, ExprKind::LValue);
-        PushInitType init_type(*this, qual_type);
-        Convert(cond);
-      }
-      StrCat(keyword::kAs);
-      Convert(qual_type);
+      PushExprKind push(*this, ExprKind::AddrOf);
+      Convert(cond);
       return;
     }
     StrCat(token::kRef);
@@ -4867,13 +4874,17 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
       return;
     }
   }
-  if (IsReferenceType(expr) || pointer_type->isFunctionPointerType()) {
+  auto *cond =
+      clang::dyn_cast<clang::ConditionalOperator>(expr->IgnoreParens());
+  if (IsReferenceType(expr) || pointer_type->isFunctionPointerType() ||
+      (cond && cond->isLValue())) {
     PushExprKind push(*this, ExprKind::AddrOf);
     Convert(expr);
   } else if (IsGlobalVar(expr)) {
     StrCat("&raw", pointer_type->getPointeeType().isConstQualified()
                        ? keyword::kConst
                        : keyword_mut_);
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(expr);
     ConvertCast(pointer_type);
     computed_expr_type_ = ComputedExprType::FreshPointer;
@@ -4882,6 +4893,7 @@ void Converter::ConvertAddrOf(clang::Expr *expr, clang::QualType pointer_type) {
     if (!pointer_type->getPointeeType().isConstQualified()) {
       StrCat(keyword_mut_);
     }
+    PushExprKind push(*this, ExprKind::LValue);
     Convert(expr);
     ConvertCast(pointer_type);
     computed_expr_type_ = ComputedExprType::FreshPointer;

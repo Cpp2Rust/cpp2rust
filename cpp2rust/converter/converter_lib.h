@@ -232,6 +232,9 @@ bool RecordNeedsDestruction(const clang::CXXRecordDecl *decl);
 
 clang::Expr *ToAddrOf(clang::ASTContext &ctx, clang::Expr *expr);
 
+clang::ConditionalOperator *
+MakeConditionalAddrOf(clang::ASTContext &ctx, clang::ConditionalOperator *expr);
+
 clang::CXXConstructExpr *MakeConstructExpr(clang::ASTContext &ctx,
                                            clang::QualType type,
                                            clang::CXXConstructorDecl *ctor,

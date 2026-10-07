@@ -31,9 +31,9 @@ pub fn fn_0(v: Ptr<Vec<i32>>, v3: Vec<i32>) {
     (*v2.borrow_mut())[0_usize] = 1;
     elem!(
         ((if true {
-            v3.as_pointer()
+            (Ptr::<Vec<i32>>::decay(&(v3.as_pointer())))
         } else {
-            Ptr::<Vec<i32>>::decay(&(v))
+            (Ptr::<Vec<i32>>::decay(&(v)))
         }) as Ptr<i32>),
         0_usize
     )
